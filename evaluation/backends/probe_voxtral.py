@@ -115,10 +115,13 @@ async def _realtime_session(ws_url: str, audio: np.ndarray, model: str,
 
             # 세션 설정 - 필드명이 틀려도 서버가 error 이벤트로 알려줄 것이고,
             # 그 error 가 곧 정답 스키마다.
+            # model 은 **최상위**여야 한다. session 안에 넣으면 서버가
+            # "Missing required field: model" 로 거절한다(2026-09-09 실측).
+            # 성공해도 session.updated 같은 확인 이벤트는 오지 않는다.
             await send({
                 "type": "session.update",
+                "model": model,
                 "session": {
-                    "model": model,
                     "input_audio_format": "pcm16",
                     "language": lang,
                     "temperature": 0.0,
