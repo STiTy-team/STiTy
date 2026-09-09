@@ -35,76 +35,116 @@ CHUNK_BY_RIGHT = {0: 0.08, 1: 0.16, 3: 0.32, 6: 0.56, 13: 1.12}
 
 
 class NemotronEngine:
+    """cache-aware streaming (nemotron-3.5-asr-streaming).
+
+    정식 스트리밍 API 는 청크마다 generate() 를 부르는 것이 **아니다**.
+    mel 청크를 내놓는 제너레이터를 input_features 로 한 번 넘기면 generate() 가
+    스트림을 소비하며 encoder/decoder 캐시를 내부에서 이어간다
+    (generation_nemotron_asr_streaming.py:212-225).
+
+    청크마다 generate() 를 부르면 캐시가 매번 리셋돼 경계에서 단어가 통째로 빠진다.
+    2026-09-09 실측: 재입국 충격은 신혼 단계가 없기 때문에 -> 매입국 충격 신혼단계가 때문에.
+    제너레이터로 바꾼 뒤 같은 문장이 참조와 거의 일치했다.
+
+    청크 크기는 샘플이 아니라 **mel 프레임 수**로 못박혀 있다:
+        first = 1 + subsampling_factor * right,  subsequent = subsampling_factor * (right + 1)
+    프로세서의 num_samples_first_audio_chunk 는 첫 청크에서 1 프레임 과다하므로
+    (105 요구 / 106 산출) 프레임 수에서 역산한다. per 쪽 프로퍼티는 정확하다.
+
+    generate() 는 스트림을 다 소비한 뒤에야 반환하므로 feed() 는 부분 결과를 내지
+    않는다. 전체 전사는 finish() 가 돌려준다.
+    """
+
+    HOP = 160
+    SUPPORTED_LOOKAHEAD = (0, 3, 6, 13)
+
     def __init__(self, model_id: str = MODEL_ID, right_context: int = 13,
-                 lang: str = "ko-KR", lookahead_tokens: int = 6, device: str = "cuda"):
+                 lang: str = "ko-KR", device: str = "cuda", **_ignored):
+        import queue as _queue
+        import threading as _threading
         import torch
         from transformers import AutoModelForRNNT, AutoProcessor
 
         self.torch = torch
+        self._queue_mod = _queue
+        self._threading = _threading
         self.model_id = model_id
-        self.right_context = right_context
-        self.att_context_size = [56, right_context]
         self.default_lang = lang
-        self.lookahead_tokens = lookahead_tokens
 
-        logger.info("loading %s (att_context_size=%s)", model_id, self.att_context_size)
+        if right_context not in self.SUPPORTED_LOOKAHEAD:
+            logger.warning("right_context=%s 미지원 - 13 으로 진행 (지원: %s)",
+                           right_context, self.SUPPORTED_LOOKAHEAD)
+            right_context = 13
+        self.lookahead = right_context
+
+        logger.info("loading %s (num_lookahead_tokens=%s)", model_id, self.lookahead)
         self.processor = AutoProcessor.from_pretrained(model_id)
+        self.processor.set_num_lookahead_tokens(self.lookahead)
         self.model = AutoModelForRNNT.from_pretrained(model_id, device_map=device)
         self.model.eval()
 
-        if hasattr(self.processor, "set_num_lookahead_tokens"):
-            self.processor.set_num_lookahead_tokens(lookahead_tokens)
-        if hasattr(self.model, "set_att_context_size"):
-            self.model.set_att_context_size(self.att_context_size)
-        elif hasattr(self.model, "encoder") and hasattr(self.model.encoder, "set_default_att_context_size"):
-            self.model.encoder.set_default_att_context_size(self.att_context_size)
-        else:
-            logger.warning("att_context_size 를 설정할 훅을 못 찾음 - 모델 기본값으로 진행")
+        self.latency_ms = self.processor.streaming_latency_ms
+        self.first_samples = (self.processor.num_mel_frames_first_audio_chunk - 1) * self.HOP
+        self.chunk_samples = self.processor.num_samples_per_audio_chunk
 
-        # 청크 길이는 right context 가 정한다. 클라이언트가 200ms 로 밀어 넣으므로
-        # 여기서 다시 모아 정확한 경계로 잘라 넣는다.
-        self.chunk_sec = CHUNK_BY_RIGHT.get(right_context, 1.12)
-        self.chunk_samples = int(self.chunk_sec * SAMPLING_RATE)
-
+        self._lang = lang
+        self._q = None
+        self._thread = None
+        self._error = None
+        self._text = ""
         self._buf = np.zeros(0, dtype=np.float32)
         self._first = True
-        self._lang = lang
-        self._prev_text = ""
-        self._state = None
 
     # -- StreamingEngine ---------------------------------------------------
     def start(self, lang: str) -> None:
-        self._buf = np.zeros(0, dtype=np.float32)
-        self._first = True
-        self._prev_text = ""
-        self._state = None
+        self._abort()
         if lang and lang != "auto":
             self._lang = {"ko": "ko-KR", "en": "en-US"}.get(lang, lang)
         else:
             self._lang = self.default_lang
+        self._q = self._queue_mod.Queue(maxsize=64)
+        self._thread = None
+        self._error = None
+        self._text = ""
+        self._buf = np.zeros(0, dtype=np.float32)
+        self._first = True
 
     def feed(self, pcm: np.ndarray) -> Optional[str]:
-        self._buf = np.concatenate([self._buf, pcm.astype(np.float32)])
-        out = []
-        while len(self._buf) >= self.chunk_samples:
-            chunk = self._buf[: self.chunk_samples]
-            self._buf = self._buf[self.chunk_samples:]
-            text = self._infer(chunk, last=False)
-            if text:
-                out.append(text)
-        return " ".join(out) if out else None
+        if self._q is None:
+            self.start(self._lang)
+        self._buf = np.concatenate([self._buf, np.asarray(pcm, dtype=np.float32)])
+        while True:
+            n = self.first_samples if self._first else self.chunk_samples
+            if len(self._buf) < n:
+                break
+            chunk = self._buf[:n]
+            self._buf = self._buf[n:]
+            self._push(chunk, first=self._first)
+            self._first = False
+        return None  # generate() 는 스트림을 다 먹은 뒤에야 텍스트를 준다
 
     def finish(self) -> Optional[str]:
-        text = None
+        if self._q is None:
+            return None
         if len(self._buf) > 0:
-            pad = self.chunk_samples - len(self._buf)
-            chunk = np.concatenate([self._buf, np.zeros(max(0, pad), dtype=np.float32)])
-            text = self._infer(chunk, last=True)
-            self._buf = np.zeros(0, dtype=np.float32)
-        self._first = True
-        return text
+            n = self.first_samples if self._first else self.chunk_samples
+            tail = np.concatenate([self._buf, np.zeros(max(0, n - len(self._buf)), dtype=np.float32)])[:n]
+            self._push(tail, first=self._first)
+            self._first = False
+        self._buf = np.zeros(0, dtype=np.float32)
+        if self._thread is not None:
+            self._q.put(None)              # 스트림 끝 -> 제너레이터 종료 -> generate 반환
+            self._thread.join(timeout=120)
+            if self._thread.is_alive():
+                logger.error("generate 스레드가 120s 안에 끝나지 않았다")
+        self._q = None
+        self._thread = None
+        if self._error is not None:
+            raise self._error
+        return self._text or None
 
     def close(self) -> None:
+        self._abort()
         try:
             del self.model
             self.torch.cuda.empty_cache()
@@ -112,55 +152,61 @@ class NemotronEngine:
             pass
 
     # -- 내부 --------------------------------------------------------------
-    def _infer(self, chunk: np.ndarray, last: bool) -> Optional[str]:
-        kwargs = dict(
-            sampling_rate=SAMPLING_RATE,
-            language=self._lang,
-            is_streaming=True,
-            is_first_audio_chunk=self._first,
-            return_tensors="pt",
-        )
-        if last:
-            kwargs["is_last_audio_chunk"] = True
-        try:
-            inputs = self.processor(chunk, **kwargs)
-        except TypeError:
-            # is_last_audio_chunk 를 안 받는 버전
-            kwargs.pop("is_last_audio_chunk", None)
-            inputs = self.processor(chunk, **kwargs)
+    def _prompt_ids(self):
+        probe = self.processor(np.zeros(self.first_samples, dtype=np.float32),
+                               sampling_rate=SAMPLING_RATE, language=self._lang,
+                               is_streaming=True, is_first_audio_chunk=True,
+                               return_tensors="pt")
+        return probe["prompt_ids"].to(self.model.device)
 
-        inputs = {k: (v.to(self.model.device) if hasattr(v, "to") else v)
-                  for k, v in inputs.items()}
-        self._first = False
+    def _features(self, chunk: np.ndarray, first: bool):
+        out = self.processor(chunk, sampling_rate=SAMPLING_RATE, language=self._lang,
+                             is_streaming=True, is_first_audio_chunk=first,
+                             return_tensors="pt")
+        return out["input_features"].to(self.model.device)
 
-        with self.torch.no_grad():
-            gen_kwargs = {}
-            if self._state is not None:
-                gen_kwargs["state"] = self._state
+    def _push(self, chunk: np.ndarray, first: bool) -> None:
+        feats = self._features(chunk, first)
+        self._ensure_thread()
+        self._q.put(feats)
+
+    def _ensure_thread(self) -> None:
+        if self._thread is not None:
+            return
+        prompt_ids = self._prompt_ids()
+        q = self._q
+
+        def _stream():
+            while True:
+                item = q.get()
+                if item is None:
+                    return
+                yield item
+
+        def _run():
             try:
-                out = self.model.generate(**inputs, **gen_kwargs)
-            except TypeError:
-                out = self.model.generate(**inputs)
+                with self.torch.no_grad():
+                    out = self.model.generate(input_features=_stream(),
+                                              num_lookahead_tokens=self.lookahead,
+                                              prompt_ids=prompt_ids)
+                text = self.processor.batch_decode(out.sequences, skip_special_tokens=True)[0]
+                self._text = (text or "").strip()
+            except Exception as e:                      # noqa: BLE001
+                logger.exception("nemotron generate 실패")
+                self._error = e
 
-        if isinstance(out, (tuple, list)) and len(out) == 2:
-            out, self._state = out
+        self._thread = self._threading.Thread(target=_run, name="nemotron-generate", daemon=True)
+        self._thread.start()
 
-        try:
-            text = self.processor.batch_decode(out, skip_special_tokens=True)[0]
-        except Exception:
-            text = self.processor.batch_decode(out)[0]
-
-        text = (text or "").strip()
-        if not text:
-            return None
-        # RNN-T 는 수정하지 않지만, 구현에 따라 누적 텍스트를 돌려줄 수 있다.
-        # 접두사면 새로 붙은 부분만 취한다.
-        if self._prev_text and text.startswith(self._prev_text):
-            new = text[len(self._prev_text):].strip()
-            self._prev_text = text
-            return new or None
-        self._prev_text = text
-        return text
+    def _abort(self) -> None:
+        if self._q is not None and self._thread is not None:
+            try:
+                self._q.put_nowait(None)
+            except Exception:
+                pass
+            self._thread.join(timeout=10)
+        self._q = None
+        self._thread = None
 
 
 def _probe(path: str, lang: str, right_context: int) -> int:
@@ -168,10 +214,19 @@ def _probe(path: str, lang: str, right_context: int) -> int:
     report = {"model_id": MODEL_ID, "audio": path, "lang": lang,
               "right_context": right_context, "steps": []}
 
+    def _json_safe(v):
+        # load_processor/load_model 은 객체를 반환한다. 그대로 report 에 넣으면
+        # 마지막 json.dumps 에서 통째로 죽는다(2026-09-09 런이 여기서 날아갔다).
+        try:
+            json.dumps(v, ensure_ascii=False)
+            return v
+        except TypeError:
+            return "<%s>" % type(v).__name__
+
     def step(name, fn):
         try:
             v = fn()
-            report["steps"].append({"step": name, "ok": True, "value": v})
+            report["steps"].append({"step": name, "ok": True, "value": _json_safe(v)})
             return v
         except Exception as e:
             report["steps"].append({"step": name, "ok": False,

@@ -24,7 +24,7 @@ def main():
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--lang", default="ko-KR")
     ap.add_argument("--right-context", type=int, default=13,
-                    help="Nemotron att_context_size 의 right. 0/1/3/6/13 = 80ms~1.12s")
+                    help="Nemotron num_lookahead_tokens. 0/3/6/13 = 80ms/320ms/560ms/1.12s")
     ap.add_argument("--log-file")
     args = ap.parse_args()
 
@@ -36,9 +36,9 @@ def main():
                         level=logging.INFO, handlers=handlers)
 
     if args.backend == "nemotron":
-        from engine_nemotron import NemotronEngine, CHUNK_BY_RIGHT
+        from engine_nemotron import NemotronEngine
 
-        note = f"right_context={args.right_context} chunk={CHUNK_BY_RIGHT.get(args.right_context)}s"
+        note = f"num_lookahead_tokens={args.right_context}"  # {0:80ms,3:320,6:560,13:1120}
 
         def factory():
             return NemotronEngine(right_context=args.right_context, lang=args.lang)
