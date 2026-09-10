@@ -126,11 +126,39 @@ _ap.add_argument("--no-native", action="store_true",
 _ap.add_argument("--no-header", action="store_true",
                  help="상단 제목·설명 문단을 안 그린다. 논문/슬라이드에 캡션이 따로 붙는 "
                       "경우 그림 안의 제목은 중복이고 패널 높이만 먹는다")
+_ap.add_argument("--legend-ncol", type=int, default=None,
+                 help="범례 열 수. 기본은 패널 하나면 2, 둘이면 3, 셋 이상이면 4. 항목이 7개라 "
+                      "3 을 주면 세 줄(3+3+1)로 접힌다 — 패널 하나짜리는 글자를 조금 줄여야 "
+                      "폭 안에 든다")
+_ap.add_argument("--drop", nargs="+", default=[],
+                 help="그리지 않을 정책 (조건 접두사: punct / mu_prefix / syntax …). "
+                      "빼면 x 범위·축약 구간·범례도 그 정책 없이 다시 잡힌다")
+_ap.add_argument("--short-ylabel", action="store_true",
+                 help="y축 라벨을 지표 이름만(BLEU / COMET) 적는다. 언어쌍은 패널 제목에, "
+                      "채점 모델은 캡션에 있으므로 논문 그림에서는 중복이다")
+_ap.add_argument("--no-cite", action="store_true",
+                 help="범례에서 인용 표기(`Papi et al., 2023`)를 뺀다. 본문 캡션에 인용이 "
+                      "붙는 논문 그림용")
+_ap.add_argument("--serif", action="store_true",
+                 help="Times 계열 세리프(Nimbus Roman → Liberation Serif → STIX)와 STIX "
+                      "수식 폰트로 그린다. 본문이 Times 인 논문용. 굵기는 그대로 볼드다")
+_ap.add_argument("--no-legend", action="store_true",
+                 help="범례를 그리지 않는다. 캡션이 계열을 설명하는 논문 그림용")
 _ap.add_argument("--ceiling-in-ylim", action="store_true",
                  help="offline 상한을 y 범위에 포함시킨다. 기본은 제외 — 상한이 높아서 "
                       "포함하면 곡선이 아래로 눌려 점 간격이 안 보인다")
 ARGS = _ap.parse_args()
 M = ARGS.metric
+if ARGS.no_cite:
+    def _strip(lbl):
+        lbl = re.sub(r";?\s*[A-Z][A-Za-z]+ et al\., \d{4}", "", lbl)
+        return re.sub(r"\s*\(\)", "", lbl)
+    SERIES = [(*x[:4], _strip(x[4])) for x in SERIES]
+    SINGLE = [(*x[:3], _strip(x[3])) for x in SINGLE]
+    NATIVE = [(*x[:4], _strip(x[4]), x[5]) for x in NATIVE]
+SERIES = [x for x in SERIES if x[0] not in ARGS.drop]
+SINGLE = [x for x in SINGLE if x[0] not in ARGS.drop]
+NATIVE = [x for x in NATIVE if x[0] not in ARGS.drop]
 STEM = ARGS.out or ("tradeoff" if M == "bleu" else f"tradeoff_{M}")
 
 d = Path("core/meaning_segmentator/experiment/artifacts") / ARGS.run_id / "bleu"
@@ -144,24 +172,38 @@ if missing:
 
 # 글씨는 전부 잉크색 볼드다 — 회색(INK2) 라벨은 축소 인쇄와 빔프로젝터에서 먼저
 # 사라진다. INK2 는 이제 보조 선(상한 파선·절단 표시)에만 남는다.
+_W = "bold"
 plt.rcParams.update({
-    "font.family": "DejaVu Sans", "font.size": 11,
+    # 세리프 목록 끝의 DejaVu Sans 는 글리프 폴백용이다 — Nimbus Roman 에 '→' 가 없다.
+    "font.family": (["Nimbus Roman", "Liberation Serif", "STIXGeneral", "DejaVu Sans"]
+                    if ARGS.serif else "DejaVu Sans"),
+    "mathtext.fontset": "stix" if ARGS.serif else "dejavusans",
+    # 논문 PDF 는 Type 3 폰트를 거부하는 곳이 많다 (IEEE/ACM 검사기). 세리프 모드는 TrueType 으로 심는다.
+    "pdf.fonttype": 42 if ARGS.serif else 3,
+    "font.size": 11,
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
     "text.color": INK, "axes.labelcolor": INK, "axes.edgecolor": GRID,
     "xtick.color": INK, "ytick.color": INK, "axes.linewidth": 1.0,
-    "axes.labelweight": "bold", "axes.titleweight": "bold",
-    "xtick.labelsize": 11, "ytick.labelsize": 11,
-    "font.weight": "bold",
+    "axes.labelweight": _W, "axes.titleweight": _W,
+    "xtick.labelsize": 11 if len(TARGETS) > 1 else 13.5,
+    "ytick.labelsize": 11 if len(TARGETS) > 1 else 13.5,
+    "font.weight": _W,
 })
+# 패널 하나짜리는 지면에서 한 칸을 통째로 차지하므로 글자를 한 단계 키운다.
+_FS = 1.0 if len(TARGETS) > 1 else 1.25
 fig, axes = plt.subplots(
     1, len(TARGETS), squeeze=False,
-    figsize=(5.5 * len(TARGETS) if len(TARGETS) > 1 else 7.2, 5.9))
+    figsize=(5.5 * len(TARGETS) if len(TARGETS) > 1 else 9.2,
+             5.9 if len(TARGETS) > 1 else 6.6))
 axes = axes[0]
-_L = (0.095 if M == "comet" else 0.075) if len(TARGETS) > 1 else \
-     (0.085 if M == "comet" else 0.070)
+_SINGLE = len(TARGETS) == 1
+_L = (0.095 if M == "comet" else 0.075) if not _SINGLE else \
+     (0.11 if M == "comet" else 0.095)
 _TOP = 0.90 if ARGS.no_header else (0.815 if M == "comet" else 0.845)
-fig.subplots_adjust(left=_L, right=0.985, top=_TOP, bottom=0.235,
-                    wspace=0.22)
+# 패널 하나짜리는 폭이 좁아 범례를 2열로 접어야 한다 — 3열이면 긴 라벨(TransLLaMa 인용)이
+# 그림 밖으로 나간다. 그만큼 아래 여백을 더 준다.
+fig.subplots_adjust(left=_L, right=0.985, top=_TOP,
+                    bottom=0.255 if _SINGLE else 0.235, wspace=0.22)
 
 
 # **격자를 데이터에서 읽는다.** 종전에는 위 상수가 그대로 쓰여 T=2,3,5,7,10 점이
@@ -194,7 +236,7 @@ def label_points(ax, pts, color, prefix, dy):
     계열 구분은 마커가 하고 글자는 읽히는 것이 우선이다."""
     for x, y, v in pts:
         ax.annotate(f"{prefix}{v}", (x, y), textcoords="offset points",
-                    xytext=(0, dy), fontsize=9.5, color=INK, fontweight="bold",
+                    xytext=(0, dy), fontsize=9.5 * _FS, color=INK, fontweight=_W,
                     ha="center", va="bottom" if dy > 0 else "top", zorder=7)
 
 
@@ -282,9 +324,12 @@ for ax, tgt in zip(axes, TARGETS):
                     f"(no segmentation)",
                     (0.015, _ceil), xycoords=("axes fraction", "data"),
                     textcoords="offset points", xytext=(0, -15),
-                    color=INK, fontsize=9, fontweight="bold", zorder=6)
+                    color=INK, fontsize=9 * _FS, fontweight=_W, zorder=6)
     span = max(xs) - min(xs)
-    xlo, xhi = min(xs) - span * 0.06, max(xs) + span * 0.11
+    # 패널 하나짜리는 오른쪽 여백을 줄인다 — 다중 패널의 0.11 은 punct 마커와 축약
+    # 표시가 들어갈 자리였고, 없으면 파선 상한만 빈 데로 한 마디 더 뻗는다.
+    xlo, xhi = ((min(xs) - span * 0.04, max(xs) + span * 0.02) if _SINGLE
+                else (min(xs) - span * 0.06, max(xs) + span * 0.11))
 
     # 점이 없는 넓은 구간을 축약한다 — 관심 구간(경쟁 정책들)이 짓눌리지 않도록.
     gaps = find_gaps(xs, xlo, xhi)
@@ -310,13 +355,17 @@ for ax, tgt in zip(axes, TARGETS):
                 ax.plot([fr + dx - 0.007, fr + dx + 0.007], [-0.013, 0.013],
                         transform=ax.transAxes, color=INK2, lw=1.1,
                         clip_on=False, zorder=10)
-    ax.set_xlabel("LAAL (ms of source audio)", fontsize=12, labelpad=8)
-    ylab = (f"BLEU  (EN→{tgt.upper()}, {blobs[tgt]['tokenize']})" if M == "bleu"
-            else f"COMET  (EN→{tgt.upper()}, wmt22-comet-da)")
-    ax.set_ylabel(ylab, fontsize=12)
-    ax.yaxis.set_label_coords((-0.135 if M == "comet" else -0.085)
-                              * (1.0 if len(TARGETS) > 1 else 0.72), 0.5)
-    ax.set_title(f"EN→{tgt.upper()}", loc="left", fontsize=14, fontweight="bold", pad=8)
+    ax.set_xlabel("LAAL (ms of source audio)", fontsize=12 * _FS, labelpad=8)
+    if ARGS.short_ylabel:
+        ax.set_ylabel(M.upper(), fontsize=12 * _FS, labelpad=8)
+    else:
+        ylab = (f"BLEU  (EN→{tgt.upper()}, {blobs[tgt]['tokenize']})" if M == "bleu"
+                else f"COMET  (EN→{tgt.upper()}, wmt22-comet-da)")
+        ax.set_ylabel(ylab, fontsize=12)
+        ax.yaxis.set_label_coords((-0.135 if M == "comet" else -0.085)
+                                  * (1.0 if len(TARGETS) > 1 else 0.68), 0.5)
+    ax.set_title(f"EN→{tgt.upper()}", loc="left", fontsize=14 * _FS,
+                 fontweight=_W, pad=8)
     ax.tick_params(length=4, width=1.0)
 
 # 상한을 못 그린 패널이 첫 칸일 수 있으므로 범례는 전 패널에서 모아 중복만 뺀다.
@@ -331,13 +380,17 @@ if _CEIL_LBL in l:   # 상한은 종전대로 맨 앞에 둔다
     _i = l.index(_CEIL_LBL)
     h.insert(0, h.pop(_i))
     l.insert(0, l.pop(_i))
-_leg = fig.legend(h, l, loc="lower center", ncol=3 if len(TARGETS) < 3 else 4,
-                  frameon=False, fontsize=11.5, handlelength=2.6,
-                  handletextpad=0.7, columnspacing=2.0, labelspacing=0.7,
-                  bbox_to_anchor=(0.5, 0.005))
-for _t in _leg.get_texts():
-    _t.set_fontweight("bold")
-    _t.set_color(INK)
+_NCOL = ARGS.legend_ncol or (2 if _SINGLE else (3 if len(TARGETS) < 3 else 4))
+if not ARGS.no_legend:
+    _leg = fig.legend(h, l, loc="lower center", ncol=_NCOL,
+                      frameon=False,
+                      fontsize=(10.5 if _NCOL >= 3 else 12.5) if _SINGLE else 11.5,
+                      handlelength=2.6, handletextpad=0.7,
+                      columnspacing=(1.1 if _NCOL >= 3 else 1.6) if _SINGLE else 2.0,
+                      labelspacing=0.7, bbox_to_anchor=(0.5, 0.005))
+    for _t in _leg.get_texts():
+        _t.set_fontweight(_W)
+        _t.set_color(INK)
 # **번역기 이름을 결과에서 읽는다.** 종전에는 "gtx" 가 제목에 박혀 있어서, madlad 로 잰
 # 그림이 스스로를 gtx 라고 말했다 (`bleu_eval` 리포트에 있던 것과 같은 종류의 사고다).
 _trs = sorted({b.get("translator", "?").split(":")[1] if b.get("translator", "").startswith("local:")
@@ -348,7 +401,7 @@ if not ARGS.no_header:
              f"{ARGS.title}"
              + ((f" (same translator, {_MT}; T = {_TSTR} per curve)")
                 if len(TARGETS) > 1 else f"  ·  {_MT}, T = {_TSTR}"),
-             ha="left", va="top", fontweight="bold",
+             ha="left", va="top", fontweight=_W,
              fontsize=12.5 if len(TARGETS) > 1 else 12.0)
     fig.text(0.008, 0.945,
              "Upper-left is better. LAAL is forced-aligned (Qwen3-ForcedAligner; wav2vec2 CTC "
@@ -367,6 +420,9 @@ if not ARGS.no_header:
               + ("BLEU tokenisation: " + blobs[TARGETS[0]]["tokenize"] if M == "bleu"
                  else "COMET: wmt22-comet-da (reference-based).")),
              ha="left", va="top", fontsize=7.5, color=INK2, linespacing=1.6)
-fig.savefig(d / f"{STEM}.png", dpi=200, facecolor=SURFACE)
-fig.savefig(d / f"{STEM}.pdf", facecolor=SURFACE)
+# 패널 하나짜리는 범례가 그림 폭을 정하므로 여백을 그려진 것에 맞춰 잘라낸다.
+# 다중 패널은 종전 여백을 유지한다 (기존 산출물과 크기가 달라지지 않게).
+_SAVE = dict(bbox_inches="tight", pad_inches=0.04) if _SINGLE else {}
+fig.savefig(d / f"{STEM}.png", dpi=200, facecolor=SURFACE, **_SAVE)
+fig.savefig(d / f"{STEM}.pdf", facecolor=SURFACE, **_SAVE)
 print("saved", d / f"{STEM}.png")
