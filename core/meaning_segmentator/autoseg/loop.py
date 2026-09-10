@@ -927,8 +927,9 @@ def main() -> int:
     p.add_argument("--v0-candidates", type=int, default=1,
                    help="prompt_v0 후보 수. 2 이상이면 dev 일부로 골라 시작한다")
     p.add_argument("--select-n", type=int, default=0,
-                   help="후보 선별에 쓸 **train** 문장 수. 0 = train 전체. dev 는 채택 "
-                        "판정 전용이라 선별에 쓰지 않는다 (select_prompt 주석 참고). "
+                   help="후보 선별에 쓸 **선별 홀드아웃** 문장 수. 0 = 홀드아웃 전체. "
+                        "dev 는 채택 판정 전용이라 선별에 쓰지 않는다 "
+                        "(select_prompt 주석 참고). "
                         "정확도는 문장 수만 따른다 — 실측 1위적중 20문장 36%% / 40문장 58%% "
                         "/ 60문장 76%%")
     # 한 분절 호출에 넣을 문장 수. **비용의 유일한 큰 레버**다 — en-de test 100문장 실측:
@@ -1030,8 +1031,14 @@ def main() -> int:
     p.add_argument("--tgt-spaced", default=None, choices=["yes", "no"],
                    help="타깃 언어가 띄어쓰기를 쓰는가. 미지정 시 --tgt-lang 에서 추론 (LAAL 단위)")
     p.add_argument("--iterations", type=int, default=6)
-    p.add_argument("--train", type=int, default=30)
-    p.add_argument("--train-pool", type=int, default=None)
+    p.add_argument("--train", type=int, default=30,
+                   help="이터레이션마다 평가할 문장 수. Critic 사례가 여기서 나온다")
+    p.add_argument("--train-pool", type=int, default=None,
+                   help="train 풀 크기. 기본 2*--train — 앞쪽 --train 개는 이터레이션 "
+                        "배치, 나머지는 **후보 선별 전용 홀드아웃**이다. 둘을 가르지 "
+                        "않으면 Critic 이 규칙을 만든 문장으로 그 규칙의 후보를 다시 "
+                        "고르게 된다. --train 과 같은 값을 주면 홀드아웃이 없어져 "
+                        "종전처럼 같은 문장으로 고른다")
     # 프롬프트가 v0 대비 커질 수 있는 **유일한** 상한. 품질 노브가 아니라 비용 천장이다 —
     # 프롬프트는 문장마다 다시 보내므로 길이가 곧 토큰 비용이다.
     #
@@ -1140,9 +1147,35 @@ def main() -> int:
     # **측정은 train+dev 만 본다.** test 를 넣으면 그 문장의 구두점이 검증기 규칙
     # (`trailing_punct`)에 반영되어 "루프가 한 번도 보지 않은 데이터" 라는 전제가 깨진다.
     sentences = data.load(args.dataset)
-    pool_n = max(args.train, args.train_pool or args.train)
-    splits = data.split_data(sentences, pool_n, args.dev, args.test, seed=args.seed)
-    fit = splits["train"] + splits["dev"]
+    # **선별 문장과 진단 문장을 갈라 놓는다.** 종전 기본값(`--train-pool` 미지정)에서는
+    # 둘이 **같은 문장**이었다: Critic 이 그 30문장의 실패를 보고 규칙을 만들고, 그
+    # 규칙으로 만든 후보 3개를 **같은 30문장**으로 다시 골랐다. 시험 문제를 미리 보고
+    # 공부한 뒤 그 시험으로 실력을 재는 모양이다.
+    #
+    # 기본을 `2 × --train` 으로 올려 앞쪽 절반만 이터레이션 배치로 쓰고 뒤쪽 절반은
+    # **선별 전용 홀드아웃**으로 둔다 (`select_prompt` 참고). `split_data` 가 test ->
+    # dev -> train 순으로 배분하므로 **풀을 키워도 test/dev 와 앞쪽 절반은 그대로다** —
+    # 그래서 이터레이션 배치는 종전과 글자까지 같고, 비용도 그대로다 (배치 30,
+    # 선별 3후보 × 30). 되돌리려면 `--train-pool` 을 `--train` 과 같게 준다.
+    _pool_auto = args.train_pool is None
+    args.train_pool = args.train_pool or 2 * args.train
+    pool_n = max(args.train, args.train_pool)
+    try:
+        splits = data.split_data(sentences, pool_n, args.dev, args.test, seed=args.seed)
+    except ValueError:
+        # **문장이 모자라면 홀드아웃부터 포기한다.** 기본값 때문에 데이터가 빠듯한
+        # 코퍼스에서 런이 시작도 못 하고 죽는 일은 없어야 한다. 명시로 준 값이면
+        # 조용히 줄이지 않고 그대로 터뜨린다 — 요청한 설정이 안 되는 것이므로.
+        if not _pool_auto:
+            raise
+        args.train_pool = pool_n = args.train
+        splits = data.split_data(sentences, pool_n, args.dev, args.test, seed=args.seed)
+        print(f"[data] 문장이 모자라 선별 홀드아웃을 못 만든다 — train {args.train} 을 "
+              f"배치와 선별에 함께 쓴다", file=sys.stderr)
+    # **프로파일 모집단은 늘리지 않는다.** 여기서 발화 속도가 나오고 그게 `min_gap` ->
+    # `t_floor` -> T 격자를 정한다. 풀을 키운 김에 같이 넓히면 격자가 바뀔 수 있고,
+    # 그러면 이번 변경의 효과와 격자 변경의 효과가 한 런 안에서 섞인다.
+    fit = splits["train"][:args.train] + splits["dev"]
     measured = data.measure_profile([x.text for x in fit])
     spaced, trailing_punct = data.profile_settings(measured)
 
@@ -1277,7 +1310,9 @@ def main() -> int:
         # 로딩·분할·측정은 위에서 이미 끝났다 (격자 유도가 발화 속도를 필요로 해서).
         data.write_splits(splits, run_dir / "data")
         log(f"[data] {args.dataset}: 전체 {len(sentences)}, "
-            f"train {len(splits['train'])} / dev {len(splits['dev'])} / test {len(splits['test'])}")
+            f"train {len(splits['train'])} (배치 {args.train} + 선별 홀드아웃 "
+            f"{max(0, len(splits['train']) - args.train)}) / "
+            f"dev {len(splits['dev'])} / test {len(splits['test'])}")
         (run_dir / "measured_profile.json").write_text(
             json.dumps(measured, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -1521,7 +1556,10 @@ def main() -> int:
             """
             if len(cands) <= 1:
                 return list(cands)
-            pool = splits["train"]
+            # **홀드아웃에서 고른다.** 뒤쪽 절반은 이터레이션 배치에 들어간 적이 없으므로
+            # Critic 도 PE 도 이 문장들의 실패를 본 적이 없다. `--train-pool` 을 `--train`
+            # 과 같게 주면 비어서 종전처럼 배치와 같은 문장으로 되돌아간다.
+            pool = splits["train"][args.train:] or splits["train"]
             sel = pool[:select_n] if select_n and select_n < len(pool) else pool
             # **분절을 먼저 한 풀에 몰아 캐시를 채운다.** 후보를 순차로 `run_eval` 하면
             # 후보마다 select/batch_size 개의 콜만 던지게 되어 워커를 못 채운다
@@ -1765,9 +1803,10 @@ def main() -> int:
             timer.mark("train_eval")
 
             _set_skip_guard(best.get("fmt") if best["train_score"] is not None else None)
-            batch = splits["train"]
-            if len(batch) > args.train:
-                batch = random.Random(20260808 + it).sample(batch, args.train)
+            # **앞쪽 `--train` 개 고정.** 종전에는 풀에서 매 이터 무작위로 뽑았는데,
+            # 그러면 선별 홀드아웃(뒤쪽 절반)까지 배치에 섞여 분리가 깨진다. 고정해도
+            # 종전 기본값(풀 = train)과 배치가 동일하므로 달라지는 것은 없다.
+            batch = splits["train"][:args.train]
             rows, m, viol = run_eval(prompt, batch, t_grid, "train")
             sc = metrics.score(m)
 

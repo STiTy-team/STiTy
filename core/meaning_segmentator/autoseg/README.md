@@ -197,14 +197,15 @@ PYTHONPATH=. python -m core.meaning_segmentator.autoseg.infra.cost_report --run-
 | `--no-judge` | — | 판정자를 끈다. 사례에 '왜·어디로' 설명이 안 붙는다 |
 | `--revision-candidates` | `3` | 이터레이션당 개정 후보 수. 첫 개는 자유 개정, 나머지는 Critic 의 `proposed_rule` 을 하나씩만 반영. **train 으로 골라 쓴다** |
 | `--v0-candidates` | `1` | `prompt_v0` 후보 수 |
-| `--select-n` | `0` (train 전체) | 후보 선별에 쓸 **train** 문장 수. dev 는 채택 판정 전용이라 선별에 안 쓴다. 정확도는 문장 수만 따른다 (1위적중 20문장 36% / 40문장 58% / 60문장 76%) |
+| `--train-pool` | `2 × --train` | train 풀 크기. 앞쪽 `--train` 개만 이터레이션 배치로 쓰고 **나머지는 후보 선별 전용 홀드아웃**이다. 가르지 않으면 Critic 이 규칙을 만든 문장으로 그 규칙의 후보를 다시 고르게 된다. `--train` 과 같은 값을 주면 홀드아웃이 없어진다 |
+| `--select-n` | `0` (홀드아웃 전체) | 후보 선별에 쓸 홀드아웃 문장 수. dev 는 채택 판정 전용이라 선별에 안 쓴다. 정확도는 문장 수만 따른다 (1위적중 20문장 36% / 40문장 58% / 60문장 76%) |
 | `--adequacy-backend` | `cometkiwi` | 참조 없는 QE. y축 주지표 |
 | `--consistency-backend` | `nli` | 보고용 가설 검증값. `nli`(양방향 entailment, 어순 무관) / `comet` / `xcomet`. **NLI 모델은 `metrics.NLI_MODEL` 로 고정**돼 있다 (`xlm-roberta-large-xnli-anli`) — 다국어라 타깃별로 바꿀 필요가 없고, 자리마다 모델을 하나로 못박은 것이 런 간 값이 섞이는 것을 막는다 |
 | `--translate-backend` | `local` | 번역기. `local`(HF seq2seq, `--local-mt-model`, 기본 `google/madlad400-3b-mt`) / `remote`(OpenAI 호환 서버의 MT 전용 모델, `--remote-mt-*`) / `v2`(공식 Cloud Translation Basic, `GOOGLE_TRANSLATE_API_KEY` 필요) / `gtx`(무료 비공식). **백엔드마다 번역문이 다르다** — gtx↔v2 는 기존 캐시 18건 재번역 대조에서 일치 0/18. `translator_id` 와 캐시 키에 백엔드가 들어가 섞이지는 않지만, **다른 백엔드로 잰 점수끼리는 비교할 수 없다** (gtx 로 잰 기존 26개 런이 그렇다) |
 | `--local-mt-model` | `google/madlad400-3b-mt` | `local` 일 때 쓸 HF seq2seq 모델 |
 | `--remote-mt-url` / `--remote-mt-model` / `--remote-mt-template` / `--remote-mt-workers` | — / — / `seedx` / `64` | `remote` 일 때의 엔드포인트·모델·프롬프트 규약·동시 요청 수. 동시 요청은 LLM 용 `--workers` 와 별개다 |
 | `--google-key-env` | `GOOGLE_TRANSLATE_API_KEY` | `v2` 키를 읽을 환경변수/.env 키 이름. 계정을 갈아끼울 때 쓴다 |
-| `--tgt-langs` | 기본 풀 | 목적함수를 다언어로. 분절은 타깃 무관이라 비용의 90% 가 그대로다. 소스 언어는 자동 제외 |
+| `--tgt-langs` | English Chinese Japanese German | 목적함수를 다언어로. 소스 언어는 자동 제외되므로 보통 타깃 3개다. 분절은 타깃 무관이라 LLM 비용의 90% 가 그대로지만 **번역·채점은 타깃 수에 비례한다** — 실측으로 타깃 하나가 dev 평가에 437초를 더한다. 풀을 바꾸면 `effective_z` 가 다른 수가 되어 런 간 비교가 깨진다 |
 | `--target-aware` | — | **언어쌍 전용 프롬프트(비교군)**. 타깃 1개 필수. 네 에이전트가 타깃 문법을 근거로 쓸 수 있게 풀고 `check_target_agnostic` 게이트를 끈다. 아래 §언어쌍 전용 비교군 |
 | `--seg-reasoning-effort` | `medium` | 분절 호출 사고량. **비용의 98% 가 여기다** |
 | `--agent-reasoning-effort` | `medium` | Profiler/Judge/Critic/PE 사고량 |
@@ -221,8 +222,14 @@ PYTHONPATH=. python -m core.meaning_segmentator.autoseg.infra.cost_report --run-
 | `--final-only` | — | 이터레이션을 건너뛰고 기존 `best_prompt.txt` 로 최종 test 평가만 |
 | `--allow-broken-coverage` | — | 분절기가 요구 경계 수를 못 채워도 계속한다. **기본은 iter 0 에서 중단** |
 
-크기 인자(`--iterations` 6 / `--train` 30 / `--dev` 60 / `--test` 100)와 나머지(`--workers`, `--train-pool`, `--tgt-code`, `--tgt-spaced`, `--no-google-context`,
+크기 인자(`--iterations` 6 / `--train` 30 / `--dev` 60 / `--test` 100)와 나머지(`--workers`, `--tgt-code`, `--tgt-spaced`, `--no-google-context`,
 `--comet-batch-size`)는 `--help` 로 볼 것.
+
+**train 은 두 몫으로 갈라져 있다.** 풀 60문장 중 앞 30개가 이터레이션 배치(Critic
+사례가 여기서 나온다), 뒤 30개가 후보 선별 홀드아웃이다. `split_data` 가 test → dev →
+train 순으로 배분하므로 **풀을 키워도 test·dev·배치는 그대로**고, 비용도 그대로다
+(배치 30문장, 선별 3후보 × 30문장). 프로파일 측정(`min_gap` → T 격자)의 모집단도
+배치 + dev 로 고정돼 있다 — 홀드아웃을 넣으면 격자가 움직일 수 있다.
 
 `--fresh` 없이 같은 `--run-id` 로 다시 실행하면 언어 프로파일·prompt_v0·번역 캐시를
 재사용해 이어서 돈다.
