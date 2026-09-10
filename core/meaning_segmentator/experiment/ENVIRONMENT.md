@@ -163,9 +163,10 @@ ja/zh 의 값이 큰 것은 언어 특성이 아니라 **단위가 다르기 때
 않는다.** 발화속도는 총 길이가 아니라 `speech_ms`(첫 발화 시작 ~ 마지막 발화 끝)로 잰다 —
 FLEURS 녹음은 앞뒤 무음이 1~2초씩 있어 총 길이로 재면 과소평가된다.
 
-검증 타깃은 기본 풀(English, Korean, Japanese, Chinese, Spanish, German)에서 **소스 언어만
-뺀 5개**이고, 목적함수는 타깃별 z-정규화 effective 의 평균이다. `--target-aware` 런
-(`run13ta-*`) 만 타깃이 1개다.
+검증 타깃은 기본 풀(English, Chinese, Japanese, German)에서 **소스 언어만 뺀 3개**이고,
+목적함수는 타깃별 z-정규화 effective 의 평균이다. `--target-aware` 런 (`run13ta-*`) 만
+타깃이 1개다. 아래 표의 런들은 Korean·Spanish 가 포함된 6개 풀(타깃 5개)로 쟀으므로
+`effective_z` 값을 지금 풀로 잰 런과 직접 비교할 수 없다 — 타깃별 원값 곡선은 비교된다.
 
 ## 7. 벽시계 시간과 비용
 

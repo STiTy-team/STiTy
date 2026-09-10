@@ -111,7 +111,19 @@ class ScoredSplit:
 # z 기준선은 **분할별로 한 번 정해 고정한다** (`_zmix`, `run_dir/z_baseline.json`).
 # 평가마다 다시 잡으면 채택 판정이 망가진다 — run05 에서 실제로 그랬다.
 
-DEFAULT_TARGET_POOL = ["English", "Korean", "Japanese", "Chinese", "Spanish", "German"]
+# **풀을 6개에서 4개로 줄였다 — 시간이 이유다.** 타깃 하나가 이터레이션 하나에서
+# 265문장 × (격자 3벌 + 순위 셔플 3벌) 을 번역하고 채점한다. 실측으로 타깃 하나가
+# dev 평가에 437초를 더하고, 그것이 train·dev·후보 선별 세 군데에서 반복된다 —
+# 5타깃 런이 12.8시간, 같은 데이터의 1타깃 런이 2.8~4.7시간이었다.
+#
+# 남긴 넷은 **문자 체계와 어순이 서로 다른 축**을 하나씩 잡는다: 로마자 SVO(English),
+# 한자 고립어(Chinese), 교착어 SOV(Japanese), 굴절어 + 동사 후치(German). 뺀 Korean 은
+# Japanese 와 어순·교착 성질이 겹치고, Spanish 는 English 와 겹친다.
+#
+# **이 값을 바꾸면 목적함수가 바뀐다.** `effective_z` 는 타깃별 z 의 평균이라 풀이
+# 달라지면 다른 수가 된다 — 6타깃으로 잰 기존 런의 점수와 직접 비교할 수 없다.
+# 타깃별 원값 곡선은 그대로 보고되므로 언어 하나씩의 비교는 여전히 가능하다.
+DEFAULT_TARGET_POOL = ["English", "Chinese", "Japanese", "German"]
 
 
 def resolve_targets(pool: list[str], src_lang: str) -> list[str]:

@@ -47,8 +47,10 @@ experiment/
 `min_gap: 3` 도 인자가 아니라 유도 결과다 (`loop.py` 가 `args.min_gap` 에 되쓴다).
 
 `--tgt-lang` 은 검증 타깃이 아니다. 검증 타깃은 기본 풀
-(English, Korean, Japanese, Chinese, Spanish, German)에서 **소스 언어만 뺀** 5개이고,
+(English, Chinese, Japanese, German)에서 **소스 언어만 뺀** 3개이고,
 목적함수는 타깃별 z-정규화 effective 의 평균이다. `--target-aware` 런만 타깃이 1개다.
+아래 런 목록은 Korean·Spanish 가 포함된 6개 풀(타깃 5개)로 잰 것이라 `effective_z` 를
+지금 풀로 잰 런과 직접 비교할 수 없다.
 
 ## 런 목록
 
