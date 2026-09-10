@@ -240,10 +240,20 @@ def label_points(ax, pts, color, prefix, dy):
                     ha="center", va="bottom" if dy > 0 else "top", zorder=7)
 
 
+def _knob_label(c: dict, T) -> str:
+    """점에 적을 노브 값. **실현 평균 조각 크기**(`piece_units`, bleu_eval 산출)가 있으면
+    그걸 소수 한 자리로 적고, 없으면(옛 산출) 목표 T 를 적는다. T 는 `round(길이/T)` 로
+    조각 수를 정하는 노브라 실현값과 0.1~0.9 어긋난다 (de-en T=4 → 3.8, zh-en T=21 → 16.4).
+    논문 표의 T 열도 실현값이므로 그림과 같은 수가 보여야 한다."""
+    pu = c.get("piece_units")
+    return f"{pu:.1f}" if pu is not None else str(T)
+
+
 def curve(C, prefix):
-    """`(x, y, T)` 목록. **T 를 같이 돌려준다** — 조건이 빠질 수 있고 큰 T 는 포화해
+    """`(x, y, 라벨)` 목록. **라벨을 같이 돌려준다** — 조건이 빠질 수 있고 큰 T 는 포화해
     지연이 역전되기도 해서, 점 순서로 T 를 되짚으면 라벨이 어긋난다."""
-    pts = [(C[f"{prefix}_T{T}"]["laal_ms"], C[f"{prefix}_T{T}"][M], T)
+    pts = [(C[f"{prefix}_T{T}"]["laal_ms"], C[f"{prefix}_T{T}"][M],
+            _knob_label(C[f"{prefix}_T{T}"], T))
            for T in T_GRID
            if f"{prefix}_T{T}" in C and C[f"{prefix}_T{T}"].get("laal_ms") is not None]
     return sorted(pts)
