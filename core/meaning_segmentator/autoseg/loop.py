@@ -2035,6 +2035,55 @@ def main() -> int:
             ctx = best_ctx or {"rows": rows, "metrics": m.to_dict(),
                                "violations": viol, "judgements": judgements}
             try:
+                # ── A8a 거부 부검 ───────────────────────────────────────
+                # **거부된 개정의 실패는 지금까지 아무도 안 봤다.** 아래 Critic 은
+                # `ctx = best_ctx` 라 항상 현재 best 의 실패만 본다 — 방금 진 개정본의
+                # 행은 best_ctx 에 들어간 적이 없으므로 그 경로에서는 원리적으로 안
+                # 보인다. 그래서 거부 이력에 남는 것이 changelog 와 Δ 숫자뿐이었다:
+                # "무엇을 했다가 졌다"는 있고 **"어디서 어떻게 졌다"가 없다.**
+                #
+                # `paired_delta` 는 그 답을 이미 계산한다 — 문장별 Δ 를 다 구해 놓고
+                # 평균과 오차만 남기고 버린다. `metrics.regressions` 가 같은 계산에서
+                # 낙폭 상위 문장을 되돌려 준다. 새로 재는 것은 없다.
+                #
+                # **판정 직후가 아니라 여기서 부른다.** 조기 종료·마지막 이터에서는
+                # 위쪽 break 로 빠지므로, 그때는 아무도 안 읽을 부검에 돈을 안 쓴다.
+                if (not adopted and rejected_attempts
+                        and rejected_attempts[-1].get("version") == it
+                        and "why_failed" not in rejected_attempts[-1]
+                        and best_ctx.get("dev_rows")):
+                    regs = metrics.regressions(dev_rows, best_ctx["dev_rows"],
+                                               t_grid, delta_key)
+                    if regs:
+                        timer.mark("critic_regression")
+                        # **부검 실패로 루프를 끝내지 않는다.** 바깥 except 는 에이전트
+                        # 실패를 루프 중단으로 처리하는데, 부검은 없어도 이터레이션이
+                        # 그대로 돌아간다 — 다음 개정의 정보가 줄 뿐이다.
+                        try:
+                            pm = critic.diagnose_regression(
+                                best["prompt"], prompt, regs,
+                                changelog=rejected_attempts[-1].get("changelog"),
+                                sections_changed=last_sections,
+                                delta=dev_delta, target_language=pair_tgt)
+                        except BudgetExceeded:
+                            raise
+                        except Exception as e:
+                            pm = None
+                            log(f"[iter {it}] 거부 부검 실패 — 건너뛴다: {e}")
+                        if pm:
+                            # 거부 이력에 실어 둔다 — Critic 과 PE 둘 다 이 목록을
+                            # 통째로 받으므로 별도 배선이 필요 없다.
+                            rejected_attempts[-1].update({
+                                k: pm[k] for k in
+                                ("why_failed", "blamed_lines", "mechanism", "lesson")
+                                if pm.get(k)})
+                            (it_dir / "regression.json").write_text(
+                                json.dumps({"regressions": regs, "post_mortem": pm},
+                                           ensure_ascii=False, indent=2),
+                                encoding="utf-8")
+                            log(f"[iter {it}] 거부 부검 {pm.get('mechanism')} "
+                                f"| {(pm.get('why_failed') or '')[:90]}")
+
                 # ── A8 Critic ───────────────────────────────────────────
                 # 비평 대상과 개정 대상은 반드시 같은 프롬프트여야 한다.
                 timer.mark("critic")

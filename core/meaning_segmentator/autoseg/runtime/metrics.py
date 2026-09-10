@@ -1046,6 +1046,59 @@ def paired_delta(new_rows: list[dict], best_rows: list[dict],
             "n_pairs": len(deltas), "n_changed": changed}
 
 
+def regressions(new_rows: list[dict], best_rows: list[dict], t_grid: list[int],
+                key: str = "effective", top_n: int = 5) -> list[dict]:
+    """거부된 개정이 **가장 크게 떨어뜨린 문장**들. 거부 부검의 입력.
+
+    `paired_delta` 는 정확히 같은 차이를 문장별로 계산해 놓고 평균과 오차만 남기고
+    버린다. 그래서 거부 이력에는 "무엇을 바꿨다"(changelog)와 "얼마나 졌다"(delta)는
+    있는데 **어디서 어떻게 졌다**가 없다. 이 함수가 그 문장을 되돌려 준다 — 이전 분절,
+    새 분절, 조각별 모순의 변화까지. **새로 재는 것은 없다**: 두 행 목록에 이미 다
+    들어 있고 LLM 호출도 없다.
+
+    싣는 예산 T 는 **낙폭이 가장 큰 하나**뿐이다. 격자 전체를 실으면 사례 하나가 T
+    개수만큼 부풀어 Critic 프롬프트를 삼킨다.
+
+    분절이 실제로 바뀐 예산만 후보로 본다. 같은 분절인데 값이 다르면 그건 개정이
+    한 일이 아니라 번역·판정의 재실행 잡음이므로 귀책할 대상이 없다.
+    """
+    best = {r["id"]: r for r in best_rows}
+    out: list[dict] = []
+    for r in new_rows:
+        b = best.get(r["id"])
+        if not b:
+            continue
+        total, seen, worst = 0.0, 0, None
+        for T in t_grid:
+            a = (r.get("by_T") or {}).get(str(T))
+            c = (b.get("by_T") or {}).get(str(T))
+            if not a or not c or a.get(key) is None or c.get(key) is None:
+                continue
+            gap = a[key] - c[key]
+            total += gap
+            seen += 1
+            if a.get("seg_text") != c.get("seg_text") and (worst is None or gap < worst[1]):
+                worst = (T, gap, a, c)
+        if not seen or worst is None:
+            continue
+        mean_d = total / seen
+        if mean_d >= 0:                     # 나빠진 문장만 부검한다
+            continue
+        T, gap, a, c = worst
+        out.append({
+            "id": r["id"], "text": r.get("text"),
+            "delta": round(mean_d, 5),
+            "budget_T": T, "delta_at_T": round(gap, 5),
+            "before_seg": c.get("seg_text"), "after_seg": a.get("seg_text"),
+            "before_contradiction": c.get("pieces_contra"),
+            "after_contradiction": a.get("pieces_contra"),
+            "before_adequacy": c.get("adequacy"), "after_adequacy": a.get("adequacy"),
+            "before_missing_boundaries": c.get("missing_boundaries"),
+            "after_missing_boundaries": a.get("missing_boundaries"),
+        })
+    return sorted(out, key=lambda d: d["delta"])[:top_n]
+
+
 def rank_lift(real: list[float | None], shuffled: list[float | None]) -> dict:
     """순위를 무작위로 섞었을 때 잃는 `effective` — 문장별 쌍체.
 

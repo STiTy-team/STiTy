@@ -292,7 +292,7 @@ autoseg/
 | `runtime/data.py` | A0 Data Preparer — 정규화, 층화 분할, **측정 프로파일** | — |
 | `runtime/pipeline.py` | A2 Segmenter / A3 Validator / **A4 Truncator** / A5 Google 번역 + 캐시 | 분절만 |
 | `runtime/metrics.py` | A6 Scorer — `adequacy`(QE) / `contradiction`(NLI) / `effective` / `consistency` / `laal_words` / `score` + Critic 에게 넘기는 지표 용어집(`GLOSSARY`) | — |
-| `runtime/agents.py` | A1 Profiler / **A7 Judge** / A8 Critic / A9 Prompt Engineer / A10 Compressor | ● |
+| `runtime/agents.py` | A1 Profiler / **A7 Judge** / A8 Critic (+ 거부 부검) / A9 Prompt Engineer / A10 Compressor | ● |
 | `loop.py` | A11 Loop Controller — T 격자 평가, 채택·롤백·중단, 곡선·비교군·리포트 | — |
 | `infra/tracing.py` | 호출마다 용도(`purpose`) 라벨. `Usage.by_purpose` 는 항상, LangSmith 는 키가 있을 때만. 키가 없으면 통째로 no-op | — |
 
@@ -339,10 +339,15 @@ experiment/artifacts/{pair_id}/{run_id}/
   iter_NN/{prompt.txt, train_rows.json, dev_rows.json,
            violations.json, dev_violations.json, metrics.json,
            judgements.json, priority_audit.json, critique.json,
-           changelog.json, timing.json}
+           regression.json, changelog.json, timing.json}
   history.json  best_prompt.txt  test_rows.json  test_judgements.json
   curve.json  final_report.md  cache/  prompt_eval/
 ```
+
+`regression.json` 은 **거부된 이터레이션에만** 생긴다 — 그 개정이 가장 크게 떨어뜨린
+문장들(이전/새 분절, 조각별 모순 before·after)과 그에 대한 부검(`why_failed`,
+`blamed_lines`, `mechanism`, `lesson`)이다. 부검 결과는 거부 이력에 실려 다음
+이터레이션의 Critic 과 PE 가 함께 받는다.
 
 `timing.json` 은 이터레이션 단계별 소요 시간이다 — 어디서 시간을 쓰는지 안 남기면
 "판정이 이터당 8~13분"같은 병목을 못 찾는다. 참조 기반 평가를 돌린 런은
