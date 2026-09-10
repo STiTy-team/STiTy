@@ -793,10 +793,18 @@ def _spearman(xs: list[float], ys: list[float]) -> float | None:
     return num / (dx * dy) if dx and dy else None
 
 
-def rank_contra_spearman(rows: list[dict], T: int, min_boundaries: int = 3) -> tuple[float | None, int]:
-    """모델이 단 순위(<SEG:n>) vs 실측 경계 contradiction 의 문장 내 Spearman 평균.
+def _confidence_order(seg_text: str) -> list[int]:
+    """태그 등장 순서대로의 **−점수**. 점수가 클수록 확신이므로 부호를 뒤집으면 "작을수록
+    확신" 인 순위와 같은 방향이 되어, 아래 진단들의 부호 해석("양수 = 정렬됨")이 순위제
+    시절 그대로 유지된다."""
+    return [-int(m.group(1)) for m in TAG_RE.finditer(seg_text or "") if m.group(1)]
 
-    **양수 = 정렬됨** (순위 숫자가 클수록 = 확신 낮을수록 실측 위험이 큼).
+
+def rank_contra_spearman(rows: list[dict], T: int, min_boundaries: int = 3) -> tuple[float | None, int]:
+    """모델이 단 점수(<SEG:s>) vs 실측 경계 contradiction 의 문장 내 Spearman 평균.
+
+    **양수 = 정렬됨** (점수가 낮을수록 = 확신 낮을수록 실측 위험이 큼). 계산은 −점수로
+    하므로 순위제 시절과 부호가 같다.
     0 근처 = 순위가 위험과 무상관, 음수 = 거꾸로 — 절단이 위험을 줄이지 못하고
     `[Priority Rules]` 를 고치는 것이 근거 없는 일이 된다는 뜻이다.
 
@@ -819,8 +827,7 @@ def rank_contra_spearman(rows: list[dict], T: int, min_boundaries: int = 3) -> t
         d = (r.get("by_T") or {}).get(key)
         if not d:
             continue
-        ranks = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "")
-                 if m.group(1)]
+        ranks = _confidence_order(d.get("seg_text"))
         contras = (d.get("pieces_contra") or [])[:-1]
         if len(ranks) != len(contras) or len(ranks) < min_boundaries:
             continue
@@ -857,7 +864,7 @@ def _floor_corrected(d: dict, contras: list[float], floor_fn,
 
 def rank_contra_gap(rows: list[dict], T: int, min_boundaries: int = 2,
                     floor_fn=None, tgt_spaced: bool = True) -> tuple[float | None, int]:
-    """순위 **하위 절반 − 상위 절반**의 경계 contradiction 평균 차. 문장 평균.
+    """점수 **하위 절반 − 상위 절반**의 경계 contradiction 평균 차. 문장 평균.
 
     `rank_contra_spearman` 과 같은 축을 다른 통계량으로 잰다. Spearman 은 순위 상관만
     보므로 "정렬은 됐는데 격차가 없다"를 못 가르지만, 이 값은 **크기**를 재므로
@@ -904,15 +911,14 @@ def rank_contra_gaps(rows: list[dict], T: int, min_boundaries: int = 2,
         d = (r.get("by_T") or {}).get(key)
         if not d:
             continue
-        ranks = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "")
-                 if m.group(1)]
+        ranks = _confidence_order(d.get("seg_text"))
         contras = (d.get("pieces_contra") or [])[:-1]
         if len(ranks) != len(contras) or len(ranks) < min_boundaries:
             continue
         vals = _floor_corrected(d, [float(x) for x in contras], floor_fn, tgt_spaced)
-        order = sorted(range(len(ranks)), key=lambda i: ranks[i])   # 순위 오름차순
+        order = sorted(range(len(ranks)), key=lambda i: (ranks[i], i))   # 점수 내림차순
         half = len(order) // 2
-        top = [vals[i] for i in order[:half]]                 # 확신 높음 (번호 작음)
+        top = [vals[i] for i in order[:half]]                 # 확신 높음 (점수 큼)
         bottom = [vals[i] for i in order[len(order) - half:]]  # 확신 낮음
         gaps.append(sum(bottom) / len(bottom) - sum(top) / len(top))
     return gaps
@@ -920,59 +926,76 @@ def rank_contra_gaps(rows: list[dict], T: int, min_boundaries: int = 2,
 
 def priority_audit(rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = True,
                    min_n: int = 8) -> list[dict]:
-    """모델 순위가 **무엇을 과신하는가** 를 특징별로 대조한다.
+    """모델 점수가 **무엇을 과신하는가** 를 특징별로, 그리고 **점수 구간별 실측 위험**
+    (보정 곡선)을 낸다.
 
-    `rank_contra_gap` 은 "순위가 정보를 주는가"만 답한다. 0 이하라는 사실만으로는 PE 가
+    `rank_contra_gap` 은 "점수가 정보를 주는가"만 답한다. 0 이하라는 사실만으로는 PE 가
     `[Priority Rules]` 의 **어느 줄**을 고쳐야 하는지 알 수 없어, 눈감고 재작성하다
     실패한다 (en-de run02 iter1~2, 수동 시도 2회 모두 동일).
 
-    여기서는 경계를 표면 특징으로 묶어 **모델이 매긴 순위 백분위**와 **실측 contradiction**
-    을 나란히 낸다. 백분위가 낮은데(=확신 높음) contra 가 높으면 그 특징이 과신 대상이다.
-    en-de 실측에서 이 대조가 "쉼표 경계: 백분위 0.35 / contra 0.108 vs 그 외 0.64 / 0.062"
-    를 뽑아냈고, 그걸 프롬프트에 반영한 것이 순위를 유의하게 개선한 **유일한** 개입이었다
-    (gap −0.005 → +0.032, 순열 p=0.005).
+    여기서는 경계를 표면 특징으로 묶어 **모델이 매긴 평균 점수**와 **실측 contradiction**
+    을 나란히 낸다. 점수가 높은데 contra 도 높으면 그 특징이 과신 대상이다. 순위제
+    시절 en-de 실측에서 같은 대조가 "쉼표 경계: 백분위 0.35 / contra 0.108 vs 그 외
+    0.64 / 0.062" 를 뽑아냈고, 그걸 프롬프트에 반영한 것이 순위를 유의하게 개선한
+    **유일한** 개입이었다 (gap −0.005 → +0.032, 순열 p=0.005).
 
-    **언어 자원을 쓰지 않는다** — 특징은 구두점(측정 프로파일에서 온다)과 상대 위치뿐이다.
-    반환은 `over_trust` 내림차순. 각 항목의 `over_trust` 는
-    `(중앙 백분위 − 이 특징 백분위) × contra 비` 로, 양수가 클수록 과신이다.
+    **점수 구간(`score 90-100` …)도 특징으로 넣는다.** 순위 백분위는 문장 안에서만 뜻이
+    있어 문장 간에 합칠 수 없었는데(2경계 문장의 1위와 6경계 문장의 3위가 같은 0.5),
+    점수는 절대값이라 합쳐진다. 구간이 올라갈수록 contra 가 내려가야 정상이고, 인접
+    구간이 평평하면 프롬프트의 척도가 거기서 구분을 못 하는 것이다 (de-en test 실측:
+    80점 미만은 단조, 80 이상은 평평).
+
+    **언어 자원을 쓰지 않는다** — 특징은 구두점(측정 프로파일에서 온다)·상대 위치·점수
+    구간뿐이다. 반환은 `over_trust` 내림차순. 각 항목의 `over_trust` 는
+    `(이 특징 평균 점수 − 전체 평균 점수) / 100 × contra 비` 로, 양수가 클수록 과신이다.
     """
     key = str(T)
-    recs: list[tuple[str, float, float]] = []      # (특징, 순위 백분위, contra)
+    recs: list[tuple[str, float, float]] = []      # (특징, 점수, contra)
     for r in rows:
         d = (r.get("by_T") or {}).get(key)
         if not d:
             continue
-        ranks = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "")
-                 if m.group(1)]
+        scores = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "")
+                  if m.group(1)]
         contras = (d.get("pieces_contra") or [])[:-1]
         src = d.get("pieces_src") or []
-        if len(ranks) != len(contras) or len(ranks) < 3 or len(src) - 1 != len(contras):
+        if len(scores) != len(contras) or len(scores) < 3 or len(src) - 1 != len(contras):
             continue
         vals = _floor_corrected(d, [float(x) for x in contras], floor_fn, tgt_spaced)
-        n = len(ranks)
-        order = sorted(range(n), key=lambda i: ranks[i])
-        pct = {i: (k + 1) / n for k, i in enumerate(order)}
+        n = len(scores)
         for j, c in enumerate(vals):
             tail = (src[j] or "").rstrip()[-1:]
             feat = f"뒤 구두점 {tail!r}" if tail and not tail.isalnum() else "구두점 없음"
-            recs.append((feat, pct[j], c))
-            recs.append((f"상대위치 {int(j / max(1, n) * 3)}/3", pct[j], c))
+            recs.append((feat, float(scores[j]), c))
+            recs.append((f"상대위치 {int(j / max(1, n) * 3)}/3", float(scores[j]), c))
+            recs.append((score_band(scores[j]), float(scores[j]), c))
     if not recs:
         return []
-    base_pct = sum(r[1] for r in recs) / len(recs)
+    base_score = sum(r[1] for r in recs) / len(recs)
     base_con = sum(r[2] for r in recs) / len(recs) or 1e-9
     out = []
     for feat in sorted({r[0] for r in recs}):
         g = [r for r in recs if r[0] == feat]
         if len(g) < min_n:
             continue
-        p = sum(x[1] for x in g) / len(g)
+        sc = sum(x[1] for x in g) / len(g)
         c = sum(x[2] for x in g) / len(g)
         out.append({"feature": feat, "n": len(g),
-                    "rank_percentile": round(p, 3),
+                    "mean_score": round(sc, 1),
                     "contradiction": round(c, 4),
-                    "over_trust": round((base_pct - p) * (c / base_con), 4)})
+                    "over_trust": round((sc - base_score) / 100.0 * (c / base_con), 4)})
     return sorted(out, key=lambda d: -d["over_trust"])
+
+
+SCORE_BANDS = ((90, 100), (80, 89), (70, 79), (50, 69), (0, 49))
+
+
+def score_band(score: int) -> str:
+    """점수 → 보정 곡선 구간 이름. 실측 분포(30~95 에 고루)에 맞춰 위쪽을 잘게 나눴다."""
+    for lo, hi in SCORE_BANDS:
+        if lo <= score <= hi:
+            return f"score {lo}-{hi}"
+    return "score 0-49"
 
 
 def paired_delta(new_rows: list[dict], best_rows: list[dict],

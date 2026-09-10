@@ -132,11 +132,12 @@ def floor_lookup(floor: dict, hyp_units: int) -> float:
 
 
 def recheck_ranks(rows: list[dict], T: int, floor: dict) -> dict:
-    """바닥 보정 후 순위 정렬도 재계산.
+    """바닥 보정 후 점수 정렬도 재계산.
 
     경계 j 의 hypothesis 길이 = 조각 번역 1..j+1 을 이어붙인 토큰 수 — 단위는 바닥을
     잰 것과 같아야 하므로 `floor["tgt_spaced"]` 를 따른다.
-    보정: c' = max(0, c − c0(길이)). 보정 전/후 Spearman 과 순위별 평균을 함께 낸다.
+    보정: c' = max(0, c − c0(길이)). 보정 전/후 Spearman 과 점수 구간별 평균을 함께 낸다.
+    Spearman 은 −점수로 계산해 "양수 = 정렬됨" 해석이 순위제 시절과 같다.
     """
     tag_re = re.compile(r"<SEG:(\d+)>")
     tgt_spaced = floor.get("tgt_spaced", True)
@@ -149,7 +150,7 @@ def recheck_ranks(rows: list[dict], T: int, floor: dict) -> dict:
         d = (r.get("by_T") or {}).get(key)
         if not d:
             continue
-        ranks = [int(m) for m in tag_re.findall(d.get("seg_text") or "")]
+        ranks = [-int(m) for m in tag_re.findall(d.get("seg_text") or "")]   # −점수
         contras = (d.get("pieces_contra") or [])[:-1]
         pieces_tgt = d.get("pieces_tgt") or []
         if len(ranks) != len(contras) or not ranks:
@@ -161,8 +162,9 @@ def recheck_ranks(rows: list[dict], T: int, floor: dict) -> dict:
             cc = max(0.0, c - floor_lookup(floor, max(1, hyp_len)))
             sent_raw.append((rk, c))
             sent_cor.append((rk, cc))
-            by_rank_raw.setdefault(min(rk, 6), []).append(c)
-            by_rank_cor.setdefault(min(rk, 6), []).append(cc)
+            band = metrics.score_band(-rk)
+            by_rank_raw.setdefault(band, []).append(c)
+            by_rank_cor.setdefault(band, []).append(cc)
         if len(sent_raw) >= 3:
             raw_pairs.append(sent_raw)
             cor_pairs.append(sent_cor)

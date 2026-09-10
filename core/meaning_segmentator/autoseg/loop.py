@@ -27,6 +27,7 @@ from .gates import noise_floor
 from .infra import gateway
 from .infra.gateway import BudgetExceeded, Gateway
 from .runtime.pipeline import (GoogleTranslator, JsonCache, blocks_scoring,
+                       check_tag_convention,
                        coverage_need, normalize_tags, round_half_up, segment_batch,
                        LocalTranslator, LOCAL_MT_DEFAULT, RemoteMTTranslator,
                        REMOTE_MT_TEMPLATES,
@@ -495,6 +496,9 @@ def evaluate(
     분절 호출은 **T 와 무관하게 한 번**이다. 순위 태그가 붙어 나오므로 이후 조각 수
     조절은 결정론적 절단이고, 곡선 전체가 추론 1회로 나온다.
     """
+    legacy = check_tag_convention(prompt)
+    if legacy:
+        raise ValueError(legacy)
     texts = [s.text for s in sentences]
     # 커버리지 요건은 **가장 조인 예산**에서 온다. 그보다 적게 찍으면 그 T 에서 노브가
     # 무력해지므로, 요건이 곡선에 그릴 최소 T 를 기준으로 잡혀야 격자 전체가 의미를 갖는다.
@@ -1815,9 +1819,14 @@ def main() -> int:
                     (it_dir / "priority_audit.json").write_text(
                         json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
                     top = audit[0]
-                    log(f"[iter {it}] 순위감사 최다 과신 '{top['feature']}' "
-                        f"백분위 {top['rank_percentile']:.2f} contra {top['contradiction']:.4f} "
+                    log(f"[iter {it}] 점수감사 최다 과신 '{top['feature']}' "
+                        f"평균점수 {top['mean_score']:.1f} contra {top['contradiction']:.4f} "
                         f"(n={top['n']})")
+                    bands = [a for a in audit if a["feature"].startswith("score ")]
+                    if bands:
+                        log(f"[iter {it}] 보정곡선(T={low_t}) " + "  ".join(
+                            f"{a['feature'][6:]}:{a['contradiction']:.3f}(n={a['n']})"
+                            for a in sorted(bands, key=lambda a: -int(a["feature"].split()[1].split("-")[0]))))
                 if sp_corr is not None or gap is not None:
                     log(f"[iter {it}] 순위진단(T={low_t}) "
                         f"gap={_cell(gap, '+.4f')}±{_cell(gap_se, '.4f')}(n={gap_n}) "
@@ -1890,8 +1899,8 @@ def main() -> int:
             # 아끼는 것보다 쓰는 것이 크거나 비슷하다.
             #
             # 그리고 게이트에는 **순환**이 있었다. `select_prompt` 가 후보 K개 중
-            # train 최고를 고르는데, `--train-pool` 을 안 주면 그 train 이 게이트 배치와
-            # **같은 문장**이다 (설정 26개 중 14개가 겹침 100%). 고른 자로 그 선택을
+            # train 최고를 고르는데, 그 시절 기본값에서는 그 train 이 게이트 배치와
+            # **같은 문장**이었다 (설정 26개 중 14개가 겹침 100%). 고른 자로 그 선택을
             # 재검사한 셈 — A9 에서 dev 를 두 번 쓰던 것과 같은 모양이다. 승자 이득을
             # 실측하면 후보 그룹 18개(K=3)에서 최대값−평균 중앙 **0.0118**, 이론값
             # 0.846·sd = 0.0109 와 일치한다. 게이트 여유(1×se) 중앙이 0.0156 이므로
@@ -2049,7 +2058,13 @@ def main() -> int:
                         judgements=ctx.get("judgements"),
                         target_language=pair_tgt,
                         coverage=ctx_cov,
-                        rejected=rejected_attempts or None)
+                        rejected=rejected_attempts or None,
+                        # **비평 대상 프롬프트를 함께 넘긴다.** 없으면 줄 단위 귀책이
+                        # 불가능하고, 이미 프롬프트에 있는 문장을 다른 말로 옮긴
+                        # `proposed_rule` 이 나온다. `ctx` 가 best_ctx 일 때 그 행을
+                        # 만든 것은 `best["prompt"]` 다 — 이번 이터의 `prompt` 가
+                        # 아니다. 둘을 헷갈리면 안 본 프롬프트에 귀책하게 된다.
+                        prompt=(best["prompt"] if best_ctx else prompt))
                 critique = best_critique
                 # 캐시가 고착 방지를 우회하지 않도록 aggregate 만 다시 계산한다 (LLM 없음).
                 if stale >= 2 and last_sections:
@@ -2440,12 +2455,12 @@ def build_report(args, run_dir, profile, measured, history, best, test_m, test_v
         "",
         f"- 포맷 통과율 {test_m.format_pass_rate:.4f} (재시도 없이 "
         f"{test_m.format_pass_rate_no_retry:.4f}), 위반 {len(test_viol)}건",
-        f"- **순위 격차 `rank_contra_gap` (T={min(final_grid)}, 바닥 보정)**: "
+        f"- **점수 격차 `rank_contra_gap` (T={min(final_grid)}, 바닥 보정)**: "
         + (f"**{gap:+.4f}**" if gap is not None else "미측정")
-        + " — 순위 하위 절반 − 상위 절반의 경계 contradiction 차. "
-        "양수 = 절단이 실제로 위험을 덜어냄. **0 이하면 순위가 정보를 주지 않는다** "
-        "(기준점이 0 인 것은 순위 무정보 시 기대값이 정확히 0 이기 때문 — 임의 상수 아님)",
-        f"- 순위정렬 Spearman (T={min(final_grid)}, raw): "
+        + " — 점수 하위 절반 − 상위 절반의 경계 contradiction 차. "
+        "양수 = 절단이 실제로 위험을 덜어냄. **0 이하면 점수가 정보를 주지 않는다** "
+        "(기준점이 0 인 것은 점수 무정보 시 기대값이 정확히 0 이기 때문 — 임의 상수 아님)",
+        f"- 점수정렬 Spearman (T={min(final_grid)}, raw): "
         + (f"{sp:+.4f}" if sp is not None else "미측정")
         + " — 같은 축의 방향만 보는 보조값. **바닥 보정이 없어 음수 쪽으로 편향**된다 "
         "(run03: raw −0.25 → 보정 후 +0.14). 판정은 위의 gap 으로 한다",

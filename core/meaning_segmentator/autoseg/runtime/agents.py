@@ -50,16 +50,23 @@ REQUIRED_SECTIONS = [
     "[Examples — Do NOT Segment]",
 ]
 
-# 태그는 순위를 달고 나온다. 순위가 있어야 사후 절단으로 지연 노브를 돌릴 수 있고,
+# 태그는 확신 점수(0..100)를 달고 나온다. 점수가 있어야 사후 절단으로 지연 노브를 돌릴 수 있고,
 # 그러면 지연이 목적함수에서 빠져 단일축이 된다 (설계 v2 §6·§7).
+# **점수는 순위가 아니라 절대값이다.** 순위(1 = 최고)로 받던 것을 0..100 점수로 바꿨다.
+# 절단은 순서만 쓰므로 잃는 게 없고(de-en test 100문장 `rank_lift` +0.105 → +0.087, 오차
+# 안), 절대값은 문장 간에 합쳐 보정 곡선을 만들 수 있다 — 80점 미만 구간은 점수가
+# 내려갈수록 실측 contradiction 이 단조로 올랐고(0.085 → 0.153), 80 이상은 평평했다.
+# 즉 모델은 "꽤 안전" 위로는 구분을 못 한다. 그 사실을 순위로는 볼 수 없었다.
 _PRIORITY_RULE = (
-    "- Number every tag: <SEG:1>, <SEG:2>, ... where 1 marks the boundary you are MOST\n"
-    "  confident about. Use each number exactly once, starting at 1 with no gaps.\n"
-    "  The numbers are confidence ranks, NOT positions — <SEG:1> may appear anywhere.\n"
+    "- Score every tag: <SEG:s> where s is an integer from 0 to 100 — your confidence that the\n"
+    "  words still to come will NOT force a revision of what was emitted before this boundary.\n"
+    "  100 = certainly safe, 0 = almost certainly overturned. The score is ABSOLUTE, not a rank:\n"
+    "  two boundaries may share a score, and a given score must mean the same degree of safety\n"
+    "  in every sentence. Scores are NOT positions — <SEG:100> may appear anywhere.\n"
 )
 
 OUTPUT_RULES_SPACED = """[Output Rules]
-- Insert <SEG:n> tags only. Do NOT change, correct, or paraphrase the original text in any way.
+- Insert <SEG:s> tags only. Do NOT change, correct, or paraphrase the original text in any way.
 """ + _PRIORITY_RULE + """- No tag at the very start or the very end of the text.
 - Never place two tags consecutively.
 - Punctuation must stay attached to the text before it — never immediately after a tag.
@@ -68,7 +75,7 @@ OUTPUT_RULES_SPACED = """[Output Rules]
 - Output the tagged text and nothing else. No explanation, label, or commentary."""
 
 OUTPUT_RULES_UNSPACED = """[Output Rules]
-- Insert <SEG:n> tags only. Do NOT change, correct, or paraphrase the original text in any way.
+- Insert <SEG:s> tags only. Do NOT change, correct, or paraphrase the original text in any way.
 - The source script does not use spaces between words. Do NOT add, remove, or move any
   character of the original text — the only thing you add is the tag itself.
 """ + _PRIORITY_RULE + """- No tag at the very start or the very end of the text.
@@ -82,16 +89,16 @@ OUTPUT_RULES_UNSPACED = """[Output Rules]
 
 _COVERAGE_RULE = (
     "- Mark AT LEAST one boundary per {min_t} {unit} of input (a {example_len}-{unit} sentence\n"
-    "  needs at least {example_n}). A deterministic step later keeps only the top-ranked ones,\n"
+    "  needs at least {example_n}). A deterministic step later keeps only the highest-scored ones,\n"
     "  so a boundary you never marked can never be used.\n"
-    "  If you cannot find enough safe positions, mark the least-risky remaining ones and rank\n"
-    "  them last. Output with too few boundaries is rejected.\n"
+    "  If you cannot find enough safe positions, mark the least-risky remaining ones and give\n"
+    "  them low scores. Output with too few boundaries is rejected.\n"
 )
 
 # 간격 규칙. 예전 문면은 "extra boundaries cost nothing" 이라고 했지만 그건 절단기가
-# 간격을 안 볼 때 얘기다. 붙어 있는 경계는 절단기가 어차피 버리므로 찍어봐야 순위만
-# 흐리고, 버려진 자리가 상위 순위면 절단이 아래 순위를 집게 된다 (실측 남긴 경계 평균
-# 순위 1.92 -> 2.98). 그래서 **간격을 마킹 시점에 지키게** 한다.
+# 간격을 안 볼 때 얘기다. 붙어 있는 경계는 절단기가 어차피 버리므로 찍어봐야 점수만
+# 흐리고, 버려진 자리가 상위 점수면 절단이 아래 점수를 집게 된다 (순위제 시절 실측:
+# 남긴 경계 평균 순위 1.92 -> 2.98). 그래서 **간격을 마킹 시점에 지키게** 한다.
 #
 # 문면만으로는 안 움직인다 — 밀도를 문면으로 시킨 `dense` 변종이 0.354 로 사실상
 # 불변이었다 (AUTOSEG_DETAILS.md '순위 축 진단'). 그래서 강제는 문면이 아니라
@@ -465,30 +472,31 @@ __TARGET_POLICY__
 
 Given a language profile, write the initial segmentation system prompt.
 
-Downstream mechanism you must write for: the model marks EVERY defensible boundary and ranks
-them by confidence. A deterministic step afterwards keeps only the top-ranked ones, as many as
+Downstream mechanism you must write for: the model marks EVERY defensible boundary and gives
+each a confidence SCORE from 0 to 100 (100 = the later words certainly cannot overturn what
+was emitted). A deterministic step afterwards keeps only the highest-scored ones, as many as
 the current latency budget allows. So the model is never choosing HOW MANY pieces to make —
 that is decided later. It is choosing WHERE boundaries can go and WHICH ones are safest.
 
-THE MOST IMPORTANT THING TO GET RIGHT — candidacy and ranking are separate decisions.
+THE MOST IMPORTANT THING TO GET RIGHT — candidacy and scoring are separate decisions.
 
 A position is a CANDIDATE if the text before it is a coherent stretch a translator could render
 without inventing content that has not arrived. That is a low bar, and most positions between
-phrases clear it. How likely the later text is to force a revision decides the RANK, not
+phrases clear it. How likely the later text is to force a revision decides the SCORE, not
 whether the boundary is marked at all.
 
-Marking a boundary is FREE. A risky one that ends up ranked last will simply never be kept
+Marking a boundary is FREE. A risky one that ends up with a low score will simply never be kept
 under a tight budget. Withholding it, by contrast, permanently removes an option and can only
 make the system slower. So the failure you must avoid is under-marking, not over-marking.
 
 Concretely, when you write the prompt:
 - NEVER write a rule of the form "never place a boundary before/until X". If X is risky, say
-  it ranks LOW in [Priority Rules]. [Never Segment] is only for positions that are wrong at
+  it scores LOW in [Priority Rules]. [Never Segment] is only for positions that are wrong at
   ANY budget — inside a word, inside a self-repair fragment, or where the preceding text is
   not a renderable stretch at all.
 - Do NOT require that the emitted translation survive unchanged once the rest arrives. That
   test is far too strict for a head-final source language and would leave almost every sentence
-  unsegmented. It belongs in [Priority Rules] as a ranking signal, never as an admission test.
+  unsegmented. It belongs in [Priority Rules] as a scoring signal, never as an admission test.
 - A spontaneous-speech sentence of N words should typically receive on the order of N/{min_t}
   marked boundaries. If your rules would leave a 20-word utterance with one or two tags, they
   are too restrictive — loosen them.
@@ -503,18 +511,23 @@ Hard requirements:
   language from the profile, not generic advice like "split at clause boundaries".
 - [Priority Rules] must say what makes one boundary MORE confident than another in this
   language — which surface forms are safest to cut after, and which are riskier but still
-  allowed. Rank by how little the following text can change the meaning already emitted.
-  Every position you were tempted to forbid belongs here, at the bottom of the ranking.
+  allowed. Score by how little the following text can change the meaning already emitted.
+  Anchor the scale so it means the same thing in every sentence: 90+ only where the emitted
+  text is complete and nothing that can follow would change it; 50 where the remainder could
+  plausibly overturn it; below 30 where it usually does. Every position you were tempted to
+  forbid belongs here, with a low score.
 - [Decision Procedure] must be two steps in this order: (1) mark every position where the
-  preceding stretch is renderable on its own — be generous; (2) rank the marked positions by
+  preceding stretch is renderable on its own — be generous; (2) score the marked positions by
   how much the remaining text could still overturn what was emitted. Step 1 must not consult
   step 2's risk judgement.
-- Examples must be written in the source language with numbered tags inserted, in the form:
+- Examples must be written in the source language with scored tags inserted, in the form:
     Input: <sentence>
-    Output: <sentence with numbered tags>
+    Output: <sentence with <SEG:score> tags>
+  Use the full range of scores across the examples (not only 80-95), and let two boundaries
+  share a score when their risk is genuinely equal.
   Give 6-10 examples per example section. Invent realistic sentences in the source language.
-- Mark every boundary that is defensible, then rank. Do NOT hold boundaries back out of
-  caution — holding back cannot improve the score, it only removes options from the ranking.
+- Mark every boundary that is defensible, then score. Do NOT hold boundaries back out of
+  caution — holding back cannot improve the score, it only removes options from the selection.
 
 Return ONLY the prompt text. No commentary, no code fences."""
 
@@ -846,9 +859,10 @@ def judge_top_contra(judge: Judge, rows: list[dict], T: int,
 
 CRITIC_SYSTEM = """You diagnose failures of a meaning-based segmentation prompt.
 
-Setup: a model marks EVERY defensible boundary with a numbered tag <SEG:n>, ranked by
-confidence (1 = most confident). A deterministic step then keeps only the top-ranked boundaries,
-as many as the latency budget allows, and each resulting piece is translated in order — seeing
+Setup: a model marks EVERY defensible boundary with a scored tag <SEG:s>, s = 0..100 being its
+confidence that the later words will not overturn what was emitted (100 = certain). A
+deterministic step then keeps only the highest-scored boundaries, as many as the latency budget
+allows, and each resulting piece is translated in order — seeing
 only the already-final translations before it, never what comes after, and never revisable.
 
 That later step can only pick from the tags the prompt produced. So the piece COUNT is out of
@@ -864,7 +878,7 @@ COVERAGE REPORT in the user message tells you whether that holds this iteration:
   and say which existing restriction to relax.
 
 - PLACEMENT — a boundary sits somewhere that damages the translation.
-- PRIORITY — the boundaries are in defensible places, but ranked wrong, so the ones kept under
+- PRIORITY — the boundaries are in defensible places, but scored wrong, so the ones kept under
   a tight budget are the risky ones.
 - COVERAGE — the prompt never marked enough boundaries for the budget to reach (only
   diagnosable when the coverage report says it is broken).
@@ -910,12 +924,12 @@ The LAST number of the list is always 0.0: nothing follows the final piece, so t
 that could contradict it. Never read that as evidence the final boundary was good.
 
 MEASURED EVIDENCE — PRIORITY. Cases may carry "adequacy_by_T", keyed by target piece size.
-A LARGE key means few pieces, so only the TOP-RANKED boundaries survived. A SMALL key means
-many pieces, so lower-ranked boundaries survived too.
+A LARGE key means few pieces, so only the HIGHEST-SCORED boundaries survived. A SMALL key means
+many pieces, so lower-scored boundaries survived too.
 
   worse at a LARGE key than at a SMALL key  ->  PRIORITY problem. The positions are
-                                                defensible; the ranking put a risky boundary
-                                                at rank 1. Fix [Priority Rules].
+                                                defensible; the scoring gave a risky boundary
+                                                the top score. Fix [Priority Rules].
   bad at every key                           ->  PLACEMENT problem. Fix [When to Segment] /
                                                 [Never Segment] / [Decision Procedure].
 
@@ -967,7 +981,8 @@ class Critic:
                judgements: list[dict] | None = None,
                target_language: str | None = None,
                coverage: dict | None = None,
-               rejected: list[dict] | None = None) -> dict:
+               rejected: list[dict] | None = None,
+               prompt: str | None = None) -> dict:
         user = (
             # 타깃 인지 모드에서만 붙는다. 기본에서는 Critic 이 타깃을 모르는 편이 낫다 —
             # 알면 한 언어의 문법으로 규칙을 제안하고 그게 PE 를 거쳐 프롬프트에 남는다.
@@ -987,16 +1002,21 @@ class Critic:
             f"{json.dumps(violations[:10], ensure_ascii=False, indent=2)}\n\n"
             f"Cases to diagnose:\n{json.dumps(cases, ensure_ascii=False, indent=2)}"
         )
-        # 순위 감사 — 모델이 **어떤 종류의 위치를 과신하는지**. gap 이 음수라는 사실만으로는
-        # [Priority Rules] 의 어느 줄이 틀렸는지 알 수 없다 (metrics.priority_audit).
+        # 점수 감사 — 모델이 **어떤 종류의 위치를 과신하는지**, 그리고 **점수 구간별로
+        # 실제 위험이 갈리는지**(보정 곡선). gap 이 음수라는 사실만으로는 [Priority Rules]
+        # 의 어느 줄이 틀렸는지 알 수 없다 (metrics.priority_audit).
         if priority_audit:
             user += (
-                "\n\nRanking audit — for each surface feature: the AVERAGE CONFIDENCE RANK "
-                "the prompt assigned (0 = ranked most confident, 1 = ranked least) versus the "
-                "MEASURED contradiction at those boundaries. A feature with a LOW rank "
-                "percentile but a HIGH contradiction is one the prompt over-trusts: it tells "
-                "the model these positions are safe when the measurement says they are not. "
-                "Cite the feature by name when you propose a priority rule.\n"
+                "\n\nScore audit — for each surface feature, and for each SCORE BAND "
+                "(`score 90-100`, `score 80-89`, ...): the AVERAGE SCORE the prompt assigned "
+                "(`mean_score`, 100 = most confident) versus the MEASURED contradiction at "
+                "those boundaries. A feature with a HIGH mean score but a HIGH contradiction is "
+                "one the prompt over-trusts: it tells the model these positions are safe when "
+                "the measurement says they are not. The score bands are the CALIBRATION CURVE: "
+                "contradiction should fall as the band rises. Where two adjacent bands have the "
+                "same contradiction, the prompt's scale is not separating them — say which "
+                "scoring line to sharpen. Cite the feature by name when you propose a priority "
+                "rule.\n"
                 + json.dumps(priority_audit, ensure_ascii=False, indent=2))
         # 판정 분포 — **사례로 못 간 판정까지 반영한다.** 사례는 10개뿐이라 거기서
         # 원인 분포를 읽으면 표본이 라벨 5개 수준으로 떨어진다 (`cause_summary` 참조).
@@ -1438,22 +1458,22 @@ __TARGET_RULE__
      If you are about to add "never segment X", ask what will be cut instead.
    - `format_pass_rate` is enforced by deterministic repair and one retry. What still fails
      there is the model rewriting the source text, which more wording does not fix.
-   - `rank_lift` tells you whether the RANKING is doing work. Near zero means rewriting
+   - `rank_lift` tells you whether the SCORING is doing work. Near zero means rewriting
      [Priority Rules] will not help — the problem is WHERE boundaries are marked. A clearly
-     positive value means the ranking already works; refine it only if the cases show
-     specific mis-ranked boundaries.
+     positive value means the scoring already works; refine it only if the cases show
+     specific mis-scored boundaries.
    - `missing_boundaries` above zero means the prompt is not marking enough for the budget.
      Relax prohibitions and add permissive rules — marking a boundary is free, a risky one
-     can simply be ranked last.
+     can simply be given a low score.
    Prefer edits that ADD a positive criterion ("prefer a boundary where ...") or RELAX an
    over-broad prohibition over edits that add another prohibition.
 
 WHAT IS ALREADY HANDLED WITHOUT YOU.
 
-A deterministic pass runs on every output before it is scored. It renumbers the confidence
-ranks (preserving their order), removes tags at the very start or end, merges tags that sit at
-the same position, moves punctuation back onto the preceding piece, and drops boundaries that
-violate the minimum spacing. None of that is your problem — writing rules about tag numbering,
+A deterministic pass runs on every output before it is scored. It clamps scores to 0-100,
+removes tags at the very start or end, merges tags that sit at the same position (keeping the
+higher score), moves punctuation back onto the preceding piece, and drops boundaries that
+violate the minimum spacing. None of that is your problem — writing rules about the tag format,
 tag placement at sentence edges, punctuation attachment or spacing wastes the iteration.
 
 What survives to the score is: the model rewriting the source text, too few boundaries for the
@@ -1483,16 +1503,16 @@ a polarity, predicate or modal that the rest of the sentence overturns. The last
 0.0 because nothing follows the final piece — never read it as evidence.
 
 "adequacy_by_T" — the same sentence scored under different piece sizes. A LARGE key means few
-pieces, so only top-ranked boundaries survived; a SMALL key means many pieces. Worse at a large
-key than a small one is a RANKING failure, not a position failure.
+pieces, so only the highest-scored boundaries survived; a SMALL key means many pieces. Worse at
+a large key than a small one is a SCORING failure, not a position failure.
 
 - Turn evidence into a general condition stated in surface forms of the source language.
   "A tag may follow a discourse filler when a full subject+verb clause follows it" is a rule.
   "Split sentence X after word 3" is not — never write that.
 - NEVER respond to a bad case by telling the model to mark fewer boundaries. The piece count is
   set by a separate deterministic step, not by the prompt. Holding a boundary back cannot raise
-  the score; it only removes an option from the ranking. If a boundary is risky, it belongs LOW
-  in [Priority Rules], not in [Never Segment].
+  the score; it only removes an option from the selection. If a boundary is risky, it belongs
+  LOW in [Priority Rules], not in [Never Segment].
 - [Never Segment] is only for positions that are wrong at ANY budget.
 
 Remember the objective:
@@ -1519,7 +1539,7 @@ Four consequences:
   preserve the offline word order.
 - Latency is NOT in the score. You cannot gain by splitting more or lose by splitting less —
   the budget decides that. What you control is WHERE boundaries may go and WHICH are safest.
-- A boundary that is safe only sometimes should still be marked, and ranked below the ones that
+- A boundary that is safe only sometimes should still be marked, and scored below the ones that
   are always safe.
 - Sentences with no boundary have NO `contradiction` — they are undefined and dropped from the
   average, not scored zero. You cannot raise the score by making the model segment less.
@@ -1580,7 +1600,7 @@ class PromptEngineer:
             + (facts + "\n\n" if facts else "")
             + f"Latency budgets in use (target piece size in source words): {t_grid}. "
             f"A budget of T keeps roughly (sentence length / T) pieces, so the LARGEST T "
-            f"exercises only your highest-ranked boundaries.\n\n"
+            f"exercises only your highest-scored boundaries.\n\n"
             f"Attempt history (prompt version -> scores, and whether it was adopted):\n{hist}\n\n"
             f"Critic feedback on the current prompt:\n{json.dumps(critique, ensure_ascii=False, indent=2)}\n\n"
             f"=== CURRENT PROMPT ===\n{current_prompt}"

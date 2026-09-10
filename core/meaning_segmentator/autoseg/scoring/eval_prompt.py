@@ -105,6 +105,7 @@ def main() -> int:
 
     sentences = data.read_split(run_dir / "data" / f"{args.split}.json")
     prompt = Path(args.prompt).read_text(encoding="utf-8")
+    # 옛 순위제 프롬프트는 `evaluate` 가 거부한다 — 비교군(`--no-priority`)은 점수가 없어 무관.
     label = args.label or Path(args.prompt).stem
 
     gw = Gateway.from_args(args, model=args.model, budget=args.budget)
@@ -181,6 +182,7 @@ def main() -> int:
                         or cfg.get("candidate_t") or min(t_grid)),
             "batch_size": args.batch_size,
             "require_priority": not args.no_priority,
+            "tag_convention": "score",       # <SEG:s>, s = 0..100, 클수록 확신
             "adequacy_backend": adequacy.name,
             "consistency_backend": cons_name,
             "contradiction_backend": (None if contradiction is None else contradiction.name),
