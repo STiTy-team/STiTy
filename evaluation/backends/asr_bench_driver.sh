@@ -276,7 +276,7 @@ nvidia-smi --query-gpu=memory.used,memory.free --format=csv,noheader | sed 's/^/
 start_gpu_watch
 echo ""; echo "### PHASE B: Nemotron"
 
-timeout 900 conda run -n asr-nemotron python "$BE/engine_nemotron.py" \
+timeout 900 "$HOME/miniforge3/bin/conda" run -n asr-nemotron python "$BE/engine_nemotron.py" \
     --probe "$KO_WAV" --lang ko-KR --right-context 13 \
     > "$RUN/nemotron_probe_ko.json" 2> "$RUN/nemotron_probe_ko.err"
 NEMO_PROBE=$?
@@ -311,7 +311,7 @@ run_nemotron_case() {   # <right_context> <lang(ko|en)> <n> <tag>
   wait_ws 127.0.0.1 "$NEMO_PORT" 600 "$NEMO_PID"
   case $? in
     0)
-      timeout 5400 conda run -n asr-nemotron python "$BE/smoke_client.py" \
+      timeout 5400 "$HOME/miniforge3/bin/conda" run -n asr-nemotron python "$BE/smoke_client.py" \
           --ws "ws://127.0.0.1:$NEMO_PORT" --lang "$lang" --limit "$n" \
           --tag "nemotron_$tag" --out "$RUN/nemotron_${tag}.json" \
           > "$RUN/nemotron_${tag}_client.log" 2>&1 \
@@ -377,7 +377,7 @@ else
       sleep 10
       for L in ko en; do
         if [[ "$L" == "ko" ]]; then W="$KO_WAV"; else W="$EN_WAV"; fi
-        timeout 900 env LD_LIBRARY_PATH="$VOX_LIB" conda run -n asr-voxtral python "$BE/probe_voxtral.py" \
+        timeout 900 env LD_LIBRARY_PATH="$VOX_LIB" "$HOME/miniforge3/bin/conda" run -n asr-voxtral python "$BE/probe_voxtral.py" \
             --audio "$W" --lang "$L" --base-url "http://127.0.0.1:$VOX_PORT" \
             --out "$RUN/voxtral_probe_${L}.json" \
             > "$RUN/voxtral_probe_${L}.log" 2>&1 \
@@ -388,7 +388,7 @@ else
       # 실제 숫자. smoke_voxtral 은 smoke_client 의 채점/데이터 로더를 그대로 쓰므로
       # 요약 JSON 형식이 nemotron/qwen3 과 같다 -> 요약 표에서 한 줄로 비교된다.
       for L in ko en; do
-        timeout 5400 env LD_LIBRARY_PATH="$VOX_LIB" conda run --no-capture-output -n asr-voxtral \
+        timeout 5400 env LD_LIBRARY_PATH="$VOX_LIB" "$HOME/miniforge3/bin/conda" run --no-capture-output -n asr-voxtral \
           python "$BE/smoke_voxtral.py" \
             --base-url "http://127.0.0.1:$VOX_PORT" --model "$VOX_MODEL" \
             --lang "$L" --limit "$SMOKE_N" --tag "voxtral" \
@@ -425,8 +425,18 @@ if ! port_free "$QWEN_PORT"; then
 elif ! wait_vram "$NEED_QWEN" "$GATE_WAIT"; then
   record "qwen3.serve" "SKIP - VRAM ${NEED_QWEN}MiB 확보 실패"
 else
-conda run --no-capture-output -n stity python "$REPO/evaluation/streaming_websocket_server_ast.py" \
-    --no-idle-shutdown --port "$QWEN_PORT" > "$Q_LOG" 2>&1 &
+# 인자 두 벌이 필수다. 빠뜨리면 둘 다 "빈 전사"로만 보이고 원인이 안 드러난다.
+#  --gpu-memory-utilization 0.60
+#     기본 0.8 이면 vLLM ASR 18.6GiB + 로컬 번역기 madlad400-3b-mt 7.2GiB 가 한 카드에
+#     올라 free 75MiB -> mm encoder 가 OOM -> EngineCore 사망. 클라이언트에는 정상 종료
+#     코드(1000 OK)로 보여서 원인이 안 드러난다.
+#  --trans-backend gtx --trans-retries 1
+#     파이프라인이 [VAD-FINISH] -> 번역 -> [AST-SEND] final 순서라, 번역이 지연되면 final
+#     이 영영 안 나간다(서버 로그엔 완벽한 전사, AST-SEND 0건). ASR 평가에는 번역을 즉시
+#     실패시키는 게 정답이다 - original(전사) 필드는 영향받지 않는다.
+"$HOME/miniforge3/bin/conda" run --no-capture-output -n stity python "$REPO/evaluation/streaming_websocket_server_ast.py" \
+    --no-idle-shutdown --port "$QWEN_PORT" --gpu-memory-utilization 0.60 \
+    --trans-backend gtx --trans-retries 1 > "$Q_LOG" 2>&1 &
 Q_PID=$!
 wait_ws 127.0.0.1 "$QWEN_PORT" 900 "$Q_PID"
 case $? in
@@ -444,7 +454,7 @@ case $? in
         record "qwen3.serve" "중간에 죽음 (qwen3_server.log)"
         break
       fi
-      timeout 5400 conda run -n asr-nemotron python "$BE/smoke_client.py" \
+      timeout 5400 "$HOME/miniforge3/bin/conda" run -n asr-nemotron python "$BE/smoke_client.py" \
           --ws "ws://127.0.0.1:$QWEN_PORT" --lang "$L" --limit "$SMOKE_N" \
           --tag "qwen3_$L" --out "$RUN/qwen3_smoke_${L}.json" \
           > "$RUN/qwen3_smoke_${L}_client.log" 2>&1 \
