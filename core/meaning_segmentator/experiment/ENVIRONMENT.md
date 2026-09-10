@@ -91,7 +91,7 @@ Minimum and Maximum cuda capability supported by this version of PyTorch is (8.0
 |---|---|---|
 | 번역 (목적함수용) | `google/madlad400-3b-mt` | fp16, **greedy** (`num_beams=1`), 마이크로배치 48, 입력 384토큰 절단, 출력 최대 192토큰, 클라이언트 스레드 64, 문맥 미사용 |
 | adequacy (주지표) | `Unbabel/wmt22-cometkiwi-da` | **참조 없는 QE**, `gpus=1`, batch 16, DataLoader `num_workers=0` |
-| contradiction / consistency | `vicgalle/xlm-roberta-large-xnli-anli` | `device=0`, batch 16, `truncation=True, max_length=512` |
+| contradiction | `vicgalle/xlm-roberta-large-xnli-anli` | `device=0`, batch 64, fp16, `truncation=True, max_length=512` |
 | 강제정렬 (전처리) | `Qwen/Qwen3-ForcedAligner-0.6B` | `min_gap` 유도용 단위 종료시각 산출, 80ms 격자 |
 
 세부 규약 셋을 함께 적어야 재현된다.
@@ -141,7 +141,7 @@ Minimum and Maximum cuda capability supported by this version of PyTorch is (8.0
 --iterations 5 --train 40 --dev 265 --test 100
 --patience 5 --workers 24
 --translate-backend local            # google/madlad400-3b-mt
---adequacy-backend cometkiwi --consistency-backend nli --adopt-se-mult 0.5
+--adequacy-backend cometkiwi --adopt-se-mult 0.5
 ```
 
 config 에만 있고 인자로 안 주는 값: `revision_candidates 3`, `v0_candidates 1`,
@@ -206,7 +206,7 @@ PYTHONPATH=. .venv-autoseg/bin/python -m core.meaning_segmentator.autoseg.loop \
   --iterations 5 --train 40 --dev 265 --test 100 \
   --patience 5 --budget 25 --workers 24 \
   --translate-backend local \
-  --adequacy-backend cometkiwi --consistency-backend nli --adopt-se-mult 0.5
+  --adequacy-backend cometkiwi --adopt-se-mult 0.5
 ```
 
 사전 요건 둘: `OPENAI_API_KEY`, 그리고 **CometKiwi 는 HF 게이트 모델**이라

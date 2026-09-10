@@ -20,13 +20,6 @@
 정규화되고, **무분절(k=1)은 0 이 아니라 정의되지 않음(None)** 이 된다. effective 도
 같이 None 이 되어 평균에서 빠진다 (`n_effective` 로 집계 대상 수를 남긴다).
 
-v1 의 `Q`(= seg 합본 vs full 번역)는 `consistency` 로 이름을 바꿔 **보고 지표로만**
-남는다. 가설("나누어 번역해 합쳐도 의미가 크게 달라지지 않는 지점")의 직접 측정값이다.
-기본 백엔드는 **양방향 NLI**(`nli`) 다 — COMET 은 참조가 자기 시스템의 offline 출력이라
-어순 편향이 있다(자체 실측: 의미를 보존한 재서술 0.8414 < 부정 뒤집힘 0.8843). NLI 는
-명제만 보므로 어순을 단조화한 좋은 분절이 감점되지 않고, ent(full⇒합본)이 환각을,
-ent(합본⇒full)이 누락을 각각 잡는다. COMET 계열은 옵션으로 남긴다.
-
 폐기된 것: `L`/`gain`(= Average Proportion. 문헌은 AP 를 쓰지 않는다), `k_eff`,
 `Q_floor`/`LCB`/`q_weight`/앵커 캘리브레이션, 달성률.
 """
@@ -72,36 +65,7 @@ def chrf(hyp: str, ref: str, max_n: int = 6, beta: float = 2.0) -> float:
     return (1 + b2) * p * r / (b2 * p + r)
 
 
-# ── consistency 백엔드 (참조 기반) ───────────────────────────────────────
-
-def _identity_shortcut(hyps: list[str], refs: list[str]) -> tuple[list[float], list[int]]:
-    """동일 문자열은 1.0, 빈 문자열은 0.0 으로 고정하고 나머지 인덱스를 돌려준다.
-
-    무분절 문장은 seg 번역 = full 번역이라 항상 여기서 걸린다. 모든 백엔드가 같은
-    규약을 쓰게 해야 백엔드 간 수치가 비교 가능하다."""
-    scores = [1.0] * len(hyps)
-    pending: list[int] = []
-    for i, (h, r) in enumerate(zip(hyps, refs)):
-        if not h or not r:
-            scores[i] = 0.0
-        elif h != r:
-            pending.append(i)
-    return scores, pending
-
-
-class QualityBackend:
-    """`consistency` 계산 백엔드 (참조 기반).
-
-    `src` 를 받는 이유는 COMET 이 원문을 입력으로 쓰기 때문이다. NLI 는 무시한다.
-
-    **embed·chrF 백엔드는 삭제했다.** 45개 런에서 한 번도 안 쓰였고(nli 39 / comet 4),
-    embed 는 그 하나 때문에 `Gateway`(임베딩 API 호출)를 이 모듈에 끌어들이고 있었다."""
-
-    name = "base"
-
-    def score(self, srcs: list[str], hyps: list[str], refs: list[str]) -> list[float]:
-        raise NotImplementedError
-
+# ── COMET 계열 공통 로더 ─────────────────────────────────────────────────
 
 class _CometBase:
     """COMET 계열 공통 로더. 모델 로드는 **프로세스당 1회**다."""
@@ -140,42 +104,6 @@ class _CometBase:
         return [float(s) for s in out.scores]
 
 
-class CometBackend(_CometBase, QualityBackend):
-    def __init__(self, model_name: str = "Unbabel/wmt22-comet-da",
-                 batch_size: int = 16, gpus: int = 1, name: str = "comet"):
-        _CometBase.__init__(self, model_name, batch_size, gpus)
-        self.name = name
-
-    def score(self, srcs, hyps, refs):
-        scores, pending = _identity_shortcut(hyps, refs)
-        if not pending:
-            return scores
-        batch = [{"src": srcs[i], "mt": hyps[i], "ref": refs[i]} for i in pending]
-        for i, s in zip(pending, self._predict(batch)):
-            scores[i] = s
-        return scores
-
-
-# 체크포인트 이름을 나눠 두는 이유는 `config.json` 에 무엇으로 쟀는지가 남아야 하기
-# 때문이다. 축이 다른 두 백엔드의 수치를 섞어 쓰면 비교가 무의미해진다.
-COMET_CHECKPOINTS = {
-    "comet": "Unbabel/wmt22-comet-da",   # XLM-R large 기반. 빠르고 공개 접근 가능
-    "xcomet": "Unbabel/XCOMET-XL",       # 오류 구간 탐지형. HF 라이선스 동의 필요
-}
-
-
-def make_backend(name: str, **kw) -> QualityBackend:
-    if name == "nli":
-        kw.setdefault("model_name", NLI_MODEL)
-        kw.setdefault("name", name)
-        return BidirectionalNliBackend(**kw)
-    if name in COMET_CHECKPOINTS:
-        kw.setdefault("model_name", COMET_CHECKPOINTS[name])
-        return CometBackend(name=name, **kw)
-    raise ValueError(f"알 수 없는 consistency 백엔드: {name}. "
-                     f"쓸 수 있는 값: nli, {', '.join(sorted(COMET_CHECKPOINTS))}")
-
-
 # ── adequacy 백엔드 (참조 없음) ──────────────────────────────────────────
 
 # **참조를 두지 않는 것이 요점이다.** 참조를 full 번역으로 두면 어순을 단조화한 좋은
@@ -203,13 +131,27 @@ class CometKiwiBackend(_CometBase, AdequacyBackend):
         self.name = name
 
     def score(self, srcs, hyps):
+        # (조각 원문, 조각 번역) -> 점수. 조각은 T 가 달라도 앞쪽이 자주 같고, 순위 셔플
+        # 대조군은 조각 대부분을 공유하므로 한 평가 안에서도 적중이 많다. 결정론적
+        # 모델이라 값이 같다.
+        memo = self.__dict__.setdefault("_memo", {})
         out = [0.0] * len(srcs)
-        pending = [i for i, (s, h) in enumerate(zip(srcs, hyps)) if s.strip() and h.strip()]
-        if not pending:
+        uniq: dict[tuple[str, str], list[int]] = {}
+        for i, (s, h) in enumerate(zip(srcs, hyps)):
+            if not (s.strip() and h.strip()):
+                continue
+            hit = memo.get((s, h))
+            if hit is not None:
+                out[i] = hit
+            else:
+                uniq.setdefault((s, h), []).append(i)
+        if not uniq:
             return out
-        batch = [{"src": srcs[i], "mt": hyps[i]} for i in pending]
-        for i, s in zip(pending, self._predict(batch)):
-            out[i] = s
+        keys = list(uniq)
+        for key, sc in zip(keys, self._predict([{"src": k[0], "mt": k[1]} for k in keys])):
+            memo[key] = sc
+            for i in uniq[key]:
+                out[i] = sc
         return out
 
 
@@ -246,7 +188,7 @@ def make_adequacy_backend(name: str, **kw) -> AdequacyBackend:
 # xlmr-anli 19 / mdeberta-xnli 16 / deberta-mnli 7).
 #
 # `xlm-roberta-large-xnli-anli` 인 이유 — **다국어 large 여야 한다.** base 급
-# `mDeBERTa-v3-base-xnli` 는 ko/zh/ja 타깃에서 consistency 곡선이 뒤집혔다 (T 를 키울수록
+# `mDeBERTa-v3-base-xnli` 는 ko/zh/ja 타깃에서 합본 함의 곡선이 뒤집혔다 (T 를 키울수록
 # offline 번역에서 멀어진다고 나온다 — 물리적으로 불가능). 같은 데이터에서 comet·chrf 는
 # 5/5 정상 방향이라 NLI 쪽 결함이었다. 영어 전용 `deberta-large-mnli` 는 분리가 가장
 # 깨끗하지만 비영어 타깃에서 무음으로 틀린 값을 준다.
@@ -257,10 +199,13 @@ NLI_MODEL = "vicgalle/xlm-roberta-large-xnli-anli"
 class _NliBase:
     """NLI pipeline 공통 로더.
 
-    pipeline 은 **(모델, 디바이스)별 프로세스 전역 싱글턴**이다 — contradiction 과
-    consistency(nli)가 같은 체크포인트를 쓰는 것이 기본 구성인데, 인스턴스별로
+    pipeline 은 **(모델, 디바이스)별 프로세스 전역 싱글턴**이다 — 인스턴스별로
     로드하면 같은 모델이 GPU 에 두 번 올라간다 (deberta-large ≈ 1.6GB 중복).
-    run04 에서 다른 실험과 GPU 를 나눠 쓰다 OOM 난 뒤 공유로 바꿨다."""
+    run04 에서 다른 실험과 GPU 를 나눠 쓰다 OOM 난 뒤 공유로 바꿨다.
+
+    **fp16 으로 올린다.** xlm-roberta-large 추론은 fp32 대비 절반 안팎으로 빨라지고
+    확률 순위는 유지된다 — 이 값은 임계값 없이 순위로만 쓰므로 소수점 셋째 자리
+    차이는 결과에 안 들어간다. CPU(device<0)면 fp32 다."""
 
     _PIPES: dict = {}
 
@@ -281,10 +226,14 @@ class _NliBase:
                 # 긴 문장(어절 40+)에서 premise+hypothesis 가 그 한계를 넘으면
                 # 조용한 오차가 아니라 RuntimeError 로 런이 죽는다 (clean500 실측:
                 # 875 토큰). 잘린 뒤쪽은 어차피 모델이 못 보던 구간이다.
+                import torch
+                dtype = torch.float16 if (self.device is not None and self.device >= 0
+                                          and torch.cuda.is_available()) else None
                 _NliBase._PIPES[key] = pipeline(
                     "text-classification", model=self.model_name,
                     device=self.device, top_k=None,
-                    truncation=True, max_length=512)
+                    truncation=True, max_length=512,
+                    **({"torch_dtype": dtype} if dtype is not None else {}))
             self._pipe = _NliBase._PIPES[key]
         return self._pipe
 
@@ -306,6 +255,10 @@ class ContradictionBackend(_NliBase):
     def __init__(self, model_name: str = NLI_MODEL,
                  batch_size: int = 16, device: int = 0, name: str = "xlmr-anli"):
         super().__init__(model_name, batch_size, device, name)
+        # (premise, hypothesis) -> (contradiction, 1 − entailment). 결정론적 모델이라
+        # 같은 쌍은 같은 값이다. 같은 문장의 앞쪽 누적 방출은 T 가 달라도, 순위 셔플
+        # 대조군에서도 그대로 되풀이되므로 한 평가 안에서만도 적중이 많다.
+        self._memo: dict[tuple[str, str], tuple[float, float]] = {}
 
     def score(self, premises: list[str], hypotheses: list[str]) -> list[float]:
         return self.score_dual(premises, hypotheses)[0]
@@ -330,53 +283,30 @@ class ContradictionBackend(_NliBase):
         n = len(premises)
         contra = [0.0] * n
         one_minus_ent = [0.0] * n
-        pending = [i for i, (p, h) in enumerate(zip(premises, hypotheses))
-                   if p.strip() and h.strip()]
-        if not pending:
-            return contra, one_minus_ent
-        res = self.load()([{"text": premises[i], "text_pair": hypotheses[i]}
-                           for i in pending], batch_size=self.batch_size)
-        for i, scores in zip(pending, res):
-            contra[i] = self._prob(scores, "contr")
-            one_minus_ent[i] = 1.0 - self._prob(scores, "entail")
-        return contra, one_minus_ent
-
-
-class BidirectionalNliBackend(_NliBase, QualityBackend):
-    """`consistency` 기본 백엔드 — 합본 vs full 번역의 **양방향 entailment**.
-
-        ent(full ⇒ 합본)   합본에 full 이 지지하지 않는 명제가 있는가 (환각·왜곡)
-        ent(합본 ⇒ full)   합본이 정보를 빠뜨렸는가 (누락)
-        score = min(둘)
-
-    함의는 비대칭이라 한 방향만 재면 반쪽만 본다 — full⇒합본은 누락을 통과시키고
-    (약한 명제는 함의되므로), 합본⇒full 은 환각을 통과시킨다. min 이라 어느 쪽
-    실패든 잡히고, 두 방향을 따로 보면 실패 유형이 분리된다.
-
-    COMET consistency 를 대체하는 이유: 참조가 offline 출력이라 어순을 단조화한
-    좋은 분절이 감점된다 (benign_paraphrase 0.8414 < negation_flip 0.8843). NLI 는
-    명제만 보므로 표면 어순·문장 수가 달라도 감점이 없고, 부정 뒤집힘은 양방향
-    모두에서 contradiction 으로 잡힌다. 두 입력이 모두 타깃 언어라 소스 언어별
-    자원도 필요 없다. 기본 `xlmr-anli` 는 다국어라 **타깃에 따라 바꿀 필요가 없다** —
-    예전 처방이던 base 급 다국어 모델은 ko/zh/ja 에서 곡선이 뒤집힌다 (`NLI_MODEL` 주석)."""
-
-    def __init__(self, model_name: str = NLI_MODEL,
-                 batch_size: int = 16, device: int = 0, name: str = "nli"):
-        super().__init__(model_name, batch_size, device, name)
-
-    def score(self, srcs, hyps, refs):
-        scores, pending = _identity_shortcut(hyps, refs)
-        if not pending:
-            return scores
-        items = []
+        pending: list[int] = []
+        for i, (p, h) in enumerate(zip(premises, hypotheses)):
+            if not (p.strip() and h.strip()):
+                continue
+            hit = self._memo.get((p, h))
+            if hit is not None:
+                contra[i], one_minus_ent[i] = hit
+            else:
+                pending.append(i)
+        # 같은 쌍이 한 호출 안에 여러 번 와도 한 번만 잰다.
+        uniq: dict[tuple[str, str], list[int]] = {}
         for i in pending:
-            items.append({"text": refs[i], "text_pair": hyps[i]})   # full ⇒ 합본
-            items.append({"text": hyps[i], "text_pair": refs[i]})   # 합본 ⇒ full
-        res = self.load()(items, batch_size=self.batch_size)
-        for j, i in enumerate(pending):
-            scores[i] = min(self._prob(res[2 * j], "entail"),
-                            self._prob(res[2 * j + 1], "entail"))
-        return scores
+            uniq.setdefault((premises[i], hypotheses[i]), []).append(i)
+        if not uniq:
+            return contra, one_minus_ent
+        keys = list(uniq)
+        res = self.load()([{"text": p, "text_pair": h} for p, h in keys],
+                          batch_size=self.batch_size)
+        for key, scores in zip(keys, res):
+            val = (self._prob(scores, "contr"), 1.0 - self._prob(scores, "entail"))
+            self._memo[key] = val
+            for i in uniq[key]:
+                contra[i], one_minus_ent[i] = val
+        return contra, one_minus_ent
 
 
 def make_contradiction_backend(**kw) -> ContradictionBackend:
@@ -482,7 +412,6 @@ class SplitMetrics:
     contradiction: float | None
     effective_min: float | None
     effective_p10: float | None
-    consistency: float
     laal_words: float
     chunks_per_sentence: float
     missing_boundaries: float
@@ -585,7 +514,6 @@ def aggregate_split(
     effective_scores: list[float | None],
     adequacy_scores: list[float],
     contradiction_scores: list[float | None],
-    consistency_scores: list[float],
     laals: list[float],
     ks: list[int],
     missings: list[int],
@@ -619,7 +547,6 @@ def aggregate_split(
         contradiction=(mean(con_vals) if con_vals else None),
         effective_min=(min(eff_vals) if eff_vals else None),
         effective_p10=percentile10(eff_vals),
-        consistency=mean(consistency_scores, 1.0),
         laal_words=mean(laals),
         chunks_per_sentence=mean([float(k) for k in ks], 1.0),
         missing_boundaries=mean([float(s) for s in missings]),
@@ -696,8 +623,6 @@ GLOSSARY: dict[str, tuple[str, bool]] = {
     "effective_min": ("the worst sentence.", False),
     "n_effective": ("sentences where `effective` is defined (they had at least one "
                     "boundary).", False),
-    "consistency": ("similarity of the concatenated pieces to the whole-sentence "
-                    "translation. Reported only — not in the objective.", False),
     "laal_words": ("lag in source words, lower is faster. It is SET BY THE LATENCY BUDGET "
                    "(T), not by the prompt. Do not try to move it.", False),
     "chunks_per_sentence": ("mean pieces per sentence. Also set by T — the truncator cuts "
@@ -964,11 +889,8 @@ def priority_audit(rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = T
         vals = _floor_corrected(d, [float(x) for x in contras], floor_fn, tgt_spaced)
         n = len(scores)
         for j, c in enumerate(vals):
-            tail = (src[j] or "").rstrip()[-1:]
-            feat = f"뒤 구두점 {tail!r}" if tail and not tail.isalnum() else "구두점 없음"
-            recs.append((feat, float(scores[j]), c))
-            recs.append((f"상대위치 {int(j / max(1, n) * 3)}/3", float(scores[j]), c))
-            recs.append((score_band(scores[j]), float(scores[j]), c))
+            for feat in boundary_features(d, j, n):
+                recs.append((feat, float(scores[j]), c))
     if not recs:
         return []
     base_score = sum(r[1] for r in recs) / len(recs)
@@ -988,6 +910,58 @@ def priority_audit(rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = T
 
 
 SCORE_BANDS = ((90, 100), (80, 89), (70, 79), (50, 69), (0, 49))
+
+
+def boundary_features(d: dict, j: int, n: int) -> list[str]:
+    """경계 j 의 표면 특징 셋 — 앞 조각 끝 구두점, 상대 위치(3분위), 점수 구간.
+    `priority_audit` 과 `attach_judge_rates` 가 같은 이름을 써야 두 표가 합쳐진다."""
+    src = d.get("pieces_src") or []
+    scores = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "") if m.group(1)]
+    tail = (src[j] or "").rstrip()[-1:] if j < len(src) else ""
+    out = [f"뒤 구두점 {tail!r}" if tail and not tail.isalnum() else "구두점 없음",
+           f"상대위치 {int(j / max(1, n) * 3)}/3"]
+    if j < len(scores):
+        out.append(score_band(scores[j]))
+    return out
+
+
+def attach_judge_rates(audit: list[dict], rows: list[dict], judgements: list[dict] | None,
+                       T: int, min_judged: int = 3) -> list[dict]:
+    """감사 항목에 **판정자가 본 결과**를 붙인다 — 특징별 `safe_rate` 등.
+
+    판정 대상은 모순 확률 상위 경계뿐이다. 거기서 `safe` 는 "NLI 가 울렸는데 뒤집힌 게
+    없다", 즉 **NLI 의 거짓 양성**이다. de-en/run02 실측으로 판정 50건 중 safe 27~33,
+    mistranslated 10~20, premature 0~8 — 최악 경계의 60% 가 거짓 양성이고 30% 는 조각
+    오역(adequacy 몫)이다. 특징별로 그 비율이 갈리면 "이 특징의 contradiction 은 위험이
+    아니라 NLI 편향" 을 Critic 이 알 수 있고, 거기에 금지 규칙을 쓰지 않게 된다.
+
+    판정은 `main_t` 에서 돌고 감사는 `low_t` 에서 도는데, 특징은 경계의 표면 성질이라
+    T 와 무관하게 같은 이름으로 합쳐진다. 판정 3건 미만인 특징에는 안 붙인다.
+    """
+    key = str(T)
+    by_id = {r["id"]: r for r in rows}
+    counts: dict[str, Counter] = {}
+    for jd in judgements or []:
+        r = by_id.get(jd.get("id"))
+        d = ((r or {}).get("by_T") or {}).get(key)
+        b = jd.get("boundary")
+        v = jd.get("verdict")
+        if not d or b is None or v not in ("safe", "premature", "mistranslated"):
+            continue
+        n = len((d.get("pieces_contra") or [])[:-1])
+        if b >= max(1, n):
+            continue
+        for feat in boundary_features(d, b, max(1, n)):
+            counts.setdefault(feat, Counter())[v] += 1
+    for a in audit:
+        c = counts.get(a.get("feature"))
+        n = sum(c.values()) if c else 0
+        if n >= min_judged:
+            a["judged_n"] = n
+            a["safe_rate"] = round(c["safe"] / n, 2)
+            a["premature_rate"] = round(c["premature"] / n, 2)
+            a["mistranslated_rate"] = round(c["mistranslated"] / n, 2)
+    return audit
 
 
 def score_band(score: int) -> str:

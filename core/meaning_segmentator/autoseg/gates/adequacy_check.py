@@ -8,7 +8,7 @@ contradiction(NLI)·판정자는 오류 주입 관문을 통과시켰지만 adeq
 
   통과 조건: 케이스마다 모든 심각한 오류 변이 < `benign_minimal`(동의어 수준 변이)
 
-케이스는 validity_cases 의 실제 KsponSpeech 발화에서 딴 조각이다. CometKiwi 는
+케이스는 실제 KsponSpeech 발화에서 딴 조각이다. CometKiwi 는
 결정론적이라 반복 실행 검사는 불필요하다 (COMET 관문과 같은 이유).
 
   PYTHONPATH=. python -m core.meaning_segmentator.autoseg.gates.adequacy_check

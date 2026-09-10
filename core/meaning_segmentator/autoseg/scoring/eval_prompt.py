@@ -71,11 +71,10 @@ def main() -> int:
     p.add_argument("--no-priority", action="store_true",
                    help="순위 태그를 요구하지 않는다. 사람이 쓴 비교군 프롬프트용")
     p.add_argument("--adequacy-backend", default=None, help="미지정 시 기준 런에서 상속")
-    p.add_argument("--consistency-backend", default=None, help="미지정 시 기준 런에서 상속")
     p.add_argument("--no-contradiction", action="store_true",
                    help="NLI 조기 방출 검출을 끈다. 기본은 기준 런 설정 상속 — "
                         "루프와 다른 자로 재면 비교가 무의미하다")
-    p.add_argument("--comet-batch-size", type=int, default=16)
+    p.add_argument("--comet-batch-size", type=int, default=64)
     args = p.parse_args()
 
     run_dir = RUNS_DIR / args.run_id
@@ -131,17 +130,6 @@ def main() -> int:
     adequacy = metrics.make_adequacy_backend(
         args.adequacy_backend or cfg.get("adequacy_backend", "cometkiwi"),
         batch_size=args.comet_batch_size)
-    cons_name = args.consistency_backend or cfg.get("consistency_backend", "comet")
-    if cons_name == "nli":
-        consistency = metrics.make_backend(
-            "nli", model_name=metrics.NLI_MODEL,
-            batch_size=args.comet_batch_size)
-    else:
-        consistency = metrics.make_backend(
-            cons_name,
-            **({"batch_size": args.comet_batch_size}
-               if cons_name in metrics.COMET_CHECKPOINTS else {}))
-
     # 조기 방출 NLI 도 기준 런에서 상속한다 — 루프의 effective 와 같은 자로 재야
     # 비교군 표에 나란히 놓을 수 있다.
     contradiction = (None if (args.no_contradiction or cfg.get("no_contradiction"))
@@ -153,7 +141,7 @@ def main() -> int:
 
     try:
         rows, m, viol = evaluate(gw, translator, prompt, sentences, spaced, seg_cache,
-                                 args.workers, adequacy, consistency, t_grid,
+                                 args.workers, adequacy, t_grid,
                                  trailing_punct, tgt_spaced=tgt_spaced,
                                  require_priority=not args.no_priority,
                                  contradiction=contradiction,
@@ -184,7 +172,6 @@ def main() -> int:
             "require_priority": not args.no_priority,
             "tag_convention": "score",       # <SEG:s>, s = 0..100, 클수록 확신
             "adequacy_backend": adequacy.name,
-            "consistency_backend": cons_name,
             "contradiction_backend": (None if contradiction is None else contradiction.name),
             "translator": tr_id,
             "metrics": m.to_dict(),
@@ -201,7 +188,7 @@ def main() -> int:
             s = m.by_T[k]
             print(f"  T={k:<3} laal {s.laal_words:6.2f}  effective {_cell(s.effective, '.4f')}  "
                   f"adequacy {s.adequacy:.4f}  contradiction {_cell(s.contradiction, '.4f')}  "
-                  f"consistency {s.consistency:.4f}  k {s.chunks_per_sentence:.2f}  "
+                  f"k {s.chunks_per_sentence:.2f}  "
                   f"부족경계 {s.missing_boundaries:.2f}")
         print(f"  score {metrics.score(m):.4f}  비용 {gw.usage.snapshot()['cost']:.4f}")
         return 0

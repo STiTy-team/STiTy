@@ -40,22 +40,6 @@ from .paths import RUNS_DIR
 _UNSPACED_TARGETS = {"japanese", "chinese", "thai", "ja", "zh", "th"}
 
 
-class _NoConsistency:
-    """`rank_lift` 대조군 전용 — consistency 를 건너뛴다.
-
-    `effective = adequacy × (1 − contradiction)` 이라 consistency 는 대조군 비교에
-    쓰이지 않는다. 그런데 `score_split` 은 항상 계산하므로, 끄지 않으면 이터레이션마다
-    NLI(또는 COMET) 한 벌이 순수 낭비로 돈다."""
-
-    name = "none"
-
-    def score(self, srcs, hyps, refs):
-        return [0.0] * len(hyps)
-
-
-_NO_CONSISTENCY = _NoConsistency()
-
-
 def target_is_spaced(name: str) -> bool:
     return name.strip().lower() not in _UNSPACED_TARGETS
 
@@ -78,7 +62,6 @@ class ScoredSplit:
     effective: list[float | None]
     adequacy: list[float]
     contradiction: list[float | None]
-    consistency: list[float]
     chrf: list[float]
     laal_words: list[float]
     k: list[int]
@@ -252,7 +235,7 @@ def evaluate_multi(targets: list[str], make_ctx, prompt, sentences, t_grid,
                    zbase: dict | None = None, **kw):
     """타깃마다 `evaluate` 를 돌리고 **z-평균 effective** 로 합친다.
 
-    `make_ctx(tgt) -> (translator, adequacy, consistency, contradiction, tgt_spaced)`.
+    `make_ctx(tgt) -> (translator, adequacy, contradiction, tgt_spaced)`.
     분절은 첫 타깃에서 한 번 호출되고 나머지는 전부 캐시 히트다 — 캐시 키에 타깃이 없다.
 
     `zbase` 는 **분할별로 고정된 z 기준선** `{str(T): {타깃: (평균, sd)}}` 이다. 비어
@@ -268,11 +251,12 @@ def evaluate_multi(targets: list[str], make_ctx, prompt, sentences, t_grid,
     viol: list[dict] = []
     norm_sink: list[dict] | None = kw.pop("norm_sink", None)
     for k, tgt in enumerate(targets):
-        tr, adq, cons, contra, tsp = make_ctx(tgt)
+        tr, adq, contra, tsp = make_ctx(tgt)
         r, m, v = evaluate(gw=kw["gw"], translator=tr, prompt=prompt, sentences=sentences,
                            spaced=kw["spaced"], seg_cache=kw["seg_cache"],
-                           workers=kw["workers"], adequacy=adq, consistency=cons,
+                           workers=kw["workers"], adequacy=adq,
                            t_grid=t_grid, trailing_punct=kw["trailing_punct"],
+                           rank_lift_shuffles=kw.get("rank_lift_shuffles", 3),
                            tgt_spaced=tsp, contradiction=contra,
                            require_coverage=kw["require_coverage"],
                            coverage_t=kw["coverage_t"],
@@ -359,7 +343,7 @@ def evaluate_multi(targets: list[str], make_ctx, prompt, sentences, t_grid,
 
 def score_split(seg_texts: list[str], texts: list[str], full: list[str],
                 translator, adequacy: metrics.AdequacyBackend,
-                consistency: metrics.QualityBackend, spaced: bool, tgt_spaced: bool,
+                spaced: bool, tgt_spaced: bool,
                 contradiction: "metrics.ContradictionBackend | None" = None) -> ScoredSplit:
     """분절 텍스트 한 벌 -> 문장별 지표.
 
@@ -367,8 +351,8 @@ def score_split(seg_texts: list[str], texts: list[str], full: list[str],
     한 함수로 둔다. 예전에는 두 벌로 복제돼 있었고, 한쪽만 고친 탓에
     `NameError: name 'eff' is not defined` 로 최종 리포트 직전에 죽은 적이 있다.
 
-    `seg_texts` 는 `<SEG>` 가 남아 있는 채점 대상, `texts` 는 원문(consistency 의 소스),
-    `full` 은 오라클 전체 번역이다.
+    `seg_texts` 는 `<SEG>` 가 남아 있는 채점 대상, `texts` 는 원문, `full` 은 오라클
+    전체 번역이다.
     """
     joined, pieces = translator.seg_batch(seg_texts, full)
 
@@ -468,7 +452,6 @@ def score_split(seg_texts: list[str], texts: list[str], full: list[str],
         effective=effective_rows,
         adequacy=adequacy_rows,
         contradiction=contradiction_rows,
-        consistency=consistency.score(texts, joined, full),
         chrf=[metrics.chrf(h, r) for h, r in zip(joined, full)],
         laal_words=[metrics.laal_words(st, ps, f, spaced, tgt_spaced)
                     for st, ps, f in zip(seg_texts, pieces, full)],
@@ -487,7 +470,6 @@ def evaluate(
     seg_cache: JsonCache,
     workers: int,
     adequacy: metrics.AdequacyBackend,
-    consistency: metrics.QualityBackend,
     t_grid: list[int],
     trailing_punct: str | None = None,
     skip_translation_below: float = 0.95,
@@ -587,7 +569,7 @@ def evaluate(
         cut_texts = [c[0] for c in cut]
         missings = [c[1] for c in cut]
 
-        sp = score_split(cut_texts, texts, full, translator, adequacy, consistency,
+        sp = score_split(cut_texts, texts, full, translator, adequacy,
                          spaced, tgt_spaced, contradiction)
 
         for i, r in enumerate(rows):
@@ -604,7 +586,6 @@ def evaluate(
                 "adequacy": round(sp.adequacy[i], 4),
                 "contradiction": (round(sp.contradiction[i], 4)
                                   if sp.contradiction[i] is not None else None),
-                "consistency": round(sp.consistency[i], 4),
                 "chrf": round(sp.chrf[i], 4), "laal_words": round(sp.laal_words[i], 4),
             }
         # **포맷 위반 문장은 채점에서 뺀다.** 규칙을 어긴 분절의 점수는 의미가 없고,
@@ -613,7 +594,7 @@ def evaluate(
         pick = lambda xs: [xs[i] for i in keep]
         by_T[str(T)] = metrics.aggregate_split(
             T, pick(sp.effective), pick(sp.adequacy), pick(sp.contradiction),
-            pick(sp.consistency), pick(sp.laal_words), pick(sp.k),
+            pick(sp.laal_words), pick(sp.k),
             pick(missings), n_total=len(rows),
             effective_ent_scores=pick(sp.effective_ent),
             contradiction_ent_scores=pick(sp.contradiction_ent))
@@ -626,7 +607,9 @@ def evaluate(
     # 순위 번호만 무작위로 치환한 대조군을 한 벌 더 채점한다. 후보 집합·`want`·`min_gap`
     # 이 전부 같으므로 바뀌는 것은 `truncate` 의 keep 집합뿐이고, 그 차이가 곧 순위의 값이다.
     # **LLM 호출은 0건이다** — 분절을 다시 하지 않고 이미 받은 태그의 번호만 섞는다.
-    # consistency 는 `effective` 에 안 들어가는 보고 지표라 대조군에서는 끈다.
+    # **dev·후보 선별에서는 끈다** (`rank_lift_shuffles=0`). 이 값은 Critic 이 train 것만
+    # 읽고 채택·선별에는 안 들어가는데, 대조군 3벌은 격자 3점과 같은 채점량이라 켜 두면
+    # dev 채점의 절반이 아무도 안 읽는 값에 쓰인다.
     if (lift_T is not None and contradiction is not None and real_eff_at_lift_T
             and rank_lift_shuffles > 0):
         # 시드는 **런 전체에서 고정**한다. 이터레이션마다 다른 순열을 뽑으면 lift 변화가
@@ -641,8 +624,7 @@ def evaluate(
             shuf = [shuffle_priorities(seg, rng) for seg in seg_texts]
             shuf_cut = [truncate(s, lift_T, spaced, min_gap)[0] for s in shuf]
             per_shuf.append(score_split(shuf_cut, texts, full, translator, adequacy,
-                                        _NO_CONSISTENCY, spaced, tgt_spaced,
-                                        contradiction).effective)
+                                        spaced, tgt_spaced, contradiction).effective)
         mean_shuf: list[float | None] = []
         for i in range(len(seg_texts)):
             vals = [s[i] for s in per_shuf if s[i] is not None]
@@ -936,8 +918,11 @@ def main() -> int:
     # 2 이상이면 첫 개는 자유 개정, 나머지는 Critic 의 `proposed_rule` 을 하나씩만 반영.
     p.add_argument("--revision-candidates", type=int, default=3,
                    help="이터레이션당 개정 후보 수. 2 이상이면 probe 로 골라 쓴다")
-    p.add_argument("--v0-candidates", type=int, default=1,
-                   help="prompt_v0 후보 수. 2 이상이면 dev 일부로 골라 시작한다")
+    # 1 → 5. 개정 26회 중 채택 4회라 **최종 프롬프트는 거의 v0 다.** 결과를 가장 좌우하는
+    # 산출물에 탐색을 가장 적게 쓰고 있었다. v0 후보 하나는 홀드아웃 분절 콜 ~10개로
+    # 이터레이션 1회의 1/6 비용이다.
+    p.add_argument("--v0-candidates", type=int, default=5,
+                   help="prompt_v0 후보 수. 2 이상이면 선별 홀드아웃으로 골라 시작한다")
     p.add_argument("--select-n", type=int, default=0,
                    help="후보 선별에 쓸 **선별 홀드아웃** 문장 수. 0 = 홀드아웃 전체. "
                         "dev 는 채택 판정 전용이라 선별에 쓰지 않는다 "
@@ -957,13 +942,12 @@ def main() -> int:
     # 7언어쌍 스윕 실측 (같은 마킹을 min_gap 만 바꿔 재절단·재채점, mg=0 대비 같은 지연에서.
     # ko->{en,de,es,ja,zh} + en->de + en->ko, xlmr-anli):
     #     effective    mg2 -0.0032  mg3 -0.0029  mg4 -0.0361
-    #     consistency  mg2 +0.0162  mg3 -0.0116  mg4 -0.0234
-    # mg=3 은 7쌍 x 2지표 = 14번의 비교에서 한 번도 1위를 못 했다. 언어로 일반화되는
-    # 최적값도 없다 — 소스가 같은 en-de(mg4 최고)와 en-ko(mg4 최악)가 정반대다.
+    # mg=3 은 7쌍 어디서도 1위를 못 했다. 언어로 일반화되는 최적값도 없다 — 소스가
+    # 같은 en-de(mg4 최고)와 en-ko(mg4 최악)가 정반대다.
     #
-    # 그런데 **두 지표 모두 이 값이 막으려는 실패를 볼 수 없다.** adequacy 는
-    # (조각 원문, 조각 번역) 쌍만 보므로 'What' -> 'What' 을 충실한 번역으로 채점하고,
-    # consistency 는 합본만 보므로 어디서 잘랐든 값이 같다. 실제로 관측된 출력:
+    # 그런데 **지표는 이 값이 막으려는 실패를 볼 수 없다.** adequacy 는 (조각 원문,
+    # 조각 번역) 쌍만 보므로 'What' -> 'What' 을 충실한 번역으로 채점한다. 실제로
+    # 관측된 출력:
     #     What <SEG:1> are <SEG:2> you <SEG:3> working <SEG:4> on?
     #   min_gap=0 -> "What / are you working on?"      한 단어를 방출한다
     #   min_gap=3 -> "What are you working on?"        무분절 (옳다)
@@ -1046,7 +1030,7 @@ def main() -> int:
     p.add_argument("--train", type=int, default=30,
                    help="이터레이션마다 평가할 문장 수. Critic 사례가 여기서 나온다")
     p.add_argument("--train-pool", type=int, default=None,
-                   help="train 풀 크기. 기본 2*--train — 앞쪽 --train 개는 이터레이션 "
+                   help="train 풀 크기. 기본 3*--train — 앞쪽 --train 개는 이터레이션 "
                         "배치, 나머지는 **후보 선별 전용 홀드아웃**이다. 둘을 가르지 "
                         "않으면 Critic 이 규칙을 만든 문장으로 그 규칙의 후보를 다시 "
                         "고르게 된다. --train 과 같은 값을 주면 홀드아웃이 없어져 "
@@ -1091,11 +1075,6 @@ def main() -> int:
     p.add_argument("--adequacy-backend", default="cometkiwi",
                    choices=sorted(metrics.QE_CHECKPOINTS),
                    help="참조 없는 QE. y축 주지표")
-    p.add_argument("--consistency-backend", default="nli",
-                   choices=["nli", "comet", "xcomet"],
-                   help="가설 검증값(보고용). 기본 nli = 합본 vs full 의 양방향 entailment — "
-                        "어순 무관. 모델은 metrics.NLI_MODEL 고정. "
-                        "comet 계열은 참조 기반이라 어순 편향이 있다")
     # `xlmr-anli` 로 바꾼 근거 (en-de test 100문장 + 관문 6케이스 실측, 2026-08-19):
     #   관문 최소 여유   mdeberta-xnli 0.0027 (통과선상) / deberta-mnli 미측정 / xlmr-anli 0.0994
     #   5개 타깃 곡선   mdeberta 2/5 정상 (ko/zh/ja 역전) / xlmr-anli 5/5
@@ -1106,7 +1085,9 @@ def main() -> int:
                    help="최소 경계 수 요건을 끈다. 노브가 k 를 통제하지 못하게 된다")
     p.add_argument("--no-contradiction", action="store_true",
                    help="NLI 를 끈다. effective = adequacy 가 되어 조기 방출이 벌받지 않는다")
-    p.add_argument("--comet-batch-size", type=int, default=16)
+    # 16 → 64. RTX 4090/GB10 24GB 에서 여유가 있고 인코더 채점은 배치에 비례해 빨라진다.
+    # 값은 배치와 무관하다 (문장별 독립 추론).
+    p.add_argument("--comet-batch-size", type=int, default=64)
     # 1.0 -> 0.5. `xlmr-anli` 는 지표 타당도가 훨씬 낫지만 문장별 분산이 커서 dev 쌍체
     # se 가 0.0065 -> 0.0144 로 배증한다 (run03 재채점 실측). 배수를 그대로 두면 문턱이
     # 두 배가 되어 채택이 더 어려워진다 — run01~03 이 이미 채택 0회다.
@@ -1170,7 +1151,10 @@ def main() -> int:
     # 그래서 이터레이션 배치는 종전과 글자까지 같고, 비용도 그대로다 (배치 30,
     # 선별 3후보 × 30). 되돌리려면 `--train-pool` 을 `--train` 과 같게 준다.
     _pool_auto = args.train_pool is None
-    args.train_pool = args.train_pool or 2 * args.train
+    # 3 × --train: 배치 30 + 선별 홀드아웃 60. 홀드아웃 30 은 쌍체 se ≈ 0.02 라 후보
+    # 3개 중 1등을 잡음으로 골랐다 (같은 프롬프트 재분절만으로 100문장 se 0.011 실측).
+    # 선별 분절 콜은 +50% 지만 분절은 이제 이터의 15% 라 감당된다.
+    args.train_pool = args.train_pool or 3 * args.train
     pool_n = max(args.train, args.train_pool)
     try:
         splits = data.split_data(sentences, pool_n, args.dev, args.test, seed=args.seed)
@@ -1300,17 +1284,6 @@ def main() -> int:
 
     adequacy = metrics.make_adequacy_backend(
         args.adequacy_backend, batch_size=args.comet_batch_size)
-    # consistency 의 nli 모델은 contradiction 백엔드를 따른다 — 둘 다 (합본, full)
-    # 타깃 언어 쌍을 재므로 언어 선택 기준이 같다 — 기본 xlmr-anli 는 다국어라 공통이다.
-    if args.consistency_backend == "nli":
-        consistency = metrics.make_backend(
-            "nli", model_name=metrics.NLI_MODEL,
-            batch_size=args.comet_batch_size)
-    else:
-        consistency = metrics.make_backend(
-            args.consistency_backend,
-            **({"batch_size": args.comet_batch_size}
-               if args.consistency_backend in metrics.COMET_CHECKPOINTS else {}))
     contradiction = (None if args.no_contradiction else
                      metrics.make_contradiction_backend())
 
@@ -1419,8 +1392,6 @@ def main() -> int:
             # 판정자 게이트웨이는 같은 `--provider` 로 만들어지므로 따로 안 남긴다.
             "api_base_url": gw.base_url,
             "adequacy_model": metrics.QE_CHECKPOINTS[args.adequacy_backend],
-            "consistency_model": getattr(consistency, "model_name",
-                                         args.consistency_backend),
             "judge_prompt_hash": JsonCache.key(agents.JUDGE_SYSTEM),
             "judge_model": args.judge_model or args.model,
             "min_boundaries_per": t_floor,   # [Output Rules] 에 박히는 값 = 검증기 요건
@@ -1445,8 +1416,7 @@ def main() -> int:
             if code not in _tr_cache:
                 _tr_cache[code] = make_translator(
                     code, JsonCache(run_dir / "cache" / f"translate_{code}.json"))
-            return (_tr_cache[code], adequacy, consistency, contradiction,
-                    target_is_spaced(tgt))
+            return (_tr_cache[code], adequacy, contradiction, target_is_spaced(tgt))
 
         _kw = dict(gw=gw, spaced=spaced, seg_cache=seg_cache, workers=args.workers,
                    trailing_punct=trailing_punct,
@@ -1477,12 +1447,15 @@ def main() -> int:
         zbase_all: dict = (json.loads(zbase_path.read_text(encoding="utf-8"))
                            if zbase_path.exists() else {})
 
-        def run_eval(prompt_: str, split_sentences, grid, split: str = "train"):
+        def run_eval(prompt_: str, split_sentences, grid, split: str = "train",
+                     shuffles: int = 3):
+            """`shuffles` 는 `rank_lift` 대조군 수. train(Critic 진단)과 test(보고)만 3,
+            dev 와 후보 선별은 0 — 그 값은 아무도 안 읽는데 채점량이 격자만큼 든다."""
             zb = zbase_all.setdefault(split, {}) if len(targets) > 1 else None
             norm: list[dict] = []
             rows_, m_, viol_, per_, per_rows_ = evaluate_multi(
                 targets, make_ctx, prompt_, split_sentences, grid, zbase=zb,
-                norm_sink=norm, **_kw)
+                norm_sink=norm, rank_lift_shuffles=shuffles, **_kw)
             run_eval.last_normalizations = norm
             if zb is not None:
                 zbase_path.write_text(json.dumps(zbase_all, ensure_ascii=False, indent=2),
@@ -1581,7 +1554,7 @@ def main() -> int:
             prewarm(cands, sel)
             scored = []
             for i, c in enumerate(cands):
-                _r, _m, _v = run_eval(c, sel, t_grid, "train")
+                _r, _m, _v = run_eval(c, sel, t_grid, "train", shuffles=0)
                 sc_i = metrics.score(_m)
                 scored.append((sc_i, i, c))
                 log(f"[{tag_}] 후보 {i}: {len(c)}자 train({len(sel)}) "
@@ -1866,6 +1839,9 @@ def main() -> int:
                 # 재작성하지 않게 한다 (metrics.priority_audit).
                 audit = metrics.priority_audit(rows, low_t, floor_fn=floor_fn,
                                                tgt_spaced=tgt_spaced)
+                # 판정자가 본 결과(특징별 safe 비율)를 같은 표에 붙인다 — NLI 가 헛울리는
+                # 특징에 Critic 이 금지 규칙을 쓰지 않게 (metrics.attach_judge_rates).
+                audit = metrics.attach_judge_rates(audit, rows, judgements, main_t)
                 if audit:
                     (it_dir / "priority_audit.json").write_text(
                         json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -1980,7 +1956,8 @@ def main() -> int:
             # z 기준선은 분할별로 고정돼 있어야 한다 — `_zmix` 참고.
             delta_key = "effective_z" if len(targets) > 1 else "effective"
             timer.mark("dev_eval")
-            dev_rows, dev_m, dev_viol = run_eval(prompt, splits["dev"], t_grid, "dev")
+            dev_rows, dev_m, dev_viol = run_eval(prompt, splits["dev"], t_grid, "dev",
+                                                 shuffles=0)
             dev_score = metrics.score(dev_m)
             dev_delta = (metrics.paired_delta(dev_rows, best_ctx["dev_rows"],
                                               t_grid, delta_key)
@@ -2199,15 +2176,35 @@ def main() -> int:
                     k = r[:80]
                     if k not in seen:
                         seen.add(k); hints.append(r)
-                # **후보는 규칙 부분집합이 아니라 표현 차이로 나뉜다.** 종전에는 규칙을
-                # 하나씩 나눠 실어 "어느 규칙이 도움됐나" 를 가리려 했는데, 한 규칙짜리
-                # 개정의 |Δ| 중앙이 0.00505 이고 dev 225 검출 한계가 0.0104 라 **전체가
-                # 도움됐는지조차 못 잰다.** 그 상태에서 규칙별 신용 배분은 환상이다.
-                # 첫 후보는 자유 개정(PE 가 critique 을 보고 판단), 나머지는 제안 전부를
-                # 각자 구현한다. 크기가 넘치면 압축기가 받는다.
-                jobs = [None] + [hints] * max(0, args.revision_candidates - 1) if hints \
-                    else [None] * max(1, args.revision_candidates)
-                jobs = jobs[:max(1, args.revision_candidates)]
+                # **후보는 방향으로 가른다 — 자유 / 추가 / 삭제.** 종전 후보 2·3 은 같은
+                # 규칙 묶음을 다른 문장으로 쓴 복제본이라 홀드아웃 잡음 안에서 복제본
+                # 사이를 고르고 있었고, 후보가 전부 "추가" 라 규칙이 쌓이기만 했다
+                # (채택 4/26). 삭제 후보의 재료는 부검이 지목한 줄(`blamed_lines`), Critic
+                # 이 사례에 귀책한 줄(`blamed_rule`), 감사가 과신이라 한 특징이다.
+                # 규칙별 신용 배분은 하지 않는다 — 한 규칙짜리 개정의 |Δ| 중앙 0.00505 가
+                # dev 검출 한계 0.0104 아래라 전체 효과조차 못 재는데 부분은 더 못 잰다.
+                _blamed: list[str] = []
+                for _ra in rejected_attempts:
+                    _blamed += [b for b in (_ra.get("blamed_lines") or []) if isinstance(b, str)]
+                for _c in (critique.get("cases") or []):
+                    if isinstance(_c.get("blamed_rule"), str) and _c["blamed_rule"].strip():
+                        _blamed.append(_c["blamed_rule"])
+                _over = [a for a in (ctx.get("priority_audit") or [])
+                         if a.get("over_trust", 0) > 0 and not a["feature"].startswith("score ")
+                         and a.get("safe_rate", 0) < 0.5][:3]
+                remove_targets = list(dict.fromkeys(b.strip() for b in _blamed if b.strip()))[:8] + [
+                    f"over-trusted feature: {a['feature']} (mean score {a['mean_score']}, "
+                    f"contradiction {a['contradiction']})" for a in _over]
+                kinds: list[tuple[str, list[str] | None]] = [("free", None)]
+                if hints:
+                    kinds.append(("add", hints))
+                if remove_targets:
+                    kinds.append(("remove", remove_targets))
+                while len(kinds) < args.revision_candidates:
+                    kinds.append(("add", hints) if hints else ("free", None))
+                jobs = kinds[:max(1, args.revision_candidates)]
+                log(f"[iter {it}] 개정 후보 방향 {[k for k, _ in jobs]}"
+                    + (f" (삭제 대상 {len(remove_targets)}건)" if remove_targets else ""))
 
                 # 개정 한 번의 **분량 예산** — 런 전체 천장 하나뿐이다.
                 # 걸음 크기 상한(직전 best 대비)도 따로 뒀다가 뺐다: 적용된 개정 42건의
@@ -2217,8 +2214,11 @@ def main() -> int:
 
                 def make(hint):
                     try:
+                        _kind, _payload = hint
                         rv = engineer.revise(best["prompt"], critique, history, profile,
-                                             t_grid, only_rules=hint,
+                                             t_grid,
+                                             only_rules=(_payload if _kind == "add" else None),
+                                             remove_only=(_payload if _kind == "remove" else None),
                                              size_budget=size_budget,
                                              measured=measured,
                                              target_language=pair_tgt,
@@ -2231,10 +2231,14 @@ def main() -> int:
                     return rv
 
                 timer.mark("prompt_engineer")
+                # 후보 K개를 **동시에** 부른다. PE 호출은 하나에 1~3분이라 직렬이면
+                # 그만큼 이터레이션이 길어지는데, 후보끼리는 서로 독립이다.
                 raw_cands = []
-                for hint in jobs:
-                    rv = make(hint)
+                with ThreadPoolExecutor(max_workers=max(1, len(jobs))) as _ex:
+                    _rvs = list(_ex.map(make, jobs))
+                for (_kind, _), rv in zip(jobs, _rvs):
                     if not rv: continue
+                    rv["candidate_kind"] = _kind
                     pr = rv.get("prompt", "")
                     if pr and not agents.check_skeleton(pr):
                         raw_cands.append((pr, rv))
@@ -2321,6 +2325,8 @@ def main() -> int:
                     "changelog": revised.get("changelog"),
                     "size_budget": size_budget,
                     "over_budget": bool(over),
+                    "candidate_kinds": [k for k, _ in jobs],
+                    "selected_kind": revised.get("candidate_kind"),
                 }, ensure_ascii=False, indent=2), encoding="utf-8")
                 history[-1]["next_changelog"] = revised.get("changelog")
                 # 고착 방지 핸들 갱신 — **다음 이터레이션이 이 섹션을 다시 고치지 않도록.**
@@ -2376,15 +2382,14 @@ def main() -> int:
             json.dumps(test_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
         # ── 비교군 (노브 없음 — 각 1점) ──────────────────────────────────
-        baselines = compare_baselines(translator, adequacy, consistency, splits["test"],
+        baselines = compare_baselines(translator, adequacy, splits["test"],
                                       spaced, tgt_spaced, args.workers, contradiction=contradiction)
         curve = {
             "ours": {k: v.to_dict() for k, v in test_m.by_T.items()},
             "baselines": baselines,
             "axes": {"x": "laal_words (source words, lower = faster)",
-                     "y": "consistency (bidirectional NLI vs offline translation; "
-                          "unsegmented = 1.0 is the axis' own reference point)",
-                     "aux": "adequacy / contradiction (2-panel), effective (loop objective)"},
+                     "y": "effective (loop objective; unsegmented is undefined — no boundary)",
+                     "aux": "adequacy / contradiction (2-panel)"},
         }
         (run_dir / "curve.json").write_text(
             json.dumps(curve, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -2418,7 +2423,7 @@ def main() -> int:
 
 # ── 비교군 ──────────────────────────────────────────────────────────────
 
-def compare_baselines(translator, adequacy, consistency, sentences, spaced,
+def compare_baselines(translator, adequacy, sentences, spaced,
                       tgt_spaced, workers, mech_every: int = 8,
                       contradiction=None) -> dict:
     """무분절 / 기계 8자분절. 순위가 없어 절단이 불가능하므로 곡선 위의 점 하나씩이다."""
@@ -2428,10 +2433,10 @@ def compare_baselines(translator, adequacy, consistency, sentences, spaced,
     for name, segs in (("unsegmented", list(texts)),
                        ("mechanical_8", [metrics.mechanical_split(t, mech_every, spaced)
                                          for t in texts])):
-        sp = score_split(segs, texts, full, translator, adequacy, consistency,
+        sp = score_split(segs, texts, full, translator, adequacy,
                          spaced, tgt_spaced, contradiction)
         out[name] = metrics.aggregate_split(
-            0, sp.effective, sp.adequacy, sp.contradiction, sp.consistency,
+            0, sp.effective, sp.adequacy, sp.contradiction,
             sp.laal_words, sp.k, [0] * len(texts),
             effective_ent_scores=sp.effective_ent,
             contradiction_ent_scores=sp.contradiction_ent).to_dict()
@@ -2457,9 +2462,6 @@ def build_report(args, run_dir, profile, measured, history, best, test_m, test_v
         f"번역기 `{translator_id}`",
         f"- adequacy 백엔드: **{args.adequacy_backend}** "
         f"(`{metrics.QE_CHECKPOINTS[args.adequacy_backend]}`, 참조 없음)",
-        f"- consistency 백엔드: {args.consistency_backend} (보고용"
-        + (", 양방향 entailment 의 min — 어순 무관" if args.consistency_backend == "nli" else "")
-        + ")",
         f"- 노브: 목표 조각 크기 T. 루프 격자 {t_grid}, 최종 격자 {final_grid}, 주 작동점 T={main_t}",
         f"- 언어 프로파일: {profile.get('source_language')}, 어순 {profile.get('word_order')} / "
         f"측정: 공백비율 {measured['space_ratio']}, 문말 부호 {measured['trailing_punctuation']}",
@@ -2489,8 +2491,8 @@ def build_report(args, run_dir, profile, measured, history, best, test_m, test_v
         "",
         "## 최종 test 곡선",
         "",
-        "| T (목표 조각 어절) | laal_words ↓ | **effective** ↑ | eff p10 ↑ | eff min ↑ | eff (ent) | adequacy | contradiction ↓ | contra (ent) | consistency | k | 부족 경계 |",
-        "|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| T (목표 조각 어절) | laal_words ↓ | **effective** ↑ | eff p10 ↑ | eff min ↑ | eff (ent) | adequacy | contradiction ↓ | contra (ent) | k | 부족 경계 |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for k in sorted(test_m.by_T, key=int):
         s = test_m.by_T[k]
@@ -2499,7 +2501,6 @@ def build_report(args, run_dir, profile, measured, history, best, test_m, test_v
                      f"{_cell(s.effective_ent, '.4f')} | "
                      f"{s.adequacy:.4f} | {_cell(s.contradiction, '.4f')} | "
                      f"{_cell(s.contradiction_ent, '.4f')} | "
-                     f"{s.consistency:.4f} | "
                      f"{s.chunks_per_sentence:.2f} | {s.missing_boundaries:.2f} |")
     for name, b in baselines.items():
         lines.append(f"| {name} (노브 없음) | {b['laal_words']:.2f} | "
@@ -2508,7 +2509,7 @@ def build_report(args, run_dir, profile, measured, history, best, test_m, test_v
                      f"{_cell(b.get('effective_ent'), '.4f')} | "
                      f"{b['adequacy']:.4f} | {_cell(b['contradiction'], '.4f')} | "
                      f"{_cell(b.get('contradiction_ent'), '.4f')} | "
-                     f"{b['consistency']:.4f} | {b['chunks_per_sentence']:.2f} | — |")
+                     f"{b['chunks_per_sentence']:.2f} | — |")
     lines += [
         "",
         "> `eff p10` 은 하위 10% 지점, `eff min` 은 최악 문장이다. **평균과 같이 읽어야 한다** —",
@@ -2542,7 +2543,7 @@ def build_report(args, run_dir, profile, measured, history, best, test_m, test_v
                   "**언어 간 절대값 비교는 하지 말 것** — 지표 스케일이 다르다. "
                   "같은 언어 안에서 T 방향만 읽는다.",
                   "",
-                  "본표의 `adequacy` / `contradiction` / `consistency` / `laal` 은 "
+                  "본표의 `adequacy` / `contradiction` / `laal` 은 "
                   f"**대표 타깃({targets[0]}) 값**이다 — 조각·지연 정보는 타깃과 무관하고 "
                   "품질 하위 지표는 대표 타깃만 저장한다. 다른 타깃의 하위 지표가 "
                   "필요하면 `eval_prompt --tgt-lang` 으로 재채점한다 (번역 캐시가 "

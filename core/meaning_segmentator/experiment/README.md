@@ -38,13 +38,19 @@ experiment/
 --iterations 5  --train 40  --dev 265  --test 100   (= 405, 매니페스트 전량)
 --patience 5  --budget 25  --workers 24
 --translate-backend local  (google/madlad400-3b-mt)
---adequacy-backend cometkiwi  --consistency-backend nli  --adopt-se-mult 0.5
+--adequacy-backend cometkiwi  --adopt-se-mult 0.5
 ```
 
 `--min-gap` / `--t-grid` / `--t-floor` 는 **인자로 안 준다.** `MIN_GAP_MS(1200) × 코퍼스
 발화속도`로 언어마다 유도되고, 그 속도는 강제정렬 산출물
 (`evaluation/ast/manifests/*_unittimes.json`)에서 실측으로 온다. run13 의 config 에 찍힌
 `min_gap: 3` 도 인자가 아니라 유도 결과다 (`loop.py` 가 `args.min_gap` 에 되쓴다).
+
+**run14 부터 분할이 다르다** (`tools/autoseg_en2x/run14.sh`): `--train 30 --train-pool 90
+--dev 215 --test 100`. 매니페스트 405문장에 기본 풀(3 × train)이 안 들어가서 명시한다 —
+`split_data` 는 문장이 모자라면 홀드아웃을 **조용히 포기**한다. test 100 은 run13 과 같은
+문장, dev 215 는 run13 dev 의 앞 215 개, 배치 30 + 선별 홀드아웃 60. `--iterations 6
+--patience 6` 으로 조기 종료 없이 돈다. v0 후보 5·개정 후보 free/add/remove 는 기본값.
 
 `--tgt-lang` 은 검증 타깃이 아니다. 검증 타깃은 기본 풀
 (English, Chinese, Japanese, German)에서 **소스 언어만 뺀** 3개이고,

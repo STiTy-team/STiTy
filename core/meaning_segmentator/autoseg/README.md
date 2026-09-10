@@ -27,7 +27,6 @@
 | **`effective`** | **`adequacy × (1 − contradiction)`**. 무분절은 미정의 (`n_effective`) | **최대화** |
 | `laal_words` | Length-Adaptive Average Lagging (소스 어절) | 보고만 |
 | `missing_boundaries` | 예산이 요구한 경계 중 못 준 개수 | 요건 (§검증기) |
-| `consistency` | 합본 vs 전체 번역의 **양방향 NLI entailment 의 min** = v1 `Q` 의 어순 무관 후계 | 보고만 |
 | **`rank_lift`** | 경계 **위치는 그대로 두고 점수만 자리끼리 무작위로 섞었을 때** `effective` 가 떨어지는 폭. 점수가 실제로 일하는지를 위치와 분리해 잰다. 크면 `[Priority Rules]` 를 다듬을 값어치가 있고, 0 근처면 문제는 "어디를 찍느냐"지 "어떻게 줄 세우냐"가 아니다 | 진단 (Critic 에게 감) |
 | `rank_contra_gap` | 점수 하위 절반 − 상위 절반의 경계 contra 차. **`rank_lift` 로 대체됐다** — 생존 경계 4개 이상인 문장만 세므로 순위가 실제로 일하는 큰 T 에서 정의역이 사라진다. 보고만 | — |
 | `rank_contra_spearman` | 같은 축의 방향만 보는 보조값. **raw 라 길이 교란 포함** — 음수면 `gates/noise_floor.py --recheck-t` 로 보정 확인 | 진단 |
@@ -50,16 +49,13 @@ ko→{en,de,es,ja,zh} + en→de + en→ko, `xlmr-anli`):
 | | mg=2 | mg=3 | mg=4 |
 |---|---|---|---|
 | `effective` 평균 | −0.0032 | −0.0029 | −0.0361 |
-| `consistency` 평균 | +0.0162 | −0.0116 | −0.0234 |
-| 1위 한 언어쌍 (14비교 중) | 4 | **0** | 1 |
 
 **`mg=3` 은 한 번도 이기지 못했고, 언어로 일반화되는 최적값도 없다** — 소스가 같은
-en-de(mg4 최고)와 en-ko(mg4 최악)가 정반대다. `mg=2` 의 consistency 이득(+0.016)은
-양수 4개가 전부 한국어 소스 그룹인데 그 5쌍은 **같은 분절을 공유**하므로 독립 관측 1개다.
+en-de(mg4 최고)와 en-ko(mg4 최악)가 정반대다. 한국어 소스 5쌍은 **같은 분절을
+공유**하므로 독립 관측 1개다.
 
-그런데 **두 지표 모두 이 값이 막으려는 실패를 볼 수 없다.** `adequacy` 는 (조각 원문,
-조각 번역) 쌍만 보므로 `'What' → 'What'` 을 충실한 번역으로 채점하고, `consistency` 는
-합본만 보므로 어디서 잘랐든 값이 같다. 실제 관측된 출력:
+그런데 **지표는 이 값이 막으려는 실패를 볼 수 없다.** `adequacy` 는 (조각 원문,
+조각 번역) 쌍만 보므로 `'What' → 'What'` 을 충실한 번역으로 채점한다. 실제 관측된 출력:
 
 ```
 What <SEG:1> are <SEG:2> you <SEG:3> working <SEG:4> on?
@@ -84,18 +80,8 @@ What <SEG:1> are <SEG:2> you <SEG:3> working <SEG:4> on?
 정규화되어 **k≥2 인 점들 사이의 비교가 유효**하다. 무분절은 경계가 없어 0(무죄)이 아니라
 **미정의(None)** 이고, 곡선의 점이 아니라 offline 기준선으로 병기한다.
 
-**consistency 가 논문 주 곡선의 y축이다** — "지연을 얼마나 사면 offline 번역의 의미에서
-얼마나 멀어지나"의 직접 측정값 (무분절 = 1.0 은 축의 기준점, 상한선으로 그린다).
-run03 재집계에서 유일하게 기울기가 살아있는 축이다 (laal 2.0→3.3 에서 0.55→0.76).
-`effective` 는 루프 목적함수 전용 — consistency 는 복구 마스킹을 못 벌하고 NLI 확률
-포화라 0.003 규모 개선 검출이 안 되므로 목적함수로 쓰지 않는다 (설계 §11.1).
-
-**consistency 가 양방향인 이유** — 함의는 비대칭이다. `ent(full ⇒ 합본)` 은 환각·왜곡을,
-`ent(합본 ⇒ full)` 은 누락을 잡고, min 이라 어느 쪽 실패든 걸린다. COMET consistency 는
-참조 기반이라 어순을 단조화한 좋은 분절을 감점했다(관문 실측 soft 위반 12건). NLI 는
-명제만 봐서 그 편향이 없다(soft 위반 0건). 단 **고유명사 음역 변이를 다른 개체로 읽는
-맹점**이 있다 — ja-ko 관문 케이스에서 확인. en 타깃은 깨끗이 통과, 비영어 타깃은 관문
-결과를 먼저 볼 것.
+**논문 곡선은 참조 기반 COMET 이다** — `scoring/bleu_eval` → `comet_eval` 이 CoVoST2
+참조로 잰 값을 `plot_tradeoff` 가 그린다. `effective` 는 루프 목적함수 전용이다.
 
 **잡음 바닥은 두 성분이다 — 편향은 고칠 수 있고 잡음은 못 줄인다.** 자기-prefix 2292쌍
 실측: 바닥은 hypothesis 길이와 Spearman −0.670 으로 강하게 얽혀 있지만(짧을수록 높다),
@@ -143,13 +129,10 @@ run03 재집계에서 유일하게 기울기가 살아있는 축이다 (laal 2.0
 # 0) 판정자 관문 — 판정자 모델/프롬프트를 바꿨다면 여기부터
 PYTHONPATH=. python -m core.meaning_segmentator.autoseg.gates.judge_check --repeats 3
 
-# 1) 지표 타당도 — consistency 백엔드를 바꿨다면
-PYTHONPATH=. python -m core.meaning_segmentator.autoseg.gates.validity_check --backends nli comet
-
-# 1b) adequacy 조각 게이트 — adequacy 백엔드를 바꿨다면
+# 1) adequacy 조각 게이트 — adequacy 백엔드를 바꿨다면
 PYTHONPATH=. python -m core.meaning_segmentator.autoseg.gates.adequacy_check
 
-# 1c) contradiction 잡음 바닥 + 순위 정렬 재검 (기존 런 재활용, 번역 호출 0)
+# 1b) contradiction 잡음 바닥 + 순위 정렬 재검 (기존 런 재활용, 번역 호출 0)
 PYTHONPATH=. python -m core.meaning_segmentator.autoseg.gates.noise_floor \
     --run-id ko-en/run03 --split test --recheck-t 2
 
@@ -195,12 +178,11 @@ PYTHONPATH=. python -m core.meaning_segmentator.autoseg.infra.cost_report --run-
 | `--batch-size` | `6` | 한 분절 호출에 넣을 문장 수. **비용의 유일한 큰 레버** (b=1 $1.05 → b=6 $0.47). **6 을 넘기지 말 것** — b=12 부터 1차 통과율이 0.75/0.27 로 무너져 비용이 U자로 되돌아오고 품질도 유의하게 나빠진다 |
 | `--judge-frac` | `0.10` | 타깃별로 판정할 **경계 비율** (contradiction 상위부터). 개수가 아니라 비율인 이유: 고정 8문장이던 시절 `cause` 6범주에 이터당 표가 중앙 5개뿐이라 Critic 이 지배적 실패를 읽을 수 없었다 |
 | `--no-judge` | — | 판정자를 끈다. 사례에 '왜·어디로' 설명이 안 붙는다 |
-| `--revision-candidates` | `3` | 이터레이션당 개정 후보 수. 첫 개는 자유 개정, 나머지는 Critic 의 `proposed_rule` 을 하나씩만 반영. **train 으로 골라 쓴다** |
-| `--v0-candidates` | `1` | `prompt_v0` 후보 수 |
-| `--train-pool` | `2 × --train` | train 풀 크기. 앞쪽 `--train` 개만 이터레이션 배치로 쓰고 **나머지는 후보 선별 전용 홀드아웃**이다. 가르지 않으면 Critic 이 규칙을 만든 문장으로 그 규칙의 후보를 다시 고르게 된다. `--train` 과 같은 값을 주면 홀드아웃이 없어진다 |
+| `--revision-candidates` | `3` | 이터레이션당 개정 후보 수. **방향으로 가른다** — 자유 개정 / Critic 의 `proposed_rule` 전부 반영 / **삭제 전용**(부검이 지목한 줄, 감사가 과신이라 한 특징을 빼거나 약하게). 선별 홀드아웃으로 골라 쓴다 |
+| `--v0-candidates` | `5` | `prompt_v0` 후보 수. 개정이 거의 채택되지 않아(26회 중 4회) 최종 프롬프트는 사실상 v0 다 — 여기 탐색을 쓰는 것이 이터레이션 한 번보다 싸다 |
+| `--train-pool` | `3 × --train` | train 풀 크기. 앞쪽 `--train` 개만 이터레이션 배치로 쓰고 **나머지는 후보 선별 전용 홀드아웃**이다. 가르지 않으면 Critic 이 규칙을 만든 문장으로 그 규칙의 후보를 다시 고르게 된다. `--train` 과 같은 값을 주면 홀드아웃이 없어진다 |
 | `--select-n` | `0` (홀드아웃 전체) | 후보 선별에 쓸 홀드아웃 문장 수. dev 는 채택 판정 전용이라 선별에 안 쓴다. 정확도는 문장 수만 따른다 (1위적중 20문장 36% / 40문장 58% / 60문장 76%) |
 | `--adequacy-backend` | `cometkiwi` | 참조 없는 QE. y축 주지표 |
-| `--consistency-backend` | `nli` | 보고용 가설 검증값. `nli`(양방향 entailment, 어순 무관) / `comet` / `xcomet`. **NLI 모델은 `metrics.NLI_MODEL` 로 고정**돼 있다 (`xlm-roberta-large-xnli-anli`) — 다국어라 타깃별로 바꿀 필요가 없고, 자리마다 모델을 하나로 못박은 것이 런 간 값이 섞이는 것을 막는다 |
 | `--translate-backend` | `local` | 번역기. `local`(HF seq2seq, `--local-mt-model`, 기본 `google/madlad400-3b-mt`) / `remote`(OpenAI 호환 서버의 MT 전용 모델, `--remote-mt-*`) / `v2`(공식 Cloud Translation Basic, `GOOGLE_TRANSLATE_API_KEY` 필요) / `gtx`(무료 비공식). **백엔드마다 번역문이 다르다** — gtx↔v2 는 기존 캐시 18건 재번역 대조에서 일치 0/18. `translator_id` 와 캐시 키에 백엔드가 들어가 섞이지는 않지만, **다른 백엔드로 잰 점수끼리는 비교할 수 없다** (gtx 로 잰 기존 26개 런이 그렇다) |
 | `--local-mt-model` | `google/madlad400-3b-mt` | `local` 일 때 쓸 HF seq2seq 모델 |
 | `--remote-mt-url` / `--remote-mt-model` / `--remote-mt-template` / `--remote-mt-workers` | — / — / `seedx` / `64` | `remote` 일 때의 엔드포인트·모델·프롬프트 규약·동시 요청 수. 동시 요청은 LLM 용 `--workers` 와 별개다 |
@@ -225,11 +207,12 @@ PYTHONPATH=. python -m core.meaning_segmentator.autoseg.infra.cost_report --run-
 크기 인자(`--iterations` 6 / `--train` 30 / `--dev` 60 / `--test` 100)와 나머지(`--workers`, `--tgt-code`, `--tgt-spaced`, `--no-google-context`,
 `--comet-batch-size`)는 `--help` 로 볼 것.
 
-**train 은 두 몫으로 갈라져 있다.** 풀 60문장 중 앞 30개가 이터레이션 배치(Critic
-사례가 여기서 나온다), 뒤 30개가 후보 선별 홀드아웃이다. `split_data` 가 test → dev →
-train 순으로 배분하므로 **풀을 키워도 test·dev·배치는 그대로**고, 비용도 그대로다
-(배치 30문장, 선별 3후보 × 30문장). 프로파일 측정(`min_gap` → T 격자)의 모집단도
-배치 + dev 로 고정돼 있다 — 홀드아웃을 넣으면 격자가 움직일 수 있다.
+**train 은 두 몫으로 갈라져 있다.** 풀 90문장 중 앞 30개가 이터레이션 배치(Critic
+사례가 여기서 나온다), 뒤 60개가 후보 선별 홀드아웃이다. `split_data` 가 test → dev →
+train 순으로 배분하므로 **풀을 키워도 test·dev·배치는 그대로**다. 홀드아웃이 60 인 이유:
+30 이면 쌍체 se ≈ 0.02 라 후보 3개 중 1등을 잡음으로 고른다 (같은 프롬프트 재분절만으로
+100문장 se 0.011). 선별 분절 콜은 3후보 × 60문장이다. 프로파일 측정(`min_gap` → T 격자)의
+모집단은 배치 + dev 로 고정돼 있다 — 홀드아웃을 넣으면 격자가 움직일 수 있다.
 
 `--fresh` 없이 같은 `--run-id` 로 다시 실행하면 언어 프로파일·prompt_v0·번역 캐시를
 재사용해 이어서 돈다.
@@ -298,7 +281,7 @@ autoseg/
 | `infra/gateway.py` | Letsur AI Gateway 클라이언트, 재시도, 비용 집계, 예산 가드, JSON 복구 | — |
 | `runtime/data.py` | A0 Data Preparer — 정규화, 층화 분할, **측정 프로파일** | — |
 | `runtime/pipeline.py` | A2 Segmenter / A3 Validator / **A4 Truncator** / A5 Google 번역 + 캐시 | 분절만 |
-| `runtime/metrics.py` | A6 Scorer — `adequacy`(QE) / `contradiction`(NLI) / `effective` / `consistency` / `laal_words` / `score` + Critic 에게 넘기는 지표 용어집(`GLOSSARY`) | — |
+| `runtime/metrics.py` | A6 Scorer — `adequacy`(QE) / `contradiction`(NLI) / `effective` / `laal_words` / `score` + Critic 에게 넘기는 지표 용어집(`GLOSSARY`) | — |
 | `runtime/agents.py` | A1 Profiler / **A7 Judge** / A8 Critic (+ 거부 부검) / A9 Prompt Engineer / A10 Compressor | ● |
 | `loop.py` | A11 Loop Controller — T 격자 평가, 채택·롤백·중단, 곡선·비교군·리포트 | — |
 | `infra/tracing.py` | 호출마다 용도(`purpose`) 라벨. `Usage.by_purpose` 는 항상, LangSmith 는 키가 있을 때만. 키가 없으면 통째로 no-op | — |
@@ -308,7 +291,6 @@ autoseg/
 | 파일 | 역할 | LLM |
 |---|---|---|
 | `scoring/eval_prompt.py` | 임의 프롬프트 1개를 루프와 동일 지표로 평가. `bleu_eval` 이 읽는 `prompt_eval/` 산출도 여기서 나온다 | 분절만 |
-| `gates/validity_check.py` | consistency 백엔드 타당도 게이트 — 오류 주입 후 순위 확인 | — |
 | `gates/adequacy_check.py` | **adequacy 백엔드 조각 입력 게이트** — QE 가 조각에서도 오류 순위를 지키는지 | — |
 | `gates/noise_floor.py` | **contradiction 잡음 바닥 측정** — full 번역 자기-prefix 의 NLI base rate. `--recheck-t` 로 바닥 보정 순위 정렬도 재계산. 루프도 이 모듈을 쓴다 | — |
 | `gates/judge_check.py` | **판정자 + NLI 타당도 게이트** (`--skip-judge` 로 NLI 만 검사 가능) | ● |
@@ -318,7 +300,7 @@ autoseg/
 | `infra/cost_report.py` | 런 하나가 실제로 쓴 LLM 비용. 크래시한 실행은 캐시 증분으로 역산 — 그 차이가 "기록되지 않은 지출" | — |
 | `baselines/` | Table 1a 타 정책 구현 (`punct` / `syntax` / `causal_align` / `alignatt` / `mu_prefix`) + 강제정렬 타임스탬프 빌더. [baselines/README.md](baselines/README.md) | — |
 | `scoring/plot_tradeoff.py` / `scoring/plot_comet.py` | 품질–지연 곡선. **import 하면 그림을 덮어쓴다** — `-m` 으로만 실행 | — |
-| `gates/validity_cases.json` / `gates/premature_cases.json` | 고정 케이스. **사람이 작성**, LLM 생성 아님 | — |
+| `gates/premature_cases.json` | 고정 케이스. **사람이 작성**, LLM 생성 아님 | — |
 | `gates/adequacy_cases.json` | 조각 오류 주입 케이스 — 실제 발화 조각 기반. 문안은 사람 확정 전 (잠정) | — |
 
 LLM 판단이 들어가는 곳은 `runtime/agents.py` 네 곳뿐이다. 포맷 검증, 절단, 점수, 채택 판정, 재시도는
@@ -371,7 +353,7 @@ experiment/artifacts/{pair_id}/{run_id}/
           "pieces_src": [...], "pieces_tgt": [...],
           "pieces_contra": [0.93, 0.0],       // 경계별. 마지막은 항상 0 (미래 없음)
           "effective": 0.80, "adequacy": 0.83, "contradiction": 0.04,
-          "consistency": 0.91, "laal_words": 4.1}
+          "laal_words": 4.1}
   }
 }
 ```
@@ -383,7 +365,7 @@ experiment/artifacts/{pair_id}/{run_id}/
 | 언제 | 무엇이 바뀌었나 | 결과 |
 |---|---|---|
 | v1 → v2 | 목적함수가 `Q`·`gain` 에서 `effective` 로 | v1 런은 아예 비교 불가 |
-| 구 집계 → 경계 평균 | `contradiction` 의 문장 값이 조각 가중 평균 → **경계 평균**, `consistency` 가 COMET → 양방향 NLI | 그 이전 ko-en 런이 해당. 재집계는 `*_rows.json` 의 `pieces_contra` 로 오프라인 가능(재번역 불필요) |
+| 구 집계 → 경계 평균 | `contradiction` 의 문장 값이 조각 가중 평균 → **경계 평균** | 그 이전 ko-en 런이 해당. 재집계는 `*_rows.json` 의 `pieces_contra` 로 오프라인 가능(재번역 불필요) |
 | gtx → v2 번역 | 번역 백엔드 자체가 다른 문장을 낸다 (재번역 대조 일치 0/18) | **gtx 로 잰 기존 26개 런의 점수는 v2 런과 비교할 수 없다.** 캐시는 `translator_id` 로 분리돼 섞이지는 않는다 |
 | 순위 → 점수 (2026-09-10) | 태그가 `<SEG:1>`(1 = 최고 확신) 순위에서 `<SEG:s>`(0~100, 클수록 확신) 점수로. 정규화가 번호를 다시 매기지 않고, 절단은 점수 내림차순(동점 앞쪽 우선) | **그 이전 런의 `best_prompt.txt`·`*_rows.json` 은 지금 코드로 절단하면 거꾸로 돈다.** `evaluate` 가 옛 [Output Rules] 문면을 보고 거부한다. 오프라인 재절단은 `truncate(..., higher_first=False)`. 세그 캐시 키는 `seg5` 로 분리. 같은 100문장 실측: `rank_lift` +0.105 → +0.087 (오차 안), score 0.699 → 0.696 |
 
@@ -410,13 +392,12 @@ MANIFESTS = {
 `LOADERS` 에 함수를 추가하는 것은 **파일 포맷 자체가 고유할 때만**이다
 (KsponSpeech 의 JSON 두 구조 흡수 같은 전처리).
 
-## 관문 두 개 — 루프보다 먼저
+## 관문 — 루프보다 먼저
 
-둘 다 루프 밖, 데이터 무관, 1회성이다.
+전부 루프 밖, 데이터 무관, 1회성이다.
 
 | | 대상 | 통과 조건 |
 |---|---|---|
-| `gates/validity_check.py` | consistency 백엔드 (`nli` / `comet` / `xcomet`) | 심각한 의미 오류 점수 < `benign_minimal` |
 | `gates/adequacy_check.py` | **adequacy 백엔드 (QE 조각 채점)** | 조각 케이스마다 심각한 오류 < `benign_minimal` |
 | `gates/judge_check.py` | 판정자 (모델 + 프롬프트) | `safe`/`not-safe` 오분류 0건 **+ 반복 실행 동일** |
 | `gates/judge_check.py --skip-judge` | **NLI contradiction 백엔드** | 케이스마다 `min(premature) > max(safe)` |
@@ -426,11 +407,6 @@ adequacy 관문 실측: 부정 뒤집힘·의미 변경·무관 문장은 전
 (원문 그대로 반환)를 정답 번역보다 높게** 주는 복사 편향. **현재 이 실패에 방어가 없다** —
 번역 층의 에코 재시도는 LLM 번역기와 함께 사라졌다. 관용구 밀도가 높은 데이터에서는
 adequacy 를 과신하지 말 것.
-
-양방향 NLI 관문 실측: **en 타깃 4케이스 위반 0** (두 모델 모두),
-soft 위반(재서술 편향) comet 12건 → nli 0건. 위반은 전부 ja-ko 케이스 — mdeberta 가
-고유명사 음역 교체(병십→헤이주)를 다른 개체로 읽는다. 비영어 타깃에서 nli consistency 를
-쓰려면 이 맹점을 감수하든지 comet 을 유지할 것 (comet 도 같은 케이스에서 role_swap 위반).
 
 **NLI 자리를 무엇으로 대신할 수 있는지는 전부 재 봤고, 전부 졌다.** 임베딩 코사인,
 학습 헤드를 얹은 bi-encoder, 소스만 보는 future-dependency, 표현 급변점, SummaC 식 창

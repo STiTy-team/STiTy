@@ -12,7 +12,7 @@ SimulST/StreamST 문헌이 품질과 지연을 어떻게 비교하는지 정리�
 >
 > | v1 (이 문서의 용어) | 현재 |
 > |---|---|
-> | `Q` (합본 vs 전체번역 COMET) | `consistency` — 같은 발상이되 COMET 이 아니라 **양방향 NLI**. 어순 편향을 없애려는 교체다 (§3 이 그 이유) |
+> | `Q` (합본 vs 전체번역 COMET) | **없다.** 한때 `consistency`(양방향 NLI)로 이어졌으나 목적함수·채택·논문 그림 어디에도 안 쓰여 지웠다 (2026-09-10). 합본 지표가 왜 부적합한지는 §3 |
 > | `gain` = 1 − L (AP 형) | `laal_words` / `laal_ms` — §2 의 권고를 받아들여 **LAAL 로 교체됨** |
 > | `Q_floor` · `ratio` · `q_weight` (품질 임계값) | **없다.** 노브 `T` 가 지연을 고정하고 목적함수가 `effective = adequacy × (1 − contradiction)` 단일축이 되면서 임계값이 통째로 사라졌다 |
 > | `reference.py` 의 `gain*` 오라클 | **없다.** 정답 분절을 만들지 않는다 |

@@ -99,9 +99,10 @@ min_gap  ──▶  t_floor = max(min_gap + 1, ceil(1.25 × min_gap))
 **train 은 두 몫이다 — 진단용과 선별용을 가른다.**
 
 ```
-train 풀 = 2 × --train      (기본 60)
+train 풀 = 3 × --train      (기본 90)
    앞 30   이터레이션 배치.  여기 실패가 Critic 사례가 된다
-   뒤 30   후보 선별 홀드아웃. 후보 3개 중 1등을 여기서 고른다
+   뒤 60   후보 선별 홀드아웃. 후보 3개 중 1등을 여기서 고른다
+           (30 이면 쌍체 se ≈ 0.02 — 후보 간 진짜 차이 ~0.005 를 못 가른다)
 dev  60   채택 판정 전용
 test 100  루프가 한 번도 안 보는 데이터
 ```
@@ -112,7 +113,7 @@ test 100  루프가 한 번도 안 보는 데이터
 train +0.035 / dev −0.001).
 
 `split_data` 가 test → dev → train 순으로 떼므로 **풀을 키워도 test·dev·배치는 그대로**
-고, 비용도 그대로다 (배치 30, 선별 3후보 × 30). 프로파일 측정 모집단은 배치 + dev 로
+고, 선별 분절 콜만 는다 (3후보 × 60). 프로파일 측정 모집단은 배치 + dev 로
 고정한다 — 홀드아웃까지 넣으면 발화 속도가 움직여 `min_gap` → T 격자가 바뀔 수 있고,
 그러면 다른 변경의 효과와 섞인다.
 
@@ -121,7 +122,9 @@ train +0.035 / dev −0.001).
 문장 수를 늘려야 하고 그건 비용이 는다.
 
 ### A1 — 언어 프로파일 `runtime/agents.py` · **LLM 1회**
-샘플 20문장을 보여주고 언어 특성을 JSON으로 받아, 첫 프롬프트를 쓴다.
+샘플 20문장을 보여주고 언어 특성을 JSON으로 받아, 첫 프롬프트를 **5개** 쓰고 선별
+홀드아웃으로 하나를 고른다. 개정이 거의 채택되지 않아(26회 중 4회) 최종 프롬프트는
+사실상 v0 다 — 여기 탐색을 쓰는 것이 이터레이션 한 번보다 싸다.
 
 ```
 LLM이 채우는 것: 어순, 절 경계 신호, 함정 표현, 군말, 문체
@@ -304,7 +307,6 @@ v2 : It's February, but I heard the engineering department has an MT in March.
 | 번역 | `local` = madlad400-3b greedy (`--local-mt-model`) | 기본값. 조각을 독립 번역해 **결정론적**이라 번역기 잡음 0. Google 경로(`v2`)는 분절이 바뀌면 문맥까지 바뀐다. CometKiwi 0.8712(Google) vs 0.8473(madlad greedy) |
 | adequacy | CometKiwi (`wmt22-cometkiwi-da`) | 참조 없는 QE. **y축 주지표** |
 | contradiction | `xlm-roberta-large-xnli-anli` | 조기 방출 검출. 다국어 large 여야 함 |
-| consistency | 같은 NLI (양방향 함의) | 보고용. 모델을 contradiction 과 공유해 GPU 1벌 |
 
 ### A6 — 채점 `runtime/metrics.py` · **결정론**
 ```
@@ -313,7 +315,6 @@ contradiction  경계마다: (전체번역) vs (그때까지 누적 방출)이 �
                경계들의 평균. 경계가 없으면 미정의
 effective      adequacy × (1 - contradiction)      ← 목적함수
 laal_words     지연. 조각 크기로 가중.  **집계에서만 해석** (아래)
-consistency    합본 vs 전체번역 양방향 함의의 min   ← 보고용
 ```
 
 ### 확인해야 할 것 — `contradiction` vs `1 − entailment`
@@ -374,7 +375,8 @@ Critic 이 받는 것
    실패 사례 (contradiction 상위 + adequacy 하위 + 포맷 위반)
    그중 모순 상위 경계에는 판정자의 cause / shift 가 붙어 있다   ← A7
    지표 전체 + 각 지표의 뜻 + [프롬프트로 움직일 수 있는가]   ← metrics.GLOSSARY
-   점수 감사 (어떤 표면 특징을 과신하는가 + 점수 구간별 실측 위험 = 보정 곡선)
+   점수 감사 (어떤 표면 특징을 과신하는가 + 점수 구간별 실측 위험 = 보정 곡선
+             + 특징별 판정 safe 비율 — NLI 가 헛울리는 자리에 금지 규칙을 못 쓰게)
    판정 전량의 verdict / cause 분포 (사례 10건보다 넓은 표본)
    커버리지 보고 (예산이 요구한 경계를 프롬프트가 실제로 주고 있나)
    고착 힌트 (직전에 고쳐서 실패한 섹션)
@@ -449,7 +451,20 @@ Critic.diagnose_regression 이 받는 것
 마지막 이터레이션에서는 부르지 않는다 — 아무도 안 읽을 부검이라서다.
 
 ### A9 — 프롬프트 수정 `runtime/agents.py` · **LLM**
-프롬프트를 고친다. 통과해야 하는 관문 3개.
+프롬프트를 고친다. 이터레이션마다 후보 3개를 **방향을 갈라** 동시에 만든다.
+
+```
+free    Critic 비평을 보고 PE 가 자유롭게
+add     Critic 의 proposed_rule 을 전부 반영          (<candidate_rules> 데이터)
+remove  빼거나 약하게만 — 부검이 지목한 줄(blamed_lines), Critic 이 사례에 귀책한
+        줄(blamed_rule), 감사가 과신이라 한 특징     (<removal_targets> 데이터)
+```
+
+종전 후보 2·3 은 같은 규칙을 다른 문장으로 쓴 복제본이라 선별이 잡음 안에서 복제본
+사이를 골랐고, 전부 "추가" 라 규칙이 쌓이기만 했다. 어느 방향이 이겼는지는
+`changelog.json` 의 `selected_kind` 에 남는다.
+
+통과해야 하는 관문 3개.
 
 ```
 골격     필수 섹션이 다 있나                        (check_skeleton)
