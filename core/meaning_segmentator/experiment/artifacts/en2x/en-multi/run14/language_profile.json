@@ -1,0 +1,71 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Sentences consistently place a subject before a verb and objects/complements after the verb (e.g., \"Stars give off light\": Stars [S] give [V] off light [O]).",
+  "register": "Formal edited written prose (encyclopedic / informational style, not spontaneous speech).",
+  "fillers_and_hesitations": [
+    "um",
+    "uh",
+    "well",
+    "you know",
+    "I mean",
+    "so",
+    "perhaps",
+    "actually",
+    "like"
+  ],
+  "discourse_markers": [
+    "while",
+    "for",
+    "but",
+    "although",
+    "when",
+    "once",
+    "during",
+    "according to",
+    "perhaps",
+    "regardless",
+    "also",
+    "to finish",
+    "around"
+  ],
+  "clause_boundary_signals": [
+    "and",
+    "but",
+    "or",
+    "while",
+    "although",
+    "because",
+    "when",
+    "once",
+    "if",
+    "during",
+    "after",
+    "before",
+    "according to"
+  ],
+  "non_boundary_traps": [
+    "to",
+    "of",
+    "that",
+    "which",
+    "'s",
+    "in",
+    "on",
+    "by",
+    "for (prepositional)",
+    "as (comparative/role)"
+  ],
+  "unstable_prefix_signals": [
+    "while",
+    "for",
+    "to",
+    "when",
+    "as",
+    "once",
+    "during",
+    "although",
+    "perhaps",
+    "according to"
+  ],
+  "notes_for_prompt_writer": "Prefer splitting at explicit clause-connectors (and, but, while, although, when, because, etc.) but avoid committing a segment when the token is a preposition or complementizer (to, of, that, which, 's) that likely continues a phrase. Be conservative near infinitive markers and possessives — these often look like boundaries but are not. The source is formal written English and contains long, multi-clausal sentences and parenthetical material; aim to emit syntactically coherent chunks (complete clause or clause group) to preserve meaning and avoid premature translation errors."
+}
