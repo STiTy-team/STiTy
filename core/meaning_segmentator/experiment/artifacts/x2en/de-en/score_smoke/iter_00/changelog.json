@@ -1,0 +1,19 @@
+{
+  "sections_changed": [
+    "[When to Segment]",
+    "[Priority Rules]"
+  ],
+  "sections_reported": [
+    "[When to Segment]",
+    "[Priority Rules]"
+  ],
+  "changelog": [
+    "When to Segment: clarified that commas which introduce continuing list items or locative/prepositional phrases remain candidates but should be treated as continuation markers (scoring handled in Priority Rules) — to avoid overconfident comma cuts in lists/locatives.",
+    "Priority Rules: added explicit, stricter checks for finite auxiliaries/modals and core-predicate dependencies (very low caps when a finite auxiliary/modal would be separated from its infinitival/participial/complement), keeping both the very-strict (≤10) and the wider-core (≤25) cases so both candidate ideas are implemented.",
+    "Priority Rules: added a cap for internal relative/subordinate-clause candidates when the clause-final verb is still to come and the clause shows long modifier/prepositional chains (≤30, lower if splitting modifier chains), and instructed that such internal candidates should not outrank clause-closing commas.",
+    "Priority Rules: lowered priority for positions that occur in the opening words of a complement clause (after a subordinator like 'dass' plus short adverbial/possessive phrases) until a minimal clause subject or predicate appears (≤35).",
+    "Priority Rules / comma guidance: merged the critic's comma rule into existing comma guidance, capping scores for commas that introduce continuing list items or locative/prepositional phrases at 40–65 so they cannot occupy the top band."
+  ],
+  "size_budget": 19016,
+  "over_budget": false
+}

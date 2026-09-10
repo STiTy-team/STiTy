@@ -1,0 +1,152 @@
+{
+  "cases": [
+    {
+      "id": "de_de_1238",
+      "error_type": "priority",
+      "span": "Hafen von Waitemata,",
+      "evidence": "Comma was scored very high (95) though it continues a locative list; the high-ranked comma boundary was selected and the metric flagged large contradiction.",
+      "cause": "modifier scope",
+      "blamed_rule": "Commas: if the comma follows a stretch that is already renderable on its own (apposition, end of an independent clause), score high (70–95); if the comma separates elements inside a noun phrase, score low (10–30).",
+      "replaces": "Commas: if the comma follows a stretch that is already renderable on its own (apposition, end of an independent clause), score high (70–95); if the comma separates elements inside a noun phrase, score low (10–30).",
+      "proposed_rule": "When a comma introduces additional coordinated list items or another locative/prepositional phrase (signals: following token is a preposition like 'in', or a place-name, or conjunctions like 'sowie'/'und'), do NOT assign it a top band (>80). Treat such commas as continuation markers and cap scores at ~40–65 depending on completeness of the preceding clause.",
+      "example_pair": {
+        "input": "Die Strände von Tamaki Drive befinden sich am Hafen von Waitemata, in den gehobenen Vororten Mission Bay sowie St. Heliers in Central Auckland.",
+        "output": "Die Strände von Tamaki Drive <SEG:85> befinden sich am Hafen von Waitemata, <SEG:60> in den gehobenen Vororten <SEG:80> Mission Bay sowie St. Heliers <SEG:75> in Central Auckland."
+      }
+    },
+    {
+      "id": "de_de_214",
+      "error_type": "placement",
+      "span": "Damals wurden fast 100 Bewohner",
+      "evidence": "Boundary occurs before the sentence-final participle 'evakuiert', leaving the predicate incomplete and producing an unrenderable partial clause.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Detect core predicate dependencies: if the preceding stretch already contains a finite auxiliary/modal whose partner (participial/infinitival main verb or separable particle) is still to come later in the sentence, assign the candidate a very low score (≤25) so it will not be top-ranked under tight budgets.",
+      "example_pair": {
+        "input": "Damals wurden fast 100 Bewohner aus dem Gebiet evakuiert.",
+        "output": "Damals wurden fast 100 Bewohner <SEG:20> aus dem Gebiet evakuiert."
+      }
+    },
+    {
+      "id": "de_de_608",
+      "error_type": "placement",
+      "span": "die von der Zukunft",
+      "evidence": "Boundary inside a relative clause before its clause-final verb; the translator had no completed verb for the relative clause when forced to translate the earlier piece, producing incorrect scope/attachment.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Subordinators at the start of an upcoming clause (e.g., \"dass\", \"wenn\", \"obwohl\") allow marking before them, but if the token itself is ambiguous (e.g., \"als\" or \"während\") score lower (30–50) until the clause-final verb or clearer disambiguator arrives.",
+      "replaces": "Subordinators at the start of an upcoming clause (e.g., \"dass\", \"wenn\", \"obwohl\") allow marking before them, but if the token itself is ambiguous (e.g., \"als\" or \"während\") score lower (30–50) until the clause-final verb or clearer disambiguator arrives.",
+      "proposed_rule": "Inside relative or subordinate clauses, if the clause-final verb has not yet appeared, and the clause contains continuing prepositional chains or a long predicted predicate, cap candidate scores at ≤30 (lower if the boundary would split the clause's modifier chain). Do not let such internal-clause candidates compete with clause-closing commas.",
+      "example_pair": {
+        "input": "Wir erleben Zeit als eine Abfolge von Ereignissen, die von der Zukunft durch die Gegenwart in die Vergangenheit verlaufen.",
+        "output": "Wir erleben Zeit <SEG:75> als eine Abfolge <SEG:50> von Ereignissen, die von der Zukunft <SEG:20> durch die Gegenwart <SEG:55> in die Vergangenheit verlaufen."
+      }
+    },
+    {
+      "id": "de_de_920",
+      "error_type": "placement",
+      "span": "Das kann Geld <SEG:50>",
+      "evidence": "Boundary splits a modal/aux + infinitive predicate ('kann ... sparen'), leaving the earlier piece without a verb and causing degraded, fragmentary translation.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "40–69: medium risk; the remainder could plausibly change the meaning emitted. Typical: after main-clause verbs in early positions (the second-position verb that often indicates a clause head) or after adverbials or discourse markers that might be followed by a subordinate clause shifting scope.",
+      "replaces": "40–69: medium risk; the remainder could plausibly change the meaning emitted. Typical: after main-clause verbs in early positions (the second-position verb that often indicates a clause head) or after adverbials or discourse markers that might be followed by a subordinate clause shifting scope.",
+      "proposed_rule": "Treat finite modals/auxiliaries in early positions as HIGH-RISK split points: if a candidate would separate a finite modal/aux from its infinitival/participial complement later in the clause, assign it a very low score (≤10). Replace the generic 'medium risk after main-clause verbs' anchor with this stricter check for modals/auxiliaries.",
+      "example_pair": {
+        "input": "Das kann Geld sparen, da man keine neuen Karten für ein Navigationsgerät oder ein eigenständiges Navigationsgerät kaufen bzw. eines von einem Mietwagenunternehmen mieten muss.",
+        "output": "Das kann Geld <SEG:05> sparen, da man <SEG:40> keine neuen Karten für ein Navigationsgerät <SEG:70> oder ein eigenständiges Navigationsgerät kaufen bzw. eines von einem <SEG:15> Mietwagenunternehmen mieten muss."
+      }
+    },
+    {
+      "id": "de_de_1499",
+      "error_type": "priority",
+      "span": "dass ihrer Meinung nach",
+      "evidence": "Position inside the opening of a complement clause was scored high (80), producing a fragment 'that in their opinion' which loses the correct referent/person; risky candidate survived under tight budget.",
+      "cause": "referent lost",
+      "blamed_rule": "Subordinators at the start of an upcoming clause (e.g., \"dass\", \"wenn\", \"obwohl\") allow marking before them, but if the token itself is ambiguous (e.g., \"als\" or \"während\") score lower (30–50) until the clause-final verb or clearer disambiguator arrives.",
+      "replaces": "Subordinators at the start of an upcoming clause (e.g., \"dass\", \"wenn\", \"obwohl\") allow marking before them, but if the token itself is ambiguous (e.g., \"als\" or \"während\") score lower (30–50) until the clause-final verb or clearer disambiguator arrives.",
+      "proposed_rule": "Positions within the opening words of a complement clause (after a subordinator like 'dass' plus short adverbial/possessive phrases such as 'ihrer Meinung nach') should be given low priority (≤35) because they often lack the clause subject/predicate and can lose referents; only raise scores once a minimal predicate or clause subject appears.",
+      "example_pair": {
+        "input": "Die vorübergehend amtierende Premierministerin Julia Gillard erklärte während des Wahlkampfes für die Bundeswahl 2010, dass ihrer Meinung nach Australien am Ende der Herrschaft von Königin Elizabeth II eine Republik werden sollte.",
+        "output": "Die vorübergehend amtierende Premierministerin Julia Gillard erklärte <SEG:75> während des Wahlkampfes für die Bundeswahl 2010, <SEG:95> dass ihrer Meinung nach <SEG:30> Australien am Ende der Herrschaft von Königin Elizabeth II <SEG:70> eine Republik werden sollte."
+      }
+    }
+  ],
+  "summary": "Two failure modes dominate. (1) The prompt is overconfident on punctuation/early-clause boundaries (commas, clause openers) so risky internal continuations get high scores and survive tight budgets — fix by lowering scores for commas that continue lists and for positions inside opening subordinate/relative clauses. (2) The prompt does not force sufficiently low scores for splits that separate core predicates (finite auxiliary/modal vs. participle/infinitive); add explicit checks to cap scores when a predicate-completing verb is still to come.",
+  "aggregate": {
+    "dominant_error": null,
+    "dominant_basis": "No corpus rate identifies a dominant failure. Read the cases and `judge_distribution` for WHICH mechanism to fix — do not infer a rate from `case_label_counts`, those cases were selected for being the worst.",
+    "measured_rates": {
+      "coverage": {
+        "n": 0,
+        "of_n": 8,
+        "rate": 0.0,
+        "of": "all sentences scored — a true corpus rate",
+        "meaning": "sentences where the tightest budget asked for boundaries the prompt never marked, so pieces are missing outright"
+      },
+      "premature_among_judged": {
+        "n": 0,
+        "of_n": 2,
+        "rate": 0.0,
+        "of": "boundaries judged this iteration, selected as the WORST by measured contradiction — NOT a corpus rate, do not compare it against `coverage`"
+      }
+    },
+    "case_label_counts": {
+      "counts": {
+        "priority": 2,
+        "placement": 3
+      },
+      "of_n": 5,
+      "of": "the selected worst cases — NOT a rate"
+    },
+    "stuck_hint": "",
+    "priority_audit": [
+      {
+        "feature": "상대위치 1/3",
+        "n": 11,
+        "mean_score": 75.9,
+        "contradiction": 0.1456,
+        "over_trust": 0.1466
+      },
+      {
+        "feature": "상대위치 0/3",
+        "n": 14,
+        "mean_score": 65.7,
+        "contradiction": 0.0371,
+        "over_trust": -0.0052
+      },
+      {
+        "feature": "score 50-69",
+        "n": 9,
+        "mean_score": 56.7,
+        "contradiction": 0.0577,
+        "over_trust": -0.067
+      },
+      {
+        "feature": "구두점 없음",
+        "n": 24,
+        "mean_score": 58.3,
+        "contradiction": 0.0893,
+        "over_trust": -0.0868
+      },
+      {
+        "feature": "상대위치 2/3",
+        "n": 8,
+        "mean_score": 56.9,
+        "contradiction": 0.1012,
+        "over_trust": -0.115
+      }
+    ],
+    "judge_distribution": {
+      "n_boundaries_judged": 2,
+      "verdicts": {
+        "safe": 2
+      },
+      "n_with_cause": 0,
+      "causes": {}
+    },
+    "max_missing_boundaries": 0.0,
+    "rank_lift": 0.1842,
+    "rank_lift_t": 2.26,
+    "summary": "Two failure modes dominate. (1) The prompt is overconfident on punctuation/early-clause boundaries (commas, clause openers) so risky internal continuations get high scores and survive tight budgets — fix by lowering scores for commas that continue lists and for positions inside opening subordinate/relative clauses. (2) The prompt does not force sufficiently low scores for splits that separate core predicates (finite auxiliary/modal vs. participle/infinitive); add explicit checks to cap scores when a predicate-completing verb is still to come."
+  }
+}
