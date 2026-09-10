@@ -821,7 +821,16 @@ class Qwen3ASRModel:
             inp = {"prompt": prompt, "multi_modal_data": {"audio": [state.audio_accum]}}
 
             # 허용 언어 제한: force_language 없을 때만 건다(둘 중 하나만).
-            if state.allowed_languages and not state.force_language:
+            #
+            # **헤더를 아직 안 쓴 요청에만 건다.** LanguageHeaderProcessor 는 요청의
+            # 출력 토큰이 비어 있으면 "지금 헤더를 쓰는 중" 으로 보고 첫 토큰부터
+            # `language <허용 언어>` 로 묶는다. 그런데 스트리밍은 앞 청크의 텍스트를
+            # 프롬프트 prefix 로 넘겨 본문 한가운데서 생성을 잇는다. 그 요청에도 걸면
+            # 모델은 `<SEG>` 뒤에 `language English` / `language None` 을 강제로 쓰게
+            # 되고, 거기서 `language None of the above` 같은 퇴행 출력으로 굳는다
+            # (실측 ACL 60/60 talk 268: 168회, 커밋이 끊겨 170초 누적 후 서버 정지).
+            # 헤더는 슬롯의 첫 청크(prefix 없음)에서 나오므로 그때만 건다.
+            if state.allowed_languages and not state.force_language and not prefix:
                 from copy import copy
                 sp = copy(self.sampling_params)
                 sp.extra_args = {"allowed_languages": list(state.allowed_languages)}

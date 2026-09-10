@@ -133,6 +133,13 @@ logger = logging.getLogger(__name__)
 
 SAMPLING_RATE = 16000
 MAX_AUDIO_ACCUM_SEC = 90.0          # audio_accum 강제 리셋 임계값 (초)
+# dot 커밋 축의 강제 리셋 임계값. dot 커밋은 확정 게이트 때문에 마침표가 프론티어에서
+# 한 청크 이상 밀린 뒤 커밋되므로 DOT-SLOT-SWITCH(마침표가 제자리일 때만 리셋)가 자주
+# 불발하고, 슬롯이 60~70초까지 자란다(실측 ACL 60/60 talk 268: accum 64~74초). 그러면
+# 매 청크 그 전체를 재디코딩하면서 이미 커밋한 문장의 표기가 바뀌어 커서가 어긋나고,
+# 같은 문장이 다시 뽑혀 나온다. 문장 넷 정도(30초)면 문맥으로 충분하다.
+# 넘기면 seed 리셋이 아니라 잔여 분량의 오디오를 들고 새 슬롯으로 옮긴다(DOT-CAP-SWITCH).
+DOT_COMMIT_MAX_ACCUM_SEC = 30.0
 MAX_SEED_COMMITTED_SENTENCES = 1    # 강제 리셋 시 seed_text에 포함할 직전 committed 문장 수
 PARTIAL_MIN_INTERVAL_SEC = 0.12     # partial(미확정 가설) 전송 최소 간격 (초)
 
@@ -714,6 +721,13 @@ class Qwen3ASRStreamingHandler:
 
     def init_streaming_state(self):
         """스트리밍 상태 초기화"""
+        # 슬롯이 공유하는 커밋 이력. 슬롯을 만들기 전에 있어야 한다.
+        # fuzzy 키는 후보마다 SequenceMatcher 를 돌리므로 상한을 둔다 — 64문장이면
+        # 7분 남짓의 발화라 재방출 대조에 충분하고, dot 축처럼 후보가 청크마다
+        # 수십 개씩 나와도 비용이 일정하다.
+        self._session_committed_asr_set = set()
+        self._session_committed_fuzzy_keys = deque(maxlen=64)
+        self._emitted_final_keys = set()   # 실제로 내보낸 final 원문 키 (_emit_final_payload)
         self.stream_slots = {
             "A": self._new_stream_slot(),
             "B": self._new_stream_slot(),
@@ -797,8 +811,13 @@ class Qwen3ASRStreamingHandler:
             "audio_anchor_sec": self.current_time,
             "tail_trim_samples": 0,  # finish 전에 잘라 낸 무음 꼬리 (재시도가 두 번 자르지 않게)
             "real_audio": False,  # 0 이 아닌 샘플을 받은 적이 있나 (디지털 무음만 온 슬롯은 디코딩하지 않는다)
-            "committed_asr_set": set(),  # 세그먼트 내 커밋된 문장 전체 (공백 정규화 후)
-            "committed_fuzzy_keys": [],  # 위와 같은 문장의 유사도 비교용 키 (_fuzzy_key)
+            # 커밋 이력은 슬롯이 아니라 **세션** 단위로 든다. 슬롯 리셋마다 비우면 리셋
+            # 직후 재디코딩된 직전 문장이 이력 없는 새 슬롯에서 그대로 다시 커밋된다
+            # (실측 ACL 60/60 talk 268: 'Well, these are embeddings that have been
+            # fine-tuned ...' 가 642초와 680초에 글자까지 같게 두 번). 같은 객체를 모든
+            # 슬롯이 공유하고, 세션 초기화(init_streaming_state)에서만 비운다.
+            "committed_asr_set": self._session_committed_asr_set,  # 커밋된 문장 전체 (공백 정규화 후)
+            "committed_fuzzy_keys": self._session_committed_fuzzy_keys,  # 위와 같은 문장의 유사도 비교용 키 (_fuzzy_key)
         }
 
     def _reset_stream_slot(self, slot_key: str, seed_text: str = "", context: str = ""):
@@ -1270,11 +1289,41 @@ class Qwen3ASRStreamingHandler:
             )
             await self._emit_partial(slot_key, force=True)
             return
+        # 커밋 없이 오디오만 쌓이는 슬롯의 안전장치. 강제 리셋(MAX_AUDIO_ACCUM_SEC)은
+        # 원래 커밋이 일어난 청크에서만 검사했는데, 모델이 경계를 못 찍는 퇴행 상태에
+        # 빠지면 커밋 자체가 없어 영원히 검사되지 않는다. 실측(ACL 60/60 talk 268, punct):
+        # `<SEG>language None of the above` 로 굳은 뒤 170초까지 쌓였고, 오디오 토큰이
+        # 인코더 캐시 예산(2048)을 넘긴 시점에 vLLM 요청이 영영 스케줄되지 않아 서버가
+        # 멈췄다. 남은 텍스트는 timeout 커밋으로 내보내고 마지막 청크만 들고 새로 시작한다.
+        if not any_commit:
+            _audio_sec_nc = _s["state"].audio_accum.shape[0] / SAMPLING_RATE
+            if _audio_sec_nc > MAX_AUDIO_ACCUM_SEC:
+                if self._pending_gpt_tasks:
+                    self._spawn_gpt_flush()
+                await self.flush_uncommitted(force=True, reason="timeout", slot_key=slot_key)
+                chunk_samples = int(round(self.config.chunk_size_sec * SAMPLING_RATE))
+                old_accum = _s["state"].audio_accum
+                carry_audio = old_accum[-chunk_samples:].copy() if old_accum.shape[0] >= chunk_samples else old_accum.copy()
+                self._reset_stream_slot(slot_key)
+                self._slot(slot_key)["state"].audio_accum = carry_audio
+                self._slot(slot_key)["real_audio"] = True
+                if slot_key == self.active_slot:
+                    self.state = self.stream_slots[self.active_slot]["state"]
+                self.log.info(
+                    f"[FORCE-SLOT-SWITCH] slot={slot_key} audio_sec={_audio_sec_nc:.1f}s "
+                    f"no_commit=1 carry={carry_audio.shape[0] / SAMPLING_RATE:.2f}s"
+                )
+                await self._emit_partial(slot_key, force=True)
+                async with self.asr_lock:
+                    self.asr_processed_cursor = self.sample_cursor
+                return
         if any_commit:
             ends_with_seg = _latest_decoded.endswith("<SEG>") or header_tail
             remaining = "" if ends_with_seg else self._slot_uncommitted_display(slot_key, text_snapshot=_committed_text_snapshot)
             audio_sec = _s["state"].audio_accum.shape[0] / SAMPLING_RATE
             force_reset = audio_sec > MAX_AUDIO_ACCUM_SEC
+            _dot_cap_hit = (self.enable_dot_commit and not self.always_commit
+                            and audio_sec > DOT_COMMIT_MAX_ACCUM_SEC)
 
             if ends_with_seg or not remaining.strip() or force_reset:
                 if force_reset:
@@ -1356,6 +1405,40 @@ class Qwen3ASRStreamingHandler:
                     self.log.info(
                         f"[DOT-SLOT-SWITCH] slot={slot_key} audio_sec={audio_sec:.1f}s "
                         f"prev={prev_strip!r}"
+                    )
+                elif _dot_cap_hit:
+                    # 마침표가 제자리가 아니어서 DOT-SLOT-SWITCH 가 불발한 채 슬롯이 자란
+                    # 경우. seed 텍스트로 갈아끼우는 강제 리셋(FORCE-SLOT-SWITCH)은 미커밋
+                    # 잔여의 **오디오**를 버려서 그 문장이 잘린다(실측 talk 268: 'So this
+                    # proves that the data set ...' 가 통째로 사라져 삭제 120어절). 대신
+                    # 잔여 텍스트 분량만큼의 오디오를 들고 새 슬롯에서 다시 디코딩한다.
+                    # 글자/초는 13~15 가 실측 중앙값이라 10 으로 넉넉히 잡고 한 청크를 더한다.
+                    # 앞 문장 꼬리가 같이 들어가는 건 dot-suffix/committed-suffix dedup 이 거른다.
+                    chunk_samples = int(round(self.config.chunk_size_sec * SAMPLING_RATE))
+                    old_accum = _s["state"].audio_accum
+                    _carry_sec = len(remaining.strip()) / 10.0 + self.config.chunk_size_sec
+                    _carry_samples = min(old_accum.shape[0], int(round(_carry_sec * SAMPLING_RATE)))
+                    _carry_samples = max(_carry_samples, min(old_accum.shape[0], chunk_samples))
+                    carry_audio = old_accum[-_carry_samples:].copy()
+                    carry_lang = _s.get("last_text_lang", "")
+                    prev_committed = _s.get("committed_display", "")
+                    carry_boundaries = _s.get("prev_boundary_sentences", ())
+                    self._reset_stream_slot(slot_key)
+                    new_slot = self._slot(slot_key)
+                    new_slot["state"].audio_accum = carry_audio
+                    new_slot["real_audio"] = True
+                    if carry_lang:
+                        new_slot["last_text_lang"] = carry_lang
+                    if prev_committed:
+                        new_slot["dot_switch_prev_committed"] = prev_committed
+                    if carry_boundaries:
+                        new_slot["prev_boundary_sentences"] = carry_boundaries
+                        new_slot["prev_boundary_accum"] = -1
+                    if slot_key == self.active_slot:
+                        self.state = self.stream_slots[self.active_slot]["state"]
+                    self.log.info(
+                        f"[DOT-CAP-SWITCH] slot={slot_key} audio_sec={audio_sec:.1f}s "
+                        f"carry={_carry_samples / SAMPLING_RATE:.2f}s remaining={remaining[:60]!r}"
                     )
                 else:
                     self.log.info(
@@ -1635,6 +1718,9 @@ class Qwen3ASRStreamingHandler:
     _REP_DEDUP_MAX_REPEATS = 2
     _FUZZY_DEDUP_MIN_WORDS = 6
     _FUZZY_DEDUP_RATIO = 0.85
+    # committed-fragment-dedup 이 보는 최소 어절 수. 실측 재방출 조각은 12~47어절이었고
+    # (ACL 60/60 talk 268), 발화에서 실제로 되풀이되는 구절은 대개 그보다 짧다.
+    _FRAGMENT_DEDUP_MIN_WORDS = 5
 
     @staticmethod
     def _fuzzy_key(text: str) -> str:
@@ -1781,6 +1867,10 @@ class Qwen3ASRStreamingHandler:
         # 비교해 못 잡는다(실측: 시연 화면에 `we say cake.` 가 한 줄 더 떴다). 헤더를
         # 떼고 이 슬롯의 커밋 전체 끝과 견줘 접미사면 버린다.
         "committed-suffix-dedup": ("extract", "commit", "flush"),
+        # 이미 커밋된 문장의 **가운데 조각**이 통째로 다시 나온 경우. 커서가 커밋된
+        # 문장 중간에 떨어지면 그 뒤가 새 문장처럼 뽑힌다. 완전 일치도 아니고 길이가
+        # 달라 유사도(0.85)도 못 넘는다. cross-dedup 과 같은 시점에 건다.
+        "committed-fragment-dedup": ("commit", "flush"),
     }
 
     def _commit_skip_reason(self, slot: dict, sentence_display: str, *, stage: str,
@@ -1889,6 +1979,19 @@ class Qwen3ASRStreamingHandler:
         if (_applies("cross-dedup-fuzzy") and not self.always_commit
                 and self._cross_dup_match(slot, sentence_display) is not None):
             return "cross-dedup-fuzzy"
+
+        # 이미 커밋된 문장 안에 어절 단위로 통째로 들어 있는 조각.
+        # 실측 ACL 60/60 talk 268: 'So once that we had those results, ... could we find a
+        # BiLSTM-CRF model, feeded with ...' 를 528초에 커밋한 뒤, 545초에 'we find a
+        # BiLSTM-CRF model, feeded with ...' 가 새 문장으로 다시 커밋됐다(punct 축 삽입
+        # 348어절 중 대부분이 이 유형). 어절 경계를 맞춰 부분 문자열로 본다.
+        if _applies("committed-fragment-dedup") and not self.always_commit:
+            _fk = self._fuzzy_key(sentence_display)
+            if _fk and len(_fk.split()) >= self._FRAGMENT_DEDUP_MIN_WORDS:
+                _needle = f" {_fk} "
+                for _prev in slot.get("committed_fuzzy_keys", ()):
+                    if _prev and _needle in f" {_prev} ":
+                        return "committed-fragment-dedup"
 
         return None
 
@@ -2284,9 +2387,23 @@ class Qwen3ASRStreamingHandler:
                         _consumed_any = True
                         continue
                     # 커서(pos)는 원문 기준으로 이미 전진시켰으므로 여기서 잘라도 안전하다
+                    _before_strip = sentence_display
                     sentence_display = self._strip_committed_prefix(slot, sentence_display)
                     if not sentence_display:
                         continue
+                    # 접두사를 잘라낸 나머지는 가드를 안 거친 새 문자열이다. 모델이 커밋된
+                    # 두 문장을 하나로 이어 다시 내놓으면(`We ran this ... library, and we
+                    # tried ...`) 앞 문장만 잘리고 뒷 문장이 그대로 나간다(실측 talk 268).
+                    if sentence_display != _before_strip:
+                        _skip2 = self._commit_skip_reason(
+                            slot, sentence_display, stage="commit", trigger=trigger_reason)
+                        if _skip2:
+                            self.log.info(
+                                f"[COMMIT-SKIP] reason={_skip2} stage=commit-after-strip "
+                                f"slot={slot_key} text={sentence_display!r}"
+                            )
+                            _consumed_any = True
+                            continue
                     committed_items.append((sentence_display, trigger_reason))
                 if committed_items or _consumed_any:
                     slot["committed_display"] = latest_ns[:pos].strip()
@@ -2342,9 +2459,31 @@ class Qwen3ASRStreamingHandler:
                             _consumed_seg += sentence_raw.count("<SEG>")
                             _consumed_any = True
                         continue
+                    _before_strip = sentence_display
                     sentence_display = self._strip_committed_prefix(slot, sentence_display)
                     if not sentence_display:
                         continue
+                    # 접두사를 잘라낸 나머지에도 가드를 다시 태운다(위 VAD 분기와 같은 이유).
+                    # 스킵이면 `_emit=False` 경로처럼 원문에서 소비만 하고 넘어간다.
+                    if sentence_display != _before_strip:
+                        _skip2 = self._commit_skip_reason(
+                            slot, sentence_display, stage="commit", trigger=trigger_reason)
+                        if _skip2:
+                            self.log.info(
+                                f"[COMMIT-SKIP] reason={_skip2} stage=commit-after-strip "
+                                f"slot={slot_key} text={sentence_display!r}"
+                            )
+                            _st = tail.lstrip()
+                            _lw = len(tail) - len(_st)
+                            while _st.startswith("<SEG>"):
+                                _st = _st[len("<SEG>"):].lstrip()
+                                _lw = len(tail) - len(_st)
+                            if _st.startswith(sentence_raw):
+                                cursor += _lw + len(sentence_raw)
+                                tail = latest_text[cursor:]
+                                _consumed_seg += sentence_raw.count("<SEG>")
+                                _consumed_any = True
+                            continue
                     stripped_tail = tail.lstrip()
                     leading_ws = len(tail) - len(stripped_tail)
                     # <SEG> 토큰이 문장 사이에 있을 때 건너뜀
@@ -3031,6 +3170,18 @@ class Qwen3ASRStreamingHandler:
             return
         if self._is_silence_hallucination(original, reason, audio_end_sec):
             return
+        # 같은 문장이 두 경로로 나가는 것을 마지막 관문에서 막는다. 커밋 가드는 문장을
+        # 뽑는 시점에 돌고, 뽑힌 뒤에는 generate 루프 안의 비동기 태스크와 청크 종료
+        # 직후의 직접 await 가 각자 emit 하므로 서로를 모른다(실측 talk 268: 'we tried
+        # and experimented ...' 가 0.3초 간격으로 두 번). 세션 안에서 이미 내보낸
+        # 5어절 이상 문장은 다시 내보내지 않는다. 모드2(always_commit)는 청크 단위라 제외.
+        if not self.always_commit:
+            _ekey = ' '.join(original.split()).rstrip('.,!?;:。？！').strip().lower()
+            if len(_ekey.split()) >= 5:
+                if _ekey in self._emitted_final_keys:
+                    self.log.info(f"[EMIT-SKIP] reason=already-emitted reason={reason} text={original!r}")
+                    return
+                self._emitted_final_keys.add(_ekey)
         self._last_final_end_sec = audio_end_sec
         self._last_final_text = original
         await self.send_message(
