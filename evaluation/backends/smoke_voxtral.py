@@ -37,7 +37,7 @@ QUIET_SEC = 3.0      # 마지막 delta 이후 이만큼 조용하면 발화 종�
 MAX_WAIT_SEC = 30.0  # 그래도 안 끝나면 포기
 
 
-async def run_one(url, model, audio, lang):
+async def run_one(url, model, audio, lang, trailing_ms=1000, commit_interval=0.0):
     pcm = (np.clip(audio, -1.0, 1.0) * 32767).astype("<i2")
     out = {"transcript": "", "first_token_latency": None, "avg_fsl_sec": None,
            "num_finals": 0}
@@ -83,6 +83,7 @@ async def run_one(url, model, audio, lang):
 
         step = int(0.2 * SAMPLING_RATE)
         t0 = time.perf_counter()
+        since_commit = 0.0
         for i in range(0, len(pcm), step):
             chunk = pcm[i:i + step]
             target = t0 + (i + len(chunk)) / SAMPLING_RATE   # 실시간 속도로 흘린다
@@ -95,7 +96,24 @@ async def run_one(url, model, audio, lang):
                 "type": "input_audio_buffer.append",
                 "audio": base64.b64encode(chunk.tobytes()).decode(),
             }))
+            # 이 프로토콜에서 확정을 유도하는 건 commit 이다. 주기적으로 보내지
+            # 않으면 발화가 끝날 때까지 출력이 하나도 오지 않는다(2026-09-10 실측).
+            if commit_interval > 0:
+                since_commit += len(chunk) / SAMPLING_RATE
+                if since_commit >= commit_interval:
+                    await ws.send(json.dumps({"type": "input_audio_buffer.commit"}))
+                    since_commit = 0.0
         t_audio_end = time.perf_counter()
+        # 다른 백엔드와 같은 오디오를 보내기 위해 무음도 같이 흘린다.
+        # 지연 기준(t_audio_end)은 무음 앞에서 잡았으므로 비교 축은 유지된다.
+        if trailing_ms > 0:
+            sil = np.zeros(int(SAMPLING_RATE * trailing_ms / 1000), dtype='<i2')
+            for i in range(0, len(sil), step):
+                await ws.send(json.dumps({
+                    "type": "input_audio_buffer.append",
+                    "audio": base64.b64encode(sil[i:i + step].tobytes()).decode(),
+                }))
+                await asyncio.sleep(0.2)
         await ws.send(json.dumps({"type": "input_audio_buffer.commit"}))
 
         deadline = t_audio_end + MAX_WAIT_SEC
@@ -107,10 +125,14 @@ async def run_one(url, model, audio, lang):
 
     out["transcript"] = state["text"].strip()
     out["num_finals"] = state["n"]
+    audio_sec = len(pcm) / SAMPLING_RATE
     if state["first"] is not None:
         out["first_token_latency"] = round(state["first"] - t0, 3)
+        out["ttfo_sec"] = round(state["first"] - t_audio_end, 3)
     if state["last"] is not None:
-        out["avg_fsl_sec"] = round(state["last"] - t_audio_end, 3)  # 발화 끝~마지막 토큰
+        out["avg_fsl_sec"] = round(state["last"] - t_audio_end, 3)  # 레거시(= completion_lag)
+        out["completion_lag_sec"] = round(state["last"] - t_audio_end, 3)
+        out["xrt"] = round((state["last"] - t0) / audio_sec, 3)
     return out
 
 
@@ -135,7 +157,8 @@ async def main_async(a) -> int:
             audio = np.interp(np.linspace(0, len(audio) - 1, n),
                               np.arange(len(audio)), audio).astype(np.float32)
         try:
-            out = await run_one(url, a.model, audio, a.lang)
+            out = await run_one(url, a.model, audio, a.lang, a.trailing_ms,
+                                a.commit_interval_sec)
         except Exception as e:
             print("  [%d] %s FAILED %s: %s" % (i, r["file_id"], type(e).__name__, e),
                   flush=True)
@@ -150,13 +173,20 @@ async def main_async(a) -> int:
     vals = [r[unit] for r in results if r.get(unit) is not None]
     lat = [r["first_token_latency"] for r in results if r.get("first_token_latency")]
     fsl = [r["avg_fsl_sec"] for r in results if r.get("avg_fsl_sec") is not None]
+    ttfo = [r["ttfo_sec"] for r in results if r.get("ttfo_sec") is not None]
+    comp = [r["completion_lag_sec"] for r in results if r.get("completion_lag_sec") is not None]
+    xrt = [r["xrt"] for r in results if r.get("xrt") is not None]
     audio_total = sum(r["audio_sec"] for r in results) or 1
     summary = {
         "backend": a.tag, "lang": a.lang, "unit": unit,
+        "commit_interval_sec": a.commit_interval_sec,
         "n_ok": len(results), "n_total": len(rows),
         "avg_" + unit: round(mean(vals), 4) if vals else None,
         "avg_first_token_latency_sec": round(mean(lat), 3) if lat else None,
         "avg_fsl_sec": round(mean(fsl), 3) if fsl else None,
+        "avg_ttfo_sec": round(mean(ttfo), 3) if ttfo else None,
+        "avg_completion_lag_sec": round(mean(comp), 3) if comp else None,
+        "avg_xrt": round(mean(xrt), 3) if xrt else None,
         "rtf": round((time.perf_counter() - t_start) / audio_total, 3),
         "empty_transcripts": sum(1 for r in results if not r["transcript"]),
     }
@@ -173,6 +203,9 @@ def main():
     ap.add_argument("--model", default="mistralai/Voxtral-Mini-4B-Realtime-2602")
     ap.add_argument("--lang", choices=["ko", "en"], default="ko")
     ap.add_argument("--limit", type=int, default=20)
+    ap.add_argument("--trailing-ms", type=int, default=1000)
+    ap.add_argument("--commit-interval-sec", type=float, default=0.0,
+                    help="0 이면 끝에 한 번만 commit(증분 출력 없음)")
     ap.add_argument("--tag", default="voxtral")
     ap.add_argument("--out", default="voxtral_smoke.json")
     sys.exit(asyncio.run(main_async(ap.parse_args())))

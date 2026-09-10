@@ -96,10 +96,11 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int):
     pcm = (np.clip(audio, -1, 1) * 32767).astype(np.int16)
     step = int(0.2 * SAMPLING_RATE)
     finals, lags, first_at = [], [], None
+    first_arr = last_arr = None      # 도착 시각(벽시계). 무음 제외 기준으로 쓴다.
     done = asyncio.Event()
 
     async def reader():
-        nonlocal first_at
+        nonlocal first_at, first_arr, last_arr
         idle = 0.0
         while True:
             try:
@@ -123,8 +124,11 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int):
             elif t == "final":
                 txt = (d.get("original") or "").strip()
                 if txt:
+                    _now = time.perf_counter()
                     if first_at is None:
-                        first_at = time.perf_counter() - t0
+                        first_at = _now - t0
+                        first_arr = _now
+                    last_arr = _now
                     finals.append(txt)
                     if d.get("fsl_sec") is not None:
                         lags.append(d["fsl_sec"])
@@ -140,6 +144,9 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int):
                 break
             await asyncio.sleep(min(left, 0.02))
         await ws.send(chunk.tobytes())
+    # 실제 오디오가 끝난 시각. 지연은 전부 이 기준으로 잰다 - 뒤에 붙는 무음은
+    # VAD 커밋을 유도하려고 우리가 보내는 것이지 발화의 일부가 아니다.
+    t_audio_end = time.perf_counter()
     if trailing_ms > 0:
         sil = np.zeros(int(SAMPLING_RATE * trailing_ms / 1000), dtype=np.int16)
         for i in range(0, len(sil), step):
@@ -149,10 +156,14 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int):
     done.set()
     await task
 
+    audio_sec = len(pcm) / SAMPLING_RATE
     return {"transcript": " ".join(finals).strip(),
             "num_finals": len(finals),
             "first_token_latency": first_at,
             "avg_fsl_sec": mean(lags) if lags else None,
+            "ttfo_sec": round(first_arr - t_audio_end, 3) if first_arr else None,
+            "completion_lag_sec": round(last_arr - t_audio_end, 3) if last_arr else None,
+            "xrt": round((last_arr - origin) / audio_sec, 3) if last_arr else None,
             "wall_sec": time.perf_counter() - t0}
 
 
@@ -214,6 +225,9 @@ async def main_async(a) -> int:
     vals = [r[unit] for r in results if r.get(unit) is not None]
     lat = [r["first_token_latency"] for r in results if r.get("first_token_latency")]
     fsl = [r["avg_fsl_sec"] for r in results if r.get("avg_fsl_sec") is not None]
+    ttfo = [r["ttfo_sec"] for r in results if r.get("ttfo_sec") is not None]
+    comp = [r["completion_lag_sec"] for r in results if r.get("completion_lag_sec") is not None]
+    xrt = [r["xrt"] for r in results if r.get("xrt") is not None]
     audio_total = sum(r["audio_sec"] for r in results) or 1
     summary = {
         "backend": a.tag, "lang": a.lang, "unit": unit,
@@ -221,6 +235,9 @@ async def main_async(a) -> int:
         f"avg_{unit}": round(mean(vals), 4) if vals else None,
         "avg_first_token_latency_sec": round(mean(lat), 3) if lat else None,
         "avg_fsl_sec": round(mean(fsl), 3) if fsl else None,
+        "avg_ttfo_sec": round(mean(ttfo), 3) if ttfo else None,
+        "avg_completion_lag_sec": round(mean(comp), 3) if comp else None,
+        "avg_xrt": round(mean(xrt), 3) if xrt else None,
         "rtf": round((time.perf_counter() - t_start) / audio_total, 3),
         "empty_transcripts": sum(1 for r in results if not r["transcript"]),
     }
