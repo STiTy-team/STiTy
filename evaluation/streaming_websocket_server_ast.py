@@ -30,6 +30,7 @@ import logging
 import os
 import re
 import sys
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -103,6 +104,145 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
         self._ast_sniffer = sniffer
         self._ast_flush_inflight = 0   # 실행 중인 _flush_pending_gpt_tasks 수
         self._ast_flush_overlaps = 0   # 핸들이 덮어써진 횟수
+
+    # ── 문장 중간 <SEG> 에서 오디오 버퍼 자르기 (AST_SEG_CUT) ───────────────
+    #
+    # 무엇이 문제인가
+    # ---------------
+    # 서버가 오디오 버퍼(`audio_accum`)를 비우는 조건은 "커밋이 났다" 가 아니라
+    # **"모델 출력이 `<SEG>` 로 끝났다"** 이다(`ends_with_seg`). `<SEG>` 뒤에 다음
+    # 문장이 이미 붙어 있으면 텍스트만 확정하고 오디오는 그대로 둔다
+    # (`COMMIT-PENDING`). 그 토큰이 오디오 몇 초인지 모르기 때문이다.
+    #
+    # 학술 독백에서는 `<SEG>` 가 거의 늘 문장 중간에 박혀 버퍼가 계속 자란다.
+    # 실측(ACL 60/60 dev, talk 2022.acl-long.110, seg 축): 478초에 시작한 슬롯이
+    # 485·492·497초에 세 번 커밋하고도 리셋되지 않아 68초까지 자랐고, 그 상태에서
+    # 다음 `<SEG>` 까지 49초가 걸렸다. 같은 오디오를 12초 늦게(=버퍼 26초로) 넣으면
+    # 같은 공백이 28.2초다. 버퍼 길이가 공백을 키운다는 뜻이다.
+    #
+    # 무엇을 하나
+    # -----------
+    # 커밋이 난 청크에서만 **이미 커밋된 텍스트**를 버퍼 오디오에 정렬해
+    # (Qwen3-ForcedAligner) 그 텍스트가 끝나는 시각을 읽고, 거기서 오디오를 잘라
+    # 뒤쪽만 새 슬롯에 넘긴다. `<SEG>` 가 올 위치를 **예측하는 것이 아니라** 이미
+    # 확정된 텍스트의 끝을 **측정**한다.
+    #
+    # 정렬 비용은 청크 주기 안에 충분히 들어온다 — 실측 warm 17ms(버퍼 2초) ~
+    # 42ms(버퍼 68초, 952자). 대가는 VRAM 1.7~2.2 GiB 다.
+    #
+    # `heur` 모드는 정렬기 없이 dot 축의 `DOT-CAP-SWITCH` 와 같은 어림(미커밋 글자
+    # 수 ÷ 10 + 청크 하나)으로 자른다. 정렬기가 그 어림보다 나은지 보는 대조군이다.
+    #
+    # 자르는 시각이 늦으면 다음 문장 앞머리가 날아간다(실측 talk 268: 강제 리셋이
+    # 문장 하나를 통째로 날려 120어절 삭제). 그래서 `AST_SEG_CUT_MARGIN_SEC` 만큼
+    # 뒤로 물러서 자르고, 남는 오디오가 한 청크보다 짧으면 자르지 않는다.
+    #
+    # **커밋 정책은 건드리지 않는다.** `final` 은 여전히 `<SEG>` 에서만 나간다.
+    # 바뀌는 것은 다음 청크에서 모델이 듣는 오디오 범위뿐이다.
+
+    _AST_SEG_CUT_SR = 16000
+
+    @property
+    def _ast_seg_cut_mode(self) -> str:
+        return os.environ.get("AST_SEG_CUT", "").strip().lower()
+
+    def _ast_get_aligner(self):
+        """정렬기를 처음 자를 때 한 번만 올린다. 실패하면 이후 시도하지 않는다."""
+        aligner = getattr(type(self), "_ast_aligner", None)
+        if aligner is not None or getattr(type(self), "_ast_aligner_failed", False):
+            return aligner
+        try:
+            import torch
+            from qwen_asr.inference.qwen3_forced_aligner import Qwen3ForcedAligner
+            model = os.environ.get("AST_SEG_CUT_ALIGNER", "Qwen/Qwen3-ForcedAligner-0.6B")
+            t0 = time.time()
+            aligner = Qwen3ForcedAligner.from_pretrained(
+                model, device_map="cuda", dtype=torch.float16)
+            type(self)._ast_aligner = aligner
+            logger.info("[SEG-CUT] 정렬기 로드 %s (%.1f초)", model, time.time() - t0)
+            return aligner
+        except Exception as exc:  # noqa: BLE001 — 정렬기 없으면 자르기만 포기한다
+            type(self)._ast_aligner_failed = True
+            logger.error("[SEG-CUT] 정렬기 로드 실패 — 자르기 비활성: %r", exc)
+            return None
+
+    def _ast_seg_cut_point(self, mode: str, accum, committed: str, slot_key: str):
+        """자를 시각(초)과 로그용 부가정보를 돌려준다. 못 자르면 (None, info)."""
+        buf_sec = len(accum) / self._AST_SEG_CUT_SR
+        if mode == "heur":
+            remaining = (self._slot_uncommitted_display(slot_key) or "").strip()
+            carry_sec = len(remaining) / 10.0 + self.config.chunk_size_sec
+            return max(0.0, buf_sec - carry_sec), {"chars": len(remaining)}
+        aligner = self._ast_get_aligner()
+        if aligner is None:
+            return None, {}
+        lang = getattr(self, "forced_language", None) or getattr(self, "hinted_language", None) or "English"
+        t0 = time.time()
+        try:
+            items = aligner.align(audio=[(accum, self._AST_SEG_CUT_SR)],
+                                  text=[committed], language=[lang])[0].items
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("[SEG-CUT] 정렬 실패 — 이번 청크는 자르지 않는다: %r", exc)
+            return None, {}
+        info = {"items": len(items), "align_sec": round(time.time() - t0, 3), "lang": lang}
+        if not items:
+            return None, info
+        return float(items[-1].end_time), info
+
+    def _ast_seg_cut_after_chunk(self, before: dict) -> None:
+        mode = self._ast_seg_cut_mode
+        if mode not in ("align", "heur"):
+            return
+        min_sec = float(os.environ.get("AST_SEG_CUT_MIN_SEC", "20"))
+        margin = float(os.environ.get("AST_SEG_CUT_MARGIN_SEC", "0.3"))
+        sr = self._AST_SEG_CUT_SR
+        chunk_sec = self.config.chunk_size_sec
+        for slot_key in list(self.stream_slots):
+            slot = self.stream_slots.get(slot_key) or {}
+            committed = (slot.get("committed_display") or "").strip()
+            # 이번 청크에 새 커밋이 없으면 정렬기를 부르지 않는다 — 자를 근거도 없다.
+            if not committed or committed == (before.get(slot_key) or "").strip():
+                continue
+            state = slot.get("state")
+            accum = getattr(state, "audio_accum", None)
+            if accum is None or len(accum) < int(min_sec * sr):
+                continue
+            buf_sec = len(accum) / sr
+            cut_sec, info = self._ast_seg_cut_point(mode, accum, committed, slot_key)
+            if cut_sec is None:
+                continue
+            cut_sec = max(0.0, cut_sec - margin)
+            carry_sec = buf_sec - cut_sec
+            # 남는 오디오가 한 청크보다 짧으면 다음 문장 앞머리를 잘라 먹는다.
+            # 줄어드는 양이 한 청크도 안 되면 부를 값어치가 없다.
+            if carry_sec < chunk_sec or cut_sec < chunk_sec:
+                logger.info("[SEG-CUT-SKIP] slot=%s buf=%.1fs cut=%.1fs carry=%.1fs %s",
+                            slot_key, buf_sec, cut_sec, carry_sec, info)
+                continue
+            carry = accum[int(cut_sec * sr):].copy()
+            last_lang = slot.get("last_text_lang", "")
+            self._reset_stream_slot(slot_key)
+            new_slot = self.stream_slots[slot_key]
+            new_slot["state"].audio_accum = carry
+            new_slot["real_audio"] = True
+            if last_lang:
+                new_slot["last_text_lang"] = last_lang
+            # SEG 리셋 경로와 같은 열쇠를 쓴다 — 재디코딩된 앞머리 중복을 그쪽 dedup 이 거른다.
+            new_slot["seg_reset_last_committed"] = committed
+            if slot_key == self.active_slot:
+                self.state = new_slot["state"]
+            self._ast_seg_cut_count = getattr(self, "_ast_seg_cut_count", 0) + 1
+            logger.info("[SEG-CUT] slot=%s mode=%s buf=%.1fs cut=%.1fs carry=%.1fs %s committed=%r",
+                        slot_key, mode, buf_sec, cut_sec, carry_sec, info, committed[-60:])
+
+    async def _asr_streaming_transcribe(self, chunk, slot_key=None):
+        if self._ast_seg_cut_mode not in ("align", "heur"):
+            await super()._asr_streaming_transcribe(chunk, slot_key)
+            return
+        before = {k: (v.get("committed_display") or "")
+                  for k, v in self.stream_slots.items()}
+        await super()._asr_streaming_transcribe(chunk, slot_key)
+        self._ast_seg_cut_after_chunk(before)
 
     # ── 밀림(late final) 추적 ────────────────────────────────────────────────
     # base 는 청크마다 `self._gpt_flush_task = asyncio.create_task(...)` 로 **대입**한다.

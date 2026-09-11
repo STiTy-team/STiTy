@@ -13,9 +13,11 @@
 #
 # 환경변수
 #   AXES           기본 "static punct seg"
+#   LANGS          기본 "de ja zh" — 매니페스트가 일부 언어만 있는 split(repro110 등)은 좁힌다
 #   CHUNK          기본 2.0
 #   TRANS_BACKEND  기본 local — MADLAD-400-3B(greedy)를 같은 GPU 에 올린다 —
 #                  **번역 품질이 달라 v2 로 낸 결과와 같은 표에 올리면 안 된다**
+#   MODEL          기본 models/Qwen3-ASR-1.7B-en-dailytalk-seg — 다른 합친 모델 경로로 바꿀 수 있다
 #   GPU_MEM        vLLM gpu_memory_utilization. local 번역기(6.75GB)와 나눠 쓰려면 0.65
 #   AST_CAP_FREEZE / AST_AUDIO_END_AT_COMMIT   서버 수정 스위치(환경 그대로 상속된다)
 # 종료는 반드시 stop_server.sh 로 한다(pkill 은 vLLM EngineCore 를 남긴다).
@@ -33,10 +35,11 @@ PORT=8765
 # 쓴다. 0.5 면 12GB 로 이 모델엔 충분하고 나머지 12GB 를 비워 둔다.
 # 카드를 혼자 쓸 때는 `GPU_UTIL=0.8` 로 올리면 된다.
 GPU_UTIL="${GPU_UTIL:-0.5}"
-MODEL="$REPO/models/Qwen3-ASR-1.7B-en-dailytalk-seg"
+MODEL="${MODEL:-$REPO/models/Qwen3-ASR-1.7B-en-dailytalk-seg}"
 
 SPLIT="${1:-dev}"
 AXES="${AXES:-static punct seg}"
+LANGS="${LANGS:-de ja zh}"
 CHUNK="${CHUNK:-2.0}"
 # 구글 두 경로가 다 막혀 로컬 MADLAD 가 기본이다(v2 는 403, gtx 는 429).
 TRANS_BACKEND="${TRANS_BACKEND:-local}"
@@ -100,7 +103,7 @@ run_axis() {
   done
   echo "═══ [$label] 준비 완료 (${waited}초) ═══"
 
-  for lang in de ja zh; do
+  for lang in $LANGS; do
     local clog="$LOGDIR/${label}_${lang}_client.log"
     echo "─── [$label/$lang] $(date '+%T')"
     "$PY" "$REPO/evaluation/ast/test_ast.py" \
@@ -154,7 +157,7 @@ done
 echo "═══════════════ 요약 ═══════════════ $(date '+%F %T')"
 for axis in $AXES; do
   label="$(axis_label "$axis")"
-  for lang in de ja zh; do
+  for lang in $LANGS; do
     echo "── $label / $lang"
     grep -E "발화 [0-9]+개|LAAL      :|BLEU      :|FTL       :|번역 호출|번역 실패" \
          "$LOGDIR/${label}_${lang}_client.log" 2>/dev/null | sed 's/^.*INFO - /   /;s/^.*ERROR - /   !! /'

@@ -303,7 +303,8 @@ def main() -> int:
     p.add_argument("--results-root", default=str(HERE / "results" / "ACL6060"))
     p.add_argument("--manifest-dir", default=str(HERE / "manifests"))
     p.add_argument("--tag", required=True)
-    p.add_argument("--split", default="dev", choices=["dev", "eval"])
+    p.add_argument("--split", default="dev",
+                   help="dev / eval, 또는 매니페스트가 있는 임의 split(repro110 등)")
     p.add_argument("--axes", nargs="+", default=None)
     p.add_argument("--langs", nargs="+", default=["de", "ja", "zh"])
     p.add_argument("--null-penalty-sec", type=float, default=10.0,
