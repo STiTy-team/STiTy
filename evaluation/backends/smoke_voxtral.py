@@ -46,7 +46,7 @@ import websockets
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from smoke_client import (SAMPLING_RATE, LAAL_UNIT, laal_pair, load_audio,  # noqa: E402
-                          load_fleurs, score)
+                          load_fleurs, score, score_pair)
 
 QUIET_SEC = 3.0      # 마지막 delta 이후 이만큼 조용하면 발화 종료로 본다
 MAX_WAIT_SEC = 30.0  # 그래도 안 끝나면 포기
@@ -166,13 +166,14 @@ async def main_async(a) -> int:
             print("  [%d] %s FAILED %s: %s" % (i, r["file_id"], type(e).__name__, e),
                   flush=True)
             continue
-        s = score(r["reference"], out["transcript"], unit)
+        s, s_raw = score_pair(r["reference"], out["transcript"], unit, a.lang)
         _sec = len(audio) / SAMPLING_RATE
         # delta 는 단어 중간에서 끊긴다 - fragments=True (units_with_delays 주석)
         _laal, _laal_ca = laal_pair(out.pop("segs_policy"), out.pop("segs_ca"),
                                     _sec, r["reference"], a.lang, fragments=True)
         results.append({**r, **out, "audio_sec": _sec,
-                        "laal_ms": _laal, "laal_ca_ms": _laal_ca, unit: s})
+                        "laal_ms": _laal, "laal_ca_ms": _laal_ca,
+                        unit: s, unit + "_raw": s_raw})
         print("  [%d/%d] %s=%s" % (i, len(rows), unit,
                                    ("%.3f" % s) if s is not None else "NA"), flush=True)
         print("      REF %s" % r["reference"][:80], flush=True)

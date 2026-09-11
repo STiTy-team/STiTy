@@ -24,6 +24,11 @@ from statistics import mean
 
 import numpy as np
 import soundfile as sf
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+# 채점·정규화는 text_norm 이 유일한 구현이다. 여기서 다시 정의하지 않는다.
+from text_norm import (canon_pair, score, score_pair,  # noqa: E402,F401
+                       _norm, _edit_distance)
 import websockets
 
 SAMPLING_RATE = 16000
@@ -32,36 +37,6 @@ LANG_DIR = {"ko": "ko_kr", "en": "en_us"}
 
 
 # -- 채점 -----------------------------------------------------------------
-def _norm(text: str) -> str:
-    text = unicodedata.normalize("NFKC", (text or "").lower())
-    text = re.sub(r"[^\w\s]", " ", text)
-    return re.sub(r"\s+", " ", text).strip()
-
-
-def _edit_distance(a, b) -> int:
-    if len(a) < len(b):
-        a, b = b, a
-    prev = list(range(len(b) + 1))
-    for i, ca in enumerate(a, 1):
-        cur = [i]
-        for j, cb in enumerate(b, 1):
-            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
-        prev = cur
-    return prev[-1]
-
-
-def score(ref: str, hyp: str, unit: str) -> float | None:
-    r, h = _norm(ref), _norm(hyp)
-    if unit == "cer":
-        r, h = r.replace(" ", ""), h.replace(" ", "")
-        seq_r, seq_h = list(r), list(h)
-    else:
-        seq_r, seq_h = r.split(), h.split()
-    if not seq_r:
-        return None
-    return _edit_distance(seq_r, seq_h) / len(seq_r)
-
-
 # -- 데이터 ---------------------------------------------------------------
 def load_fleurs(lang: str, limit: int):
     d = FLEURS_ROOT / LANG_DIR[lang]
@@ -378,7 +353,7 @@ async def main_async(a) -> int:
                 except Exception:
                     pass
                 continue
-            s = score(r["reference"], out["transcript"], unit)
+            s, s_raw = score_pair(r["reference"], out["transcript"], unit, a.lang)
             _sec = len(audio) / SAMPLING_RATE
             _laal, _laal_ca = laal_pair(out.pop("segs_policy"), out.pop("segs_ca"),
                                         _sec, r["reference"], a.lang)
@@ -392,7 +367,8 @@ async def main_async(a) -> int:
             results.append({**r, **out, "audio_sec": _sec,
                             "laal_ms": _laal, "laal_ca_ms": _laal_ca,
                             "laal_first_ms": _lf, "laal_stable_ms": _ls,
-                            "n_partial": len(_snaps), unit: s})
+                            "n_partial": len(_snaps),
+                            unit: s, unit + "_raw": s_raw})
             print(f"  [{i}/{len(rows)}] {unit}={s:.3f} " if s is not None
                   else f"  [{i}/{len(rows)}] {unit}=NA ", flush=True)
             print(f"      REF {r['reference'][:80]}", flush=True)
@@ -405,6 +381,7 @@ async def main_async(a) -> int:
             pass
 
     vals = [r[unit] for r in results if r.get(unit) is not None]
+    vals_raw = [r[unit + "_raw"] for r in results if r.get(unit + "_raw") is not None]
     fsl = [r["avg_fsl_sec"] for r in results if r.get("avg_fsl_sec") is not None]
     fin = [r["finalization_lag_sec"] for r in results
            if r.get("finalization_lag_sec") is not None]
@@ -421,7 +398,10 @@ async def main_async(a) -> int:
         "peak_normalize": a.peak_normalize,
         "laal_unit": LAAL_UNIT.get(a.lang, "word"),
         "n_ok": len(results), "n_total": len(rows),
+        # avg_<unit> 은 **표기 정규화 후** 값이다. 원값은 _raw 로 같이 남긴다.
         f"avg_{unit}": round(mean(vals), 4) if vals else None,
+        f"avg_{unit}_raw": round(mean(vals_raw), 4) if vals_raw else None,
+        "score_norm": "numbers+units",
         # LAAL: 정책(결정 시점) / LAAL_CA: 체감(도착 시점). 낮을수록 좋다.
         "laal_ms": round(mean(laal), 1) if laal else None,
         "laal_ca_ms": round(mean(laal_ca), 1) if laal_ca else None,
