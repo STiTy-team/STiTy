@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 세 백엔드 기본값 재실행 (2026-09-10).
+# 세 백엔드 기본값 재실행 (2026-09-10, 09-11 갱신).
 #
 # 이전 표의 문제 셋을 고치고 다시 잰다:
 #  1) Nemotron 만 스윕으로 최적점(rc6)을 쓰고 나머지는 기본값이었다 -> 전부 기본값.
@@ -9,10 +9,19 @@
 #  3) Voxtral 이 발화 중 출력을 안 한 건 우리가 commit 을 끝에 한 번만 보냈기 때문이다.
 #     주기적 commit(1초) 구성을 정식으로 추가하고, 종전 방식도 참고로 같이 잰다.
 #
+# 2026-09-11 추가:
+#  4) Nemotron 어댑터가 finish 에서 한 번에 뱉던 것을 streamer 로 증분화했다.
+#     이전 표의 "Nemotron 지연 꼴찌"는 모델이 아니라 이 어댑터 탓이었다.
+#  5) 입력 레벨을 세 백엔드 동일하게 피크 정규화한다(PEAK). FLEURS 는 클립별
+#     녹음 레벨이 50dB 넘게 벌어져 있고, Voxtral 은 피크 0.005 아래에서 전사가
+#     통째로 빈다(en 빈 전사 4건의 원인). Qwen3/Nemotron 은 내부 정규화가 있어
+#     영향이 적지만, 공정성을 위해 같은 오디오를 먹인다.
+#
 # 클립 수는 세 백엔드 동일하게 ko/en 각 50 (load_fleurs 가 file_id 정렬 후 앞 N개라 같은 클립).
 set -uo pipefail
 
 N=${N:-50}
+PEAK=${PEAK:-0.5}    # 0 이면 원본 레벨. 0.1/0.5/0.95 에서 전사 동일함을 확인했다.
 RUN=${RUN:-$HOME/bench-results/defaults_$(date +%Y%m%d_%H%M%S)}
 WT=$HOME/bench-wt/multi-asr-backends
 BE="$WT/evaluation/backends"
@@ -61,7 +70,7 @@ wait_port(){  # port timeout_sec
   return 1
 }
 
-log "시작 N=$N  RUN=$RUN"
+log "시작 N=$N PEAK=$PEAK RUN=$RUN"
 log "시작 GPU: $(gpu)"
 
 # ── PHASE 1: Voxtral (기본 지연 노브, commit 구성 2종) ─────────────────────
@@ -82,7 +91,7 @@ if ss -ltn 2>/dev/null | grep -q ":$VOX_PORT "; then
       timeout 7200 env LD_LIBRARY_PATH="$HOME/miniforge3/envs/asr-voxtral/lib" \
         "$CONDA" run -n asr-voxtral python "$BE/smoke_voxtral.py" \
           --base-url "http://127.0.0.1:$VOX_PORT" --lang "$L" --limit "$N" \
-          --commit-interval-sec "$CI" --tag "$TAG" \
+          --commit-interval-sec "$CI" --peak-normalize "$PEAK" --tag "$TAG" \
           --out "$RUN/${TAG}_${L}.json" > "$RUN/${TAG}_${L}_client.log" 2>&1 \
         && rec "$TAG.$L" ok || rec "$TAG.$L" FAILED
       tail -2 "$RUN/${TAG}_${L}_client.log" | tee -a "$RUN/step.log"
@@ -104,7 +113,7 @@ for L in ko en; do
   if wait_port "$NEMO_PORT" 120; then
     timeout 7200 "$CONDA" run -n asr-nemotron python "$BE/smoke_client.py" \
         --ws "ws://127.0.0.1:$NEMO_PORT" --lang "$L" --limit "$N" \
-        --tag "nemotron_rc13" --out "$RUN/nemotron_rc13_${L}.json" \
+        --peak-normalize "$PEAK" --tag "nemotron_rc13" --out "$RUN/nemotron_rc13_${L}.json" \
         > "$RUN/nemotron_rc13_${L}_client.log" 2>&1 \
       && rec "nemotron.$L" ok || rec "nemotron.$L" FAILED
     tail -2 "$RUN/nemotron_rc13_${L}_client.log" | tee -a "$RUN/step.log"
@@ -130,7 +139,7 @@ if wait_port "$QWEN_PORT" 240; then
     kill -0 "$CUR" 2>/dev/null || { rec qwen3.serve "중간에 죽음"; break; }
     timeout 7200 "$CONDA" run -n asr-nemotron python "$BE/smoke_client.py" \
         --ws "ws://127.0.0.1:$QWEN_PORT" --lang "$L" --limit "$N" \
-        --tag "qwen3" --out "$RUN/qwen3_${L}.json" \
+        --peak-normalize "$PEAK" --tag "qwen3" --out "$RUN/qwen3_${L}.json" \
         > "$RUN/qwen3_${L}_client.log" 2>&1 \
       && rec "qwen3.$L" ok || rec "qwen3.$L" FAILED
     tail -2 "$RUN/qwen3_${L}_client.log" | tee -a "$RUN/step.log"

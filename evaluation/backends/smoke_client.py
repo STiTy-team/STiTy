@@ -82,6 +82,35 @@ def load_fleurs(lang: str, limit: int):
     return rows[:limit]
 
 
+# -- 오디오 로딩 ----------------------------------------------------------
+def load_audio(path: str, peak: float = 0.0) -> np.ndarray:
+    """wav -> 16k mono float32. peak>0 이면 클립별 피크 정규화.
+
+    FLEURS 는 클립별 녹음 레벨이 50dB 넘게 벌어져 있다(en test 기준 피크
+    0.002 ~ 0.75). Qwen3/Nemotron 은 특징 추출 단계에서 발화 단위 정규화를
+    하므로 영향이 없지만, Voxtral Realtime 은 입력 게인을 그대로 받아
+    피크가 대략 0.005 아래면 **아무 것도 내놓지 않는다**(2026-09-11 실측:
+    빈 전사 4건이 전부 en 최저 레벨 클립이었고, 게인만 올리면 4건 모두
+    정상 전사됐다. 피크 0.1/0.5/0.95 에서 전사가 완전히 동일해 임계값
+    문제이지 게인 민감도가 아니다).
+
+    따라서 레벨은 백엔드별 특성이 아니라 **입력 조건**으로 취급하고, 세
+    백엔드에 같은 정규화를 적용한 오디오를 먹인다.
+    """
+    audio, sr = sf.read(path, dtype="float32")
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    if sr != SAMPLING_RATE:
+        n = int(round(len(audio) * SAMPLING_RATE / sr))
+        audio = np.interp(np.linspace(0, len(audio) - 1, n),
+                          np.arange(len(audio)), audio).astype(np.float32)
+    if peak > 0:
+        cur = float(np.abs(audio).max())
+        if cur > 1e-6:
+            audio = (audio * (peak / cur)).astype(np.float32)
+    return audio
+
+
 # -- 스트리밍 -------------------------------------------------------------
 async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int):
     t0 = time.perf_counter()
@@ -186,13 +215,7 @@ async def main_async(a) -> int:
 
     try:
         for i, r in enumerate(rows, 1):
-            audio, sr = sf.read(r["path"], dtype="float32")
-            if audio.ndim > 1:
-                audio = audio.mean(axis=1)
-            if sr != SAMPLING_RATE:
-                n = int(round(len(audio) * SAMPLING_RATE / sr))
-                audio = np.interp(np.linspace(0, len(audio) - 1, n),
-                                  np.arange(len(audio)), audio).astype(np.float32)
+            audio = load_audio(r["path"], a.peak_normalize)
             try:
                 out = await run_one(ws, audio, a.lang, a.trailing_ms)
             except Exception as e:
@@ -231,6 +254,7 @@ async def main_async(a) -> int:
     audio_total = sum(r["audio_sec"] for r in results) or 1
     summary = {
         "backend": a.tag, "lang": a.lang, "unit": unit,
+        "peak_normalize": a.peak_normalize,
         "n_ok": len(results), "n_total": len(rows),
         f"avg_{unit}": round(mean(vals), 4) if vals else None,
         "avg_first_token_latency_sec": round(mean(lat), 3) if lat else None,
@@ -254,6 +278,10 @@ def main():
     ap.add_argument("--lang", choices=["ko", "en"], default="ko")
     ap.add_argument("--limit", type=int, default=20)
     ap.add_argument("--trailing-ms", type=int, default=1000)
+    ap.add_argument("--peak-normalize", type=float, default=0.0,
+                    metavar="PEAK",
+                    help="클립별 피크를 이 값으로 맞춘다(0=원본 그대로). "
+                         "세 백엔드에 같은 값을 줘야 비교가 성립한다.")
     ap.add_argument("--tag", default="unknown")
     ap.add_argument("--out", default="smoke.json")
     sys.exit(asyncio.run(main_async(ap.parse_args())))

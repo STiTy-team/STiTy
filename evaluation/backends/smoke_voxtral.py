@@ -14,6 +14,8 @@
     <- {"type":"input_audio_buffer.commit"}
     -> {"type":"transcription.delta","delta":"..."} xN
     종료 이벤트가 없으므로 정적(quiet) 타임아웃으로 끊는다.
+    delta 는 디코드 스텝마다 오고 대부분 빈 문자열이다 - 정상 클립도 그렇다.
+    입력 피크가 대략 0.005 아래면 **전부** 빈 문자열로 온다(2026-09-11).
 """
 from __future__ import annotations
 
@@ -31,7 +33,7 @@ import soundfile as sf
 import websockets
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from smoke_client import SAMPLING_RATE, load_fleurs, score  # noqa: E402
+from smoke_client import SAMPLING_RATE, load_audio, load_fleurs, score  # noqa: E402
 
 QUIET_SEC = 3.0      # 마지막 delta 이후 이만큼 조용하면 발화 종료로 본다
 MAX_WAIT_SEC = 30.0  # 그래도 안 끝나면 포기
@@ -149,13 +151,7 @@ async def main_async(a) -> int:
 
     results, t_start = [], time.perf_counter()
     for i, r in enumerate(rows, 1):
-        audio, sr = sf.read(r["path"], dtype="float32")
-        if audio.ndim > 1:
-            audio = audio.mean(axis=1)
-        if sr != SAMPLING_RATE:
-            n = int(round(len(audio) * SAMPLING_RATE / sr))
-            audio = np.interp(np.linspace(0, len(audio) - 1, n),
-                              np.arange(len(audio)), audio).astype(np.float32)
+        audio = load_audio(r["path"], a.peak_normalize)
         try:
             out = await run_one(url, a.model, audio, a.lang, a.trailing_ms,
                                 a.commit_interval_sec)
@@ -180,6 +176,7 @@ async def main_async(a) -> int:
     summary = {
         "backend": a.tag, "lang": a.lang, "unit": unit,
         "commit_interval_sec": a.commit_interval_sec,
+        "peak_normalize": a.peak_normalize,
         "n_ok": len(results), "n_total": len(rows),
         "avg_" + unit: round(mean(vals), 4) if vals else None,
         "avg_first_token_latency_sec": round(mean(lat), 3) if lat else None,
@@ -204,6 +201,9 @@ def main():
     ap.add_argument("--lang", choices=["ko", "en"], default="ko")
     ap.add_argument("--limit", type=int, default=20)
     ap.add_argument("--trailing-ms", type=int, default=1000)
+    ap.add_argument("--peak-normalize", type=float, default=0.0, metavar="PEAK",
+                    help="클립별 피크 정규화. Voxtral 은 피크가 대략 0.005 아래면 "
+                         "델타는 오는데 텍스트가 전부 빈 문자열이다(smoke_client.load_audio 주석).")
     ap.add_argument("--commit-interval-sec", type=float, default=0.0,
                     help="0 이면 끝에 한 번만 commit(증분 출력 없음)")
     ap.add_argument("--tag", default="voxtral")
