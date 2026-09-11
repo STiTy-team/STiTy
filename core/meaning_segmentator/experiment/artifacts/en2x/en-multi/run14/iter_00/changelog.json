@@ -1,0 +1,31 @@
+{
+  "sections_changed": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Never Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "sections_reported": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Never Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "changelog": [
+    "Removed direct restatements of frozen output-format constraints from other sections so that [Output Rules] remains the sole place for those details.",
+    "Added concise guidance in [When to Segment] to discourage cuts that split multiword names, possessives/heads, adjective–head pairs, ambiguous nouns, classifier/affected predicates, and connective attachments.",
+    "Merged the candidate_rules into [Priority Rules] as an explicit list of high-risk patterns with prescribed low-score ranges so risky splits are still marked but deprioritised.",
+    "Tweaked [Decision Procedure] to reference the high-risk scoring guidance during the scoring pass and to avoid repeating [Output Rules] specifics while keeping the two-pass workflow.",
+    "Kept all other existing segmentation principles and examples unchanged to preserve prior behaviour while implementing the critic's measured fixes."
+  ],
+  "size_budget": 20832,
+  "over_budget": false,
+  "candidate_kinds": [
+    "free",
+    "add",
+    "remove"
+  ],
+  "selected_kind": "add"
+}

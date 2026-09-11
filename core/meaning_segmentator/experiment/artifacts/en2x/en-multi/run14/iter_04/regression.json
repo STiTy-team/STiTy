@@ -1,0 +1,126 @@
+{
+  "regressions": [
+    {
+      "id": "en_us_142",
+      "text": "On Wednesday, the United States' National Basketball Association (NBA) suspended its professional basketball season due to concerns regarding COVID-19.",
+      "delta": -1.29961,
+      "budget_T": 6,
+      "delta_at_T": -1.76367,
+      "before_seg": "On Wednesday, the United States' <SEG:50> National Basketball Association (NBA) <SEG:75> suspended its professional basketball season due to concerns regarding COVID-19.",
+      "after_seg": "On Wednesday, the United <SEG:10> States' National Basketball Association (NBA) suspended its professional basketball <SEG:20> season due to concerns regarding COVID-19.",
+      "before_contradiction": [
+        0.0006,
+        0.09,
+        0.0
+      ],
+      "after_contradiction": [
+        0.9967,
+        0.9958,
+        0.0
+      ],
+      "before_adequacy": 0.7223,
+      "after_adequacy": 0.7438,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_320",
+      "text": "The first economic reforms were made under the leadership of Deng Xiaoping.",
+      "delta": -1.24167,
+      "budget_T": 6,
+      "delta_at_T": -1.96215,
+      "before_seg": "The first economic reforms were made <SEG:85> under the leadership of Deng Xiaoping.",
+      "after_seg": "The first economic reforms were made under the leadership <SEG:80> of Deng Xiaoping.",
+      "before_contradiction": [
+        0.0005,
+        0.0
+      ],
+      "after_contradiction": [
+        0.0004,
+        0.0
+      ],
+      "before_adequacy": 0.8186,
+      "after_adequacy": 0.791,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_339",
+      "text": "While on his warm-up lap, Lenz fell off his bike, and was then struck by fellow racer Xavier Zayat.",
+      "delta": -1.13236,
+      "budget_T": 4,
+      "delta_at_T": -2.33586,
+      "before_seg": "While on his <SEG:20> warm-up lap, Lenz fell <SEG:80> off his bike, <SEG:90> and was then struck <SEG:30> by fellow racer Xavier Zayat.",
+      "after_seg": "While on his warm-up lap, <SEG:55> Lenz fell off his bike, <SEG:90> and was then struck <SEG:60> by fellow racer Xavier Zayat.",
+      "before_contradiction": [
+        0.0016,
+        0.0005,
+        0.0009,
+        0.0007,
+        0.0
+      ],
+      "after_contradiction": [
+        0.9939,
+        0.9674,
+        0.9683,
+        0.0
+      ],
+      "before_adequacy": 0.6107,
+      "after_adequacy": 0.6177,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 1
+    },
+    {
+      "id": "en_us_1605",
+      "text": "Due to the long distance from the continent mammals were unable to make the journey making the giant tortoise the primary grazing animal in the Galapagos.",
+      "delta": -1.0989,
+      "budget_T": 12,
+      "delta_at_T": -2.55627,
+      "before_seg": "Due to the long distance from the continent mammals were unable to make the journey making the giant tortoise the primary grazing animal <SEG:85> in the Galapagos.",
+      "after_seg": "Due to the long distance from the continent mammals were unable to make the journey <SEG:85> making the giant tortoise the primary grazing animal in the Galapagos.",
+      "before_contradiction": [
+        0.0026,
+        0.0
+      ],
+      "after_contradiction": [
+        0.001,
+        0.0
+      ],
+      "before_adequacy": 0.6764,
+      "after_adequacy": 0.6985,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_86",
+      "text": "Pittman suggested that conditions wouldn't improve until sometime next week.",
+      "delta": -1.08055,
+      "budget_T": 6,
+      "delta_at_T": -1.82915,
+      "before_seg": "Pittman suggested that conditions <SEG:60> wouldn't improve until sometime next week.",
+      "after_seg": "Pittman suggested that conditions wouldn't improve <SEG:75> until sometime next week.",
+      "before_contradiction": [
+        0.0489,
+        0.0
+      ],
+      "after_contradiction": [
+        0.6199,
+        0.0
+      ],
+      "before_adequacy": 0.6865,
+      "after_adequacy": 0.8339,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    }
+  ],
+  "post_mortem": {
+    "why_failed": "The revision added blanket forbids and conservative wording around splitting noun-phrase modifiers/possessives and an operational note to prefer nearby legal candidates. That removed previously defensible cuts (e.g., the safe cut after United States' and the earlier cut after his in “warm‑up lap”), forcing the deterministic selector to keep nearer, riskier boundaries (e.g., between “United” and “States'”) which raised committed-contradiction rates. Mechanism: removing safe candidates let worse cuts survive.",
+    "blamed_lines": [
+      "Be conservative around tokens that often only look like boundaries: infinitive markers (to), possessives ('s), and short prepositions that commonly continue a phrase. These tokens may still be candidates in some contexts, but require careful scoring.",
+      "Do not mark a boundary that separates a noun-phrase modifier from its head noun. Surface forms to watch for: possessive 's, sequences of adjectives or other pre-head modifiers, titles and institution-name fragments, and essential \"of\" complements. Exception: an explicit punctuation break (comma, dash, semicolon, or parentheses) that clearly sets off an apposition or parenthetical allows a cut.",
+      "Operational note about the deterministic post-process: a later automated step will enforce density, spacing and other format constraints and may remove too-close or otherwise illegal tags. Anticipate that removal when selecting candidates: prefer positions that preserve the original tokens and the intended meaning if some nearby candidates must be dropped. If an ideal insertion point would force an edit of source tokens under later formatting enforcement, choose the nearest legal candidate that preserves tokens and reflect the extra risk with a lower confidence score so the tag is less likely to survive tight budgets."
+    ],
+    "mechanism": "removed_safe_boundary",
+    "lesson": "Avoid adding broad prohibitions that delete previously defensible candidate cuts; any forbid must preserve enough candidates (or provide explicit alternate safe candidates) so the deterministic pruner cannot be forced to keep earlier, riskier splits."
+  }
+}

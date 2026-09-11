@@ -1,0 +1,197 @@
+{
+  "cases": [
+    {
+      "id": "en_us_1048",
+      "error_type": "placement",
+      "span": "Auckland's National Women's",
+      "evidence": "Segment cut before the actual head noun 'Hospital', causing the translator to choose the wrong institution type.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "- 20–44 (Low confidence)\n  - Positions after or before tokens that often continue the same phrase and thus are frequently revised: prepositions and complementizers used in phrasal continuations. Concrete surface forms: to (infinitive marker), of, that, which, 's (possessive/'s), in, on, by, for (prepositional), as (comparative/role).",
+      "replaces": "- 20–44 (Low confidence)\n  - Positions after or before tokens that often continue the same phrase and thus are frequently revised: prepositions and complementizers used in phrasal continuations. Concrete surface forms: to (infinitive marker), of, that, which, 's (possessive/'s), in, on, by, for (prepositional), as (comparative/role).",
+      "proposed_rule": "Never finalize the type or head of a multiword named entity or institution until the syntactic head noun (final noun) is visible; places inside a proper name or between a possessive and its head must be scored very low (<=15) unless closed by punctuation.",
+      "example_pair": {
+        "input": "He trained as an obstetrician and began to work at the Auckland's National Women's Hospital in 1959.",
+        "output": "He trained as an obstetrician <SEG:90> and began to work at the Auckland's National Women's Hospital <SEG:90> in 1959."
+      }
+    },
+    {
+      "id": "en_us_1416",
+      "error_type": "placement",
+      "span": "the cells affected",
+      "evidence": "Boundary emitted '...genetic material affected' before the clause that classifies the cells, so the predicate scope attached incorrectly.",
+      "cause": "modifier scope",
+      "blamed_rule": "- 45–69 (Medium confidence)\n  - Preceding text is renderable but the remainder could plausibly alter force or scope. Typical cases include positions before or after subordinate markers or discourse markers where the following clause adds an important qualification or reason. Example surface cues: after a subordinating clause closer (a comma after a subordinate clause), before/after words such as \"while\", \"although\", \"when\", \"because\", \"if\", \"once\", \"during\". Use ~50 where the remainder could plausibly overturn the interpretation.",
+      "replaces": "- 45–69 (Medium confidence)\n  - Preceding text is renderable but the remainder could plausibly alter force or scope. Typical cases include positions before or after subordinate markers or discourse markers where the following clause adds an important qualification or reason. Example surface cues: after a subordinating clause closer (a comma after a subordinate clause), before/after words such as \"while\", \"although\", \"when\", \"because\", \"if\", \"once\", \"during\". Use ~50 where the remainder could plausibly overturn the interpretation.",
+      "proposed_rule": "If a boundary would separate a classifier/affected predicate (e.g., 'affected', 'classified', 'diagnosed') from the noun phrase it modifies or from a following classifier clause, do not finalize that predicate — mark the position defensible but score it very low (<=20) or avoid cutting until the classifier/clause appears.",
+      "example_pair": {
+        "input": "Mutations can have a variety of different effects depending on the type of mutation, the significance of the piece of genetic material affected and whether the cells affected are germ-line cells.",
+        "output": "Mutations can have a variety of different effects <SEG:85> depending on the type of mutation, <SEG:50> the significance of the piece of genetic material affected and whether the cells affected are germ-line cells."
+      }
+    },
+    {
+      "id": "en_us_1575",
+      "error_type": "placement",
+      "span": "once an agreement is signed while",
+      "evidence": "Cut before the clause that determines attachment of durations and scope ('only for five years'), causing opposite readings for who remains and for how long.",
+      "cause": "modifier scope",
+      "blamed_rule": "- 45–69 (Medium confidence)\n  - Preceding text is renderable but the remainder could plausibly alter force or scope. Typical cases include positions before or after subordinate markers or discourse markers where the following clause adds an important qualification or reason. Example surface cues: after a subordinating clause closer (a comma after a subordinate clause), before/after words such as \"while\", \"although\", \"when\", \"because\", \"if\", \"once\", \"during\". Use ~50 where the remainder could plausibly overturn the interpretation.",
+      "replaces": "- 45–69 (Medium confidence)\n  - Preceding text is renderable but the remainder could plausibly alter force or scope. Typical cases include positions before or after subordinate markers or discourse markers where the following clause adds an important qualification or reason. Example surface cues: after a subordinating clause closer (a comma after a subordinate clause), before/after words such as \"while\", \"although\", \"when\", \"because\", \"if\", \"once\", \"during\". Use ~50 where the remainder could plausibly overturn the interpretation.",
+      "proposed_rule": "When a temporal/connective token (once, while, for [duration], only for, until, when) could attach to either preceding or following clause and thereby flip agency or duration, give any boundary that separates the connective from its clause a very low score (<=25) or avoid marking it until the attaching clause is visible.",
+      "example_pair": {
+        "input": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed while the PA agrees to leave such presence only for five years.",
+        "output": "Israel demands an ongoing military presence in the valley for ten years <SEG:80> once an agreement is signed while the PA agrees to leave such presence only for five years."
+      }
+    },
+    {
+      "id": "en_us_337",
+      "error_type": "placement",
+      "span": "To finish, Turkish",
+      "evidence": "Segment split between an adjective and its head noun, forcing a premature verb choice that changed meaning ('played' vs 'performed the show').",
+      "cause": "head not yet arrived",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Do not place boundaries between adjectival modifiers and their head noun when the head noun (or immediately following noun) will identify the actor of a predicate; such adjective–head splits must be scored very low (<=15) unless separated by punctuation.",
+      "example_pair": {
+        "input": "To finish, Turkish dance group Fire of Anatolia performed the show \"Troy\".",
+        "output": "To finish, Turkish dance group Fire of Anatolia performed <SEG:90> the show \"Troy\"."
+      }
+    },
+    {
+      "id": "en_us_87",
+      "error_type": "placement",
+      "span": "for sealers",
+      "evidence": "Translator chose a wrong noun sense ('sealers' -> '封印者') because the boundary left the word isolated without disambiguating context.",
+      "cause": "other",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Delay committing to a specific sense for ambiguous nouns (occupations, uncommon compounds) until disambiguating context appears; when a boundary would leave such nouns isolated, score it low (<=20) so higher-latency selections keep context together.",
+      "example_pair": {
+        "input": "The amount and thickness of the pack ice, according to Pittman, is the worst it has been for sealers in the past 15 years.",
+        "output": "The amount and thickness of the pack ice, according to Pittman, is the worst it has been for sealers in the past 15 years."
+      }
+    }
+  ],
+  "summary": "The prompt currently allows many defensible cuts but then over-trusts them: it permits segmentation inside multiword names, between modifiers and their heads, and before subordinate or connective clauses, and it does not force sufficiently low scores for those risky positions. Fixes: ban or strongly demote cuts that split proper-name heads or modifier–head pairs, and demote segment candidates that separate connectives/temporal markers from their attaching clause so high-ranked boundaries can't commit prematurely.",
+  "aggregate": {
+    "dominant_error": null,
+    "dominant_basis": "No corpus rate identifies a dominant failure. Read the cases and `judge_distribution` for WHICH mechanism to fix — do not infer a rate from `case_label_counts`, those cases were selected for being the worst.",
+    "measured_rates": {
+      "coverage": {
+        "n": 0,
+        "of_n": 30,
+        "rate": 0.0,
+        "of": "all sentences scored — a true corpus rate",
+        "meaning": "sentences where the tightest budget asked for boundaries the prompt never marked, so pieces are missing outright"
+      },
+      "premature_among_judged": {
+        "n": 9,
+        "of_n": 24,
+        "rate": 0.375,
+        "of": "boundaries judged this iteration, selected as the WORST by measured contradiction — NOT a corpus rate, do not compare it against `coverage`"
+      }
+    },
+    "case_label_counts": {
+      "counts": {
+        "placement": 5
+      },
+      "of_n": 5,
+      "of": "the selected worst cases — NOT a rate"
+    },
+    "stuck_hint": "",
+    "priority_audit": [
+      {
+        "feature": "score 80-89",
+        "n": 25,
+        "mean_score": 82.2,
+        "contradiction": 0.1088,
+        "over_trust": 0.2814,
+        "judged_n": 8,
+        "safe_rate": 0.5,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.5
+      },
+      {
+        "feature": "score 70-79",
+        "n": 18,
+        "mean_score": 72.2,
+        "contradiction": 0.1148,
+        "over_trust": 0.169,
+        "judged_n": 5,
+        "safe_rate": 1.0,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.0
+      },
+      {
+        "feature": "뒤 구두점 ','",
+        "n": 23,
+        "mean_score": 68.9,
+        "contradiction": 0.0085,
+        "over_trust": 0.0094,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "상대위치 1/3",
+        "n": 38,
+        "mean_score": 59.9,
+        "contradiction": 0.0735,
+        "over_trust": 0.0068,
+        "judged_n": 9,
+        "safe_rate": 0.67,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.33
+      },
+      {
+        "feature": "상대위치 0/3",
+        "n": 46,
+        "mean_score": 60.2,
+        "contradiction": 0.0269,
+        "over_trust": 0.0035,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "score 50-69",
+        "n": 37,
+        "mean_score": 54.9,
+        "contradiction": 0.0589,
+        "over_trust": -0.0275,
+        "judged_n": 9,
+        "safe_rate": 0.56,
+        "premature_rate": 0.11,
+        "mistranslated_rate": 0.33
+      }
+    ],
+    "judge_distribution": {
+      "n_boundaries_judged": 24,
+      "verdicts": {
+        "safe": 15,
+        "mistranslated": 8,
+        "premature": 1
+      },
+      "n_with_cause": 9,
+      "causes": {
+        "other": {
+          "n": 5,
+          "share": 0.556
+        },
+        "head not yet arrived": {
+          "n": 2,
+          "share": 0.222
+        },
+        "modifier scope": {
+          "n": 2,
+          "share": 0.222
+        }
+      }
+    },
+    "max_missing_boundaries": 0.0,
+    "rank_lift": 0.13959,
+    "rank_lift_t": 3.06,
+    "summary": "The prompt currently allows many defensible cuts but then over-trusts them: it permits segmentation inside multiword names, between modifiers and their heads, and before subordinate or connective clauses, and it does not force sufficiently low scores for those risky positions. Fixes: ban or strongly demote cuts that split proper-name heads or modifier–head pairs, and demote segment candidates that separate connectives/temporal markers from their attaching clause so high-ranked boundaries can't commit prematurely."
+  }
+}

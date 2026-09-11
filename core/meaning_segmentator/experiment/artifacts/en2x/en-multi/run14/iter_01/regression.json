@@ -1,0 +1,124 @@
+{
+  "regressions": [
+    {
+      "id": "en_us_1102",
+      "text": "The best indication of internal poisoning may be the presence of an open container of medication or toxic household chemicals.",
+      "delta": -1.67802,
+      "budget_T": 12,
+      "delta_at_T": -2.53156,
+      "before_seg": "The best indication of internal poisoning <SEG:85> may be the presence of an open container of medication or toxic household chemicals.",
+      "after_seg": "The best indication of internal poisoning may be the presence <SEG:75> of an open container of medication or toxic household chemicals.",
+      "before_contradiction": [
+        0.0071,
+        0.0
+      ],
+      "after_contradiction": [
+        0.0004,
+        0.0
+      ],
+      "before_adequacy": 0.72,
+      "after_adequacy": 0.7311,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_418",
+      "text": "The number of native speakers varies depending on whether or not very closely related dialects are counted.",
+      "delta": -1.423,
+      "budget_T": 6,
+      "delta_at_T": -1.76277,
+      "before_seg": "The number of native speakers varies <SEG:85> depending on whether or not very closely related <SEG:55> dialects are counted.",
+      "after_seg": "The number of native speakers varies <SEG:85> depending on whether or not <SEG:45> very closely related dialects are counted.",
+      "before_contradiction": [
+        0.0005,
+        0.0007,
+        0.0
+      ],
+      "after_contradiction": [
+        0.0005,
+        0.0006,
+        0.0
+      ],
+      "before_adequacy": 0.8155,
+      "after_adequacy": 0.7579,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_221",
+      "text": "Despite his comments he said he will be supporting the British competitors at the 2012 Olympics being held in London.",
+      "delta": -1.23607,
+      "budget_T": 12,
+      "delta_at_T": -2.54382,
+      "before_seg": "Despite his comments he said he will be supporting <SEG:80> the British competitors at the 2012 Olympics being held in London.",
+      "after_seg": "Despite his comments he said he will be supporting the British competitors <SEG:85> at the 2012 Olympics being held in London.",
+      "before_contradiction": [
+        0.0004,
+        0.0
+      ],
+      "after_contradiction": [
+        0.8562,
+        0.0
+      ],
+      "before_adequacy": 0.7536,
+      "after_adequacy": 0.7736,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_835",
+      "text": "In many countries with such a law, local hotels will handle the registration (make sure to ask).",
+      "delta": -1.1005,
+      "budget_T": 6,
+      "delta_at_T": -1.12764,
+      "before_seg": "In many countries with such a law, <SEG:80> local hotels will handle the registration <SEG:90> (make sure to ask).",
+      "after_seg": "In many countries with such a law, local hotels <SEG:45> will handle the registration <SEG:90> (make sure to ask).",
+      "before_contradiction": [
+        0.0003,
+        0.0004,
+        0.0
+      ],
+      "after_contradiction": [
+        0.0003,
+        0.0003,
+        0.0
+      ],
+      "before_adequacy": 0.7847,
+      "after_adequacy": 0.6827,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_1605",
+      "text": "Due to the long distance from the continent mammals were unable to make the journey making the giant tortoise the primary grazing animal in the Galapagos.",
+      "delta": -1.0989,
+      "budget_T": 12,
+      "delta_at_T": -2.55627,
+      "before_seg": "Due to the long distance from the continent mammals were unable to make the journey making the giant tortoise the primary grazing animal <SEG:80> in the Galapagos.",
+      "after_seg": "Due to the long distance from the continent mammals were unable to make the journey <SEG:85> making the giant tortoise the primary grazing animal in the Galapagos.",
+      "before_contradiction": [
+        0.0026,
+        0.0
+      ],
+      "after_contradiction": [
+        0.001,
+        0.0
+      ],
+      "before_adequacy": 0.6764,
+      "after_adequacy": 0.6985,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    }
+  ],
+  "post_mortem": {
+    "why_failed": "The revision added a set of “special high-risk” rules and applied them during scoring, which systematically demoted otherwise-defensible cuts (e.g., adjective–head, noun-internal, and object splits). By forcing very low scores on those patterns the deterministic selector had to keep alternative boundaries that commit earlier or misattach (examples: the cut moved away from 'internal poisoning' and from the object split after 'supporting'), raising contradiction and lowering the objective.",
+    "blamed_lines": [
+      "Also prefer to avoid committing early",
+      "Special high-risk patterns (apply these",
+      "- If a candidate split would separate an",
+      "+2) Scoring pass: For each marked"
+    ],
+    "mechanism": "removed_safe_boundary",
+    "lesson": "Do not convert commonly defensible candidate positions into near-prohibitions by assigning blanket very-low scores; if adding high-risk patterns, keep candidacy generous and calibrate scores so safe cuts survive realistic latency budgets."
+  }
+}

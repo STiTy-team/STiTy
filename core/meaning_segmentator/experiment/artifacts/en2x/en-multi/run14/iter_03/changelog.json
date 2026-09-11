@@ -1,0 +1,31 @@
+{
+  "sections_changed": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Never Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "sections_reported": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Never Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "changelog": [
+    "Core Principles: Removed references to output-format constraints so that all formatting/spacing/punctuation rules live only in [Output Rules]. This prevents accidental restatement of frozen constraints.",
+    "When to Segment: Clarified permissive triggers (clause-connectors, commas, parentheticals, fillers) and emphasised conservatism around apparent boundaries (infinitives, possessives, multiword names) without turning common candidates into prohibitions.",
+    "Never Segment: Added explicit forbids for splits that are always harmful: separating NP modifiers (including possessive 's, adjective sequences, and essential 'of' complements) from their head nouns, and separating verbs from their essential objects/complements. Each forbid allows an exception when clear punctuation (comma, dash, semicolon, parentheses) marks an explicit break.",
+    "Priority Rules: Added scoring guidance for cuts that affect scope/time modifiers (duration, 'only', frequency phrases) and for verb–object adjacency; these receive lowered confidence so they are unlikely to survive tight budgets rather than being removed outright.",
+    "Decision Procedure: Removed direct references to [Output Rules] and added a short operational guideline to anticipate the deterministic post-process (density/spacing enforcement) so candidate selection prefers positions that preserve the original tokens and avoid forcing edits; if an exact insertion would require rewriting, choose the nearest legal candidate and mark it with appropriately lower confidence."
+  ],
+  "size_budget": 20832,
+  "over_budget": false,
+  "candidate_kinds": [
+    "free",
+    "add",
+    "remove"
+  ],
+  "selected_kind": "free"
+}

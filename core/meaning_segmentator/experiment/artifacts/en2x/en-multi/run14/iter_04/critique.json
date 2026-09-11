@@ -1,0 +1,181 @@
+{
+  "cases": [
+    {
+      "id": "en_us_1048",
+      "error_type": "placement",
+      "span": "Auckland's National Women's Hospital",
+      "evidence": "Cut occurred before the head noun 'Hospital', causing translator to guess institution type ('center') and produce a wrong lexical choice.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Be generous when deciding candidacy: a position is a candidate if the text before it is a coherent, renderable stretch (a noun phrase with its predicate, a clause, a parenthetical phrase that can be translated alone, a discourse phrase that can stand alone). Mark most positions between syntactic phrases rather than only a handful of \"obvious\" ones.",
+      "replaces": "Be generous when deciding candidacy: a position is a candidate if the text before it is a coherent, renderable stretch (a noun phrase with its predicate, a clause, a parenthetical phrase that can be translated alone, a discourse phrase that can stand alone). Mark most positions between syntactic phrases rather than only a handful of \"obvious\" ones.",
+      "proposed_rule": "Candidacy must be syntax-aware: do not mark a boundary when the preceding span ends in pre-head material (possessive, title, adjective sequence, national/organizational qualifier) if a likely head noun (institution/organization/location/common-noun nucleus) appears within the next 3 tokens; treat the span as non-renderable until that head token arrives.",
+      "example_pair": {
+        "input": "He trained as an obstetrician and began to work at the Auckland's National Women's Hospital in 1959.",
+        "output": "He trained as an obstetrician <SEG:90> and began to work at the Auckland's National Women's Hospital <SEG:85> in 1959."
+      }
+    },
+    {
+      "id": "en_us_111",
+      "error_type": "placement",
+      "span": "Stardust will set a new all-time record",
+      "evidence": "Cuts before the object/complement forced the verb 'set' to be rendered as a physical 'fall' rather than 'set a record' — the verb's object arrived later.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Be generous when deciding candidacy: a position is a candidate if the text before it is a coherent, renderable stretch (a noun phrase with its predicate, a clause, a parenthetical phrase that can be translated alone, a discourse phrase that can stand alone). Mark most positions between syntactic phrases rather than only a handful of \"obvious\" ones.",
+      "replaces": "Be generous when deciding candidacy: a position is a candidate if the text before it is a coherent, renderable stretch (a noun phrase with its predicate, a clause, a parenthetical phrase that can be translated alone, a discourse phrase that can stand alone). Mark most positions between syntactic phrases rather than only a handful of \"obvious\" ones.",
+      "proposed_rule": "Do not mark a boundary immediately after a finite verb when that verb lacks an expressed object/complement in the preceding span and a noun phrase or clause likely serving as its complement appears within the next 4 tokens; delay the cut until the object/complement or punctuation that closes the predicate appears.",
+      "example_pair": {
+        "input": "Stardust will set a new all-time record for being the fastest spacecraft to return to Earth, breaking the previous record set in May of 1969.",
+        "output": "Stardust will set a new all-time record for being the fastest spacecraft to return to Earth, <SEG:85> breaking the previous record set in May of 1969 <SEG:90>."
+      }
+    },
+    {
+      "id": "en_us_1575",
+      "error_type": "priority",
+      "span": "while the PA agrees to leave such presence only for five years",
+      "evidence": "Boundary scored high/kept early so the translation assigned the wrong agent/temporal scope; the duration 'for five years' disambiguates who leaves and for how long.",
+      "cause": "wrong participant",
+      "blamed_rule": "- subordinating / clause-introducing words when they end a clause in surface position: while, although, when, because, once, if, during, after, before",
+      "replaces": "",
+      "proposed_rule": "When a cut would separate a main clause from a subordinate/contrast clause (while/although/whereas/etc.) that contains scope-limiting modifiers (only, for X years, until, permanently, temporarily, exclusively), lower the confidence (demote) or withhold the boundary until the subordinate's scope token (duration/only/etc.) appears; do not let such boundaries survive tight budgets.",
+      "example_pair": {
+        "input": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed while the PA agrees to leave such presence only for five years.",
+        "output": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed <SEG:90> while the PA agrees to leave such presence only for five years <SEG:85>."
+      }
+    },
+    {
+      "id": "en_us_532",
+      "error_type": "format_violation",
+      "span": "Eighteen holes are played during a regular round,",
+      "evidence": "Model output altered token order / wording (text_modified). The prompt already forbids edits but the model still rewrote the source instead of inserting tags.",
+      "cause": "other",
+      "blamed_rule": "Insert <SEG:s> tags only. Do NOT change, correct, or paraphrase the original text in any way.",
+      "replaces": "",
+      "proposed_rule": "Strict identity enforcement: the output must be byte-identical to the original text except for inserted <SEG:s> tokens and the required single spaces. If inserting a tag at a chosen point would require changing, moving, or re-tokenizing source words or punctuation to satisfy spacing/format rules, do not choose that point — instead pick the nearest token boundary that preserves exact original characters. Never paraphrase or reorder text; prefer fewer safe tags to any edit.",
+      "example_pair": {
+        "input": "Eighteen holes are played during a regular round, with players usually starting on the first hole on the course and finishing on the eighteenth.",
+        "output": "Eighteen holes are played during a regular round, <SEG:70> with players usually starting on the first hole on the course <SEG:60> and finishing on the eighteenth <SEG:50>."
+      }
+    }
+  ],
+  "summary": "The prompt is over-generous in candidacy without a syntactic gate, so cuts frequently appear before heads (noun or object) and before clause-scope modifiers; that produces high-contrast errors. Also the model sometimes rewrites source text despite the output-rule prohibition. Fixes: add narrow, operational syntactic checks in the candidacy pass (hold cuts until head nouns/objects or scope tokens arrive) and enforce strict identity when inserting tags.",
+  "aggregate": {
+    "dominant_error": null,
+    "dominant_basis": "No corpus rate identifies a dominant failure. Read the cases and `judge_distribution` for WHICH mechanism to fix — do not infer a rate from `case_label_counts`, those cases were selected for being the worst.",
+    "measured_rates": {
+      "coverage": {
+        "n": 1,
+        "of_n": 30,
+        "rate": 0.0333,
+        "of": "all sentences scored — a true corpus rate",
+        "meaning": "sentences where the tightest budget asked for boundaries the prompt never marked, so pieces are missing outright"
+      },
+      "premature_among_judged": {
+        "n": 6,
+        "of_n": 24,
+        "rate": 0.25,
+        "of": "boundaries judged this iteration, selected as the WORST by measured contradiction — NOT a corpus rate, do not compare it against `coverage`"
+      }
+    },
+    "case_label_counts": {
+      "counts": {
+        "placement": 2,
+        "priority": 1,
+        "format_violation": 1
+      },
+      "of_n": 4,
+      "of": "the selected worst cases — NOT a rate"
+    },
+    "stuck_hint": "",
+    "priority_audit": [
+      {
+        "feature": "score 70-79",
+        "n": 14,
+        "mean_score": 73.2,
+        "contradiction": 0.2272,
+        "over_trust": 0.1787,
+        "judged_n": 6,
+        "safe_rate": 0.67,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.33
+      },
+      {
+        "feature": "score 80-89",
+        "n": 29,
+        "mean_score": 82.6,
+        "contradiction": 0.0863,
+        "over_trust": 0.1345,
+        "judged_n": 10,
+        "safe_rate": 0.8,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.2
+      },
+      {
+        "feature": "상대위치 1/3",
+        "n": 36,
+        "mean_score": 66.9,
+        "contradiction": 0.1102,
+        "over_trust": 0.0298,
+        "judged_n": 11,
+        "safe_rate": 0.73,
+        "premature_rate": 0.09,
+        "mistranslated_rate": 0.18
+      },
+      {
+        "feature": "뒤 구두점 ','",
+        "n": 19,
+        "mean_score": 68.9,
+        "contradiction": 0.0499,
+        "over_trust": 0.0217,
+        "judged_n": 5,
+        "safe_rate": 0.8,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.2
+      },
+      {
+        "feature": "상대위치 0/3",
+        "n": 46,
+        "mean_score": 66.5,
+        "contradiction": 0.0826,
+        "over_trust": 0.0195,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "score 90-100",
+        "n": 8,
+        "mean_score": 92.5,
+        "contradiction": 0.0,
+        "over_trust": 0.0
+      }
+    ],
+    "judge_distribution": {
+      "n_boundaries_judged": 24,
+      "verdicts": {
+        "safe": 18,
+        "mistranslated": 5,
+        "premature": 1
+      },
+      "n_with_cause": 6,
+      "causes": {
+        "head not yet arrived": {
+          "n": 4,
+          "share": 0.667
+        },
+        "other": {
+          "n": 1,
+          "share": 0.167
+        },
+        "wrong participant": {
+          "n": 1,
+          "share": 0.167
+        }
+      }
+    },
+    "max_missing_boundaries": 0.069,
+    "rank_lift": 0.10519,
+    "rank_lift_t": 3.5,
+    "summary": "The prompt is over-generous in candidacy without a syntactic gate, so cuts frequently appear before heads (noun or object) and before clause-scope modifiers; that produces high-contrast errors. Also the model sometimes rewrites source text despite the output-rule prohibition. Fixes: add narrow, operational syntactic checks in the candidacy pass (hold cuts until head nouns/objects or scope tokens arrive) and enforce strict identity when inserting tags."
+  }
+}

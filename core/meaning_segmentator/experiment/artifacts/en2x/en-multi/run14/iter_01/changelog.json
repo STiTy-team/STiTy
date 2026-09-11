@@ -1,0 +1,31 @@
+{
+  "sections_changed": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Never Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "sections_reported": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Never Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "changelog": [
+    "Clarified core principle: keep candidacy generous and avoid turning common candidates into prohibitions; only give near-zero scores for clearly non-renderable lone modifiers.",
+    "Extended [When to Segment] with the critic's surface patterns (multiword institution heads, predicates/classifiers, ambiguous nouns, temporal/connective modifiers, isolated modifiers, noun-lists) but kept them as candidate triggers rather than forbidding cuts.",
+    "Removed any repetition of [Output Rules] from other sections so the frozen output format appears only once.",
+    "Merged the candidate_rules into [Priority Rules] as calibrated scoring ranges for each risky pattern, ensuring scores are low-to-moderate rather than blanket zeros so safe boundaries can still survive budget selection.",
+    "Made the [Decision Procedure] scoring pass explicitly consult the risky-pattern anchors and forbade blanket demotions; only isolated non-renderable fragments may receive near-0 scores."
+  ],
+  "size_budget": 20832,
+  "over_budget": false,
+  "candidate_kinds": [
+    "free",
+    "add",
+    "remove"
+  ],
+  "selected_kind": "add"
+}

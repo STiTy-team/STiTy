@@ -1,0 +1,211 @@
+{
+  "cases": [
+    {
+      "id": "en_us_1048",
+      "error_type": "placement",
+      "span": "the Auckland's National Women's <SEG:80> Hospital",
+      "evidence": "Boundary allowed the translator to pick a wrong head/type for the multiword institution (center/research institute) before 'Hospital' arrived; the later word overturns the piece's meaning.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Do not finalize the semantic type or head of a multiword place/institution name before the name's head noun appears; such positions may be marked as candidates but must be scored low until the head noun (e.g., 'Hospital', 'Center', 'University') is visible.",
+      "example_pair": {
+        "input": "He trained as an obstetrician and began to work at the Auckland's National Women's Hospital in 1959.",
+        "output": "He trained as an obstetrician <SEG:90> and began to work at the Auckland's National Women's Hospital <SEG:85> in 1959."
+      }
+    },
+    {
+      "id": "en_us_1416",
+      "error_type": "placement",
+      "span": "the significance of the piece <SEG:30> of genetic material <SEG:65> affected",
+      "evidence": "A cut before the predicate/affected-classifier let the translator assert 'are affected' or misattach 'affected' to the wrong noun; the following clause (whether...) determines scope and classification.",
+      "cause": "modifier scope",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Avoid high-confidence segmentation before predicates or classifiers that determine whether entities are affected or how they are classified (e.g., 'affected', relative clauses, classifier adjectives). Mark candidates but give them low scores until the classifier/predicate or disambiguating clause arrives.",
+      "example_pair": {
+        "input": "Mutations can have a variety of different effects depending on the type of mutation, the significance of the piece of genetic material affected and whether the cells affected are germ-line cells.",
+        "output": "Mutations can have a variety of different effects <SEG:85> depending on the type of mutation, the significance of the piece of genetic material affected and whether the cells affected are germ-line cells <SEG:75>."
+      }
+    },
+    {
+      "id": "en_us_87",
+      "error_type": "placement",
+      "span": "is the worst <SEG:85> it has been for sealers <SEG:80> in the past 15 years",
+      "evidence": "Boundary before the disambiguating temporal/location/idiomatic context allowed a wrong noun sense for 'sealers' (rendered as unrelated word); the later context decides the intended sense.",
+      "cause": "other",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Delay finalizing the sense of ambiguous common nouns (especially rare or polysemous nouns) until disambiguating context appears; treat cuts before disambiguation as low-confidence candidates so translators will not commit to a single sense early.",
+      "example_pair": {
+        "input": "The amount and thickness of the pack ice, according to Pittman, is the worst it has been for sealers in the past 15 years.",
+        "output": "The amount and thickness of the pack ice, according to Pittman, <SEG:70> is the worst it has been for sealers in the past 15 years."
+      }
+    },
+    {
+      "id": "en_us_1575",
+      "error_type": "placement",
+      "span": "once an agreement is signed <SEG:55> while the PA agrees <SEG:50> to leave such presence <SEG:60> only for five years",
+      "evidence": "A cut before the limiting quantifier ('only for five years') caused incorrect attachment of the temporal/duration modifier and reversed which party the duration applied to.",
+      "cause": "modifier scope",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Do not commit to the attachment of temporal/connective modifiers (once/while/for X years/only) until the following clause or quantifier that establishes their scope is visible; mark these positions but assign low confidence until the attachment target is clear.",
+      "example_pair": {
+        "input": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed while the PA agrees to leave such presence only for five years.",
+        "output": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed <SEG:85> while the PA agrees to leave such presence only for five years."
+      }
+    },
+    {
+      "id": "en_us_337",
+      "error_type": "placement",
+      "span": "To finish, Turkish <SEG:40> dance group Fire of Anatolia performed <SEG:90> the show \"Troy\"",
+      "evidence": "Boundary left an isolated modifier ('Turkish') as a standalone renderable stretch; that fragment is not a coherent translatable unit and led to a wrong verb choice (played vs performed/show).",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Do not mark a position where the preceding stretch is not a renderable stretch at all (fragments that leave no coherent piece to translate). For example, you may not mark a boundary immediately after an isolated determiner or article if the preceding words do not form a translatable unit.",
+      "replaces": "",
+      "proposed_rule": "Treat isolated modifiers (adjectives, nationality adjectives, single pre-nominal modifiers) like isolated determiners: do not mark a cut that leaves only a lone modifier with no head; if tempted, mark it but force a very low score (near 0).",
+      "example_pair": {
+        "input": "To finish, Turkish dance group Fire of Anatolia performed the show \"Troy\".",
+        "output": "To finish, Turkish dance group Fire of Anatolia performed <SEG:90> the show \"Troy\"."
+      }
+    },
+    {
+      "id": "en_us_1105",
+      "error_type": "placement",
+      "span": "and many of the smaller pyramids, <SEG:80> tombs, and temples <SEG:80> were built to",
+      "evidence": "A boundary followed a nominal list without its governing verb, allowing the fragment to be rendered as an independent assertion (existence of many small pyramids) before the predicate arrived.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Be generous when deciding candidacy: a position is a candidate if the text before it is a coherent, renderable stretch (a noun phrase with its predicate, a clause, a parenthetical phrase that can be translated alone, a discourse phrase that can stand alone).",
+      "replaces": "",
+      "proposed_rule": "Operationalise the 'renderable' test: if the preceding span is a bare NP or a noun-list lacking a governing verb/predicate, either (a) do not mark the boundary, or (b) if you must mark it to meet coverage, score it low (<=30) and translate the fragment neutrally rather than asserting a predicate.",
+      "example_pair": {
+        "input": "The great pyramid was created to honor the Pharaoh Khufu, and many of the smaller pyramids, tombs, and temples were built to honor Khufu's wives and family members.",
+        "output": "The great pyramid was created <SEG:85> to honor the Pharaoh Khufu, <SEG:85> and many of the smaller pyramids, tombs, and temples were built to honor Khufu's wives and family members."
+      }
+    }
+  ],
+  "summary": "Most failures are placement errors where the prompt either permits cuts that leave heads, classifiers, or disambiguating context to the right, or it fails to force low scores on those risky cuts. The prompt already forbids non-renderable fragments in one example line, but it lacks explicit operational rules for multiword names, ambiguous noun senses, predicate/classifier scope, and temporal-attachment patterns — add rules that keep such candidates low-scored or delay high confidence until disambiguators arrive.",
+  "aggregate": {
+    "dominant_error": null,
+    "dominant_basis": "No corpus rate identifies a dominant failure. Read the cases and `judge_distribution` for WHICH mechanism to fix — do not infer a rate from `case_label_counts`, those cases were selected for being the worst.",
+    "measured_rates": {
+      "coverage": {
+        "n": 0,
+        "of_n": 30,
+        "rate": 0.0,
+        "of": "all sentences scored — a true corpus rate",
+        "meaning": "sentences where the tightest budget asked for boundaries the prompt never marked, so pieces are missing outright"
+      },
+      "premature_among_judged": {
+        "n": 9,
+        "of_n": 24,
+        "rate": 0.375,
+        "of": "boundaries judged this iteration, selected as the WORST by measured contradiction — NOT a corpus rate, do not compare it against `coverage`"
+      }
+    },
+    "case_label_counts": {
+      "counts": {
+        "placement": 6
+      },
+      "of_n": 6,
+      "of": "the selected worst cases — NOT a rate"
+    },
+    "stuck_hint": "",
+    "priority_audit": [
+      {
+        "feature": "score 80-89",
+        "n": 25,
+        "mean_score": 82.2,
+        "contradiction": 0.1088,
+        "over_trust": 0.2814,
+        "judged_n": 8,
+        "safe_rate": 0.5,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.5
+      },
+      {
+        "feature": "score 70-79",
+        "n": 18,
+        "mean_score": 72.2,
+        "contradiction": 0.1148,
+        "over_trust": 0.169,
+        "judged_n": 5,
+        "safe_rate": 1.0,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.0
+      },
+      {
+        "feature": "뒤 구두점 ','",
+        "n": 23,
+        "mean_score": 68.9,
+        "contradiction": 0.0085,
+        "over_trust": 0.0094,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "상대위치 1/3",
+        "n": 38,
+        "mean_score": 59.9,
+        "contradiction": 0.0735,
+        "over_trust": 0.0068,
+        "judged_n": 9,
+        "safe_rate": 0.67,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.33
+      },
+      {
+        "feature": "상대위치 0/3",
+        "n": 46,
+        "mean_score": 60.2,
+        "contradiction": 0.0269,
+        "over_trust": 0.0035,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "score 50-69",
+        "n": 37,
+        "mean_score": 54.9,
+        "contradiction": 0.0589,
+        "over_trust": -0.0275,
+        "judged_n": 9,
+        "safe_rate": 0.56,
+        "premature_rate": 0.11,
+        "mistranslated_rate": 0.33
+      }
+    ],
+    "judge_distribution": {
+      "n_boundaries_judged": 24,
+      "verdicts": {
+        "safe": 15,
+        "mistranslated": 8,
+        "premature": 1
+      },
+      "n_with_cause": 9,
+      "causes": {
+        "other": {
+          "n": 5,
+          "share": 0.556
+        },
+        "head not yet arrived": {
+          "n": 2,
+          "share": 0.222
+        },
+        "modifier scope": {
+          "n": 2,
+          "share": 0.222
+        }
+      }
+    },
+    "max_missing_boundaries": 0.0,
+    "rank_lift": 0.13959,
+    "rank_lift_t": 3.06,
+    "summary": "Most failures are placement errors where the prompt either permits cuts that leave heads, classifiers, or disambiguating context to the right, or it fails to force low scores on those risky cuts. The prompt already forbids non-renderable fragments in one example line, but it lacks explicit operational rules for multiword names, ambiguous noun senses, predicate/classifier scope, and temporal-attachment patterns — add rules that keep such candidates low-scored or delay high confidence until disambiguators arrive."
+  }
+}

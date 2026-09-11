@@ -1,0 +1,129 @@
+{
+  "regressions": [
+    {
+      "id": "en_us_1461",
+      "text": "Wagonways were built in England as early as the 16th Century.",
+      "delta": -2.57115,
+      "budget_T": 6,
+      "delta_at_T": -2.95511,
+      "before_seg": "Wagonways were built in England <SEG:85> as early as the 16th Century.",
+      "after_seg": "Wagonways were built in England as early as <SEG:45> the 16th Century.",
+      "before_contradiction": [
+        0.0018,
+        0.0
+      ],
+      "after_contradiction": [
+        0.0026,
+        0.0
+      ],
+      "before_adequacy": 0.7698,
+      "after_adequacy": 0.7032,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_608",
+      "text": "We experience time as a series of events passing from the future through the present to the past.",
+      "delta": -1.27919,
+      "budget_T": 12,
+      "delta_at_T": -3.13892,
+      "before_seg": "We experience time <SEG:80> as a series of events passing from the future through the present to the past.",
+      "after_seg": "We experience time as a series of events passing from the future through the present <SEG:70> to the past.",
+      "before_contradiction": [
+        0.0007,
+        0.0
+      ],
+      "after_contradiction": [
+        0.9991,
+        0.0
+      ],
+      "before_adequacy": 0.7387,
+      "after_adequacy": 0.5461,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_134",
+      "text": "The sign was not physically damaged; the modification was done using black tarpaulins decorated with signs of peace and heart to alter the \"O\" to read lowercase \"e\".",
+      "delta": -1.25854,
+      "budget_T": 12,
+      "delta_at_T": -1.51702,
+      "before_seg": "The sign was not physically damaged; <SEG:100> the modification was done using black tarpaulins decorated with signs of peace and heart to alter the \"O\" to read lowercase \"e\".",
+      "after_seg": "The sign was not physically damaged; the modification was done using black tarpaulins <SEG:60> decorated with signs of peace and heart to alter the \"O\" to read lowercase \"e\".",
+      "before_contradiction": [
+        0.001,
+        0.0
+      ],
+      "after_contradiction": [
+        0.9855,
+        0.0
+      ],
+      "before_adequacy": 0.7488,
+      "after_adequacy": 0.7696,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_496",
+      "text": "Doctors began to be recruited by Emperor Augustus and even formed the first Roman Medical Corps for use in the aftermath of battles.",
+      "delta": -1.20175,
+      "budget_T": 6,
+      "delta_at_T": -2.49116,
+      "before_seg": "Doctors began to be recruited <SEG:65> by Emperor Augustus <SEG:90> and even formed the first Roman Medical Corps <SEG:85> for use in the aftermath of battles.",
+      "after_seg": "Doctors began to be recruited by Emperor <SEG:30> Augustus and even <SEG:45> formed the first Roman <SEG:30> Medical Corps for use in the aftermath of battles.",
+      "before_contradiction": [
+        0.0007,
+        0.0052,
+        0.3634,
+        0.0
+      ],
+      "after_contradiction": [
+        0.3171,
+        0.2334,
+        0.0288,
+        0.0
+      ],
+      "before_adequacy": 0.8131,
+      "after_adequacy": 0.7038,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    },
+    {
+      "id": "en_us_700",
+      "text": "This letter must be legalized by the Ecuadorian Ministry of Foreign Affairs, and comply with certain requirements.",
+      "delta": -1.18673,
+      "budget_T": 6,
+      "delta_at_T": -1.44306,
+      "before_seg": "This letter must be legalized <SEG:85> by the Ecuadorian Ministry of Foreign Affairs, <SEG:90> and comply with certain requirements.",
+      "after_seg": "This letter must be legalized by the Ecuadorian <SEG:30> Ministry of Foreign Affairs, and comply <SEG:50> with certain requirements.",
+      "before_contradiction": [
+        0.0003,
+        0.0009,
+        0.0
+      ],
+      "after_contradiction": [
+        0.0021,
+        0.0007,
+        0.0
+      ],
+      "before_adequacy": 0.8009,
+      "after_adequacy": 0.7421,
+      "before_missing_boundaries": 0,
+      "after_missing_boundaries": 0
+    }
+  ],
+  "post_mortem": {
+    "why_failed": "The revision added and re-anchored a set of “risky-pattern” scoring rules that lowered the relative scores of many previously-high clause-final candidates (e.g., after “England”, after the main clause in “We experience time…”, and after a semicolon) and increased the score of nearby interior/risky splits. Because the deterministic selector keeps the top-scoring cuts up to budget T, these re-scorings caused safe clause-final boundaries to lose selection to riskier internal boundaries, producing early incorrect commitments and large adequacy drops.",
+    "blamed_lines": [
+      "+- When you lower scores for known risky surface patterns, keep them calibrated so commonly defensible candidates remain selectable under reasonable budgets. Do not convert ordinary candidate positions into categorical prohibitions by assigning blanket near-zero scores; reserve near-zero only for clearly non-renderable lone modifiers or fragments.",
+      "+- multiword place/institution names: positions that precede the final head noun (Hospital, Center, University, Institute, College) are candidate points but usually incomplete until the head appears—treat as candidates and score using the Priority Rules (do not assume the head yet).",
+      "+- Risky-pattern scoring anchors (apply these when a candidate matches the surface patterns in [When to Segment]):",
+      "+- Multiword institution/place names (head noun not yet present): mark as candidate but assign low-to-moderate scores (typically 10–40) until the head noun appears; do not treat every such candidate as impossible.",
+      "+- Predicates and classifiers that determine affectedness or class (words like affected, classifier adjectives, relative clauses): mark candidates but use low-to-medium scores (20–50) until the classifier/predicate or disambiguating clause is visible.",
+      "+  - Consult the risky-pattern anchors when a candidate matches multiword names, classifiers/predicates, ambiguity sites, temporal/connective markers, isolated modifiers, or bare noun-lists.",
+      "+  - Apply calibrated ranges from the Priority Rules rather than blanket demotions; only assign near-zero (0–5) to isolated non-renderable fragments or lone modifiers."
+    ],
+    "mechanism": "promoted_risky_boundary",
+    "lesson": "When adding pattern-based scoring anchors, do not reduce clause-final or strong-punctuation candidates below their prior high ranks — preserve high scores for syntactically complete clause boundaries so budgeted selection cannot prefer risky interior cuts."
+  }
+}

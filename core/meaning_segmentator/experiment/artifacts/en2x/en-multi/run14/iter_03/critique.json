@@ -1,0 +1,208 @@
+{
+  "cases": [
+    {
+      "id": "en_us_1105",
+      "error_type": "format_violation",
+      "span": "to honor Khufu's wives and family members",
+      "evidence": "The model emitted 4 tags but the prompt requires ≥1 boundary per 4 words; spacing rules (3-word min) made it impossible to add the extra tags so the output failed format checks.",
+      "cause": "other (conflict between minimum-density and minimum-distance constraints)",
+      "blamed_rule": "Leave AT LEAST 3 words between any two tags, and the same distance between a tag and either end of the text. A piece shorter than that cannot be translated on its own, so such a boundary is unusable no matter how confident you are about it. If two good positions are closer than 3 words, mark only the better one. Output that places tags closer than this is rejected.",
+      "replaces": "Leave AT LEAST 3 words between any two tags, and the same distance between a tag and either end of the text. A piece shorter than that cannot be translated on its own, so such a boundary is unusable no matter how confident you are about it. If two good positions are closer than 3 words, mark only the better one. Output that places tags closer than this is rejected.",
+      "proposed_rule": "If the sentence length makes the required density (1 tag per 4 words) impossible under a 3-word spacing, reduce the inter-tag minimum to 2 words until the density is met; never split tokens or detach attached punctuation and prefer the least-risky adjacent legal position when ties occur.",
+      "example_pair": {
+        "input": "The great pyramid was created to honor the Pharaoh Khufu, and many of the smaller pyramids, tombs, and temples were built to honor Khufu's wives and family members.",
+        "output": "The great pyramid was created <SEG:80> to honor the Pharaoh Khufu, <SEG:85> and many of the smaller pyramids, <SEG:65> tombs, and temples <SEG:65> were built to honor Khufu's wives <SEG:70> and family members."
+      }
+    },
+    {
+      "id": "en_us_532",
+      "error_type": "format_violation",
+      "span": "Eighteen holes are played during a regular round,",
+      "evidence": "The model altered word order/omitted text when inserting tags (text_modified). That indicates the insertion/spacing rules forced rewriting instead of preserving tokens.",
+      "cause": "other (tagging/spacing rules induced rewriting)",
+      "blamed_rule": "Always place exactly one space on both sides of every tag.",
+      "replaces": "Always place exactly one space on both sides of every tag.",
+      "proposed_rule": "Never delete, move or rewrite source tokens to satisfy spacing or punctuation constraints. If an exact one-space placement would force editing, choose the nearest legal insertion that preserves all tokens (or relax spacing to preserve tokens) and emit low confidence rather than rewriting source text.",
+      "example_pair": {
+        "input": "Eighteen holes are played during a regular round, with players usually starting on the first hole on the course and finishing on the eighteenth.",
+        "output": "Eighteen holes are played during a regular round, <SEG:60> with players usually starting on the first hole <SEG:40> on the course and finishing on the eighteenth."
+      }
+    },
+    {
+      "id": "en_us_1048",
+      "error_type": "placement",
+      "span": "Auckland's National Women's <SEG:35> Hospital",
+      "evidence": "A cut occurred before the head noun 'Hospital' (split inside an institution name), causing the translator to guess the head and produce 'women's center' instead of 'women's hospital'.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Concrete surface forms: to (infinitive marker), of, that, which, 's (possessive/'s), in, on, by, for (prepositional), as (comparative/role).",
+      "replaces": "Concrete surface forms: to (infinitive marker), of, that, which, 's (possessive/'s), in, on, by, for (prepositional), as (comparative/role).",
+      "proposed_rule": "Do not mark a boundary that separates a noun-phrase modifier (possessive 's, adjectives, or a sequence of modifiers) from its head noun; wait for the NP head before tagging. If the modifier could be a standalone appositive, require explicit punctuation (comma/parenthesis) to allow a cut.",
+      "example_pair": {
+        "input": "He trained as an obstetrician and began to work at the Auckland's National Women's Hospital in 1959.",
+        "output": "He trained as an obstetrician <SEG:90> and began to work at the Auckland's National Women's Hospital in 1959."
+      }
+    },
+    {
+      "id": "en_us_111",
+      "error_type": "placement",
+      "span": "Stardust will set <SEG:75> a new all-time record",
+      "evidence": "Segmenting between the verb 'set' and its object forced a wrong verb sense in translation ('set' interpreted as 'fall'); the verb's correct sense depends on the following NP (head not yet arrived).",
+      "cause": "head not yet arrived",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Do not place a boundary immediately after a verb when the verb's English sense can be disambiguated only by a following object/complement; either wait for the object/complement or assign a very low confidence so the cut is unlikely to survive tight latency.",
+      "example_pair": {
+        "input": "Stardust will set a new all-time record for being the fastest spacecraft to return to Earth, breaking the previous record set in May of 1969 during the return of the Apollo X command module.",
+        "output": "Stardust will set a new all-time record for being the fastest spacecraft to return to Earth, <SEG:80> breaking the previous record set in May of 1969 <SEG:75> during the return of the Apollo X command module."
+      }
+    },
+    {
+      "id": "en_us_1575",
+      "error_type": "placement",
+      "span": "agrees to leave such presence only <SEG:70> for five years",
+      "evidence": "The cut occurred before the temporal/duration modifier 'for five years' and before the scope marker 'only', causing the translation to assign incorrect scope/agent (wrong participant/mistranslation).",
+      "cause": "other (modifier scope / temporal scope not yet arrived)",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Avoid segmenting between a verb phrase and immediately following scope/time modifiers (duration, 'only', frequency phrases). Wait for scope modifiers that determine the event's duration or exclusivity, or assign low confidence to such cuts.",
+      "example_pair": {
+        "input": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed while the PA agrees to leave such presence only for five years.",
+        "output": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed <SEG:85> while the PA agrees to leave such presence only for five years."
+      }
+    },
+    {
+      "id": "en_us_1416",
+      "error_type": "placement",
+      "span": "the significance of the piece <SEG:70> of genetic material",
+      "evidence": "A boundary split a nominal head from its essential 'of' complement ('piece' / 'of genetic material'), producing an unrenderable fragment and lowering adequacy.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "Concrete surface forms: to (infinitive marker), of, that, which, 's (possessive/'s), in, on, by, for (prepositional), as (comparative/role).",
+      "replaces": "Concrete surface forms: to (infinitive marker), of, that, which, 's (possessive/'s), in, on, by, for (prepositional), as (comparative/role).",
+      "proposed_rule": "Do not segment between a nominal head and an essential 'of' PP complement; treat 'of' + NP as part of the same renderable unit and wait until the complement completes before placing a boundary (except when punctuation indicates a parenthetical).",
+      "example_pair": {
+        "input": "Mutations can have a variety of different effects depending on the type of mutation, the significance of the piece of genetic material affected and whether the cells affected are germ-line cells.",
+        "output": "Mutations can have <SEG:75> a variety of different effects <SEG:80> depending on the type of mutation, the significance of the piece of genetic material affected <SEG:75> and whether the cells affected are germ-line cells."
+      }
+    }
+  ],
+  "summary": "The prompt systematically allows cuts that split noun phrases (possessive/nominal modifiers and 'of' complements) and verb–object dependencies, producing head-not-yet-arrived errors. It also contains a conflict between the fixed 3-word inter-tag spacing and the minimum-density requirement, which produced format rejections; and spacing rules are forcing the model to rewrite source text. Fixes: forbid NP-head splits and verb-object cuts, add a rule to delay cuts until scope/time modifiers arrive, and make the inter-tag spacing conditional so density and preservation of original tokens are both satisfiable.",
+  "aggregate": {
+    "dominant_error": null,
+    "dominant_basis": "No corpus rate identifies a dominant failure. Read the cases and `judge_distribution` for WHICH mechanism to fix — do not infer a rate from `case_label_counts`, those cases were selected for being the worst.",
+    "measured_rates": {
+      "coverage": {
+        "n": 1,
+        "of_n": 30,
+        "rate": 0.0333,
+        "of": "all sentences scored — a true corpus rate",
+        "meaning": "sentences where the tightest budget asked for boundaries the prompt never marked, so pieces are missing outright"
+      },
+      "premature_among_judged": {
+        "n": 6,
+        "of_n": 24,
+        "rate": 0.25,
+        "of": "boundaries judged this iteration, selected as the WORST by measured contradiction — NOT a corpus rate, do not compare it against `coverage`"
+      }
+    },
+    "case_label_counts": {
+      "counts": {
+        "format_violation": 2,
+        "placement": 4
+      },
+      "of_n": 6,
+      "of": "the selected worst cases — NOT a rate"
+    },
+    "stuck_hint": "",
+    "priority_audit": [
+      {
+        "feature": "score 70-79",
+        "n": 14,
+        "mean_score": 73.2,
+        "contradiction": 0.2272,
+        "over_trust": 0.1787,
+        "judged_n": 6,
+        "safe_rate": 0.67,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.33
+      },
+      {
+        "feature": "score 80-89",
+        "n": 29,
+        "mean_score": 82.6,
+        "contradiction": 0.0863,
+        "over_trust": 0.1345,
+        "judged_n": 10,
+        "safe_rate": 0.8,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.2
+      },
+      {
+        "feature": "상대위치 1/3",
+        "n": 36,
+        "mean_score": 66.9,
+        "contradiction": 0.1102,
+        "over_trust": 0.0298,
+        "judged_n": 11,
+        "safe_rate": 0.73,
+        "premature_rate": 0.09,
+        "mistranslated_rate": 0.18
+      },
+      {
+        "feature": "뒤 구두점 ','",
+        "n": 19,
+        "mean_score": 68.9,
+        "contradiction": 0.0499,
+        "over_trust": 0.0217,
+        "judged_n": 5,
+        "safe_rate": 0.8,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.2
+      },
+      {
+        "feature": "상대위치 0/3",
+        "n": 46,
+        "mean_score": 66.5,
+        "contradiction": 0.0826,
+        "over_trust": 0.0195,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "score 90-100",
+        "n": 8,
+        "mean_score": 92.5,
+        "contradiction": 0.0,
+        "over_trust": 0.0
+      }
+    ],
+    "judge_distribution": {
+      "n_boundaries_judged": 24,
+      "verdicts": {
+        "safe": 18,
+        "mistranslated": 5,
+        "premature": 1
+      },
+      "n_with_cause": 6,
+      "causes": {
+        "head not yet arrived": {
+          "n": 4,
+          "share": 0.667
+        },
+        "other": {
+          "n": 1,
+          "share": 0.167
+        },
+        "wrong participant": {
+          "n": 1,
+          "share": 0.167
+        }
+      }
+    },
+    "max_missing_boundaries": 0.069,
+    "rank_lift": 0.10519,
+    "rank_lift_t": 3.5,
+    "summary": "The prompt systematically allows cuts that split noun phrases (possessive/nominal modifiers and 'of' complements) and verb–object dependencies, producing head-not-yet-arrived errors. It also contains a conflict between the fixed 3-word inter-tag spacing and the minimum-density requirement, which produced format rejections; and spacing rules are forcing the model to rewrite source text. Fixes: forbid NP-head splits and verb-object cuts, add a rule to delay cuts until scope/time modifiers arrive, and make the inter-tag spacing conditional so density and preservation of original tokens are both satisfiable."
+  }
+}

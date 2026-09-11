@@ -1,0 +1,211 @@
+{
+  "cases": [
+    {
+      "id": "en_us_1048",
+      "error_type": "placement",
+      "span": "the Auckland's National Women's <SEG:80> Hospital",
+      "evidence": "Boundary split a multiword institution name so the translator guessed the institution type; oracle shows the head 'Hospital' was needed.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "If a candidate would cut a multiword proper name or institutional/place NP before its syntactic head (tokens like Hospital/Center/University/Institute/School/etc.), allow the candidate but enforce that it must not be ranked above any surrounding clause-completing or punctuation-adjacent candidate; i.e., treat such intra-name cuts as lower-priority until the head appears.",
+      "example_pair": {
+        "input": "He trained as an obstetrician and began to work at the Auckland's National Women's Hospital in 1959.",
+        "output": "He trained as an obstetrician <SEG:90> and began to work at the Auckland's National Women's Hospital <SEG:95> in 1959."
+      }
+    },
+    {
+      "id": "en_us_1416",
+      "error_type": "placement",
+      "span": "the significance of the piece <SEG:30> of genetic material <SEG:65> affected",
+      "evidence": "Cut before the participial modifier 'affected' detached the adjective from its head and caused wrong attachment/scope in translation.",
+      "cause": "modifier scope",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Do not allow a candidate that finalizes a predicate about entities when a following modifier or classifier (participial adjective, relative clause, or noun post-modifier like 'affected', 'damaged', 'classified') remains inside the same NP; such candidates must be scored below the next clause- or punctuation-completing candidate.",
+      "example_pair": {
+        "input": "Mutations can have a variety of different effects depending on the type of mutation, the significance of the piece of genetic material affected and whether the cells affected are germ-line cells.",
+        "output": "Mutations can have a variety of different effects <SEG:85> depending on the type of mutation, <SEG:50> the significance of the piece of genetic material affected <SEG:80> and whether the cells affected are germ-line cells."
+      }
+    },
+    {
+      "id": "en_us_87",
+      "error_type": "placement",
+      "span": "it has been for sealers <SEG:80> in the past 15 years",
+      "evidence": "Boundary left the noun 'sealers' to be resolved without its domain phrase; translator chose wrong sense ('sealers'→'封印者').",
+      "cause": "other",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "If a common noun's sense is plausibly disambiguated by an immediately following domain/PP or time-phrase (e.g., 'for X', 'in Y years'), ensure any candidate that would force a standalone translation of that noun is ranked below clause-completing or disambiguating candidates so the disambiguator is visible before finalizing sense.",
+      "example_pair": {
+        "input": "The amount and thickness of the pack ice, according to Pittman, is the worst it has been for sealers in the past 15 years.",
+        "output": "The amount and thickness of the pack ice, according to Pittman, <SEG:80> is the worst it has been for sealers in the past 15 years <SEG:95>."
+      }
+    },
+    {
+      "id": "en_us_1575",
+      "error_type": "placement",
+      "span": "once an agreement is signed <SEG:55> while the PA agrees <SEG:50>",
+      "evidence": "Cut before connective/clause attachment completed: translator incorrectly attached duration to the wrong party because 'only for five years' came later.",
+      "cause": "modifier scope",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "When a temporal/connective marker (once/while/after/before) appears and its attachment will be resolved by the following clause (who does what for how long), do not let an interior candidate outrank the full connective+clause boundary; treat such connective-adjacent candidates as lower priority than the clause they introduce.",
+      "example_pair": {
+        "input": "Israel demands an ongoing military presence in the valley for ten years once an agreement is signed while the PA agrees to leave such presence only for five years.",
+        "output": "Israel demands an ongoing military presence in the valley for ten years <SEG:80> once an agreement is signed <SEG:55> while the PA agrees to leave such presence only for five years <SEG:90>."
+      }
+    },
+    {
+      "id": "en_us_337",
+      "error_type": "placement",
+      "span": "To finish, Turkish <SEG:40> dance group Fire of Anatolia performed <SEG:90> the show \"Troy\"",
+      "evidence": "Cut before object clarified the performance type; translator chose a verb sense ('played' music) inconsistent with the following object 'the show \"Troy\"'.",
+      "cause": "other",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "If a general action verb (perform/do/hold/play) is followed by an object that determines the sub-type of performance (show/concert/lecture), ensure any candidate that would force choosing a language-specific verb sense is ranked below the object-completing boundary so the object is visible before committing the verb translation.",
+      "example_pair": {
+        "input": "To finish, Turkish dance group Fire of Anatolia performed the show \"Troy\".",
+        "output": "To finish, Turkish dance group Fire of Anatolia <SEG:60> performed the show \"Troy\" <SEG:90>."
+      }
+    },
+    {
+      "id": "en_us_1105",
+      "error_type": "placement",
+      "span": "and many of the smaller pyramids, <SEG:80> tombs, and temples <SEG:80> were built to <SEG:20> honor Khufu's wives",
+      "evidence": "Boundary emitted a noun-list fragment that the remaining predicate ('were built') actually licenses; translator rendered the fragment as an independent assertion.",
+      "cause": "head not yet arrived",
+      "blamed_rule": "",
+      "replaces": "",
+      "proposed_rule": "Avoid marking-and-high-scoring boundaries that leave a nominal list without its governing predicate; if the main predicate for a preceding NP has not yet appeared, keep such NP-internal candidates lower in rank than the predicate-completing boundary.",
+      "example_pair": {
+        "input": "The great pyramid was created to honor the Pharaoh Khufu, and many of the smaller pyramids, tombs, and temples were built to honor Khufu's wives and family members.",
+        "output": "The great pyramid was created <SEG:90> to honor the Pharaoh Khufu, <SEG:85> and many of the smaller pyramids, tombs, and temples <SEG:60> were built to honor Khufu's wives and family members <SEG:95>."
+      }
+    }
+  ],
+  "summary": "The prompt is generous about candidacy but lacks relative-ranking constraints that keep clause-completing, punctuation-adjacent, or disambiguating boundaries above risky interior cuts. Many errors come from finalizing heads, predicates, or noun senses before disambiguating tokens arrive; the fix is to enforce that intra-NP/head or verb–object candidates never outrank the surrounding clause/punctuation-completing candidates rather than simply banning or globally downscoring them.",
+  "aggregate": {
+    "dominant_error": null,
+    "dominant_basis": "No corpus rate identifies a dominant failure. Read the cases and `judge_distribution` for WHICH mechanism to fix — do not infer a rate from `case_label_counts`, those cases were selected for being the worst.",
+    "measured_rates": {
+      "coverage": {
+        "n": 0,
+        "of_n": 30,
+        "rate": 0.0,
+        "of": "all sentences scored — a true corpus rate",
+        "meaning": "sentences where the tightest budget asked for boundaries the prompt never marked, so pieces are missing outright"
+      },
+      "premature_among_judged": {
+        "n": 9,
+        "of_n": 24,
+        "rate": 0.375,
+        "of": "boundaries judged this iteration, selected as the WORST by measured contradiction — NOT a corpus rate, do not compare it against `coverage`"
+      }
+    },
+    "case_label_counts": {
+      "counts": {
+        "placement": 6
+      },
+      "of_n": 6,
+      "of": "the selected worst cases — NOT a rate"
+    },
+    "stuck_hint": "직전 개정이 [Core Principles], [When to Segment], [Never Segment], [Priority Rules], [Decision Procedure] 를 고쳤는데 채택에 실패했다. 같은 섹션을 같은 방식으로 다시 고치지 말 것 — 다른 섹션을 보거나 같은 섹션이라도 반대 방향(금지 추가가 아니라 완화)을 검토할 것",
+    "priority_audit": [
+      {
+        "feature": "score 80-89",
+        "n": 25,
+        "mean_score": 82.2,
+        "contradiction": 0.1088,
+        "over_trust": 0.2814,
+        "judged_n": 8,
+        "safe_rate": 0.5,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.5
+      },
+      {
+        "feature": "score 70-79",
+        "n": 18,
+        "mean_score": 72.2,
+        "contradiction": 0.1148,
+        "over_trust": 0.169,
+        "judged_n": 5,
+        "safe_rate": 1.0,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.0
+      },
+      {
+        "feature": "뒤 구두점 ','",
+        "n": 23,
+        "mean_score": 68.9,
+        "contradiction": 0.0085,
+        "over_trust": 0.0094,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "상대위치 1/3",
+        "n": 38,
+        "mean_score": 59.9,
+        "contradiction": 0.0735,
+        "over_trust": 0.0068,
+        "judged_n": 9,
+        "safe_rate": 0.67,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.33
+      },
+      {
+        "feature": "상대위치 0/3",
+        "n": 46,
+        "mean_score": 60.2,
+        "contradiction": 0.0269,
+        "over_trust": 0.0035,
+        "judged_n": 7,
+        "safe_rate": 0.86,
+        "premature_rate": 0.0,
+        "mistranslated_rate": 0.14
+      },
+      {
+        "feature": "score 50-69",
+        "n": 37,
+        "mean_score": 54.9,
+        "contradiction": 0.0589,
+        "over_trust": -0.0275,
+        "judged_n": 9,
+        "safe_rate": 0.56,
+        "premature_rate": 0.11,
+        "mistranslated_rate": 0.33
+      }
+    ],
+    "judge_distribution": {
+      "n_boundaries_judged": 24,
+      "verdicts": {
+        "safe": 15,
+        "mistranslated": 8,
+        "premature": 1
+      },
+      "n_with_cause": 9,
+      "causes": {
+        "other": {
+          "n": 5,
+          "share": 0.556
+        },
+        "head not yet arrived": {
+          "n": 2,
+          "share": 0.222
+        },
+        "modifier scope": {
+          "n": 2,
+          "share": 0.222
+        }
+      }
+    },
+    "max_missing_boundaries": 0.0,
+    "rank_lift": 0.13959,
+    "rank_lift_t": 3.06,
+    "summary": "The prompt is generous about candidacy but lacks relative-ranking constraints that keep clause-completing, punctuation-adjacent, or disambiguating boundaries above risky interior cuts. Many errors come from finalizing heads, predicates, or noun senses before disambiguating tokens arrive; the fix is to enforce that intra-NP/head or verb–object candidates never outrank the surrounding clause/punctuation-completing candidates rather than simply banning or globally downscoring them."
+  }
+}

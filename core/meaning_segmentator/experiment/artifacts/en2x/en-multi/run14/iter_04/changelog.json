@@ -1,0 +1,28 @@
+{
+  "sections_changed": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "sections_reported": [
+    "[Core Principles]",
+    "[When to Segment]",
+    "[Priority Rules]",
+    "[Decision Procedure]"
+  ],
+  "changelog": [
+    "Core Principles: added a narrow syntactic safeguard principle that prefers waiting when the preceding span ends in pre-head material and a head noun or essential complement is imminent, without converting common candidates into forbids.",
+    "When to Segment: kept permissive surface triggers but added explicit, narrow surface-based conditions that hold candidacy (wait) when pre-head material or a verb-without-object is immediately followed by a likely head/complement within a short token window; exceptions allowed when explicit punctuation separates the parts.",
+    "Priority Rules: added calibrated demotion guidance for boundaries that would separate clause-scope modifiers (duration/only/etc.) or split pre-head material from an imminent head, so these cuts are unlikely to survive tight budgets but remain candidates at loose budgets.",
+    "Decision Procedure: updated the candidacy pass to include the new syntactic safeguards (hold rules) and instructed the scorer to apply the Priority Rules' demotions; added an operational note to prefer defensible nearby token boundaries when the ideal insertion would force a rewrite of source tokens."
+  ],
+  "size_budget": 20832,
+  "over_budget": false,
+  "candidate_kinds": [
+    "free",
+    "add",
+    "remove"
+  ],
+  "selected_kind": "free"
+}
