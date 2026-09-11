@@ -236,6 +236,21 @@ Qwen3 서버는 미확정 가설을 `partial` 로 계속 내보내고(최소 간
 확정 지연(마지막 출력 − 실제 오디오 끝)은 Qwen3 −1.05 / +0.03초, Voxtral −1.35 / −0.34초,
 Nemotron −1.76 / +0.03초 — **셋 다 말이 끝나는 시점에 전사가 이미 끝나 있다.**
 
+### 이 표를 읽을 때의 단서 둘
+
+- **Qwen3 의 확정축은 실제보다 유리하다.** AST 파이프라인이 `VAD-FINISH → 번역 → final` 이라
+  ASR 만 재려고 번역을 껐다(`--trans-backend gtx --trans-retries 1 --trans-timeout 0.05`,
+  기본값은 `local` / `None` / `10.0`). 제품 경로에서는 final 이 번역을 기다리므로 확정이 더
+  늦다. 첫 표시축은 번역과 무관하다.
+
+  그 밖의 기본값 이탈은 전부 인프라 인자다 — Qwen3 `--gpu-memory-utilization 0.60`(기본 0.8),
+  Voxtral `--gpu-memory-utilization 0.85` + `--max-model-len 16384`(기본 131072) +
+  flashinfer 샘플러 off. **지연 노브는 셋 다 모델 기본값**이고 Voxtral 의
+  `transcription_delay_ms` 는 건드리지 않았다(기본 480ms).
+- **FLEURS 는 한 클립이 한 문장이고 문장 내 쉼이 없다.** 그래서 Qwen3 의 VAD 가 클립당 한 번만
+  커밋한다(확정 출력 1.2개). 쉼이 있는 실제 발화에서는 더 자주 커밋되므로 **확정축은 이
+  데이터셋 특성에 기댄 값**이다. 첫 표시축(청크 0.12초 간격)은 그 영향이 작다.
+
 ## 9. 규명한 함정
 
 ### R1 — Nemotron 의 정식 API 는 청크별 `generate()` 가 아니다
