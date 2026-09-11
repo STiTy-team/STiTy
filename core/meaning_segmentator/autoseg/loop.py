@@ -2195,16 +2195,15 @@ def main() -> int:
                 remove_targets = list(dict.fromkeys(b.strip() for b in _blamed if b.strip()))[:8] + [
                     f"over-trusted feature: {a['feature']} (mean score {a['mean_score']}, "
                     f"contradiction {a['contradiction']})" for a in _over]
-                kinds: list[tuple[str, list[str] | None]] = [("free", None)]
-                if hints:
-                    kinds.append(("add", hints))
-                if remove_targets:
-                    kinds.append(("remove", remove_targets))
-                while len(kinds) < args.revision_candidates:
-                    kinds.append(("add", hints) if hints else ("free", None))
-                jobs = kinds[:max(1, args.revision_candidates)]
-                log(f"[iter {it}] 개정 후보 방향 {[k for k, _ in jobs]}"
-                    + (f" (삭제 대상 {len(remove_targets)}건)" if remove_targets else ""))
+                # **후보는 분량으로 가른다 — 재료는 셋 다 같이 본다.** 종전에는 재료로
+                # 갈랐다: `add` 후보만 제안 목록, `remove` 후보만 삭제 목록, `free` 후보는
+                # 둘 다 못 봤다. 그래서 자유 개정이 삭제라는 선택지를 목록으로 본 적이
+                # 없고, run14 에서 다섯 번 모두 프롬프트를 키웠다 (+7 ~ +27%, 한 번도 안
+                # 줄임). 제약은 `agents.SIZE_MODES` 참조.
+                jobs = [agents.SIZE_MODES[i % len(agents.SIZE_MODES)]
+                        for i in range(max(1, args.revision_candidates))]
+                log(f"[iter {it}] 개정 후보 제약 {jobs}"
+                    f" (제안 {len(hints)}건 / 삭제 대상 {len(remove_targets)}건)")
 
                 # 개정 한 번의 **분량 예산** — 런 전체 천장 하나뿐이다.
                 # 걸음 크기 상한(직전 best 대비)도 따로 뒀다가 뺐다: 적용된 개정 42건의
@@ -2212,13 +2211,13 @@ def main() -> int:
                 # 놓아도 v0 천장보다 먼저 걸릴 일이 없다.
                 size_budget = int(prompt_v0_len * args.max_prompt_growth)
 
-                def make(hint):
+                def make(_kind):
                     try:
-                        _kind, _payload = hint
                         rv = engineer.revise(best["prompt"], critique, history, profile,
                                              t_grid,
-                                             only_rules=(_payload if _kind == "add" else None),
-                                             remove_only=(_payload if _kind == "remove" else None),
+                                             candidate_rules=hints or None,
+                                             removal_targets=remove_targets or None,
+                                             size_mode=_kind,
                                              size_budget=size_budget,
                                              measured=measured,
                                              target_language=pair_tgt,
@@ -2236,7 +2235,7 @@ def main() -> int:
                 raw_cands = []
                 with ThreadPoolExecutor(max_workers=max(1, len(jobs))) as _ex:
                     _rvs = list(_ex.map(make, jobs))
-                for (_kind, _), rv in zip(jobs, _rvs):
+                for _kind, rv in zip(jobs, _rvs):
                     if not rv: continue
                     rv["candidate_kind"] = _kind
                     pr = rv.get("prompt", "")
@@ -2260,6 +2259,28 @@ def main() -> int:
                         continue
                     _cands2.append((pr, rv))
                 cands = _cands2
+
+                # **분량 제약은 결정론으로 검사한다 — 지시만으로는 안 지켜진다.** run14 의
+                # `free` 후보는 부검이 지목한 줄까지 읽고도 다섯 번 다 프롬프트를 키웠다.
+                # `grow` 후보에는 제약이 없으므로 전멸 교착은 생기지 않지만, 그래도
+                # 통과가 0 이면 검사를 건너뛴다 — 이터레이션을 통째로 버리는 것보다 낫다.
+                _base_len = len(best["prompt"])
+
+                def _size_ok(pr: str, kind: str | None) -> bool:
+                    if kind == "shrink":
+                        return len(pr) < _base_len
+                    if kind == "neutral":
+                        return len(pr) <= _base_len
+                    return True
+
+                _kept = [(pr, rv) for pr, rv in cands
+                         if _size_ok(pr, rv.get("candidate_kind"))]
+                for pr, rv in cands:
+                    if not _size_ok(pr, rv.get("candidate_kind")):
+                        log(f"[iter {it}] 후보 {rv.get('candidate_kind')} 분량 제약 위반 "
+                            f"{len(pr)}자 (기준 {_base_len}자)"
+                            + (" — 탈락" if _kept else " — 통과 후보가 없어 살린다"))
+                cands = _kept or cands
                 timer.mark("select_prompt")
                 # 점수 순으로 줄 세운다 — 1위가 분량 관문에 걸리면 아래에서 차례로 시도한다.
                 ranked: list[dict] = []
@@ -2325,8 +2346,10 @@ def main() -> int:
                     "changelog": revised.get("changelog"),
                     "size_budget": size_budget,
                     "over_budget": bool(over),
-                    "candidate_kinds": [k for k, _ in jobs],
+                    "candidate_kinds": jobs,
                     "selected_kind": revised.get("candidate_kind"),
+                    "base_len": len(best["prompt"]),
+                    "new_len": len(new_prompt) if new_prompt else None,
                 }, ensure_ascii=False, indent=2), encoding="utf-8")
                 history[-1]["next_changelog"] = revised.get("changelog")
                 # 고착 방지 핸들 갱신 — **다음 이터레이션이 이 섹션을 다시 고치지 않도록.**
