@@ -18,19 +18,19 @@ trap cleanup EXIT INT TERM
 wait_port(){ for _ in $(seq 1 "$2"); do ss -ltn 2>/dev/null | grep -q ":$1 " && return 0; sleep 5; done; return 1; }
 log "시작 N=$N PEAK=$PEAK RUN=$RUN"
 for L in ko en; do
-  LOCALE="ko-KR"; [[ "$L" == "en" ]] && LOCALE="en-US"
+  LOCALE="auto"   # 언어 힌트 없음 - Voxtral 은 지정 자체가 불가하다
   SLOG="$RUN/nemotron_${L}_server.log"
   setsid "$CONDA" run --no-capture-output -n asr-nemotron python "$BE/server.py" \
-      --backend nemotron --lang "$LOCALE" --right-context 13 \
+      --backend nemotron --lang "$LOCALE" --right-context 3 \
       --port "$PORT" --log-file "$SLOG" > "$SLOG.stdout" 2>&1 &
   CUR=$!
   if wait_port "$PORT" 120; then
     timeout 7200 "$CONDA" run --no-capture-output -n asr-nemotron python "$BE/smoke_client.py" \
         --ws "ws://127.0.0.1:$PORT" --lang "$L" --limit "$N" \
-        --peak-normalize "$PEAK" --tag "nemotron_rc13" --out "$RUN/nemotron_rc13_${L}.json" \
-        > "$RUN/nemotron_rc13_${L}_client.log" 2>&1 \
+        --peak-normalize "$PEAK" --trailing-ms 0 --tag "nemotron_rc3" --out "$RUN/nemotron_rc3_${L}.json" \
+        > "$RUN/nemotron_rc3_${L}_client.log" 2>&1 \
       && log "  nemotron.$L ok" || log "  nemotron.$L FAILED"
-    tail -1 "$RUN/nemotron_rc13_${L}_client.log" | tee -a "$RUN/step.log"
+    tail -1 "$RUN/nemotron_rc3_${L}_client.log" | tee -a "$RUN/step.log"
   else
     log "  nemotron.$L 서버 안 뜸"
   fi

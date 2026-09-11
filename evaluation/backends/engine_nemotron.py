@@ -66,7 +66,7 @@ class NemotronEngine:
     HOP = 160
     SUPPORTED_LOOKAHEAD = (0, 3, 6, 13)
 
-    def __init__(self, model_id: str = MODEL_ID, right_context: int = 13,
+    def __init__(self, model_id: str = MODEL_ID, right_context: int = 3,
                  lang: str = "ko-KR", device: str = "cuda", **_ignored):
         import queue as _queue
         import threading as _threading
@@ -108,11 +108,17 @@ class NemotronEngine:
 
     # -- StreamingEngine ---------------------------------------------------
     def start(self, lang: str) -> None:
+        """lang="auto" 면 프로세서 기본값(자동 감지)을 쓴다.
+
+        Voxtral realtime 은 언어를 알려줄 방법이 아예 없고(스키마에 필드가 없다),
+        Qwen3 도 start 에 lang="auto" 로 붙인다. Nemotron 에만 로케일을 알려주면
+        셋 중 하나만 힌트를 받는 비교가 된다 - 조건을 맞춘다.
+        """
         self._abort()
         if lang and lang != "auto":
             self._lang = {"ko": "ko-KR", "en": "en-US"}.get(lang, lang)
         else:
-            self._lang = self.default_lang
+            self._lang = "auto"
         self._q = self._queue_mod.Queue(maxsize=64)
         self._thread = None
         self._error = None
@@ -365,7 +371,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--probe", metavar="WAV")
     ap.add_argument("--lang", default="ko-KR")
-    ap.add_argument("--right-context", type=int, default=13)
+    ap.add_argument("--right-context", type=int, default=3)
     args = ap.parse_args()
     if args.probe:
         sys.exit(_probe(args.probe, args.lang, args.right_context))

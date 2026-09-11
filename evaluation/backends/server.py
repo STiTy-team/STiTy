@@ -22,9 +22,13 @@ def main():
     ap.add_argument("--backend", choices=["nemotron"], required=True)
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8765)
-    ap.add_argument("--lang", default="ko-KR")
-    ap.add_argument("--right-context", type=int, default=13,
-                    help="Nemotron num_lookahead_tokens. 0/3/6/13 = 80ms/320ms/560ms/1.12s")
+    ap.add_argument("--lang", default="auto",
+                    help="auto 권장 - 세 백엔드 조건을 맞추려면 힌트를 주지 않는다")
+    ap.add_argument("--right-context", type=int, default=3,
+                    help="Nemotron num_lookahead_tokens. 0/3/6/13 = 80ms/320ms/560ms/1.12s. "
+                         "**모델 기본값은 3 이다** - config 의 default_num_lookahead_tokens=3, "
+                         "supported=[3,0,6,13] 이고 프로세서 streaming_latency_ms 가 320 으로 뜬다. "
+                         "13 은 lookahead 를 최대로 준 설정이라 '기본값 비교' 에 쓰면 안 된다.")
     ap.add_argument("--log-file")
     args = ap.parse_args()
 
