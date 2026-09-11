@@ -1,0 +1,20 @@
+# bench/ dependencies.
+#
+# The repo pins loosely and several of these are only present transitively today,
+# which is how a WER run ends up emitting {"wer": null} and looking successful.
+# bench checks for them before the model loads and names the missing package.
+
+PyYAML>=6.0
+numpy
+soundfile
+librosa
+
+# metrics. jiwer is optional -- bench's primary WER is computed without it and
+# only the legacy cross-check number needs it.
+jiwer
+sacrebleu>=2.4
+
+# Korean and Japanese BLEU tokenizers. Without these sacrebleu falls back to a
+# character tokenizer and records that in the signature, which makes scores
+# incomparable with runs that had them.
+sacrebleu[ja,ko]

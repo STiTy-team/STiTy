@@ -1,0 +1,35 @@
+# ACL 60/60 eval, en->de. Conference talks; one item per gold sentence, one
+# session per talk.
+name: acl6060-en-de-seg
+
+dataset:
+  name: acl6060
+  limit: 20
+
+languages:
+  lang: en
+  target: de
+
+stity:
+  transcription:
+    name: qwen3
+    model: baseline
+    chunk_size_sec: 2.0       # per-model: travels with this checkpoint
+    max_new_tokens: 128
+    beam_size: 1
+  translation:
+    name: google
+  commit: seg
+  vad:
+    enabled: true
+    min_silence_ms: 800
+  gpu_memory_utilization: 0.5
+
+metrics: [wer, fsl, laal, bleu, commit]
+
+pacing:
+  trailing_silence_ms: 4000
+
+logs:
+  top_k: 10
+  rank_by: laal

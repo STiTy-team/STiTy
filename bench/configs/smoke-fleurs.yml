@@ -1,0 +1,30 @@
+# Smallest useful run: 5 FLEURS items, ASR only, no translator and no API cost.
+# Use this to check the pipeline end to end before spending time on a real run.
+name: smoke-fleurs
+
+dataset:
+  name: fleurs
+  limit: 5
+
+languages:
+  lang: en
+  target: ko
+
+stity:
+  transcription:
+    name: qwen3
+    model: baseline
+  translation: none
+  commit: seg
+  vad:
+    enabled: true
+  gpu_memory_utilization: 0.5
+
+metrics: [wer, fsl, commit]
+
+pacing:
+  trailing_silence_ms: 4000
+
+logs:
+  top_k: 5
+  rank_by: wer
