@@ -51,8 +51,16 @@ class NemotronEngine:
     프로세서의 num_samples_first_audio_chunk 는 첫 청크에서 1 프레임 과다하므로
     (105 요구 / 106 산출) 프레임 수에서 역산한다. per 쪽 프로퍼티는 정확하다.
 
-    generate() 는 스트림을 다 소비한 뒤에야 반환하므로 feed() 는 부분 결과를 내지
-    않는다. 전체 전사는 finish() 가 돌려준다.
+    generate() 자체는 스트림을 다 소비한 뒤에야 반환하지만, 토큰은 그 전에
+    이미 나온다. 베이스 GenerationMixin._sample 이 스텝마다 streamer.put(next_tokens)
+    을 부르므로(transformers/generation/utils.py:2933) streamer 를 끼우면
+    feed() 가 증분 텍스트를 돌려줄 수 있다. 2026-09-11 이전 구현은 streamer 없이
+    finish() 에서 한 번에 뱉어 클립당 조각이 1 개였고, 그래서 이 백엔드만
+    "지연 꼴찌" 로 찍혔다 - 모델이 아니라 어댑터 문제였다.
+
+    RNNT 라 토큰 열에 blank 가 대량으로 섞인다. 델타는 토큰을 따로 디코드해
+    이어붙이지 않고 **누적 디코드 후 접두사 차이**로 뽑는다(blank/특수토큰이
+    skip_special_tokens 로 사라지고, 부분 토큰 경계에서 깨지지 않는다).
     """
 
     HOP = 160
@@ -94,6 +102,9 @@ class NemotronEngine:
         self._text = ""
         self._buf = np.zeros(0, dtype=np.float32)
         self._first = True
+        self._ids = []
+        self._emitted = ""
+        self._ids_lock = _threading.Lock()
 
     # -- StreamingEngine ---------------------------------------------------
     def start(self, lang: str) -> None:
@@ -108,6 +119,9 @@ class NemotronEngine:
         self._text = ""
         self._buf = np.zeros(0, dtype=np.float32)
         self._first = True
+        self._ids = []
+        self._emitted = ""
+        self._ids_lock = self._threading.Lock()
 
     def feed(self, pcm: np.ndarray) -> Optional[str]:
         if self._q is None:
@@ -121,7 +135,7 @@ class NemotronEngine:
             self._buf = self._buf[n:]
             self._push(chunk, first=self._first)
             self._first = False
-        return None  # generate() 는 스트림을 다 먹은 뒤에야 텍스트를 준다
+        return self._drain()
 
     def finish(self) -> Optional[str]:
         if self._q is None:
@@ -141,7 +155,16 @@ class NemotronEngine:
         self._thread = None
         if self._error is not None:
             raise self._error
-        return self._text or None
+        tail = self._drain(flush=True)
+        if not self._emitted and self._text:
+            # 스트리머가 한 번도 안 불린 경우에만 최종 시퀀스로 대체한다.
+            # 여기서 self._text 와 self._emitted 를 '조정' 하려 들면 안 된다:
+            # 둘은 같은 greedy 디코드 결과지만 공백 처리가 달라(strip vs lstrip)
+            # 문자열 비교가 어긋나고, 그러면 전사 전체가 한 번 더 붙는다
+            # (2026-09-11 실측: CER 1.245, HYP 가 정확히 두 번 반복됐다).
+            tail = self._text
+            self._emitted = self._text
+        return tail or None
 
     def close(self) -> None:
         self._abort()
@@ -183,12 +206,15 @@ class NemotronEngine:
                     return
                 yield item
 
+        streamer = _TokenStreamer(self)
+
         def _run():
             try:
                 with self.torch.no_grad():
                     out = self.model.generate(input_features=_stream(),
                                               num_lookahead_tokens=self.lookahead,
-                                              prompt_ids=prompt_ids)
+                                              prompt_ids=prompt_ids,
+                                              streamer=streamer)
                 text = self.processor.batch_decode(out.sequences, skip_special_tokens=True)[0]
                 self._text = (text or "").strip()
             except Exception as e:                      # noqa: BLE001
@@ -197,6 +223,43 @@ class NemotronEngine:
 
         self._thread = self._threading.Thread(target=_run, name="nemotron-generate", daemon=True)
         self._thread.start()
+
+    def _drain(self, flush: bool = False) -> Optional[str]:
+        """streamer 가 쌓은 토큰을 디코드해 아직 안 내보낸 부분만 돌려준다.
+
+        **단어 경계까지만** 내보낸다. 소비자(smoke_client)는 final 들을
+        " ".join 으로 잇는데, 단어 중간에서 끊으면 그 자리에 공백이 생겨
+        멀쩡한 전사가 깨진다(2026-09-11: "lag be hind", "ma de", "depen ding"
+        만으로 en WER 0.0959 -> 0.1892). 반 단어는 자막으로 띄울 수도 없다.
+        flush=True(finish 경로)면 꼬리까지 전부 내보낸다.
+        """
+        with self._ids_lock:
+            ids = list(self._ids)
+        if not ids:
+            return None
+        try:
+            text = self.processor.batch_decode([ids], skip_special_tokens=True)[0]
+        except Exception:                                   # noqa: BLE001
+            return None
+        text = (text or "").lstrip()
+        if not text.startswith(self._emitted):
+            # RNNT 는 단조 증가라 보통 여기 안 온다. 와도 조용히 리셋하지 않고
+            # 전체를 새 기준으로 삼는다(중복 출력이 침묵보다 낫다).
+            self._emitted = text
+            return text.strip() or None
+        pending = text[len(self._emitted):]
+        if flush:
+            self._emitted = text
+            return pending.strip() or None
+        cut = pending.rfind(" ")
+        if cut < 0:
+            return None                     # 아직 단어 하나도 안 끝났다
+        self._emitted += pending[:cut + 1]  # 공백까지 소비 - 다음 델타는 단어 첫 글자부터
+        return pending[:cut].strip() or None
+
+    def _put_ids(self, ids) -> None:
+        with self._ids_lock:
+            self._ids.extend(ids)
 
     def _abort(self) -> None:
         if self._q is not None and self._thread is not None:
@@ -207,6 +270,23 @@ class NemotronEngine:
             self._thread.join(timeout=10)
         self._q = None
         self._thread = None
+
+
+class _TokenStreamer:
+    """generate() 가 스텝마다 부르는 훅. BaseStreamer 상속은 필요 없다 - put/end 면 된다."""
+
+    def __init__(self, engine: "NemotronEngine"):
+        self.engine = engine
+
+    def put(self, value) -> None:
+        try:
+            ids = value.reshape(-1).tolist() if hasattr(value, "reshape") else list(value)
+        except Exception:                                   # noqa: BLE001
+            return
+        self.engine._put_ids(int(i) for i in ids)
+
+    def end(self) -> None:
+        pass
 
 
 def _probe(path: str, lang: str, right_context: int) -> int:
