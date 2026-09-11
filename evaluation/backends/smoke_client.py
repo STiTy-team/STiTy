@@ -140,6 +140,41 @@ def units_with_delays(pieces, unit="word", fragments=False):
     return [(w, delays[k]) for k, w in enumerate(words) if k < len(delays)]
 
 
+def partial_axes(snaps, final_text, unit):
+    """partial 스냅숏들 -> (first_display, stable) 단위 리스트.
+
+    partial 은 누적 텍스트를 **통째로 교체**한다(서버 주석: 모델이 롤백 후
+    재디코딩하므로 append 로는 정합성을 못 맞춘다). 그래서 단위 i 의 시각은
+      first  = i 번째 단위가 처음 존재하게 된 스냅숏의 시각
+      stable = i 번째 단위가 최종본과 같은 값이 된 **마지막** 시각
+                (그 뒤로 다시 바뀌면 굳지 않은 것으로 본다)
+    로 잡는다. stable 은 "화면에 뜬 글자를 믿어도 되는 시각"이고, first 는
+    "무엇이든 떴다"는 시각이다. 둘 다 내야 수정 가능한 출력(Qwen3 partial)과
+    append-only 출력(Voxtral 델타, Nemotron RNN-T)을 공정하게 견준다.
+    """
+    if not snaps or not final_text:
+        return [], []
+    seq = (lambda s: list(s.replace(" ", ""))) if unit == "char" else (lambda s: s.split())
+    fin = seq(final_text)
+    first = []                      # first[i] = 처음 뜬 시각
+    stable = [None] * len(fin)
+    for txt, d in snaps:
+        cur = seq(txt)
+        while len(first) < len(cur):
+            first.append(d)
+        for i in range(min(len(cur), len(fin))):
+            if cur[i] == fin[i]:
+                if stable[i] is None:
+                    stable[i] = d
+            else:
+                stable[i] = None    # 다시 틀어졌다
+    last = snaps[-1][1]
+    segs_first = [(u, first[i]) for i, u in enumerate(fin) if i < len(first)]
+    segs_stable = [(u, stable[i] if stable[i] is not None else last)
+                   for i, u in enumerate(fin)]
+    return segs_first, segs_stable
+
+
 def laal_pair(segments_policy, segments_ca, src_sec, ref_text, lang,
               fragments=False):
     """(LAAL, LAAL_CA) ms. segments = [(text, delay_ms)].
@@ -215,6 +250,7 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int,
     first_arr = last_arr = None      # 도착 시각(벽시계). 확정 지연 기준.
     segs_policy = []   # [(text, d_ms)] d = 커밋 결정 시점까지 읽은 소스 오디오
     segs_ca = []       # [(text, d_ms)] d = 그 출력을 받은 실시간 경과
+    snaps = []         # [(누적 텍스트, d_ms)] partial - 미확정 가설(통째 교체)
     n_decision = 0     # decisionAudioSec 을 실제로 받은 final 수
     done = asyncio.Event()
 
@@ -240,6 +276,11 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int,
             if t == "finish_done":
                 if done.is_set():
                     return
+            elif t == "partial":
+                # 미확정 가설. 채점에는 절대 쓰지 않고 지연 축에만 쓴다.
+                ptxt = (d.get("text") or "").strip()
+                if ptxt:
+                    snaps.append((ptxt, (time.perf_counter() - origin) * 1000.0))
             elif t == "final":
                 txt = (d.get("original") or "").strip()
                 if txt:
@@ -292,6 +333,7 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int,
             "num_finals": len(finals),
             "segs_policy": segs_policy,
             "segs_ca": segs_ca,
+            "snaps": snaps,
             "n_decision": n_decision,
             "avg_fsl_sec": mean(lags) if lags else None,
             # 확정 지연: 마지막 출력 − 실제 발화 끝(뒤에 붙인 무음 제외)
@@ -340,8 +382,17 @@ async def main_async(a) -> int:
             _sec = len(audio) / SAMPLING_RATE
             _laal, _laal_ca = laal_pair(out.pop("segs_policy"), out.pop("segs_ca"),
                                         _sec, r["reference"], a.lang)
+            _snaps = out.pop("snaps")
+            _lu = LAAL_UNIT.get(a.lang, "word")
+            _sf, _ss = partial_axes(_snaps, out["transcript"], _lu)
+            _lf = _ls = None
+            if _sf and laal_for_utterance is not None and _sec > 0:
+                _lf = round(laal_for_utterance(_sf, _sec * 1000.0, r["reference"], _lu), 1)
+                _ls = round(laal_for_utterance(_ss, _sec * 1000.0, r["reference"], _lu), 1)
             results.append({**r, **out, "audio_sec": _sec,
-                            "laal_ms": _laal, "laal_ca_ms": _laal_ca, unit: s})
+                            "laal_ms": _laal, "laal_ca_ms": _laal_ca,
+                            "laal_first_ms": _lf, "laal_stable_ms": _ls,
+                            "n_partial": len(_snaps), unit: s})
             print(f"  [{i}/{len(rows)}] {unit}={s:.3f} " if s is not None
                   else f"  [{i}/{len(rows)}] {unit}=NA ", flush=True)
             print(f"      REF {r['reference'][:80]}", flush=True)
@@ -359,6 +410,9 @@ async def main_async(a) -> int:
            if r.get("finalization_lag_sec") is not None]
     laal = [r["laal_ms"] for r in results if r.get("laal_ms") is not None]
     laal_ca = [r["laal_ca_ms"] for r in results if r.get("laal_ca_ms") is not None]
+    laal_f = [r["laal_first_ms"] for r in results if r.get("laal_first_ms") is not None]
+    laal_s = [r["laal_stable_ms"] for r in results if r.get("laal_stable_ms") is not None]
+    n_par = [r.get("n_partial", 0) for r in results]
     rtfs = [r["rtf"] for r in results if r.get("rtf") is not None]
     n_dec = sum(r.get("n_decision", 0) for r in results)
     audio_total = sum(r["audio_sec"] for r in results) or 1
@@ -371,6 +425,10 @@ async def main_async(a) -> int:
         # LAAL: 정책(결정 시점) / LAAL_CA: 체감(도착 시점). 낮을수록 좋다.
         "laal_ms": round(mean(laal), 1) if laal else None,
         "laal_ca_ms": round(mean(laal_ca), 1) if laal_ca else None,
+        # partial 채널(있는 백엔드만). first = 처음 뜬 시각, stable = 굳은 시각
+        "laal_first_ms": round(mean(laal_f), 1) if laal_f else None,
+        "laal_stable_ms": round(mean(laal_s), 1) if laal_s else None,
+        "partials_per_clip": round(mean(n_par), 1) if n_par else None,
         "finalization_lag_sec": round(mean(fin), 3) if fin else None,
         "avg_fsl_sec": round(mean(fsl), 3) if fsl else None,
         "rtf": round(mean(rtfs), 3) if rtfs else None,
