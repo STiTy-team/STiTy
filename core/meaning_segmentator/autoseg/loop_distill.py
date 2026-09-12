@@ -272,10 +272,55 @@ def build_cases(rows: list[dict], labels: dict, sent_index: dict[str, int], unit
                 best_at = (T, loss)
         return best_at
 
+    def failure_kind(r: dict, T_at: int) -> str:
+        """이 문장이 **왜** 졌나 — 잘못 남긴 경계들의 지배적 성분.
+
+        라벨은 세 성분으로 분해된다: `contra`(조기 방출 — 뒤가 앞을 뒤집는다),
+        `adq_left`/`adq_right`(조각이 파편이라 그 자체로 번역이 안 된다). 경계마다 가장
+        나쁜 성분을 고르고 문장 단위로 다수결한다.
+        """
+        bt = r["by_T"][str(T_at)]
+        bad = set(bt["kept_model"]) - set(bt["kept_label"])
+        if not bad:
+            return "other"
+        i = sent_index[r["id"]]
+        votes = []
+        for j in bad:
+            p = L.label_parts(labels, i, j)
+            votes.append(max({"contra": p["contra"],
+                              "frag_left": 1 - p["adq_left"],
+                              "frag_right": 1 - p["adq_right"]}.items(),
+                             key=lambda kv: kv[1])[0])
+        return collections.Counter(votes).most_common(1)[0][0]
+
     picked = [(w, r) for r in rows if (w := worst(r))]
     picked.sort(key=lambda x: -x[0][1])
+
+    # **손실 크기로만 뽑으면 시끄러운 실패 하나만 계속 본다.** run18 train 실측:
+    # 손실이 있는 93문장이 frag_right 42 / contra 28 / frag_left 23 으로 갈리는데,
+    # 상위 8개는 contra 6 / frag_right 2 / **frag_left 0** 이었다. 조기 방출은 건당
+    # 손실이 크고 파편은 작아서, 줄을 세우면 위쪽을 contra 가 독차지한다. 그래서
+    # 전체의 4분의 1인 실패 종류를 Critic 이 **한 번도 못 본다.**
+    #
+    # 종류별로 통을 만들고 돌아가며 뽑는다. 통 안에서는 손실 순이므로 "각 종류에서 가장
+    # 크게 진 것"이 먼저 온다. 한 종류가 모자라면 남은 자리는 다른 통이 가져간다.
+    # **진 문장만 통에 넣는다.** 손실 0 은 절단기가 라벨과 같은 자리를 고른 문장이라
+    # 고칠 것이 없다. 종전에는 손실 순 상위만 잘라 자연히 걸러졌는데, 돌아가며 뽑으면
+    # 바닥에서 올라와 자리를 먹는다 (실측: n_cases 12 중 3칸이 loss 0.000 이었다).
+    buckets: dict[str, list] = {}
+    for (T_at, loss), r in picked:
+        if loss <= 0:
+            continue
+        buckets.setdefault(failure_kind(r, T_at), []).append(((T_at, loss), r))
+    order = sorted(buckets, key=lambda k: -len(buckets[k]))
+    chosen: list = []
+    while len(chosen) < n_cases and any(buckets[k] for k in order):
+        for k in order:
+            if buckets[k] and len(chosen) < n_cases:
+                chosen.append((buckets[k].pop(0), k))
+
     cases = []
-    for (T_at, loss), r in picked[:n_cases]:
+    for ((T_at, loss), r), kind_ in chosen:
         key = str(T_at)
         i = sent_index[r["id"]]
         u = units_by_id[r["id"]]
@@ -295,6 +340,8 @@ def build_cases(rows: list[dict], labels: dict, sent_index: dict[str, int], unit
             })
         cases.append({"id": r["id"], "text": r["text"], "T": T_at,
                       "loss": round(loss, 4),
+                      # 어느 통에서 왔는지 — Critic 이 종류별로 규칙을 나눠 쓸 수 있게.
+                      "failure_kind": kind_,
                       "candidates": cands})
     return cases
 
@@ -307,8 +354,14 @@ def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
                            "achv": m["achv"], "spearman_within": m["spearman_within"],
                            "tie_rate": m["tie_rate"], "tie_at_cut_rate": m["tie_at_cut_rate"]},
                           ensure_ascii=False, indent=1)
-            + ("\n\n=== CASES (largest loss; each case is shown at the budget T where "
-               "that sentence fell hardest, so T differs between cases) ===\n")
+            + ("\n\n=== CASES (each shown at the budget T where that sentence fell hardest, "
+               "so T differs between cases). `failure_kind` says which component of the "
+               "label the wrongly-kept boundaries broke: `contra` = the rest of the sentence "
+               "overturns what was emitted, `frag_left` / `frag_right` = that side is a "
+               "fragment that cannot be translated on its own. **Cases are drawn round-robin "
+               "across those kinds, not by loss alone** — ranking by loss alone buries the "
+               "fragment failures under the louder contra ones, so treat the kinds as equally "
+               "important and produce rules for each kind you see. ===\n")
             + json.dumps(cases, ensure_ascii=False, indent=1))
     # 실패만 보여주면 비평이 "무엇이 이미 일하고 있는가"를 모른 채 그것까지 뜯자고 한다.
     if accepted:
@@ -435,7 +488,11 @@ def main() -> int:
                         "골랐나. achv 는 같은 k 로 아무렇게나 골라도 0.836 이 나와(run15 test 실측) "
                         "실사용 폭이 0.164 뿐이고, 같은 프롬프트 차이를 재도 t 가 절반이다")
     p.add_argument("--max-prompt-growth", type=float, default=1.6)
-    p.add_argument("--n-cases", type=int, default=8)
+    p.add_argument("--n-cases", type=int, default=12,
+                   help="Critic 에게 줄 실패 사례 수. **실패 종류별로 통을 만들어 돌아가며 "
+                        "뽑는다** (contra / frag_left / frag_right) — 손실 순으로만 뽑으면 "
+                        "조기 방출이 위를 독차지해 파편 실패를 못 본다. 통이 셋이므로 3의 "
+                        "배수가 고르게 나뉜다. 분절 호출은 안 늘고 Critic 입력만 길어진다")
     p.add_argument("--budget", type=float, default=25.0)
     p.add_argument("--fresh", action="store_true")
     p.add_argument("--skip-final-effective", action="store_true")
@@ -813,10 +870,16 @@ def main() -> int:
             # 후보로 남긴다. 기준선(`best`)보다 나쁜 것만 들어오지만, 다음 이터의 출발점
             # 으로는 쓸모가 있다 — 다른 골짜기에 있을 수 있다. 프롬프트가 커지면 메모리도
             # 커지므로 `--pool-size` 로 끊는다.
+            # 승격될 후보(`passed[0]`)는 넣지 않는다 — 채택되면 그게 `best` 가 되므로
+            # 풀 한 칸이 best 복제로 낭비된다. 여기서 걸러야 한다: `best` 는 아직 옛
+            # 것이라 `rv["prompt"] != best["prompt"]` 로는 안 잡힌다.
+            promoted = passed[0][2]["prompt"] if passed else None
             for _d, obj, rv in picks:
-                if rv["prompt"] != best["prompt"]:
+                if rv["prompt"] not in (best["prompt"], promoted):
                     pool.append({"prompt": rv["prompt"], "kind": rv["candidate_kind"],
                                  "holdout_obj": obj, "from_iter": it})
+            # 이미 `best` 가 된 옛 항목도 걷어낸다 (다음 이터에서 중복 출발점이 된다).
+            pool[:] = [p_ for p_ in pool if p_["prompt"] != best["prompt"]]
             pool.sort(key=lambda p_: -p_["holdout_obj"])
             del pool[args.pool_size:]
             (it_dir / "changelog.json").write_text(json.dumps({
