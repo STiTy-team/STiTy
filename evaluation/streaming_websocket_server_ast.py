@@ -213,9 +213,19 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
                 continue
             cut_sec = max(0.0, cut_sec - margin)
             carry_sec = buf_sec - cut_sec
-            # 남는 오디오가 한 청크보다 짧으면 다음 문장 앞머리를 잘라 먹는다.
-            # 줄어드는 양이 한 청크도 안 되면 부를 값어치가 없다.
-            if carry_sec < chunk_sec or cut_sec < chunk_sec:
+            # 남길 오디오(carry)의 하한. 기본은 한 청크라 사실상 자르지 않는다 —
+            # **실측(dev/de, 20260912_215012): 자르기 시도 97회 중 85회가 여기서 막혔고,
+            # 그 85회의 98%가 `carry < chunk_sec` 조건이었다**(`cut < chunk_sec` 은 0건).
+            # 막힌 건들의 carry 는 중앙 1.20초, 버퍼는 중앙 24초였다. carry 가 작다는 건
+            # 버퍼의 대부분이 **이미 커밋된 텍스트**라는 뜻이므로, 그때야말로 잘라야 할
+            # 자리다. 자르지 않아 버려진 오디오가 이 런에서만 2,083초다.
+            #
+            # 다음 문장 앞머리를 잘라 먹을 위험은 carry 크기가 아니라 정렬 오차가 만든다.
+            # 그건 `AST_SEG_CUT_MARGIN_SEC` 이 막는 몫이다(cut 을 그만큼 앞당기므로
+            # carry 가 같은 양만큼 늘어난다). 기본값은 종전 동작 그대로 두고, 낮추려면
+            # `AST_SEG_CUT_MIN_CARRY_SEC` 로 명시한다.
+            min_carry = float(os.environ.get("AST_SEG_CUT_MIN_CARRY_SEC", chunk_sec))
+            if carry_sec < min_carry or cut_sec < chunk_sec:
                 logger.info("[SEG-CUT-SKIP] slot=%s buf=%.1fs cut=%.1fs carry=%.1fs %s",
                             slot_key, buf_sec, cut_sec, carry_sec, info)
                 continue
@@ -818,10 +828,17 @@ def _install_trans_guard() -> None:
     # 실패). 모델은 첫 번역 호출 때 lazy 로 올라오므로, 번역이 일어나지 않는 실행은 GPU 를
     # 물지 않는다. 올라오면 fp16 기준 약 7.2GiB 를 쓰니 ASR 서버의
     # --gpu-memory-utilization 과 합쳐 24GiB 를 넘지 않게 잡을 것.
-    pre.add_argument("--trans-backend", default="local", choices=["v2", "gtx", "local"],
+    pre.add_argument("--trans-backend", default="local",
+                     choices=["v2", "gtx", "local", "remote"],
                      help="local=MADLAD-400-3B greedy(기본값, 키 불필요, 첫 호출 때 GPU 약 7.2GiB), "
+                          "remote=같은 모델을 다른 프로세스에서 HTTP 로 호출(--trans-remote-url), "
                           "gtx=무료 위젯 엔드포인트(이 IP 에서 429), "
                           "v2=공식 Cloud Translation Basic(API 키 필요, 현재 403)")
+    # 카드 하나에 ASR 서버를 둘 이상 띄울 때 쓴다. local 은 프로세스마다 MADLAD 를
+    # 복제하므로(7.2GiB) 둘이 24GiB 에 들어가지 않는다. 모델을 한 번만 올려 두고 나머지는
+    # 이 주소로 부른다. 서버는 STiTy-Mobile/demo-web/local_translation_server.py.
+    pre.add_argument("--trans-remote-url", default=None,
+                     help="번역 서버 주소(예: http://127.0.0.1:8770). --trans-backend remote 와 함께 쓴다")
     # 로컬 번역기는 **번역 품질이 다르다**(CometKiwi 0.8712 → 0.8473). v2 로 낸 결과와
     # 같은 표에 올리면 안 되고, 바꾼 시점을 반드시 기록할 것.
     pre.add_argument("--trans-local-model", default="google/madlad400-3b-mt")
@@ -899,6 +916,7 @@ def _install_trans_guard() -> None:
         fsl_server.base_server,
         backend=args.trans_backend,
         api_key=api_key,
+        remote_url=args.trans_remote_url,
         retries=args.trans_retries,
         timeout=args.trans_timeout,
         backoff=args.trans_backoff,
