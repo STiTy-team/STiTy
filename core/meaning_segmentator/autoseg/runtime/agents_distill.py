@@ -342,13 +342,31 @@ SIZE_MANDATE = {
 
 
 def engineer_messages(current_prompt: str, critique: dict, history: list[dict],
-                      rejected: list[dict], size_budget: int, size_mode: str) -> tuple[str, str]:
+                      rejected: list[dict], size_budget: int, size_mode: str,
+                      accepted: list[dict] | None = None) -> tuple[str, str]:
+    """`accepted` 는 **실측으로 이긴** 개정들이다 — 실패만 주면 방향이 안 생긴다.
+
+    종전에는 `rejected` 만 넘겼다. "이건 하지 마라"는 후보 공간을 좁힐 뿐 어디로 갈지를
+    말하지 않으므로, 이터마다 같은 재료에서 독립 추출하는 것과 같아진다. run17 실측:
+    후보 홀드아웃 overlap 의 이터별 최댓값이 0.393 -> 0.474 -> 0.439 -> 0.387 로
+    올랐다 내려온다. 위로 움직인 유일한 자리가 채택으로 기준선이 오른 iter 1 이었다.
+
+    이긴 개정의 changelog·건드린 구역·실측 Δ 와 **그 개정이 실제로 살린 문장**을 함께
+    준다. 채택본의 근거이므로 "이어서 밀어라"의 재료가 된다.
+    """
     sys_p = (ENGINEER_SYSTEM.replace("__BUDGET__", str(size_budget))
              .replace("__CURLEN__", str(len(current_prompt))))
     hist = [{k: h.get(k) for k in ("version", "adopted", "score_train", "score_dev",
                                    "changelog")} for h in history[-8:]]
     user = (f"=== CRITIQUE (measured) ===\n{json.dumps(critique, ensure_ascii=False, indent=1)}\n\n"
             f"=== ATTEMPT HISTORY ===\n{json.dumps(hist, ensure_ascii=False, indent=1)}\n\n")
+    if accepted:
+        user += ("=== ACCEPTED DIRECTIONS (measured as better — these are why the current "
+                 "prompt looks the way it does) ===\n"
+                 + json.dumps(accepted, ensure_ascii=False, indent=1) + "\n"
+                 "Prefer extending these lines of change over starting a new direction. "
+                 "`gained_on` lists sentences the change actually rescued, with the "
+                 "segmentation before and after — read those before proposing anything.\n\n")
     if rejected:
         user += ("=== REJECTED DIRECTIONS (already measured as no better) ===\n"
                  + json.dumps(rejected, ensure_ascii=False, indent=1) + "\n\n")

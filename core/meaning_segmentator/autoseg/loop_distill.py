@@ -183,6 +183,57 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
     return rows, m
 
 
+def moved_sentences(rows_a: list[dict], rows_b: list[dict], t_grid: list[int],
+                    key: str = "overlap", top_n: int = 5, gains: bool = False) -> list[dict]:
+    """`rows_a` 가 `rows_b` 대비 가장 크게 **떨어진**(또는 `gains` 면 오른) 문장들.
+
+    **`metrics.regressions` 를 쓸 수 없다.** 그쪽은 `by_T[T]["seg_text"]` 로 분절이 실제로
+    바뀌었는지를 보는데, 증류 루프의 `by_T` 에는 그 키가 없다 (`kept_model` /
+    `kept_label` / `util_*` / `overlap` 뿐). `a.get("seg_text") != c.get("seg_text")` 가
+    `None != None` 이라 **항상 거짓**이 되어 결과가 언제나 빈 리스트다 — 이식했던 거부
+    부검이 조용히 죽어 있던 이유다.
+
+    여기서는 분절이 바뀌었는지를 `kept_model`(절단기가 실제로 남긴 경계)로 판정한다.
+    같은 경계 집합인데 값이 다르면 그건 개정이 한 일이 아니라 분절 비결정성이므로
+    귀책할 대상이 없다 — `metrics.regressions` 의 판단과 같고 근거만 이 루프의 것이다.
+
+    싣는 예산 T 는 **변화가 가장 큰 하나**뿐이다. 격자 전체를 실으면 사례 하나가 T
+    개수만큼 부풀어 에이전트 프롬프트를 삼킨다.
+    """
+    b = {r["id"]: r for r in rows_b}
+    out: list[dict] = []
+    for r in rows_a:
+        c = b.get(r["id"])
+        if not c:
+            continue
+        total, seen, pick = 0.0, 0, None
+        for T in t_grid:
+            x = (r.get("by_T") or {}).get(str(T))
+            y = (c.get("by_T") or {}).get(str(T))
+            if not x or not y or x.get(key) is None or y.get(key) is None:
+                continue
+            gap = x[key] - y[key]
+            total += gap
+            seen += 1
+            if x.get("kept_model") != y.get("kept_model"):
+                if pick is None or (gap > pick[1] if gains else gap < pick[1]):
+                    pick = (T, gap, x, y)
+        if not seen or pick is None:
+            continue
+        mean_d = total / seen
+        if (mean_d <= 0) if gains else (mean_d >= 0):
+            continue
+        T, gap, x, y = pick
+        out.append({
+            "id": r["id"], "text": r.get("text"),
+            "delta": round(mean_d, 5), "budget_T": T, "delta_at_T": round(gap, 5),
+            "kept_now": x.get("kept_model"), "kept_before": y.get("kept_model"),
+            "kept_by_label": x.get("kept_label"),
+            "overlap_now": x.get(key), "overlap_before": y.get(key),
+        })
+    return sorted(out, key=lambda d: -d["delta"] if gains else d["delta"])[:top_n]
+
+
 def paired(rows_a: list[dict], rows_b: list[dict], key: str = "overlap") -> dict:
     b = {r["id"]: r.get(key) for r in rows_b}
     d = [r[key] - b[r["id"]] for r in rows_a
@@ -249,7 +300,8 @@ def build_cases(rows: list[dict], labels: dict, sent_index: dict[str, int], unit
 
 
 def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
-               rejected: list[dict], effort: str | None) -> dict:
+               rejected: list[dict], effort: str | None,
+               accepted: list[dict] | None = None) -> dict:
     user = (f"=== METRICS (train batch) ===\n"
             + json.dumps({"overlap": m["overlap"], "overlap_by_T": m["overlap_by_T"],
                            "achv": m["achv"], "spearman_within": m["spearman_within"],
@@ -258,6 +310,12 @@ def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
             + ("\n\n=== CASES (largest loss; each case is shown at the budget T where "
                "that sentence fell hardest, so T differs between cases) ===\n")
             + json.dumps(cases, ensure_ascii=False, indent=1))
+    # 실패만 보여주면 비평이 "무엇이 이미 일하고 있는가"를 모른 채 그것까지 뜯자고 한다.
+    if accepted:
+        user += ("\n\n=== ACCEPTED DIRECTIONS (measured as better) ===\n"
+                 + json.dumps(accepted, ensure_ascii=False, indent=1)
+                 + "\nDo not propose undoing these — they are why the prompt scores what "
+                   "it does. Find what they did NOT fix.")
     if rejected:
         user += ("\n\n=== REJECTED DIRECTIONS ===\n"
                  + json.dumps(rejected, ensure_ascii=False, indent=1))
@@ -269,8 +327,9 @@ def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
 def run_engineer(gw: Gateway, prompt: str, critique: dict, history: list[dict],
                  rejected: list[dict], size_budget: int, mode: str,
                  effort: str | None, output_rules: str, src_lang: str,
-                 targets: list[str]) -> dict | None:
-    sys_p, user = ad.engineer_messages(prompt, critique, history, rejected, size_budget, mode)
+                 targets: list[str], accepted: list[dict] | None = None) -> dict | None:
+    sys_p, user = ad.engineer_messages(prompt, critique, history, rejected, size_budget, mode,
+                                       accepted=accepted)
 
     def limit_of(pr: str) -> str | None:
         """분량 제약 위반 문구. 안 어겼으면 None."""
@@ -362,6 +421,10 @@ def main() -> int:
     p.add_argument("--patience", type=int, default=3)
     p.add_argument("--v0-candidates", type=int, default=3)
     p.add_argument("--revision-candidates", type=int, default=3)
+    p.add_argument("--pool-size", type=int, default=2,
+                   help="다음 이터의 출발점으로 남길 기각 후보 수 (홀드아웃 성적 상위). "
+                        "첫 후보는 항상 현재 best 에서 출발하므로 실제로 쓰이는 것은 "
+                        "min(pool-size, revision-candidates-1) 개다. 0 = 끔(항상 best)")
     p.add_argument("--revision-rounds", type=int, default=2,
                    help="한 이터레이션에서 개정 후보를 다시 뽑을 최대 라운드 수. 홀드아웃 "
                         "기준선(Δ>0)을 넘는 후보가 나오면 즉시 멈춘다. 끝까지 없으면 dev "
@@ -515,6 +578,11 @@ def main() -> int:
         # ── 이터레이션 ────────────────────────────────────────────────
         prompt = prompt_v0
         rejected: list[dict] = []
+        # 실측으로 이긴 개정들 (A). `rejected` 와 짝이고 PE·Critic 이 둘 다 받는다.
+        accepted: list[dict] = []
+        # 기각됐지만 홀드아웃 성적이 좋았던 후보 (D). 기준선이 못 오를 때 여기서 다시
+        # 출발한다 — 다음 이터가 항상 `best` 에서만 시작하면 골짜기를 못 넘는다.
+        pool: list[dict] = []
         no_improve = 0
         for it in range(args.iterations):
             it_dir = run_dir / f"iter_{it:02d}"
@@ -560,6 +628,33 @@ def main() -> int:
             (it_dir / "metrics.json").write_text(json.dumps(entry, ensure_ascii=False, indent=1),
                                                  encoding="utf-8")
             if adopted:
+                # ── 채택 귀속 ──────────────────────────────────────────
+                # **무엇이 이겼는지 남긴다.** 거부 부검의 반대 방향이다. 종전에는 이긴
+                # 개정도 changelog(자기 보고)와 Δ 숫자만 남아, 다음 이터의 PE 가
+                # "무엇을 이어서 밀지"를 알 수 없었다. `regressions` 는 인자를 뒤집으면
+                # 그대로 개선분을 준다 — 새 행이 옛 행을 이긴 문장을 낙폭 순으로
+                # 돌려주므로 여기서는 **상승 순**이 된다. 새로 재는 것도 LLM 호출도 없다.
+                if best.get("dev_rows"):
+                    gains = moved_sentences(dv_rows, best["dev_rows"], t_grid, "overlap",
+                                            gains=True)
+                    accepted.append({
+                        "version": it, "changelog": best.get("next_changelog"),
+                        "sections_changed": best.get("next_sections"),
+                        "dev_delta": pd,
+                        "prompt_len": {"before": len(best["prompt"]), "after": len(prompt)},
+                        # 이긴 개정이 실제로 살린 문장 — 어느 경계를 새로 잡았고 라벨이
+                        # 원하던 자리가 어디였는지까지. PE 가 "이어서 밀" 근거다.
+                        "gained_on": [{"id": g["id"], "text": g["text"],
+                                       "budget_T": g["budget_T"], "gain": g["delta"],
+                                       "kept_now": g["kept_now"],
+                                       "kept_before": g["kept_before"],
+                                       "kept_by_label": g["kept_by_label"]}
+                                      for g in gains[:4]],
+                    })
+                    (it_dir / "accepted.json").write_text(
+                        json.dumps(accepted[-1], ensure_ascii=False, indent=2), encoding="utf-8")
+                    top = ", ".join(f"{g['id']} +{g['delta']:.3f}" for g in gains[:3])
+                    log(f"[iter {it}] 채택 귀속 — 살린 문장 {len(gains)}개 ({top})")
                 best = {"prompt": prompt, "version": it, "dev_rows": dv_rows, "dev_m": dv_m,
                         "train_rows": tr_rows, "train_m": tr_m}
                 (run_dir / "best_prompt.txt").write_text(prompt, encoding="utf-8")
@@ -596,7 +691,7 @@ def main() -> int:
             if (not adopted and rejected and rejected[-1].get("version") == it
                     and best.get("dev_rows")):
                 # `by_T` 에 들어 있는 축은 overlap 하나다 (achv 는 행 단위라 없다).
-                regs = metrics.regressions(dv_rows, best["dev_rows"], t_grid, "overlap")
+                regs = moved_sentences(dv_rows, best["dev_rows"], t_grid, "overlap")
                 if regs:
                     try:
                         pm = agents.Critic(gw).diagnose_regression(
@@ -629,7 +724,8 @@ def main() -> int:
             units_by_id = {s.id: L.units_of(s.text, spaced) for s in batch}
             cases = build_cases(best["train_rows"], lab_batch, sent_index, units_by_id,
                                 main_T, spaced, args.n_cases, t_grid)
-            critique = run_critic(gw, best["prompt"], best["train_m"], cases, rejected, ag_effort)
+            critique = run_critic(gw, best["prompt"], best["train_m"], cases, rejected,
+                                  ag_effort, accepted=accepted)
             critique["metrics"] = {"overlap": best["train_m"]["overlap"],
                                    "overlap_by_T": best["train_m"]["overlap_by_T"],
                                    "achv": best["train_m"]["achv"],
@@ -665,10 +761,25 @@ def main() -> int:
                 modes = [("grow", "neutral", "shrink")[k % 3]
                          for k in range(args.revision_candidates)]
                 seen = rejected + round_fails
+                # **출발점을 `best` 하나로 고정하지 않는다** (D). 이터마다 같은 자리에서
+                # 다시 뽑으면 후보 분포가 정지 상태가 된다 — run17 실측으로 이터별
+                # 최댓값이 0.393 -> 0.474 -> 0.439 -> 0.387 로 올랐다 내려왔고, 위로
+                # 움직인 자리는 채택으로 기준선이 오른 한 번뿐이었다. 기각됐어도 홀드아웃
+                # 성적이 좋았던 후보에서 다시 출발하면 골짜기를 넘어갈 길이 생긴다.
+                #
+                # 첫 후보는 항상 `best` 에서 출발한다 — 풀이 전부 나쁜 쪽으로 흘러가도
+                # 현재 최선 주변 탐색이 끊기지 않게 하는 닻이다. 채점 기준선(`base_rows`)은
+                # 출발점과 무관하게 언제나 `best` 다.
+                bases = [best["prompt"]]
+                for p_ in pool[:max(0, len(modes) - 1)]:
+                    bases.append(p_["prompt"])
+                while len(bases) < len(modes):
+                    bases.append(best["prompt"])
                 with ThreadPoolExecutor(max_workers=len(modes)) as ex:
-                    rvs = list(ex.map(lambda md: run_engineer(
-                        gw, best["prompt"], critique, history, seen, size_budget, md,
-                        ag_effort, out_rules, args.src_lang, targets), modes))
+                    rvs = list(ex.map(lambda t_: run_engineer(
+                        gw, t_[1], critique, history, seen, size_budget, t_[0],
+                        ag_effort, out_rules, args.src_lang, targets,
+                        accepted=accepted), list(zip(modes, bases))))
                 cands = [rv for rv in rvs if rv]
                 attempts += len(cands)
                 for rv in cands:
@@ -698,6 +809,16 @@ def main() -> int:
             # 승격 후보는 Δ 최대. 동점이면 홀드아웃 절대값으로 가른다.
             picks.sort(key=lambda x: (-x[0], -x[1]))
             passed = [p for p in picks if p[0] > 0]
+            # 풀 갱신 (D) — 승격 못 한 후보 중 홀드아웃 성적 상위를 다음 이터의 출발점
+            # 후보로 남긴다. 기준선(`best`)보다 나쁜 것만 들어오지만, 다음 이터의 출발점
+            # 으로는 쓸모가 있다 — 다른 골짜기에 있을 수 있다. 프롬프트가 커지면 메모리도
+            # 커지므로 `--pool-size` 로 끊는다.
+            for _d, obj, rv in picks:
+                if rv["prompt"] != best["prompt"]:
+                    pool.append({"prompt": rv["prompt"], "kind": rv["candidate_kind"],
+                                 "holdout_obj": obj, "from_iter": it})
+            pool.sort(key=lambda p_: -p_["holdout_obj"])
+            del pool[args.pool_size:]
             (it_dir / "changelog.json").write_text(json.dumps({
                 "selected_kind": picks[0][2]["candidate_kind"] if passed else None,
                 "gate": {"threshold": 0.0, "rounds": args.revision_rounds,
