@@ -271,32 +271,56 @@ def run_engineer(gw: Gateway, prompt: str, critique: dict, history: list[dict],
                  effort: str | None, output_rules: str, src_lang: str,
                  targets: list[str]) -> dict | None:
     sys_p, user = ad.engineer_messages(prompt, critique, history, rejected, size_budget, mode)
-    try:
-        rv = gw.chat_json(sys_p, user, max_tokens=PROMPT_MAX_TOKENS,
-                          reasoning_effort=effort, purpose="prompt_engineer")
-    except Exception as e:  # noqa: BLE001
-        log(f"[pe/{mode}] 실패: {e}")
+
+    def limit_of(pr: str) -> str | None:
+        """분량 제약 위반 문구. 안 어겼으면 None."""
+        if mode == "shrink" and len(pr) >= len(prompt):
+            return f"{len(pr)} >= {len(prompt)}"
+        if mode == "neutral" and len(pr) > len(prompt):
+            return f"{len(pr)} > {len(prompt)}"
+        if len(pr) > size_budget:
+            return f"예산 초과 {len(pr)} > {size_budget}"
         return None
-    pr = (rv.get("prompt") or "").strip()
-    if not pr:
-        return None
-    pr = ad.replace_section(pr, "[Output Rules]", output_rules)
-    errs = ad.check_skeleton(pr) + agents.check_target_agnostic(pr, src_lang, targets)
-    if errs:
-        log(f"[pe/{mode}] 관문 실패: {errs}")
-        return None
-    if mode == "shrink" and len(pr) >= len(prompt):
-        log(f"[pe/{mode}] 분량 제약 위반 {len(pr)} >= {len(prompt)}")
-        return None
-    if mode == "neutral" and len(pr) > len(prompt):
-        log(f"[pe/{mode}] 분량 제약 위반 {len(pr)} > {len(prompt)}")
-        return None
-    if len(pr) > size_budget:
-        log(f"[pe/{mode}] 예산 초과 {len(pr)} > {size_budget}")
-        return None
-    rv["prompt"] = pr
-    rv["candidate_kind"] = mode
-    return rv
+
+    # **분량 위반은 한 번 되묻는다.** 종전에는 그냥 버렸는데, 그러면 `shrink`/`neutral`
+    # 이 통째로 사라지고 탐색이 제한 없는 `grow` 하나로 줄어든다 — run17 iter 0 에서
+    # 두 라운드 모두 그렇게 됐다 (shrink 13320/13520, neutral 13643/13104, 모두 기준
+    # 12032 초과). 그 결과 r0·r1 이 사실상 같은 모드의 재추출이 되고 프롬프트만 +30%
+    # 부푼다. 분절 호출에는 같은 성격의 복구 재시도가 이미 있다.
+    #
+    # 되묻는 값은 **잰 글자 수**다. 지시문을 다시 쓰지 않는다 — `engineer_messages` 가
+    # 이미 제약을 담고 있고, 여기서 다시 쓰면 두 문구가 어긋날 때 고칠 수 없는 것을
+    # 시키게 된다.
+    for attempt in range(2):
+        try:
+            rv = gw.chat_json(sys_p, user, max_tokens=PROMPT_MAX_TOKENS,
+                              reasoning_effort=effort, purpose="prompt_engineer")
+        except Exception as e:  # noqa: BLE001
+            log(f"[pe/{mode}] 실패: {e}")
+            return None
+        pr = (rv.get("prompt") or "").strip()
+        if not pr:
+            return None
+        pr = ad.replace_section(pr, "[Output Rules]", output_rules)
+        errs = ad.check_skeleton(pr) + agents.check_target_agnostic(pr, src_lang, targets)
+        if errs:
+            log(f"[pe/{mode}] 관문 실패: {errs}")
+            return None
+        bad = limit_of(pr)
+        if not bad:
+            rv["prompt"] = pr
+            rv["candidate_kind"] = mode
+            return rv
+        if attempt == 0:
+            log(f"[pe/{mode}] 분량 제약 위반 {bad} — 재시도")
+            user += (f"\n\n=== LENGTH VIOLATION ===\nYour previous answer was {len(pr)} "
+                     f"characters, which breaks the size constraint for mode "
+                     f"'{mode}' ({bad}). Cut text until it fits. Remove whole rules that "
+                     f"the measurements do not support rather than trimming wording "
+                     f"everywhere — a shorter prompt with fewer, better rules is the point "
+                     f"of this mode.")
+    log(f"[pe/{mode}] 분량 제약 위반 {bad} — 재시도 후에도 초과, 버린다")
+    return None
 
 
 # ── main ────────────────────────────────────────────────────────────────
@@ -529,7 +553,10 @@ def main() -> int:
                 f"dev overlap={dv_m['overlap']} {dv_m['overlap_by_T']} achv={dv_m['achv']} "
                 f"fmt={dv_m['format_pass_rate']}(1st {dv_m['format_pass_rate_no_retry']}, "
                 f"위반 {dv_m['first_pass_violations']['counts']}) "
-                f"Δ={pd} | {'채택' if adopted else '거부'} | 비용 {gw.usage.snapshot()['cost']:.3f}")
+                # 재사용 이터는 잰 것이 없으므로 '거부' 로 찍으면 안 된다 — 나중에
+                # 로그만 보면 기각이 실제보다 많아 보인다.
+                f"Δ={pd} | {'재사용' if reuse else ('채택' if adopted else '거부')} "
+                f"| 비용 {gw.usage.snapshot()['cost']:.3f}")
             (it_dir / "metrics.json").write_text(json.dumps(entry, ensure_ascii=False, indent=1),
                                                  encoding="utf-8")
             if adopted:
@@ -628,12 +655,19 @@ def main() -> int:
             base_rows, _bm = ev(best["prompt"], holdout, lab_hold)
             picks: list[tuple[float, float, dict]] = []   # (Δ, holdout objective, 후보)
             attempts = 0
+            # **재추출은 앞 라운드가 진 것을 보고 뽑아야 한다.** 안 넘기면 r1 이 r0 와
+            # 똑같은 입력으로 같은 분포에서 다시 뽑는 것이라 복권을 한 장 더 사는 것과
+            # 같다 — 라운드를 늘린 값어치가 없다. PE 는 이미 `rejected` 를
+            # "REJECTED DIRECTIONS (already measured as no better)" 로 받으므로
+            # (`agents_distill.engineer_messages`), 이 라운드에서 잰 실패를 거기 얹는다.
+            round_fails: list[dict] = []
             for rnd in range(args.revision_rounds):
                 modes = [("grow", "neutral", "shrink")[k % 3]
                          for k in range(args.revision_candidates)]
+                seen = rejected + round_fails
                 with ThreadPoolExecutor(max_workers=len(modes)) as ex:
                     rvs = list(ex.map(lambda md: run_engineer(
-                        gw, best["prompt"], critique, history, rejected, size_budget, md,
+                        gw, best["prompt"], critique, history, seen, size_budget, md,
                         ag_effort, out_rules, args.src_lang, targets), modes))
                 cands = [rv for rv in rvs if rv]
                 attempts += len(cands)
@@ -646,6 +680,14 @@ def main() -> int:
                         f"achv={hm['achv']} Δ={d['mean_delta']}±{d['se_delta']}")
                     rv["holdout_delta"] = d
                     picks.append((delta, hm[args.objective] or 0.0, rv))
+                    if delta <= 0:
+                        # 다음 라운드가 같은 방향을 다시 시도하지 않게 근거와 함께 남긴다.
+                        round_fails.append({
+                            "version": f"{it}.r{rnd}", "candidate_kind": rv["candidate_kind"],
+                            "changelog": rv.get("changelog"),
+                            "sections_changed": rv.get("sections_changed"),
+                            "gate": "holdout", "holdout_delta": d,
+                        })
                 if any(p[0] > 0 for p in picks):
                     break
                 if rnd + 1 < args.revision_rounds:
