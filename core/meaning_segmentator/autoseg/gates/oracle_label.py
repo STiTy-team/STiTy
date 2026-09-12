@@ -91,6 +91,13 @@ def main() -> int:
     ap.add_argument("--n", type=int, default=0, help="문장 수 상한 (스모크)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--no-floor", action="store_true")
+    ap.add_argument("--llm-rows", default=None,
+                    help="LLM 비교군 rows 파일 (기본: iter_NN/{split}_rows.json). "
+                         "test 는 런 루트의 test_rows.json")
+    ap.add_argument("--emit", nargs="*", default=[],
+                    help="이 정책들의 절단을 prompt_eval 형식으로 내보낸다 — "
+                         "`<run-id>_oracle_<정책>/prompt_eval/<정책>_<split>.json`. "
+                         "bleu_eval/comet_eval 이 그대로 읽는다 (gold 참조 검증용)")
     args = ap.parse_args()
 
     run_dir = RUNS_DIR / args.run_id
@@ -109,16 +116,17 @@ def main() -> int:
         hist = json.loads((run_dir / "history.json").read_text(encoding="utf-8"))
         adopted = [h["version"] for h in hist if h.get("adopted")]
         args.llm_iter = adopted[-1] if adopted else 0
-    llm_rows = {r["id"]: r for r in json.loads(
-        (run_dir / f"iter_{args.llm_iter:02d}" / f"{args.split}_rows.json")
-        .read_text(encoding="utf-8"))}
-    # 비교는 LLM 행이 유효한 문장에서만 — 정책 전부가 같은 문장 집합을 본다.
-    sents = [s for s in sents if s["id"] in llm_rows and llm_rows[s["id"]].get("valid")]
+    llm_path = (Path(args.llm_rows) if args.llm_rows
+                else run_dir / f"iter_{args.llm_iter:02d}" / f"{args.split}_rows.json")
+    llm_rows = {r["id"]: r for r in json.loads(llm_path.read_text(encoding="utf-8"))}
+    # 라벨은 전 문장에 만든다. LLM 행이 없거나 무효인 문장은 llm 정책에서 무분절로
+    # 두어 effective 가 None 이 되므로 쌍체 비교에서 저절로 빠진다.
     ids = [s["id"] for s in sents]
+    n_llm_ok = sum(1 for i in ids if i in llm_rows and llm_rows[i].get("valid"))
     texts = [s["text"] for s in sents]
     units = [_units(t, spaced) for t in texts]
-    log(f"{args.run_id} {args.split}: 문장 {len(sents)} / 타깃 {targets} / T {t_grid} / "
-        f"min_gap {min_gap} / spaced {spaced} / LLM iter {args.llm_iter}")
+    log(f"{args.run_id} {args.split}: 문장 {len(sents)} (LLM 유효 {n_llm_ok}) / 타깃 {targets} / "
+        f"T {t_grid} / min_gap {min_gap} / spaced {spaced} / LLM rows {llm_path.name}")
 
     adequacy = metrics.make_adequacy_backend(cfg.get("adequacy_backend", "cometkiwi"),
                                              batch_size=cfg.get("comet_batch_size", 64))
@@ -181,9 +189,25 @@ def main() -> int:
         label_path.write_text(json.dumps(cached_labels, ensure_ascii=False), encoding="utf-8")
         log(f"[{tgt}] 라벨 완료 {time.time() - t0:.0f}s -> {label_path.name}")
 
+    # ── 1b. 경계 단위 consistency (있으면) ───────────────────────────────
+    # `gates/boundary_consistency.py` 가 따로 만든다. 라벨 캐시와 파일을 나눈 이유는
+    # 축을 하나 더하는 것이 아직 후보이기 때문이다 — 없으면 관련 정책만 빠진다.
+    cons_path = run_dir / f"oracle_consistency_{args.split}.json"
+    cons: dict[str, list[dict]] = {}
+    if cons_path.exists():
+        blob = json.loads(cons_path.read_text(encoding="utf-8"))
+        if all(t in blob and [x["id"] for x in blob[t]] == ids for t in targets):
+            cons = blob
+            log(f"consistency 사용 ({cons_path.name})")
+        else:
+            log(f"{cons_path.name} 의 타깃·문장이 안 맞아 건너뜀")
+
     # ── 2. 점수 정책 ────────────────────────────────────────────────────
     def mean_over_targets(key: str, i: int, j: int) -> float:
         return st.mean(labels[t][i][key][j - 1] for t in targets)
+
+    def mean_cons(key: str, i: int, j: int) -> float:
+        return st.mean(cons[t][i][key][j - 1] for t in targets)
 
     rng = random.Random(args.seed)
     policies: dict[str, list[str]] = {}
@@ -216,12 +240,29 @@ def main() -> int:
     policies["margin_adqLR"] = all_pos(
         lambda i, j, n: (2 - mean_over_targets("contra", i, j)
                          - mean_over_targets("ent", i, j)) / 2 * _adq_lr(i, j))
+    if cons:
+        # 세 축이 서로 다른 실패를 본다: adq 는 조각 하나가 번역기를 통과하는가,
+        # contra 는 앞조각만 본 사람이 오해하는가, cons 는 이어붙인 결과가 전체 번역과
+        # 같은 말인가. 단독·짝·셋 조합을 다 실어 gold 로 가른다.
+        policies["cons"] = all_pos(lambda i, j, n: mean_cons("cons", i, j))
+        policies["cons_fwd"] = all_pos(lambda i, j, n: mean_cons("ent_fwd", i, j))
+        policies["cons_bwd"] = all_pos(lambda i, j, n: mean_cons("ent_bwd", i, j))
+        policies["cons_adqLR"] = all_pos(
+            lambda i, j, n: mean_cons("cons", i, j) * _adq_lr(i, j))
+        policies["contra_cons"] = all_pos(
+            lambda i, j, n: (1 - mean_over_targets("contra", i, j)) * mean_cons("cons", i, j))
+        policies["contra_cons_adqLR"] = all_pos(
+            lambda i, j, n: (1 - mean_over_targets("contra", i, j))
+            * mean_cons("cons", i, j) * _adq_lr(i, j))
     policies["first"] = all_pos(lambda i, j, n: 1 - j / n)
     policies["random"] = all_pos(lambda i, j, n: rng.random())
     # LLM 비교군 — 같은 후보 위치에 (a) LLM 점수 (b) 오라클 라벨 (c) 앞쪽 우선
     llm_seg, llm_or, llm_first = [], [], []
     for i, u in enumerate(units):
-        pos = llm_positions(llm_rows[ids[i]]["seg_text"], spaced)
+        lr = llm_rows.get(ids[i])
+        # 증류 런(`loop_distill`)의 행은 점수 붙은 출력을 `out` 에 담는다 — 키만 다르다.
+        lr_seg = (lr.get("seg_text") or lr.get("out")) if lr else None
+        pos = (llm_positions(lr_seg, spaced) if lr_seg and lr.get("valid") else {})
         pos = {j: s for j, s in pos.items() if 1 <= j < len(u)}
         llm_seg.append(build_seg(u, {j: s / 100 for j, s in pos.items()}, spaced))
         llm_or.append(build_seg(u, {j: 1 - mean_over_targets("contra_floor", i, j)
@@ -230,6 +271,40 @@ def main() -> int:
     policies["llm"] = llm_seg
     policies["llm_pos_oracle"] = llm_or
     policies["llm_pos_first"] = llm_first
+
+    # ── 2b. prompt_eval 형식으로 내보내기 (gold 참조 검증용) ───────────────
+    # bleu_eval 은 `run_dir/prompt_eval/<label>_<split>.json` 의 rows[by_T][T]
+    # {seg_text, pieces_src} 를 읽고 `run_dir/bleu/<tgt>.json` 에 쓴다 — 라벨과 무관하게
+    # 같은 파일에 쓰므로 정책마다 런 디렉토리를 따로 판다. 캐시는 원 런에 심볼릭 링크.
+    import shutil
+    from ..runtime.pipeline import split_segments
+    for pol in args.emit:
+        if pol not in policies:
+            log(f"[emit] 모르는 정책 {pol} — 건너뜀 ({sorted(policies)})")
+            continue
+        odir = RUNS_DIR / f"{args.run_id}_oracle_{pol}"
+        (odir / "prompt_eval").mkdir(parents=True, exist_ok=True)
+        for fn in ("config.json", "measured_profile.json"):
+            if not (odir / fn).exists():
+                shutil.copy(run_dir / fn, odir / fn)
+        if not (odir / "cache").exists():
+            (odir / "cache").symlink_to(Path("..") / run_dir.name / "cache")
+        rows = []
+        for i, seg in enumerate(policies[pol]):
+            by_T = {}
+            for T in t_grid:
+                cut, miss = truncate(seg, T, spaced, min_gap)
+                pieces = split_segments(cut) or [texts[i]]
+                by_T[str(T)] = {"seg_text": cut, "k": len(pieces),
+                                "missing_boundaries": miss, "pieces_src": pieces}
+            rows.append({"id": ids[i], "text": texts[i], "seg_text": seg, "valid": True,
+                         "full_trans": fulls[targets[0]][i], "by_T": by_T})
+        (odir / "prompt_eval" / f"{pol}_{args.split}.json").write_text(json.dumps({
+            "prompt_file": f"oracle:{pol}", "split": args.split, "t_grid": t_grid,
+            "min_gap": min_gap, "t_floor": cfg.get("t_floor"), "src_spaced": spaced,
+            "tag_convention": "score", "label_source": str(label_path),
+            "rows": rows}, ensure_ascii=False, indent=1), encoding="utf-8")
+        log(f"[emit] {pol} -> {odir.name}/prompt_eval/{pol}_{args.split}.json ({len(rows)}문장)")
 
     # ── 3. 절단 + 채점 ─────────────────────────────────────────────────
     results: dict[str, dict] = {}
@@ -291,7 +366,11 @@ def main() -> int:
     # ── 5. 라벨 대 LLM 점수 정렬도 (LLM 후보 위치에서) ────────────────────
     pooled_s, pooled_l, within = [], [], []
     for i, u in enumerate(units):
-        pos = llm_positions(llm_rows[ids[i]]["seg_text"], spaced)
+        lr = llm_rows.get(ids[i])
+        lr_seg = (lr.get("seg_text") or lr.get("out")) if lr else None
+        if not (lr_seg and lr.get("valid")):
+            continue
+        pos = llm_positions(lr_seg, spaced)
         pos = {j: s for j, s in pos.items() if 1 <= j < len(u)}
         s = [pos[j] for j in sorted(pos)]
         l = [1 - mean_over_targets("contra_floor", i, j) for j in sorted(pos)]
