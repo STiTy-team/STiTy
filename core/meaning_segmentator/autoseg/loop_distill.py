@@ -127,10 +127,20 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
             u_vals.append(um)
             o_vals.append(uo)
         row["by_T"] = by_T
+        # 문장 안 동점 — `truncate` 는 동점을 앞쪽 우선으로 깨므로 절단이 내용이 아니라
+        # 위치로 정해진다. 실측(run15 test): 경계의 71% 가 동점, 절단 경계선의 21% 가 동점.
+        cnt = collections.Counter(sc)
+        row["n_tied"] = sum(v for v in cnt.values() if v > 1)
+        row["tie_at_cut"] = sum(
+            1 for T in t_grid if str(T) in by_T
+            for k_ in [len(by_T[str(T)]["kept_label"])]
+            if 0 < k_ < len(sc) and sorted(sc, reverse=True)[k_ - 1] == sorted(sc, reverse=True)[k_])
         if u_vals:
             row["util"] = round(st.mean(u_vals), 4)
             row["util_oracle"] = round(st.mean(o_vals), 4)
             row["achv"] = round(st.mean(u_vals) / max(1e-9, st.mean(o_vals)), 4)
+            row["overlap"] = round(st.mean(by_T[str(T_)]["overlap"] for T_ in t_grid
+                                           if str(T_) in by_T), 4)
         rows.append(row)
     # 후보가 없는 짧은 문장은 행으로 남기되 점수 없음
     for i, c in enumerate(cand):
@@ -149,7 +159,14 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
         "achv": round(st.mean(r["achv"] for r in scored), 4) if scored else None,
         "util": round(st.mean(r["util"] for r in scored), 4) if scored else None,
         "util_oracle": round(st.mean(r["util_oracle"] for r in scored), 4) if scored else None,
+        "overlap": (round(st.mean(r["overlap"] for r in scored), 4) if scored else None),
         "overlap_by_T": {str(T): round(st.mean(v), 3) if v else None for T, v in per_T_over.items()},
+        # 동점률 — 점수가 순위로 일할 수 있는 상태인가. 높으면 절단이 위치로 정해진다.
+        "tie_rate": (round(sum(r.get("n_tied", 0) for r in scored)
+                           / max(1, sum(len(r["scores"]) for r in scored)), 4) if scored else None),
+        "tie_at_cut_rate": (round(sum(r.get("tie_at_cut", 0) for r in scored)
+                                  / max(1, sum(len(r.get("by_T", {})) for r in scored)), 4)
+                            if scored else None),
         "spearman_pooled": (round(metrics._spearman([float(x) for x in pairs_s], pairs_l), 4)
                             if len(pairs_s) > 2 else None),
         "spearman_within": round(st.mean(within), 4) if within else None,
@@ -166,7 +183,7 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
     return rows, m
 
 
-def paired(rows_a: list[dict], rows_b: list[dict], key: str = "achv") -> dict:
+def paired(rows_a: list[dict], rows_b: list[dict], key: str = "overlap") -> dict:
     b = {r["id"]: r.get(key) for r in rows_b}
     d = [r[key] - b[r["id"]] for r in rows_a
          if r.get(key) is not None and b.get(r["id"]) is not None]
@@ -210,10 +227,10 @@ def build_cases(rows: list[dict], labels: dict, sent_index: dict[str, int], unit
 def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
                rejected: list[dict], effort: str | None) -> dict:
     user = (f"=== METRICS (train batch) ===\n"
-            + json.dumps({"achv": m["achv"], "spearman_within": m["spearman_within"],
-                          "spearman_pooled": m["spearman_pooled"],
-                          "overlap_by_T": m["overlap_by_T"],
-                          "calibration": m["calibration"]}, ensure_ascii=False, indent=1)
+            + json.dumps({"overlap": m["overlap"], "overlap_by_T": m["overlap_by_T"],
+                           "achv": m["achv"], "spearman_within": m["spearman_within"],
+                           "tie_rate": m["tie_rate"], "tie_at_cut_rate": m["tie_at_cut_rate"]},
+                          ensure_ascii=False, indent=1)
             + f"\n\n=== CASES (largest loss at T={cases[0]['T'] if cases else '?'}) ===\n"
             + json.dumps(cases, ensure_ascii=False, indent=1))
     if rejected:
@@ -293,6 +310,10 @@ def main() -> int:
     p.add_argument("--v0-candidates", type=int, default=3)
     p.add_argument("--revision-candidates", type=int, default=3)
     p.add_argument("--adopt-se-mult", type=float, default=1.0)
+    p.add_argument("--objective", default="overlap", choices=["overlap", "achv"],
+                   help="채택·후보 선별 기준. 기본 overlap — 라벨 최적 절단과 몇 %% 같은 자리를 "
+                        "골랐나. achv 는 같은 k 로 아무렇게나 골라도 0.836 이 나와(run15 test 실측) "
+                        "실사용 폭이 0.164 뿐이고, 같은 프롬프트 차이를 재도 t 가 절반이다")
     p.add_argument("--max-prompt-growth", type=float, default=1.6)
     p.add_argument("--n-cases", type=int, default=8)
     p.add_argument("--budget", type=float, default=25.0)
@@ -407,12 +428,12 @@ def main() -> int:
                     log(f"[v0] 후보 {k} 관문 실패 {errs}")
                     continue
                 _, m = ev(pr, holdout, lab_hold)
-                log(f"[v0] 후보 {k}: {len(pr)}자 holdout achv={m['achv']} "
+                log(f"[v0] 후보 {k}: {len(pr)}자 holdout overlap={m['overlap']} achv={m['achv']} "
                     f"overlap={m['overlap_by_T']} fmt={m['format_pass_rate']} "
                     f"(1st {m['format_pass_rate_no_retry']}, 위반 {m['first_pass_violations']['counts']})")
                 if m["first_pass_violations"]["samples"]:
                     log(f"[v0] 1차 위반 예: {m['first_pass_violations']['samples'][0]}")
-                scored_c.append((m["achv"] or 0.0, k, pr))
+                scored_c.append((m[args.objective] or 0.0, k, pr))
             if not scored_c:
                 log("[stop] v0 후보가 전부 관문에 걸렸다")
                 return 2
@@ -437,16 +458,17 @@ def main() -> int:
                                                     encoding="utf-8")
             (it_dir / "dev_rows.json").write_text(json.dumps(dv_rows, ensure_ascii=False),
                                                   encoding="utf-8")
-            pd = paired(dv_rows, best["dev_rows"]) if best else None
+            pd = paired(dv_rows, best["dev_rows"], key=args.objective) if best else None
             adopted = (not best) or (pd["mean_delta"] > args.adopt_se_mult * pd["se_delta"])
             entry = {"version": it, "adopted": adopted, "train": tr_m, "dev": dv_m,
-                     "score_train": tr_m["achv"], "score_dev": dv_m["achv"],
+                     "score_train": tr_m[args.objective], "score_dev": dv_m[args.objective],
                      "paired_dev": pd, "changelog": best.get("next_changelog"),
                      "prompt_len": len(prompt), "usage": gw.usage.snapshot()}
-            log(f"[iter {it}] train achv={tr_m['achv']} sp={tr_m['spearman_within']} "
+            log(f"[iter {it}] train overlap={tr_m['overlap']} achv={tr_m['achv']} "
+                f"tie={tr_m['tie_rate']}/{tr_m['tie_at_cut_rate']} sp={tr_m['spearman_within']} "
                 f"fmt={tr_m['format_pass_rate']}(1st {tr_m['format_pass_rate_no_retry']}, "
                 f"위반 {dv_m['first_pass_violations']['counts']}) | "
-                f"dev achv={dv_m['achv']} overlap={dv_m['overlap_by_T']} "
+                f"dev overlap={dv_m['overlap']} {dv_m['overlap_by_T']} achv={dv_m['achv']} "
                 f"Δ={pd} | {'채택' if adopted else '거부'} | 비용 {gw.usage.snapshot()['cost']:.3f}")
             (it_dir / "metrics.json").write_text(json.dumps(entry, ensure_ascii=False, indent=1),
                                                  encoding="utf-8")
@@ -473,10 +495,11 @@ def main() -> int:
             cases = build_cases(best["train_rows"], lab_batch, sent_index, units_by_id,
                                 main_T, spaced, args.n_cases)
             critique = run_critic(gw, best["prompt"], best["train_m"], cases, rejected, ag_effort)
-            critique["metrics"] = {"achv": best["train_m"]["achv"],
-                                   "calibration": best["train_m"]["calibration"],
-                                   "spearman_within": best["train_m"]["spearman_within"],
-                                   "overlap_by_T": best["train_m"]["overlap_by_T"]}
+            critique["metrics"] = {"overlap": best["train_m"]["overlap"],
+                                   "overlap_by_T": best["train_m"]["overlap_by_T"],
+                                   "achv": best["train_m"]["achv"],
+                                   "tie_rate": best["train_m"]["tie_rate"],
+                                   "spearman_within": best["train_m"]["spearman_within"]}
             (it_dir / "critique.json").write_text(json.dumps(critique, ensure_ascii=False, indent=1),
                                                   encoding="utf-8")
             (it_dir / "cases.json").write_text(json.dumps(cases, ensure_ascii=False, indent=1),
@@ -494,10 +517,11 @@ def main() -> int:
             base_rows, _bm = ev(best["prompt"], holdout, lab_hold)
             for rv in cands:
                 c_rows, hm = ev(rv["prompt"], holdout, lab_hold)
-                d = paired(c_rows, base_rows)
+                d = paired(c_rows, base_rows, key=args.objective)
                 log(f"[iter {it} 개정] {rv['candidate_kind']:8s} {len(rv['prompt'])}자 "
-                    f"holdout achv={hm['achv']} Δ={d['mean_delta']}±{d['se_delta']}")
-                picks.append((hm["achv"] or 0.0, rv))
+                    f"holdout overlap={hm['overlap']} achv={hm['achv']} "
+                    f"Δ={d['mean_delta']}±{d['se_delta']}")
+                picks.append((hm[args.objective] or 0.0, rv))
             picks.sort(key=lambda x: -x[0])
             chosen = picks[0][1]
             (it_dir / "changelog.json").write_text(json.dumps({
@@ -595,7 +619,10 @@ def main() -> int:
                                                encoding="utf-8")
     lines = [f"# 증류 루프 결과 — {args.pair_id}/{args.run_id}", "",
              f"- 채택본 iter {best['version']} / 비용 {report['usage']['cost']:.3f} / 타깃 {targets}",
-             "", "| iter | train achv | dev achv | dev Δ (쌍체) | 길이 | 채택 |", "|---|---|---|---|---|---|"]
+             f"- 채택 기준 **{args.objective}** — 라벨 최적 절단과 같은 자리를 고른 비율 "
+             f"(같은 k 로 무작위 선택은 0.189, achv 는 0.836. run15 test 실측)",
+             "", f"| iter | train {args.objective} | dev {args.objective} | dev Δ (쌍체) | 길이 | 채택 |",
+             "|---|---|---|---|---|---|"]
     for h in history:
         pd = h.get("paired_dev")
         d_txt = "—" if not pd else f"{pd['mean_delta']:+.4f}±{pd['se_delta']:.4f}"

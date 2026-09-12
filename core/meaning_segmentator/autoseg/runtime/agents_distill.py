@@ -19,12 +19,18 @@ SECTIONS = ["[Role]", "[Core Principles]", "[Scoring Rules]", "[Decision Procedu
 
 # 점수의 뜻 = 라벨의 정의. 모델과 채점기가 같은 문장을 읽는다.
 SCORE_MEANING = (
-    "how good a cut at that position is for streaming translation, on two counts at once: "
-    "(a) the words BEFORE the marker form a stretch a translator can render on its own, and "
-    "the words AFTER it also form such a stretch; (b) nothing that comes after the marker "
-    "would overturn what a translator, seeing only the words before it, would already have "
-    "said. 100 = both hold beyond doubt; 0 = the cut leaves an untranslatable fragment or "
-    "commits the translator to something the rest of the sentence contradicts."
+    "how good a cut at that position is for streaming translation. The target you are "
+    "predicting was MEASURED, not judged, and this is exactly how: (a) the words BEFORE the "
+    "marker were cut out and fed ALONE to a machine translator, and a reference-free quality "
+    "estimator scored how faithfully that output renders those words; (b) the words AFTER the "
+    "marker were measured the same way; (c) the whole sentence was translated separately, and "
+    "an entailment model checked whether the translation of the part before the marker "
+    "contradicts that whole-sentence translation. The three numbers were combined as "
+    "(1 - contradiction) x (quality_before + quality_after) / 2. "
+    "Nothing in that procedure looks at grammar. A stretch that is syntactically incomplete "
+    "still scores high if a translator renders it faithfully on its own, and a stretch that "
+    "is a complete clause still scores low if the translator mangles it or if what follows "
+    "reverses it. Predict the measurement, not your judgment of well-formedness."
 )
 
 
@@ -35,10 +41,16 @@ def output_rules(spaced: bool) -> str:
   Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
   becomes for example <SEG:73>. Never output a bare number without the marker. The number is
   {SCORE_MEANING}
-- Scores are ABSOLUTE, not ranks: the same number must mean the same quality of cut in every
-  sentence, several markers may share a number, and a later step keeps only the highest ones
-  under the current latency budget. A deterministic step also guarantees a minimum distance
-  between kept cuts, so you never need to reason about spacing or about how many to keep.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
 - Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any {unit} of the
   text. Keep exactly one space on both sides of every marker.
 - Output the text with the filled markers and nothing else. No explanation, label, or commentary."""
@@ -188,18 +200,17 @@ Hard requirements:
 - Section headers, verbatim and in this order:
   [Role], [Core Principles], [Scoring Rules], [Decision Procedure], [Output Rules], [Examples]
 - [Output Rules] MUST be copied verbatim from the block given to you.
-- [Scoring Rules] is the substance. Give score BANDS anchored to CONCRETE surface forms of the
-  source language taken from the profile — what comes right before the marker, what comes right
-  after, punctuation, function words, clause and phrase shapes. Say explicitly what pushes a
-  position UP (the left stretch is a complete, self-standing unit AND the right stretch starts a
-  new unit) and what pushes it DOWN (the left stretch ends in material whose head or complement
-  is still to come; the right stretch begins with something that only makes sense attached to
-  the left; the words after could change polarity, participant, scope or referent of what was
-  already said). Use the whole 0-100 range and anchor it: 85+ only where both stretches stand
-  alone and nothing after can overturn the left; around 50 where the cut is usable but the
-  remainder plausibly reshapes the left; 20 and below where one side is a fragment.
-- Both sides matter. A position after a complete clause still scores LOW if what follows is a
-  two-word tail that cannot be translated on its own. Say so.
+- [Scoring Rules] is the substance. Give rules anchored to CONCRETE surface forms of the source
+  language taken from the profile — what comes right before the marker, what comes right after,
+  punctuation, function words, clause and phrase shapes.
+- Do NOT assume that syntactic completeness is what raises the score. The target was measured by
+  feeding each side to a machine translator and by checking entailment against the whole-sentence
+  translation; grammar is not part of that procedure. Cutting after a preposition, a coordinator
+  or a relative pronoun may measure WELL, and cutting after a complete clause may measure badly.
+  Write the surface conditions you believe in, but state them as predictions to be tested, and
+  do not pad the prompt with rules whose only support is that the left side "looks unfinished".
+- Use the whole 0-100 range, and separate positions rather than bunching them: the numbers are
+  read only as an ordering within one sentence.
 - Never write rules that name or depend on a target language.
 - [Decision Procedure] is short: read the whole sentence once; for each marker judge the left
   stretch, the right stretch, and what the remainder could overturn; write the number.
@@ -229,8 +240,11 @@ the top-scored positions for each latency budget T; the loss you are diagnosing 
 mass the model's choice leaves on the table compared with choosing by the label itself.
 
 You receive:
-- "calibration": mean label per score band over the whole batch. Bands whose mean label is
-  out of order (a higher band with a lower label) are where the prompt's anchors are wrong.
+- "overlap"/"overlap_by_T": how many of the positions the labels would keep the model also
+  kept. This is what the prompt is judged on.
+- "tie_rate"/"tie_at_cut_rate": how often the model gave two positions in one sentence the same
+  number, and how often that tie fell exactly on the cut-off. A tie hands the decision to word
+  order, so a high value is lost ground that costs nothing to recover.
 - "cases": sentences with the largest loss at the main budget, each listing every candidate as
   {pos, left (last words before the marker), right (first words after), score, label, contra,
   adq_left, adq_right, kept_by_model, kept_by_label}. Two kinds of error matter:
@@ -238,7 +252,10 @@ You receive:
                  says the cut is bad. Look at contra vs adq to say WHY: high contra means the
                  remainder overturns the left; low adq_left/adq_right means a side is a fragment.
     UNDER-TRUST  kept_by_label and not kept_by_model — a good cut the model scored too low.
-- "rank": within-sentence rank correlation between score and label, and overlap of kept sets.
+- "rank": within-sentence rank correlation between score and label.
+
+Only the ORDER inside a sentence is ever read. Where a band sits on the 0-100 scale changes
+nothing by itself, so do not diagnose the scale — diagnose which positions are ordered wrongly.
 
 Your job: find the SURFACE-FORM condition, in the source language, that separates the
 over-trusted positions from the correctly high ones (or the under-trusted from the correctly
@@ -265,7 +282,7 @@ Return ONLY JSON:
      "proposed_rule": "one rule for [Scoring Rules], with a target band",
      "direction": "lower | raise"}
   ],
-  "calibration_fix": "one sentence on which band anchors to move, or \\"\\"",
+  "tie_fix": "one sentence on what makes the prompt produce equal numbers, or \\"\\"",
   "summary": "2-3 sentences on what the prompt systematically gets wrong"
 }"""
 
@@ -290,15 +307,18 @@ Hard constraints:
 5. Never name or depend on a target language.
 6. Consult the attempt history: entries with "adopted": false were measured and rejected —
    do not repeat them or minor variants; move in a different direction.
-7. Decide from the measurements in the critique: the calibration table says which bands are
-   mis-anchored; the cases say which surface conditions are mis-scored and in which direction.
-   Every change must be traceable to one of them.
+7. Decide from the measurements in the critique: the cases say which surface conditions are
+   mis-scored and in which direction, and each case carries the measured decomposition
+   (contra / adq_left / adq_right) that says WHY. Every change must be traceable to one of them.
+8. Do not spend the revision on where the score BANDS sit. Only the order of the markers inside
+   one sentence is ever read; shifting a band up or down changes nothing on its own.
 
 What the model is judged on: for each latency budget the deterministic step keeps the
-top-scored candidates; the score is the measured label mass of the kept set relative to the
-best possible set. So the prompt wins by (a) ranking candidates correctly WITHIN a sentence and
-(b) keeping the absolute scale consistent ACROSS sentences. Rules must say what is immediately
-before and after the marker in source-language surface forms.
+top-scored candidates WITHIN each sentence, and the score is how many of those positions match
+the ones the measured labels would have kept. The prompt wins by ordering candidates correctly
+inside a sentence — and by leaving no ties, since a tie hands the choice to word order. Absolute
+comparability across sentences is never read. Rules must say what is immediately before and
+after the marker in source-language surface forms.
 
 Return ONLY JSON:
 {
