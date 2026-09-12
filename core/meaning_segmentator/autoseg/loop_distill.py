@@ -527,12 +527,17 @@ def run_engineer(gw: Gateway, prompt: str, critique: dict, history: list[dict],
             return rv
         if attempt == 0:
             log(f"[pe/{mode}] 분량 제약 위반 {bad} — 재시도")
+            # **재시도에도 목표치를 준다.** 종전에는 위반 사실만 알려주고 "줄여라"라고만
+            # 했더니 착지가 들쭉날쭉했고 **늘려서 돌아온 적이 두 번** 있다
+            # (10156 -> 10641, 12801 -> 13529). 한계선 대신 그 80% 를 목표로 준다.
+            hard = size_budget if mode == "grow" else len(prompt)
+            target = int(hard * ad.SIZE_TARGET_RATIO)
             user += (f"\n\n=== LENGTH VIOLATION ===\nYour previous answer was {len(pr)} "
-                     f"characters, which breaks the size constraint for mode "
-                     f"'{mode}' ({bad}). Cut text until it fits. Remove whole rules that "
-                     f"the measurements do not support rather than trimming wording "
-                     f"everywhere — a shorter prompt with fewer, better rules is the point "
-                     f"of this mode.")
+                     f"characters, which breaks the size constraint for mode '{mode}' ({bad}). "
+                     f"**Write about {target} characters this time** — not just under the "
+                     f"limit, but at the target, so a small overshoot still fits. Remove whole "
+                     f"rules that the measurements do not support rather than trimming wording "
+                     f"everywhere; a shorter prompt with fewer, better rules is the point.")
     log(f"[pe/{mode}] 분량 제약 위반 {bad} — 재시도 후에도 초과, 버린다")
     return None
 
@@ -922,6 +927,19 @@ def main() -> int:
                                             if v["verdict"] == "drop")
                 log(f"[iter {it}] 규칙 관문 {kept}/{n_before} 통과"
                     + (f" — 탈락 {dict(drops)}" if drops else ""))
+                # **통과 규칙이 없으면 개정을 만들지 않는다.** 근거 없이 만든 후보는
+                # 홀드아웃 300문장을 채점하는 값을 못 한다 — run20 iter1~3 실측:
+                # `grow` 는 프롬프트를 거의 안 건드려 제자리(-0.004)지만 `neutral`/
+                # `shrink` 는 줄이라는 제약 때문에 무언가를 지워야 하고, 근거 없이 지우니
+                # -0.043 ~ -0.095 로 무너진다. 세 이터가 그렇게 헛돌았다.
+                if kept == 0:
+                    no_improve += 1
+                    log(f"[iter {it}] 통과 규칙 없음 — 개정 생략, 무개선 {no_improve}회")
+                    if no_improve >= args.patience:
+                        log(f"[stop] dev 무개선 {no_improve}회")
+                        break
+                    prompt = best["prompt"]
+                    continue
             # **기준선을 못 넘은 후보에 dev 평가를 쓰지 않는다.** 종전에는 홀드아웃
             # **절대값** 최대만 골라 무조건 승격했다. 홀드아웃은 후보 여럿 중 최댓값을
             # 뽑는 자리라 위로 편향돼 있으므로(run16 실측: 승격 후보의 홀드아웃 Δ 가 dev

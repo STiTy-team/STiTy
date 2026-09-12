@@ -351,18 +351,32 @@ Return ONLY JSON:
   "prompt": "the complete revised prompt text"
 }"""
 
+# **목표는 한계선의 80% 로 준다.** 한계선을 그대로 목표로 주면 지켜지지 않는다 — 숫자는
+# 이미 두 군데(ENGINEER_SYSTEM 3번, 아래 문구)에 있는데도 4개 런 38건 실측에서 출력이
+# 한계 대비 **중앙값 +11%, 최대 +30%** 로 나왔다. 목표를 미리 내려 잡으면 같은 비율로
+# 초과해도 안에 들어온다: f=0.95 면 29%, 0.90 이면 50%, **0.80 이면 95%(38건 중 36)**,
+# 0.75 면 100% 가 착지한다. 0.80 을 쓴다 — 0.75 는 프롬프트를 필요 이상으로 깎는다.
+#
+# **한계선 자체는 안 바꾼다.** 검사는 그대로 하고 목표만 내린다. 그래야 `neutral` 이
+# "순증 금지"라는 뜻을 유지한다.
 SIZE_MANDATE = {
     "grow": ("\n\n=== THIS CANDIDATE'S CONSTRAINT: none on length beyond the budget ===\n"
-             "Implement the critique's proposals, merged into the existing rules.\n"),
+             "Implement the critique's proposals, merged into the existing rules.\n"
+             "Aim for about __TARGET__ characters. The hard cap is the budget above; answers "
+             "that reach for the cap get truncated by it and are discarded.\n"),
     "neutral": ("\n\n=== THIS CANDIDATE'S CONSTRAINT: no net growth ===\n"
-                "Your output must be at most __CURLEN__ characters. Every idea you add has to be "
-                "paid for by removing or tightening a line the critique no longer supports. "
-                "This is checked deterministically.\n"),
+                "**Write about __TARGET__ characters.** The hard limit is __CURLEN__ and is "
+                "checked deterministically — an answer over it is discarded, not trimmed, so "
+                "aim for the target and leave yourself room. Every idea you add has to be paid "
+                "for by removing or tightening a line the critique no longer supports.\n"),
     "shrink": ("\n\n=== THIS CANDIDATE'S CONSTRAINT: net shorter ===\n"
                "Only remove, merge, or re-anchor existing lines; do not add rules or examples. "
-               "Your output must be SHORTER than __CURLEN__ characters. This is checked "
-               "deterministically.\n"),
+               "**Write about __TARGET__ characters.** The hard limit is __CURLEN__ and is "
+               "checked deterministically — an answer over it is discarded, not trimmed.\n"),
 }
+
+# 목표 = 한계 × 이 값. 위 주석의 실측 근거 참조.
+SIZE_TARGET_RATIO = 0.80
 
 
 def engineer_messages(current_prompt: str, critique: dict, history: list[dict],
@@ -395,5 +409,9 @@ def engineer_messages(current_prompt: str, critique: dict, history: list[dict],
         user += ("=== REJECTED DIRECTIONS (already measured as no better) ===\n"
                  + json.dumps(rejected, ensure_ascii=False, indent=1) + "\n\n")
     user += f"=== CURRENT PROMPT ===\n{current_prompt}"
-    user += SIZE_MANDATE[size_mode].replace("__CURLEN__", str(len(current_prompt)))
+    # 모드마다 한계가 다르다: grow 는 예산, neutral/shrink 는 현재 길이.
+    hard = size_budget if size_mode == "grow" else len(current_prompt)
+    user += (SIZE_MANDATE[size_mode]
+             .replace("__CURLEN__", str(len(current_prompt)))
+             .replace("__TARGET__", str(int(hard * SIZE_TARGET_RATIO))))
     return sys_p, user
