@@ -1,0 +1,620 @@
+"""증류 루프 — 실측 라벨을 점수 전용 프롬프트로 옮긴다.
+
+`loop.py` 와 다른 점 셋.
+
+1. **후보 위치는 코드가 정한다.** 모든 단위 경계(양끝 `min_gap` 안쪽 제외)에 `<SEG:?>`
+   를 박아 주고 모델은 점수만 채운다. 커버리지·간격 규칙이 프롬프트에서 사라진다.
+2. **정답이 있다.** 위치마다 실측 라벨(`runtime/labels.py`, 런당 분할별 1회, LLM 0콜)이
+   있으므로 이터레이션 평가에 번역·NLI·QE 가 필요 없다 — 분절 호출만 든다. 지표는 전부
+   결정론이고 경계 단위다: 절단기가 모델 점수로 고른 집합의 라벨 질량을 라벨로 고른
+   집합 대비 얼마나 달성했나(`achv`), 집합 겹침, 문장 내 순위 상관, 점수 구간별 보정표.
+3. **판정자(A7)가 없다.** 라벨 분해(contra / 왼쪽 adq / 오른쪽 adq)가 이유를 말한다.
+   Critic 은 모델이 과신·불신한 경계와 그 분해값을 받아 표면형 조건을 찾는다.
+
+최종 test 만 실제 목적함수(`score_split` 의 effective)로 다시 재고, gold 참조 평가는
+`prompt_eval/best_test.json` 을 `bleu_eval`/`comet_eval` 에 넣어 한다.
+
+    PYTHONPATH=. python -m core.meaning_segmentator.autoseg.loop_distill \\
+        --dataset fleurs-en-multi --src-lang English --pair-id en2x/en-multi --run-id run15 \\
+        --labels-from en2x/en-multi/run14 --iterations 5 --budget 25
+"""
+from __future__ import annotations
+
+import argparse
+import collections
+import json
+import random
+import shutil
+import statistics as st
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+from .infra.gateway import BudgetExceeded, Gateway, add_provider_args
+from .runtime import agents, agents_distill as ad, data, labels as L, metrics
+from .runtime.pipeline import (JsonCache, LocalTranslator, TAG_RE, boundaries,
+                               segment_batch, split_segments, tag_positions, to_lang_code,
+                               truncate)
+from .loop import (DEFAULT_TARGET_POOL, MIN_GAP_MS, derive_min_gap, derive_t_grids,
+                   resolve_targets, score_split, target_is_spaced)
+from .paths import RUNS_DIR
+
+SCALE = 10000
+PROMPT_MAX_TOKENS = 16000
+AGENT_MAX_TOKENS = 12000
+
+
+def log(msg: str) -> None:
+    print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
+
+
+def _seg_with(units: list[str], scores: dict[int, int], spaced: bool) -> str:
+    out = units[0]
+    for j in range(1, len(units)):
+        out = (f"{out} <SEG:{scores[j]}> {units[j]}" if j in scores
+               else out + (" " if spaced else "") + units[j])
+    return out
+
+
+def kept_positions(seg: str, T: int, spaced: bool, min_gap: int) -> list[int]:
+    cut, _ = truncate(seg, T, spaced, min_gap)
+    pos, _ = tag_positions(cut, spaced)
+    return pos
+
+
+# ── 평가 (결정론, 라벨 기반) ─────────────────────────────────────────────
+
+def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
+             spaced: bool, min_gap: int, t_grid: list[int], seg_cache: JsonCache,
+             workers: int, batch_size: int, reasoning_effort: str | None,
+             ) -> tuple[list[dict], dict]:
+    texts = [s.text for s in sents]
+    units = [L.units_of(t, spaced) for t in texts]
+    cand = [ad.candidate_positions(len(u), min_gap) for u in units]
+    idx = [i for i, c in enumerate(cand) if c]
+    marked = [ad.mark_candidates(units[i], cand[i]) for i in idx]
+    first_pass: list[dict] = []
+    outs, ok1 = segment_batch(
+        gw, prompt, marked, cache=seg_cache, workers=workers,
+        validate_fn=lambda t, o: ad.validate_scored("", t, o, spaced),
+        normalize_fn=ad.normalize_scored, reasoning_effort=reasoning_effort,
+        batch_size=batch_size, first_pass_sink=first_pass)
+
+    rows: list[dict] = []
+    pairs_s: list[float] = []
+    pairs_l: list[float] = []
+    within: list[float] = []
+    per_T_over: dict[int, list[float]] = {T: [] for T in t_grid}
+    for k, i in enumerate(idx):
+        u, c = units[i], cand[i]
+        out = outs[k]
+        viol = ad.validate_scored(sents[i].id, marked[k], out, spaced)
+        row = {"id": sents[i].id, "text": texts[i], "marked": marked[k], "out": out,
+               "valid": not viol, "first_pass": ok1[k],
+               "violations": [v.rule for v in viol], "positions": c}
+        if viol:
+            rows.append(row)
+            continue
+        sc = ad.scores_of(out)
+        lab = [L.label_value(labels, i, j) for j in c]
+        row["scores"] = sc
+        row["labels"] = [round(x, 4) for x in lab]
+        pairs_s += sc
+        pairs_l += lab
+        if len(sc) >= 3:
+            w = metrics._spearman([float(x) for x in sc], lab)
+            if w is not None:
+                within.append(w)
+        seg_model = _seg_with(u, dict(zip(c, sc)), spaced)
+        seg_label = _seg_with(u, {j: round(y * SCALE) for j, y in zip(c, lab)}, spaced)
+        lab_at = dict(zip(c, lab))
+        by_T = {}
+        u_vals, o_vals = [], []
+        for T in t_grid:
+            if boundaries(texts[i], T, spaced) <= 0:
+                continue
+            km = kept_positions(seg_model, T, spaced, min_gap)
+            ko = kept_positions(seg_label, T, spaced, min_gap)
+            if not ko:
+                continue
+            um = st.mean(lab_at[j] for j in km) if km else 0.0
+            uo = st.mean(lab_at[j] for j in ko)
+            by_T[str(T)] = {"kept_model": km, "kept_label": ko, "util_model": round(um, 4),
+                            "util_label": round(uo, 4),
+                            "overlap": round(len(set(km) & set(ko)) / len(ko), 3)}
+            per_T_over[T].append(by_T[str(T)]["overlap"])
+            u_vals.append(um)
+            o_vals.append(uo)
+        row["by_T"] = by_T
+        if u_vals:
+            row["util"] = round(st.mean(u_vals), 4)
+            row["util_oracle"] = round(st.mean(o_vals), 4)
+            row["achv"] = round(st.mean(u_vals) / max(1e-9, st.mean(o_vals)), 4)
+        rows.append(row)
+    # 후보가 없는 짧은 문장은 행으로 남기되 점수 없음
+    for i, c in enumerate(cand):
+        if not c:
+            rows.append({"id": sents[i].id, "text": texts[i], "valid": True,
+                         "first_pass": True, "positions": [], "note": "no candidate"})
+    scored = [r for r in rows if r.get("achv") is not None]
+    bands: dict[str, list[float]] = {}
+    for s_, y in zip(pairs_s, pairs_l):
+        b = f"{min(int(s_) // 10 * 10, 90):02d}-{min(int(s_) // 10 * 10, 90) + 9:02d}"
+        bands.setdefault(b, []).append(y)
+    m = {
+        "n": len(sents), "n_scored": len(scored),
+        "format_pass_rate": round(sum(1 for r in rows if r.get("valid")) / max(1, len(rows)), 4),
+        "format_pass_rate_no_retry": round(sum(1 for r in rows if r.get("first_pass")) / max(1, len(rows)), 4),
+        "achv": round(st.mean(r["achv"] for r in scored), 4) if scored else None,
+        "util": round(st.mean(r["util"] for r in scored), 4) if scored else None,
+        "util_oracle": round(st.mean(r["util_oracle"] for r in scored), 4) if scored else None,
+        "overlap_by_T": {str(T): round(st.mean(v), 3) if v else None for T, v in per_T_over.items()},
+        "spearman_pooled": (round(metrics._spearman([float(x) for x in pairs_s], pairs_l), 4)
+                            if len(pairs_s) > 2 else None),
+        "spearman_within": round(st.mean(within), 4) if within else None,
+        "calibration": {b: {"n": len(v), "label_mean": round(st.mean(v) * 100, 1)}
+                        for b, v in sorted(bands.items())},
+        "n_boundaries": len(pairs_s),
+        # 1차 시도 위반 — 재시도 전 상태. 무엇이 깨지는지 안 남기면 재시도 비용의 원인을 못 찾는다.
+        "first_pass_violations": {
+            "counts": dict(sorted(collections.Counter(v["rule"] for v in first_pass).items())),
+            "samples": [{"rule": v["rule"], "detail": v["detail"], "seg_text": v["seg_text"][:300]}
+                        for v in first_pass[:3]],
+        },
+    }
+    return rows, m
+
+
+def paired(rows_a: list[dict], rows_b: list[dict], key: str = "achv") -> dict:
+    b = {r["id"]: r.get(key) for r in rows_b}
+    d = [r[key] - b[r["id"]] for r in rows_a
+         if r.get(key) is not None and b.get(r["id"]) is not None]
+    if len(d) < 2:
+        return {"mean_delta": 0.0, "se_delta": 0.0, "n_pairs": len(d)}
+    return {"mean_delta": round(st.mean(d), 4),
+            "se_delta": round(st.stdev(d) / len(d) ** 0.5, 4), "n_pairs": len(d)}
+
+
+# ── Critic 사례 ─────────────────────────────────────────────────────────
+
+def build_cases(rows: list[dict], labels: dict, sent_index: dict[str, int], units_by_id: dict,
+                main_T: int, spaced: bool, n_cases: int = 8) -> list[dict]:
+    key = str(main_T)
+    scored = [r for r in rows if r.get("by_T", {}).get(key)]
+    scored.sort(key=lambda r: -(r["by_T"][key]["util_label"] - r["by_T"][key]["util_model"]))
+    cases = []
+    for r in scored[:n_cases]:
+        i = sent_index[r["id"]]
+        u = units_by_id[r["id"]]
+        bt = r["by_T"][key]
+        km, ko = set(bt["kept_model"]), set(bt["kept_label"])
+        cands = []
+        for j, s_, y in zip(r["positions"], r["scores"], r["labels"]):
+            parts = L.label_parts(labels, i, j)
+            cands.append({
+                "pos": j,
+                "left": L.join_units(u[max(0, j - 3):j], spaced),
+                "right": L.join_units(u[j:j + 3], spaced),
+                "score": s_, "label": round(y * 100),
+                "contra": parts["contra"], "adq_left": parts["adq_left"],
+                "adq_right": parts["adq_right"],
+                "kept_by_model": j in km, "kept_by_label": j in ko,
+            })
+        cases.append({"id": r["id"], "text": r["text"], "T": main_T,
+                      "loss": round(bt["util_label"] - bt["util_model"], 4),
+                      "candidates": cands})
+    return cases
+
+
+def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
+               rejected: list[dict], effort: str | None) -> dict:
+    user = (f"=== METRICS (train batch) ===\n"
+            + json.dumps({"achv": m["achv"], "spearman_within": m["spearman_within"],
+                          "spearman_pooled": m["spearman_pooled"],
+                          "overlap_by_T": m["overlap_by_T"],
+                          "calibration": m["calibration"]}, ensure_ascii=False, indent=1)
+            + f"\n\n=== CASES (largest loss at T={cases[0]['T'] if cases else '?'}) ===\n"
+            + json.dumps(cases, ensure_ascii=False, indent=1))
+    if rejected:
+        user += ("\n\n=== REJECTED DIRECTIONS ===\n"
+                 + json.dumps(rejected, ensure_ascii=False, indent=1))
+    user += f"\n\n<prompt_under_review>\n{prompt}\n</prompt_under_review>"
+    return gw.chat_json(ad.critic_system(), user, max_tokens=AGENT_MAX_TOKENS,
+                        reasoning_effort=effort, purpose="critic")
+
+
+def run_engineer(gw: Gateway, prompt: str, critique: dict, history: list[dict],
+                 rejected: list[dict], size_budget: int, mode: str,
+                 effort: str | None, output_rules: str, src_lang: str,
+                 targets: list[str]) -> dict | None:
+    sys_p, user = ad.engineer_messages(prompt, critique, history, rejected, size_budget, mode)
+    try:
+        rv = gw.chat_json(sys_p, user, max_tokens=PROMPT_MAX_TOKENS,
+                          reasoning_effort=effort, purpose="prompt_engineer")
+    except Exception as e:  # noqa: BLE001
+        log(f"[pe/{mode}] 실패: {e}")
+        return None
+    pr = (rv.get("prompt") or "").strip()
+    if not pr:
+        return None
+    pr = ad.replace_section(pr, "[Output Rules]", output_rules)
+    errs = ad.check_skeleton(pr) + agents.check_target_agnostic(pr, src_lang, targets)
+    if errs:
+        log(f"[pe/{mode}] 관문 실패: {errs}")
+        return None
+    if mode == "shrink" and len(pr) >= len(prompt):
+        log(f"[pe/{mode}] 분량 제약 위반 {len(pr)} >= {len(prompt)}")
+        return None
+    if mode == "neutral" and len(pr) > len(prompt):
+        log(f"[pe/{mode}] 분량 제약 위반 {len(pr)} > {len(prompt)}")
+        return None
+    if len(pr) > size_budget:
+        log(f"[pe/{mode}] 예산 초과 {len(pr)} > {size_budget}")
+        return None
+    rv["prompt"] = pr
+    rv["candidate_kind"] = mode
+    return rv
+
+
+# ── main ────────────────────────────────────────────────────────────────
+
+def main() -> int:
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--dataset", default="fleurs-en-multi")
+    p.add_argument("--src-lang", default="English")
+    p.add_argument("--pair-id", required=True)
+    p.add_argument("--run-id", required=True)
+    p.add_argument("--labels-from", default=None,
+                   help="같은 분할의 oracle_labels_*.json 을 가진 런 (예: en2x/en-multi/run14)")
+    p.add_argument("--model", default="gpt-5-mini")
+    add_provider_args(p)
+    p.add_argument("--seg-reasoning-effort", default="medium")
+    p.add_argument("--agent-reasoning-effort", default="medium")
+    p.add_argument("--batch-size", type=int, default=6)
+    p.add_argument("--workers", type=int, default=16)
+    p.add_argument("--tgt-langs", nargs="+", default=None)
+    p.add_argument("--local-mt-model", default="google/madlad400-3b-mt")
+    p.add_argument("--adequacy-backend", default="cometkiwi")
+    p.add_argument("--comet-batch-size", type=int, default=64)
+    p.add_argument("--min-gap", type=int, default=None)
+    p.add_argument("--units-per-sec", type=float, default=None)
+    p.add_argument("--t-grid", type=int, nargs="+", default=None)
+    p.add_argument("--final-t-grid", type=int, nargs="+", default=None)
+    p.add_argument("--main-t", type=int, default=None)
+    p.add_argument("--train", type=int, default=30)
+    p.add_argument("--train-pool", type=int, default=None)
+    p.add_argument("--dev", type=int, default=215)
+    p.add_argument("--test", type=int, default=100)
+    p.add_argument("--seed", type=int, default=data.DEFAULT_SEED)
+    p.add_argument("--iterations", type=int, default=5)
+    p.add_argument("--patience", type=int, default=3)
+    p.add_argument("--v0-candidates", type=int, default=3)
+    p.add_argument("--revision-candidates", type=int, default=3)
+    p.add_argument("--adopt-se-mult", type=float, default=1.0)
+    p.add_argument("--max-prompt-growth", type=float, default=1.6)
+    p.add_argument("--n-cases", type=int, default=8)
+    p.add_argument("--budget", type=float, default=25.0)
+    p.add_argument("--fresh", action="store_true")
+    p.add_argument("--skip-final-effective", action="store_true")
+    args = p.parse_args()
+
+    run_dir = RUNS_DIR / args.pair_id / args.run_id
+    if args.fresh and run_dir.exists():
+        shutil.rmtree(run_dir)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    labels_from = (RUNS_DIR / args.labels_from) if args.labels_from else None
+
+    # ── 데이터·프로파일·노브 (loop.py 와 같은 절차) ────────────────────
+    sentences = data.load(args.dataset)
+    args.train_pool = args.train_pool or 3 * args.train
+    pool_n = max(args.train, args.train_pool)
+    splits = data.split_data(sentences, pool_n, args.dev, args.test, seed=args.seed)
+    data.write_splits(splits, run_dir / "data")
+    fit = splits["train"][:args.train] + splits["dev"]
+    measured = data.measure_profile([x.text for x in fit])
+    spaced, _punct = data.profile_settings(measured)
+    (run_dir / "measured_profile.json").write_text(
+        json.dumps(measured, ensure_ascii=False, indent=2), encoding="utf-8")
+    if args.min_gap is None:
+        rate, src = data.units_per_sec(args.dataset, fit, spaced)
+        if rate is None and args.units_per_sec:
+            rate, src = args.units_per_sec, "cli"
+        if rate is None:
+            log("[stop] 발화 속도를 잴 수 없다 — --min-gap 또는 --units-per-sec 필요")
+            return 2
+        args.min_gap = derive_min_gap(rate)
+        log(f"[min_gap] {rate:.2f}{measured['unit']}/초 × {MIN_GAP_MS}ms → {args.min_gap} ({src})")
+    grid_loop, grid_final = derive_t_grids(args.min_gap)
+    t_grid = args.t_grid or grid_loop
+    final_grid = args.final_t_grid or grid_final
+    main_T = args.main_t or sorted(t_grid)[len(t_grid) // 2]
+    targets = resolve_targets(args.tgt_langs or DEFAULT_TARGET_POOL, args.src_lang)
+    cfg = {**vars(args), "t_grid": t_grid, "final_t_grid": final_grid, "main_t": main_T,
+           "targets": targets, "spaced": spaced, "mode": "distill",
+           "translator_id": f"local:{args.local_mt_model}:{to_lang_code(targets[0])}:ctx=False",
+           "adequacy_backend": args.adequacy_backend, "min_gap": args.min_gap,
+           "pair_id": args.pair_id}
+    (run_dir / "config.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2),
+                                         encoding="utf-8")
+    log(f"[data] train {len(splits['train'])} (배치 {args.train} + 홀드아웃 "
+        f"{len(splits['train']) - args.train}) / dev {len(splits['dev'])} / test "
+        f"{len(splits['test'])} / T {t_grid} main {main_T} / min_gap {args.min_gap} / 타깃 {targets}")
+
+    # ── 라벨 (LLM 0콜) ─────────────────────────────────────────────────
+    adequacy = metrics.make_adequacy_backend(args.adequacy_backend,
+                                             batch_size=args.comet_batch_size)
+    contradiction = metrics.make_contradiction_backend()
+    translators: dict[str, LocalTranslator] = {}
+    lab: dict[str, dict] = {}
+    for split in ("train", "dev", "test"):
+        ss = splits[split]
+        lab[split] = L.compute_labels(
+            run_dir, split, [s.id for s in ss], [s.text for s in ss], targets, spaced,
+            adequacy, contradiction, args.local_mt_model, target_is_spaced, log=log,
+            translators=translators, reuse_from=labels_from)
+    batch = splits["train"][:args.train]
+    holdout = splits["train"][args.train:] or batch
+    lab_batch = {t: per[:args.train] for t, per in lab["train"].items()}
+    lab_hold = ({t: per[args.train:] for t, per in lab["train"].items()}
+                if splits["train"][args.train:] else lab_batch)
+
+    gw = Gateway.from_args(args, model=args.model, budget=args.budget,
+                           reasoning_effort=args.agent_reasoning_effort)
+    seg_cache = JsonCache(run_dir / "cache" / "segment.json")
+    out_rules = ad.output_rules(spaced)
+    seg_effort = None if args.seg_reasoning_effort == "none" else args.seg_reasoning_effort
+    ag_effort = None if args.agent_reasoning_effort == "none" else args.agent_reasoning_effort
+
+    def ev(prompt, sents, labels_):
+        return evaluate(gw, prompt, sents, labels_, spaced, args.min_gap, t_grid, seg_cache,
+                        args.workers, args.batch_size, seg_effort)
+
+    history: list[dict] = []
+    best: dict = {}
+    try:
+        # ── 프로파일 + v0 ─────────────────────────────────────────────
+        prof_path = run_dir / "language_profile.json"
+        if prof_path.exists():
+            profile = json.loads(prof_path.read_text(encoding="utf-8"))
+        else:
+            profile = agents.Profiler(gw).profile([s.text for s in batch[:20]])
+            prof_path.write_text(json.dumps(profile, ensure_ascii=False, indent=2),
+                                 encoding="utf-8")
+        facts = agents.measured_facts(measured)
+        v0_path = run_dir / "prompt_v0.txt"
+        if v0_path.exists():
+            prompt_v0 = v0_path.read_text(encoding="utf-8")
+        else:
+            def write_one(k: int):
+                user = (f"Language profile:\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
+                        + (facts + "\n\n" if facts else "")
+                        + "The prompt must be TARGET-LANGUAGE-AGNOSTIC.\n\n"
+                        + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{out_rules}")
+                pr = gw.chat(ad.writer_system(spaced, args.min_gap), user,
+                             max_tokens=PROMPT_MAX_TOKENS, reasoning_effort=ag_effort,
+                             purpose="prompt_v0").strip()
+                pr = ad.replace_section(pr, "[Output Rules]", out_rules)
+                errs = ad.check_skeleton(pr) + agents.check_target_agnostic(pr, args.src_lang, targets)
+                (run_dir / f"prompt_v0_cand{k}.txt").write_text(pr, encoding="utf-8")
+                return pr, errs
+            with ThreadPoolExecutor(max_workers=args.v0_candidates) as ex:
+                cands = list(ex.map(write_one, range(args.v0_candidates)))
+            scored_c = []
+            for k, (pr, errs) in enumerate(cands):
+                if errs:
+                    log(f"[v0] 후보 {k} 관문 실패 {errs}")
+                    continue
+                _, m = ev(pr, holdout, lab_hold)
+                log(f"[v0] 후보 {k}: {len(pr)}자 holdout achv={m['achv']} "
+                    f"overlap={m['overlap_by_T']} fmt={m['format_pass_rate']} "
+                    f"(1st {m['format_pass_rate_no_retry']}, 위반 {m['first_pass_violations']['counts']})")
+                if m["first_pass_violations"]["samples"]:
+                    log(f"[v0] 1차 위반 예: {m['first_pass_violations']['samples'][0]}")
+                scored_c.append((m["achv"] or 0.0, k, pr))
+            if not scored_c:
+                log("[stop] v0 후보가 전부 관문에 걸렸다")
+                return 2
+            scored_c.sort(key=lambda x: -x[0])
+            prompt_v0 = scored_c[0][2]
+            log(f"[v0] 후보 {scored_c[0][1]} 채택 (achv={scored_c[0][0]})")
+            v0_path.write_text(prompt_v0, encoding="utf-8")
+        size_budget = int(len(prompt_v0) * args.max_prompt_growth)
+
+        # ── 이터레이션 ────────────────────────────────────────────────
+        prompt = prompt_v0
+        rejected: list[dict] = []
+        no_improve = 0
+        for it in range(args.iterations):
+            it_dir = run_dir / f"iter_{it:02d}"
+            it_dir.mkdir(exist_ok=True)
+            (it_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
+            t0 = time.time()
+            tr_rows, tr_m = ev(prompt, batch, lab_batch)
+            dv_rows, dv_m = ev(prompt, splits["dev"], lab["dev"])
+            (it_dir / "train_rows.json").write_text(json.dumps(tr_rows, ensure_ascii=False),
+                                                    encoding="utf-8")
+            (it_dir / "dev_rows.json").write_text(json.dumps(dv_rows, ensure_ascii=False),
+                                                  encoding="utf-8")
+            pd = paired(dv_rows, best["dev_rows"]) if best else None
+            adopted = (not best) or (pd["mean_delta"] > args.adopt_se_mult * pd["se_delta"])
+            entry = {"version": it, "adopted": adopted, "train": tr_m, "dev": dv_m,
+                     "score_train": tr_m["achv"], "score_dev": dv_m["achv"],
+                     "paired_dev": pd, "changelog": best.get("next_changelog"),
+                     "prompt_len": len(prompt), "usage": gw.usage.snapshot()}
+            log(f"[iter {it}] train achv={tr_m['achv']} sp={tr_m['spearman_within']} "
+                f"fmt={tr_m['format_pass_rate']}(1st {tr_m['format_pass_rate_no_retry']}, "
+                f"위반 {dv_m['first_pass_violations']['counts']}) | "
+                f"dev achv={dv_m['achv']} overlap={dv_m['overlap_by_T']} "
+                f"Δ={pd} | {'채택' if adopted else '거부'} | 비용 {gw.usage.snapshot()['cost']:.3f}")
+            (it_dir / "metrics.json").write_text(json.dumps(entry, ensure_ascii=False, indent=1),
+                                                 encoding="utf-8")
+            if adopted:
+                best = {"prompt": prompt, "version": it, "dev_rows": dv_rows, "dev_m": dv_m,
+                        "train_rows": tr_rows, "train_m": tr_m}
+                (run_dir / "best_prompt.txt").write_text(prompt, encoding="utf-8")
+                no_improve = 0
+            else:
+                rejected.append({"version": it, "changelog": best.get("next_changelog"),
+                                 "dev_delta": pd})
+                no_improve += 1
+            history.append(entry)
+            (run_dir / "history.json").write_text(json.dumps(history, ensure_ascii=False, indent=1),
+                                                  encoding="utf-8")
+            if no_improve >= args.patience or it == args.iterations - 1:
+                if no_improve >= args.patience:
+                    log(f"[stop] dev 무개선 {no_improve}회")
+                break
+
+            # Critic — 항상 best 의 train 실패를 본다
+            sent_index = {s.id: k for k, s in enumerate(batch)}
+            units_by_id = {s.id: L.units_of(s.text, spaced) for s in batch}
+            cases = build_cases(best["train_rows"], lab_batch, sent_index, units_by_id,
+                                main_T, spaced, args.n_cases)
+            critique = run_critic(gw, best["prompt"], best["train_m"], cases, rejected, ag_effort)
+            critique["metrics"] = {"achv": best["train_m"]["achv"],
+                                   "calibration": best["train_m"]["calibration"],
+                                   "spearman_within": best["train_m"]["spearman_within"],
+                                   "overlap_by_T": best["train_m"]["overlap_by_T"]}
+            (it_dir / "critique.json").write_text(json.dumps(critique, ensure_ascii=False, indent=1),
+                                                  encoding="utf-8")
+            (it_dir / "cases.json").write_text(json.dumps(cases, ensure_ascii=False, indent=1),
+                                               encoding="utf-8")
+            modes = [("grow", "neutral", "shrink")[k % 3] for k in range(args.revision_candidates)]
+            with ThreadPoolExecutor(max_workers=len(modes)) as ex:
+                rvs = list(ex.map(lambda md: run_engineer(
+                    gw, best["prompt"], critique, history, rejected, size_budget, md,
+                    ag_effort, out_rules, args.src_lang, targets), modes))
+            cands = [rv for rv in rvs if rv]
+            if not cands:
+                log(f"[iter {it}] 개정 후보 전멸 — 중단")
+                break
+            picks = []
+            base_rows, _bm = ev(best["prompt"], holdout, lab_hold)
+            for rv in cands:
+                c_rows, hm = ev(rv["prompt"], holdout, lab_hold)
+                d = paired(c_rows, base_rows)
+                log(f"[iter {it} 개정] {rv['candidate_kind']:8s} {len(rv['prompt'])}자 "
+                    f"holdout achv={hm['achv']} Δ={d['mean_delta']}±{d['se_delta']}")
+                picks.append((hm["achv"] or 0.0, rv))
+            picks.sort(key=lambda x: -x[0])
+            chosen = picks[0][1]
+            (it_dir / "changelog.json").write_text(json.dumps({
+                "selected_kind": chosen["candidate_kind"], "changelog": chosen.get("changelog"),
+                "sections_changed": chosen.get("sections_changed"),
+                "candidates": [{"kind": rv["candidate_kind"], "len": len(rv["prompt"]),
+                                "holdout_achv": a} for a, rv in picks]},
+                ensure_ascii=False, indent=1), encoding="utf-8")
+            best["next_changelog"] = chosen.get("changelog")
+            prompt = chosen["prompt"]
+            (run_dir / "next_prompt.txt").write_text(prompt, encoding="utf-8")
+            log(f"[iter {it}] 소요 {time.time() - t0:.0f}s")
+    except BudgetExceeded as e:
+        log(f"[stop] 예산 초과: {e}")
+    finally:
+        seg_cache.flush()
+
+    if not best:
+        log("[stop] 채택된 프롬프트가 없다")
+        gw.close()
+        return 1
+
+    # ── 최종 test ─────────────────────────────────────────────────────
+    test = splits["test"]
+    te_rows, te_m = evaluate(gw, best["prompt"], test, lab["test"], spaced, args.min_gap,
+                             final_grid, seg_cache, args.workers, args.batch_size, seg_effort)
+    seg_cache.flush()
+    log(f"[test] achv={te_m['achv']} overlap={te_m['overlap_by_T']} "
+        f"sp={te_m['spearman_within']} fmt={te_m['format_pass_rate']}")
+    units_t = [L.units_of(s.text, spaced) for s in test]
+    by_id = {r["id"]: r for r in te_rows}
+    pe_rows = []
+    label_segs = []
+    for i, s in enumerate(test):
+        r = by_id[s.id]
+        u = units_t[i]
+        if r.get("scores"):
+            seg = _seg_with(u, dict(zip(r["positions"], r["scores"])), spaced)
+        else:
+            seg = s.text
+        c = r.get("positions") or []
+        lseg = (_seg_with(u, {j: round(L.label_value(lab["test"], i, j) * SCALE) for j in c}, spaced)
+                if c else s.text)
+        label_segs.append(lseg)
+        by_T = {}
+        for T in final_grid:
+            cut, miss = truncate(seg, T, spaced, args.min_gap)
+            pieces = split_segments(cut) or [s.text]
+            by_T[str(T)] = {"seg_text": cut, "k": len(pieces), "missing_boundaries": miss,
+                            "pieces_src": pieces}
+        pe_rows.append({"id": s.id, "text": s.text, "seg_text": seg, "valid": bool(r.get("valid")),
+                        "by_T": by_T})
+    (run_dir / "prompt_eval").mkdir(exist_ok=True)
+    (run_dir / "prompt_eval" / "best_test.json").write_text(json.dumps({
+        "prompt_file": "best_prompt.txt", "split": "test", "t_grid": final_grid,
+        "min_gap": args.min_gap, "src_spaced": spaced, "tag_convention": "score",
+        "rows": pe_rows}, ensure_ascii=False, indent=1), encoding="utf-8")
+    (run_dir / "test_rows.json").write_text(json.dumps(te_rows, ensure_ascii=False),
+                                            encoding="utf-8")
+
+    report = {"test_label_metrics": te_m, "effective": {}}
+    if not args.skip_final_effective:
+        texts = [s.text for s in test]
+        for name, segs in (("model", [r["seg_text"] for r in pe_rows]), ("oracle_label", label_segs)):
+            report["effective"][name] = {}
+            for T in final_grid:
+                cuts = [truncate(sg, T, spaced, args.min_gap)[0] for sg in segs]
+                per_t = {}
+                for tgt in targets:
+                    tr = translators.get(tgt)
+                    if tr is None:
+                        tr = LocalTranslator(
+                            tgt_code=to_lang_code(tgt), model_id=args.local_mt_model,
+                            cache=JsonCache(run_dir / "cache" / f"translate_{to_lang_code(tgt)}.json"))
+                        translators[tgt] = tr
+                    full = tr.full(texts)
+                    sp = score_split(cuts, texts, full, tr, adequacy, spaced,
+                                     target_is_spaced(tgt), contradiction)
+                    per_t[tgt] = sp.effective
+                eff = []
+                for i in range(len(texts)):
+                    v = [per_t[t][i] for t in targets if per_t[t][i] is not None]
+                    eff.append(st.mean(v) if v else None)
+                ok = [x for x in eff if x is not None]
+                report["effective"][name][str(T)] = {
+                    "mean": round(st.mean(ok), 4) if ok else None, "n": len(ok),
+                    "by_tgt": {t: round(st.mean([x for x in per_t[t] if x is not None]), 4)
+                               for t in targets}}
+                log(f"[test/effective] {name:12s} T={T:<3d} {report['effective'][name][str(T)]['mean']}")
+    report["usage"] = gw.usage.snapshot()
+    report["history"] = [{k: h.get(k) for k in ("version", "adopted", "score_train", "score_dev",
+                                                 "paired_dev", "prompt_len")} for h in history]
+    report["best_version"] = best["version"]
+    (run_dir / "final_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1),
+                                               encoding="utf-8")
+    lines = [f"# 증류 루프 결과 — {args.pair_id}/{args.run_id}", "",
+             f"- 채택본 iter {best['version']} / 비용 {report['usage']['cost']:.3f} / 타깃 {targets}",
+             "", "| iter | train achv | dev achv | dev Δ (쌍체) | 길이 | 채택 |", "|---|---|---|---|---|---|"]
+    for h in history:
+        pd = h.get("paired_dev")
+        d_txt = "—" if not pd else f"{pd['mean_delta']:+.4f}±{pd['se_delta']:.4f}"
+        lines.append(f"| {h['version']} | {h['score_train']} | {h['score_dev']} | {d_txt} | "
+                     f"{h['prompt_len']} | {'O' if h['adopted'] else 'X'} |")
+    lines += ["", f"test: achv {te_m['achv']} / overlap {te_m['overlap_by_T']} / "
+              f"spearman_within {te_m['spearman_within']} / fmt {te_m['format_pass_rate']}", ""]
+    if report["effective"]:
+        lines += ["| 정책 | " + " | ".join(f"T={T}" for T in final_grid) + " |",
+                  "|---" * (len(final_grid) + 1) + "|"]
+        for name, d in report["effective"].items():
+            lines.append(f"| {name} | " + " | ".join(f"{d[str(T)]['mean']}" for T in final_grid) + " |")
+    (run_dir / "final_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print("\n".join(lines))
+    gw.close()
+    for tr in translators.values():
+        tr.close()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

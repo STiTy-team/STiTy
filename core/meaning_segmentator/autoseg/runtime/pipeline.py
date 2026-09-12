@@ -235,6 +235,8 @@ def segment_batch(
         #         있는 결과는 다른 분포다 — 실측 1차 통과율 0.83 -> 0.94.
         #   seg5  태그가 순위(1 = 최고)에서 **점수(0..100, 클수록 확신)** 로. 정규화가
         #         더 이상 번호를 1..N 으로 다시 매기지 않으므로 캐시값의 뜻이 다르다.
+        #   seg6  증류 정규화가 후보 밖 마커를 버린다 (`agents_distill.drop_extra_markers`).
+        #         같은 응답이라도 예전에는 재시도 결과가, 지금은 1차 결과가 캐시에 남는다.
         # 캐시는 런 디렉토리마다 따로이므로 새 런에는 영향이 없고, `--resume` 이 옛
         # 디렉토리를 이어갈 때만 의미가 있다.
         # 사고량이 바뀌면 분절도 바뀌므로 키에 넣는다. 안 넣으면 effort=low 런이 medium 으로
@@ -242,7 +244,7 @@ def segment_batch(
         # **모델도 같은 이유로 키에 들어간다.** 없으면 모델을 바꿔 돌린 평가가 이전 모델의
         # 캐시를 그대로 맞아 호출 0 회로 "동일한 결과"를 내놓는다 — 두 모델을 비교하려던
         # 실험이 조용히 같은 분절을 두 번 채점하는 것으로 바뀐다.
-        return JsonCache.key("seg5", prompt_hash, gw.model, reasoning_effort or "-",
+        return JsonCache.key("seg6", prompt_hash, gw.model, reasoning_effort or "-",
                              str(batch_size), t)
 
     def cached(t: str) -> list | None:
