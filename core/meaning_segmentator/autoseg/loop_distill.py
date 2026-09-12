@@ -439,7 +439,7 @@ def main() -> int:
                 return 2
             scored_c.sort(key=lambda x: -x[0])
             prompt_v0 = scored_c[0][2]
-            log(f"[v0] 후보 {scored_c[0][1]} 채택 (achv={scored_c[0][0]})")
+            log(f"[v0] 후보 {scored_c[0][1]} 채택 ({args.objective}={scored_c[0][0]})")
             v0_path.write_text(prompt_v0, encoding="utf-8")
         size_budget = int(len(prompt_v0) * args.max_prompt_growth)
 
@@ -467,8 +467,10 @@ def main() -> int:
             log(f"[iter {it}] train overlap={tr_m['overlap']} achv={tr_m['achv']} "
                 f"tie={tr_m['tie_rate']}/{tr_m['tie_at_cut_rate']} sp={tr_m['spearman_within']} "
                 f"fmt={tr_m['format_pass_rate']}(1st {tr_m['format_pass_rate_no_retry']}, "
-                f"위반 {dv_m['first_pass_violations']['counts']}) | "
+                f"위반 {tr_m['first_pass_violations']['counts']}) | "
                 f"dev overlap={dv_m['overlap']} {dv_m['overlap_by_T']} achv={dv_m['achv']} "
+                f"fmt={dv_m['format_pass_rate']}(1st {dv_m['format_pass_rate_no_retry']}, "
+                f"위반 {dv_m['first_pass_violations']['counts']}) "
                 f"Δ={pd} | {'채택' if adopted else '거부'} | 비용 {gw.usage.snapshot()['cost']:.3f}")
             (it_dir / "metrics.json").write_text(json.dumps(entry, ensure_ascii=False, indent=1),
                                                  encoding="utf-8")
