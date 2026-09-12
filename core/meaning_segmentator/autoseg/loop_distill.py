@@ -263,12 +263,15 @@ def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
                 if not ((not left or _tok_matches(lt, left))
                         and (not right or _tok_matches(rt, right)))]
         v["n_matched"] = len(hit)
-        if len(hit) < min_matches or len(miss) < 2:
+        if len(hit) < max(3, min_matches) or len(miss) < 3:
             v.update(verdict="drop", reason=f"걸린 경계 {len(hit)} < {min_matches}")
             verdicts.append(v)
             continue
         mh, mm = st.mean(hit), st.mean(miss)
-        se = ((st.pvariance(hit) / len(hit)) + (st.pvariance(miss) / len(miss))) ** 0.5
+        # **표본분산(n-1)을 쓴다.** 모분산은 표본이 작을 때 0 으로 수렴해 t 를 폭발시킨다 —
+        # run20 iter3 에서 걸린 경계 1개짜리 규칙이 t=-24.17 을 받았다. 자유도를 빼면
+        # 작은 표본에서 se 가 정직하게 커지고, 그래야 문턱을 낮춰도 퇴화 사례가 안 샌다.
+        se = ((st.variance(hit) / len(hit)) + (st.variance(miss) / len(miss))) ** 0.5
         t = (mh - mm) / se if se > 0 else 0.0
         # `lower` 는 "이 자리 점수를 내려라" 이므로 라벨이 **낮아야** 맞다.
         want_neg = (c.get("direction") or "lower") == "lower"
@@ -581,12 +584,14 @@ def main() -> int:
     p.add_argument("--patience", type=int, default=3)
     p.add_argument("--v0-candidates", type=int, default=3)
     p.add_argument("--revision-candidates", type=int, default=3)
-    p.add_argument("--rule-min-matches", type=int, default=8,
+    p.add_argument("--rule-min-matches", type=int, default=5,
                    help="제안 규칙이 train 전 경계 중 최소 몇 자리에 걸려야 하나. **판정은 "
-                        "t 가 한다** — 표본이 작으면 se 가 커져 t 가 안 나오므로, 이 값은 "
-                        "n=1~3 짜리 퇴화 사례만 막는 바닥이다. 20 으로 잡으면 실측으로 "
-                        "유효한 규칙까지 죽는다 (숫자|단위 n=9 t=-2.85, 문말부호 뒤 "
-                        "n=15 t=+3.65). LLM 호출 0. 0 = 관문 끔")
+                        "t 가 한다** — 표본분산(n-1)을 쓰므로 작은 표본은 se 가 커져 t 를 "
+                        "못 넘는다. 이 값은 분산이 계산 안 되는 자리만 막는 바닥이다. "
+                        "run20 실측으로 8 은 너무 높았다 — 진짜 규칙 둘(n=5 t=-6.94, "
+                        "n=6 t=-2.80)이 재보지도 못하고 죽었고 4이터 중 3이터가 재료 0개가 "
+                        "됐다. 5 로 내리면 재료 0인 이터가 1개로 준다. 5 아래로는 통과 수가 "
+                        "안 늘어난다 (퇴화 사례는 t 가 막는다). LLM 호출 0. 0 = 관문 끔")
     p.add_argument("--rule-min-support", type=int, default=2,
                    help="규칙 하나가 대야 하는 뒷받침 사례 수 (`supported_by`). 라벨을 재기 "
                         "전에 구조로 거른다 — 사례 하나에서 나온 조건은 그 문장에 맞춘 "
