@@ -678,10 +678,17 @@ def _install_trans_guard() -> None:
     # 실패). 모델은 첫 번역 호출 때 lazy 로 올라오므로, 번역이 일어나지 않는 실행은 GPU 를
     # 물지 않는다. 올라오면 fp16 기준 약 7.2GiB 를 쓰니 ASR 서버의
     # --gpu-memory-utilization 과 합쳐 24GiB 를 넘지 않게 잡을 것.
-    pre.add_argument("--trans-backend", default="local", choices=["v2", "gtx", "local"],
+    pre.add_argument("--trans-backend", default="local",
+                     choices=["v2", "gtx", "local", "remote"],
                      help="local=MADLAD-400-3B greedy(기본값, 키 불필요, 첫 호출 때 GPU 약 7.2GiB), "
+                          "remote=같은 모델을 다른 프로세스에서 HTTP 로 호출(--trans-remote-url), "
                           "gtx=무료 위젯 엔드포인트(이 IP 에서 429), "
                           "v2=공식 Cloud Translation Basic(API 키 필요, 현재 403)")
+    # 카드 하나에 ASR 서버를 둘 이상 띄울 때 쓴다. local 은 프로세스마다 MADLAD 를
+    # 복제하므로(7.2GiB) 둘이 24GiB 에 들어가지 않는다. 모델을 한 번만 올려 두고 나머지는
+    # 이 주소로 부른다. 서버는 STiTy-Mobile/demo-web/local_translation_server.py.
+    pre.add_argument("--trans-remote-url", default=None,
+                     help="번역 서버 주소(예: http://127.0.0.1:8770). --trans-backend remote 와 함께 쓴다")
     # 로컬 번역기는 **번역 품질이 다르다**(CometKiwi 0.8712 → 0.8473). v2 로 낸 결과와
     # 같은 표에 올리면 안 되고, 바꾼 시점을 반드시 기록할 것.
     pre.add_argument("--trans-local-model", default="google/madlad400-3b-mt")
@@ -759,6 +766,7 @@ def _install_trans_guard() -> None:
         fsl_server.base_server,
         backend=args.trans_backend,
         api_key=api_key,
+        remote_url=args.trans_remote_url,
         retries=args.trans_retries,
         timeout=args.trans_timeout,
         backoff=args.trans_backoff,
