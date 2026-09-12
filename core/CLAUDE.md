@@ -1,6 +1,6 @@
 # core/
 
-번역 레이어 + 분절 연구 코드. 서버 코드는 포함하지 않는다.
+파이프라인 부품 + 번역 레이어 + 공용 채점 + 분절 연구 코드. 서버 코드는 포함하지 않는다.
 
 | 경로 | 역할 |
 |---|---|
@@ -8,6 +8,8 @@
 | `translator/gpt_corrector.py` | `GPTCorrector` — 교정만. 서버 `--correction`으로 활성화 |
 | `translator/local_translator.py` | 로컬 번역기 — seq2seq(MADLAD/NLLB)와 `LLMTranslator`(지시형 LLM, **앞 발화를 문맥으로 받을 수 있는 유일한 백엔드**), 그리고 독립 번역 서버를 부르는 HTTP 클라이언트 `RemoteTranslator`. `make_translator` 가 모델 이름으로 고른다 |
 | `translator/LOCAL_TRANSLATION.md` | 어떤 로컬 번역 모델을 올릴지, 문맥을 몇 턴 줄지 — 실측표 |
+| `pipelines/` | 벤치마크가 재는 파이프라인과 그 부품. 종류별 서브패키지 하나, 그 안에 레지스트리 하나, 파일 하나가 백엔드 하나 — `pipeline/`(`pipelines`) · `vad/`(`detectors`) · `transcription/`(`transcribers`) · `translation/`(`translators`) · `correction/`(`correctors`). 설정 파일이 이름으로 고른다 |
+| `utils/metrics/` | 음성 번역 공용 채점 — WER·CER·BLEU·FSL·LAAL·커밋 사유·라우팅. 입구는 `score_item`·`score_run` 둘. STiTy `final` 필드를 그대로 읽고(`Utterance`/`Segment`), 데이터가 못 받치는 지표는 **값이 빠지고 `unavailable` 에 이유가 남는다** — `null` 도 예외도 없다. 실행·설정·보고서 형식은 모른다 |
 | `meaning_segmentator/utils/` | 의미 분절 연구 스크립트 (GPT `<SEG>` 마킹, 점진적 컨텍스트 번역, COMET 평가) |
 | `meaning_segmentator/autoseg/` | 분절 프롬프트 자동 생성 에이전트 루프. 코드가 하는 일 @meaning_segmentator/autoseg/AUTOSEG_SIMPLIFY.md, 사용법 @meaning_segmentator/autoseg/README.md |
 | ⤷ 근거·기각 기록 | 왜 이 지표 조합인가, 무엇을 검토하고 버렸나, 순위 축 진단, 참조 기반 평가 프로토콜 @meaning_segmentator/autoseg/AUTOSEG_DETAILS.md |
@@ -16,11 +18,54 @@
 | ⤷ 문헌 대조 | @meaning_segmentator/docs/SEGMENTATION_CRITERIA_RELATED_WORK.md |
 | `research/cif`, `research/context_scoring` | CIF·컨텍스트 스코어링 실험. 런타임 경로 아님 |
 
+## `pipelines/` — 부품 하나는 클래스 하나
+
+부품을 쓴다는 것은 클래스 하나를 쓴다는 뜻이다. 이름, 받을 설정(`SETTINGS`), 그리고
+자기가 하는 일 하나. 그 외에 구현해야 하는 것은 없다.
+
+```python
+@translators.register("my-translator")
+class MyTranslator(Translator):
+    SETTINGS = {"model": ("model", str)}
+
+    async def load(self):
+        self.model = ...
+
+    async def translate(self, text, target_lang, source_lang=None, context=None):
+        return translated_text, source_lang
+```
+
+| 종류 | 레지스트리 | 하는 일 |
+|---|---|---|
+| `transcription` | `transcribers` | `start(language)` / `transcribe(audio)` / `flush(reason, speech)` / `finish(reason, speech)` |
+| `translation` | `translators` | `translate(text, target_lang, source_lang, context)` → (번역문, 소스 언어) |
+| `vad` | `detectors` | `detect(audio)` → 끝난 발화 `Speech` 또는 `None` |
+| `correction` | `correctors` | `correct(text, language)` → 고친 텍스트. **등록된 백엔드가 아직 없다** |
+| `pipeline` | `pipelines` | `start` / `listen(audio)` / `finish`. `REQUIRED`·`OPTIONAL` 로 자기 부품을 선언한다 |
+
+부품은 파이프라인의 **옵션 안에** 설정한다. 형제 블록이 아니다 — 다른 파이프라인에 없는
+부품이 필요하면 그 레지스트리를 `REQUIRED`/`OPTIONAL` 에 적는 것만으로 설정 키가 생긴다.
+파이프라인이 안 쓰는 부품을 설정하면 오류다. 안 쓰는 부품은 블록을 **빼서** 없앤다 —
+아무것도 안 하는 `none` 백엔드는 두지 않는다.
+
+**부품은 결과를 반환하지 않고 `logging.emit` 으로 내보낸다** (`transcribed`, `final`).
+기록에 남은 것과 채점되는 것이 같은 것이어야 하기 때문이다. 이벤트마다 `audio`(녹음 안에서의
+위치)가 찍히므로, 실시간보다 빠르게 민 실행도 말한 속도 그대로 재생된다.
+
+**스트리밍 전사는 이미 낸 텍스트를 고쳐 쓴다.** Qwen3 는 청크마다 `unfixed_token_num` 만큼
+되돌려 다시 디코딩하고, 반복 환각 컷은 `state.text` 를 줄이기까지 한다. 커밋한 지점을
+넘어 고쳐지면 `revised_after_commit`(다시 씀) 또는 `retracted_after_commit`(거둬들임)이
+남는다 — 무수정 제약상 되돌릴 수 없으니, 조용히 어긋나는 대신 기록에 남긴다. 프로덕션
+서버는 이걸 `_cross_dup_match`·`_strip_committed_prefix` 로 걸러내지만 그 방어는 아직 없다.
+
 두 GPT 모듈 모두 기본 모델은 `gpt-5.4-mini` (런타임 경로. `autoseg/`의 모델과 무관하다). 두 플래그 모두 꺼져 있으면 서버는 Google Translate로 번역하므로 `core/`의 GPT 경로를 아예 타지 않는다.
 
 ## 규칙
 
 - 학습/실험 코드는 `research/` 아래에만. 런타임 파일 옆에 두지 말 것.
+- **주석을 쓰지 않는다.** `pipelines/` 와 `utils/metrics/` 에는 주석도 독스트링도 없다.
+  주석으로만 알 수 있는 것이 있으면 그건 코드가 잘못된 것이다 — 이름과 구조로 드러내고,
+  경위는 커밋 메시지에 적는다.
 - **문맥은 LLM 백엔드만 받는다.** 서버의 `--local-translation-context N` 이 앞 발화 원문을 넘기고,
   seq2seq 번역기는 그걸 받아서 버린다(경고 1회). 이어붙여 넣는 `--google-context` 방식은 Google 이
   줄바꿈을 보존해 주기 때문에 되는 것이라 로컬 모델에서는 깨진다 — NLLB 는 줄 수를 안 지켜

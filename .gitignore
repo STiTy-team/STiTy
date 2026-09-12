@@ -198,10 +198,11 @@ Qwen3-ASR/finetuning/finetuning-out-en-win/
 # AST 샘플 오디오 (저장소는 wav 를 추적하지 않는다)
 evaluation/ast/samples/
 
-# bench outputs. Summaries in bench/results/ are small and tracked on purpose --
-# comparing two runs should be a diff. Per-item rows and the event stream are not.
-bench/items/
-bench/runs/
+# bench outputs. One directory per run under bench/runs/. The summaries are small
+# and tracked on purpose -- comparing two runs should be a diff. Per-item rows,
+# the event stream and the replay are not.
+bench/runs/*/*
+!bench/runs/*/summary.json
 
 # Benchmark datasets live in their own repo (github.com/STiTy-team/datasets),
 # checked out wherever STITY_DATA_ROOT points. Nothing dataset-shaped belongs here.

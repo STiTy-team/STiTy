@@ -18,3 +18,11 @@ sacrebleu>=2.4
 # character tokenizer and records that in the signature, which makes scores
 # incomparable with runs that had them.
 sacrebleu[ja,ko]
+
+# console output. already present transitively via transformers/accelerate, pinned
+# here because bench imports it directly and a transitive dep is not a promise.
+rich>=13.0
+
+# config schema and validation. present transitively via vLLM, pinned here
+# because bench imports it directly.
+pydantic>=2.0

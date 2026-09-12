@@ -8,12 +8,15 @@
 # 데이터셋은 별도 리포다. 체크아웃한 디렉토리가 곧 STITY_DATA_ROOT 다.
 git clone git@github.com:STiTy-team/datasets.git ~/datasets
 export STITY_DATA_ROOT=~/datasets
-make dataset DATA=fleurs                       # 내려받고 변환까지
+bash $STITY_DATA_ROOT/fleurs/install.sh        # 내려받고 변환까지
 
-make dry   CONFIG=bench/configs/fleurs.yml     # 설정만 확인. 모델 안 올린다
-make bench CONFIG=bench/configs/fleurs.yml
-make test                                      # 단위 테스트 (GPU 불필요)
+make bench CONFIG=<설정>.yml                        # 실행
+make replay RUN=bench/runs/<이름>-<ts>              # 그 실행을 브라우저에서 다시 본다
 ```
+
+`make replay` 는 http://localhost:3000 에 페이지 하나를 띄운다. 왼쪽은 휴대폰이 `final` 로
+그린 화면 그대로(번역이 본문, 전사가 그 아래), 오른쪽은 **휴대폰에는 안 보이는** 이벤트
+줄기 전부다. 둘 다 같은 시계 — 이벤트의 `audio` 위치 — 가 움직인다.
 
 데이터셋은 `fleurs` 와 `acl6060` 둘이다. 계약(`dataset.yml` + `manifest.jsonl`)과 새
 코퍼스 붙이는 법은 그 리포의 README 에 있다. bench 에는 데이터셋별 분기가 없다.
@@ -28,24 +31,25 @@ dataset:
   limit: 20
 
 languages:
-  lang: en                     # 또는 map: {en: ko, ko: en, fr: ko}
+  lang: en
   target: de
 
 stity:
-  transcription:
-    name: qwen3
-    model: baseline
-    chunk_size_sec: 2.0        # 모델별 설정은 그 모델 밑에 둔다
-    max_new_tokens: 128
-  translation:
-    name: google               # none | google | local | gpt
-  commit: seg                  # seg | punct | static
-  vad: {enabled: true, min_silence_ms: 800}
+  pipeline:
+    name: cascade
+    transcription:
+      name: qwen3
+      chunk_size_sec: 2.0      # 모델별 설정은 그 모델 밑에 둔다
+      max_new_tokens: 128
+    translation: {name: local, model: google/madlad400-3b-mt}
+    vad: {name: silero, min_silence_ms: 800}
+  commit: seg                  # seg | punct | always
   gpu_memory_utilization: 0.5
-
-metrics: [wer, fsl, laal, bleu, commit]
-logs: {top_k: 10, rank_by: laal}
 ```
+
+**부품은 파이프라인 안에 쓴다.** transcription·translation·vad 는 파이프라인의 인자이지
+형제가 아니다. 다른 파이프라인이 쓰지 않는 부품을 받는 파이프라인도 자기 options 에 적으면
+되고, 바깥이 그 종류를 먼저 알아야 할 일이 없다.
 
 `translation: gpt` 처럼 문자열만 쓰면 `{name: gpt}` 로 풀린다.
 
@@ -55,49 +59,52 @@ logs: {top_k: 10, rank_by: laal}
 
 ### `commit` 은 명시적으로 풀린다
 
-| `commit` | `always_commit` | `enable_dot_commit` | `dot_commit_confirm` | `hide_seg` |
-|---|---|---|---|---|
-| `seg` | false | false | false | false |
-| `punct` | false | true | true | true |
-| `static` | true | false | false | true |
+| `commit` | `always_commit` | `enable_dot_commit` | `hide_seg` |
+|---|---|---|---|
+| `seg` | false | false | false |
+| `punct` | false | true | true |
+| `always` | true | false | true |
 
 프로덕션 서버는 `enable_dot_commit` 기본값을 **가중치 경로에서 유도한다**
 (`_infer_dot_commit_default`). 그래서 같은 명령이 체크포인트에 따라 다른 정책으로 돈다.
 bench 는 `parse_args` 를 부르지 않고 위 표로만 푼다. 해석된 값은 결과 파일에 전부 남는다.
 
-`hide_seg` 는 SEG 를 뱉는 가중치로 `punct`/`static` 축을 돌릴 때 필요하다. 없으면 축이
+`hide_seg` 는 SEG 를 뱉는 가중치로 `punct`/`always` 축을 돌릴 때 필요하다. 없으면 축이
 조용히 섞인다 — 실측으로 punct 축 커밋의 36%가 seg 였고, 그 커밋만 확정 게이트를 건너뛰어
 지연이 실제보다 좋게 잡혔다.
 
-### 여러 언어가 섞인 대화
+### 한 실행은 한 방향이다
 
-```yaml
-languages:
-  map: {en: ko, ko: en, fr: ko}
-```
+`lang` → `target` 한 쌍이다. 한 서버가 한 모델이고 모델은 언어로 대상을 고르지 않는다 —
+프로덕션에서는 클라이언트가 접속하는 포트가 그 선택이다. 그래서 한 실행의 방향도 하나다.
 
-`map` 의 키가 그대로 ASR 의 `allowed_languages` 가 되어 언어 이름 토큰에 로짓 바이어스를
-건다. 즉 **언어 설정은 번역만이 아니라 WER 도 바꾼다.** `lang`/`target` 쌍으로는 세 언어를
-각각 다른 곳으로 보낼 수 없으므로(서버의 `parse_lang_map` docstring이 그렇게 적고 있다),
-섞인 데이터셋에는 `map` 을 쓴다. 둘을 동시에 주면 죽는다 — 점수가 달라지는 두 경로다.
+`lang`/`target` 은 그대로 ASR 의 `allowed_languages` 가 되어 언어 이름 토큰에 로짓 바이어스를
+건다. 즉 **언어 설정은 번역만이 아니라 WER 도 바꾼다.** (`restrict: false` 로 끌 수 있다.)
 
-`metrics: [routing]` 이 언어 판정과 라우팅을 잰다. BLEU 는 **올바르게 라우팅된 세그먼트만**
+`routing` 지표가 언어 판정과 라우팅을 잰다. BLEU 는 **올바르게 라우팅된 세그먼트만**
 으로 내고(`bleu`), 전체 기준은 `bleu_all` 로 따로 낸다. 한국어 출력을 프랑스어 참조와
 비교하면 번역 품질 문제와 언어 판정 문제가 한 숫자에 섞여 둘 다 못 읽는다.
 
 ## 나오는 것
 
-| 파일 | 무엇 | git |
-|---|---|---|
-| `results/<name>.json` | 요약 + 해석된 설정 전부 | 추적한다 (작다, 실행 비교가 diff 로 보인다) |
-| `items/<name>-<ts>.jsonl` | 항목 단위 행. append | 안 한다 |
-| `logs/<name>-<ts>.jsonl` | **이벤트 전부. 이게 원본이다** | 안 한다 |
-| `logs/<name>-<ts>.replay.json` | 상위 k개 항목의 리플레이 | 안 한다 |
+실행 하나가 디렉토리 하나다. 지우려면 그 디렉토리만 지우면 된다.
+
+```
+runs/<name>-<ts>/
+  summary.json                      이 실행의 요약 + 해석된 설정 전부
+  items.jsonl                       항목 단위 행. append (죽어도 채점된다)
+  events.jsonl                      이벤트 전부. 이게 원본이고 리플레이가 읽는 것이다
+```
+
+| 파일 | git |
+|---|---|
+| `runs/<name>-<ts>/summary.json` | 추적한다 (작다, 실행 비교가 diff 로 보인다) |
+| 나머지 | 안 한다 |
 
 요약과 리플레이는 이벤트 스트림을 다시 읽어 만든 **투영**이다. 전부 append 라 중간에
 죽어도 그때까지가 남고 채점된다.
 
-`results/<name>.json` 의 `config.resolved` 에는 설정에 안 쓴 값까지 **실제로 쓰인 값**이
+`summary.json` 의 `config.resolved` 에는 설정에 안 쓴 값까지 **실제로 쓰인 값**이
 들어간다. 이게 없으면 두 실행을 비교할 수 없다.
 
 ## 이벤트
@@ -121,9 +128,9 @@ languages:
 | `wer` | 주 숫자. 빈 가설을 전체 삭제로 센다 |
 | `wer_scored_only` | 옛 숫자(빈 가설 제외). 대조용 |
 | `cer` | 문자 오류 합 / 참조 문자 합 |
-| `fsl` | vad 커밋은 `min_silence_ms` 만큼 더한 정규화값도 함께 |
+| `fsl` | 커밋이 오디오보다 얼마나 늦게 도착했나 = `recv_elapsed_sec − decision_audio_sec`. **기록하지 않고 유도한다** — 두 시계가 이미 있으니 파이프라인이 따로 내면 어긋날 수 있다. `realtime: false` 로 돌리면 오디오보다 앞서 끝나 음수가 나온다 |
 | `laal` | `decision_audio_sec` 이 `d_i` 다 |
-| `bleu` | 라우팅이 맞은 것만. 전체는 `bleu_all` |
+| `bleu` | 라우팅이 맞은 것만. 전체는 `bleu_all`. **발화 하나가 한 쌍**이다 — 세그먼트를 다시 이어 붙여 채점한다 |
 | `commit` | 사유별 개수·비율. `finish_ratio` 가 크면 축의 커밋 경로가 안 도는 것이다 |
 | `routing` | 언어 판정 정확도, 라우팅 정확도, 혼동 행렬 |
 
@@ -131,33 +138,44 @@ languages:
 행을 버리고(`scoring.py:19`), `process_batch` 가 그 행을 또 버린다. 실패한 발화가 두 번
 숨어서 점수가 좋아 보인다. 실측으로 한쪽이 완전 실패인 두 발화에서 0.0 과 0.5 가 갈린다.
 
-요청한 지표를 계산할 수 없으면 **모델을 올리기 전에** 죽는다. `sacrebleu` 가 없거나 번역
-참조가 없는데 `bleu` 를 요청하면 0초에 알려준다. 네 시간 뒤에 `null` 을 보는 것보다 낫다.
+**지표는 고르지 않는다. 매 실행이 낼 수 있는 것을 전부 계산한다.** 설정으로 부분집합을
+고르는 길은 없다 — 이미 GPU 시간을 치르고 얻은 숫자를 가릴 뿐이다.
+
+**데이터가 못 받치는 지표는 없는 채로 둔다. 실패하지 않는다.** 값이 아예 빠지고
+`diagnostics.unavailable` 에 이유가 남는다. `null` 은 나오지 않는다 — 지표는 숫자이거나
+이유이고, 읽는 사람이 빈칸을 추측할 일은 없다.
+
+| 데이터 | 나오는 것 | 빠지는 것 |
+|---|---|---|
+| 오디오만 (전사·번역 참조 없음) | `fsl`·`commit`·`routing` | `wer`·`cer`·`bleu`·`laal` |
+| 전사는 있고 번역 참조 없음 | 위 + `wer`·`cer` | `bleu`·`laal` |
+| 일부 언어만 번역 참조 있음 | 그 언어들의 `bleu` | 참조 없는 언어 (`bleu_by_target` 의 이유에 적힌다) |
+
+참조 번역이 없으면 `laal` 도 빠진다. 분모가 `max(|Y_hyp|, |Y_ref|)` 라서 `|Y_ref|` 를 빼면
+근사가 아니라 **다른 지표(AL)** 가 되고, AL 은 짧게 생성할수록 점수가 좋아지는 구멍이 있다.
+그걸 `laal_ms` 칸에 적으면 비교가 불가능한 두 숫자가 한 열에 섞인다.
 
 ## 구조
 
 ```
-__main__.py   CLI. --dry-run 은 모델 전에 끝난다
-config.py     YAML → dataclass. 점수를 바꾸는 값 전부 명시 해석
-registry.py   이름 → 컴포넌트
-driver.py     ASR 서버를 import 하는 유일한 모듈
-events.py     emit() + EventSink + JSONL 핸들러
-report.py     이벤트 스트림 → results / replay
-metrics/      asr · latency · translation · commit · routing
-data/         manifest · audio · build(변환기용 헬퍼)
-components/   transcription · translation
+__main__.py   CLI + 실행. ASR 서버를 import 하는 유일한 모듈이고, 그 import 는
+              Engine 안에서 늦게 일어난다 — 설정 오류는 모델을 올리기 전에 걸린다
+config.py     YAML 블록 하나가 클래스 하나. 점수를 바꾸는 값 전부 명시 해석
+report.py     이벤트 스트림 → summary.json
+replay.py     이벤트 스트림 → :3000 웹 페이지 (replay.html 이 화면 전부)
+dataset.py    dataset.yml + manifest.jsonl 읽기
 ```
 
-`metrics/`·`config.py`·`data/`·`report.py` 는 `driver.py` 를 import 하지 않는다.
-그래야 GPU 없이 테스트가 돈다.
+채점은 `core.utils.metrics` 가 한다. bench 에는 지표 모듈이 없고 `__main__.py` 의
+`score_item`·`score_run` 둘이 전부다 — 설정에서 무엇을 계산할지 고르는 자리가 없으니
+고를 코드도 없다.
+
+`config.py`·`dataset.py`·`report.py`·`replay.py` 는 `__main__.py` 를
+import 하지 않는다.
+그래야 GPU 없이 돌릴 수 있다.
 
 데이터셋 리포는 반대로 **STiTy 를 import 하지 않는다.** 두 리포가 나란히 체크아웃돼
-있다는 가정은 곧 깨진다. 변환기는 스스로 검사하고, 최종 판정만 이쪽이 한다:
-
-```bash
-python -m bench.data.manifest --validate $STITY_DATA_ROOT/fleurs
-make validate DATA=fleurs
-```
+있다는 가정은 곧 깨진다.
 
 ## 아직 안 되는 것
 
