@@ -1,0 +1,27 @@
+{
+ "selected_kind": "grow",
+ "changelog": [
+  "Added explicit cap when a cut falls between a subject NP (proper-name/noun) and a following finite verb: lower Top -> Middle (50–70) to avoid over-trusting subject–predicate splits (addresses en_us_337).",
+  "Re-anchored trailing-comma semantics: a comma/semicolon only supports Top when the immediate pre-marker token itself is a finite verb or a clause-closing token; otherwise treat it as non-closing and cap to Middle (40–60) (addresses en_us_357 and calibration_fix).",
+  "If the immediate pre-marker token looks like a past-participle (surface -ed or a short irregular participle form), lower score into Middle/Low (20–50) because the left is likely a reduced dependent modifier (addresses en_us_1416).",
+  "Detect probable appositive/title splits: when the token after the marker is a capitalized proper name and the token before the marker is a common-noun title (e.g., 'president', 'Pharaoh'), cap to Middle (40–60) rather than Top (addresses en_us_1105).",
+  "If a comma precedes a small noun-head (numeral or determiner-less noun like 'one', 'many') that continues the previous phrase, cap score to Middle (40–60) because the right likely continues/attaches to the left (addresses en_us_548).",
+  "Updated examples to illustrate the revised punctuation, participial, and subject–verb split rules (moved the '2019,' example into Middle range and added a subject+proper-name split example)."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 13846,
+   "holdout_achv": 0.9202
+  },
+  {
+   "kind": "shrink",
+   "len": 11226,
+   "holdout_achv": 0.9179
+  }
+ ]
+}

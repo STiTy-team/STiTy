@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_337",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "token before marker is a capitalized proper-name token (part of a multiword name) and token after the marker is a finite verb",
+   "blamed_rule": "Right begins with a finite verb or a new subject head (not a bound subordinator or preludial preposition), allowing the right to be translated independently.",
+   "proposed_rule": "If the immediate left token is capitalized (proper-name) and the immediate right token is a finite verb, treat this subject-NP ↔ predicate split as risky and lower the score to Middle (50–70).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 13,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker follows a short prepositional/directional phrase (preposition + short NP, ≤3 tokens) that carries a trailing comma, and the right begins a new subject+finite-verb clause",
+   "blamed_rule": "- Typical surface signals: left ends with a main verb + object/complements, or with a closing punctuation token attached to the previous word (e.g., a semicolon or comma that closes a parenthetic or subordinate clause), and the next token starts a new clause (a lexical head, a new subject, or a capitalized sentence-internal noun).",
+   "proposed_rule": "If the token immediately before the marker is the head of a short PP/adverbial (pattern: preposition + optional determiner + short noun/pronoun, ≤3 tokens) and it carries a trailing comma but does not contain a finite verb, lower the cut sharply to Low (0–20) because such short adjuncts almost always attach to the following clause.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1105",
+   "pos": 9,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "the token after the marker is a capitalized single-name (proper noun) and the token before the marker is a common-noun title or determiner+common-noun object (title + name pattern)",
+   "blamed_rule": "Right begins with a finite verb or a new subject head (not a bound subordinator or preludial preposition), allowing the right to be translated independently.",
+   "proposed_rule": "When the immediate right token is a capitalized single-token proper name and the immediate left token is a common-noun title or determiner+common-noun (e.g., 'Pharaoh', 'president', 'king'), demote the cut to Middle (40–60) because the right is likely an apposition or name that attaches to the left rather than an independent clause.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1575",
+   "pos": 25,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "the right begins with a restricting adverb ('only', 'just', case-insensitive) immediately followed by a preposition or numeral (e.g., 'only for five')",
+   "blamed_rule": "The remainder begins with a few words that could change polarity, participant identity, scope, or referent of the left (e.g., \"but\", \"however\", \"rather\", or a negation), or introduces a restricting relative clause that reinterprets the left head.",
+   "proposed_rule": "If the immediate right token is a restricting adverb like 'only' or 'just' followed by a preposition or numeral, push the cut into Low (0–10) because such sequences typically continue/limit the left and can reverse or reshape its meaning.",
+   "direction": "lower"
+  }
+ ],
+ "calibration_fix": "Reserve 0–9 only for unmistakable fragments: shift the current 00–09 bucket upward (re-anchor those examples to ~20–29) so the lowest band reflects true unusable cuts rather than many moderately-good ones.",
+ "summary": "The prompt systematically over-credits cuts where the right simply starts with a finite verb or a capitalized token (treating verb starts and trailing commas as automatic clause boundaries). It under-penalizes short adjuncts (short PPs/directional phrases with commas), restricting adverbial tails ('only ...'), and title+name appositions that attach rather than begin a new independent clause. Re-anchoring low-band calibration and adding surface tests for short adjuncts, restricting adverbials, and proper-name subject splits will reduce these high-contrast over-trust errors.",
+ "metrics": {
+  "achv": 0.9263,
+  "calibration": {
+   "00-09": {
+    "n": 269,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 11,
+    "label_mean": 67.4
+   },
+   "20-29": {
+    "n": 24,
+    "label_mean": 64.4
+   },
+   "30-39": {
+    "n": 15,
+    "label_mean": 65.8
+   },
+   "40-49": {
+    "n": 8,
+    "label_mean": 60.2
+   },
+   "50-59": {
+    "n": 21,
+    "label_mean": 65.6
+   },
+   "60-69": {
+    "n": 5,
+    "label_mean": 77.1
+   },
+   "70-79": {
+    "n": 11,
+    "label_mean": 72.0
+   },
+   "80-89": {
+    "n": 13,
+    "label_mean": 74.2
+   },
+   "90-99": {
+    "n": 23,
+    "label_mean": 63.8
+   }
+  },
+  "spearman_within": 0.3452,
+  "overlap_by_T": {
+   "4": 0.552,
+   "6": 0.535,
+   "12": 0.469
+  }
+ }
+}

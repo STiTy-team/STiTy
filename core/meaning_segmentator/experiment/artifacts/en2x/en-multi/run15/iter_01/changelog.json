@@ -1,0 +1,25 @@
+{
+ "selected_kind": "grow",
+ "changelog": [
+  "Re-anchored the low-end calibration: reserve 0–9 for unmistakable, unrescued fragments; shift other low labels upward to reflect that many previously 00–09 items were moderate (addresses 'calibration_fix').",
+  "Introduce a two-step scoring workflow: assign an initial surface-based score, then apply bounded, conjunctive modifiers (penalties) for specific risky surface patterns observed in the critique; this targets systematic over-trust while avoiding brittle one-rule caps.",
+  "Add a conjunctive short-PP-with-trailing-comma test that strongly reduces scores only when a short adjunct (prep + ≤3-token NP) with trailing comma immediately precedes a marker and the right begins a new finite-clause — lowers to Low (floor ≤20) to fix en_us_357 style errors.",
+  "Add a conservative multi-word-name / proper-name split penalty: when the left token is capitalized and likely part of a multiword name (preceded by another capitalized token or common title), and the right begins with a finite verb, apply a moderate penalty (push toward Middle) to correct en_us_337 over-trust.",
+  "Add a targeted title+name apposition test: when the right is a single capitalized token and the left is a common-noun title or determiner+common-noun, require nearby punctuation or appositive signal before applying a moderate lowering to Middle (addresses en_us_1105) — conjunctive check avoids false positives.",
+  "Add a restricting-adverb sequence rule: when the right begins with 'only' or 'just' (case-insensitive) immediately followed by a preposition or numeral, apply a strong penalty (floor ≤10) because such tails almost always continue/limit the left (addresses en_us_1575).",
+  "Updated Decision Procedure: explicitly instruct initial assignment + ordered modifier application with caps/floors and integer rounding, to make scoring deterministic and consistent across sentences.",
+  "Reworked Examples: replaced/added examples that demonstrate the new modifiers (short PP comma, multiword-name split, restricting adverb) while keeping representative anchors for other key behaviors."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 13374,
+   "holdout_achv": 0.8939
+  }
+ ]
+}

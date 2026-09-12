@@ -1,0 +1,27 @@
+{
+ "selected_kind": "shrink",
+ "changelog": [
+  "Re-anchored low-end calibration: reserve 0–9 for only unmistakable fragments and prefer 20–29 for weak nonstandalone tails (trace: calibration_fix).",
+  "Tightened Top-band awarding: require both an independently renderable right and that nothing later can plausibly reassign or negate the left; withhold 85+ when surface cues mimic clause boundaries (trace: summary and cases).",
+  "Added concise guidance listing the four risky surface patterns observed in the critique (short trailing adjuncts ending in directional noun; immediate subordinators on the right; title + single capitalized token apposition; right-side restricting adverb immediately followed by prep/number). In presence of any, prefer Middle/Low instead of Top (trace: cases en_us_357, en_us_1105, en_us_1575).",
+  "Made scoring language more compact and deterministic: prefer conservative labels when in doubt between extreme-low and low (trace: calibration table), and round to integers.",
+  "Re-anchored example low scores upward to reflect the raised 20–29 anchor (keeps same examples but updates low-band numbers)."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "shrink",
+   "len": 10345,
+   "holdout_achv": 0.9052
+  },
+  {
+   "kind": "grow",
+   "len": 13543,
+   "holdout_achv": 0.8756
+  }
+ ]
+}

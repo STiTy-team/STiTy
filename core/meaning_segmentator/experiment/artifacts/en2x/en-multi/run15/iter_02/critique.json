@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_357",
+   "pos": 13,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left ends with a short PP (prep + ≤3 tokens) ending in directional noun; right starts with determiner+noun",
+   "blamed_rule": "closing punctuation token attached to the previous word",
+   "proposed_rule": "Re-anchor short-PP cases: if left is prep+≤3 tokens ending in directional noun, cap to Middle (40–60).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 17,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "right begins with a subordinating conjunction (if/when/because/although) immediately after the marker",
+   "blamed_rule": "Left ends in 'that', 'which', 'who', or a subordinating signal",
+   "proposed_rule": "Sharpen subordinator enforcement: if right begins with subordinator, cap to Low (≤20) unless explicit clause-closer punctuation precedes marker.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1105",
+   "pos": 9,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "left ends with common-noun title; right begins with a single capitalized token (proper name/apposition)",
+   "blamed_rule": "a capitalized sentence-internal noun",
+   "proposed_rule": "Re-anchor capitalized-name splits: when right is single capitalized token after noun-title, cap to Middle (40–60).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1575",
+   "pos": 25,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "right begins with restricting adverb ('only','just') immediately followed by a preposition or numeral",
+   "blamed_rule": "The remainder begins with a few words that could change polarity, participant identity, scope, or referent of the left",
+   "proposed_rule": "Sharpen restricting-adverb rule: immediate right 'only'/'just' + (prep|number) → floor to Low (0–20).",
+   "direction": "lower"
+  }
+ ],
+ "calibration_fix": "Raise 00–09 anchor to 20–29; reserve 0–9 only for unmistakable fragments.",
+ "summary": "Model over-scores where surface cues mimic clause boundaries (commas, capitals, short PPs). Tighten and re-anchor those specific cues to lower bands.",
+ "metrics": {
+  "achv": 0.9263,
+  "calibration": {
+   "00-09": {
+    "n": 269,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 11,
+    "label_mean": 67.4
+   },
+   "20-29": {
+    "n": 24,
+    "label_mean": 64.4
+   },
+   "30-39": {
+    "n": 15,
+    "label_mean": 65.8
+   },
+   "40-49": {
+    "n": 8,
+    "label_mean": 60.2
+   },
+   "50-59": {
+    "n": 21,
+    "label_mean": 65.6
+   },
+   "60-69": {
+    "n": 5,
+    "label_mean": 77.1
+   },
+   "70-79": {
+    "n": 11,
+    "label_mean": 72.0
+   },
+   "80-89": {
+    "n": 13,
+    "label_mean": 74.2
+   },
+   "90-99": {
+    "n": 23,
+    "label_mean": 63.8
+   }
+  },
+  "spearman_within": 0.3452,
+  "overlap_by_T": {
+   "4": 0.552,
+   "6": 0.535,
+   "12": 0.469
+  }
+ }
+}

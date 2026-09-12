@@ -1,0 +1,214 @@
+{
+ "version": 0,
+ "adopted": true,
+ "train": {
+  "n": 30,
+  "n_scored": 27,
+  "format_pass_rate": 0.9,
+  "format_pass_rate_no_retry": 0.6,
+  "achv": 0.9263,
+  "util": 0.7249,
+  "util_oracle": 0.7796,
+  "overlap_by_T": {
+   "4": 0.552,
+   "6": 0.535,
+   "12": 0.469
+  },
+  "spearman_pooled": 0.1745,
+  "spearman_within": 0.3452,
+  "calibration": {
+   "00-09": {
+    "n": 269,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 11,
+    "label_mean": 67.4
+   },
+   "20-29": {
+    "n": 24,
+    "label_mean": 64.4
+   },
+   "30-39": {
+    "n": 15,
+    "label_mean": 65.8
+   },
+   "40-49": {
+    "n": 8,
+    "label_mean": 60.2
+   },
+   "50-59": {
+    "n": 21,
+    "label_mean": 65.6
+   },
+   "60-69": {
+    "n": 5,
+    "label_mean": 77.1
+   },
+   "70-79": {
+    "n": 11,
+    "label_mean": 72.0
+   },
+   "80-89": {
+    "n": 13,
+    "label_mean": 74.2
+   },
+   "90-99": {
+    "n": 23,
+    "label_mean": 63.8
+   }
+  },
+  "n_boundaries": 400,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 12
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 14개, 출력 16개)",
+     "seg_text": "While visiting the <SEG:0> monasteries, <SEG:88> women <SEG:5> are <SEG:3> required <SEG:2> to <SEG:2> wear <SEG:20> skirts <SEG:15> covering <SEG:2> the <SEG:0> knees <SEG:2> and <SEG:2> have <SEG:3> their <SEG:0> shoulders <SEG:5> covered, <SEG:10> too."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 29개, 출력 31개)",
+     "seg_text": "Stardust will set <SEG:20> a <SEG:0> new <SEG:5> all-time <SEG:5> record <SEG:70> for <SEG:2> being <SEG:3> the <SEG:0> fastest <SEG:5> spacecraft <SEG:60> to <SEG:2> return <SEG:30> to <SEG:2> Earth, <SEG:95> breaking <SEG:3> the <SEG:0> previous <SEG:5> record <SEG:50> set <SEG:2> in <SEG:2> May <"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 15개, 출력 16개)",
+     "seg_text": "For over a <SEG:0> thousand <SEG:5> years <SEG:88> the <SEG:0> Christian <SEG:5> religion <SEG:5> had <SEG:3> bound <SEG:4> European <SEG:5> states <SEG:40> together <SEG:80> despite <SEG:2> differences <SEG:30> in <SEG:2> language <SEG:5> and <SEG:1> customs. I"
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 199,
+  "format_pass_rate": 0.9256,
+  "format_pass_rate_no_retry": 0.5023,
+  "achv": 0.9254,
+  "util": 0.7247,
+  "util_oracle": 0.781,
+  "overlap_by_T": {
+   "4": 0.558,
+   "6": 0.475,
+   "12": 0.404
+  },
+  "spearman_pooled": 0.2429,
+  "spearman_within": 0.3074,
+  "calibration": {
+   "00-09": {
+    "n": 2008,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 148,
+    "label_mean": 65.3
+   },
+   "20-29": {
+    "n": 154,
+    "label_mean": 67.8
+   },
+   "30-39": {
+    "n": 108,
+    "label_mean": 69.2
+   },
+   "40-49": {
+    "n": 82,
+    "label_mean": 67.4
+   },
+   "50-59": {
+    "n": 190,
+    "label_mean": 68.4
+   },
+   "60-69": {
+    "n": 32,
+    "label_mean": 71.4
+   },
+   "70-79": {
+    "n": 38,
+    "label_mean": 70.1
+   },
+   "80-89": {
+    "n": 69,
+    "label_mean": 73.5
+   },
+   "90-99": {
+    "n": 201,
+    "label_mean": 75.2
+   }
+  },
+  "n_boundaries": 3030,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 106,
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 12개, 출력 14개)",
+     "seg_text": "These agents are <SEG:25> responsible <SEG:45> for <SEG:2> providing <SEG:30> government <SEG:10> and <SEG:1> judicial <SEG:3> services <SEG:85> under <SEG:2> Article <SEG:2> 247 <SEG:15> of <SEG:2> the <SEG:1> Pakistani <SEG:3> Constitution."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 17개, 출력 19개)",
+     "seg_text": "The governor also <SEG:3> stated, <SEG:96> \"Today, <SEG:90> we <SEG:3> learned <SEG:50> that <SEG:2> some <SEG:2> school <SEG:0> aged <SEG:3> children <SEG:5> have <SEG:5> been <SEG:2> identified <SEG:50> as <SEG:2> having <SEG:5> had <SEG:5> contact <SEG:35> with <SEG:2> the <SEG:1> patient.\""
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 11개, 출력 13개)",
+     "seg_text": "Some people believe <SEG:50> that <SEG:2> experiencing <SEG:15> many <SEG:3> artificially <SEG:3> induced <SEG:5> lucid <SEG:3> dreams <SEG:30> often <SEG:30> enough <SEG:5> can <SEG:2> be <SEG:3> very <SEG:5> exhausting."
+    }
+   ]
+  }
+ },
+ "score_train": 0.9263,
+ "score_dev": 0.9254,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 11397,
+ "usage": {
+  "calls": 277,
+  "prompt_tokens": 835530,
+  "completion_tokens": 1349222,
+  "cached_tokens": 568064,
+  "truncated": 0,
+  "cost": 2.779512,
+  "by_purpose": {
+   "segment": {
+    "calls": 71,
+    "prompt_tokens": 234643,
+    "completion_tokens": 711686,
+    "reasoning_tokens": 663744,
+    "cached_tokens": 136576,
+    "cost": 1.451303
+   },
+   "segment_retry": {
+    "calls": 202,
+    "prompt_tokens": 595122,
+    "completion_tokens": 607110,
+    "reasoning_tokens": 583296,
+    "cached_tokens": 429952,
+    "cost": 1.266261
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 4791,
+    "completion_tokens": 28776,
+    "reasoning_tokens": 20864,
+    "cached_tokens": 1536,
+    "cost": 0.058404
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 1650,
+    "reasoning_tokens": 1280,
+    "cached_tokens": 0,
+    "cost": 0.003544
+   }
+  }
+ }
+}

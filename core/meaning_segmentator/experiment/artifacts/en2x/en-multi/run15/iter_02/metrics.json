@@ -1,0 +1,244 @@
+{
+ "version": 2,
+ "adopted": false,
+ "train": {
+  "n": 30,
+  "n_scored": 27,
+  "format_pass_rate": 0.9,
+  "format_pass_rate_no_retry": 0.4,
+  "achv": 0.9201,
+  "util": 0.7157,
+  "util_oracle": 0.7735,
+  "overlap_by_T": {
+   "4": 0.619,
+   "6": 0.495,
+   "12": 0.344
+  },
+  "spearman_pooled": 0.13,
+  "spearman_within": 0.2835,
+  "calibration": {
+   "00-09": {
+    "n": 244,
+    "label_mean": 62.7
+   },
+   "10-19": {
+    "n": 61,
+    "label_mean": 63.6
+   },
+   "20-29": {
+    "n": 28,
+    "label_mean": 61.1
+   },
+   "30-39": {
+    "n": 15,
+    "label_mean": 70.4
+   },
+   "40-49": {
+    "n": 7,
+    "label_mean": 40.1
+   },
+   "50-59": {
+    "n": 9,
+    "label_mean": 67.4
+   },
+   "60-69": {
+    "n": 3,
+    "label_mean": 81.2
+   },
+   "70-79": {
+    "n": 9,
+    "label_mean": 74.4
+   },
+   "80-89": {
+    "n": 6,
+    "label_mean": 81.7
+   },
+   "90-99": {
+    "n": 14,
+    "label_mean": 74.0
+   }
+  },
+  "n_boundaries": 396,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 18,
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 8개, 출력 10개)",
+     "seg_text": "Music is often <SEG:45> recorded <SEG:10> using <SEG:10> sophisticated <SEG:30> computers <SEG:20> to <SEG:10> process <SEG:30> and <SEG:3> mix <SEG:30> sounds <SEG:55> together."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 15개, 출력 16개)",
+     "seg_text": "For over a <SEG:10> thousand <SEG:3> years <SEG:88> the <SEG:10> Christian <SEG:10> religion <SEG:3> had <SEG:3> bound <SEG:20> European <SEG:10> states <SEG:60> together <SEG:96> despite <SEG:10> differences <SEG:10> in <SEG:10> language <SEG:30> and <SEG:3> customs. I"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 26개, 출력 28개)",
+     "seg_text": "Mutations can have <SEG:70> a <SEG:10> variety <SEG:25> of <SEG:10> different <SEG:10> effects <SEG:95> depending <SEG:10> on <SEG:10> the <SEG:10> type <SEG:10> of <SEG:10> mutation, <SEG:96> the <SEG:10> significance <SEG:10> of <SEG:10> the <SEG:10> piece <SEG:10> of <SEG:10> genetic <SEG:10> mat"
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 195,
+  "format_pass_rate": 0.907,
+  "format_pass_rate_no_retry": 0.4233,
+  "achv": 0.9146,
+  "util": 0.7152,
+  "util_oracle": 0.7798,
+  "overlap_by_T": {
+   "4": 0.517,
+   "6": 0.417,
+   "12": 0.35
+  },
+  "spearman_pooled": 0.2194,
+  "spearman_within": 0.2624,
+  "calibration": {
+   "00-09": {
+    "n": 1724,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 412,
+    "label_mean": 65.2
+   },
+   "20-29": {
+    "n": 168,
+    "label_mean": 66.2
+   },
+   "30-39": {
+    "n": 143,
+    "label_mean": 67.5
+   },
+   "40-49": {
+    "n": 51,
+    "label_mean": 66.9
+   },
+   "50-59": {
+    "n": 84,
+    "label_mean": 67.0
+   },
+   "60-69": {
+    "n": 25,
+    "label_mean": 67.5
+   },
+   "70-79": {
+    "n": 61,
+    "label_mean": 71.9
+   },
+   "80-89": {
+    "n": 57,
+    "label_mean": 74.1
+   },
+   "90-99": {
+    "n": 188,
+    "label_mean": 74.0
+   }
+  },
+  "n_boundaries": 2913,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 123,
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Besides carrying three <SEG:10> important <SEG:10> scientific <SEG:10> instruments, <SEG:30> the <SEG:10> lunar <SEG:10> probe <SEG:10> also <SEG:10> carried <SEG:10> the <SEG:10> image <SEG:10> of <SEG:10> the <SEG:10> Indian <SEG:10> national <SEG:10> flag, <SEG:85> painted <SEG:10> on <SEG:10> al"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 17개, 출력 19개)",
+     "seg_text": "Besides carrying three <SEG:10> important <SEG:10> scientific <SEG:10> instruments, <SEG:30> the <SEG:10> lunar <SEG:10> probe <SEG:10> also <SEG:10> carried <SEG:10> the <SEG:10> image <SEG:10> of <SEG:10> the <SEG:10> Indian <SEG:10> national <SEG:10> flag, <SEG:85> painted <SEG:10> on <SEG:10> al"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 12개, 출력 14개)",
+     "seg_text": "These agents are <SEG:3> responsible <SEG:80> for <SEG:5> providing <SEG:10> government <SEG:10> and <SEG:5> judicial <SEG:10> services <SEG:80> under <SEG:5> Article <SEG:5> 247 <SEG:5> of <SEG:5> the <SEG:10> Pakistani <SEG:5> Constitution."
+    }
+   ]
+  }
+ },
+ "score_train": 0.9201,
+ "score_dev": 0.9146,
+ "paired_dev": {
+  "mean_delta": -0.0099,
+  "se_delta": 0.0073,
+  "n_pairs": 185
+ },
+ "changelog": [
+  "Re-anchored the low-end calibration: reserve 0–9 for unmistakable, unrescued fragments; shift other low labels upward to reflect that many previously 00–09 items were moderate (addresses 'calibration_fix').",
+  "Introduce a two-step scoring workflow: assign an initial surface-based score, then apply bounded, conjunctive modifiers (penalties) for specific risky surface patterns observed in the critique; this targets systematic over-trust while avoiding brittle one-rule caps.",
+  "Add a conjunctive short-PP-with-trailing-comma test that strongly reduces scores only when a short adjunct (prep + ≤3-token NP) with trailing comma immediately precedes a marker and the right begins a new finite-clause — lowers to Low (floor ≤20) to fix en_us_357 style errors.",
+  "Add a conservative multi-word-name / proper-name split penalty: when the left token is capitalized and likely part of a multiword name (preceded by another capitalized token or common title), and the right begins with a finite verb, apply a moderate penalty (push toward Middle) to correct en_us_337 over-trust.",
+  "Add a targeted title+name apposition test: when the right is a single capitalized token and the left is a common-noun title or determiner+common-noun, require nearby punctuation or appositive signal before applying a moderate lowering to Middle (addresses en_us_1105) — conjunctive check avoids false positives.",
+  "Add a restricting-adverb sequence rule: when the right begins with 'only' or 'just' (case-insensitive) immediately followed by a preposition or numeral, apply a strong penalty (floor ≤10) because such tails almost always continue/limit the left (addresses en_us_1575).",
+  "Updated Decision Procedure: explicitly instruct initial assignment + ordered modifier application with caps/floors and integer rounding, to make scoring deterministic and consistent across sentences.",
+  "Reworked Examples: replaced/added examples that demonstrate the new modifiers (short PP comma, multiword-name split, restricting adverb) while keeping representative anchors for other key behaviors."
+ ],
+ "prompt_len": 13374,
+ "usage": {
+  "calls": 778,
+  "prompt_tokens": 2599470,
+  "completion_tokens": 4282441,
+  "cached_tokens": 1879040,
+  "truncated": 0,
+  "cost": 8.791966,
+  "by_purpose": {
+   "segment_retry": {
+    "calls": 583,
+    "prompt_tokens": 1874438,
+    "completion_tokens": 2129285,
+    "reasoning_tokens": 2059776,
+    "cached_tokens": 1455104,
+    "cost": 4.399781
+   },
+   "segment": {
+    "calls": 183,
+    "prompt_tokens": 650173,
+    "completion_tokens": 2070432,
+    "reasoning_tokens": 1946240,
+    "cached_tokens": 412288,
+    "cost": 4.210642
+   },
+   "prompt_engineer": {
+    "calls": 6,
+    "prompt_tokens": 30833,
+    "completion_tokens": 36449,
+    "reasoning_tokens": 16128,
+    "cached_tokens": 10112,
+    "cost": 0.078331
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 4791,
+    "completion_tokens": 28776,
+    "reasoning_tokens": 20864,
+    "cached_tokens": 1536,
+    "cost": 0.058404
+   },
+   "critic": {
+    "calls": 2,
+    "prompt_tokens": 38261,
+    "completion_tokens": 15849,
+    "reasoning_tokens": 13312,
+    "cached_tokens": 0,
+    "cost": 0.041263
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 1650,
+    "reasoning_tokens": 1280,
+    "cached_tokens": 0,
+    "cost": 0.003544
+   }
+  }
+ }
+}

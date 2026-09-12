@@ -1,0 +1,117 @@
+{
+ "cases": [
+  {
+   "id": "en_us_337",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker follows a proper-name token (a noun) and the token after the marker is a finite verb (cut between subject NP and predicate)",
+   "blamed_rule": "Right begins with a finite verb or a new subject head (not a bound subordinator or preludial preposition), allowing the right to be translated independently.",
+   "proposed_rule": "If the token immediately after the marker is a finite verb but the token immediately before the marker is a noun/proper-name (i.e., the cut falls between a subject NP and its verb), do NOT assign Top band; instead cap the score to the Middle band (50–70) because the left lacks a predicate and the translator is committed until the verb arrives.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 13,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately follows a token that ends with a comma and where that pre-marker token is an adverbial/prepositional phrase tail (e.g., 'right,' 'left,' 'to finish,')",
+   "blamed_rule": "Typical surface signals: left ends with a main verb + object/complements, or with a closing punctuation token attached to the previous word (e.g., \"2019,\").",
+   "proposed_rule": "Do not treat a trailing comma/semicolon alone as justification for Top band. If the token immediately before the marker ends with ',' or ';' and that bare token (without punctuation) is NOT a finite verb form (it is an adverbial, prepositional phrase tail, or noun token like 'right', 'left', 'to finish'), reduce the maximum to the Middle band (40–60). Only grant 85+ when the immediate pre-marker token is itself a finite verb or a clearly complete clause-final token.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 17,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker follows a short clause fragment ending with a comma (adverbial/prepositional tail) rather than a clause with finite predicate",
+   "blamed_rule": "Typical surface signals: left ends with a main verb + object/complements, or with a closing punctuation token attached to the previous word (e.g., \"2019,\").",
+   "proposed_rule": "Sharpen the punctuation rule: treat trailing punctuation as clause-closing only if the immediate pre-marker token is a finite verb or a clear clause-final punctuation following a parenthetic; otherwise cap score to Middle band (40–60).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1416",
+   "pos": 28,
+   "error": "over-trust",
+   "why": "fragment_right | mixed",
+   "surface_condition": "token immediately before marker is a past-participial form (ends with -ed or looks like a participle), with the right starting a copula ('are') — cut splits a dependent/reduced clause",
+   "blamed_rule": "Left ends in 'that', 'which', 'who', or a subordinating signal (\"while\", \"when\", \"because\", \"although\", \"if\") — these typically introduce dependent clauses and indicate the head or complement is still to come.",
+   "proposed_rule": "Add a surface-form check for participial tails: if the immediate token before the marker is a past-participle-looking token (surface ends with 'ed' or is an irregular participle form) or the immediate pre-marker token is a subordinating cue not already listed (e.g. 'whether'), then lower from Top to Middle/Low (20–50) because the left is likely a reduced dependent modifier that must be resolved by later words.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1105",
+   "pos": 9,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "marker occurs inside an object/appositive boundary where the token after the marker is a capitalized proper name (a title-object followed immediately by a name with comma)",
+   "blamed_rule": "95–100: left is an independent clause with its predicate and core object/complements complete (subject + finite verb + core arguments), and the right begins a new independent clause or a self-standing phrase that does not attach to or modify the left.",
+   "proposed_rule": "Do not award Top band when the token immediately after the marker is a capitalized proper name (starts with uppercase) and the token immediately before the marker is a common-noun title or noun that commonly takes apposition/detached name (e.g., 'Pharaoh', 'president', 'city', 'group'). In that case cap to Middle band (40–60) because the cut likely splits an object/apposition.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_548",
+   "pos": 22,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker follows a token that ends with a comma and the token after the marker is a short noun phrase start (e.g., 'one' / numeral) that continues the previous phrase",
+   "blamed_rule": "Typical surface signals: left ends with a main verb + object/complements, or with a closing punctuation token attached to the previous word (e.g., \"2019,\").",
+   "proposed_rule": "If the immediate pre-marker token ends with ',' or ';' and the immediate post-marker token is a small noun-head (numeral or determiner-less noun like 'one', 'many'), lower to Middle band (40–60) because the right is likely a continuation/apposition of the left rather than an independent clause.",
+   "direction": "lower"
+  }
+ ],
+ "calibration_fix": "Re-anchor the punctuation-as-completion cue: don't treat a trailing comma as a Top-band signal by default. Move the example that rewards \"2019,\" from Top (95–100) into the Middle range (40–70) unless the pre-marker token is itself a finite verb.",
+ "summary": "The scorer is systematically over-trusting cuts that look clause-final only because of surface punctuation or because the right begins with a finite verb or proper name. In practice commas and leading verbs often mark adjuncts, appositives, or subject–predicate splits rather than independent clause boundaries. Sharpen the punctuation and immediate-token checks (exclude commas unless the immediate pre-marker token is a finite verb; detect participial tails and proper-name apposition) and lower such positions into the Middle/Lower bands.",
+ "metrics": {
+  "achv": 0.9263,
+  "calibration": {
+   "00-09": {
+    "n": 269,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 11,
+    "label_mean": 67.4
+   },
+   "20-29": {
+    "n": 24,
+    "label_mean": 64.4
+   },
+   "30-39": {
+    "n": 15,
+    "label_mean": 65.8
+   },
+   "40-49": {
+    "n": 8,
+    "label_mean": 60.2
+   },
+   "50-59": {
+    "n": 21,
+    "label_mean": 65.6
+   },
+   "60-69": {
+    "n": 5,
+    "label_mean": 77.1
+   },
+   "70-79": {
+    "n": 11,
+    "label_mean": 72.0
+   },
+   "80-89": {
+    "n": 13,
+    "label_mean": 74.2
+   },
+   "90-99": {
+    "n": 23,
+    "label_mean": 63.8
+   }
+  },
+  "spearman_within": 0.3452,
+  "overlap_by_T": {
+   "4": 0.552,
+   "6": 0.535,
+   "12": 0.469
+  }
+ }
+}

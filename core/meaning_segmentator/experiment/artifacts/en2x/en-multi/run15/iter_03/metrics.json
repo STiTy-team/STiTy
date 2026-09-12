@@ -1,0 +1,248 @@
+{
+ "version": 3,
+ "adopted": false,
+ "train": {
+  "n": 30,
+  "n_scored": 29,
+  "format_pass_rate": 0.9667,
+  "format_pass_rate_no_retry": 0.6667,
+  "achv": 0.9296,
+  "util": 0.7245,
+  "util_oracle": 0.7761,
+  "overlap_by_T": {
+   "4": 0.557,
+   "6": 0.533,
+   "12": 0.444
+  },
+  "spearman_pooled": 0.2646,
+  "spearman_within": 0.3527,
+  "calibration": {
+   "00-09": {
+    "n": 241,
+    "label_mean": 60.9
+   },
+   "10-19": {
+    "n": 36,
+    "label_mean": 64.1
+   },
+   "20-29": {
+    "n": 95,
+    "label_mean": 67.5
+   },
+   "30-39": {
+    "n": 13,
+    "label_mean": 69.9
+   },
+   "40-49": {
+    "n": 12,
+    "label_mean": 61.2
+   },
+   "50-59": {
+    "n": 18,
+    "label_mean": 61.4
+   },
+   "60-69": {
+    "n": 3,
+    "label_mean": 75.0
+   },
+   "70-79": {
+    "n": 10,
+    "label_mean": 74.7
+   },
+   "80-89": {
+    "n": 2,
+    "label_mean": 81.2
+   },
+   "90-99": {
+    "n": 23,
+    "label_mean": 64.6
+   }
+  },
+  "n_boundaries": 453,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 10
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 14개, 출력 15개)",
+     "seg_text": "While visiting the <SEG:5> monasteries, <SEG:90> women <SEG:5> are <SEG:5> required <SEG:25> to <SEG:5> wear <SEG:10> skirts <SEG:25> covering <SEG:5> the <SEG:5> knees <SEG:22> and <SEG:5> have <SEG:10> their <SEG:5> shoulders <SEG:10> covered, too."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 29개, 출력 31개)",
+     "seg_text": "Stardust will set <SEG:10> a <SEG:5> new <SEG:5> all-time <SEG:5> record <SEG:25> for <SEG:5> being <SEG:5> the <SEG:5> fastest <SEG:5> spacecraft <SEG:25> to <SEG:5> return <SEG:20> to <SEG:5> Earth, <SEG:82> breaking <SEG:5> the <SEG:5> previous <SEG:5> record <SEG:25> set <SEG:5> in <SEG:5> May <"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 15개, 출력 16개)",
+     "seg_text": "For over a <SEG:5> thousand <SEG:5> years <SEG:90> the <SEG:5> Christian <SEG:5> religion <SEG:10> had <SEG:5> bound <SEG:10> European <SEG:5> states <SEG:30> together <SEG:25> despite <SEG:5> differences <SEG:25> in <SEG:5> language <SEG:30> and <SEG:5> customs. I"
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 189,
+  "format_pass_rate": 0.8791,
+  "format_pass_rate_no_retry": 0.4,
+  "achv": 0.9179,
+  "util": 0.7185,
+  "util_oracle": 0.7806,
+  "overlap_by_T": {
+   "4": 0.537,
+   "6": 0.434,
+   "12": 0.332
+  },
+  "spearman_pooled": 0.2456,
+  "spearman_within": 0.2945,
+  "calibration": {
+   "00-09": {
+    "n": 1289,
+    "label_mean": 62.2
+   },
+   "10-19": {
+    "n": 448,
+    "label_mean": 63.7
+   },
+   "20-29": {
+    "n": 577,
+    "label_mean": 67.3
+   },
+   "30-39": {
+    "n": 110,
+    "label_mean": 68.7
+   },
+   "40-49": {
+    "n": 32,
+    "label_mean": 71.0
+   },
+   "50-59": {
+    "n": 89,
+    "label_mean": 67.7
+   },
+   "60-69": {
+    "n": 27,
+    "label_mean": 76.7
+   },
+   "70-79": {
+    "n": 55,
+    "label_mean": 70.5
+   },
+   "80-89": {
+    "n": 31,
+    "label_mean": 74.8
+   },
+   "90-99": {
+    "n": 157,
+    "label_mean": 74.6
+   }
+  },
+  "n_boundaries": 2815,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 129,
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 11개, 출력 13개)",
+     "seg_text": "Some people believe <SEG:45> that <SEG:5> experiencing <SEG:5> many <SEG:5> artificially <SEG:5> induced <SEG:25> lucid <SEG:5> dreams <SEG:25> often <SEG:15> enough <SEG:20> can <SEG:5> be <SEG:25> very <SEG:5> exhausting."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 17개, 출력 19개)",
+     "seg_text": "Middle distance running <SEG:5> is <SEG:3> a <SEG:2> relatively <SEG:3> inexpensive <SEG:20> sport; <SEG:95> however, <SEG:40> there <SEG:2> are <SEG:5> many <SEG:5> misconceptions <SEG:25> regarding <SEG:5> the <SEG:2> few <SEG:5> pieces <SEG:5> of <SEG:3> equipment <SEG:18> required <SEG:3> to <SE"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 17개, 출력 19개)",
+     "seg_text": "Perry specifically said, <SEG:95> \"There <SEG:2> are <SEG:5> few <SEG:5> places <SEG:35> in <SEG:5> the <SEG:3> world <SEG:35> better <SEG:5> equipped <SEG:5> to <SEG:3> meet <SEG:5> the <SEG:3> challenge <SEG:40> that <SEG:3> is <SEG:3> posed <SEG:25> in <SEG:3> this <SEG:2> case.\""
+    }
+   ]
+  }
+ },
+ "score_train": 0.9296,
+ "score_dev": 0.9179,
+ "paired_dev": {
+  "mean_delta": -0.0067,
+  "se_delta": 0.0046,
+  "n_pairs": 182
+ },
+ "changelog": [
+  "Re-anchored low-end calibration: reserve 0–9 for only unmistakable fragments and prefer 20–29 for weak nonstandalone tails (trace: calibration_fix).",
+  "Tightened Top-band awarding: require both an independently renderable right and that nothing later can plausibly reassign or negate the left; withhold 85+ when surface cues mimic clause boundaries (trace: summary and cases).",
+  "Added concise guidance listing the four risky surface patterns observed in the critique (short trailing adjuncts ending in directional noun; immediate subordinators on the right; title + single capitalized token apposition; right-side restricting adverb immediately followed by prep/number). In presence of any, prefer Middle/Low instead of Top (trace: cases en_us_357, en_us_1105, en_us_1575).",
+  "Made scoring language more compact and deterministic: prefer conservative labels when in doubt between extreme-low and low (trace: calibration table), and round to integers.",
+  "Re-anchored example low scores upward to reflect the raised 20–29 anchor (keeps same examples but updates low-band numbers)."
+ ],
+ "prompt_len": 10345,
+ "usage": {
+  "calls": 1047,
+  "prompt_tokens": 3422669,
+  "completion_tokens": 5665381,
+  "cached_tokens": 2455040,
+  "truncated": 1,
+  "cost": 11.634045,
+  "by_purpose": {
+   "segment_retry": {
+    "calls": 786,
+    "prompt_tokens": 2446915,
+    "completion_tokens": 2814151,
+    "reasoning_tokens": 2720576,
+    "cached_tokens": 1902208,
+    "cost": 5.812034
+   },
+   "segment": {
+    "calls": 244,
+    "prompt_tokens": 843636,
+    "completion_tokens": 2729174,
+    "reasoning_tokens": 2563520,
+    "cached_tokens": 524544,
+    "cost": 5.551235
+   },
+   "prompt_engineer": {
+    "calls": 9,
+    "prompt_tokens": 48408,
+    "completion_tokens": 55939,
+    "reasoning_tokens": 25536,
+    "cached_tokens": 10112,
+    "cost": 0.121705
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 58087,
+    "completion_tokens": 27849,
+    "reasoning_tokens": 25312,
+    "cached_tokens": 16640,
+    "cost": 0.066476
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 4791,
+    "completion_tokens": 28776,
+    "reasoning_tokens": 20864,
+    "cached_tokens": 1536,
+    "cost": 0.058404
+   },
+   "critic:brevity_retry": {
+    "calls": 1,
+    "prompt_tokens": 19858,
+    "completion_tokens": 7842,
+    "reasoning_tokens": 7232,
+    "cached_tokens": 0,
+    "cost": 0.020649
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 1650,
+    "reasoning_tokens": 1280,
+    "cached_tokens": 0,
+    "cost": 0.003544
+   }
+  }
+ }
+}

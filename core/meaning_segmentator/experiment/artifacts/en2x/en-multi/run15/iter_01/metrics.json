@@ -1,0 +1,242 @@
+{
+ "version": 1,
+ "adopted": false,
+ "train": {
+  "n": 30,
+  "n_scored": 28,
+  "format_pass_rate": 0.9333,
+  "format_pass_rate_no_retry": 0.4667,
+  "achv": 0.8905,
+  "util": 0.6944,
+  "util_oracle": 0.7742,
+  "overlap_by_T": {
+   "4": 0.524,
+   "6": 0.387,
+   "12": 0.324
+  },
+  "spearman_pooled": 0.1622,
+  "spearman_within": 0.2743,
+  "calibration": {
+   "00-09": {
+    "n": 255,
+    "label_mean": 62.5
+   },
+   "10-19": {
+    "n": 19,
+    "label_mean": 66.0
+   },
+   "20-29": {
+    "n": 28,
+    "label_mean": 64.3
+   },
+   "30-39": {
+    "n": 14,
+    "label_mean": 63.1
+   },
+   "40-49": {
+    "n": 11,
+    "label_mean": 64.7
+   },
+   "50-59": {
+    "n": 51,
+    "label_mean": 64.1
+   },
+   "60-69": {
+    "n": 19,
+    "label_mean": 66.8
+   },
+   "70-79": {
+    "n": 5,
+    "label_mean": 65.1
+   },
+   "80-89": {
+    "n": 1,
+    "label_mean": 75.3
+   },
+   "90-99": {
+    "n": 13,
+    "label_mean": 66.2
+   }
+  },
+  "n_boundaries": 416,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 16,
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 14개, 출력 16개)",
+     "seg_text": "While visiting the <SEG:5> monasteries, <SEG:60> women <SEG:50> are <SEG:3> required <SEG:10> to <SEG:2> wear <SEG:50> skirts <SEG:25> covering <SEG:5> the <SEG:5> knees <SEG:95> and <SEG:2> have <SEG:3> their <SEG:5> shoulders <SEG:20> covered, <SEG:5> too."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 29개, 출력 31개)",
+     "seg_text": "Stardust will set <SEG:50> a <SEG:5> new <SEG:5> all-time <SEG:5> record <SEG:50> for <SEG:2> being <SEG:5> the <SEG:5> fastest <SEG:5> spacecraft <SEG:5> to <SEG:2> return <SEG:20> to <SEG:2> Earth, <SEG:60> breaking <SEG:5> the <SEG:5> previous <SEG:5> record <SEG:20> set <SEG:20> in <SEG:2> May <"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "For over a <SEG:5> thousand <SEG:5> years <SEG:95> the <SEG:5> Christian <SEG:5> religion <SEG:50> had <SEG:3> bound <SEG:30> European <SEG:5> states <SEG:40> together <SEG:95> despite <SEG:2> differences <SEG:30> in <SEG:2> language <SEG:95> and <SEG:2> customs."
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 197,
+  "format_pass_rate": 0.9163,
+  "format_pass_rate_no_retry": 0.507,
+  "achv": 0.9113,
+  "util": 0.7114,
+  "util_oracle": 0.7795,
+  "overlap_by_T": {
+   "4": 0.516,
+   "6": 0.379,
+   "12": 0.299
+  },
+  "spearman_pooled": 0.2401,
+  "spearman_within": 0.2851,
+  "calibration": {
+   "00-09": {
+    "n": 1856,
+    "label_mean": 62.4
+   },
+   "10-19": {
+    "n": 90,
+    "label_mean": 67.3
+   },
+   "20-29": {
+    "n": 145,
+    "label_mean": 64.4
+   },
+   "30-39": {
+    "n": 91,
+    "label_mean": 70.4
+   },
+   "40-49": {
+    "n": 86,
+    "label_mean": 69.6
+   },
+   "50-59": {
+    "n": 420,
+    "label_mean": 67.6
+   },
+   "60-69": {
+    "n": 145,
+    "label_mean": 72.9
+   },
+   "70-79": {
+    "n": 26,
+    "label_mean": 72.0
+   },
+   "80-89": {
+    "n": 22,
+    "label_mean": 71.3
+   },
+   "90-99": {
+    "n": 76,
+    "label_mean": 76.6
+   }
+  },
+  "n_boundaries": 2957,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 104,
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 17개, 출력 19개)",
+     "seg_text": "Perry specifically said, <SEG:100> \"There <SEG:5> are <SEG:3> few <SEG:3> places <SEG:30> in <SEG:2> the <SEG:3> world <SEG:30> better <SEG:3> equipped <SEG:20> to <SEG:3> meet <SEG:3> the <SEG:3> challenge <SEG:30> that <SEG:5> is <SEG:3> posed <SEG:40> in <SEG:2> this <SEG:3> case.\""
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 13개, 출력 14개)",
+     "seg_text": "Accompanied by those <SEG:3> officials, <SEG:60> he <SEG:50> assured <SEG:5> Texas <SEG:5> citizens <SEG:40> that <SEG:5> steps <SEG:50> were <SEG:3> being <SEG:3> taken <SEG:30> to <SEG:3> protect <SEG:3> the public's <SEG:3> safety."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 19개, 출력 21개)",
+     "seg_text": "Architecture is concerned <SEG:20> with <SEG:5> the <SEG:5> design <SEG:50> and <SEG:5> construction <SEG:30> of <SEG:5> buildings. <SEG:100> The <SEG:5> architecture <SEG:20> of <SEG:5> a <SEG:5> place <SEG:60> is <SEG:3> often <SEG:5> a <SEG:5> tourist <SEG:5> attraction <SEG:30> in <SEG:5> its <S"
+    }
+   ]
+  }
+ },
+ "score_train": 0.8905,
+ "score_dev": 0.9113,
+ "paired_dev": {
+  "mean_delta": -0.0123,
+  "se_delta": 0.0072,
+  "n_pairs": 187
+ },
+ "changelog": [
+  "Added explicit cap when a cut falls between a subject NP (proper-name/noun) and a following finite verb: lower Top -> Middle (50–70) to avoid over-trusting subject–predicate splits (addresses en_us_337).",
+  "Re-anchored trailing-comma semantics: a comma/semicolon only supports Top when the immediate pre-marker token itself is a finite verb or a clause-closing token; otherwise treat it as non-closing and cap to Middle (40–60) (addresses en_us_357 and calibration_fix).",
+  "If the immediate pre-marker token looks like a past-participle (surface -ed or a short irregular participle form), lower score into Middle/Low (20–50) because the left is likely a reduced dependent modifier (addresses en_us_1416).",
+  "Detect probable appositive/title splits: when the token after the marker is a capitalized proper name and the token before the marker is a common-noun title (e.g., 'president', 'Pharaoh'), cap to Middle (40–60) rather than Top (addresses en_us_1105).",
+  "If a comma precedes a small noun-head (numeral or determiner-less noun like 'one', 'many') that continues the previous phrase, cap score to Middle (40–60) because the right likely continues/attaches to the left (addresses en_us_548).",
+  "Updated examples to illustrate the revised punctuation, participial, and subject–verb split rules (moved the '2019,' example into Middle range and added a subject+proper-name split example)."
+ ],
+ "prompt_len": 13846,
+ "usage": {
+  "calls": 540,
+  "prompt_tokens": 1764647,
+  "completion_tokens": 2758612,
+  "cached_tokens": 1248896,
+  "truncated": 0,
+  "cost": 5.677384,
+  "by_purpose": {
+   "segment": {
+    "calls": 132,
+    "prompt_tokens": 462168,
+    "completion_tokens": 1409763,
+    "reasoning_tokens": 1320384,
+    "cached_tokens": 287232,
+    "cost": 2.870441
+   },
+   "segment_retry": {
+    "calls": 400,
+    "prompt_tokens": 1262877,
+    "completion_tokens": 1294689,
+    "reasoning_tokens": 1247552,
+    "cached_tokens": 955264,
+    "cost": 2.690163
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 4791,
+    "completion_tokens": 28776,
+    "reasoning_tokens": 20864,
+    "cached_tokens": 1536,
+    "cost": 0.058404
+   },
+   "prompt_engineer": {
+    "calls": 3,
+    "prompt_tokens": 14908,
+    "completion_tokens": 15645,
+    "reasoning_tokens": 5568,
+    "cached_tokens": 4864,
+    "cost": 0.033923
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 18929,
+    "completion_tokens": 8089,
+    "reasoning_tokens": 6592,
+    "cached_tokens": 0,
+    "cost": 0.02091
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 1650,
+    "reasoning_tokens": 1280,
+    "cached_tokens": 0,
+    "cost": 0.003544
+   }
+  }
+ }
+}

@@ -1,0 +1,276 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 88,
+  "format_pass_rate": 0.88,
+  "format_pass_rate_no_retry": 0.4,
+  "achv": 0.8996,
+  "util": 0.7036,
+  "util_oracle": 0.7805,
+  "overlap_by_T": {
+   "4": 0.524,
+   "6": 0.432,
+   "8": 0.345,
+   "12": 0.259
+  },
+  "spearman_pooled": 0.203,
+  "spearman_within": 0.2207,
+  "calibration": {
+   "00-09": {
+    "n": 872,
+    "label_mean": 61.6
+   },
+   "10-19": {
+    "n": 75,
+    "label_mean": 66.3
+   },
+   "20-29": {
+    "n": 72,
+    "label_mean": 61.4
+   },
+   "30-39": {
+    "n": 40,
+    "label_mean": 64.8
+   },
+   "40-49": {
+    "n": 32,
+    "label_mean": 64.6
+   },
+   "50-59": {
+    "n": 70,
+    "label_mean": 68.9
+   },
+   "60-69": {
+    "n": 25,
+    "label_mean": 68.6
+   },
+   "70-79": {
+    "n": 27,
+    "label_mean": 71.3
+   },
+   "80-89": {
+    "n": 26,
+    "label_mean": 76.3
+   },
+   "90-99": {
+    "n": 77,
+    "label_mean": 71.2
+   }
+  },
+  "n_boundaries": 1316,
+  "first_pass_violations": {
+   "counts": {
+    "markers_moved": 60,
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 16개, 출력 18개)",
+     "seg_text": "Towering above the <SEG:5> north <SEG:5> end <SEG:20> of <SEG:0> Machu <SEG:0> Picchu <SEG:90> is <SEG:10> this <SEG:5> steep <SEG:5> mountain, <SEG:96> often <SEG:20> the <SEG:5> backdrop <SEG:10> to <SEG:0> many <SEG:0> photos <SEG:20> of <SEG:0> the <SEG:0> ruins."
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 32개, 출력 34개)",
+     "seg_text": "There are a <SEG:5> lot <SEG:5> of <SEG:0> social <SEG:5> and <SEG:0> political <SEG:5> effects <SEG:85> such <SEG:5> as <SEG:5> the <SEG:0> use <SEG:10> of <SEG:0> metric <SEG:5> system, <SEG:95> a <SEG:0> shift <SEG:50> from <SEG:0> absolutism <SEG:60> to <SEG:0> republicanism, <SEG:85> nationalis"
+    },
+    {
+     "rule": "markers_moved",
+     "detail": "마커 위치가 입력과 다름 (입력 13개, 출력 15개)",
+     "seg_text": "Occasional specialist air <SEG:0> tours <SEG:98> go <SEG:10> inland, <SEG:80> for <SEG:0> mountaineering <SEG:60> or <SEG:0> to <SEG:0> reach <SEG:10> the <SEG:0> Pole, <SEG:0> which <SEG:0> has <SEG:10> a <SEG:0> large <SEG:5> base."
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.617,
+    "n": 88,
+    "by_tgt": {
+     "Chinese": 0.6291,
+     "Japanese": 0.5859,
+     "German": 0.6361
+    }
+   },
+   "6": {
+    "mean": 0.6905,
+    "n": 87,
+    "by_tgt": {
+     "Chinese": 0.6859,
+     "Japanese": 0.6774,
+     "German": 0.7082
+    }
+   },
+   "8": {
+    "mean": 0.7283,
+    "n": 81,
+    "by_tgt": {
+     "Chinese": 0.7028,
+     "Japanese": 0.7401,
+     "German": 0.742
+    }
+   },
+   "12": {
+    "mean": 0.7393,
+    "n": 56,
+    "by_tgt": {
+     "Chinese": 0.7114,
+     "Japanese": 0.7566,
+     "German": 0.7499
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.645,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6274,
+     "Japanese": 0.645,
+     "German": 0.6627
+    }
+   },
+   "6": {
+    "mean": 0.7264,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7016,
+     "Japanese": 0.7355,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7738,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.7439,
+     "Japanese": 0.7935,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8042,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7767,
+     "Japanese": 0.823,
+     "German": 0.8129
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 1124,
+  "prompt_tokens": 3655471,
+  "completion_tokens": 6014978,
+  "cached_tokens": 2635776,
+  "truncated": 1,
+  "cost": 12.350774,
+  "by_purpose": {
+   "segment_retry": {
+    "calls": 846,
+    "prompt_tokens": 2623830,
+    "completion_tokens": 2994109,
+    "reasoning_tokens": 2893568,
+    "cached_tokens": 2043008,
+    "cost": 6.184499
+   },
+   "segment": {
+    "calls": 261,
+    "prompt_tokens": 899523,
+    "completion_tokens": 2898813,
+    "reasoning_tokens": 2721856,
+    "cached_tokens": 564480,
+    "cost": 5.895499
+   },
+   "prompt_engineer": {
+    "calls": 9,
+    "prompt_tokens": 48408,
+    "completion_tokens": 55939,
+    "reasoning_tokens": 25536,
+    "cached_tokens": 10112,
+    "cost": 0.121705
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 58087,
+    "completion_tokens": 27849,
+    "reasoning_tokens": 25312,
+    "cached_tokens": 16640,
+    "cost": 0.066476
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 4791,
+    "completion_tokens": 28776,
+    "reasoning_tokens": 20864,
+    "cached_tokens": 1536,
+    "cost": 0.058404
+   },
+   "critic:brevity_retry": {
+    "calls": 1,
+    "prompt_tokens": 19858,
+    "completion_tokens": 7842,
+    "reasoning_tokens": 7232,
+    "cached_tokens": 0,
+    "cost": 0.020649
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 1650,
+    "reasoning_tokens": 1280,
+    "cached_tokens": 0,
+    "cost": 0.003544
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.9263,
+   "score_dev": 0.9254,
+   "paired_dev": null,
+   "prompt_len": 11397
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.8905,
+   "score_dev": 0.9113,
+   "paired_dev": {
+    "mean_delta": -0.0123,
+    "se_delta": 0.0072,
+    "n_pairs": 187
+   },
+   "prompt_len": 13846
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.9201,
+   "score_dev": 0.9146,
+   "paired_dev": {
+    "mean_delta": -0.0099,
+    "se_delta": 0.0073,
+    "n_pairs": 185
+   },
+   "prompt_len": 13374
+  },
+  {
+   "version": 3,
+   "adopted": false,
+   "score_train": 0.9296,
+   "score_dev": 0.9179,
+   "paired_dev": {
+    "mean_delta": -0.0067,
+    "se_delta": 0.0046,
+    "n_pairs": 182
+   },
+   "prompt_len": 10345
+  }
+ ],
+ "best_version": 0
+}
