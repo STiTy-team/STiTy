@@ -208,6 +208,25 @@ def _tok_matches(tok: str, wanted: list[str]) -> bool:
     return False
 
 
+def _rule_fires_in(sid: str, rows_by_id: dict, units_by_id: dict,
+                   left: list[str], right: list[str]) -> bool:
+    """그 문장의 **잘못 남긴 경계** 중에 이 조건이 걸리는 자리가 있나.
+
+    `supported_by` 검증용. 규칙이 그 사례를 근거로 나왔다면 그 사례에서 모델이 잘못
+    남긴 경계 하나쯤은 조건에 걸려야 한다.
+    """
+    row, u = rows_by_id.get(sid), units_by_id.get(sid)
+    if not row or not u or not row.get("by_T"):
+        return False
+    bad: set[int] = set()
+    for bt in row["by_T"].values():
+        bad |= set(bt["kept_model"]) - set(bt["kept_label"])
+    return any(0 < j < len(u)
+               and (not left or _tok_matches(u[j - 1], left))
+               and (not right or _tok_matches(u[j], right))
+               for j in bad)
+
+
 def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
                    min_matches: int, min_t: float,
                    min_support: int = 2) -> tuple[dict, list[dict]]:
@@ -227,6 +246,7 @@ def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
     `min_t` 표준오차 이상 벌어지며 **부호가 `direction` 과 맞을 것**. 떨어진 규칙은
     프롬프트에 안 들어가지만 판정 내역은 산출물에 남는다.
     """
+    rows_by_id = {r["id"]: r for r in rows}
     pool: list[tuple[str, str, float]] = []      # (앞 토큰, 뒤 토큰, 라벨)
     for r in rows:
         u = units_by_id.get(r["id"])
@@ -245,16 +265,24 @@ def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
         sup = c.get("supported_by") or ([c["id"]] if c.get("id") else [])
         v = {"supported_by": sup, "direction": c.get("direction"),
              "surface_condition": (c.get("surface_condition") or "")[:120]}
-        # **사례 하나짜리는 라벨을 재기 전에 떨어진다.** 좁은 규칙의 원인은 Critic 이
-        # 게을러서가 아니라 옛 계약이 문장 하나(`id`+`pos`)에 진단을 묶었기 때문이다 —
-        # run19 실측으로 13개 규칙 중 9개가 1400 경계 중 0~2자리에만 걸렸고, 그 9개는
-        # 전부 한 문장에서 나온 조건이었다. 이제 규칙 단위로 받고 뒷받침 사례를 대게 한다.
-        if len(sup) < min_support:
-            v.update(verdict="drop", reason=f"뒷받침 사례 {len(sup)} < {min_support}")
-            verdicts.append(v)
-            continue
         if not left and not right:
             v.update(verdict="drop", reason="check 없음")
+            verdicts.append(v)
+            continue
+        # **`supported_by` 를 세지 말고 검증한다.** Critic 이 스스로 적은 값이라 부풀려
+        # 진다 — run20 실측으로 규칙 11개 중 **4개는 인용한 사례 어디에도 그 패턴이
+        # 없었다** (2건 주장 -> 0건 실제, 세 번 더). 개수만 세면 그 넷이 전부 통과하고,
+        # 관문 하나가 자기 보고를 그대로 믿는 상태가 된다 (지금까지는 뒤의 라벨 관문이
+        # 결과적으로 막아 줬을 뿐이다).
+        #
+        # 인용한 사례에 **`check` 가 실제로 걸리는 잘못된 경계가 있는지** 본다. 자료는
+        # 이미 있다 (사례로 보여준 행 + 그 행의 kept_model - kept_label). 비용 0.
+        verified = [sid for sid in sup if _rule_fires_in(sid, rows_by_id, units_by_id,
+                                                        left, right)]
+        v["verified_support"] = len(verified)
+        if len(verified) < min_support:
+            v.update(verdict="drop",
+                     reason=f"검증된 뒷받침 {len(verified)} < {min_support} (주장 {len(sup)})")
             verdicts.append(v)
             continue
         hit = [y for (lt, rt, y) in pool

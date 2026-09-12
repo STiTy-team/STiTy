@@ -293,6 +293,11 @@ pattern. Each entry names the cases that support it in "supported_by", and **an 
 by fewer than 2 cases is rejected before it is read**. Fewer, better-supported rules beat many
 narrow ones. It is correct to return 3 rules from 24 cases.
 
+"supported_by" is CHECKED, not taken on trust: for each case id you list, the wrongly-kept
+boundaries of that case must actually match your "check" tokens. Ids that do not match are not
+counted, so padding the list makes the rule fail rather than pass. List only the cases the rule
+really explains, and make "check" cover the surface forms those cases actually contain.
+
 Return ONLY JSON:
 {
   "rules": [
