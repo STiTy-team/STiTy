@@ -1,0 +1,270 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.95,
+  "achv": 0.8744,
+  "util": 0.684,
+  "util_oracle": 0.7803,
+  "overlap": 0.3556,
+  "overlap_by_T": {
+   "4": 0.466,
+   "6": 0.367,
+   "8": 0.297,
+   "12": 0.284
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.169,
+  "spearman_within": 0.198,
+  "calibration": {
+   "00-09": {
+    "n": 111,
+    "label_mean": 63.9
+   },
+   "10-19": {
+    "n": 264,
+    "label_mean": 60.6
+   },
+   "20-29": {
+    "n": 173,
+    "label_mean": 62.0
+   },
+   "30-39": {
+    "n": 126,
+    "label_mean": 60.3
+   },
+   "40-49": {
+    "n": 114,
+    "label_mean": 64.7
+   },
+   "50-59": {
+    "n": 121,
+    "label_mean": 62.0
+   },
+   "60-69": {
+    "n": 131,
+    "label_mean": 61.4
+   },
+   "70-79": {
+    "n": 132,
+    "label_mean": 63.2
+   },
+   "80-89": {
+    "n": 172,
+    "label_mean": 68.4
+   },
+   "90-99": {
+    "n": 200,
+    "label_mean": 68.7
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The ancient city <SEG:86> in <SEG:68> the <SEG:64> Judean <SEG:78> Hills <SEG:100> has <SEG:84> a <SEG:60> fascinating <SEG:74> history <SEG:92> spanning <SEG:56> thousands years."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Voyagers planning sex <SEG:70> reassignment <SEG:78> surgery <SEG:92> abroad <SEG:100> must <SEG:30> ensure <SEG:46> they're <SEG:38> carrying <SEG:62> valid <SEG:54> documents <SEG:86> for <SEG:20> ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "For most countries, <SEG:100> you <SEG:90> will <SEG:85> need <SEG:80> an <SEG:34> offer <SEG:58> letter <SEG:95> from <SEG:32> the <SEG:30> institution <SEG:92> you <SEG:70> wish <SEG:66> to <SEG:28> study <SEG:88> at, <SEG:24> and <SEG:76> also <SEG:72> evidence <SEG:84> of <SEG:26> funds <SEG:82>"
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.6198,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6129,
+     "Japanese": 0.6192,
+     "German": 0.6271
+    }
+   },
+   "6": {
+    "mean": 0.6626,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.6457,
+     "Japanese": 0.6742,
+     "German": 0.6678
+    }
+   },
+   "8": {
+    "mean": 0.6849,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6718,
+     "Japanese": 0.6879,
+     "German": 0.6951
+    }
+   },
+   "12": {
+    "mean": 0.718,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7111,
+     "Japanese": 0.7186,
+     "German": 0.7243
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6456,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6303,
+     "Japanese": 0.6446,
+     "German": 0.662
+    }
+   },
+   "6": {
+    "mean": 0.7265,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7016,
+     "Japanese": 0.7358,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7935,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8059,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8283,
+     "German": 0.813
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 400,
+  "prompt_tokens": 1449393,
+  "completion_tokens": 3530536,
+  "cached_tokens": 1060864,
+  "truncated": 0,
+  "cost": 7.184726,
+  "by_purpose": {
+   "segment": {
+    "calls": 295,
+    "prompt_tokens": 1049715,
+    "completion_tokens": 3124277,
+    "reasoning_tokens": 2932032,
+    "cached_tokens": 759168,
+    "cost": 6.34017
+   },
+   "segment_retry": {
+    "calls": 89,
+    "prompt_tokens": 286176,
+    "completion_tokens": 300515,
+    "reasoning_tokens": 289856,
+    "cached_tokens": 237184,
+    "cost": 0.619208
+   },
+   "prompt_engineer": {
+    "calls": 9,
+    "prompt_tokens": 54081,
+    "completion_tokens": 56695,
+    "reasoning_tokens": 27840,
+    "cached_tokens": 33792,
+    "cost": 0.119307
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 52648,
+    "completion_tokens": 23491,
+    "reasoning_tokens": 19328,
+    "cached_tokens": 27136,
+    "cost": 0.054038
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 5799,
+    "completion_tokens": 23317,
+    "reasoning_tokens": 14912,
+    "cached_tokens": 3584,
+    "cost": 0.047277
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 2241,
+    "reasoning_tokens": 1792,
+    "cached_tokens": 0,
+    "cost": 0.004725
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.4547,
+   "score_dev": 0.4741,
+   "paired_dev": null,
+   "prompt_len": 12533
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.4569,
+   "score_dev": 0.3941,
+   "paired_dev": {
+    "mean_delta": -0.08,
+    "se_delta": 0.0198,
+    "n_pairs": 215
+   },
+   "prompt_len": 12981
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.4749,
+   "score_dev": 0.443,
+   "paired_dev": {
+    "mean_delta": -0.0312,
+    "se_delta": 0.0183,
+    "n_pairs": 215
+   },
+   "prompt_len": 14277
+  },
+  {
+   "version": 3,
+   "adopted": false,
+   "score_train": 0.4176,
+   "score_dev": 0.3696,
+   "paired_dev": {
+    "mean_delta": -0.1045,
+    "se_delta": 0.0198,
+    "n_pairs": 215
+   },
+   "prompt_len": 10487
+  }
+ ],
+ "best_version": 0
+}

@@ -1,0 +1,267 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.98,
+  "achv": 0.8774,
+  "util": 0.6861,
+  "util_oracle": 0.7803,
+  "overlap": 0.3537,
+  "overlap_by_T": {
+   "4": 0.453,
+   "6": 0.368,
+   "8": 0.297,
+   "12": 0.209
+  },
+  "tie_rate": 0.0039,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1894,
+  "spearman_within": 0.2125,
+  "calibration": {
+   "00-09": {
+    "n": 147,
+    "label_mean": 62.3
+   },
+   "10-19": {
+    "n": 190,
+    "label_mean": 59.8
+   },
+   "20-29": {
+    "n": 158,
+    "label_mean": 58.8
+   },
+   "30-39": {
+    "n": 143,
+    "label_mean": 63.2
+   },
+   "40-49": {
+    "n": 134,
+    "label_mean": 62.2
+   },
+   "50-59": {
+    "n": 136,
+    "label_mean": 62.9
+   },
+   "60-69": {
+    "n": 148,
+    "label_mean": 65.8
+   },
+   "70-79": {
+    "n": 146,
+    "label_mean": 66.3
+   },
+   "80-89": {
+    "n": 152,
+    "label_mean": 65.4
+   },
+   "90-99": {
+    "n": 190,
+    "label_mean": 69.0
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "There were protests <SEG:90> worldwide, <SEG:75> several <SEG:45> criminal <SEG:52> prosecutions, <SEG:82> and <SEG:38> the <SEG:18> leaders <SEG:60> of <SEG:32> the <SEG:10> governments <SEG:68> of <SEG:26> Iceland <SEG:100> and <SEG:??>"
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 14개, 출력 13개, 빠진 자리 [16])",
+     "seg_text": "There were protests <SEG:90> worldwide, <SEG:75> several <SEG:45> criminal <SEG:52> prosecutions, <SEG:82> and <SEG:38> the <SEG:18> leaders <SEG:60> of <SEG:32> the <SEG:10> governments <SEG:68> of <SEG:26> Iceland <SEG:100> and <SEG:??>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The 100-metre ship <SEG:88> was <SEG:44> en <SEG:38> route <SEG:68> to <SEG:36> pick <SEG:32> up <SEG:28> its <SEG:24> usual <SEG:20> fertiliser <SEG:54> cargo <SEG:62> and <SEG:50> initially <SEG:82> officials <SEG:98> feared <SEG:58> the <SEG:16> vessel <SEG:74> could <SEG:12> spill <SEG:??>"
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.6075,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5942,
+     "Japanese": 0.5952,
+     "German": 0.6332
+    }
+   },
+   "6": {
+    "mean": 0.6498,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.632,
+     "Japanese": 0.6423,
+     "German": 0.6751
+    }
+   },
+   "8": {
+    "mean": 0.6851,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6509,
+     "Japanese": 0.7022,
+     "German": 0.7023
+    }
+   },
+   "12": {
+    "mean": 0.7098,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.6838,
+     "Japanese": 0.7285,
+     "German": 0.7171
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6459,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6303,
+     "Japanese": 0.6447,
+     "German": 0.6626
+    }
+   },
+   "6": {
+    "mean": 0.7265,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7016,
+     "Japanese": 0.7356,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7937,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8041,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8227,
+     "German": 0.813
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 255,
+  "prompt_tokens": 1203176,
+  "completion_tokens": 2668348,
+  "cached_tokens": 825856,
+  "truncated": 0,
+  "cost": 5.451672,
+  "by_purpose": {
+   "segment": {
+    "calls": 225,
+    "prompt_tokens": 898132,
+    "completion_tokens": 2495432,
+    "reasoning_tokens": 2353152,
+    "cached_tokens": 670848,
+    "cost": 5.064456
+   },
+   "prompt_engineer": {
+    "calls": 15,
+    "prompt_tokens": 82229,
+    "completion_tokens": 92418,
+    "reasoning_tokens": 41600,
+    "cached_tokens": 43904,
+    "cost": 0.195515
+   },
+   "critic": {
+    "calls": 4,
+    "prompt_tokens": 179898,
+    "completion_tokens": 44443,
+    "reasoning_tokens": 40256,
+    "cached_tokens": 83200,
+    "cost": 0.11514
+   },
+   "segment_retry": {
+    "calls": 10,
+    "prompt_tokens": 36753,
+    "completion_tokens": 32971,
+    "reasoning_tokens": 31872,
+    "cached_tokens": 27904,
+    "cost": 0.068852
+   },
+   "critic_regression": {
+    "calls": 1,
+    "prompt_tokens": 6164,
+    "completion_tokens": 3084,
+    "reasoning_tokens": 2496,
+    "cached_tokens": 0,
+    "cost": 0.007709
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.3975,
+   "score_dev": 0.4249,
+   "paired_dev": {
+    "mean_delta": -0.0027,
+    "se_delta": 0.0179,
+    "n_pairs": 215
+   },
+   "prompt_len": 13698
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 3,
+   "adopted": true,
+   "score_train": 0.4099,
+   "score_dev": 0.4644,
+   "paired_dev": {
+    "mean_delta": 0.0368,
+    "se_delta": 0.0179,
+    "n_pairs": 215
+   },
+   "prompt_len": 16005
+  },
+  {
+   "version": 4,
+   "adopted": false,
+   "score_train": 0.4099,
+   "score_dev": 0.4644,
+   "paired_dev": null,
+   "prompt_len": 16005
+  }
+ ],
+ "best_version": 3
+}

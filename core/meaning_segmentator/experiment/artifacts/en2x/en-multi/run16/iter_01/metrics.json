@@ -1,0 +1,250 @@
+{
+ "version": 1,
+ "adopted": false,
+ "train": {
+  "n": 30,
+  "n_scored": 30,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9333,
+  "achv": 0.9271,
+  "util": 0.7196,
+  "util_oracle": 0.7748,
+  "overlap": 0.4569,
+  "overlap_by_T": {
+   "4": 0.468,
+   "6": 0.453,
+   "12": 0.447
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2032,
+  "spearman_within": 0.2473,
+  "calibration": {
+   "00-09": {
+    "n": 33,
+    "label_mean": 59.8
+   },
+   "10-19": {
+    "n": 46,
+    "label_mean": 62.3
+   },
+   "20-29": {
+    "n": 63,
+    "label_mean": 62.4
+   },
+   "30-39": {
+    "n": 56,
+    "label_mean": 62.0
+   },
+   "40-49": {
+    "n": 45,
+    "label_mean": 60.1
+   },
+   "50-59": {
+    "n": 48,
+    "label_mean": 61.0
+   },
+   "60-69": {
+    "n": 40,
+    "label_mean": 60.8
+   },
+   "70-79": {
+    "n": 54,
+    "label_mean": 65.3
+   },
+   "80-89": {
+    "n": 54,
+    "label_mean": 67.1
+   },
+   "90-99": {
+    "n": 30,
+    "label_mean": 75.7
+   }
+  },
+  "n_boundaries": 469,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 2,
+    "unscored_marker": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Stars give off <SEG:98> light <SEG:92> and <SEG:76> heat <SEG:88> because <SEG:18> of <SEG:26> the <SEG:33> energy <SEG:80> made <SEG:47> when <SEG:9> hydrogen <SEG:35> atoms <SEG:56> are <SEG:22> merged <SEG:72> (or <SEG:42> fused) <SEG:70> together <SEG:5> to <SEG:?> form heavier elements."
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 18개, 출력 17개, 빠진 자리 [20])",
+     "seg_text": "Stars give off <SEG:98> light <SEG:92> and <SEG:76> heat <SEG:88> because <SEG:18> of <SEG:26> the <SEG:33> energy <SEG:80> made <SEG:47> when <SEG:9> hydrogen <SEG:35> atoms <SEG:56> are <SEG:22> merged <SEG:72> (or <SEG:42> fused) <SEG:70> together <SEG:5> to <SEG:?> form heavier elements."
+    },
+    {
+     "rule": "unscored_marker",
+     "detail": "점수를 안 채운 마커가 남아 있음",
+     "seg_text": "Stars give off <SEG:98> light <SEG:92> and <SEG:76> heat <SEG:88> because <SEG:18> of <SEG:26> the <SEG:33> energy <SEG:80> made <SEG:47> when <SEG:9> hydrogen <SEG:35> atoms <SEG:56> are <SEG:22> merged <SEG:72> (or <SEG:42> fused) <SEG:70> together <SEG:5> to <SEG:?> form heavier elements."
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9628,
+  "achv": 0.8931,
+  "util": 0.6989,
+  "util_oracle": 0.7803,
+  "overlap": 0.3941,
+  "overlap_by_T": {
+   "4": 0.446,
+   "6": 0.377,
+   "12": 0.331
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1632,
+  "spearman_within": 0.2015,
+  "calibration": {
+   "00-09": {
+    "n": 264,
+    "label_mean": 65.2
+   },
+   "10-19": {
+    "n": 451,
+    "label_mean": 62.9
+   },
+   "20-29": {
+    "n": 376,
+    "label_mean": 61.6
+   },
+   "30-39": {
+    "n": 322,
+    "label_mean": 63.0
+   },
+   "40-49": {
+    "n": 311,
+    "label_mean": 63.9
+   },
+   "50-59": {
+    "n": 366,
+    "label_mean": 65.4
+   },
+   "60-69": {
+    "n": 389,
+    "label_mean": 66.5
+   },
+   "70-79": {
+    "n": 350,
+    "label_mean": 67.1
+   },
+   "80-89": {
+    "n": 355,
+    "label_mean": 66.2
+   },
+   "90-99": {
+    "n": 215,
+    "label_mean": 72.9
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 8
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The company hopes <SEG:6> to <SEG:12> diversify <SEG:55> its <SEG:20> profit <SEG:35> sources <SEG:92> and <SEG:16> gain <SEG:50> popularity <SEG:72> in <SEG:9> areas <SEG:40> where <SEG:14> Skype <SEG:52> holds <SEG:68> a <SEG:17> strong <SEG:38> position, <SEG:89> such <SEG:11> as <SEG:75> China, "
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "He originally named <SEG:78> the <SEG:15> Hangeul <SEG:30> alphabet <SEG:62> Hunmin <SEG:8> Jeongeum, <SEG:95> which <SEG:22> means <SEG:70> \"the <SEG:12> correct <SEG:25> sounds <SEG:55> for <SEG:18> the <SEG:10> instruction <SEG:50> of the \""
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Northern Rock had <SEG:94> required <SEG:86> support <SEG:78> due <SEG:33> to <SEG:28> its <SEG:48> exposure <SEG:74> during <SEG:38> the <SEG:60> subprime <SEG:56> mortgage <SEG:22>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4569,
+ "score_dev": 0.3941,
+ "paired_dev": {
+  "mean_delta": -0.08,
+  "se_delta": 0.0198,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Added targeted low-band rule for markers followed by temporal adverbs when the left context ends with a passive allegation (addresses en_us_317: lower over-trust on 'been + past-participle' + temporal adverb).",
+  "Added rule lowering scores when a left-side named/product token is isolated and the right token is a present-participle (-ing) (addresses en_us_1379 pos6: reduce over-trust for noun + -ing).",
+  "Added rule lowering scores when a left-side named entity is isolated but the right token is a finite verb (addresses en_us_337: finite verbs after names increase contradiction risk).",
+  "Added explicit low-band rule for cuts splitting a numeral and its unit word (addresses en_us_44: avoid cutting inside numeric+unit expressions).",
+  "Added rule reducing scores when the token after a marker is 'to' and the second token after is a directional noun/adverb or the 'to' starts an infinitival that re-scopes the clause (addresses en_us_357: 'to' + direction/infinitival is risky).",
+  "Added an exception to raise score when a marker follows a preposition/determiner (e.g., 'of') but the token immediately after the marker is a capitalized product/brand or short proper name (addresses en_us_1379 pos5: avoid under-trust after prepositions when a strong named token follows).",
+  "Clarified Decision Procedure to inspect up to two tokens after and up to two tokens before the marker to detect the above surface patterns (so rules are actionable).",
+  "Replaced Examples with a compact set (6) that each exercise one of the changed rules so the model sees concrete patterns and expected numeric outcomes."
+ ],
+ "prompt_len": 12981,
+ "usage": {
+  "calls": 190,
+  "prompt_tokens": 683240,
+  "completion_tokens": 1545893,
+  "cached_tokens": 514816,
+  "truncated": 0,
+  "cost": 3.146762,
+  "by_purpose": {
+   "segment": {
+    "calls": 132,
+    "prompt_tokens": 479501,
+    "completion_tokens": 1344340,
+    "reasoning_tokens": 1257152,
+    "cached_tokens": 364672,
+    "cost": 2.726504
+   },
+   "segment_retry": {
+    "calls": 50,
+    "prompt_tokens": 164316,
+    "completion_tokens": 150301,
+    "reasoning_tokens": 144448,
+    "cached_tokens": 137856,
+    "cost": 0.310663
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 5799,
+    "completion_tokens": 23317,
+    "reasoning_tokens": 14912,
+    "cached_tokens": 3584,
+    "cost": 0.047277
+   },
+   "prompt_engineer": {
+    "calls": 3,
+    "prompt_tokens": 15556,
+    "completion_tokens": 19237,
+    "reasoning_tokens": 9600,
+    "cached_tokens": 8704,
+    "cost": 0.040405
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 17094,
+    "completion_tokens": 6457,
+    "reasoning_tokens": 4992,
+    "cached_tokens": 0,
+    "cost": 0.017187
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 2241,
+    "reasoning_tokens": 1792,
+    "cached_tokens": 0,
+    "cost": 0.004725
+   }
+  }
+ }
+}

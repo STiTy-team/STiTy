@@ -1,0 +1,215 @@
+{
+ "version": 3,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.99,
+  "achv": 0.8971,
+  "util": 0.7003,
+  "util_oracle": 0.776,
+  "overlap": 0.4192,
+  "overlap_by_T": {
+   "4": 0.449,
+   "6": 0.393,
+   "12": 0.414
+  },
+  "tie_rate": 0.0026,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1616,
+  "spearman_within": 0.2306,
+  "calibration": {
+   "00-09": {
+    "n": 137,
+    "label_mean": 60.3
+   },
+   "10-19": {
+    "n": 179,
+    "label_mean": 62.4
+   },
+   "20-29": {
+    "n": 150,
+    "label_mean": 62.9
+   },
+   "30-39": {
+    "n": 142,
+    "label_mean": 64.7
+   },
+   "40-49": {
+    "n": 119,
+    "label_mean": 63.8
+   },
+   "50-59": {
+    "n": 135,
+    "label_mean": 64.9
+   },
+   "60-69": {
+    "n": 134,
+    "label_mean": 65.4
+   },
+   "70-79": {
+    "n": 164,
+    "label_mean": 65.3
+   },
+   "80-89": {
+    "n": 172,
+    "label_mean": 65.5
+   },
+   "90-99": {
+    "n": 220,
+    "label_mean": 69.7
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "They did two <SEG:96> experiments <SEG:100> marking <SEG:74> either <SEG:22> the <SEG:4> DNA <SEG:92> in <SEG:12> the <SEG:6> phage <SEG:88> with <SEG:10> a <SEG:8> radioactive <SEG:62> phosphorus <SEG:84> or <SEG:40> the <SEG:16> protein <SEG:82> of <SEG:14> the <SEG:18> phage <SEG:80> ."
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9953,
+  "achv": 0.9105,
+  "util": 0.7124,
+  "util_oracle": 0.7803,
+  "overlap": 0.4387,
+  "overlap_by_T": {
+   "4": 0.506,
+   "6": 0.417,
+   "12": 0.33
+  },
+  "tie_rate": 0.0035,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2068,
+  "spearman_within": 0.2625,
+  "calibration": {
+   "00-09": {
+    "n": 539,
+    "label_mean": 62.7
+   },
+   "10-19": {
+    "n": 389,
+    "label_mean": 63.1
+   },
+   "20-29": {
+    "n": 280,
+    "label_mean": 62.9
+   },
+   "30-39": {
+    "n": 231,
+    "label_mean": 63.2
+   },
+   "40-49": {
+    "n": 252,
+    "label_mean": 63.5
+   },
+   "50-59": {
+    "n": 253,
+    "label_mean": 64.7
+   },
+   "60-69": {
+    "n": 319,
+    "label_mean": 64.1
+   },
+   "70-79": {
+    "n": 339,
+    "label_mean": 65.8
+   },
+   "80-89": {
+    "n": 342,
+    "label_mean": 66.8
+   },
+   "90-99": {
+    "n": 455,
+    "label_mean": 72.0
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "These bosses had <SEG:8> been <SEG:12> reined <SEG:56> in <SEG:20> by <SEG:18> Provenzano <SEG:96> when <SEG:16> he <SEG:44> put <SEG:64> an <SEG:2> end <SEG:60> to <SEG:28> the <SEG:36> Riina-driven <SEG:68> war <SEG:92> against <SEG:22> the <SEG:32> state <SEG:76> that <SEG:6> claimed <SEG:84> the"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4192,
+ "score_dev": 0.4387,
+ "paired_dev": {
+  "mean_delta": 0.0111,
+  "se_delta": 0.0189,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Scoring Rules: Soften the NUM+UNIT treatment (traceable to en_us_66). Instead of moving numeral↔unit splits into a low band, reduce the generic numeral boost so such splits rank in a mid-high preference band (still considered but not topmost). This lowers over-trust on split numeric expressions while preserving useful numeral signal.",
+  "Scoring Rules: Removed previously added targeted downgrades (proper-name-substring and left-lexical+subordinator) that were not supported by the measured critique to avoid over-broad removal of safe high-scoring cuts; changes are limited and traceable to the en_us_66 case.",
+  "Decision Procedure: Restrict explicit targeted-downgrade application to the NUM+UNIT exception and retain the existing deterministic tie-break (earlier marker wins) to avoid reintroducing a rejected tie-break variant. Tie handling remains deterministic and unchanged."
+ ],
+ "prompt_len": 9936,
+ "usage": {
+  "calls": 266,
+  "prompt_tokens": 1064055,
+  "completion_tokens": 2671466,
+  "cached_tokens": 747008,
+  "truncated": 0,
+  "cost": 5.440869,
+  "by_purpose": {
+   "segment": {
+    "calls": 225,
+    "prompt_tokens": 784971,
+    "completion_tokens": 2474236,
+    "reasoning_tokens": 2332608,
+    "cached_tokens": 578432,
+    "cost": 5.014568
+   },
+   "segment_retry": {
+    "calls": 24,
+    "prompt_tokens": 84263,
+    "completion_tokens": 94573,
+    "reasoning_tokens": 91456,
+    "cached_tokens": 63744,
+    "cost": 0.195869
+   },
+   "prompt_engineer": {
+    "calls": 13,
+    "prompt_tokens": 60080,
+    "completion_tokens": 76579,
+    "reasoning_tokens": 36544,
+    "cached_tokens": 26496,
+    "cost": 0.162216
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 128786,
+    "completion_tokens": 22217,
+    "reasoning_tokens": 17536,
+    "cached_tokens": 78336,
+    "cost": 0.059005
+   },
+   "critic_regression": {
+    "calls": 1,
+    "prompt_tokens": 5955,
+    "completion_tokens": 3861,
+    "reasoning_tokens": 3392,
+    "cached_tokens": 0,
+    "cost": 0.009211
+   }
+  }
+ }
+}

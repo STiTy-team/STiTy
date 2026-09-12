@@ -1,0 +1,209 @@
+{
+ "version": 1,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.8968,
+  "util": 0.6996,
+  "util_oracle": 0.776,
+  "overlap": 0.3975,
+  "overlap_by_T": {
+   "4": 0.467,
+   "6": 0.357,
+   "12": 0.359
+  },
+  "tie_rate": 0.0013,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1999,
+  "spearman_within": 0.2673,
+  "calibration": {
+   "00-09": {
+    "n": 279,
+    "label_mean": 61.5
+   },
+   "10-19": {
+    "n": 236,
+    "label_mean": 62.4
+   },
+   "20-29": {
+    "n": 132,
+    "label_mean": 60.0
+   },
+   "30-39": {
+    "n": 83,
+    "label_mean": 64.7
+   },
+   "40-49": {
+    "n": 86,
+    "label_mean": 67.6
+   },
+   "50-59": {
+    "n": 86,
+    "label_mean": 65.8
+   },
+   "60-69": {
+    "n": 117,
+    "label_mean": 64.2
+   },
+   "70-79": {
+    "n": 149,
+    "label_mean": 66.7
+   },
+   "80-89": {
+    "n": 165,
+    "label_mean": 66.7
+   },
+   "90-99": {
+    "n": 219,
+    "label_mean": 70.3
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.986,
+  "achv": 0.9045,
+  "util": 0.7086,
+  "util_oracle": 0.7803,
+  "overlap": 0.4249,
+  "overlap_by_T": {
+   "4": 0.499,
+   "6": 0.394,
+   "12": 0.338
+  },
+  "tie_rate": 0.0018,
+  "tie_at_cut_rate": 0.0017,
+  "spearman_pooled": 0.2311,
+  "spearman_within": 0.2651,
+  "calibration": {
+   "00-09": {
+    "n": 458,
+    "label_mean": 61.2
+   },
+   "10-19": {
+    "n": 456,
+    "label_mean": 62.8
+   },
+   "20-29": {
+    "n": 322,
+    "label_mean": 62.4
+   },
+   "30-39": {
+    "n": 247,
+    "label_mean": 63.6
+   },
+   "40-49": {
+    "n": 216,
+    "label_mean": 64.0
+   },
+   "50-59": {
+    "n": 235,
+    "label_mean": 65.1
+   },
+   "60-69": {
+    "n": 307,
+    "label_mean": 65.5
+   },
+   "70-79": {
+    "n": 337,
+    "label_mean": 65.6
+   },
+   "80-89": {
+    "n": 356,
+    "label_mean": 68.4
+   },
+   "90-99": {
+    "n": 465,
+    "label_mean": 71.4
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 3
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "We experience time <SEG:100> as <SEG:40> a <SEG:26> series <SEG:72> of <SEG:44> events <SEG:92> passing <SEG:66> from <SEG:52> the <SEG:36> future <SEG:86> through <SEG:58> the <SEG:32> present <SEG:80>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The Indus Valley <SEG:88> Civilization <SEG:92> was <SEG:9> a <SEG:2> Bronze <SEG:70> Age <SEG:80> civilisation <SEG:59> in <SEG:7> the <SEG:5> northwest <SEG:66> Indian <SEG:77> subcontinent <SEG:85> encompassing <SEG:74> most <SEG:19> of <SEG:11> modern-day <SEG:62> Pakistan <SEG:100> and <SEG:13>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Every corner store <SEG:86> is <SEG:42> filled <SEG:92> with <SEG:18> a <SEG:38> confusing <SEG:62> array <SEG:80> of <SEG:34> pre-paid <SEG:74> phone <SEG:68> cards <SEG:100> that <SEG:22> can <SEG:50> be <SEG:46> used <SEG:58> from <SEG:30> pay <SEG:26> phones <SEG:54>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.3975,
+ "score_dev": 0.4249,
+ "paired_dev": {
+  "mean_delta": -0.0027,
+  "se_delta": 0.0179,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Refined numeral handling: added an exception that penalizes markers that split a numeral from an immediately adjacent measurement/unit token (low target band 10–35) to address measured over-trust on numeric+unit splits (traceable to critique case list).",
+  "Added targeted down-weighting for markers immediately after short named/org/id tokens (reduce target band 15–45 unless the opposite side contains an independent numeral/date/unit), to correct over-boosting at short-name boundaries (traceable to critique cases).",
+  "Updated surface-form checklist and examples to reflect the two targeted downgrades and show concrete applied effects in sample outputs."
+ ],
+ "prompt_len": 13698,
+ "usage": {
+  "calls": 96,
+  "prompt_tokens": 403229,
+  "completion_tokens": 974028,
+  "cached_tokens": 276096,
+  "truncated": 0,
+  "cost": 1.986742,
+  "by_purpose": {
+   "segment": {
+    "calls": 87,
+    "prompt_tokens": 327106,
+    "completion_tokens": 920736,
+    "reasoning_tokens": 865408,
+    "cached_tokens": 249472,
+    "cost": 1.867117
+   },
+   "prompt_engineer": {
+    "calls": 5,
+    "prompt_tokens": 22522,
+    "completion_tokens": 30659,
+    "reasoning_tokens": 13760,
+    "cached_tokens": 17408,
+    "cost": 0.063032
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 42810,
+    "completion_tokens": 13619,
+    "reasoning_tokens": 12800,
+    "cached_tokens": 0,
+    "cost": 0.037941
+   },
+   "segment_retry": {
+    "calls": 3,
+    "prompt_tokens": 10791,
+    "completion_tokens": 9014,
+    "reasoning_tokens": 8640,
+    "cached_tokens": 9216,
+    "cost": 0.018652
+   }
+  }
+ }
+}

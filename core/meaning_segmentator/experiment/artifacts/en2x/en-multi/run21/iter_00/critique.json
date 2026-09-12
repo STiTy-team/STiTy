@@ -1,0 +1,72 @@
+{
+ "rules": [
+  {
+   "surface_condition": "marker that splits a numeric quantity from its unit (the token immediately before is a number and the token immediately after is a measurement-word like million/percent/meters/kilometers/miles/year/etc.)",
+   "supported_by": [
+    "en_us_66",
+    "en_us_140",
+    "en_us_1050",
+    "en_us_278",
+    "en_us_46"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Scoring Rules: if the token immediately before the marker is NUM and the token immediately after the marker is a measurement/unit token, lower the predicted band to a low range (target band 10–35) because splitting a numeric from its unit often creates a fragment/contrast that the entailment or single-side quality punishes.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "percent",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "miles",
+     "mile",
+     "year",
+     "years",
+     "m",
+     "km"
+    ]
+   }
+  },
+  {
+   "surface_condition": "marker immediately after a short named phrase / organisation identifier where the name token sits adjacent to the cut (left_last is a single-word org/id token such as parenthood/service/kv62)",
+   "supported_by": [
+    "en_us_276",
+    "en_us_738",
+    "en_us_685"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Scoring Rules: remove or sharply reduce the generic upward bias that raises scores solely because an immediate neighbor looks like a short organization/place token. Concretely, if the token immediately before the marker is one of a short named/identifier tokens list (check below), reduce the target band (target band 15–45) unless the opposite side also contains a numeral/date or explicit unit that independently justifies a high score.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "parenthood",
+     "service",
+     "kv62",
+     "minae"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The model over-boosts cuts that sit next to numbers or short names. In particular it often rates a split between a numeral and its unit (\"1.2 <SEG> million\", \"240 <SEG> kilometers\") too highly despite large contradiction/fragment penalties, and it also elevates cuts adjacent to short named tokens or organisation identifiers. Add targeted down-weighting for those surface patterns so the ordering within sentences favors intact numeric+unit chunks and avoids spuriously high cuts at adjacent name/ID boundaries.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

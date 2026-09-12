@@ -1,0 +1,31 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 1,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Modify numeral bias: keep general upward bias for numerals/dates/names but add explicit exception to lower scores when a NUM on the left is immediately followed by a measurement unit or counted noun (targets band 10–35). Rationale: addresses measured over-trust where numeral↔unit splits are risky (trace: critique cases en_us_66 etc.).",
+  "Add rule to lower scores when a numeral/ordinal on one side is immediately adjacent to a coordinator in a coordination or range (and/or/to), treating such cuts as risky (target band 10–35). Rationale: addresses measured over-trust for numeral↔(and|or|to) splits.",
+  "Introduce a deterministic same-bucket tie-break procedure inside Scoring Rules: apply a small position-based offset and a token-class priority (units < ordinals < plain NUM) before rounding to integers so markers never tie. Rationale: implements the critique's tie_fix to avoid identical integers while keeping decision deterministic.",
+  "Update Examples to reflect the new numeral/unit and numeral↔coordinator lowering tendencies (changed the outputs for the 1,200 tests example and the climate 'one to two degree' example) so examples remain testable and consistent with rules."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 14161,
+   "holdout_delta": {
+    "mean_delta": 0.0221,
+    "se_delta": 0.024,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4286
+  }
+ ]
+}

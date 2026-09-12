@@ -1,0 +1,97 @@
+{
+ "rules": [
+  {
+   "surface_condition": "positions where the token immediately AFTER the marker is a present-participial / -ing verb that commonly introduces a clause continuation (e.g. causing, facing, resulting, leading, following)",
+   "supported_by": [
+    "en_us_360",
+    "en_us_380"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "In [Scoring Rules] add a targeted downward override: if the token immediately after the marker is one of {causing, facing, resulting, leading, following, resulting} then reduce the predicted score into a low-risk band (target 10–35). Rationale: present-participial continuations frequently overturn or continue the left chunk (high contradiction / low standalone faithfulness) even when a preceding comma would otherwise encourage an uplift.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "causing",
+     "facing",
+     "resulting",
+     "leading",
+     "following"
+    ]
+   }
+  },
+  {
+   "surface_condition": "positions immediately after concrete-place / concrete-object nouns that are often comma‑terminated adjuncts (examples seen: oahu, maldives, gauge, ship, coffin, mummy) when the token immediately AFTER the marker is a finite auxiliary or finite lexical verb (was, is, are, reached, will, be)",
+   "supported_by": [
+    "en_us_203",
+    "en_us_140",
+    "en_us_164"
+   ],
+   "error": "over-trust",
+   "why": "frag_right | contra",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "Add a sharpening of the comma-adjunct uplift: if the token immediately BEFORE the marker is in {oahu, maldives, gauge, ship, coffin, mummy, light} AND the token immediately AFTER the marker is one of {was, is, are, reached, will, be, were}, then lower the score into a conservative band (target 5–35). Rationale: place/object adjuncts followed by finite predicates are a frequent source of contradiction / bad standalone translation despite the visual comma; the general comma uplift should not override this signal.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "oahu",
+     "maldives",
+     "gauge",
+     "ship",
+     "coffin",
+     "mummy",
+     "light"
+    ],
+    "right_first": [
+     "was",
+     "is",
+     "are",
+     "reached",
+     "will",
+     "be",
+     "were"
+    ]
+   }
+  },
+  {
+   "surface_condition": "positions that split a role/designation or class-word immediately before a following name/label (examples of left tokens: governor, class, former, president, minister, senator, dr, mr, ms, mrs)",
+   "supported_by": [
+    "en_us_278",
+    "en_us_164"
+   ],
+   "error": "over-trust",
+   "why": "fragment_right",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Introduce a protective lowering for title/role splits: if the token immediately BEFORE the marker is any of {governor, president, senator, minister, dr, mr, ms, mrs, former, class} then reduce the score into a cautious band (target 10–35). Rationale: splitting a designation/class token from the following name/appositive frequently yields fragments or appositional mismatches in single-side translation; the generic named-phrase uplift should be suppressed here.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "governor",
+     "president",
+     "senator",
+     "minister",
+     "dr",
+     "mr",
+     "ms",
+     "mrs",
+     "former",
+     "class"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties still arise when per-bucket heuristics produce identical integers after rounding and the micro-offset is too small to survive integer rounding. Increase the deterministic micro-offset used before rounding (e.g., offset = 0.01 × token_position_index) or apply a small token-class priority offset (prespecified, numeric) before rounding so that the integer rounding preserves the deterministic ordering.",
+ "summary": "The prompt's comma/adjunct and named-phrase uplifts are too blunt: they let markers with right-side continuations (present-participles or finite predicates) or title/name appositions score very high despite measured contradiction or fragmenthood. Add targeted downward overrides that (1) penalize right-side present-participles, (2) disable the comma-adjunct uplift for concrete-place/object nouns followed by finite verbs, and (3) suppress named-phrase uplift when a role/class token is immediately before the cut. These rules are surface-token anchored and measurable on the given cases.",
+ "metrics": {
+  "overlap": 0.4157,
+  "overlap_by_T": {
+   "4": 0.463,
+   "6": 0.36,
+   "12": 0.43
+  },
+  "achv": 0.9107,
+  "tie_rate": 0.0026,
+  "spearman_within": 0.2534
+ }
+}

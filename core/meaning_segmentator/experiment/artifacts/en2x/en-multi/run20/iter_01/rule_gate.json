@@ -1,0 +1,45 @@
+[
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_203",
+   "en_us_687",
+   "en_us_140",
+   "en_us_1570"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where the token immediately after the marker is a clause-introducing auxiliary/causal/negation token that often sta",
+  "n_matched": 110,
+  "label_matched": 0.6362,
+  "label_rest": 0.6483,
+  "t": -0.66,
+  "verdict": "drop",
+  "reason": "|t| 0.66 < 2.0"
+ },
+ {
+  "supported_by": [
+   "en_us_278",
+   "en_us_847",
+   "en_us_351"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where the token immediately after the marker is a predicate/finite verb that continues the main clause (i.e., the m",
+  "n_matched": 80,
+  "label_matched": 0.6608,
+  "label_rest": 0.6467,
+  "t": 0.73,
+  "verdict": "drop",
+  "reason": "|t| 0.73 < 2.0"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_351"
+  ],
+  "direction": "raise",
+  "surface_condition": "cuts where the token immediately before the marker is a demonstrative pronoun (this/that/these/those) and the token imme",
+  "n_matched": 2,
+  "verdict": "drop",
+  "reason": "걸린 경계 2 < 8"
+ }
+]

@@ -1,0 +1,35 @@
+{
+ "selected_kind": "grow",
+ "changelog": [
+  "Added targeted low-band rule for markers followed by temporal adverbs when the left context ends with a passive allegation (addresses en_us_317: lower over-trust on 'been + past-participle' + temporal adverb).",
+  "Added rule lowering scores when a left-side named/product token is isolated and the right token is a present-participle (-ing) (addresses en_us_1379 pos6: reduce over-trust for noun + -ing).",
+  "Added rule lowering scores when a left-side named entity is isolated but the right token is a finite verb (addresses en_us_337: finite verbs after names increase contradiction risk).",
+  "Added explicit low-band rule for cuts splitting a numeral and its unit word (addresses en_us_44: avoid cutting inside numeric+unit expressions).",
+  "Added rule reducing scores when the token after a marker is 'to' and the second token after is a directional noun/adverb or the 'to' starts an infinitival that re-scopes the clause (addresses en_us_357: 'to' + direction/infinitival is risky).",
+  "Added an exception to raise score when a marker follows a preposition/determiner (e.g., 'of') but the token immediately after the marker is a capitalized product/brand or short proper name (addresses en_us_1379 pos5: avoid under-trust after prepositions when a strong named token follows).",
+  "Clarified Decision Procedure to inspect up to two tokens after and up to two tokens before the marker to detect the above surface patterns (so rules are actionable).",
+  "Replaced Examples with a compact set (6) that each exercise one of the changed rules so the model sees concrete patterns and expected numeric outcomes."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 12981,
+   "holdout_achv": 0.3898
+  },
+  {
+   "kind": "shrink",
+   "len": 11585,
+   "holdout_achv": 0.3645
+  },
+  {
+   "kind": "neutral",
+   "len": 10559,
+   "holdout_achv": 0.3448
+  }
+ ]
+}

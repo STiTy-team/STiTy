@@ -1,0 +1,42 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 2,
+  "n_passed": 2
+ },
+ "changelog": [
+  "Refined Scoring Rules to implement moderate, context-aware demotions for markers that split numerals from immediately following measurement/unit words (traceable to CRITIQUE: numeral+unit over-trust). Change introduces a soft, conditional downward ordering rather than a blanket strong penalty and adds an explicit exception to preserve genuinely good numeral-adjacent boundaries.",
+  "Added a targeted, conservative rule lowering markers immediately after short identifier-like tokens (traceable to CRITIQUE: short-ID over-trust) but only when local context indicates continuation and not when the opposite side contains a numeral/date/unit or punctuation. The rule is weaker and conditional to avoid removing safe boundaries.",
+  "Added a concise rule to modestly lower markers that are immediately followed by clause-continuing subordinators (because/due/that/which/etc.) when that continuation is likely to change meaning, as noted in the critique.",
+  "Clarified that these are relative, surface-anchored ordering tendencies (not absolute numeric bands) and added a small local-ranking precedence list to guide within-sentence ordering so the deterministic keeper ranks cuts more safely without producing ties.",
+  "Updated Examples to demonstrate the new behaviour: (a) the climate-models example now demotes a 'number <SEG> unit' split to a mid-range rank, and (b) replaced one example with a short-identifier example to show the conservative demotion and its exception when followed by a numeral/unit."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 16005,
+   "holdout_delta": {
+    "mean_delta": 0.0361,
+    "se_delta": 0.0261,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4425
+  },
+  {
+   "kind": "shrink",
+   "len": 11147,
+   "holdout_delta": {
+    "mean_delta": 0.0105,
+    "se_delta": 0.0308,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.417
+  }
+ ]
+}

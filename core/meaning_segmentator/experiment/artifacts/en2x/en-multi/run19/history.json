@@ -1,0 +1,773 @@
+[
+ {
+  "version": 0,
+  "adopted": true,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8866,
+   "util": 0.6918,
+   "util_oracle": 0.776,
+   "overlap": 0.3715,
+   "overlap_by_T": {
+    "4": 0.444,
+    "6": 0.336,
+    "12": 0.305
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1724,
+   "spearman_within": 0.2128,
+   "calibration": {
+    "00-09": {
+     "n": 129,
+     "label_mean": 60.6
+    },
+    "10-19": {
+     "n": 157,
+     "label_mean": 61.2
+    },
+    "20-29": {
+     "n": 138,
+     "label_mean": 62.5
+    },
+    "30-39": {
+     "n": 125,
+     "label_mean": 64.1
+    },
+    "40-49": {
+     "n": 137,
+     "label_mean": 64.3
+    },
+    "50-59": {
+     "n": 144,
+     "label_mean": 65.9
+    },
+    "60-69": {
+     "n": 153,
+     "label_mean": 64.9
+    },
+    "70-79": {
+     "n": 173,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 167,
+     "label_mean": 65.7
+    },
+    "90-99": {
+     "n": 229,
+     "label_mean": 69.0
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9674,
+   "achv": 0.9014,
+   "util": 0.7057,
+   "util_oracle": 0.7803,
+   "overlap": 0.4276,
+   "overlap_by_T": {
+    "4": 0.497,
+    "6": 0.409,
+    "12": 0.323
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1984,
+   "spearman_within": 0.2539,
+   "calibration": {
+    "00-09": {
+     "n": 396,
+     "label_mean": 61.5
+    },
+    "10-19": {
+     "n": 380,
+     "label_mean": 63.7
+    },
+    "20-29": {
+     "n": 273,
+     "label_mean": 63.0
+    },
+    "30-39": {
+     "n": 231,
+     "label_mean": 63.6
+    },
+    "40-49": {
+     "n": 239,
+     "label_mean": 63.3
+    },
+    "50-59": {
+     "n": 250,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 329,
+     "label_mean": 65.1
+    },
+    "70-79": {
+     "n": 366,
+     "label_mean": 66.5
+    },
+    "80-89": {
+     "n": 410,
+     "label_mean": 67.2
+    },
+    "90-99": {
+     "n": 525,
+     "label_mean": 69.6
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "score_train": 0.3715,
+  "score_dev": 0.4276,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 12032,
+  "usage": {
+   "calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "cached_tokens": 0,
+   "truncated": 0,
+   "cost": 0.0,
+   "by_purpose": {}
+  }
+ },
+ {
+  "version": 1,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8866,
+   "util": 0.6918,
+   "util_oracle": 0.776,
+   "overlap": 0.3715,
+   "overlap_by_T": {
+    "4": 0.444,
+    "6": 0.336,
+    "12": 0.305
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1724,
+   "spearman_within": 0.2128,
+   "calibration": {
+    "00-09": {
+     "n": 129,
+     "label_mean": 60.6
+    },
+    "10-19": {
+     "n": 157,
+     "label_mean": 61.2
+    },
+    "20-29": {
+     "n": 138,
+     "label_mean": 62.5
+    },
+    "30-39": {
+     "n": 125,
+     "label_mean": 64.1
+    },
+    "40-49": {
+     "n": 137,
+     "label_mean": 64.3
+    },
+    "50-59": {
+     "n": 144,
+     "label_mean": 65.9
+    },
+    "60-69": {
+     "n": 153,
+     "label_mean": 64.9
+    },
+    "70-79": {
+     "n": 173,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 167,
+     "label_mean": 65.7
+    },
+    "90-99": {
+     "n": 229,
+     "label_mean": 69.0
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9674,
+   "achv": 0.9014,
+   "util": 0.7057,
+   "util_oracle": 0.7803,
+   "overlap": 0.4276,
+   "overlap_by_T": {
+    "4": 0.497,
+    "6": 0.409,
+    "12": 0.323
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1984,
+   "spearman_within": 0.2539,
+   "calibration": {
+    "00-09": {
+     "n": 396,
+     "label_mean": 61.5
+    },
+    "10-19": {
+     "n": 380,
+     "label_mean": 63.7
+    },
+    "20-29": {
+     "n": 273,
+     "label_mean": 63.0
+    },
+    "30-39": {
+     "n": 231,
+     "label_mean": 63.6
+    },
+    "40-49": {
+     "n": 239,
+     "label_mean": 63.3
+    },
+    "50-59": {
+     "n": 250,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 329,
+     "label_mean": 65.1
+    },
+    "70-79": {
+     "n": 366,
+     "label_mean": 66.5
+    },
+    "80-89": {
+     "n": 410,
+     "label_mean": 67.2
+    },
+    "90-99": {
+     "n": 525,
+     "label_mean": 69.6
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "score_train": 0.3715,
+  "score_dev": 0.4276,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 12032,
+  "usage": {
+   "calls": 41,
+   "prompt_tokens": 185317,
+   "completion_tokens": 440423,
+   "cached_tokens": 106880,
+   "truncated": 0,
+   "cost": 0.903127,
+   "by_purpose": {
+    "segment": {
+     "calls": 34,
+     "prompt_tokens": 119076,
+     "completion_tokens": 398982,
+     "reasoning_tokens": 378176,
+     "cached_tokens": 89856,
+     "cost": 0.807515
+    },
+    "prompt_engineer": {
+     "calls": 4,
+     "prompt_tokens": 18476,
+     "completion_tokens": 26580,
+     "reasoning_tokens": 12736,
+     "cached_tokens": 13440,
+     "cost": 0.054755
+    },
+    "critic": {
+     "calls": 1,
+     "prompt_tokens": 42557,
+     "completion_tokens": 6300,
+     "reasoning_tokens": 4544,
+     "cached_tokens": 0,
+     "cost": 0.023239
+    },
+    "segment_retry": {
+     "calls": 2,
+     "prompt_tokens": 5208,
+     "completion_tokens": 8561,
+     "reasoning_tokens": 8320,
+     "cached_tokens": 3584,
+     "cost": 0.017618
+    }
+   }
+  }
+ },
+ {
+  "version": 2,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.98,
+   "achv": 0.8973,
+   "util": 0.6999,
+   "util_oracle": 0.776,
+   "overlap": 0.429,
+   "overlap_by_T": {
+    "4": 0.496,
+    "6": 0.373,
+    "12": 0.398
+   },
+   "tie_rate": 0.0026,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1813,
+   "spearman_within": 0.2525,
+   "calibration": {
+    "00-09": {
+     "n": 250,
+     "label_mean": 61.1
+    },
+    "10-19": {
+     "n": 207,
+     "label_mean": 62.5
+    },
+    "20-29": {
+     "n": 144,
+     "label_mean": 65.4
+    },
+    "30-39": {
+     "n": 106,
+     "label_mean": 63.1
+    },
+    "40-49": {
+     "n": 101,
+     "label_mean": 65.2
+    },
+    "50-59": {
+     "n": 95,
+     "label_mean": 64.6
+    },
+    "60-69": {
+     "n": 132,
+     "label_mean": 65.6
+    },
+    "70-79": {
+     "n": 152,
+     "label_mean": 64.1
+    },
+    "80-89": {
+     "n": 165,
+     "label_mean": 67.6
+    },
+    "90-99": {
+     "n": 200,
+     "label_mean": 69.4
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 2
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Komen's policy disqualified <SEG:92> Planned <SEG:25> Parenthood <SEG:30> due <SEG:5> to <SEG:3> a <SEG:2> pending <SEG:18> investigation <SEG:85> on <SEG:10> how <SEG:52> Planned <SEG:22> Parenthood <SEG:99> spends <SEG:88> and <SEG:12> reports <SEG:70> its <SEG:6> money <SEG:60> that <SEG:4> is <S"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "They did two <SEG:86> experiments <SEG:92> marking <SEG:40> either <SEG:6> the <SEG:3> DNA <SEG:98> in <SEG:7> the <SEG:5> phage <SEG:76> with <SEG:9> a <SEG:4> radioactive <SEG:84> phosphorus <SEG:80> or <SEG:10> the <SEG:2> protein <SEG:74> of <SEG:8> the <SEG:1> phage <SEG:70> ."
+     }
+    ]
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9302,
+   "achv": 0.9001,
+   "util": 0.7047,
+   "util_oracle": 0.7803,
+   "overlap": 0.4278,
+   "overlap_by_T": {
+    "4": 0.48,
+    "6": 0.417,
+    "12": 0.341
+   },
+   "tie_rate": 0.0024,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2047,
+   "spearman_within": 0.2515,
+   "calibration": {
+    "00-09": {
+     "n": 610,
+     "label_mean": 61.5
+    },
+    "10-19": {
+     "n": 468,
+     "label_mean": 63.1
+    },
+    "20-29": {
+     "n": 257,
+     "label_mean": 63.2
+    },
+    "30-39": {
+     "n": 191,
+     "label_mean": 64.8
+    },
+    "40-49": {
+     "n": 208,
+     "label_mean": 65.8
+    },
+    "50-59": {
+     "n": 216,
+     "label_mean": 64.1
+    },
+    "60-69": {
+     "n": 309,
+     "label_mean": 66.2
+    },
+    "70-79": {
+     "n": 324,
+     "label_mean": 64.6
+    },
+    "80-89": {
+     "n": 359,
+     "label_mean": 67.8
+    },
+    "90-99": {
+     "n": 457,
+     "label_mean": 70.9
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 15
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The advice assumes <SEG:66> that <SEG:14> travellers <SEG:78> do <SEG:16> not <SEG:10> steal, <SEG:95> trespass, <SEG:92> participate <SEG:86> in <SEG:18> the <SEG:6> illegal <SEG:22> market, <SEG:99> beg, <SEG:90> or <SEG:60> otherwise <SEG:70> exploit <SEG:82> other <SEG:8> people <SEG:74> for <SE"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Athletes may feel <SEG:58> that <SEG:5> they <SEG:92> prefer <SEG:72> a <SEG:3> product <SEG:86> even <SEG:12> when <SEG:7> it <SEG:50> provides <SEG:68>"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "In an ambush <SEG:72> east <SEG:90> of <SEG:8> Bardia, <SEG:99> the <SEG:6> British <SEG:78> captured <SEG:95> the <SEG:4> Italian <SEG:65> Tenth <SEG:82> Army's <SEG:86>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.429,
+  "score_dev": 0.4278,
+  "paired_dev": {
+   "mean_delta": 0.0002,
+   "se_delta": 0.0176,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Scoring Rules: Added a targeted numeric+unit exception that prevents the generic numeral boost when a marker splits a number from a unit/scale token (e.g., million, billion, percent); such markers are biased downward into a lower target band (0–40). This addresses the en_us_66 over-trust case.",
+   "Scoring Rules: Added a targeted downgrade for markers that split adjectival clusters from the noun 'language' (common adjectives such as local/national/official/etc. on the left and 'language' on the right); bias these markers into a lower target band (0–40) to avoid over-scoring isolated adjectives.",
+   "Scoring Rules: Added a targeted downgrade for name/organization boosts when the right-side begins a subordinating continuation (right_first in {due, because, to}); if left_last looks like a name/org (capitalized token or common org suffix) and right_first is subordinating, bias the marker downward into 0–40.",
+   "Examples: Replaced one example (Officials in the capital...) with a focused number+unit split example illustrating the numeric+unit exception; kept the remaining examples but updated counts to keep all outputs consistent and unique."
+  ],
+  "prompt_len": 14465,
+  "usage": {
+   "calls": 152,
+   "prompt_tokens": 658094,
+   "completion_tokens": 1514463,
+   "cached_tokens": 460544,
+   "truncated": 0,
+   "cost": 3.089827,
+   "by_purpose": {
+    "segment": {
+     "calls": 121,
+     "prompt_tokens": 461644,
+     "completion_tokens": 1367848,
+     "reasoning_tokens": 1291776,
+     "cached_tokens": 344832,
+     "cost": 2.77352
+    },
+    "segment_retry": {
+     "calls": 21,
+     "prompt_tokens": 76321,
+     "completion_tokens": 83403,
+     "reasoning_tokens": 80704,
+     "cached_tokens": 60160,
+     "cost": 0.17235
+    },
+    "prompt_engineer": {
+     "calls": 8,
+     "prompt_tokens": 34838,
+     "completion_tokens": 49850,
+     "reasoning_tokens": 23808,
+     "cached_tokens": 16896,
+     "cost": 0.104608
+    },
+    "critic": {
+     "calls": 2,
+     "prompt_tokens": 85291,
+     "completion_tokens": 13362,
+     "reasoning_tokens": 10560,
+     "cached_tokens": 38656,
+     "cost": 0.039349
+    }
+   }
+  }
+ },
+ {
+  "version": 3,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.99,
+   "achv": 0.8971,
+   "util": 0.7003,
+   "util_oracle": 0.776,
+   "overlap": 0.4192,
+   "overlap_by_T": {
+    "4": 0.449,
+    "6": 0.393,
+    "12": 0.414
+   },
+   "tie_rate": 0.0026,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1616,
+   "spearman_within": 0.2306,
+   "calibration": {
+    "00-09": {
+     "n": 137,
+     "label_mean": 60.3
+    },
+    "10-19": {
+     "n": 179,
+     "label_mean": 62.4
+    },
+    "20-29": {
+     "n": 150,
+     "label_mean": 62.9
+    },
+    "30-39": {
+     "n": 142,
+     "label_mean": 64.7
+    },
+    "40-49": {
+     "n": 119,
+     "label_mean": 63.8
+    },
+    "50-59": {
+     "n": 135,
+     "label_mean": 64.9
+    },
+    "60-69": {
+     "n": 134,
+     "label_mean": 65.4
+    },
+    "70-79": {
+     "n": 164,
+     "label_mean": 65.3
+    },
+    "80-89": {
+     "n": 172,
+     "label_mean": 65.5
+    },
+    "90-99": {
+     "n": 220,
+     "label_mean": 69.7
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 1
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "They did two <SEG:96> experiments <SEG:100> marking <SEG:74> either <SEG:22> the <SEG:4> DNA <SEG:92> in <SEG:12> the <SEG:6> phage <SEG:88> with <SEG:10> a <SEG:8> radioactive <SEG:62> phosphorus <SEG:84> or <SEG:40> the <SEG:16> protein <SEG:82> of <SEG:14> the <SEG:18> phage <SEG:80> ."
+     }
+    ]
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9953,
+   "achv": 0.9105,
+   "util": 0.7124,
+   "util_oracle": 0.7803,
+   "overlap": 0.4387,
+   "overlap_by_T": {
+    "4": 0.506,
+    "6": 0.417,
+    "12": 0.33
+   },
+   "tie_rate": 0.0035,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2068,
+   "spearman_within": 0.2625,
+   "calibration": {
+    "00-09": {
+     "n": 539,
+     "label_mean": 62.7
+    },
+    "10-19": {
+     "n": 389,
+     "label_mean": 63.1
+    },
+    "20-29": {
+     "n": 280,
+     "label_mean": 62.9
+    },
+    "30-39": {
+     "n": 231,
+     "label_mean": 63.2
+    },
+    "40-49": {
+     "n": 252,
+     "label_mean": 63.5
+    },
+    "50-59": {
+     "n": 253,
+     "label_mean": 64.7
+    },
+    "60-69": {
+     "n": 319,
+     "label_mean": 64.1
+    },
+    "70-79": {
+     "n": 339,
+     "label_mean": 65.8
+    },
+    "80-89": {
+     "n": 342,
+     "label_mean": 66.8
+    },
+    "90-99": {
+     "n": 455,
+     "label_mean": 72.0
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 1
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "These bosses had <SEG:8> been <SEG:12> reined <SEG:56> in <SEG:20> by <SEG:18> Provenzano <SEG:96> when <SEG:16> he <SEG:44> put <SEG:64> an <SEG:2> end <SEG:60> to <SEG:28> the <SEG:36> Riina-driven <SEG:68> war <SEG:92> against <SEG:22> the <SEG:32> state <SEG:76> that <SEG:6> claimed <SEG:84> the"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4192,
+  "score_dev": 0.4387,
+  "paired_dev": {
+   "mean_delta": 0.0111,
+   "se_delta": 0.0189,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Scoring Rules: Soften the NUM+UNIT treatment (traceable to en_us_66). Instead of moving numeral↔unit splits into a low band, reduce the generic numeral boost so such splits rank in a mid-high preference band (still considered but not topmost). This lowers over-trust on split numeric expressions while preserving useful numeral signal.",
+   "Scoring Rules: Removed previously added targeted downgrades (proper-name-substring and left-lexical+subordinator) that were not supported by the measured critique to avoid over-broad removal of safe high-scoring cuts; changes are limited and traceable to the en_us_66 case.",
+   "Decision Procedure: Restrict explicit targeted-downgrade application to the NUM+UNIT exception and retain the existing deterministic tie-break (earlier marker wins) to avoid reintroducing a rejected tie-break variant. Tie handling remains deterministic and unchanged."
+  ],
+  "prompt_len": 9936,
+  "usage": {
+   "calls": 266,
+   "prompt_tokens": 1064055,
+   "completion_tokens": 2671466,
+   "cached_tokens": 747008,
+   "truncated": 0,
+   "cost": 5.440869,
+   "by_purpose": {
+    "segment": {
+     "calls": 225,
+     "prompt_tokens": 784971,
+     "completion_tokens": 2474236,
+     "reasoning_tokens": 2332608,
+     "cached_tokens": 578432,
+     "cost": 5.014568
+    },
+    "segment_retry": {
+     "calls": 24,
+     "prompt_tokens": 84263,
+     "completion_tokens": 94573,
+     "reasoning_tokens": 91456,
+     "cached_tokens": 63744,
+     "cost": 0.195869
+    },
+    "prompt_engineer": {
+     "calls": 13,
+     "prompt_tokens": 60080,
+     "completion_tokens": 76579,
+     "reasoning_tokens": 36544,
+     "cached_tokens": 26496,
+     "cost": 0.162216
+    },
+    "critic": {
+     "calls": 3,
+     "prompt_tokens": 128786,
+     "completion_tokens": 22217,
+     "reasoning_tokens": 17536,
+     "cached_tokens": 78336,
+     "cost": 0.059005
+    },
+    "critic_regression": {
+     "calls": 1,
+     "prompt_tokens": 5955,
+     "completion_tokens": 3861,
+     "reasoning_tokens": 3392,
+     "cached_tokens": 0,
+     "cost": 0.009211
+    }
+   }
+  }
+ }
+]

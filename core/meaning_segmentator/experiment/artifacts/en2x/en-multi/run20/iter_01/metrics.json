@@ -1,0 +1,200 @@
+{
+ "version": 1,
+ "adopted": true,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9107,
+  "util": 0.7098,
+  "util_oracle": 0.776,
+  "overlap": 0.4157,
+  "overlap_by_T": {
+   "4": 0.463,
+   "6": 0.36,
+   "12": 0.43
+  },
+  "tie_rate": 0.0026,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1685,
+  "spearman_within": 0.2534,
+  "calibration": {
+   "00-09": {
+    "n": 261,
+    "label_mean": 63.2
+   },
+   "10-19": {
+    "n": 255,
+    "label_mean": 62.7
+   },
+   "20-29": {
+    "n": 152,
+    "label_mean": 60.1
+   },
+   "30-39": {
+    "n": 103,
+    "label_mean": 64.1
+   },
+   "40-49": {
+    "n": 82,
+    "label_mean": 67.6
+   },
+   "50-59": {
+    "n": 104,
+    "label_mean": 64.0
+   },
+   "60-69": {
+    "n": 118,
+    "label_mean": 63.1
+   },
+   "70-79": {
+    "n": 141,
+    "label_mean": 65.8
+   },
+   "80-89": {
+    "n": 154,
+    "label_mean": 67.5
+   },
+   "90-99": {
+    "n": 182,
+    "label_mean": 71.1
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 214,
+  "format_pass_rate": 0.9953,
+  "format_pass_rate_no_retry": 0.9953,
+  "achv": 0.9174,
+  "util": 0.7178,
+  "util_oracle": 0.7803,
+  "overlap": 0.4708,
+  "overlap_by_T": {
+   "4": 0.526,
+   "6": 0.438,
+   "12": 0.407
+  },
+  "tie_rate": 0.0018,
+  "tie_at_cut_rate": 0.0018,
+  "spearman_pooled": 0.2278,
+  "spearman_within": 0.2869,
+  "calibration": {
+   "00-09": {
+    "n": 625,
+    "label_mean": 61.9
+   },
+   "10-19": {
+    "n": 518,
+    "label_mean": 63.0
+   },
+   "20-29": {
+    "n": 288,
+    "label_mean": 64.1
+   },
+   "30-39": {
+    "n": 213,
+    "label_mean": 63.8
+   },
+   "40-49": {
+    "n": 188,
+    "label_mean": 63.9
+   },
+   "50-59": {
+    "n": 206,
+    "label_mean": 62.6
+   },
+   "60-69": {
+    "n": 288,
+    "label_mean": 64.7
+   },
+   "70-79": {
+    "n": 319,
+    "label_mean": 66.6
+   },
+   "80-89": {
+    "n": 316,
+    "label_mean": 68.4
+   },
+   "90-99": {
+    "n": 421,
+    "label_mean": 72.4
+   }
+  },
+  "n_boundaries": 3382,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The governor also <SEG:22> stated, <SEG:98> \"Today, <SEG:86> we <SEG:26> learned <SEG:30> that <SEG:8> some <SEG:18> school <SEG:14> aged <SEG:12> children <SEG:92> have <SEG:36> been <SEG:42> identified <SEG:62> as <SEG:4> having <SEG:54> had <SEG:48> contact <SEG:80> with the patient."
+    }
+   ]
+  }
+ },
+ "score_train": 0.4157,
+ "score_dev": 0.4708,
+ "paired_dev": {
+  "mean_delta": 0.0423,
+  "se_delta": 0.0181,
+  "n_pairs": 214
+ },
+ "changelog": [
+  "Modify numeral bias: keep general upward bias for numerals/dates/names but add explicit exception to lower scores when a NUM on the left is immediately followed by a measurement unit or counted noun (targets band 10–35). Rationale: addresses measured over-trust where numeral↔unit splits are risky (trace: critique cases en_us_66 etc.).",
+  "Add rule to lower scores when a numeral/ordinal on one side is immediately adjacent to a coordinator in a coordination or range (and/or/to), treating such cuts as risky (target band 10–35). Rationale: addresses measured over-trust for numeral↔(and|or|to) splits.",
+  "Introduce a deterministic same-bucket tie-break procedure inside Scoring Rules: apply a small position-based offset and a token-class priority (units < ordinals < plain NUM) before rounding to integers so markers never tie. Rationale: implements the critique's tie_fix to avoid identical integers while keeping decision deterministic.",
+  "Update Examples to reflect the new numeral/unit and numeral↔coordinator lowering tendencies (changed the outputs for the 1,200 tests example and the climate 'one to two degree' example) so examples remain testable and consistent with rules."
+ ],
+ "prompt_len": 14161,
+ "usage": {
+  "calls": 77,
+  "prompt_tokens": 350732,
+  "completion_tokens": 841583,
+  "cached_tokens": 234880,
+  "truncated": 0,
+  "cost": 1.718001,
+  "by_purpose": {
+   "segment": {
+    "calls": 70,
+    "prompt_tokens": 282784,
+    "completion_tokens": 797339,
+    "reasoning_tokens": 752448,
+    "cached_tokens": 215424,
+    "cost": 1.616904
+   },
+   "prompt_engineer": {
+    "calls": 5,
+    "prompt_tokens": 21522,
+    "completion_tokens": 31038,
+    "reasoning_tokens": 13504,
+    "cached_tokens": 16640,
+    "cost": 0.063713
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 42723,
+    "completion_tokens": 9758,
+    "reasoning_tokens": 8704,
+    "cached_tokens": 0,
+    "cost": 0.030197
+   },
+   "segment_retry": {
+    "calls": 1,
+    "prompt_tokens": 3703,
+    "completion_tokens": 3448,
+    "reasoning_tokens": 3328,
+    "cached_tokens": 2816,
+    "cost": 0.007188
+   }
+  }
+ }
+}

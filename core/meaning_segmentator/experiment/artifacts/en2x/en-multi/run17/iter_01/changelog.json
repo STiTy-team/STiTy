@@ -1,0 +1,54 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 2,
+  "candidates_tried": 3,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Make numeral/date/name 'boost' conditional: only apply strong upward bias when the token after the marker is punctuation, sentence end, or a capitalized token; otherwise suppress the boost (addresses en_us_66, en_us_278, en_us_203).",
+  "Introduce an ordered set of negative 'override' tests that, if matched, reduce or block positive boosts and bias the model to keep the adjacent tokens together rather than cut them (addresses over-trust cases across en_us_66, en_us_278, en_us_203, en_us_738, en_us_360, en_us_1050, en_us_417, en_us_1000).",
+  "Add explicit checks for quote- and parenthesis-adjacency: if the token before ends with a closing quote or the token after begins with an opening quote, or if either side abuts '(' or ')', treat that as an override signal unless followed immediately by punctuation or sentence end (addresses en_us_360 pos8; en_us_738 pos3; en_us_1000 pos8).",
+  "Add explicit check for nearby negation: if negation tokens (not, n't, never) appear within two tokens on the left, reduce the boundary's upward bias and treat the cut as risky (addresses en_us_738 pos7).",
+  "Add explicit check for comma-then-clausal-continuation patterns: when a comma precedes the marker and the token after is a clausal-starter contraction/pronoun (it, it's, they, he, she, we, etc.) or other clausal-starter, treat as override and reduce the boost (addresses en_us_1050 pos12).",
+  "Add check for modifier/adverbial clusters left of the cut: if the left side ends with comparative/superlative or common adverbial modifiers (most, more, -ly forms) and the right side has a common noun, treat as override to avoid splitting modifier from its head (addresses en_us_417 pos23).",
+  "Add specific handling for splitting name + parenthetical-abbreviation pairs: if '(' or ')' is adjacent to a named-entity token on either side, treat as override to avoid splitting the pair (addresses en_us_1000 pos8).",
+  "Consolidate all these into the Surface-form checklist so the model applies positive boosts only when no higher-priority override matches; avoid prescribing absolute bands — instead instruct to reduce relative upward bias so scores within the sentence order correctly."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 15071,
+   "holdout_delta": {
+    "mean_delta": 0.0672,
+    "se_delta": 0.0318,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4736
+  },
+  {
+   "kind": "shrink",
+   "len": 9720,
+   "holdout_delta": {
+    "mean_delta": -0.0192,
+    "se_delta": 0.0321,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3873
+  },
+  {
+   "kind": "neutral",
+   "len": 11059,
+   "holdout_delta": {
+    "mean_delta": -0.0219,
+    "se_delta": 0.0331,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3845
+  }
+ ]
+}

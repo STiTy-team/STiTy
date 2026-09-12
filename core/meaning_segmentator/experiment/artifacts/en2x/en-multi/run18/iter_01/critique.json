@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_276",
+   "pos": 14,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token immediately before marker is a capitalized name/organization token AND token immediately after is a lexical verb (is/was/does/VERB...)",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "In [Scoring Rules]: If the token immediately before the marker is capitalized (proper-name/organization token) AND the token immediately after the marker is a lexical verb (common copula/aux/third-person-s/infinitive/verb-stem or ends with typical verb morphology), apply a strong negative bias (subtract ~25 points; target band: move such cuts into the mid 20–55 range). Rationale: splitting a name from its predicate often yields high contradiction (remainder overturns the left).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 9,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token immediately after marker is a comparative/quantifier/modifier (e.g., 'more', 'less', 'than', 'only', 'no', 'not')",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher.",
+   "proposed_rule": "In [Scoring Rules]: If the token immediately after the marker is a comparative/quantifier or restrictive modifier ('more','less','than','only','no','not','never','only','few','several', etc.), lower the score substantially (subtract ~30–40 points; target band: push such cuts toward 0–40). Rationale: these tokens usually introduce limits or comparisons that frequently change/qualify the meaning of the left segment, producing high contradiction.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 10,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token immediately before marker is a place/proper-name token followed by a closing comma and the token immediately after is a copula ('is','was','are','were')",
+   "blamed_rule": "Is there a comma attached to the token immediately before the marker that closes an embedded phrase? If yes, consider upward bias if the adjacent chunks look lexical and are self-contained.",
+   "proposed_rule": "In [Scoring Rules]: If the token immediately before the marker is a capitalized place/name (or ends with a closing comma) AND the token immediately after the marker is a copula/copular verb ('is','was','are','were'), apply a negative bias (subtract ~25 points; target band: move such cuts into ~15–50). Rationale: comma+place + copula patterns often start a predicate that can change or contradict the isolated left chunk.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a closing parenthesis ')' (left ends with a parenthetical/appositive) regardless of the earlier name token",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "In [Scoring Rules]: If the token immediately before the marker is ')' (closing parenthesis) — i.e., the left side ends with an embedded parenthetical/appositive — reduce the usual name/place boost (subtract ~20–30 points; target band: move such cuts into ~10–55). Rationale: parenthetical material attached to a name often means the following words continue or qualify the name/predicate; the existing rule only penalizes when the parenthetical opens on the right, so add the symmetric negative case.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_687",
+   "pos": 11,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately after marker is a past participle/adjectival VBN (e.g., 'done','described','released','reported') and token before is a common noun",
+   "blamed_rule": "Adjectival/participial fragment endpoints: if the token immediately before the marker is a past participle or adjectival head commonly used to modify a following noun (examples: spoken, reported, estimated, known) possibly preceded by an adverb (e.g., 'most', 'commonly', 'widely') AND the token immediately after the marker is a common noun, bias the score downward.",
+   "proposed_rule": "In [Scoring Rules]: Add the symmetric case: if the token immediately after the marker is a past participle/adjectival VBN (done, described, reported, released, wounded, etc.) AND the token immediately before the marker is a common noun, apply a negative bias (subtract ~20–30 points; target band: pull such cuts into ~10–55). Rationale: splitting a noun from an immediately following participial modifier often leaves meaning that the remainder crucially modifies the left and produces contradiction or degraded single-side translation.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1570",
+   "pos": 5,
+   "error": "under-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately after marker is a preposition/determiner ('to','in','of','the') but both sides contain strong lexical content (content verb + noun) — i.e., cut sits between two content words inside a common compound/verb+noun phrase",
+   "blamed_rule": "Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "In [Scoring Rules]: Allow upward exceptions when a cut separates two adjacent content words (both immediate neighbor tokens are lexical content words: noun/verb/numeral) even if the token after is a common function word globally (e.g., 'to' inside 'authority to override'). Specifically, if both token_before and token_after are contentful word tokens (noun/verb/numeral) or token_after continues a frequent compound (tax|laws, authority|to), boost score (add ~20 points; target band: raise such cuts into ~60–90). Rationale: some surface consecutive content-word splits (inside multiword legal/technical phrases) still translate well on each side and were undervalued by the blanket preposition/determiner penalty.",
+   "direction": "raise"
+  },
+  {
+   "id": "en_us_1294",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a named-organization token (capitalized) AND token immediately after is a reporting verb ('said','stated','announced','reported')",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "In [Scoring Rules]: If the token immediately before the marker is a capitalized organization/place/person token AND the token immediately after is a reporting verb (said, told, reported, announced, stated, etc.), apply a negative bias (subtract ~20–30 points; target band: move such cuts into ~20–60). Rationale: cutting a name right before its reporting predicate frequently yields high contradiction/ambiguity and should be downweighted relative to other name-adjacent cuts.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1106",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a present-participial/gerund form (ending in -ing like 'finding','slowing') and token immediately after is a noun (common noun)",
+   "blamed_rule": "Adjectival/participial fragment endpoints: if the token immediately before the marker is a past participle or adjectival head commonly used to modify a following noun (examples: spoken, reported, estimated, known) possibly preceded by an adverb (e.g., 'most', 'commonly', 'widely') AND the token immediately after the marker is a common noun, bias the score downward.",
+   "proposed_rule": "In [Scoring Rules]: Extend participial-fragment penalty to present participles/gerunds: if token immediately before the marker is an -ing verbal/adjectival form (finding, slowing, reducing, affecting, etc.) AND token immediately after is a common noun, apply a moderate negative bias (subtract ~20 points; target band: move such cuts into ~15–55). Rationale: present-participial segments often expect their noun continuation; splitting them can cause the remainder to overturn or be required for faithful rendering.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties most often arise when neighboring markers share identical checklist signals (e.g., symmetric numeral↔unit or parenthetical patterns); add a deterministic tie-break preference that disfavors cuts that split a proper-name from its following predicate or that split numerals from adjacent scale tokens so ties are resolved away from these risky splits.",
+ "summary": "The model persistently over-boosts cuts that isolate a name/noun from the immediately following predicate (verbs, copulas, participles) and also gives high scores when the right side begins with comparative/quantifier tokens — both situations correlate with high measured contradiction. Conversely, some useful cuts are under-valued by blanket 'token after is preposition/determiner' penalties when both adjacent tokens are contentful (common-word splits inside technical/compound phrases). Add narrow, surface-anchored negative exceptions for name→verb, closing-parenthesis, noun→VBN and gerund→noun splits, and add a compensating upward exception for adjacent content-word splits to correct the under-trusts.",
+ "metrics": {
+  "overlap": 0.4106,
+  "overlap_by_T": {
+   "4": 0.476,
+   "6": 0.359,
+   "12": 0.375
+  },
+  "achv": 0.9007,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2348
+ }
+}

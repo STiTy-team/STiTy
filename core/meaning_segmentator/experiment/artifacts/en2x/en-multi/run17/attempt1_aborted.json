@@ -1,0 +1,163 @@
+{
+ "note": "중단된 1차 시도(15:08~15:58)의 게이트웨이 usage. 개정 후보 셋 중 shrink/neutral 이 분량 제약으로 전부 버려져 grow 전용이 된 것을 보고 중단했다. 재시작이 iter_* 를 덮어쓰므로 여기 남긴다 — cost_report 는 이 파일도 스냅샷으로 읽는다.",
+ "usage": {
+  "calls": 143,
+  "prompt_tokens": 557441,
+  "completion_tokens": 1531694,
+  "cached_tokens": 408320,
+  "truncated": 0,
+  "cost": 3.110876,
+  "by_purpose": {
+   "segment": {
+    "calls": 121,
+    "prompt_tokens": 456172,
+    "completion_tokens": 1418636,
+    "reasoning_tokens": 1342400,
+    "cached_tokens": 343936,
+    "cost": 2.873929
+   },
+   "segment_retry": {
+    "calls": 11,
+    "prompt_tokens": 36212,
+    "completion_tokens": 41488,
+    "reasoning_tokens": 40064,
+    "cached_tokens": 28672,
+    "cost": 0.085578
+   },
+   "prompt_engineer": {
+    "calls": 6,
+    "prompt_tokens": 41528,
+    "completion_tokens": 34414,
+    "reasoning_tokens": 10880,
+    "cached_tokens": 33920,
+    "cost": 0.071578
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 5841,
+    "completion_tokens": 24431,
+    "reasoning_tokens": 16000,
+    "cached_tokens": 1792,
+    "cost": 0.049919
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 16659,
+    "completion_tokens": 10145,
+    "reasoning_tokens": 6848,
+    "cached_tokens": 0,
+    "cost": 0.024455
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 1029,
+    "completion_tokens": 2580,
+    "reasoning_tokens": 2112,
+    "cached_tokens": 0,
+    "cost": 0.005417
+   }
+  }
+ },
+ "per_iter": {
+  "iter_00/metrics.json": {
+   "calls": 101,
+   "prompt_tokens": 348257,
+   "completion_tokens": 933223,
+   "cached_tokens": 263680,
+   "truncated": 0,
+   "cost": 1.894182,
+   "by_purpose": {
+    "segment": {
+     "calls": 87,
+     "prompt_tokens": 309352,
+     "completion_tokens": 871277,
+     "reasoning_tokens": 816064,
+     "cached_tokens": 236032,
+     "cost": 1.766785
+    },
+    "segment_retry": {
+     "calls": 10,
+     "prompt_tokens": 32035,
+     "completion_tokens": 34935,
+     "reasoning_tokens": 33664,
+     "cached_tokens": 25856,
+     "cost": 0.072061
+    },
+    "prompt_v0": {
+     "calls": 3,
+     "prompt_tokens": 5841,
+     "completion_tokens": 24431,
+     "reasoning_tokens": 16000,
+     "cached_tokens": 1792,
+     "cost": 0.049919
+    },
+    "profiler": {
+     "calls": 1,
+     "prompt_tokens": 1029,
+     "completion_tokens": 2580,
+     "reasoning_tokens": 2112,
+     "cached_tokens": 0,
+     "cost": 0.005417
+    }
+   }
+  },
+  "iter_01/metrics.json": {
+   "calls": 143,
+   "prompt_tokens": 557441,
+   "completion_tokens": 1531694,
+   "cached_tokens": 408320,
+   "truncated": 0,
+   "cost": 3.110876,
+   "by_purpose": {
+    "segment": {
+     "calls": 121,
+     "prompt_tokens": 456172,
+     "completion_tokens": 1418636,
+     "reasoning_tokens": 1342400,
+     "cached_tokens": 343936,
+     "cost": 2.873929
+    },
+    "segment_retry": {
+     "calls": 11,
+     "prompt_tokens": 36212,
+     "completion_tokens": 41488,
+     "reasoning_tokens": 40064,
+     "cached_tokens": 28672,
+     "cost": 0.085578
+    },
+    "prompt_engineer": {
+     "calls": 6,
+     "prompt_tokens": 41528,
+     "completion_tokens": 34414,
+     "reasoning_tokens": 10880,
+     "cached_tokens": 33920,
+     "cost": 0.071578
+    },
+    "prompt_v0": {
+     "calls": 3,
+     "prompt_tokens": 5841,
+     "completion_tokens": 24431,
+     "reasoning_tokens": 16000,
+     "cached_tokens": 1792,
+     "cost": 0.049919
+    },
+    "critic": {
+     "calls": 1,
+     "prompt_tokens": 16659,
+     "completion_tokens": 10145,
+     "reasoning_tokens": 6848,
+     "cached_tokens": 0,
+     "cost": 0.024455
+    },
+    "profiler": {
+     "calls": 1,
+     "prompt_tokens": 1029,
+     "completion_tokens": 2580,
+     "reasoning_tokens": 2112,
+     "cached_tokens": 0,
+     "cost": 0.005417
+    }
+   }
+  }
+ }
+}

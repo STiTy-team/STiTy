@@ -1,0 +1,37 @@
+{
+ "selected_kind": "grow",
+ "changelog": [
+  "Added a set of narrow immediate-adjacent override rules that lower scores when specific left/right token pairs indicate high contradiction or fragment risk (addresses measured over-trust cases).",
+  "Implemented a passive+temporal-adverb override (auxiliary + VBN immediately left of marker and temporal adverb immediately right) to force low scores (10–30) unless a strong stabilizer is present.",
+  "Implemented a product/name + present-participle override (left token is a product/name and right token ends in -ing) to lower scores to mid-low (10–45) when attachment risk is high, with exceptions for clear possessives or preposition anchors.",
+  "Implemented a named-entity + finite-verb override (left ends with capitalized named token and right token is a finite verb) to lower scores into 20–50, reflecting subject+predicate re-scoping risk.",
+  "Sharpened numeral+unit detection: when a numeral (digits or clear spelled number) is immediately left and a count/unit noun is immediately right, force very low (0–15). This consolidates two measured failure modes into a single precise rule.",
+  "Added a directional-adverb override: if the immediate-right token is a direction word/phrase (right, left, 'to the right', etc.), lower into 5–25 unless punctuation or comma-bound apposition stabilizes meaning.",
+  "Clarified the 'to' after passive/past rule: when immediate-right is 'to' and the tokens immediately before form a past or passive event (past-tense V or aux + VBN), lower into 10–35 to reflect infinitival re-scoping risk.",
+  "Gave these adjacent-token overrides clear precedence over the broader heuristics and added narrowly scoped exceptions (capitalization, intervening punctuation, possessives, and strong preposition anchors) to avoid over-correction seen in the rejected attempt.",
+  "Changed Decision Procedure to prioritize the single immediate token on each side and consult the second token only when needed to decide these adjacent overrides (different from the prior attempt that always looked two tokens).",
+  "Replaced Examples with 6 targeted sentences that exercise the new adjacent-token overrides and show distinct, tie-free numeric outputs."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 14277,
+   "holdout_achv": 0.4559
+  },
+  {
+   "kind": "neutral",
+   "len": 10528,
+   "holdout_achv": 0.4287
+  },
+  {
+   "kind": "shrink",
+   "len": 12456,
+   "holdout_achv": 0.3876
+  }
+ ]
+}

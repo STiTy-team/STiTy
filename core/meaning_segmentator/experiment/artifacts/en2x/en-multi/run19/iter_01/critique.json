@@ -1,0 +1,104 @@
+{
+ "cases": [
+  {
+   "id": "en_us_417",
+   "pos": 23,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "right_first is a common noun 'language'/'languages' when left_last is an adjectival/adverbial cluster (e.g. most/commonly/spoken)",
+   "blamed_rule": "Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "Scoring Rules: Downgrade markers whose right-side begins with 'language' or 'languages' when the left-side ends with a short adjectival/adverbial cluster (left_last in {most, commonly, spoken, more, less}) — target band 0–50.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "most",
+     "commonly",
+     "spoken",
+     "more",
+     "less"
+    ],
+    "right_first": [
+     "language",
+     "languages"
+    ]
+   }
+  },
+  {
+   "id": "en_us_66",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker splits a numeric+unit phrase: left_last is NUM and right_first is a multiplier/unit word (e.g. million, billion, percent, thousand)",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "Scoring Rules: Do NOT apply the generic numerator boost when the marker splits a numeric + unit/scale token sequence. If left_last is NUM and right_first is in {million, billion, thousand, percent, % ,k,m,mi,kg,miles,signatures} then move marker into a lower target band 0–40.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "billion",
+     "thousand",
+     "percent",
+     "%",
+     "k",
+     "m",
+     "mi",
+     "kg",
+     "miles",
+     "signatures",
+     "signature"
+    ]
+   }
+  },
+  {
+   "id": "en_us_276",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "left_last is a short organization/name token (e.g. parenthood, university, inc) and right_first is a subordinating token like 'due'/'because'/'to' that continues the clause",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value.",
+   "proposed_rule": "Scoring Rules: Reduce boost for cuts that end immediately after organization/name tokens when the right-first token is a subordinating word. If left_last is in {foundation, association, parenthood, university, corporation, company, inc, ltd, group, authority, service} AND right_first in {due, because, to, on, that, which, who, of} then move marker to target band 0–45.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "foundation",
+     "association",
+     "parenthood",
+     "university",
+     "corporation",
+     "company",
+     "inc",
+     "ltd",
+     "group",
+     "authority",
+     "service"
+    ],
+    "right_first": [
+     "due",
+     "because",
+     "to",
+     "on",
+     "that",
+     "which",
+     "who",
+     "of"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The prompt systematically over-boosts cuts adjacent to surface tokens that look lexical (numbers, short names, adjective clusters) even when those cuts split multi-token constructs (numeric+unit, adjectival cluster before a head noun) or leave a fragment that the remainder will resolve/contradict. Add targeted downgrades: (1) block numeric boosts that split number+unit phrases, (2) avoid treating adjectival clusters before the noun 'language' as independently high, and (3) reduce name/organization boosts when the right side begins a subordinating continuation (due/because/to). These rules keep the existing high-score heuristics but prevent the common over-trust mistakes. ",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

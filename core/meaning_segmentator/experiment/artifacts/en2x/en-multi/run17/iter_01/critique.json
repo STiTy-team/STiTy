@@ -1,0 +1,107 @@
+{
+ "cases": [
+  {
+   "id": "en_us_66",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "immediately before is a decimal numeral (e.g., '1.2') and immediately after is a lowercase unit word (million, percent, inches, m, km, etc.)",
+   "blamed_rule": "cuts adjacent to numerals/dates often",
+   "proposed_rule": "For [Scoring Rules]: restrict the existing 'numeral → boost' to only apply when the token after the numeral is punctuation, sentence end, or a capitalized token (proper name). If the token after the numeral is a lowercase unit/quantity word (million, percent, inches, m, etc.) or a lowercased common noun, lower the score into the 10–40 band.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token immediately before ends with a closing quotation mark (\") and token immediately after begins a clause (e.g., because, since, causing)",
+   "blamed_rule": "lexical token translators typically",
+   "proposed_rule": "For [Scoring Rules]: when the token before the marker ends with a closing quote (\" or single-quote) or the token after begins with an opening quote, reduce the boost unless the next token after the quote is punctuation or a sentence end; target band 0–40 for such quote-split cuts.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_278",
+   "pos": 18,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "immediately before is a numeral (e.g., '46') and immediately after is a unit word (percent, % or 'percent of') or part of a quantity phrase",
+   "blamed_rule": "cuts adjacent to numerals/dates often",
+   "proposed_rule": "For [Scoring Rules]: do not count a numeral as a reliable boundary if the right-side token is a unit/quantity word or if left-side contains quantifier words ('over', 'about'); lower such cuts into the 10–40 band.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 4,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "immediately before is a numeral (e.g., '6.34') and immediately after is a measurement unit word (inches, cm, m, etc.)",
+   "blamed_rule": "cuts adjacent to numerals/dates often",
+   "proposed_rule": "For [Scoring Rules]: suppress the numeral adjacency boost when the token after the numeral is a common measurement unit (inches, cm, m, lb, kg, million, percent); map those cuts to a lower band (10–40) because measurement phrases should remain intact.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "immediately after the marker is an opening parenthesis '(' or the marker splits a capitalized multiword name from a following parenthetical/explanatory phrase",
+   "blamed_rule": "short fixed named phrases",
+   "proposed_rule": "For [Scoring Rules]: sharpen the 'named-phrase → boost' to require that the token after the named phrase is punctuation, sentence end, or a capitalized token; if the next token is '(' or a lowercase explanatory token, lower the score into the 10–50 band.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 7,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker falls after a verb phrase containing explicit negation nearby (e.g., 'does not issue' / 'doesn't ...')",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token",
+   "proposed_rule": "For [Scoring Rules]: detect verb phrases with explicit negation in the preceding two tokens (not, n't, never) and reduce their boundary score to 0–30, since negation often interacts with the remainder and raises contradiction risk.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1050",
+   "pos": 12,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker falls before a contraction/pronoun starting a continuation clause (e.g., \"it's\", \"it's\") immediately after a comma",
+   "blamed_rule": "comma or parenthetical comma surrounds",
+   "proposed_rule": "For [Scoring Rules]: when a comma precedes the marker and the token after the marker is a clausal-starter contraction/pronoun (it's, it's, it, they, he, she), reduce the boundary score into the 0–40 band because such continuations often change entailment.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_417",
+   "pos": 23,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "marker leaves an adjective/adverbial cluster on the left (e.g., 'most commonly spoken') with the head noun on the right",
+   "blamed_rule": "cuts that separate two independently meaningful lexical clusters",
+   "proposed_rule": "For [Scoring Rules]: penalize cuts that leave a left-side ending in a comparative/superlative/modifier cluster (tokens like 'most', 'more', words ending in -ly or 'commonly') with a common noun immediately on the right; map such cuts to 10–40 band.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker splits a multi-token organization/label containing a parenthetical abbreviation (e.g., 'Daesh (ISIL)') where one side keeps the abbreviation and the other side keeps the full name",
+   "blamed_rule": "short fixed named phrases",
+   "proposed_rule": "For [Scoring Rules]: avoid boosting boundaries that split name + parenthetical abbreviation pairs; if either side ends or begins with '(' or ')' adjacent to an organization token, lower score to 10–40.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties arise when multiple markers trigger the same surface heuristics (same lexical signals) so the model gives them equal bias; currently ties are resolved by position (earlier wins).",
+ "summary": "The prompt over-boosts boundaries that look lexically 'informative' (numerals, named phrases, quoted strings) without enough negative checks for measurement phrases, parentheticals, or clause-continuation tokens; as a result it ranks many cuts high that the entailment/quality measurement finds contradictory. Re-anchor existing boosts (numeral/name/lexical boosts) to require stronger boundary signals (punctuation, sentence end, capitalization) and actively lower scores when immediate neighbors indicate measurement-unit attachment, closing quotes/parentheticals, negation, or clausal continuations.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

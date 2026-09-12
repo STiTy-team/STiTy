@@ -1,0 +1,41 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 2,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Scoring Rules: Added a targeted numeric+unit exception that prevents the generic numeral boost when a marker splits a number from a unit/scale token (e.g., million, billion, percent); such markers are biased downward into a lower target band (0–40). This addresses the en_us_66 over-trust case.",
+  "Scoring Rules: Added a targeted downgrade for markers that split adjectival clusters from the noun 'language' (common adjectives such as local/national/official/etc. on the left and 'language' on the right); bias these markers into a lower target band (0–40) to avoid over-scoring isolated adjectives.",
+  "Scoring Rules: Added a targeted downgrade for name/organization boosts when the right-side begins a subordinating continuation (right_first in {due, because, to}); if left_last looks like a name/org (capitalized token or common org suffix) and right_first is subordinating, bias the marker downward into 0–40.",
+  "Examples: Replaced one example (Officials in the capital...) with a focused number+unit split example illustrating the numeric+unit exception; kept the remaining examples but updated counts to keep all outputs consistent and unique."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 14465,
+   "holdout_delta": {
+    "mean_delta": 0.0134,
+    "se_delta": 0.0283,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4198
+  },
+  {
+   "kind": "shrink",
+   "len": 10894,
+   "holdout_delta": {
+    "mean_delta": -0.0032,
+    "se_delta": 0.029,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4032
+  }
+ ]
+}

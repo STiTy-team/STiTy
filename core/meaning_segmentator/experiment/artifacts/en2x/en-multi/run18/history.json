@@ -1,0 +1,983 @@
+[
+ {
+  "version": 0,
+  "adopted": true,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8866,
+   "util": 0.6918,
+   "util_oracle": 0.776,
+   "overlap": 0.3715,
+   "overlap_by_T": {
+    "4": 0.444,
+    "6": 0.336,
+    "12": 0.305
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1724,
+   "spearman_within": 0.2128,
+   "calibration": {
+    "00-09": {
+     "n": 129,
+     "label_mean": 60.6
+    },
+    "10-19": {
+     "n": 157,
+     "label_mean": 61.2
+    },
+    "20-29": {
+     "n": 138,
+     "label_mean": 62.5
+    },
+    "30-39": {
+     "n": 125,
+     "label_mean": 64.1
+    },
+    "40-49": {
+     "n": 137,
+     "label_mean": 64.3
+    },
+    "50-59": {
+     "n": 144,
+     "label_mean": 65.9
+    },
+    "60-69": {
+     "n": 153,
+     "label_mean": 64.9
+    },
+    "70-79": {
+     "n": 173,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 167,
+     "label_mean": 65.7
+    },
+    "90-99": {
+     "n": 229,
+     "label_mean": 69.0
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9674,
+   "achv": 0.9014,
+   "util": 0.7057,
+   "util_oracle": 0.7803,
+   "overlap": 0.4276,
+   "overlap_by_T": {
+    "4": 0.497,
+    "6": 0.409,
+    "12": 0.323
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1984,
+   "spearman_within": 0.2539,
+   "calibration": {
+    "00-09": {
+     "n": 396,
+     "label_mean": 61.5
+    },
+    "10-19": {
+     "n": 380,
+     "label_mean": 63.7
+    },
+    "20-29": {
+     "n": 273,
+     "label_mean": 63.0
+    },
+    "30-39": {
+     "n": 231,
+     "label_mean": 63.6
+    },
+    "40-49": {
+     "n": 239,
+     "label_mean": 63.3
+    },
+    "50-59": {
+     "n": 250,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 329,
+     "label_mean": 65.1
+    },
+    "70-79": {
+     "n": 366,
+     "label_mean": 66.5
+    },
+    "80-89": {
+     "n": 410,
+     "label_mean": 67.2
+    },
+    "90-99": {
+     "n": 525,
+     "label_mean": 69.6
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "score_train": 0.3715,
+  "score_dev": 0.4276,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 12032,
+  "usage": {
+   "calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "cached_tokens": 0,
+   "truncated": 0,
+   "cost": 0.0,
+   "by_purpose": {}
+  }
+ },
+ {
+  "version": 1,
+  "adopted": true,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9007,
+   "util": 0.702,
+   "util_oracle": 0.776,
+   "overlap": 0.4106,
+   "overlap_by_T": {
+    "4": 0.476,
+    "6": 0.359,
+    "12": 0.375
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.181,
+   "spearman_within": 0.2348,
+   "calibration": {
+    "00-09": {
+     "n": 249,
+     "label_mean": 61.2
+    },
+    "10-19": {
+     "n": 211,
+     "label_mean": 62.8
+    },
+    "20-29": {
+     "n": 132,
+     "label_mean": 62.4
+    },
+    "30-39": {
+     "n": 108,
+     "label_mean": 62.7
+    },
+    "40-49": {
+     "n": 94,
+     "label_mean": 65.3
+    },
+    "50-59": {
+     "n": 107,
+     "label_mean": 66.8
+    },
+    "60-69": {
+     "n": 122,
+     "label_mean": 65.8
+    },
+    "70-79": {
+     "n": 164,
+     "label_mean": 64.8
+    },
+    "80-89": {
+     "n": 154,
+     "label_mean": 66.6
+    },
+    "90-99": {
+     "n": 211,
+     "label_mean": 70.1
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9721,
+   "achv": 0.9112,
+   "util": 0.7132,
+   "util_oracle": 0.7803,
+   "overlap": 0.468,
+   "overlap_by_T": {
+    "4": 0.524,
+    "6": 0.455,
+    "12": 0.358
+   },
+   "tie_rate": 0.0018,
+   "tie_at_cut_rate": 0.0017,
+   "spearman_pooled": 0.2145,
+   "spearman_within": 0.266,
+   "calibration": {
+    "00-09": {
+     "n": 553,
+     "label_mean": 62.3
+    },
+    "10-19": {
+     "n": 506,
+     "label_mean": 62.9
+    },
+    "20-29": {
+     "n": 319,
+     "label_mean": 63.7
+    },
+    "30-39": {
+     "n": 242,
+     "label_mean": 63.2
+    },
+    "40-49": {
+     "n": 229,
+     "label_mean": 61.8
+    },
+    "50-59": {
+     "n": 212,
+     "label_mean": 64.8
+    },
+    "60-69": {
+     "n": 269,
+     "label_mean": 66.2
+    },
+    "70-79": {
+     "n": 310,
+     "label_mean": 66.6
+    },
+    "80-89": {
+     "n": 324,
+     "label_mean": 67.0
+    },
+    "90-99": {
+     "n": 435,
+     "label_mean": 72.2
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 6
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The governor also <SEG:50> stated, <SEG:99> \"Today, <SEG:90> we <SEG:5> learned <SEG:63> that <SEG:2> some <SEG:10> school <SEG:12> aged <SEG:15> children <SEG:70> have <SEG:30> been <SEG:35> identified <SEG:55> as <SEG:25> having <SEG:20> had <SEG:40> contact <SEG:82> with the patient."
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Periodic rhythms, which <SEG:4> are <SEG:8> not <SEG:12> simply <SEG:16> responses <SEG:70> to <SEG:7> external <SEG:22> periodic <SEG:10> cues, <SEG:99> have <SEG:14> been <SEG:92> documented <SEG:78> for <SEG:6> most <SEG:9> living <SEG:18> beings, <SEG:74> including <SEG:5> bacteria, <SEG:88> fun"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "We experience time <SEG:60> as <SEG:10> a <SEG:6> series <SEG:70> of <SEG:22> events <SEG:95> passing <SEG:85> from <SEG:28> the <SEG:18> future <SEG:50> through <SEG:30> the <SEG:15> present <SEG:78>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4106,
+  "score_dev": 0.468,
+  "paired_dev": {
+   "mean_delta": 0.0404,
+   "se_delta": 0.0181,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Add narrow negative exception penalizing cuts that separate a numeral token from an immediately following scale/unit token (addresses en_us_66, en_us_278, en_us_203, en_us_1050): reduces false high scores where reliable-looking numerals are split from their units.",
+   "Penalize cuts where the token immediately after the marker is a causal/subordinating connector (explicitly include 'because', 'causing', 'so', 'therefore', 'hence') especially when left ends a quoted phrase or standalone NP (addresses en_us_360): avoids over-trusting left-side reliability when remainder often modifies/overturns it.",
+   "Reduce boosts for cuts that follow a named organization/place when the right side begins with an appositional parenthetical or immediate abbreviation (right token '(' or comma then '(' or '(' + uppercase) (addresses en_us_738, en_us_1000): prevents splitting names from clarifying parentheticals/roles.",
+   "Treat repeated-unit patterns (numeral on one side + unit token immediately on the other) as bad splits (addresses en_us_1050): same mechanism as numeral↔unit rule to stop over-trusting repeated unit separations.",
+   "Lower scores for cuts that leave an adjectival/participial modifier phrase at the left that syntactically expects a following noun (examples: 'spoken', 'reported', 'estimated', possibly preceded by adverbs like 'most', 'commonly') when the right begins with a common noun (addresses en_us_417): avoids boosting adjectival fragments that lose their noun anchor.",
+   "Add a deterministic tie-break bias: when checklist signals produce exact ties, apply a small deterministic penalty to numeral–unit splits and parenthetical/appositive splits so they no longer tie (implements the critique 'tie_fix').",
+   "Integrated all new negative exceptions as narrowly-scoped, surface-token–anchored tendencies and preserved existing general high/low tendencies to retain useful prior behavior (merges critique proposals with original rules)."
+  ],
+  "prompt_len": 15132,
+  "usage": {
+   "calls": 122,
+   "prompt_tokens": 497494,
+   "completion_tokens": 1348574,
+   "cached_tokens": 348544,
+   "truncated": 0,
+   "cost": 2.743099,
+   "by_purpose": {
+    "segment": {
+     "calls": 104,
+     "prompt_tokens": 411586,
+     "completion_tokens": 1264933,
+     "reasoning_tokens": 1199360,
+     "cached_tokens": 308736,
+     "cost": 2.563297
+    },
+    "segment_retry": {
+     "calls": 13,
+     "prompt_tokens": 45553,
+     "completion_tokens": 51900,
+     "reasoning_tokens": 50304,
+     "cached_tokens": 34048,
+     "cost": 0.107527
+    },
+    "prompt_engineer": {
+     "calls": 4,
+     "prompt_tokens": 23696,
+     "completion_tokens": 23829,
+     "reasoning_tokens": 9536,
+     "cached_tokens": 5760,
+     "cost": 0.052286
+    },
+    "critic": {
+     "calls": 1,
+     "prompt_tokens": 16659,
+     "completion_tokens": 7912,
+     "reasoning_tokens": 5632,
+     "cached_tokens": 0,
+     "cost": 0.019989
+    }
+   }
+  }
+ },
+ {
+  "version": 2,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9007,
+   "util": 0.702,
+   "util_oracle": 0.776,
+   "overlap": 0.4106,
+   "overlap_by_T": {
+    "4": 0.476,
+    "6": 0.359,
+    "12": 0.375
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.181,
+   "spearman_within": 0.2348,
+   "calibration": {
+    "00-09": {
+     "n": 249,
+     "label_mean": 61.2
+    },
+    "10-19": {
+     "n": 211,
+     "label_mean": 62.8
+    },
+    "20-29": {
+     "n": 132,
+     "label_mean": 62.4
+    },
+    "30-39": {
+     "n": 108,
+     "label_mean": 62.7
+    },
+    "40-49": {
+     "n": 94,
+     "label_mean": 65.3
+    },
+    "50-59": {
+     "n": 107,
+     "label_mean": 66.8
+    },
+    "60-69": {
+     "n": 122,
+     "label_mean": 65.8
+    },
+    "70-79": {
+     "n": 164,
+     "label_mean": 64.8
+    },
+    "80-89": {
+     "n": 154,
+     "label_mean": 66.6
+    },
+    "90-99": {
+     "n": 211,
+     "label_mean": 70.1
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9721,
+   "achv": 0.9112,
+   "util": 0.7132,
+   "util_oracle": 0.7803,
+   "overlap": 0.468,
+   "overlap_by_T": {
+    "4": 0.524,
+    "6": 0.455,
+    "12": 0.358
+   },
+   "tie_rate": 0.0018,
+   "tie_at_cut_rate": 0.0017,
+   "spearman_pooled": 0.2145,
+   "spearman_within": 0.266,
+   "calibration": {
+    "00-09": {
+     "n": 553,
+     "label_mean": 62.3
+    },
+    "10-19": {
+     "n": 506,
+     "label_mean": 62.9
+    },
+    "20-29": {
+     "n": 319,
+     "label_mean": 63.7
+    },
+    "30-39": {
+     "n": 242,
+     "label_mean": 63.2
+    },
+    "40-49": {
+     "n": 229,
+     "label_mean": 61.8
+    },
+    "50-59": {
+     "n": 212,
+     "label_mean": 64.8
+    },
+    "60-69": {
+     "n": 269,
+     "label_mean": 66.2
+    },
+    "70-79": {
+     "n": 310,
+     "label_mean": 66.6
+    },
+    "80-89": {
+     "n": 324,
+     "label_mean": 67.0
+    },
+    "90-99": {
+     "n": 435,
+     "label_mean": 72.2
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 6
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The governor also <SEG:50> stated, <SEG:99> \"Today, <SEG:90> we <SEG:5> learned <SEG:63> that <SEG:2> some <SEG:10> school <SEG:12> aged <SEG:15> children <SEG:70> have <SEG:30> been <SEG:35> identified <SEG:55> as <SEG:25> having <SEG:20> had <SEG:40> contact <SEG:82> with the patient."
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Periodic rhythms, which <SEG:4> are <SEG:8> not <SEG:12> simply <SEG:16> responses <SEG:70> to <SEG:7> external <SEG:22> periodic <SEG:10> cues, <SEG:99> have <SEG:14> been <SEG:92> documented <SEG:78> for <SEG:6> most <SEG:9> living <SEG:18> beings, <SEG:74> including <SEG:5> bacteria, <SEG:88> fun"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "We experience time <SEG:60> as <SEG:10> a <SEG:6> series <SEG:70> of <SEG:22> events <SEG:95> passing <SEG:85> from <SEG:28> the <SEG:18> future <SEG:50> through <SEG:30> the <SEG:15> present <SEG:78>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4106,
+  "score_dev": 0.468,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 15132,
+  "usage": {
+   "calls": 165,
+   "prompt_tokens": 700777,
+   "completion_tokens": 1837869,
+   "cached_tokens": 471808,
+   "truncated": 0,
+   "cost": 3.744775,
+   "by_purpose": {
+    "segment": {
+     "calls": 138,
+     "prompt_tokens": 547730,
+     "completion_tokens": 1699104,
+     "reasoning_tokens": 1612608,
+     "cached_tokens": 401792,
+     "cost": 3.444737
+    },
+    "prompt_engineer": {
+     "calls": 10,
+     "prompt_tokens": 69560,
+     "completion_tokens": 59986,
+     "reasoning_tokens": 19904,
+     "cached_tokens": 31872,
+     "cost": 0.130191
+    },
+    "segment_retry": {
+     "calls": 15,
+     "prompt_tokens": 50894,
+     "completion_tokens": 59716,
+     "reasoning_tokens": 57920,
+     "cached_tokens": 38144,
+     "cost": 0.123573
+    },
+    "critic": {
+     "calls": 2,
+     "prompt_tokens": 32593,
+     "completion_tokens": 19063,
+     "reasoning_tokens": 14528,
+     "cached_tokens": 0,
+     "cost": 0.046274
+    }
+   }
+  }
+ },
+ {
+  "version": 3,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9007,
+   "util": 0.702,
+   "util_oracle": 0.776,
+   "overlap": 0.4106,
+   "overlap_by_T": {
+    "4": 0.476,
+    "6": 0.359,
+    "12": 0.375
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.181,
+   "spearman_within": 0.2348,
+   "calibration": {
+    "00-09": {
+     "n": 249,
+     "label_mean": 61.2
+    },
+    "10-19": {
+     "n": 211,
+     "label_mean": 62.8
+    },
+    "20-29": {
+     "n": 132,
+     "label_mean": 62.4
+    },
+    "30-39": {
+     "n": 108,
+     "label_mean": 62.7
+    },
+    "40-49": {
+     "n": 94,
+     "label_mean": 65.3
+    },
+    "50-59": {
+     "n": 107,
+     "label_mean": 66.8
+    },
+    "60-69": {
+     "n": 122,
+     "label_mean": 65.8
+    },
+    "70-79": {
+     "n": 164,
+     "label_mean": 64.8
+    },
+    "80-89": {
+     "n": 154,
+     "label_mean": 66.6
+    },
+    "90-99": {
+     "n": 211,
+     "label_mean": 70.1
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9721,
+   "achv": 0.9112,
+   "util": 0.7132,
+   "util_oracle": 0.7803,
+   "overlap": 0.468,
+   "overlap_by_T": {
+    "4": 0.524,
+    "6": 0.455,
+    "12": 0.358
+   },
+   "tie_rate": 0.0018,
+   "tie_at_cut_rate": 0.0017,
+   "spearman_pooled": 0.2145,
+   "spearman_within": 0.266,
+   "calibration": {
+    "00-09": {
+     "n": 553,
+     "label_mean": 62.3
+    },
+    "10-19": {
+     "n": 506,
+     "label_mean": 62.9
+    },
+    "20-29": {
+     "n": 319,
+     "label_mean": 63.7
+    },
+    "30-39": {
+     "n": 242,
+     "label_mean": 63.2
+    },
+    "40-49": {
+     "n": 229,
+     "label_mean": 61.8
+    },
+    "50-59": {
+     "n": 212,
+     "label_mean": 64.8
+    },
+    "60-69": {
+     "n": 269,
+     "label_mean": 66.2
+    },
+    "70-79": {
+     "n": 310,
+     "label_mean": 66.6
+    },
+    "80-89": {
+     "n": 324,
+     "label_mean": 67.0
+    },
+    "90-99": {
+     "n": 435,
+     "label_mean": 72.2
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 6
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The governor also <SEG:50> stated, <SEG:99> \"Today, <SEG:90> we <SEG:5> learned <SEG:63> that <SEG:2> some <SEG:10> school <SEG:12> aged <SEG:15> children <SEG:70> have <SEG:30> been <SEG:35> identified <SEG:55> as <SEG:25> having <SEG:20> had <SEG:40> contact <SEG:82> with the patient."
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Periodic rhythms, which <SEG:4> are <SEG:8> not <SEG:12> simply <SEG:16> responses <SEG:70> to <SEG:7> external <SEG:22> periodic <SEG:10> cues, <SEG:99> have <SEG:14> been <SEG:92> documented <SEG:78> for <SEG:6> most <SEG:9> living <SEG:18> beings, <SEG:74> including <SEG:5> bacteria, <SEG:88> fun"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "We experience time <SEG:60> as <SEG:10> a <SEG:6> series <SEG:70> of <SEG:22> events <SEG:95> passing <SEG:85> from <SEG:28> the <SEG:18> future <SEG:50> through <SEG:30> the <SEG:15> present <SEG:78>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4106,
+  "score_dev": 0.468,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 15132,
+  "usage": {
+   "calls": 224,
+   "prompt_tokens": 964987,
+   "completion_tokens": 2482754,
+   "cached_tokens": 666240,
+   "truncated": 0,
+   "cost": 5.056851,
+   "by_purpose": {
+    "segment": {
+     "calls": 189,
+     "prompt_tokens": 747781,
+     "completion_tokens": 2296296,
+     "reasoning_tokens": 2178368,
+     "cached_tokens": 553344,
+     "cost": 4.655035
+    },
+    "prompt_engineer": {
+     "calls": 15,
+     "prompt_tokens": 109474,
+     "completion_tokens": 95928,
+     "reasoning_tokens": 35008,
+     "cached_tokens": 56064,
+     "cost": 0.20661
+    },
+    "segment_retry": {
+     "calls": 17,
+     "prompt_tokens": 58829,
+     "completion_tokens": 63414,
+     "reasoning_tokens": 61504,
+     "cached_tokens": 44800,
+     "cost": 0.131455
+    },
+    "critic": {
+     "calls": 3,
+     "prompt_tokens": 48903,
+     "completion_tokens": 27116,
+     "reasoning_tokens": 20544,
+     "cached_tokens": 12032,
+     "cost": 0.063751
+    }
+   }
+  }
+ },
+ {
+  "version": 4,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9004,
+   "util": 0.7022,
+   "util_oracle": 0.776,
+   "overlap": 0.3985,
+   "overlap_by_T": {
+    "4": 0.461,
+    "6": 0.347,
+    "12": 0.344
+   },
+   "tie_rate": 0.0039,
+   "tie_at_cut_rate": 0.0038,
+   "spearman_pooled": 0.1827,
+   "spearman_within": 0.2597,
+   "calibration": {
+    "00-09": {
+     "n": 255,
+     "label_mean": 60.3
+    },
+    "10-19": {
+     "n": 235,
+     "label_mean": 63.2
+    },
+    "20-29": {
+     "n": 158,
+     "label_mean": 66.2
+    },
+    "30-39": {
+     "n": 131,
+     "label_mean": 65.1
+    },
+    "40-49": {
+     "n": 126,
+     "label_mean": 63.8
+    },
+    "50-59": {
+     "n": 102,
+     "label_mean": 65.8
+    },
+    "60-69": {
+     "n": 123,
+     "label_mean": 63.9
+    },
+    "70-79": {
+     "n": 123,
+     "label_mean": 66.1
+    },
+    "80-89": {
+     "n": 124,
+     "label_mean": 66.3
+    },
+    "90-99": {
+     "n": 175,
+     "label_mean": 70.4
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9814,
+   "achv": 0.9039,
+   "util": 0.7069,
+   "util_oracle": 0.7803,
+   "overlap": 0.4257,
+   "overlap_by_T": {
+    "4": 0.494,
+    "6": 0.411,
+    "12": 0.309
+   },
+   "tie_rate": 0.0059,
+   "tie_at_cut_rate": 0.0017,
+   "spearman_pooled": 0.2013,
+   "spearman_within": 0.2542,
+   "calibration": {
+    "00-09": {
+     "n": 622,
+     "label_mean": 62.9
+    },
+    "10-19": {
+     "n": 582,
+     "label_mean": 63.2
+    },
+    "20-29": {
+     "n": 334,
+     "label_mean": 63.3
+    },
+    "30-39": {
+     "n": 258,
+     "label_mean": 64.9
+    },
+    "40-49": {
+     "n": 230,
+     "label_mean": 62.7
+    },
+    "50-59": {
+     "n": 195,
+     "label_mean": 63.9
+    },
+    "60-69": {
+     "n": 256,
+     "label_mean": 65.5
+    },
+    "70-79": {
+     "n": 262,
+     "label_mean": 67.2
+    },
+    "80-89": {
+     "n": 271,
+     "label_mean": 68.7
+    },
+    "90-99": {
+     "n": 389,
+     "label_mean": 71.2
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 4
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Nevertheless, all French-speaking <SEG:75> Belgians <SEG:82> and <SEG:27> Swiss <SEG:86> would <SEG:51> have <SEG:53> learned <SEG:54> standard <SEG:44> French <SEG:90> in <SEG:40> school, <SEG:96> so <SEG:36> they <SEG:74> would <SEG:71> be <SEG:68> able <SEG:65> to <SEG:62> understand <SEG:58> you"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Car camping is <SEG:40> possible <SEG:60> if <SEG:45> you <SEG:55> have <SEG:36> a <SEG:30> large <SEG:20> minivan, <SEG:100> SUV, <SEG:75> Sedan <SEG:68> or <SEG:88> Station <SEG:16> Wagon <SEG:80> with <SEG:12> seats <SEG:10> that lay down ."
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "They are superior <SEG:90> to <SEG:48> web <SEG:60> proxies <SEG:76> for <SEG:30> several <SEG:20> reasons: <SEG:100> They <SEG:54> re-route <SEG:42> all <SEG:36> Internet <SEG:82> traffic, <SEG:70>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.3985,
+  "score_dev": 0.4257,
+  "paired_dev": {
+   "mean_delta": -0.0423,
+   "se_delta": 0.0163,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Refined the comma/adjunct upward-bias into a conditional: do not apply that upward bias when the token after the marker is an auxiliary/copula — addresses en_us_203 (prevents over-trust when a copula/predicate reinterprets a comma-terminated adjunct).",
+   "Added a negative exception for proper-name (capitalized) immediately before + lexical verb immediately after, lowering score in that surface pattern — addresses en_us_276 (prevents over-trusting bare names that are immediately reinterpreted by a following predicate).",
+   "Added a negative exception for name/organization cluster (including immediately-closed parenthetical acronym) before + reporting/lexical verb after, lowering the usual name boost — addresses en_us_738 and en_us_1000 (stops splitting names from their predicate or clarifying parentheticals).",
+   "Added a negative exception for left-end closing parenthesis (')') immediately before the marker when the token after begins a role/title common noun, lowering score — addresses en_us_1000 (prevents treating a parenthetical-terminated name as independently faithful when a descriptive predicate follows).",
+   "Made participial rule symmetric: penalize both token_before = VBN + token_after = common noun AND token_after = VBN + token_before = common noun — addresses en_us_687 (catches splits that strand the participle on either side).",
+   "Added negative exception for left-side light-pronoun + auxiliary clusters (it/they/he + have/has/had/is/was/etc.) when the token after begins with a negator/determiner ('no','a','the'), lowering score — addresses en_us_1570 (prevents over-valuing auxiliary-led fragments).",
+   "Added negative exception for finite lexical-verb before + common noun/pronoun after (likely verb→object splits), lowering score — addresses en_us_1106 (reduces over-trust at verb→object splits).",
+   "Added positive exception: raise score when the token immediately after the marker begins a contiguous capitalized multiword name cluster (two or more title-case tokens), increasing score — addresses en_us_1294 (recognizes that exposing the start of a multiword proper name often yields independent translatability).",
+   "Extended deterministic tie-avoidance in Decision Procedure to prefer not cutting immediately before auxiliaries/copulas when the left ends with a comma-terminated adjunct (tie breaks toward the non-auxiliary cut) — implements the critique 'tie_fix'.",
+   "Integrated all new narrow, surface-anchored exceptions while preserving prior numeral↔unit, repeated-unit, parenthetical/appositive, causal-connector, and participial-left signals; clarified surface-form checklist to include the new checks."
+  ],
+  "prompt_len": 18631,
+  "usage": {
+   "calls": 322,
+   "prompt_tokens": 1450856,
+   "completion_tokens": 3804522,
+   "cached_tokens": 1048448,
+   "truncated": 0,
+   "cost": 7.735857,
+   "by_purpose": {
+    "segment": {
+     "calls": 276,
+     "prompt_tokens": 1156723,
+     "completion_tokens": 3552650,
+     "reasoning_tokens": 3379392,
+     "cached_tokens": 884864,
+     "cost": 7.195386
+    },
+    "prompt_engineer": {
+     "calls": 19,
+     "prompt_tokens": 144183,
+     "completion_tokens": 121832,
+     "reasoning_tokens": 43584,
+     "cached_tokens": 72960,
+     "cost": 0.263294
+    },
+    "segment_retry": {
+     "calls": 23,
+     "prompt_tokens": 84075,
+     "completion_tokens": 94617,
+     "reasoning_tokens": 91904,
+     "cached_tokens": 66560,
+     "cost": 0.195277
+    },
+    "critic": {
+     "calls": 4,
+     "prompt_tokens": 65875,
+     "completion_tokens": 35423,
+     "reasoning_tokens": 27136,
+     "cached_tokens": 24064,
+     "cost": 0.0819
+    }
+   }
+  }
+ }
+]

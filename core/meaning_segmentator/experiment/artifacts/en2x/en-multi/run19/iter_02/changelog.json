@@ -1,0 +1,50 @@
+{
+ "selected_kind": "neutral",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 3,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Scoring Rules: Soften the NUM+UNIT treatment (traceable to en_us_66). Instead of moving numeral↔unit splits into a low band, reduce the generic numeral boost so such splits rank in a mid-high preference band (still considered but not topmost). This lowers over-trust on split numeric expressions while preserving useful numeral signal.",
+  "Scoring Rules: Removed previously added targeted downgrades (proper-name-substring and left-lexical+subordinator) that were not supported by the measured critique to avoid over-broad removal of safe high-scoring cuts; changes are limited and traceable to the en_us_66 case.",
+  "Decision Procedure: Restrict explicit targeted-downgrade application to the NUM+UNIT exception and retain the existing deterministic tie-break (earlier marker wins) to avoid reintroducing a rejected tie-break variant. Tie handling remains deterministic and unchanged."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]"
+ ],
+ "candidates": [
+  {
+   "kind": "neutral",
+   "len": 9936,
+   "holdout_delta": {
+    "mean_delta": 0.01,
+    "se_delta": 0.0291,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4164
+  },
+  {
+   "kind": "grow",
+   "len": 12995,
+   "holdout_delta": {
+    "mean_delta": -0.0034,
+    "se_delta": 0.0292,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.403
+  },
+  {
+   "kind": "shrink",
+   "len": 9003,
+   "holdout_delta": {
+    "mean_delta": -0.0506,
+    "se_delta": 0.0278,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3559
+  }
+ ]
+}

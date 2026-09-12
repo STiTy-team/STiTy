@@ -1,0 +1,87 @@
+{
+ "cases": [
+  {
+   "id": "en_us_317",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left ends with auxiliary + past-participle (been/was + VBN) immediately before the marker; token after marker is a temporal adverb (previously/earlier/recently)",
+   "blamed_rule": "",
+   "proposed_rule": "Scoring Rules: If the token immediately before the marker is an auxiliary (been/was/is) followed by a past-participial form and the token immediately after the marker is a temporal adverb (previously, earlier, recently, formerly), reduce the score into the low band 10–30 (do not treat the left VBN as a standalone reliable chunk).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1379",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left ends with a product/name (iPods) after a preposition; token after marker begins with a present-participle (-ing)",
+   "blamed_rule": "Named entities, numerals, dates, short fixed expressions: tend to increase the chance both sides translate well; cut points that isolate these can be rated higher.",
+   "proposed_rule": "Scoring Rules: If the left token is a product/brand/common-noun for an item (capitalized or common form) and the token immediately after the marker is a present-participle (-ing) verb, lower the score to the mid-to-low band 10–45 (present participles often attach to the preceding noun and risk contradiction/attachment errors).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_337",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left isolates a multiword named entity (capitalized group/name) and token after marker is a finite verb (performed, did, is)",
+   "blamed_rule": "Named entities, numerals, dates, short fixed expressions: tend to increase the chance both sides translate well; cut points that isolate these can be rated higher.",
+   "proposed_rule": "Scoring Rules: If the left-ending token(s) form a capitalized named entity and the token immediately after the marker is a finite verb (V[finite]), lower the score into the 20–50 band (names followed by verbs often form subject+predicate whose meaning can be re-scoped by the remainder).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_44",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "marker splits a numeral and its unit (numeral token immediately before marker, unit noun immediately after)",
+   "blamed_rule": "Cuts inside names, abbreviations, titles, dates, or numerical expressions (e.g., \"Mr.\", \"Dr.\", \"U.S.\", \"e.g.\", \"i.e.\", \"May 1969\", possessives 's) or where commas mark appositive or parenthetical material; such positions are unreliable and tend to score low.",
+   "proposed_rule": "Scoring Rules (sharpening existing rule): Explicitly detect numeral + unit splits: if the token before the marker is a pure numeral/token-with-commas and the token after is a likely unit noun (miles, kg, people, men, hours, km/h), force the score into the very low band 0–15.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 21,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token after marker begins with a directional adverb/phrase (right, left, to the right/to the left) often followed by a conditional/comma",
+   "blamed_rule": "",
+   "proposed_rule": "Scoring Rules: If the token immediately after the marker is a direction word or short directional phrase (right, left, 'to the right', 'to the left') — especially when followed by a comma or a conditional 'if' — lower the score into the low band 5–25 (directional adverbs often participate in clause-level conditionals that reverse or restrict meaning).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_548",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "marker occurs immediately after a numeric expression and before the counted noun/unit (e.g., '2,400' before 'men')",
+   "blamed_rule": "Cuts inside names, abbreviations, titles, dates, or numerical expressions (e.g., \"Mr.\", \"Dr.\", \"U.S.\", \"e.g.\", \"i.e.\", \"May 1969\", possessives 's) or where commas mark appositive or parenthetical material; such positions are unreliable and tend to score low.",
+   "proposed_rule": "Scoring Rules (re-anchor): If the token before the marker is a numeral (digits or spelled-out number) and the token after is a count/unit noun (people, men, km, miles, hours), force the score into 0–15 (splitting numeral and noun yields fragmentary context and harms independent translation quality).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1105",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker before an infinitival 'to' where the left ends in a passive/past verb ('was created' / passive) that 'to' can re-scope (purpose/result)",
+   "blamed_rule": "Subordinators and relative pronouns: while, when, because, although, that, which, who, where, after, before, since, as — these often mark clause boundaries and can be good cut points, but many (see unstable list) are context-dependent; treat \"that\", \"for\", \"to\", \"while\", \"once\", \"when\", \"because\", \"according to\", \"but\" cautiously.",
+   "proposed_rule": "Scoring Rules (sharpen existing 'to' caution): When the token after the marker is 'to' and the token(s) immediately before form a passive or past-tense verb phrase (was/were + VBN / past-tense V) or an eventive predicate, lower the score to the 10–35 band (infinitival 'to' frequently introduces a purpose/result clause that can change entitlement/contrast).",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The prompt systematically over-values isolated surface chunks (named entities, numerals) even when the token after the cut is a present-participle, infinitival 'to', directional adverb, or when a passive + temporal adverb pattern makes the remainder likely to overturn meaning. Several of these failure modes are touched on in the prompt (numerical expressions, 'to', named entities) but the rules are too general or not re-anchored to the immediately adjacent tokens; adding narrowly scoped low-band rules that inspect the token immediately before and after each marker fixes most over-trust errors.",
+ "metrics": {
+  "overlap": 0.4547,
+  "overlap_by_T": {
+   "4": 0.53,
+   "6": 0.439,
+   "12": 0.316
+  },
+  "achv": 0.8931,
+  "tie_rate": 0.0,
+  "spearman_within": 0.2834
+ }
+}

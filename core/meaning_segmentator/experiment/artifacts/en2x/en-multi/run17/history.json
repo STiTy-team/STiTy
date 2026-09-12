@@ -1,0 +1,936 @@
+[
+ {
+  "version": 0,
+  "adopted": true,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8866,
+   "util": 0.6918,
+   "util_oracle": 0.776,
+   "overlap": 0.3715,
+   "overlap_by_T": {
+    "4": 0.444,
+    "6": 0.336,
+    "12": 0.305
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1724,
+   "spearman_within": 0.2128,
+   "calibration": {
+    "00-09": {
+     "n": 129,
+     "label_mean": 60.6
+    },
+    "10-19": {
+     "n": 157,
+     "label_mean": 61.2
+    },
+    "20-29": {
+     "n": 138,
+     "label_mean": 62.5
+    },
+    "30-39": {
+     "n": 125,
+     "label_mean": 64.1
+    },
+    "40-49": {
+     "n": 137,
+     "label_mean": 64.3
+    },
+    "50-59": {
+     "n": 144,
+     "label_mean": 65.9
+    },
+    "60-69": {
+     "n": 153,
+     "label_mean": 64.9
+    },
+    "70-79": {
+     "n": 173,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 167,
+     "label_mean": 65.7
+    },
+    "90-99": {
+     "n": 229,
+     "label_mean": 69.0
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9674,
+   "achv": 0.9014,
+   "util": 0.7057,
+   "util_oracle": 0.7803,
+   "overlap": 0.4276,
+   "overlap_by_T": {
+    "4": 0.497,
+    "6": 0.409,
+    "12": 0.323
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1984,
+   "spearman_within": 0.2539,
+   "calibration": {
+    "00-09": {
+     "n": 396,
+     "label_mean": 61.5
+    },
+    "10-19": {
+     "n": 380,
+     "label_mean": 63.7
+    },
+    "20-29": {
+     "n": 273,
+     "label_mean": 63.0
+    },
+    "30-39": {
+     "n": 231,
+     "label_mean": 63.6
+    },
+    "40-49": {
+     "n": 239,
+     "label_mean": 63.3
+    },
+    "50-59": {
+     "n": 250,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 329,
+     "label_mean": 65.1
+    },
+    "70-79": {
+     "n": 366,
+     "label_mean": 66.5
+    },
+    "80-89": {
+     "n": 410,
+     "label_mean": 67.2
+    },
+    "90-99": {
+     "n": 525,
+     "label_mean": 69.6
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "score_train": 0.3715,
+  "score_dev": 0.4276,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 12032,
+  "usage": {
+   "calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "cached_tokens": 0,
+   "truncated": 0,
+   "cost": 0.0,
+   "by_purpose": {}
+  }
+ },
+ {
+  "version": 1,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8866,
+   "util": 0.6918,
+   "util_oracle": 0.776,
+   "overlap": 0.3715,
+   "overlap_by_T": {
+    "4": 0.444,
+    "6": 0.336,
+    "12": 0.305
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1724,
+   "spearman_within": 0.2128,
+   "calibration": {
+    "00-09": {
+     "n": 129,
+     "label_mean": 60.6
+    },
+    "10-19": {
+     "n": 157,
+     "label_mean": 61.2
+    },
+    "20-29": {
+     "n": 138,
+     "label_mean": 62.5
+    },
+    "30-39": {
+     "n": 125,
+     "label_mean": 64.1
+    },
+    "40-49": {
+     "n": 137,
+     "label_mean": 64.3
+    },
+    "50-59": {
+     "n": 144,
+     "label_mean": 65.9
+    },
+    "60-69": {
+     "n": 153,
+     "label_mean": 64.9
+    },
+    "70-79": {
+     "n": 173,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 167,
+     "label_mean": 65.7
+    },
+    "90-99": {
+     "n": 229,
+     "label_mean": 69.0
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9674,
+   "achv": 0.9014,
+   "util": 0.7057,
+   "util_oracle": 0.7803,
+   "overlap": 0.4276,
+   "overlap_by_T": {
+    "4": 0.497,
+    "6": 0.409,
+    "12": 0.323
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1984,
+   "spearman_within": 0.2539,
+   "calibration": {
+    "00-09": {
+     "n": 396,
+     "label_mean": 61.5
+    },
+    "10-19": {
+     "n": 380,
+     "label_mean": 63.7
+    },
+    "20-29": {
+     "n": 273,
+     "label_mean": 63.0
+    },
+    "30-39": {
+     "n": 231,
+     "label_mean": 63.6
+    },
+    "40-49": {
+     "n": 239,
+     "label_mean": 63.3
+    },
+    "50-59": {
+     "n": 250,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 329,
+     "label_mean": 65.1
+    },
+    "70-79": {
+     "n": 366,
+     "label_mean": 66.5
+    },
+    "80-89": {
+     "n": 410,
+     "label_mean": 67.2
+    },
+    "90-99": {
+     "n": 525,
+     "label_mean": 69.6
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "score_train": 0.3715,
+  "score_dev": 0.4276,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 12032,
+  "usage": {
+   "calls": 102,
+   "prompt_tokens": 396818,
+   "completion_tokens": 1320204,
+   "cached_tokens": 310016,
+   "truncated": 0,
+   "cost": 2.669859,
+   "by_purpose": {
+    "segment": {
+     "calls": 85,
+     "prompt_tokens": 304048,
+     "completion_tokens": 1216352,
+     "reasoning_tokens": 1164160,
+     "cached_tokens": 234240,
+     "cost": 2.456012
+    },
+    "prompt_engineer": {
+     "calls": 8,
+     "prompt_tokens": 50624,
+     "completion_tokens": 49514,
+     "reasoning_tokens": 21056,
+     "cached_tokens": 39040,
+     "cost": 0.1029
+    },
+    "segment_retry": {
+     "calls": 8,
+     "prompt_tokens": 25487,
+     "completion_tokens": 45638,
+     "reasoning_tokens": 44736,
+     "cached_tokens": 20224,
+     "cost": 0.093097
+    },
+    "critic": {
+     "calls": 1,
+     "prompt_tokens": 16659,
+     "completion_tokens": 8700,
+     "reasoning_tokens": 6720,
+     "cached_tokens": 16512,
+     "cost": 0.01785
+    }
+   }
+  }
+ },
+ {
+  "version": 2,
+  "adopted": true,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9085,
+   "util": 0.7095,
+   "util_oracle": 0.776,
+   "overlap": 0.4177,
+   "overlap_by_T": {
+    "4": 0.483,
+    "6": 0.349,
+    "12": 0.422
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2098,
+   "spearman_within": 0.282,
+   "calibration": {
+    "00-09": {
+     "n": 259,
+     "label_mean": 61.3
+    },
+    "10-19": {
+     "n": 224,
+     "label_mean": 62.2
+    },
+    "20-29": {
+     "n": 158,
+     "label_mean": 62.7
+    },
+    "30-39": {
+     "n": 128,
+     "label_mean": 65.7
+    },
+    "40-49": {
+     "n": 120,
+     "label_mean": 63.9
+    },
+    "50-59": {
+     "n": 103,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 116,
+     "label_mean": 65.4
+    },
+    "70-79": {
+     "n": 132,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 127,
+     "label_mean": 68.9
+    },
+    "90-99": {
+     "n": 185,
+     "label_mean": 70.8
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9907,
+   "achv": 0.9178,
+   "util": 0.7179,
+   "util_oracle": 0.7803,
+   "overlap": 0.4574,
+   "overlap_by_T": {
+    "4": 0.512,
+    "6": 0.424,
+    "12": 0.399
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2173,
+   "spearman_within": 0.2662,
+   "calibration": {
+    "00-09": {
+     "n": 565,
+     "label_mean": 62.1
+    },
+    "10-19": {
+     "n": 512,
+     "label_mean": 63.2
+    },
+    "20-29": {
+     "n": 335,
+     "label_mean": 63.6
+    },
+    "30-39": {
+     "n": 266,
+     "label_mean": 63.4
+    },
+    "40-49": {
+     "n": 248,
+     "label_mean": 63.8
+    },
+    "50-59": {
+     "n": 253,
+     "label_mean": 63.2
+    },
+    "60-69": {
+     "n": 264,
+     "label_mean": 65.8
+    },
+    "70-79": {
+     "n": 277,
+     "label_mean": 66.6
+    },
+    "80-89": {
+     "n": 283,
+     "label_mean": 67.9
+    },
+    "90-99": {
+     "n": 396,
+     "label_mean": 72.8
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 2
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Please treat the <SEG:22> site <SEG:70> with <SEG:34> all <SEG:30> of <SEG:26> the <SEG:32> dignity, <SEG:88> solemnity <SEG:52> and <SEG:46> respect <SEG:58> it <SEG:40> deserves. <SEG:100> Do <SEG:18> not <SEG:14> make <SEG:64> jokes <SEG:12> about <SEG:8> the <SEG:4>"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Jardín de la <SEG:34> Unión. <SEG:100> This <SEG:10> space <SEG:78> was <SEG:26> built <SEG:70> as <SEG:22> the <SEG:46> atrium <SEG:74> for <SEG:18> a <SEG:30> 17th-century <SEG:66> convent, <SEG:86> of <SEG:42> which <SEG:38> the <SEG:14> Templo <SEG:62> de <SEG:54> San <SEG:58> Diego <SEG:92> is "
+     }
+    ]
+   }
+  },
+  "score_train": 0.4177,
+  "score_dev": 0.4574,
+  "paired_dev": {
+   "mean_delta": 0.0297,
+   "se_delta": 0.0181,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Make numeral/date/name 'boost' conditional: only apply strong upward bias when the token after the marker is punctuation, sentence end, or a capitalized token; otherwise suppress the boost (addresses en_us_66, en_us_278, en_us_203).",
+   "Introduce an ordered set of negative 'override' tests that, if matched, reduce or block positive boosts and bias the model to keep the adjacent tokens together rather than cut them (addresses over-trust cases across en_us_66, en_us_278, en_us_203, en_us_738, en_us_360, en_us_1050, en_us_417, en_us_1000).",
+   "Add explicit checks for quote- and parenthesis-adjacency: if the token before ends with a closing quote or the token after begins with an opening quote, or if either side abuts '(' or ')', treat that as an override signal unless followed immediately by punctuation or sentence end (addresses en_us_360 pos8; en_us_738 pos3; en_us_1000 pos8).",
+   "Add explicit check for nearby negation: if negation tokens (not, n't, never) appear within two tokens on the left, reduce the boundary's upward bias and treat the cut as risky (addresses en_us_738 pos7).",
+   "Add explicit check for comma-then-clausal-continuation patterns: when a comma precedes the marker and the token after is a clausal-starter contraction/pronoun (it, it's, they, he, she, we, etc.) or other clausal-starter, treat as override and reduce the boost (addresses en_us_1050 pos12).",
+   "Add check for modifier/adverbial clusters left of the cut: if the left side ends with comparative/superlative or common adverbial modifiers (most, more, -ly forms) and the right side has a common noun, treat as override to avoid splitting modifier from its head (addresses en_us_417 pos23).",
+   "Add specific handling for splitting name + parenthetical-abbreviation pairs: if '(' or ')' is adjacent to a named-entity token on either side, treat as override to avoid splitting the pair (addresses en_us_1000 pos8).",
+   "Consolidate all these into the Surface-form checklist so the model applies positive boosts only when no higher-priority override matches; avoid prescribing absolute bands — instead instruct to reduce relative upward bias so scores within the sentence order correctly."
+  ],
+  "prompt_len": 15071,
+  "usage": {
+   "calls": 215,
+   "prompt_tokens": 856409,
+   "completion_tokens": 2669093,
+   "cached_tokens": 639360,
+   "truncated": 0,
+   "cost": 5.408432,
+   "by_purpose": {
+    "segment": {
+     "calls": 189,
+     "prompt_tokens": 708476,
+     "completion_tokens": 2515909,
+     "reasoning_tokens": 2397952,
+     "cached_tokens": 522624,
+     "cost": 5.091347
+    },
+    "prompt_engineer": {
+     "calls": 12,
+     "prompt_tokens": 73958,
+     "completion_tokens": 72798,
+     "reasoning_tokens": 30848,
+     "cached_tokens": 56064,
+     "cost": 0.151471
+    },
+    "segment_retry": {
+     "calls": 12,
+     "prompt_tokens": 40173,
+     "completion_tokens": 60817,
+     "reasoning_tokens": 59456,
+     "cached_tokens": 31104,
+     "cost": 0.124679
+    },
+    "critic": {
+     "calls": 2,
+     "prompt_tokens": 33802,
+     "completion_tokens": 19569,
+     "reasoning_tokens": 15936,
+     "cached_tokens": 29568,
+     "cost": 0.040936
+    }
+   }
+  }
+ },
+ {
+  "version": 3,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9085,
+   "util": 0.7095,
+   "util_oracle": 0.776,
+   "overlap": 0.4177,
+   "overlap_by_T": {
+    "4": 0.483,
+    "6": 0.349,
+    "12": 0.422
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2098,
+   "spearman_within": 0.282,
+   "calibration": {
+    "00-09": {
+     "n": 259,
+     "label_mean": 61.3
+    },
+    "10-19": {
+     "n": 224,
+     "label_mean": 62.2
+    },
+    "20-29": {
+     "n": 158,
+     "label_mean": 62.7
+    },
+    "30-39": {
+     "n": 128,
+     "label_mean": 65.7
+    },
+    "40-49": {
+     "n": 120,
+     "label_mean": 63.9
+    },
+    "50-59": {
+     "n": 103,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 116,
+     "label_mean": 65.4
+    },
+    "70-79": {
+     "n": 132,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 127,
+     "label_mean": 68.9
+    },
+    "90-99": {
+     "n": 185,
+     "label_mean": 70.8
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9907,
+   "achv": 0.9178,
+   "util": 0.7179,
+   "util_oracle": 0.7803,
+   "overlap": 0.4574,
+   "overlap_by_T": {
+    "4": 0.512,
+    "6": 0.424,
+    "12": 0.399
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2173,
+   "spearman_within": 0.2662,
+   "calibration": {
+    "00-09": {
+     "n": 565,
+     "label_mean": 62.1
+    },
+    "10-19": {
+     "n": 512,
+     "label_mean": 63.2
+    },
+    "20-29": {
+     "n": 335,
+     "label_mean": 63.6
+    },
+    "30-39": {
+     "n": 266,
+     "label_mean": 63.4
+    },
+    "40-49": {
+     "n": 248,
+     "label_mean": 63.8
+    },
+    "50-59": {
+     "n": 253,
+     "label_mean": 63.2
+    },
+    "60-69": {
+     "n": 264,
+     "label_mean": 65.8
+    },
+    "70-79": {
+     "n": 277,
+     "label_mean": 66.6
+    },
+    "80-89": {
+     "n": 283,
+     "label_mean": 67.9
+    },
+    "90-99": {
+     "n": 396,
+     "label_mean": 72.8
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 2
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Please treat the <SEG:22> site <SEG:70> with <SEG:34> all <SEG:30> of <SEG:26> the <SEG:32> dignity, <SEG:88> solemnity <SEG:52> and <SEG:46> respect <SEG:58> it <SEG:40> deserves. <SEG:100> Do <SEG:18> not <SEG:14> make <SEG:64> jokes <SEG:12> about <SEG:8> the <SEG:4>"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Jardín de la <SEG:34> Unión. <SEG:100> This <SEG:10> space <SEG:78> was <SEG:26> built <SEG:70> as <SEG:22> the <SEG:46> atrium <SEG:74> for <SEG:18> a <SEG:30> 17th-century <SEG:66> convent, <SEG:86> of <SEG:42> which <SEG:38> the <SEG:14> Templo <SEG:62> de <SEG:54> San <SEG:58> Diego <SEG:92> is "
+     }
+    ]
+   }
+  },
+  "score_train": 0.4177,
+  "score_dev": 0.4574,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 15071,
+  "usage": {
+   "calls": 341,
+   "prompt_tokens": 1425337,
+   "completion_tokens": 4254419,
+   "cached_tokens": 1070592,
+   "truncated": 0,
+   "cost": 8.624289,
+   "by_purpose": {
+    "segment": {
+     "calls": 291,
+     "prompt_tokens": 1127040,
+     "completion_tokens": 3981258,
+     "reasoning_tokens": 3800896,
+     "cached_tokens": 846592,
+     "cost": 8.053793
+    },
+    "prompt_engineer": {
+     "calls": 20,
+     "prompt_tokens": 141458,
+     "completion_tokens": 126508,
+     "reasoning_tokens": 50816,
+     "cached_tokens": 108288,
+     "cost": 0.264016
+    },
+    "segment_retry": {
+     "calls": 27,
+     "prompt_tokens": 105228,
+     "completion_tokens": 117267,
+     "reasoning_tokens": 114496,
+     "cached_tokens": 86144,
+     "cost": 0.241459
+    },
+    "critic": {
+     "calls": 3,
+     "prompt_tokens": 51611,
+     "completion_tokens": 29386,
+     "reasoning_tokens": 23552,
+     "cached_tokens": 29568,
+     "cost": 0.065022
+    }
+   }
+  }
+ },
+ {
+  "version": 4,
+  "adopted": false,
+  "train": {
+   "n": 100,
+   "n_scored": 100,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9085,
+   "util": 0.7095,
+   "util_oracle": 0.776,
+   "overlap": 0.4177,
+   "overlap_by_T": {
+    "4": 0.483,
+    "6": 0.349,
+    "12": 0.422
+   },
+   "tie_rate": 0.0013,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2098,
+   "spearman_within": 0.282,
+   "calibration": {
+    "00-09": {
+     "n": 259,
+     "label_mean": 61.3
+    },
+    "10-19": {
+     "n": 224,
+     "label_mean": 62.2
+    },
+    "20-29": {
+     "n": 158,
+     "label_mean": 62.7
+    },
+    "30-39": {
+     "n": 128,
+     "label_mean": 65.7
+    },
+    "40-49": {
+     "n": 120,
+     "label_mean": 63.9
+    },
+    "50-59": {
+     "n": 103,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 116,
+     "label_mean": 65.4
+    },
+    "70-79": {
+     "n": 132,
+     "label_mean": 66.0
+    },
+    "80-89": {
+     "n": 127,
+     "label_mean": 68.9
+    },
+    "90-99": {
+     "n": 185,
+     "label_mean": 70.8
+    }
+   },
+   "n_boundaries": 1552,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9907,
+   "achv": 0.9178,
+   "util": 0.7179,
+   "util_oracle": 0.7803,
+   "overlap": 0.4574,
+   "overlap_by_T": {
+    "4": 0.512,
+    "6": 0.424,
+    "12": 0.399
+   },
+   "tie_rate": 0.0053,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2173,
+   "spearman_within": 0.2662,
+   "calibration": {
+    "00-09": {
+     "n": 565,
+     "label_mean": 62.1
+    },
+    "10-19": {
+     "n": 512,
+     "label_mean": 63.2
+    },
+    "20-29": {
+     "n": 335,
+     "label_mean": 63.6
+    },
+    "30-39": {
+     "n": 266,
+     "label_mean": 63.4
+    },
+    "40-49": {
+     "n": 248,
+     "label_mean": 63.8
+    },
+    "50-59": {
+     "n": 253,
+     "label_mean": 63.2
+    },
+    "60-69": {
+     "n": 264,
+     "label_mean": 65.8
+    },
+    "70-79": {
+     "n": 277,
+     "label_mean": 66.6
+    },
+    "80-89": {
+     "n": 283,
+     "label_mean": 67.9
+    },
+    "90-99": {
+     "n": 396,
+     "label_mean": 72.8
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 2
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Please treat the <SEG:22> site <SEG:70> with <SEG:34> all <SEG:30> of <SEG:26> the <SEG:32> dignity, <SEG:88> solemnity <SEG:52> and <SEG:46> respect <SEG:58> it <SEG:40> deserves. <SEG:100> Do <SEG:18> not <SEG:14> make <SEG:64> jokes <SEG:12> about <SEG:8> the <SEG:4>"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Jardín de la <SEG:34> Unión. <SEG:100> This <SEG:10> space <SEG:78> was <SEG:26> built <SEG:70> as <SEG:22> the <SEG:46> atrium <SEG:74> for <SEG:18> a <SEG:30> 17th-century <SEG:66> convent, <SEG:86> of <SEG:42> which <SEG:38> the <SEG:14> Templo <SEG:62> de <SEG:54> San <SEG:58> Diego <SEG:92> is "
+     }
+    ]
+   }
+  },
+  "score_train": 0.4177,
+  "score_dev": 0.4574,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 15071,
+  "usage": {
+   "calls": 442,
+   "prompt_tokens": 1903008,
+   "completion_tokens": 5537942,
+   "cached_tokens": 1441152,
+   "truncated": 0,
+   "cost": 11.227377,
+   "by_purpose": {
+    "segment": {
+     "calls": 376,
+     "prompt_tokens": 1486270,
+     "completion_tokens": 5175221,
+     "reasoning_tokens": 4942784,
+     "cached_tokens": 1121664,
+     "cost": 10.469635
+    },
+    "prompt_engineer": {
+     "calls": 28,
+     "prompt_tokens": 214742,
+     "completion_tokens": 180819,
+     "reasoning_tokens": 70592,
+     "cached_tokens": 166144,
+     "cost": 0.377941
+    },
+    "segment_retry": {
+     "calls": 34,
+     "prompt_tokens": 132206,
+     "completion_tokens": 141592,
+     "reasoning_tokens": 138304,
+     "cached_tokens": 109696,
+     "cost": 0.291554
+    },
+    "critic": {
+     "calls": 4,
+     "prompt_tokens": 69790,
+     "completion_tokens": 40310,
+     "reasoning_tokens": 31744,
+     "cached_tokens": 43648,
+     "cost": 0.088247
+    }
+   }
+  }
+ }
+]

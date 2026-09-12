@@ -1,0 +1,255 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.96,
+  "achv": 0.8906,
+  "util": 0.6968,
+  "util_oracle": 0.7803,
+  "overlap": 0.3957,
+  "overlap_by_T": {
+   "4": 0.477,
+   "6": 0.394,
+   "8": 0.349,
+   "12": 0.321
+  },
+  "tie_rate": 0.0052,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2142,
+  "spearman_within": 0.2374,
+  "calibration": {
+   "00-09": {
+    "n": 310,
+    "label_mean": 60.7
+   },
+   "10-19": {
+    "n": 249,
+    "label_mean": 60.8
+   },
+   "20-29": {
+    "n": 143,
+    "label_mean": 63.1
+   },
+   "30-39": {
+    "n": 113,
+    "label_mean": 60.6
+   },
+   "40-49": {
+    "n": 108,
+    "label_mean": 60.0
+   },
+   "50-59": {
+    "n": 111,
+    "label_mean": 65.3
+   },
+   "60-69": {
+    "n": 116,
+    "label_mean": 65.9
+   },
+   "70-79": {
+    "n": 116,
+    "label_mean": 65.3
+   },
+   "80-89": {
+    "n": 116,
+    "label_mean": 67.5
+   },
+   "90-99": {
+    "n": 162,
+    "label_mean": 71.7
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 4
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Towering above the <SEG:10> north <SEG:58> end <SEG:66> of <SEG:44> Machu <SEG:92> Picchu <SEG:88> is <SEG:50> this <SEG:38> steep <SEG:70> mountain, <SEG:100> often <SEG:54> the <SEG:32> backdrop <SEG:76> to <SEG:62> many <SEG:80> photos <SEG:? of the ruins."
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 16개, 출력 15개, 빠진 자리 [18])",
+     "seg_text": "Towering above the <SEG:10> north <SEG:58> end <SEG:66> of <SEG:44> Machu <SEG:92> Picchu <SEG:88> is <SEG:50> this <SEG:38> steep <SEG:70> mountain, <SEG:100> often <SEG:54> the <SEG:32> backdrop <SEG:76> to <SEG:62> many <SEG:80> photos <SEG:? of the ruins."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Foster care is <SEG:3> supposed <SEG:18> to <SEG:5> provide <SEG:72> all <SEG:7> the <SEG:2> necessities <SEG:99> that <SEG:10> were <SEG:9> lacking <SEG:58> in <SEG:4> the <SEG:1> home <SEG:92> they <SEG:6> were <SEG:8> previously taken ."
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.6152,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5987,
+     "Japanese": 0.6122,
+     "German": 0.6349
+    }
+   },
+   "6": {
+    "mean": 0.6661,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.6505,
+     "Japanese": 0.6614,
+     "German": 0.6865
+    }
+   },
+   "8": {
+    "mean": 0.7121,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6729,
+     "Japanese": 0.738,
+     "German": 0.7254
+    }
+   },
+   "12": {
+    "mean": 0.7395,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7129,
+     "Japanese": 0.7457,
+     "German": 0.7598
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6458,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6302,
+     "Japanese": 0.6446,
+     "German": 0.6627
+    }
+   },
+   "6": {
+    "mean": 0.7265,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7017,
+     "Japanese": 0.7356,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7937,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8041,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8227,
+     "German": 0.813
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 468,
+  "prompt_tokens": 2009600,
+  "completion_tokens": 5801339,
+  "cached_tokens": 1525248,
+  "truncated": 0,
+  "cost": 11.761897,
+  "by_purpose": {
+   "segment": {
+    "calls": 398,
+    "prompt_tokens": 1576971,
+    "completion_tokens": 5416831,
+    "reasoning_tokens": 5173568,
+    "cached_tokens": 1192576,
+    "cost": 10.959575
+   },
+   "prompt_engineer": {
+    "calls": 28,
+    "prompt_tokens": 214742,
+    "completion_tokens": 180819,
+    "reasoning_tokens": 70592,
+    "cached_tokens": 166144,
+    "cost": 0.377941
+   },
+   "segment_retry": {
+    "calls": 38,
+    "prompt_tokens": 148097,
+    "completion_tokens": 163379,
+    "reasoning_tokens": 159488,
+    "cached_tokens": 122880,
+    "cost": 0.336134
+   },
+   "critic": {
+    "calls": 4,
+    "prompt_tokens": 69790,
+    "completion_tokens": 40310,
+    "reasoning_tokens": 31744,
+    "cached_tokens": 43648,
+    "cost": 0.088247
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 2,
+   "adopted": true,
+   "score_train": 0.4177,
+   "score_dev": 0.4574,
+   "paired_dev": {
+    "mean_delta": 0.0297,
+    "se_delta": 0.0181,
+    "n_pairs": 215
+   },
+   "prompt_len": 15071
+  },
+  {
+   "version": 3,
+   "adopted": false,
+   "score_train": 0.4177,
+   "score_dev": 0.4574,
+   "paired_dev": null,
+   "prompt_len": 15071
+  },
+  {
+   "version": 4,
+   "adopted": false,
+   "score_train": 0.4177,
+   "score_dev": 0.4574,
+   "paired_dev": null,
+   "prompt_len": 15071
+  }
+ ],
+ "best_version": 2
+}

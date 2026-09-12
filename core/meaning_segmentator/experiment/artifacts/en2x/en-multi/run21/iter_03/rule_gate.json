@@ -1,0 +1,44 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_203"
+  ],
+  "direction": "lower",
+  "surface_condition": "splits that separate a numeric token from an immediately following measurement/unit token when the left token is any num",
+  "verified_support": 2,
+  "n_matched": 15,
+  "label_matched": 0.5166,
+  "label_rest": 0.6487,
+  "t": -2.93,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_380"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers immediately followed by an -ing verb/participial continuation (clause-continuing gerund/participle) such as 'cau",
+  "verified_support": 2,
+  "n_matched": 4,
+  "verdict": "drop",
+  "reason": "걸린 경계 4 < 5"
+ },
+ {
+  "supported_by": [
+   "en_us_1000",
+   "en_us_278",
+   "en_us_477"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers immediately following single-token proper-name/identifier tokens (single-token names/acronyms) where the left-la",
+  "verified_support": 3,
+  "n_matched": 10,
+  "label_matched": 0.5475,
+  "label_rest": 0.6481,
+  "t": -1.8,
+  "verdict": "drop",
+  "reason": "|t| 1.80 < 2.0"
+ }
+]

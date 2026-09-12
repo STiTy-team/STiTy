@@ -1,0 +1,38 @@
+[
+ {
+  "id": "en_us_66",
+  "direction": "lower",
+  "surface_condition": "left_last is a numeral and right_first is a unit word (million/percent/miles/meters/ kilometres etc.)",
+  "n_matched": 11,
+  "label_matched": 0.4957,
+  "label_rest": 0.6485,
+  "t": -3.35,
+  "verdict": "keep"
+ },
+ {
+  "id": "en_us_360",
+  "direction": "lower",
+  "surface_condition": "left_last is end of a quoted phrase or a noun like radiation/phrase-ending noun and right_first is a subordinating token",
+  "n_matched": 1,
+  "verdict": "drop",
+  "reason": "걸린 경계 1 < 8"
+ },
+ {
+  "id": "en_us_1150",
+  "direction": "lower",
+  "surface_condition": "left_last is a numeral/date token or a short temporal token adjacent to a preceding preposition (e.g., during) and yield",
+  "n_matched": 2,
+  "verdict": "drop",
+  "reason": "걸린 경계 2 < 8"
+ },
+ {
+  "id": "en_us_276",
+  "direction": "lower",
+  "surface_condition": "left_last is an organization/person name token (proper-name substring) and the left segment is part of a multiword NP th",
+  "n_matched": 13,
+  "label_matched": 0.5151,
+  "label_rest": 0.6486,
+  "t": -2.81,
+  "verdict": "keep"
+ }
+]

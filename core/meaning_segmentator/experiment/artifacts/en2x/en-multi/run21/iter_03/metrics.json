@@ -1,0 +1,214 @@
+{
+ "version": 3,
+ "adopted": true,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9003,
+  "util": 0.7028,
+  "util_oracle": 0.776,
+  "overlap": 0.4099,
+  "overlap_by_T": {
+   "4": 0.466,
+   "6": 0.374,
+   "12": 0.383
+  },
+  "tie_rate": 0.0026,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1968,
+  "spearman_within": 0.2572,
+  "calibration": {
+   "00-09": {
+    "n": 196,
+    "label_mean": 60.9
+   },
+   "10-19": {
+    "n": 215,
+    "label_mean": 63.8
+   },
+   "20-29": {
+    "n": 133,
+    "label_mean": 63.0
+   },
+   "30-39": {
+    "n": 124,
+    "label_mean": 62.3
+   },
+   "40-49": {
+    "n": 105,
+    "label_mean": 62.1
+   },
+   "50-59": {
+    "n": 112,
+    "label_mean": 62.2
+   },
+   "60-69": {
+    "n": 140,
+    "label_mean": 66.6
+   },
+   "70-79": {
+    "n": 152,
+    "label_mean": 65.4
+   },
+   "80-89": {
+    "n": 177,
+    "label_mean": 69.6
+   },
+   "90-99": {
+    "n": 198,
+    "label_mean": 69.1
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9907,
+  "achv": 0.9107,
+  "util": 0.7129,
+  "util_oracle": 0.7803,
+  "overlap": 0.4644,
+  "overlap_by_T": {
+   "4": 0.523,
+   "6": 0.428,
+   "12": 0.411
+  },
+  "tie_rate": 0.0018,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2084,
+  "spearman_within": 0.255,
+  "calibration": {
+   "00-09": {
+    "n": 418,
+    "label_mean": 62.6
+   },
+   "10-19": {
+    "n": 426,
+    "label_mean": 64.0
+   },
+   "20-29": {
+    "n": 303,
+    "label_mean": 63.2
+   },
+   "30-39": {
+    "n": 256,
+    "label_mean": 62.6
+   },
+   "40-49": {
+    "n": 253,
+    "label_mean": 62.3
+   },
+   "50-59": {
+    "n": 262,
+    "label_mean": 62.8
+   },
+   "60-69": {
+    "n": 301,
+    "label_mean": 64.7
+   },
+   "70-79": {
+    "n": 349,
+    "label_mean": 65.3
+   },
+   "80-89": {
+    "n": 360,
+    "label_mean": 68.1
+   },
+   "90-99": {
+    "n": 471,
+    "label_mean": 71.6
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The company hopes <SEG:76> to <SEG:52> diversify <SEG:84> its <SEG:44> profit <SEG:64> sources <SEG:88> and <SEG:32> gain <SEG:56> popularity <SEG:72> in <SEG:20> areas <SEG:60> where <SEG:36> Skype <SEG:80> holds <SEG:68> a <SEG:40> strong <SEG:16> position, <SEG:98> such <SEG:24> as <SEG:28> China"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The main reason <SEG:86> for <SEG:20> this <SEG:40> phenomenon <SEG:92> is <SEG:36> the <SEG:34> result <SEG:78> of <SEG:12> the <SEG:30> lucid <SEG:64> dreams <SEG:72> expanding <SEG:68> the <SEG:16> length <SEG:24> of <SEG:10> time <SEG:98>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4099,
+ "score_dev": 0.4644,
+ "paired_dev": {
+  "mean_delta": 0.0368,
+  "se_delta": 0.0179,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Refined Scoring Rules to implement moderate, context-aware demotions for markers that split numerals from immediately following measurement/unit words (traceable to CRITIQUE: numeral+unit over-trust). Change introduces a soft, conditional downward ordering rather than a blanket strong penalty and adds an explicit exception to preserve genuinely good numeral-adjacent boundaries.",
+  "Added a targeted, conservative rule lowering markers immediately after short identifier-like tokens (traceable to CRITIQUE: short-ID over-trust) but only when local context indicates continuation and not when the opposite side contains a numeral/date/unit or punctuation. The rule is weaker and conditional to avoid removing safe boundaries.",
+  "Added a concise rule to modestly lower markers that are immediately followed by clause-continuing subordinators (because/due/that/which/etc.) when that continuation is likely to change meaning, as noted in the critique.",
+  "Clarified that these are relative, surface-anchored ordering tendencies (not absolute numeric bands) and added a small local-ranking precedence list to guide within-sentence ordering so the deterministic keeper ranks cuts more safely without producing ties.",
+  "Updated Examples to demonstrate the new behaviour: (a) the climate-models example now demotes a 'number <SEG> unit' split to a mid-range rank, and (b) replaced one example with a short-identifier example to show the conservative demotion and its exception when followed by a numeral/unit."
+ ],
+ "prompt_len": 16005,
+ "usage": {
+  "calls": 193,
+  "prompt_tokens": 895624,
+  "completion_tokens": 2024000,
+  "cached_tokens": 641792,
+  "truncated": 0,
+  "cost": 4.127503,
+  "by_purpose": {
+   "segment": {
+    "calls": 174,
+    "prompt_tokens": 690716,
+    "completion_tokens": 1909522,
+    "reasoning_tokens": 1798912,
+    "cached_tokens": 512000,
+    "cost": 3.876523
+   },
+   "prompt_engineer": {
+    "calls": 10,
+    "prompt_tokens": 49795,
+    "completion_tokens": 60642,
+    "reasoning_tokens": 26624,
+    "cached_tokens": 31744,
+    "cost": 0.12659
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 129978,
+    "completion_tokens": 32907,
+    "reasoning_tokens": 30272,
+    "cached_tokens": 83200,
+    "cost": 0.079588
+   },
+   "segment_retry": {
+    "calls": 5,
+    "prompt_tokens": 18971,
+    "completion_tokens": 17845,
+    "reasoning_tokens": 17216,
+    "cached_tokens": 14848,
+    "cost": 0.037092
+   },
+   "critic_regression": {
+    "calls": 1,
+    "prompt_tokens": 6164,
+    "completion_tokens": 3084,
+    "reasoning_tokens": 2496,
+    "cached_tokens": 0,
+    "cost": 0.007709
+   }
+  }
+ }
+}

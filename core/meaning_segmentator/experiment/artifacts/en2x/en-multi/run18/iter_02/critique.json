@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_276",
+   "pos": 14,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token two before = 'how' AND token immediately before is a capitalized name (proper noun) with the right token a verb",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value.",
+   "proposed_rule": "If token_two_before ∈ {how,what,why} AND token_before is a capitalized name/proper-noun, apply a downward bias (subtract ~20 points) to the cut (target band: −15 to −25).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 4,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a closing parenthesis ')' that completes a name/appositive",
+   "blamed_rule": "Parenthetical/appositive following a name: if the left-side token is a named organization/place/person cluster or other short name-like phrase and the token immediately after the marker opens a parenthetical/appositive (right token is '(' OR a comma immediately followed by '(' OR an immediate '(' + uppercase abbreviation), reduce the usual named-phrase boost: the parenthetical typically completes or clarifies the name and the remainder often changes meaning.",
+   "proposed_rule": "Also treat a marker immediately following a closing parenthesis that ends a name/appositive as a negative signal: lower score by ~20 (target band: −10 to −30) when token_before = ')' and the token(s) immediately preceding that parenthesis form a name-like cluster.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 10,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token immediately before marker ends with a comma (adjunct/locative) AND token immediately after marker is a copula/auxiliary (is/was/are/were/was described)",
+   "blamed_rule": "A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves.",
+   "proposed_rule": "When a comma-terminated left-adjunct (token_before has attached comma or is locative/date phrase) is followed immediately by a copula/auxiliary on the right (is/was/are/were/was described/etc.), apply a downward bias (subtract ~25 points) because the remainder commonly predicates or reinterprets the adjunct (target band: −20 to −30).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a closing parenthesis ')' that completes a name/appositive",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Add a negative exception for markers immediately after a closing parenthesis that ends a name/appositive: reduce score by ~20 (target band: −10 to −30) because the parenthetical often belongs semantically to the name and the following predicate can change meaning.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_687",
+   "pos": 11,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "token immediately after marker is a past-participle (VBN) like 'done' AND token immediately before is a noun/pronoun (the noun being modified)",
+   "blamed_rule": "Adjectival/participial fragment endpoints: if the token immediately before the marker is a past participle or adjectival head commonly used to modify a following noun (examples: spoken, reported, estimated, known) possibly preceded by an adverb (e.g., 'most', 'commonly', 'widely') AND the token immediately after the marker is a common noun, bias the score downward.",
+   "proposed_rule": "Sharpen the participial rule symmetrically: if token_after is a past-participle (VBN) and token_before is a common noun/pronoun (i.e., splitting a noun from a VBN that plausibly modifies it), apply a downward bias (subtract ~20; target band: −15 to −25).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1570",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "token immediately before marker is an auxiliary/light verb (is/are/was/had/could/would/etc.) AND token immediately after is a determiner/negator (a/the/no) or short NP start",
+   "blamed_rule": "Cuts placed after isolated auxiliary-like or light tokens (verbs such as \"is\", \"are\", \"was\", modal-like tokens such as \"could\", \"would\", or light numerals like \"one\" used in unanchored phrases) can be low when those tokens do not leave enough lexical content by themselves. (Prediction to test: cuts that leave only a light verb or lone function word on one side tend to score lower.)",
+   "proposed_rule": "Strengthen auxiliary penalty: if token_before is an auxiliary/modal/light verb and token_after is a determiner/negator ('a','an','the','no') or immediately starts a short NP, reduce score by ~25 (target band: −20 to −30) because left lacks self-contained lexical content.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1294",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a named organization/place AND token immediately after is a reporting verb (said/stated/announced) or 'said' + 'that'",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If token_before is a name-like cluster and token_after is a reporting verb (said/stated/reported/announced) — especially when followed by 'that' — apply a downward bias (subtract ~15–20; target band: −10 to −25) because the following complement clause typically contains the informative content.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1106",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token immediately before marker is a lexical verb (finite or base form) AND token immediately after is a common noun (verb→object split)",
+   "blamed_rule": "Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher.",
+   "proposed_rule": "Penalize verb→direct-object splits: if token_before is a content verb and token_after is a common noun/pronoun (i.e., cut splits a likely verb + object), lower the score by ~20 (target band: −15 to −25) because translations frequently depend on the verb–object pairing.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties arise when adjacent markers show near-identical lexical density and none of the narrow exceptions (numeral↔unit, parenthetical/appositive, participial) trigger; the checklist then assigns equal bias and the deterministic tie-break falls to position order.",
+ "summary": "The prompt persistently over-trusts cuts that split names from immediately attached predicates or parentheticals (especially when the marker follows a closing parenthesis or comes after a 'how' + name pattern) and fails to penalize several attachment-sensitive splits (verb→object and noun + following VBN). It also sometimes keeps cuts after light auxiliaries despite the existing auxiliary guideline being too weak. I propose narrowly scoped new/sharpened negative exceptions (closing-parenthesis after name, 'how'→name, name→reporting-verb, verb→noun, noun→VBN, auxiliary + determiner) that subtract ~15–30 points to reorder these positions correctly.",
+ "metrics": {
+  "overlap": 0.4106,
+  "overlap_by_T": {
+   "4": 0.476,
+   "6": 0.359,
+   "12": 0.375
+  },
+  "achv": 0.9007,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2348
+ }
+}

@@ -1,0 +1,77 @@
+{
+ "cases": [
+  {
+   "id": "en_us_317",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "word immediately AFTER the marker is a temporal adverb (previously / formerly / earlier) while the left ends in a passive allegation (been + past participle / verbs like accused, charged)",
+   "blamed_rule": "- Adversative words following a cut (but, although, however, instead): strongly predict contradiction risk; assign lower measured scores.",
+   "proposed_rule": "If the token immediately after the marker is a temporal adverb (previously, formerly, earlier, subsequently) AND the left-side immediately-before context is a passive allegation (pattern: been + past-participle) or an allegation verb (accuse/charge/suspect), lower the marker into the 0–30 band (target: 5–25).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1379",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left ends with a named/product token (capitalized brand-like noun) and the word immediately AFTER the marker is a present-participle / -ing form (overheating, causing, leaving)",
+   "blamed_rule": "- Named entities, numerals, dates, short fixed expressions: tend to increase the chance both sides translate well; cut points that isolate these can be rated higher.",
+   "proposed_rule": "Do NOT raise score for cuts that isolate a named/product token if the right-side token is a present-participle (-ing). Instead, reduce such markers to the 10–50 band (target: 20–40) because an -ing clause after a noun often continues/changes the proposition and raises contradiction risk.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_337",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "left isolates a named entity (short multiword name) while the word immediately AFTER the marker is a finite verb (performed / performed the …)",
+   "blamed_rule": "- Named entities, numerals, dates, short fixed expressions: tend to increase the chance both sides translate well; cut points that isolate these can be rated higher.",
+   "proposed_rule": "When a marker isolates a named entity on the left but the right token is a finite verb (performed, reported, said, etc.), lower the score (target band 40–60) instead of assigning a very-high score; verbs immediately after a name often determine truth/role and increase contradiction/mistranslation risk.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_44",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "marker splits a numeric + unit expression: immediate-left contains numeral/digits and immediate-right is a unit word (miles, km/h, %, dollars, hours)",
+   "blamed_rule": "- Low measured score (0–39): ... Cuts inside names, abbreviations, titles, dates, or numerical expressions (e.g., \"Mr.\", \"Dr.\", \"U.S.\", \"e.g.\", \"i.e.\", \"May 1969\", possessives 's) or where commas mark appositive or parenthetical material; such positions are unreliable and tend to score low.",
+   "proposed_rule": "If the token immediately before the marker is a numeral (digit sequence or number word) and the token immediately after is a measurement/unit word (miles, km/h, mph, kg, % , hours, days, lb, $), force the marker into the 0–30 band (target: 0–20).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 21,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "word immediately AFTER the marker is the preposition 'to' followed by a directional noun phrase (the left/right/north/south) or an infinitival that changes scope",
+   "blamed_rule": "- Subordinators and relative pronouns: while, when, because, although, that, which, who, where, after, before, since, as — these often mark clause boundaries and can be good cut points, but many (see unstable list) are context-dependent; treat \"that\", \"for\", \"to\", \"while\", \"once\", \"when\", \"because\", \"according to\", \"but\" cautiously.",
+   "proposed_rule": "If the token after the marker is 'to' and the next token (second token after the marker) is a directional noun/adverb (left/right/north/south/east/west) or the 'to' begins an infinitival that will re-scope the clause, lower the score into the 0–10 band (target: 0–8).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1379",
+   "pos": 5,
+   "error": "under-trust",
+   "why": "mixed",
+   "surface_condition": "marker immediately after a preposition/determiner ('cases of' / token before marker is 'of') while the token immediately AFTER the marker is a capitalized named/product token (iPods) or a strong noun phrase",
+   "blamed_rule": "- Prepositions and determiners (of, to, for, in, on, at, with, by): frequently part of a phrase rather than a clause boundary. Cuts immediately after these tokens are often low-to-mid because the fragment may lack context or invite attachment ambiguity.",
+   "proposed_rule": "If the token immediately after the marker is a capitalized product/brand or a short named noun (proper name) then raise the marker (target band 60–85) even when the marker follows a preposition like 'of' — a following named token often yields good independent translation.",
+   "direction": "raise"
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The prompt systematically over-weights 'safe' tokens (named entities, isolated nouns, numerals) and under-penalizes common surface cues that signal contradiction (right-side -ing verbs, temporal adverbs, parentheticals, 'to' + direction, unit splits). It also sometimes over-penalizes cuts after prepositions even when the immediate right token is a strong named/entity token; sharpening rules to look at the immediate two tokens (token after marker and possibly the next token) fixes both over- and under-trust patterns.",
+ "metrics": {
+  "overlap": 0.4547,
+  "overlap_by_T": {
+   "4": 0.53,
+   "6": 0.439,
+   "12": 0.316
+  },
+  "achv": 0.8931,
+  "tie_rate": 0.0,
+  "spearman_within": 0.2834
+ }
+}

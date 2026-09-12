@@ -1,0 +1,99 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts that split a numeral token from an immediately following measurement/unit token (e.g., 1.2 <SEG> million, 240 <SEG> kilometers, 9,000 <SEG> year, 46 <SEG> percent, 378 <SEG> meters)",
+   "supported_by": [
+    "en_us_66",
+    "en_us_140",
+    "en_us_46",
+    "en_us_278",
+    "en_us_1050"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "- Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "Scoring Rule: if the token immediately before the marker is NUM and the token immediately after the marker is a measurement/unit word, reduce the predicted value (move the marker out of the extreme-top ranks). Target band: lower scores into the mid–low band (recommend roughly 30–55) instead of boosting toward the top. Rationale: many such splits are low because splitting number from its scale/unit badly harms adequacy or is contradicted by the continuation.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "percent",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "m",
+     "mile",
+     "miles",
+     "year",
+     "years",
+     "km"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers immediately followed by a clause-continuing subordinating token (right-first ∈ {because, due, causing, that, which, who, when, while, as})",
+   "supported_by": [
+    "en_us_360",
+    "en_us_276"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "Scoring Rule: if the token immediately after the marker is a clause-continuing/subordinating word from the list (because, due, causing, that, which, who, when, while, as), apply a stronger downward adjustment than the generic 'preposition/determiner' bias — aim for a low band (recommend roughly 10–40) unless the opposite side contains a clear numeral/unit or an independent named entity that justifies a higher score. Rationale: these tokens often indicate the remainder will modify/overturn the left stretch and produce high contradiction measurements.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "because",
+     "due",
+     "causing",
+     "that",
+     "which",
+     "who",
+     "when",
+     "while",
+     "as"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers immediately after short identifier/parenthetical-like tokens (short IDs and acronyms) such as parenthood, isil, kv62, minae, service",
+   "supported_by": [
+    "en_us_276",
+    "en_us_1000",
+    "en_us_685",
+    "en_us_738"
+   ],
+   "error": "over-trust",
+   "why": "frag_left",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Scoring Rule: if the token immediately before the marker is a short identifier from the listed small-ID vocabulary (examples: parenthood, isil, kv62, minae, service), reduce the predicted value moderately (target band ~15–45), unless the token immediately after the marker is NUM or a clear measurement/unit/date (in which case do not apply this reduction). Rationale: short IDs are often part of a larger identifier or are followed by disambiguating material; cutting immediately after them commonly yields fragments or contradictions in the measured procedure.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "parenthood",
+     "isil",
+     "kv62",
+     "minae",
+     "service"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The model over-ranks cuts that split numerals from their unit words, that are immediately followed by clause-continuing subordinators (because/due/causing/that/which/...), and that occur right after short identifier/acronym tokens. These surface patterns recur across cases and correspond to high measured contradiction or fragment scores; moving them down (moderately, not brutally) should reorder boundaries so the deterministic keeper prefers safer cuts. Avoid the earlier hard, blanket demotions — prefer targeted, mid-strength downward shifts and one small exception to preserve genuinely good numeral-adjacent boundaries.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

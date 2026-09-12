@@ -1,0 +1,90 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts that split a numeral from its unit/quantified noun (number on the left, measurement/unit or counted-noun on the right)",
+   "supported_by": [
+    "en_us_66",
+    "en_us_140",
+    "en_us_278",
+    "en_us_46",
+    "en_us_1050"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Scoring Rules: If the token immediately before the marker is a NUM and the token immediately after the marker is a measurement unit or counted-noun (see list), treat this boundary as risky and move its score well down (target band 10–35) rather than giving an upward bias. Rationale: the model's current numeral-first heuristic boosts such cuts, but splitting a numeral from its unit or the noun it quantifies frequently produces contradiction or misrendering.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "percent",
+     "percent.",
+     "percent,",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "miles",
+     "mile",
+     "year",
+     "years",
+     "m",
+     "km",
+     "mph",
+     "signatures",
+     "votes",
+     "people",
+     "inches",
+     "feet"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts that split coordinated/ranged numerals or ordinals (a number/ordinal on the left, immediately followed by 'and' or 'or' on the right)",
+   "supported_by": [
+    "en_us_301",
+    "en_us_417"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Cuts before or after subordinators or coordinators can measure well when the segment to the left or right is itself translated reliably (e.g., if the left already ends in a named entity or numeral). Example surface words: \"and\", \"but\", \"however\", \"when\", \"after\", \"since\", \"while\", \"which\", \"that\", \"who\". Do not assume these always help; the testable prediction is only that presence of reliable lexical material on one side increases measured score.",
+   "proposed_rule": "Scoring Rules: If the token immediately before the marker is a NUM or common ordinal (first, second, third, ... tenth) and the token immediately after the marker is 'and' or 'or', do not apply the usual upward bias for numerals; instead lower the score into a conservative band (target band 5–30). Rationale: splitting coordinated numeric ranges/ordinals (\"between the second | and fourth\", \"2015 | or 2016\") frequently severs a single quantified/paired expression and yields high contradiction or low reliability.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM",
+     "first",
+     "second",
+     "third",
+     "fourth",
+     "fifth",
+     "sixth",
+     "seventh",
+     "eighth",
+     "ninth",
+     "tenth"
+    ],
+    "right_first": [
+     "and",
+     "or"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties arise when multiple markers land in the same surface bucket (e.g., several adjacent markers are all 'near a numeral' or 'near a comma') and receive identical heuristic boosts. Fix: deterministically break same-bucket ties by a small position-based offset (earlier marker loses a fixed tiny rank bump) or by token-class priority (units < ordinals < plain NUM) so the model never emits identical integers.",
+ "summary": "The prompt currently over-weights numerals and adjacent coordinators: it boosts any cut next to a number (or ordinal) even when that number is part of a multiword measurement or a coordinated range. That produces many over-trust errors where splitting the numeral from its unit or from the rest of a paired expression yields high contradiction or poor measured fidelity. The two proposed rules consistently lower scores for (a) numeral↔unit splits and (b) numeral/ordinal↔(and|or) splits, returning those boundaries to more conservative bands so the kept set better matches measured quality.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

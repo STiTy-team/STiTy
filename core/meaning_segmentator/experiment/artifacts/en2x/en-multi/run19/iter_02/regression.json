@@ -1,0 +1,107 @@
+{
+  "regressions": [
+    {
+      "id": "en_us_991",
+      "text": "The walls and roofs of ice caves can collapse and cracks can get closed.",
+      "delta": -0.8335,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        9
+      ],
+      "kept_before": [
+        6
+      ],
+      "kept_by_label": [
+        6
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_1581",
+      "text": "The Amazon is also the widest river on Earth, at times six miles wide.",
+      "delta": -0.8335,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        11
+      ],
+      "kept_before": [
+        9
+      ],
+      "kept_by_label": [
+        9
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_142",
+      "text": "On Wednesday, the United States' National Basketball Association (NBA) suspended its professional basketball season due to concerns regarding COVID-19.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        4,
+        9
+      ],
+      "kept_before": [
+        5,
+        8
+      ],
+      "kept_by_label": [
+        5,
+        8
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_1138",
+      "text": "Earlier the Chinese news agency Xinhua reported a plane to be hijacked.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        5
+      ],
+      "kept_before": [
+        6
+      ],
+      "kept_by_label": [
+        6
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_189",
+      "text": "As of the night of August 9, the eye of Morakot was about seventy kilometres away from the Chinese province of Fujian.",
+      "delta": -0.689,
+      "budget_T": 12,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        6
+      ],
+      "kept_before": [
+        7
+      ],
+      "kept_by_label": [
+        7
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    }
+  ],
+  "post_mortem": {
+    "why_failed": "The revision added targeted downgrades that removed previously-high scoring cuts: the numeric+unit exception demoted splits like numeral↔unit (e.g., six / miles) and the name/org+subordinating rule demoted cuts around named organizations before subordinators (e.g., …Association / due …). By removing those safe/high-scoring boundaries the truncator had to keep worse alternatives that more often contradicted the full-sentence translation, dropping the measured objective.",
+    "blamed_lines": [
+      "+- Numeric+unit split exception (traceable to en_us_66): Do NOT apply the generic numeral boost when the marker splits a numeric token from an immediately following unit/scale token. Concretely: if the token immediately before the marker is a numeral (a digit sequence or formatted number token) and the token immediately after the marker is one of {million, billion, thousand, percent, %, k, m, mi, kg, miles, signatures, signature, dollars}, then do NOT bias upward; instead bias the marker downward into a lower target band (0–40).",
+      "+- Name/organization + subordinating continuation exception: When the token immediately before the marker looks like a name or organization (a capitalized token or tokens ending with common org suffixes such as Inc, Corp, Ltd, LLC, or a short all-capital acronym) AND the token immediately after the marker is a subordinating continuation token in {due, because, to}, then reduce or remove the usual name/org boost and bias the marker downward into the lower target band (0–40).",
+      "+- Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward, except when a targeted exception above applies (numeric+unit, name/org + subordinating continuation). For numeric+unit splits, move the marker into band 0–40 instead of boosting."
+    ],
+    "mechanism": "removed_safe_boundary",
+    "lesson": "Targeted downgrades must be narrowly scoped and not broadly remove previously-safe high-scoring cuts—test that exceptions only affect the exact token shapes intended (e.g., digit tokens vs spelled-out numbers) to avoid forcing worse kept boundaries."
+  }
+}

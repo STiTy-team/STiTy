@@ -1,0 +1,253 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.98,
+  "achv": 0.8858,
+  "util": 0.6927,
+  "util_oracle": 0.7803,
+  "overlap": 0.3614,
+  "overlap_by_T": {
+   "4": 0.455,
+   "6": 0.366,
+   "8": 0.303,
+   "12": 0.276
+  },
+  "tie_rate": 0.0026,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2071,
+  "spearman_within": 0.2122,
+  "calibration": {
+   "00-09": {
+    "n": 223,
+    "label_mean": 60.9
+   },
+   "10-19": {
+    "n": 266,
+    "label_mean": 61.4
+   },
+   "20-29": {
+    "n": 155,
+    "label_mean": 60.5
+   },
+   "30-39": {
+    "n": 110,
+    "label_mean": 60.0
+   },
+   "40-49": {
+    "n": 105,
+    "label_mean": 62.4
+   },
+   "50-59": {
+    "n": 110,
+    "label_mean": 64.4
+   },
+   "60-69": {
+    "n": 137,
+    "label_mean": 65.1
+   },
+   "70-79": {
+    "n": 136,
+    "label_mean": 68.1
+   },
+   "80-89": {
+    "n": 130,
+    "label_mean": 63.9
+   },
+   "90-99": {
+    "n": 172,
+    "label_mean": 70.9
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Unattended bags are <SEG:22> a <SEG:5> target <SEG:58> for <SEG:15> theft <SEG:68> and <SEG:9> can <SEG:7> also <SEG:25> attract <SEG:95> attention <SEG:52> from <SEG:11> authorities <SEG:82> wary <SEG:30> ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Caretaker Prime Minister <SEG:92> Julia <SEG:88> Gillard <SEG:99> claimed <SEG:82> during <SEG:5> the <SEG:3> campaign <SEG:30> of <SEG:8> the <SEG:2> 2010 <SEG:14> federal <SEG:42> election <SEG:78> that <SEG:6> she <SEG:10> believed <SEG:70> Australia <SEG:22> should <SEG:16> become <SEG:46> a <SE"
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.5997,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5865,
+     "Japanese": 0.5897,
+     "German": 0.6231
+    }
+   },
+   "6": {
+    "mean": 0.6702,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.6551,
+     "Japanese": 0.6554,
+     "German": 0.7001
+    }
+   },
+   "8": {
+    "mean": 0.6975,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6671,
+     "Japanese": 0.6905,
+     "German": 0.7351
+    }
+   },
+   "12": {
+    "mean": 0.7311,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.6896,
+     "Japanese": 0.7539,
+     "German": 0.7498
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6459,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6303,
+     "Japanese": 0.6446,
+     "German": 0.6627
+    }
+   },
+   "6": {
+    "mean": 0.7265,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7017,
+     "Japanese": 0.7356,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7937,
+     "German": 0.784
+    }
+   },
+   "12": {
+    "mean": 0.8041,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8227,
+     "German": 0.8129
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 322,
+  "prompt_tokens": 1493968,
+  "completion_tokens": 3661572,
+  "cached_tokens": 1089280,
+  "truncated": 0,
+  "cost": 7.451548,
+  "by_purpose": {
+   "segment": {
+    "calls": 276,
+    "prompt_tokens": 1137158,
+    "completion_tokens": 3391137,
+    "reasoning_tokens": 3217536,
+    "cached_tokens": 888320,
+    "cost": 6.866692
+   },
+   "prompt_engineer": {
+    "calls": 18,
+    "prompt_tokens": 98492,
+    "completion_tokens": 128503,
+    "reasoning_tokens": 59968,
+    "cached_tokens": 50432,
+    "cost": 0.270282
+   },
+   "segment_retry": {
+    "calls": 24,
+    "prompt_tokens": 88522,
+    "completion_tokens": 97083,
+    "reasoning_tokens": 94208,
+    "cached_tokens": 74240,
+    "cost": 0.199592
+   },
+   "critic": {
+    "calls": 4,
+    "prompt_tokens": 169796,
+    "completion_tokens": 44849,
+    "reasoning_tokens": 39872,
+    "cached_tokens": 76288,
+    "cost": 0.114982
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 1,
+   "adopted": true,
+   "score_train": 0.4157,
+   "score_dev": 0.4708,
+   "paired_dev": {
+    "mean_delta": 0.0423,
+    "se_delta": 0.0181,
+    "n_pairs": 214
+   },
+   "prompt_len": 14161
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.4157,
+   "score_dev": 0.4708,
+   "paired_dev": null,
+   "prompt_len": 14161
+  },
+  {
+   "version": 3,
+   "adopted": false,
+   "score_train": 0.4157,
+   "score_dev": 0.4708,
+   "paired_dev": null,
+   "prompt_len": 14161
+  },
+  {
+   "version": 4,
+   "adopted": false,
+   "score_train": 0.4051,
+   "score_dev": 0.4634,
+   "paired_dev": {
+    "mean_delta": -0.0063,
+    "se_delta": 0.0177,
+    "n_pairs": 214
+   },
+   "prompt_len": 16932
+  }
+ ],
+ "best_version": 1
+}

@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_276",
+   "pos": 14,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token before = capitalized name; token after = verb",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward",
+   "proposed_rule": "If the token immediately before the marker is a proper-name token (capitalized word) and the token immediately after is a lexical verb (finite or base-form), reduce the score by 20–30 (target band: −25). This prevents treating bare name endpoints as self-contained when a following predicate is likely to reinterpret/override them.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 4,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "left ends with organization/name (may include parenthetical) ; right begins with reporting verb",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward",
+   "proposed_rule": "If the token immediately before the marker is a name/organization cluster (including an immediately-closed parenthetical acronym) and the token immediately after is a reporting/lexical verb (e.g., does, said, announced), lower the score by 15–25 (target band: −20). This narrows the generic name boost so names followed by predicates are not over-trusted.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 10,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "left ends with comma-terminated location/adjunct; token after = auxiliary/copula (is/was/are)",
+   "blamed_rule": "Is there a comma attached to the token immediately before the marker that closes an embedded phrase? If yes, consider upward bias",
+   "proposed_rule": "Do not apply the comma-closed adjunct upward bias when the token immediately after the marker is an auxiliary/copula (is/was/are/was described/etc.); instead decrease the score by 15–30 (target band: −20). Comma boundaries that are followed by a copula commonly reframe the adjunct and produce low (contradiction-prone) measured values.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "left ends with parenthetical acronym (')'); token after = common noun role/title",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward",
+   "proposed_rule": "If the left-side immediately ends with a parenthetical acronym/expansion (closing ')') and the token immediately after the marker begins a role/title common noun (militant, official, minister, etc.), lower the score by 15–25 (target band: −20). This prevents treating the parenthetical-terminated name as an independently faithful chunk when the right is a descriptive predicate that often changes interpretation.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_687",
+   "pos": 11,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "token after = past-participial (VBN) starting a clause; token before = common noun",
+   "blamed_rule": "Adjectival/participial fragment endpoints: if the token immediately before the marker is a past participle ... AND the token immediately after the marker is a common noun, bias the score downward.",
+   "proposed_rule": "Also penalize the mirror case: if the token immediately after the marker is a past participle (VBN) or adjectival participle and the token immediately before is a common noun (noun likely being modified), lower the score by 15–30 (target band: −20). This catches splits that leave the participle stranded on the right and that often produce low measured faithfulness.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1570",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token before = pronoun + auxiliary (It also had); token after = negator/determiner ('no')",
+   "blamed_rule": "Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "If the left-side ends in a light pronoun+auxiliary cluster (it/they/he + have/has/had/is/was/etc.), treat that left stretch as weak lexical evidence and lower the cut score by 15–25 (target band: −20), especially when the right begins with a negator/determiner ('no','a','the'). This prevents over-valuing auxiliary-led fragments that depend on the remainder.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1294",
+   "pos": 3,
+   "error": "under-trust",
+   "why": "mixed",
+   "surface_condition": "right begins a multiword proper name (capitalized sequence) after a short left (e.g., 'Also the Pacific' | 'Tsunami Warning Center')",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward",
+   "proposed_rule": "Raise score when the token immediately after the marker begins a contiguous capitalized name cluster of two or more title-case tokens (i.e., right token and the next token are both capitalized), by +15–25 (target band: +20). This recognizes that splits that expose the start of a multiword proper name often leave each side independently translatable.",
+   "direction": "raise"
+  },
+  {
+   "id": "en_us_1106",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "token before = finite verb (makes/finds); token after = common noun (object) or pronoun",
+   "blamed_rule": "Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words ... are likely to score higher.",
+   "proposed_rule": "If the token immediately before the marker is a finite lexical verb and the token immediately after is a common noun/pronoun likely to be its direct object, penalize the cut by 15–25 (target band: −20). This reduces over-trust at verb→object splits where the object is required for faithful rendering.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties happen when the surface-form checklist yields equal net bias (e.g., both a numeral boost and a small negative exception apply). The prompt already applies deterministic tie penalties for numeral↔unit and name↔parenthetical splits; extend that deterministic bias to also prefer not cutting immediately before auxiliaries/copulas when the left ends with a comma-terminated adjunct (so the tie breaks toward the non-auxiliary cut).",
+ "summary": "The prompt systematically over-weights isolated name/numeral/comma signals and sometimes boosts cuts even when the remainder contains auxiliaries/participles/verbs that typically reinterpret or contradict the left fragment. It also under-values the start of multiword proper names. Sharpening exceptions that suppress the generic name/comma/numeral boosts in the specific surface contexts above (and adding the mirror participial case) will move scores toward the measured labels.",
+ "metrics": {
+  "overlap": 0.4106,
+  "overlap_by_T": {
+   "4": 0.476,
+   "6": 0.359,
+   "12": 0.375
+  },
+  "achv": 0.9007,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2348
+ }
+}

@@ -1,0 +1,196 @@
+{
+ "version": 3,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9085,
+  "util": 0.7095,
+  "util_oracle": 0.776,
+  "overlap": 0.4177,
+  "overlap_by_T": {
+   "4": 0.483,
+   "6": 0.349,
+   "12": 0.422
+  },
+  "tie_rate": 0.0013,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2098,
+  "spearman_within": 0.282,
+  "calibration": {
+   "00-09": {
+    "n": 259,
+    "label_mean": 61.3
+   },
+   "10-19": {
+    "n": 224,
+    "label_mean": 62.2
+   },
+   "20-29": {
+    "n": 158,
+    "label_mean": 62.7
+   },
+   "30-39": {
+    "n": 128,
+    "label_mean": 65.7
+   },
+   "40-49": {
+    "n": 120,
+    "label_mean": 63.9
+   },
+   "50-59": {
+    "n": 103,
+    "label_mean": 63.4
+   },
+   "60-69": {
+    "n": 116,
+    "label_mean": 65.4
+   },
+   "70-79": {
+    "n": 132,
+    "label_mean": 66.0
+   },
+   "80-89": {
+    "n": 127,
+    "label_mean": 68.9
+   },
+   "90-99": {
+    "n": 185,
+    "label_mean": 70.8
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9907,
+  "achv": 0.9178,
+  "util": 0.7179,
+  "util_oracle": 0.7803,
+  "overlap": 0.4574,
+  "overlap_by_T": {
+   "4": 0.512,
+   "6": 0.424,
+   "12": 0.399
+  },
+  "tie_rate": 0.0053,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2173,
+  "spearman_within": 0.2662,
+  "calibration": {
+   "00-09": {
+    "n": 565,
+    "label_mean": 62.1
+   },
+   "10-19": {
+    "n": 512,
+    "label_mean": 63.2
+   },
+   "20-29": {
+    "n": 335,
+    "label_mean": 63.6
+   },
+   "30-39": {
+    "n": 266,
+    "label_mean": 63.4
+   },
+   "40-49": {
+    "n": 248,
+    "label_mean": 63.8
+   },
+   "50-59": {
+    "n": 253,
+    "label_mean": 63.2
+   },
+   "60-69": {
+    "n": 264,
+    "label_mean": 65.8
+   },
+   "70-79": {
+    "n": 277,
+    "label_mean": 66.6
+   },
+   "80-89": {
+    "n": 283,
+    "label_mean": 67.9
+   },
+   "90-99": {
+    "n": 396,
+    "label_mean": 72.8
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 2
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Please treat the <SEG:22> site <SEG:70> with <SEG:34> all <SEG:30> of <SEG:26> the <SEG:32> dignity, <SEG:88> solemnity <SEG:52> and <SEG:46> respect <SEG:58> it <SEG:40> deserves. <SEG:100> Do <SEG:18> not <SEG:14> make <SEG:64> jokes <SEG:12> about <SEG:8> the <SEG:4>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Jardín de la <SEG:34> Unión. <SEG:100> This <SEG:10> space <SEG:78> was <SEG:26> built <SEG:70> as <SEG:22> the <SEG:46> atrium <SEG:74> for <SEG:18> a <SEG:30> 17th-century <SEG:66> convent, <SEG:86> of <SEG:42> which <SEG:38> the <SEG:14> Templo <SEG:62> de <SEG:54> San <SEG:58> Diego <SEG:92> is "
+    }
+   ]
+  }
+ },
+ "score_train": 0.4177,
+ "score_dev": 0.4574,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 15071,
+ "usage": {
+  "calls": 341,
+  "prompt_tokens": 1425337,
+  "completion_tokens": 4254419,
+  "cached_tokens": 1070592,
+  "truncated": 0,
+  "cost": 8.624289,
+  "by_purpose": {
+   "segment": {
+    "calls": 291,
+    "prompt_tokens": 1127040,
+    "completion_tokens": 3981258,
+    "reasoning_tokens": 3800896,
+    "cached_tokens": 846592,
+    "cost": 8.053793
+   },
+   "prompt_engineer": {
+    "calls": 20,
+    "prompt_tokens": 141458,
+    "completion_tokens": 126508,
+    "reasoning_tokens": 50816,
+    "cached_tokens": 108288,
+    "cost": 0.264016
+   },
+   "segment_retry": {
+    "calls": 27,
+    "prompt_tokens": 105228,
+    "completion_tokens": 117267,
+    "reasoning_tokens": 114496,
+    "cached_tokens": 86144,
+    "cost": 0.241459
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 51611,
+    "completion_tokens": 29386,
+    "reasoning_tokens": 23552,
+    "cached_tokens": 29568,
+    "cost": 0.065022
+   }
+  }
+ }
+}

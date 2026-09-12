@@ -1,0 +1,107 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts where a lexical left chunk ending in a place/name/lexical noun is immediately followed by a finite verb/continuation token on the right (surface tokens below). These boundaries were over-scored when the prompt's comma/adjunct uplift and lexical boosts outweighed continuation risk.",
+   "supported_by": [
+    "en_us_203",
+    "en_us_360",
+    "en_us_140",
+    "en_us_164"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "In [Scoring Rules]: when the token immediately BEFORE the marker is a lexical place/name/noun and the token immediately AFTER the marker is a finite verb or continuation word, force the boundary score down into the cautious band 10–35 (override comma/adjunct uplift). This reduces over-trust where the right-hand clause continues/overturns the left.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "oahu",
+     "maldives",
+     "gonu",
+     "gauge",
+     "ship",
+     "mummy",
+     "light"
+    ],
+    "right_first": [
+     "was",
+     "is",
+     "are",
+     "reached",
+     "causing",
+     "named",
+     "shows",
+     "served"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts immediately before parenthetical acronyms or parenthetical time/UTC tokens (acronyms and clock-zone tokens were being given too much 'named-phrase' uplift).",
+   "supported_by": [
+    "en_us_1000",
+    "en_us_1205",
+    "en_us_140"
+   ],
+   "error": "over-trust",
+   "why": "frag_right",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "In [Scoring Rules]: if the token immediately AFTER the marker is a parenthetical-style token that is an uppercase/acronym or timezone/acronym (e.g., ISIL, UTC) or a parenthetical numeric timestamp, lower the score into band 10–35. Do not treat such parenthetical tokens as standalone reliable named phrases for the purpose of uplift.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "isil",
+     "utc",
+     "isna",
+     "unhcr"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts immediately AFTER the relative/subordinating token 'that' (left_last = 'that'). Some of these positions were under-valued by the model's generic 'downward bias for following determiners/prepositions/relative pronouns'.",
+   "supported_by": [
+    "en_us_380",
+    "en_us_276"
+   ],
+   "error": "under-trust",
+   "why": "contra",
+   "blamed_rule": "- Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "In [Scoring Rules]: provide a specific exception that raises the score (target band 70–95) when the token immediately BEFORE the marker is the subordinating/relative pronoun 'that' and the token immediately AFTER the marker is lexical (e.g., 'the', a noun, a verb). Rationale: many judged-good cuts are the boundary after a 'that' that starts an independently-verifiable clause; the generic downward bias over-penalises these.",
+   "direction": "raise",
+   "check": {
+    "left_last": [
+     "that"
+    ],
+    "right_first": [
+     "the",
+     "a",
+     "an",
+     "this",
+     "these",
+     "those",
+     "one",
+     "we",
+     "it",
+     "he",
+     "she",
+     "they",
+     "which",
+     "who",
+     "when"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Existing deterministic micro-offset is present in the prompt. A remaining source of identical ints is coarse bucket overlap. To avoid accidental equal integers, apply the micro-offset after applying the above overrides (offset = 0.001 × token_position_index) and then round—this preserves deterministic order while allowing the new overrides to change bucket assignment.",
+ "summary": "The prompt systematically over-boosts cuts where strong lexical signals (named places, quoted/parenthetical tokens) interact with continuation verbs or parenthetical acronyms, and it sometimes under-penalises continuations that begin with causal/auxiliary tokens. Conversely, a blanket downward bias on tokens like 'that' penalises some genuinely high-scoring boundaries. I propose three narrowly scoped, surface-form rules: (1) suppress comma/adjunct uplift when a following finite verb/continuation likely continues or overturns the left (list of place/name nouns × finite verbs), (2) do not treat parenthetical acronyms/timezone tokens as reliable named-phrase uplifts (explicitly lower cuts before ISIL/UTC-style tokens), and (3) add an exception to raise cuts immediately after 'that' when the right side is lexical. Each rule is tied to immediate tokens so they generalize and are measurable.",
+ "metrics": {
+  "overlap": 0.4157,
+  "overlap_by_T": {
+   "4": 0.463,
+   "6": 0.36,
+   "12": 0.43
+  },
+  "achv": 0.9107,
+  "tie_rate": 0.0026,
+  "spearman_within": 0.2534
+ }
+}

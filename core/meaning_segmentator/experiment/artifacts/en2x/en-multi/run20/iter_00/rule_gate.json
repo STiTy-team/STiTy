@@ -1,0 +1,29 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_140",
+   "en_us_278",
+   "en_us_46",
+   "en_us_1050"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that split a numeral from its unit/quantified noun (number on the left, measurement/unit or counted-noun on the rig",
+  "n_matched": 16,
+  "label_matched": 0.5372,
+  "label_rest": 0.6486,
+  "t": -2.45,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_301",
+   "en_us_417"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that split coordinated/ranged numerals or ordinals (a number/ordinal on the left, immediately followed by 'and' or ",
+  "n_matched": 3,
+  "verdict": "drop",
+  "reason": "걸린 경계 3 < 8"
+ }
+]

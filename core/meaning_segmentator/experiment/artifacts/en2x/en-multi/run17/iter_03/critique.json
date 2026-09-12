@@ -1,0 +1,117 @@
+{
+ "cases": [
+  {
+   "id": "en_us_738",
+   "pos": 7,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker after a verb phrase containing explicit negation (bigram like 'does not' immediately to the left) with a lowercase common noun immediately after",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "Re-anchor the existing 'cuts-after-main-verb' tendency so it is blocked when the left side contains an explicit negation bigram immediately to the left of the marker (patterns: AUX + not / n't, e.g. 'does not', 'didn't', 'hasn't'). If that exact left-bigram matches, forcibly reduce the marker's raw score by ~30 points (target band: -25 to -35) so comma/verb boosts cannot override the negation risk.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 11,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker after a noun that is immediately followed (post-marker) by a preposition 'for' (pattern: ... NOUN  |  for ...)",
+   "blamed_rule": "Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "Make the 'post-marker preposition' check an explicit high-priority override: if the immediate token after the marker is a preposition (for, by, with, of, to, in, on, about, concerning) and the token immediately before is a content noun or verb, apply a stronger downward adjustment of ~30 points (target band: -20 to -40) so that preposition-attached sequences are deprioritized relative to other comma/lexical boosts.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_276",
+   "pos": 14,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately after a wh-subordinator ('how', 'what', 'why', 'where', 'when') that heads a clause, with the token after the marker a verb",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "Add a specific override for wh-subordinators: if the left-side fragment ends with a wh-word (immediately before the marker) such as 'how', 'what', 'why', 'where', 'when' (i.e., marker splits directly after a wh-word or after the small wh-phrase) and the token after is a verb, reduce score by ~30 (target band: -20 to -40). Treat wh-subordinators as high-contradiction risk because they typically head clauses that continue the meaning.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_853",
+   "pos": 7,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately after a comma that precedes a clausal subordinator/coordinator such as 'while' (pattern: ...,  |  while ...)",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "Narrow the comma-adjunct boost: if the left side ends with a comma or closing adjunct marker and the immediate token after the marker is a clausal-starter (subordinator/coordinator/auxiliary: while, because, although, though, which, that, when, while, or, and, but, however, is/was/are), treat this as a high-priority override and reduce the marker's score by ~30 points (target band: -20 to -40). This prevents comma-based boosts from promoting cuts that start a continuation clause.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 10,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker after a geographic/adjunct phrase closed by a comma (e.g., 'on Oahu,') where the token after is an auxiliary ('was') starting a clause",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "When a comma/closing adjunct is followed immediately by an auxiliary or clausal starter (is/was/are/were/has/had/will/can/might), treat the cut as clausal continuation and apply a downward adjustment of ~30 points (target band: -20 to -40) instead of granting the usual comma-based boost.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker that splits a closing quote/parenthetical (token before ends with '\"' or ')') while the token after is a causal subordinator ('because', 'since')",
+   "blamed_rule": "- Quote adjacency: if the token immediately before the marker ends with a closing quote (\" or ')\" or the token after begins with an opening quote, reduce boost unless the token after that quote is punctuation or sentence end.",
+   "proposed_rule": "Raise priority of quote/parenthesis adjacency override: if the cut splits a closing quote or closing parenthesis and the immediate post-marker token is a subordinator (because, since, while, although) or an auxiliary, then reduce the score by ~35 points (target band: -25 to -40). In other words, do not treat closing-quote adjacency as a generic positive signal when the following token starts a continuing clause.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 13,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately after a passive or light-verb sequence ending in a past participle ('are stimulated') with the token after being a preposition ('by')",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "Add a targeted override for 'verb + by/for' attachments: if the token immediately before is an auxiliary + past participle or light-verb sequence (patterns: 'is/are/was/were' + V-ed) and the immediate token after the marker is a preposition that commonly forms an agent/attachment (by, for, with), reduce the marker score by ~30 points (target band: -20 to -40) because these commonly form verb+PP attachments that continue the clause.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1253",
+   "pos": 15,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker that splits a noun phrase right before a coordinating 'or' (pattern: ... NOUN  |  or ...), leaving the connector on the right",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "Make coordinator-attached splits (immediate right token one of 'or', 'and', 'but') a blocking override if the coordinator continues a coordinated NP/clause: when the immediate token after is a coordinator and the left side ends in a noun or quantified noun phrase, reduce score by ~30 (target band: -20 to -40) because coordination typically keeps the phrase together for faithful translation.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1253",
+   "pos": 21,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker between two adjacent prepositional phrases or preposition-hosting phrases (pattern: '... of the X  |  with ...'), i.e., post-marker token is a preposition 'with'",
+   "blamed_rule": "Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "Re-anchor the 'post-marker preposition' downward bias to immediate adjacency and increase its effect: if the token after the marker is a preposition and the token before is part of a noun/prep phrase, apply a -25 to -35 point adjustment (target band: -30) to deprioritize cuts that split tightly attached prepositional phrase sequences.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_482",
+   "pos": 16,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "marker inside a comma-separated list (left ends with comma) where the right token is a lowercase list item (common noun) continuing the enumeration",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "Differentiate comma uses: if the cut is inside a comma-separated enumeration (pattern: comma before the marker and the token after is a lowercase noun and not a clause-starter or capitalized proper name), treat it as an 'enumeration' (high attach risk) and reduce score by ~25 points (target band: -15 to -35) rather than granting a full adjunct boost.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties arise when opposing surface cues (e.g., comma-adjunct boost vs. post-marker preposition/downward bias) cancel out and the sentence-level rule asks for distinct integers; add a tiny deterministic positional bias (subtract 0.001 × marker_index) as a final micro-tiebreak so symmetric signals resolve reproducibly.",
+ "summary": "The prompt currently over-weights comma/parenthetical/lexical-cluster boosts and lets those wins override immediate-attachment signals that predict contradiction (post-marker prepositions, wh-subordinators, coordinators, auxiliaries, explicit negation bigrams). Many high-score mistakes are cuts that split clause-continuations or list/attachment structures; raising the priority and magnitude of immediate-adjacency overrides (preposition/wh/coordinator/aux/negation/quote) will reduce over-trust. The proposed fixes re-anchor these overrides to exact immediate-token patterns and make them strong, high-priority adjustments (≈-25 to -35 points) so they reliably reorder cut preferences within each sentence.",
+ "metrics": {
+  "overlap": 0.4177,
+  "overlap_by_T": {
+   "4": 0.483,
+   "6": 0.349,
+   "12": 0.422
+  },
+  "achv": 0.9085,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.282
+ }
+}

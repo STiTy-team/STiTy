@@ -1,0 +1,52 @@
+[
+ {
+  "id": "en_us_66",
+  "direction": "lower",
+  "surface_condition": "marker splits a numeral token on the left from an immediately following unit/scale word on the right (e.g. NUM / million",
+  "n_matched": 9,
+  "label_matched": 0.4647,
+  "label_rest": 0.6485,
+  "t": -4.45,
+  "verdict": "keep"
+ },
+ {
+  "id": "en_us_1000",
+  "direction": "lower",
+  "surface_condition": "marker immediately follows an organization/group name or extremist acronym (e.g., 'isil', 'daesh', 'isis') on the left a",
+  "n_matched": 1,
+  "verdict": "drop",
+  "reason": "걸린 경계 1 < 8"
+ },
+ {
+  "id": "en_us_360",
+  "direction": "lower",
+  "surface_condition": "marker occurs after the end of a quoted/named phrase or noun (e.g., report/discovery/emission/statement) and the right_f",
+  "n_matched": 0,
+  "verdict": "drop",
+  "reason": "걸린 경계 0 < 8"
+ },
+ {
+  "id": "en_us_417",
+  "direction": "lower",
+  "surface_condition": "marker falls immediately before the head noun 'language'/'languages' while the left side ends in degree/adverbial tokens",
+  "n_matched": 1,
+  "verdict": "drop",
+  "reason": "걸린 경계 1 < 8"
+ },
+ {
+  "id": "en_us_738",
+  "direction": "lower",
+  "surface_condition": "marker immediately follows a multi-word organization/agency name ending in tokens like 'service'/'department'/'agency' a",
+  "n_matched": 0,
+  "verdict": "drop",
+  "reason": "걸린 경계 0 < 8"
+ },
+ {
+  "id": "en_us_1050",
+  "direction": "lower",
+  "surface_condition": "marker falls between a numeric token on the left (NUM) and a continuing clause on the right that reinterprets the measur",
+  "n_matched": 0,
+  "verdict": "drop",
+  "reason": "걸린 경계 0 < 8"
+ }
+]

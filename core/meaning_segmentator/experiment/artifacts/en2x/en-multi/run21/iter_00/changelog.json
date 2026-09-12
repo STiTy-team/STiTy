@@ -1,0 +1,40 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 2,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Refined numeral handling: added an exception that penalizes markers that split a numeral from an immediately adjacent measurement/unit token (low target band 10–35) to address measured over-trust on numeric+unit splits (traceable to critique case list).",
+  "Added targeted down-weighting for markers immediately after short named/org/id tokens (reduce target band 15–45 unless the opposite side contains an independent numeral/date/unit), to correct over-boosting at short-name boundaries (traceable to critique cases).",
+  "Updated surface-form checklist and examples to reflect the two targeted downgrades and show concrete applied effects in sample outputs."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 13698,
+   "holdout_delta": {
+    "mean_delta": 0.0173,
+    "se_delta": 0.0262,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4237
+  },
+  {
+   "kind": "shrink",
+   "len": 9935,
+   "holdout_delta": {
+    "mean_delta": -0.085,
+    "se_delta": 0.0317,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3215
+  }
+ ]
+}

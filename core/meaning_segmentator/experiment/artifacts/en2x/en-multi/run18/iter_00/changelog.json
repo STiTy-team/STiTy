@@ -1,0 +1,54 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 3,
+  "n_passed": 2
+ },
+ "changelog": [
+  "Add narrow negative exception penalizing cuts that separate a numeral token from an immediately following scale/unit token (addresses en_us_66, en_us_278, en_us_203, en_us_1050): reduces false high scores where reliable-looking numerals are split from their units.",
+  "Penalize cuts where the token immediately after the marker is a causal/subordinating connector (explicitly include 'because', 'causing', 'so', 'therefore', 'hence') especially when left ends a quoted phrase or standalone NP (addresses en_us_360): avoids over-trusting left-side reliability when remainder often modifies/overturns it.",
+  "Reduce boosts for cuts that follow a named organization/place when the right side begins with an appositional parenthetical or immediate abbreviation (right token '(' or comma then '(' or '(' + uppercase) (addresses en_us_738, en_us_1000): prevents splitting names from clarifying parentheticals/roles.",
+  "Treat repeated-unit patterns (numeral on one side + unit token immediately on the other) as bad splits (addresses en_us_1050): same mechanism as numeral↔unit rule to stop over-trusting repeated unit separations.",
+  "Lower scores for cuts that leave an adjectival/participial modifier phrase at the left that syntactically expects a following noun (examples: 'spoken', 'reported', 'estimated', possibly preceded by adverbs like 'most', 'commonly') when the right begins with a common noun (addresses en_us_417): avoids boosting adjectival fragments that lose their noun anchor.",
+  "Add a deterministic tie-break bias: when checklist signals produce exact ties, apply a small deterministic penalty to numeral–unit splits and parenthetical/appositive splits so they no longer tie (implements the critique 'tie_fix').",
+  "Integrated all new negative exceptions as narrowly-scoped, surface-token–anchored tendencies and preserved existing general high/low tendencies to retain useful prior behavior (merges critique proposals with original rules)."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 15132,
+   "holdout_delta": {
+    "mean_delta": 0.0212,
+    "se_delta": 0.0319,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4277
+  },
+  {
+   "kind": "shrink",
+   "len": 10434,
+   "holdout_delta": {
+    "mean_delta": 0.001,
+    "se_delta": 0.0281,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4074
+  },
+  {
+   "kind": "neutral",
+   "len": 11655,
+   "holdout_delta": {
+    "mean_delta": -0.0136,
+    "se_delta": 0.0293,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3928
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+[
+ {
+  "supported_by": [
+   "en_us_203",
+   "en_us_360",
+   "en_us_140",
+   "en_us_164"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where a lexical left chunk ending in a place/name/lexical noun is immediately followed by a finite verb/continuatio",
+  "n_matched": 6,
+  "verdict": "drop",
+  "reason": "걸린 경계 6 < 8"
+ },
+ {
+  "supported_by": [
+   "en_us_1000",
+   "en_us_1205",
+   "en_us_140"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts immediately before parenthetical acronyms or parenthetical time/UTC tokens (acronyms and clock-zone tokens were bei",
+  "n_matched": 1,
+  "verdict": "drop",
+  "reason": "걸린 경계 1 < 8"
+ },
+ {
+  "supported_by": [
+   "en_us_380",
+   "en_us_276"
+  ],
+  "direction": "raise",
+  "surface_condition": "cuts immediately AFTER the relative/subordinating token 'that' (left_last = 'that'). Some of these positions were under-",
+  "n_matched": 4,
+  "verdict": "drop",
+  "reason": "걸린 경계 4 < 8"
+ }
+]

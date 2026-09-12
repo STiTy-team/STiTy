@@ -1,0 +1,70 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Most sample sentences place a clear subject before a verb before its object (e.g. “They include financial restrictions,” “Water is spilling over the levee”).",
+  "register": "edited written prose (news/encyclopedic/encyclopaedia-style and press/news reporting)",
+  "fillers_and_hesitations": [
+    "um",
+    "uh",
+    "er",
+    "ah",
+    "well",
+    "you know",
+    "I mean"
+  ],
+  "discourse_markers": [
+    "and",
+    "but",
+    "however",
+    "although",
+    "since",
+    "when",
+    "while",
+    "after",
+    "as",
+    "due to",
+    "by which",
+    "which",
+    "that"
+  ],
+  "clause_boundary_signals": [
+    "that",
+    "which",
+    "who",
+    "when",
+    "after",
+    "since",
+    "although",
+    "while",
+    "as",
+    "because",
+    "due to",
+    "by which"
+  ],
+  "non_boundary_traps": [
+    "and (can coordinate nouns: 'Greed and selfishness')",
+    "as (in light verbs: 'quoted as saying')",
+    "of (noun complements: 'bag of palm leaves')",
+    "the / a / an (articles inside NPs; appositions: 'the ship')",
+    "in / at / on / by (prepositional phrases that attach locally, not clause boundaries)"
+  ],
+  "unstable_prefix_signals": [
+    "the",
+    "a",
+    "an",
+    "to",
+    "in",
+    "at",
+    "by",
+    "for",
+    "which",
+    "that",
+    "who",
+    "when",
+    "after",
+    "since",
+    "while",
+    "as",
+    "due to"
+  ],
+  "notes_for_prompt_writer": "Treat English as SVO and prefer splitting at full clause boundaries signalled by subordinators or coordinating connectors (and/but/however) that start independent clauses. Avoid emitting segments immediately after determiners, prepositions or auxiliary-looking tokens (the, a, in, to, as, by, which/that) because the phrase is likely to continue and change translation. When in doubt wait for a main verb or an explicit subordinating word that completes its complement before emitting a segment."
+}

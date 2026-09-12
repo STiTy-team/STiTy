@@ -1,0 +1,97 @@
+{
+ "rules": [
+  {
+   "surface_condition": "splits that separate a numeric token from an immediately following measurement/unit token when the left token is any numeric token (including decimals).",
+   "supported_by": [
+    "en_us_66",
+    "en_us_203"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "(b) the left numeral is formatted with thousands separators or decimals (e.g., contains \",\" or \".\" in the token) indicating a clear numeric figure that translators commonly render alone;",
+   "proposed_rule": "Scoring Rules: NUM–UNIT demotion (sharpened). If the token immediately before the marker is NUM and the token immediately after is a measurement/unit token (e.g. \"million\", \"percent\", \"kilometers\", \"kilometer\", \"meters\", \"meter\", \"inches\", \"inch\", \"miles\", \"mile\", \"year\", \"years\", \"km\", \"m\", \"degree\"), apply a clear downward ordering bias: rank these NUM–UNIT splits below other nearby candidate cuts. Target band: order these markers toward the low–mid range (approx. 10–35) relative to other positions in the sentence. Do NOT exempt tokens merely because the NUM token contains a decimal point; keep the exception only for explicit thousands-separator patterns like a comma if and only if the unit is clause-final (punctuated).",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "percent",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "inches",
+     "inch",
+     "miles",
+     "mile",
+     "year",
+     "years",
+     "km",
+     "m",
+     "degree"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers immediately followed by an -ing verb/participial continuation (clause-continuing gerund/participle) such as 'causing', 'facing', 'reaching'.",
+   "supported_by": [
+    "en_us_360",
+    "en_us_380"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- If the token immediately after the marker is a clause-continuing subordinator or continuation signal that commonly modifies or restricts the previous clause (examples: \"because\", \"due\", \"due to\", \"that\", \"which\", \"causing\", \"so that\"), then apply a modest downward ordering bias for that marker, especially when the left side is lexically weak (function words or a lone short token).",
+   "proposed_rule": "Scoring Rules: strengthen demotion for participial continuations. If the token immediately after the marker is a present-participial / gerund verb token (conservative list to start: \"causing\", \"facing\", \"reaching\", \"leading\", \"resulting\"), apply a stronger downward ordering bias than the current modest lowering—target these cuts into a low band (approx. 10–30) when the right-first token is one of the listed gerunds. This is because such participial continuations frequently overturn or materially continue the left clause (high contradiction risk).",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "causing",
+     "facing",
+     "reaching",
+     "leading",
+     "resulting"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers immediately following single-token proper-name/identifier tokens (single-token names/acronyms) where the left-last token is a name-like identifier (examples expanded to multiword-name tails).",
+   "supported_by": [
+    "en_us_1000",
+    "en_us_278",
+    "en_us_477"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "- If the token immediately before the marker is a short identifier-like token (examples to monitor: short organization/place/name fragments such as \"parenthood\", \"isil\", \"kv62\", \"minae\", \"service\"), then only apply a modest downward ordering bias when ALL of the following hold: (a) the left token is the primary lexical content immediately before the marker (i.e., the left side contains no additional strong content word immediately adjacent), (b) the token immediately after the marker is a lower-case non-numeric word (suggesting likely continuation), and (c) the token immediately after the marker is NOT a numeral/date/measurement/unit token or punctuation. If the token after the marker is an independent numeral/date/unit or the unit/date/numeric evidence is present, SKIP this demotion and allow the short-ID adjacency to retain its usual upward effect.",
+   "proposed_rule": "Scoring Rules: broaden short-identifier demotion to single-token name tails. Extend the conservative short-ID demotion to also fire on single-token proper-name tails that end the left stretch (approximate by a monitored list of common single-token name/ID tokens derived from data; initial monitored tokens: \"romney\", \"strabo\", \"isil\", \"gonu\", \"kv62\", \"minae\", \"parenthood\", \"service\"). When the left_last is one of these tokens, apply a modest downward ordering bias (target band ~15–45) unless the right side obviously contains an independent numeral/date/unit or punctuation that should preserve the upward bias. This change re-anchors the short-ID rule to include common single-token name tails (multiword NEs often collapse to a single final token) while keeping the conservative exceptions.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "romney",
+     "strabo",
+     "isil",
+     "gonu",
+     "kv62",
+     "minae",
+     "parenthood",
+     "service"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties arise when multiple markers receive identical coarse adjustments from the same high-level tendency (e.g., several markers adjacent to numerals or names all get the same band). The prompt demands unique integers; reduce tie incidence by making these rules relative (apply small ordered offsets inside each target band) so markers firing the same rule are still ranked by small offsets derived from secondary signals (e.g., clause-closing punctuation, presence of adjacent content words).",
+ "summary": "Three recurring failure modes remain. (1) The decimal-number exception for NUM–UNIT splits is too permissive: decimal numerals like \"1.2\" and \"6.34\" are being left exempt and the model over-keeps bad splits — tighten this by treating NUM (including decimals) + unit as a demotion unless a strong thousands-sep + clause-final punctuation signal exists. (2) Participial/gerund continuations (\"causing\", \"facing\", \"reaching\") are still under-demoted and frequently produce contradiction; raise their penalty. (3) The conservative short-identifier rule did not cover single-token name tails (final name tokens), so expand the monitored short-ID list to include common single-token names/IDs and apply the modest demotion there as well.",
+ "metrics": {
+  "overlap": 0.4099,
+  "overlap_by_T": {
+   "4": 0.466,
+   "6": 0.374,
+   "12": 0.383
+  },
+  "achv": 0.9003,
+  "tie_rate": 0.0026,
+  "spearman_within": 0.2572
+ }
+}

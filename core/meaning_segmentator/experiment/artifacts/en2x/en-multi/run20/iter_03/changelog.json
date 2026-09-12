@@ -1,0 +1,42 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 2,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Add narrow comma/adjunct suppression: when a comma-adjunct follows a capitalized/place-name token and the immediate right token is a finite continuation verb from a small, explicit list, suppress the comma uplift (addresses measured over-boosts where named places + following finite verbs continue or overturn the left).",
+  "Lower parenthetical/acronym/timezone uplift: treat all-uppercase 2–6 letter tokens (optionally wrapped in parentheses) as unreliable named-phrase uplifts and mark cuts before them as risky unless strong lexical context exists (addresses over-trust on parenthetical acronyms/timezone tokens).",
+  "Add 'that'-exception uplift: while subordinators like 'that' usually lower cuts, raise cuts immediately after 'that' when the token to the right is a lexical content word (not in a small function-word list), to recover measured cases where 'that' boundaries were under-ranked.",
+  "Clarify and move the deterministic micro-offset application: apply token-class priority first, then all scoring overrides, then apply a small deterministic micro-offset (offset = 0.001 × (total_markers - position_index)) before final rounding to integers; this preserves deterministic order (earlier markers outrank later ones if all else equal) while letting new overrides change bucket assignment (implements critique tie_fix).",
+  "Updated Examples to reflect the narrow 'that' uplift and preserved numeral/coordinator lowering tendencies so examples stay testable and consistent with the new overrides."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 16932,
+   "holdout_delta": {
+    "mean_delta": 0.0075,
+    "se_delta": 0.0243,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4361
+  },
+  {
+   "kind": "shrink",
+   "len": 10735,
+   "holdout_delta": {
+    "mean_delta": -0.0059,
+    "se_delta": 0.0341,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4227
+  }
+ ]
+}

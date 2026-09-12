@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_738",
+   "pos": 7,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "a negation token (not / n't / never) appears within two tokens left of the marker and the token after the marker is a lowercase common noun (e.g., splits negated verb from its object)",
+   "blamed_rule": "- Nearby negation: if not / n't / never appears within two tokens to the left of the marker, reduce upward bias because negation near the boundary often interacts with the remainder.",
+   "proposed_rule": "Raise the priority and magnitude of the nearby-negation override: if not / n't / never occurs within two tokens left of the marker AND the token after the marker is a lowercase common noun or determiner, subtract ~30–40 points (target: move candidate from top band into mid 20–60 band) so such cuts rank below other content-adjacent cuts.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 11,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "the token immediately after the marker is a preposition (for / of / to / by / on) while the left token is a noun (splitting a noun+PP chain)",
+   "blamed_rule": "- Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "Make the 'token-after-is-preposition' rule a higher-priority override: when the immediate right token is a preposition (for/of/to/by/on) and the left token is a content noun, reduce the score by ~30 points (target: move from top band into lower-mid band) because such cuts commonly break noun+PP complements and produce contradiction.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_276",
+   "pos": 14,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "the left side begins with a subordinating particle (how/that/which/when) and the token after the marker begins with a lexical verb (i.e., cuts between a 'how/that' clause introducer and its predicate)",
+   "blamed_rule": "- Cuts that leave a relative or subordinating word (e.g., \"that\", \"which\", \"who\", \"when\", \"while\", \"as\", \"because\", \"due to\") stranded at the end of a segment are often low — but this is an empirical tendency, not a rule: if the stranded token plus its nearby words nevertheless translate reliably on their own, the measured score can still be high.",
+   "proposed_rule": "If the left segment begins with a subordinating/wh-word (how/that/which/when/while/because) and the immediate token after the marker is a lexical verb, apply a strong downward adjustment (~30–40 points; target band: mid 20–60) because these cuts tend to break clause-initial subordinators from their predicates and produce contradiction.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_853",
+   "pos": 7,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker falls before a subordinating conjunction (while/because/when) or coordinator that begins a clausal continuation, especially when the left side ends with a comma or a verb",
+   "blamed_rule": "- Cuts before or after subordinators or coordinators can measure well when the segment to the left or right is itself translated reliably (e.g., if the left already ends in a named entity or numeral). Example surface words: \"and\", \"but\", \"however\", \"when\", \"after\", \"since\", \"while\", \"which\", \"that\", \"who\". Do not assume these always help; the testable prediction is only that presence of reliable lexical material on one side increases measured score.",
+   "proposed_rule": "Introduce a high-priority 'clausal-continuation' override: if the token after the marker is a subordinator/coordinator that typically starts a clause (while/because/when/which/that/how) and the left token is not a proper name/numeral (or the left ends with a comma), subtract ~30 points (target: push such candidates out of top band into mid 20–60) to prefer cuts that do not split into a clausal continuation.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 10,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token after the marker is an auxiliary verb (is/was/are/were/has/had/be) starting a main/clausal predicate, while the left side is an adjunct ending with comma or place name",
+   "blamed_rule": "- Markers placed after isolated auxiliary-like or light tokens (verbs such as \"is\", \"are\", \"was\", modal-like tokens such as \"could\", \"would\", or light numerals like \"one\" used in unanchored phrases) can be low when those tokens do not leave enough lexical content by themselves. (Prediction to test: cuts that leave only a light verb or lone function word on one side tend to score lower.)",
+   "proposed_rule": "Add an explicit override: when the token after the marker is an auxiliary verb (is/are/was/were/has/had/be) that begins the sentence's predicate and the left side ends in an adjunct/place/PP (often followed by a comma), reduce the marker score by ~30–40 points (target: move these from top band into mid 20–60) because such cuts usually start clause continuations and correlate with high contradiction.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "the token immediately before the marker ends with a closing quotation mark and the token after is a clause-starter (because/while/when) or auxiliary",
+   "blamed_rule": "- Quote adjacency: if the token immediately before the marker ends with a closing quote (\" or ') or the token after begins with an opening quote, reduce boost unless the token after that quote is punctuation or sentence end.",
+   "proposed_rule": "Strengthen quote-adjacency override: if the left token ends with a closing quote AND the immediate right token is a clause-starter (because/while/when/that) or an auxiliary, apply a strong penalty (~35–45 points; target band: mid 10–50) because quoted fragments followed by clause continuations often change/clarify the quoted material (high contradiction).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1253",
+   "pos": 15,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately precedes a coordinating conjunction (or / and) that links nouns (left token is a noun phrase and right begins with 'or'/'and' + determiner/noun)",
+   "blamed_rule": "- Middle-range and context-dependent tendencies\n- Cutting immediately after coordinating conjunctions such as \"and\" or \"but\" can be high if the rest of the clause is independently translatable, or low if the conjunction is coordinating closely linked nouns; rely on surface neighbors: if \"and\" is followed by a capitalized proper name or numeral phrase it is more likely to score higher than if it coordinates two nouns inside one NP. (Prediction to test: surface neighbors around \"and\"/\"but\" predict the measured score.)",
+   "proposed_rule": "New explicit override for coordinations: if the immediate right token is a coordinator (or/and) and the left token is a noun or ends a noun phrase (and the coordinator is followed by a determiner or lowercase noun), subtract ~30 points (target: move such candidates from top band into mid 20–60) because these cuts split coordinated noun lists and often contradict or garble meaning.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_482",
+   "pos": 16,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker falls inside a comma-separated enumeration (left ends with a comma and the token after is a lowercase noun that continues an item list or is followed by a comma/or)",
+   "blamed_rule": "- Commas are ambiguous: a comma may mark a clean adjunct boundary (testable as high) or simply separate internal NP items (testable as low). Use the lexical density on each side (nouns, verbs, numerals, names) as a predictor.",
+   "proposed_rule": "Explicit 'enumeration' override: if the marker sits where the left token ends with a comma (or the immediate right token is a lowercase noun) and the following tokens form a list (next token after right is comma or 'or'), reduce the score by ~25–35 points (target: move candidates from top band into mid 30–60) to avoid cutting inside noun enumerations.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties occur because the prompt asks for unique integers but leaves 'if two positions feel equal, decide which' unspecified; add a deterministic micro-tiebreak (e.g., subtract 0.001×position_index so later policy choices are reproducible) so equal evidence never produces the same integer.",
+ "summary": "The prompt over-values local lexical anchors and comma-adjacent boosts while under-weighting high-contradiction surface cues. In practice the model still places top scores on cuts that split quoted text, clause continuations (while/because), auxiliaries, coordinations ('or'), enumerations, or noun+PP chains. Make the existing overrides higher priority or add explicit, stronger penalties for these immediate-adjacency patterns so such positions are ranked well below genuine high-scoring cuts.",
+ "metrics": {
+  "overlap": 0.4177,
+  "overlap_by_T": {
+   "4": 0.483,
+   "6": 0.349,
+   "12": 0.422
+  },
+  "achv": 0.9085,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.282
+ }
+}

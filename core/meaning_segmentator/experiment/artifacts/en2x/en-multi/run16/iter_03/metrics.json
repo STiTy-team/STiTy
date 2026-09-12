@@ -1,0 +1,230 @@
+{
+ "version": 3,
+ "adopted": false,
+ "train": {
+  "n": 30,
+  "n_scored": 30,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.8886,
+  "util": 0.6948,
+  "util_oracle": 0.7748,
+  "overlap": 0.4176,
+  "overlap_by_T": {
+   "4": 0.475,
+   "6": 0.401,
+   "12": 0.342
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.0749,
+  "spearman_within": 0.1034,
+  "calibration": {
+   "00-09": {
+    "n": 15,
+    "label_mean": 52.2
+   },
+   "10-19": {
+    "n": 71,
+    "label_mean": 64.3
+   },
+   "20-29": {
+    "n": 70,
+    "label_mean": 66.4
+   },
+   "30-39": {
+    "n": 43,
+    "label_mean": 58.3
+   },
+   "40-49": {
+    "n": 43,
+    "label_mean": 62.6
+   },
+   "50-59": {
+    "n": 46,
+    "label_mean": 62.8
+   },
+   "60-69": {
+    "n": 52,
+    "label_mean": 60.1
+   },
+   "70-79": {
+    "n": 42,
+    "label_mean": 60.2
+   },
+   "80-89": {
+    "n": 40,
+    "label_mean": 63.2
+   },
+   "90-99": {
+    "n": 47,
+    "label_mean": 73.5
+   }
+  },
+  "n_boundaries": 469,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9581,
+  "achv": 0.893,
+  "util": 0.6981,
+  "util_oracle": 0.7803,
+  "overlap": 0.3696,
+  "overlap_by_T": {
+   "4": 0.422,
+   "6": 0.356,
+   "12": 0.316
+  },
+  "tie_rate": 0.0012,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1232,
+  "spearman_within": 0.1366,
+  "calibration": {
+   "00-09": {
+    "n": 81,
+    "label_mean": 59.6
+   },
+   "10-19": {
+    "n": 392,
+    "label_mean": 64.4
+   },
+   "20-29": {
+    "n": 502,
+    "label_mean": 64.6
+   },
+   "30-39": {
+    "n": 393,
+    "label_mean": 64.6
+   },
+   "40-49": {
+    "n": 374,
+    "label_mean": 62.2
+   },
+   "50-59": {
+    "n": 375,
+    "label_mean": 63.4
+   },
+   "60-69": {
+    "n": 385,
+    "label_mean": 64.5
+   },
+   "70-79": {
+    "n": 278,
+    "label_mean": 66.1
+   },
+   "80-89": {
+    "n": 296,
+    "label_mean": 67.4
+   },
+   "90-99": {
+    "n": 323,
+    "label_mean": 72.1
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 2,
+    "text_modified": 9,
+    "unscored_marker": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The company hopes <SEG:28> to <SEG:62> diversify <SEG:94> its <SEG:58> profit <SEG:52> sources <SEG:86> and <SEG:24> gain <SEG:48> popularity <SEG:78> in <SEG:36> areas <SEG:68> where <SEG:16> Skype <SEG:22> holds <SEG:42> a <SEG:32> strong <SEG:56> position, <SEG:100> such <SEG:34> as <SEG:26> Chin"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Periodic rhythms, which <SEG:40> are <SEG:82> not <SEG:78> simply <SEG:74> responses <SEG:100> to <SEG:92> external <SEG:88> periodic <SEG:86> cues, <SEG:20> have <SEG:34> been <SEG:30> documented <SEG:98> for <SEG:72> most <SEG:70> living <SEG:66> beings, <SEG:25> including <SEG:60> bacteria, <SEG:"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "We experience time <SEG:100> as <SEG:92> a <SEG:64> series <SEG:88> of <SEG:78> events <SEG:20> passing <SEG:72> from <SEG:60> the <SEG:56> future <SEG:66> through <SEG:52> the <SEG:48> present <SEG:44>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4176,
+ "score_dev": 0.3696,
+ "paired_dev": {
+  "mean_delta": -0.1045,
+  "se_delta": 0.0198,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Re-anchored numeric rule to exact-token whitelist: force very low scores when a pure numeral is immediately followed by a unit/count noun or '(' introducing a unit parenthetical (addresses en_us_44).",
+  "Added a concise predicate-continuation adjacency rule: if the token immediately right is a verb-form (finite VB/VBP/VBD or VBG) with NO intervening punctuation, lower the marker into mid-low/low bands (finite 10–40, VBG 10–45); this overrides heuristics that raise isolated-name/numeral cuts (addresses en_us_1379 and en_us_337).",
+  "Added a remainder-lookahead override: if any strong adversative (but, however, although, instead) OR conditional introducer (if, unless) appears later before sentence end, force low scores (0–30) with high precedence (addresses en_us_317 and en_us_357).",
+  "Added a targeted passive+temporal override: when left ends aux+VBN and the immediate-right token is a temporal adverb (recently, today, yesterday, later, earlier, etc.), lower to 10–30 (addresses en_us_317).",
+  "Explicited numeral+count continuity: when a numeral on the left is followed immediately (no comma) by a count noun (men, people, miles, etc.), do NOT elevate the cut — lower to a mid band (40–70) because numeral+noun is typically atomic (addresses en_us_548).",
+  "Specified precedence and simplicity: adjacency overrides (immediate-token patterns) and remainder lookahead take priority over generic heuristics about names, punctuation, or list separators; keep rules compact and focused on surface tokens."
+ ],
+ "prompt_len": 10487,
+ "usage": {
+  "calls": 378,
+  "prompt_tokens": 1369469,
+  "completion_tokens": 3382528,
+  "cached_tokens": 1004160,
+  "truncated": 0,
+  "cost": 6.881487,
+  "by_purpose": {
+   "segment": {
+    "calls": 278,
+    "prompt_tokens": 986603,
+    "completion_tokens": 2987802,
+    "reasoning_tokens": 2806400,
+    "cached_tokens": 716672,
+    "cost": 6.061004
+   },
+   "segment_retry": {
+    "calls": 84,
+    "prompt_tokens": 269364,
+    "completion_tokens": 288982,
+    "reasoning_tokens": 278912,
+    "cached_tokens": 222976,
+    "cost": 0.595135
+   },
+   "prompt_engineer": {
+    "calls": 9,
+    "prompt_tokens": 54081,
+    "completion_tokens": 56695,
+    "reasoning_tokens": 27840,
+    "cached_tokens": 33792,
+    "cost": 0.119307
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 52648,
+    "completion_tokens": 23491,
+    "reasoning_tokens": 19328,
+    "cached_tokens": 27136,
+    "cost": 0.054038
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 5799,
+    "completion_tokens": 23317,
+    "reasoning_tokens": 14912,
+    "cached_tokens": 3584,
+    "cost": 0.047277
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 2241,
+    "reasoning_tokens": 1792,
+    "cached_tokens": 0,
+    "cost": 0.004725
+   }
+  }
+ }
+}

@@ -1,0 +1,97 @@
+{
+ "cases": [
+  {
+   "id": "en_us_66",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "cut splits a numeral token (digits/decimal) on the left from an immediately following scale/unit word on the right (million, billion, percent, %, m, km, inches, meters, etc.)",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately before the marker is a numeral (digits, optionally with decimal/comma) AND the token immediately after the marker is a scale or unit word (examples: million, billion, percent, %, meter(s), m, km, inch(es), lb, kg, etc.), reduce the score into a low band (recommend target band 0–40).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token immediately after the marker is a causal/subordinating connector ('because', 'causing', 'so', 'therefore', etc.) following a quoted/fixed phrase or noun-phrase",
+   "blamed_rule": "- Cuts before or after subordinators or coordinators can measure well when the segment to the left or right is itself translated reliably (e.g., if the left already ends in a named entity or numeral). Example surface words: \"and\", \"but\", \"however\", \"when\", \"after\", \"since\", \"while\", \"which\", \"that\", \"who\". Do not assume these always help; the testable prediction is only that presence of reliable lexical material on one side increases measured score.",
+   "proposed_rule": "If the token immediately after the marker is a causal/subordinating connector (explicitly include 'because', 'causing', 'so', 'therefore', 'hence') — especially when the left ends a quoted phrase or a standalone NP — bias the score downward into a low band (recommend target band 0–30) because the remainder often modifies/overturns the left.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_278",
+   "pos": 18,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "cut splits a numeral token on the left from its unit/scale word on the right (e.g., left ends with '46', right begins with 'percent')",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the left token is a numeral and the right token is a unit/scale word (percent/%/million/billion/meter(s)/inch(es)/etc.), penalize the cut (target band 0–40). In other words, do not raise cuts that separate a numeric quantifier from its scale word.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 4,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "cut separates a numeric token (e.g., '6.34') from the immediately following unit word (inches, m, cm, etc.)",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "When a cut would leave a numeral on one side and its unit/scale word immediately on the other side, lower the predicted score into 0–40 (do not treat an isolated numeral as a reliable single-side unit).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "cut immediately after a named organization/place when the right side begins with an appositional parenthetical or abbreviation (right token is '(' or immediately '(' + uppercase abbreviation)",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Sharpen the named-phrase boost: if a cut follows a named entity but the very next token opens a parenthetical/appositive (e.g., '(' or a comma followed by '(' or an immediate abbreviation like '(MINAE)'), reduce the boost — target band 0–50 — because the parenthetical typically completes/clarifies the name and the remainder often changes meaning.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1050",
+   "pos": 12,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "cut places a numeral on the left while the right begins with the repeated unit word (splitting '378' from 'meters')",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Treat repeated-unit patterns like numeral on one side + unit token immediately on the other as bad splits; lower score into 0–40. (Same mechanism as the numeral–unit rule above.)",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_417",
+   "pos": 23,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "left side ends in an adjectival/participial modifier phrase (e.g., 'most commonly spoken', 'estimated to be', 'reported') that syntactically expects a following noun",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "If the token immediately before the marker is a past participle or adjectival head often used to modify a noun (examples: spoken, reported, estimated, known) possibly preceded by an adverb (e.g., 'most', 'commonly', 'widely') AND the token immediately after is a common noun, lower the score into a middling-to-low band (recommend target band 0–50). This avoids boosting adjectival fragments that lose their noun anchor.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "cut breaks inside a named-entity cluster that is followed by a role/noun or parenthetical (e.g., 'alleged Daesh (ISIL) | militant ...')",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Do not automatically boost cuts that fall inside or immediately after multi-token named-entity clusters when the right side starts a title/role or parenthetical clarification (tokens like '(' or words such as 'militant', 'official', 'president' immediately after). Lower such cuts into 0–50 band unless the right-side chunk is itself a self-contained name/number.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties arise when the checklist assigns equal upward and downward biases to adjacent markers (for example both markers are next to numerals/commas or both adjacent to named phrases); add a small deterministic bias (e.g., penalize numeral–unit splits and parenthetical-appositive splits) so they no longer get identical scores.",
+ "summary": "The prompt systematically over-weights isolated reliable tokens (numerals, short names, commas) and boosts cuts that look locally 'lexical' even when those cuts split numeral+unit pairs, split names from parentheticals/appositives, or leave adjectival/participial fragments that depend on the following noun. Add narrowly scoped negative exceptions: penalize numeral↔unit splits, cuts before causal subordinators (because/causing), and cuts that separate names from immediate parenthetical/appositive material, and lower adjectival fragment endpoints. These targeted adjustments will move scores in the correct direction without removing the useful general tendencies already encoded.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

@@ -1,0 +1,117 @@
+{
+ "cases": [
+  {
+   "id": "en_us_66",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token before = numeral (e.g. \"1.2\") and token after = unit (\"million\")",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "[Scoring Rules] If the token immediately before the marker is a numeral (digits or decimal) AND the token immediately after the marker is a scale/unit word (million, billion, percent, %, m, km, kg, lb, lbs, etc.), reduce the score (target band: 0–50).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token after = causal subordinator (\"because\")",
+   "blamed_rule": "Cuts before or after subordinators or coordinators can measure well when the segment to the left or right is itself translated reliably",
+   "proposed_rule": "[Scoring Rules] If the token immediately after the marker is a causal subordinator (because, since, as in causal use, although rare), lower the score substantially (target band: 0–40) because the remainder often supplies causal/contextual content that can overturn the left-side meaning.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_360",
+   "pos": 17,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "comma before marker and token after ends with \"ing\" (e.g., \"causing\")",
+   "blamed_rule": "A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores",
+   "proposed_rule": "[Scoring Rules] If the marker follows a comma and the token immediately after the marker is a lowercase word ending in -ing (present-participle/gerund), lower the score (target band: 0–40) because such comma+ing sequences often begin clauses that change/extend meaning (high contradiction risk).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_278",
+   "pos": 18,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token before = numeral (\"46\") and token after = unit word (\"percent\")",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "[Scoring Rules] If the token immediately before the marker is a numeral and the token immediately after is a unit word (percent, % , million, etc.), lower the score into the mid/low band (target band: 0–50) because splitting a numeric value from its unit often yields contradiction or poor single-side adequacy.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_203",
+   "pos": 4,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "token before = numeric (\"6.34\") and token after = unit (\"inches\")",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "[Scoring Rules] Penalize cuts that separate a numeric token from an immediately following unit word (inches, m, cm, percent, million, etc.); move such cuts toward the lower half (target band: 0–50).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "token after = \"(\" (opening parenthesis immediately after marker)",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers..., short fixed named phrases (e.g., organization names, place names).",
+   "proposed_rule": "[Scoring Rules] Do not boost cuts where the token immediately after the marker is an opening parenthesis (\"(\") or where a parenthetical immediately follows; lower the score (target band: 0–50) because the parenthetical often supplies essential qualifiers affecting entailment/meaning.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_738",
+   "pos": 7,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left contains negation token near boundary (\"not\" within last 2 tokens)",
+   "blamed_rule": "Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words... are likely to score higher.",
+   "proposed_rule": "[Scoring Rules] If the left-side tokens within two positions of the marker include negation words (not, n't, never) then lower the score (target band: 0–40), since negation near the cut is frequently contradicted or clarified by the remainder.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1050",
+   "pos": 12,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "comma before marker and token after is a pronoun or contraction starting a clause (\"it's\", \"it\", \"they\")",
+   "blamed_rule": "A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct ... often yields high scores",
+   "proposed_rule": "[Scoring Rules] If the marker follows a comma and the token immediately after is a pronoun or contraction that begins a clause (it, it's, they, he, she, we), move the score downward (target band: 0–45) because such clause starts often continue or modify prior statement (contradiction risk).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_417",
+   "pos": 23,
+   "error": "over-trust",
+   "why": "fragment_left",
+   "surface_condition": "token before ends with -ly (\"commonly\") or is a superlative marker (\"most\") and token after is a lowercase common noun",
+   "blamed_rule": "Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words ... are likely to score higher.",
+   "proposed_rule": "[Scoring Rules] If the token immediately before the marker is an adverbial form (ends with -ly) or a modifier like \"most\"/\"more\" and the token after is a lowercase common noun, lower the score (target band: 0–45) because this pattern usually splits a modifier from the noun it modifies, producing a fragment that translates poorly alone.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately after a named entity including parenthetical acronym (left ends with \")\")",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples ... short fixed named phrases (e.g., organization names, place names).",
+   "proposed_rule": "[Scoring Rules] Reduce boosts for cuts that end with a named entity immediately followed or closed by a parenthetical (e.g., \"Name (ACR)\"); such boundaries should be moved toward mid/low (target band: 0–50) because parenthetical qualifiers commonly change entailment/meaning.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "Ties typically occur when multiple markers have identical immediate-surface neighbors (e.g., repeated function words or symmetric tokens) and the checklist assigns equal bias; add an explicit micro tiebreaker (small deterministic positional offset) instead of leaving equal scores.",
+ "summary": "The prompt systematically over-boosts cuts that look superficially 'lexical' (numerals, organization names, comma boundaries) without checking for common continuations that change meaning: splitting numerals from their units, names from parentheticals, comma + clause starts (because/causing/it...), and adjectives/adverbs separated from the noun are repeatedly over-scored. Proposed fixes sharpen existing tendencies by adding negative exceptions tied to the immediate token after/before the marker (units after numerals, opening parenthesis, causal subordinators, -ing clause starts, nearby negation, modifier+noun splits).",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

@@ -1,0 +1,189 @@
+{
+ "cases": [
+  {
+   "id": "en_us_66",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker splits a numeral token on the left from an immediately following unit/scale word on the right (e.g. NUM / million|percent|kilometers|miles|signatures|dollars)",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "If left_last is NUM and right_first is a measurement/scale token in {million, billion, thousand, percent, %, k, m, mi, kilometer, kilometres, kilometer(s), kilometers, miles, signatures, signature, dollars, km, kg, m}, do NOT place this boundary in the topmost boost band; instead limit its boost to a mid-high band (target 40–75) so it is still considered but not preferred over safer lexical boundaries.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "billion",
+     "thousand",
+     "percent",
+     "%",
+     "k",
+     "m",
+     "mi",
+     "kilometer",
+     "kilometres",
+     "kilometers",
+     "miles",
+     "signatures",
+     "signature",
+     "dollars",
+     "km",
+     "kg"
+    ]
+   }
+  },
+  {
+   "id": "en_us_1000",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately follows an organization/group name or extremist acronym (e.g., 'isil', 'daesh', 'isis') on the left and the right_first is a lowercased role/occupation noun like 'militant'/'member'/'official' that continues the predicate",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "When left_last is a known organization token or acronym (examples: isil, daesh, isis, nato, un) and right_first is a continuation noun signaling a role/action (e.g., militant, member, official, leader, suspect, representative), reduce the immmediate top-band boost and place the cut into a milder boost band (target 40–75). This avoids over-prioritizing splits that separate a name/acronym from its predicate continuation, which frequently produce contradictions.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "isil",
+     "daesh",
+     "isis",
+     "nato",
+     "un",
+     "fbi",
+     "cia"
+    ],
+    "right_first": [
+     "militant",
+     "militants",
+     "member",
+     "members",
+     "official",
+     "leader",
+     "suspect",
+     "representative"
+    ]
+   }
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker occurs after the end of a quoted/named phrase or noun (e.g., report/discovery/emission/statement) and the right_first is a subordinating connector (because/that/which/while/when/as/since)",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value.",
+   "proposed_rule": "If right_first is a subordinating continuation token in {because, that, which, who, when, while, as, since, due} AND the token immediately before the marker is one of {report, discovery, emission, statement, finding, claim, result}, demote this boundary into a mid band (target 30–70) instead of the top band. Quoted/named nominal phrases followed by subordinators often create contradictions with the remainder.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "report",
+     "discovery",
+     "emission",
+     "statement",
+     "finding",
+     "claim",
+     "result"
+    ],
+    "right_first": [
+     "because",
+     "that",
+     "which",
+     "who",
+     "when",
+     "while",
+     "as",
+     "since",
+     "due"
+    ]
+   }
+  },
+  {
+   "id": "en_us_417",
+   "pos": 23,
+   "error": "over-trust",
+   "why": "frag_right",
+   "surface_condition": "marker falls immediately before the head noun 'language'/'languages' while the left side ends in degree/adverbial tokens (e.g., 'most', 'commonly') or adjectival cluster",
+   "blamed_rule": "",
+   "proposed_rule": "If right_first is {language, languages} and the token immediately before the marker is a degree/adverb token in {most, commonly, generally, widely, commonly} or an adjectival form such as 'spoken', reduce the boost for that boundary into a mid band (target 30–70). This prevents over-prioritizing adjective-only fragments that rely on the following noun to be coherent.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "most",
+     "commonly",
+     "generally",
+     "widely",
+     "spoken"
+    ],
+    "right_first": [
+     "language",
+     "languages"
+    ]
+   }
+  },
+  {
+   "id": "en_us_738",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker immediately follows a multi-word organization/agency name ending in tokens like 'service'/'department'/'agency' and the right_first is a verb token (does/is/does not) continuing the clause",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "When left_last is an organizational head token in {service, department, agency, bureau, council, authority} or a proper-name token and right_first is a verb form like {does, do, is, was, are, were, does}, cap the upward name/org boost to a mid band (target 40–75). This avoids giving full top rank to boundaries that separate an organization name from its immediately continuing predicate (a frequent source of contradiction).",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "service",
+     "department",
+     "agency",
+     "bureau",
+     "council",
+     "authority"
+    ],
+    "right_first": [
+     "does",
+     "do",
+     "is",
+     "was",
+     "are",
+     "were"
+    ]
+   }
+  },
+  {
+   "id": "en_us_1050",
+   "pos": 12,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker falls between a numeric token on the left (NUM) and a continuing clause on the right that reinterprets the measurement (right_first lowercase, not a punctuation-terminated phrase)",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "If left_last is NUM and the right_first is a common continuation token that typically carries the remainder of a measurement/clarification (e.g., it's, it, its, long, wide, tall) then reduce the numeric-driven top boost to a moderate band (target 40–75) rather than full top band. Preserve the numeral boost when the numeral is followed by punctuation (comma) or a capitalized named unit (safe anchors).",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "its",
+     "it's",
+     "it",
+     "long",
+     "wide",
+     "tall",
+     "high"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties arise when multiple markers match the same checklist heuristics and receive identical heuristic boosts; add a deterministic tiny offset (epsilon) that prefers markers whose right_first is a lexical token (not in {the,a,an,in,on,of,to,by,for}) to break ties instead of relying on positional tie-breakers.",
+ "summary": "The scorer systematically over-prioritizes boundaries adjacent to numerals and named entities, giving them top-band scores even when splitting a number from its unit or an organization from its predicate — both common sources of contradiction. It also overvalues adjective-only fragments before head nouns like 'language' and quoted/named nominal phrases followed by subordinators. I propose mild, narrowly scoped downgrades (move from top band into a mid-high band 30–75) for these surface patterns so safe lexical cuts remain rewarded but risky splits are deprioritized.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

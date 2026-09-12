@@ -1,0 +1,125 @@
+{
+ "cases": [
+  {
+   "id": "en_us_66",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left_last is a numeral and right_first is a unit word (million/percent/miles/meters/ kilometres etc.)",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately before the marker is NUM and the token immediately after the marker is a unit word (million|thousand|percent|km|kilometer|kilometers|miles|mile|meter|meters|m), reduce the predicted score into a lower band (target band 20-50) because numeric+unit fragments often participate in continuing numeric expressions or get contradicted by the remainder.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "thousand",
+     "percent",
+     "km",
+     "kilometer",
+     "kilometers",
+     "miles",
+     "mile",
+     "meter",
+     "meters",
+     "m"
+    ]
+   }
+  },
+  {
+   "id": "en_us_360",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "left_last is end of a quoted phrase or a noun like radiation/phrase-ending noun and right_first is a subordinating token that often overturns (because/but/while/although)",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately after the marker is a subordinating/contrasting connective (because|because|but|however|although|though|while|since|as|due) and the token immediately before the marker is a lexical noun (examples: radiation, investigation, report, policy — i.e. not an article/preposition), lower the predicted score into 10-45 band. Rationale: these connectives commonly introduce clauses that can overturn or heavily modify the preceding span, so adjacent lexical content should not automatically guarantee a high final measured value.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "radiation",
+     "investigation",
+     "report",
+     "policy",
+     "emission",
+     "disqualified",
+     "said",
+     "described",
+     "shown"
+    ],
+    "right_first": [
+     "because",
+     "but",
+     "however",
+     "although",
+     "though",
+     "while",
+     "since",
+     "as",
+     "due"
+    ]
+   }
+  },
+  {
+   "id": "en_us_1150",
+   "pos": 3,
+   "error": "over-trust",
+   "why": "frag_left",
+   "surface_condition": "left_last is a numeral/date token or a short temporal token adjacent to a preceding preposition (e.g., during) and yields an incomplete left stretch",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately before the marker is NUM or an explicit year token and the token immediately before that (i.e. two tokens back) is a temporal preposition like during/on/in (not inspectable by this rule), we cannot access two-back reliably; as a robust single-token check: if left_last is NUM and right_first is a non-lexical continuation noun that commonly continues the temporal phrase (e.g. selections, season, month, week), lower score into 10-45 band. Rationale: 'during 1976' style spans are often fragmentary and translate poorly when cut off after the year despite the presence of a year token.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "selections",
+     "season",
+     "month",
+     "week",
+     "year"
+    ]
+   }
+  },
+  {
+   "id": "en_us_276",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "frag_left",
+   "surface_condition": "left_last is an organization/person name token (proper-name substring) and the left segment is part of a multiword NP that is likely incomplete by itself",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately before the marker is one of common organization/name tokens (parenthood|park|service|kv62|minae|daesh|isil|guinness|romney|carter) lower the predicted score by moving it toward 20-50 band unless the token immediately after the marker is punctuation that closes a parenthetical/comma (i.e., the cut closes an apposition). Rationale: single-sided translation quality of truncated multiword proper names or their leading contexts is often poor or contradicted by the remainder; the current heuristic over-favors proper-name substrings.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "parenthood",
+     "park",
+     "service",
+     "kv62",
+     "minae",
+     "daesh",
+     "isil",
+     "guinness",
+     "romney",
+     "carter"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "When the prompt produces equal internal scores it is usually because two adjacent markers match the same combination of surface heuristics (for example both flank low-bias function words like 'the' or both are adjacent to NUM/unit patterns). Add a deterministic small perturbation: when two markers would tie, prefer the marker whose right_first token is lexical (not in {the,a,an,in,on,of,to,by,for}) so ties break toward contentful cuts.",
+ "summary": "The prompt consistently over-weights the presence of lexical anchors (numerals, names, short named phrases) and raises scores even when those anchors sit in fragments or are immediately vulnerable to contradiction by a following subordinate clause. Add targeted downgrades: (1) NUM adjacent to unit words (million/percent/units) should be lowered because numeric spans are often continued/qualified; (2) lexical nouns followed by subordinators (because/however/though) should be lowered because the remainder often overturns or heavily modifies the left; (3) short proper-name substrings should be treated cautiously unless the cut clearly closes an apposition. These rules are expressed as surface-form checks on the immediate neighbor tokens so they are measurable and generalise. ",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

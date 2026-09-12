@@ -1,0 +1,216 @@
+{
+ "version": 4,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9004,
+  "util": 0.7022,
+  "util_oracle": 0.776,
+  "overlap": 0.3985,
+  "overlap_by_T": {
+   "4": 0.461,
+   "6": 0.347,
+   "12": 0.344
+  },
+  "tie_rate": 0.0039,
+  "tie_at_cut_rate": 0.0038,
+  "spearman_pooled": 0.1827,
+  "spearman_within": 0.2597,
+  "calibration": {
+   "00-09": {
+    "n": 255,
+    "label_mean": 60.3
+   },
+   "10-19": {
+    "n": 235,
+    "label_mean": 63.2
+   },
+   "20-29": {
+    "n": 158,
+    "label_mean": 66.2
+   },
+   "30-39": {
+    "n": 131,
+    "label_mean": 65.1
+   },
+   "40-49": {
+    "n": 126,
+    "label_mean": 63.8
+   },
+   "50-59": {
+    "n": 102,
+    "label_mean": 65.8
+   },
+   "60-69": {
+    "n": 123,
+    "label_mean": 63.9
+   },
+   "70-79": {
+    "n": 123,
+    "label_mean": 66.1
+   },
+   "80-89": {
+    "n": 124,
+    "label_mean": 66.3
+   },
+   "90-99": {
+    "n": 175,
+    "label_mean": 70.4
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9814,
+  "achv": 0.9039,
+  "util": 0.7069,
+  "util_oracle": 0.7803,
+  "overlap": 0.4257,
+  "overlap_by_T": {
+   "4": 0.494,
+   "6": 0.411,
+   "12": 0.309
+  },
+  "tie_rate": 0.0059,
+  "tie_at_cut_rate": 0.0017,
+  "spearman_pooled": 0.2013,
+  "spearman_within": 0.2542,
+  "calibration": {
+   "00-09": {
+    "n": 622,
+    "label_mean": 62.9
+   },
+   "10-19": {
+    "n": 582,
+    "label_mean": 63.2
+   },
+   "20-29": {
+    "n": 334,
+    "label_mean": 63.3
+   },
+   "30-39": {
+    "n": 258,
+    "label_mean": 64.9
+   },
+   "40-49": {
+    "n": 230,
+    "label_mean": 62.7
+   },
+   "50-59": {
+    "n": 195,
+    "label_mean": 63.9
+   },
+   "60-69": {
+    "n": 256,
+    "label_mean": 65.5
+   },
+   "70-79": {
+    "n": 262,
+    "label_mean": 67.2
+   },
+   "80-89": {
+    "n": 271,
+    "label_mean": 68.7
+   },
+   "90-99": {
+    "n": 389,
+    "label_mean": 71.2
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 4
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Nevertheless, all French-speaking <SEG:75> Belgians <SEG:82> and <SEG:27> Swiss <SEG:86> would <SEG:51> have <SEG:53> learned <SEG:54> standard <SEG:44> French <SEG:90> in <SEG:40> school, <SEG:96> so <SEG:36> they <SEG:74> would <SEG:71> be <SEG:68> able <SEG:65> to <SEG:62> understand <SEG:58> you"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Car camping is <SEG:40> possible <SEG:60> if <SEG:45> you <SEG:55> have <SEG:36> a <SEG:30> large <SEG:20> minivan, <SEG:100> SUV, <SEG:75> Sedan <SEG:68> or <SEG:88> Station <SEG:16> Wagon <SEG:80> with <SEG:12> seats <SEG:10> that lay down ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "They are superior <SEG:90> to <SEG:48> web <SEG:60> proxies <SEG:76> for <SEG:30> several <SEG:20> reasons: <SEG:100> They <SEG:54> re-route <SEG:42> all <SEG:36> Internet <SEG:82> traffic, <SEG:70>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.3985,
+ "score_dev": 0.4257,
+ "paired_dev": {
+  "mean_delta": -0.0423,
+  "se_delta": 0.0163,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Refined the comma/adjunct upward-bias into a conditional: do not apply that upward bias when the token after the marker is an auxiliary/copula — addresses en_us_203 (prevents over-trust when a copula/predicate reinterprets a comma-terminated adjunct).",
+  "Added a negative exception for proper-name (capitalized) immediately before + lexical verb immediately after, lowering score in that surface pattern — addresses en_us_276 (prevents over-trusting bare names that are immediately reinterpreted by a following predicate).",
+  "Added a negative exception for name/organization cluster (including immediately-closed parenthetical acronym) before + reporting/lexical verb after, lowering the usual name boost — addresses en_us_738 and en_us_1000 (stops splitting names from their predicate or clarifying parentheticals).",
+  "Added a negative exception for left-end closing parenthesis (')') immediately before the marker when the token after begins a role/title common noun, lowering score — addresses en_us_1000 (prevents treating a parenthetical-terminated name as independently faithful when a descriptive predicate follows).",
+  "Made participial rule symmetric: penalize both token_before = VBN + token_after = common noun AND token_after = VBN + token_before = common noun — addresses en_us_687 (catches splits that strand the participle on either side).",
+  "Added negative exception for left-side light-pronoun + auxiliary clusters (it/they/he + have/has/had/is/was/etc.) when the token after begins with a negator/determiner ('no','a','the'), lowering score — addresses en_us_1570 (prevents over-valuing auxiliary-led fragments).",
+  "Added negative exception for finite lexical-verb before + common noun/pronoun after (likely verb→object splits), lowering score — addresses en_us_1106 (reduces over-trust at verb→object splits).",
+  "Added positive exception: raise score when the token immediately after the marker begins a contiguous capitalized multiword name cluster (two or more title-case tokens), increasing score — addresses en_us_1294 (recognizes that exposing the start of a multiword proper name often yields independent translatability).",
+  "Extended deterministic tie-avoidance in Decision Procedure to prefer not cutting immediately before auxiliaries/copulas when the left ends with a comma-terminated adjunct (tie breaks toward the non-auxiliary cut) — implements the critique 'tie_fix'.",
+  "Integrated all new narrow, surface-anchored exceptions while preserving prior numeral↔unit, repeated-unit, parenthetical/appositive, causal-connector, and participial-left signals; clarified surface-form checklist to include the new checks."
+ ],
+ "prompt_len": 18631,
+ "usage": {
+  "calls": 322,
+  "prompt_tokens": 1450856,
+  "completion_tokens": 3804522,
+  "cached_tokens": 1048448,
+  "truncated": 0,
+  "cost": 7.735857,
+  "by_purpose": {
+   "segment": {
+    "calls": 276,
+    "prompt_tokens": 1156723,
+    "completion_tokens": 3552650,
+    "reasoning_tokens": 3379392,
+    "cached_tokens": 884864,
+    "cost": 7.195386
+   },
+   "prompt_engineer": {
+    "calls": 19,
+    "prompt_tokens": 144183,
+    "completion_tokens": 121832,
+    "reasoning_tokens": 43584,
+    "cached_tokens": 72960,
+    "cost": 0.263294
+   },
+   "segment_retry": {
+    "calls": 23,
+    "prompt_tokens": 84075,
+    "completion_tokens": 94617,
+    "reasoning_tokens": 91904,
+    "cached_tokens": 66560,
+    "cost": 0.195277
+   },
+   "critic": {
+    "calls": 4,
+    "prompt_tokens": 65875,
+    "completion_tokens": 35423,
+    "reasoning_tokens": 27136,
+    "cached_tokens": 24064,
+    "cost": 0.0819
+   }
+  }
+ }
+}

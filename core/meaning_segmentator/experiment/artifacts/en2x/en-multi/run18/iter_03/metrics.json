@@ -1,0 +1,201 @@
+{
+ "version": 3,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9007,
+  "util": 0.702,
+  "util_oracle": 0.776,
+  "overlap": 0.4106,
+  "overlap_by_T": {
+   "4": 0.476,
+   "6": 0.359,
+   "12": 0.375
+  },
+  "tie_rate": 0.0013,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.181,
+  "spearman_within": 0.2348,
+  "calibration": {
+   "00-09": {
+    "n": 249,
+    "label_mean": 61.2
+   },
+   "10-19": {
+    "n": 211,
+    "label_mean": 62.8
+   },
+   "20-29": {
+    "n": 132,
+    "label_mean": 62.4
+   },
+   "30-39": {
+    "n": 108,
+    "label_mean": 62.7
+   },
+   "40-49": {
+    "n": 94,
+    "label_mean": 65.3
+   },
+   "50-59": {
+    "n": 107,
+    "label_mean": 66.8
+   },
+   "60-69": {
+    "n": 122,
+    "label_mean": 65.8
+   },
+   "70-79": {
+    "n": 164,
+    "label_mean": 64.8
+   },
+   "80-89": {
+    "n": 154,
+    "label_mean": 66.6
+   },
+   "90-99": {
+    "n": 211,
+    "label_mean": 70.1
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9721,
+  "achv": 0.9112,
+  "util": 0.7132,
+  "util_oracle": 0.7803,
+  "overlap": 0.468,
+  "overlap_by_T": {
+   "4": 0.524,
+   "6": 0.455,
+   "12": 0.358
+  },
+  "tie_rate": 0.0018,
+  "tie_at_cut_rate": 0.0017,
+  "spearman_pooled": 0.2145,
+  "spearman_within": 0.266,
+  "calibration": {
+   "00-09": {
+    "n": 553,
+    "label_mean": 62.3
+   },
+   "10-19": {
+    "n": 506,
+    "label_mean": 62.9
+   },
+   "20-29": {
+    "n": 319,
+    "label_mean": 63.7
+   },
+   "30-39": {
+    "n": 242,
+    "label_mean": 63.2
+   },
+   "40-49": {
+    "n": 229,
+    "label_mean": 61.8
+   },
+   "50-59": {
+    "n": 212,
+    "label_mean": 64.8
+   },
+   "60-69": {
+    "n": 269,
+    "label_mean": 66.2
+   },
+   "70-79": {
+    "n": 310,
+    "label_mean": 66.6
+   },
+   "80-89": {
+    "n": 324,
+    "label_mean": 67.0
+   },
+   "90-99": {
+    "n": 435,
+    "label_mean": 72.2
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 6
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The governor also <SEG:50> stated, <SEG:99> \"Today, <SEG:90> we <SEG:5> learned <SEG:63> that <SEG:2> some <SEG:10> school <SEG:12> aged <SEG:15> children <SEG:70> have <SEG:30> been <SEG:35> identified <SEG:55> as <SEG:25> having <SEG:20> had <SEG:40> contact <SEG:82> with the patient."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Periodic rhythms, which <SEG:4> are <SEG:8> not <SEG:12> simply <SEG:16> responses <SEG:70> to <SEG:7> external <SEG:22> periodic <SEG:10> cues, <SEG:99> have <SEG:14> been <SEG:92> documented <SEG:78> for <SEG:6> most <SEG:9> living <SEG:18> beings, <SEG:74> including <SEG:5> bacteria, <SEG:88> fun"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "We experience time <SEG:60> as <SEG:10> a <SEG:6> series <SEG:70> of <SEG:22> events <SEG:95> passing <SEG:85> from <SEG:28> the <SEG:18> future <SEG:50> through <SEG:30> the <SEG:15> present <SEG:78>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4106,
+ "score_dev": 0.468,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 15132,
+ "usage": {
+  "calls": 224,
+  "prompt_tokens": 964987,
+  "completion_tokens": 2482754,
+  "cached_tokens": 666240,
+  "truncated": 0,
+  "cost": 5.056851,
+  "by_purpose": {
+   "segment": {
+    "calls": 189,
+    "prompt_tokens": 747781,
+    "completion_tokens": 2296296,
+    "reasoning_tokens": 2178368,
+    "cached_tokens": 553344,
+    "cost": 4.655035
+   },
+   "prompt_engineer": {
+    "calls": 15,
+    "prompt_tokens": 109474,
+    "completion_tokens": 95928,
+    "reasoning_tokens": 35008,
+    "cached_tokens": 56064,
+    "cost": 0.20661
+   },
+   "segment_retry": {
+    "calls": 17,
+    "prompt_tokens": 58829,
+    "completion_tokens": 63414,
+    "reasoning_tokens": 61504,
+    "cached_tokens": 44800,
+    "cost": 0.131455
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 48903,
+    "completion_tokens": 27116,
+    "reasoning_tokens": 20544,
+    "cached_tokens": 12032,
+    "cost": 0.063751
+   }
+  }
+ }
+}

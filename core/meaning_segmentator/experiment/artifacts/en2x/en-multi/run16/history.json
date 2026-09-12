@@ -1,0 +1,915 @@
+[
+ {
+  "version": 0,
+  "adopted": true,
+  "train": {
+   "n": 30,
+   "n_scored": 30,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8931,
+   "util": 0.6968,
+   "util_oracle": 0.7748,
+   "overlap": 0.4547,
+   "overlap_by_T": {
+    "4": 0.53,
+    "6": 0.439,
+    "12": 0.316
+   },
+   "tie_rate": 0.0,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.228,
+   "spearman_within": 0.2834,
+   "calibration": {
+    "00-09": {
+     "n": 18,
+     "label_mean": 61.0
+    },
+    "10-19": {
+     "n": 82,
+     "label_mean": 60.2
+    },
+    "20-29": {
+     "n": 62,
+     "label_mean": 59.4
+    },
+    "30-39": {
+     "n": 40,
+     "label_mean": 62.5
+    },
+    "40-49": {
+     "n": 45,
+     "label_mean": 64.4
+    },
+    "50-59": {
+     "n": 31,
+     "label_mean": 64.8
+    },
+    "60-69": {
+     "n": 38,
+     "label_mean": 60.4
+    },
+    "70-79": {
+     "n": 36,
+     "label_mean": 66.8
+    },
+    "80-89": {
+     "n": 54,
+     "label_mean": 64.8
+    },
+    "90-99": {
+     "n": 63,
+     "label_mean": 69.9
+    }
+   },
+   "n_boundaries": 469,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9023,
+   "achv": 0.9248,
+   "util": 0.7232,
+   "util_oracle": 0.7803,
+   "overlap": 0.4741,
+   "overlap_by_T": {
+    "4": 0.539,
+    "6": 0.449,
+    "12": 0.395
+   },
+   "tie_rate": 0.0,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2596,
+   "spearman_within": 0.2861,
+   "calibration": {
+    "00-09": {
+     "n": 265,
+     "label_mean": 61.2
+    },
+    "10-19": {
+     "n": 521,
+     "label_mean": 60.7
+    },
+    "20-29": {
+     "n": 419,
+     "label_mean": 63.3
+    },
+    "30-39": {
+     "n": 321,
+     "label_mean": 62.1
+    },
+    "40-49": {
+     "n": 258,
+     "label_mean": 64.5
+    },
+    "50-59": {
+     "n": 238,
+     "label_mean": 65.1
+    },
+    "60-69": {
+     "n": 251,
+     "label_mean": 65.2
+    },
+    "70-79": {
+     "n": 280,
+     "label_mean": 66.7
+    },
+    "80-89": {
+     "n": 363,
+     "label_mean": 68.1
+    },
+    "90-99": {
+     "n": 483,
+     "label_mean": 72.7
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 21
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "It was the <SEG:12> final <SEG:20> match <SEG:65> for <SEG:30> the <SEG:15> All <SEG:8> Blacks, <SEG:90> who <SEG:18> had <SEG:25> already <SEG:35> won <SEG:70> the <SEG:40> trophy <SEG:80>"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Since then, China's <SEG:46> economic <SEG:66> size <SEG:94> has <SEG:12> grown <SEG:100> ."
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The presenter, who <SEG:42> was <SEG:46> arrested <SEG:66> at <SEG:20> the <SEG:14> scene, <SEG:100> denied <SEG:60> the <SEG:13> attack <SEG:85> and <SEG:34> claimed <SEG:56> he <SEG:11> used <SEG:52> the <SEG:12> pole <SEG:80> to <SEG:10> protect <SEG:54> himself <SEG:96> from <SEG:24> bottles <SE"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4547,
+  "score_dev": 0.4741,
+  "paired_dev": null,
+  "changelog": null,
+  "prompt_len": 12533,
+  "usage": {
+   "calls": 99,
+   "prompt_tokens": 341095,
+   "completion_tokens": 651562,
+   "cached_tokens": 268288,
+   "truncated": 0,
+   "cost": 1.328033,
+   "by_purpose": {
+    "segment": {
+     "calls": 61,
+     "prompt_tokens": 222723,
+     "completion_tokens": 532091,
+     "reasoning_tokens": 492160,
+     "cached_tokens": 170240,
+     "cost": 1.081559
+    },
+    "segment_retry": {
+     "calls": 34,
+     "prompt_tokens": 111599,
+     "completion_tokens": 93913,
+     "reasoning_tokens": 89984,
+     "cached_tokens": 94464,
+     "cost": 0.194471
+    },
+    "prompt_v0": {
+     "calls": 3,
+     "prompt_tokens": 5799,
+     "completion_tokens": 23317,
+     "reasoning_tokens": 14912,
+     "cached_tokens": 3584,
+     "cost": 0.047277
+    },
+    "profiler": {
+     "calls": 1,
+     "prompt_tokens": 974,
+     "completion_tokens": 2241,
+     "reasoning_tokens": 1792,
+     "cached_tokens": 0,
+     "cost": 0.004725
+    }
+   }
+  }
+ },
+ {
+  "version": 1,
+  "adopted": false,
+  "train": {
+   "n": 30,
+   "n_scored": 30,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9333,
+   "achv": 0.9271,
+   "util": 0.7196,
+   "util_oracle": 0.7748,
+   "overlap": 0.4569,
+   "overlap_by_T": {
+    "4": 0.468,
+    "6": 0.453,
+    "12": 0.447
+   },
+   "tie_rate": 0.0,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2032,
+   "spearman_within": 0.2473,
+   "calibration": {
+    "00-09": {
+     "n": 33,
+     "label_mean": 59.8
+    },
+    "10-19": {
+     "n": 46,
+     "label_mean": 62.3
+    },
+    "20-29": {
+     "n": 63,
+     "label_mean": 62.4
+    },
+    "30-39": {
+     "n": 56,
+     "label_mean": 62.0
+    },
+    "40-49": {
+     "n": 45,
+     "label_mean": 60.1
+    },
+    "50-59": {
+     "n": 48,
+     "label_mean": 61.0
+    },
+    "60-69": {
+     "n": 40,
+     "label_mean": 60.8
+    },
+    "70-79": {
+     "n": 54,
+     "label_mean": 65.3
+    },
+    "80-89": {
+     "n": 54,
+     "label_mean": 67.1
+    },
+    "90-99": {
+     "n": 30,
+     "label_mean": 75.7
+    }
+   },
+   "n_boundaries": 469,
+   "first_pass_violations": {
+    "counts": {
+     "markers_missing": 1,
+     "text_modified": 2,
+     "unscored_marker": 1
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Stars give off <SEG:98> light <SEG:92> and <SEG:76> heat <SEG:88> because <SEG:18> of <SEG:26> the <SEG:33> energy <SEG:80> made <SEG:47> when <SEG:9> hydrogen <SEG:35> atoms <SEG:56> are <SEG:22> merged <SEG:72> (or <SEG:42> fused) <SEG:70> together <SEG:5> to <SEG:?> form heavier elements."
+     },
+     {
+      "rule": "markers_missing",
+      "detail": "마커가 빠짐 (입력 18개, 출력 17개, 빠진 자리 [20])",
+      "seg_text": "Stars give off <SEG:98> light <SEG:92> and <SEG:76> heat <SEG:88> because <SEG:18> of <SEG:26> the <SEG:33> energy <SEG:80> made <SEG:47> when <SEG:9> hydrogen <SEG:35> atoms <SEG:56> are <SEG:22> merged <SEG:72> (or <SEG:42> fused) <SEG:70> together <SEG:5> to <SEG:?> form heavier elements."
+     },
+     {
+      "rule": "unscored_marker",
+      "detail": "점수를 안 채운 마커가 남아 있음",
+      "seg_text": "Stars give off <SEG:98> light <SEG:92> and <SEG:76> heat <SEG:88> because <SEG:18> of <SEG:26> the <SEG:33> energy <SEG:80> made <SEG:47> when <SEG:9> hydrogen <SEG:35> atoms <SEG:56> are <SEG:22> merged <SEG:72> (or <SEG:42> fused) <SEG:70> together <SEG:5> to <SEG:?> form heavier elements."
+     }
+    ]
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9628,
+   "achv": 0.8931,
+   "util": 0.6989,
+   "util_oracle": 0.7803,
+   "overlap": 0.3941,
+   "overlap_by_T": {
+    "4": 0.446,
+    "6": 0.377,
+    "12": 0.331
+   },
+   "tie_rate": 0.0,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1632,
+   "spearman_within": 0.2015,
+   "calibration": {
+    "00-09": {
+     "n": 264,
+     "label_mean": 65.2
+    },
+    "10-19": {
+     "n": 451,
+     "label_mean": 62.9
+    },
+    "20-29": {
+     "n": 376,
+     "label_mean": 61.6
+    },
+    "30-39": {
+     "n": 322,
+     "label_mean": 63.0
+    },
+    "40-49": {
+     "n": 311,
+     "label_mean": 63.9
+    },
+    "50-59": {
+     "n": 366,
+     "label_mean": 65.4
+    },
+    "60-69": {
+     "n": 389,
+     "label_mean": 66.5
+    },
+    "70-79": {
+     "n": 350,
+     "label_mean": 67.1
+    },
+    "80-89": {
+     "n": 355,
+     "label_mean": 66.2
+    },
+    "90-99": {
+     "n": 215,
+     "label_mean": 72.9
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 8
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The company hopes <SEG:6> to <SEG:12> diversify <SEG:55> its <SEG:20> profit <SEG:35> sources <SEG:92> and <SEG:16> gain <SEG:50> popularity <SEG:72> in <SEG:9> areas <SEG:40> where <SEG:14> Skype <SEG:52> holds <SEG:68> a <SEG:17> strong <SEG:38> position, <SEG:89> such <SEG:11> as <SEG:75> China, "
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "He originally named <SEG:78> the <SEG:15> Hangeul <SEG:30> alphabet <SEG:62> Hunmin <SEG:8> Jeongeum, <SEG:95> which <SEG:22> means <SEG:70> \"the <SEG:12> correct <SEG:25> sounds <SEG:55> for <SEG:18> the <SEG:10> instruction <SEG:50> of the \""
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Northern Rock had <SEG:94> required <SEG:86> support <SEG:78> due <SEG:33> to <SEG:28> its <SEG:48> exposure <SEG:74> during <SEG:38> the <SEG:60> subprime <SEG:56> mortgage <SEG:22>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4569,
+  "score_dev": 0.3941,
+  "paired_dev": {
+   "mean_delta": -0.08,
+   "se_delta": 0.0198,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Added targeted low-band rule for markers followed by temporal adverbs when the left context ends with a passive allegation (addresses en_us_317: lower over-trust on 'been + past-participle' + temporal adverb).",
+   "Added rule lowering scores when a left-side named/product token is isolated and the right token is a present-participle (-ing) (addresses en_us_1379 pos6: reduce over-trust for noun + -ing).",
+   "Added rule lowering scores when a left-side named entity is isolated but the right token is a finite verb (addresses en_us_337: finite verbs after names increase contradiction risk).",
+   "Added explicit low-band rule for cuts splitting a numeral and its unit word (addresses en_us_44: avoid cutting inside numeric+unit expressions).",
+   "Added rule reducing scores when the token after a marker is 'to' and the second token after is a directional noun/adverb or the 'to' starts an infinitival that re-scopes the clause (addresses en_us_357: 'to' + direction/infinitival is risky).",
+   "Added an exception to raise score when a marker follows a preposition/determiner (e.g., 'of') but the token immediately after the marker is a capitalized product/brand or short proper name (addresses en_us_1379 pos5: avoid under-trust after prepositions when a strong named token follows).",
+   "Clarified Decision Procedure to inspect up to two tokens after and up to two tokens before the marker to detect the above surface patterns (so rules are actionable).",
+   "Replaced Examples with a compact set (6) that each exercise one of the changed rules so the model sees concrete patterns and expected numeric outcomes."
+  ],
+  "prompt_len": 12981,
+  "usage": {
+   "calls": 190,
+   "prompt_tokens": 683240,
+   "completion_tokens": 1545893,
+   "cached_tokens": 514816,
+   "truncated": 0,
+   "cost": 3.146762,
+   "by_purpose": {
+    "segment": {
+     "calls": 132,
+     "prompt_tokens": 479501,
+     "completion_tokens": 1344340,
+     "reasoning_tokens": 1257152,
+     "cached_tokens": 364672,
+     "cost": 2.726504
+    },
+    "segment_retry": {
+     "calls": 50,
+     "prompt_tokens": 164316,
+     "completion_tokens": 150301,
+     "reasoning_tokens": 144448,
+     "cached_tokens": 137856,
+     "cost": 0.310663
+    },
+    "prompt_v0": {
+     "calls": 3,
+     "prompt_tokens": 5799,
+     "completion_tokens": 23317,
+     "reasoning_tokens": 14912,
+     "cached_tokens": 3584,
+     "cost": 0.047277
+    },
+    "prompt_engineer": {
+     "calls": 3,
+     "prompt_tokens": 15556,
+     "completion_tokens": 19237,
+     "reasoning_tokens": 9600,
+     "cached_tokens": 8704,
+     "cost": 0.040405
+    },
+    "critic": {
+     "calls": 1,
+     "prompt_tokens": 17094,
+     "completion_tokens": 6457,
+     "reasoning_tokens": 4992,
+     "cached_tokens": 0,
+     "cost": 0.017187
+    },
+    "profiler": {
+     "calls": 1,
+     "prompt_tokens": 974,
+     "completion_tokens": 2241,
+     "reasoning_tokens": 1792,
+     "cached_tokens": 0,
+     "cost": 0.004725
+    }
+   }
+  }
+ },
+ {
+  "version": 2,
+  "adopted": false,
+  "train": {
+   "n": 30,
+   "n_scored": 30,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.9145,
+   "util": 0.7124,
+   "util_oracle": 0.7748,
+   "overlap": 0.4749,
+   "overlap_by_T": {
+    "4": 0.517,
+    "6": 0.439,
+    "12": 0.447
+   },
+   "tie_rate": 0.0,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2703,
+   "spearman_within": 0.2881,
+   "calibration": {
+    "00-09": {
+     "n": 38,
+     "label_mean": 57.2
+    },
+    "10-19": {
+     "n": 109,
+     "label_mean": 59.4
+    },
+    "20-29": {
+     "n": 65,
+     "label_mean": 63.1
+    },
+    "30-39": {
+     "n": 41,
+     "label_mean": 60.0
+    },
+    "40-49": {
+     "n": 39,
+     "label_mean": 65.7
+    },
+    "50-59": {
+     "n": 37,
+     "label_mean": 61.3
+    },
+    "60-69": {
+     "n": 41,
+     "label_mean": 68.5
+    },
+    "70-79": {
+     "n": 43,
+     "label_mean": 69.3
+    },
+    "80-89": {
+     "n": 39,
+     "label_mean": 66.6
+    },
+    "90-99": {
+     "n": 17,
+     "label_mean": 76.8
+    }
+   },
+   "n_boundaries": 469,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9767,
+   "achv": 0.9185,
+   "util": 0.7188,
+   "util_oracle": 0.7803,
+   "overlap": 0.443,
+   "overlap_by_T": {
+    "4": 0.501,
+    "6": 0.427,
+    "12": 0.358
+   },
+   "tie_rate": 0.0024,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.2461,
+   "spearman_within": 0.2798,
+   "calibration": {
+    "00-09": {
+     "n": 286,
+     "label_mean": 59.9
+    },
+    "10-19": {
+     "n": 688,
+     "label_mean": 61.5
+    },
+    "20-29": {
+     "n": 476,
+     "label_mean": 63.1
+    },
+    "30-39": {
+     "n": 331,
+     "label_mean": 64.6
+    },
+    "40-49": {
+     "n": 312,
+     "label_mean": 65.2
+    },
+    "50-59": {
+     "n": 269,
+     "label_mean": 65.2
+    },
+    "60-69": {
+     "n": 282,
+     "label_mean": 67.5
+    },
+    "70-79": {
+     "n": 253,
+     "label_mean": 69.1
+    },
+    "80-89": {
+     "n": 265,
+     "label_mean": 69.2
+    },
+    "90-99": {
+     "n": 237,
+     "label_mean": 74.7
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "text_modified": 5
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Periodic rhythms, which <SEG:25> are <SEG:35> not <SEG:30> simply <SEG:50> responses <SEG:55> to <SEG:20> external <SEG:40> periodic <SEG:45> cues, <SEG:100> have <SEG:65> been <SEG:60> documented <SEG:85> for <SEG:15> most <SEG:10> living <SEG:5> beings, <SEG:95> including <SEG:3> bacteria, <SEG:75"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "We experience time <SEG:100> as <SEG:40> a <SEG:25> series <SEG:85> of <SEG:35> events <SEG:80> passing <SEG:65> from <SEG:30> the <SEG:15> future <SEG:75> through <SEG:55> the <SEG:20> present <SEG:90>"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Coalition and Afghan <SEG:36> troops <SEG:68> moved <SEG:78> into <SEG:82> the <SEG:44> area <SEG:88> to <SEG:20> secure <SEG:72> the <SEG:46> site <SEG:100> and <SEG:40> other <SEG:58> coalition <SEG:62> aircraft <SEG:95> have <SEG:54> been <SEG:50>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4749,
+  "score_dev": 0.443,
+  "paired_dev": {
+   "mean_delta": -0.0312,
+   "se_delta": 0.0183,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Added a set of narrow immediate-adjacent override rules that lower scores when specific left/right token pairs indicate high contradiction or fragment risk (addresses measured over-trust cases).",
+   "Implemented a passive+temporal-adverb override (auxiliary + VBN immediately left of marker and temporal adverb immediately right) to force low scores (10–30) unless a strong stabilizer is present.",
+   "Implemented a product/name + present-participle override (left token is a product/name and right token ends in -ing) to lower scores to mid-low (10–45) when attachment risk is high, with exceptions for clear possessives or preposition anchors.",
+   "Implemented a named-entity + finite-verb override (left ends with capitalized named token and right token is a finite verb) to lower scores into 20–50, reflecting subject+predicate re-scoping risk.",
+   "Sharpened numeral+unit detection: when a numeral (digits or clear spelled number) is immediately left and a count/unit noun is immediately right, force very low (0–15). This consolidates two measured failure modes into a single precise rule.",
+   "Added a directional-adverb override: if the immediate-right token is a direction word/phrase (right, left, 'to the right', etc.), lower into 5–25 unless punctuation or comma-bound apposition stabilizes meaning.",
+   "Clarified the 'to' after passive/past rule: when immediate-right is 'to' and the tokens immediately before form a past or passive event (past-tense V or aux + VBN), lower into 10–35 to reflect infinitival re-scoping risk.",
+   "Gave these adjacent-token overrides clear precedence over the broader heuristics and added narrowly scoped exceptions (capitalization, intervening punctuation, possessives, and strong preposition anchors) to avoid over-correction seen in the rejected attempt.",
+   "Changed Decision Procedure to prioritize the single immediate token on each side and consult the second token only when needed to decide these adjacent overrides (different from the prior attempt that always looked two tokens).",
+   "Replaced Examples with 6 targeted sentences that exercise the new adjacent-token overrides and show distinct, tie-free numeric outputs."
+  ],
+  "prompt_len": 14277,
+  "usage": {
+   "calls": 278,
+   "prompt_tokens": 1032303,
+   "completion_tokens": 2401661,
+   "cached_tokens": 767616,
+   "truncated": 0,
+   "cost": 4.888684,
+   "by_purpose": {
+    "segment": {
+     "calls": 203,
+     "prompt_tokens": 748473,
+     "completion_tokens": 2114612,
+     "reasoning_tokens": 1980416,
+     "cached_tokens": 555520,
+     "cost": 4.29135
+    },
+    "segment_retry": {
+     "calls": 63,
+     "prompt_tokens": 208303,
+     "completion_tokens": 210050,
+     "reasoning_tokens": 202560,
+     "cached_tokens": 174720,
+     "cost": 0.432864
+    },
+    "prompt_engineer": {
+     "calls": 6,
+     "prompt_tokens": 34139,
+     "completion_tokens": 37914,
+     "reasoning_tokens": 18240,
+     "cached_tokens": 20736,
+     "cost": 0.079697
+    },
+    "prompt_v0": {
+     "calls": 3,
+     "prompt_tokens": 5799,
+     "completion_tokens": 23317,
+     "reasoning_tokens": 14912,
+     "cached_tokens": 3584,
+     "cost": 0.047277
+    },
+    "critic": {
+     "calls": 2,
+     "prompt_tokens": 34615,
+     "completion_tokens": 13527,
+     "reasoning_tokens": 10432,
+     "cached_tokens": 13056,
+     "cost": 0.03277
+    },
+    "profiler": {
+     "calls": 1,
+     "prompt_tokens": 974,
+     "completion_tokens": 2241,
+     "reasoning_tokens": 1792,
+     "cached_tokens": 0,
+     "cost": 0.004725
+    }
+   }
+  }
+ },
+ {
+  "version": 3,
+  "adopted": false,
+  "train": {
+   "n": 30,
+   "n_scored": 30,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 1.0,
+   "achv": 0.8886,
+   "util": 0.6948,
+   "util_oracle": 0.7748,
+   "overlap": 0.4176,
+   "overlap_by_T": {
+    "4": 0.475,
+    "6": 0.401,
+    "12": 0.342
+   },
+   "tie_rate": 0.0,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.0749,
+   "spearman_within": 0.1034,
+   "calibration": {
+    "00-09": {
+     "n": 15,
+     "label_mean": 52.2
+    },
+    "10-19": {
+     "n": 71,
+     "label_mean": 64.3
+    },
+    "20-29": {
+     "n": 70,
+     "label_mean": 66.4
+    },
+    "30-39": {
+     "n": 43,
+     "label_mean": 58.3
+    },
+    "40-49": {
+     "n": 43,
+     "label_mean": 62.6
+    },
+    "50-59": {
+     "n": 46,
+     "label_mean": 62.8
+    },
+    "60-69": {
+     "n": 52,
+     "label_mean": 60.1
+    },
+    "70-79": {
+     "n": 42,
+     "label_mean": 60.2
+    },
+    "80-89": {
+     "n": 40,
+     "label_mean": 63.2
+    },
+    "90-99": {
+     "n": 47,
+     "label_mean": 73.5
+    }
+   },
+   "n_boundaries": 469,
+   "first_pass_violations": {
+    "counts": {},
+    "samples": []
+   }
+  },
+  "dev": {
+   "n": 215,
+   "n_scored": 215,
+   "format_pass_rate": 1.0,
+   "format_pass_rate_no_retry": 0.9581,
+   "achv": 0.893,
+   "util": 0.6981,
+   "util_oracle": 0.7803,
+   "overlap": 0.3696,
+   "overlap_by_T": {
+    "4": 0.422,
+    "6": 0.356,
+    "12": 0.316
+   },
+   "tie_rate": 0.0012,
+   "tie_at_cut_rate": 0.0,
+   "spearman_pooled": 0.1232,
+   "spearman_within": 0.1366,
+   "calibration": {
+    "00-09": {
+     "n": 81,
+     "label_mean": 59.6
+    },
+    "10-19": {
+     "n": 392,
+     "label_mean": 64.4
+    },
+    "20-29": {
+     "n": 502,
+     "label_mean": 64.6
+    },
+    "30-39": {
+     "n": 393,
+     "label_mean": 64.6
+    },
+    "40-49": {
+     "n": 374,
+     "label_mean": 62.2
+    },
+    "50-59": {
+     "n": 375,
+     "label_mean": 63.4
+    },
+    "60-69": {
+     "n": 385,
+     "label_mean": 64.5
+    },
+    "70-79": {
+     "n": 278,
+     "label_mean": 66.1
+    },
+    "80-89": {
+     "n": 296,
+     "label_mean": 67.4
+    },
+    "90-99": {
+     "n": 323,
+     "label_mean": 72.1
+    }
+   },
+   "n_boundaries": 3399,
+   "first_pass_violations": {
+    "counts": {
+     "markers_missing": 2,
+     "text_modified": 9,
+     "unscored_marker": 1
+    },
+    "samples": [
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "The company hopes <SEG:28> to <SEG:62> diversify <SEG:94> its <SEG:58> profit <SEG:52> sources <SEG:86> and <SEG:24> gain <SEG:48> popularity <SEG:78> in <SEG:36> areas <SEG:68> where <SEG:16> Skype <SEG:22> holds <SEG:42> a <SEG:32> strong <SEG:56> position, <SEG:100> such <SEG:34> as <SEG:26> Chin"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "Periodic rhythms, which <SEG:40> are <SEG:82> not <SEG:78> simply <SEG:74> responses <SEG:100> to <SEG:92> external <SEG:88> periodic <SEG:86> cues, <SEG:20> have <SEG:34> been <SEG:30> documented <SEG:98> for <SEG:72> most <SEG:70> living <SEG:66> beings, <SEG:25> including <SEG:60> bacteria, <SEG:"
+     },
+     {
+      "rule": "text_modified",
+      "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+      "seg_text": "We experience time <SEG:100> as <SEG:92> a <SEG:64> series <SEG:88> of <SEG:78> events <SEG:20> passing <SEG:72> from <SEG:60> the <SEG:56> future <SEG:66> through <SEG:52> the <SEG:48> present <SEG:44>"
+     }
+    ]
+   }
+  },
+  "score_train": 0.4176,
+  "score_dev": 0.3696,
+  "paired_dev": {
+   "mean_delta": -0.1045,
+   "se_delta": 0.0198,
+   "n_pairs": 215
+  },
+  "changelog": [
+   "Re-anchored numeric rule to exact-token whitelist: force very low scores when a pure numeral is immediately followed by a unit/count noun or '(' introducing a unit parenthetical (addresses en_us_44).",
+   "Added a concise predicate-continuation adjacency rule: if the token immediately right is a verb-form (finite VB/VBP/VBD or VBG) with NO intervening punctuation, lower the marker into mid-low/low bands (finite 10–40, VBG 10–45); this overrides heuristics that raise isolated-name/numeral cuts (addresses en_us_1379 and en_us_337).",
+   "Added a remainder-lookahead override: if any strong adversative (but, however, although, instead) OR conditional introducer (if, unless) appears later before sentence end, force low scores (0–30) with high precedence (addresses en_us_317 and en_us_357).",
+   "Added a targeted passive+temporal override: when left ends aux+VBN and the immediate-right token is a temporal adverb (recently, today, yesterday, later, earlier, etc.), lower to 10–30 (addresses en_us_317).",
+   "Explicited numeral+count continuity: when a numeral on the left is followed immediately (no comma) by a count noun (men, people, miles, etc.), do NOT elevate the cut — lower to a mid band (40–70) because numeral+noun is typically atomic (addresses en_us_548).",
+   "Specified precedence and simplicity: adjacency overrides (immediate-token patterns) and remainder lookahead take priority over generic heuristics about names, punctuation, or list separators; keep rules compact and focused on surface tokens."
+  ],
+  "prompt_len": 10487,
+  "usage": {
+   "calls": 378,
+   "prompt_tokens": 1369469,
+   "completion_tokens": 3382528,
+   "cached_tokens": 1004160,
+   "truncated": 0,
+   "cost": 6.881487,
+   "by_purpose": {
+    "segment": {
+     "calls": 278,
+     "prompt_tokens": 986603,
+     "completion_tokens": 2987802,
+     "reasoning_tokens": 2806400,
+     "cached_tokens": 716672,
+     "cost": 6.061004
+    },
+    "segment_retry": {
+     "calls": 84,
+     "prompt_tokens": 269364,
+     "completion_tokens": 288982,
+     "reasoning_tokens": 278912,
+     "cached_tokens": 222976,
+     "cost": 0.595135
+    },
+    "prompt_engineer": {
+     "calls": 9,
+     "prompt_tokens": 54081,
+     "completion_tokens": 56695,
+     "reasoning_tokens": 27840,
+     "cached_tokens": 33792,
+     "cost": 0.119307
+    },
+    "critic": {
+     "calls": 3,
+     "prompt_tokens": 52648,
+     "completion_tokens": 23491,
+     "reasoning_tokens": 19328,
+     "cached_tokens": 27136,
+     "cost": 0.054038
+    },
+    "prompt_v0": {
+     "calls": 3,
+     "prompt_tokens": 5799,
+     "completion_tokens": 23317,
+     "reasoning_tokens": 14912,
+     "cached_tokens": 3584,
+     "cost": 0.047277
+    },
+    "profiler": {
+     "calls": 1,
+     "prompt_tokens": 974,
+     "completion_tokens": 2241,
+     "reasoning_tokens": 1792,
+     "cached_tokens": 0,
+     "cost": 0.004725
+    }
+   }
+  }
+ }
+]

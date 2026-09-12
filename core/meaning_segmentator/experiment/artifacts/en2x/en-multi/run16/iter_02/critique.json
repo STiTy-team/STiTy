@@ -1,0 +1,77 @@
+{
+ "cases": [
+  {
+   "id": "en_us_317",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker after aux+VBN; immediate-right = temporal adverb",
+   "blamed_rule": "",
+   "proposed_rule": "Scoring Rules: if any strong adversative (but|however|although|instead) appears anywhere later in the remainder (before sentence end) then reduce the score for this marker into the low band (0–30). Give this override high precedence over heuristics that raise scores for short lexical chunks.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_1379",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "immediate-right is a present‑participle (VBG) with NO intervening comma",
+   "blamed_rule": "Named entities, numerals, dates",
+   "proposed_rule": "Scoring Rules: if the token immediately after the marker is a verb-form (finite V or VBG/VBN) with no intervening punctuation (no comma/semicolon) — i.e. likely continuing the predicate — lower the score into mid‑low band (10–45). Apply regardless of whether the left ends in a name/product.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_337",
+   "pos": 8,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker before a finite verb (no comma) that continues the predicate",
+   "blamed_rule": "Left or right ends on compact",
+   "proposed_rule": "Scoring Rules: when the immediate-right token is a finite verb (VB/VBP/VBD) and there is no punctuation separating it from the left, treat the cut as likely splitting subject vs predicate and push the score down to 10–40 unless a comma/parenthesis or explicit discourse marker stabilizes independence.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_44",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "fragment_right",
+   "surface_condition": "marker splits digits and unit word (digit left, unit noun right)",
+   "blamed_rule": "Cuts inside ... numerical expressions",
+   "proposed_rule": "Scoring Rules (re-anchor existing numeric rule): when the left token is a pure numeral (digits or spelled cardinal) and the immediate-right token is a unit/count noun (miles, km, kg, mph, km/h, percent, etc.) or an opening '(' introducing a unit parenthetical, force a very low score (0–15). Make this rule high-precedence and exact-token anchored (unit whitelist).",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_357",
+   "pos": 16,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "marker followed later by conditional subordinator (if) that can invert scope",
+   "blamed_rule": "",
+   "proposed_rule": "Scoring Rules: if the remainder (tokens to sentence end) contains a conditional introducer ('if', 'unless') or other conditional subordinator before the next sentence boundary, lower the marker score to 0–30 because the remainder can rescind or qualify the left span. Give precedence over heuristics that promote noun/name isolation.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_548",
+   "pos": 6,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "left ends with numeral phrase; immediate-right is a count noun continuing phrase (no punctuation)",
+   "blamed_rule": "Named entities, numerals, dates",
+   "proposed_rule": "Scoring Rules: do not automatically elevate cuts that isolate numerals; if a numeral on the left is immediately followed (no comma) by a count noun on the right (men, people, miles, etc.), lower the score to mid band (40–70) because the numeral + noun is typically one atomic expression for translation.",
+   "direction": "lower"
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The scorer over-weights isolated short lexical chunks (names, numerals) and often ignores continuation predicates and later adversatives/conditionals in the remainder. Two practical fixes: (1) a predicate‑continuation rule that lowers scores whenever the immediate-right token is a verb-form with no intervening punctuation, and (2) a remainder‑lookahead for adversatives/conditionals that forces low scores if those tokens appear later in the sentence. Also re-anchor the numeric‑unit rule to exact-digit + unit patterns so cuts inside numbers/units are forced very low.",
+ "metrics": {
+  "overlap": 0.4547,
+  "overlap_by_T": {
+   "4": 0.53,
+   "6": 0.439,
+   "12": 0.316
+  },
+  "achv": 0.8931,
+  "tie_rate": 0.0,
+  "spearman_within": 0.2834
+ }
+}

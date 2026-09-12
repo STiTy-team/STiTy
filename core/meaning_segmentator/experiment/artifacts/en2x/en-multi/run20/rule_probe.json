@@ -1,0 +1,160 @@
+{
+ "rule": "- Cutting immediately AFTER a function word (an article, preposition, conjunction, auxiliary or\n  determiner: the, a, an, of, to, in, on, at, for, with, from, by, and, or, but, is, are, was,\n  were, be, been, that, which, as, its, their, this, these, than, into) LOOKS wrong because the\n  left side ends on a word that expects a continuation. Measurement says otherwise: these\n  positions are consistently scored TOO LOW relative to what they measure. Do not penalise a\n  position merely because the left side ends on such a word — score it on what the remainder\n  could overturn, not on whether the left side reads as finished.",
+ "base_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9211,
+  "util": 0.7177,
+  "util_oracle": 0.7765,
+  "overlap": 0.4286,
+  "overlap_by_T": {
+   "4": 0.52,
+   "6": 0.383,
+   "12": 0.297
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1854,
+  "spearman_within": 0.2863,
+  "calibration": {
+   "00-09": {
+    "n": 263,
+    "label_mean": 63.4
+   },
+   "10-19": {
+    "n": 259,
+    "label_mean": 64.8
+   },
+   "20-29": {
+    "n": 143,
+    "label_mean": 63.8
+   },
+   "30-39": {
+    "n": 92,
+    "label_mean": 61.2
+   },
+   "40-49": {
+    "n": 96,
+    "label_mean": 66.0
+   },
+   "50-59": {
+    "n": 101,
+    "label_mean": 65.5
+   },
+   "60-69": {
+    "n": 108,
+    "label_mean": 65.1
+   },
+   "70-79": {
+    "n": 129,
+    "label_mean": 68.7
+   },
+   "80-89": {
+    "n": 138,
+    "label_mean": 69.0
+   },
+   "90-99": {
+    "n": 151,
+    "label_mean": 73.1
+   }
+  },
+  "n_boundaries": 1480,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "variant_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.99,
+  "achv": 0.9093,
+  "util": 0.7094,
+  "util_oracle": 0.7765,
+  "overlap": 0.4067,
+  "overlap_by_T": {
+   "4": 0.484,
+   "6": 0.365,
+   "12": 0.281
+  },
+  "tie_rate": 0.0027,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1926,
+  "spearman_within": 0.2679,
+  "calibration": {
+   "00-09": {
+    "n": 232,
+    "label_mean": 64.3
+   },
+   "10-19": {
+    "n": 225,
+    "label_mean": 63.9
+   },
+   "20-29": {
+    "n": 152,
+    "label_mean": 63.0
+   },
+   "30-39": {
+    "n": 109,
+    "label_mean": 64.5
+   },
+   "40-49": {
+    "n": 108,
+    "label_mean": 65.3
+   },
+   "50-59": {
+    "n": 102,
+    "label_mean": 66.5
+   },
+   "60-69": {
+    "n": 118,
+    "label_mean": 63.9
+   },
+   "70-79": {
+    "n": 137,
+    "label_mean": 67.6
+   },
+   "80-89": {
+    "n": 129,
+    "label_mean": 69.2
+   },
+   "90-99": {
+    "n": 168,
+    "label_mean": 72.3
+   }
+  },
+  "n_boundaries": 1480,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 1,
+    "unscored_marker": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "In the 1960s <SEG:95> he <SEG:5> headed <SEG:75> back <SEG:50> to <SEG:12> newly-independent <SEG:65> Algeria <SEG:85> to <SEG:?> teach film directing."
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 8개, 출력 7개, 빠진 자리 [10])",
+     "seg_text": "In the 1960s <SEG:95> he <SEG:5> headed <SEG:75> back <SEG:50> to <SEG:12> newly-independent <SEG:65> Algeria <SEG:85> to <SEG:?> teach film directing."
+    },
+    {
+     "rule": "unscored_marker",
+     "detail": "점수를 안 채운 마커가 남아 있음",
+     "seg_text": "In the 1960s <SEG:95> he <SEG:5> headed <SEG:75> back <SEG:50> to <SEG:12> newly-independent <SEG:65> Algeria <SEG:85> to <SEG:?> teach film directing."
+    }
+   ]
+  }
+ },
+ "paired": {
+  "mean_delta": -0.0219,
+  "se_delta": 0.0283,
+  "n_pairs": 100
+ }
+}

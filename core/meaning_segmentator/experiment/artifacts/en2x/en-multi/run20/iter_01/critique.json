@@ -1,0 +1,129 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts where the token immediately after the marker is a clause-introducing auxiliary/causal/negation token that often starts a continuation (these tokens often indicate the remainder can overturn or continue the left):",
+   "supported_by": [
+    "en_us_360",
+    "en_us_203",
+    "en_us_687",
+    "en_us_140",
+    "en_us_1570"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "In [Scoring Rules]: if the token immediately after the marker is one of {because, causing, because, since, as, due, because, then, no, not, because, therefore, hence, so, therefore} or is a finite/copular/auxiliary token that launches a clause (one of {was, were, is, are, be, been, being, had, have, has}), reduce the score substantially — put the marker into a low target band (5–30). This should OVERRIDE any generic upward bias coming from a reliable-looking token on the left (names, numerals, quoted noun-phrases). Rationale: many measured failures arise when a lexical left fragment looks good but what follows is a causal/auxiliary continuation that overturns or completes it; lowering avoids over-trust.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "because",
+     "causing",
+     "since",
+     "as",
+     "due",
+     "then",
+     "no",
+     "not",
+     "therefore",
+     "so",
+     "was",
+     "were",
+     "is",
+     "are",
+     "be",
+     "been",
+     "being",
+     "had",
+     "have",
+     "has",
+     "done",
+     "reached",
+     "succeeding",
+     "shows"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts where the token immediately after the marker is a predicate/finite verb that continues the main clause (i.e., the marker would separate a noun/subject chunk from its verb), e.g. won/want/reach/serve/show/succeed",
+   "supported_by": [
+    "en_us_278",
+    "en_us_847",
+    "en_us_351"
+   ],
+   "error": "over-trust",
+   "why": "frag_right",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher.",
+   "proposed_rule": "In [Scoring Rules]: when the token immediately after the marker is a finite/main-verb (examples below) and the token immediately before the marker is contentful (noun, name, numeral, or an NP-like left chunk), reduce the score moderately (target band 10–40). Rationale: the model currently over-values cuts that isolate a lexical left chunk from the verb that completes it (subjects/objects separated from predicates); measured labels show such splits often produce poor right-side translatability or contradiction.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "won",
+     "want",
+     "wants",
+     "wanted",
+     "reach",
+     "reached",
+     "show",
+     "shows",
+     "served",
+     "serve",
+     "succeeding",
+     "found",
+     "found",
+     "be",
+     "is",
+     "are",
+     "was",
+     "were",
+     "will"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts where the token immediately before the marker is a demonstrative pronoun (this/that/these/those) and the token immediately after is a noun (a common pattern where the left chunk ('... this') is a reliable short chunk and the right is the head noun), i.e. markers of the form 'this | noun' or 'that | noun'",
+   "supported_by": [
+    "en_us_360",
+    "en_us_351"
+   ],
+   "error": "under-trust",
+   "why": "mixed",
+   "blamed_rule": "- Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "In [Scoring Rules]: raise the score (move toward a higher band, target band 55–85) when left_last is a demonstrative pronoun {this, that, these, those} AND right_first is a lexical noun (examples below). Rationale: the measurer often finds short demonstrative fragments translate reliably on their own and the right noun phrase also translates well; examples show the model sometimes under-ranks these boundaries.",
+   "direction": "raise",
+   "check": {
+    "left_last": [
+     "this",
+     "that",
+     "these",
+     "those"
+    ],
+    "right_first": [
+     "process",
+     "problem",
+     "season",
+     "case",
+     "cases",
+     "report",
+     "activity",
+     "time",
+     "election",
+     "region",
+     "year"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The model still over-values lexical-looking left fragments even when what follows is a clause that negates/continues them (causal auxiliaries, causing/ because/was/etc.). It also over-trusts cuts that separate subject/NP from the predicate (finite verbs). Conversely, the model under-ranks cuts after demonstratives (this/that) that empirical measurement shows are often good. The proposed rules (1) force a strong downward override when clause-introducing auxiliaries/causatives/negations follow, (2) lower cuts that separate an NP from a following finite verb, and (3) raise cuts after demonstratives followed by nouns.",
+ "metrics": {
+  "overlap": 0.4157,
+  "overlap_by_T": {
+   "4": 0.463,
+   "6": 0.36,
+   "12": 0.43
+  },
+  "achv": 0.9107,
+  "tie_rate": 0.0026,
+  "spearman_within": 0.2534
+ }
+}

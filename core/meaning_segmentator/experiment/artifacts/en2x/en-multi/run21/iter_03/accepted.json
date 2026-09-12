@@ -1,0 +1,90 @@
+{
+  "version": 3,
+  "changelog": [
+    "Refined Scoring Rules to implement moderate, context-aware demotions for markers that split numerals from immediately following measurement/unit words (traceable to CRITIQUE: numeral+unit over-trust). Change introduces a soft, conditional downward ordering rather than a blanket strong penalty and adds an explicit exception to preserve genuinely good numeral-adjacent boundaries.",
+    "Added a targeted, conservative rule lowering markers immediately after short identifier-like tokens (traceable to CRITIQUE: short-ID over-trust) but only when local context indicates continuation and not when the opposite side contains a numeral/date/unit or punctuation. The rule is weaker and conditional to avoid removing safe boundaries.",
+    "Added a concise rule to modestly lower markers that are immediately followed by clause-continuing subordinators (because/due/that/which/etc.) when that continuation is likely to change meaning, as noted in the critique.",
+    "Clarified that these are relative, surface-anchored ordering tendencies (not absolute numeric bands) and added a small local-ranking precedence list to guide within-sentence ordering so the deterministic keeper ranks cuts more safely without producing ties.",
+    "Updated Examples to demonstrate the new behaviour: (a) the climate-models example now demotes a 'number <SEG> unit' split to a mid-range rank, and (b) replaced one example with a short-identifier example to show the conservative demotion and its exception when followed by a numeral/unit."
+  ],
+  "sections_changed": [
+    "[Scoring Rules]",
+    "[Examples]"
+  ],
+  "dev_delta": {
+    "mean_delta": 0.0368,
+    "se_delta": 0.0179,
+    "n_pairs": 215
+  },
+  "prompt_len": {
+    "before": 12032,
+    "after": 16005
+  },
+  "gained_on": [
+    {
+      "id": "en_us_1572",
+      "text": "Three more bombs exploded near government buildings in a period of two hours.",
+      "budget_T": 4,
+      "gain": 1.0,
+      "kept_now": [
+        4,
+        7
+      ],
+      "kept_before": [
+        3,
+        6
+      ],
+      "kept_by_label": [
+        4,
+        7
+      ]
+    },
+    {
+      "id": "en_us_12",
+      "text": "Nadal's head to head record against the Canadian is 7–2.",
+      "budget_T": 4,
+      "gain": 1.0,
+      "kept_now": [
+        5
+      ],
+      "kept_before": [
+        4,
+        7
+      ],
+      "kept_by_label": [
+        5
+      ]
+    },
+    {
+      "id": "en_us_321",
+      "text": "Since then, China's economic size has grown by 90 times.",
+      "budget_T": 4,
+      "gain": 1.0,
+      "kept_now": [
+        5
+      ],
+      "kept_before": [
+        3,
+        7
+      ],
+      "kept_by_label": [
+        5
+      ]
+    },
+    {
+      "id": "en_us_877",
+      "text": "For those unfamiliar with medical jargon, the words infectious and contagious have distinct meanings.",
+      "budget_T": 6,
+      "gain": 0.8335,
+      "kept_now": [
+        6
+      ],
+      "kept_before": [
+        8
+      ],
+      "kept_by_label": [
+        6
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+ "selected_kind": null,
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 3,
+  "n_passed": 0
+ },
+ "changelog": null,
+ "sections_changed": null,
+ "candidates": [
+  {
+   "kind": "shrink",
+   "len": 11250,
+   "holdout_delta": {
+    "mean_delta": -0.0213,
+    "se_delta": 0.0346,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4073
+  },
+  {
+   "kind": "neutral",
+   "len": 12870,
+   "holdout_delta": {
+    "mean_delta": -0.043,
+    "se_delta": 0.0256,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3856
+  },
+  {
+   "kind": "grow",
+   "len": 17000,
+   "holdout_delta": {
+    "mean_delta": -0.0663,
+    "se_delta": 0.0276,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3623
+  }
+ ]
+}

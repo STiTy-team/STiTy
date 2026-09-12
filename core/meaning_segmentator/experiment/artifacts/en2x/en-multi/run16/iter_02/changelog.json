@@ -1,0 +1,32 @@
+{
+ "selected_kind": "shrink",
+ "changelog": [
+  "Re-anchored numeric rule to exact-token whitelist: force very low scores when a pure numeral is immediately followed by a unit/count noun or '(' introducing a unit parenthetical (addresses en_us_44).",
+  "Added a concise predicate-continuation adjacency rule: if the token immediately right is a verb-form (finite VB/VBP/VBD or VBG) with NO intervening punctuation, lower the marker into mid-low/low bands (finite 10–40, VBG 10–45); this overrides heuristics that raise isolated-name/numeral cuts (addresses en_us_1379 and en_us_337).",
+  "Added a remainder-lookahead override: if any strong adversative (but, however, although, instead) OR conditional introducer (if, unless) appears later before sentence end, force low scores (0–30) with high precedence (addresses en_us_317 and en_us_357).",
+  "Added a targeted passive+temporal override: when left ends aux+VBN and the immediate-right token is a temporal adverb (recently, today, yesterday, later, earlier, etc.), lower to 10–30 (addresses en_us_317).",
+  "Explicited numeral+count continuity: when a numeral on the left is followed immediately (no comma) by a count noun (men, people, miles, etc.), do NOT elevate the cut — lower to a mid band (40–70) because numeral+noun is typically atomic (addresses en_us_548).",
+  "Specified precedence and simplicity: adjacency overrides (immediate-token patterns) and remainder lookahead take priority over generic heuristics about names, punctuation, or list separators; keep rules compact and focused on surface tokens."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]"
+ ],
+ "candidates": [
+  {
+   "kind": "shrink",
+   "len": 10487,
+   "holdout_achv": 0.3602
+  },
+  {
+   "kind": "grow",
+   "len": 12106,
+   "holdout_achv": 0.356
+  },
+  {
+   "kind": "neutral",
+   "len": 10787,
+   "holdout_achv": 0.3431
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_140",
+   "en_us_46",
+   "en_us_278",
+   "en_us_1050"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that split a numeral token from an immediately following measurement/unit token (e.g., 1.2 <SEG> million, 240 <SEG>",
+  "verified_support": 5,
+  "n_matched": 14,
+  "label_matched": 0.5354,
+  "label_rest": 0.6485,
+  "t": -2.56,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_276"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers immediately followed by a clause-continuing subordinating token (right-first ∈ {because, due, causing, that, whi",
+  "verified_support": 2,
+  "n_matched": 39,
+  "label_matched": 0.6721,
+  "label_rest": 0.6468,
+  "t": 0.82,
+  "verdict": "drop",
+  "reason": "|t| 0.82 < 2.0"
+ },
+ {
+  "supported_by": [
+   "en_us_276",
+   "en_us_1000",
+   "en_us_685",
+   "en_us_738"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers immediately after short identifier/parenthetical-like tokens (short IDs and acronyms) such as parenthood, isil, ",
+  "verified_support": 4,
+  "n_matched": 7,
+  "label_matched": 0.4639,
+  "label_rest": 0.6483,
+  "t": -3.55,
+  "verdict": "keep"
+ }
+]

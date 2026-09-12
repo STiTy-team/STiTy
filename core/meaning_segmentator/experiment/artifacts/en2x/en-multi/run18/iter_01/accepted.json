@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "changelog": [
+    "Add narrow negative exception penalizing cuts that separate a numeral token from an immediately following scale/unit token (addresses en_us_66, en_us_278, en_us_203, en_us_1050): reduces false high scores where reliable-looking numerals are split from their units.",
+    "Penalize cuts where the token immediately after the marker is a causal/subordinating connector (explicitly include 'because', 'causing', 'so', 'therefore', 'hence') especially when left ends a quoted phrase or standalone NP (addresses en_us_360): avoids over-trusting left-side reliability when remainder often modifies/overturns it.",
+    "Reduce boosts for cuts that follow a named organization/place when the right side begins with an appositional parenthetical or immediate abbreviation (right token '(' or comma then '(' or '(' + uppercase) (addresses en_us_738, en_us_1000): prevents splitting names from clarifying parentheticals/roles.",
+    "Treat repeated-unit patterns (numeral on one side + unit token immediately on the other) as bad splits (addresses en_us_1050): same mechanism as numeral↔unit rule to stop over-trusting repeated unit separations.",
+    "Lower scores for cuts that leave an adjectival/participial modifier phrase at the left that syntactically expects a following noun (examples: 'spoken', 'reported', 'estimated', possibly preceded by adverbs like 'most', 'commonly') when the right begins with a common noun (addresses en_us_417): avoids boosting adjectival fragments that lose their noun anchor.",
+    "Add a deterministic tie-break bias: when checklist signals produce exact ties, apply a small deterministic penalty to numeral–unit splits and parenthetical/appositive splits so they no longer tie (implements the critique 'tie_fix').",
+    "Integrated all new negative exceptions as narrowly-scoped, surface-token–anchored tendencies and preserved existing general high/low tendencies to retain useful prior behavior (merges critique proposals with original rules)."
+  ],
+  "sections_changed": [
+    "[Scoring Rules]",
+    "[Decision Procedure]"
+  ],
+  "dev_delta": {
+    "mean_delta": 0.0404,
+    "se_delta": 0.0181,
+    "n_pairs": 215
+  },
+  "prompt_len": {
+    "before": 12032,
+    "after": 15132
+  },
+  "gained_on": [
+    {
+      "id": "en_us_12",
+      "text": "Nadal's head to head record against the Canadian is 7–2.",
+      "budget_T": 4,
+      "gain": 1.0,
+      "kept_now": [
+        5
+      ],
+      "kept_before": [
+        4,
+        7
+      ],
+      "kept_by_label": [
+        5
+      ]
+    },
+    {
+      "id": "en_us_321",
+      "text": "Since then, China's economic size has grown by 90 times.",
+      "budget_T": 4,
+      "gain": 1.0,
+      "kept_now": [
+        5
+      ],
+      "kept_before": [
+        3,
+        7
+      ],
+      "kept_by_label": [
+        5
+      ]
+    },
+    {
+      "id": "en_us_877",
+      "text": "For those unfamiliar with medical jargon, the words infectious and contagious have distinct meanings.",
+      "budget_T": 6,
+      "gain": 0.8335,
+      "kept_now": [
+        6
+      ],
+      "kept_before": [
+        8
+      ],
+      "kept_by_label": [
+        6
+      ]
+    },
+    {
+      "id": "en_us_1230",
+      "text": "As the inter-district buses are often full, it is advisable to purchase a ticket a few days in advance.",
+      "budget_T": 12,
+      "gain": 0.75,
+      "kept_now": [
+        7
+      ],
+      "kept_before": [
+        16
+      ],
+      "kept_by_label": [
+        7
+      ]
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+ "version": 0,
+ "adopted": true,
+ "train": {
+  "n": 30,
+  "n_scored": 30,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.8931,
+  "util": 0.6968,
+  "util_oracle": 0.7748,
+  "overlap": 0.4547,
+  "overlap_by_T": {
+   "4": 0.53,
+   "6": 0.439,
+   "12": 0.316
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.228,
+  "spearman_within": 0.2834,
+  "calibration": {
+   "00-09": {
+    "n": 18,
+    "label_mean": 61.0
+   },
+   "10-19": {
+    "n": 82,
+    "label_mean": 60.2
+   },
+   "20-29": {
+    "n": 62,
+    "label_mean": 59.4
+   },
+   "30-39": {
+    "n": 40,
+    "label_mean": 62.5
+   },
+   "40-49": {
+    "n": 45,
+    "label_mean": 64.4
+   },
+   "50-59": {
+    "n": 31,
+    "label_mean": 64.8
+   },
+   "60-69": {
+    "n": 38,
+    "label_mean": 60.4
+   },
+   "70-79": {
+    "n": 36,
+    "label_mean": 66.8
+   },
+   "80-89": {
+    "n": 54,
+    "label_mean": 64.8
+   },
+   "90-99": {
+    "n": 63,
+    "label_mean": 69.9
+   }
+  },
+  "n_boundaries": 469,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9023,
+  "achv": 0.9248,
+  "util": 0.7232,
+  "util_oracle": 0.7803,
+  "overlap": 0.4741,
+  "overlap_by_T": {
+   "4": 0.539,
+   "6": 0.449,
+   "12": 0.395
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2596,
+  "spearman_within": 0.2861,
+  "calibration": {
+   "00-09": {
+    "n": 265,
+    "label_mean": 61.2
+   },
+   "10-19": {
+    "n": 521,
+    "label_mean": 60.7
+   },
+   "20-29": {
+    "n": 419,
+    "label_mean": 63.3
+   },
+   "30-39": {
+    "n": 321,
+    "label_mean": 62.1
+   },
+   "40-49": {
+    "n": 258,
+    "label_mean": 64.5
+   },
+   "50-59": {
+    "n": 238,
+    "label_mean": 65.1
+   },
+   "60-69": {
+    "n": 251,
+    "label_mean": 65.2
+   },
+   "70-79": {
+    "n": 280,
+    "label_mean": 66.7
+   },
+   "80-89": {
+    "n": 363,
+    "label_mean": 68.1
+   },
+   "90-99": {
+    "n": 483,
+    "label_mean": 72.7
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 21
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "It was the <SEG:12> final <SEG:20> match <SEG:65> for <SEG:30> the <SEG:15> All <SEG:8> Blacks, <SEG:90> who <SEG:18> had <SEG:25> already <SEG:35> won <SEG:70> the <SEG:40> trophy <SEG:80>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Since then, China's <SEG:46> economic <SEG:66> size <SEG:94> has <SEG:12> grown <SEG:100> ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The presenter, who <SEG:42> was <SEG:46> arrested <SEG:66> at <SEG:20> the <SEG:14> scene, <SEG:100> denied <SEG:60> the <SEG:13> attack <SEG:85> and <SEG:34> claimed <SEG:56> he <SEG:11> used <SEG:52> the <SEG:12> pole <SEG:80> to <SEG:10> protect <SEG:54> himself <SEG:96> from <SEG:24> bottles <SE"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4547,
+ "score_dev": 0.4741,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 12533,
+ "usage": {
+  "calls": 99,
+  "prompt_tokens": 341095,
+  "completion_tokens": 651562,
+  "cached_tokens": 268288,
+  "truncated": 0,
+  "cost": 1.328033,
+  "by_purpose": {
+   "segment": {
+    "calls": 61,
+    "prompt_tokens": 222723,
+    "completion_tokens": 532091,
+    "reasoning_tokens": 492160,
+    "cached_tokens": 170240,
+    "cost": 1.081559
+   },
+   "segment_retry": {
+    "calls": 34,
+    "prompt_tokens": 111599,
+    "completion_tokens": 93913,
+    "reasoning_tokens": 89984,
+    "cached_tokens": 94464,
+    "cost": 0.194471
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 5799,
+    "completion_tokens": 23317,
+    "reasoning_tokens": 14912,
+    "cached_tokens": 3584,
+    "cost": 0.047277
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 2241,
+    "reasoning_tokens": 1792,
+    "cached_tokens": 0,
+    "cost": 0.004725
+   }
+  }
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "rules": [
+  {
+   "surface_condition": "markers immediately before causal/subordinating introducers (surface tokens that typically start clauses that can overturn the preceding span)",
+   "supported_by": [
+    "en_us_360",
+    "en_us_276"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "Scoring rule (downgrade causal/subordinator starts): If the token immediately after the marker is a causal/subordinating introducer (examples: because, causing, due), apply a strong downward adjustment so the marker falls in a low band (suggested target band: 10–35). Rationale: these tokens often introduce clauses that change or qualify the meaning of the left span, producing high contradiction in the measured label.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "because",
+     "causing",
+     "due"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers immediately before parenthetical/acronym tokens (right-side tokens that are short uppercase-style acronyms or identifier codes)",
+   "supported_by": [
+    "en_us_1000",
+    "en_us_685"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "",
+   "proposed_rule": "Scoring rule (downgrade parenthetical/acronym continuation): If the token immediately after the marker is a short acronym/identifier token that commonly appears inside parentheses or as an inline code (examples in data: isil, kv62, nsa), lower the predicted score to a modest band (suggested target band: 10–40). Rationale: such tokens usually continue or disambiguate the named entity and the left-alone translation can be contradicted or altered by the parenthetical expansion.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "isil",
+     "kv62",
+     "nsa"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties arise when multiple markers match the same surface-rule bucket; add a deterministic tiny offset (e.g., +index*0.01) when converting buckets to integers so identical-rule matches do not produce exact equal integers.",
+ "summary": "The model over-ranks cuts that sit immediately before clause-introducing tokens (because/causing/due) or before parenthetical/acronym tokens (ISIL, KV62, NSA). Both patterns recur and are associated with high contradiction; explicitly lowering scores for those right-first tokens will push the keeper decision away from boundaries that the remainder tends to overturn. The proposed rules are conservative, token-anchored downgrades (narrow target bands) to avoid wide collateral demotion of unrelated safe cuts.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

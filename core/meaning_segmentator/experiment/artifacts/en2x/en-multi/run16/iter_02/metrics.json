@@ -1,0 +1,232 @@
+{
+ "version": 2,
+ "adopted": false,
+ "train": {
+  "n": 30,
+  "n_scored": 30,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.9145,
+  "util": 0.7124,
+  "util_oracle": 0.7748,
+  "overlap": 0.4749,
+  "overlap_by_T": {
+   "4": 0.517,
+   "6": 0.439,
+   "12": 0.447
+  },
+  "tie_rate": 0.0,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2703,
+  "spearman_within": 0.2881,
+  "calibration": {
+   "00-09": {
+    "n": 38,
+    "label_mean": 57.2
+   },
+   "10-19": {
+    "n": 109,
+    "label_mean": 59.4
+   },
+   "20-29": {
+    "n": 65,
+    "label_mean": 63.1
+   },
+   "30-39": {
+    "n": 41,
+    "label_mean": 60.0
+   },
+   "40-49": {
+    "n": 39,
+    "label_mean": 65.7
+   },
+   "50-59": {
+    "n": 37,
+    "label_mean": 61.3
+   },
+   "60-69": {
+    "n": 41,
+    "label_mean": 68.5
+   },
+   "70-79": {
+    "n": 43,
+    "label_mean": 69.3
+   },
+   "80-89": {
+    "n": 39,
+    "label_mean": 66.6
+   },
+   "90-99": {
+    "n": 17,
+    "label_mean": 76.8
+   }
+  },
+  "n_boundaries": 469,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9767,
+  "achv": 0.9185,
+  "util": 0.7188,
+  "util_oracle": 0.7803,
+  "overlap": 0.443,
+  "overlap_by_T": {
+   "4": 0.501,
+   "6": 0.427,
+   "12": 0.358
+  },
+  "tie_rate": 0.0024,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2461,
+  "spearman_within": 0.2798,
+  "calibration": {
+   "00-09": {
+    "n": 286,
+    "label_mean": 59.9
+   },
+   "10-19": {
+    "n": 688,
+    "label_mean": 61.5
+   },
+   "20-29": {
+    "n": 476,
+    "label_mean": 63.1
+   },
+   "30-39": {
+    "n": 331,
+    "label_mean": 64.6
+   },
+   "40-49": {
+    "n": 312,
+    "label_mean": 65.2
+   },
+   "50-59": {
+    "n": 269,
+    "label_mean": 65.2
+   },
+   "60-69": {
+    "n": 282,
+    "label_mean": 67.5
+   },
+   "70-79": {
+    "n": 253,
+    "label_mean": 69.1
+   },
+   "80-89": {
+    "n": 265,
+    "label_mean": 69.2
+   },
+   "90-99": {
+    "n": 237,
+    "label_mean": 74.7
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Periodic rhythms, which <SEG:25> are <SEG:35> not <SEG:30> simply <SEG:50> responses <SEG:55> to <SEG:20> external <SEG:40> periodic <SEG:45> cues, <SEG:100> have <SEG:65> been <SEG:60> documented <SEG:85> for <SEG:15> most <SEG:10> living <SEG:5> beings, <SEG:95> including <SEG:3> bacteria, <SEG:75"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "We experience time <SEG:100> as <SEG:40> a <SEG:25> series <SEG:85> of <SEG:35> events <SEG:80> passing <SEG:65> from <SEG:30> the <SEG:15> future <SEG:75> through <SEG:55> the <SEG:20> present <SEG:90>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Coalition and Afghan <SEG:36> troops <SEG:68> moved <SEG:78> into <SEG:82> the <SEG:44> area <SEG:88> to <SEG:20> secure <SEG:72> the <SEG:46> site <SEG:100> and <SEG:40> other <SEG:58> coalition <SEG:62> aircraft <SEG:95> have <SEG:54> been <SEG:50>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.4749,
+ "score_dev": 0.443,
+ "paired_dev": {
+  "mean_delta": -0.0312,
+  "se_delta": 0.0183,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Added a set of narrow immediate-adjacent override rules that lower scores when specific left/right token pairs indicate high contradiction or fragment risk (addresses measured over-trust cases).",
+  "Implemented a passive+temporal-adverb override (auxiliary + VBN immediately left of marker and temporal adverb immediately right) to force low scores (10–30) unless a strong stabilizer is present.",
+  "Implemented a product/name + present-participle override (left token is a product/name and right token ends in -ing) to lower scores to mid-low (10–45) when attachment risk is high, with exceptions for clear possessives or preposition anchors.",
+  "Implemented a named-entity + finite-verb override (left ends with capitalized named token and right token is a finite verb) to lower scores into 20–50, reflecting subject+predicate re-scoping risk.",
+  "Sharpened numeral+unit detection: when a numeral (digits or clear spelled number) is immediately left and a count/unit noun is immediately right, force very low (0–15). This consolidates two measured failure modes into a single precise rule.",
+  "Added a directional-adverb override: if the immediate-right token is a direction word/phrase (right, left, 'to the right', etc.), lower into 5–25 unless punctuation or comma-bound apposition stabilizes meaning.",
+  "Clarified the 'to' after passive/past rule: when immediate-right is 'to' and the tokens immediately before form a past or passive event (past-tense V or aux + VBN), lower into 10–35 to reflect infinitival re-scoping risk.",
+  "Gave these adjacent-token overrides clear precedence over the broader heuristics and added narrowly scoped exceptions (capitalization, intervening punctuation, possessives, and strong preposition anchors) to avoid over-correction seen in the rejected attempt.",
+  "Changed Decision Procedure to prioritize the single immediate token on each side and consult the second token only when needed to decide these adjacent overrides (different from the prior attempt that always looked two tokens).",
+  "Replaced Examples with 6 targeted sentences that exercise the new adjacent-token overrides and show distinct, tie-free numeric outputs."
+ ],
+ "prompt_len": 14277,
+ "usage": {
+  "calls": 278,
+  "prompt_tokens": 1032303,
+  "completion_tokens": 2401661,
+  "cached_tokens": 767616,
+  "truncated": 0,
+  "cost": 4.888684,
+  "by_purpose": {
+   "segment": {
+    "calls": 203,
+    "prompt_tokens": 748473,
+    "completion_tokens": 2114612,
+    "reasoning_tokens": 1980416,
+    "cached_tokens": 555520,
+    "cost": 4.29135
+   },
+   "segment_retry": {
+    "calls": 63,
+    "prompt_tokens": 208303,
+    "completion_tokens": 210050,
+    "reasoning_tokens": 202560,
+    "cached_tokens": 174720,
+    "cost": 0.432864
+   },
+   "prompt_engineer": {
+    "calls": 6,
+    "prompt_tokens": 34139,
+    "completion_tokens": 37914,
+    "reasoning_tokens": 18240,
+    "cached_tokens": 20736,
+    "cost": 0.079697
+   },
+   "prompt_v0": {
+    "calls": 3,
+    "prompt_tokens": 5799,
+    "completion_tokens": 23317,
+    "reasoning_tokens": 14912,
+    "cached_tokens": 3584,
+    "cost": 0.047277
+   },
+   "critic": {
+    "calls": 2,
+    "prompt_tokens": 34615,
+    "completion_tokens": 13527,
+    "reasoning_tokens": 10432,
+    "cached_tokens": 13056,
+    "cost": 0.03277
+   },
+   "profiler": {
+    "calls": 1,
+    "prompt_tokens": 974,
+    "completion_tokens": 2241,
+    "reasoning_tokens": 1792,
+    "cached_tokens": 0,
+    "cost": 0.004725
+   }
+  }
+ }
+}

@@ -1,0 +1,240 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.8544,
+  "util": 0.6694,
+  "util_oracle": 0.7803,
+  "overlap": 0.3204,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.32,
+   "8": 0.27,
+   "12": 0.194
+  },
+  "tie_rate": 0.0052,
+  "tie_at_cut_rate": 0.0028,
+  "spearman_pooled": 0.1629,
+  "spearman_within": 0.1705,
+  "calibration": {
+   "00-09": {
+    "n": 208,
+    "label_mean": 60.3
+   },
+   "10-19": {
+    "n": 180,
+    "label_mean": 62.4
+   },
+   "20-29": {
+    "n": 117,
+    "label_mean": 63.9
+   },
+   "30-39": {
+    "n": 92,
+    "label_mean": 61.5
+   },
+   "40-49": {
+    "n": 118,
+    "label_mean": 60.1
+   },
+   "50-59": {
+    "n": 129,
+    "label_mean": 63.3
+   },
+   "60-69": {
+    "n": 150,
+    "label_mean": 64.7
+   },
+   "70-79": {
+    "n": 159,
+    "label_mean": 66.0
+   },
+   "80-89": {
+    "n": 173,
+    "label_mean": 64.9
+   },
+   "90-99": {
+    "n": 218,
+    "label_mean": 67.1
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.5933,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5653,
+     "Japanese": 0.5951,
+     "German": 0.6195
+    }
+   },
+   "6": {
+    "mean": 0.6223,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.5912,
+     "Japanese": 0.6273,
+     "German": 0.6483
+    }
+   },
+   "8": {
+    "mean": 0.6692,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6305,
+     "Japanese": 0.6852,
+     "German": 0.692
+    }
+   },
+   "12": {
+    "mean": 0.7175,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.6594,
+     "Japanese": 0.736,
+     "German": 0.7572
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6459,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6302,
+     "Japanese": 0.6448,
+     "German": 0.6627
+    }
+   },
+   "6": {
+    "mean": 0.7265,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7017,
+     "Japanese": 0.7356,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7937,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8041,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8227,
+     "German": 0.813
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 283,
+  "prompt_tokens": 1125518,
+  "completion_tokens": 2846220,
+  "cached_tokens": 793344,
+  "truncated": 0,
+  "cost": 5.795317,
+  "by_purpose": {
+   "segment": {
+    "calls": 242,
+    "prompt_tokens": 846434,
+    "completion_tokens": 2648990,
+    "reasoning_tokens": 2496512,
+    "cached_tokens": 624768,
+    "cost": 5.369016
+   },
+   "segment_retry": {
+    "calls": 24,
+    "prompt_tokens": 84263,
+    "completion_tokens": 94573,
+    "reasoning_tokens": 91456,
+    "cached_tokens": 63744,
+    "cost": 0.195869
+   },
+   "prompt_engineer": {
+    "calls": 13,
+    "prompt_tokens": 60080,
+    "completion_tokens": 76579,
+    "reasoning_tokens": 36544,
+    "cached_tokens": 26496,
+    "cost": 0.162216
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 128786,
+    "completion_tokens": 22217,
+    "reasoning_tokens": 17536,
+    "cached_tokens": 78336,
+    "cost": 0.059005
+   },
+   "critic_regression": {
+    "calls": 1,
+    "prompt_tokens": 5955,
+    "completion_tokens": 3861,
+    "reasoning_tokens": 3392,
+    "cached_tokens": 0,
+    "cost": 0.009211
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.429,
+   "score_dev": 0.4278,
+   "paired_dev": {
+    "mean_delta": 0.0002,
+    "se_delta": 0.0176,
+    "n_pairs": 215
+   },
+   "prompt_len": 14465
+  },
+  {
+   "version": 3,
+   "adopted": false,
+   "score_train": 0.4192,
+   "score_dev": 0.4387,
+   "paired_dev": {
+    "mean_delta": 0.0111,
+    "se_delta": 0.0189,
+    "n_pairs": 215
+   },
+   "prompt_len": 9936
+  }
+ ],
+ "best_version": 0
+}

@@ -1,0 +1,122 @@
+{
+  "regressions": [
+    {
+      "id": "en_us_991",
+      "text": "The walls and roofs of ice caves can collapse and cracks can get closed.",
+      "delta": -1.0,
+      "budget_T": 4,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        4,
+        7,
+        11
+      ],
+      "kept_before": [
+        3,
+        6,
+        9
+      ],
+      "kept_by_label": [
+        3,
+        6,
+        9
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_1581",
+      "text": "The Amazon is also the widest river on Earth, at times six miles wide.",
+      "delta": -1.0,
+      "budget_T": 4,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        4,
+        7,
+        11
+      ],
+      "kept_before": [
+        3,
+        6,
+        9
+      ],
+      "kept_by_label": [
+        3,
+        6,
+        9
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_352",
+      "text": "The steel needle floats on top of the water because of surface tension.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        4
+      ],
+      "kept_before": [
+        9
+      ],
+      "kept_by_label": [
+        9
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_142",
+      "text": "On Wednesday, the United States' National Basketball Association (NBA) suspended its professional basketball season due to concerns regarding COVID-19.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        9,
+        13
+      ],
+      "kept_before": [
+        5,
+        8
+      ],
+      "kept_by_label": [
+        5,
+        8
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_1138",
+      "text": "Earlier the Chinese news agency Xinhua reported a plane to be hijacked.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        9
+      ],
+      "kept_before": [
+        6
+      ],
+      "kept_by_label": [
+        6
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    }
+  ],
+  "post_mortem": {
+    "why_failed": "The revision added two targeted downward adjustments (a NUM–UNIT split exception and a short-identifier down-weight) that demoted previously high-scoring cut positions (notably cuts between numerals and their unit tokens and cuts after short IDs). Those demoted safe boundaries were dropped by the deterministic keeper and the next-highest (worse/contradicting) cuts were selected instead, producing the observed rise in contradiction and the rightward one-token shifts.",
+    "blamed_lines": [
+      "Exception (numeral+unit split — downward adjustment):",
+      "- If the marker falls immediately between a numeral (or formatted numeric token) and an immediately adjacent measurement/unit token (examples: million, percent, kilometers, kilometer, meters, meter, miles, mile, year, years, m, km, degree), then the measured value tends to be much lower than the naive numeral bias suggests. In such NUM–UNIT splits (e.g., \"1.2 <SEG> million\", \"240 <SEG> kilometers\", \"two <SEG> degree\") apply a strong downward adjustment and target a low band (rough guideline: ~10–35) because single-side translation and contradiction signals frequently punish these fragments.",
+      "Targeted short-identifier down-weighting:",
+      "- If the token immediately before the marker is a short named/identifier token that translators typically copy or anchor to (examples to check for: parenthood, service, kv62, minae), then reduce the predicted score substantially (guideline target band ~15–45). Do not automatically keep such markers high merely because the token is a short name: short IDs often form part of a larger identifier or phrase whose translation depends on the following words. Exception: if the opposite side (the side after the marker when the short token is on the left) contains an independent numeral, explicit date, or measurement/unit token then the upward evidence may override this reduction.",
+      "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward — unless the marker splits that numeral from an immediately adjacent measurement/unit token (see the NUM–UNIT split exception above), in which case bias strongly downward toward ~10–35.",
+      "Is the token immediately before the marker a short named/identifier token from the short-ID list (parenthood, service, kv62, minae)? If yes, reduce the score substantially (guideline ~15–45) unless the opposite side contains an independent numeral/date/unit that justifies a higher value."
+    ],
+    "mechanism": "removed_safe_boundary",
+    "lesson": "Avoid blanket downward adjustments that demote cut positions which were previously high-ranked (e.g., numeral–unit or short-ID adjacencies) without checking how those removals change which boundaries survive at realistic latency budgets."
+  }
+}

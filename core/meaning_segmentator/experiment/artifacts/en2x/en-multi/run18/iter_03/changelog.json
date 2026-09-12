@@ -1,0 +1,47 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 2,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Refined the comma/adjunct upward-bias into a conditional: do not apply that upward bias when the token after the marker is an auxiliary/copula — addresses en_us_203 (prevents over-trust when a copula/predicate reinterprets a comma-terminated adjunct).",
+  "Added a negative exception for proper-name (capitalized) immediately before + lexical verb immediately after, lowering score in that surface pattern — addresses en_us_276 (prevents over-trusting bare names that are immediately reinterpreted by a following predicate).",
+  "Added a negative exception for name/organization cluster (including immediately-closed parenthetical acronym) before + reporting/lexical verb after, lowering the usual name boost — addresses en_us_738 and en_us_1000 (stops splitting names from their predicate or clarifying parentheticals).",
+  "Added a negative exception for left-end closing parenthesis (')') immediately before the marker when the token after begins a role/title common noun, lowering score — addresses en_us_1000 (prevents treating a parenthetical-terminated name as independently faithful when a descriptive predicate follows).",
+  "Made participial rule symmetric: penalize both token_before = VBN + token_after = common noun AND token_after = VBN + token_before = common noun — addresses en_us_687 (catches splits that strand the participle on either side).",
+  "Added negative exception for left-side light-pronoun + auxiliary clusters (it/they/he + have/has/had/is/was/etc.) when the token after begins with a negator/determiner ('no','a','the'), lowering score — addresses en_us_1570 (prevents over-valuing auxiliary-led fragments).",
+  "Added negative exception for finite lexical-verb before + common noun/pronoun after (likely verb→object splits), lowering score — addresses en_us_1106 (reduces over-trust at verb→object splits).",
+  "Added positive exception: raise score when the token immediately after the marker begins a contiguous capitalized multiword name cluster (two or more title-case tokens), increasing score — addresses en_us_1294 (recognizes that exposing the start of a multiword proper name often yields independent translatability).",
+  "Extended deterministic tie-avoidance in Decision Procedure to prefer not cutting immediately before auxiliaries/copulas when the left ends with a comma-terminated adjunct (tie breaks toward the non-auxiliary cut) — implements the critique 'tie_fix'.",
+  "Integrated all new narrow, surface-anchored exceptions while preserving prior numeral↔unit, repeated-unit, parenthetical/appositive, causal-connector, and participial-left signals; clarified surface-form checklist to include the new checks."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Decision Procedure]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 18631,
+   "holdout_delta": {
+    "mean_delta": 0.0102,
+    "se_delta": 0.025,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4379
+  },
+  {
+   "kind": "shrink",
+   "len": 12561,
+   "holdout_delta": {
+    "mean_delta": -0.0129,
+    "se_delta": 0.0284,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4148
+  }
+ ]
+}

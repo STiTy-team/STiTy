@@ -1,0 +1,28 @@
+[
+ {
+  "id": "en_us_417",
+  "direction": "lower",
+  "surface_condition": "right_first is a common noun 'language'/'languages' when left_last is an adjectival/adverbial cluster (e.g. most/commonl",
+  "n_matched": 1,
+  "verdict": "drop",
+  "reason": "걸린 경계 1 < 8"
+ },
+ {
+  "id": "en_us_66",
+  "direction": "lower",
+  "surface_condition": "marker splits a numeric+unit phrase: left_last is NUM and right_first is a multiplier/unit word (e.g. million, billion, ",
+  "n_matched": 8,
+  "label_matched": 0.4647,
+  "label_rest": 0.6484,
+  "t": -3.96,
+  "verdict": "keep"
+ },
+ {
+  "id": "en_us_276",
+  "direction": "lower",
+  "surface_condition": "left_last is a short organization/name token (e.g. parenthood, university, inc) and right_first is a subordinating token",
+  "n_matched": 2,
+  "verdict": "drop",
+  "reason": "걸린 경계 2 < 8"
+ }
+]
