@@ -209,7 +209,8 @@ def _tok_matches(tok: str, wanted: list[str]) -> bool:
 
 
 def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
-                   min_matches: int, min_t: float) -> tuple[dict, list[dict]]:
+                   min_matches: int, min_t: float,
+                   min_support: int = 2) -> tuple[dict, list[dict]]:
     """제안 규칙을 **라벨 전량에 대고** 재서 일반화 못 하는 것을 걸러낸다.
 
     한 문장에서 뽑은 규칙이 검증 없이 그대로 프롬프트에 들어가고 있었다. run18 채택
@@ -236,11 +237,22 @@ def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
                 pool.append((u[j - 1], u[j], y))
     verdicts: list[dict] = []
     kept: list[dict] = []
-    for c in critique.get("cases") or []:
+    # 계약이 `rules` 다. `cases` 는 옛 형식 — 산출물을 다시 읽을 때만 걸린다.
+    key = "rules" if critique.get("rules") is not None else "cases"
+    for c in critique.get(key) or []:
         chk = c.get("check") or {}
         left, right = chk.get("left_last") or [], chk.get("right_first") or []
-        v = {"id": c.get("id"), "direction": c.get("direction"),
+        sup = c.get("supported_by") or ([c["id"]] if c.get("id") else [])
+        v = {"supported_by": sup, "direction": c.get("direction"),
              "surface_condition": (c.get("surface_condition") or "")[:120]}
+        # **사례 하나짜리는 라벨을 재기 전에 떨어진다.** 좁은 규칙의 원인은 Critic 이
+        # 게을러서가 아니라 옛 계약이 문장 하나(`id`+`pos`)에 진단을 묶었기 때문이다 —
+        # run19 실측으로 13개 규칙 중 9개가 1400 경계 중 0~2자리에만 걸렸고, 그 9개는
+        # 전부 한 문장에서 나온 조건이었다. 이제 규칙 단위로 받고 뒷받침 사례를 대게 한다.
+        if len(sup) < min_support:
+            v.update(verdict="drop", reason=f"뒷받침 사례 {len(sup)} < {min_support}")
+            verdicts.append(v)
+            continue
         if not left and not right:
             v.update(verdict="drop", reason="check 없음")
             verdicts.append(v)
@@ -269,7 +281,7 @@ def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
             kept.append(c)
         verdicts.append(v)
     out = dict(critique)
-    out["cases"] = kept
+    out[key] = kept
     return out, verdicts
 
 
@@ -570,6 +582,10 @@ def main() -> int:
                         "n=1~3 짜리 퇴화 사례만 막는 바닥이다. 20 으로 잡으면 실측으로 "
                         "유효한 규칙까지 죽는다 (숫자|단위 n=9 t=-2.85, 문말부호 뒤 "
                         "n=15 t=+3.65). LLM 호출 0. 0 = 관문 끔")
+    p.add_argument("--rule-min-support", type=int, default=2,
+                   help="규칙 하나가 대야 하는 뒷받침 사례 수 (`supported_by`). 라벨을 재기 "
+                        "전에 구조로 거른다 — 사례 하나에서 나온 조건은 그 문장에 맞춘 "
+                        "것이라 일반화가 안 된다. 1 = 구조 관문 끔")
     p.add_argument("--rule-min-t", type=float, default=2.0,
                    help="걸린 경계의 라벨 평균이 나머지와 벌어져야 하는 표준오차 배수. "
                         "부호도 `direction` 과 맞아야 한다 — lower 면 라벨이 낮아야 한다")
@@ -894,13 +910,14 @@ def main() -> int:
             # 일반화 못 하는 규칙은 프롬프트에 못 들어간다 (LLM 호출 0). 판정 내역은
             # 남긴다 — 무엇이 왜 떨어졌는지 안 남기면 관문을 조정할 근거가 없다.
             if args.rule_min_matches > 0:
-                n_before = len(critique.get("cases") or [])
+                rk = "rules" if critique.get("rules") is not None else "cases"
+                n_before = len(critique.get(rk) or [])
                 critique, verdicts = validate_rules(
                     critique, best["train_rows"], units_by_id,
-                    args.rule_min_matches, args.rule_min_t)
+                    args.rule_min_matches, args.rule_min_t, args.rule_min_support)
                 (it_dir / "rule_gate.json").write_text(
                     json.dumps(verdicts, ensure_ascii=False, indent=1), encoding="utf-8")
-                kept = len(critique.get("cases") or [])
+                kept = len(critique.get(rk) or [])
                 drops = collections.Counter(v.get("reason") for v in verdicts
                                             if v["verdict"] == "drop")
                 log(f"[iter {it}] 규칙 관문 {kept}/{n_before} 통과"

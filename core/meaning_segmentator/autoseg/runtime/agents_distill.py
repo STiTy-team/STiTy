@@ -257,9 +257,11 @@ You receive:
 Only the ORDER inside a sentence is ever read. Where a band sits on the 0-100 scale changes
 nothing by itself, so do not diagnose the scale — diagnose which positions are ordered wrongly.
 
-Your job: find the SURFACE-FORM condition, in the source language, that separates the
+Your job: find the SURFACE-FORM conditions, in the source language, that separate the
 over-trusted positions from the correctly high ones (or the under-trusted from the correctly
-low ones), and propose a rule for [Scoring Rules] that moves the score in the right direction.
+low ones), and propose rules for [Scoring Rules] that move the score in the right direction.
+A condition is worth proposing only if it recurs across the cases — one sentence is an anecdote,
+not a pattern.
 Rules must generalise to unseen sentences: state the condition in terms of what is immediately
 before/after the marker, never in terms of this sentence. Do not quote more than 40 characters
 of source text in any field.
@@ -284,12 +286,21 @@ being followed, say so and propose moving, sharpening, or re-anchoring it instea
 REJECTED DIRECTIONS may be listed: revisions already tried on this prompt and measured as no
 better. Do not re-propose them; diagnose a different mechanism or the opposite direction.
 
+**The unit of your answer is a RULE, not a case.** Do not walk the cases one by one and write a
+diagnosis for each — that produces conditions fitted to one sentence, which are dropped. Read all
+the cases first, find the patterns that recur across several of them, and emit one entry per
+pattern. Each entry names the cases that support it in "supported_by", and **an entry supported
+by fewer than 2 cases is rejected before it is read**. Fewer, better-supported rules beat many
+narrow ones. It is correct to return 3 rules from 24 cases.
+
 Return ONLY JSON:
 {
-  "cases": [
-    {"id": "...", "pos": 7, "error": "over-trust | under-trust",
+  "rules": [
+    {"surface_condition": "the class of positions this fires on, in source-language surface "
+                          "forms — never a particular sentence",
+     "supported_by": ["case id", "case id", "..."],
+     "error": "over-trust | under-trust",
      "why": "contra | fragment_left | fragment_right | mixed",
-     "surface_condition": "what is immediately before/after the marker, generalised",
      "blamed_rule": "verbatim line or \\"\\"",
      "proposed_rule": "one rule for [Scoring Rules], with a target band",
      "direction": "lower | raise",
