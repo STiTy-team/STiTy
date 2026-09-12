@@ -167,6 +167,12 @@ MANIFESTS = {
     # 기존 파일과 바이트 동일하고 ja/zh 는 utt_id·순서까지 같다 — 분할이 안 움직인다.
     # `_unittimes.json` 은 en-de 것을 복사했다: 소스가 같은 en 문장이라 강제정렬 결과가
     # 같고, 실제로 `min_gap 3` / 격자 `[4,6,12]` 이 그대로 유도된다.
+    # loop405 + 층화 정렬(clean500_order)의 미사용 꼬리 500. Critic 근거(train 배치)를
+    # 키우려고 붙였다 — 꼬리 행은 소스 텍스트만 있고 정답 번역이 없다.
+    # **`--split-from` 과 반드시 같이 쓴다.** 층화가 층마다 셔플을 하므로 그냥 쓰면
+    # test/dev 가 통째로 뒤바뀌어 loop405 로 잰 런과 비교가 끊긴다 (실측: +70 에
+    # test 22/100 잔존). 만든 스크립트는 `evaluation/ast/extend_manifest_loop_tail.py`.
+    "fleurs-en-multi-x": _AST / "fleurs_nway_en-de_multi_loop905.jsonl",
     "fleurs-en-multi-ja": _AST / "fleurs_nway_en-ja_multi_loop405.jsonl",
     "fleurs-en-multi-zh": _AST / "fleurs_nway_en-zh_multi_loop405.jsonl",
 }
@@ -423,6 +429,7 @@ def split_data(
     n_dev: int,
     n_test: int,
     seed: int = DEFAULT_SEED,
+    pinned: dict[str, list[str]] | None = None,
 ) -> dict[str, list[Sentence]]:
     """층화 후 라운드로빈으로 train/dev/test 를 겹치지 않게 뽑는다.
 
@@ -442,6 +449,44 @@ def split_data(
         raise ValueError(
             f"문장 부족: 사용 가능 {len(pool)}개 < 요청 {n_train + n_dev + n_test}개"
         )
+
+    # **`pinned` 는 매니페스트를 늘려도 평가 분할을 그대로 두려고 있다.**
+    # 층화는 층마다 `rng.shuffle` 을 하므로 풀에 문장이 하나만 늘어도 그 층의 **순열
+    # 전체**가 달라진다. 경계값 문제가 아니라 재현이 통째로 깨지는 문제다 —
+    # loop405(405문장)에 70문장을 붙여 실측하면 test 는 100개 중 **22개만** 남고
+    # dev 는 215개 중 98개만 남는다. 그대로 늘리면 이 트랙의 기존 런과 비교가 끊긴다.
+    #
+    # 고정된 분할은 풀에서 먼저 빼내 그대로 쓰고, **나머지에서만** 남은 분할을 뽑는다.
+    # 그래서 새로 붙인 문장은 전부 train 으로만 들어간다. 넘기는 값은 기존 런의
+    # `data/{test,dev}.json` 에 있는 id 목록이다.
+    if pinned:
+        by_id = {s.id: s for s in pool}
+        taken: set[str] = set()
+        fixed: dict[str, list[Sentence]] = {}
+        for name, ids in pinned.items():
+            missing = [i for i in ids if i not in by_id]
+            if missing:
+                raise ValueError(
+                    f"고정 분할 '{name}' 의 문장 {len(missing)}개가 풀에 없다 "
+                    f"(예: {missing[:3]}). 매니페스트가 그 런과 다르다."
+                )
+            fixed[name] = [by_id[i] for i in ids]
+            taken.update(ids)
+        want = {"train": n_train, "dev": n_dev, "test": n_test}
+        rest_names = [k for k in ("test", "dev", "train") if k not in fixed]
+        need = sum(want[k] for k in rest_names)
+        rest_pool = [s for s in pool if s.id not in taken]
+        if len(rest_pool) < need:
+            raise ValueError(
+                f"고정 분할({len(taken)}개)을 빼고 남은 {len(rest_pool)}개 < "
+                f"나머지 분할 요청 {need}개 ({', '.join(rest_names)})"
+            )
+        rest = stratified_order(rest_pool, seed, limit=need)
+        out, at = dict(fixed), 0
+        for k in rest_names:
+            out[k] = rest[at:at + want[k]]
+            at += want[k]
+        return out
 
     order = stratified_order(pool, seed, limit=n_train + n_dev + n_test)
 
