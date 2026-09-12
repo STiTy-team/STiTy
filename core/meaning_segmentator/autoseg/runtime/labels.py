@@ -52,11 +52,18 @@ def compute_labels(run_dir: Path, split: str, ids: list[str], texts: list[str],
     for src in (label_path, (reuse_from / f"oracle_labels_{split}.json") if reuse_from else None):
         if src and src.exists():
             blob = json.loads(src.read_text(encoding="utf-8"))
-            for tgt, per in blob.items():
-                if tgt in targets and [x["id"] for x in per] == ids and tgt not in cached:
-                    cached[tgt] = per
-            if src != label_path and cached:
-                log(f"[labels/{split}] {src} 에서 {sorted(cached)} 재사용")
+            # **이 출처가 실제로 채운 것만 적는다.** 종전에는 누적된 `cached` 전체를
+            # 찍어서, 앞 출처(런 자기 파일)가 다 채웠는데도 뒤 출처(`reuse_from`)가
+            # 준 것처럼 나왔다. run17 재시작에서 train 200문장 라벨이 자기 파일에서
+            # 왔는데 로그는 run15 (90문장, 겹침 30)에서 재사용했다고 적었다 —
+            # 그대로 읽으면 분할이 run15 와 같다고 오독하게 된다.
+            got = [tgt for tgt, per in blob.items()
+                   if tgt in targets and [x["id"] for x in per] == ids and tgt not in cached]
+            for tgt in got:
+                cached[tgt] = blob[tgt]
+            if got:
+                where = "런 산출물" if src == label_path else str(src)
+                log(f"[labels/{split}] {where} 에서 {sorted(got)} 재사용")
     out: dict[str, list[dict]] = {}
     units = [units_of(t, spaced) for t in texts]
     translators = translators if translators is not None else {}
