@@ -42,7 +42,12 @@ from .paths import RUNS_DIR
 
 SCALE = 10000
 PROMPT_MAX_TOKENS = 16000
-AGENT_MAX_TOKENS = 12000
+# **상한이지 과금 단위가 아니다** — 안 닿으면 올려도 비용이 안 늘고, 부족하면 예산을
+# 다 쓰고 결과가 0 이 된다 (`SEG_MAX_TOKENS` 와 같은 성격). Critic 출력이 사례 수에
+# 비례한다: 실측으로 8사례에 2,363 토큰이므로 `--n-cases 24` 면 7,000 토큰이 넘고,
+# 사고 토큰이 같은 예산에 잡히므로 12,000 으로는 잘린다. 잘린 JSON 은 복구가 안 된다
+# (`gateway.chat_json` 주석 참조 — 간결 재시도가 같은 실패를 반복한 전례가 있다).
+AGENT_MAX_TOKENS = 24000
 
 
 def log(msg: str) -> None:
