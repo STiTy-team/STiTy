@@ -183,6 +183,91 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
     return rows, m
 
 
+# ── 규칙 일반화 관문 ────────────────────────────────────────────────────
+
+def _norm_tok(t: str) -> str:
+    return "".join(ch for ch in t.lower() if ch.isalnum() or ch in "%'-")
+
+
+def _tok_matches(tok: str, wanted: list[str]) -> bool:
+    n = _norm_tok(tok)
+    for w in wanted:
+        if w == "NUM":
+            if any(ch.isdigit() for ch in tok):
+                return True
+        elif w == "PUNCTEND":
+            if tok[-1:] in ".?!…。？！":
+                return True
+        elif n == _norm_tok(w):
+            return True
+    return False
+
+
+def validate_rules(critique: dict, rows: list[dict], units_by_id: dict,
+                   min_matches: int, min_t: float) -> tuple[dict, list[dict]]:
+    """제안 규칙을 **라벨 전량에 대고** 재서 일반화 못 하는 것을 걸러낸다.
+
+    한 문장에서 뽑은 규칙이 검증 없이 그대로 프롬프트에 들어가고 있었다. run18 채택
+    개정의 규칙들이 `en_us_66`, `en_us_278` 처럼 문장 id 를 호명했고, 그 개정본은 dev
+    에서는 이겼지만 **test 쌍체 -0.0603±0.0228 (2.6 se) 로 일반화에 실패했다.**
+    홀드아웃도 dev 도 선택에 쓴 집합이라 이 실패를 못 잡는다.
+
+    라벨은 train 전 문장의 **모든 경계**를 덮고 있고 LLM 호출이 0 이다. 규칙이 실제로
+    몇 자리에 걸리는지, 그 자리들의 라벨이 주장한 방향인지를 공짜로 잴 수 있다.
+    run15 커밋 본문이 손으로 하던 계산(관계사 +0.081±0.022, 전치사 -0.015±0.014 를 재서
+    "넷 중 셋이 반대" 판정)을 관문으로 만든 것이다.
+
+    통과 조건 둘: 걸리는 경계가 `min_matches` 이상이고, 걸린 자리의 라벨 평균이 나머지와
+    `min_t` 표준오차 이상 벌어지며 **부호가 `direction` 과 맞을 것**. 떨어진 규칙은
+    프롬프트에 안 들어가지만 판정 내역은 산출물에 남는다.
+    """
+    pool: list[tuple[str, str, float]] = []      # (앞 토큰, 뒤 토큰, 라벨)
+    for r in rows:
+        u = units_by_id.get(r["id"])
+        if not u or not r.get("labels"):
+            continue
+        for j, y in zip(r["positions"], r["labels"]):
+            if 0 < j < len(u):
+                pool.append((u[j - 1], u[j], y))
+    verdicts: list[dict] = []
+    kept: list[dict] = []
+    for c in critique.get("cases") or []:
+        chk = c.get("check") or {}
+        left, right = chk.get("left_last") or [], chk.get("right_first") or []
+        v = {"id": c.get("id"), "direction": c.get("direction"),
+             "surface_condition": (c.get("surface_condition") or "")[:120]}
+        if not left and not right:
+            v.update(verdict="drop", reason="check 없음")
+            verdicts.append(v)
+            continue
+        hit = [y for (lt, rt, y) in pool
+               if (not left or _tok_matches(lt, left)) and (not right or _tok_matches(rt, right))]
+        miss = [y for (lt, rt, y) in pool
+                if not ((not left or _tok_matches(lt, left))
+                        and (not right or _tok_matches(rt, right)))]
+        v["n_matched"] = len(hit)
+        if len(hit) < min_matches or len(miss) < 2:
+            v.update(verdict="drop", reason=f"걸린 경계 {len(hit)} < {min_matches}")
+            verdicts.append(v)
+            continue
+        mh, mm = st.mean(hit), st.mean(miss)
+        se = ((st.pvariance(hit) / len(hit)) + (st.pvariance(miss) / len(miss))) ** 0.5
+        t = (mh - mm) / se if se > 0 else 0.0
+        # `lower` 는 "이 자리 점수를 내려라" 이므로 라벨이 **낮아야** 맞다.
+        want_neg = (c.get("direction") or "lower") == "lower"
+        ok = (abs(t) >= min_t) and ((t < 0) if want_neg else (t > 0))
+        v.update(label_matched=round(mh, 4), label_rest=round(mm, 4), t=round(t, 2),
+                 verdict="keep" if ok else "drop")
+        if not ok:
+            v["reason"] = ("방향 반대" if abs(t) >= min_t else f"|t| {abs(t):.2f} < {min_t}")
+        else:
+            kept.append(c)
+        verdicts.append(v)
+    out = dict(critique)
+    out["cases"] = kept
+    return out, verdicts
+
+
 def moved_sentences(rows_a: list[dict], rows_b: list[dict], t_grid: list[int],
                     key: str = "overlap", top_n: int = 5, gains: bool = False) -> list[dict]:
     """`rows_a` 가 `rows_b` 대비 가장 크게 **떨어진**(또는 `gains` 면 오른) 문장들.
@@ -474,6 +559,15 @@ def main() -> int:
     p.add_argument("--patience", type=int, default=3)
     p.add_argument("--v0-candidates", type=int, default=3)
     p.add_argument("--revision-candidates", type=int, default=3)
+    p.add_argument("--rule-min-matches", type=int, default=8,
+                   help="제안 규칙이 train 전 경계 중 최소 몇 자리에 걸려야 하나. **판정은 "
+                        "t 가 한다** — 표본이 작으면 se 가 커져 t 가 안 나오므로, 이 값은 "
+                        "n=1~3 짜리 퇴화 사례만 막는 바닥이다. 20 으로 잡으면 실측으로 "
+                        "유효한 규칙까지 죽는다 (숫자|단위 n=9 t=-2.85, 문말부호 뒤 "
+                        "n=15 t=+3.65). LLM 호출 0. 0 = 관문 끔")
+    p.add_argument("--rule-min-t", type=float, default=2.0,
+                   help="걸린 경계의 라벨 평균이 나머지와 벌어져야 하는 표준오차 배수. "
+                        "부호도 `direction` 과 맞아야 한다 — lower 면 라벨이 낮아야 한다")
     p.add_argument("--pool-size", type=int, default=2,
                    help="다음 이터의 출발점으로 남길 기각 후보 수 (홀드아웃 성적 상위). "
                         "첫 후보는 항상 현재 best 에서 출발하므로 실제로 쓰이는 것은 "
@@ -792,6 +886,20 @@ def main() -> int:
                                                   encoding="utf-8")
             (it_dir / "cases.json").write_text(json.dumps(cases, ensure_ascii=False, indent=1),
                                                encoding="utf-8")
+            # 일반화 못 하는 규칙은 프롬프트에 못 들어간다 (LLM 호출 0). 판정 내역은
+            # 남긴다 — 무엇이 왜 떨어졌는지 안 남기면 관문을 조정할 근거가 없다.
+            if args.rule_min_matches > 0:
+                n_before = len(critique.get("cases") or [])
+                critique, verdicts = validate_rules(
+                    critique, best["train_rows"], units_by_id,
+                    args.rule_min_matches, args.rule_min_t)
+                (it_dir / "rule_gate.json").write_text(
+                    json.dumps(verdicts, ensure_ascii=False, indent=1), encoding="utf-8")
+                kept = len(critique.get("cases") or [])
+                drops = collections.Counter(v.get("reason") for v in verdicts
+                                            if v["verdict"] == "drop")
+                log(f"[iter {it}] 규칙 관문 {kept}/{n_before} 통과"
+                    + (f" — 탈락 {dict(drops)}" if drops else ""))
             # **기준선을 못 넘은 후보에 dev 평가를 쓰지 않는다.** 종전에는 홀드아웃
             # **절대값** 최대만 골라 무조건 승격했다. 홀드아웃은 후보 여럿 중 최댓값을
             # 뽑는 자리라 위로 편향돼 있으므로(run16 실측: 승격 후보의 홀드아웃 Δ 가 dev
