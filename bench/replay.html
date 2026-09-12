@@ -1,0 +1,588 @@
+<!-- The replay page's content. `replay.py` wraps this in a document and substitutes
+     __DATA__ with the run's events, so this file is the whole of the UI and nothing
+     about a run is hard-coded into it.
+
+     Inside the phone the values are the app's own (HomeScreen.tsx: LANG_COLORS, the
+     bubble palette, a system font stack) -- the point of the panel is to show what
+     the device showed, so it does not get a look of its own. Everything outside it
+     is the instrument, and reads as a different object. -->
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --ground: #eef0ec; --panel: #fbfcfa; --sunken: #f2f4f0;
+    --ink: #12171a; --ink-soft: #5a6470; --ink-faint: #8b949e;
+    --rule: #dde1d9; --rule-soft: #e8ebe4;
+    --accent: #7a9030; --accent-soft: rgba(122, 144, 48, 0.12);
+    --seg: #6080c8; --vad: #7a9030; --dot: #c8a030;
+    --always: #9060c8; --finish: #8e9288; --alarm: #b85050;
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --device: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1316; --panel: #151b1e; --sunken: #111619;
+      --ink: #e8ece6; --ink-soft: #9aa4a0; --ink-faint: #6b7572;
+      --rule: #252d30; --rule-soft: #1d2427;
+      --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
+      --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
+      --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1316; --panel: #151b1e; --sunken: #111619;
+    --ink: #e8ece6; --ink-soft: #9aa4a0; --ink-faint: #6b7572;
+    --rule: #252d30; --rule-soft: #1d2427;
+    --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
+    --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
+    --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--sans); font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+
+  /* ── frame ───────────────────────────────────────────────────────────── */
+  .wrap { max-width: 1380px; margin: 0 auto; padding: 20px; display: grid; gap: 16px; }
+  .bar {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 14px 18px; display: grid; gap: 12px;
+  }
+  .bar-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .chip {
+    font-size: 11px; font-family: var(--mono); padding: 2px 8px; border-radius: 999px;
+    background: var(--sunken); border: 1px solid var(--rule); color: var(--ink-soft);
+  }
+  .chip.ok { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .chip.bad { color: var(--alarm); border-color: var(--alarm); }
+  .spacer { flex: 1; }
+
+  /* ── timeline ribbon: every commit, by what triggered it ─────────────── */
+  .ribbon { position: relative; height: 46px; cursor: pointer; user-select: none; }
+  .ribbon-track {
+    position: absolute; inset: 14px 0 16px; background: var(--sunken);
+    border-radius: 3px; overflow: hidden;
+  }
+  .ribbon-item {
+    position: absolute; top: 0; bottom: 0; border-right: 1px solid var(--rule);
+  }
+  .ribbon-item:last-child { border-right: 0; }
+  .ribbon-item.speech { background: var(--accent-soft); }
+  .tick { position: absolute; top: 8px; width: 2px; height: 22px; border-radius: 1px; }
+  .tick.lab { top: 2px; height: 28px; }
+  .playhead {
+    position: absolute; top: 6px; bottom: 8px; width: 1px; background: var(--ink);
+    pointer-events: none;
+  }
+  .playhead::after {
+    content: ""; position: absolute; top: -4px; left: -3px;
+    width: 7px; height: 7px; border-radius: 2px; background: var(--ink);
+  }
+  .ribbon-labels {
+    position: absolute; left: 0; right: 0; bottom: 0; display: flex;
+    font-size: 9px; color: var(--ink-faint); font-family: var(--mono);
+  }
+  .ribbon-labels span {
+    border-left: 1px solid var(--rule-soft); padding-left: 4px;
+    overflow: hidden; white-space: nowrap;
+  }
+
+  .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 7px;
+    padding: 6px 12px; font-size: 13px; font-weight: 500;
+  }
+  .btn:hover { border-color: var(--ink-faint); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .seg-group { display: flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; }
+  .seg-group button {
+    background: var(--panel); border: 0; padding: 6px 10px; font-size: 12px;
+    border-left: 1px solid var(--rule); font-family: var(--mono);
+  }
+  .seg-group button:first-child { border-left: 0; }
+  .seg-group button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .clock { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
+  .clock b { color: var(--ink); font-weight: 600; }
+
+  /* ── two columns: the device, and the instrument ─────────────────────── */
+  .cols { display: grid; grid-template-columns: 384px minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .cols { grid-template-columns: 1fr; } }
+  .col-head {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; padding: 0 2px;
+  }
+  .col-head p { margin: 0; font-size: 11px; color: var(--ink-faint); }
+
+  /* phone */
+  .phone {
+    width: 384px; max-width: 100%; height: 720px; background: #1b1b1d;
+    border-radius: 44px; padding: 11px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+  }
+  .screen {
+    position: relative; height: 100%; background: #fff; border-radius: 34px;
+    overflow: hidden; display: flex; flex-direction: column;
+    font-family: var(--device); color: #1a1a1a;
+  }
+  .notch {
+    position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+    width: 104px; height: 24px; background: #1b1b1d; border-radius: 999px; z-index: 5;
+  }
+  .status {
+    height: 42px; flex: 0 0 42px; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 22px; font-size: 11px;
+    font-weight: 600; color: #1a1a1a;
+  }
+  .appbar {
+    flex: 0 0 auto; padding: 4px 16px 10px; display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #eee;
+  }
+  .langpill {
+    display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+  }
+  .dotmark { width: 9px; height: 9px; border-radius: 50%; }
+  .arrow { color: #bbb; font-size: 13px; }
+  .feed { flex: 1; overflow-y: auto; padding: 12px 0 4px; scroll-behavior: smooth; }
+  .feed-empty {
+    height: 100%; display: grid; place-items: center; color: #b8b8b8; font-size: 13px;
+  }
+  /* bubbles: HomeScreen.tsx S.bubbleRow / S.bubble / S.bubbleMain / S.bubbleSub */
+  .row {
+    display: flex; padding: 5px 16px; gap: 8px; align-items: flex-end;
+    animation: rise 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .row.mine { flex-direction: row-reverse; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+  @media (prefers-reduced-motion: reduce) { .row { animation: none; } }
+  .av {
+    width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center;
+    font-size: 8px; font-weight: 700; flex-shrink: 0;
+  }
+  .bub { max-width: 72%; padding: 10px 14px; border-radius: 18px; }
+  .bub .main { font-size: 15px; font-weight: 600; line-height: 1.4; }
+  .bub .sub { font-size: 11px; margin-top: 3px; }
+  .pending {
+    position: absolute; left: 0; right: 0; bottom: 96px; display: flex; justify-content: center;
+    pointer-events: none;
+  }
+  .pending span {
+    min-width: 58px; text-align: center; padding: 8px 18px; border-radius: 999px;
+    background: rgba(122, 144, 48, 0.1); border: 1px solid rgba(122, 144, 48, 0.24);
+    color: #7a9030; font-size: 18px; line-height: 20px; font-weight: 800; letter-spacing: 2px;
+  }
+  .recbar {
+    flex: 0 0 auto; margin: 0 16px 18px; background: rgba(96, 128, 200, 0.07);
+    border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .pulse { width: 10px; height: 10px; border-radius: 50%; background: #c8c8c8; flex-shrink: 0; }
+  .pulse.live { background: var(--alarm); animation: beat 1.1s ease-in-out infinite; }
+  @keyframes beat { 50% { opacity: 0.35; } }
+  .recbar .label { font-size: 13px; font-weight: 600; color: #6080c8; flex: 1; }
+  .recbar .t { font-size: 12px; color: #9aa; font-variant-numeric: tabular-nums; }
+
+  /* instrument */
+  .logs {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
+    display: flex; flex-direction: column; height: 742px; overflow: hidden;
+  }
+  .logs-top {
+    padding: 10px 12px; border-bottom: 1px solid var(--rule); display: flex;
+    gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .filters { display: flex; gap: 4px; flex-wrap: wrap; }
+  .filters button {
+    background: var(--sunken); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 3px 9px; font-size: 11px; font-family: var(--mono); color: var(--ink-soft);
+  }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+  .find {
+    background: var(--sunken); border: 1px solid var(--rule); border-radius: 7px;
+    padding: 5px 9px; font-size: 12px; font-family: var(--mono); color: var(--ink);
+    min-width: 130px; flex: 1;
+  }
+  .stream { flex: 1; overflow: auto; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11.5px; }
+  thead th {
+    position: sticky; top: 0; background: var(--sunken); text-align: left;
+    padding: 6px 10px; font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--rule);
+    z-index: 2;
+  }
+  tbody tr { border-bottom: 1px solid var(--rule-soft); }
+  tbody tr.future { opacity: 0.32; }
+  tbody tr.now { background: var(--accent-soft); }
+  td { padding: 4px 10px; vertical-align: top; }
+  td.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-soft); }
+  td.type { white-space: nowrap; font-weight: 500; }
+  td.fields { color: var(--ink-soft); word-break: break-word; }
+  td.fields b { color: var(--ink); font-weight: 500; }
+  .reason { display: inline-block; padding: 0 5px; border-radius: 3px; color: #fff; font-size: 10px; }
+  .items { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+  .items button {
+    background: var(--sunken); border: 1px solid var(--rule); border-radius: 7px;
+    padding: 5px 9px; text-align: left; white-space: nowrap; font-size: 11px;
+    font-family: var(--mono); color: var(--ink-soft); line-height: 1.35;
+  }
+  .items button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
+  .items b { display: block; color: var(--ink); font-weight: 600; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--ink-faint); padding: 0 2px; }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+</style>
+
+<div class="wrap">
+  <header class="bar">
+    <div class="bar-top">
+      <div>
+        <div class="eyebrow">Session replay</div>
+        <h1 id="run-name">—</h1>
+      </div>
+      <span class="chip" id="run-stamp"></span>
+      <span class="chip" id="run-status"></span>
+      <span class="chip" id="run-dir"></span>
+      <span class="spacer"></span>
+      <div class="clock">
+        <b id="clock-now">0.00</b> / <span id="clock-end">0.00</span> s of recording
+        &nbsp;·&nbsp; <span id="clock-item">—</span>
+      </div>
+    </div>
+
+    <div class="ribbon" id="ribbon" role="slider" tabindex="0" aria-label="Seek"
+         aria-valuemin="0" aria-valuenow="0">
+      <div class="ribbon-track" id="ribbon-track"></div>
+      <div class="ribbon-labels" id="ribbon-labels"></div>
+      <div class="playhead" id="playhead" style="left:0"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn primary" id="play">▶ Play</button>
+      <button class="btn" id="restart">↺ Restart</button>
+      <div class="seg-group" id="speeds"></div>
+      <span class="spacer"></span>
+      <div class="legend" id="legend"></div>
+    </div>
+  </header>
+
+  <div class="cols">
+    <section>
+      <div class="col-head">
+        <span class="eyebrow">On the phone</span>
+        <p>what the client rendered from <code>final</code></p>
+      </div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="status"><span id="st-time">9:41</span><span>STiTy</span></div>
+          <div class="appbar">
+            <div class="langpill"><span class="dotmark" id="pill-src-dot"></span><span id="pill-src">—</span></div>
+            <span class="arrow">→</span>
+            <div class="langpill"><span class="dotmark" id="pill-tgt-dot"></span><span id="pill-tgt">—</span></div>
+          </div>
+          <div class="feed" id="feed"><div class="feed-empty">Press play</div></div>
+          <div class="pending" id="pending" hidden><span>•••</span></div>
+          <div class="recbar">
+            <span class="pulse" id="pulse"></span>
+            <span class="label" id="rec-label">Idle</span>
+            <span class="t" id="rec-time">0.0s</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="col-head">
+        <span class="eyebrow">Not on the phone</span>
+        <p>the recorded stream — every event, at the point in the audio it came from</p>
+      </div>
+      <div class="logs">
+        <div class="items" id="items"></div>
+        <div class="logs-top">
+          <div class="filters" id="filters"></div>
+          <input class="find" id="find" type="search" placeholder="filter text…" aria-label="Filter events">
+        </div>
+        <div class="stream" id="stream">
+          <table>
+            <thead><tr>
+              <th style="width:62px">audio</th><th style="width:50px">lag</th>
+              <th style="width:78px">item</th><th style="width:120px">event</th><th>fields</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const DATA = __DATA__;
+
+// HomeScreen.tsx LANG_COLORS, verbatim -- the phone panel shows the app's colours.
+const LANG = {
+  en: {bubble:"#6080C8", avatar:"#9BB4D4"}, ko: {bubble:"#7A9030", avatar:"#A8B870"},
+  ja: {bubble:"#C87060", avatar:"#E0A898"}, zh: {bubble:"#9060C8", avatar:"#B898E0"},
+  es: {bubble:"#C8A030", avatar:"#E0C878"}, fr: {bubble:"#308898", avatar:"#78B8C8"},
+  id: {bubble:"#30A070", avatar:"#70C0A0"}, vi: {bubble:"#B85050", avatar:"#E09080"},
+  th: {bubble:"#5080C0", avatar:"#88B0E0"}, de: {bubble:"#C09050", avatar:"#E0C080"},
+};
+const langColor = c => LANG[c] || {bubble:"#909090", avatar:"#B8B8B8"};
+const REASONS = {seg:"--seg", vad:"--vad", dot:"--dot", always:"--always", finish:"--finish"};
+const NOISY = new Set(["chunk"]);
+const $ = id => document.getElementById(id);
+
+// ── one timeline over every item, so the run plays as it was recorded ──────
+let T = 0;
+const items = DATA.items.map(it => {
+  const span = Math.max(it.duration || 0, ...it.events.map(e => e.audio || 0), 0.001);
+  const entry = {...it, offset: T, span};
+  T += span;
+  return entry;
+});
+const events = [];
+for (const it of items) {
+  for (const e of it.events) {
+    const audio = e.audio == null
+      ? (e.type === "item_close" ? it.span : 0)      // bookends carry no position
+      : e.audio;
+    events.push({...e, item: e.item || it.id, audio, at: it.offset + audio, _it: it});
+  }
+}
+events.sort((a, b) => a.at - b.at);
+const pendingFinals = new Map();                       // transcribed -> its final
+events.forEach((e, i) => {
+  if (e.type !== "transcribed") return;
+  const f = events.slice(i + 1).find(x => x.type === "final" && x.item === e.item);
+  if (f) pendingFinals.set(e, f.at);
+});
+
+let now = 0, playing = false, speed = 1, lastFrame = null, cursor = -1;
+const shown = new Set(), hidden = new Set(NOISY);
+let query = "";
+
+// ── header ────────────────────────────────────────────────────────────────
+$("run-name").textContent = DATA.run.name || "replay";
+$("run-stamp").textContent = DATA.run.stamp || "";
+$("run-dir").textContent = DATA.run.dir || "";
+const st = $("run-status");
+st.textContent = DATA.run.status || "";
+st.className = "chip " + (DATA.run.status === "ok" ? "ok" : DATA.run.status ? "bad" : "");
+if (!DATA.run.status) st.hidden = true;
+$("clock-end").textContent = T.toFixed(2);
+const src = DATA.run.src_lang || "", tgt = DATA.run.target_lang || "";
+$("pill-src").textContent = (src || "?").toUpperCase();
+$("pill-tgt").textContent = (tgt || "?").toUpperCase();
+$("pill-src-dot").style.background = langColor(src).bubble;
+$("pill-tgt-dot").style.background = langColor(tgt).bubble;
+$("legend").innerHTML = Object.entries(REASONS)
+  .map(([r, v]) => `<span><i style="background:var(${v})"></i>${r}</span>`).join("");
+
+// ── ribbon: item blocks, speech shading, a tick per commit ────────────────
+const track = $("ribbon-track"), labels = $("ribbon-labels");
+for (const it of items) {
+  const block = document.createElement("div");
+  block.className = "ribbon-item";
+  block.style.left = (100 * it.offset / T) + "%";
+  block.style.width = (100 * it.span / T) + "%";
+  track.appendChild(block);
+  const label = document.createElement("span");
+  label.style.width = (100 * it.span / T) + "%";
+  label.textContent = it.id;
+  labels.appendChild(label);
+}
+for (const e of events) {
+  if (e.type !== "final" && e.type !== "vad_speech_end") continue;
+  const tick = document.createElement("div");
+  const reason = e.commit_reason || "";
+  tick.className = "tick" + (e.type === "final" ? " lab" : "");
+  tick.style.left = (100 * e.at / T) + "%";
+  tick.style.background = e.type === "final"
+    ? `var(${REASONS[reason] || "--finish"})` : "var(--ink-faint)";
+  tick.title = e.type === "final" ? `${reason} @ ${e.audio.toFixed(2)}s` : "speech end";
+  track.appendChild(tick);
+}
+
+// ── the log table: every event once, revealed as the clock passes it ──────
+const tbody = $("rows");
+const SKIP = new Set(["t", "type", "item", "session", "audio", "at", "_it"]);
+function fieldsHtml(e) {
+  const lead = ["original", "translation", "commit_reason", "detail", "error", "msg"];
+  const out = [];
+  for (const k of lead) {
+    if (e[k] == null || e[k] === "") continue;
+    if (k === "commit_reason") {
+      out.push(`<span class="reason" style="background:var(${REASONS[e[k]] || "--finish"})">${esc(e[k])}</span>`);
+    } else out.push(`<b>${esc(String(e[k]))}</b>`);
+  }
+  for (const [k, v] of Object.entries(e)) {
+    if (SKIP.has(k) || lead.includes(k) || v == null || v === "") continue;
+    out.push(`${esc(k)}=${esc(typeof v === "number" ? fmt(v) : String(v))}`);
+  }
+  return out.join(" ");
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(3);
+
+const rowEls = events.map(e => {
+  const tr = document.createElement("tr");
+  tr.className = "future";
+  const lag = (e.t != null && e.audio != null) ? (e.t - e.audio) : null;
+  tr.innerHTML =
+    `<td class="r">${e.audio.toFixed(2)}</td>` +
+    `<td class="r">${lag == null ? "" : (lag >= 0 ? "+" : "") + lag.toFixed(2)}</td>` +
+    `<td class="r">${esc(e.item || "")}</td>` +
+    `<td class="type">${esc(e.type)}</td>` +
+    `<td class="fields">${fieldsHtml(e)}</td>`;
+  tr.dataset.type = e.type;
+  tr.dataset.text = (e.type + " " + (e.item || "") + " " + tr.textContent).toLowerCase();
+  tr.addEventListener("click", () => seek(e.at));
+  tbody.appendChild(tr);
+  return tr;
+});
+
+function applyFilters() {
+  rowEls.forEach((tr, i) => {
+    const e = events[i];
+    const ok = !hidden.has(e.type) && (!query || tr.dataset.text.includes(query));
+    tr.hidden = !ok;
+  });
+}
+const types = [...new Set(events.map(e => e.type))].sort();
+$("filters").innerHTML = types
+  .map(t => `<button data-t="${esc(t)}" aria-pressed="${!hidden.has(t)}">${esc(t)}</button>`).join("");
+$("filters").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const t = b.dataset.t;
+  hidden.has(t) ? hidden.delete(t) : hidden.add(t);
+  b.setAttribute("aria-pressed", String(!hidden.has(t)));
+  applyFilters();
+});
+$("find").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); applyFilters(); });
+
+$("items").innerHTML = items.map(it => {
+  const n = it.events.filter(e => e.type === "final").length;
+  const wer = it.wer == null ? "" : ` · wer ${it.wer.toFixed(2)}`;
+  return `<button data-at="${it.offset}" aria-pressed="false"><b>${esc(it.id)}</b>` +
+         `${it.span.toFixed(1)}s · ${n} commit${n === 1 ? "" : "s"}${esc(wer)}</button>`;
+}).join("");
+$("items").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (b) seek(Number(b.dataset.at) + 0.0001);
+});
+
+// ── the phone: rebuilt from whatever is in the past, so seeking is exact ──
+const feed = $("feed");
+function render() {
+  const past = events.filter(e => e.at <= now);
+  const finals = past.filter(e => e.type === "final");
+  const current = items.find(it => now >= it.offset && now < it.offset + it.span) || items.at(-1);
+  const mine = finals.filter(e => e.item === current.id);
+
+  feed.innerHTML = mine.length ? mine.map(e => {
+    const lang = (e.language || "").toLowerCase();
+    const isMine = lang === src, isPeer = lang === tgt;
+    const c = isMine ? {bubble:"#6080C8", avatar:"#9BB4D4", text:"#fff", sub:"rgba(255,255,255,0.65)"}
+            : isPeer ? {bubble:"#f2f2f2", avatar:"#E8E0A0", text:"#1a1a1a", sub:"#aaa"}
+            : {...langColor(lang), text:"#fff", sub:"rgba(255,255,255,0.65)"};
+    const main = e.translation || e.original || "";
+    const sub = e.translation ? e.original : "";
+    return `<div class="row ${isMine ? "mine" : ""}">` +
+      `<div class="av" style="background:${c.avatar};color:${isMine ? "#fff" : "#7A9030"}">${esc(lang.toUpperCase())}</div>` +
+      `<div class="bub" style="background:${c.bubble};` +
+      `border-bottom-${isMine ? "right" : "left"}-radius:4px">` +
+      `<div class="main" style="color:${c.text}">${esc(main)}</div>` +
+      (sub ? `<div class="sub" style="color:${c.sub}">${esc(sub)}</div>` : "") +
+      `</div></div>`;
+  }).join("") : `<div class="feed-empty">${now > 0 ? "Nothing committed yet" : "Press play"}</div>`;
+  feed.scrollTop = feed.scrollHeight;
+
+  // A commit is decided before it is delivered; that gap is the dots.
+  const waiting = [...pendingFinals].some(([e, at]) => e.at <= now && at > now);
+  $("pending").hidden = !waiting;
+
+  const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "vad_speech_end")
+                       .filter(e => e.item === current.id).at(-1);
+  const live = speaking && speaking.type === "vad_speech_start";
+  $("pulse").className = "pulse" + (live ? " live" : "");
+  $("rec-label").textContent = live ? "Listening…" : (playing ? "Paused between utterances" : "Idle");
+  $("rec-time").textContent = (now - current.offset).toFixed(1) + "s";
+  $("clock-item").textContent = current.id;
+  $("clock-now").textContent = now.toFixed(2);
+  $("playhead").style.left = (100 * now / T) + "%";
+  $("ribbon").setAttribute("aria-valuenow", now.toFixed(2));
+  for (const b of $("items").children) b.setAttribute("aria-pressed", String(b.dataset.at == current.offset));
+
+  // Reveal up to the clock, and mark the newest row.
+  const upto = events.findIndex(e => e.at > now);
+  const edge = upto === -1 ? events.length : upto;
+  if (edge !== cursor) {
+    rowEls.forEach((tr, i) => {
+      tr.classList.toggle("future", i >= edge);
+      tr.classList.toggle("now", i === edge - 1);
+    });
+    const newest = rowEls[edge - 1];
+    if (newest && playing && !newest.hidden) {
+      newest.scrollIntoView({block: "nearest", behavior: "smooth"});
+    }
+    cursor = edge;
+  }
+}
+
+function seek(to) {
+  now = Math.max(0, Math.min(T, to));
+  cursor = -1;
+  render();
+}
+function frame(ts) {
+  if (!playing) return;
+  if (lastFrame != null) now = Math.min(T, now + (ts - lastFrame) / 1000 * speed);
+  lastFrame = ts;
+  render();
+  if (now >= T) { playing = false; $("play").textContent = "▶ Play"; return; }
+  requestAnimationFrame(frame);
+}
+function toggle(on) {
+  playing = on == null ? !playing : on;
+  if (playing && now >= T) now = 0;
+  lastFrame = null;
+  $("play").textContent = playing ? "❙❙ Pause" : "▶ Play";
+  if (playing) requestAnimationFrame(frame);
+  else render();
+}
+$("play").addEventListener("click", () => toggle());
+$("restart").addEventListener("click", () => { seek(0); toggle(true); });
+$("speeds").innerHTML = [0.5, 1, 2, 4, 20]
+  .map(s => `<button data-s="${s}" aria-pressed="${s === 1}">${s === 20 ? "max" : s + "×"}</button>`).join("");
+$("speeds").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  speed = Number(b.dataset.s);
+  for (const x of $("speeds").children) x.setAttribute("aria-pressed", String(x === b));
+});
+$("ribbon").addEventListener("pointerdown", ev => {
+  const box = ev.currentTarget.getBoundingClientRect();
+  const move = e => seek(T * Math.max(0, Math.min(1, (e.clientX - box.left) / box.width)));
+  move(ev);
+  const up = () => { removeEventListener("pointermove", move); removeEventListener("pointerup", up); };
+  addEventListener("pointermove", move); addEventListener("pointerup", up);
+});
+$("ribbon").addEventListener("keydown", ev => {
+  const step = ev.shiftKey ? 1 : 0.1;
+  if (ev.key === "ArrowRight") { seek(now + step); ev.preventDefault(); }
+  if (ev.key === "ArrowLeft") { seek(now - step); ev.preventDefault(); }
+});
+addEventListener("keydown", ev => {
+  if (ev.target.matches("input")) return;
+  if (ev.code === "Space") { toggle(); ev.preventDefault(); }
+});
+
+applyFilters();
+render();
+</script>
