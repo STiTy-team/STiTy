@@ -34,7 +34,8 @@ test 100 gold(3타깃 COMET 평균, T 격자 4/6/8/12):
 ## 준비물
 
 - 이 저장소, 브랜치 `autoseg-distill`
-- `.venv` (COMET 계열은 반드시 `.venv/bin/python` — 기본 python 은 `comet` 이 없다)
+- `unbabel-comet` 이 설치된 venv. 스크립트는 `.venv-autoseg` 가 있으면 그것을, 없으면 `.venv` 를
+  쓴다 — 기본 python 에는 `comet` 이 없다
 - GPU 9 GB 이상. madlad-3b → wmt22-comet-da → cometkiwi 를 순서대로 올린다
 - **CometKiwi 는 HF 게이트 모델이다.** huggingface.co 에서 라이선스 동의 후 `hf auth login`.
   안 되어 있으면 G 만 실패한다 (F 는 게이트가 없다)

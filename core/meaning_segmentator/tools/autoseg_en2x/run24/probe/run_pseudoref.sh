@@ -5,7 +5,9 @@ set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
 set -a; [ -f ./.env ] && . ./.env; set +a
 export PYTHONPATH=. PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-PY=.venv/bin/python; S=core/meaning_segmentator/tools/autoseg_en2x/run24/probe
+# comet 이 있는 venv 를 고른다. 기계마다 이름이 다르다 (run20~23 chain.sh 와 같은 규칙).
+if [ -x .venv-autoseg/bin/python ]; then PY=.venv-autoseg/bin/python; else PY=.venv/bin/python; fi
+S=core/meaning_segmentator/tools/autoseg_en2x/run24/probe
 LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/run24_pseudoref.log
 NEED=9000
 wait_gpu() {

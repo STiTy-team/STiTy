@@ -147,7 +147,10 @@ if a.emit:
         for fn in ('config.json', 'measured_profile.json'):
             if not (odir / fn).exists():
                 shutil.copy(R / fn, odir / fn)
-        if not (odir / 'cache').exists():
+        # 링크 대상은 gitignore 라 새로 받은 기계에는 없다. 끊긴 링크면 bleu_eval 의 mkdir 이
+        # FileExistsError 로 죽으므로 대상부터 만든다.
+        (R / 'cache').mkdir(exist_ok=True)
+        if not (odir / 'cache').is_symlink() and not (odir / 'cache').exists():
             (odir / 'cache').symlink_to(Path('..') / R.name / 'cache')
         rows = []
         for i, s in enumerate(sents):
