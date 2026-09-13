@@ -8,7 +8,7 @@ export PYTHONPATH=. PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # comet 이 있는 venv 를 고른다. 기계마다 이름이 다르다 (run20~23 chain.sh 와 같은 규칙).
 if [ -x .venv-autoseg/bin/python ]; then PY=.venv-autoseg/bin/python; else PY=.venv/bin/python; fi
 S=core/meaning_segmentator/tools/autoseg_en2x/run24/probe
-LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/run24_H.log
+LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/run24_${1:-H}.log
 NEED=9000
 wait_gpu() {
   local ok=0 free
@@ -24,7 +24,7 @@ echo "== $(date '+%F %T') emit (F/G/H)" >> $LOG
 wait_gpu || exit 1
 $PY -u -m core.meaning_segmentator.tools.autoseg_en2x.run24.probe.pseudoref --split test --emit >> $LOG 2>&1 \
   || { echo "EMIT FAILED" >> $LOG; exit 1; }
-TAG=H_qeXcontra
+TAG=${1:-H_qeXcontra}
 echo "== $(date '+%F %T') $TAG bleu" >> $LOG
 wait_gpu || exit 1
 $PY -u -m core.meaning_segmentator.autoseg.scoring.bleu_eval \
