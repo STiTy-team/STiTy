@@ -34,13 +34,34 @@ SCORE_MEANING = (
 )
 
 
-def output_rules(spaced: bool) -> str:
+# 라벨의 contra 를 소스 NLI 로 잰 런(`--contra-source source`)용 문구. (c) 만 다르다 —
+# 번역이 아니라 **원문 전체와 원문 앞부분**을 함의 모델에 넣는다. 프롬프트가 측정 절차를
+# 그대로 서술하는 것이 이 설계의 약속이라, 라벨을 바꾸면 문구도 같이 바뀌어야 한다.
+SCORE_MEANING_SOURCE = SCORE_MEANING.replace(
+    "(c) the whole sentence was translated separately, and an entailment model checked whether "
+    "the translation of the part before the marker contradicts that whole-sentence translation. ",
+    "(c) an entailment model read the whole source sentence and checked whether it contradicts "
+    "the part before the marker taken on its own — no translation is involved in this step. ")
+assert SCORE_MEANING_SOURCE != SCORE_MEANING
+
+
+def score_meaning(contra_source: str = "translation") -> str:
+    """점수의 뜻 — 라벨의 contra 를 무엇으로 쟀느냐에 따라 (c) 절이 다르다."""
+    if contra_source == "source":
+        return SCORE_MEANING_SOURCE
+    if contra_source == "translation":
+        return SCORE_MEANING
+    raise ValueError(f"contra_source: {contra_source}")
+
+
+def output_rules(spaced: bool, contra_source: str = "translation") -> str:
     unit = "words" if spaced else "characters"
+    meaning = score_meaning(contra_source)
     return f"""[Output Rules]
 - The input already contains a <SEG:?> marker at every position where a cut is possible.
   Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
   becomes for example <SEG:73>. Never output a bare number without the marker. The number is
-  {SCORE_MEANING}
+  {meaning}
 - Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
   highest-scoring ones under the current latency budget and nothing else reads the numbers, so
   they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
@@ -157,6 +178,46 @@ def scores_of(out: str) -> list[int]:
     return [int(m.group(1)) for m in TAG_RE.finditer(out) if m.group(1)]
 
 
+def mean_rank_scores(samples: list[list[float]]) -> list[float]:
+    """같은 문장을 k번 채점한 점수 목록들 → 위치별 **평균 순위**의 백분위 (0~100, 높을수록 좋음).
+
+    분절기가 비결정론이라(gpt-5-mini 는 temperature 를 거부) 한 번 채점한 점수는 잡음이 크다
+    — run22 실측으로 같은 v0 를 dev 에서 두 번 재면 남긴 경계의 28% 가 옮겨간다. 샘플을
+    평균내면 잡음 분산이 1/k 로 준다.
+
+    점수 자체가 아니라 **순위**를 평균한다. 프롬프트는 문장 안 순서만 읽히므로 샘플마다
+    절대 눈금이 달라도 순위는 같은 자다. 동점은 평균 순위를 나눠 갖는다. 위치가 하나면 50.
+
+    **평균 순위가 같은 자리는 원점수로 가른다.** k 가 작으면 평균 순위가 자주 겹친다 —
+    run22 캐시 두 샘플로 k=2 를 재니 tie_rate 0.38 이었다. 그대로 두면 절단기가 위치(앞쪽
+    우선)로 정하므로 편향이 된다. 샘플마다 0~1 로 정규화한 원점수의 평균을 백분위 한 칸
+    (100/(k·(n−1))) 보다 작은 0.01 배로 더한다 — 순위가 다르면 절대 못 뒤집고, 같을 때만
+    가른다. 절단 태그는 이 소수점을 살리려면 ×10000 이 필요하다 (`evaluate` 의 `tag_scale`).
+    """
+    n = len(samples[0])
+    if n == 1:
+        return [50.0]
+    total = [0.0] * n
+    raw = [0.0] * n
+    for sc in samples:
+        lo, hi = min(sc), max(sc)
+        for i, s in enumerate(sc):
+            raw[i] += (s - lo) / (hi - lo) if hi > lo else 0.5
+        order = sorted(range(n), key=lambda i: -sc[i])
+        i = 0
+        while i < n:
+            j = i
+            while j + 1 < n and sc[order[j + 1]] == sc[order[i]]:
+                j += 1
+            r = (i + j) / 2 + 1          # 1 이 최상위, 동점은 평균 순위
+            for k_ in range(i, j + 1):
+                total[order[k_]] += r
+            i = j + 1
+    k = len(samples)
+    return [round(100.0 * (n - t / k) / (n - 1) + 0.01 * (w / k), 4)
+            for t, w in zip(total, raw)]
+
+
 def check_skeleton(prompt: str) -> list[str]:
     errs = []
     last = -1
@@ -223,8 +284,8 @@ Hard requirements:
 Return ONLY the prompt text. No commentary, no code fences."""
 
 
-def writer_system(spaced: bool, min_gap: int) -> str:
-    return (WRITER_SYSTEM.replace("__SCORE_MEANING__", SCORE_MEANING)
+def writer_system(spaced: bool, min_gap: int, contra_source: str = "translation") -> str:
+    return (WRITER_SYSTEM.replace("__SCORE_MEANING__", score_meaning(contra_source))
             .replace("__GAP__", str(max(1, min_gap))))
 
 
@@ -316,8 +377,8 @@ Return ONLY JSON:
 }"""
 
 
-def critic_system() -> str:
-    return CRITIC_SYSTEM.replace("__SCORE_MEANING__", SCORE_MEANING)
+def critic_system(contra_source: str = "translation") -> str:
+    return CRITIC_SYSTEM.replace("__SCORE_MEANING__", score_meaning(contra_source))
 
 
 # ── Prompt Engineer ──────────────────────────────────────────────────────

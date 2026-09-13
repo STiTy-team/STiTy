@@ -73,18 +73,45 @@ def kept_positions(seg: str, T: int, spaced: bool, min_gap: int) -> list[int]:
 def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
              spaced: bool, min_gap: int, t_grid: list[int], seg_cache: JsonCache,
              workers: int, batch_size: int, reasoning_effort: str | None,
-             ) -> tuple[list[dict], dict]:
+             k_samples: int = 1) -> tuple[list[dict], dict]:
+    """프롬프트 하나를 문장들에 채점하고 라벨 대비 지표를 낸다.
+
+    **`k_samples` > 1 이면 같은 문장을 k번 채점해 순위를 평균한다** (`ad.mean_rank_scores`).
+    분절기가 비결정론이라 한 번 채점은 잡음이 크다 — run22 실측: 같은 v0 를 dev 에서
+    두 번 재면 남긴 경계의 28% 가 옮겨가고 쌍체 Δ +0.023±0.017 이 나와, 무변경이 채택
+    문턱(1 se)을 넘는다. 개정이 만드는 churn(30~37%)과 거의 같은 크기라 Δ 로 규칙 효과를
+    볼 수 없었다.
+
+    샘플 i 는 캐시 파일을 따로 쓴다 — 0 은 종전 그대로 `segment.json`, 그 뒤는
+    `segment_s{i}.json`. 같은 캐시를 쓰면 전부 적중해 한 번 채점과 같아진다.
+
+    k=1 이면 종전과 정확히 같다: `scores` 는 모델이 낸 정수 그대로다. k>1 이면 `scores` 는
+    평균 순위의 백분위(0~100 실수)이고, 절단용 태그는 `tag_scale`(10000) 을 곱한 정수다 —
+    라벨 태그가 `SCALE` 을 곱하는 것과 같은 방식이다. `valid` 는 유효 샘플이 하나라도
+    있으면 참, `first_pass` 는 모든 샘플이 1차 통과했을 때만 참이다.
+    """
     texts = [s.text for s in sents]
     units = [L.units_of(t, spaced) for t in texts]
     cand = [ad.candidate_positions(len(u), min_gap) for u in units]
     idx = [i for i, c in enumerate(cand) if c]
     marked = [ad.mark_candidates(units[i], cand[i]) for i in idx]
     first_pass: list[dict] = []
-    outs, ok1 = segment_batch(
-        gw, prompt, marked, cache=seg_cache, workers=workers,
-        validate_fn=lambda t, o: ad.validate_scored("", t, o, spaced),
-        normalize_fn=ad.normalize_scored, reasoning_effort=reasoning_effort,
-        batch_size=batch_size, first_pass_sink=first_pass)
+    caches = [seg_cache] + [JsonCache(seg_cache.path.with_name(f"segment_s{s}.json"))
+                            for s in range(1, k_samples)]
+    outs_k: list[list[str]] = []
+    ok_k: list[list[bool]] = []
+    for cache in caches:
+        outs, ok1 = segment_batch(
+            gw, prompt, marked, cache=cache, workers=workers,
+            validate_fn=lambda t, o: ad.validate_scored("", t, o, spaced),
+            normalize_fn=ad.normalize_scored, reasoning_effort=reasoning_effort,
+            batch_size=batch_size, first_pass_sink=first_pass)
+        outs_k.append(outs)
+        ok_k.append(ok1)
+    for cache in caches[1:]:
+        cache.flush()
+    # 평균 순위 백분위는 소수점 둘째 자리에 동점 보조키가 있다 — 태그 정수로 옮기며 살린다.
+    tag_scale = 1 if k_samples == 1 else 10000
 
     rows: list[dict] = []
     pairs_s: list[float] = []
@@ -93,15 +120,19 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
     per_T_over: dict[int, list[float]] = {T: [] for T in t_grid}
     for k, i in enumerate(idx):
         u, c = units[i], cand[i]
-        out = outs[k]
-        viol = ad.validate_scored(sents[i].id, marked[k], out, spaced)
-        row = {"id": sents[i].id, "text": texts[i], "marked": marked[k], "out": out,
-               "valid": not viol, "first_pass": ok1[k],
-               "violations": [v.rule for v in viol], "positions": c}
-        if viol:
+        outs_i = [o[k] for o in outs_k]
+        viols = [ad.validate_scored(sents[i].id, marked[k], o, spaced) for o in outs_i]
+        valid_outs = [o for o, v in zip(outs_i, viols) if not v]
+        row = {"id": sents[i].id, "text": texts[i], "marked": marked[k],
+               "out": outs_i[0] if k_samples == 1 else outs_i,
+               "valid": bool(valid_outs), "first_pass": all(o[k] for o in ok_k),
+               "n_valid_samples": len(valid_outs), "tag_scale": tag_scale,
+               "violations": sorted({v.rule for vs in viols for v in vs}), "positions": c}
+        if not valid_outs:
             rows.append(row)
             continue
-        sc = ad.scores_of(out)
+        samples = [ad.scores_of(o) for o in valid_outs]
+        sc = samples[0] if k_samples == 1 else ad.mean_rank_scores(samples)
         lab = [L.label_value(labels, i, j) for j in c]
         row["scores"] = sc
         row["labels"] = [round(x, 4) for x in lab]
@@ -111,7 +142,7 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
             w = metrics._spearman([float(x) for x in sc], lab)
             if w is not None:
                 within.append(w)
-        seg_model = _seg_with(u, dict(zip(c, sc)), spaced)
+        seg_model = _seg_with(u, {j: round(s * tag_scale) for j, s in zip(c, sc)}, spaced)
         seg_label = _seg_with(u, {j: round(y * SCALE) for j, y in zip(c, lab)}, spaced)
         lab_at = dict(zip(c, lab))
         by_T = {}
@@ -481,7 +512,8 @@ def build_cases(rows: list[dict], labels: dict, sent_index: dict[str, int], unit
 
 def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
                rejected: list[dict], effort: str | None,
-               accepted: list[dict] | None = None) -> dict:
+               accepted: list[dict] | None = None,
+               contra_source: str = "translation") -> dict:
     user = (f"=== METRICS (train batch) ===\n"
             + json.dumps({"overlap": m["overlap"], "overlap_by_T": m["overlap_by_T"],
                            "achv": m["achv"], "spearman_within": m["spearman_within"],
@@ -506,7 +538,7 @@ def run_critic(gw: Gateway, prompt: str, m: dict, cases: list[dict],
         user += ("\n\n=== REJECTED DIRECTIONS ===\n"
                  + json.dumps(rejected, ensure_ascii=False, indent=1))
     user += f"\n\n<prompt_under_review>\n{prompt}\n</prompt_under_review>"
-    return gw.chat_json(ad.critic_system(), user, max_tokens=AGENT_MAX_TOKENS,
+    return gw.chat_json(ad.critic_system(contra_source), user, max_tokens=AGENT_MAX_TOKENS,
                         reasoning_effort=effort, purpose="critic")
 
 
@@ -593,6 +625,15 @@ def main() -> int:
     p.add_argument("--seg-reasoning-effort", default="medium")
     p.add_argument("--agent-reasoning-effort", default="medium")
     p.add_argument("--batch-size", type=int, default=6)
+    p.add_argument("--contra-source", default="translation", choices=["translation", "source"],
+                   help="라벨의 contra 를 무엇으로 재나. translation = 번역 NLI (종전). source = "
+                        "소스 NLI (premise 원문 전체, hypothesis 앞부분) — 타깃 무관, gold 손해 없음 "
+                        "(run23/gold_test.md). adq 는 두 모드 모두 번역 기반. 프롬프트의 점수 "
+                        "설명([Output Rules]·Critic·작성기)도 이 모드를 따라간다")
+    p.add_argument("--k-samples", type=int, default=1,
+                   help="같은 문장을 몇 번 채점해 순위를 평균할까. 분절기가 비결정론이라 1회 채점은 "
+                        "잡음이 크다 (run22 실측: v0 재채점만으로 dev Δ +0.023, 경계 28%% 이동). "
+                        "샘플 i 는 cache/segment_s{i}.json 을 따로 쓴다. 분절 비용이 k배 든다")
     p.add_argument("--workers", type=int, default=16)
     p.add_argument("--tgt-langs", nargs="+", default=None)
     p.add_argument("--local-mt-model", default="google/madlad400-3b-mt")
@@ -703,7 +744,8 @@ def main() -> int:
                                          encoding="utf-8")
     log(f"[data] train {len(splits['train'])} (배치 {args.train} + 홀드아웃 "
         f"{len(splits['train']) - args.train}) / dev {len(splits['dev'])} / test "
-        f"{len(splits['test'])} / T {t_grid} main {main_T} / min_gap {args.min_gap} / 타깃 {targets}")
+        f"{len(splits['test'])} / T {t_grid} main {main_T} / min_gap {args.min_gap} / 타깃 {targets}"
+        f" / k_samples {args.k_samples}")
 
     # ── 라벨 (LLM 0콜) ─────────────────────────────────────────────────
     adequacy = metrics.make_adequacy_backend(args.adequacy_backend,
@@ -716,7 +758,7 @@ def main() -> int:
         lab[split] = L.compute_labels(
             run_dir, split, [s.id for s in ss], [s.text for s in ss], targets, spaced,
             adequacy, contradiction, args.local_mt_model, target_is_spaced, log=log,
-            translators=translators, reuse_from=labels_from)
+            translators=translators, reuse_from=labels_from, contra_source=args.contra_source)
     batch = splits["train"][:args.train]
     holdout = splits["train"][args.train:] or batch
     lab_batch = {t: per[:args.train] for t, per in lab["train"].items()}
@@ -726,13 +768,13 @@ def main() -> int:
     gw = Gateway.from_args(args, model=args.model, budget=args.budget,
                            reasoning_effort=args.agent_reasoning_effort)
     seg_cache = JsonCache(run_dir / "cache" / "segment.json")
-    out_rules = ad.output_rules(spaced)
+    out_rules = ad.output_rules(spaced, args.contra_source)
     seg_effort = None if args.seg_reasoning_effort == "none" else args.seg_reasoning_effort
     ag_effort = None if args.agent_reasoning_effort == "none" else args.agent_reasoning_effort
 
     def ev(prompt, sents, labels_):
         return evaluate(gw, prompt, sents, labels_, spaced, args.min_gap, t_grid, seg_cache,
-                        args.workers, args.batch_size, seg_effort)
+                        args.workers, args.batch_size, seg_effort, k_samples=args.k_samples)
 
     history: list[dict] = []
     best: dict = {}
@@ -755,7 +797,7 @@ def main() -> int:
                         + (facts + "\n\n" if facts else "")
                         + "The prompt must be TARGET-LANGUAGE-AGNOSTIC.\n\n"
                         + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{out_rules}")
-                pr = gw.chat(ad.writer_system(spaced, args.min_gap), user,
+                pr = gw.chat(ad.writer_system(spaced, args.min_gap, args.contra_source), user,
                              max_tokens=PROMPT_MAX_TOKENS, reasoning_effort=ag_effort,
                              purpose="prompt_v0").strip()
                 pr = ad.replace_section(pr, "[Output Rules]", out_rules)
@@ -935,7 +977,7 @@ def main() -> int:
             cases = build_cases(best["train_rows"], lab_batch, sent_index, units_by_id,
                                 main_T, spaced, args.n_cases, t_grid)
             critique = run_critic(gw, best["prompt"], best["train_m"], cases, rejected,
-                                  ag_effort, accepted=accepted)
+                                  ag_effort, accepted=accepted, contra_source=args.contra_source)
             critique["metrics"] = {"overlap": best["train_m"]["overlap"],
                                    "overlap_by_T": best["train_m"]["overlap_by_T"],
                                    "achv": best["train_m"]["achv"],
@@ -1108,7 +1150,8 @@ def main() -> int:
     # ── 최종 test ─────────────────────────────────────────────────────
     test = splits["test"]
     te_rows, te_m = evaluate(gw, best["prompt"], test, lab["test"], spaced, args.min_gap,
-                             final_grid, seg_cache, args.workers, args.batch_size, seg_effort)
+                             final_grid, seg_cache, args.workers, args.batch_size, seg_effort,
+                             k_samples=args.k_samples)
     seg_cache.flush()
     log(f"[test] achv={te_m['achv']} overlap={te_m['overlap_by_T']} "
         f"sp={te_m['spearman_within']} fmt={te_m['format_pass_rate']}")
@@ -1120,7 +1163,9 @@ def main() -> int:
         r = by_id[s.id]
         u = units_t[i]
         if r.get("scores"):
-            seg = _seg_with(u, dict(zip(r["positions"], r["scores"])), spaced)
+            ts = r.get("tag_scale", 1)
+            seg = _seg_with(u, {j: round(s * ts) for j, s in zip(r["positions"], r["scores"])},
+                            spaced)
         else:
             seg = s.text
         c = r.get("positions") or []

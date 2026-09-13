@@ -29,6 +29,53 @@ from ..gates import noise_floor
 LABEL_KEYS = ("contra", "ent", "contra_floor", "adq_l", "adq_r", "hyp_units")
 
 
+def contra_source_of(labels: dict[str, list[dict]]) -> str:
+    """이 라벨의 `contra` 가 무엇으로 잰 것인가 — "translation"(기본) 또는 "source"."""
+    for per in labels.values():
+        for d in per:
+            return d.get("contra_source", "translation")
+    return "translation"
+
+
+def apply_source_contra(labels: dict[str, list[dict]], texts: list[str], spaced: bool,
+                        contradiction, log=print) -> dict[str, list[dict]]:
+    """`contra`/`ent` 를 **소스 NLI** 로 덮어쓴다 — premise = 원문 전체, hypothesis = `units[:j]`.
+
+    번역 NLI contra 는 타깃 간 순위상관 0.21 로 라벨 성분 중 가장 타깃 종속적이었다 (dev,
+    2026-09-13). 원문끼리 재면 번역이 안 끼므로 타깃이 무엇이든 같은 값이고, 세 타깃 평균과
+    +0.42 로 어느 단일 타깃보다 잘 맞는다. gold(test 100 COMET)에서 현행 대비 손해 없음
+    (격자 평균 0.7642→0.7685, T=4 +0.013 유의). `run23/gold_test.md`.
+
+    adq 는 건드리지 않는다 — 조각 번역 품질은 번역 없이는 정의가 안 된다. 번역 contra 는
+    `contra_mt`/`ent_mt` 로 남기고 `contra_source: "source"` 를 찍어 재사용 시 모드를 가른다.
+    이미 소스 모드면 그대로 돌려준다 (멱등).
+    """
+    if contra_source_of(labels) == "source":
+        return labels
+    units = [units_of(t, spaced) for t in texts]
+    prem, hyp, owner = [], [], []
+    for i, u in enumerate(units):
+        for j in range(1, len(u)):
+            prem.append(texts[i]); hyp.append(join_units(u[:j], spaced)); owner.append(i)
+    t0 = time.time()
+    contra, one_minus_ent = contradiction.score_dual(prem, hyp)
+    per_sent: dict[int, tuple[list, list]] = {}
+    for k, i in enumerate(owner):
+        per_sent.setdefault(i, ([], []))
+        per_sent[i][0].append(round(contra[k], 4)); per_sent[i][1].append(round(one_minus_ent[k], 4))
+    out: dict[str, list[dict]] = {}
+    for tgt, per in labels.items():
+        rows = []
+        for i, d in enumerate(per):
+            c, e = per_sent.get(i, ([], []))
+            assert len(c) == len(d["contra"]), f"{tgt} {d.get('id')}: 경계 수 불일치 {len(c)} vs {len(d['contra'])}"
+            rows.append({**d, "contra": c, "ent": e, "contra_mt": d["contra"], "ent_mt": d["ent"],
+                         "contra_source": "source"})
+        out[tgt] = rows
+    log(f"[labels] 소스 NLI contra {len(prem)}쌍 {time.time() - t0:.0f}s (번역 contra 는 contra_mt 로 보관)")
+    return out
+
+
 def units_of(text: str, spaced: bool) -> list[str]:
     return text.split() if spaced else list(text.replace(" ", ""))
 
@@ -41,11 +88,16 @@ def compute_labels(run_dir: Path, split: str, ids: list[str], texts: list[str],
                    targets: list[str], spaced: bool, adequacy, contradiction,
                    mt_model: str, target_is_spaced, log=print,
                    translators: dict | None = None,
-                   reuse_from: Path | None = None) -> dict[str, list[dict]]:
+                   reuse_from: Path | None = None,
+                   contra_source: str = "translation") -> dict[str, list[dict]]:
     """`{타깃: [문장별 {id, contra[], ent[], contra_floor[], adq_l[], adq_r[], hyp_units[]}]}`.
 
     `reuse_from` 은 같은 분할(같은 id 순서)의 라벨을 가진 다른 런 디렉토리다 — 시드·분할이
     같은 런끼리는 라벨이 동일하므로 그대로 복사한다.
+
+    `contra_source="source"` 면 번역 라벨(adq)을 그대로 두고 `contra` 만 소스 NLI 로 덮어쓴다
+    (`apply_source_contra`). 재사용한 파일이 이미 소스 모드면 그대로, 번역 모드면 변환한다.
+    반대 방향(소스 모드 파일을 번역 모드로 재사용)은 `contra_mt` 를 되돌린다.
     """
     label_path = run_dir / f"oracle_labels_{split}.json"
     cached: dict = {}
@@ -112,6 +164,17 @@ def compute_labels(run_dir: Path, split: str, ids: list[str], texts: list[str],
         cached[tgt] = per
         label_path.write_text(json.dumps(cached, ensure_ascii=False), encoding="utf-8")
         log(f"[labels/{split}] {tgt}: 완료 {time.time() - t0:.0f}s -> {label_path.name}")
+    if contra_source == "source":
+        out = apply_source_contra(out, texts, spaced, contradiction, log=log)
+        cached = out
+        label_path.write_text(json.dumps(cached, ensure_ascii=False), encoding="utf-8")
+    elif contra_source_of(out) == "source":
+        # 소스 모드 파일을 번역 모드 런이 재사용하는 경우 — 보관해 둔 번역 contra 로 되돌린다.
+        out = {tgt: [{**d, "contra": d["contra_mt"], "ent": d["ent_mt"], "contra_source": "translation"}
+                     for d in per] for tgt, per in out.items()}
+        cached = out
+        label_path.write_text(json.dumps(cached, ensure_ascii=False), encoding="utf-8")
+        log(f"[labels/{split}] 재사용한 라벨이 소스 모드라 번역 contra(contra_mt)로 되돌림")
     if not label_path.exists() or set(json.loads(label_path.read_text(encoding="utf-8"))) != set(cached):
         label_path.write_text(json.dumps(cached, ensure_ascii=False), encoding="utf-8")
     return out
