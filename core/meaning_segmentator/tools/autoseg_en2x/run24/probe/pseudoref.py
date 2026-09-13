@@ -120,7 +120,10 @@ else:
     print(f'-> {out_path}', flush=True)
 
 # ── 3) 라벨 정의들 ──────────────────────────────────────────────────────
-def m(key, i, j): return st.mean(lab[t][i][key][j - 1] for t in TG)
+TG_LAB = [t for t in TG if t in lab]        # adq/contra 라벨이 있는 타깃만 (새로 넣은 언어는 없다)
+
+
+def m(key, i, j): return st.mean(lab[t][i][key][j - 1] for t in TG_LAB)
 def adq(i, j): return (m('adq_l', i, j) + m('adq_r', i, j)) / 2
 def pr(i, j, k): return st.mean(blob[str(i)][str(j)][t][k] for t in TG)
 DEFS = {
@@ -199,9 +202,10 @@ for name, f in DEFS.items():
             ko = kept_of(u, c, agg, T)
             if not ko: continue
             if per_t:
-                ks = [kept_of(u, c, per_t[t], T) for t in TG]
-                for x in range(len(TG)):
-                    for y in range(x + 1, len(TG)):
+                tl = list(per_t)
+                ks = [kept_of(u, c, per_t[t], T) for t in tl]
+                for x in range(len(tl)):
+                    for y in range(x + 1, len(tl)):
                         pair_ov.append(len(set(ks[x]) & set(ks[y])) / max(1, len(ks[x])))
             for tag, rows in llm_rows.items():
                 r = rows.get(s['id'])
@@ -209,9 +213,10 @@ for name, f in DEFS.items():
                 km = kept_of(u, c, {j: x / 100 for j, x in zip(r['positions'], r['scores'])}, T)
                 llm_ov[tag].append(len(set(km) & set(ko)) / len(ko))
         if per_t and len(c) >= 3:
-            for x in range(len(TG)):
-                for y in range(x + 1, len(TG)):
-                    w = _spearman([per_t[TG[x]][j] for j in c], [per_t[TG[y]][j] for j in c])
+            tl = list(per_t)
+            for x in range(len(tl)):
+                for y in range(x + 1, len(tl)):
+                    w = _spearman([per_t[tl[x]][j] for j in c], [per_t[tl[y]][j] for j in c])
                     if w is not None: pair_sp.append(w)
     po = f'{st.mean(pair_ov):8.3f}' if pair_ov else f'{"—":>8s}'
     ps = f'{st.mean(pair_sp):+8.3f}' if pair_sp else f'{"—":>8s}'
