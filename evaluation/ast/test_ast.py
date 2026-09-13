@@ -14,8 +14,8 @@ manifest 생성기만 새로 쓰면 붙는다 (`build_manifest_mustc.py` 참고)
 
 지표
 ----
-LAAL     비계산인지(non-computation-aware). d = `decisionAudioSec`(커밋 결정 시점까지
-         읽은 소스 오디오). 정책만 평가하므로 GPU 가 달라도 재현된다.
+LAAL     비계산인지(non-computation-aware). d = `decisionAudioSec`(커밋을 번역으로 넘긴
+         순간까지 서버가 받은 소스 오디오). 정책만 평가하므로 GPU 가 달라도 재현된다.
 LAAL_CA  계산인지. d = 클라이언트가 `final` 을 받은 실시간 경과. 실제 체감 지연.
 BLEU     sacrebleu corpus BLEU. 발화별로 세그먼트 번역을 이어붙인 것 vs 참조 번역.
 
@@ -207,8 +207,11 @@ async def stream_one(ws, audio, *, chunk_size_ms, send_interval_ms, target_lang,
                 "translation": (data.get("translation") or "").strip(),
                 "commit_reason": (data.get("commitReason") or "").lower(),
                 "decision_audio_sec": data.get("decisionAudioSec"),
-                # 서버가 audioEndSec 로 보정한 경우에만 채워진다 (보정 전 원값)
-                "decision_audio_sec_raw": data.get("decisionAudioSecRaw"),
+                # 커밋을 번역으로 넘긴 순간의 오디오 위치. 서버가 이 값을 못 찍어 payload
+                # 시점으로 대신했으면 fallback 이 True 다.
+                "dispatch_audio_sec": data.get("dispatchAudioSec"),
+                "dispatch_audio_sec_fallback": data.get("dispatchAudioSecFallback"),
+                "trans_wall_sec": data.get("transWallSec"),
                 "audio_start_sec": data.get("audioStartSec"),
                 "audio_end_sec": data.get("audioEndSec"),
                 "fsl_sec": data.get("fsl_sec"),

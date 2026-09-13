@@ -106,7 +106,7 @@ vLLM 기본값은 **0.8** 이고, 이건 "모델이 필요한 양"이 아니라 
 
 | 지표 | 정의 |
 |---|---|
-| `laal_ms` | 비계산인지 LAAL. d = `decisionAudioSec`(커밋을 결정한 순간까지 읽은 소스 오디오). 정책만 평가하므로 GPU 가 달라도 재현된다. **주지표.** |
+| `laal_ms` | 비계산인지 LAAL. d = `decisionAudioSec`(커밋을 번역으로 넘긴 순간까지 서버가 받은 소스 오디오, `dispatchAudioSec` 과 같은 값). 번역이 끝난 뒤의 위치(`payloadAtAudioSec`)를 쓰면 비동기로 번역한 커밋에만 번역 대기가 섞인다. 정책만 평가하므로 GPU 가 달라도 재현된다. **주지표.** |
 | `laal_ca_ms` | 계산인지 LAAL. d = 클라이언트가 `final` 을 받은 실시간 경과. 실제 체감 지연. |
 | `bleu` | sacrebleu corpus BLEU. 발화별 세그먼트 번역을 이어붙인 것 vs 참조. |
 
@@ -211,8 +211,12 @@ self._gpt_flush_task = asyncio.create_task(self._flush_pending_gpt_tasks())  # �
 오디오 로드와 채점은 별도 스레드로 빼서 다른 워커의 실시간 페이싱을 방해하지 않는다.
 16 병렬 실측 8.0배속(침묵 4초 포함). 요약 로그의 `실시간 대비 N배속` 으로 서버 병목을 본다.
 
-번역 호출은 **부분적으로 병렬**이다 — SEG/dot 커밋은 `asyncio.create_task` 로 발사돼 ASR
-디코딩과 겹쳐 돌지만, always/vad/finish 커밋은 직접 await 라 그 연결 안에서는 순차다.
+번역은 **축 커밋(seg/dot/always)에서 전부 비동기**다 — `asyncio.create_task` 로 넘기고 서버는
+오디오를 계속 받는다. base 는 청크가 끝난 뒤의 커밋(always 전부, dot 확정 게이트)을 직접
+await 해서 그동안 수신이 멈췄고, static 의 CA 가 그만큼 늦게 잡혔다(실측: 직전 커밋 번역 시간의
+0.40배가 다음 커밋 수신에 얹힘). VAD 커밋과 `flush_uncommitted` 경로(finish 잔여·timeout·
+환각 컷)는 여전히 직접 await 한다. 뒤에 뜬 flush 가 앞 커밋을 앞질러 emit 하지 않도록 flush 는
+락으로 한 줄로 세운다.
 `asr_lock` 은 연결마다 하나라 연결 간에는 직렬화되지 않는다(실제 병목은 vLLM 엔진).
 16 병렬에서 번역 실패는 0건이었다.
 

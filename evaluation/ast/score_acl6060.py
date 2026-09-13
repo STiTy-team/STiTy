@@ -112,10 +112,14 @@ def load_manifest(path: Path) -> Dict[str, dict]:
     return out
 
 
-DELAY_FIELDS = ("decision_audio_sec", "payload_at_audio_sec")
+DELAY_FIELDS = ("dispatch_audio_sec", "decision_audio_sec", "payload_at_audio_sec")
+# 결과 파일 이름에 붙는 꼬리. 같은 tag 를 다른 필드로 채점한 결과가 서로 덮지 않게 한다.
+# 기본 필드만 꼬리가 없다 — `comet_acl6060.py` 와 `plot_acl6060.py` 가 그 이름을 읽는다.
+DELAY_FIELD_SUFFIX = {"dispatch_audio_sec": "", "decision_audio_sec": "_decision",
+                      "payload_at_audio_sec": "_payload"}
 
 
-def commits_from_row(row: dict, delay_field: str = "decision_audio_sec") -> List[Commit]:
+def commits_from_row(row: dict, delay_field: str = "dispatch_audio_sec") -> List[Commit]:
     """`metric.json` 의 세그먼트 → 커밋. **결정 시점 순서**로 정렬한다.
 
     `segment_id` 는 서버가 매기는 발행 순서라 대체로 시간순이지만, 지연의 근거는
@@ -123,20 +127,31 @@ def commits_from_row(row: dict, delay_field: str = "decision_audio_sec") -> List
 
     `delay_field` 로 무엇을 고를 것인가
     -----------------------------------
-    `decision_audio_sec` 은 `<SEG>` 를 **처음** 감지한 시각인데, 서버가
-    `if key not in self._slot_seg_detected` 로만 기록해 **갱신하지 않는다**. seg 축은
+    `dispatch_audio_sec` 은 커밋을 번역으로 넘긴 순간 서버가 받은 오디오 위치다. NCA 의
+    정의(계산 시간 0 을 가정하고 정책이 얼마나 듣고 내보내기로 했나)에 맞는 값이라
+    기본값이다. 서버가 이 필드를 찍기 시작하기 전의 런에는 없다.
+
+    `decision_audio_sec` 은 이 필드가 있는 런에서는 `dispatch_audio_sec` 과 같다. 그 전
+    런에서는 `<SEG>` 를 **처음** 감지한 시각이었고, 서버가
+    `if key not in self._slot_seg_detected` 로만 기록해 **갱신하지 않았다**. seg 축은
     커밋 시점 텍스트에 이미 다음 `<SEG>` 가 들어 있는 일이 흔해서(`COMMIT-PENDING`),
     pop 직후 다음 청크에서 곧바로 새 값이 박힌다. 실측(dev 3언어 3,161쌍): stale 커밋의
     53~57% 가 `decision[k] == payload[k-1] + 0.2s` 로 **직전 커밋을 낸 직후의 위치**다.
-    그래서 이 값은 세그먼트의 끝이 아니라 **시작**에 가깝고, 그만큼 지연이 통째로 빠진다.
+    그래서 그 런들의 이 값은 세그먼트의 끝이 아니라 **시작**에 가깝다.
 
-    `payload_at_audio_sec` 은 payload 를 만들 때 서버가 받아 둔 오디오 위치
-    (`float(self.current_time)`)다. 공식 StreamLAAL 이 쓰는 `total_audio_processed` 와
-    같은 뜻이고, gold 문장 끝과 비교하면 중앙 +1.09초로 물리적으로 맞는 자리에 온다
-    (`decision` 은 −2.16초로 문장을 다 듣기 전을 가리킨다).
+    `payload_at_audio_sec` 은 번역이 끝나 payload 를 만들 때 서버가 받아 둔 오디오
+    위치다. 옛 런에서 쓸 수 있는 가장 나은 값이지만, 번역을 비동기로 넘긴 커밋에는 번역
+    대기가 섞이고 직접 await 한 커밋에는 안 섞인다. 실측(top2, de): seg-c1 은 결정 대비
+    평균 +0.43초, static-c6 은 574커밋 전부 0초. 그래서 옛 런의 seg 와 static 을 이 값으로
+    한 곡선에 올리면 seg 가 늦게 그려진다.
     """
     if delay_field not in DELAY_FIELDS:
         raise ValueError(f"delay_field 는 {DELAY_FIELDS} 중 하나여야 한다: {delay_field!r}")
+    if row["segments"] and all(s.get(delay_field) is None for s in row["segments"]):
+        # 조용히 걸러 내면 가설이 통째로 비어 BLEU 까지 무너진다. 옛 런이면 필드를 골라 주게 한다.
+        raise SystemExit(
+            f"!! {row.get('utt_id')}: 세그먼트에 `{delay_field}` 가 없다 — 이 필드를 찍기 전 "
+            f"서버로 돈 런이면 --delay-field payload_at_audio_sec 을 줄 것")
     segs = [s for s in row["segments"]
             if s.get(delay_field) is not None
             and s.get("recv_elapsed_sec") is not None]
@@ -173,6 +188,7 @@ def score_one(run_dir: Path, manifest: Dict[str, dict], lang: str,
     diag_total = Diagnostics()
     as_wers, n_null, n_ref_total = [], 0, 0
     n_neg = 0
+    n_dispatch_fallback = 0
 
     samples = []
     for row in metric["rows"]:
@@ -187,6 +203,9 @@ def score_one(run_dir: Path, manifest: Dict[str, dict], lang: str,
         diag_total.n_violation_intra += d.n_violation_intra
         diag_total.n_violation_boundary += d.n_violation_boundary
         diag_total.notes += d.notes
+        # 서버가 넘긴 시점을 못 찍어 payload 시점으로 대신한 커밋. 번역 대기가 섞인 값이다.
+        n_dispatch_fallback += sum(1 for s in row["segments"]
+                                   if s.get("dispatch_audio_sec_fallback"))
 
         # 재분절 — 공식 구현의 메서드를 그대로 부른다(우리가 다시 짜지 않는다).
         # mweralign 이 AS-WER 을 stderr 로 뱉으므로 잡아서 진단으로 쓴다(해석은 위 docstring).
@@ -312,6 +331,7 @@ def score_one(run_dir: Path, manifest: Dict[str, dict], lang: str,
             "n_commits": diag_total.n_commits,
             "n_units": diag_total.n_units,
             "n_empty_commits_dropped": diag_total.n_empty_commits_dropped,
+            "n_dispatch_fallback": n_dispatch_fallback,
             "notes": diag_total.notes[:10],
         },
         "_reseg": reseg_pairs,
@@ -330,9 +350,10 @@ def main() -> int:
     p.add_argument("--langs", nargs="+", default=["de", "ja", "zh"])
     p.add_argument("--null-penalty-sec", type=float, default=10.0,
                    help="보조 컬럼에서 null 문장 하나에 물리는 벌점(초). 임의값이므로 함께 보고할 것")
-    p.add_argument("--delay-field", default="decision_audio_sec", choices=list(DELAY_FIELDS),
-                   help="d_i 로 쓸 metric.json 필드. 기본값 decision_audio_sec 은 직전 커밋 "
-                        "직후의 위치를 가리키는 문제가 있다(commits_from_row docstring 참고)")
+    p.add_argument("--delay-field", default="dispatch_audio_sec", choices=list(DELAY_FIELDS),
+                   help="d_i 로 쓸 metric.json 필드. 기본값은 커밋을 번역으로 넘긴 순간. "
+                        "그 필드가 없는 옛 런은 payload_at_audio_sec 을 줄 것"
+                        "(commits_from_row docstring 참고)")
     p.add_argument("--baseline-out", default=None,
                    help="첫 런 진단을 기준선으로 저장할 경로")
     p.add_argument("--out", default=None)
@@ -369,13 +390,17 @@ def main() -> int:
                   f"커밋 {dg['n_commits']} 단위 {dg['n_units']}")
             if dg["n_violation_intra"]:
                 print("   !! 조각 내부 단조 위반 — 펼치기가 새고 있다. 즉시 확인할 것")
+            if dg["n_dispatch_fallback"]:
+                print(f"   !! 넘긴 시점 대신 payload 시점을 쓴 커밋 {dg['n_dispatch_fallback']}개 "
+                      f"— 서버 로그의 [AST-NO-DISPATCH] 를 확인할 것")
 
     if not results:
         print("채점할 결과가 없습니다."); return 2
 
     # 기본 필드가 아니면 파일 이름을 갈라 둔다 — 같은 tag 의 기존 채점을 덮으면
-    # 어느 필드로 낸 값인지 사후에 구분할 수 없다.
-    sfx = "" if a.delay_field == "decision_audio_sec" else "_payload"
+    # 어느 필드로 낸 값인지 사후에 구분할 수 없다. 꼬리 없는 옛 파일은 decision 필드로
+    # 낸 것인데, 그 tag 들에는 dispatch 필드가 없어 기본값 채점이 시작 전에 멈추므로 덮이지 않는다.
+    sfx = DELAY_FIELD_SUFFIX[a.delay_field]
     out = Path(a.out) if a.out else root / f"streamlaal_{a.split}_{a.tag}{sfx}.json"
     reseg = {f"{r['axis']}/{r['lang']}": r.pop("_reseg") for r in results}
     sents = {f"{r['axis']}/{r['lang']}": r.pop("_per_sentence") for r in results}

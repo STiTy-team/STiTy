@@ -9,14 +9,30 @@ FSL 서버(`LibriSpeech/servers/streaming_websocket_server_fsl.py`)를 상속해
 
 추가되는 `final` 필드
 --------------------
-decisionAudioSec  커밋을 **결정한 순간**까지 읽은 소스 오디오 길이(초). LAAL 의 d_i.
+dispatchAudioSec  커밋을 **번역으로 넘긴 순간**까지 서버가 받은 소스 오디오 길이(초).
+                  커밋 사유(seg/dot/always/vad/finish)와 무관하게 같은 규칙이다.
+decisionAudioSec  LAAL(NCA) 의 d_i. `dispatchAudioSec` 과 같은 값이다.
                   기존 `audioEndSec` 와 다르다 — 그건 세그먼트 *내용*의 경계(SEG는
                   토큰비율 역추정)이지 결정 시점의 읽기 지점이 아니다.
-                    SEG/dot : SEG 를 감지한 청크의 끝 오디오 위치
-                    vad     : VAD 트리거 시점 (speech_end + VAD_MIN_SILENCE_MS)
-                    finish  : 그 시점까지 수신한 전체 오디오
+transWallSec      번역을 넘긴 순간부터 번역이 끝나기까지의 서버 wall-clock(초).
 emitElapsedSec    스트림 시작부터 이 payload 를 send 하기까지의 서버 wall-clock(초).
 audioReceivedSec  send 시점까지 수신한 오디오 길이(초). 디버깅·검산용.
+
+번역은 모든 축에서 비동기다
+--------------------------
+base 는 generate 루프 안의 커밋(seg, dot 일부)만 번역을 백그라운드 태스크로 넘기고,
+청크가 끝난 뒤의 커밋(always 전부, dot 확정 게이트)은 번역을 직접 await 한다. 서버는
+오디오 메시지를 하나씩 처리하므로 그 await 동안 수신이 멈춘다. 그러면 축마다 두 지표가
+반대로 기운다.
+
+    NCA  번역이 끝난 뒤 읽은 `current_time` 에는 seg 만 번역 대기가 섞인다
+         (실측 seg-c1: 결정 대비 평균 +0.43초, static-c6: 574커밋 전부 0초)
+    CA   static 만 번역 대기 동안 수신이 막혀 다음 커밋이 늦는다
+         (실측 static-c6: 직전 커밋 번역 시간의 0.40배가 이번 커밋 수신에 얹힘, R² 0.94)
+
+그래서 이 서버는 d_i 를 번역으로 넘기는 순간에 찍고(`_correct_and_translate`), 청크
+종료·스트림 종료의 축 커밋도 백그라운드로 넘긴다(`_process_slot_updates`). VAD 커밋과
+`flush_uncommitted` 경로(finish 잔여·timeout·환각 컷)는 여전히 직접 await 한다.
 
 LAAL 자체는 서버가 계산하지 않는다 — 참조 번역과 소스 길이를 아는 쪽은 클라이언트다.
 (`evaluation/ast/metrics_ast.py`)
@@ -54,6 +70,28 @@ logger = logging.getLogger(__name__)
 # 아무 AST 인자도 주지 않으면 FSL 서버와 같게 동작해야 한다. 근거는
 # `ASTStreamingServer._ast_hide_seg_token` 의 docstring 에 있다.
 HIDE_SEG = False
+
+
+def _trailing_loop(text: str, min_repeats: int, min_words: int,
+                   max_period: int = 40) -> Optional[tuple[int, int]]:
+    """`text` 가 같은 어절 묶음의 연속 반복으로 끝나면 (주기 어절 수, 반복 횟수).
+
+    끝에서부터 본다 — 루프는 생성의 뒤쪽에서 자라므로 앞쪽의 정상 텍스트는 무관하다.
+    주기의 시작 위치는 따지지 않는다. 반복이면 어느 자리에서 잘라도 끝 n 어절이 바로 앞
+    n 어절과 같다. 대소문자와 구두점은 무시한다. 상한에서 잘린 마지막 어절은 조각일 수
+    있어 그 어절을 뺀 경우도 본다. 짧은 주기부터 찾으므로 "A A A A" 는 주기 1 로 잡힌다.
+    """
+    words = [w for w in (re.sub(r"[^\w']", "", t.lower()) for t in text.split()) if w]
+    for drop in (0, 1):
+        ws = words[:len(words) - drop]
+        for n in range(1, min(max_period, len(ws) // max(1, min_repeats)) + 1):
+            unit = ws[-n:]
+            k = 1
+            while (k + 1) * n <= len(ws) and ws[-(k + 1) * n:len(ws) - k * n] == unit:
+                k += 1
+            if k >= min_repeats and k * n >= min_words:
+                return n, k
+    return None
 
 
 class _StartSniffingWS:
@@ -102,8 +140,12 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
         sniffer = _StartSniffingWS(websocket)
         super().__init__(sniffer, *args, **kwargs)
         self._ast_sniffer = sniffer
-        self._ast_flush_inflight = 0   # 실행 중인 _flush_pending_gpt_tasks 수
-        self._ast_flush_overlaps = 0   # 핸들이 덮어써진 횟수
+        self._ast_flush_inflight = 0   # 실행 중이거나 차례를 기다리는 _flush_pending_gpt_tasks 수
+        self._ast_flush_overlaps = 0   # 앞 flush 가 안 끝났는데 새 flush 가 뜬 횟수
+        # flush 를 한 줄로 세운다. 뒤에 뜬 flush 의 번역이 먼저 끝나면 앞 커밋보다 먼저
+        # emit 돼 segment_id·audioStartSec 커서가 오디오 순서와 뒤집힌다. asyncio.Lock 은
+        # 기다린 순서대로 넘겨주므로 뜬 순서가 곧 emit 순서다.
+        self._ast_flush_lock = asyncio.Lock()
 
     # ── 문장 중간 <SEG> 에서 오디오 버퍼 자르기 (AST_SEG_CUT) ───────────────
     #
@@ -245,14 +287,108 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
             logger.info("[SEG-CUT] slot=%s mode=%s buf=%.1fs cut=%.1fs carry=%.1fs %s committed=%r",
                         slot_key, mode, buf_sec, cut_sec, carry_sec, info, committed[-60:])
 
+    # ── 상한에 닿은 반복 루프는 굳히지 않고 슬롯을 새로 시작 (AST_CAP_LOOP_RESET) ──
+    #
+    # 무엇이 문제인가
+    # ---------------
+    # `CAP-FREEZE` 는 생성이 128토큰 상한에서 잘리면 잘린 텍스트를 prefix 로 굳힌다.
+    # 그 텍스트가 옳다고 가정하는데, 반복 환각이면 반복을 굳혀 버린다. 굳은 prefix 는
+    # 모델이 고칠 수 없고, 해제 조건(`<SEG>` 가 끝 근처에 나옴)은 루프 안에서 오지 않는다.
+    #
+    # 실측(ACL 60/60 dev, talk 2022.acl-long.110, en-covost2-top1-c300, seg-c1, de/ja/zh
+    # 동일): 631.4~634.0초 문장 사이 휴지에서 `I'm not sure <SEG>` 를 지어낸 뒤 `<SEG>` 뒤에
+    # 텍스트가 붙어 슬롯이 리셋되지 않았다. 그 환각 prefix 에 끌려 실제 발화 대신
+    # `if this is the case, but I'm not sure ...` 를 반복했고, 461자에서 상한에 닿아
+    # CAP-FREEZE 에 진입해 청크마다 약 430자씩 쌓였다. 703.5초 스트림 종료에 24,239자
+    # 커밋 하나로 나갔고 그 사이 70초의 발화가 통째로 사라졌다. 디코딩 중 반복 컷
+    # (`_cut_repeat_hallucination`)은 같은 단어 4연속만 봐서 9어절 주기를 못 잡았다.
+    #
+    # 무엇을 하나
+    # -----------
+    # 청크 디코딩이 끝난 직전, 즉 다음 청크의 CAP-FREEZE 가 굳히기 전에 본다. 생성이
+    # 상한에 닿았거나 이미 굳은 슬롯에서 마지막 `<SEG>` 뒤 텍스트가 같은 어절 묶음의
+    # 반복으로 끝나면, 그 텍스트를 버리고 슬롯을 새로 만든다. 오디오는 그대로 넘긴다 —
+    # 루프를 만든 것은 오디오가 아니라 환각 prefix 이므로 빈 prefix 로 다시 들으면 된다.
+    # 넘긴 오디오가 같은 환각을 다시 부르면(리셋 뒤 커밋 없이 또 걸리면) 마지막 청크만
+    # 남긴다(`FORCE-SLOT-SWITCH` 와 같은 처리).
+    #
+    # **커밋 정책은 건드리지 않는다.** 버리는 것은 아직 커밋되지 않은 반복 텍스트뿐이다.
+
+    def _ast_cap_loop_reset_after_chunk(self) -> None:
+        if os.environ.get("AST_CAP_LOOP_RESET") != "1":
+            return
+        cap = getattr(getattr(self.asr, "sampling_params", None), "max_tokens", 0) or 0
+        if not cap:
+            return
+        min_repeats = int(os.environ.get("AST_CAP_LOOP_MIN_REPEATS", "3"))
+        min_words = int(os.environ.get("AST_CAP_LOOP_MIN_WORDS", "12"))
+        sr = self._AST_SEG_CUT_SR
+        for slot_key in list(self.stream_slots):
+            slot = self.stream_slots.get(slot_key) or {}
+            state = slot.get("state")
+            if state is None:
+                continue
+            last_new = getattr(state, "_last_chunk_new_tokens", 0) or 0
+            frozen = getattr(state, "_ast_cap_frozen", False)
+            if last_new < cap and not frozen:
+                continue
+            # 디코딩은 청크마다 한 번인데 이 함수는 오디오 메시지(0.2초)마다 불린다.
+            if getattr(state, "_ast_loop_checked_chunk", None) == state.chunk_id:
+                continue
+            state._ast_loop_checked_chunk = state.chunk_id
+            raw = getattr(state, "_raw_decoded", "") or ""
+            if "<SEG>" in raw:
+                tail = raw[raw.rfind("<SEG>") + len("<SEG>"):]
+            else:
+                tail = raw.split("<asr_text>", 1)[-1]
+            loop = _trailing_loop(tail, min_repeats, min_words)
+            if loop is None:
+                continue
+            period, repeats = loop
+            accum = state.audio_accum
+            committed = (slot.get("committed_display") or "").strip()
+            again = bool(slot.get("ast_loop_reset")) and not committed
+            if again:
+                carry = accum[-int(round(self.config.chunk_size_sec * sr)):].copy()
+            else:
+                carry = accum.copy()
+            last_committed = committed or slot.get("seg_reset_last_committed")
+            last_lang = slot.get("last_text_lang", "")
+            self._reset_stream_slot(slot_key)
+            new_slot = self.stream_slots[slot_key]
+            new_slot["state"].audio_accum = carry
+            new_slot["real_audio"] = True
+            new_slot["ast_loop_reset"] = True
+            if last_committed:
+                # SEG 리셋 경로와 같은 열쇠 — 다시 디코딩된 앞머리 중복을 그쪽 dedup 이 거른다.
+                new_slot["seg_reset_last_committed"] = last_committed
+            if last_lang:
+                new_slot["last_text_lang"] = last_lang
+            if slot_key == self.active_slot:
+                self.state = new_slot["state"]
+            self._ast_cap_loop_reset_count = getattr(self, "_ast_cap_loop_reset_count", 0) + 1
+            logger.info("[CAP-LOOP-RESET] slot=%s 주기 %d어절×%d회 생성 %d/%d frozen=%s "
+                        "buf=%.1fs carry=%.1fs again=%s | %.80s",
+                        slot_key, period, repeats, last_new, cap, frozen,
+                        len(accum) / sr, len(carry) / sr, again, tail.strip()[-80:])
+
     async def _asr_streaming_transcribe(self, chunk, slot_key=None):
+        if os.environ.get("SEG_LOGPROB_DUMP"):
+            # 위치별 `<SEG>` 로그확률 기록(qwen3_asr.py)이 어느 발화의 몇 초 청크인지 남기게 한다.
+            # 여러 연결이 한 파일에 쓰므로 발화 id 가 없으면 줄을 나눌 수 없다.
+            for _v in self.stream_slots.values():
+                _st = _v.get("state")
+                if _st is not None:
+                    _st._diag_tag = self._ast_utt_id
+                    _st._diag_now = round(float(self.current_time), 3)
         if self._ast_seg_cut_mode not in ("align", "heur"):
             await super()._asr_streaming_transcribe(chunk, slot_key)
-            return
-        before = {k: (v.get("committed_display") or "")
-                  for k, v in self.stream_slots.items()}
-        await super()._asr_streaming_transcribe(chunk, slot_key)
-        self._ast_seg_cut_after_chunk(before)
+        else:
+            before = {k: (v.get("committed_display") or "")
+                      for k, v in self.stream_slots.items()}
+            await super()._asr_streaming_transcribe(chunk, slot_key)
+            self._ast_seg_cut_after_chunk(before)
+        self._ast_cap_loop_reset_after_chunk()
 
     # ── 밀림(late final) 추적 ────────────────────────────────────────────────
     # base 는 청크마다 `self._gpt_flush_task = asyncio.create_task(...)` 로 **대입**한다.
@@ -265,13 +401,40 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
     async def _flush_pending_gpt_tasks(self) -> None:
         if self._ast_flush_inflight > 0:
             self._ast_flush_overlaps += 1
-            logger.warning("[AST-OVERLAP] flush 태스크 중첩 (실행 중 %d개) — 핸들 덮어쓰기 발생",
-                           self._ast_flush_inflight)
+            logger.info("[AST-OVERLAP] flush 중첩 (앞선 flush %d개) — 순서대로 기다린다",
+                        self._ast_flush_inflight)
         self._ast_flush_inflight += 1
         try:
-            await super()._flush_pending_gpt_tasks()
+            # 락을 잡은 뒤에 base 가 대기열을 가져간다. 앞 flush 가 가져간 커밋은 전부 앞
+            # 오디오이므로, 뒤 flush 가 무엇을 가져가든 emit 순서는 오디오 순서를 지킨다.
+            async with self._ast_flush_lock:
+                await super()._flush_pending_gpt_tasks()
         finally:
             self._ast_flush_inflight -= 1
+
+    # ── 축 커밋의 번역을 전부 비동기로 ──────────────────────────────────────
+    # base 는 `_in_generate_loop` 로 번역 경로를 가른다(True 면 create_task, False 면 직접
+    # await). 청크 종료(chunk_end) 호출과 스트림 종료(final) 호출은 generate 밖이라 False
+    # 로 들어오므로, 그 호출 동안만 True 로 세워 같은 백그라운드 경로를 태운다.
+    #
+    # `force_reason` 이 있는 호출(VAD)은 건드리지 않는다. 그 커밋의 emit 은 FSL
+    # `_emit_final_payload` 에서 `_drain_pending_gpt()` 를 부르는데, 백그라운드 flush 안에서
+    # 그 드레인이 돌면 자기 자신을 기다리게 된다.
+    #
+    # 대기열은 여기서 비우지 않는다. 청크 종료 호출 뒤에는 base 가 `_spawn_gpt_flush()` 를
+    # 부르고, 스트림 종료 뒤에는 `finish_streaming` 의 드레인이 걷어 간다.
+
+    async def _process_slot_updates(self, slot_key=None, force_reason=None, chunk_end=False,
+                                    final=False):
+        if self._in_generate_loop or force_reason is not None:
+            return await super()._process_slot_updates(
+                slot_key, force_reason=force_reason, chunk_end=chunk_end, final=final)
+        self._in_generate_loop = True
+        try:
+            return await super()._process_slot_updates(
+                slot_key, force_reason=force_reason, chunk_end=chunk_end, final=final)
+        finally:
+            self._in_generate_loop = False
 
     async def _drain_pending_gpt(self) -> None:
         await super()._drain_pending_gpt()
@@ -289,33 +452,12 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
     def _ast_utt_id(self):
         return self._ast_sniffer.state.get("utt_id")
 
-    def _decision_audio_sec(self, slot_key: str, reason: str) -> float:
-        """커밋 결정 시점까지 읽은 소스 오디오 길이(초).
-
-        주의: 이 메서드는 `super()._emit_final_payload()` **이전**에 호출해야 한다.
-        상위 구현이 `_pending_vad_trigger_sec` 와 `_slot_seg_detected[slot_key]` 를
-        소비(pop)하기 때문이다.
-        """
-        if reason == "vad" and self._pending_vad_trigger_sec is not None:
-            # VAD 는 speech_end 가 아니라 트리거(= speech_end + 침묵대기) 시점에 결정한다.
-            # 침묵을 기다린 비용은 정책이 치른 값이므로 지연에 포함되는 게 맞다.
-            return float(self._pending_vad_trigger_sec)
-
-        # `AST_AUDIO_END_AT_COMMIT=1` 이면 감지 시점을 쓰지 않는다. 이유는 아래
-        # `_emit_final_payload` 주석 참고 — 그 값은 세그먼트의 **시작**에 가깝지 끝이 아니다.
-        if os.environ.get("AST_AUDIO_END_AT_COMMIT") != "1":
-            seg_info = self._slot_seg_detected.get(slot_key)
-            if seg_info is not None and seg_info.get("audio_sec") is not None:
-                return float(seg_info["audio_sec"])
-
-        # dot 커밋(SEG 미감지)과 finish: 현재까지 수신·투입된 오디오 전량
-        return float(self.current_time)
-
     # ── 발화 귀속 ────────────────────────────────────────────────────────────
     # uttId 는 **커밋이 결정되는 순간** 찍어야 한다. payload 를 만드는 시점이나 전송
     # 시점에 찍으면 늦은 emit 이 다음 발화의 id 를 달고 나가서, 정확히 막으려던 오염을
-    # 그대로 재현한다. `_translate` / `_correct_and_translate` 는 커밋 직후(번역 태스크
-    # 진입 시점)에 실행되므로 여기서 읽는 값이 그 커밋이 속한 발화다.
+    # 그대로 재현한다. `_correct_and_translate` 는 커밋을 번역으로 넘기는 호출식에서
+    # 값을 잡는다(아래). `_translate` 를 바깥에서 직접 부르는 곳은 flush 의 폴백 경로뿐이라
+    # 진입 시점에 읽는다.
 
     # ── 번역 호출 계측 ──────────────────────────────────────────────────────
     # call count 는 보고할 지표이고, **번역 실패는 사후에 복구할 수 없다.** 실패하면
@@ -346,8 +488,27 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
         self._attach_trans_stats(extra, local)
         return translation, lang, extra
 
-    async def _correct_and_translate(self, text, current_lang, audio_end_sec):
-        utt_id = self._ast_utt_id
+    def _correct_and_translate(self, text, current_lang, audio_end_sec):
+        """코루틴을 돌려주는 **일반 함수**다. 번역으로 넘기는 순간의 값을 여기서 잡는다.
+
+        base 는 이 메서드를 `await self._correct_and_translate(...)` 와
+        `asyncio.create_task(self._correct_and_translate(...))` 두 방식으로 부른다. 뒤의
+        경우 코루틴 본문은 태스크가 처음 스케줄될 때에야 돌기 시작하므로, `async def` 안에서
+        `current_time` 을 읽으면 그사이 받은 오디오가 섞일 수 있다. 호출식이 평가되는
+        순간은 두 방식 모두 커밋을 번역으로 넘기는 순간이므로 값은 코루틴 밖에서 읽는다.
+
+        인자 `audio_end_sec` 을 쓰지 않는 이유: `flush_uncommitted` 는 거기에 VAD 의
+        speech_end 를 넘긴다. 받은 오디오 길이가 아니다.
+        """
+        return self._ast_correct_and_translate(
+            text, current_lang, audio_end_sec,
+            dispatch_audio_sec=float(self.current_time),
+            dispatch_perf=time.perf_counter(),
+            utt_id=self._ast_utt_id,
+        )
+
+    async def _ast_correct_and_translate(self, text, current_lang, audio_end_sec, *,
+                                         dispatch_audio_sec, dispatch_perf, utt_id):
         tok = trans_guard.begin_local()
         try:
             corrected, translation, lang, extra = await super()._correct_and_translate(
@@ -356,6 +517,10 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
         finally:
             local = trans_guard.end_local(tok)
         extra["uttId"] = utt_id
+        extra["dispatchAudioSec"] = round(dispatch_audio_sec, 3)
+        # 비동기 경로에서는 FSL 의 `trans_sec` 가 generate 종료 기준으로 다시 계산돼 0 에
+        # 가깝게 나온다. 넘긴 순간부터 끝날 때까지를 따로 재 두어야 CA − NCA 를 검산할 수 있다.
+        extra["transWallSec"] = round(time.perf_counter() - dispatch_perf, 4)
         self._attach_trans_stats(extra, local)
         return corrected, translation, lang, extra
 
@@ -384,7 +549,7 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
         #   segInfoAgeSec       위 둘의 차이. 정상이면 1초 안쪽이고, 이게 크면
         #                       "묵은 타임스탬프로 새 텍스트를 찍었다"는 뜻이다
         #
-        # 여기서 읽어야 한다 — `_decision_audio_sec` 이 pop 하기 **전**이다.
+        # 여기서 읽어야 한다 — 상위 `_emit_final_payload` 가 pop 하기 **전**이다.
         _si = self._slot_seg_detected.get(slot_key) or {}
         _now = float(self.current_time)
         _det = _si.get("audio_sec")
@@ -406,9 +571,16 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
                 "누적 %.1fs 텍스트 %d자 | %.60s",
                 reason, float(_det), _now, _now - float(_det),
                 merged.get("slotAudioAccumSec", -1), len(original or ""), original or "")
-        merged["decisionAudioSec"] = round(
-            self._decision_audio_sec(slot_key, reason), 3
-        )
+        # d_i 는 번역으로 넘긴 순간이다(모듈 docstring). 그 값이 없는 커밋은 flush 의 폴백
+        # `_translate` 로 나간 것이다 — 이때만 payload 시점을 쓰고 표시를 남긴다. 조용히
+        # 섞으면 번역 대기가 다시 NCA 에 들어간다.
+        _dispatch = merged.get("dispatchAudioSec")
+        if _dispatch is None:
+            _dispatch = round(_now, 3)
+            merged["dispatchAudioSecFallback"] = True
+            logger.warning("[AST-NO-DISPATCH] reason=%s 넘긴 시점 기록 없음 — payload 시점 "
+                           "%.1fs 로 대체 | %.60s", reason, _now, original or "")
+        merged["decisionAudioSec"] = _dispatch
 
         # ── SEG 커밋의 audio_end 역추정 재설계 (AST_AUDIO_END_AT_COMMIT=1) ─────────
         #
@@ -440,10 +612,6 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
         # 비율 1.0 이라 구간 끝(=지금)을 가져가고, 한 청크에서 커밋이 여러 개 나오면
         # 그 구간을 글자 비율대로 나눠 갖는다. 두 실패 모드가 한 식으로 잡힌다.
         #
-        # `decisionAudioSec` 도 같은 값을 쓴다 — "이 커밋을 내기까지 읽은 소스 오디오"는
-        # 이 커밋이 담은 마지막 음성의 위치와 같아야 하기 때문이다. 이 값이 StreamLAAL 의
-        # `d_i` 이고, 원래 식의 오차가 그대로 음수 지연(최악 −39.3초)이 되고 있었다.
-        #
         # `seg_token_idx` 를 None 으로 두어 `_flush_deferred_seg_emits` 의 토큰 역추정이
         # 이 값을 덮어쓰지 못하게 한다(`no-token-info` 경로로 떨어진다).
         if os.environ.get("AST_AUDIO_END_AT_COMMIT") == "1" and reason == "seg":
@@ -462,7 +630,6 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
             merged["spanSec"] = round(_span, 3)
             merged["spanRatio"] = round(_ratio, 4)
             merged["restLen"] = _r
-            merged["decisionAudioSec"] = round(audio_end_sec, 3)
             _si2 = self._slot_seg_detected.get(slot_key)
             if _si2 is not None:
                 _si2["seg_token_idx"] = None
@@ -559,17 +726,6 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
             # 함수라 여기서 한 번에 잡는 게 유일하게 정확하다.
             kwargs["emitElapsedSec"] = round(self._stream_elapsed_sec(), 4)
             kwargs["audioReceivedSec"] = round(self.current_time, 3)
-
-            # 불변식: 오디오 T 지점까지의 내용을 담은 세그먼트를 T 이전에 결정할 수는 없다.
-            # SEG 커밋은 payload 를 만든 뒤 deferred 큐에 넣고, 나중에 토큰비율로
-            # audioEndSec 를 보정해서 내보낸다. 그래서 생성 시점에 찍은 decisionAudioSec 가
-            # 보정된 audioEndSec 보다 앞서는 경우가 생긴다(실측: dec=6.40 인데 audioEnd=12.00).
-            # 그대로 두면 그 세그먼트의 지연이 실제보다 작게 잡혀 LAAL 이 낙관적으로 나온다.
-            decision = kwargs.get("decisionAudioSec")
-            audio_end = kwargs.get("audioEndSec")
-            if decision is not None and audio_end is not None and audio_end > decision:
-                kwargs["decisionAudioSecRaw"] = decision  # 감사를 위해 원값 보존
-                kwargs["decisionAudioSec"] = round(float(audio_end), 3)
         elif msg_type == "hello":
             kwargs["message"] = "Qwen3-ASR Streaming Server (AST)"
             cfg = dict(kwargs.get("serverConfig") or {})
@@ -715,6 +871,10 @@ class ASTStreamingServer(fsl_server.FSLStreamingServer):
         지금은 잘린 채 영구히 굳으므로 더 나빠지지는 않는다. 그래도 추론 경로 수정이라
         전사 품질이 떨어질 수 있으니 발동한 발표와 안 한 발표를 함께 재서 확인할 것.
 
+        상한에 닿은 텍스트가 **반복 환각**이면 그 반복을 굳혀 끝없이 쌓는다. 그 경우는
+        `AST_CAP_LOOP_RESET=1` 이 굳히기 전에 슬롯을 새로 시작한다
+        (`ASTStreamingHandler._ast_cap_loop_reset_after_chunk`).
+
         이 수정은 오디오 누적을 막지 않는다. `MAX_AUDIO_ACCUM_SEC=90` 안전판이
         `if any_commit:` 안에 갇혀 커밋이 없으면 발동하지 않는 문제는 **여기서 고치지
         않는다**(별건). 그래서 한시 모드 중 오디오는 계속 늘고, prefix 창이
@@ -783,9 +943,37 @@ class ASTStreamingServer(fsl_server.FSLStreamingServer):
         logger.info("[CAP-FREEZE] 설치됨 — 상한 도달 시 prefix 굴림 (해제비율 %.2f, "
                     "prefix창 %d토큰). 커밋 정책은 불변.", exit_ratio, max_prefix)
 
+    def _ast_install_seg_logprob(self) -> None:
+        """`SEG_LOGPROB_TOPK` 를 서버가 덮어쓴 SamplingParams 에 다시 싣는다.
+
+        qwen3_asr.py 는 모델을 올릴 때 이 환경변수로 `logprobs` 를 켜지만, base 서버는 모델을
+        올린 직후 `self.asr.sampling_params` 를 새 SamplingParams(temperature·max_tokens·
+        skip_special_tokens 만)로 바꿔 끼운다. 그래서 스위치를 줘도 logprob 이 하나도 오지 않아
+        `[SEG-LOGPROB]` 과 `SEG_LOGPROB_DUMP` 가 조용히 비었다(실측: talk 268 70초 스트리밍에
+        기록 0줄). 바꿔 끼운 값을 그대로 두고 `logprobs` 만 더한다.
+        """
+        topk = os.environ.get("SEG_LOGPROB_TOPK")
+        if not topk or getattr(self, "_ast_seg_logprob_installed", False):
+            return
+        sp = getattr(self.asr, "sampling_params", None)
+        if sp is None:
+            logger.error("[SEG-LOGPROB] sampling_params 를 찾지 못했습니다 — 관측 불가")
+            return
+        if getattr(sp, "logprobs", None) is None:
+            from vllm import SamplingParams
+            self.asr.sampling_params = SamplingParams(
+                temperature=sp.temperature,
+                max_tokens=sp.max_tokens,
+                skip_special_tokens=sp.skip_special_tokens,
+                logprobs=int(topk),
+            )
+        self._ast_seg_logprob_installed = True
+        logger.info("[SEG-LOGPROB] 설치됨 — 생성 위치마다 top-%s logprob 수신", topk)
+
     async def handle_connection(self, websocket):
         self._ast_hide_seg_token()
         self._ast_install_cap_freeze()
+        self._ast_install_seg_logprob()
         async with self.connection_lock:
             self.active_connections += 1
             if self.idle_task and not self.idle_task.done():

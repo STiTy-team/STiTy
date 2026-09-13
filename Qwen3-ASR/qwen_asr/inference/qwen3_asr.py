@@ -925,6 +925,37 @@ class Qwen3ASRModel:
                 else:
                     logger.info("[SEG-LOGPROB] chunk=%s 후보 없음 / %d토큰",
                                 state.chunk_id, len(final.outputs[0].token_ids))
+            # 위치별 기록. 위 로그는 청크마다 최고 후보 한 곳만 남겨, 그 후보가 어느 단어 경계
+            # 였는지(gold 문장 끝인가, 문장 중간인가)를 되짚을 수 없다. `SEG_LOGPROB_DUMP=경로`
+            # 를 주면 생성 토큰마다 [토큰, 채택 logp, <SEG> logp(top-K 밖이면 null),
+            # top-K 최저 logp] 를 JSONL 한 줄(청크 하나)로 덧붙인다. `SEG_LOGPROB_TOPK` 와 함께
+            # 켜야 한다. `_diag_tag`·`_diag_now` 는 평가 서버가 발화 id 와 스트림 시각으로 채운다.
+            _dump = os.environ.get("SEG_LOGPROB_DUMP")
+            if _dump and getattr(final.outputs[0], "logprobs", None):
+                import json as _json
+                _tok = self.processor.tokenizer
+                _ids = list(final.outputs[0].token_ids)
+                _lps = final.outputs[0].logprobs or []
+                _rows = []
+                for _pos, _tid in enumerate(_ids):
+                    _lp = _lps[_pos] if _pos < len(_lps) else None
+                    _ch = _lp.get(_tid) if _lp else None
+                    _sg = _lp.get(_SEG_TOKEN_ID) if _lp else None
+                    _rows.append([
+                        _tok.decode([_tid]),
+                        round(_ch.logprob, 3) if _ch is not None else None,
+                        round(_sg.logprob, 3) if _sg is not None else None,
+                        round(min(v.logprob for v in _lp.values()), 3) if _lp else None,
+                    ])
+                with open(_dump, "a", encoding="utf-8") as _f:
+                    _f.write(_json.dumps({
+                        "tag": getattr(state, "_diag_tag", None),
+                        "now": getattr(state, "_diag_now", None),
+                        "chunk": state.chunk_id,
+                        "accum_sec": round(state.audio_accum.shape[0] / 16000.0, 3),
+                        "prefix": prefix or "",
+                        "tok": _rows,
+                    }, ensure_ascii=False) + "\n")
             gen_text = final.outputs[0].text
             if prefix:
                 prev_ids = self.processor.tokenizer.encode(state._raw_decoded)

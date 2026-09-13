@@ -19,8 +19,8 @@ d_i 는 i번째 타깃 단위가 나온 시점의 **지연**, T 는 소스 오�
 타깃 단위는 모두 같은 d를 공유한다 (chunk-level SimulST의 표준 처리).
 
 d를 무엇으로 두느냐에 따라 두 가지를 모두 보고한다:
-  - LAAL      (non-computation-aware): d = 커밋을 결정한 순간까지 읽은 소스 오디오 길이
-                                       (`decisionAudioSec`). 정책만 평가, 하드웨어 무관.
+  - LAAL      (non-computation-aware): d = 커밋을 번역으로 넘긴 순간까지 서버가 받은 소스
+                                       오디오 길이(`decisionAudioSec`). 정책만 평가, 하드웨어 무관.
   - LAAL_CA   (computation-aware)    : d = 클라이언트가 `final`을 받은 실시간 경과.
                                        계산 비용 포함, 실제 체감.
 검산: LAAL_CA − LAAL ≈ mean(fsl). 크게 어긋나면 타이밍 배선이 틀린 것이다.
