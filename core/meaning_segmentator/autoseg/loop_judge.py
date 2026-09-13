@@ -207,6 +207,46 @@ def decide(boot: dict, strong: float = 0.005) -> str:
 
 # ── 실행 ────────────────────────────────────────────────────────────────
 
+# ── 재개 ────────────────────────────────────────────────────────────────
+
+STATE_FILE = "state.json"
+
+
+def save_state(path: Path, done: int, prompt: str, history: list, checkpoint: dict | None,
+               prompt_budget: int, total_cost: float) -> None:
+    """이터레이션 경계의 루프 상태. 임시 파일에 쓰고 이름을 바꿔, 쓰는 도중에 죽어도 직전
+    상태가 온전히 남는다."""
+    blob = {"done": done, "prompt": prompt, "history": history, "checkpoint": checkpoint,
+            "prompt_budget": prompt_budget, "total_cost": round(total_cost, 6)}
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(blob, ensure_ascii=False, indent=1), encoding="utf-8")
+    tmp.replace(path)
+
+
+def load_state(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def prior_spend(run_dir: Path) -> float:
+    """앞선 실행들이 이 런에 쓴 돈. 게이트웨이 누적은 실행마다 0 에서 다시 시작하므로
+    `metrics.json` 에 앞선 실행 몫을 더한 `run_total_cost` 를 같이 적고, 그 최댓값을 쓴다.
+    그 필드가 없는 기록은 그 실행 하나의 누적 `usage.cost` 로 본다."""
+    best = 0.0
+    for p in run_dir.glob("iter_*/metrics.json"):
+        try:
+            blob = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        best = max(best, float(blob.get("run_total_cost",
+                                        (blob.get("usage") or {}).get("cost", 0.0))))
+    state = load_state(run_dir / STATE_FILE)
+    if state:
+        best = max(best, float(state.get("total_cost", 0.0)))
+    return best
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -234,7 +274,10 @@ def main() -> int:
                    help="집합 탐색 산출물(set_scores_dev.json). 주면 목표가 그리디 오라클 대신 "
                         "탐색 최적이 된다 — 상호작용 오류는 이때만 보인다")
     p.add_argument("--checkpoint-every", type=int, default=2, help="0 이면 dev-B 를 안 본다")
-    p.add_argument("--prompt-budget", type=int, default=9000, help="프롬프트 길이 상한(자)")
+    p.add_argument("--prompt-budget", type=int, default=None,
+                   help="PE 개정본 길이 상한(자). 기본은 시작 프롬프트 길이 — 이터레이션 사이에 "
+                        "길이가 늘지 않는다. Writer 의 길이 지시는 지켜진다는 보장이 없어, 고정값을 "
+                        "두면 v0 가 처음부터 상한을 넘어 개정이 매번 반려될 수 있다")
     p.add_argument("--k-samples", type=int, default=3)
     p.add_argument("--model", default="gpt-5-mini")
     p.add_argument("--seg-reasoning-effort", default="medium")
@@ -242,7 +285,12 @@ def main() -> int:
     p.add_argument("--batch-size", type=int, default=6)
     p.add_argument("--workers", type=int, default=16)
     p.add_argument("--comet-batch-size", type=int, default=32)
-    p.add_argument("--budget", type=float, default=25.0)
+    p.add_argument("--budget", type=float, default=25.0,
+                   help="런 전체 비용 상한($). --resume 이면 앞선 실행 지출을 빼고 남은 만큼만 쓴다")
+    p.add_argument("--resume", action="store_true",
+                   help="같은 --run-id 의 state.json 에서 마지막으로 끝난 이터레이션 다음부터 잇는다. "
+                        "state.json 이 없으면 v0 단계부터 — 이미 쓴 v0 후보 파일은 Writer 를 다시 "
+                        "부르지 않고 그대로 채점한다(분절 캐시 적중이라 공짜)")
     add_provider_args(p)
     a = p.parse_args()
 
@@ -274,6 +322,15 @@ def main() -> int:
 
     gw = Gateway.from_args(a, model=a.model, budget=a.budget,
                            reasoning_effort=a.agent_reasoning_effort)
+    spent_before = prior_spend(run_dir) if a.resume else 0.0
+    state = load_state(run_dir / STATE_FILE) if a.resume else None
+    if a.resume:
+        gw.budget = a.budget - spent_before
+        log(f"[resume] 앞선 실행 지출 ${spent_before:.2f} — 이번 실행 예산 ${gw.budget:.2f} / "
+            + (f"이터 {state['done']} 까지 완료" if state else "state.json 없음, v0 단계부터"))
+        if gw.budget <= 0:
+            log("[stop] 남은 예산이 없다 — --budget 을 올려라")
+            return 2
     seg_cache = JsonCache(run_dir / "cache" / "segment.json")
     seg_effort = None if a.seg_reasoning_effort == "none" else a.seg_reasoning_effort
     translators = {t: LocalTranslator(tgt_code=to_lang_code(t),
@@ -286,6 +343,15 @@ def main() -> int:
                                                               batch_size=a.comet_batch_size),
                              spaced=spaced,
                              target_spaced={t: target_is_spaced(t) for t in targets})
+
+    def save_usage(d: Path) -> None:
+        """런 누적 usage 를 `iter_NN/metrics.json` 에 덮어쓴다 — `infra.cost_report` 가 읽는 형식.
+        에이전트 호출과 채점마다 부르므로 크래시해도 직전 호출까지의 지출이 남는다."""
+        d.mkdir(parents=True, exist_ok=True)
+        u = gw.usage.snapshot()
+        (d / "metrics.json").write_text(json.dumps({"usage": u,
+                                                    "run_total_cost": spent_before + u["cost"]},
+                                                   ensure_ascii=False, indent=1), encoding="utf-8")
 
     def hset_of(sents, lab, sets: dict) -> dict:
         keys = sorted(sets)
@@ -345,7 +411,7 @@ def main() -> int:
             profile = agents.Profiler(gw).profile([x.text for x in spare[:20]])
             prof_path.write_text(json.dumps(profile, ensure_ascii=False, indent=2),
                                  encoding="utf-8")
-        out_rules = ad.output_rules(spaced, "source")
+        out_rules = ad.output_rules(spaced, "source", meaning_in_scoring_rules=True)
         facts = agents.measured_facts(measured)
         user = (f"Language profile:\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
                 + (facts + "\n\n" if facts else "")
@@ -354,13 +420,19 @@ def main() -> int:
                 + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{out_rules}")
         cands = []
         for c in range(a.v0_candidates):
-            pr = gw.chat(aj.writer_system(spaced, targets), user, max_tokens=16000,
-                         reasoning_effort=(None if a.agent_reasoning_effort == "none"
-                                           else a.agent_reasoning_effort),
-                         purpose="prompt_v0").strip()
-            pr = aj.replace_section(pr, "[Output Rules]", out_rules)
+            cand_path = run_dir / f"prompt_v0_cand{c}.txt"
+            if a.resume and cand_path.exists():
+                pr = cand_path.read_text(encoding="utf-8")
+                log(f"[v0] 후보 {c} 파일 재사용")
+            else:
+                pr = gw.chat(aj.writer_system(spaced, targets), user, max_tokens=16000,
+                             reasoning_effort=(None if a.agent_reasoning_effort == "none"
+                                               else a.agent_reasoning_effort),
+                             purpose="prompt_v0").strip()
+                save_usage(run_dir / "iter_00")
+                pr = aj.replace_section(pr, "[Output Rules]", out_rules)
+                cand_path.write_text(pr, encoding="utf-8")
             errs = aj.check_skeleton(pr)
-            (run_dir / f"prompt_v0_cand{c}.txt").write_text(pr, encoding="utf-8")
             if errs:
                 log(f"[v0] 후보 {c} 골격 실패: {errs}")
                 continue
@@ -374,6 +446,7 @@ def main() -> int:
             scored = []
             for c, pr in enumerate(cands):
                 _r, _s, h, _m = score_prompt(pr, devA, labA, f"v0 후보 {c}")
+                save_usage(run_dir / "iter_00")
                 scored.append((st.mean(h.values()), c, pr))
             scored.sort(reverse=True)
             log(f"[v0] 후보 H_set {[round(x[0], 4) for x in scored]} → {scored[0][1]} 채택")
@@ -382,11 +455,23 @@ def main() -> int:
         log("[stop] --prompt 또는 --generate-v0 가 필요하다")
         return 2
     v0_path.write_text(prompt, encoding="utf-8")
+    budget = a.prompt_budget or len(prompt)
+    start = 1
+    if state:
+        prompt, history, checkpoint = state["prompt"], state["history"], state["checkpoint"]
+        budget, start = state["prompt_budget"], state["done"] + 1
+        log(f"[resume] 이터 {start} 부터 — 현재 프롬프트 {len(prompt)}자 / PE 상한 {budget}자")
+    else:
+        log(f"[v0] 길이 {len(prompt)}자 / PE 상한 {budget}자")
 
-    cur_rows, cur_sets, cur_h, cur_m = score_prompt(prompt, devA, labA, "iter 0")
-    (run_dir / "iter_00").mkdir(parents=True, exist_ok=True)
+    # 재개 때도 다시 잰다 — 현재 프롬프트의 분절은 캐시에 있어 LLM 호출이 없고 QE 만 돈다.
+    cur_rows, cur_sets, cur_h, cur_m = score_prompt(
+        prompt, devA, labA, "iter 0" if start == 1 else f"iter {start - 1} 재개")
+    save_usage(run_dir / f"iter_{start - 1:02d}")
 
-    for it in range(1, a.iterations + 1):
+    for it in range(start, a.iterations + 1):
+        save_state(run_dir / STATE_FILE, it - 1, prompt, history, checkpoint, budget,
+                   spent_before + gw.usage.snapshot()["cost"])
         idir = run_dir / f"iter_{it:02d}"
         idir.mkdir(parents=True, exist_ok=True)
 
@@ -417,17 +502,33 @@ def main() -> int:
         (idir / "critique.json").write_text(json.dumps({"raw": crit, "findings": findings},
                                                        ensure_ascii=False, indent=1),
                                             encoding="utf-8")
+        save_usage(idir)
         if not findings:
             log("[iter] Critic 이 쓸 수 있는 finding 을 안 냈다 — 건너뛴다")
             continue
 
-        pe = gw.chat_json(aj.engineer_system(a.prompt_budget, len(prompt)),
-                          json.dumps({"current_prompt": prompt, "findings": findings,
-                                      "history": history}, ensure_ascii=False),
+        pe_user = {"current_prompt": prompt, "findings": findings, "history": history,
+                   "size": aj.size_brief(prompt, budget)}
+        pe = gw.chat_json(aj.engineer_system(budget, len(prompt)),
+                          json.dumps(pe_user, ensure_ascii=False),
                           max_tokens=AGENT_MAX_TOKENS, purpose="engineer")
-        cand, note = aj.parse_prompt(pe, prompt, a.prompt_budget)
+        save_usage(idir)
+        cand, note = aj.parse_prompt(pe, prompt, budget)
+        if cand is None and aj.only_too_long(note):
+            # 길이만 넘은 초안은 버리지 않고 실측 초과량을 붙여 한 번 되돌린다 — 콜 하나가
+            # 이터레이션 하나를 통째로 날리는 것보다 싸다.
+            draft = (pe or {}).get("prompt") or ""
+            fb = aj.size_feedback(draft, prompt, budget)
+            log(f"[iter {it}] PE 길이 초과 {len(draft)} > {budget} — 초과량 {fb['over_by']}자를 "
+                f"알려 한 번 더")
+            pe = gw.chat_json(aj.engineer_system(budget, len(prompt)),
+                              json.dumps({**pe_user, "your_previous_attempt": draft,
+                                          "size_feedback": fb}, ensure_ascii=False),
+                              max_tokens=AGENT_MAX_TOKENS, purpose="engineer:shorten")
+            save_usage(idir)
+            cand, note = aj.parse_prompt(pe, prompt, budget)
         if cand is None:
-            log(f"[iter] PE 출력 반려: {note}")
+            log(f"[iter] PE 출력 반려: {note} / 누적 ${gw.usage.snapshot()['cost']:.2f}")
             history.append({"iter": it, "adopted": False, "reason": note})
             continue
 
@@ -476,13 +577,17 @@ def main() -> int:
             (run_dir / "checkpoint.json").write_text(
                 json.dumps({k: v for k, v in (checkpoint or {}).items() if k != "prompt"},
                            ensure_ascii=False, indent=1), encoding="utf-8")
+        save_usage(idir)
+    else:
+        save_state(run_dir / STATE_FILE, a.iterations, prompt, history, checkpoint, budget,
+                   spent_before + gw.usage.snapshot()["cost"])
 
     (run_dir / "history.json").write_text(json.dumps(history, ensure_ascii=False, indent=1),
                                           encoding="utf-8")
     (run_dir / "best_prompt.txt").write_text(prompt, encoding="utf-8")
     u = gw.usage.snapshot()
     log(f"[끝] dev-A H_set {st.mean(cur_h.values()):.4f} / 오라클 {st.mean(ora_hA.values()):.4f} "
-        f"/ 비용 ${u['cost']:.2f} ({u['calls']} 호출)")
+        f"/ 비용 ${spent_before + u['cost']:.2f} (이번 실행 ${u['cost']:.2f}, {u['calls']} 호출)")
     gw.close()
     return 0
 

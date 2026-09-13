@@ -166,5 +166,40 @@ class Cases(unittest.TestCase):
         self.assertEqual([c["id"] for c in got], ["s1", "s2"])
 
 
+class State(unittest.TestCase):
+    def test_저장한_그대로_읽히고_임시파일이_안_남는다(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / lj.STATE_FILE
+            ck = {"iter": 2, "value": 0.61, "prompt": "P2"}
+            lj.save_state(p, 2, "P3", [{"iter": 1, "adopted": False}], ck, 9000, 12.5)
+            got = lj.load_state(p)
+            self.assertEqual((got["done"], got["prompt"], got["checkpoint"], got["prompt_budget"]),
+                             (2, "P3", ck, 9000))
+            self.assertEqual([x.name for x in Path(d).iterdir()], [lj.STATE_FILE])
+
+    def test_없으면_None(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as d:
+            self.assertIsNone(lj.load_state(Path(d) / lj.STATE_FILE))
+
+    def test_앞선_지출은_기록들의_최댓값(self):
+        """실행마다 게이트웨이 누적이 0 에서 다시 시작한다 — 합이 아니라 런 누적의 최댓값."""
+        import json, tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as d:
+            r = Path(d)
+            (r / "iter_00").mkdir()
+            (r / "iter_00" / "metrics.json").write_text(json.dumps({"usage": {"cost": 7.4}}))
+            (r / "iter_02").mkdir()
+            (r / "iter_02" / "metrics.json").write_text(
+                json.dumps({"usage": {"cost": 3.0}, "run_total_cost": 10.4}))
+            self.assertAlmostEqual(lj.prior_spend(r), 10.4)
+            lj.save_state(r / lj.STATE_FILE, 2, "P", [], None, 1, 11.0)
+            self.assertAlmostEqual(lj.prior_spend(r), 11.0)
+
+
 if __name__ == "__main__":
     unittest.main()

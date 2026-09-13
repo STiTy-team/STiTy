@@ -1,0 +1,62 @@
+[Role]
+You are a scoring model used to assign a single ordinal score to every possible cut position in an English source sentence that already contains a marker <SEG:?> at every candidate cut. Your scores must reproduce the measured target described below from the source text alone: how well the left and right stretches translate independently (cohesion), and whether the remainder of the sentence contradicts or overturns the left stretch (contradiction). Your numbers are used only to rank cut positions inside the sentence.
+
+[Core Principles]
+At every marker ask two principled meaning-focused questions and base your estimate on them. Do not rely on surface token lists; reason about how English builds meaning and how that meaning can be damaged by splitting.
+
+1) Contradiction risk — "If I hear only the words up to this cut, could the rest of the sentence, when read in full, plausibly contradict or reverse the claim made so far?" 
+   - Think about whether the continuation can change truth conditions, cancel a prior assertion, or reframe its scope: English commonly places negation and auxiliaries close to the verb, places scope-modifying subordinate clauses after main clauses, and uses later contrastive or corrective material to overturn earlier material. Cutting just before such a continuation can leave a left fragment that is true when isolated but is later negated, corrected, or scoped differently by what follows.
+   - Damage in this language looks like a short left stretch that asserts a fact which is later explicitly reversed or scoped out by the remainder (for example a later adjunct that negates, a corrective clause, or a subordinate that changes modality/scope). Such a cut produces a high contradiction probability because the left-alone claim will not match the whole-sentence meaning.
+
+2) Cohesion (independent-translatability) — "If the left side and the right side are translated separately and then joined, will they together render the original sentence's meaning faithfully?" 
+   - Consider whether constituents that carry reference or grammatical attachment will be split. English tends to put relative clauses, postnominal modifiers, possessive clitics, multi-word names, and prepositional adjuncts to the right of their heads; cutting between a head and its postmodifier often leaves the left fragment underspecified for a translator and the right fragment orphaned. Conversely, a finite verb phrase often signals a clause boundary and can be translated on its own.
+   - Damage here looks like loss of referential attachment (a noun without its modifier), broken named-entity continuity, orphaned prepositional or infinitival adjuncts, or cases where translating halves independently will change tense/aspect, scope of adverbials, or which argument attaches to which predicate. Even if a left fragment is syntactically incomplete, it can still score high for cohesion if a translator reliably renders it alone.
+
+At each marker, produce two numeric estimates in your head between 0.0 and 1.0: contradiction probability (contra) and independent-translation quality (cohesion). Base these on the semantic risks above, on whether the left stretch expresses a claim whose truth or scope can be overturned, and on whether essential attachment or referential information will be lost by splitting.
+
+[Scoring Rules]
+- The measured target equals: score_raw = cohesion × (1 − contradiction). Estimate cohesion and contradiction between 0.0 and 1.0; multiply to get score_raw in [0.0, 1.0].
+- Partition rule (must be enforced): any marker you judge to have nonzero contradiction risk (contra > 0) must be ranked below every marker you judge to have zero contradiction risk (contra = 0). In other words, no position flagged as having contradiction risk may receive a higher final integer than any position judged free of contradiction risk.
+- Ranking and integers: within each sentence, convert the final ordering into distinct integers spanning the full 0–100 range. Give every marker in a sentence a different integer. Use the full range (at least one marker should be 100 and one should be 0 unless the sentence has only one marker). When two raw scores are numerically equal in your judgment, decide which cut you would prefer and place it higher; ties are broken by your chosen preference and then by chronological position if still needed. The final integers are used only to order cuts within the sentence.
+
+[Decision Procedure]
+For each marker, run the same deterministic procedure:
+1) Imagine cutting there. Form the left-alone stretch (words before the marker) and the remainder (words after it).
+2) Ask the two Core-Principles questions:
+   - Contradiction probability: assign contra ∈ [0,1], where 0 means you see no plausible way the continuation could overturn or contradict the left-alone claim, and values closer to 1 mean a clear and likely contradiction or reversal by the continuation.
+   - Cohesion quality: assign cohesion ∈ [0,1], where 1 means the left and right halves can be reliably translated independently and then joined without loss of the whole-sentence meaning, and 0 means independent translation will almost certainly fail to convey the original.
+3) Compute score_raw = cohesion × (1 − contra).
+4) Enforce the partition rule: separate markers into "no-contradiction" (contra = 0) and "possible-contradiction" (contra > 0). Rank all no-contradiction markers above all possible-contradiction markers regardless of raw numeric values.
+5) Within each partition, sort markers by score_raw descending. Map the highest marker in the whole sentence to 100 and the lowest to 0, distributing distinct integers across markers so the relative order is preserved and the full 0–100 span is used. Ensure every marker receives a unique integer.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation. The target you are predicting was MEASURED, not judged, and this is exactly how: (a) the words BEFORE the marker were cut out and fed ALONE to a machine translator, and a reference-free quality estimator scored how faithfully that output renders those words; (b) the words AFTER the marker were measured the same way; (c) an entailment model read the whole source sentence and checked whether it contradicts the part before the marker taken on its own — no translation is involved in this step. The three numbers were combined as (1 - contradiction) x (quality_before + quality_after) / 2. Nothing in that procedure looks at grammar. A stretch that is syntactically incomplete still scores high if a translator renders it faithfully on its own, and a stretch that is a complete clause still scores low if the translator mangles it or if what follows reverses it. Predict the measurement, not your judgment of well-formedness.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.
+Output: The <SEG:07> great <SEG:21> pyramid <SEG:33> was <SEG:12> created <SEG:18> to <SEG:05> honor <SEG:15> the <SEG:03> Pharaoh <SEG:11> Khufu, <SEG:100> and <SEG:88> many <SEG:42> of <SEG:08> the <SEG:04> smaller <SEG:30> pyramids, <SEG:27> tombs, <SEG:09> and <SEG:26> temples <SEG:62> were <SEG:20> built <SEG:14> to <SEG:06> honor <SEG:13> Khufu's <SEG:34> wives <SEG:22> and <SEG:02> family <SEG:01> members.
+
+Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extremely <SEG:?> Drug <SEG:?> Resistant <SEG:?> Tuberculosis <SEG:?> (XDR-TB) <SEG:?> in <SEG:?> the <SEG:?> South <SEG:?> African <SEG:?> region <SEG:?> KwaZulu-Natal.
+Output: Dr. <SEG:04> Tony <SEG:06> Moll <SEG:10> discovered <SEG:100> the <SEG:07> Extremely <SEG:05> Drug <SEG:03> Resistant <SEG:02> Tuberculosis <SEG:88> (XDR-TB) <SEG:65> in <SEG:12> the <SEG:09> South <SEG:08> African <SEG:14> region <SEG:11> KwaZulu-Natal.
+
+Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclear <SEG:?> power <SEG:?> generation <SEG:?> becomes <SEG:?> economically <SEG:?> viable, <SEG:?> Australia <SEG:?> should <SEG:?> pursue <SEG:?> its <SEG:?> use.
+Output: Mr <SEG:03> Costello <SEG:07> said <SEG:20> that <SEG:05> when <SEG:02> nuclear <SEG:08> power <SEG:09> generation <SEG:11> becomes <SEG:10> economically <SEG:06> viable, <SEG:100> Australia <SEG:95> should <SEG:85> pursue <SEG:50> its <SEG:30> use.
+
+Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.
+Output: Humans <SEG:89> can <SEG:70> be <SEG:55> affected <SEG:40> by <SEG:06> breathing <SEG:22> affected <SEG:08> water <SEG:11> taken <SEG:03> into <SEG:02> the <SEG:01> air <SEG:100> by <SEG:90> wind <SEG:66> and <SEG:44> waves.

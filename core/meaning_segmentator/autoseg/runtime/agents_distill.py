@@ -54,9 +54,16 @@ def score_meaning(contra_source: str = "translation") -> str:
     raise ValueError(f"contra_source: {contra_source}")
 
 
-def output_rules(spaced: bool, contra_source: str = "translation") -> str:
+def output_rules(spaced: bool, contra_source: str = "translation",
+                 meaning_in_scoring_rules: bool = False) -> str:
     unit = "words" if spaced else "characters"
-    meaning = score_meaning(contra_source)
+    # 판단형 루프(loop_judge)는 측정 절차를 [Scoring Rules] 한 곳에만 쓴다. 두 곳에 쓰면 라벨을
+    # 바꿀 때 한쪽만 고쳐져, 한 프롬프트 안에 서로 다른 목표 설명이 남는다.
+    # 헤더를 대괄호째 쓰지 않는다 — `replace_section`/`section_of` 가 본문 속 "[Scoring Rules]" 를
+    # 섹션 경계로 잡아 이 섹션을 중간에서 자르고 꼬리를 한 벌 더 붙인다 (judge02 v0 에서 났다).
+    meaning = ("how good a cut at that position is for streaming translation, exactly as the "
+               "measured target stated in the Scoring Rules section defines it."
+               if meaning_in_scoring_rules else score_meaning(contra_source))
     return f"""[Output Rules]
 - The input already contains a <SEG:?> marker at every position where a cut is possible.
   Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>

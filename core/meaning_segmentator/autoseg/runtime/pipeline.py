@@ -181,7 +181,11 @@ class JsonCache:
             self._flush_locked()
 
     def _flush_locked(self) -> None:
-        self.path.write_text(json.dumps(self._data, ensure_ascii=False), encoding="utf-8")
+        # 임시 파일에 쓰고 이름을 바꾼다. 제자리에 쓰다 죽으면 잘린 JSON 이 남고, 생성자가
+        # JSONDecodeError 를 빈 캐시로 받아 번역·분절 캐시가 **통째로 조용히** 사라진다.
+        tmp = self.path.with_name(self.path.name + ".tmp")
+        tmp.write_text(json.dumps(self._data, ensure_ascii=False), encoding="utf-8")
+        tmp.replace(self.path)
         self._dirty = 0
 
 

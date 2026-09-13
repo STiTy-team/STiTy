@@ -140,6 +140,7 @@ PER_TGT = {
     'F 참조 COMET (이어붙임)':    lambda t, i, j: blob[str(i)][str(j)][t][0],
     'G 무참조 QE (이어붙임)':     lambda t, i, j: blob[str(i)][str(j)][t][1],
 }
+LAB_BASED = {'B 소스contra × adq (현행)', 'D adq 만'}   # lab 을 읽으므로 TG_LAB 만 돈다
 
 def kept_of(u, c, sc, T):
     return kept_positions(_seg_with(u, {j: int(round(sc[j] * 10000)) for j in c}, spaced), T, spaced, mg)
@@ -196,7 +197,8 @@ for name, f in DEFS.items():
         u = units[i]; c = list(range(mg, len(u) - mg + 1))
         if not c: continue
         agg = {j: f(i, j) for j in c}
-        per_t = {t: {j: PER_TGT[name](t, i, j) for j in c} for t in TG} if name in PER_TGT else None
+        per_t = ({t: {j: PER_TGT[name](t, i, j) for j in c} for t in (TG_LAB if name in LAB_BASED else TG)}
+                 if name in PER_TGT else None)
         for T in cfg['t_grid']:
             if boundaries(s['text'], T, spaced) <= 0: continue
             ko = kept_of(u, c, agg, T)

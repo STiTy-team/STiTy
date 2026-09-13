@@ -96,9 +96,22 @@
 
 ## PE 계약
 
-`[Core Principles]` 의 질문과 `[Examples]` 만 고친다. `[Scoring Rules]` 에 줄을 더하지
-않는다 — 그쪽은 결합식(`(1 − contradiction) × cohesion`)과 순위 규칙만 둔다.
-`[Output Rules]` 의 측정 절차 서술은 라벨이 바뀔 때만 고친다.
+`[Core Principles]` 의 질문과 `[Examples]` 만 고친다. `[Scoring Rules]` 와 `[Output Rules]`
+는 동결이다.
+
+- `[Scoring Rules]` 는 **측정 절차를 서술하는 유일한 자리**다 — cohesion·contra 가 무엇이고
+  어떻게 곱하는지, 그리고 결합식과 순위 규칙. Writer 가 v0 를 만들 때 쓴다.
+- `[Output Rules]` 는 출력 형식만 두고, 점수의 뜻은 `[Scoring Rules]` 를 가리킨다
+  (`agents_distill.output_rules(..., meaning_in_scoring_rules=True)`). 두 곳에 측정을 쓰면 라벨을
+  바꿀 때 한쪽만 고쳐져 한 프롬프트 안에 서로 다른 목표 설명이 남는다.
+
+PE 개정본의 길이 상한은 시작 프롬프트 길이다(`--prompt-budget` 으로 덮어쓴다). 길이가
+이터레이션 사이에 늘지 않으므로 새 줄은 옛 줄을 대체해야 한다.
+
+모델은 글자 수를 못 센다(judge01: 8000자 지시에 Writer 10,947자, 상한 9,000 에 PE 9,895자).
+그래서 길이는 코드가 센다. PE 입력의 `size` 에 섹션별 실측 길이와 고칠 수 있는 두 섹션의
+합계 상한(`editable_cap`)을 넣고, 길이만 넘은 초안은 버리지 않고 섹션별 실측·초과량
+(`size_feedback`)을 붙여 **한 번** 되돌린다. 다른 사유가 섞인 반려는 되돌리지 않는다.
 
 ## 관문과 가드
 
@@ -127,6 +140,26 @@
 
 `run24`/`run25` 의 분할을 그대로 쓴다 (같은 시드·같은 문장). dev 215 를 A/B 로 나눠
 A 로 고르고 B 로 확인한다. test 100 은 마지막 한 번.
+
+## 재개
+
+`--resume` 은 같은 `--run-id` 를 이어서 돈다. 몇 시간짜리 런이라 재부팅·GPU 오류로 끊기면
+처음부터 다시 도는 값이 크다.
+
+- 이터레이션을 시작할 때마다 `state.json` 에 그때까지의 상태를 쓴다 — 완료한 이터 수, 현재
+  프롬프트, 시도 이력, 체크포인트(프롬프트 포함), PE 길이 상한, 런 누적 지출. 임시 파일에 쓰고
+  이름을 바꾸므로 쓰는 도중에 죽어도 직전 상태가 남는다.
+- 재개하면 끝난 이터 다음부터 돈다. 도중에 끊긴 이터는 Critic 부터 다시 한다 — PE 가
+  비결정론이라 같은 후보가 나오지 않으므로 그 이터의 채점 비용은 한 번 더 든다.
+- `state.json` 이 없으면 v0 단계부터 잇는다. 이미 쓴 `prompt_v0_cand*.txt` 는 Writer 를 다시
+  부르지 않고 채점한다. 분절 캐시가 프롬프트 해시로 잡혀 있어 끝난 채점은 공짜다.
+- `--budget` 은 **런 전체** 상한이다. 앞선 실행 지출은 `iter_*/metrics.json` 의
+  `run_total_cost`(없으면 그 실행의 `usage.cost`)와 `state.json` 중 최댓값으로 잡아 뺀다.
+
+```bash
+RUN=judge03 BUDGET=50 RESUME=1 PY=.venv-autoseg/bin/python \
+  bash core/meaning_segmentator/tools/autoseg_en2x/run_judge01.sh
+```
 
 ## 산출물
 

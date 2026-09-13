@@ -7,7 +7,8 @@
 (dev overlap 0.4767 → 0.5485).
 
 여기서는 Critic 이 **판단 기준**을 내고 PE 가 `[Core Principles]`/`[Examples]` 를 고친다.
-`[Scoring Rules]` 는 결합식과 순위 규칙만 두고 건드리지 않는다.
+`[Scoring Rules]` 는 측정 절차·결합식·순위 규칙만 두고, `[Output Rules]` 와 함께 건드리지 않는다.
+측정 절차를 서술하는 곳은 `[Scoring Rules]` 하나다.
 """
 
 from __future__ import annotations
@@ -75,12 +76,17 @@ ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iterat
 Hard constraints:
 1. Keep the section skeleton exactly: [Role], [Core Principles], [Scoring Rules],
    [Decision Procedure], [Output Rules], [Examples]. Same headers, same order.
-2. Copy [Output Rules] verbatim from the current prompt. It is frozen — it states how the
-   target was measured, and the measurement did not change.
-3. [Scoring Rules] holds only the combination formula and the ranking/tie rules. Do not add
-   scoring conditions there. Judgements belong in [Core Principles], worked cases in [Examples].
-4. SIZE: at most __BUDGET__ characters (current prompt is __CURLEN__). A prompt of judgements is
-   short by design; if a new line supersedes an old one, REPLACE it rather than append.
+2. Copy [Scoring Rules] and [Output Rules] verbatim from the current prompt. Both are frozen —
+   [Scoring Rules] states how the target was measured, and the measurement did not change.
+3. Do not add scoring conditions anywhere. Judgements belong in [Core Principles], worked cases
+   in [Examples].
+4. SIZE: at most __BUDGET__ characters (current prompt is __CURLEN__). The size is held fixed
+   across iterations: if a new line supersedes an old one, REPLACE it rather than append, and cut
+   weaker material to make room for what you add. You cannot count characters reliably, so code
+   counts them for you: the input field "size" gives every section's length, and "editable_cap"
+   is the most [Core Principles] and [Examples] may hold together. Trust those numbers.
+   If "size_feedback" is present, "your_previous_attempt" was over the limit by "over_by"
+   characters: keep its changes, and cut at least that much from the sections in "cut_from".
 5. At most 8 examples. If you add one, remove a weaker one. Examples keep the Input/Output form
    with <SEG:?> at every candidate position in the input.
 6. Never write token lists or punctuation rules. A token condition fires on a handful of
@@ -133,9 +139,12 @@ Hard requirements:
   nothing about the rest, while the measurement is taken at every position; a judgement applies
   everywhere. Grammar labels are not the criterion either: a cut between two complete clauses
   can measure badly, and a cut inside a phrase can measure well.
-- [Scoring Rules] holds ONLY how to combine the judgements into one number and the ranking rules
-  (distinct integers, use the full range, a position with contradiction risk ranks below every
-  position without one). No scoring conditions there.
+- [Scoring Rules] is the ONLY place that states how the target was measured — [Output Rules]
+  points to it and says nothing about the measurement. State cohesion, contra and the product
+  exactly as given above, then how to combine the judgements into one number and the ranking
+  rules (distinct integers, use the full range). contra is a graded probability and enters only
+  through the product: do not turn it into a yes/no flag or a separate tier that outranks
+  cohesion. No scoring conditions there.
 - [Examples]: 3-4 pairs, in the SOURCE language, each Input/Output with <SEG:?> at every
   candidate position of the input and integers in the output. Build them from the sample
   sentences you are given, not from invented text.
@@ -217,3 +226,38 @@ def parse_prompt(blob: dict, current: str, budget: int) -> tuple[str | None, lis
     if errs:
         return None, errs
     return pr, [str(x) for x in (blob.get("changelog") or [])]
+
+
+# ── 길이 — 모델은 글자 수를 못 센다. 코드가 세서 넘긴다 ─────────────────────
+# judge01 에서 Writer 는 "8000자 이하" 지시에 10,947자를, PE 는 상한 9,000 에 9,895자를 냈다.
+# 상한 숫자만 주면 쓰는 도중에 길이를 가늠하지 못하므로, 섹션별 실측과 초과량을 준다.
+
+EDITABLE = tuple(ALLOWED_WHERE.values())
+
+
+def section_sizes(prompt: str) -> dict[str, int]:
+    return {h: len(section_of(prompt, h)) for h in SECTIONS}
+
+
+def size_brief(prompt: str, budget: int) -> dict:
+    """PE 입력용 — 섹션별 길이와, 고칠 수 있는 두 섹션이 함께 가질 수 있는 최대 길이."""
+    sizes = section_sizes(prompt)
+    fixed = len(prompt) - sum(sizes[h] for h in EDITABLE)
+    return {"counted_by": "code", "budget": budget, "current_total": len(prompt),
+            "sections": sizes, "editable_sections": list(EDITABLE),
+            "editable_cap": budget - fixed}
+
+
+def size_feedback(draft: str, current: str, budget: int) -> dict:
+    """길이 초과로 반려된 초안을 한 번 되돌려 보낼 때 붙이는 실측."""
+    now, was = section_sizes(draft), section_sizes(current)
+    return {"counted_by": "code", "attempt_total": len(draft), "budget": budget,
+            "over_by": len(draft) - budget,
+            "sections": {h: {"attempt": now[h], "current": was[h], "change": now[h] - was[h]}
+                         for h in SECTIONS},
+            "cut_from": sorted(EDITABLE, key=lambda h: now[h] - was[h], reverse=True)}
+
+
+def only_too_long(errs: list[str]) -> bool:
+    """반려 사유가 길이 초과뿐인가 — 그때만 되돌려 보낼 값어치가 있다."""
+    return bool(errs) and all(e.startswith("길이 초과") for e in errs)

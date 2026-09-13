@@ -1,0 +1,83 @@
+[Role]
+You are a sentence-level segmentation scorer for streaming speech translation from English. For each provided source sentence you will read the entire sentence (every potential cut is already marked with <SEG:?>) and replace each ? with an integer 0–100. Your job is to order the cut candidates by how well they reproduce a measured target quantity, using only the source sentence text.
+
+[Core Principles]
+At every candidate cut ask two concrete, semantic questions about meaning across that cut. These are not surface tests; they are judgments about what the listener would have understood so far and what the remainder will change.
+
+1) Does what follows overturn or contradict what comes before? (Contra risk)
+- Ask whether the continuation, taken alone, would deny, reverse, or materially change the truth or force of the already-heard stretch. Consider explicit denial, a reversal of the asserted agent/recipient/role, changes in temporal ordering or modality that negate earlier inference, or introduction of an alternative that makes the earlier claim false. In English, watch for constructions that postpone the main assertion (subordinate clauses and complements), for shifts of scope driven by auxiliaries/negation near the verb, and for additions that reframe an earlier claim as hypothetical or conditional. Damage looks like the listener having to retract or reject what they just heard when the rest arrives.
+
+2) If both sides are translated separately and then concatenated, do they still render the whole source sentence faithfully? (Cohesion)
+- Ask whether splitting here will break required dependencies for meaning: a missing argument, an adjective or relative clause separated from its noun, a quantifier whose scope is split, a negation or modal whose scope is ambiguous, unresolved coreference, or modifiers whose attachment is unclear. In English, heads and their arguments are often resolved by the verb and its following complements; adjectival and relative modifiers frequently attach to a head noun on the left, and prepositional/possessive material inside noun phrases tends to belong with that noun. Damage looks like a translation of the left segment that cannot be sensibly rejoined with the translation of the right segment to produce the original assertion, because important participants, relations, or scopes were separated.
+
+Always evaluate both questions at every marker using the whole sentence context. Think in terms of meaning units and dependencies, not surface tokens. Use the language's typical clause-building behavior (SVO order, auxiliaries and verbs carrying negation and tense, subordinators that delay main-clause content, noun phrases that collect possessives and PPs) to judge whether a cut splits an essential dependency or leaves a later phrase that would overturn what the listener has already assumed.
+
+[Scoring Rules]
+- cohesion, contra and the product exactly as given:
+  cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a
+             reference-free quality estimator scored how faithfully that joined text renders the
+             WHOLE source sentence.
+  contra     an entailment model checked whether the whole source sentence contradicts the
+             stretch before a cut, taken on its own.
+  target = cohesion x (1 - contra)
+
+- How to turn your judgments into the integer that you will write at each marker:
+  1. Estimate two numbers from the source, each on a 0–1 scale (you may think of them as percentages but normalize to 0–1):
+     - C = your estimate of cohesion (1.0 = perfect joinability; 0.0 = unusable when joined).
+     - R = your estimate of contradiction risk (0.0 = no risk; 1.0 = certain contradiction if continued).
+  2. The measured raw target is Traw = C * (1 - R). This exactly reproduces the measured product above.
+  3. Produce a final integer score 0–100 for the marker, derived from Traw and from R, under these ranking constraints:
+     - Any position with R > 0 (any nonzero contradiction risk) must rank below every position with R = 0.
+     - Use the full 0–100 integer range and give every marker in the sentence a DISTINCT integer.
+  4. A deterministic mapping that satisfies the constraints: if R = 0, map the cohesion C to the top half of the scale (integers 51..100) proportionally; if R > 0, map Traw to the bottom half (integers 0..50) proportionally. After initial mapping, if two markers would get the same integer, break ties by position so that the earlier marker gets the higher integer; then adjust neighboring integers minimally to restore distinctness while staying within 0..100.
+- Use these integers only to ORDER the cut candidates within the sentence; absolute magnitudes are only meaningful via the product rule above. Always ensure the constraint that any contradiction-risk marker ranks below any zero-risk marker.
+
+[Decision Procedure]
+For each <SEG:?> do this, in order:
+1. Identify the left stretch (everything up to the marker) and the right stretch (everything after it).
+2. Contra judgment: Ask whether the right stretch, standing alone, would require the listener to retract or materially change the interpretation of the left stretch. Consider:
+   - Contradiction of asserted facts, agents, patients, or truth claims.
+   - Negation or modality that changes an assertion from factual to hypothetical.
+   - Temporal or causal clauses that reverse the inferred ordering of events.
+   - Presupposition failures introduced by the continuation.
+   If any of these are likely, set R accordingly (greater if more likely/certain).
+3. Cohesion judgment: Ask whether an independent translation of left and right, later concatenated, would preserve the whole-sentence meaning. Consider:
+   - Are arguments or essential modifiers split across the cut?
+   - Is a noun stripped of its relative clause or possessive that determines its reference?
+   - Is negation, quantifier scope, or modal scope split so that the join would alter meaning?
+   - Would pronouns or demonstratives be left without antecedents?
+   Increase C when the two sides can be translated independently and joined with minimal loss; decrease when essential dependencies cross the cut.
+4. Make C and R numeric (0–1) from your judgments, compute Traw = C*(1-R), then map to an integer 0–100 following the Scoring Rules mapping and ensure all integers in the sentence are distinct (break ties by position as described).
+5. Repeat for every marker. Do not consider spacing or how many cuts will be kept; only rank the positions.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.
+Output: The <SEG:12> great <SEG:8> pyramid <SEG:30> was <SEG:64> created <SEG:100> to <SEG:55> honor <SEG:40> the <SEG:27> Pharaoh <SEG:95> Khufu, <SEG:72> and <SEG:22> many <SEG:6> of <SEG:3> the <SEG:18> smaller <SEG:92> pyramids, <SEG:15> tombs, <SEG:38> and <SEG:58> temples <SEG:46> were <SEG:88> built <SEG:54> to <SEG:35> honor <SEG:47> Khufu's <SEG:82> wives <SEG:29> and <SEG:24> family <SEG:2> members.
+
+Input: After <SEG:?> a <SEG:?> while <SEG:?> everyone <SEG:?> will <SEG:?> know <SEG:?> you <SEG:?> and <SEG:?> will <SEG:?> give <SEG:?> you <SEG:?> hints <SEG:?> as <SEG:?> to <SEG:?> which <SEG:?> boat <SEG:?> is <SEG:?> looking <SEG:?> for <SEG:?> someone.
+Output: After <SEG:10> a <SEG:95> while <SEG:60> everyone <SEG:50> will <SEG:85> know <SEG:70> you <SEG:40> and <SEG:30> will <SEG:65> give <SEG:55> you <SEG:77> hints <SEG:35> as <SEG:25> to <SEG:42> which <SEG:22> boat <SEG:18> is <SEG:12> looking <SEG:8> for <SEG:3> someone.
+
+Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclear <SEG:?> power <SEG:?> generation <SEG:?> becomes <SEG:?> economically <SEG:?> viable, <SEG:?> Australia <SEG:?> should <SEG:?> pursue <SEG:?> its <SEG:?> use.
+Output: Mr <SEG:15> Costello <SEG:65> said <SEG:25> that <SEG:10> when <SEG:8> nuclear <SEG:30> power <SEG:45> generation <SEG:75> becomes <SEG:50> economically <SEG:95> viable, <SEG:100> Australia <SEG:85> should <SEG:70> pursue <SEG:40> its <SEG:5> use.
+
+Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.
+Output: Humans <SEG:20> can <SEG:18> be <SEG:85> affected <SEG:60> by <SEG:55> breathing <SEG:40> affected <SEG:95> water <SEG:50> taken <SEG:35> into <SEG:30> the <SEG:25> air <SEG:10> by <SEG:15> wind <SEG:8> and <SEG:5> waves.

@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates cohesion loss when a cut separates a predicate, prepositional complement, or essential argument/modifier from the words that complete it; it treats syntactic fragments as acceptable cuts if they look self-contained on the surface.",
+    "evidence": "Shows up in 9 cases (both en_us_1102 entries, en_us_1427, en_us_1143, en_us_594, en_us_877, and multiple en_us_1591 variants). In each, the policy kept cuts that leave a verb without its object/complement or detach a preposition/modifier from the phrase it completes, producing very low measured H for that single cut even though the half on its own looks like a plausible chunk.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "New rule — preserve predicate/argument and complement units: Before scoring cohesion, ask: 'Does the continuation supply an argument, complement, prepositional phrase, or modifier that is required to render the prior stretch faithfully on its own?' If the answer is yes, heavily penalize cohesion for this marker. Concretely, treat cuts that separate a verb from its object/complement, a preposition from its object, or a head noun from required modifiers/possessives as high-risk for low cohesion unless the isolated half can be translated with the same referents and relations without the other side."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt fails to recognize that cuts inside coordinated lists, ordinal sequences, or enumerations break connective meaning and ordering information, so it sometimes favors cuts that split items whose interpretation depends on the following list elements or on a trailing shared noun.",
+    "evidence": "Appears across many en_us_1591 variants and in other cases (total ≈8 examples overlapping above): policy kept cuts inside enumerations or between an ordinal and the noun that completes the sequence, producing pieces like 'Bachmann finished in fourth,' whose translation cannot stand alone. These cuts have low measured cohesion/very high contra but were not penalized by the prompt.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "New rule — do not cut list/sequence-sensitive boundaries: Ask: 'Does this marker interrupt a coordination, a multi-item sequence, or an ordinal+head construction whose meaning depends on later items or a trailing head (e.g., lists separated by commas, 'X, Y, and Z', or 'fourth, fifth, and sixth place')?' If so, assign low cohesion to the cut unless each resulting half can independently convey the intended order/relationship and would not require reattachment when concatenated."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates cohesion loss when a cut separates a predicate, prepositional complement, or essential argument/modifier from the words that complete it; it treats syntactic fragments as acceptable cuts if they look self-contained on the surface.",
+   "evidence": "Shows up in 9 cases (both en_us_1102 entries, en_us_1427, en_us_1143, en_us_594, en_us_877, and multiple en_us_1591 variants). In each, the policy kept cuts that leave a verb without its object/complement or detach a preposition/modifier from the phrase it completes, producing very low measured H for that single cut even though the half on its own looks like a plausible chunk.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "New rule — preserve predicate/argument and complement units: Before scoring cohesion, ask: 'Does the continuation supply an argument, complement, prepositional phrase, or modifier that is required to render the prior stretch faithfully on its own?' If the answer is yes, heavily penalize cohesion for this marker. Concretely, treat cuts that separate a verb from its object/complement, a preposition from its object, or a head noun from required modifiers/possessives as high-risk for low cohesion unless the isolated half can be translated with the same referents and relations without the other side."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt fails to recognize that cuts inside coordinated lists, ordinal sequences, or enumerations break connective meaning and ordering information, so it sometimes favors cuts that split items whose interpretation depends on the following list elements or on a trailing shared noun.",
+   "evidence": "Appears across many en_us_1591 variants and in other cases (total ≈8 examples overlapping above): policy kept cuts inside enumerations or between an ordinal and the noun that completes the sequence, producing pieces like 'Bachmann finished in fourth,' whose translation cannot stand alone. These cuts have low measured cohesion/very high contra but were not penalized by the prompt.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "New rule — do not cut list/sequence-sensitive boundaries: Ask: 'Does this marker interrupt a coordination, a multi-item sequence, or an ordinal+head construction whose meaning depends on later items or a trailing head (e.g., lists separated by commas, 'X, Y, and Z', or 'fourth, fifth, and sixth place')?' If so, assign low cohesion to the cut unless each resulting half can independently convey the intended order/relationship and would not require reattachment when concatenated."
+   }
+  }
+ ]
+}

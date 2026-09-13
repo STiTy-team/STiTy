@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer systematically underestimates contradiction risk when the left fragment asserts a specific value, rank, count, or other definite assignment that the remainder continues, modifies, or reassigns (common in enumerations and lists).",
+    "evidence": "Seen in 7 cases: multiple variants of the same multi‑item list (the policy kept cuts that left a single item's asserted rank or attribute and the continuation assigned different ranks or continued the list) and a parenthetical example with 'do not' about jellyfish. In the diffs these positions show very high measured contra (near 1) and near‑zero raw H, yet the prompt kept them.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Contradiction check for enumerations and definite assignments: If the left stretch asserts a concrete value, ordinal, count, or an explicit attribute about an item (e.g. a claimed rank, quantity, 'X finished Y', 'X is Z'), and the remainder continues the enumeration or assigns other values to items that bear on that assertion, treat contradiction as high. Concretely ask: could a listener who heard only the left stretch form a definite claim about an item that the rest of the sentence then revises, reassigns, or contradicts? If yes, set contradiction to a large nonzero value (often near 1) and rank the cut low."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer fails to punish cuts that break apart semantically bound function words or fixed multiword dependencies (connectors, complementizers, determiners/prepositions with their complements, 'such as', 'may be the presence of', 'not even', etc.), producing low cohesion when those pieces are translated separately.",
+    "evidence": "Seen in 6 cases: policy cuts split determiners/prepositions from their complements and separated parts of phrasal connectors across sentences (examples include splits inside 'may be the presence of …', 'such as vomiting', 'are sufficiently general that …', and other function‑word + complement sequences). In the diffs these markers have low cohesion and the target always avoids cutting inside such bound expressions.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Cohesion check for bound function words and multiword dependencies: Ask whether the marker separates a function word or connector from the phrase it semantically binds (determiner/preposition + noun phrase, a complementizer or modal with its complement, multiword connectors like 'such as', 'may be the presence of', 'not even …', etc.). If the two sides require each other to recover attachment, scope, or the connector's role, reduce cohesion sharply. Prefer cuts that keep such dependency pairs together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer systematically underestimates contradiction risk when the left fragment asserts a specific value, rank, count, or other definite assignment that the remainder continues, modifies, or reassigns (common in enumerations and lists).",
+   "evidence": "Seen in 7 cases: multiple variants of the same multi‑item list (the policy kept cuts that left a single item's asserted rank or attribute and the continuation assigned different ranks or continued the list) and a parenthetical example with 'do not' about jellyfish. In the diffs these positions show very high measured contra (near 1) and near‑zero raw H, yet the prompt kept them.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Contradiction check for enumerations and definite assignments: If the left stretch asserts a concrete value, ordinal, count, or an explicit attribute about an item (e.g. a claimed rank, quantity, 'X finished Y', 'X is Z'), and the remainder continues the enumeration or assigns other values to items that bear on that assertion, treat contradiction as high. Concretely ask: could a listener who heard only the left stretch form a definite claim about an item that the rest of the sentence then revises, reassigns, or contradicts? If yes, set contradiction to a large nonzero value (often near 1) and rank the cut low."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer fails to punish cuts that break apart semantically bound function words or fixed multiword dependencies (connectors, complementizers, determiners/prepositions with their complements, 'such as', 'may be the presence of', 'not even', etc.), producing low cohesion when those pieces are translated separately.",
+   "evidence": "Seen in 6 cases: policy cuts split determiners/prepositions from their complements and separated parts of phrasal connectors across sentences (examples include splits inside 'may be the presence of …', 'such as vomiting', 'are sufficiently general that …', and other function‑word + complement sequences). In the diffs these markers have low cohesion and the target always avoids cutting inside such bound expressions.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Cohesion check for bound function words and multiword dependencies: Ask whether the marker separates a function word or connector from the phrase it semantically binds (determiner/preposition + noun phrase, a complementizer or modal with its complement, multiword connectors like 'such as', 'may be the presence of', 'not even …', etc.). If the two sides require each other to recover attachment, scope, or the connector's role, reduce cohesion sharply. Prefer cuts that keep such dependency pairs together."
+   }
+  }
+ ]
+}
