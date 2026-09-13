@@ -3,6 +3,7 @@ from pathlib import Path
 
 from core.errors import ConfigError
 from core.utils import audio as audio_mod
+from core.utils import langs
 from core.utils import logging
 
 from . import transcribers
@@ -15,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MODEL = "Qwen/Qwen3-ASR-1.7B"
 MAX_MODEL_LEN = 4096
 KEEP_AFTER_SPEECH_SEC = 0.1
+PARTIAL_MIN_INTERVAL_SEC = 0.12
 
 
 def _last_word_boundary(decoded: str, already: str) -> int:
@@ -102,32 +104,40 @@ class Qwen3Transcription(Transcriber):
         self._log_gpu("after load")
 
     def start(self, language: str | None = None, **_) -> None:
-        self._language = language or None
         self._fed_samples = 0
         self._opened_at = time.perf_counter()
+        self._partial_seq = 0
         self._start_stream()
+
+    def _allowed_language_names(self) -> list[str] | None:
+        if not self.cfg.languages.restrict:
+            return None
+        names = [langs.CODE_TO_NAME.get(code)
+                 for code in (self.cfg.languages.lang, self.cfg.languages.target)]
+        return [name for name in names if name] or None
 
     def _start_stream(self) -> None:
         kw = self.settings
-        language = self._language
         self.state = self.model.init_streaming_state(
-            language=language,
             chunk_size_sec=float(kw.get("chunk_size_sec", 2.0)),
             unfixed_chunk_num=int(kw.get("unfixed_chunk_num", 2)),
             unfixed_token_num=int(kw.get("unfixed_token_num", 5)),
-            allowed_languages=[language]
-            if (language and self.cfg.languages.restrict) else None,
+            allowed_languages=self._allowed_language_names(),
         )
         self._emitted = ""
+        self._partial_text = None
+        self._partial_at = 0.0
 
     async def transcribe(self, audio: bytes) -> None:
         self._fed_samples += len(audio) // 2
         await self.model.streaming_transcribe(
             audio_mod.from_pcm_bytes(audio), self.state,
             on_seg=self._trigger("seg"), on_dot=self._trigger("dot"),
+            on_partial=self._partial_callback(),
         )
         if self.cfg.stity.commit.always_commit:
             self._take("always")
+        self._offer_partial(force=True)
 
     async def flush(self, reason: str, speech: Speech | None = None) -> None:
         await self.finish(reason, speech)
@@ -172,6 +182,34 @@ class Qwen3Transcription(Transcriber):
 
         return callback
 
+    def _partial_callback(self):
+        async def callback(_state) -> None:
+            self._offer_partial()
+
+        return callback
+
+    def _offer_partial(self, *, force: bool = False) -> None:
+        now = time.perf_counter()
+        if not force and now - self._partial_at < PARTIAL_MIN_INTERVAL_SEC:
+            return
+        decoded = (self.state.text or "").replace("<SEG>", "")
+        tail = decoded[len(self._emitted):] if decoded.startswith(self._emitted) \
+            else decoded
+        text = tail.strip()
+        if not text and not force:
+            return
+        previous = self._partial_text
+        if not force and previous and text != previous and previous.startswith(text):
+            return
+        self._partial_at = now
+        if text == (previous or ""):
+            return
+        self._partial_text = text
+        self._partial_seq += 1
+        logging.emit("partial", text=text,
+                     language=langs.norm_code(self.state.language or ""),
+                     seq=self._partial_seq)
+
     def _take(self, reason: str) -> None:
         decoded = (self.state.text or "").replace("<SEG>", "")
         already = self._emitted
@@ -191,11 +229,12 @@ class Qwen3Transcription(Transcriber):
         logging.emit(
             "transcribed",
             original=new,
-            language=(self.state.language or "").lower(),
+            language=langs.norm_code(self.state.language or ""),
             commit_reason=reason,
             decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
             recv_elapsed_sec=round(time.perf_counter() - self._opened_at, 4),
         )
+        self._offer_partial(force=True)
 
     def _log_gpu(self, when: str) -> None:
         try:

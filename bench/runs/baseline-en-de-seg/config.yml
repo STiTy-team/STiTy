@@ -1,0 +1,22 @@
+name: baseline-en-de-seg
+
+dataset:
+  name: acl6060
+  limit: 40
+
+languages:
+  lang: en
+  target: de
+
+stity:
+  pipeline:
+    name: cascade
+    transcription:
+      name: qwen3
+      model: Qwen/Qwen3-ASR-1.7B
+      chunk_size_sec: 2.0
+      max_new_tokens: 128
+    translation: {name: local, model: google/madlad400-3b-mt}
+    vad: {name: silero, min_silence_ms: 800}
+  commit: seg
+  gpu_memory_utilization: 0.42
