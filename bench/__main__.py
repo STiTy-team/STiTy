@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import shutil
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,6 +20,10 @@ from .config import BenchConfig
 logger = logging.getLogger("bench")
 
 RUNS_DIR = Path(__file__).resolve().parent / "runs"
+
+CHUNK_SIZE_MS = 200
+TRAILING_SILENCE_MS = 4000
+REALTIME = True
 
 
 def _row(item, *, status: str, **fields) -> dict:
@@ -51,7 +56,7 @@ async def _stream_item(pipeline, item, cfg) -> dict:
 
     pcm = audio_mod.to_pcm_bytes(audio)
     bytes_per_chunk = max(
-        2, int(audio_mod.SAMPLING_RATE * cfg.pacing.chunk_size_ms / 1000) * 2
+        2, int(audio_mod.SAMPLING_RATE * CHUNK_SIZE_MS / 1000) * 2
     )
     audio_sec = len(pcm) / 2 / audio_mod.SAMPLING_RATE
     target_lang = cfg.languages.expected_target(item.src_lang)
@@ -62,7 +67,7 @@ async def _stream_item(pipeline, item, cfg) -> dict:
         audio_sec=round(audio_sec, 3),
         src_lang=item.src_lang,
         target_lang=target_lang,
-        trailing_silence_ms=cfg.pacing.trailing_silence_ms,
+        trailing_silence_ms=TRAILING_SILENCE_MS,
         started_at=datetime.now(timezone.utc).isoformat(),
     )
 
@@ -75,7 +80,7 @@ async def _stream_item(pipeline, item, cfg) -> dict:
         nonlocal sent_samples
         sent_samples += len(chunk) // 2
         logging.set_audio_position(sent_samples / audio_mod.SAMPLING_RATE)
-        if cfg.pacing.realtime:
+        if REALTIME:
             delay = (
                 origin + sent_samples / audio_mod.SAMPLING_RATE - time.perf_counter()
             )
@@ -89,9 +94,9 @@ async def _stream_item(pipeline, item, cfg) -> dict:
             for start in range(0, len(pcm), bytes_per_chunk):
                 await feed(pcm[start : start + bytes_per_chunk], silence=False)
 
-            silence_left = cfg.pacing.trailing_silence_ms
+            silence_left = TRAILING_SILENCE_MS
             while silence_left > 0:
-                step = min(cfg.pacing.chunk_size_ms, silence_left)
+                step = min(CHUNK_SIZE_MS, silence_left)
                 silence_left -= step
                 await feed(audio_mod.silence_bytes(step), silence=True)
 
@@ -189,6 +194,25 @@ def data_root() -> Path:
     return root
 
 
+RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "config.yml")
+
+
+def open_run_dir(run_dir: Path, *, config_path: str | None) -> None:
+    run_dir.mkdir(parents=True, exist_ok=True)
+    destination = (run_dir / "config.yml").resolve()
+    source = Path(config_path).resolve() if config_path else None
+    already_there = source == destination
+
+    for name in RUN_FILES:
+        path = run_dir / name
+        if already_there and path.resolve() == destination:
+            continue
+        path.unlink(missing_ok=True)
+
+    if source is not None and not already_there:
+        shutil.copyfile(source, destination)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     cfg = load_config(args.config)
@@ -200,8 +224,8 @@ def main(argv: list[str] | None = None) -> int:
 
         started = datetime.now(timezone.utc)
         stamp = started.strftime("%Y%m%dT%H%M%S")
-        run_dir = RUNS_DIR / f"{cfg.name}-{stamp}"
-        run_dir.mkdir(parents=True, exist_ok=True)
+        run_dir = RUNS_DIR / cfg.name
+        open_run_dir(run_dir, config_path=args.config)
 
         logging.attach_stream(run_dir / "events.jsonl")
         logging.bind(run=cfg.name)
@@ -247,6 +271,9 @@ def main(argv: list[str] | None = None) -> int:
             finished=datetime.now(timezone.utc),
             run_dir=run_dir,
             components=describe_pipeline(cfg),
+            pacing={"chunk_size_ms": CHUNK_SIZE_MS,
+                    "trailing_silence_ms": TRAILING_SILENCE_MS,
+                    "realtime": REALTIME},
             failure=failure,
         )
         if failure is not None:

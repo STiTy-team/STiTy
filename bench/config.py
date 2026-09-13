@@ -110,19 +110,11 @@ class StityConfig(ConfigBody):
         return (self.resolved.get("parts") or {}).get(kind, {}).get("kwargs", {})
 
 
-class PacingConfig(ConfigBody):
-
-    chunk_size_ms: int = 200
-    trailing_silence_ms: int = 1000
-    realtime: bool = True
-
-
 class BenchConfig(ConfigBody):
     name: str
     dataset: DatasetConfig
     languages: LanguagesConfig
     stity: StityConfig
-    pacing: PacingConfig = PacingConfig()
 
     _raw: dict = PrivateAttr(default_factory=dict)
 

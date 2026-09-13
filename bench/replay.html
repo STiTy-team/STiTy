@@ -172,6 +172,12 @@
   .bub { max-width: 72%; padding: 10px 14px; border-radius: 18px; }
   .bub .main { font-size: 15px; font-weight: 600; line-height: 1.4; }
   .bub .sub { font-size: 11px; margin-top: 3px; }
+  #live .row { opacity: 0.55; animation: none; }
+  .caret {
+    display: inline-block; width: 2px; height: 1em; margin-left: 2px;
+    background: currentColor; vertical-align: -0.12em; animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
   .pending {
     position: absolute; left: 0; right: 0; bottom: 96px; display: flex; justify-content: center;
     pointer-events: none;
@@ -267,7 +273,9 @@
     <div class="controls">
       <button class="btn primary" id="play">▶ Play</button>
       <button class="btn" id="restart">↺ Restart</button>
+      <button class="btn" id="sound" aria-pressed="true">♪ Sound</button>
       <div class="seg-group" id="speeds"></div>
+      <audio id="player" preload="auto"></audio>
       <span class="spacer"></span>
       <div class="legend" id="legend"></div>
     </div>
@@ -288,7 +296,10 @@
             <span class="arrow">→</span>
             <div class="langpill"><span class="dotmark" id="pill-tgt-dot"></span><span id="pill-tgt">—</span></div>
           </div>
-          <div class="feed" id="feed"><div class="feed-empty">Press play</div></div>
+          <div class="feed" id="feed">
+            <div id="feed-rows"><div class="feed-empty">Press play</div></div>
+            <div id="live" hidden></div>
+          </div>
           <div class="pending" id="pending" hidden><span>•••</span></div>
           <div class="recbar">
             <span class="pulse" id="pulse"></span>
@@ -337,7 +348,7 @@ const LANG = {
 };
 const langColor = c => LANG[c] || {bubble:"#909090", avatar:"#B8B8B8"};
 const REASONS = {seg:"--seg", vad:"--vad", dot:"--dot", always:"--always", finish:"--finish"};
-const NOISY = new Set(["chunk"]);
+const NOISY = new Set(["chunk", "partial"]);
 const $ = id => document.getElementById(id);
 
 // ── one timeline over every item, so the run plays as it was recorded ──────
@@ -366,6 +377,7 @@ events.forEach((e, i) => {
 });
 
 let now = 0, playing = false, speed = 1, lastFrame = null, cursor = -1;
+let feedKey = null, liveShown = "";
 const shown = new Set(), hidden = new Set(NOISY);
 let query = "";
 
@@ -478,41 +490,105 @@ $("items").addEventListener("click", ev => {
   const b = ev.target.closest("button"); if (b) seek(Number(b.dataset.at) + 0.0001);
 });
 
+const player = $("player");
+const AUDIO_MAX_SPEED = 4;
+const DRIFT_SEC = 0.25;
+let audioOn = true, audioFor = null, pendingTime = null;
+
+player.addEventListener("loadedmetadata", () => {
+  if (pendingTime != null) { player.currentTime = pendingTime; pendingTime = null; }
+});
+function audioSeek(to) {
+  if (player.readyState >= 1) player.currentTime = to; else pendingTime = to;
+}
+function syncAudio(current) {
+  if (!current.audio_url || !audioOn) { if (!player.paused) player.pause(); return; }
+  if (audioFor !== current.id) {
+    audioFor = current.id;
+    pendingTime = null;
+    player.src = current.audio_url;
+  }
+  const want = now - current.offset;
+  const dur = Number.isFinite(player.duration) ? player.duration : null;
+  const inClip = want >= 0 && (dur == null || want < dur - 0.02);
+  player.playbackRate = Math.min(speed, AUDIO_MAX_SPEED);
+  if (!playing || speed > AUDIO_MAX_SPEED || !inClip) {
+    if (!player.paused) player.pause();
+    if (!playing && inClip) audioSeek(want);
+    return;
+  }
+  if (Math.abs(player.currentTime - want) > DRIFT_SEC) audioSeek(want);
+  if (player.paused) player.play().catch(() => {});
+}
+$("sound").addEventListener("click", ev => {
+  audioOn = !audioOn;
+  ev.currentTarget.setAttribute("aria-pressed", String(audioOn));
+  ev.currentTarget.textContent = audioOn ? "♪ Sound" : "♪̸ Muted";
+  render();
+});
+
 // ── the phone: rebuilt from whatever is in the past, so seeking is exact ──
-const feed = $("feed");
+const feed = $("feed"), feedRows = $("feed-rows"), liveEl = $("live");
+function bubble(lang, main, sub, caret) {
+  const isMine = lang === src, isPeer = lang === tgt;
+  const c = isMine ? {bubble:"#6080C8", avatar:"#9BB4D4", text:"#fff", sub:"rgba(255,255,255,0.65)"}
+          : isPeer ? {bubble:"#f2f2f2", avatar:"#E8E0A0", text:"#1a1a1a", sub:"#aaa"}
+          : {...langColor(lang), text:"#fff", sub:"rgba(255,255,255,0.65)"};
+  return `<div class="row ${isMine ? "mine" : ""}">` +
+    `<div class="av" style="background:${c.avatar};color:${isMine ? "#fff" : "#7A9030"}">${esc(lang.toUpperCase())}</div>` +
+    `<div class="bub" style="background:${c.bubble};` +
+    `border-bottom-${isMine ? "right" : "left"}-radius:4px">` +
+    `<div class="main" style="color:${c.text}">${esc(main)}` +
+    (caret ? `<span class="caret"></span>` : "") + `</div>` +
+    (sub ? `<div class="sub" style="color:${c.sub}">${esc(sub)}</div>` : "") +
+    `</div></div>`;
+}
 function render() {
+  const upto = events.findIndex(e => e.at > now);
+  const edge = upto === -1 ? events.length : upto;
   const past = events.filter(e => e.at <= now);
   const finals = past.filter(e => e.type === "final");
   const current = items.find(it => now >= it.offset && now < it.offset + it.span) || items.at(-1);
   const mine = finals.filter(e => e.item === current.id);
 
-  feed.innerHTML = mine.length ? mine.map(e => {
-    const lang = (e.language || "").toLowerCase();
-    const isMine = lang === src, isPeer = lang === tgt;
-    const c = isMine ? {bubble:"#6080C8", avatar:"#9BB4D4", text:"#fff", sub:"rgba(255,255,255,0.65)"}
-            : isPeer ? {bubble:"#f2f2f2", avatar:"#E8E0A0", text:"#1a1a1a", sub:"#aaa"}
-            : {...langColor(lang), text:"#fff", sub:"rgba(255,255,255,0.65)"};
-    const main = e.translation || e.original || "";
-    const sub = e.translation ? e.original : "";
-    return `<div class="row ${isMine ? "mine" : ""}">` +
-      `<div class="av" style="background:${c.avatar};color:${isMine ? "#fff" : "#7A9030"}">${esc(lang.toUpperCase())}</div>` +
-      `<div class="bub" style="background:${c.bubble};` +
-      `border-bottom-${isMine ? "right" : "left"}-radius:4px">` +
-      `<div class="main" style="color:${c.text}">${esc(main)}</div>` +
-      (sub ? `<div class="sub" style="color:${c.sub}">${esc(sub)}</div>` : "") +
-      `</div></div>`;
-  }).join("") : `<div class="feed-empty">${now > 0 ? "Nothing committed yet" : "Press play"}</div>`;
-  feed.scrollTop = feed.scrollHeight;
+  const key = current.id + "|" + mine.length + "|" + (now > 0);
+  if (key !== feedKey) {
+    feedKey = key;
+    feedRows.innerHTML = mine.length
+      ? mine.map(e => bubble((e.language || "").toLowerCase(),
+                             e.translation || e.original || "",
+                             e.translation ? e.original : "", false)).join("")
+      : `<div class="feed-empty">${now > 0 ? "Nothing committed yet" : "Press play"}</div>`;
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  let live = null;
+  for (let i = edge - 1; i >= 0; i--) {
+    const e = events[i];
+    if (e.item !== current.id) continue;
+    if (e.type === "final" || e.type === "item_open") break;
+    if (e.type === "partial") { live = e; break; }
+  }
+  const liveKey = live && live.text ? live.seq + "|" + live.text : "";
+  if (liveKey !== liveShown) {
+    liveShown = liveKey;
+    liveEl.hidden = !liveKey;
+    liveEl.innerHTML = liveKey
+      ? bubble((live.language || "").toLowerCase(), live.text, "", true) : "";
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  syncAudio(current);
 
   // A commit is decided before it is delivered; that gap is the dots.
   const waiting = [...pendingFinals].some(([e, at]) => e.at <= now && at > now);
-  $("pending").hidden = !waiting;
+  $("pending").hidden = !waiting || !!liveShown;
 
   const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "vad_speech_end")
                        .filter(e => e.item === current.id).at(-1);
-  const live = speaking && speaking.type === "vad_speech_start";
-  $("pulse").className = "pulse" + (live ? " live" : "");
-  $("rec-label").textContent = live ? "Listening…" : (playing ? "Paused between utterances" : "Idle");
+  const hearing = speaking && speaking.type === "vad_speech_start";
+  $("pulse").className = "pulse" + (hearing ? " live" : "");
+  $("rec-label").textContent = hearing ? "Listening…" : (playing ? "Paused between utterances" : "Idle");
   $("rec-time").textContent = (now - current.offset).toFixed(1) + "s";
   $("clock-item").textContent = current.id;
   $("clock-now").textContent = now.toFixed(2);
@@ -521,8 +597,6 @@ function render() {
   for (const b of $("items").children) b.setAttribute("aria-pressed", String(b.dataset.at == current.offset));
 
   // Reveal up to the clock, and mark the newest row.
-  const upto = events.findIndex(e => e.at > now);
-  const edge = upto === -1 ? events.length : upto;
   if (edge !== cursor) {
     rowEls.forEach((tr, i) => {
       tr.classList.toggle("future", i >= edge);

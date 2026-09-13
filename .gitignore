@@ -198,11 +198,13 @@ Qwen3-ASR/finetuning/finetuning-out-en-win/
 # AST 샘플 오디오 (저장소는 wav 를 추적하지 않는다)
 evaluation/ast/samples/
 
-# bench outputs. One directory per run under bench/runs/. The summaries are small
-# and tracked on purpose -- comparing two runs should be a diff. Per-item rows,
-# the event stream and the replay are not.
+# bench outputs. One directory per config under bench/runs/, replaced each time that
+# config is run. The config and the summary are small and tracked on purpose -- what
+# was run and what it scored should both be a diff. The per-item rows and the event
+# stream are neither small nor comparable line by line, so they stay local.
 bench/runs/*/*
 !bench/runs/*/summary.json
+!bench/runs/*/config.yml
 
 # Benchmark datasets live in their own repo (github.com/STiTy-team/datasets),
 # checked out wherever STITY_DATA_ROOT points. Nothing dataset-shaped belongs here.

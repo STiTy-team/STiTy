@@ -59,7 +59,7 @@ def environment() -> dict:
 
 
 def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
-              finished: datetime, run_dir: Path, components: dict,
+              finished: datetime, run_dir: Path, components: dict, pacing: dict,
               failure: str | None = None) -> Path:
     errored = [r for r in rows if r.get("status") != "ok"]
     empty = [r for r in rows if r.get("status") == "ok"
@@ -88,6 +88,7 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
         "failed_items": [r.get("id") for r in errored + empty],
         "misrouted_items": score.misrouted_items,
         "config": cfg.raw,
+        "pacing": pacing,
         "dataset": dataset.provenance(),
         "components": components,
         "environment": environment(),
