@@ -1,0 +1,87 @@
+{
+ "cases": [
+  {
+   "id": "en_us_1630",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "the token immediately AFTER the marker is an ordinal or numeric ordinal word (e.g. \"fifteenth\", \"ninth\", \"1st\") and the LEFT ends in a finite verb",
+   "blamed_rule": "Arly <SEG:5> Velasquez <SEG:20> finished <SEG:70> fifteenth <SEG:35> in <SEG:2> the Paralympics slalom event.",
+   "proposed_rule": "If the immediate right token is an ordinal/cardinal numeral or ordinal adjective (1st/2nd/\"first\",\"fifteenth\", etc.) AND the left-most side ends with a finite verb, treat the right as a likely verb complement and force the score down into 0–20.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_618",
+   "pos": 5,
+   "error": "over-trust",
+   "why": "contra",
+   "surface_condition": "the right begins with existential 'there' followed immediately by a finite verb (\"there is/are/was/were ...\")",
+   "blamed_rule": "",
+   "proposed_rule": "If the immediate right token is the existential 'there' and it is followed within 1–2 tokens by a finite verb, treat the cut as a clause-continuation risk and lower the score into the 41–60 band (good-but-risky) instead of scoring it very high.",
+   "direction": "lower"
+  },
+  {
+   "id": "en_us_863",
+   "pos": 11,
+   "error": "over-trust",
+   "why": "mixed",
+   "surface_condition": "the right begins with a copular/copula or other finite verb (\"is/are/was/were\") while the left is a bare NP (no finite verb immediately before)",
+   "blamed_rule": "Surface signals: left ends in what looks like a clause but either (a) the right begins with a verb that lacks an explicit subject (verb continuing from left), or (b) the right begins with a subordinating/continuation signal (but, although, where) or a prepositional head (of, to, in) suggesting continuation.",
+   "proposed_rule": "Sharpen the existing 41–60 rule: require a stronger downward move when the right token is a copula/finite verb (is/are/was/were) and the left lacks a finite verb — set such cuts to 21–40 (weak cut) because the right is likely the predicate of the left NP.",
+   "direction": "lower"
+  }
+ ],
+ "calibration_fix": "Lower the example anchor that encourages high scores after verbs: change the example output 'finished <SEG:70>' in the Arly example to something like 'finished <SEG:20>'.",
+ "summary": "The prompt systematically overweights left-side completeness (finite verbs and punctuation anchors, and some example anchors) and under-recognises right-headed continuations that function as verb complements or predicates. Add explicit patterns for ordinals/numerals, existential 'there', and copular/finites starting the right side (and sharpen the copula rule already present) so these cuts are pushed into lower bands. Also re-anchor the illustrative example that currently teaches high scores after verbs to correct calibration.",
+ "metrics": {
+  "achv": 0.7465,
+  "calibration": {
+   "00-09": {
+    "n": 27,
+    "label_mean": 58.8
+   },
+   "10-19": {
+    "n": 3,
+    "label_mean": 55.5
+   },
+   "20-29": {
+    "n": 4,
+    "label_mean": 53.1
+   },
+   "30-39": {
+    "n": 4,
+    "label_mean": 71.0
+   },
+   "40-49": {
+    "n": 1,
+    "label_mean": 62.8
+   },
+   "50-59": {
+    "n": 3,
+    "label_mean": 43.7
+   },
+   "60-69": {
+    "n": 1,
+    "label_mean": 40.8
+   },
+   "70-79": {
+    "n": 3,
+    "label_mean": 56.7
+   },
+   "80-89": {
+    "n": 1,
+    "label_mean": 46.4
+   },
+   "90-99": {
+    "n": 2,
+    "label_mean": 59.0
+   }
+  },
+  "spearman_within": -0.1711,
+  "overlap_by_T": {
+   "4": 0.283,
+   "6": 0.167,
+   "12": 0.0
+  }
+ }
+}

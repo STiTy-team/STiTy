@@ -1,0 +1,157 @@
+{
+ "version": 0,
+ "adopted": true,
+ "train": {
+  "n": 4,
+  "n_scored": 3,
+  "format_pass_rate": 0.75,
+  "format_pass_rate_no_retry": 0.25,
+  "achv": 0.7465,
+  "util": 0.5629,
+  "util_oracle": 0.7546,
+  "overlap_by_T": {
+   "4": 0.283,
+   "6": 0.167,
+   "12": 0.0
+  },
+  "spearman_pooled": -0.1882,
+  "spearman_within": -0.1711,
+  "calibration": {
+   "00-09": {
+    "n": 27,
+    "label_mean": 58.8
+   },
+   "10-19": {
+    "n": 3,
+    "label_mean": 55.5
+   },
+   "20-29": {
+    "n": 4,
+    "label_mean": 53.1
+   },
+   "30-39": {
+    "n": 4,
+    "label_mean": 71.0
+   },
+   "40-49": {
+    "n": 1,
+    "label_mean": 62.8
+   },
+   "50-59": {
+    "n": 3,
+    "label_mean": 43.7
+   },
+   "60-69": {
+    "n": 1,
+    "label_mean": 40.8
+   },
+   "70-79": {
+    "n": 3,
+    "label_mean": 56.7
+   },
+   "80-89": {
+    "n": 1,
+    "label_mean": 46.4
+   },
+   "90-99": {
+    "n": 2,
+    "label_mean": 59.0
+   }
+  },
+  "n_boundaries": 49
+ },
+ "dev": {
+  "n": 8,
+  "n_scored": 8,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.375,
+  "achv": 0.8261,
+  "util": 0.6193,
+  "util_oracle": 0.7507,
+  "overlap_by_T": {
+   "4": 0.305,
+   "6": 0.135,
+   "12": 0.1
+  },
+  "spearman_pooled": 0.1846,
+  "spearman_within": 0.2705,
+  "calibration": {
+   "00-09": {
+    "n": 64,
+    "label_mean": 56.3
+   },
+   "10-19": {
+    "n": 21,
+    "label_mean": 60.1
+   },
+   "20-29": {
+    "n": 15,
+    "label_mean": 67.7
+   },
+   "30-39": {
+    "n": 10,
+    "label_mean": 60.7
+   },
+   "40-49": {
+    "n": 4,
+    "label_mean": 64.2
+   },
+   "50-59": {
+    "n": 11,
+    "label_mean": 71.6
+   },
+   "60-69": {
+    "n": 1,
+    "label_mean": 80.5
+   },
+   "70-79": {
+    "n": 3,
+    "label_mean": 58.5
+   },
+   "90-99": {
+    "n": 2,
+    "label_mean": 47.6
+   }
+  },
+  "n_boundaries": 131
+ },
+ "score_train": 0.7465,
+ "score_dev": 0.8261,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 10550,
+ "usage": {
+  "calls": 17,
+  "prompt_tokens": 48614,
+  "completion_tokens": 78032,
+  "cached_tokens": 24320,
+  "truncated": 0,
+  "cost": 0.162746,
+  "by_purpose": {
+   "segment_retry": {
+    "calls": 12,
+    "prompt_tokens": 34691,
+    "completion_tokens": 34465,
+    "reasoning_tokens": 33088,
+    "cached_tokens": 15360,
+    "cost": 0.074147
+   },
+   "segment": {
+    "calls": 4,
+    "prompt_tokens": 12306,
+    "completion_tokens": 35158,
+    "reasoning_tokens": 33280,
+    "cached_tokens": 7680,
+    "cost": 0.071665
+   },
+   "prompt_v0": {
+    "calls": 1,
+    "prompt_tokens": 1617,
+    "completion_tokens": 8409,
+    "reasoning_tokens": 5824,
+    "cached_tokens": 1280,
+    "cost": 0.016934
+   }
+  }
+ }
+}

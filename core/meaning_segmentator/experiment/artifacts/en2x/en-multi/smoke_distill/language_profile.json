@@ -1,0 +1,47 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Subjects precede verbs and objects follow (e.g. \"They called themselves the Moriori\", \"Arly Velasquez ... finished fifteenth\").",
+  "register": "journalistic/broadcast news style (newswire or spoken-broadcast summaries — concise, factual sentences, some named entities and sports results).",
+  "fillers_and_hesitations": [
+    "um",
+    "uh",
+    "you know",
+    "I mean",
+    "like"
+  ],
+  "discourse_markers": [
+    "But",
+    "Although",
+    "and",
+    "where",
+    "in the end",
+    "there (existential use)"
+  ],
+  "clause_boundary_signals": [
+    "But",
+    "Although",
+    "and",
+    "where",
+    "in the end",
+    "there were"
+  ],
+  "non_boundary_traps": [
+    "New Zealand's (possessive)",
+    "men's (possessive)",
+    "of",
+    "to",
+    "there (can be locative or part of existential clause)",
+    "omitted 'that' (zero complementizer) — e.g. \"made it clear ... she will\""
+  ],
+  "unstable_prefix_signals": [
+    "But",
+    "Although",
+    "where",
+    "of",
+    "'s (possessive)",
+    "to",
+    "in (as in 'in other parts ...')",
+    "there"
+  ],
+  "notes_for_prompt_writer": "Treat subordinators (but, although, where) and prepositional heads (of, to, in) as signs that continuation is very likely — avoid emitting a unit immediately after them. Possessive markers (’s, men's, New Zealand's) frequently attach forward to a following noun, not as a boundary. Existential 'there' and zero-complementizer patterns (\"made it clear she will...\") often start or embed clauses without an explicit marker, so prefer waiting for a finite verb or an explicit coordinating marker before splitting."
+}

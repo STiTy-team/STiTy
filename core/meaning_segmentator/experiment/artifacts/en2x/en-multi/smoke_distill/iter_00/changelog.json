@@ -1,0 +1,21 @@
+{
+ "selected_kind": "grow",
+ "changelog": [
+  "Added explicit immediate-token rules for ordinal/numeric ordinals: if the token immediately AFTER the marker is an ordinal/numeric-ordinal and the left ends in a finite verb, force the score into 0–20 (lower) — addresses en_us_1630 over‑trust.",
+  "Added explicit existential 'there' rule: if the immediate right token is 'there' and within the next 1–2 tokens a finite verb appears, treat as clause-continuation risk and push the score down into 41–60 (good-but-risky) — addresses en_us_618 over‑trust.",
+  "Sharpened copula/finite-verb continuation rule: when the right begins with a copula (is/are/was/were) and the left lacks a finite verb, treat as weak cut and set to 21–40 (not high) — addresses en_us_863 mixed over‑trust.",
+  "Clarified that rules inspect the immediate left and right tokens and allow a 1–2 token lookback/lookahead for identifying finite verbs/continuations; replaced/merged overlapping guidance to keep consistent anchoring.",
+  "Re-anchored the example that previously encouraged high scores after verbs: changed Arly example 'finished <SEG:70>' to 'finished <SEG:20>' to correct calibration."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 11878,
+   "holdout_achv": 0.9094
+  }
+ ]
+}

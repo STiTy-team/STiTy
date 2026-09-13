@@ -1,0 +1,209 @@
+{
+ "test_label_metrics": {
+  "n": 4,
+  "n_scored": 4,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.75,
+  "achv": 0.9582,
+  "util": 0.7306,
+  "util_oracle": 0.7621,
+  "overlap_by_T": {
+   "4": 0.584,
+   "6": 0.642,
+   "8": 0.5,
+   "12": 0.333
+  },
+  "spearman_pooled": 0.2339,
+  "spearman_within": 0.2449,
+  "calibration": {
+   "00-09": {
+    "n": 39,
+    "label_mean": 65.1
+   },
+   "10-19": {
+    "n": 9,
+    "label_mean": 54.4
+   },
+   "20-29": {
+    "n": 9,
+    "label_mean": 68.7
+   },
+   "30-39": {
+    "n": 3,
+    "label_mean": 72.1
+   },
+   "40-49": {
+    "n": 3,
+    "label_mean": 70.5
+   },
+   "50-59": {
+    "n": 3,
+    "label_mean": 80.6
+   },
+   "60-69": {
+    "n": 2,
+    "label_mean": 79.0
+   },
+   "70-79": {
+    "n": 1,
+    "label_mean": 77.1
+   },
+   "80-89": {
+    "n": 2,
+    "label_mean": 77.3
+   }
+  },
+  "n_boundaries": 71
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.6008,
+    "n": 4,
+    "by_tgt": {
+     "Chinese": 0.5673,
+     "Japanese": 0.5677,
+     "German": 0.6675
+    }
+   },
+   "6": {
+    "mean": 0.6716,
+    "n": 4,
+    "by_tgt": {
+     "Chinese": 0.6151,
+     "Japanese": 0.6842,
+     "German": 0.7155
+    }
+   },
+   "8": {
+    "mean": 0.7215,
+    "n": 4,
+    "by_tgt": {
+     "Chinese": 0.6606,
+     "Japanese": 0.7656,
+     "German": 0.7383
+    }
+   },
+   "12": {
+    "mean": 0.7567,
+    "n": 3,
+    "by_tgt": {
+     "Chinese": 0.741,
+     "Japanese": 0.7344,
+     "German": 0.7947
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6802,
+    "n": 4,
+    "by_tgt": {
+     "Chinese": 0.6405,
+     "Japanese": 0.7434,
+     "German": 0.6568
+    }
+   },
+   "6": {
+    "mean": 0.6855,
+    "n": 4,
+    "by_tgt": {
+     "Chinese": 0.5215,
+     "Japanese": 0.787,
+     "German": 0.748
+    }
+   },
+   "8": {
+    "mean": 0.7444,
+    "n": 4,
+    "by_tgt": {
+     "Chinese": 0.6761,
+     "Japanese": 0.7744,
+     "German": 0.7828
+    }
+   },
+   "12": {
+    "mean": 0.7798,
+    "n": 3,
+    "by_tgt": {
+     "Chinese": 0.7617,
+     "Japanese": 0.767,
+     "German": 0.8109
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 32,
+  "prompt_tokens": 104806,
+  "completion_tokens": 169901,
+  "cached_tokens": 46848,
+  "truncated": 0,
+  "cost": 0.355463,
+  "by_purpose": {
+   "segment": {
+    "calls": 9,
+    "prompt_tokens": 29024,
+    "completion_tokens": 81920,
+    "reasoning_tokens": 77696,
+    "cached_tokens": 13568,
+    "cost": 0.168043
+   },
+   "segment_retry": {
+    "calls": 19,
+    "prompt_tokens": 57178,
+    "completion_tokens": 59797,
+    "reasoning_tokens": 57472,
+    "cached_tokens": 32000,
+    "cost": 0.126689
+   },
+   "prompt_engineer": {
+    "calls": 2,
+    "prompt_tokens": 8357,
+    "completion_tokens": 11397,
+    "reasoning_tokens": 4672,
+    "cached_tokens": 0,
+    "cost": 0.024883
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 8630,
+    "completion_tokens": 8378,
+    "reasoning_tokens": 7616,
+    "cached_tokens": 0,
+    "cost": 0.018913
+   },
+   "prompt_v0": {
+    "calls": 1,
+    "prompt_tokens": 1617,
+    "completion_tokens": 8409,
+    "reasoning_tokens": 5824,
+    "cached_tokens": 1280,
+    "cost": 0.016934
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.7465,
+   "score_dev": 0.8261,
+   "paired_dev": null,
+   "prompt_len": 10550
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.844,
+   "score_dev": 0.8077,
+   "paired_dev": {
+    "mean_delta": -0.0184,
+    "se_delta": 0.032,
+    "n_pairs": 8
+   },
+   "prompt_len": 11878
+  }
+ ],
+ "best_version": 0
+}
