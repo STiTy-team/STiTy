@@ -26,6 +26,10 @@ p = argparse.ArgumentParser()
 p.add_argument('--split', default='dev')
 p.add_argument('--n', type=int, default=100, help='문장 수 (앞에서부터)')
 p.add_argument('--m', type=int, default=8, help='경계별 H 상위 m개로 가지치기')
+p.add_argument('--min-gap', type=int, default=None,
+               help='절단 사이 최소 조각 길이. 기본은 런 설정 (loop_judge 는 1 로 돈다)')
+p.add_argument('--t-grid', type=int, nargs='+', default=None, help='기본은 런 설정 격자')
+p.add_argument('--tag', default=None, help='산출물 꼬리표 — 격자·min_gap 을 바꿔 잴 때')
 p.add_argument('--max-sets', type=int, default=200, help='(문장,T)당 열거 상한. 넘으면 그리디+교환')
 p.add_argument('--batch-size', type=int, default=32)
 p.add_argument('--emit', action='store_true',
@@ -33,8 +37,10 @@ p.add_argument('--emit', action='store_true',
 a = p.parse_args()
 
 R24 = RUNS_DIR / 'en2x/en-multi/run24'; R25 = RUNS_DIR / 'en2x/en-multi/run25'
-cfg = json.load(open(R24 / 'config.json')); sp, mg = cfg['spaced'], cfg['min_gap']
-grid = cfg['final_t_grid'] if a.split == 'test' else cfg['t_grid']
+cfg = json.load(open(R24 / 'config.json')); sp = cfg['spaced']
+mg = a.min_gap if a.min_gap is not None else cfg['min_gap']
+grid = a.t_grid or (cfg['final_t_grid'] if a.split == 'test' else cfg['t_grid'])
+SUF = f'_{a.tag}' if a.tag else ''
 sents = json.load(open(R25 / f'data/{a.split}.json'))[:a.n]
 lab = json.load(open(R25 / f'oracle_labels_{a.split}.json')); TG = list(lab)
 def coh(i, j): return st.mean(lab[t][i]['adq_l'][j - 1] for t in TG)
@@ -184,9 +190,9 @@ for idx, (i, T, k, greedy, sets, pruned) in enumerate(jobs):
         return round(q * (1 - max(contra(i, j) for j in c)), 5)
     dump.setdefault(str(i), {})[str(T)] = {'greedy': list(greedy),
                                            'sets': {','.join(map(str, c)): hs2(c) for c in sets}}
-(R25 / f'set_scores_{a.split}.json').write_text(json.dumps(dump, ensure_ascii=False), encoding='utf-8')
+(R25 / f'set_scores_{a.split}{SUF}.json').write_text(json.dumps(dump, ensure_ascii=False), encoding='utf-8')
 
-out = R25 / f'set_search_{a.split}.json'
+out = R25 / f'set_search_{a.split}{SUF}.json'
 out.write_text(json.dumps(rows, ensure_ascii=False), encoding='utf-8')
 print(f'\n{"T":>4s} {"n":>5s} {"그리디":>9s} {"탐색최적":>9s} {"차이":>9s} {"최적=그리디":>10s} {"집합수":>7s}')
 for T in grid:

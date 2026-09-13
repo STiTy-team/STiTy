@@ -53,23 +53,32 @@ class Sets(unittest.TestCase):
 
     def test_오라클은_라벨_상위_k개(self):
         lab = labels_for(self.texts, lambda i, j: 0.0, lambda i, j: 1.0 if j == 6 else 0.1)
-        got = lj.oracle_sets(lab, self.sents, [6], spaced=True, min_gap=3)
-        self.assertEqual(got[(0, 6)], (6,))
+        got = lj.oracle_sets(lab, self.sents, spaced=True, min_gap=1)
+        self.assertEqual(got[(0, 1)], (6,))
+
+    def test_k_를_1부터_훑는다(self):
+        """T 격자와 달리 문장마다 k 가 1..kmax 로 전부 들어온다."""
+        lab = labels_for(self.texts, lambda i, j: 0.0, lambda i, j: 0.1 * j)
+        got = lj.oracle_sets(lab, self.sents, spaced=True, min_gap=1)
+        ks = sorted(k for _i, k in got)
+        self.assertEqual(ks, [1, 2, 3, 4, 5])          # 12어절 / 평균 조각 2 이상
+        self.assertEqual(len(got[(0, 3)]), 3)
 
     def test_contra_가_높은_자리는_밀린다(self):
         lab = labels_for(self.texts, lambda i, j: 0.99 if j == 6 else 0.0,
                          lambda i, j: 1.0 if j in (6, 9) else 0.1)
-        got = lj.oracle_sets(lab, self.sents, [6], spaced=True, min_gap=3)
-        self.assertEqual(got[(0, 6)], (9,))
+        got = lj.oracle_sets(lab, self.sents, spaced=True, min_gap=1)
+        self.assertEqual(got[(0, 1)], (9,))
 
     def test_정책은_채점_행에서_나온다(self):
         rows = [{"id": "s0", "positions": [3, 6, 9], "scores": [10, 90, 20]}]
-        got = lj.policy_sets(rows, self.sents, [6], spaced=True, min_gap=3)
-        self.assertEqual(got[(0, 6)], (6,))
+        got = lj.policy_sets(rows, self.sents, spaced=True, min_gap=1)
+        self.assertEqual(got[(0, 1)], (6,))
+        self.assertEqual(got[(0, 2)], (6, 9))
 
     def test_점수가_없는_문장은_건너뛴다(self):
         rows = [{"id": "s0", "positions": [3], "scores": None}]
-        self.assertEqual(lj.policy_sets(rows, self.sents, [6], True, 3), {})
+        self.assertEqual(lj.policy_sets(rows, self.sents, True, 1), {})
 
 
 class SearchSets(unittest.TestCase):
@@ -99,6 +108,14 @@ class SearchSets(unittest.TestCase):
         self.assertEqual(sets, {})
 
 
+class Latency(unittest.TestCase):
+    def test_평균_조각으로_묶는다(self):
+        """12어절 문장: k=1 이면 조각 6.0 (≤7 칸), k=5 면 2.0 (≤3 칸)."""
+        sents = [sent(0, " ".join(["w"] * 12))]
+        got = lj.by_latency(sents, {(0, 1): 0.8, (0, 5): 0.4}, spaced=True)
+        self.assertEqual(got, {"≤3": 0.4, "≤7": 0.8})
+
+
 class Cases(unittest.TestCase):
     def setUp(self):
         self.texts = ["a b c d e f g h i j k l"]
@@ -107,43 +124,45 @@ class Cases(unittest.TestCase):
                               lambda i, j: {3: 0.9, 6: 0.2, 9: 0.8}.get(j, 0.1))
 
     def test_손해가_없으면_사례가_없다(self):
-        pol = {(0, 6): (3,)}
-        got = lj.build_cases(self.sents, self.lab, pol, pol, {(0, 6): 0.7}, {(0, 6): 0.7},
-                             True, 3, 5)
+        pol = {(0, 1): (3,)}
+        got = lj.build_cases(self.sents, self.lab, pol, pol, {(0, 1): 0.7}, {(0, 1): 0.7},
+                             True, 1, 5)
         self.assertEqual(got, [])
 
     def test_뺀_자리와_넣은_자리를_모두_싣는다(self):
-        pol, ora = {(0, 6): (6,)}, {(0, 6): (3,)}
-        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 6): 0.60}, {(0, 6): 0.75},
-                             True, 3, 5)
+        pol, ora = {(0, 1): (6,)}, {(0, 1): (3,)}
+        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.60}, {(0, 1): 0.75},
+                             True, 1, 5)
         self.assertEqual(len(got), 1)
         c = got[0]
+        self.assertEqual(c["cuts"], 1)
+        self.assertAlmostEqual(c["avg_chunk"], 6.0)
         self.assertEqual([d["pos"] for d in c["diff"]["dropped"]], [6])
         self.assertEqual([d["pos"] for d in c["diff"]["added"]], [3])
         self.assertAlmostEqual(c["gap"], 0.15, places=4)
         self.assertIn("‖", c["policy"]["text"])
 
     def test_경계별_H_가_낮은_자리를_골랐으면_경계오류로_분류(self):
-        pol, ora = {(0, 6): (6,)}, {(0, 6): (3,)}    # 뺀 자리 H 0.2 < 넣은 자리 0.9
-        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 6): 0.6}, {(0, 6): 0.75},
-                             True, 3, 5)
+        pol, ora = {(0, 1): (6,)}, {(0, 1): (3,)}    # 뺀 자리 H 0.2 < 넣은 자리 0.9
+        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.6}, {(0, 1): 0.75},
+                             True, 1, 5)
         self.assertEqual(got[0]["error_type"], "boundary")
 
     def test_경계별로는_좋은_자리를_골랐으면_상호작용오류(self):
-        pol, ora = {(0, 6): (3,)}, {(0, 6): (6,)}    # 뺀 자리 H 0.9 > 넣은 자리 0.2
-        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 6): 0.6}, {(0, 6): 0.75},
-                             True, 3, 5)
+        pol, ora = {(0, 1): (3,)}, {(0, 1): (6,)}    # 뺀 자리 H 0.9 > 넣은 자리 0.2
+        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.6}, {(0, 1): 0.75},
+                             True, 1, 5)
         self.assertEqual(got[0]["error_type"], "interaction")
 
     def test_손해_큰_순으로_자른다(self):
         texts = ["a b c d e f g h i j k l"] * 3
         sents = [sent(i, t) for i, t in enumerate(texts)]
         lab = labels_for(texts, lambda i, j: 0.0, lambda i, j: 0.5)
-        pol = {(i, 6): (6,) for i in range(3)}
-        ora = {(i, 6): (3,) for i in range(3)}
-        pol_h = {(0, 6): 0.5, (1, 6): 0.1, (2, 6): 0.3}
-        ora_h = {(0, 6): 0.6, (1, 6): 0.9, (2, 6): 0.5}
-        got = lj.build_cases(sents, lab, pol, ora, pol_h, ora_h, True, 3, 2)
+        pol = {(i, 1): (6,) for i in range(3)}
+        ora = {(i, 1): (3,) for i in range(3)}
+        pol_h = {(0, 1): 0.5, (1, 1): 0.1, (2, 1): 0.3}
+        ora_h = {(0, 1): 0.6, (1, 1): 0.9, (2, 1): 0.5}
+        got = lj.build_cases(sents, lab, pol, ora, pol_h, ora_h, True, 1, 2)
         self.assertEqual([c["id"] for c in got], ["s1", "s2"])
 
 

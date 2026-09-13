@@ -34,6 +34,11 @@ for split in ('dev', 'test', 'train'):
         print(f'[skip] {pre_path.name} 없음'); continue
     pre = json.loads(pre_path.read_text(encoding='utf-8'))
     lab = json.loads((SRC / f'oracle_labels_{split}.json').read_text(encoding='utf-8'))
+    # cohesion 을 잰 타깃이 기준이다. adq 라벨이 없는 타깃(나중에 추가한 언어)은 contra 를
+    # 그대로 복사해 채운다 — contra 는 소스 NLI 라 타깃과 무관하다.
+    base = next(iter(lab.values()))
+    tgts = list(next(iter(pre.values())).values().__iter__().__next__())
+    lab = {t: lab.get(t, base) for t in tgts}
     out = {}
     n_pos = 0
     for tgt, per in lab.items():
@@ -52,4 +57,10 @@ for split in ('dev', 'test', 'train'):
           for i, r in enumerate(out[list(out)[0]]) for k in range(len(r['contra'])) ]
     print(f'[run25] {split}: 경계 {n_pos // len(out)} / 라벨 평균 {st.mean(v):.4f} '
           f'(min {min(v):.3f} max {max(v):.3f})')
+cfgp = DST / 'config.json'
+cfg = json.loads(cfgp.read_text(encoding='utf-8'))
+seen = json.loads((DST / 'oracle_labels_dev.json').read_text(encoding='utf-8'))
+cfg['targets'] = list(seen)
+cfgp.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding='utf-8')
+print(f"[run25] config targets -> {cfg['targets']}")
 print(f'-> {DST}')

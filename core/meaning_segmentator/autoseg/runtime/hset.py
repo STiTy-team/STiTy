@@ -45,6 +45,40 @@ def cut_set(units: list[str], scores: dict[int, float], T: int, spaced: bool,
     return tuple(sorted(pos))
 
 
+def top_k_cuts(units: list[str], scores: dict[int, float], k: int,
+               min_gap: int) -> tuple[int, ...]:
+    """점수 상위 k개 자리. 동점은 앞쪽이 이긴다 (`truncate` 와 같은 규칙).
+
+    T 대신 k 로 부르는 이유: T 는 문장 길이에 따라 k 를 정하는 함수라 격자를 몇 점 고르는
+    순간 **그 깊이의 순위만** 채점된다. k 를 1부터 훑으면 순위 전체가 채점되고, LLM 비용은
+    안 는다 — 점수 벡터는 문장당 한 번만 뽑기 때문이다.
+    """
+    if k <= 0 or not scores:
+        return ()
+    picked: list[int] = []
+    for j in sorted(scores, key=lambda x: (-scores[x], x)):
+        if all(abs(j - q) >= min_gap for q in picked) and \
+           j >= min_gap and len(units) - j >= min_gap:
+            picked.append(j)
+            if len(picked) == k:
+                break
+    return tuple(sorted(picked))
+
+
+def k_range(n_units: int, min_chunk: int = 2, max_k: int = 10) -> list[int]:
+    """이 문장에서 재볼 k 들 — 평균 조각이 `min_chunk` 어절 아래로 가면 멈춘다.
+
+    1어절 조각 구간은 어떤 분절이든 `H_set` 이 바닥이라 잡음만 는다.
+    """
+    kmax = min(max_k, n_units // min_chunk - 1)
+    return list(range(1, kmax + 1))
+
+
+def chunk_len(n_units: int, k: int) -> float:
+    """k 개를 자를 때의 평균 조각 길이 — 보고용 지연축."""
+    return n_units / (k + 1)
+
+
 def pieces_of(units: list[str], cut: tuple[int, ...], spaced: bool) -> list[tuple[int, int]]:
     """절단집합 → 조각의 (시작, 끝) 인덱스. 절단이 없으면 문장 하나."""
     out, prev = [], 0
@@ -108,21 +142,38 @@ class HsetScorer:
         return out
 
 
-def paired_bootstrap(a: list[float], b: list[float], iters: int = 2000,
-                     seed: int = 1) -> dict:
-    """짝지어진 차이의 평균과 95% 신뢰구간. 짝은 (문장, T) 단위다.
+def paired_bootstrap(a: list[float], b: list[float], clusters: list | None = None,
+                     iters: int = 2000, seed: int = 1) -> dict:
+    """짝지어진 차이의 평균과 95% 신뢰구간.
 
     종전 관문은 `Δ > 1 se` 였는데, **같은 프롬프트를 다시 채점만 해도** Δ 가
     +0.023 ± 0.017 로 그 문턱을 넘었다 (run22 실측). CI 하한을 쓰면 그 잡음이 걸러진다.
+
+    `clusters` 를 주면 **그 단위로 재추출한다** (기본은 짝 단위). 짝이 (문장, k) 일 때 같은
+    문장의 k 들은 같은 점수 벡터에서 나오므로 독립이 아니다 — 짝 단위로 재추출하면 CI 가
+    실제보다 좁아져 아무것도 아닌 개정을 통과시킨다. 문장 id 를 클러스터로 주면 그 문장의
+    k 들이 통째로 뽑히거나 통째로 빠진다.
     """
     import random
     if len(a) != len(b):
         raise ValueError(f"짝이 안 맞는다: {len(a)} vs {len(b)}")
     d = [x - y for x, y in zip(a, b)]
     if len(d) < 2:
-        return {"mean": 0.0, "lo": 0.0, "hi": 0.0, "n": len(d)}
+        return {"mean": 0.0, "lo": 0.0, "hi": 0.0, "n": len(d), "n_clusters": 0}
     rng = random.Random(seed)
-    n = len(d)
-    means = sorted(sum(d[rng.randrange(n)] for _ in range(n)) / n for _ in range(iters))
+    if clusters is None:
+        groups = [[x] for x in d]
+    else:
+        by: dict = {}
+        for c, x in zip(clusters, d):
+            by.setdefault(c, []).append(x)
+        groups = list(by.values())
+    g = len(groups)
+    means = []
+    for _ in range(iters):
+        picked = [groups[rng.randrange(g)] for _ in range(g)]
+        flat = [x for grp in picked for x in grp]
+        means.append(sum(flat) / len(flat))
+    means.sort()
     return {"mean": round(st.mean(d), 5), "lo": round(means[int(.025 * iters)], 5),
-            "hi": round(means[int(.975 * iters) - 1], 5), "n": n}
+            "hi": round(means[int(.975 * iters) - 1], 5), "n": len(d), "n_clusters": g}

@@ -45,6 +45,9 @@ p.add_argument('--run-id', default='en2x/en-multi/run24')
 p.add_argument('--mt-cache-from', default='en2x/en-multi/run21',
                help='prefix/suffix 번역 캐시를 가진 런 (라벨을 만든 런)')
 p.add_argument('--comet', default='Unbabel/wmt22-comet-da')
+p.add_argument('--targets', nargs='+', default=None,
+               help='cohesion 을 잴 언어들. 기본은 라벨 파일에 있는 것. 여기 없던 언어를 넣으면 '
+                    '조각 번역부터 새로 한다 (contra 는 소스 NLI 라 타깃과 무관하다)')
 p.add_argument('--batch-size', type=int, default=32)
 a = p.parse_args()
 
@@ -54,7 +57,8 @@ spaced, mg, grid = cfg['spaced'], cfg['min_gap'], cfg['final_t_grid']
 sents = json.load(open(R / f'data/{a.split}.json'))
 ids = [s['id'] for s in sents]; texts = [s['text'] for s in sents]
 units = [L.units_of(t, spaced) for t in texts]
-lab = json.load(open(R / f'oracle_labels_{a.split}.json')); TG = list(lab)
+lab = json.load(open(R / f'oracle_labels_{a.split}.json'))
+TG = a.targets or list(lab)
 mt_cache_dir = RUNS_DIR / a.mt_cache_from / 'cache'
 out_path = R / f'pseudoref_{a.split}.json'
 

@@ -33,7 +33,7 @@ from .loop_distill import evaluate
 from .paths import RUNS_DIR
 from .runtime import agents_judge as aj
 from .runtime import data, hset, labels as L, metrics
-from .runtime.pipeline import JsonCache, LocalTranslator, boundaries, to_lang_code
+from .runtime.pipeline import JsonCache, LocalTranslator, to_lang_code
 
 AGENT_MAX_TOKENS = 24000
 
@@ -44,43 +44,47 @@ def log(msg: str) -> None:
 
 # ── 절단집합 ────────────────────────────────────────────────────────────
 
-def policy_sets(rows: list[dict], sents: list, t_grid: list[int], spaced: bool,
-                min_gap: int) -> dict[tuple[int, int], tuple[int, ...]]:
-    """채점 행 → {(문장 index, T): 절단집합}. 점수가 없는 문장은 건너뛴다."""
+def _sets_from_scores(sents: list, score_of, spaced: bool, min_gap: int, min_chunk: int,
+                      max_k: int) -> dict[tuple[int, int], tuple[int, ...]]:
+    """`{(문장 index, k): 절단집합}` — k 를 1부터 훑는다.
+
+    **T 격자 대신 k 축을 쓴다.** T 는 문장 길이에서 k 를 정하는 함수라, 격자를 몇 점 고르면
+    그 깊이의 순위만 채점된다. k 를 훑으면 순위 전체가 채점되고 LLM 비용은 안 는다 —
+    점수 벡터는 문장당 한 번만 뽑기 때문이다. 지연축은 보고할 때 `chunk_len(n, k)` 로
+    되돌린다.
+    """
+    out = {}
+    for i, s in enumerate(sents):
+        u = L.units_of(s.text, spaced)
+        sc = score_of(i, s, u)
+        if not sc:
+            continue
+        for k in hset.k_range(len(u), min_chunk, max_k):
+            c = hset.top_k_cuts(u, sc, k, min_gap)
+            if len(c) == k:
+                out[(i, k)] = c
+    return out
+
+
+def policy_sets(rows: list[dict], sents: list, spaced: bool, min_gap: int,
+                min_chunk: int = 2, max_k: int = 10) -> dict[tuple[int, int], tuple[int, ...]]:
+    """채점 행 → 절단집합. 점수가 없는 문장은 건너뛴다."""
     by_id = {r["id"]: r for r in rows if r.get("scores")}
-    out = {}
-    for i, s in enumerate(sents):
+
+    def score_of(i, s, u):
         r = by_id.get(s.id)
-        if not r:
-            continue
-        u = L.units_of(s.text, spaced)
-        sc = {j: float(x) / 100.0 for j, x in zip(r["positions"], r["scores"])}
-        for T in t_grid:
-            if boundaries(s.text, T, spaced) <= 0:
-                continue
-            c = hset.cut_set(u, sc, T, spaced, min_gap)
-            if c:
-                out[(i, T)] = c
-    return out
+        return {j: float(x) / 100.0 for j, x in zip(r["positions"], r["scores"])} if r else {}
+
+    return _sets_from_scores(sents, score_of, spaced, min_gap, min_chunk, max_k)
 
 
-def oracle_sets(lab: dict, sents: list, t_grid: list[int], spaced: bool,
-                min_gap: int) -> dict[tuple[int, int], tuple[int, ...]]:
+def oracle_sets(lab: dict, sents: list, spaced: bool, min_gap: int,
+                min_chunk: int = 2, max_k: int = 10) -> dict[tuple[int, int], tuple[int, ...]]:
     """경계별 라벨 상위 k개 — 지금 오라클이 내는 답(그리디)."""
-    out = {}
-    for i, s in enumerate(sents):
-        u = L.units_of(s.text, spaced)
-        c = list(range(min_gap, len(u) - min_gap + 1))
-        if not c:
-            continue
-        sc = {j: L.label_value(lab, i, j) for j in c}
-        for T in t_grid:
-            if boundaries(s.text, T, spaced) <= 0:
-                continue
-            got = hset.cut_set(u, sc, T, spaced, min_gap)
-            if got:
-                out[(i, T)] = got
-    return out
+    def score_of(i, s, u):
+        return {j: L.label_value(lab, i, j) for j in range(min_gap, len(u) - min_gap + 1)}
+
+    return _sets_from_scores(sents, score_of, spaced, min_gap, min_chunk, max_k)
 
 
 def search_sets(path: Path, t_grid: list[int], limit: int) -> tuple[dict, dict]:
@@ -132,7 +136,7 @@ def build_cases(sents: list, lab: dict, pol: dict, ora: dict, pol_h: dict, ora_h
     gaps = sorted(((ora_h[k] - pol_h[k], k) for k in pol if k in ora_h and k in pol_h),
                   reverse=True)
     cases = []
-    for gap, (i, T) in gaps[:n_cases]:
+    for gap, (i, kk) in gaps[:n_cases]:
         if gap <= 0:
             break
         s = sents[i]
@@ -151,18 +155,18 @@ def build_cases(sents: list, lab: dict, pol: dict, ora: dict, pol_h: dict, ora_h
                  "cohesion": round(st.mean(per[i]["adq_l"][j - 1] for per in lab.values()), 4)}
             return d
 
-        dropped = [detail(j) for j in pol[(i, T)] if j not in ora[(i, T)]]
-        added = [detail(j) for j in ora[(i, T)] if j not in pol[(i, T)]]
-        case = {"id": s.id, "T": T, "gap": round(gap, 4),
-                "error_type": error_type(dropped, added),
-                "policy": {"cut": list(pol[(i, T)]), "H_set": round(pol_h[(i, T)], 4),
-                           "text": _marked(u, pol[(i, T)], spaced)},
-                "target": {"cut": list(ora[(i, T)]), "H_set": round(ora_h[(i, T)], 4),
-                           "text": _marked(u, ora[(i, T)], spaced)},
+        dropped = [detail(j) for j in pol[(i, kk)] if j not in ora[(i, kk)]]
+        added = [detail(j) for j in ora[(i, kk)] if j not in pol[(i, kk)]]
+        case = {"id": s.id, "cuts": kk, "avg_chunk": round(hset.chunk_len(len(u), kk), 1),
+                "gap": round(gap, 4), "error_type": error_type(dropped, added),
+                "policy": {"cut": list(pol[(i, kk)]), "H_set": round(pol_h[(i, kk)], 4),
+                           "text": _marked(u, pol[(i, kk)], spaced)},
+                "target": {"cut": list(ora[(i, kk)]), "H_set": round(ora_h[(i, kk)], 4),
+                           "text": _marked(u, ora[(i, kk)], spaced)},
                 "diff": {"dropped": dropped, "added": added}}
         if pieces_tr:
-            case["policy"]["pieces"] = pieces_tr(i, pol[(i, T)])
-            case["target"]["pieces"] = pieces_tr(i, ora[(i, T)])
+            case["policy"]["pieces"] = pieces_tr(i, pol[(i, kk)])
+            case["target"]["pieces"] = pieces_tr(i, ora[(i, kk)])
         cases.append(case)
     return cases
 
@@ -173,6 +177,21 @@ def _marked(units: list[str], cut: tuple[int, ...], spaced: bool) -> str:
         sep = " ‖ " if j in cut else (" " if spaced else "")
         out += sep + units[j]
     return out
+
+
+def by_latency(sents: list, h: dict, spaced: bool,
+               bins=(3, 5, 7, 10, 99)) -> dict[str, float]:
+    """(문장, k) 값들을 평균 조각 길이로 묶어 지연축 곡선으로 — 보고용.
+
+    판정은 (문장, k) 짝으로 하고 문장 단위로 재추출한다. 이쪽은 사람이 읽을 표다.
+    """
+    acc: dict[str, list[float]] = {}
+    for (i, k), v in h.items():
+        n = len(L.units_of(sents[i].text, spaced))
+        c = hset.chunk_len(n, k)
+        lab = next((f"≤{b}" for b in bins if c <= b), f">{bins[-2]}")
+        acc.setdefault(lab, []).append(v)
+    return {k: round(st.mean(v), 4) for k, v in sorted(acc.items())}
 
 
 # ── 채택 판정 ───────────────────────────────────────────────────────────
@@ -195,6 +214,13 @@ def main() -> int:
     p.add_argument("--run-id", required=True)
     p.add_argument("--prompt", required=True, help="시작 프롬프트 파일")
     p.add_argument("--dev-a", type=int, default=150, help="dev 앞 N 문장을 채택 판정에 쓴다")
+    p.add_argument("--min-gap", type=int, default=1,
+                   help="절단 사이 최소 조각 길이. **기본 1 — 제약을 걸지 않는다.** 종전 루프는 "
+                        "발화 속도에서 유도한 3 을 썼는데, 그건 ASR 쪽 노브지 이 지표의 일부가 "
+                        "아니다. 너무 짧은 조각은 H_set 이 알아서 벌한다")
+    p.add_argument("--min-chunk", type=int, default=2,
+                   help="평균 조각이 이보다 짧아지는 k 는 안 잰다 — 1어절 조각 구간은 잡음뿐")
+    p.add_argument("--max-k", type=int, default=10, help="문장당 잴 절단 수 상한")
     p.add_argument("--iterations", type=int, default=5)
     p.add_argument("--n-cases", type=int, default=12)
     p.add_argument("--target-sets", default=None,
@@ -219,7 +245,9 @@ def main() -> int:
     if not (run_dir / "cache").exists():
         (run_dir / "cache").symlink_to(Path("..") / src.name / "cache")
     cfg = json.loads((src / "config.json").read_text(encoding="utf-8"))
-    spaced, min_gap, t_grid = cfg["spaced"], cfg["min_gap"], cfg["t_grid"]
+    spaced = cfg["spaced"]
+    min_gap = a.min_gap if a.min_gap is not None else cfg["min_gap"]
+    t_grid = cfg["t_grid"]          # 채점(evaluate)의 라벨 지표용. 판정은 k 축으로 한다
     targets = cfg["targets"]
 
     def load(split):
@@ -232,8 +260,10 @@ def main() -> int:
     devA, devB = dev[:a.dev_a], dev[a.dev_a:] + train
     labA = {t: per[:a.dev_a] for t, per in lab_dev.items()}
     labB = {t: lab_dev[t][a.dev_a:] + lab_train[t] for t in lab_dev}
-    log(f"[data] dev-A {len(devA)} / dev-B {len(devB)} / T {t_grid} / min_gap {min_gap} "
-        f"/ 타깃 {targets}")
+    log(f"[data] dev-A {len(devA)} / dev-B {len(devB)} / k 1~{a.max_k} "
+        f"(평균 조각 ≥ {a.min_chunk}) / min_gap {min_gap}"
+        f"{' (런 설정 %d 을 덮어씀)' % cfg['min_gap'] if min_gap != cfg['min_gap'] else ''}"
+        f" / 타깃 {targets}")
 
     gw = Gateway.from_args(a, model=a.model, budget=a.budget,
                            reasoning_effort=a.agent_reasoning_effort)
@@ -267,7 +297,7 @@ def main() -> int:
         ora_A, ora_hA = search_sets(Path(a.target_sets), t_grid, len(devA))
         kind = f"탐색 최적 ({Path(a.target_sets).name})"
     else:
-        ora_A = oracle_sets(labA, devA, t_grid, spaced, min_gap)
+        ora_A = oracle_sets(labA, devA, spaced, min_gap, a.min_chunk, a.max_k)
         ora_hA = hset_of(devA, labA, ora_A)
         kind = "그리디 오라클 — 상호작용 오류는 드물게만 보인다"
     log(f"[목표] {kind}: dev-A H_set 평균 {st.mean(ora_hA.values()):.4f} ({len(ora_hA)} 짝)")
@@ -277,10 +307,11 @@ def main() -> int:
         rows, m = evaluate(gw, pr, sents, lab, spaced, min_gap, t_grid, seg_cache,
                            a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
         seg_cache.flush()
-        sets = policy_sets(rows, sents, t_grid, spaced, min_gap)
+        sets = policy_sets(rows, sents, spaced, min_gap, a.min_chunk, a.max_k)
         h = hset_of(sents, lab, sets)
-        log(f"[{tag}] H_set {st.mean(h.values()):.4f} / overlap {m['overlap']} / "
-            f"fmt {m['format_pass_rate']} / 누적 ${gw.usage.snapshot()['cost']:.2f}")
+        log(f"[{tag}] H_set {st.mean(h.values()):.4f} {by_latency(sents, h, spaced)} / "
+            f"overlap {m['overlap']} / fmt {m['format_pass_rate']} / "
+            f"누적 ${gw.usage.snapshot()['cost']:.2f}")
         return rows, sets, h, m
 
     cur_rows, cur_sets, cur_h, cur_m = score_prompt(prompt, devA, labA, "iter 0")
@@ -334,10 +365,11 @@ def main() -> int:
 
         _, c_sets, c_h, c_m = score_prompt(cand, devA, labA, f"iter {it} 후보")
         keys = sorted(set(c_h) & set(cur_h))
-        boot = hset.paired_bootstrap([c_h[k] for k in keys], [cur_h[k] for k in keys])
+        boot = hset.paired_bootstrap([c_h[k] for k in keys], [cur_h[k] for k in keys],
+                                     clusters=[i for i, _k in keys])
         verdict = decide(boot)
         log(f"[iter {it}] Δ H_set {boot['mean']:+.4f} [{boot['lo']:+.4f}, {boot['hi']:+.4f}] "
-            f"짝 {boot['n']} → {verdict}")
+            f"짝 {boot['n']} / 문장 {boot['n_clusters']} → {verdict}")
 
         if verdict == "confirm":
             log("[iter] 경계선 — 신선한 캐시로 재채점")
@@ -345,10 +377,11 @@ def main() -> int:
             rows2, _m2 = evaluate(gw, cand, devA, labA, spaced, min_gap, t_grid, tmp,
                                   a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
             tmp.flush()
-            s2 = policy_sets(rows2, devA, t_grid, spaced, min_gap)
+            s2 = policy_sets(rows2, devA, spaced, min_gap, a.min_chunk, a.max_k)
             h2 = hset_of(devA, labA, s2)
             k2 = sorted(set(h2) & set(cur_h))
-            b2 = hset.paired_bootstrap([h2[k] for k in k2], [cur_h[k] for k in k2])
+            b2 = hset.paired_bootstrap([h2[k] for k in k2], [cur_h[k] for k in k2],
+                                       clusters=[i for i, _k in k2])
             log(f"[iter {it}] 재채점 Δ {b2['mean']:+.4f} [{b2['lo']:+.4f}, {b2['hi']:+.4f}]")
             verdict = "accept" if b2["lo"] > 0 else "reject"
 

@@ -40,6 +40,43 @@ class CutSet(unittest.TestCase):
         self.assertEqual(H.cut_set("a b c".split(), {}, 2, True, 1), ())
 
 
+class TopK(unittest.TestCase):
+    def test_상위_k개(self):
+        u = "a b c d e f".split()
+        sc = {1: 0.1, 2: 0.9, 3: 0.5, 4: 0.7, 5: 0.2}
+        self.assertEqual(H.top_k_cuts(u, sc, 2, min_gap=1), (2, 4))
+
+    def test_동점은_앞쪽이_이긴다(self):
+        u = "a b c d e".split()
+        sc = {1: 0.5, 2: 0.5, 3: 0.1, 4: 0.1}
+        self.assertEqual(H.top_k_cuts(u, sc, 1, min_gap=1), (1,))
+
+    def test_min_gap_은_양끝도_본다(self):
+        """자리 1 은 앞 조각이 1어절이라 min_gap 3 에서 못 쓴다."""
+        u = "a b c d e f g h".split()
+        sc = {1: 0.9, 2: 0.8, 5: 0.7}
+        self.assertEqual(H.top_k_cuts(u, sc, 2, min_gap=3), (5,))
+
+    def test_k가_0이면_빈_집합(self):
+        self.assertEqual(H.top_k_cuts(list("abc"), {1: 0.5}, 0, 1), ())
+
+
+class KRange(unittest.TestCase):
+    def test_평균_조각이_2어절_아래로_안_간다(self):
+        self.assertEqual(H.k_range(8, min_chunk=2), [1, 2, 3])
+        self.assertEqual(H.k_range(5, min_chunk=2), [1])
+
+    def test_상한을_지킨다(self):
+        self.assertEqual(H.k_range(100, min_chunk=2, max_k=4), [1, 2, 3, 4])
+
+    def test_너무_짧으면_없다(self):
+        self.assertEqual(H.k_range(4, min_chunk=2), [1])
+        self.assertEqual(H.k_range(3, min_chunk=2), [])   # 3어절을 둘로 쪼개면 평균 1.5
+
+    def test_지연축_변환(self):
+        self.assertAlmostEqual(H.chunk_len(20, 3), 5.0)
+
+
 class Pieces(unittest.TestCase):
     def test_절단이_없으면_통짜(self):
         self.assertEqual(H.pieces_of(list("abcd"), (), True), [(0, 4)])
@@ -83,6 +120,21 @@ class Bootstrap(unittest.TestCase):
         self.assertEqual(r["mean"], 0.0)
         self.assertLessEqual(r["lo"], 0.0)
         self.assertGreaterEqual(r["hi"], 0.0)
+
+    def test_같은_문장의_k들은_한_덩이로_뽑힌다(self):
+        """클러스터를 주면 CI 가 넓어진다 — 문장 안 상관을 무시하지 않는다."""
+        a, b, cl = [], [], []
+        for s in range(20):                       # 문장 20개, 각 5개 k
+            good = s < 11                         # 11문장만 개선 — 문장 단위로 뭉쳐 있다
+            for _k in range(5):
+                a.append(0.6 if good else 0.4)
+                b.append(0.5)
+                cl.append(s)
+        naive = H.paired_bootstrap(a, b)
+        clustered = H.paired_bootstrap(a, b, clusters=cl)
+        self.assertEqual(naive["mean"], clustered["mean"])
+        self.assertGreater(clustered["hi"] - clustered["lo"], naive["hi"] - naive["lo"])
+        self.assertEqual(clustered["n_clusters"], 20)
 
     def test_한결같은_개선이면_하한이_양수(self):
         a = [0.6] * 50
