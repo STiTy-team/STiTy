@@ -1,0 +1,219 @@
+{
+ "version": 2,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.97,
+  "achv": 0.8841,
+  "util": 0.6903,
+  "util_oracle": 0.776,
+  "overlap": 0.3806,
+  "overlap_by_T": {
+   "4": 0.442,
+   "6": 0.355,
+   "12": 0.312
+  },
+  "tie_rate": 0.0387,
+  "tie_at_cut_rate": 0.019,
+  "spearman_pooled": 0.1628,
+  "spearman_within": 0.2334,
+  "calibration": {
+   "00-09": {
+    "n": 97,
+    "label_mean": 62.1
+   },
+   "10-19": {
+    "n": 199,
+    "label_mean": 62.3
+   },
+   "20-29": {
+    "n": 183,
+    "label_mean": 63.6
+   },
+   "30-39": {
+    "n": 168,
+    "label_mean": 64.2
+   },
+   "40-49": {
+    "n": 129,
+    "label_mean": 61.6
+   },
+   "50-59": {
+    "n": 153,
+    "label_mean": 66.7
+   },
+   "60-69": {
+    "n": 167,
+    "label_mean": 62.2
+   },
+   "70-79": {
+    "n": 169,
+    "label_mean": 66.9
+   },
+   "80-89": {
+    "n": 136,
+    "label_mean": 68.1
+   },
+   "90-99": {
+    "n": 151,
+    "label_mean": 69.7
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 3
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Greed and selfishness <SEG:80> will <SEG:25> always <SEG:24> be <SEG:23> with <SEG:22> us <SEG:30> and <SEG:20> it <SEG:19> is <SEG:18> the <SEG:45> nature <SEG:70> of <SEG:55> cooperation <SEG:75> that <SEG:17> when <SEG:16> the <SEG:50> majority <SEG:100> benefit <SEG:65> there <SEG:15> will <SEG:"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Komen's policy disqualified <SEG:88> Planned <SEG:70> Parenthood <SEG:98> due <SEG:10> to <SEG:6> a <SEG:3> pending <SEG:82> investigation <SEG:92> on <SEG:9> how <SEG:12> Planned <SEG:68> Parenthood <SEG:95> spends <SEG:80> and <SEG:5> reports <SEG:62> its <SEG:4> money <SEG:86> that <SEG:7> is <SE"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Protesters hope to <SEG:30> collect <SEG:75> a <SEG:10> petition <SEG:80> of <SEG:5> 1.2 <SEG:99> million <SEG:95> signatures <SEG:90> to <SEG:25> present <SEG:70> to <SEG:20> the <SEG:15> National <SEG:86>"
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9442,
+  "achv": 0.9116,
+  "util": 0.7131,
+  "util_oracle": 0.7803,
+  "overlap": 0.4766,
+  "overlap_by_T": {
+   "4": 0.533,
+   "6": 0.454,
+   "12": 0.387
+  },
+  "tie_rate": 0.0424,
+  "tie_at_cut_rate": 0.014,
+  "spearman_pooled": 0.2216,
+  "spearman_within": 0.2779,
+  "calibration": {
+   "00-09": {
+    "n": 218,
+    "label_mean": 62.5
+   },
+   "10-19": {
+    "n": 446,
+    "label_mean": 61.7
+   },
+   "20-29": {
+    "n": 415,
+    "label_mean": 62.0
+   },
+   "30-39": {
+    "n": 351,
+    "label_mean": 64.3
+   },
+   "40-49": {
+    "n": 273,
+    "label_mean": 65.5
+   },
+   "50-59": {
+    "n": 282,
+    "label_mean": 63.7
+   },
+   "60-69": {
+    "n": 388,
+    "label_mean": 64.7
+   },
+   "70-79": {
+    "n": 373,
+    "label_mean": 67.1
+   },
+   "80-89": {
+    "n": 335,
+    "label_mean": 67.7
+   },
+   "90-99": {
+    "n": 318,
+    "label_mean": 73.0
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Architecture is concerned <SEG:64> with <SEG:40> the <SEG:50> design <SEG:88> and <SEG:46> construction <SEG:82> of <SEG:34> buildings. <SEG:100> The <SEG:16> architecture <SEG:76> of <SEG:28> a <SEG:2> place <SEG:70> is <SEG:10> often <SEG:52> a <SEG:0> tourist <SEG:94> attraction <SEG:58> in <SEG:"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "If using a <SEG:12> drone, <SEG:100> check <SEG:70> well <SEG:64> in <SEG:16> advance <SEG:82> as <SEG:22> to <SEG:28> what <SEG:8> you <SEG:46> are <SEG:40> allowed <SEG:88> to <SEG:34> film <SEG:94> and <SEG:52> what <SEG:4> permits <SEG:58> or <SEG:0> additional <SEG:76>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The company hopes <SEG:56> to <SEG:10> diversify <SEG:72> its <SEG:8> profit <SEG:60> sources <SEG:80> and <SEG:32> gain <SEG:64> popularity <SEG:76> in <SEG:14> areas <SEG:40> where <SEG:36> Skype <SEG:84> holds <SEG:68> a <SEG:6> strong <SEG:52> position, <SEG:94> such <SEG:4> as <SEG:2> China, <S"
+    }
+   ]
+  }
+ },
+ "score_train": 0.3806,
+ "score_dev": 0.4766,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 12032,
+ "usage": {
+  "calls": 234,
+  "prompt_tokens": 932218,
+  "completion_tokens": 2246356,
+  "cached_tokens": 789376,
+  "truncated": 0,
+  "cost": 4.548157,
+  "by_purpose": {
+   "segment": {
+    "calls": 206,
+    "prompt_tokens": 759670,
+    "completion_tokens": 2117961,
+    "reasoning_tokens": 1989504,
+    "cached_tokens": 681472,
+    "cost": 4.272508
+   },
+   "segment_retry": {
+    "calls": 21,
+    "prompt_tokens": 68024,
+    "completion_tokens": 71786,
+    "reasoning_tokens": 69376,
+    "cached_tokens": 53888,
+    "cost": 0.148453
+   },
+   "prompt_engineer": {
+    "calls": 5,
+    "prompt_tokens": 21272,
+    "completion_tokens": 33864,
+    "reasoning_tokens": 14784,
+    "cached_tokens": 16384,
+    "cost": 0.06936
+   },
+   "critic": {
+    "calls": 2,
+    "prompt_tokens": 83252,
+    "completion_tokens": 22745,
+    "reasoning_tokens": 20416,
+    "cached_tokens": 37632,
+    "cost": 0.057836
+   }
+  }
+ }
+}

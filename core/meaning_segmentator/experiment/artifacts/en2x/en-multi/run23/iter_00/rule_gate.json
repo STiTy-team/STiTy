@@ -1,0 +1,45 @@
+[
+ {
+  "supported_by": [
+   "en_us_140",
+   "en_us_278",
+   "en_us_203",
+   "en_us_66"
+  ],
+  "direction": "lower",
+  "surface_condition": "Cuts adjacent to a numeral that is immediately followed by a unit/quantifier token (split inside a measurement/quantity ",
+  "verified_support": 4,
+  "n_matched": 12,
+  "label_matched": 0.4818,
+  "label_rest": 0.6487,
+  "t": -3.58,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_417",
+   "en_us_477"
+  ],
+  "direction": "raise",
+  "surface_condition": "Markers that fall at a sentence boundary (left side ends with sentence-final punctuation) where the right-side token is ",
+  "verified_support": 0,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 0 < 2 (주장 2)"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_203",
+   "en_us_140"
+  ],
+  "direction": "lower",
+  "surface_condition": "Cuts immediately before participial/predicative verbs that continue the clause (tokens like 'reaching', 'causing', 'name",
+  "verified_support": 2,
+  "n_matched": 5,
+  "label_matched": 0.4618,
+  "label_rest": 0.648,
+  "t": -1.73,
+  "verdict": "drop",
+  "reason": "|t| 1.73 < 2.0"
+ }
+]

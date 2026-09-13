@@ -1,0 +1,115 @@
+{
+  "regressions": [
+    {
+      "id": "en_us_1167",
+      "text": "Their predecessors, the Australopithecus did not walk upright as habitually.",
+      "delta": -1.0,
+      "budget_T": 4,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        3,
+        6
+      ],
+      "kept_before": [
+        4,
+        7
+      ],
+      "kept_by_label": [
+        4,
+        7
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_13",
+      "text": "He recently lost against Raonic in the Brisbane Open.",
+      "delta": -1.0,
+      "budget_T": 4,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        4
+      ],
+      "kept_before": [
+        5
+      ],
+      "kept_by_label": [
+        5
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_328",
+      "text": "Born in the Croatian capital, Zagreb, Bobek gained fame while playing for Partizan Belgrade.",
+      "delta": -1.0,
+      "budget_T": 4,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        5,
+        8,
+        11
+      ],
+      "kept_before": [
+        3,
+        6,
+        9
+      ],
+      "kept_by_label": [
+        3,
+        6,
+        9
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_1135",
+      "text": "The first public reading of the document was by John Nixon in the yard of Independence Hall on July 8.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        7,
+        15
+      ],
+      "kept_before": [
+        11,
+        17
+      ],
+      "kept_by_label": [
+        11,
+        17
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    },
+    {
+      "id": "en_us_286",
+      "text": "Latvia and Slovakia have both delayed the process of joining ACTA.",
+      "delta": -0.75,
+      "budget_T": 6,
+      "delta_at_T": -1.0,
+      "kept_now": [
+        8
+      ],
+      "kept_before": [
+        6
+      ],
+      "kept_by_label": [
+        6
+      ],
+      "overlap_now": 0.0,
+      "overlap_before": 1.0
+    }
+  ],
+  "post_mortem": {
+    "why_failed": "The revision added blanket demotions for numeral–unit adjacencies and for splitting short parenthetical/identifier tokens; those demotions pushed down previously reliable comma/appositive and numeral-adjacent cuts so the truncator could no longer keep those safe boundaries and instead kept worse cuts that contradicted the rest of the sentence. The net effect removed safe boundaries in many sentences with appositives/names and shifted the kept cut choices, producing large drops in measured objective.",
+    "blamed_lines": [
+      "+- DEMOTE NUM–UNIT SPLITS: if the left-side token immediately before the marker is a numeral/number token and the immediately following token (right_first) is a measurement or unit word, or vice versa (unit before marker and numeral after), reduce the score substantially relative to other local candidates. Treat such cuts as prone to over-trust and place them into a lower band (e.g., target relative range toward 0–40 within the sentence) unless strong contrary lexical context exists. Example unit tokens to check for (case-insensitive surface forms): \"million\", \"percent\", \"percent.\", \"kilometers\", \"kilometer\", \"meters\", \"meter\", \"miles\", \"mile\", \"inches\", \"inch\", \"year\", \"years\", \"m\", \"degree\", \"°\", \"kg\", \"lbs\", \"ft\".",
+      "+- DEMOTE PARENTHETICAL / SHORT IDENTIFIER SPLITS: if the marker splits a short identifier or title that is visually parenthetical or set off by punctuation — e.g., a single short uppercased token or an abbreviation next to commas or parentheses such as \"(CEO)\", \"Inc.\", \"Ltd.\", \"Dr.\", \"Ph.D.\", initials like \"Jr.\", or a single all-caps token of length ≤ 4 — then bias downward. Such tokens are often meaningful only in conjunction with their surrounding punctuation and were observed to be over-ranked when split."
+    ],
+    "mechanism": "removed_safe_boundary",
+    "lesson": "Avoid broad, hard demotions that remove many formerly reliable punctuation/appositive or numeral-adjacent cut positions; instead scope demotions narrowly or add contextual exceptions so safe boundaries are not systematically suppressed."
+  }
+}

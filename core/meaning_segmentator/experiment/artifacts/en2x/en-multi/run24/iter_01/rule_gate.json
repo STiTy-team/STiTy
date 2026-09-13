@@ -1,0 +1,46 @@
+[
+ {
+  "supported_by": [
+   "en_us_1150",
+   "en_us_419",
+   "en_us_703",
+   "en_us_66",
+   "en_us_301"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where the token immediately BEFORE the marker is a numeral/date",
+  "verified_support": 5,
+  "n_matched": 37,
+  "label_matched": 0.7411,
+  "label_rest": 0.6865,
+  "t": 3.41,
+  "verdict": "drop",
+  "reason": "방향 반대"
+ },
+ {
+  "supported_by": [
+   "en_us_380",
+   "en_us_301"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where the token immediately AFTER the marker is the coordinator 'or'",
+  "verified_support": 2,
+  "n_matched": 7,
+  "label_matched": 0.6708,
+  "label_rest": 0.6879,
+  "t": -0.51,
+  "verdict": "drop",
+  "reason": "|t| 0.51 < 2.0"
+ },
+ {
+  "supported_by": [
+   "en_us_1294",
+   "en_us_738"
+  ],
+  "direction": "raise",
+  "surface_condition": "cuts where the token immediately AFTER the marker begins a capitalized named-entity token (common org/place tokens obser",
+  "verified_support": 0,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 0 < 2 (주장 2)"
+ }
+]

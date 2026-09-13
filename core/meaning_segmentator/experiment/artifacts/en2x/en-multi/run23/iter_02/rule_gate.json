@@ -1,0 +1,45 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_278",
+   "en_us_203",
+   "en_us_140"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where the token immediately before the marker is a numeral and the token immediately after is a measurement/unit or",
+  "verified_support": 4,
+  "n_matched": 13,
+  "label_matched": 0.4794,
+  "label_rest": 0.6489,
+  "t": -3.94,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_950"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts where the token immediately after the marker is a present-participial verb (continuation like '... , causing ...' /",
+  "verified_support": 2,
+  "n_matched": 3,
+  "verdict": "drop",
+  "reason": "걸린 경계 3 < 5"
+ },
+ {
+  "supported_by": [
+   "en_us_738",
+   "en_us_1000",
+   "en_us_276"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts immediately after short organization/place/name tokens (mid-sentence capitalized names or recognizable org/place wo",
+  "verified_support": 3,
+  "n_matched": 11,
+  "label_matched": 0.4247,
+  "label_rest": 0.649,
+  "t": -3.96,
+  "verdict": "keep"
+ }
+]

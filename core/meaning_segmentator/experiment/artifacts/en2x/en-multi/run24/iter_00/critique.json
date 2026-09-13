@@ -1,0 +1,84 @@
+{
+ "rules": [
+  {
+   "surface_condition": "Left token is a numeral (contains a digit) and the token immediately after the cut is a unit/range connector (evidence of a number+unit or numeric range being split).",
+   "supported_by": [
+    "en_us_419",
+    "en_us_703",
+    "en_us_66",
+    "en_us_301"
+   ],
+   "error": "over-trust",
+   "why": "fragment_left",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately BEFORE the marker is NUM and the token immediately AFTER the marker is a unit or range connector (see check), move the score down into a lower band (e.g. target band 0–60) so the cut does not get ranked above intact number+unit/range boundaries.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "months",
+     "years",
+     "or",
+     "dollars"
+    ]
+   }
+  },
+  {
+   "surface_condition": "The token immediately AFTER the cut is a bare predicate-token (base verb or short adjective commonly starting the clause continuation), so the right side looks like a predicate that completes the left NP.",
+   "supported_by": [
+    "en_us_1106",
+    "en_us_847",
+    "en_us_422"
+   ],
+   "error": "over-trust",
+   "why": "fragment_right",
+   "blamed_rule": "- Cuts that separate two independently meaningful lexical clusters (e.g., noun phrase + independent verb phrase) where both clusters contain content words (nouns, verbs, numerals) and do not leave a dangling single function word are likely to score higher. (Prediction to test: cuts after a main verb or after a multi-word noun phrase with a numeral/name often score high.)",
+   "proposed_rule": "If the token immediately AFTER the marker is one of short predicate starters (see check), lower the score (target band ~0–60) because the right side is likely a predicate that needs the left NP and standalone translation quality of the right fragment is often poor.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "tick",
+     "want",
+     "closer"
+    ]
+   }
+  },
+  {
+   "surface_condition": "The cut abuts parenthetical material / an opened parenthesis token (either the token immediately BEFORE or immediately AFTER the marker is the inner token of a parenthesis in the source).",
+   "supported_by": [
+    "en_us_380",
+    "en_us_738"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "If the token immediately BEFORE or AFTER the marker is the inner token of parenthetical material (see check), reduce the score (target band 0–60). Parentheticals frequently tie tokens that belong together; cutting adjacent to them is often fragmentary or causes entailment errors.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "minae",
+     "nsa"
+    ],
+    "right_first": [
+     "or"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "The model produces equal scores when it applies identical surface heuristics to repeated/parallel tokens (e.g. multiple occurrences of the same function word). Break ties deterministically by preferring cuts that keep multi-token named expressions or number+unit pairs intact (i.e., when heuristics tie, rank cuts that do NOT split NUM+unit or NameName lower).",
+ "summary": "The scorer systematically over-weights isolated lexical cues (numbers, names, parenthetical cues, bare predicate tokens) and thus ranks cuts that split number+unit pairs, parentheticals, or NP→predicate boundaries too highly. Applying targeted downward adjustments when a cut splits a numeral from its unit, when the right side begins with a bare predicate token, or when the cut abuts parenthetical inner tokens will reduce the label-vs-model ordering errors. The blamed lines in the prompt are the high-score suggestions for numerals, for separating lexical clusters, and for parentheticals — re-anchoring those tendencies to avoid splitting tightly-bound tokens fixes the observed errors.",
+ "metrics": {
+  "overlap": 0.4512,
+  "overlap_by_T": {
+   "4": 0.494,
+   "6": 0.417,
+   "12": 0.43
+  },
+  "achv": 0.9453,
+  "tie_rate": 0.0535,
+  "spearman_within": 0.3558
+ }
+}

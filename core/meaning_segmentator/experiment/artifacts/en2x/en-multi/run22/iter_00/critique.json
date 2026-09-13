@@ -1,0 +1,92 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cut that splits a numeral from its measurement/unit word (NUM on one side, unit on the other)",
+   "supported_by": [
+    "en_us_66",
+    "en_us_140",
+    "en_us_203",
+    "en_us_278",
+    "en_us_46",
+    "en_us_1050"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "cuts adjacent to numerals/dates often score high",
+   "proposed_rule": "If left_last is NUM and right_first is a measurement/unit token (or vice versa), reduce the score into a lower band (e.g. target band 0–40) so numeric+unit expressions are not spuriously ranked highest when they are split across the cut.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "percent",
+     "percent.",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "miles",
+     "mile",
+     "inches",
+     "inch",
+     "year",
+     "years",
+     "m"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cut that separates a named entity from a parenthetical identifier/acronym (the parenthetical starts the following token)",
+   "supported_by": [
+    "en_us_1000",
+    "en_us_685"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "short fixed named phrases",
+   "proposed_rule": "If the token immediately after the marker is a parenthetical identifier / short acronym (e.g. 'isil', 'kv62', 'nsa', 'minae'), lower the score into a medium/low band (e.g. target band 0–60) because splitting an entity from its parenthetical id often yields unreliable partial translations or contradiction.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "isil",
+     "kv62",
+     "nsa",
+     "minae"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cut immediately before a sentence-starting pronoun / contraction (e.g. it / it's) that begins the next sentence",
+   "supported_by": [
+    "en_us_417",
+    "en_us_1050"
+   ],
+   "error": "under-trust",
+   "why": "mixed",
+   "blamed_rule": "bias score downward",
+   "proposed_rule": "If the token immediately after the marker is a sentence-initial pronoun/contraction ('it', \"it's\"), raise the score (e.g. target band 60–100). Do this despite the generic downward bias for auxiliaries/pronouns, because cuts before an initial-sentence pronoun often produce high measured values in the data.",
+   "direction": "raise",
+   "check": {
+    "right_first": [
+     "it",
+     "it's"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties appear when multiple surface-based biases cancel each other (e.g. a numeral and a downward-function-word bias). Break ties deterministically by preferring the earlier marker instead of emitting equal numbers.",
+ "summary": "The model systematically over-ranks cuts that split numeric measurements (NUM vs unit) and some parenthetical identifiers: it treats numerals and short named tokens as inherently high-quality anchors even when splitting the quantity or name causes contradiction or fragmentation. It also under-ranks a small class of cuts that precede sentence-initial pronouns (it / it's) which the labels often mark as good. Adjust scoring to demote NUM–unit splits and parenthetical separations, and to lift cuts before initial-sentence pronouns.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

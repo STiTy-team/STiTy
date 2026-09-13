@@ -1,0 +1,226 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.96,
+  "achv": 0.9303,
+  "util": 0.7428,
+  "util_oracle": 0.7984,
+  "overlap": 0.3806,
+  "overlap_by_T": {
+   "4": 0.515,
+   "6": 0.38,
+   "8": 0.294,
+   "12": 0.254
+  },
+  "tie_rate": 0.0291,
+  "tie_at_cut_rate": 0.0111,
+  "spearman_pooled": 0.2902,
+  "spearman_within": 0.3334,
+  "calibration": {
+   "00-09": {
+    "n": 103,
+    "label_mean": 66.2
+   },
+   "10-19": {
+    "n": 194,
+    "label_mean": 64.5
+   },
+   "20-29": {
+    "n": 195,
+    "label_mean": 67.7
+   },
+   "30-39": {
+    "n": 153,
+    "label_mean": 66.9
+   },
+   "40-49": {
+    "n": 126,
+    "label_mean": 67.2
+   },
+   "50-59": {
+    "n": 135,
+    "label_mean": 70.7
+   },
+   "60-69": {
+    "n": 177,
+    "label_mean": 71.4
+   },
+   "70-79": {
+    "n": 168,
+    "label_mean": 73.0
+   },
+   "80-89": {
+    "n": 144,
+    "label_mean": 74.7
+   },
+   "90-99": {
+    "n": 149,
+    "label_mean": 75.0
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 4
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Voyagers planning sex <SEG:82> reassignment <SEG:89> surgery <SEG:98> abroad <SEG:55> must <SEG:30> ensure <SEG:60> they're <SEG:40> carrying <SEG:75> valid <SEG:68> documents <SEG:45> for <SEG:10> ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "For most countries, <SEG:92> you <SEG:47> will <SEG:44> need <SEG:53> an <SEG:11> offer <SEG:82> letter <SEG:85> from <SEG:32> the <SEG:20> institution <SEG:89> you <SEG:41> wish <SEG:56> to <SEG:29> study <SEG:78> at, <SEG:68> and <SEG:38> also <SEG:35> evidence <SEG:50> of <SEG:23> funds <SEG:74> "
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "There are a <SEG:26> lot <SEG:72> of <SEG:40> social <SEG:34> and <SEG:6> political <SEG:84> effects <SEG:42> such <SEG:24> as <SEG:20> the <SEG:36> use <SEG:68> of <SEG:70> metric <SEG:54> system, <SEG:100> a <SEG:30> shift <SEG:78> from <SEG:28> absolutism <SEG:64> to <SEG:58> republicanism, <SEG:"
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.6055,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5867,
+     "Japanese": 0.5928,
+     "German": 0.6369
+    }
+   },
+   "6": {
+    "mean": 0.6433,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.6223,
+     "Japanese": 0.648,
+     "German": 0.6596
+    }
+   },
+   "8": {
+    "mean": 0.6778,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6479,
+     "Japanese": 0.695,
+     "German": 0.6904
+    }
+   },
+   "12": {
+    "mean": 0.7158,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.6645,
+     "Japanese": 0.7231,
+     "German": 0.7599
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6373,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6344,
+     "Japanese": 0.62,
+     "German": 0.6574
+    }
+   },
+   "6": {
+    "mean": 0.6914,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.6649,
+     "Japanese": 0.6827,
+     "German": 0.7267
+    }
+   },
+   "8": {
+    "mean": 0.7291,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.7032,
+     "Japanese": 0.7589,
+     "German": 0.7251
+    }
+   },
+   "12": {
+    "mean": 0.7556,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.74,
+     "Japanese": 0.7911,
+     "German": 0.7358
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 233,
+  "prompt_tokens": 960207,
+  "completion_tokens": 2250430,
+  "cached_tokens": 814208,
+  "truncated": 0,
+  "cost": 4.557715,
+  "by_purpose": {
+   "segment": {
+    "calls": 210,
+    "prompt_tokens": 764073,
+    "completion_tokens": 2149889,
+    "reasoning_tokens": 2014400,
+    "cached_tokens": 674176,
+    "cost": 4.339107
+   },
+   "segment_retry": {
+    "calls": 20,
+    "prompt_tokens": 66084,
+    "completion_tokens": 69007,
+    "reasoning_tokens": 66496,
+    "cached_tokens": 53504,
+    "cost": 0.142497
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 130050,
+    "completion_tokens": 31534,
+    "reasoning_tokens": 28288,
+    "cached_tokens": 86528,
+    "cost": 0.076112
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.4512,
+   "score_dev": 0.4767,
+   "paired_dev": null,
+   "prompt_len": 12066
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.4512,
+   "score_dev": 0.4767,
+   "paired_dev": null,
+   "prompt_len": 12066
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.4512,
+   "score_dev": 0.4767,
+   "paired_dev": null,
+   "prompt_len": 12066
+  }
+ ],
+ "best_version": 0
+}

@@ -1,0 +1,89 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts where the token immediately before the marker is a numeral and the token immediately after is a measurement/unit or numeral-bound word",
+   "supported_by": [
+    "en_us_66",
+    "en_us_278",
+    "en_us_203",
+    "en_us_140"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "If left_last is NUM and right_first is a measurement/unit token, move the marker into a lower target band (roughly 10–50) instead of applying the usual strong upward boost. This reduces misplaced preference for splitting numerals from their units or coordinated numerals.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "kilometers",
+     "miles",
+     "percent",
+     "million",
+     "inches",
+     "years",
+     "or"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts where the token immediately after the marker is a present-participial verb (continuation like '... , causing ...' / '..., trying ...')",
+   "supported_by": [
+    "en_us_360",
+    "en_us_950"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Is there a comma attached to the token immediately before the marker that closes an embedded phrase? If yes, consider upward bias if the adjacent chunks look lexical.",
+   "proposed_rule": "If right_first is a continuing participial form (surface verbs ending in 'ing' such as causing/trying/reaching/cleaning), suppress any comma-driven upward boost and place the marker in a lower band (roughly 10–50). Participial continuations frequently continue or overturn the left segment's meaning and the measurement shows high contradiction.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "causing",
+     "trying",
+     "reaching",
+     "cleaning"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts immediately after short organization/place/name tokens (mid-sentence capitalized names or recognizable org/place words)",
+   "supported_by": [
+    "en_us_738",
+    "en_us_1000",
+    "en_us_276"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "When left_last is a short name/org token (examples below), reduce the size of the upward bias (target band ~10–50) instead of treating the position as top-tier. Many such cuts split a name/appositive from its continuing clause and the remainder often overturns or degrades the left-side measurement.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "park",
+     "service",
+     "planned",
+     "parenthood",
+     "daesh",
+     "gonu",
+     "hangi"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The prompt currently over-boosts cuts adjacent to numerals/short named phrases and comma boundaries, causing repeated high scores for splits that the measured labels mark down (often because the remainder contradicts or completes the unit). Two surface patterns stand out: (1) numeral / unit splits (NUM followed by a unit word) and (2) comma + participial continuations (right_first ending in 'ing'); both need explicit downward adjustments. Also reduce the strong generic named-entity boost for short org/place tokens, since many such boundaries are appositive and yield contradiction in the measurement.",
+ "metrics": {
+  "overlap": 0.3806,
+  "overlap_by_T": {
+   "4": 0.442,
+   "6": 0.355,
+   "12": 0.312
+  },
+  "achv": 0.8841,
+  "tie_rate": 0.0387,
+  "spearman_within": 0.2334
+ }
+}

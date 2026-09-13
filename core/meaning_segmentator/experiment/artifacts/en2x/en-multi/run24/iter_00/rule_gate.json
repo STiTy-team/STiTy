@@ -1,0 +1,43 @@
+[
+ {
+  "supported_by": [
+   "en_us_419",
+   "en_us_703",
+   "en_us_66",
+   "en_us_301"
+  ],
+  "direction": "lower",
+  "surface_condition": "Left token is a numeral (contains a digit) and the token immediately after the cut is a unit/range connector (evidence o",
+  "verified_support": 4,
+  "n_matched": 9,
+  "label_matched": 0.7244,
+  "label_rest": 0.6876,
+  "t": 2.32,
+  "verdict": "drop",
+  "reason": "방향 반대"
+ },
+ {
+  "supported_by": [
+   "en_us_1106",
+   "en_us_847",
+   "en_us_422"
+  ],
+  "direction": "lower",
+  "surface_condition": "The token immediately AFTER the cut is a bare predicate-token (base verb or short adjective commonly starting the clause",
+  "verified_support": 3,
+  "n_matched": 3,
+  "verdict": "drop",
+  "reason": "걸린 경계 3 < 5"
+ },
+ {
+  "supported_by": [
+   "en_us_380",
+   "en_us_738"
+  ],
+  "direction": "lower",
+  "surface_condition": "The cut abuts parenthetical material / an opened parenthesis token (either the token immediately BEFORE or immediately A",
+  "verified_support": 0,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 0 < 2 (주장 2)"
+ }
+]

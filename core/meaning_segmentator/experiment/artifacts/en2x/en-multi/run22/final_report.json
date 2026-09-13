@@ -1,0 +1,228 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 1.0,
+  "achv": 0.8544,
+  "util": 0.6694,
+  "util_oracle": 0.7803,
+  "overlap": 0.3204,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.32,
+   "8": 0.27,
+   "12": 0.194
+  },
+  "tie_rate": 0.0052,
+  "tie_at_cut_rate": 0.0028,
+  "spearman_pooled": 0.1629,
+  "spearman_within": 0.1705,
+  "calibration": {
+   "00-09": {
+    "n": 208,
+    "label_mean": 60.3
+   },
+   "10-19": {
+    "n": 180,
+    "label_mean": 62.4
+   },
+   "20-29": {
+    "n": 117,
+    "label_mean": 63.9
+   },
+   "30-39": {
+    "n": 92,
+    "label_mean": 61.5
+   },
+   "40-49": {
+    "n": 118,
+    "label_mean": 60.1
+   },
+   "50-59": {
+    "n": 129,
+    "label_mean": 63.3
+   },
+   "60-69": {
+    "n": 150,
+    "label_mean": 64.7
+   },
+   "70-79": {
+    "n": 159,
+    "label_mean": 66.0
+   },
+   "80-89": {
+    "n": 173,
+    "label_mean": 64.9
+   },
+   "90-99": {
+    "n": 218,
+    "label_mean": 67.1
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.5933,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5653,
+     "Japanese": 0.5951,
+     "German": 0.6195
+    }
+   },
+   "6": {
+    "mean": 0.6223,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.5912,
+     "Japanese": 0.6273,
+     "German": 0.6483
+    }
+   },
+   "8": {
+    "mean": 0.6692,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6305,
+     "Japanese": 0.6852,
+     "German": 0.692
+    }
+   },
+   "12": {
+    "mean": 0.7175,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.6594,
+     "Japanese": 0.736,
+     "German": 0.7572
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.6459,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6302,
+     "Japanese": 0.6448,
+     "German": 0.6627
+    }
+   },
+   "6": {
+    "mean": 0.7265,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7017,
+     "Japanese": 0.7356,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7937,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8041,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8227,
+     "German": 0.813
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 189,
+  "prompt_tokens": 829026,
+  "completion_tokens": 1996781,
+  "cached_tokens": 606720,
+  "truncated": 0,
+  "cost": 4.064307,
+  "by_purpose": {
+   "segment": {
+    "calls": 155,
+    "prompt_tokens": 567586,
+    "completion_tokens": 1814227,
+    "reasoning_tokens": 1717312,
+    "cached_tokens": 428160,
+    "cost": 3.674015
+   },
+   "prompt_engineer": {
+    "calls": 15,
+    "prompt_tokens": 75806,
+    "completion_tokens": 99593,
+    "reasoning_tokens": 46272,
+    "cached_tokens": 58368,
+    "cost": 0.205005
+   },
+   "segment_retry": {
+    "calls": 15,
+    "prompt_tokens": 46677,
+    "completion_tokens": 45461,
+    "reasoning_tokens": 43904,
+    "cached_tokens": 40832,
+    "cost": 0.093404
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 130138,
+    "completion_tokens": 33821,
+    "reasoning_tokens": 30720,
+    "cached_tokens": 79360,
+    "cost": 0.08232
+   },
+   "critic_regression": {
+    "calls": 1,
+    "prompt_tokens": 8819,
+    "completion_tokens": 3679,
+    "reasoning_tokens": 3200,
+    "cached_tokens": 0,
+    "cost": 0.009563
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.3883,
+   "score_dev": 0.4049,
+   "paired_dev": {
+    "mean_delta": -0.0227,
+    "se_delta": 0.0193,
+    "n_pairs": 215
+   },
+   "prompt_len": 11580
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.3715,
+   "score_dev": 0.4276,
+   "paired_dev": null,
+   "prompt_len": 12032
+  }
+ ],
+ "best_version": 0
+}

@@ -1,0 +1,34 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_140",
+   "en_us_46",
+   "en_us_292"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that split a numeric token from an immediately adjacent measurement/scale token or that split a month name from a n",
+  "verified_support": 4,
+  "n_matched": 20,
+  "label_matched": 0.5192,
+  "label_rest": 0.6491,
+  "t": -3.74,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_276",
+   "en_us_1150"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that fall immediately before an overt subordinator/clause-introducing verb (right_first in a short list like 'becau",
+  "verified_support": 3,
+  "n_matched": 10,
+  "label_matched": 0.5068,
+  "label_rest": 0.6483,
+  "t": -1.91,
+  "verdict": "drop",
+  "reason": "|t| 1.91 < 2.0"
+ }
+]

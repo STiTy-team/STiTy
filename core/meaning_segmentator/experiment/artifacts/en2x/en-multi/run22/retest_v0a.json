@@ -1,0 +1,59 @@
+{
+ "tag": "v0a",
+ "prompt": "prompt_v0.txt",
+ "n": 215,
+ "model": "gpt-5-mini",
+ "seg_reasoning_effort": "medium",
+ "usage": {
+  "calls": 36,
+  "prompt_tokens": 130744,
+  "completion_tokens": 375269,
+  "cached_tokens": 97664,
+  "truncated": 0,
+  "cost": 0.76125,
+  "by_purpose": {
+   "segment": {
+    "calls": 36,
+    "prompt_tokens": 130744,
+    "completion_tokens": 375269,
+    "reasoning_tokens": 351680,
+    "cached_tokens": 97664,
+    "cost": 0.76125
+   }
+  }
+ },
+ "result": {
+  "base_overlap": 0.4276,
+  "retest_overlap": 0.4505,
+  "retest_by_T": {
+   "4": 0.516,
+   "6": 0.427,
+   "12": 0.345
+  },
+  "paired": {
+   "mean_delta": 0.0229,
+   "se_delta": 0.0167,
+   "n_pairs": 215
+  },
+  "delta_sd": 0.2456,
+  "abs_delta_mean": 0.1449,
+  "same_sentence_rate": 0.414,
+  "churn": {
+   "pairs": 572,
+   "changed": 308,
+   "changed_rate": 0.538,
+   "up": 98,
+   "down": 84,
+   "kept": 1640,
+   "moved": 465,
+   "moved_rate": 0.284
+  },
+  "spearman_within": {
+   "base": null,
+   "retest": 0.2615
+  },
+  "format_pass_rate": 1.0,
+  "first_pass_violations": {},
+  "seconds": 335
+ }
+}

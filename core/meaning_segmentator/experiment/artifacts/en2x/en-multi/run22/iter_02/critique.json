@@ -1,0 +1,119 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts that split a numeric token from an immediately adjacent measurement/scale token or that split a month name from a numeric day (i.e., NUM ↔ unit or month ↔ NUM). These cuts are prone to high model scores but low measured labels because splitting a quantity/date often leaves two halves whose joint meaning is needed to avoid contradiction/mistranslation.",
+   "supported_by": [
+    "en_us_66",
+    "en_us_140",
+    "en_us_46",
+    "en_us_292"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "DEMOTE NUM–UNIT / DATE SPLITS: if a marker separates a numeric token from an immediately adjacent measurement or scale token, or separates a month name from a numeric day, move that marker into a lower target band (e.g., reduce relative rank toward the 0–40 range within the sentence). In other words, do not treat a numeral or date by itself as a strong anchor when the adjoining token is a unit/scale or the other half of a date — lower its score relative to other local candidates so the model prefers cuts that keep numbers attached to their units/days.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM",
+     "january",
+     "february",
+     "march",
+     "april",
+     "may",
+     "june",
+     "july",
+     "august",
+     "september",
+     "october",
+     "november",
+     "december",
+     "million",
+     "percent",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "miles",
+     "mile",
+     "inches",
+     "inch",
+     "year",
+     "years",
+     "m",
+     "km",
+     "mph"
+    ],
+    "right_first": [
+     "NUM",
+     "january",
+     "february",
+     "march",
+     "april",
+     "may",
+     "june",
+     "july",
+     "august",
+     "september",
+     "october",
+     "november",
+     "december",
+     "million",
+     "percent",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "miles",
+     "mile",
+     "inches",
+     "inch",
+     "year",
+     "years",
+     "m",
+     "km",
+     "mph"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts that fall immediately before an overt subordinator/clause-introducing verb (right_first in a short list like 'because','causing','due','succeeding','resulting','reaching','described') when the comma/adjunct boundary is the local cue. These positions were given high scores by the prompt's comma-adjunct upward tendency but the remainder often overturns or crucially modifies the left segment, producing high contradiction.",
+   "supported_by": [
+    "en_us_360",
+    "en_us_276",
+    "en_us_1150"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "DEMOTE CUTS BEFORE CAUSAL / CLAUSE-INTRODUCERS: if right_first is a clause-introducing token that signals cause/major modification (e.g., \"because\", \"causing\", \"due\", \"succeeding\", \"resulting\", \"reaching\", \"described\"), reduce the score for that marker (target relative band ~0–40) unless there is an unusually strong, independent lexical anchor on both sides. This narrows the comma-adjunct upward bias so the model does not prefer cuts that leave a left segment that the remainder can overturn.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "because",
+     "causing",
+     "due",
+     "succeeding",
+     "resulting",
+     "reaching",
+     "described",
+     "reported",
+     "being"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties usually arise when multiple strong surface cues (e.g., a numeral and a name) receive equal aggregate weight; break ties deterministically by adding a tiny position-based offset that favors the earlier marker (i.e., if scores would be equal, prefer the earlier cut).",
+ "summary": "The prompt systematically over-ranks cuts that separate numerals/dates from their measurement or date components and cuts after adjunct commas when the remainder begins with causal or clause-introducing tokens. Both patterns produce high contradiction in the measured label; demoting those surface patterns (NUM–unit/date splits and comma→causal-subordinator cuts) reduces over-trust and lets truly safer boundaries surface. The changes are narrow, surface-driven demotions rather than blanket removals of comma or numeral signals.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

@@ -1,0 +1,177 @@
+{
+ "rule": "- NUM–UNIT adjacency (moderate, conditional demotion):\n  - If the token immediately before the marker is a numeral (digit-formatted number like 1,200 or a simple spelled-out numeral such as \"one\", \"two\", \"three\") and the token immediately after the marker is a measurement/unit word (examples to watch for: \"million\", \"percent\", \"kilometers\", \"meter\", \"meters\", \"mile\", \"miles\", \"year\", \"years\", \"km\", \"m\", \"degree\"), do NOT automatically boost this marker. Instead, apply a moderate downward ordering bias: rank such NUM–UNIT splits below other nearby markers that keep numeric+unit together or that separate stronger lexical clusters, because splitting a number from its unit often reduces single-side fidelity or creates contradictions. This is a soft ordering change (aim to move these markers toward mid-range relative ranks rather than to the extreme bottom) to correct measured over-trust in raw numeral adjacency.\n  - Exception (preserve genuinely good numeral-adjacent boundaries): do not apply the demotion when one of the following is true: (a) the unit token is followed immediately by punctuation (comma, period) suggesting the unit ends the clause; (b) the left numeral is formatted with thousands separators or decimals (e.g., contains \",\" or \".\" in the token) indicating a clear numeric figure that translators commonly render alone; (c) the unit token is capitalized or otherwise looks like a standalone label. When an exception applies, keep the usual numeral-adjacent upward bias.",
+ "split": "dev",
+ "n": 215,
+ "base_prompt": "core/meaning_segmentator/experiment/artifacts/en2x/en-multi/run22/prompt_v0.txt",
+ "base_metrics": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9674,
+  "achv": 0.9014,
+  "util": 0.7057,
+  "util_oracle": 0.7803,
+  "overlap": 0.4276,
+  "overlap_by_T": {
+   "4": 0.497,
+   "6": 0.409,
+   "12": 0.323
+  },
+  "tie_rate": 0.0053,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1984,
+  "spearman_within": 0.2539,
+  "calibration": {
+   "00-09": {
+    "n": 396,
+    "label_mean": 61.5
+   },
+   "10-19": {
+    "n": 380,
+    "label_mean": 63.7
+   },
+   "20-29": {
+    "n": 273,
+    "label_mean": 63.0
+   },
+   "30-39": {
+    "n": 231,
+    "label_mean": 63.6
+   },
+   "40-49": {
+    "n": 239,
+    "label_mean": 63.3
+   },
+   "50-59": {
+    "n": 250,
+    "label_mean": 63.4
+   },
+   "60-69": {
+    "n": 329,
+    "label_mean": 65.1
+   },
+   "70-79": {
+    "n": 366,
+    "label_mean": 66.5
+   },
+   "80-89": {
+    "n": 410,
+    "label_mean": 67.2
+   },
+   "90-99": {
+    "n": 525,
+    "label_mean": 69.6
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "variant_metrics": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9953,
+  "achv": 0.9109,
+  "util": 0.7128,
+  "util_oracle": 0.7803,
+  "overlap": 0.4772,
+  "overlap_by_T": {
+   "4": 0.524,
+   "6": 0.465,
+   "12": 0.368
+  },
+  "tie_rate": 0.0024,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.2057,
+  "spearman_within": 0.2633,
+  "calibration": {
+   "00-09": {
+    "n": 521,
+    "label_mean": 62.8
+   },
+   "10-19": {
+    "n": 414,
+    "label_mean": 61.8
+   },
+   "20-29": {
+    "n": 259,
+    "label_mean": 63.7
+   },
+   "30-39": {
+    "n": 194,
+    "label_mean": 63.0
+   },
+   "40-49": {
+    "n": 216,
+    "label_mean": 65.2
+   },
+   "50-59": {
+    "n": 250,
+    "label_mean": 63.9
+   },
+   "60-69": {
+    "n": 329,
+    "label_mean": 65.2
+   },
+   "70-79": {
+    "n": 364,
+    "label_mean": 64.4
+   },
+   "80-89": {
+    "n": 374,
+    "label_mean": 66.6
+   },
+   "90-99": {
+    "n": 478,
+    "label_mean": 72.1
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "These bosses had <SEG:3> been <SEG:10> reined <SEG:6> in <SEG:0> by <SEG:20> Provenzano <SEG:88> when <SEG:7> he <SEG:15> put <SEG:65> an <SEG:2> end <SEG:70> to <SEG:1> the <SEG:25> Riina-driven <SEG:82> war <SEG:60> against <SEG:5> the <SEG:55> state <SEG:75> that <SEG:18> claimed <SEG:68> the <SE"
+    }
+   ]
+  }
+ },
+ "paired": {
+  "mean_delta": 0.0496,
+  "se_delta": 0.0181,
+  "n_pairs": 215
+ },
+ "usage": {
+  "calls": 37,
+  "prompt_tokens": 145904,
+  "completion_tokens": 415068,
+  "cached_tokens": 105728,
+  "truncated": 0,
+  "cost": 0.842823,
+  "by_purpose": {
+   "segment": {
+    "calls": 36,
+    "prompt_tokens": 142156,
+    "completion_tokens": 409039,
+    "reasoning_tokens": 385472,
+    "cached_tokens": 102912,
+    "cost": 0.830462
+   },
+   "segment_retry": {
+    "calls": 1,
+    "prompt_tokens": 3748,
+    "completion_tokens": 6029,
+    "reasoning_tokens": 5824,
+    "cached_tokens": 2816,
+    "cost": 0.012361
+   }
+  }
+ }
+}

@@ -1,0 +1,96 @@
+{
+ "rules": [
+  {
+   "surface_condition": "cuts that split a numeral from an immediately adjacent measurement/scale word (e.g., '1.2' + 'million', '46' + 'percent', '240' + 'kilometers', '20' + 'years')",
+   "supported_by": [
+    "en_us_66",
+    "en_us_140",
+    "en_us_203",
+    "en_us_278",
+    "en_us_884"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "DEMOTE NUM–UNIT SPLITS (moderate): if a cut has a numeral (left_last = NUM) immediately adjacent to a unit/scale token on the other side (right_first in the unit list below), lower that marker's score relative to other candidates in the sentence (move it toward the mid/low band rather than treating it as top-ranked). Target band: roughly 30–60 within-sentence (i.e., make such splits less likely to be the very top choices). This is a conservative, testable demotion (do not hard-zero these cuts; just reduce their rank priority).",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "million",
+     "percent",
+     "kilometers",
+     "kilometer",
+     "meters",
+     "meter",
+     "miles",
+     "mile",
+     "inches",
+     "inch",
+     "year",
+     "years",
+     "km",
+     "m"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts that separate a short parenthetical identifier / acronym token (surface forms seen as tokens inside parentheses: 'ISIL', 'MINAE', 'KV62') from surrounding words",
+   "supported_by": [
+    "en_us_1000",
+    "en_us_738",
+    "en_us_685"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves.",
+   "proposed_rule": "DEMOTE PARENTHETICAL/SHORT-ID SPLITS (targeted): if the token immediately after the marker is a short identifier/acronym commonly written in parentheses (examples below), reduce the marker's score moderately (target band ~20–50). This prevents over-ranking cuts that visually split an identifier/acronym from the phrase that defines or disambiguates it.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "isil",
+     "minae",
+     "kv62"
+    ]
+   }
+  },
+  {
+   "surface_condition": "cuts immediately before a clausal introducer/participial token that often continues or reverses meaning (right_first ∈ {because, causing, resulting, reaching, succeeding, being, due})",
+   "supported_by": [
+    "en_us_360",
+    "en_us_1150"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "Cuts before or after subordinators or coordinators can measure well when the segment to the left or right is itself translated reliably (e.g., if the left already ends in a named entity or numeral). Example surface words: \"and\", \"but\", \"however\", \"when\", \"after\", \"since\", \"while\", \"which\", \"that\", \"who\".",
+   "proposed_rule": "DEMOTE BEFORE PARTICIPIAL / CLAUSAL INTRODUCERS: if the token immediately after the marker is a clause-introducing or present-participial token (examples: because, causing, resulting, reaching, succeeding, being, due), lower the marker's ranking moderately (target band ~20–50). These tokens frequently begin subordinate clauses that change or complete the left segment's claim, so cuts there are often contradicted by the remainder.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "because",
+     "causing",
+     "resulting",
+     "reaching",
+     "succeeding",
+     "being",
+     "due"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "",
+ "summary": "The prompt systematically over-ranks cuts that break numeric expressions (NUM + unit), cut off short parenthetical identifiers/acronyms, or sit immediately before participial/clausal introducers — in these patterns the remainder often overturns or completes the left segment so measured scores are low despite the model's surface cue. Proposed fixes are conservative, surface-anchored demotions (moderate downward moves, not hard zeros) so that safe comma/appositive boundaries and genuine numeric anchors are not broadly suppressed.",
+ "metrics": {
+  "overlap": 0.3715,
+  "overlap_by_T": {
+   "4": 0.444,
+   "6": 0.336,
+   "12": 0.305
+  },
+  "achv": 0.8866,
+  "tie_rate": 0.0013,
+  "spearman_within": 0.2128
+ }
+}

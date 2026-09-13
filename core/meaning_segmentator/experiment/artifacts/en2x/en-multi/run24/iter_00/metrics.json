@@ -1,0 +1,204 @@
+{
+ "version": 0,
+ "adopted": true,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.95,
+  "achv": 0.9453,
+  "util": 0.7514,
+  "util_oracle": 0.7945,
+  "overlap": 0.4512,
+  "overlap_by_T": {
+   "4": 0.494,
+   "6": 0.417,
+   "12": 0.43
+  },
+  "tie_rate": 0.0535,
+  "tie_at_cut_rate": 0.0494,
+  "spearman_pooled": 0.2903,
+  "spearman_within": 0.3558,
+  "calibration": {
+   "00-09": {
+    "n": 93,
+    "label_mean": 65.5
+   },
+   "10-19": {
+    "n": 183,
+    "label_mean": 62.1
+   },
+   "20-29": {
+    "n": 224,
+    "label_mean": 63.9
+   },
+   "30-39": {
+    "n": 146,
+    "label_mean": 67.8
+   },
+   "40-49": {
+    "n": 135,
+    "label_mean": 66.9
+   },
+   "50-59": {
+    "n": 151,
+    "label_mean": 70.6
+   },
+   "60-69": {
+    "n": 150,
+    "label_mean": 71.3
+   },
+   "70-79": {
+    "n": 175,
+    "label_mean": 71.4
+   },
+   "80-89": {
+    "n": 146,
+    "label_mean": 74.2
+   },
+   "90-99": {
+    "n": 149,
+    "label_mean": 76.2
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Yet eighty percent <SEG:95> of <SEG:20> our <SEG:25> goods <SEG:80> were <SEG:40> taxed <SEG:75> through <SEG:70> tariffs <SEG:88> in <SEG:22> Central <SEG:30> American <SEG:35> countries. <SEG:99>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Yet, Spanish is <SEG:10> also <SEG:25> widely <SEG:60> used <SEG:70> in <SEG:45> public <SEG:100> transport <SEG:85> ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Yet eighty percent <SEG:95> of <SEG:6> our <SEG:10> goods <SEG:70> were <SEG:30> taxed <SEG:65> through <SEG:50> tariffs <SEG:60> in <SEG:40> Central <SEG:85> American <SEG:75> countries. <SEG:99>"
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9535,
+  "achv": 0.949,
+  "util": 0.7551,
+  "util_oracle": 0.7951,
+  "overlap": 0.4767,
+  "overlap_by_T": {
+   "4": 0.57,
+   "6": 0.436,
+   "12": 0.382
+  },
+  "tie_rate": 0.0459,
+  "tie_at_cut_rate": 0.0367,
+  "spearman_pooled": 0.3089,
+  "spearman_within": 0.3645,
+  "calibration": {
+   "00-09": {
+    "n": 238,
+    "label_mean": 61.8
+   },
+   "10-19": {
+    "n": 391,
+    "label_mean": 64.3
+   },
+   "20-29": {
+    "n": 475,
+    "label_mean": 65.1
+   },
+   "30-39": {
+    "n": 357,
+    "label_mean": 66.8
+   },
+   "40-49": {
+    "n": 230,
+    "label_mean": 67.4
+   },
+   "50-59": {
+    "n": 297,
+    "label_mean": 69.6
+   },
+   "60-69": {
+    "n": 356,
+    "label_mean": 70.1
+   },
+   "70-79": {
+    "n": 404,
+    "label_mean": 72.1
+   },
+   "80-89": {
+    "n": 322,
+    "label_mean": 73.1
+   },
+   "90-99": {
+    "n": 329,
+    "label_mean": 76.7
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 10
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The company hopes <SEG:34> to <SEG:6> diversify <SEG:54> its <SEG:4> profit <SEG:66> sources <SEG:62> and <SEG:8> gain <SEG:74> popularity <SEG:50> in <SEG:10> areas <SEG:46> where <SEG:14> Skype <SEG:88> holds <SEG:58> a <SEG:2> strong <SEG:70> position, <SEG:98> such <SEG:12> as <SEG:16> China, <S"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "If using a <SEG:20> drone, <SEG:100> check <SEG:88> well <SEG:58> in <SEG:10> advance <SEG:60> as <SEG:18> to <SEG:16> what <SEG:50> you <SEG:34> are <SEG:30> allowed <SEG:68> to <SEG:45> film <SEG:82> and <SEG:14> what <SEG:55> permits <SEG:78> or <SEG:12> additional <SEG:95> licensing are required"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The walls and <SEG:54> roofs <SEG:70> of <SEG:15> ice <SEG:95> caves <SEG:78> can <SEG:48> collapse <SEG:85> and <SEG:40> cracks <SEG:62> can get closed ."
+    }
+   ]
+  }
+ },
+ "score_train": 0.4512,
+ "score_dev": 0.4767,
+ "paired_dev": null,
+ "changelog": null,
+ "prompt_len": 12066,
+ "usage": {
+  "calls": 175,
+  "prompt_tokens": 631525,
+  "completion_tokens": 1661290,
+  "cached_tokens": 547968,
+  "truncated": 0,
+  "cost": 3.357168,
+  "by_purpose": {
+   "segment": {
+    "calls": 159,
+    "prompt_tokens": 578970,
+    "completion_tokens": 1611967,
+    "reasoning_tokens": 1508864,
+    "cached_tokens": 505728,
+    "cost": 3.254888
+   },
+   "segment_retry": {
+    "calls": 16,
+    "prompt_tokens": 52555,
+    "completion_tokens": 49323,
+    "reasoning_tokens": 47488,
+    "cached_tokens": 42240,
+    "cost": 0.102281
+   }
+  }
+ }
+}

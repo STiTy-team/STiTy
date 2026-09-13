@@ -1,0 +1,59 @@
+[
+ {
+  "supported_by": [
+   "en_us_1150",
+   "en_us_419",
+   "en_us_884",
+   "en_us_860",
+   "en_us_301"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers where the token immediately before the cut is a numeral (contains a digit)",
+  "verified_support": 5,
+  "n_matched": 37,
+  "label_matched": 0.7411,
+  "label_rest": 0.6865,
+  "t": 3.41,
+  "verdict": "drop",
+  "reason": "방향 반대"
+ },
+ {
+  "supported_by": [
+   "en_us_1294",
+   "en_us_738",
+   "en_us_432"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers where the token immediately before the cut is an organization/place word (e.g. center, service, sea, park, compa",
+  "verified_support": 2,
+  "n_matched": 10,
+  "label_matched": 0.5682,
+  "label_rest": 0.6886,
+  "t": -1.1,
+  "verdict": "drop",
+  "reason": "|t| 1.10 < 2.0"
+ },
+ {
+  "supported_by": [
+   "en_us_419",
+   "en_us_884",
+   "en_us_422"
+  ],
+  "direction": "raise",
+  "surface_condition": "markers where the token immediately before the cut is a common adjunct-closing noun often seen before a comma (e.g. year",
+  "verified_support": 0,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 0 < 2 (주장 3)"
+ },
+ {
+  "supported_by": [
+   "en_us_1294",
+   "en_us_432"
+  ],
+  "direction": "lower",
+  "surface_condition": "markers where the token immediately after the cut is a negator (no, not, never)",
+  "verified_support": 1,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 1 < 2 (주장 2)"
+ }
+]

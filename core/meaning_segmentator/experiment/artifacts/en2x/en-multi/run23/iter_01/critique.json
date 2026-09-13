@@ -1,0 +1,79 @@
+{
+ "rules": [
+  {
+   "surface_condition": "Cuts that split a name from an immediately following parenthetical/acronym (common in \"Name (ACRONYM)\" patterns) are over-valued by the prompt; penalize them.",
+   "supported_by": [
+    "en_us_738",
+    "en_us_1000"
+   ],
+   "error": "over-trust",
+   "why": "fragment_right",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "If the token immediately AFTER the marker is a parenthetical/acronym token (common short organization/abbrev tokens such as ISIL, MINAE, NSA, etc.), place the position into a lower target band (e.g. 10–40) instead of applying the usual 'name'-boost. This avoids cutting between an entity and its parenthetical identifier.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "minae",
+     "isil",
+     "nsa",
+     "isil",
+     "ns a"
+    ]
+   }
+  },
+  {
+   "surface_condition": "Cuts immediately AFTER a numeral token (years, counts, small cardinals) are frequently over-valued by the prompt's numeral boost; reduce that boost.",
+   "supported_by": [
+    "en_us_1253",
+    "en_us_884",
+    "en_us_301",
+    "en_us_278"
+   ],
+   "error": "over-trust",
+   "why": "mixed",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "If the token immediately BEFORE the marker is NUM, do NOT apply a strong top-band boost; instead assign the position to a moderated target band (e.g. 10–60). In other words, treat numerals as context-dependent: keep a modest upward bias but suppress placements into the very top band when only a bare numeral anchors one side.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ]
+   }
+  },
+  {
+   "surface_condition": "Cuts where the token immediately AFTER the marker is a verb-form that commonly continues the clause (participles and short past participles: causing, reaching, named, released, etc.) are often over-scored when the comma/adjunct heuristic boosts them.",
+   "supported_by": [
+    "en_us_360",
+    "en_us_203"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "If the token immediately AFTER the marker is a participial/predicative verb form (common surface forms: tokens ending in 'ing' or a small enumerated list of frequent past-participles like 'named','released','reaching','causing'), reduce the comma/adjunct upward boost and place the cut in a lower band (e.g. 10–50). This treats commas followed by continuing predicates as less likely to mark independent adjunct boundaries.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "causing",
+     "reaching",
+     "named",
+     "released",
+     "caused",
+     "reached"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Many heuristics apply identical discrete boosts (e.g. 'name' boost, 'numeral' boost, 'comma adjunct' boost) so after rounding several markers receive the same numeric value; add a tiny deterministic position-dependent offset (e.g. epsilon × marker_index) before integerizing to avoid ties.",
+ "summary": "The prompt systematically over-weights surface anchors (names, numerals, comma-adjunct heuristics), causing it to favor cuts that split entities from parentheticals, split bare numerals from their context, or split before continuing participial clauses — even when the remainder contradicts or fragments the segment. Apply targeted down-ranks: (1) avoid cutting between a name and its parenthetical acronym; (2) suppress aggressive top-band boosts for bare numerals; (3) suppress comma-driven boosts when the next token is a continuing participial/predicative verb. These changes focus the model away from brittle surface shortcuts that produce contradiction/fragment errors.",
+ "metrics": {
+  "overlap": 0.3806,
+  "overlap_by_T": {
+   "4": 0.442,
+   "6": 0.355,
+   "12": 0.312
+  },
+  "achv": 0.8841,
+  "tie_rate": 0.0387,
+  "spearman_within": 0.2334
+ }
+}

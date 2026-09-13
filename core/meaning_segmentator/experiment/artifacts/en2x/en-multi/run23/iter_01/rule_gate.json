@@ -1,0 +1,42 @@
+[
+ {
+  "supported_by": [
+   "en_us_738",
+   "en_us_1000"
+  ],
+  "direction": "lower",
+  "surface_condition": "Cuts that split a name from an immediately following parenthetical/acronym (common in \"Name (ACRONYM)\" patterns) are ove",
+  "verified_support": 2,
+  "n_matched": 3,
+  "verdict": "drop",
+  "reason": "걸린 경계 3 < 5"
+ },
+ {
+  "supported_by": [
+   "en_us_1253",
+   "en_us_884",
+   "en_us_301",
+   "en_us_278"
+  ],
+  "direction": "lower",
+  "surface_condition": "Cuts immediately AFTER a numeral token (years, counts, small cardinals) are frequently over-valued by the prompt's numer",
+  "verified_support": 3,
+  "n_matched": 37,
+  "label_matched": 0.6019,
+  "label_rest": 0.6485,
+  "t": -1.63,
+  "verdict": "drop",
+  "reason": "|t| 1.63 < 2.0"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_203"
+  ],
+  "direction": "lower",
+  "surface_condition": "Cuts where the token immediately AFTER the marker is a verb-form that commonly continues the clause (participles and sho",
+  "verified_support": 1,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 1 < 2 (주장 2)"
+ }
+]

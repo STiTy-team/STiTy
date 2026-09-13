@@ -1,0 +1,51 @@
+{
+ "selected_kind": "grow",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 3,
+  "n_passed": 2
+ },
+ "changelog": [
+  "Weakened the automatic upward boost for cuts adjacent to numerals/ dates/ percentages/ names by adding an operational 'numeric-attachment' exception: when left_last contains a digit and right_first has tight numeric-unit surface shape (short lowercase alpha token, contains a digit, or contains %/currency characters), require higher lexical density on both sides to keep a high score; otherwise lower the bias. (Addresses measured over-trust on numeral+unit splits: en_us_66, en_us_278, en_us_203, en_us_140.)",
+  "Reduced the short-name/organization/place shortcut: short capitalized tokens at the cut (length ≤ 10) no longer automatically give a strong boost unless the left stretch contains ≥ 3 content tokens. This lowers upward bias on appositive short names that the critique flagged. (Addresses en_us_738, en_us_1000, en_us_276.)",
+  "Made comma-adjacent adjunct boosts more conservative by adding a continuity test: if a comma precedes the marker but the right_first looks like a participial continuation (surface ends with 'ing') and the right stretch is low in lexical content, reduce the upward bias. This treats many comma+participial continuations as less likely true adjunct boundaries unless lexical density supports them. (Addresses comma + 'ing' continuation errors noted in the summary.)",
+  "Operationalized 'lexical density' and 'content-token' checks as concrete surface heuristics (alphabetic tokens longer than 2 chars excluding a small stoplist). These counts are used in the three exceptions above so decisions remain surface-anchored and testable.",
+  "Rewrote the surface-form checklist to include the numeric-attachment and short-name exceptions and to make all heuristics explicitly testable with the immediately adjacent tokens and short counts of content tokens on each side."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]"
+ ],
+ "candidates": [
+  {
+   "kind": "grow",
+   "len": 15501,
+   "holdout_delta": {
+    "mean_delta": 0.0199,
+    "se_delta": 0.0264,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4232
+  },
+  {
+   "kind": "neutral",
+   "len": 10089,
+   "holdout_delta": {
+    "mean_delta": 0.0154,
+    "se_delta": 0.0238,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4188
+  },
+  {
+   "kind": "shrink",
+   "len": 11852,
+   "holdout_delta": {
+    "mean_delta": -0.0717,
+    "se_delta": 0.0285,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3317
+  }
+ ]
+}

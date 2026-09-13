@@ -1,0 +1,52 @@
+{
+ "selected_kind": "neutral",
+ "gate": {
+  "threshold": 0.0,
+  "rounds": 1,
+  "candidates_tried": 3,
+  "n_passed": 1
+ },
+ "changelog": [
+  "Tightened numeral/date ascendency rule and added an explicit exception to demote cuts that split a numeral from its unit (traceable to measured over-trust on NUM–unit splits).",
+  "Added a rule to demote cuts that separate short parenthetical/identifier tokens (e.g., titles, abbreviations) from surrounding punctuation because these were mis-scored as strong anchors.",
+  "Added a positive bias for cuts that precede sentence-initial pronouns 'it' and 'it's' to correct observed under-ranking.",
+  "Made tie-breaking explicit in the scoring tendencies (prefer earlier marker when surface cues tie) to implement the tie_fix.",
+  "Replaced one example (Officials in the capital...) with a new example showing a lifted score before 'it', and adjusted the 'researchers 1,200' example to show demotion of a NUM–unit split."
+ ],
+ "sections_changed": [
+  "[Scoring Rules]",
+  "[Examples]"
+ ],
+ "candidates": [
+  {
+   "kind": "neutral",
+   "len": 11580,
+   "holdout_delta": {
+    "mean_delta": 0.0074,
+    "se_delta": 0.029,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.4138
+  },
+  {
+   "kind": "grow",
+   "len": 14601,
+   "holdout_delta": {
+    "mean_delta": -0.0198,
+    "se_delta": 0.0274,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3866
+  },
+  {
+   "kind": "shrink",
+   "len": 10271,
+   "holdout_delta": {
+    "mean_delta": -0.0464,
+    "se_delta": 0.0303,
+    "n_pairs": 100
+   },
+   "holdout_obj": 0.3601
+  }
+ ]
+}

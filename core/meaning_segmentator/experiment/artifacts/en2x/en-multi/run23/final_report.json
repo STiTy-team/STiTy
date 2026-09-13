@@ -1,0 +1,248 @@
+{
+ "test_label_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.97,
+  "achv": 0.8612,
+  "util": 0.6744,
+  "util_oracle": 0.7803,
+  "overlap": 0.3439,
+  "overlap_by_T": {
+   "4": 0.463,
+   "6": 0.334,
+   "8": 0.281,
+   "12": 0.261
+  },
+  "tie_rate": 0.0337,
+  "tie_at_cut_rate": 0.0139,
+  "spearman_pooled": 0.1624,
+  "spearman_within": 0.1831,
+  "calibration": {
+   "00-09": {
+    "n": 118,
+    "label_mean": 62.0
+   },
+   "10-19": {
+    "n": 170,
+    "label_mean": 60.7
+   },
+   "20-29": {
+    "n": 193,
+    "label_mean": 63.5
+   },
+   "30-39": {
+    "n": 158,
+    "label_mean": 60.7
+   },
+   "40-49": {
+    "n": 113,
+    "label_mean": 61.7
+   },
+   "50-59": {
+    "n": 170,
+    "label_mean": 63.4
+   },
+   "60-69": {
+    "n": 179,
+    "label_mean": 62.9
+   },
+   "70-79": {
+    "n": 159,
+    "label_mean": 66.8
+   },
+   "80-89": {
+    "n": 127,
+    "label_mean": 66.7
+   },
+   "90-99": {
+    "n": 157,
+    "label_mean": 67.7
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 3,
+    "unscored_marker": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "In principle the <SEG:6> Tibetan <SEG:80> Buddhism <SEG:66> is <SEG:12> very <SEG:20> simple. <SEG:98> It <SEG:9> consists <SEG:76> of <SEG:18> Kundalini <SEG:86> Yoga, <SEG:92> meditation <SEG:74> and <SEG:4> the <SEG:14> path <SEG:70>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "The very long <SEG:90> days <SEG:50> in <SEG:10> the <SEG:20> summer <SEG:68> can <SEG:40> lead <SEG:75> to <SEG:70> problems <SEG:95> getting <SEG:80> sufficient <SEG:100> sleep <SEG:45> and <SEG:?> associated health issues."
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 13개, 출력 12개, 빠진 자리 [15])",
+     "seg_text": "The very long <SEG:90> days <SEG:50> in <SEG:10> the <SEG:20> summer <SEG:68> can <SEG:40> lead <SEG:75> to <SEG:70> problems <SEG:95> getting <SEG:80> sufficient <SEG:100> sleep <SEG:45> and <SEG:?> associated health issues."
+    }
+   ]
+  }
+ },
+ "effective": {
+  "model": {
+   "4": {
+    "mean": 0.6039,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.5834,
+     "Japanese": 0.6112,
+     "German": 0.6171
+    }
+   },
+   "6": {
+    "mean": 0.6485,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.6275,
+     "Japanese": 0.6618,
+     "German": 0.6562
+    }
+   },
+   "8": {
+    "mean": 0.6702,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.6407,
+     "Japanese": 0.697,
+     "German": 0.6731
+    }
+   },
+   "12": {
+    "mean": 0.7129,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.6658,
+     "Japanese": 0.728,
+     "German": 0.7449
+    }
+   }
+  },
+  "oracle_label": {
+   "4": {
+    "mean": 0.645,
+    "n": 100,
+    "by_tgt": {
+     "Chinese": 0.6277,
+     "Japanese": 0.6448,
+     "German": 0.6626
+    }
+   },
+   "6": {
+    "mean": 0.7266,
+    "n": 99,
+    "by_tgt": {
+     "Chinese": 0.7017,
+     "Japanese": 0.7359,
+     "German": 0.7422
+    }
+   },
+   "8": {
+    "mean": 0.7739,
+    "n": 93,
+    "by_tgt": {
+     "Chinese": 0.744,
+     "Japanese": 0.7937,
+     "German": 0.7841
+    }
+   },
+   "12": {
+    "mean": 0.8041,
+    "n": 67,
+    "by_tgt": {
+     "Chinese": 0.7765,
+     "Japanese": 0.8228,
+     "German": 0.813
+    }
+   }
+  }
+ },
+ "usage": {
+  "calls": 631,
+  "prompt_tokens": 2532173,
+  "completion_tokens": 6259431,
+  "cached_tokens": 2187776,
+  "truncated": 0,
+  "cost": 12.659656,
+  "by_purpose": {
+   "segment": {
+    "calls": 553,
+    "prompt_tokens": 2132894,
+    "completion_tokens": 5933295,
+    "reasoning_tokens": 5586560,
+    "cached_tokens": 1895552,
+    "cost": 11.973314
+   },
+   "segment_retry": {
+    "calls": 65,
+    "prompt_tokens": 228165,
+    "completion_tokens": 229378,
+    "reasoning_tokens": 222080,
+    "cached_tokens": 177408,
+    "cost": 0.47588
+   },
+   "prompt_engineer": {
+    "calls": 10,
+    "prompt_tokens": 45999,
+    "completion_tokens": 65217,
+    "reasoning_tokens": 28864,
+    "cached_tokens": 35456,
+    "cost": 0.133956
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 125115,
+    "completion_tokens": 31541,
+    "reasoning_tokens": 28288,
+    "cached_tokens": 79360,
+    "cost": 0.076505
+   }
+  }
+ },
+ "history": [
+  {
+   "version": 0,
+   "adopted": true,
+   "score_train": 0.3806,
+   "score_dev": 0.4766,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 1,
+   "adopted": false,
+   "score_train": 0.3806,
+   "score_dev": 0.4766,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 2,
+   "adopted": false,
+   "score_train": 0.3806,
+   "score_dev": 0.4766,
+   "paired_dev": null,
+   "prompt_len": 12032
+  },
+  {
+   "version": 3,
+   "adopted": false,
+   "score_train": 0.38,
+   "score_dev": 0.461,
+   "paired_dev": {
+    "mean_delta": -0.0156,
+    "se_delta": 0.0154,
+    "n_pairs": 215
+   },
+   "prompt_len": 15501
+  }
+ ],
+ "best_version": 0
+}

@@ -1,0 +1,231 @@
+{
+ "version": 3,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.95,
+  "achv": 0.8838,
+  "util": 0.6904,
+  "util_oracle": 0.776,
+  "overlap": 0.38,
+  "overlap_by_T": {
+   "4": 0.431,
+   "6": 0.351,
+   "12": 0.352
+  },
+  "tie_rate": 0.049,
+  "tie_at_cut_rate": 0.0228,
+  "spearman_pooled": 0.1874,
+  "spearman_within": 0.2439,
+  "calibration": {
+   "00-09": {
+    "n": 110,
+    "label_mean": 63.4
+   },
+   "10-19": {
+    "n": 182,
+    "label_mean": 61.8
+   },
+   "20-29": {
+    "n": 192,
+    "label_mean": 59.8
+   },
+   "30-39": {
+    "n": 155,
+    "label_mean": 64.8
+   },
+   "40-49": {
+    "n": 116,
+    "label_mean": 65.8
+   },
+   "50-59": {
+    "n": 178,
+    "label_mean": 64.0
+   },
+   "60-69": {
+    "n": 160,
+    "label_mean": 66.7
+   },
+   "70-79": {
+    "n": 163,
+    "label_mean": 66.6
+   },
+   "80-89": {
+    "n": 145,
+    "label_mean": 64.7
+   },
+   "90-99": {
+    "n": 151,
+    "label_mean": 71.7
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Italy's main goals <SEG:80> were <SEG:25> African <SEG:35> countries. <SEG:85> To <SEG:5> capture <SEG:65> those <SEG:10> countries, <SEG:78> they <SEG:14> would <SEG:16> need <SEG:60> to <SEG:18> have <SEG:50> a <SEG:20> troop <SEG:45> launching <SEG:40> pad, <SEG:88> so <SEG:8> as <SEG:30> troops "
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "They did two <SEG:80> experiments <SEG:97> marking <SEG:68> either <SEG:10> the <SEG:4> DNA <SEG:74> in <SEG:8> the <SEG:5> phage <SEG:88> with <SEG:9> a <SEG:6> radioactive <SEG:22> phosphorus <SEG:92> or <SEG:32> the <SEG:7> protein <SEG:70> of <SEG:11> the <SEG:3> phage <SEG:85>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Greed and selfishness <SEG:86> will <SEG:30> always <SEG:42> be <SEG:35> with <SEG:10> us <SEG:50> and <SEG:8> it <SEG:12> is <SEG:15> the <SEG:5> nature <SEG:72> of <SEG:3> cooperation <SEG:58> that <SEG:4> when <SEG:20> the <SEG:6> majority <SEG:100> benefit <SEG:80> there <SEG:34> will <SEG:28> a"
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9349,
+  "achv": 0.9151,
+  "util": 0.716,
+  "util_oracle": 0.7803,
+  "overlap": 0.461,
+  "overlap_by_T": {
+   "4": 0.512,
+   "6": 0.451,
+   "12": 0.366
+  },
+  "tie_rate": 0.0438,
+  "tie_at_cut_rate": 0.021,
+  "spearman_pooled": 0.231,
+  "spearman_within": 0.2817,
+  "calibration": {
+   "00-09": {
+    "n": 225,
+    "label_mean": 61.8
+   },
+   "10-19": {
+    "n": 399,
+    "label_mean": 61.7
+   },
+   "20-29": {
+    "n": 437,
+    "label_mean": 62.9
+   },
+   "30-39": {
+    "n": 362,
+    "label_mean": 64.2
+   },
+   "40-49": {
+    "n": 264,
+    "label_mean": 62.8
+   },
+   "50-59": {
+    "n": 331,
+    "label_mean": 64.1
+   },
+   "60-69": {
+    "n": 349,
+    "label_mean": 64.3
+   },
+   "70-79": {
+    "n": 394,
+    "label_mean": 67.9
+   },
+   "80-89": {
+    "n": 322,
+    "label_mean": 67.4
+   },
+   "90-99": {
+    "n": 316,
+    "label_mean": 74.1
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 14
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Periodic rhythms, which <SEG:3> are <SEG:12> not <SEG:18> simply <SEG:38> responses <SEG:56> to <SEG:8> external <SEG:48> periodic <SEG:60> cues, <SEG:99> have <SEG:1> been <SEG:6> documented <SEG:78> for <SEG:30> most <SEG:24> living <SEG:68> beings, <SEG:85> including <SEG:20> bacteria, <SEG:92> f"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "We experience time <SEG:78> as <SEG:8> a <SEG:4> series <SEG:48> of <SEG:12> events <SEG:99> passing <SEG:42> from <SEG:6> the <SEG:3> future <SEG:66> through <SEG:22> the <SEG:2> present <SEG:58>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Coalition and Afghan <SEG:18> troops <SEG:95> moved <SEG:62> into <SEG:8> the <SEG:5> area <SEG:54> to <SEG:7> secure <SEG:90> the <SEG:6> site <SEG:48> and <SEG:12> other <SEG:14> coalition <SEG:72> aircraft <SEG:82> have <SEG:3> been <SEG:10>"
+    }
+   ]
+  }
+ },
+ "score_train": 0.38,
+ "score_dev": 0.461,
+ "paired_dev": {
+  "mean_delta": -0.0156,
+  "se_delta": 0.0154,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Weakened the automatic upward boost for cuts adjacent to numerals/ dates/ percentages/ names by adding an operational 'numeric-attachment' exception: when left_last contains a digit and right_first has tight numeric-unit surface shape (short lowercase alpha token, contains a digit, or contains %/currency characters), require higher lexical density on both sides to keep a high score; otherwise lower the bias. (Addresses measured over-trust on numeral+unit splits: en_us_66, en_us_278, en_us_203, en_us_140.)",
+  "Reduced the short-name/organization/place shortcut: short capitalized tokens at the cut (length ≤ 10) no longer automatically give a strong boost unless the left stretch contains ≥ 3 content tokens. This lowers upward bias on appositive short names that the critique flagged. (Addresses en_us_738, en_us_1000, en_us_276.)",
+  "Made comma-adjacent adjunct boosts more conservative by adding a continuity test: if a comma precedes the marker but the right_first looks like a participial continuation (surface ends with 'ing') and the right stretch is low in lexical content, reduce the upward bias. This treats many comma+participial continuations as less likely true adjunct boundaries unless lexical density supports them. (Addresses comma + 'ing' continuation errors noted in the summary.)",
+  "Operationalized 'lexical density' and 'content-token' checks as concrete surface heuristics (alphabetic tokens longer than 2 chars excluding a small stoplist). These counts are used in the three exceptions above so decisions remain surface-anchored and testable.",
+  "Rewrote the surface-form checklist to include the numeric-attachment and short-name exceptions and to make all heuristics explicitly testable with the immediately adjacent tokens and short counts of content tokens on each side."
+ ],
+ "prompt_len": 15501,
+ "usage": {
+  "calls": 594,
+  "prompt_tokens": 2399308,
+  "completion_tokens": 5900123,
+  "cached_tokens": 2073472,
+  "truncated": 0,
+  "cost": 11.933542,
+  "by_purpose": {
+   "segment": {
+    "calls": 519,
+    "prompt_tokens": 2009968,
+    "completion_tokens": 5584426,
+    "reasoning_tokens": 5259328,
+    "cached_tokens": 1789696,
+    "cost": 11.268662
+   },
+   "segment_retry": {
+    "calls": 62,
+    "prompt_tokens": 218226,
+    "completion_tokens": 218939,
+    "reasoning_tokens": 212032,
+    "cached_tokens": 168960,
+    "cost": 0.454419
+   },
+   "prompt_engineer": {
+    "calls": 10,
+    "prompt_tokens": 45999,
+    "completion_tokens": 65217,
+    "reasoning_tokens": 28864,
+    "cached_tokens": 35456,
+    "cost": 0.133956
+   },
+   "critic": {
+    "calls": 3,
+    "prompt_tokens": 125115,
+    "completion_tokens": 31541,
+    "reasoning_tokens": 28288,
+    "cached_tokens": 79360,
+    "cost": 0.076505
+   }
+  }
+ }
+}

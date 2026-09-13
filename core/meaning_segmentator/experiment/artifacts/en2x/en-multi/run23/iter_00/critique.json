@@ -1,0 +1,96 @@
+{
+ "rules": [
+  {
+   "surface_condition": "Cuts adjacent to a numeral that is immediately followed by a unit/quantifier token (split inside a measurement/quantity phrase). These splits are often over-scored by the prompt's current 'numerals raise score' tendency and frequently carry high contradiction when the remainder completes the measure.",
+   "supported_by": [
+    "en_us_140",
+    "en_us_278",
+    "en_us_203",
+    "en_us_66"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Add a caveat to the numeral-boost: if the left_last token is NUM and the immediate right_first token is a measurement/unit/quantifier token, DO NOT apply the strong upward bias; instead place the score in a lower target band (rough target band 10–50) because these cuts often split a quantity and its unit and are frequently contradicted by the remainder.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ],
+    "right_first": [
+     "kilometers",
+     "miles",
+     "percent",
+     "million",
+     "inches",
+     "years"
+    ]
+   }
+  },
+  {
+   "surface_condition": "Markers that fall at a sentence boundary (left side ends with sentence-final punctuation) where the right-side token is a sentence-start pronoun/determiner (It/They/He/She/We/This/That/The). The existing checklist's downward bias for an immediately following determiner/pronoun has caused the model to underrate perfectly valid sentence-boundary cuts.",
+   "supported_by": [
+    "en_us_417",
+    "en_us_477"
+   ],
+   "error": "under-trust",
+   "why": "fragment_left",
+   "blamed_rule": "- Is the token immediately after the marker a determiner/preposition/auxiliary/relative pronoun? If yes, bias score downward.",
+   "proposed_rule": "Add an exception: if the token immediately before the marker ends the sentence (left_last is PUNCTEND), then do NOT apply the downward bias for a following pronoun/determiner; instead raise these cuts (rough target band 65–95) because they commonly separate full-sentence content that translates reliably on its own.",
+   "direction": "raise",
+   "check": {
+    "left_last": [
+     "PUNCTEND"
+    ],
+    "right_first": [
+     "it",
+     "they",
+     "he",
+     "she",
+     "we",
+     "this",
+     "that",
+     "the"
+    ]
+   }
+  },
+  {
+   "surface_condition": "Cuts immediately before participial/predicative verbs that continue the clause (tokens like 'reaching', 'causing', 'named', 'described', 'reached', 'succeeding', 'serving', 'showing'). The prompt's comma-adjunct heuristic makes the model treat many comma boundaries as high even when the verb phrase after the comma continues and can overturn or heavily depend on the remainder.",
+   "supported_by": [
+    "en_us_360",
+    "en_us_203",
+    "en_us_140"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "- A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "Narrow the comma-adjunct upward bias: when the token immediately after the marker is a participial/predicative verb form that clearly continues the clause (right_first in a tested list of continuing verbs), reduce the upward bias (target band 0–45). In other words, do not treat all comma boundaries as high—if the right_first is a continuing verbal form, prefer a lower score.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "reaching",
+     "causing",
+     "named",
+     "described",
+     "reached",
+     "succeeding",
+     "serving",
+     "showing"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Equal scores arise when multiple surface-based heuristics apply the same numeric boost/deduction; add a deterministic tiny position-based tie-breaker (e.g. add index*epsilon) so the scorer never outputs equal integers for two markers.",
+ "summary": "The prompt over-weights surface numerals and generic comma-adjunct signals (treating them as universally reliable), causing high scores for splits that actually split quantities or continuing clauses and therefore carry high contradiction. It also over-applies a downward bias to positions followed by determiners/pronouns even at true sentence boundaries; add targeted exceptions: (1) reduce the numeral boost when the numeral is immediately followed by a unit token, (2) raise cuts that follow sentence-final punctuation even if the next token is a pronoun/determiner, and (3) suppress comma-driven boosts when the right-side token is a continuing participial/predicative verb.",
+ "metrics": {
+  "overlap": 0.3806,
+  "overlap_by_T": {
+   "4": 0.442,
+   "6": 0.355,
+   "12": 0.312
+  },
+  "achv": 0.8841,
+  "tie_rate": 0.0387,
+  "spearman_within": 0.2334
+ }
+}

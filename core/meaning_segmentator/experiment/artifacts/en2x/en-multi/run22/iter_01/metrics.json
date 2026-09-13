@@ -1,0 +1,219 @@
+{
+ "version": 1,
+ "adopted": false,
+ "train": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.99,
+  "achv": 0.8889,
+  "util": 0.6934,
+  "util_oracle": 0.776,
+  "overlap": 0.3883,
+  "overlap_by_T": {
+   "4": 0.445,
+   "6": 0.343,
+   "12": 0.359
+  },
+  "tie_rate": 0.0013,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1498,
+  "spearman_within": 0.2084,
+  "calibration": {
+   "00-09": {
+    "n": 181,
+    "label_mean": 64.6
+   },
+   "10-19": {
+    "n": 211,
+    "label_mean": 62.1
+   },
+   "20-29": {
+    "n": 170,
+    "label_mean": 61.9
+   },
+   "30-39": {
+    "n": 142,
+    "label_mean": 63.5
+   },
+   "40-49": {
+    "n": 132,
+    "label_mean": 64.7
+   },
+   "50-59": {
+    "n": 119,
+    "label_mean": 64.1
+   },
+   "60-69": {
+    "n": 125,
+    "label_mean": 65.4
+   },
+   "70-79": {
+    "n": 143,
+    "label_mean": 63.6
+   },
+   "80-89": {
+    "n": 150,
+    "label_mean": 67.9
+   },
+   "90-99": {
+    "n": 179,
+    "label_mean": 70.1
+   }
+  },
+  "n_boundaries": 1552,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 1
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Cold weather is <SEG:6> perhaps <SEG:36> the <SEG:18> only <SEG:28> real <SEG:32> danger <SEG:40> the <SEG:24> unprepared will face ."
+    }
+   ]
+  }
+ },
+ "dev": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9488,
+  "achv": 0.9,
+  "util": 0.704,
+  "util_oracle": 0.7803,
+  "overlap": 0.4049,
+  "overlap_by_T": {
+   "4": 0.476,
+   "6": 0.372,
+   "12": 0.334
+  },
+  "tie_rate": 0.0041,
+  "tie_at_cut_rate": 0.0,
+  "spearman_pooled": 0.1537,
+  "spearman_within": 0.2054,
+  "calibration": {
+   "00-09": {
+    "n": 310,
+    "label_mean": 63.9
+   },
+   "10-19": {
+    "n": 432,
+    "label_mean": 64.0
+   },
+   "20-29": {
+    "n": 358,
+    "label_mean": 64.0
+   },
+   "30-39": {
+    "n": 319,
+    "label_mean": 63.1
+   },
+   "40-49": {
+    "n": 319,
+    "label_mean": 63.4
+   },
+   "50-59": {
+    "n": 287,
+    "label_mean": 65.2
+   },
+   "60-69": {
+    "n": 292,
+    "label_mean": 64.4
+   },
+   "70-79": {
+    "n": 302,
+    "label_mean": 65.0
+   },
+   "80-89": {
+    "n": 337,
+    "label_mean": 65.4
+   },
+   "90-99": {
+    "n": 443,
+    "label_mean": 70.9
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "text_modified": 11
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "We experience time <SEG:40> as <SEG:6> a <SEG:5> series <SEG:30> of <SEG:8> events <SEG:92> passing <SEG:75> from <SEG:12> the <SEG:3> future <SEG:60> through <SEG:10> the <SEG:7> present <SEG:85> ."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "It was the <SEG:5> final <SEG:62> match <SEG:86> for <SEG:8> the <SEG:3> All <SEG:40> Blacks, <SEG:92> who <SEG:10> had <SEG:20> already <SEG:74> won <SEG:68> the <SEG:4> trophy <SEG:100>"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Northern Rock had <SEG:64> required <SEG:76> support <SEG:88> due <SEG:58> to <SEG:46> its <SEG:40> exposure <SEG:82> during <SEG:52> the <SEG:34> subprime <SEG:70> mortgage <SEG:95> ."
+    }
+   ]
+  }
+ },
+ "score_train": 0.3883,
+ "score_dev": 0.4049,
+ "paired_dev": {
+  "mean_delta": -0.0227,
+  "se_delta": 0.0193,
+  "n_pairs": 215
+ },
+ "changelog": [
+  "Tightened numeral/date ascendency rule and added an explicit exception to demote cuts that split a numeral from its unit (traceable to measured over-trust on NUM–unit splits).",
+  "Added a rule to demote cuts that separate short parenthetical/identifier tokens (e.g., titles, abbreviations) from surrounding punctuation because these were mis-scored as strong anchors.",
+  "Added a positive bias for cuts that precede sentence-initial pronouns 'it' and 'it's' to correct observed under-ranking.",
+  "Made tie-breaking explicit in the scoring tendencies (prefer earlier marker when surface cues tie) to implement the tie_fix.",
+  "Replaced one example (Officials in the capital...) with a new example showing a lifted score before 'it', and adjusted the 'researchers 1,200' example to show demotion of a NUM–unit split."
+ ],
+ "prompt_len": 11580,
+ "usage": {
+  "calls": 125,
+  "prompt_tokens": 481176,
+  "completion_tokens": 1327077,
+  "cached_tokens": 346624,
+  "truncated": 0,
+  "cost": 2.696458,
+  "by_purpose": {
+   "segment": {
+    "calls": 104,
+    "prompt_tokens": 371037,
+    "completion_tokens": 1235649,
+    "reasoning_tokens": 1169920,
+    "cached_tokens": 289920,
+    "cost": 2.498825
+   },
+   "segment_retry": {
+    "calls": 15,
+    "prompt_tokens": 46677,
+    "completion_tokens": 45461,
+    "reasoning_tokens": 43904,
+    "cached_tokens": 40832,
+    "cost": 0.093404
+   },
+   "prompt_engineer": {
+    "calls": 5,
+    "prompt_tokens": 20652,
+    "completion_tokens": 34260,
+    "reasoning_tokens": 17536,
+    "cached_tokens": 15872,
+    "cost": 0.070112
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 42810,
+    "completion_tokens": 11707,
+    "reasoning_tokens": 10880,
+    "cached_tokens": 0,
+    "cost": 0.034117
+   }
+  }
+ }
+}

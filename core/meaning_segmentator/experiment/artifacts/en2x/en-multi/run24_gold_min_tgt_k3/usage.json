@@ -1,0 +1,117 @@
+{
+ "tag": "min_tgt_k3",
+ "prompt": "core/meaning_segmentator/tools/autoseg_en2x/run24/probe/v0_minimal_tgt.txt",
+ "model": "gpt-5-mini",
+ "usage": {
+  "calls": 59,
+  "prompt_tokens": 118003,
+  "completion_tokens": 629755,
+  "cached_tokens": 88832,
+  "truncated": 0,
+  "cost": 1.269024,
+  "by_purpose": {
+   "segment": {
+    "calls": 54,
+    "prompt_tokens": 109299,
+    "completion_tokens": 610740,
+    "reasoning_tokens": 578368,
+    "cached_tokens": 84992,
+    "cost": 1.229682
+   },
+   "segment_retry": {
+    "calls": 5,
+    "prompt_tokens": 8704,
+    "completion_tokens": 19015,
+    "reasoning_tokens": 18368,
+    "cached_tokens": 3840,
+    "cost": 0.039342
+   }
+  }
+ },
+ "test_metrics": {
+  "n": 100,
+  "n_scored": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.95,
+  "achv": 0.9622,
+  "util": 0.7683,
+  "util_oracle": 0.7984,
+  "overlap": 0.4991,
+  "overlap_by_T": {
+   "4": 0.597,
+   "6": 0.502,
+   "8": 0.445,
+   "12": 0.381
+  },
+  "tie_rate": 0.044,
+  "tie_at_cut_rate": 0.0223,
+  "spearman_pooled": 0.3349,
+  "spearman_within": 0.4099,
+  "calibration": {
+   "00-09": {
+    "n": 78,
+    "label_mean": 68.9
+   },
+   "10-19": {
+    "n": 144,
+    "label_mean": 63.9
+   },
+   "20-29": {
+    "n": 202,
+    "label_mean": 65.4
+   },
+   "30-39": {
+    "n": 231,
+    "label_mean": 67.0
+   },
+   "40-49": {
+    "n": 183,
+    "label_mean": 69.3
+   },
+   "50-59": {
+    "n": 138,
+    "label_mean": 69.5
+   },
+   "60-69": {
+    "n": 138,
+    "label_mean": 70.0
+   },
+   "70-79": {
+    "n": 123,
+    "label_mean": 71.1
+   },
+   "80-89": {
+    "n": 146,
+    "label_mean": 75.8
+   },
+   "90-99": {
+    "n": 161,
+    "label_mean": 78.3
+   }
+  },
+  "n_boundaries": 1544,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 1,
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "A doctor who <SEG:36> worked <SEG:38> at <SEG:52> Children's <SEG:48> Hospital <SEG:50> of <SEG:40> Pittsburgh, <SEG:18> Pennsylvania <SEG:98> will <SEG:74> be <SEG:70> charged <SEG:76> with <SEG:34> aggravated <SEG:32> murder <SEG:88> after <SEG:30> her <SEG:28> mother <SEG:26> was <SEG:?0> found <"
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 28개, 출력 26개, 빠진 자리 [20, 21])",
+     "seg_text": "A doctor who <SEG:36> worked <SEG:38> at <SEG:52> Children's <SEG:48> Hospital <SEG:50> of <SEG:40> Pittsburgh, <SEG:18> Pennsylvania <SEG:98> will <SEG:74> be <SEG:70> charged <SEG:76> with <SEG:34> aggravated <SEG:32> murder <SEG:88> after <SEG:30> her <SEG:28> mother <SEG:26> was <SEG:?0> found <"
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "Unattended bags are <SEG:40> a <SEG:45> target <SEG:68> for <SEG:22> theft <SEG:78> and <SEG:18> can <SEG:12> also <SEG:6> attract <SEG:58> attention <SEG:95> from <SEG:52> authorities <SEG:88> wary <SEG:34> of ."
+    }
+   ]
+  }
+ }
+}

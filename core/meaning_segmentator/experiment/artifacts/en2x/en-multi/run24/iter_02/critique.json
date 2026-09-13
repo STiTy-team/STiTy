@@ -1,0 +1,101 @@
+{
+ "rules": [
+  {
+   "surface_condition": "markers where the token immediately before the cut is a numeral (contains a digit)",
+   "supported_by": [
+    "en_us_1150",
+    "en_us_419",
+    "en_us_884",
+    "en_us_860",
+    "en_us_301"
+   ],
+   "error": "over-trust",
+   "why": "fragment_left",
+   "blamed_rule": "Is the token immediately before the marker a numeral/date/percentage/name? If yes, bias score upward.",
+   "proposed_rule": "Scoring Rules: do not automatically place such markers into the top band. If left_last is a NUM, reduce the default upward bias — map these markers into a mid–high band (for example target band 40–80) instead of the topmost band (85–100). This preserves that some numeral-adjacent cuts are good, but prevents systematic over-selection of cuts that merely end in a numeral.",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "NUM"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers where the token immediately before the cut is an organization/place word (e.g. center, service, sea, park, company)",
+   "supported_by": [
+    "en_us_1294",
+    "en_us_738",
+    "en_us_432"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "Left or right stretch that ends or begins with a lexical token translators typically render reliably will tend to raise the measured value. Examples of such surface forms: numerals and formatted numbers (e.g., \"1,200\", \"2050\"), explicit dates, percentages, currency figures, and short fixed named phrases (e.g., organization names, place names). (Prediction to test: cuts adjacent to numerals/dates often score high.)",
+   "proposed_rule": "Scoring Rules: sharpen the named-phrase heuristic. If left_last is one of frequent organization/place headwords (e.g. \"center\",\"service\",\"sea\",\"park\",\"company\"), do not by default assign the top band — instead place in a moderately high band (for example 45–85) unless additional surface signals support top ranking (e.g. following token is punctuation that clearly closes a parenthetical or both adq scores are high).",
+   "direction": "lower",
+   "check": {
+    "left_last": [
+     "center",
+     "service",
+     "sea",
+     "park",
+     "company",
+     "union"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers where the token immediately before the cut is a common adjunct-closing noun often seen before a comma (e.g. years, speakers, people, report, season)",
+   "supported_by": [
+    "en_us_419",
+    "en_us_884",
+    "en_us_422"
+   ],
+   "error": "under-trust",
+   "why": "mixed",
+   "blamed_rule": "A marker that falls where a comma or parenthetical comma surrounds a self-contained adjunct (e.g., \"yesterday,\", \"on Tuesday,\", \"as sources said,\") often yields high scores if both sides can be translated faithfully by themselves. (Prediction to test: cuts after a comma that closes an embedded adjunct can score high.)",
+   "proposed_rule": "Scoring Rules: raise the score for markers whose left_last token is one of common adjunct closers (examples: \"years\",\"speakers\",\"people\",\"report\",\"season\"). These tokens often indicate a comma-bound adjunct that the label favors; map such markers into a higher band (for example 70–100) unless overt contradiction tokens appear on the right (see negation rule).",
+   "direction": "raise",
+   "check": {
+    "left_last": [
+     "years",
+     "speakers",
+     "people",
+     "report",
+     "season"
+    ]
+   }
+  },
+  {
+   "surface_condition": "markers where the token immediately after the cut is a negator (no, not, never)",
+   "supported_by": [
+    "en_us_1294",
+    "en_us_432"
+   ],
+   "error": "over-trust",
+   "why": "contra",
+   "blamed_rule": "",
+   "proposed_rule": "Scoring Rules: strongly penalize cuts where right_first is a negation token (\"no\",\"not\",\"never\"). Such right-side negators commonly invert or contradict the left segment; lower the score into the bottom band (for example 0–30) unless the left-side translation quality is demonstrably perfect and the remainder does not contradict.",
+   "direction": "lower",
+   "check": {
+    "right_first": [
+     "no",
+     "not",
+     "never"
+    ]
+   }
+  }
+ ],
+ "tie_fix": "Ties occur when repeated, identical heuristics fire (e.g. several adjacent markers all end in numerals or common function words). Break ties deterministically by preferring earlier markers only after applying the refined heuristics above (or add a tiny positional offset: +1 for earlier, -1 for later).",
+ "summary": "The prompt systematically over-values cuts adjacent to numerals and to short named/place/organization headwords, causing the model to keep boundaries that the measured label rejects (often because the remainder contradicts or the left fragment is not independently translatable). It also under-values comma-closing adjunct boundaries (tokens like years/speakers/people), which the label often prefers. Implementing sharper, token-anchored bands (penalize numeral/org-head adjacencies, boost adjunct-closers, and penalize immediate negators) will re-order positions within sentences to better match the measured labels.",
+ "metrics": {
+  "overlap": 0.4512,
+  "overlap_by_T": {
+   "4": 0.494,
+   "6": 0.417,
+   "12": 0.43
+  },
+  "achv": 0.9453,
+  "tie_rate": 0.0535,
+  "spearman_within": 0.3558
+ }
+}

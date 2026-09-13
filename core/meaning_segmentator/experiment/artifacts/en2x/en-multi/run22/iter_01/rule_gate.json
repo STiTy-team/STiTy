@@ -1,0 +1,47 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_140",
+   "en_us_203",
+   "en_us_278",
+   "en_us_884"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that split a numeral from an immediately adjacent measurement/scale word (e.g., '1.2' + 'million', '46' + 'percent'",
+  "verified_support": 5,
+  "n_matched": 15,
+  "label_matched": 0.5166,
+  "label_rest": 0.6487,
+  "t": -2.93,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_1000",
+   "en_us_738",
+   "en_us_685"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts that separate a short parenthetical identifier / acronym token (surface forms seen as tokens inside parentheses: 'I",
+  "verified_support": 2,
+  "n_matched": 4,
+  "verdict": "drop",
+  "reason": "걸린 경계 4 < 5"
+ },
+ {
+  "supported_by": [
+   "en_us_360",
+   "en_us_1150"
+  ],
+  "direction": "lower",
+  "surface_condition": "cuts immediately before a clausal introducer/participial token that often continues or reverses meaning (right_first ∈ {",
+  "verified_support": 2,
+  "n_matched": 8,
+  "label_matched": 0.5161,
+  "label_rest": 0.6481,
+  "t": -1.46,
+  "verdict": "drop",
+  "reason": "|t| 1.46 < 2.0"
+ }
+]

@@ -1,0 +1,42 @@
+[
+ {
+  "supported_by": [
+   "en_us_66",
+   "en_us_140",
+   "en_us_203",
+   "en_us_278",
+   "en_us_46",
+   "en_us_1050"
+  ],
+  "direction": "lower",
+  "surface_condition": "cut that splits a numeral from its measurement/unit word (NUM on one side, unit on the other)",
+  "verified_support": 6,
+  "n_matched": 15,
+  "label_matched": 0.5166,
+  "label_rest": 0.6487,
+  "t": -2.93,
+  "verdict": "keep"
+ },
+ {
+  "supported_by": [
+   "en_us_1000",
+   "en_us_685"
+  ],
+  "direction": "lower",
+  "surface_condition": "cut that separates a named entity from a parenthetical identifier/acronym (the parenthetical starts the following token)",
+  "verified_support": 1,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 1 < 2 (주장 2)"
+ },
+ {
+  "supported_by": [
+   "en_us_417",
+   "en_us_1050"
+  ],
+  "direction": "raise",
+  "surface_condition": "cut immediately before a sentence-starting pronoun / contraction (e.g. it / it's) that begins the next sentence",
+  "verified_support": 1,
+  "verdict": "drop",
+  "reason": "검증된 뒷받침 1 < 2 (주장 2)"
+ }
+]
