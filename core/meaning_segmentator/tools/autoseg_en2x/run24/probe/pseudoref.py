@@ -6,6 +6,12 @@
 
     F (참조 COMET)   src = 원문 전체, mt = MT(prefix) ⊕ MT(suffix), ref = MT(원문 전체)
     G (무참조 QE)    src = 원문 전체, mt = 같은 이어붙임              ← F 의 참조 없는 짝
+    H = G × (1 − 소스 contra)
+
+H 를 두는 이유: G 는 조각 번역을 **이어 붙인 뒤** 채점하므로, 앞 조각이 오해를 만들어도
+뒤 조각이 메우면 통과한다. 사용자는 그 시점에 이미 틀린 것을 읽었다. 소스 contra 는
+그 자리(부정·제한이 뒤에 오는 자리)를 잡으니 둘은 서로 다른 실패를 본다 — dev 실측으로
+소스만 모순인 자리 84곳, 번역만 모순인 자리 174곳으로 겹치지 않는다.
 
 참조는 **로컬 번역기가 만든 전체 번역**이다. 사람 참조가 없는 데이터셋에도 붙는다.
 조각과 참조가 같은 엔진에서 나오므로 둘의 차이는 절단이 낸 손해뿐이다.
@@ -119,6 +125,7 @@ DEFS = {
     'F 참조 COMET (이어붙임)':    lambda i, j: pr(i, j, 0),
     'G 무참조 QE (이어붙임)':     lambda i, j: pr(i, j, 1),
     'F × B':                   lambda i, j: pr(i, j, 0) * (1 - m('contra', i, j)) * adq(i, j),
+    'H G × (1−소스contra)':      lambda i, j: pr(i, j, 1) * (1 - m('contra', i, j)),
 }
 PER_TGT = {
     'B 소스contra × adq (현행)': lambda t, i, j: (1 - lab[t][i]['contra'][j-1]) * (lab[t][i]['adq_l'][j-1] + lab[t][i]['adq_r'][j-1]) / 2,
@@ -132,7 +139,8 @@ def kept_of(u, c, sc, T):
 
 if a.emit:
     # ── test: F/G 오라클 절단을 gold 로 ────────────────────────────────
-    for name, key in (('F_pseudoref', 'F 참조 COMET (이어붙임)'), ('G_qeconcat', 'G 무참조 QE (이어붙임)')):
+    for name, key in (('F_pseudoref', 'F 참조 COMET (이어붙임)'), ('G_qeconcat', 'G 무참조 QE (이어붙임)'),
+                      ('H_qeXcontra', 'H G × (1−소스contra)')):
         f = DEFS[key]
         odir = R.parent / f'{R.name}_gold_{name}'
         (odir / 'prompt_eval').mkdir(parents=True, exist_ok=True)

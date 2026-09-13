@@ -77,3 +77,26 @@ dev 분석표에서 같이 볼 것: `타깃겹침`(세 타깃이 같은 자리�
 
 `pseudoref_{dev,test}.json` 이 있으면 그 단계는 건너뛴다. 그대로 다시 띄우면 된다.
 번역·COMET 캐시도 남으므로 재실행이 싸다.
+
+---
+
+## 추가: 오라클 확정안 H
+
+`H = G × (1 − 소스 contra)`. G 는 이어 붙인 뒤 채점하므로 앞 조각의 오해를 뒤 조각이
+메우면 통과한다 — 사용자는 그때 이미 틀린 것을 읽었다. 소스 contra 가 그 자리를 잡는다.
+dev 실측으로 두 신호는 겹치지 않는다 (소스만 모순 84자리, 번역만 모순 174자리).
+
+```bash
+tmux new-session -d -s H -c <저장소> \
+  "bash core/meaning_segmentator/tools/autoseg_en2x/run24/probe/run_H.sh"
+```
+
+`pseudoref_test.json` 이 있으면 라벨 계산을 건너뛰고 emit 부터 한다 (GPU 20분).
+결과는 `run24_gold_H_qeXcontra/compare.md`.
+
+| 비교 대상 | 격자평균 |
+|---|---|
+| 무절단 | 0.8770 |
+| G 오라클 | 0.7823 |
+| B 오라클 | 0.7685 |
+| min_tgt 정책 | 0.7686 |
