@@ -1,0 +1,200 @@
+{
+ "rule": "",
+ "variant_prompt": "core/meaning_segmentator/tools/autoseg_en2x/run24/probe/v0_coh.txt",
+ "k_samples": 3,
+ "split": "dev",
+ "n": 215,
+ "base_prompt": "core/meaning_segmentator/tools/autoseg_en2x/run24/probe/v0_minimal_tgt.txt",
+ "base_metrics": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9488,
+  "achv": 0.9481,
+  "util": 0.7481,
+  "util_oracle": 0.7883,
+  "overlap": 0.4869,
+  "overlap_by_T": {
+   "4": 0.547,
+   "6": 0.455,
+   "12": 0.414
+  },
+  "tie_rate": 0.0485,
+  "tie_at_cut_rate": 0.0175,
+  "spearman_pooled": 0.2853,
+  "spearman_within": 0.3531,
+  "calibration": {
+   "00-09": {
+    "n": 140,
+    "label_mean": 60.9
+   },
+   "10-19": {
+    "n": 334,
+    "label_mean": 62.2
+   },
+   "20-29": {
+    "n": 514,
+    "label_mean": 62.7
+   },
+   "30-39": {
+    "n": 471,
+    "label_mean": 66.6
+   },
+   "40-49": {
+    "n": 385,
+    "label_mean": 67.2
+   },
+   "50-59": {
+    "n": 313,
+    "label_mean": 67.8
+   },
+   "60-69": {
+    "n": 278,
+    "label_mean": 68.7
+   },
+   "70-79": {
+    "n": 278,
+    "label_mean": 70.9
+   },
+   "80-89": {
+    "n": 326,
+    "label_mean": 71.8
+   },
+   "90-99": {
+    "n": 360,
+    "label_mean": 76.8
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {},
+   "samples": []
+  }
+ },
+ "variant_metrics": {
+  "n": 215,
+  "n_scored": 215,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.9767,
+  "achv": 0.9517,
+  "util": 0.7509,
+  "util_oracle": 0.7883,
+  "overlap": 0.4938,
+  "overlap_by_T": {
+   "4": 0.539,
+   "6": 0.478,
+   "12": 0.41
+  },
+  "tie_rate": 0.0509,
+  "tie_at_cut_rate": 0.0175,
+  "spearman_pooled": 0.2879,
+  "spearman_within": 0.346,
+  "calibration": {
+   "00-09": {
+    "n": 146,
+    "label_mean": 60.1
+   },
+   "10-19": {
+    "n": 309,
+    "label_mean": 62.7
+   },
+   "20-29": {
+    "n": 387,
+    "label_mean": 63.8
+   },
+   "30-39": {
+    "n": 520,
+    "label_mean": 64.0
+   },
+   "40-49": {
+    "n": 491,
+    "label_mean": 67.6
+   },
+   "50-59": {
+    "n": 390,
+    "label_mean": 68.3
+   },
+   "60-69": {
+    "n": 297,
+    "label_mean": 69.3
+   },
+   "70-79": {
+    "n": 257,
+    "label_mean": 70.9
+   },
+   "80-89": {
+    "n": 262,
+    "label_mean": 72.0
+   },
+   "90-99": {
+    "n": 340,
+    "label_mean": 77.4
+   }
+  },
+  "n_boundaries": 3399,
+  "first_pass_violations": {
+   "counts": {
+    "markers_missing": 3,
+    "text_modified": 5
+   },
+   "samples": [
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "It was the <SEG:80> final <SEG:85> match <SEG:90> for <SEG:75> the <SEG:70> All <SEG:5> Blacks, <SEG:100> who <SEG:30> had <SEG:55> already <SEG:60> won <SEG:65> the <SEG:50> trophy <SEG:95>"
+    },
+    {
+     "rule": "markers_missing",
+     "detail": "마커가 빠짐 (입력 15개, 출력 14개, 빠진 자리 [17])",
+     "seg_text": "The first public <SEG:60> reading <SEG:68> of <SEG:52> the <SEG:44> document <SEG:76> was <SEG:36> by <SEG:28> John <SEG:20> Nixon <SEG:100> in <SEG:12> the <SEG:8> yard <SEG:84> of <SEG:4> Independence <SEG:0> Hall on July 8."
+    },
+    {
+     "rule": "text_modified",
+     "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+     "seg_text": "While you may <SEG:56> not <SEG:6> need <SEG:60> a <SEG:14> visa <SEG:92> for <SEG:12> short <SEG:52> visits <SEG:64> to <SEG:24> certain <SEG:48> countries <SEG:88> as <SEG:32> a <SEG:20> tourist <SEG:16> or <SEG:22> for <SEG:26> business, <SEG:98> going <SEG:74> there <SEG:70> as <SEG:30> an <SEG:"
+    }
+   ]
+  }
+ },
+ "paired": {
+  "mean_delta": 0.007,
+  "se_delta": 0.0121,
+  "n_pairs": 215
+ },
+ "churn": {
+  "pairs": 572,
+  "changed": 256,
+  "changed_rate": 0.448,
+  "up": 73,
+  "down": 71,
+  "kept": 1634,
+  "moved": 335,
+  "moved_rate": 0.205
+ },
+ "usage": {
+  "calls": 115,
+  "prompt_tokens": 245615,
+  "completion_tokens": 1303732,
+  "cached_tokens": 162048,
+  "truncated": 0,
+  "cost": 2.632407,
+  "by_purpose": {
+   "segment": {
+    "calls": 108,
+    "prompt_tokens": 232716,
+    "completion_tokens": 1275548,
+    "reasoning_tokens": 1204800,
+    "cached_tokens": 159232,
+    "cost": 2.573448
+   },
+   "segment_retry": {
+    "calls": 7,
+    "prompt_tokens": 12899,
+    "completion_tokens": 28184,
+    "reasoning_tokens": 27200,
+    "cached_tokens": 2816,
+    "cost": 0.058959
+   }
+  }
+ }
+}
