@@ -31,7 +31,7 @@ from .infra.gateway import Gateway, add_provider_args
 from .loop import target_is_spaced
 from .loop_distill import evaluate
 from .paths import RUNS_DIR
-from .runtime import agents_judge as aj
+from .runtime import agents, agents_distill as ad, agents_judge as aj
 from .runtime import data, hset, labels as L, metrics
 from .runtime.pipeline import JsonCache, LocalTranslator, to_lang_code
 
@@ -212,7 +212,14 @@ def main() -> int:
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--from-run", required=True, help="분할·라벨·캐시를 물려받을 런")
     p.add_argument("--run-id", required=True)
-    p.add_argument("--prompt", required=True, help="시작 프롬프트 파일")
+    p.add_argument("--prompt", default=None,
+                   help="시작 프롬프트 파일. 없으면 --generate-v0 로 만든다")
+    p.add_argument("--generate-v0", action="store_true",
+                   help="v0 를 손으로 쓰지 않고 만든다: Profiler 가 소스 문장에서 언어 특징을 뽑고 "
+                        "Writer 가 그것으로 판단형 프롬프트를 쓴다. 손으로 쓴 v0 는 영어 부정어 "
+                        "목록과 영어 예시가 박혀 있어 다른 소스 언어로 못 옮긴다")
+    p.add_argument("--v0-candidates", type=int, default=2,
+                   help="생성할 v0 후보 수. dev-A H_set 으로 골라 시작한다")
     p.add_argument("--dev-a", type=int, default=150, help="dev 앞 N 문장을 채택 판정에 쓴다")
     p.add_argument("--min-gap", type=int, default=1,
                    help="절단 사이 최소 조각 길이. **기본 1 — 제약을 걸지 않는다.** 종전 루프는 "
@@ -290,7 +297,6 @@ def main() -> int:
         vals = scorer.score(texts, [(i, sets[(i, T)]) for i, T in keys], contra_of)
         return dict(zip(keys, vals))
 
-    prompt = Path(a.prompt).read_text(encoding="utf-8")
     history: list[dict] = []
     cur_rows, cur_h = None, None
     if a.target_sets:
@@ -314,9 +320,71 @@ def main() -> int:
             f"누적 ${gw.usage.snapshot()['cost']:.2f}")
         return rows, sets, h, m
 
+    v0_path = run_dir / "prompt_v0.txt"
+    if a.prompt:
+        prompt = Path(a.prompt).read_text(encoding="utf-8")
+    elif v0_path.exists():
+        prompt = v0_path.read_text(encoding="utf-8")
+        log("[v0] 런 산출물 재사용")
+    elif a.generate_v0:
+        # **프로파일·예시 문장은 어느 분할에도 안 쓰인 문장에서 뽑는다.** dev 에서 뽑으면 그
+        # 문장이 프롬프트 안에 그대로 들어간 채로 dev 에서 채점된다 — 라벨 유출은 아니지만
+        # 그 문장에서만 유리해진다.
+        pool_ids = {x.id for x in dev} | {x.id for x in train} | {
+            r["id"] for r in json.loads((src / "data/test.json").read_text(encoding="utf-8"))}
+        spare = [x for x in data.load(cfg["dataset"]) if x.id not in pool_ids]
+        if len(spare) < 20:
+            log(f"[v0] 분할 밖 문장이 {len(spare)}개뿐 — dev-A 에서 뽑는다")
+            spare = devA
+        log(f"[v0] 분할 밖 문장 {len(spare)}개에서 프로파일 20 / 예시 8")
+        measured = json.loads((src / "measured_profile.json").read_text(encoding="utf-8"))
+        prof_path = run_dir / "language_profile.json"
+        if prof_path.exists():
+            profile = json.loads(prof_path.read_text(encoding="utf-8"))
+        else:
+            profile = agents.Profiler(gw).profile([x.text for x in spare[:20]])
+            prof_path.write_text(json.dumps(profile, ensure_ascii=False, indent=2),
+                                 encoding="utf-8")
+        out_rules = ad.output_rules(spaced, "source")
+        facts = agents.measured_facts(measured)
+        user = (f"Language profile:\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
+                + (facts + "\n\n" if facts else "")
+                + "Sample source sentences to build the examples from:\n"
+                + "\n".join(f"{i+1}. {x.text}" for i, x in enumerate(spare[20:28])) + "\n\n"
+                + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{out_rules}")
+        cands = []
+        for c in range(a.v0_candidates):
+            pr = gw.chat(aj.writer_system(spaced, targets), user, max_tokens=16000,
+                         reasoning_effort=(None if a.agent_reasoning_effort == "none"
+                                           else a.agent_reasoning_effort),
+                         purpose="prompt_v0").strip()
+            pr = aj.replace_section(pr, "[Output Rules]", out_rules)
+            errs = aj.check_skeleton(pr)
+            (run_dir / f"prompt_v0_cand{c}.txt").write_text(pr, encoding="utf-8")
+            if errs:
+                log(f"[v0] 후보 {c} 골격 실패: {errs}")
+                continue
+            cands.append(pr)
+        if not cands:
+            log("[stop] v0 후보가 전부 골격 검증에 걸렸다")
+            return 2
+        if len(cands) == 1:
+            prompt = cands[0]
+        else:
+            scored = []
+            for c, pr in enumerate(cands):
+                _r, _s, h, _m = score_prompt(pr, devA, labA, f"v0 후보 {c}")
+                scored.append((st.mean(h.values()), c, pr))
+            scored.sort(reverse=True)
+            log(f"[v0] 후보 H_set {[round(x[0], 4) for x in scored]} → {scored[0][1]} 채택")
+            prompt = scored[0][2]
+    else:
+        log("[stop] --prompt 또는 --generate-v0 가 필요하다")
+        return 2
+    v0_path.write_text(prompt, encoding="utf-8")
+
     cur_rows, cur_sets, cur_h, cur_m = score_prompt(prompt, devA, labA, "iter 0")
     (run_dir / "iter_00").mkdir(parents=True, exist_ok=True)
-    (run_dir / "prompt_v0.txt").write_text(prompt, encoding="utf-8")
 
     for it in range(1, a.iterations + 1):
         idir = run_dir / f"iter_{it:02d}"

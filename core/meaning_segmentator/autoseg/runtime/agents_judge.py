@@ -83,8 +83,8 @@ Hard constraints:
    short by design; if a new line supersedes an old one, REPLACE it rather than append.
 5. At most 8 examples. If you add one, remove a weaker one. Examples keep the Input/Output form
    with <SEG:?> at every candidate position in the input.
-6. Never write token lists or punctuation rules. The surface-form version of this prompt was
-   measured and lost: judgement-based wording beat it by 0.07 overlap on 215 sentences.
+6. Never write token lists or punctuation rules. A token condition fires on a handful of
+   positions while the measurement is taken at every position; a judgement applies everywhere.
 7. Never name or depend on a specific target language pair beyond what the current prompt says.
 8. Consult the attempt history: entries with "adopted": false were measured and rejected. Do not
    repeat them or minor variants — move in a different direction.
@@ -100,6 +100,58 @@ Return ONLY JSON:
   "changelog": ["one line per change, stating what and why"],
   "prompt": "the complete revised prompt text"
 }"""
+
+WRITER_SYSTEM = """You write the system prompt for a scoring model used in streaming speech translation.
+
+The model receives one source sentence in which EVERY possible cut position is already marked
+with <SEG:?>. It replaces each ? with a score 0-100. Only the ORDER of those numbers inside one
+sentence is ever read: a deterministic step keeps the highest-scored positions that fit the
+current latency budget, and the kept positions are the segmentation that ships. Each piece is
+translated ON ITS OWN and read in order by a listener who cannot go back.
+
+The scores are judged against a MEASURED target, and your prompt must let the model reproduce it
+from the SOURCE TEXT ALONE:
+  cohesion   the pieces were translated separately into __TARGETS__, joined in order, and a
+             reference-free quality estimator scored how faithfully that joined text renders the
+             WHOLE source sentence.
+  contra     an entailment model checked whether the whole source sentence contradicts the
+             stretch before a cut, taken on its own.
+  target = cohesion x (1 - contra)
+
+Hard requirements:
+- Section headers, verbatim and in this order:
+  [Role], [Core Principles], [Scoring Rules], [Decision Procedure], [Output Rules], [Examples]
+- [Output Rules] MUST be copied verbatim from the block given to you.
+- [Core Principles] is the substance. Write JUDGEMENTS — questions the model asks about MEANING at
+  each position — not surface-form rules. Two judgements carry the measurement: whether what
+  follows overturns the stretch already heard, and whether translating the two sides apart still
+  adds up to the source. Say what damage looks like in THIS source language, using what the
+  profile tells you about how it builds clauses, where it puts negation and heads, and what it
+  leaves implicit. Name the language's own devices; do not name individual tokens as triggers.
+- **Do NOT write surface-form rules** — no lists of function words, no punctuation rules, no
+  "if the previous token is X". A token condition fires on a handful of positions and says
+  nothing about the rest, while the measurement is taken at every position; a judgement applies
+  everywhere. Grammar labels are not the criterion either: a cut between two complete clauses
+  can measure badly, and a cut inside a phrase can measure well.
+- [Scoring Rules] holds ONLY how to combine the judgements into one number and the ranking rules
+  (distinct integers, use the full range, a position with contradiction risk ranks below every
+  position without one). No scoring conditions there.
+- [Examples]: 3-4 pairs, in the SOURCE language, each Input/Output with <SEG:?> at every
+  candidate position of the input and integers in the output. Build them from the sample
+  sentences you are given, not from invented text.
+- __SPACING__
+- Keep the whole prompt under 8000 characters.
+
+Return ONLY the prompt text. No commentary, no code fences."""
+
+
+def writer_system(spaced: bool, targets: list[str]) -> str:
+    unit = "words" if spaced else "characters"
+    return (WRITER_SYSTEM
+            .replace("__TARGETS__", ", ".join(targets))
+            .replace("__SPACING__",
+                     f"The source is written in {unit}; a cut position sits between two {unit}."))
+
 
 ALLOWED_WHERE = {"core_principles": "[Core Principles]", "examples": "[Examples]"}
 FROZEN = ("[Output Rules]", "[Scoring Rules]")
