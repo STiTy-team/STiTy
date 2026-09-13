@@ -39,7 +39,7 @@ from core.meaning_segmentator.autoseg.runtime.pipeline import (JsonCache, LocalT
                                                                to_lang_code, truncate)
 
 p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-p.add_argument('--split', choices=('dev', 'test'), default='dev')
+p.add_argument('--split', choices=('dev', 'test', 'train'), default='dev')
 p.add_argument('--emit', action='store_true', help='test 절단을 gold 용으로 내보낸다')
 p.add_argument('--run-id', default='en2x/en-multi/run24')
 p.add_argument('--mt-cache-from', default='en2x/en-multi/run21',
@@ -173,8 +173,9 @@ if a.emit:
 
 # ── 4) dev 분석 ─────────────────────────────────────────────────────────
 llm_rows = {}
-for tag, path in (('v0 (k=3)', R / 'iter_00/dev_rows.json'),
-                  ('minimal_tgt', R / 'rule_probe_minimal_tgt_k3_rows.json')):
+for tag, path in ((('v0 (k=3)', R / 'iter_00/dev_rows.json'),
+                   ('minimal_tgt', R / 'rule_probe_minimal_tgt_k3_rows.json'))
+                  if a.split == 'dev' else ()):        # 채점 행은 dev 것만 있다
     if path.exists():
         llm_rows[tag] = {r['id']: r for r in json.loads(path.read_text(encoding='utf-8')) if r.get('scores')}
 
@@ -210,7 +211,8 @@ for name, f in DEFS.items():
                     if w is not None: pair_sp.append(w)
     po = f'{st.mean(pair_ov):8.3f}' if pair_ov else f'{"—":>8s}'
     ps = f'{st.mean(pair_sp):+8.3f}' if pair_sp else f'{"—":>8s}'
-    print(f'{name:26s} {po} {ps}' + ''.join(f' {st.mean(v):12.4f}' for v in llm_ov.values()))
+    print(f'{name:26s} {po} {ps}' +
+          ''.join(f' {(st.mean(v) if v else float("nan")):12.4f}' for v in llm_ov.values()))
 
 # 정의끼리 얼마나 다른가 — 순위상관
 print('\n정의 간 문장 내 순위상관')
