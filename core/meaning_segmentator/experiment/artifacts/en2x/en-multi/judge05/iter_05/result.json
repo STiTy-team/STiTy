@@ -1,0 +1,41 @@
+{
+ "iter": 5,
+ "adopted": false,
+ "delta": {
+  "mean": -0.01823,
+  "lo": -0.03168,
+  "hi": -0.0038,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": -0.01823,
+  "lo": -0.03168,
+  "hi": -0.0038,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Replace C2 to force explicit, concrete guidance: penalize cuts that leave a left fragment as a standalone/asserted claim (e.g., unfinished predicate, final list item, scope-bearing temporal/modal), raising contra toward 1.0 and lowering cohesion toward 0 when the remainder is semantically required — addresses the boundary-failure finding that such cuts were under-detected.",
+  "Delete E4 (low-evidence example) to free prompt space so the stricter C2 guidance can be added without exceeding the size budget."
+ ],
+ "findings": [
+  "The prompt under-detects cuts that leave a left fragment as a plausible but incomplete claim — e.g., a partial outcome, an unfinished predicate, or a fragment of an enumerated/result list — where the remainder completes, qualifies, or reverses that claim. In these situations the remainder should almost always be treated as highly contradictory (raise contra toward 1.0) and cohesion as very low, because the left piece read alone is misleading or semantically incomplete."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "change",
+   "was": "1) Does what follows the cut overturn, negate, limit, or materially change the t",
+   "now": "1) Does what follows the cut overturn, negate, limit, or materially change the c"
+  },
+  {
+   "op": "delete",
+   "id": "E4",
+   "kind": "delete",
+   "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+   "now": ""
+  }
+ ]
+}

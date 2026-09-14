@@ -1,0 +1,86 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows can reverse, negate, restrict, or materially change the truth or claim made so far when read on its own. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or when later material supplies the main clause's modal/temporal frame and so would make the earlier fragment misleading alone. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a predicate from its object/complement, splitting a head noun from necessary modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment (verb vs noun) without disambiguating material, or detaching quantifiers/negation from what they modify. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "text": "Always make both judgments at every marker. Ask concrete, testable questions about how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change the scope of a main clause—so you can detect when meaning depends on material across the cut. Do not apply token-based surface rules; apply the two semantic questions everywhere.\n\nExplicit tests to add to your routine (apply at every marker):\n1) Incomplete predicate or list-item test: \"Does the left chunk contain a complete predicate or a finished list item that makes sense on its own?\" If the left piece needs the following words to complete the main verb, object, or a list item, treat cohesion as very low and/or raise contra; score the marker near the bottom of the sentence.\n2) Detached-head/modifier test: \"Would a translator of either side be missing its syntactic head or an essential modifier/determiner/title/multiword name?\" If a cut leaves a title, determiner, modifier, or multiword name unattached to its head, sharply reduce cohesion.\n\nUse these tests to bias your cohesion and contra estimates before computing the product; if both tests fail, the cut is very poor."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": -247
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": -220
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C6",
+    "chars_change": 833
+   }
+  ],
+  "result_chars": 9030,
+  "errors": [
+   "길이 초과: 9030 > 8664"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or later material that supplies the main clause's modal/temporal frame and would make the earlier fragment misleading. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "text": "Always make both judgments at every marker. Think about how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change the scope of a main clause. Do not apply token-based surface rules; apply the two semantic questions everywhere.\n\nTwo explicit tests to apply at each marker and use to bias cohesion and contra:\n1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predicate or an incomplete list item that only makes sense with the following words?\" If yes, treat cohesion as very low and/or raise contra.\n2) Detached-head/modifier test: \"Would either side lack its syntactic head or an essential modifier/determiner/title/multiword name?\" If yes, sharply reduce cohesion.\n\nIf both tests flag the cut, the cut is very poor; score it near the bottom."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": -241
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": -246
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C6",
+    "chars_change": 475
+   }
+  ],
+  "result_chars": 8652,
+  "errors": null
+ }
+]

@@ -166,6 +166,64 @@ class Cases(unittest.TestCase):
         self.assertEqual([c["id"] for c in got], ["s1", "s2"])
 
 
+class PickCases(unittest.TestCase):
+    def test_구간을_돌며_문장당_하나씩(self):
+        gaps = [(0.9, (0, 1)), (0.8, (1, 1)), (0.7, (0, 2)), (0.2, (2, 5)), (0.1, (3, 5)),
+                (-0.1, (4, 5))]
+        bin_of = lambda key: "≤3" if key[1] >= 5 else "≤10"
+        got = lj.pick_cases(gaps, bin_of, 10)
+        self.assertEqual([k for _g, k in got], [(2, 5), (0, 1), (3, 5), (1, 1)])
+        self.assertEqual([k for _g, k in lj.pick_cases(gaps, bin_of, 3)],
+                         [(2, 5), (0, 1), (3, 5)])
+
+    def test_모순_절단_하나로_0_이_된_사례를_표시한다(self):
+        texts = ["a b c d e f g h i j k l"]
+        lab = labels_for(texts, lambda i, j: 0.9 if j == 6 else 0.0, lambda i, j: 0.8)
+        got = lj.build_cases([sent(0, texts[0])], lab, {(0, 1): (6,)}, {(0, 1): (3,)},
+                             {(0, 1): 0.05}, {(0, 1): 0.8}, True, 1, 5)
+        self.assertTrue(got[0]["contra_kill"])
+        self.assertAlmostEqual(got[0]["policy_worst_contra"], 0.9)
+        self.assertEqual(got[0]["latency_bin"], "≤7")
+
+
+class CheckpointVerdict(unittest.TestCase):
+    H = {(i, k): 0.5 + 0.01 * ((i * 7 + k) % 5) for i in range(30) for k in (1, 2, 3)}
+
+    def prev(self, h):
+        return {"iter": 2, "value": sum(h.values()) / len(h), "prompt": "P",
+                "h": [[i, k, v] for (i, k), v in h.items()]}
+
+    def test_처음이면_저장(self):
+        self.assertEqual(lj.checkpoint_verdict(None, self.H), ("save", None))
+
+    def test_잡음만큼_낮으면_롤백하지_않는다(self):
+        noisy = {key: v - 0.0024 + 0.01 * ((key[0] % 3) - 1) for key, v in self.H.items()}
+        verdict, boot = lj.checkpoint_verdict(self.prev(self.H), noisy)
+        self.assertEqual(verdict, "save")
+        self.assertLess(boot["mean"], 0)
+
+    def test_분명히_낮으면_롤백(self):
+        worse = {key: v - 0.05 for key, v in self.H.items()}
+        self.assertEqual(lj.checkpoint_verdict(self.prev(self.H), worse)[0], "rollback")
+
+    def test_짝_기록이_없으면_점으로_비교(self):
+        old = {"iter": 2, "value": 0.6, "prompt": "P"}
+        self.assertEqual(lj.checkpoint_verdict(old, self.H), ("rollback", None))
+
+
+class LengthCap(unittest.TestCase):
+    def test_직전_채택본_대비_증가율(self):
+        self.assertEqual(lj.length_cap(8652, 8664, 0.05, 1.3), int(8652 * 1.05))
+
+    def test_줄어든_뒤에도_여유가_남는다(self):
+        """시작 길이 고정이면 채택 후 여유가 0 이 됐다 — 증가율은 줄어든 길이에서도 여유를 준다."""
+        cap = lj.length_cap(8318, 8664, 0.05, 1.3)
+        self.assertGreater(cap - 8318, 400)
+
+    def test_천장이_누적_증가를_막는다(self):
+        self.assertEqual(lj.length_cap(11000, 8664, 0.05, 1.3), int(8664 * 1.3))
+
+
 class State(unittest.TestCase):
     def test_저장한_그대로_읽히고_임시파일이_안_남는다(self):
         import tempfile
@@ -173,10 +231,12 @@ class State(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / lj.STATE_FILE
             ck = {"iter": 2, "value": 0.61, "prompt": "P2"}
-            lj.save_state(p, 2, "P3", [{"iter": 1, "adopted": False}], ck, 9000, 12.5)
+            prov = {"- rule": {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None,
+                               "critic_hits": 2}}
+            lj.save_state(p, 2, "P3", [{"iter": 1, "adopted": False}], ck, 9000, 12.5, prov)
             got = lj.load_state(p)
-            self.assertEqual((got["done"], got["prompt"], got["checkpoint"], got["prompt_budget"]),
-                             (2, "P3", ck, 9000))
+            self.assertEqual((got["done"], got["prompt"], got["checkpoint"], got["v0_len"],
+                              got["provenance"]), (2, "P3", ck, 9000, prov))
             self.assertEqual([x.name for x in Path(d).iterdir()], [lj.STATE_FILE])
 
     def test_없으면_None(self):
@@ -197,7 +257,7 @@ class State(unittest.TestCase):
             (r / "iter_02" / "metrics.json").write_text(
                 json.dumps({"usage": {"cost": 3.0}, "run_total_cost": 10.4}))
             self.assertAlmostEqual(lj.prior_spend(r), 10.4)
-            lj.save_state(r / lj.STATE_FILE, 2, "P", [], None, 1, 11.0)
+            lj.save_state(r / lj.STATE_FILE, 2, "P", [], None, 1, 11.0, {})
             self.assertAlmostEqual(lj.prior_spend(r), 11.0)
 
 

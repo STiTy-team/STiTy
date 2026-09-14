@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer systematically underestimates contra when the continuation contains a negation, an impossibility, or a completing predicate that can reverse or make the left fragment misleading; cuts that leave a fragment which the remainder ‘cancels’ should get very low target but are being scored too highly.",
+    "evidence": "Appears across many policy/target pairs (multiple variants of the same sentences plus other examples): the dropped positions that the offline target rejects consistently show very high contra (≈0.98) and near-zero H when evaluated alone (e.g. splits that separate a clause from a trailing 'cannot', a finalizing verb, or the main-clause negation). The policy nevertheless kept those cuts in multiple sentences (internal-poisoning examples, the economy/price sentence, the name-list sentences), so this is a recurring misjudgement.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add guidance: Explicitly treat any remainder that contains explicit negation, an impossibility/modal that overturns an earlier claim, or a completing/main predicate as likely to contradict the left fragment. For every marker ask: 'If a listener saw only the left piece, would the right-hand continuation plausibly change its truth or force a reverse claim?' If yes, raise contra toward 1 (and thus push target toward zero). Example (illustrative):\nInput: \"... such that an immediate diagnosis <SEG:?> cannot be made.\"\nDesired scoring: treat the cut before \"cannot be made\" as very low (e.g. <SEG:01>) because the remainder negates/finishes the fragment."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer undervalues cuts that isolate very short, grammatical left pieces (single prenominal modifiers, honorifics, single-word subjects or initial discourse particles). Those tiny left pieces often translate and compose well with the remainder, so their cohesion is high and they should often receive high target scores, but the prompt penalizes them.",
+    "evidence": "Seen repeatedly (notably the many variants of the name/title sentence and the 'Coalition' example): the offline target consistently adds early micro-cuts isolating words like a prenominal modifier or an honorific and those single-word-left cuts have high measured H. The policy tends to keep larger later spans instead of these micro-cuts, indicating a systematic underestimation of cohesion for very short left fragments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add guidance: When the left piece is a short, self-contained prenominal element, honorific, article, or discourse particle, do not assume low cohesion by length alone. Explicitly assess whether that tiny piece can be translated as a standalone unit that composes with the rest; if it does, give cohesion a high value and keep contra low. Example (illustrative):\nInput: \"Former <SEG:?> House Speaker <SEG:?> Newt <SEG:?> Gingrich <SEG:?>, ...\"\nDesired scoring: assign high target to the micro-cuts that isolate 'Former' / 'House Speaker' / 'Newt' because separately translated short constituents typically compose cleanly with the following material."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer systematically underestimates contra when the continuation contains a negation, an impossibility, or a completing predicate that can reverse or make the left fragment misleading; cuts that leave a fragment which the remainder ‘cancels’ should get very low target but are being scored too highly.",
+   "evidence": "Appears across many policy/target pairs (multiple variants of the same sentences plus other examples): the dropped positions that the offline target rejects consistently show very high contra (≈0.98) and near-zero H when evaluated alone (e.g. splits that separate a clause from a trailing 'cannot', a finalizing verb, or the main-clause negation). The policy nevertheless kept those cuts in multiple sentences (internal-poisoning examples, the economy/price sentence, the name-list sentences), so this is a recurring misjudgement.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add guidance: Explicitly treat any remainder that contains explicit negation, an impossibility/modal that overturns an earlier claim, or a completing/main predicate as likely to contradict the left fragment. For every marker ask: 'If a listener saw only the left piece, would the right-hand continuation plausibly change its truth or force a reverse claim?' If yes, raise contra toward 1 (and thus push target toward zero). Example (illustrative):\nInput: \"... such that an immediate diagnosis <SEG:?> cannot be made.\"\nDesired scoring: treat the cut before \"cannot be made\" as very low (e.g. <SEG:01>) because the remainder negates/finishes the fragment."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer undervalues cuts that isolate very short, grammatical left pieces (single prenominal modifiers, honorifics, single-word subjects or initial discourse particles). Those tiny left pieces often translate and compose well with the remainder, so their cohesion is high and they should often receive high target scores, but the prompt penalizes them.",
+   "evidence": "Seen repeatedly (notably the many variants of the name/title sentence and the 'Coalition' example): the offline target consistently adds early micro-cuts isolating words like a prenominal modifier or an honorific and those single-word-left cuts have high measured H. The policy tends to keep larger later spans instead of these micro-cuts, indicating a systematic underestimation of cohesion for very short left fragments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add guidance: When the left piece is a short, self-contained prenominal element, honorific, article, or discourse particle, do not assume low cohesion by length alone. Explicitly assess whether that tiny piece can be translated as a standalone unit that composes with the rest; if it does, give cohesion a high value and keep contra low. Example (illustrative):\nInput: \"Former <SEG:?> House Speaker <SEG:?> Newt <SEG:?> Gingrich <SEG:?>, ...\"\nDesired scoring: assign high target to the micro-cuts that isolate 'Former' / 'House Speaker' / 'Newt' because separately translated short constituents typically compose cleanly with the following material."
+   }
+  }
+ ]
+}

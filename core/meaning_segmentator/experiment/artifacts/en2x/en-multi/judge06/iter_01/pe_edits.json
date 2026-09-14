@@ -1,0 +1,83 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "1) Does what follows the cut overturn, negate, limit, materially change, or supply essential qualification, scope, or completion for the claim made so far?  Treat contra not only as explicit contradiction but as any continuation that would change what a reader reasonably infers from the left fragment read alone. If the remainder would materially change the truth-value, implication, or pragmatic interpretation of the left fragment, set contra high (near 1.0)."
+   },
+   {
+    "op": "insert_after",
+    "id": "C10",
+    "kind": "change",
+    "text": "Additional checklist (apply at every marker): - Flag as very poor (sharply reduce cohesion / raise contra) any cut that leaves a finite verb, copula, auxiliary, preposition, separable particle, or other syntactic head without its expected object/complement or attachment. - Flag splits inside enumerations where later words (e.g. 'respectively', ordinals, indexes) resolve which item maps to which antecedent. - Flag cuts that detach a multiword title/name or an essential modifier from its head if separate translation would force a risky attachment decision."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 354
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C10",
+    "kind": "change",
+    "chars_change": 561
+   }
+  ],
+  "result_chars": 9567,
+  "errors": [
+   "길이 초과: 9567 > 9084"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Also treat as contra any continuation that supplies essential qualification, scope, or completion (for example: temporal or modal frame-setting words; enumerations resolved later by 'respectively' or ordinal/index markers; or a main-clause object/attachment that completes an apparently finished claim). Estimate contra as a probability (0.0–1.0); if the remainder would materially change the truth-value, implication, or pragmatic inference of the left fragment, set contra high (near 1.0)."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "Checklist (apply at every marker): - Penalize cuts that leave a finite verb, copula, auxiliary, preposition, separable particle, or other syntactic head without its expected object/complement. - Penalize splits inside enumerations where later words (e.g. 'respectively', ordinals, indexes) resolve which item maps to which antecedent. - Penalize detaching multiword titles/names or essential modifiers from their head if separate translation would force a risky attachment decision."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -805
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 137
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 403
+   }
+  ],
+  "result_chars": 8386,
+  "errors": null
+ }
+]

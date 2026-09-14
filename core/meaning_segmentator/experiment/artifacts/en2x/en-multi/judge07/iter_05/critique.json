@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt under‑estimates how dangerous a continuation that contains a negation, strong scope changer, or clause‑final qualifier is: if the right side begins with words that can reverse, deny, or materially restrict the left‑side inference (cannot, not, only if, respectively, or clause‑final completions that supply the real predicate), the cut should get a very high contra score even when cohesion looks OK.",
+    "evidence": "9 cases (those with contra_kill=true) share the same pattern: the policy kept a cut that leaves a left fragment whose provisional meaning is later overturned or restricted by a short continuation (examples: continuations that start or end with cannot / not, a completion that provides the actual predicate, or a qualifier that reverses an expectation). In every such case a single high‑contra boundary zeroed the whole set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Explicitly flag high‑risk continuations: when the right‑side begins with or contains a negation (not, never, cannot), restrictive scope markers (only, rather than, instead), clause‑final completions or resolvers (respectively, in <YEAR>, as a result), or auxiliaries/particles that change truth conditions, assign a high Contra (close to 1) unless the left side already fully specifies and cannot be reversed. In other words: treat any candidate cut as unsafe whenever the unseen continuation can plausibly negate, reverse, or materially narrow the interpretation the listener would draw from the left fragment."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt does not give a clear, repeatable rule for small, function‑word‑headed fragments: cuts that leave a left piece ending in a determiner, preposition, auxiliary, or other light function word (so the missing right side must supply the lexical head or complement) tend to break cohesion and should be penalized unless the remaining head is purely optional.",
+    "evidence": "6 cases show the better offline segmentation moves cuts earlier to isolate short function words (e.g. leaving 'Scientists', 'This', 'We experience', 'Jardín' etc. as their own pieces) because translating those function/lead fragments separately preserves clarity, while the policy's cuts left noun or verb heads stranded and produced low cohesion or high contra.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Rule for function‑word fragments: if a candidate cut would leave the left segment ending in a light/function word (determiner, preposition, auxiliary, short pronoun without its noun, or a single demonstrative) and the right side must immediately supply the lexical head or complement for basic interpretation, reduce Cohesion (and thus the target score). Prefer cuts that isolate safe function fragments (so the following content can supply the head) or that keep a head together with its mandatory dependents."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt under‑estimates how dangerous a continuation that contains a negation, strong scope changer, or clause‑final qualifier is: if the right side begins with words that can reverse, deny, or materially restrict the left‑side inference (cannot, not, only if, respectively, or clause‑final completions that supply the real predicate), the cut should get a very high contra score even when cohesion looks OK.",
+   "evidence": "9 cases (those with contra_kill=true) share the same pattern: the policy kept a cut that leaves a left fragment whose provisional meaning is later overturned or restricted by a short continuation (examples: continuations that start or end with cannot / not, a completion that provides the actual predicate, or a qualifier that reverses an expectation). In every such case a single high‑contra boundary zeroed the whole set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Explicitly flag high‑risk continuations: when the right‑side begins with or contains a negation (not, never, cannot), restrictive scope markers (only, rather than, instead), clause‑final completions or resolvers (respectively, in <YEAR>, as a result), or auxiliaries/particles that change truth conditions, assign a high Contra (close to 1) unless the left side already fully specifies and cannot be reversed. In other words: treat any candidate cut as unsafe whenever the unseen continuation can plausibly negate, reverse, or materially narrow the interpretation the listener would draw from the left fragment."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt does not give a clear, repeatable rule for small, function‑word‑headed fragments: cuts that leave a left piece ending in a determiner, preposition, auxiliary, or other light function word (so the missing right side must supply the lexical head or complement) tend to break cohesion and should be penalized unless the remaining head is purely optional.",
+   "evidence": "6 cases show the better offline segmentation moves cuts earlier to isolate short function words (e.g. leaving 'Scientists', 'This', 'We experience', 'Jardín' etc. as their own pieces) because translating those function/lead fragments separately preserves clarity, while the policy's cuts left noun or verb heads stranded and produced low cohesion or high contra.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Rule for function‑word fragments: if a candidate cut would leave the left segment ending in a light/function word (determiner, preposition, auxiliary, short pronoun without its noun, or a single demonstrative) and the right side must immediately supply the lexical head or complement for basic interpretation, reduce Cohesion (and thus the target score). Prefer cuts that isolate safe function fragments (so the following content can supply the head) or that keep a head together with its mandatory dependents."
+   }
+  }
+ ]
+}

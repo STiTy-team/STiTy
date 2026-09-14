@@ -1,0 +1,82 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "   - Explicitly penalize cuts that leave the left fragment asserting a proposition whose truth, scope, or specificity depends on material to the right. At each marker ask: \"If the left side were presented alone as a sentence, could later words change its truth, add required complements, clarify an enumeration (e.g. via 'respectively'), negate it, or supply modal/temporal framing?\" If yes, raise contra sharply (treat (1 - contra) as near zero) and/or set cohesion very low; rank such cuts among the bottom integers because separately translated pieces would mislead the listener."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a verb from its object or particle, splitting a noun from required modifiers/possessives/determiners, detaching quantifiers or negation, or slicing enumerative items from their list. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "Two operational tests to apply at every marker (use these to bias cohesion and contra): 1) Incomplete-predicate / list-item test: Would the left chunk be an unfinished predicate or an incomplete list item that only makes sense with the following words? 2) Detached-head / modifier test: Would either side lack its syntactic head or an essential modifier/determiner/multiword name so that meaning or attachment is unspecified? If either test is true for essential material (verb+object, required modifier, or an enumerative item, including constructions clarified by 'respectively'), set cohesion near 0 and treat the cut as very poor. Exception (narrow): short, self-contained premodifiers, titles, honorifics, or name parts that can be translated independently and then joined without changing attachment or scope should be evaluated as translatable before penalizing."
+   },
+   {
+    "op": "delete",
+    "id": "C8"
+   },
+   {
+    "op": "delete",
+    "id": "C9"
+   },
+   {
+    "op": "delete",
+    "id": "C10"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 75
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -73
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 790
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -216
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "C9",
+    "kind": "delete",
+    "chars_change": -167
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "C10",
+    "kind": "delete",
+    "chars_change": -76
+   }
+  ],
+  "result_chars": 8984,
+  "errors": null
+ }
+]

@@ -1,0 +1,66 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00513,
+  "lo": -0.0183,
+  "hi": 0.00685,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": -0.00513,
+  "lo": -0.0183,
+  "hi": 0.00685,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Paraphrased C3 to shorten and keep focus on contradiction risk (to make room and keep same judgement).",
+  "Paraphrased C5 to a shorter description of dependency loss on split (to reduce prompt size while preserving guidance).",
+  "Paraphrased C6 to a concise reminder to apply both judgements everywhere and punctuation rule (room-saving).",
+  "Inserted new core unit C7 (Provisional-head test) to address the critic finding that cuts after provisional heads must carry high Contra even when cohesion looks good.",
+  "Replaced example E4 with the Internal poisoning example from the findings to illustrate the provisional-head test in practice."
+ ],
+ "findings": [
+  "The scorer systematically underestimates the risk of cutting immediately after a 'provisional' head: positions that leave a claim, scope, or reference unfinished (e.g. clause-introducing heads, complements awaiting a negation or disambiguating verb/object, contrastive 'but', or mid-list separators) are often scored too highly. In other words: if the left fragment invites a concrete interpretation that the right fragment can reverse or complete, treat that cut as high-contradiction regardless of local fluency.",
+  "The scorer lets moderate-to-high cohesion scores drown out high contradiction risk: positions with plausible standalone phrasing (good cohesion) but where the continuation changes truth conditions are being ranked too high because cohesion is treated as the dominant signal rather than used only via the product formula."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C3",
+   "kind": "paraphrase",
+   "was": "- This is about whether what follows requires reinterpreting who, what, or wheth",
+   "now": "- Determines whether the continuation forces reinterpreting who, what, or whethe"
+  },
+  {
+   "op": "replace",
+   "id": "C5",
+   "kind": "paraphrase",
+   "was": "- This measures whether sending the parts apart loses essential dependencies, at",
+   "now": "- Tests whether splitting the sentence separates dependents or attachments: modi"
+  },
+  {
+   "op": "replace",
+   "id": "C6",
+   "kind": "paraphrase",
+   "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+   "now": "Apply both judgements at every inter-word position. Treat punctuation as attache"
+  },
+  {
+   "op": "insert_after",
+   "id": "C6",
+   "kind": "change",
+   "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+   "now": "Provisional-head test: At each marker ask whether the left span ends with a head"
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "change",
+   "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+   "now": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> imm"
+  }
+ ]
+}

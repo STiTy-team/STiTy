@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The policy underrates the harm of cuts that leave an incomplete predicate or an unfinished item of a coordination/list: if the left piece ends inside a list item or before the clause that completes the verb phrase, that left piece is not self-contained and its cohesion score should be very low (or contra high).",
+    "evidence": "Observed across 9 cases (multiple variants of the same sentence plus other examples): repeated failures where cuts left fragments like an item of a list or a verb phrase ('... finished in fourth,', '... to secure the site', '... that an immediate diagnosis') which the offline target avoids. All share the pattern that the left fragment requires material after the cut to complete a predicate or to finish a coordination, producing very low per-cut H when measured alone.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add a rule: If the left-side fragment would be an incomplete predicate or an unfinished element of a coordination/list (i.e. it needs the following words to complete the main verb, object, or list item), treat cohesion as very low and/or increase contra accordingly. Question to ask at each marker: 'Does the left chunk contain a complete predicate or a finished list item that makes sense on its own?' If the answer is no, score the marker near the bottom of the sentence. Example I/O: Input: \"... finished in fourth, <SEG:?> fifth, and sixth ...\" → mark the cut after \"finished in fourth,\" very low because the item and predicate are incomplete."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The policy underestimates cohesion loss when a cut separates modifiers/function words from the head they attach to (titles, premodifiers, determiners, or multiword names): fragments missing their head or their essential modifier produce mistranslations when translated separately.",
+    "evidence": "Seen in 7 cases (many repetitions of the name/title sentence plus examples with role/titles and noun modifiers): policy kept cuts that detach modifiers or split titles from names (e.g. separating 'Former' / 'House Speaker' / name parts) or split 'such' from 'as X', causing low H in the joined-translated result. All share an attachment risk: meaning depends on material across the boundary.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add a rule: At each marker, explicitly test whether the left or right fragment would leave a modifier, determiner, title, or multiword name unattached to its syntactic head. Ask: 'Would a translator of the left piece be missing the head (or would the right piece be missing its required modifier)?' If yes, reduce cohesion sharply. Example I/O: Input: \"Former <SEG:?> House Speaker <SEG:?> Newt <SEG:?> Gingrich, ...\" → prefer cuts that avoid leaving a title or modifier stranded away from its head; do not treat a cut between a title and its head as high-scoring."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The policy underrates the harm of cuts that leave an incomplete predicate or an unfinished item of a coordination/list: if the left piece ends inside a list item or before the clause that completes the verb phrase, that left piece is not self-contained and its cohesion score should be very low (or contra high).",
+   "evidence": "Observed across 9 cases (multiple variants of the same sentence plus other examples): repeated failures where cuts left fragments like an item of a list or a verb phrase ('... finished in fourth,', '... to secure the site', '... that an immediate diagnosis') which the offline target avoids. All share the pattern that the left fragment requires material after the cut to complete a predicate or to finish a coordination, producing very low per-cut H when measured alone.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add a rule: If the left-side fragment would be an incomplete predicate or an unfinished element of a coordination/list (i.e. it needs the following words to complete the main verb, object, or list item), treat cohesion as very low and/or increase contra accordingly. Question to ask at each marker: 'Does the left chunk contain a complete predicate or a finished list item that makes sense on its own?' If the answer is no, score the marker near the bottom of the sentence. Example I/O: Input: \"... finished in fourth, <SEG:?> fifth, and sixth ...\" → mark the cut after \"finished in fourth,\" very low because the item and predicate are incomplete."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The policy underestimates cohesion loss when a cut separates modifiers/function words from the head they attach to (titles, premodifiers, determiners, or multiword names): fragments missing their head or their essential modifier produce mistranslations when translated separately.",
+   "evidence": "Seen in 7 cases (many repetitions of the name/title sentence plus examples with role/titles and noun modifiers): policy kept cuts that detach modifiers or split titles from names (e.g. separating 'Former' / 'House Speaker' / name parts) or split 'such' from 'as X', causing low H in the joined-translated result. All share an attachment risk: meaning depends on material across the boundary.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add a rule: At each marker, explicitly test whether the left or right fragment would leave a modifier, determiner, title, or multiword name unattached to its syntactic head. Ask: 'Would a translator of the left piece be missing the head (or would the right piece be missing its required modifier)?' If yes, reduce cohesion sharply. Example I/O: Input: \"Former <SEG:?> House Speaker <SEG:?> Newt <SEG:?> Gingrich, ...\" → prefer cuts that avoid leaving a title or modifier stranded away from its head; do not treat a cut between a title and its head as high-scoring."
+   }
+  }
+ ]
+}

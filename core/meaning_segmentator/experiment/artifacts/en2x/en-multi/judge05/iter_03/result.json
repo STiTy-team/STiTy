@@ -1,0 +1,22 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": -0.03774,
+  "lo": -0.05354,
+  "hi": -0.02228,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Replace C3 to force explicit penalization when a left fragment, taken alone, asserts a proposition whose truth/scope depends on words to the right — addresses the finding that the model underestimates how later material can overturn or complete earlier claims.",
+  "Paraphrase C5 to keep the cohesion judgement but shorten and focus its guidance (still asks to check argument structure, attachments, and scope crossings) — frees space while preserving meaning.",
+  "Replace C7 with an operational, consolidated pair of tests that make the incomplete-predicate/list and detached-head/modifier checks actionable, and add a narrowly scoped exception for short name/title parts — addresses the finding that the tests were not applied forcefully enough and that titles/name parts were over-penalized.",
+  "Delete C8 and C9 because their content is folded into the new operational test unit (C7) and they had low evidence/critic hits.",
+  "Delete C10 as redundant after consolidating the tests into C7."
+ ],
+ "findings": [
+  "The prompt underestimates how much a following phrase can overturn or complete an apparent assertion on the left: it often treats a left fragment that reads like a finished claim as a safe cut even when the remainder (enumeration, complement, negation, or scope-bearing clause) will materially change that claim.",
+  "The prompt does not forcefully apply the incomplete-predicate / detached-head tests to list items and predicate complements: it sometimes leaves list fragments or separated predicates that result in high measured contradiction or very low cohesion."
+ ]
+}

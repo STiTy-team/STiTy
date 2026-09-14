@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates cuts that break parallel correspondences (lists mapped by \"respectively\", paired results, or parallel measurements): even if the left fragment reads as a grammatical clause, the remainder can supply the indexing that assigns values to earlier items and thus materially change truth.",
+    "evidence": "Seen in 5 cases (all variants of the same names-and-ranks sentence) where cutting inside the name/result sequence or before/around \"respectively\" produced very low H_set; also present in the pricing example where splitting the two multipliers ('four times ... and eleven times ...') misassigns the rates. All share a parallel sequence whose interpretation depends on material after the cut.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Parallel-list / respectively test: If the remainder provides the indexing or pairing (ranks, measurements, results, or an explicit marker like \"respectively\") that assigns properties to earlier list items, treat contra as high (near 1.0) or cohesion as very low; do not allow surface grammaticality of the left chunk to override this — the cut is unsafe."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt fails to penalize cuts that leave an incomplete predicate, separable verb construction, or multiword prepositional chain: when the left side lacks the complement/particle or the right side supplies the verb's core argument/scope, the cut produces a fragment that cannot stand on its own.",
+    "evidence": "Appears in at least 5 cases (the 'wooden wheels were replaced by iron wheels' example, the 'future through the present to the past' chain, the split of 'that ... cannot be made', and the pricing/amount splits) where targets keep the verb+complement or the entire prepositional span together; all share cuts that break essential predicate or prepositional frames.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Incomplete-predicate / multiword-frame rule (strengthen): If the left fragment would be missing an essential complement, particle, or the tail of a multiword prepositional/verb frame (i.e., the remainder supplies the core argument or particle that completes the predicate), mark cohesion near 0 and raise contra; treat such cuts as very poor."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt under-penalizes cuts that detach a syntactic head from essential modifiers or titles (honorifics, multiword names, postmodifiers): separating a head from its determiners/titles or splitting a multiword name often prevents correct independent translation and composition.",
+    "evidence": "Occurs across multiple sentences (variants of the names/title sentence, the 'Dr. Tony Moll' pattern, and the 'unfamiliar with medical jargon' example) where the better segmentation avoids cutting inside named entities or between a title and a name; these cuts share that one side loses the identifying head or an essential modifier.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Detached-head / modifier clarification: If a cut separates a title/honorific or a determinative/modifier from the named head (or splits a multiword proper name or required postmodifier), sharply reduce cohesion (near 0); prefer keeping the head plus its modifiers together so each piece can be independently translated without loss of reference."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates cuts that break parallel correspondences (lists mapped by \"respectively\", paired results, or parallel measurements): even if the left fragment reads as a grammatical clause, the remainder can supply the indexing that assigns values to earlier items and thus materially change truth.",
+   "evidence": "Seen in 5 cases (all variants of the same names-and-ranks sentence) where cutting inside the name/result sequence or before/around \"respectively\" produced very low H_set; also present in the pricing example where splitting the two multipliers ('four times ... and eleven times ...') misassigns the rates. All share a parallel sequence whose interpretation depends on material after the cut.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Parallel-list / respectively test: If the remainder provides the indexing or pairing (ranks, measurements, results, or an explicit marker like \"respectively\") that assigns properties to earlier list items, treat contra as high (near 1.0) or cohesion as very low; do not allow surface grammaticality of the left chunk to override this — the cut is unsafe."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt fails to penalize cuts that leave an incomplete predicate, separable verb construction, or multiword prepositional chain: when the left side lacks the complement/particle or the right side supplies the verb's core argument/scope, the cut produces a fragment that cannot stand on its own.",
+   "evidence": "Appears in at least 5 cases (the 'wooden wheels were replaced by iron wheels' example, the 'future through the present to the past' chain, the split of 'that ... cannot be made', and the pricing/amount splits) where targets keep the verb+complement or the entire prepositional span together; all share cuts that break essential predicate or prepositional frames.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Incomplete-predicate / multiword-frame rule (strengthen): If the left fragment would be missing an essential complement, particle, or the tail of a multiword prepositional/verb frame (i.e., the remainder supplies the core argument or particle that completes the predicate), mark cohesion near 0 and raise contra; treat such cuts as very poor."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt under-penalizes cuts that detach a syntactic head from essential modifiers or titles (honorifics, multiword names, postmodifiers): separating a head from its determiners/titles or splitting a multiword name often prevents correct independent translation and composition.",
+   "evidence": "Occurs across multiple sentences (variants of the names/title sentence, the 'Dr. Tony Moll' pattern, and the 'unfamiliar with medical jargon' example) where the better segmentation avoids cutting inside named entities or between a title and a name; these cuts share that one side loses the identifying head or an essential modifier.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Detached-head / modifier clarification: If a cut separates a title/honorific or a determinative/modifier from the named head (or splits a multiword proper name or required postmodifier), sharply reduce cohesion (near 0); prefer keeping the head plus its modifiers together so each piece can be independently translated without loss of reference."
+   }
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates how bad a cut is when it leaves a fragment that needs following words to make a predicate or a complete assertion — subjects without their verbs, verbs without their objects/complements, list items that require the rest of the list to be interpreted, or scope-bearing material (quantifiers/negation) detached from what they modify.",
+    "evidence": "Appears across most cases (≈9 of 12): the model kept cuts whose single-boundary H is near zero (examples include left-hand fragments like a named person '... finished in fourth,' a trailing clause 'that an immediate diagnosis', 'to secure the site', and comparable fragments in enumerations). Those fragments are meaningless or misleading when read alone and have very low cohesion in the measured data.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Ask explicitly whether the left-hand piece contains a complete predication or a self-contained proposition. If the left side is just a subject, a prepositional adjunct, a verb lacking its object/complement, a list item that depends on later list elements, or a scope carrier (quantifier/negation) whose host appears after the cut, treat cohesion as very low and contra risk as high. In short: if the fragment cannot stand as an informative, truthful claim on its own, score the cut near the bottom."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt undervalues the benefit of splitting inside complex noun phrases or titles to let translations reorder or attach modifiers correctly — it prefers coarser cuts that leave modifiers or titles attached in ways that reduce cross‑language compositionality.",
+    "evidence": "Seen in the repeated Newt Gingrich examples (6 variants) and other Noun-Phrase-heavy sentences: the offline target consistently splits titles, honorifics, or multiword name phrases into smaller pieces and achieves high H, while the policy kept larger phrase boundaries that produced low cohesion in the measured translations.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When a candidate cut falls inside a multiword noun phrase (titles, stacked modifiers, multi-part names) ask whether target-language word order or modifier attachment will likely force reordering or separate handling of constituents. If separate translation of sub-parts reduces reordering ambiguity or preserves modifier scope, raise the score for internal splits; otherwise penalize cuts that leave necessary reorderings unresolved."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt fails to penalize cuts that isolate coordinators, connectives, or other linking material (including 'and', 'respectively' relations, or coordinating prepositional phrases), producing pieces that cannot be coherently rejoined.",
+    "evidence": "Occurs in multiple cases (≈5): coordination and connective-related cuts (e.g., isolating 'and Congresswoman ...' or splitting off 'for business' / 'and eleven times') had low measured H but were selected by the policy. The offline targets keep connective-bearing material with the clause it links to, giving much higher cohesion.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Explicitly check whether a cut would detach a coordinator, connective, or item that resolves an earlier coordination/’respectively’ relation. If the left or right piece would be a standalone coordinator or leave an item that depends on another element to make sense, lower cohesion — prefer cuts that keep connectives with the clause or list they bind."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates how bad a cut is when it leaves a fragment that needs following words to make a predicate or a complete assertion — subjects without their verbs, verbs without their objects/complements, list items that require the rest of the list to be interpreted, or scope-bearing material (quantifiers/negation) detached from what they modify.",
+   "evidence": "Appears across most cases (≈9 of 12): the model kept cuts whose single-boundary H is near zero (examples include left-hand fragments like a named person '... finished in fourth,' a trailing clause 'that an immediate diagnosis', 'to secure the site', and comparable fragments in enumerations). Those fragments are meaningless or misleading when read alone and have very low cohesion in the measured data.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Ask explicitly whether the left-hand piece contains a complete predication or a self-contained proposition. If the left side is just a subject, a prepositional adjunct, a verb lacking its object/complement, a list item that depends on later list elements, or a scope carrier (quantifier/negation) whose host appears after the cut, treat cohesion as very low and contra risk as high. In short: if the fragment cannot stand as an informative, truthful claim on its own, score the cut near the bottom."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt undervalues the benefit of splitting inside complex noun phrases or titles to let translations reorder or attach modifiers correctly — it prefers coarser cuts that leave modifiers or titles attached in ways that reduce cross‑language compositionality.",
+   "evidence": "Seen in the repeated Newt Gingrich examples (6 variants) and other Noun-Phrase-heavy sentences: the offline target consistently splits titles, honorifics, or multiword name phrases into smaller pieces and achieves high H, while the policy kept larger phrase boundaries that produced low cohesion in the measured translations.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When a candidate cut falls inside a multiword noun phrase (titles, stacked modifiers, multi-part names) ask whether target-language word order or modifier attachment will likely force reordering or separate handling of constituents. If separate translation of sub-parts reduces reordering ambiguity or preserves modifier scope, raise the score for internal splits; otherwise penalize cuts that leave necessary reorderings unresolved."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt fails to penalize cuts that isolate coordinators, connectives, or other linking material (including 'and', 'respectively' relations, or coordinating prepositional phrases), producing pieces that cannot be coherently rejoined.",
+   "evidence": "Occurs in multiple cases (≈5): coordination and connective-related cuts (e.g., isolating 'and Congresswoman ...' or splitting off 'for business' / 'and eleven times') had low measured H but were selected by the policy. The offline targets keep connective-bearing material with the clause it links to, giving much higher cohesion.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Explicitly check whether a cut would detach a coordinator, connective, or item that resolves an earlier coordination/’respectively’ relation. If the left or right piece would be a standalone coordinator or leave an item that depends on another element to make sense, lower cohesion — prefer cuts that keep connectives with the clause or list they bind."
+   }
+  }
+ ]
+}

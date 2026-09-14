@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt systematically underestimates contradiction risk when a cut leaves a subject/nominal phrase but the main predicate, change-of-state, negation, or other truth-determining material appears after the cut.",
+    "evidence": "Observed in 12 cases (en_us_1591, en_us_1427, en_us_1593, en_us_1192, en_us_1143, en_us_608, en_us_877, en_us_725, en_us_1102, en_us_1591, en_us_725, en_us_1192): the policy kept cuts that end on a noun/subject while the verb/predicate later reverses or completes the claim. Those dropped boundaries show very high contra (≈0.94–0.99) and zeroed the set, so the mistakes recur across short and mid-length bins rather than being one-off errors.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the left span ends with an entity or noun phrase that is plausibly the sentence's subject or head, and the right span contains the main predicate, a change-of-state, negation, scalar or other content that determines truth, treat Contra as high unless the continuation is clearly parenthetical/appositive. Concretely ask: 'Does the right side supply the verb/event that makes the left-side fragment true, false, or substantially different?' If yes, raise Contra and punish the cut."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates cohesion loss when cutting inside tightly bound nominal units (titles, multiword names, determiner+head, or noun plus restrictive modifier); such splits often yield independent-piece translations that fail to reattach modifiers or reconstruct the intended name/title.",
+    "evidence": "Observed in 6 cases (en_us_1591, en_us_1143, en_us_725, en_us_117, en_us_1102, en_us_1192): policy cuts split multiword names/titles or broke apart nominals so that independent translations could not reliably reassemble the original referent or role; cohesion scores for these boundaries should have been lower, and the better offline sets either avoided those internal cuts or moved cuts to preserve the nominal unit.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat multiword nominal units (titles, personal names, determiner+head, noun + restrictive modifier) as cohesion-sensitive: if a cut falls inside such a unit, lower Cohesion unless the split clearly leaves each piece independently interpretable (for example, a parenthetical or fixed abbreviation). Ask: 'Would the left or right piece alone leave the referent or role ambiguous or unattachable?' If yes, reduce Cohesion and prefer cuts that keep the unit intact or move the cut to a clearer boundary."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt systematically underestimates contradiction risk when a cut leaves a subject/nominal phrase but the main predicate, change-of-state, negation, or other truth-determining material appears after the cut.",
+   "evidence": "Observed in 12 cases (en_us_1591, en_us_1427, en_us_1593, en_us_1192, en_us_1143, en_us_608, en_us_877, en_us_725, en_us_1102, en_us_1591, en_us_725, en_us_1192): the policy kept cuts that end on a noun/subject while the verb/predicate later reverses or completes the claim. Those dropped boundaries show very high contra (≈0.94–0.99) and zeroed the set, so the mistakes recur across short and mid-length bins rather than being one-off errors.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the left span ends with an entity or noun phrase that is plausibly the sentence's subject or head, and the right span contains the main predicate, a change-of-state, negation, scalar or other content that determines truth, treat Contra as high unless the continuation is clearly parenthetical/appositive. Concretely ask: 'Does the right side supply the verb/event that makes the left-side fragment true, false, or substantially different?' If yes, raise Contra and punish the cut."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates cohesion loss when cutting inside tightly bound nominal units (titles, multiword names, determiner+head, or noun plus restrictive modifier); such splits often yield independent-piece translations that fail to reattach modifiers or reconstruct the intended name/title.",
+   "evidence": "Observed in 6 cases (en_us_1591, en_us_1143, en_us_725, en_us_117, en_us_1102, en_us_1192): policy cuts split multiword names/titles or broke apart nominals so that independent translations could not reliably reassemble the original referent or role; cohesion scores for these boundaries should have been lower, and the better offline sets either avoided those internal cuts or moved cuts to preserve the nominal unit.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat multiword nominal units (titles, personal names, determiner+head, noun + restrictive modifier) as cohesion-sensitive: if a cut falls inside such a unit, lower Cohesion unless the split clearly leaves each piece independently interpretable (for example, a parenthetical or fixed abbreviation). Ask: 'Would the left or right piece alone leave the referent or role ambiguous or unattachable?' If yes, reduce Cohesion and prefer cuts that keep the unit intact or move the cut to a clearer boundary."
+   }
+  }
+ ]
+}

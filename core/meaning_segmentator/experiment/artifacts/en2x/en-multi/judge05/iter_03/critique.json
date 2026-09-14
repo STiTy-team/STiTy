@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates how much a following phrase can overturn or complete an apparent assertion on the left: it often treats a left fragment that reads like a finished claim as a safe cut even when the remainder (enumeration, complement, negation, or scope-bearing clause) will materially change that claim.",
+    "evidence": "Appears across 10 cases (the repeated Newt Gingrich / Perry / Bachmann examples, the 'internal poisoning' cases, 'wooden wheels were replaced', 'When the fighting ceased ...', 'We experience time ...', 'infectious and contagious ...', and the fare/pricing sentence). They all share the pattern that the left fragment, read alone, looks like an assertion or completed clause but is made precise, reversed, or completed by material to the right (enumerations with 'respectively', predicate complements, 'cannot' negation, or a temporal/modal frame). In every instance the measured best sets avoid the cut that leaves that misleading fragment while the policy kept it.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Explicitly penalize cuts that leave a left fragment which, taken alone, asserts a fact whose truth, scope, or specificity depends on material to the right. At each marker ask: 'If the left side were presented alone as a sentence, would it assert a completed proposition whose truth or meaning could be changed by words that follow (e.g. an attached complement, enumeration clarified by \"respectively\", later negation, or the sentence's modal/temporal frame)?' If yes, raise contra sharply (treat (1 - contra) as near zero) and/or set cohesion very low. In practice, mark such cuts as very poor (assign them among the bottom-ranked integers) because joining separately translated pieces will mislead the listener."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt does not forcefully apply the incomplete-predicate / detached-head tests to list items and predicate complements: it sometimes leaves list fragments or separated predicates that result in high measured contradiction or very low cohesion.",
+    "evidence": "Seen in 8 cases (the Gingrich list examples, the 'internal poisoning' split, 'wooden wheels were replaced', and the fare/price sentence). In those examples the best cutsets either avoid splitting an item from the rest of its list or keep predicates and their objects together; the policy repeatedly picks cuts that separate an item from its enumerative context or detach a verb from its complement.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Make the two explicit tests (incomplete-predicate/list and detached-head/modifier) operational: if the marker would split a noun from an essential modifier/determinant, break a verb from its object/complement, or slice an enumerative item from the rest of its assigned list (including constructions using 'respectively'), then set cohesion near 0 and treat the cut as among the worst. Concretely: when either test is true, score cohesion very low and do not rely on small contra adjustments to rescue the cut."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates how much a following phrase can overturn or complete an apparent assertion on the left: it often treats a left fragment that reads like a finished claim as a safe cut even when the remainder (enumeration, complement, negation, or scope-bearing clause) will materially change that claim.",
+   "evidence": "Appears across 10 cases (the repeated Newt Gingrich / Perry / Bachmann examples, the 'internal poisoning' cases, 'wooden wheels were replaced', 'When the fighting ceased ...', 'We experience time ...', 'infectious and contagious ...', and the fare/pricing sentence). They all share the pattern that the left fragment, read alone, looks like an assertion or completed clause but is made precise, reversed, or completed by material to the right (enumerations with 'respectively', predicate complements, 'cannot' negation, or a temporal/modal frame). In every instance the measured best sets avoid the cut that leaves that misleading fragment while the policy kept it.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Explicitly penalize cuts that leave a left fragment which, taken alone, asserts a fact whose truth, scope, or specificity depends on material to the right. At each marker ask: 'If the left side were presented alone as a sentence, would it assert a completed proposition whose truth or meaning could be changed by words that follow (e.g. an attached complement, enumeration clarified by \"respectively\", later negation, or the sentence's modal/temporal frame)?' If yes, raise contra sharply (treat (1 - contra) as near zero) and/or set cohesion very low. In practice, mark such cuts as very poor (assign them among the bottom-ranked integers) because joining separately translated pieces will mislead the listener."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt does not forcefully apply the incomplete-predicate / detached-head tests to list items and predicate complements: it sometimes leaves list fragments or separated predicates that result in high measured contradiction or very low cohesion.",
+   "evidence": "Seen in 8 cases (the Gingrich list examples, the 'internal poisoning' split, 'wooden wheels were replaced', and the fare/price sentence). In those examples the best cutsets either avoid splitting an item from the rest of its list or keep predicates and their objects together; the policy repeatedly picks cuts that separate an item from its enumerative context or detach a verb from its complement.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Make the two explicit tests (incomplete-predicate/list and detached-head/modifier) operational: if the marker would split a noun from an essential modifier/determinant, break a verb from its object/complement, or slice an enumerative item from the rest of its assigned list (including constructions using 'respectively'), then set cohesion near 0 and treat the cut as among the worst. Concretely: when either test is true, score cohesion very low and do not rely on small contra adjustments to rescue the cut."
+   }
+  }
+ ]
+}

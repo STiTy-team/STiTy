@@ -1,0 +1,21 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.01419,
+  "lo": -0.02852,
+  "hi": 1e-05,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Replace C7 with a consolidated, concise pair of tests that capture both the incomplete-predicate/list concern and the bound-span (tight semantic span) issue, and add the exception for short labels/name parts — to address the critique that cuts sometimes split required complements or tightly bonded phrases while over-penalizing name parts.",
+  "Delete C8 (old Incomplete-predicate/list unit) because its content is folded into the new C7 and to reduce prompt size.",
+  "Delete C9 (old Detached-head/modifier unit) because its content is replaced by the bound-span test in the new C7.",
+  "Delete C10 (redundant summary sentence) because its guidance is merged into the new consolidated test unit."
+ ],
+ "findings": [
+  "The model fails to mark cuts that break syntactically required complements, multiword prepositional/temporal chains, or list items as bad. Question to ask at a candidate cut: does either side end in a phrase that syntactically or semantically requires material on the other side to form a complete predicate, complement, prepositional/temporal chain, or coordinated list? If yes, raise contra and lower cohesion (treat the cut as very poor).",
+  "The model over-penalizes cuts that split titles, honorifics, or name parts and so avoids useful small cuts there. Question to ask: is the fragment a short, self-explanatory premodifier or name component (titles, honorifics, name parts) that can be translated independently and then joined without changing scope or attachment? If yes, do not automatically collapse cohesion for a 'detached head'; assess its true translatability."
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt systematically underestimates when the remainder of the sentence supplies the fragment's main predicate, scope, or disambiguating material; it therefore treats incomplete fragments as safe cuts when reading them alone would be misleading or wrong.",
+    "evidence": "Appears across most cases (all 12 examples). Shared pattern: the policy kept cuts that leave a fragment whose truth or interpretation depends on later material (e.g., a later clause supplies the main verb, a scope-limiting adjunct, or an enumerator that changes the earlier claim), producing very high contra and very low H for that cut when measured.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add an explicit, repeatable test for predicate/completion: For each marker also ask — 'If I read only the text before this cut, does that fragment assert a complete, non‑misleading claim on its own? Or does the remainder supply the main finite verb, a scope/qualification that changes the claim, or an attachment that disambiguates the fragment?' If the remainder supplies any of those, raise contra (near 1.0) and lower target accordingly. Treat this test as mandatory for every marker."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt undervalues the benefit of isolating short, self-contained lexical units (titles, names, small fixed phrases) from the rest of a sentence; it favors cuts that leave attached modifiers or list structure unresolved, reducing composition quality.",
+    "evidence": "Recurring in the Newt Gingrich family of cases (6 variants) and other examples where titles, names, or list items are present. In these cases the better offline segmentation isolates titles/names into their own pieces so that translations don't force premature attachment; the policy instead kept cuts that merged or left those units attached and produced low H.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich <SEG:?> , <SEG:?> and <SEG:?> others\nOutput: Former <SEG:05> House <SEG:10> Speaker <SEG:20> Newt <SEG:30> Gingrich <SEG:100> , <SEG:40> and <SEG:35> others\nExplanation: prefer isolating short title/name units so each piece can be translated without forcing premature attachment; score cuts that separate the title/name higher than cuts that leave ambiguous attachment."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt systematically underestimates when the remainder of the sentence supplies the fragment's main predicate, scope, or disambiguating material; it therefore treats incomplete fragments as safe cuts when reading them alone would be misleading or wrong.",
+   "evidence": "Appears across most cases (all 12 examples). Shared pattern: the policy kept cuts that leave a fragment whose truth or interpretation depends on later material (e.g., a later clause supplies the main verb, a scope-limiting adjunct, or an enumerator that changes the earlier claim), producing very high contra and very low H for that cut when measured.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add an explicit, repeatable test for predicate/completion: For each marker also ask — 'If I read only the text before this cut, does that fragment assert a complete, non‑misleading claim on its own? Or does the remainder supply the main finite verb, a scope/qualification that changes the claim, or an attachment that disambiguates the fragment?' If the remainder supplies any of those, raise contra (near 1.0) and lower target accordingly. Treat this test as mandatory for every marker."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt undervalues the benefit of isolating short, self-contained lexical units (titles, names, small fixed phrases) from the rest of a sentence; it favors cuts that leave attached modifiers or list structure unresolved, reducing composition quality.",
+   "evidence": "Recurring in the Newt Gingrich family of cases (6 variants) and other examples where titles, names, or list items are present. In these cases the better offline segmentation isolates titles/names into their own pieces so that translations don't force premature attachment; the policy instead kept cuts that merged or left those units attached and produced low H.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich <SEG:?> , <SEG:?> and <SEG:?> others\nOutput: Former <SEG:05> House <SEG:10> Speaker <SEG:20> Newt <SEG:30> Gingrich <SEG:100> , <SEG:40> and <SEG:35> others\nExplanation: prefer isolating short title/name units so each piece can be translated without forcing premature attachment; score cuts that separate the title/name higher than cuts that leave ambiguous attachment."
+   }
+  }
+ ]
+}

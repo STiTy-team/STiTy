@@ -1,0 +1,125 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "Two explicit tests to apply at each marker and use to bias cohesion and contra: 1) Incomplete-predicate/list test: Ask whether either side would be an unfinished predicate, a clause missing its required complement, a subordinating complement left dangling, or an incomplete item in a coordinated/list structure. If so, treat cohesion as very low and/or raise contra. 2) Bound-span test: Ask whether the cut falls inside a tightly bonded semantic span — for example a verb plus its required object or complement, a contiguous prepositional/temporal chain, or a coordinated ordinal/list phrase whose meaning depends on later elements. If the cut splits such a bound span, sharply reduce cohesion. These tests focus on whether meaning or argument structure is left syntactically or semantically incomplete, not on surface token length."
+   },
+   {
+    "op": "delete",
+    "id": "C8"
+   },
+   {
+    "op": "delete",
+    "id": "C9"
+   },
+   {
+    "op": "delete",
+    "id": "C10"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "Exception for short modifiers and name parts: Single-word premodifiers, honorifics, titles, or name components should not be automatically treated as 'detached heads' if they function as self-contained labels or modifiers that can be translated independently and then reattached without changing scope or core argument structure. When a fragment is a clearly translatable label or name part that leaves the main predicate and its complements intact, use the measured cohesion value rather than imposing a blanket penalty."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 753
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -216
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "C9",
+    "kind": "delete",
+    "chars_change": -167
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "C10",
+    "kind": "delete",
+    "chars_change": -76
+   },
+   {
+    "edit": 4,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 522
+   }
+  ],
+  "result_chars": 9467,
+  "errors": [
+   "길이 초과: 9467 > 9084"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "Two explicit tests to apply at each marker and use to bias cohesion and contra: 1) Incomplete/list test: Would either side be an unfinished predicate, a clause missing a required complement, or an incomplete item in a coordinated/list structure? If yes, treat cohesion as very low and/or raise contra. 2) Bound-span test: Does the cut split a tightly bonded semantic span — for example a verb with its required object/complement, a contiguous prepositional/temporal chain, or a coordinated ordinal/list phrase whose meaning depends on later elements? If yes, sharply reduce cohesion. Exception for short modifiers and name parts: single-word premodifiers, honorifics, titles, or name components that act as self-contained labels and do not leave core argument structure unresolved should not be automatically penalized; use their measured cohesion value."
+   },
+   {
+    "op": "delete",
+    "id": "C8"
+   },
+   {
+    "op": "delete",
+    "id": "C9"
+   },
+   {
+    "op": "delete",
+    "id": "C10"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 775
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -216
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "C9",
+    "kind": "delete",
+    "chars_change": -167
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "C10",
+    "kind": "delete",
+    "chars_change": -76
+   }
+  ],
+  "result_chars": 8967,
+  "errors": null
+ }
+]

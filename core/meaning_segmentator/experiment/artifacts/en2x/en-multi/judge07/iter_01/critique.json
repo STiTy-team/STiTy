@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates contradiction risk when the remainder completes or revises the main predicate or supplies scope-changing material (negation/restriction, numeric quantifier, comparative, contrastive particle). It treats left-side fragments as safe even though the right-side continuation can force a reinterpretation of who/what acted or whether an event occurred.",
+    "evidence": "9 cases (e.g. en_us_1591, en_us_1427, en_us_1593, en_us_1192, en_us_1143, en_us_608, en_us_877, en_us_725, en_us_1102) show the policy keeping cuts that later report very high contra and zeroed the set; they all separate a subject or nominal/temporal phrase from the predicate/completion, or leave a clause provisional until a negation/quantity/scope word on the right arrives.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add explicit scope/completion check: Before assigning Contra, ask whether the right side supplies the main predicate or any scope‑changing element (negation, restriction/contrastive particle, numeric quantifier/comparative, or other material that can reverse or refine the left inference). If the continuation completes or can reverse the left fragment's truth/role, raise Contra substantially (treat the left stretch as provisional) and lower the target accordingly."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underweights cohesion loss when a cut splits a content head from its required complement or modifier (for example: noun + 'of' phrase, verb + object/particle, or an attachment that determines interpretation). Such splits produce low fidelity when translated independently.",
+    "evidence": "7 cases (e.g. en_us_1102, en_us_725, en_us_608, en_us_1192, en_us_1593, en_us_1143, en_us_1591) keep cuts that separate heads from essential complements (\"open container of medication\", \"atrium for a 17th-century convent\", verb/object or prepositional attachments) and the target sets avoid those cuts because cohesion falls measurably.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add head–complement cohesion rule: Treat any cut that would separate a content head (noun, verb, adjective) from an essential complement or prepositional modifier as low‑cohesion unless the right side is clearly parenthetical or optional. In practice, if cutting would leave a noun without its complement (e.g. 'container' separated from 'of X') or a verb without its object/particle, set Cohesion much lower and prefer not to cut there."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates contradiction risk when the remainder completes or revises the main predicate or supplies scope-changing material (negation/restriction, numeric quantifier, comparative, contrastive particle). It treats left-side fragments as safe even though the right-side continuation can force a reinterpretation of who/what acted or whether an event occurred.",
+   "evidence": "9 cases (e.g. en_us_1591, en_us_1427, en_us_1593, en_us_1192, en_us_1143, en_us_608, en_us_877, en_us_725, en_us_1102) show the policy keeping cuts that later report very high contra and zeroed the set; they all separate a subject or nominal/temporal phrase from the predicate/completion, or leave a clause provisional until a negation/quantity/scope word on the right arrives.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add explicit scope/completion check: Before assigning Contra, ask whether the right side supplies the main predicate or any scope‑changing element (negation, restriction/contrastive particle, numeric quantifier/comparative, or other material that can reverse or refine the left inference). If the continuation completes or can reverse the left fragment's truth/role, raise Contra substantially (treat the left stretch as provisional) and lower the target accordingly."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underweights cohesion loss when a cut splits a content head from its required complement or modifier (for example: noun + 'of' phrase, verb + object/particle, or an attachment that determines interpretation). Such splits produce low fidelity when translated independently.",
+   "evidence": "7 cases (e.g. en_us_1102, en_us_725, en_us_608, en_us_1192, en_us_1593, en_us_1143, en_us_1591) keep cuts that separate heads from essential complements (\"open container of medication\", \"atrium for a 17th-century convent\", verb/object or prepositional attachments) and the target sets avoid those cuts because cohesion falls measurably.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add head–complement cohesion rule: Treat any cut that would separate a content head (noun, verb, adjective) from an essential complement or prepositional modifier as low‑cohesion unless the right side is clearly parenthetical or optional. In practice, if cutting would leave a noun without its complement (e.g. 'container' separated from 'of X') or a verb without its object/particle, set Cohesion much lower and prefer not to cut there."
+   }
+  }
+ ]
+}

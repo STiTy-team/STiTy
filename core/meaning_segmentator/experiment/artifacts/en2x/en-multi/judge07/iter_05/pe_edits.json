@@ -1,0 +1,42 @@
+[
+ {
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "C7: Flag high-risk continuations: if the unseen right side can plausibly negate, reverse, or materially narrow the inference a listener makes from the left fragment, assign a high Contra (close to 1) unless the left side already fully and unambiguously fixes the claim. Examples of high-risk continuations include beginnings or contents with negation (not, never, cannot), restrictive scope markers (only, instead, rather than), clause-final resolvers or temporal qualifiers (respectively, as a result, in 2020), or auxiliaries/particles that change truth conditions. Treat such candidate cuts as unsafe even when surface cohesion looks acceptable."
+   },
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "C8: Function-word fragments: if a cut would leave the left segment ending in a light/function word (determiner, preposition, auxiliary, lone demonstrative, or a short pronoun) and the right side must immediately supply the lexical head or complement for basic interpretation, reduce Cohesion (penalize the cut). Prefer cuts that either isolate safe function fragments (so the following content can supply the head) or that keep a head together with its required dependents."
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 645
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -449
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edit 1: 없는 id 'C7'"
+  ]
+ }
+]

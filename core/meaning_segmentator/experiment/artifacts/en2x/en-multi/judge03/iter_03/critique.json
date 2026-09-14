@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt systematically underestimates how unacceptable a cut is when the remainder contains the clause’s predicate, negation, scope-setter, or other material that completes or reverses the meaning of the left fragment — cuts that leave a dependent or misleading fragment should get very low scores.",
+    "evidence": "Observed in 12 cases (multiple budgets of the same sentences plus several different sentences). In each, the policy kept markers whose standalone H was near zero and whose contra was near 1.0 (examples: fragments like a named person followed by ‘finished in fourth,’ or a clause split so that ‘cannot be made’ is separated). All share the same symptom: the right-hand side supplies the key predicate/negation/scope that makes the left fragment true or false, so the cut alone is misleading and should be ranked very low.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add explicit test and decision rule: At each marker, always ask whether the remainder (the text after the cut) supplies the main predicate, a negation/limiting operator, or any scope-setting complement that the left fragment needs to be a complete, non-misleading claim. If the remainder provides the clause’s main verb, its negation/qualification, or an exclusive exception that would change the truth or interpretation of the left fragment when that left fragment is read alone, treat contra as very high and/or cohesion as very low so that target ≈ 0. To check this, mentally read the left piece by itself: if that isolated fragment would be false, incomplete, or would assert something the full sentence later undoes, score the cut near the bottom of the sentence ranking. Example (showing intended scoring behaviour):\nInput: \"Michele Bachmann finished in fourth, <SEG:?> fifth, and sixth place respectively.\"  \nDesired output (illustrative): mark the cut before \"fifth\" with a very low integer so it is ranked last (e.g. <SEG:02>) because the remainder completes/changes the claim."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt systematically underestimates how unacceptable a cut is when the remainder contains the clause’s predicate, negation, scope-setter, or other material that completes or reverses the meaning of the left fragment — cuts that leave a dependent or misleading fragment should get very low scores.",
+   "evidence": "Observed in 12 cases (multiple budgets of the same sentences plus several different sentences). In each, the policy kept markers whose standalone H was near zero and whose contra was near 1.0 (examples: fragments like a named person followed by ‘finished in fourth,’ or a clause split so that ‘cannot be made’ is separated). All share the same symptom: the right-hand side supplies the key predicate/negation/scope that makes the left fragment true or false, so the cut alone is misleading and should be ranked very low.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add explicit test and decision rule: At each marker, always ask whether the remainder (the text after the cut) supplies the main predicate, a negation/limiting operator, or any scope-setting complement that the left fragment needs to be a complete, non-misleading claim. If the remainder provides the clause’s main verb, its negation/qualification, or an exclusive exception that would change the truth or interpretation of the left fragment when that left fragment is read alone, treat contra as very high and/or cohesion as very low so that target ≈ 0. To check this, mentally read the left piece by itself: if that isolated fragment would be false, incomplete, or would assert something the full sentence later undoes, score the cut near the bottom of the sentence ranking. Example (showing intended scoring behaviour):\nInput: \"Michele Bachmann finished in fourth, <SEG:?> fifth, and sixth place respectively.\"  \nDesired output (illustrative): mark the cut before \"fifth\" with a very low integer so it is ranked last (e.g. <SEG:02>) because the remainder completes/changes the claim."
+   }
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00748,
+  "lo": -0.02312,
+  "hi": 0.0082,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Condensed and tightened [Core Principles] to make room for the explicit predicate/negation/scope test while preserving the two-judgment procedure and semantic guidance — this keeps the intended behavior but reduces verbosity.",
+  "Added the explicit predicate/negation/scope decision rule into [Core Principles] (per the critique) so cuts that leave the clause's main predicate, negation, or scope-setter to the remainder are treated as very bad (target ≈ 0).",
+  "Removed the weakest example (the 'Humans ... waves' case) from [Examples] to offset length added by the new decision rule and keep the overall prompt within the size budget.",
+  "Tightened example spacing and preserved Input/Output forms; kept the Michele example illustrating the predicate-completion failure requested by the critique."
+ ],
+ "findings": [
+  "The prompt systematically underestimates how unacceptable a cut is when the remainder contains the clause’s predicate, negation, scope-setter, or other material that completes or reverses the meaning of the left fragment — cuts that leave a dependent or misleading fragment should get very low scores."
+ ]
+}

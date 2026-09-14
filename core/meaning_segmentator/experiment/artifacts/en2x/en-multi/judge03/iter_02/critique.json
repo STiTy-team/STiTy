@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates cohesion loss when a cut separates a fragment from the clause material that completes its main predicate, negation, quantifier, or scope — i.e. when one side lacks the finite verb/negation/complement or the scoping element that the other side supplies.",
+    "evidence": "Shows in 9 cases (many repeats of the politician list, the poisoning sentence, the airfare example, the coalition sentence, and the jargon sentence). In each, the policy kept cuts that left an unfinished predicate, a negation or scope-maker, or a quantifier on one side; those single-boundary measurements have very low H (near 0) and high contra, whereas targets avoid cutting off the clause-completing material.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Before scoring each marker explicitly ask: would either side, taken alone, be missing the clause's main truth‑conditional content because the remainder supplies the finite verb/negation/quantifier/complement or a scoping connective? If yes, mark cohesion low (and/or contra high). In practice: treat any cut that leaves an open predicate, a separated negation/ability/modality, an unfinished comparative/quantifier scope, or the completion of a coordinated predicate as damaging to composition."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt prefers keeping long nominal chunks intact and thus misses opportunities to make earlier micro-cuts inside noun phrases that would preserve later predicate/argument cohesion; it fails to prefer splitting modifiers/titles when that prevents creating a later fragment that cannot stand alone.",
+    "evidence": "Shows in 6 cases (all variants of the politician/name-list examples). Targets consistently add cuts inside long titles/names so the final predicate and coordinated list items remain whole; policies that keep the full title produce low per-cut H later. This pattern recurs across different budgets.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When a choice must trade off keeping a multiword nominal intact versus preserving a complete verb phrase or list-clause later, prefer small cuts that isolate modifiers/titles (i.e. split off premodifiers or honorifics) if that prevents leaving the later clause incomplete. Concretely: if splitting the noun phrase lets the adjacent predicate keep its arguments and scope, raise the score of the earlier micro-cut and lower the score of the cut that would leave the predicate fragmentary."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates cohesion loss when a cut separates a fragment from the clause material that completes its main predicate, negation, quantifier, or scope — i.e. when one side lacks the finite verb/negation/complement or the scoping element that the other side supplies.",
+   "evidence": "Shows in 9 cases (many repeats of the politician list, the poisoning sentence, the airfare example, the coalition sentence, and the jargon sentence). In each, the policy kept cuts that left an unfinished predicate, a negation or scope-maker, or a quantifier on one side; those single-boundary measurements have very low H (near 0) and high contra, whereas targets avoid cutting off the clause-completing material.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Before scoring each marker explicitly ask: would either side, taken alone, be missing the clause's main truth‑conditional content because the remainder supplies the finite verb/negation/quantifier/complement or a scoping connective? If yes, mark cohesion low (and/or contra high). In practice: treat any cut that leaves an open predicate, a separated negation/ability/modality, an unfinished comparative/quantifier scope, or the completion of a coordinated predicate as damaging to composition."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt prefers keeping long nominal chunks intact and thus misses opportunities to make earlier micro-cuts inside noun phrases that would preserve later predicate/argument cohesion; it fails to prefer splitting modifiers/titles when that prevents creating a later fragment that cannot stand alone.",
+   "evidence": "Shows in 6 cases (all variants of the politician/name-list examples). Targets consistently add cuts inside long titles/names so the final predicate and coordinated list items remain whole; policies that keep the full title produce low per-cut H later. This pattern recurs across different budgets.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When a choice must trade off keeping a multiword nominal intact versus preserving a complete verb phrase or list-clause later, prefer small cuts that isolate modifiers/titles (i.e. split off premodifiers or honorifics) if that prevents leaving the later clause incomplete. Concretely: if splitting the noun phrase lets the adjacent predicate keep its arguments and scope, raise the score of the earlier micro-cut and lower the score of the cut that would leave the predicate fragmentary."
+   }
+  }
+ ]
+}

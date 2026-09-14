@@ -1,0 +1,66 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows can reverse, negate, restrict, or materially change the claim made when the left fragment is read alone. Look for negation, contrast, exclusive exceptions, opposite outcomes, or later modal/temporal framing. Estimate contra as a probability 0.0–1.0.\n\n   Explicit catastrophic-cut rule: If cutting here would (a) leave the left side as an apparent assertion that a negator, modal, or scope-changing phrase on the right would reverse or materially change, (b) separate a verb from its required complement/object/particle, or (c) interrupt a completing prepositional/time/path phrase or the final element(s) of an enumerated predicate, then treat this cut as very poor. Concretely: raise contra near 1.0 and set cohesion very low so target ≈ 0. Do not rely on punctuation alone."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so separately translated pieces would fail to compose. Common risks: splitting predicate from object/complement, detaching a head noun from required modifiers/possessives, breaking a verb+particle or multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces.\n\n   Referential-isolation guidance: If the cut cleanly isolates a referential unit (a title/role phrase or a proper name) so both sides contain their heads and are independently interpretable, raise cohesion—such cuts often translate well separately. Test: would each side read as a self-contained referent without the other? If yes, score the cut comparatively high."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": 301
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": 347
+   }
+  ],
+  "result_chars": 9300,
+  "errors": [
+   "길이 초과: 9300 > 8664"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows can reverse, negate, restrict, or materially change the claim made when the left fragment is read alone. Estimate contra as a probability 0.0–1.0.\n\n   Catastrophic-cut rule: If cutting here would (a) leave the left side as an apparent assertion that a negator, modal, or scope-changing phrase on the right would reverse or materially change it, (b) separate a verb from its required complement/object/particle, or (c) interrupt a completing prepositional/time/path span or the final element(s) of an enumerated predicate, then treat this cut as very poor. Concretely: raise contra near 1.0 and set cohesion very low so target ≈ 0. Do not rely on punctuation alone to justify such a cut."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: splitting a predicate from its object/complement, detaching a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or separating quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces.\n\n   Referential-isolation guidance: If the cut cleanly isolates a referential unit (a title/role phrase or a proper name) so both sides contain their heads and are independently interpretable, raise cohesion—such cuts often translate well separately. Test: would each side read as a self-contained referent without the other? If yes, score the cut comparatively high."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": 212
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": 365
+   }
+  ],
+  "result_chars": 9229,
+  "errors": [
+   "길이 초과: 9229 > 8664"
+  ]
+ }
+]

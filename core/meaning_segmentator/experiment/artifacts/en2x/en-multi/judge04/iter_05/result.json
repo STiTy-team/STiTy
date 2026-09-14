@@ -1,0 +1,24 @@
+{
+ "iter": 5,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00137,
+  "lo": -0.01564,
+  "hi": 0.0124,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "replace C3 — consolidated and tightened the guidance on when later material can 'contra' the left fragment and added a Parallel-list / respectively test to flag cuts that depend on remainder-provided indexing or pairing (addresses the parallel-list finding).",
+  "replace C5 — strengthened the Incomplete-predicate / multiword-frame rule and clarified the Detached-head / modifier rule; condensed the list of cohesion risks so the rules are actionable and concise (addresses the incomplete-predicate and detached-head findings).",
+  "replace C6 — shortened and focused the reminder to always apply both judgments and to consider English proposition-building at every marker.",
+  "delete C8 — removed now-redundant separate test because its content was merged into C5.",
+  "delete C9 — removed now-redundant separate test because its content was merged into C5.",
+  "delete E1 — removed the largest example to keep the prompt within the character budget after adding the new rule text."
+ ],
+ "findings": [
+  "The prompt underestimates cuts that break parallel correspondences (lists mapped by \"respectively\", paired results, or parallel measurements): even if the left fragment reads as a grammatical clause, the remainder can supply the indexing that assigns values to earlier items and thus materially change truth.",
+  "The prompt fails to penalize cuts that leave an incomplete predicate, separable verb construction, or multiword prepositional chain: when the left side lacks the complement/particle or the right side supplies the verb's core argument/scope, the cut produces a fragment that cannot stand on its own.",
+  "The prompt under-penalizes cuts that detach a syntactic head from essential modifiers or titles (honorifics, multiword names, postmodifiers): separating a head from its determiners/titles or splitting a multiword name often prevents correct independent translation and composition."
+ ]
+}

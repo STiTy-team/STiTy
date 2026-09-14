@@ -1,0 +1,225 @@
+[
+ {
+  "iter": 1,
+  "adopted": false,
+  "reason": [
+   "길이 초과: 9253 > 9084"
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predic",
+    "now": "1) Incomplete-predicate / standalone-assertion test: Would the left chunk, read "
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "was": "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an",
+    "now": "2) Detached-head / essential-modifier test: Would the cut separate a syntactic h"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.01419,
+   "lo": -0.02852,
+   "hi": 1e-05,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Replace C7 with a consolidated, concise pair of tests that capture both the incomplete-predicate/list concern and the bound-span (tight semantic span) issue, and add the exception for short labels/name parts — to address the critique that cuts sometimes split required complements or tightly bonded phrases while over-penalizing name parts.",
+   "Delete C8 (old Incomplete-predicate/list unit) because its content is folded into the new C7 and to reduce prompt size.",
+   "Delete C9 (old Detached-head/modifier unit) because its content is replaced by the bound-span test in the new C7.",
+   "Delete C10 (redundant summary sentence) because its guidance is merged into the new consolidated test unit."
+  ],
+  "findings": [
+   "The model fails to mark cuts that break syntactically required complements, multiword prepositional/temporal chains, or list items as bad. Question to ask at a candidate cut: does either side end in a phrase that syntactically or semantically requires material on the other side to form a complete predicate, complement, prepositional/temporal chain, or coordinated list? If yes, raise contra and lower cohesion (treat the cut as very poor).",
+   "The model over-penalizes cuts that split titles, honorifics, or name parts and so avoids useful small cuts there. Question to ask: is the fragment a short, self-explanatory premodifier or name component (titles, honorifics, name parts) that can be translated independently and then joined without changing scope or attachment? If yes, do not automatically collapse cohesion for a 'detached head'; assess its true translatability."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "Two explicit tests to apply at each marker and use to bias cohesion and contra:",
+    "now": "Two explicit tests to apply at each marker and use to bias cohesion and contra: "
+   },
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predic",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "C9",
+    "kind": "delete",
+    "was": "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "C10",
+    "kind": "delete",
+    "was": "If both tests flag the cut, the cut is very poor; score it near the bottom.",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": -0.03774,
+   "lo": -0.05354,
+   "hi": -0.02228,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Replace C3 to force explicit penalization when a left fragment, taken alone, asserts a proposition whose truth/scope depends on words to the right — addresses the finding that the model underestimates how later material can overturn or complete earlier claims.",
+   "Paraphrase C5 to keep the cohesion judgement but shorten and focus its guidance (still asks to check argument structure, attachments, and scope crossings) — frees space while preserving meaning.",
+   "Replace C7 with an operational, consolidated pair of tests that make the incomplete-predicate/list and detached-head/modifier checks actionable, and add a narrowly scoped exception for short name/title parts — addresses the finding that the tests were not applied forcefully enough and that titles/name parts were over-penalized.",
+   "Delete C8 and C9 because their content is folded into the new operational test unit (C7) and they had low evidence/critic hits.",
+   "Delete C10 as redundant after consolidating the tests into C7."
+  ],
+  "findings": [
+   "The prompt underestimates how much a following phrase can overturn or complete an apparent assertion on the left: it often treats a left fragment that reads like a finished claim as a safe cut even when the remainder (enumeration, complement, negation, or scope-bearing clause) will materially change that claim.",
+   "The prompt does not forcefully apply the incomplete-predicate / detached-head tests to list items and predicate complements: it sometimes leaves list fragments or separated predicates that result in high measured contradiction or very low cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "   - Decide whether what follows the cut can reverse, negate, restrict, or mater",
+    "now": "   - Explicitly penalize cuts that leave the left fragment asserting a propositi"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "was": "   - Judge whether essential argument structure, attachment, or scope relations ",
+    "now": "   - Judge whether essential argument structure, attachment, or scope relations "
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "Two explicit tests to apply at each marker and use to bias cohesion and contra:",
+    "now": "Two operational tests to apply at every marker (use these to bias cohesion and c"
+   },
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predic",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "C9",
+    "kind": "delete",
+    "was": "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "C10",
+    "kind": "delete",
+    "was": "If both tests flag the cut, the cut is very poor; score it near the bottom.",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": false,
+  "delta": {
+   "mean": -0.02001,
+   "lo": -0.03224,
+   "hi": -0.0079,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "gain": {
+   "mean": -0.02001,
+   "lo": -0.03224,
+   "hi": -0.0079,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Deleted large Example E1 to free space (it had v0 evidence and was the largest example).",
+   "Inserted new Core Principles unit C11 after C6 to require explicit 'standalone-claim' and 'list-mapping' tests at every marker, per the critique showing these risks were under-addressed."
+  ],
+  "findings": [
+   "The prompt underestimates cuts that leave an apparent standalone claim (an incomplete predicate, a subject without its verb/object, or a list-item that reads like an assertion). Ask at each marker: “If the left fragment were read alone, would it assert a complete fact or assignment that the remainder could negate, reassign, or complete?” If yes, treat the marker as very risky (raise contra sharply and/or set cohesion very low).",
+   "The prompt fails to treat boundaries inside enumerations or mapped lists (assignments across multiple antecedents) as especially dangerous. Ask: “Does the left fragment assign an element, ordinal, quantity, or role within a larger list that the remainder will distribute or remap (the kind of construction that yields 'respectively' or paired assignments)?” If yes, increase contra because the left fragment is likely misleading when isolated."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+    "now": ""
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "Always make both judgments at every marker. Think about how English builds propo",
+    "now": "C11: At every marker explicitly test for standalone-claim risk and for list-mapp"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "adopted": false,
+  "delta": {
+   "mean": -0.01823,
+   "lo": -0.03168,
+   "hi": -0.0038,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "gain": {
+   "mean": -0.01823,
+   "lo": -0.03168,
+   "hi": -0.0038,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Replace C2 to force explicit, concrete guidance: penalize cuts that leave a left fragment as a standalone/asserted claim (e.g., unfinished predicate, final list item, scope-bearing temporal/modal), raising contra toward 1.0 and lowering cohesion toward 0 when the remainder is semantically required — addresses the boundary-failure finding that such cuts were under-detected.",
+   "Delete E4 (low-evidence example) to free prompt space so the stricter C2 guidance can be added without exceeding the size budget."
+  ],
+  "findings": [
+   "The prompt under-detects cuts that leave a left fragment as a plausible but incomplete claim — e.g., a partial outcome, an unfinished predicate, or a fragment of an enumerated/result list — where the remainder completes, qualifies, or reverses that claim. In these situations the remainder should almost always be treated as highly contradictory (raise contra toward 1.0) and cohesion as very low, because the left piece read alone is misleading or semantically incomplete."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "1) Does what follows the cut overturn, negate, limit, or materially change the t",
+    "now": "1) Does what follows the cut overturn, negate, limit, or materially change the c"
+   },
+   {
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+    "now": ""
+   }
+  ]
+ }
+]

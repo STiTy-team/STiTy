@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer routinely treats items of a coordinated list, ordinal enumerations, or phrases that rely on a later 'closure' word (e.g. 'respectively', numeric/ordinal continuations, paired list completions) as if they were self-contained. It fails to ask whether the left fragment is an incomplete list item whose meaning depends on the following material, so cuts that split enumerations or 'item + rest' constructions get scored as much better than they are.",
+    "evidence": "Occurs across 9 cases here (notably the multiple variants of the Gingrich sentence, the 'fourth, fifth, and sixth, respectively' splits; the 'Symptoms ... as vomiting ... that an immediate diagnosis' split; 'wooden wheels were replaced by iron wheels' split; splits inside numeric/price lists such as 'pay up to four times ... and eleven times ...'; and cuts before 'meanings' in the 'infectious and contagious ... meanings' example). In all these, the dropped markers have very low H or very high contra when evaluated alone, showing the pattern is recurrent.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "List-item/respective-closure rule: If the left chunk is an element of a coordination/enumeration (numbers, ordinals, comma‑separated items) or if a later token like “respectively” or a paired numeric/ordinal phrase completes semantics, treat the left chunk as an incomplete list item. Mark cohesion very low and/or raise contra substantially — a list element without its completion should rarely score high."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer underestimates how often the remainder materially changes the truth or force of an earlier fragment (contra). It too often relies on apparent surface completeness and gives too-high cohesion instead of raising contra when the following material supplies the main clause's temporal/modal/frame/negation or disambiguating attachment.",
+    "evidence": "Visible in 7+ cases (examples: splitting 'Bachmann finished in fourth,' vs the rest where contra ≈ 0.98; cutting before 'to the past' in the time sentence where contra ≈ 0.94; splitting 'remaining inmates stayed in' where contra ≈ 0.9976; other instances where the policy kept cuts whose contra is large). The dropped positions show high measured contra even though the policy kept them, indicating contra was systematically under‑weighted.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Material-change (contra) checklist: Always ask — could the remainder add negation/limitation/modality/temporal frame or otherwise reverse or qualify the claim made so far? If yes, assign a high contra (close to 1) and reduce the target proportionally. Treat scope-supplying subordinate clauses, 'that' clauses, modifiers that govern truth, and list-completions as strong signals to raise contra."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer routinely treats items of a coordinated list, ordinal enumerations, or phrases that rely on a later 'closure' word (e.g. 'respectively', numeric/ordinal continuations, paired list completions) as if they were self-contained. It fails to ask whether the left fragment is an incomplete list item whose meaning depends on the following material, so cuts that split enumerations or 'item + rest' constructions get scored as much better than they are.",
+   "evidence": "Occurs across 9 cases here (notably the multiple variants of the Gingrich sentence, the 'fourth, fifth, and sixth, respectively' splits; the 'Symptoms ... as vomiting ... that an immediate diagnosis' split; 'wooden wheels were replaced by iron wheels' split; splits inside numeric/price lists such as 'pay up to four times ... and eleven times ...'; and cuts before 'meanings' in the 'infectious and contagious ... meanings' example). In all these, the dropped markers have very low H or very high contra when evaluated alone, showing the pattern is recurrent.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "List-item/respective-closure rule: If the left chunk is an element of a coordination/enumeration (numbers, ordinals, comma‑separated items) or if a later token like “respectively” or a paired numeric/ordinal phrase completes semantics, treat the left chunk as an incomplete list item. Mark cohesion very low and/or raise contra substantially — a list element without its completion should rarely score high."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer underestimates how often the remainder materially changes the truth or force of an earlier fragment (contra). It too often relies on apparent surface completeness and gives too-high cohesion instead of raising contra when the following material supplies the main clause's temporal/modal/frame/negation or disambiguating attachment.",
+   "evidence": "Visible in 7+ cases (examples: splitting 'Bachmann finished in fourth,' vs the rest where contra ≈ 0.98; cutting before 'to the past' in the time sentence where contra ≈ 0.94; splitting 'remaining inmates stayed in' where contra ≈ 0.9976; other instances where the policy kept cuts whose contra is large). The dropped positions show high measured contra even though the policy kept them, indicating contra was systematically under‑weighted.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Material-change (contra) checklist: Always ask — could the remainder add negation/limitation/modality/temporal frame or otherwise reverse or qualify the claim made so far? If yes, assign a high contra (close to 1) and reduce the target proportionally. Treat scope-supplying subordinate clauses, 'that' clauses, modifiers that govern truth, and list-completions as strong signals to raise contra."
+   }
+  }
+ ]
+}

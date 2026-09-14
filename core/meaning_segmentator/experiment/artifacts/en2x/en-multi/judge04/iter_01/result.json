@@ -1,0 +1,20 @@
+{
+ "iter": 1,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01466,
+  "lo": 0.00071,
+  "hi": 0.02834,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "replace C3 — tightened and condensed the guidance on when later material 'contra' the left fragment; kept the probability framing but removed verbose examples to save space.",
+  "replace C5 — shortened the cohesion guidance to a focused list of common structural risks and a concise instruction to estimate cohesion as a 0–100 fidelity percentage.",
+  "replace C6 — merged and compressed the routine-reminder and the two explicit tests (incomplete-predicate/list and detached-head/modifier) into a compact, actionable form so the tests are always applied; reduced length to meet size budget."
+ ],
+ "findings": [
+  "The policy underrates the harm of cuts that leave an incomplete predicate or an unfinished item of a coordination/list: if the left piece ends inside a list item or before the clause that completes the verb phrase, that left piece is not self-contained and its cohesion score should be very low (or contra high).",
+  "The policy underestimates cohesion loss when a cut separates modifiers/function words from the head they attach to (titles, premodifiers, determiners, or multiword names): fragments missing their head or their essential modifier produce mistranslations when translated separately."
+ ]
+}

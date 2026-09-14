@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 from .agents_distill import SECTIONS, check_skeleton, replace_section  # noqa: F401  (재수출)
 
@@ -40,6 +41,12 @@ You receive cases. Each case is one sentence at one budget T and contains:
   kept but the policy did not ("added"). Each carries the per-boundary measurements: "H" (the
   same product measured with that cut ALONE), "H_pct" (its rank inside the sentence, 0-100),
   "cohesion", "contra".
+- "latency_bin": the average piece length of this cut set ("≤3" = pieces of about 3 words).
+  Cases are spread across bins on purpose. In the short bins good cut sets are NECESSARILY dense;
+  a finding that makes the prompt avoid cutting near other cuts in general will hurt those bins.
+- "contra_kill": true when a single policy cut with a high contradiction ("policy_worst_contra")
+  is what zeroed the set. Such a case says "this one position is overturned later" — not that
+  short pieces or dense cuts are bad. Do not turn it into a general caution about cutting.
 - "error_type":
     "boundary"    the policy kept a position whose own H is low. It is a bad cut on its own
                   terms, and the prompt should have seen that from the source alone.
@@ -71,30 +78,45 @@ Return ONLY JSON:
 }
 At most 3 findings. Order them by how many cases they explain."""
 
-ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iteration at a time.
+ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iteration at a time, by EDITING
+numbered units of it. You do not rewrite the prompt — code applies your edits.
+
+What you can edit:
+- "units" lists every unit of [Core Principles] (ids C1, C2, ...; one line each) and of
+  [Examples] (ids E1, E2, ...; one Input/Output pair each), with its exact text, its length
+  ("chars") and its evidence:
+    "origin"         "v0", or the iteration whose ADOPTED revision introduced this text
+    "adopted_delta"  the measured gain of that adoption, "adopted_ci_lo" its lower bound
+                     (null for v0 units — nothing was measured about them one by one)
+    "critic_hits"    how many times the critic has asked to change this unit
+- Every other section — [Role], [Scoring Rules], [Decision Procedure], [Output Rules] — stays as
+  it is. [Scoring Rules] states how the target was measured, and the measurement did not change.
 
 Hard constraints:
-1. Keep the section skeleton exactly: [Role], [Core Principles], [Scoring Rules],
-   [Decision Procedure], [Output Rules], [Examples]. Same headers, same order.
-2. Copy [Scoring Rules] and [Output Rules] verbatim from the current prompt. Both are frozen —
-   [Scoring Rules] states how the target was measured, and the measurement did not change.
-3. Do not add scoring conditions anywhere. Judgements belong in [Core Principles], worked cases
-   in [Examples].
-4. SIZE: at most __BUDGET__ characters (current prompt is __CURLEN__). The size is held fixed
-   across iterations: if a new line supersedes an old one, REPLACE it rather than append, and cut
-   weaker material to make room for what you add. You cannot count characters reliably, so code
-   counts them for you: the input field "size" gives every section's length, and "editable_cap"
-   is the most [Core Principles] and [Examples] may hold together. Trust those numbers.
-   If "size_feedback" is present, "your_previous_attempt" was over the limit by "over_by"
-   characters: keep its changes, and cut at least that much from the sections in "cut_from".
-5. At most 8 examples. If you add one, remove a weaker one. Examples keep the Input/Output form
-   with <SEG:?> at every candidate position in the input.
-6. Never write token lists or punctuation rules. A token condition fires on a handful of
+1. Judgements belong in [Core Principles], worked cases in [Examples]. Do not add scoring
+   conditions anywhere.
+2. SIZE: the edited prompt must be at most __BUDGET__ characters (it is __CURLEN__ now) — a small
+   growth over the last adopted prompt. You cannot count characters reliably, so code counts
+   them. When what you want to add does not fit, make room by EVIDENCE, not by length:
+   - replace or delete the units with the weakest evidence first: "v0" units with no measured
+     gain, and above all units the critic keeps faulting (high "critic_hits");
+   - keep units whose "adopted_ci_lo" is positive — their gain was measured — unless you
+     paraphrase them shorter with the same meaning;
+   - paraphrasing any unit shorter without changing what it asks is allowed. Mark such an edit
+     "kind": "paraphrase"; an edit that adds or changes a judgement is "kind": "change".
+   If "size_feedback" is present, "your_previous_edits" produced a prompt "over_by" characters
+   too long, and "your_edits" shows the exact change each of those edits made. Return a complete
+   new edit list whose result fits.
+3. At most 8 examples. An example unit is exactly "Input: ..." then a newline and "Output: ...",
+   with <SEG:?> at every candidate position in the input and integers in the output.
+4. Never write token lists or punctuation rules. A token condition fires on a handful of
    positions while the measurement is taken at every position; a judgement applies everywhere.
-7. Never name or depend on a specific target language pair beyond what the current prompt says.
-8. Consult the attempt history: entries with "adopted": false were measured and rejected. Do not
-   repeat them or minor variants — move in a different direction.
-9. Every change must be traceable to a finding in the critique.
+5. Never name or depend on a specific target language pair beyond what the current prompt says.
+6. Consult the attempt history: entries with "adopted": false were measured and rejected. Do not
+   repeat them or minor variants — move in a different direction. Each entry lists its "edits":
+   which unit it changed ("was", the unit's text at the time) and into what ("now"). Do not make
+   the same change to the same units again, even reworded.
+7. Every change must be traceable to a finding in the critique.
 
 What the model is judged on: the cut sets its scores produce are translated piece by piece and
 scored against the source as a whole, with the worst contradiction risk in the set applied as a
@@ -102,10 +124,18 @@ penalty. Only the ORDER of the numbers inside one sentence is ever read.
 
 Return ONLY JSON:
 {
-  "sections_changed": ["[Core Principles]", "..."],
   "changelog": ["one line per change, stating what and why"],
-  "prompt": "the complete revised prompt text"
-}"""
+  "edits": [
+    {"op": "replace", "id": "C3", "kind": "change", "text": "the complete new text of that unit"},
+    {"op": "replace", "id": "C1", "kind": "paraphrase", "text": "the same judgement, shorter"},
+    {"op": "delete", "id": "E4"},
+    {"op": "insert_after", "id": "C5", "kind": "change", "text": "a new unit"}
+  ]
+}
+"insert_after" with id "C0" or "E0" inserts at the TOP of that section, and "C_end" or "E_end"
+appends at the BOTTOM — use those instead of inventing an id past the last one. Ids are renumbered
+every iteration, so name only ids from the "units" list you were given. Each existing id may be
+replaced or deleted at most once."""
 
 WRITER_SYSTEM = """You write the system prompt for a scoring model used in streaming speech translation.
 
@@ -248,16 +278,229 @@ def size_brief(prompt: str, budget: int) -> dict:
             "editable_cap": budget - fixed}
 
 
-def size_feedback(draft: str, current: str, budget: int) -> dict:
-    """길이 초과로 반려된 초안을 한 번 되돌려 보낼 때 붙이는 실측."""
-    now, was = section_sizes(draft), section_sizes(current)
-    return {"counted_by": "code", "attempt_total": len(draft), "budget": budget,
-            "over_by": len(draft) - budget,
-            "sections": {h: {"attempt": now[h], "current": was[h], "change": now[h] - was[h]}
-                         for h in SECTIONS},
-            "cut_from": sorted(EDITABLE, key=lambda h: now[h] - was[h], reverse=True)}
-
-
 def only_too_long(errs: list[str]) -> bool:
     """반려 사유가 길이 초과뿐인가 — 그때만 되돌려 보낼 값어치가 있다."""
     return bool(errs) and all(e.startswith("길이 초과") for e in errs)
+
+
+# ── 편집 단위 — PE 는 프롬프트를 다시 쓰지 않고 번호 붙은 단위를 고친다 ─────────
+# judge03 에서 초과량을 알려 되돌려도 다섯 번 중 네 번이 상한을 못 맞췄다(두 번은 더 길어졌다).
+# 1만 자를 통째로 다시 쓰는 한 길이는 모델 손을 떠난다. 편집만 받고 적용과 길이는 코드가 한다.
+
+UNIT_TAGS = {"[Core Principles]": "C", "[Examples]": "E"}
+MAX_EXAMPLES = 8
+
+
+def _items(prompt: str, header: str) -> list[str | None]:
+    """섹션 본문을 단위 목록으로. 빈 줄은 None 으로 남겨 재조립 때 모양을 지킨다.
+    [Core Principles] 는 한 줄이 한 단위, [Examples] 는 "Input:" 줄부터 다음 "Input:" 이나
+    빈 줄 전까지가 한 단위다."""
+    body = section_of(prompt, header)[len(header):].strip("\n")
+    items: list[str | None] = []
+    for line in body.split("\n"):
+        if not line.strip():
+            items.append(None)
+        elif (header == "[Examples]" and items and items[-1] is not None
+              and not line.lstrip().startswith("Input:")):
+            items[-1] += "\n" + line
+        else:
+            items.append(line)
+    return items
+
+
+def edit_units(prompt: str) -> list[dict]:
+    """PE 입력용 — 고칠 수 있는 단위마다 id·섹션·실제 글자 수·본문."""
+    out = []
+    for header, tag in UNIT_TAGS.items():
+        k = 0
+        for it in _items(prompt, header):
+            if it is None:
+                continue
+            k += 1
+            out.append({"id": f"{tag}{k}", "section": header, "chars": len(it), "text": it})
+    return out
+
+
+def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]:
+    """편집 목록을 적용한다 — (새 프롬프트 또는 None, 건너뛴 편집, 적용한 편집의 글자 증감).
+
+    잘못된 편집은 **그것만 건너뛰고** 나머지를 적용한다. 묶음을 통째로 반려하면 멀쩡한 편집까지
+    버려지고 이터 하나가 날아간다 (judge07 iter 1: 편집 넷 중 하나가 없는 id 를 가리켜 전부 반려).
+    남는 편집이 하나도 없을 때만 None 이다."""
+    if not isinstance(edits, list) or not edits:
+        return None, [{"edit": None, "id": None, "reason": "edits 가 비었다"}], []
+    known = {u["id"]: u["text"] for u in edit_units(prompt)}
+    last = {t: 0 for t in UNIT_TAGS.values()}
+    for uid in known:
+        last[uid[0]] = max(last[uid[0]], int(uid[1:]))
+
+    def anchor(uid: str) -> str | None:
+        """`insert_after` 가 가리키는 자리. "C0"/"E0" 은 섹션 맨 앞, "C_end"/"E_end" 는 맨 끝이고,
+        **마지막 id 바로 다음 번호**(C6 까지 있을 때의 C7)도 맨 끝으로 읽는다 — 끝에 붙이는 자리가
+        없어서 PE 가 그 번호를 만들어 썼고, judge07 은 그 때문에 다섯 이터 중 넷을 날렸다."""
+        if uid in known:
+            return uid
+        m = re.fullmatch(r"([CE])(?:_(?:end|last)|(\d+))", uid or "")
+        if not m or m.group(1) not in last:
+            return None
+        tag, num = m.group(1), m.group(2)
+        if num is None:
+            return f"{tag}_end"
+        n = int(num)
+        if n == 0:
+            return f"{tag}0"
+        return f"{tag}_end" if n == last[tag] + 1 else None
+    plan: dict[str, str | None] = {}
+    inserts: dict[str, list[str]] = {}
+    errs: list[dict] = []
+    deltas: list[dict] = []
+    for n, e in enumerate(edits):
+        if not isinstance(e, dict):
+            errs.append({"edit": n, "id": None, "reason": "객체가 아니다"})
+            continue
+        op, uid = e.get("op"), str(e.get("id") or "")
+        text = e["text"].strip("\n") if isinstance(e.get("text"), str) else ""
+        # PE 가 단위 id 를 본문 머리에 써 넣는다("C11: At every marker …", judge05 iter 4). 그 글자는
+        # 분절기 프롬프트에 그대로 들어가므로 뗀다.
+        text = re.sub(r"^\s*[CE]\d+\s*[:.)\-–]\s*", "", text)
+        if op not in ("replace", "delete", "insert_after"):
+            errs.append({"edit": n, "id": uid, "reason": f"모르는 op {op!r}"})
+            continue
+        at = anchor(uid) if op == "insert_after" else (uid if uid in known else None)
+        if at is None:
+            errs.append({"edit": n, "id": uid, "reason": f"없는 id {uid!r}"})
+            continue
+        if op != "delete":
+            if not text.strip():
+                errs.append({"edit": n, "id": uid, "reason": "text 가 비었다"})
+                continue
+            if any(h in text for h in SECTIONS):
+                errs.append({"edit": n, "id": uid, "reason": "text 에 섹션 헤더가 들어 있다"})
+                continue
+            if uid.startswith("E") and not (text.lstrip().startswith("Input:")
+                                            and "\nOutput:" in text):
+                errs.append({"edit": n, "id": uid,
+                             "reason": "예시는 'Input: …' 다음 줄 'Output: …' 한 쌍이어야 한다"})
+                continue
+        kind = "delete" if op == "delete" else str(e.get("kind") or "change")
+        if op == "insert_after":
+            inserts.setdefault(at, []).append(text)
+            deltas.append({"edit": n, "op": op, "id": at, "kind": kind,
+                           "chars_change": len(text) + 1})
+            continue
+        if uid in plan:
+            errs.append({"edit": n, "id": uid, "reason": "같은 단위를 두 번 고친다"})
+            continue
+        plan[uid] = None if op == "delete" else text
+        change = -(len(known[uid]) + 1) if op == "delete" else len(text) - len(known[uid])
+        deltas.append({"edit": n, "op": op, "id": uid, "kind": kind, "chars_change": change})
+    if not deltas:
+        return None, errs, deltas
+    out = prompt
+    for header, tag in UNIT_TAGS.items():
+        gap = [""] if header == "[Examples]" else []        # 예시 쌍 사이는 빈 줄
+        lines: list[str] = []
+        for t in inserts.get(f"{tag}0", []):
+            lines += [t] + gap
+        k = 0
+        for it in _items(prompt, header):
+            if it is None:
+                lines.append("")
+                continue
+            k += 1
+            uid = f"{tag}{k}"
+            kept = plan.get(uid, it)
+            if kept is not None:
+                lines.append(kept)
+            for t in inserts.get(uid, []):
+                lines += gap + [t]
+        for t in inserts.get(f"{tag}_end", []):
+            lines += gap + [t]
+        body = re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip("\n")
+        out = replace_section(out, header, f"{header}\n{body}")
+    # replace_section 은 섹션 뒤에 빈 줄을 붙인다. 마지막 섹션이면 파일 끝 모양이 바뀌어, 아무것도
+    # 안 바꾼 편집도 길이가 늘어 상한에 걸린다(judge03 v0: 8,664 → 8,666). 원래 끝을 되살린다.
+    tail = prompt[len(prompt.rstrip("\n")):]
+    return out.rstrip("\n") + tail, errs, deltas
+
+
+def parse_edits(blob: dict, current: str, budget: int) -> tuple[
+        str | None, list[str], str | None, list[dict], list[dict]]:
+    """PE 편집 출력을 적용하고 검증한다 — (프롬프트 또는 None, 변경목록 또는 사유, 적용 결과,
+    편집별 증감, 건너뛴 편집). 적용 결과는 검증에 떨어져도 돌려준다 — 길이 피드백을 만들 때 쓴다."""
+    blob = blob or {}
+    draft, skipped, deltas = apply_edits(current, blob.get("edits"))
+    if draft is None:
+        return (None, [s["reason"] for s in skipped] or ["적용할 편집이 없다"], None, deltas,
+                skipped)
+    n_ex = sum(1 for u in edit_units(draft)
+               if u["section"] == "[Examples]" and u["text"].lstrip().startswith("Input:"))
+    if n_ex > MAX_EXAMPLES:
+        return None, [f"예시 {n_ex}개 > {MAX_EXAMPLES}"], draft, deltas, skipped
+    pr, note = parse_prompt({"prompt": draft, "changelog": blob.get("changelog")}, current, budget)
+    return pr, note, draft, deltas, skipped
+
+
+def init_provenance(prompt: str) -> dict[str, dict]:
+    """단위 본문 → 출처 기록. 시작 프롬프트의 단위는 전부 v0 이고 따로 잰 이득이 없다."""
+    return {u["text"]: {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None,
+                        "critic_hits": 0} for u in edit_units(prompt)}
+
+
+def adopt_provenance(prov: dict, new_prompt: str, it: int, gain: dict) -> dict:
+    """채택된 개정본의 출처표. 그대로 남은 단위는 기록을 잇고, 새로 들어오거나 바뀐 단위는 이번
+    채택의 Δ 를 받는다(압축한 단위도 새 문구로 다시 잰 것이다). 사라진 단위의 기록은 버린다."""
+    out = {}
+    for u in edit_units(new_prompt):
+        t = u["text"]
+        out[t] = prov[t] if t in prov else {
+            "origin": f"iter {it}", "adopted_delta": round(gain["mean"], 4),
+            "adopted_ci_lo": round(gain["lo"], 4), "critic_hits": 0}
+    return out
+
+
+def _head(s: str) -> str:
+    """앞부분 비교용 — 글머리 기호·번호를 떼고 공백·대소문자를 맞춘다."""
+    return " ".join(re.sub(r"^[\s\-*•\d).:]+", "", s).lower().split())
+
+
+def count_critic_hits(prov: dict, findings: list[dict]) -> None:
+    """Critic 이 고치라고 가리킨 단위의 지적 횟수를 올린다. finding 의 edit.target 은 "고칠 줄의
+    첫 몇 단어" 라 앞부분 일치로 찾는다. 너무 짧은 target 은 엉뚱한 줄에 걸리므로 센다지 않는다."""
+    for f in findings:
+        tgt = _head((f.get("edit") or {}).get("target") or "")[:40]
+        if len(tgt) < 12:
+            continue
+        for text, rec in prov.items():
+            if _head(text).startswith(tgt):
+                rec["critic_hits"] += 1
+
+
+def edit_summary(prompt: str, edits) -> list[dict]:
+    """이력용 — 어느 단위를 무엇으로 바꿨는지 짧게. 이력에 사유·Δ 만 있으면 PE 가 기각된 편집을
+    알아보지 못하고 되풀이한다(judge05 iter 2~4). id 는 이터마다 다시 매겨지므로 원문 앞부분을 싣는다."""
+    known = {u["id"]: u["text"] for u in edit_units(prompt)}
+    out = []
+    for e in edits or []:
+        if not isinstance(e, dict):
+            continue
+        op = e.get("op")
+        out.append({"op": op, "id": e.get("id"),
+                    "kind": "delete" if op == "delete" else (e.get("kind") or "change"),
+                    "was": known.get(str(e.get("id")), "")[:80],
+                    "now": (e.get("text") or "")[:80]})
+    return out
+
+
+def units_with_provenance(prompt: str, prov: dict) -> list[dict]:
+    """PE 입력용 — 편집 단위에 출처 기록을 붙인다."""
+    blank = {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None, "critic_hits": 0}
+    return [{**u, **prov.get(u["text"], blank)} for u in edit_units(prompt)]
+
+
+def edit_feedback(draft: str, current: str, budget: int, deltas: list[dict]) -> dict:
+    """길이만 넘은 편집을 한 번 되돌려 보낼 때 붙이는 실측."""
+    units = sorted(edit_units(current), key=lambda u: -u["chars"])
+    return {"counted_by": "code", "result_total": len(draft), "budget": budget,
+            "over_by": len(draft) - budget, "your_edits": deltas,
+            "largest_units": [{"id": u["id"], "chars": u["chars"]} for u in units[:6]]}

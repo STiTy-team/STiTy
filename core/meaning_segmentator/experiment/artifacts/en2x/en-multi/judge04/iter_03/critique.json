@@ -1,0 +1,52 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt under-detects cuts that leave an incomplete proposition or a truncated list item: it treats fragments that need arguments, complements, or continuation as if they were self-contained. Question to ask at a marker: does the left fragment, read alone, leave an action/relation, prepositional phrase, complement clause, quantified phrase, or enumerated item that requires the following words to complete its meaning? If yes, the cut is very poor and should get a very low score.",
+    "evidence": "13 cases show this (all provided cases: en_us_1591 ×6, en_us_1427 ×2, en_us_1593, en_us_1514, en_us_608, en_us_877, en_us_1192). In each, the policy kept cuts whose per-boundary H was near zero and whose contra was near one because the left chunk was an unfinished predicate, a prepositional/complement fragment, or a truncated list item (e.g. verb without its object, a PP missing its endpoint, a complement clause without its main clause, or a single item split from an ongoing enumeration).",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Incomplete-predicate/list test:",
+     "text": "1) Incomplete-predicate/list test: For every marker, ask whether the left piece — when read on its own — leaves an action, relation, prepositional/argument slot, complement clause, quantified expression, or an enumerated list item that cannot be understood or that would be misleading without the following words. If the left fragment requires the remainder to supply a verb’s object/argument, the object or endpoint of a preposition, the completion of a complement clause, the continuation of a list, or the scope of a quantifier/negation, then treat cohesion as very low and raise contra sharply. In such cases the cut should be scored near the bottom. Always bias both cohesion down and contra up when any such dependency is present."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt insufficiently penalizes cuts that detach core lexical heads from their essential modifiers or multiword identity expressions (titles, roles, multiword names). Question to ask at a marker: would separating this spot split an identity/title/role or leave a noun without the modifiers that determine its reference? If so, the joined translations will fail to preserve who/what is being referred to and cohesion should be reduced.",
+    "evidence": "6 cases (the six en_us_1591 instances) repeatedly show the model keeping cuts that split titles, roles, or multiword names across the marker; the better offline targets keep cuts that preserve the integrity of title+name or break before the whole title, which raises cohesion substantially.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "2) Detached-head/modifier test:",
+     "text": "2) Detached-head/modifier test: At each marker, decide whether the cut would separate a lexical head (person/place/thing) from modifiers or elements that determine its identity or grammatical role — for example, detaching a title from the person it modifies, splitting a multiword proper name, or removing determiners/modifiers that fix reference. If a cut would force a translator to guess an attachment or to split an identity-bearing phrase, sharply reduce cohesion; such cuts are poor even if the fragments look grammatical in isolation."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt under-detects cuts that leave an incomplete proposition or a truncated list item: it treats fragments that need arguments, complements, or continuation as if they were self-contained. Question to ask at a marker: does the left fragment, read alone, leave an action/relation, prepositional phrase, complement clause, quantified phrase, or enumerated item that requires the following words to complete its meaning? If yes, the cut is very poor and should get a very low score.",
+   "evidence": "13 cases show this (all provided cases: en_us_1591 ×6, en_us_1427 ×2, en_us_1593, en_us_1514, en_us_608, en_us_877, en_us_1192). In each, the policy kept cuts whose per-boundary H was near zero and whose contra was near one because the left chunk was an unfinished predicate, a prepositional/complement fragment, or a truncated list item (e.g. verb without its object, a PP missing its endpoint, a complement clause without its main clause, or a single item split from an ongoing enumeration).",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Incomplete-predicate/list test:",
+    "text": "1) Incomplete-predicate/list test: For every marker, ask whether the left piece — when read on its own — leaves an action, relation, prepositional/argument slot, complement clause, quantified expression, or an enumerated list item that cannot be understood or that would be misleading without the following words. If the left fragment requires the remainder to supply a verb’s object/argument, the object or endpoint of a preposition, the completion of a complement clause, the continuation of a list, or the scope of a quantifier/negation, then treat cohesion as very low and raise contra sharply. In such cases the cut should be scored near the bottom. Always bias both cohesion down and contra up when any such dependency is present."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt insufficiently penalizes cuts that detach core lexical heads from their essential modifiers or multiword identity expressions (titles, roles, multiword names). Question to ask at a marker: would separating this spot split an identity/title/role or leave a noun without the modifiers that determine its reference? If so, the joined translations will fail to preserve who/what is being referred to and cohesion should be reduced.",
+   "evidence": "6 cases (the six en_us_1591 instances) repeatedly show the model keeping cuts that split titles, roles, or multiword names across the marker; the better offline targets keep cuts that preserve the integrity of title+name or break before the whole title, which raises cohesion substantially.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "2) Detached-head/modifier test:",
+    "text": "2) Detached-head/modifier test: At each marker, decide whether the cut would separate a lexical head (person/place/thing) from modifiers or elements that determine its identity or grammatical role — for example, detaching a title from the person it modifies, splitting a multiword proper name, or removing determiners/modifiers that fix reference. If a cut would force a translator to guess an attachment or to split an identity-bearing phrase, sharply reduce cohesion; such cuts are poor even if the fragments look grammatical in isolation."
+   }
+  }
+ ]
+}

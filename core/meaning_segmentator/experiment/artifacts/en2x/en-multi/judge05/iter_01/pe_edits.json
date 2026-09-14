@@ -1,0 +1,74 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "1) Incomplete-predicate / standalone-assertion test: Ask whether the left chunk, read on its own, already makes a concrete factual claim (for example: a finite verb that appears complete, an ordinal or numbered/list item, or a statement of outcome) whose truth or interpretation depends on material that follows. If YES, treat the cut as very high-risk: either set cohesion near 0 or raise contra toward 1. Operational guidance: when the left fragment alone asserts a specific outcome that the continuation can modify or negate (e.g. an item of an enumeration later resolved by 'respectively', or a verb whose required complement/argument appears later), increase contra strongly (for example >= 0.8) or set cohesion very low. This rule overrides small-surface preferences for short pieces; prefer to keep such assertions attached to their disambiguating material."
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "text": "2) Detached-head / essential-modifier test: Ask whether the cut would separate a syntactic head (person/place name, noun-phrase head, finite verb) from an essential modifier, determiner, title element, or other attached words that determine its interpretation. If YES, sharply reduce cohesion (treat the joined-translation fidelity as very low). Operational guidance: splitting inside multiword names or titles, or between a determiner/modifier and its head, usually yields unfaithful isolated translations; prefer cuts that leave atomic names/titles or head+modifier units intact, or else score such internal cuts near the bottom."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 649
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "chars_change": 465
+   }
+  ],
+  "result_chars": 9766,
+  "errors": [
+   "길이 초과: 9766 > 9084"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "1) Incomplete-predicate / standalone-assertion test: Would the left chunk, read on its own, already make a concrete factual claim (for example: a finished finite predicate, an ordinal or numbered/list item, or a stated outcome) whose truth or interpretation depends on material that follows? If YES, treat the cut as high-risk: set cohesion very low or raise contra strongly (for example >= 0.8). Operational rule: prefer to keep such assertions attached to their disambiguating continuation rather than cutting them off."
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "text": "2) Detached-head / essential-modifier test: Would the cut separate a syntactic head (person/place name, noun-phrase head, finite verb) from an essential modifier, determiner, title element, or other attached words that determine its interpretation? If YES, sharply reduce cohesion: splitting inside multiword names/titles or between a determiner/modifier and its head usually yields unfaithful isolated translations, so score such internal cuts near the bottom."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 306
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "chars_change": 295
+   }
+  ],
+  "result_chars": 9253,
+  "errors": [
+   "길이 초과: 9253 > 9084"
+  ]
+ }
+]

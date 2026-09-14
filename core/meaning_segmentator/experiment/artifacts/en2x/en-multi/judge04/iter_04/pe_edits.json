@@ -1,0 +1,66 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Always ask: could the remainder add negation, limitation, modality, a temporal frame, or otherwise reverse or qualify the earlier claim? Treat scope‑supplying subordinators (that/if/when), post‑modifier clauses, and list completions as strong signals to raise contra close to 1. Estimate contra as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Look for split predicates and objects, detached head nouns or essential modifiers/determiners/titles, broken multiword predicates, or separated quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces. List-item/respective-closure rule: if the left chunk is an element of a coordination/enumeration (commas, ordinals, numbers) or awaits a later paired/‘respectively’ closure that completes its meaning, treat that left chunk as an incomplete list item — sharply reduce cohesion and/or raise contra."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": 42
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": 182
+   }
+  ],
+  "result_chars": 8876,
+  "errors": [
+   "길이 초과: 8876 > 8664"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Judge whether what follows the cut can reverse, negate, restrict, or materially change the claim in the left fragment when that fragment is read alone. Always ask: could the remainder add negation, limitation, modality, a temporal frame, or otherwise reverse or qualify the earlier claim? Treat scope‑supplying subordinators (that/if/when), post‑modifier clauses, and list completions as strong signals to raise contra. Estimate contra as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: splitting a predicate from its object/complement, detaching a head noun from required modifiers/determiners/titles, breaking a multiword predicate or particle, or separating quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces. List‑item/respective‑closure rule: if the left chunk is an element of a coordination/enumeration (commas, ordinals, numbers) or awaits a later paired/“respectively” closure that completes its meaning, treat it as an incomplete list item—sharply reduce cohesion and/or raise contra. Apply the incomplete‑predicate/list test and the detached‑head/modifier test at every marker."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": 35
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": 305
+   }
+  ],
+  "result_chars": 8992,
+  "errors": [
+   "길이 초과: 8992 > 8664"
+  ]
+ }
+]

@@ -1,0 +1,51 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates contra when the remainder supplies essential qualification, scope, or completion — i.e. when the left fragment, though grammatical, would be misleading or changed in truth/value without the following words (qualifiers, temporal/modal frame, 'respectively'/enumeration alignment, or an object/complement supplied later).",
+    "evidence": "Observed in 9 cases (en_us_1591, en_us_1427, en_us_608, en_us_1192, en_us_1143, en_us_1593, en_us_877, en_us_802, en_us_1514). In each, the policy kept a cut that left a fragment that looked self-contained syntactically but whose meaning is materially altered by what follows (high measured contra; contra_kill=true). They share continuations that provide key qualifications, scope, or completion (e.g. lists ended by 'respectively', predicates completed by an object/phrase, or material that supplies the main clause's temporal/modal frame).",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Does what follows the cut overturn, negate, limit, or materially change the truth or claim made so far?",
+     "text": "1) Does what follows the cut overturn, negate, limit, materially change, or supply essential qualification/scope/completion for the claim made so far?  - Treat as contra not only explicit negation or contradiction but any continuation that would change what a reader/listener reasonably infers from the left fragment read alone. Examples of such continuations: scope or frame-setting words (temporal/modality), enumerations resolved by 'respectively' or indexing, qualifiers that flip an apparent assertion, or any main-clause object/complement or attachment that completes an apparently finished claim. If the remainder would materially change the truth-value, implication, or pragmatic interpretation of the left fragment when read on its own, set contra high (near 1.0)."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The incomplete-predicate / detached-head tests are applied too narrowly: cuts that separate a verb (finite or auxiliary), preposition, or other head from the phrase that completes it often get treated as acceptable when they should be scored very low for cohesion and/or high for contra.",
+    "evidence": "Seen across many cases where policy cuts split predicates or attachments (en_us_1591, en_us_1593, en_us_608, en_us_1192, en_us_1427, en_us_1143, en_us_1514, en_us_339, en_us_877). In each, the problematic cut detached a predicate or an attachment (verb without its object/complement, preposition without its object, or modifier detached from its head), producing low measured H or high contra even though the left side looked syntactically complete.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Additional explicit checklist (apply at every marker):\n- Flag as very poor (reduce cohesion sharply / raise contra) any cut that leaves a finite verb, copula, auxiliary, or preposition without its expected object/complement or attachment (e.g. verb with no object, preposition with no complement, separable particle whose partner is on the right).\n- Flag splits inside enumerations where an ordinal, index word, or 'respectively' will resolve which item maps to which antecedent.\n- Flag cuts that detach a multiword title/name from its core modifier if translating the halves separately would force a risky attachment decision.\n\nExample (Input / Output illustrating the intended judgment):\nInput: We <SEG:?> experience <SEG:?> time <SEG:?> as <SEG:?> a <SEG:?> series <SEG:?> of <SEG:?> events.\nOutput (illustrative scoring decision): We <SEG:90> experience <SEG:10> time <SEG:100> as <SEG:05> a <SEG:04> series <SEG:03> of <SEG:02> events.\n(Reason: cutting after 'experience' or 'time' detaches predicates or their complements and should receive very low cohesion/high-contra scores.)"
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates contra when the remainder supplies essential qualification, scope, or completion — i.e. when the left fragment, though grammatical, would be misleading or changed in truth/value without the following words (qualifiers, temporal/modal frame, 'respectively'/enumeration alignment, or an object/complement supplied later).",
+   "evidence": "Observed in 9 cases (en_us_1591, en_us_1427, en_us_608, en_us_1192, en_us_1143, en_us_1593, en_us_877, en_us_802, en_us_1514). In each, the policy kept a cut that left a fragment that looked self-contained syntactically but whose meaning is materially altered by what follows (high measured contra; contra_kill=true). They share continuations that provide key qualifications, scope, or completion (e.g. lists ended by 'respectively', predicates completed by an object/phrase, or material that supplies the main clause's temporal/modal frame).",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Does what follows the cut overturn, negate, limit, or materially change the truth or claim made so far?",
+    "text": "1) Does what follows the cut overturn, negate, limit, materially change, or supply essential qualification/scope/completion for the claim made so far?  - Treat as contra not only explicit negation or contradiction but any continuation that would change what a reader/listener reasonably infers from the left fragment read alone. Examples of such continuations: scope or frame-setting words (temporal/modality), enumerations resolved by 'respectively' or indexing, qualifiers that flip an apparent assertion, or any main-clause object/complement or attachment that completes an apparently finished claim. If the remainder would materially change the truth-value, implication, or pragmatic interpretation of the left fragment when read on its own, set contra high (near 1.0)."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The incomplete-predicate / detached-head tests are applied too narrowly: cuts that separate a verb (finite or auxiliary), preposition, or other head from the phrase that completes it often get treated as acceptable when they should be scored very low for cohesion and/or high for contra.",
+   "evidence": "Seen across many cases where policy cuts split predicates or attachments (en_us_1591, en_us_1593, en_us_608, en_us_1192, en_us_1427, en_us_1143, en_us_1514, en_us_339, en_us_877). In each, the problematic cut detached a predicate or an attachment (verb without its object/complement, preposition without its object, or modifier detached from its head), producing low measured H or high contra even though the left side looked syntactically complete.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Additional explicit checklist (apply at every marker):\n- Flag as very poor (reduce cohesion sharply / raise contra) any cut that leaves a finite verb, copula, auxiliary, or preposition without its expected object/complement or attachment (e.g. verb with no object, preposition with no complement, separable particle whose partner is on the right).\n- Flag splits inside enumerations where an ordinal, index word, or 'respectively' will resolve which item maps to which antecedent.\n- Flag cuts that detach a multiword title/name from its core modifier if translating the halves separately would force a risky attachment decision.\n\nExample (Input / Output illustrating the intended judgment):\nInput: We <SEG:?> experience <SEG:?> time <SEG:?> as <SEG:?> a <SEG:?> series <SEG:?> of <SEG:?> events.\nOutput (illustrative scoring decision): We <SEG:90> experience <SEG:10> time <SEG:100> as <SEG:05> a <SEG:04> series <SEG:03> of <SEG:02> events.\n(Reason: cutting after 'experience' or 'time' detaches predicates or their complements and should receive very low cohesion/high-contra scores.)"
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates contradiction/cohesion risk when a cut leaves a provisional assertion — i.e. when the left side ends before the sentence's main predicate, an essential complement, or a disambiguating modifier (relative clause, 'that'/'of which' clause, required complement or verb phrase) that determines who/what or whether an event actually holds.",
+    "evidence": "13 cases show the same symptom: the policy kept cuts that stop immediately after a subject or noun phrase or just before the verb/complement, and those single boundaries produced very high contra and destroyed the set score. They share cuts that leave an incomplete assertion whose truth or referent is resolved only by the following material (examples include splits before the main verb, before required complements, or before relative/appositive material).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the left segment ends where the upcoming material supplies the main predicate, a required complement, or a disambiguating modifier for the head noun (including relative clauses or 'that'/'of which' clauses), treat Contra as high (near 1) and lower the marker's target accordingly. Example (illustrative):\nInput: Eventually, wooden <SEG:?> wheels <SEG:?> were <SEG:?> replaced <SEG:?> by <SEG:?> iron.\nGood judgement: assign a very low score to the cut after 'wooden' because the following verb phrase overturns or completes the assertion."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt misses the special risk of splitting inside enumerations or mapped lists (including constructions with 'respectively' or parallel rank assignments): an early cut can leave a listener with a misleading assignment that the later items will reassign.",
+    "evidence": "3 cases (subset of the above) involve coordinated lists or mapped enumerations where the policy kept a cut that let a partial clause assert a rank or assignment later redistributed by the continuation; those cuts yield very high contra and ruin the joined translation.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: A, B and C <SEG:?> finished <SEG:?> in first, <SEG:?> second, <SEG:?> and <SEG:?> third place, respectively.\nBad cut to avoid: A, B and C finished in first, <SEG:100> second, ... — cutting so a single name is presented as having a final assigned rank before the rest of the mapping appears. Rule: mark positions that produce provisional role/rank assignments (especially when 'respectively', ordinal lists, or parallel constructions follow) with high Contra so they rank very low."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates contradiction/cohesion risk when a cut leaves a provisional assertion — i.e. when the left side ends before the sentence's main predicate, an essential complement, or a disambiguating modifier (relative clause, 'that'/'of which' clause, required complement or verb phrase) that determines who/what or whether an event actually holds.",
+   "evidence": "13 cases show the same symptom: the policy kept cuts that stop immediately after a subject or noun phrase or just before the verb/complement, and those single boundaries produced very high contra and destroyed the set score. They share cuts that leave an incomplete assertion whose truth or referent is resolved only by the following material (examples include splits before the main verb, before required complements, or before relative/appositive material).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the left segment ends where the upcoming material supplies the main predicate, a required complement, or a disambiguating modifier for the head noun (including relative clauses or 'that'/'of which' clauses), treat Contra as high (near 1) and lower the marker's target accordingly. Example (illustrative):\nInput: Eventually, wooden <SEG:?> wheels <SEG:?> were <SEG:?> replaced <SEG:?> by <SEG:?> iron.\nGood judgement: assign a very low score to the cut after 'wooden' because the following verb phrase overturns or completes the assertion."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt misses the special risk of splitting inside enumerations or mapped lists (including constructions with 'respectively' or parallel rank assignments): an early cut can leave a listener with a misleading assignment that the later items will reassign.",
+   "evidence": "3 cases (subset of the above) involve coordinated lists or mapped enumerations where the policy kept a cut that let a partial clause assert a rank or assignment later redistributed by the continuation; those cuts yield very high contra and ruin the joined translation.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: A, B and C <SEG:?> finished <SEG:?> in first, <SEG:?> second, <SEG:?> and <SEG:?> third place, respectively.\nBad cut to avoid: A, B and C finished in first, <SEG:100> second, ... — cutting so a single name is presented as having a final assigned rank before the rest of the mapping appears. Rule: mark positions that produce provisional role/rank assignments (especially when 'respectively', ordinal lists, or parallel constructions follow) with high Contra so they rank very low."
+   }
+  }
+ ]
+}

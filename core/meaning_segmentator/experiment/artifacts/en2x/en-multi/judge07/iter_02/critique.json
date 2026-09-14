@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer systematically underestimates the risk of cutting immediately after a 'provisional' head: positions that leave a claim, scope, or reference unfinished (e.g. clause-introducing heads, complements awaiting a negation or disambiguating verb/object, contrastive 'but', or mid-list separators) are often scored too highly. In other words: if the left fragment invites a concrete interpretation that the right fragment can reverse or complete, treat that cut as high-contradiction regardless of local fluency.",
+    "evidence": "Observed in a majority of cases (about 9–10 of 12): en_us_1427, en_us_1593, en_us_1192, en_us_1143, en_us_1102, en_us_608, en_us_877, en_us_1591, en_us_725. They share the pattern that the left side ends with a head that makes a listener draw a specific inference (an expectation of a diagnosis, a completed predicate, list membership/quantity, or a negation/completion) which the continuation then negates, completes, or materially alters; each policy cut had very high contra (≈0.87–0.99) and destroyed set quality.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add explicit provisional‑head test: At each marker, ask: \"Does the left stretch end with a head that makes a listener commit to a concrete interpretation that the immediate continuation can reverse, restrict, or complete?\" Examples of such heads: complementizers or clause introducers, verbs or auxiliaries lacking their object or complement, scope‑bearing words (negation/modality), contrastive conjunctions (but, however), and list enumerators that determine counts or ordering. If the answer is yes, set Contra high (near 1.0) even if the left fragment looks locally fluent; do not be swayed by surface cohesion alone. Explicitly compute target = cohesion × (1 − contra) and allow a very low target when contra is high."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer lets moderate-to-high cohesion scores drown out high contradiction risk: positions with plausible standalone phrasing (good cohesion) but where the continuation changes truth conditions are being ranked too high because cohesion is treated as the dominant signal rather than used only via the product formula.",
+    "evidence": "Seen across multiple cases where dropped policy cuts had decent cohesion (≈0.7–0.85) but very high contra (≈0.87–0.99), producing near-zero true utility (the product). The scorer appears to favor local fluency (cohesion) and fails to downrank cuts whose cohesion is nonzero but whose contra makes the product near zero (examples: en_us_1591, en_us_1427, en_us_1192, en_us_1593, en_us_1102).",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: Internal poisoning may not be immediately apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as vomiting <SEG:?> are <SEG:?> sufficiently general <SEG:?> that an immediate diagnosis <SEG:?> cannot be made.\nOutput (good): Internal poisoning may not be immediately apparent. <SEG:05> Symptoms, <SEG:02> such <SEG:01> as vomiting <SEG:04> are <SEG:03> sufficiently general that an immediate diagnosis cannot be made.\n\nComment: Do not reward a cut that leaves 'that an immediate diagnosis' separated from 'cannot be made'—although 'that an immediate diagnosis' reads fluently, the continuation reverses/negates the inference, so Contra→high and the cut must rank very low."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer systematically underestimates the risk of cutting immediately after a 'provisional' head: positions that leave a claim, scope, or reference unfinished (e.g. clause-introducing heads, complements awaiting a negation or disambiguating verb/object, contrastive 'but', or mid-list separators) are often scored too highly. In other words: if the left fragment invites a concrete interpretation that the right fragment can reverse or complete, treat that cut as high-contradiction regardless of local fluency.",
+   "evidence": "Observed in a majority of cases (about 9–10 of 12): en_us_1427, en_us_1593, en_us_1192, en_us_1143, en_us_1102, en_us_608, en_us_877, en_us_1591, en_us_725. They share the pattern that the left side ends with a head that makes a listener draw a specific inference (an expectation of a diagnosis, a completed predicate, list membership/quantity, or a negation/completion) which the continuation then negates, completes, or materially alters; each policy cut had very high contra (≈0.87–0.99) and destroyed set quality.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add explicit provisional‑head test: At each marker, ask: \"Does the left stretch end with a head that makes a listener commit to a concrete interpretation that the immediate continuation can reverse, restrict, or complete?\" Examples of such heads: complementizers or clause introducers, verbs or auxiliaries lacking their object or complement, scope‑bearing words (negation/modality), contrastive conjunctions (but, however), and list enumerators that determine counts or ordering. If the answer is yes, set Contra high (near 1.0) even if the left fragment looks locally fluent; do not be swayed by surface cohesion alone. Explicitly compute target = cohesion × (1 − contra) and allow a very low target when contra is high."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer lets moderate-to-high cohesion scores drown out high contradiction risk: positions with plausible standalone phrasing (good cohesion) but where the continuation changes truth conditions are being ranked too high because cohesion is treated as the dominant signal rather than used only via the product formula.",
+   "evidence": "Seen across multiple cases where dropped policy cuts had decent cohesion (≈0.7–0.85) but very high contra (≈0.87–0.99), producing near-zero true utility (the product). The scorer appears to favor local fluency (cohesion) and fails to downrank cuts whose cohesion is nonzero but whose contra makes the product near zero (examples: en_us_1591, en_us_1427, en_us_1192, en_us_1593, en_us_1102).",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: Internal poisoning may not be immediately apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as vomiting <SEG:?> are <SEG:?> sufficiently general <SEG:?> that an immediate diagnosis <SEG:?> cannot be made.\nOutput (good): Internal poisoning may not be immediately apparent. <SEG:05> Symptoms, <SEG:02> such <SEG:01> as vomiting <SEG:04> are <SEG:03> sufficiently general that an immediate diagnosis cannot be made.\n\nComment: Do not reward a cut that leaves 'that an immediate diagnosis' separated from 'cannot be made'—although 'that an immediate diagnosis' reads fluently, the continuation reverses/negates the inference, so Contra→high and the cut must rank very low."
+   }
+  }
+ ]
+}

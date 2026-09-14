@@ -1,0 +1,71 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Sentences in the sample consistently place a nominal subject before a finite verb and then objects or complements (e.g. \"He trained...\", \"Apple CEO Steve Jobs unveiled...\").",
+  "register": "Edited encyclopedic / news-style written prose (formal, well-formed sentences, likely from reference or reportage).",
+  "fillers_and_hesitations": [
+    "um",
+    "uh",
+    "er",
+    "well",
+    "you know",
+    "I mean",
+    "like"
+  ],
+  "discourse_markers": [
+    "and",
+    "but",
+    "although",
+    "because",
+    "because of",
+    "if",
+    "while",
+    "once",
+    "after",
+    "for",
+    "of course",
+    "around",
+    "only",
+    "when",
+    "since"
+  ],
+  "clause_boundary_signals": [
+    "and",
+    "but",
+    "although",
+    "because",
+    "if",
+    "while",
+    "once",
+    "after",
+    "when",
+    "since",
+    "which",
+    "that",
+    "who",
+    "because of",
+    "for (subordinator sense)"
+  ],
+  "non_boundary_traps": [
+    "of",
+    "to",
+    "in",
+    "for (prepositional phrase)",
+    "and (coordination inside NPs: \"language and customs\")",
+    "or",
+    "'s (possessive)",
+    "the"
+  ],
+  "unstable_prefix_signals": [
+    "to",
+    "that",
+    "only",
+    "not",
+    "whether",
+    "if",
+    "after",
+    "as",
+    "because",
+    "for"
+  ],
+  "notes_for_prompt_writer": "Prefer to place <SEG> at clause boundaries introduced by subordinators (although, because, if, while, once, after) or at major coordinating conjunctions when they join independent clauses. Avoid splitting inside noun phrases (watch 'of', 'to', possessive '’s', and coordination inside NPs like 'X and Y'). Be cautious immediately after tokens listed as unstable prefixes — the syntactic role of preceding material is often revised by what follows. Expect formal, complete sentences rather than disfluent spoken fragments, so segmentation can assume grammatical clauses and relative clauses should stay attached to their noun heads."
+}

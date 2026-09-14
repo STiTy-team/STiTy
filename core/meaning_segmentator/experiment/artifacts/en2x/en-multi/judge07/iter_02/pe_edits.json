@@ -1,0 +1,111 @@
+[
+ {
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "C7: Provisional-head test: At each marker ask whether the left span ends with a head that makes a listener commit to a concrete interpretation the immediate continuation can reverse, restrict, or complete. Examples: clause introducers/complementizers, verbs or auxiliaries lacking their object/complement, negation or modality, contrastives (but/however), and list enumerators. If yes, raise Contra (near 1.0) even if surface cohesion looks good; compute target = cohesion × (1 − contra) and let high Contra drive the target down."
+   },
+   {
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "change",
+    "text": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> immediately <SEG:?> apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as <SEG:?> vomiting <SEG:?> are <SEG:?> sufficiently <SEG:?> general <SEG:?> that <SEG:?> an <SEG:?> immediate <SEG:?> diagnosis <SEG:?> cannot <SEG:?> be <SEG:?> made.\nOutput: Internal <SEG:45> poisoning <SEG:20> may <SEG:10> not <SEG:25> be <SEG:05> immediately <SEG:30> apparent. <SEG:100> Symptoms, <SEG:40> such <SEG:15> as <SEG:12> vomiting <SEG:35> are <SEG:22> sufficiently <SEG:18> general <SEG:08> that <SEG:06> an <SEG:07> immediate <SEG:03> diagnosis <SEG:01> cannot <SEG:02> be <SEG:04> made."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 527
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "change",
+    "chars_change": 652
+   }
+  ],
+  "result_chars": 10118,
+  "errors": [
+   "길이 초과: 10118 > 9384"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Determines whether the continuation forces reinterpreting who, what, or whether an event occurred; for example, when a later clause negates, restricts, or changes the referent. Cuts that leave earlier material liable to reversal should score low on this judgement."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Tests whether splitting the sentence separates dependents or attachments: modifiers, relative clauses, objects/complements, possessives, or prepositional phrases that belong to the other side. Also watch scope-bearing elements (negation, auxiliaries) and narrow-focus adverbials. If independent translation would orphan or misattach constituents, cohesion must be reduced."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "Apply both judgements at every inter-word position. Treat punctuation as attached to the preceding word and follow the corpus rule that certain punctuation characters never start a segment."
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "Provisional-head test: At each marker ask whether the left span ends with a head that makes a listener commit to a concrete interpretation the immediate continuation can reverse, restrict, or complete. Examples: clause introducers/complementizers, verbs or auxiliaries missing their object/complement, negation or modality, contrastives (but/however), and list enumerators. If yes, set Contra high (near 1.0) even if surface cohesion looks good; compute target = cohesion × (1 − contra) so high Contra drives the target down."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "change",
+    "text": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> immediately <SEG:?> apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as <SEG:?> vomiting <SEG:?> are <SEG:?> sufficiently <SEG:?> general <SEG:?> that <SEG:?> an <SEG:?> immediate <SEG:?> diagnosis <SEG:?> cannot <SEG:?> be <SEG:?> made.\nOutput: Internal <SEG:05> poisoning <SEG:02> may <SEG:10> not <SEG:15> be <SEG:04> immediately <SEG:20> apparent. <SEG:100> Symptoms, <SEG:30> such <SEG:08> as <SEG:06> vomiting <SEG:12> are <SEG:07> sufficiently <SEG:03> general <SEG:01> that <SEG:09> an <SEG:11> immediate <SEG:13> diagnosis <SEG:14> cannot <SEG:16> be <SEG:17> made."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -299
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -496
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -111
+   },
+   {
+    "edit": 3,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 526
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "E4",
+    "kind": "change",
+    "chars_change": 203
+   }
+  ],
+  "result_chars": 8761,
+  "errors": null
+ }
+]

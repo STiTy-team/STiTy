@@ -1,0 +1,30 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt under-detects cuts that leave a left fragment as a plausible but incomplete claim — e.g., a partial outcome, an unfinished predicate, or a fragment of an enumerated/result list — where the remainder completes, qualifies, or reverses that claim. In these situations the remainder should almost always be treated as highly contradictory (raise contra toward 1.0) and cohesion as very low, because the left piece read alone is misleading or semantically incomplete.",
+    "evidence": "12 cases (many variants of en_us_1591 plus en_us_1427, en_us_1593, en_us_1514, en_us_608, en_us_877, en_us_1192). All share the pattern that a cut leaves a left chunk that asserts an outcome/role/result or stops mid-predicate or mid-list (partial ranking, partial diagnosis, subject without its verb/complement, or a split inside a result phrase). Measured H for those cuts is near zero because the remainder supplies essential information or reverses implication, but the prompt kept/scored them too highly.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Does what follows the cut overturn,",
+     "text": "1) Does what follows the cut overturn, negate, limit, or materially change the claim made so far?  - In addition to the existing guidance, treat any cut as high-risk (set contra near 1.0 and cohesion near 0) whenever the remainder supplies the main clause verb/complement, an essential result or ordinal that completes a partial outcome, the last item of an enumerated result list, a final negation, or the scope-bearing temporal/modal frame for the left fragment. Concretely: if the left fragment, read alone, would assert a concrete result/role/measurement/ordinal or leave a predicate or list visibly unfinished, then the remainder is not optional but semantically required — raise contra sharply and lower cohesion accordingly. Only when the remainder merely adds optional descriptive detail (not needed to complete or to rescue the truth of the left fragment) should you apply the usual graded estimation."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt under-detects cuts that leave a left fragment as a plausible but incomplete claim — e.g., a partial outcome, an unfinished predicate, or a fragment of an enumerated/result list — where the remainder completes, qualifies, or reverses that claim. In these situations the remainder should almost always be treated as highly contradictory (raise contra toward 1.0) and cohesion as very low, because the left piece read alone is misleading or semantically incomplete.",
+   "evidence": "12 cases (many variants of en_us_1591 plus en_us_1427, en_us_1593, en_us_1514, en_us_608, en_us_877, en_us_1192). All share the pattern that a cut leaves a left chunk that asserts an outcome/role/result or stops mid-predicate or mid-list (partial ranking, partial diagnosis, subject without its verb/complement, or a split inside a result phrase). Measured H for those cuts is near zero because the remainder supplies essential information or reverses implication, but the prompt kept/scored them too highly.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Does what follows the cut overturn,",
+    "text": "1) Does what follows the cut overturn, negate, limit, or materially change the claim made so far?  - In addition to the existing guidance, treat any cut as high-risk (set contra near 1.0 and cohesion near 0) whenever the remainder supplies the main clause verb/complement, an essential result or ordinal that completes a partial outcome, the last item of an enumerated result list, a final negation, or the scope-bearing temporal/modal frame for the left fragment. Concretely: if the left fragment, read alone, would assert a concrete result/role/measurement/ordinal or leave a predicate or list visibly unfinished, then the remainder is not optional but semantically required — raise contra sharply and lower cohesion accordingly. Only when the remainder merely adds optional descriptive detail (not needed to complete or to rescue the truth of the left fragment) should you apply the usual graded estimation."
+   }
+  }
+ ]
+}

@@ -1,0 +1,408 @@
+{
+ "done": 5,
+ "prompt": "[Role]\nYou are a segmentation-and-scoring model. For a single English source sentence that already contains a <SEG:?> marker at every possible cut position, your job is to replace each ? with an integer 0–100 so the numbers rank the candidate cuts in the order that best matches the measured target described below.\n\n[Core Principles]\nAt every candidate cut ask two concrete meaning-focused questions about the source material on either side of the marker. These are the judgments you must make, repeatedly and everywhere in the sentence:\n\n1) Does what follows the cut overturn, negate, limit, or materially change the truth or claim made so far?  \n   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or later material that supplies the main clause's modal/temporal frame and would make the earlier fragment misleading. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch.\n\n2) If you translate the two sides separately and then join those translations in order, how well do they together render the whole source sentence? (Will the pieces compose?)  \n   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces.\n\nAlways make both judgments at every marker. Think about how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change the scope of a main clause. Do not apply token-based surface rules; apply the two semantic questions everywhere.\n\nTwo explicit tests to apply at each marker and use to bias cohesion and contra:\n1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predicate or an incomplete list item that only makes sense with the following words?\" If yes, treat cohesion as very low and/or raise contra.\n2) Detached-head/modifier test: \"Would either side lack its syntactic head or an essential modifier/determiner/title/multiword name?\" If yes, sharply reduce cohesion.\n\nIf both tests flag the cut, the cut is very poor; score it near the bottom.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n\nHow to produce a numeric score for each marker:\n- Mentally estimate cohesion on a 0–100 scale (higher = pieces compose well). This is the expected fidelity percentage of the joined, separately translated pieces.\n- Estimate contra as a probability between 0.0 and 1.0 (higher = greater chance the remainder contradicts or overturns the earlier stretch).\n- Compute target = cohesion * (1 - contra). Interpreted numerically, target ranges 0–100.\n- Convert the target to a distinct integer 0–100 for that marker (round normally). These integers are what you output and what will be used to rank markers within the sentence.\n- contra is a graded probability and may reduce the target smoothly; do not threshold contra into a binary flag or create tiers that override cohesion. The product is the only combination rule.\n\nRanking rules:\n- Use the full 0–100 integer range to establish a strict ordering among markers inside the sentence: every marker must receive a different integer. If two positions feel equal, decide which cut you prefer and score that one higher.\n- The absolute values only matter for ordering within the sentence; focus on correctly ordering cuts by expected target.\n\n[Decision Procedure]\nFor each marker, perform the two judgments (cohesion on 0–100; contra probability 0–1), compute target = cohesion * (1 - contra), round to an integer, and assign that integer to the marker. Ensure all markers in the sentence receive distinct integers; break any internal ties by adjusting values minimally while preserving the relative ordering you intended. Do not reason about how many cuts will be kept or about spacing—those are handled later.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.\nOutput: The <SEG:04> great <SEG:08> pyramid <SEG:12> was <SEG:16> created <SEG:20> to <SEG:24> honor <SEG:28> the <SEG:32> Pharaoh <SEG:36> Khufu, <SEG:100> and <SEG:40> many <SEG:44> of <SEG:48> the <SEG:52> smaller <SEG:56> pyramids, <SEG:95> tombs, <SEG:90> and <SEG:64> temples <SEG:68> were <SEG:85> built <SEG:72> to <SEG:76> honor <SEG:80> Khufu's <SEG:84> wives <SEG:88> and <SEG:92> family <SEG:96> members.\n\nInput: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extremely <SEG:?> Drug <SEG:?> Resistant <SEG:?> Tuberculosis <SEG:?> (XDR-TB) <SEG:?> in <SEG:?> the <SEG:?> South <SEG:?> African <SEG:?> region <SEG:?> KwaZulu-Natal.\nOutput: Dr. <SEG:03> Tony <SEG:07> Moll <SEG:11> discovered <SEG:15> the <SEG:19> Extremely <SEG:23> Drug <SEG:27> Resistant <SEG:31> Tuberculosis <SEG:100> (XDR-TB) <SEG:35> in <SEG:39> the <SEG:43> South <SEG:47> African <SEG:51> region <SEG:95> KwaZulu-Natal.\n\nInput: San <SEG:?> Francisco <SEG:?> is <SEG:?> also <SEG:?> one <SEG:?> of <SEG:?> the <SEG:?> best <SEG:?> places <SEG:?> in <SEG:?> the <SEG:?> nation <SEG:?> for <SEG:?> other <SEG:?> Asian <SEG:?> cuisine: <SEG:?> Korean, <SEG:?> Thai, <SEG:?> Indian, <SEG:?> and <SEG:?> Japanese.\nOutput: San <SEG:02> Francisco <SEG:06> is <SEG:10> also <SEG:14> one <SEG:18> of <SEG:22> the <SEG:26> best <SEG:30> places <SEG:34> in <SEG:38> the <SEG:42> nation <SEG:46> for <SEG:50> other <SEG:54> Asian <SEG:58> cuisine: <SEG:100> Korean, <SEG:80> Thai, <SEG:70> Indian, <SEG:60> and <SEG:40> Japanese.\n\nInput: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.\nOutput: Humans <SEG:05> can <SEG:10> be <SEG:15> affected <SEG:30> by <SEG:20> breathing <SEG:25> affected <SEG:18> water <SEG:22> taken <SEG:35> into <SEG:28> the <SEG:32> air <SEG:100> by <SEG:40> wind <SEG:50> and <SEG:60> waves.",
+ "history": [
+  {
+   "iter": 1,
+   "adopted": false,
+   "reason": [
+    "길이 초과: 9253 > 9084"
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C8",
+     "kind": "change",
+     "was": "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predic",
+     "now": "1) Incomplete-predicate / standalone-assertion test: Would the left chunk, read "
+    },
+    {
+     "op": "replace",
+     "id": "C9",
+     "kind": "change",
+     "was": "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an",
+     "now": "2) Detached-head / essential-modifier test: Would the cut separate a syntactic h"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": -0.01419,
+    "lo": -0.02852,
+    "hi": 1e-05,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "changelog": [
+    "Replace C7 with a consolidated, concise pair of tests that capture both the incomplete-predicate/list concern and the bound-span (tight semantic span) issue, and add the exception for short labels/name parts — to address the critique that cuts sometimes split required complements or tightly bonded phrases while over-penalizing name parts.",
+    "Delete C8 (old Incomplete-predicate/list unit) because its content is folded into the new C7 and to reduce prompt size.",
+    "Delete C9 (old Detached-head/modifier unit) because its content is replaced by the bound-span test in the new C7.",
+    "Delete C10 (redundant summary sentence) because its guidance is merged into the new consolidated test unit."
+   ],
+   "findings": [
+    "The model fails to mark cuts that break syntactically required complements, multiword prepositional/temporal chains, or list items as bad. Question to ask at a candidate cut: does either side end in a phrase that syntactically or semantically requires material on the other side to form a complete predicate, complement, prepositional/temporal chain, or coordinated list? If yes, raise contra and lower cohesion (treat the cut as very poor).",
+    "The model over-penalizes cuts that split titles, honorifics, or name parts and so avoids useful small cuts there. Question to ask: is the fragment a short, self-explanatory premodifier or name component (titles, honorifics, name parts) that can be translated independently and then joined without changing scope or attachment? If yes, do not automatically collapse cohesion for a 'detached head'; assess its true translatability."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C7",
+     "kind": "change",
+     "was": "Two explicit tests to apply at each marker and use to bias cohesion and contra:",
+     "now": "Two explicit tests to apply at each marker and use to bias cohesion and contra: "
+    },
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predic",
+     "now": ""
+    },
+    {
+     "op": "delete",
+     "id": "C9",
+     "kind": "delete",
+     "was": "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an",
+     "now": ""
+    },
+    {
+     "op": "delete",
+     "id": "C10",
+     "kind": "delete",
+     "was": "If both tests flag the cut, the cut is very poor; score it near the bottom.",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "adopted": false,
+   "delta": {
+    "mean": -0.03774,
+    "lo": -0.05354,
+    "hi": -0.02228,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "changelog": [
+    "Replace C3 to force explicit penalization when a left fragment, taken alone, asserts a proposition whose truth/scope depends on words to the right — addresses the finding that the model underestimates how later material can overturn or complete earlier claims.",
+    "Paraphrase C5 to keep the cohesion judgement but shorten and focus its guidance (still asks to check argument structure, attachments, and scope crossings) — frees space while preserving meaning.",
+    "Replace C7 with an operational, consolidated pair of tests that make the incomplete-predicate/list and detached-head/modifier checks actionable, and add a narrowly scoped exception for short name/title parts — addresses the finding that the tests were not applied forcefully enough and that titles/name parts were over-penalized.",
+    "Delete C8 and C9 because their content is folded into the new operational test unit (C7) and they had low evidence/critic hits.",
+    "Delete C10 as redundant after consolidating the tests into C7."
+   ],
+   "findings": [
+    "The prompt underestimates how much a following phrase can overturn or complete an apparent assertion on the left: it often treats a left fragment that reads like a finished claim as a safe cut even when the remainder (enumeration, complement, negation, or scope-bearing clause) will materially change that claim.",
+    "The prompt does not forcefully apply the incomplete-predicate / detached-head tests to list items and predicate complements: it sometimes leaves list fragments or separated predicates that result in high measured contradiction or very low cohesion."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C3",
+     "kind": "change",
+     "was": "   - Decide whether what follows the cut can reverse, negate, restrict, or mater",
+     "now": "   - Explicitly penalize cuts that leave the left fragment asserting a propositi"
+    },
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "paraphrase",
+     "was": "   - Judge whether essential argument structure, attachment, or scope relations ",
+     "now": "   - Judge whether essential argument structure, attachment, or scope relations "
+    },
+    {
+     "op": "replace",
+     "id": "C7",
+     "kind": "change",
+     "was": "Two explicit tests to apply at each marker and use to bias cohesion and contra:",
+     "now": "Two operational tests to apply at every marker (use these to bias cohesion and c"
+    },
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predic",
+     "now": ""
+    },
+    {
+     "op": "delete",
+     "id": "C9",
+     "kind": "delete",
+     "was": "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an",
+     "now": ""
+    },
+    {
+     "op": "delete",
+     "id": "C10",
+     "kind": "delete",
+     "was": "If both tests flag the cut, the cut is very poor; score it near the bottom.",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "adopted": false,
+   "delta": {
+    "mean": -0.02001,
+    "lo": -0.03224,
+    "hi": -0.0079,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "gain": {
+    "mean": -0.02001,
+    "lo": -0.03224,
+    "hi": -0.0079,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "changelog": [
+    "Deleted large Example E1 to free space (it had v0 evidence and was the largest example).",
+    "Inserted new Core Principles unit C11 after C6 to require explicit 'standalone-claim' and 'list-mapping' tests at every marker, per the critique showing these risks were under-addressed."
+   ],
+   "findings": [
+    "The prompt underestimates cuts that leave an apparent standalone claim (an incomplete predicate, a subject without its verb/object, or a list-item that reads like an assertion). Ask at each marker: “If the left fragment were read alone, would it assert a complete fact or assignment that the remainder could negate, reassign, or complete?” If yes, treat the marker as very risky (raise contra sharply and/or set cohesion very low).",
+    "The prompt fails to treat boundaries inside enumerations or mapped lists (assignments across multiple antecedents) as especially dangerous. Ask: “Does the left fragment assign an element, ordinal, quantity, or role within a larger list that the remainder will distribute or remap (the kind of construction that yields 'respectively' or paired assignments)?” If yes, increase contra because the left fragment is likely misleading when isolated."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "E1",
+     "kind": "delete",
+     "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+     "now": ""
+    },
+    {
+     "op": "insert_after",
+     "id": "C6",
+     "kind": "change",
+     "was": "Always make both judgments at every marker. Think about how English builds propo",
+     "now": "C11: At every marker explicitly test for standalone-claim risk and for list-mapp"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "adopted": false,
+   "delta": {
+    "mean": -0.01823,
+    "lo": -0.03168,
+    "hi": -0.0038,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "gain": {
+    "mean": -0.01823,
+    "lo": -0.03168,
+    "hi": -0.0038,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "changelog": [
+    "Replace C2 to force explicit, concrete guidance: penalize cuts that leave a left fragment as a standalone/asserted claim (e.g., unfinished predicate, final list item, scope-bearing temporal/modal), raising contra toward 1.0 and lowering cohesion toward 0 when the remainder is semantically required — addresses the boundary-failure finding that such cuts were under-detected.",
+    "Delete E4 (low-evidence example) to free prompt space so the stricter C2 guidance can be added without exceeding the size budget."
+   ],
+   "findings": [
+    "The prompt under-detects cuts that leave a left fragment as a plausible but incomplete claim — e.g., a partial outcome, an unfinished predicate, or a fragment of an enumerated/result list — where the remainder completes, qualifies, or reverses that claim. In these situations the remainder should almost always be treated as highly contradictory (raise contra toward 1.0) and cohesion as very low, because the left piece read alone is misleading or semantically incomplete."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C2",
+     "kind": "change",
+     "was": "1) Does what follows the cut overturn, negate, limit, or materially change the t",
+     "now": "1) Does what follows the cut overturn, negate, limit, or materially change the c"
+    },
+    {
+     "op": "delete",
+     "id": "E4",
+     "kind": "delete",
+     "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+     "now": ""
+    }
+   ]
+  }
+ ],
+ "checkpoint": {
+  "iter": 2,
+  "value": 0.5440368876981024,
+  "prompt": "[Role]\nYou are a segmentation-and-scoring model. For a single English source sentence that already contains a <SEG:?> marker at every possible cut position, your job is to replace each ? with an integer 0–100 so the numbers rank the candidate cuts in the order that best matches the measured target described below.\n\n[Core Principles]\nAt every candidate cut ask two concrete meaning-focused questions about the source material on either side of the marker. These are the judgments you must make, repeatedly and everywhere in the sentence:\n\n1) Does what follows the cut overturn, negate, limit, or materially change the truth or claim made so far?  \n   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or later material that supplies the main clause's modal/temporal frame and would make the earlier fragment misleading. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch.\n\n2) If you translate the two sides separately and then join those translations in order, how well do they together render the whole source sentence? (Will the pieces compose?)  \n   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces.\n\nAlways make both judgments at every marker. Think about how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change the scope of a main clause. Do not apply token-based surface rules; apply the two semantic questions everywhere.\n\nTwo explicit tests to apply at each marker and use to bias cohesion and contra:\n1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predicate or an incomplete list item that only makes sense with the following words?\" If yes, treat cohesion as very low and/or raise contra.\n2) Detached-head/modifier test: \"Would either side lack its syntactic head or an essential modifier/determiner/title/multiword name?\" If yes, sharply reduce cohesion.\n\nIf both tests flag the cut, the cut is very poor; score it near the bottom.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n\nHow to produce a numeric score for each marker:\n- Mentally estimate cohesion on a 0–100 scale (higher = pieces compose well). This is the expected fidelity percentage of the joined, separately translated pieces.\n- Estimate contra as a probability between 0.0 and 1.0 (higher = greater chance the remainder contradicts or overturns the earlier stretch).\n- Compute target = cohesion * (1 - contra). Interpreted numerically, target ranges 0–100.\n- Convert the target to a distinct integer 0–100 for that marker (round normally). These integers are what you output and what will be used to rank markers within the sentence.\n- contra is a graded probability and may reduce the target smoothly; do not threshold contra into a binary flag or create tiers that override cohesion. The product is the only combination rule.\n\nRanking rules:\n- Use the full 0–100 integer range to establish a strict ordering among markers inside the sentence: every marker must receive a different integer. If two positions feel equal, decide which cut you prefer and score that one higher.\n- The absolute values only matter for ordering within the sentence; focus on correctly ordering cuts by expected target.\n\n[Decision Procedure]\nFor each marker, perform the two judgments (cohesion on 0–100; contra probability 0–1), compute target = cohesion * (1 - contra), round to an integer, and assign that integer to the marker. Ensure all markers in the sentence receive distinct integers; break any internal ties by adjusting values minimally while preserving the relative ordering you intended. Do not reason about how many cuts will be kept or about spacing—those are handled later.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.\nOutput: The <SEG:04> great <SEG:08> pyramid <SEG:12> was <SEG:16> created <SEG:20> to <SEG:24> honor <SEG:28> the <SEG:32> Pharaoh <SEG:36> Khufu, <SEG:100> and <SEG:40> many <SEG:44> of <SEG:48> the <SEG:52> smaller <SEG:56> pyramids, <SEG:95> tombs, <SEG:90> and <SEG:64> temples <SEG:68> were <SEG:85> built <SEG:72> to <SEG:76> honor <SEG:80> Khufu's <SEG:84> wives <SEG:88> and <SEG:92> family <SEG:96> members.\n\nInput: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extremely <SEG:?> Drug <SEG:?> Resistant <SEG:?> Tuberculosis <SEG:?> (XDR-TB) <SEG:?> in <SEG:?> the <SEG:?> South <SEG:?> African <SEG:?> region <SEG:?> KwaZulu-Natal.\nOutput: Dr. <SEG:03> Tony <SEG:07> Moll <SEG:11> discovered <SEG:15> the <SEG:19> Extremely <SEG:23> Drug <SEG:27> Resistant <SEG:31> Tuberculosis <SEG:100> (XDR-TB) <SEG:35> in <SEG:39> the <SEG:43> South <SEG:47> African <SEG:51> region <SEG:95> KwaZulu-Natal.\n\nInput: San <SEG:?> Francisco <SEG:?> is <SEG:?> also <SEG:?> one <SEG:?> of <SEG:?> the <SEG:?> best <SEG:?> places <SEG:?> in <SEG:?> the <SEG:?> nation <SEG:?> for <SEG:?> other <SEG:?> Asian <SEG:?> cuisine: <SEG:?> Korean, <SEG:?> Thai, <SEG:?> Indian, <SEG:?> and <SEG:?> Japanese.\nOutput: San <SEG:02> Francisco <SEG:06> is <SEG:10> also <SEG:14> one <SEG:18> of <SEG:22> the <SEG:26> best <SEG:30> places <SEG:34> in <SEG:38> the <SEG:42> nation <SEG:46> for <SEG:50> other <SEG:54> Asian <SEG:58> cuisine: <SEG:100> Korean, <SEG:80> Thai, <SEG:70> Indian, <SEG:60> and <SEG:40> Japanese.\n\nInput: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.\nOutput: Humans <SEG:05> can <SEG:10> be <SEG:15> affected <SEG:30> by <SEG:20> breathing <SEG:25> affected <SEG:18> water <SEG:22> taken <SEG:35> into <SEG:28> the <SEG:32> air <SEG:100> by <SEG:40> wind <SEG:50> and <SEG:60> waves.",
+  "provenance": {
+   "At every candidate cut ask two concrete meaning-focused questions about the source material on either side of the marker. These are the judgments you must make, repeatedly and everywhere in the sentence:": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   },
+   "1) Does what follows the cut overturn, negate, limit, or materially change the truth or claim made so far?  ": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   },
+   "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or later material that supplies the main clause's modal/temporal frame and would make the earlier fragment misleading. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch.": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 0
+   },
+   "2) If you translate the two sides separately and then join those translations in order, how well do they together render the whole source sentence? (Will the pieces compose?)  ": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   },
+   "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces.": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 0
+   },
+   "Always make both judgments at every marker. Think about how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change the scope of a main clause. Do not apply token-based surface rules; apply the two semantic questions everywhere.": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 0
+   },
+   "Two explicit tests to apply at each marker and use to bias cohesion and contra:": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 1
+   },
+   "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predicate or an incomplete list item that only makes sense with the following words?\" If yes, treat cohesion as very low and/or raise contra.": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 1
+   },
+   "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an essential modifier/determiner/title/multiword name?\" If yes, sharply reduce cohesion.": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 1
+   },
+   "If both tests flag the cut, the cut is very poor; score it near the bottom.": {
+    "origin": "en2x/en-multi/judge04 iter 1",
+    "adopted_delta": 0.0147,
+    "adopted_ci_lo": 0.0007,
+    "critic_hits": 0
+   },
+   "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.\nOutput: The <SEG:04> great <SEG:08> pyramid <SEG:12> was <SEG:16> created <SEG:20> to <SEG:24> honor <SEG:28> the <SEG:32> Pharaoh <SEG:36> Khufu, <SEG:100> and <SEG:40> many <SEG:44> of <SEG:48> the <SEG:52> smaller <SEG:56> pyramids, <SEG:95> tombs, <SEG:90> and <SEG:64> temples <SEG:68> were <SEG:85> built <SEG:72> to <SEG:76> honor <SEG:80> Khufu's <SEG:84> wives <SEG:88> and <SEG:92> family <SEG:96> members.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   },
+   "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extremely <SEG:?> Drug <SEG:?> Resistant <SEG:?> Tuberculosis <SEG:?> (XDR-TB) <SEG:?> in <SEG:?> the <SEG:?> South <SEG:?> African <SEG:?> region <SEG:?> KwaZulu-Natal.\nOutput: Dr. <SEG:03> Tony <SEG:07> Moll <SEG:11> discovered <SEG:15> the <SEG:19> Extremely <SEG:23> Drug <SEG:27> Resistant <SEG:31> Tuberculosis <SEG:100> (XDR-TB) <SEG:35> in <SEG:39> the <SEG:43> South <SEG:47> African <SEG:51> region <SEG:95> KwaZulu-Natal.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   },
+   "Input: San <SEG:?> Francisco <SEG:?> is <SEG:?> also <SEG:?> one <SEG:?> of <SEG:?> the <SEG:?> best <SEG:?> places <SEG:?> in <SEG:?> the <SEG:?> nation <SEG:?> for <SEG:?> other <SEG:?> Asian <SEG:?> cuisine: <SEG:?> Korean, <SEG:?> Thai, <SEG:?> Indian, <SEG:?> and <SEG:?> Japanese.\nOutput: San <SEG:02> Francisco <SEG:06> is <SEG:10> also <SEG:14> one <SEG:18> of <SEG:22> the <SEG:26> best <SEG:30> places <SEG:34> in <SEG:38> the <SEG:42> nation <SEG:46> for <SEG:50> other <SEG:54> Asian <SEG:58> cuisine: <SEG:100> Korean, <SEG:80> Thai, <SEG:70> Indian, <SEG:60> and <SEG:40> Japanese.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   },
+   "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.\nOutput: Humans <SEG:05> can <SEG:10> be <SEG:15> affected <SEG:30> by <SEG:20> breathing <SEG:25> affected <SEG:18> water <SEG:22> taken <SEG:35> into <SEG:28> the <SEG:32> air <SEG:100> by <SEG:40> wind <SEG:50> and <SEG:60> waves.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null,
+    "critic_hits": 0
+   }
+  }
+ },
+ "v0_len": 8652,
+ "total_cost": 17.730951,
+ "provenance": {
+  "At every candidate cut ask two concrete meaning-focused questions about the source material on either side of the marker. These are the judgments you must make, repeatedly and everywhere in the sentence:": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "1) Does what follows the cut overturn, negate, limit, or materially change the truth or claim made so far?  ": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 1
+  },
+  "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or later material that supplies the main clause's modal/temporal frame and would make the earlier fragment misleading. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch.": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 0
+  },
+  "2) If you translate the two sides separately and then join those translations in order, how well do they together render the whole source sentence? (Will the pieces compose?)  ": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces.": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 0
+  },
+  "Always make both judgments at every marker. Think about how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change the scope of a main clause. Do not apply token-based surface rules; apply the two semantic questions everywhere.": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 0
+  },
+  "Two explicit tests to apply at each marker and use to bias cohesion and contra:": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 1
+  },
+  "1) Incomplete-predicate/list test: \"Would the left chunk be an unfinished predicate or an incomplete list item that only makes sense with the following words?\" If yes, treat cohesion as very low and/or raise contra.": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 1
+  },
+  "2) Detached-head/modifier test: \"Would either side lack its syntactic head or an essential modifier/determiner/title/multiword name?\" If yes, sharply reduce cohesion.": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 1
+  },
+  "If both tests flag the cut, the cut is very poor; score it near the bottom.": {
+   "origin": "en2x/en-multi/judge04 iter 1",
+   "adopted_delta": 0.0147,
+   "adopted_ci_lo": 0.0007,
+   "critic_hits": 0
+  },
+  "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.\nOutput: The <SEG:04> great <SEG:08> pyramid <SEG:12> was <SEG:16> created <SEG:20> to <SEG:24> honor <SEG:28> the <SEG:32> Pharaoh <SEG:36> Khufu, <SEG:100> and <SEG:40> many <SEG:44> of <SEG:48> the <SEG:52> smaller <SEG:56> pyramids, <SEG:95> tombs, <SEG:90> and <SEG:64> temples <SEG:68> were <SEG:85> built <SEG:72> to <SEG:76> honor <SEG:80> Khufu's <SEG:84> wives <SEG:88> and <SEG:92> family <SEG:96> members.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extremely <SEG:?> Drug <SEG:?> Resistant <SEG:?> Tuberculosis <SEG:?> (XDR-TB) <SEG:?> in <SEG:?> the <SEG:?> South <SEG:?> African <SEG:?> region <SEG:?> KwaZulu-Natal.\nOutput: Dr. <SEG:03> Tony <SEG:07> Moll <SEG:11> discovered <SEG:15> the <SEG:19> Extremely <SEG:23> Drug <SEG:27> Resistant <SEG:31> Tuberculosis <SEG:100> (XDR-TB) <SEG:35> in <SEG:39> the <SEG:43> South <SEG:47> African <SEG:51> region <SEG:95> KwaZulu-Natal.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "Input: San <SEG:?> Francisco <SEG:?> is <SEG:?> also <SEG:?> one <SEG:?> of <SEG:?> the <SEG:?> best <SEG:?> places <SEG:?> in <SEG:?> the <SEG:?> nation <SEG:?> for <SEG:?> other <SEG:?> Asian <SEG:?> cuisine: <SEG:?> Korean, <SEG:?> Thai, <SEG:?> Indian, <SEG:?> and <SEG:?> Japanese.\nOutput: San <SEG:02> Francisco <SEG:06> is <SEG:10> also <SEG:14> one <SEG:18> of <SEG:22> the <SEG:26> best <SEG:30> places <SEG:34> in <SEG:38> the <SEG:42> nation <SEG:46> for <SEG:50> other <SEG:54> Asian <SEG:58> cuisine: <SEG:100> Korean, <SEG:80> Thai, <SEG:70> Indian, <SEG:60> and <SEG:40> Japanese.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.\nOutput: Humans <SEG:05> can <SEG:10> be <SEG:15> affected <SEG:30> by <SEG:20> breathing <SEG:25> affected <SEG:18> water <SEG:22> taken <SEG:35> into <SEG:28> the <SEG:32> air <SEG:100> by <SEG:40> wind <SEG:50> and <SEG:60> waves.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  }
+ }
+}

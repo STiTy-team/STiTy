@@ -1,0 +1,195 @@
+[
+ {
+  "iter": 1,
+  "adopted": false,
+  "reason": [
+   "edit 3: 없는 id 'C7'"
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "was": "- This is about whether what follows requires reinterpreting who, what, or wheth",
+    "now": "- Determines whether the continuation forces reinterpreting who or what acted, o"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "was": "- This measures whether sending the parts apart loses essential dependencies, at",
+    "now": "- Measures whether translating the halves separately loses essential dependencie"
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+    "now": "Before assigning Contra, check whether the right side supplies the main predicat"
+   },
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "",
+    "now": "Head–complement cohesion rule: treat any cut that separates a content head (noun"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00513,
+   "lo": -0.0183,
+   "hi": 0.00685,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "gain": {
+   "mean": -0.00513,
+   "lo": -0.0183,
+   "hi": 0.00685,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Paraphrased C3 to shorten and keep focus on contradiction risk (to make room and keep same judgement).",
+   "Paraphrased C5 to a shorter description of dependency loss on split (to reduce prompt size while preserving guidance).",
+   "Paraphrased C6 to a concise reminder to apply both judgements everywhere and punctuation rule (room-saving).",
+   "Inserted new core unit C7 (Provisional-head test) to address the critic finding that cuts after provisional heads must carry high Contra even when cohesion looks good.",
+   "Replaced example E4 with the Internal poisoning example from the findings to illustrate the provisional-head test in practice."
+  ],
+  "findings": [
+   "The scorer systematically underestimates the risk of cutting immediately after a 'provisional' head: positions that leave a claim, scope, or reference unfinished (e.g. clause-introducing heads, complements awaiting a negation or disambiguating verb/object, contrastive 'but', or mid-list separators) are often scored too highly. In other words: if the left fragment invites a concrete interpretation that the right fragment can reverse or complete, treat that cut as high-contradiction regardless of local fluency.",
+   "The scorer lets moderate-to-high cohesion scores drown out high contradiction risk: positions with plausible standalone phrasing (good cohesion) but where the continuation changes truth conditions are being ranked too high because cohesion is treated as the dominant signal rather than used only via the product formula."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "was": "- This is about whether what follows requires reinterpreting who, what, or wheth",
+    "now": "- Determines whether the continuation forces reinterpreting who, what, or whethe"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "was": "- This measures whether sending the parts apart loses essential dependencies, at",
+    "now": "- Tests whether splitting the sentence separates dependents or attachments: modi"
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+    "now": "Apply both judgements at every inter-word position. Treat punctuation as attache"
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+    "now": "Provisional-head test: At each marker ask whether the left span ends with a head"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "change",
+    "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+    "now": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> imm"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "reason": [
+   "edit 3: 없는 id 'E5'"
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+    "now": ""
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+    "now": "C7: Provisional-head rule: If the left span ends where the upcoming material sup"
+   },
+   {
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "change",
+    "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+    "now": "E5: Input: Eventually, wooden <SEG:?> wheels <SEG:?> were <SEG:?> replaced <SEG:"
+   },
+   {
+    "op": "insert_after",
+    "id": "E5",
+    "kind": "change",
+    "was": "",
+    "now": "E6: Input: A, <SEG:?> B <SEG:?> and <SEG:?> C <SEG:?> finished <SEG:?> in <SEG:?"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": false,
+  "reason": [
+   "edit 1: 없는 id 'C7'"
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+    "now": "C7: Provisional-head: If the left side ends on a noun or other provisional head "
+   },
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "",
+    "now": "C8: Multiword-nominals: Cuts inside titles, multiword names, determiner+head, or"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "adopted": false,
+  "reason": [
+   "edit 1: 없는 id 'C7'"
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "Make both judgements everywhere: they apply at every inter-word position, not ju",
+    "now": "C7: Flag high-risk continuations: if the unseen right side can plausibly negate,"
+   },
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "",
+    "now": "C8: Function-word fragments: if a cut would leave the left segment ending in a l"
+   },
+   {
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+    "now": ""
+   }
+  ]
+ }
+]

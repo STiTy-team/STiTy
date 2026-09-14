@@ -1,0 +1,57 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Determines whether the continuation forces reinterpreting who or what acted, or whether an event occurred — for example by introducing negation, restriction, a new scope, or by changing a referent or the factual status. If the right side can reverse or invalidate the earlier inference, the cut scores poorly on this judgement."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Measures whether translating the halves separately loses essential dependencies or attachments. Damage includes a noun left without its modifier or 'of' phrase, a verb separated from its object/particle, stranded possessives or prepositional attachments, or modifiers whose scope becomes unclear. Watch relative clauses, subordinators, negation/auxiliary scope, coordination inside phrases, clause‑introducing heads, and narrow‑focus adverbials — these often make earlier material provisional."
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "Before assigning Contra, check whether the right side supplies the main predicate or any scope‑changing element (negation, restriction/contrastive particle, numeric quantifier/comparative, or other material that can reverse or refine the left inference). If the continuation completes or can reverse the left fragment's truth or role, treat the left stretch as provisional: raise Contra substantially and lower the target accordingly."
+   },
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "Head–complement cohesion rule: treat any cut that separates a content head (noun, verb, adjective) from an essential complement or prepositional modifier as low‑cohesion unless the right side is clearly parenthetical or optional. If cutting would leave a head without its required complement (e.g. 'container' separated from 'of X', or a verb without its object/particle), set Cohesion much lower and avoid that cut."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -236
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -375
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 435
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edit 3: 없는 id 'C7'"
+  ]
+ }
+]

@@ -1,0 +1,67 @@
+[
+ {
+  "iter": 1,
+  "adopted": true,
+  "delta": {
+   "mean": 0.01466,
+   "lo": 0.00071,
+   "hi": 0.02834,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "replace C3 — tightened and condensed the guidance on when later material 'contra' the left fragment; kept the probability framing but removed verbose examples to save space.",
+   "replace C5 — shortened the cohesion guidance to a focused list of common structural risks and a concise instruction to estimate cohesion as a 0–100 fidelity percentage.",
+   "replace C6 — merged and compressed the routine-reminder and the two explicit tests (incomplete-predicate/list and detached-head/modifier) into a compact, actionable form so the tests are always applied; reduced length to meet size budget."
+  ],
+  "findings": [
+   "The policy underrates the harm of cuts that leave an incomplete predicate or an unfinished item of a coordination/list: if the left piece ends inside a list item or before the clause that completes the verb phrase, that left piece is not self-contained and its cohesion score should be very low (or contra high).",
+   "The policy underestimates cohesion loss when a cut separates modifiers/function words from the head they attach to (titles, premodifiers, determiners, or multiword names): fragments missing their head or their essential modifier produce mistranslations when translated separately."
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "reason": [
+   "길이 초과: 9229 > 8664"
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "reason": [
+   "길이 초과: 9104 > 8664"
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": false,
+  "reason": [
+   "길이 초과: 8992 > 8664"
+  ]
+ },
+ {
+  "iter": 5,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00137,
+   "lo": -0.01564,
+   "hi": 0.0124,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "replace C3 — consolidated and tightened the guidance on when later material can 'contra' the left fragment and added a Parallel-list / respectively test to flag cuts that depend on remainder-provided indexing or pairing (addresses the parallel-list finding).",
+   "replace C5 — strengthened the Incomplete-predicate / multiword-frame rule and clarified the Detached-head / modifier rule; condensed the list of cohesion risks so the rules are actionable and concise (addresses the incomplete-predicate and detached-head findings).",
+   "replace C6 — shortened and focused the reminder to always apply both judgments and to consider English proposition-building at every marker.",
+   "delete C8 — removed now-redundant separate test because its content was merged into C5.",
+   "delete C9 — removed now-redundant separate test because its content was merged into C5.",
+   "delete E1 — removed the largest example to keep the prompt within the character budget after adding the new rule text."
+  ],
+  "findings": [
+   "The prompt underestimates cuts that break parallel correspondences (lists mapped by \"respectively\", paired results, or parallel measurements): even if the left fragment reads as a grammatical clause, the remainder can supply the indexing that assigns values to earlier items and thus materially change truth.",
+   "The prompt fails to penalize cuts that leave an incomplete predicate, separable verb construction, or multiword prepositional chain: when the left side lacks the complement/particle or the right side supplies the verb's core argument/scope, the cut produces a fragment that cannot stand on its own.",
+   "The prompt under-penalizes cuts that detach a syntactic head from essential modifiers or titles (honorifics, multiword names, postmodifiers): separating a head from its determiners/titles or splitting a multiword name often prevents correct independent translation and composition."
+  ]
+ }
+]

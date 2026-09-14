@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt routinely underestimates how catastrophic a cut is when it detaches an essential predicate element — negation/auxiliary/modality, the main verb's required complement, a completing prepositional span, or the final part of an enumerated predicate — so it keeps cuts that leave an unfinished or misleading clause on the left or isolate a negator on the right.",
+    "evidence": "Seen across many cases (multiple variants of the same news sentence plus other distinct sentences — in the dataset this failure appears in most examples, e.g. splits that separate '…cannot be made.', '…were replaced by iron', '…finished in fourth,', and 'future through the present' from their continuations). They share the same structural risk: the left fragment looks like an assertion only when read together with the right fragment (negator/complement/list continuation), so separating them raises contra toward 1.0 and collapses cohesion.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add an explicit rule: If cutting here would (a) leave the left side as an apparent assertion whose truth would be reversed or materially changed by a negator/modal that sits on the right, or (b) separate a verb from its required complement/object/particle, or (c) interrupt a completing prepositional/time/path phrase or the final element(s) of an enumerated predicate, then treat this cut as very poor. Concretely: raise contra to near 1.0 and set cohesion very low (so target ≈ 0); do not rely on punctuation alone to justify such a cut. Example (instructional): when the right fragment contains the negator or the completing phrase of the main predicate, score the cut near the bottom."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt is overly conservative about splitting complex noun phrases with titles/roles and multiword names — it fails to reward cuts that isolate a self-contained title/role or a proper name so both sides become independently interpretable.",
+    "evidence": "Appears repeatedly in the repeated variants of the same sentence (5 cases) where the better segmentation splits the leading honorific/role and the personal name into separate pieces (e.g. 'Former' / 'House Speaker' / 'Newt' / 'Gingrich'). Those added cuts have high individual H scores offline, showing that isolating titles/names often improves separate-translation composition.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add guidance: explicitly recognise when a cut cleanly isolates a referential unit (a title/role phrase or a proper name) so that both left and right fragments are independently interpretable and contain their heads. In that case, raise cohesion — such cuts are often high-quality because separately translated referents compose naturally. Test: would each side read as a self-contained referent (a role/title or a name) without requiring words on the other side? If yes, score the cut comparatively high."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt routinely underestimates how catastrophic a cut is when it detaches an essential predicate element — negation/auxiliary/modality, the main verb's required complement, a completing prepositional span, or the final part of an enumerated predicate — so it keeps cuts that leave an unfinished or misleading clause on the left or isolate a negator on the right.",
+   "evidence": "Seen across many cases (multiple variants of the same news sentence plus other distinct sentences — in the dataset this failure appears in most examples, e.g. splits that separate '…cannot be made.', '…were replaced by iron', '…finished in fourth,', and 'future through the present' from their continuations). They share the same structural risk: the left fragment looks like an assertion only when read together with the right fragment (negator/complement/list continuation), so separating them raises contra toward 1.0 and collapses cohesion.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add an explicit rule: If cutting here would (a) leave the left side as an apparent assertion whose truth would be reversed or materially changed by a negator/modal that sits on the right, or (b) separate a verb from its required complement/object/particle, or (c) interrupt a completing prepositional/time/path phrase or the final element(s) of an enumerated predicate, then treat this cut as very poor. Concretely: raise contra to near 1.0 and set cohesion very low (so target ≈ 0); do not rely on punctuation alone to justify such a cut. Example (instructional): when the right fragment contains the negator or the completing phrase of the main predicate, score the cut near the bottom."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt is overly conservative about splitting complex noun phrases with titles/roles and multiword names — it fails to reward cuts that isolate a self-contained title/role or a proper name so both sides become independently interpretable.",
+   "evidence": "Appears repeatedly in the repeated variants of the same sentence (5 cases) where the better segmentation splits the leading honorific/role and the personal name into separate pieces (e.g. 'Former' / 'House Speaker' / 'Newt' / 'Gingrich'). Those added cuts have high individual H scores offline, showing that isolating titles/names often improves separate-translation composition.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add guidance: explicitly recognise when a cut cleanly isolates a referential unit (a title/role phrase or a proper name) so that both left and right fragments are independently interpretable and contain their heads. In that case, raise cohesion — such cuts are often high-quality because separately translated referents compose naturally. Test: would each side read as a self-contained referent (a role/title or a name) without requiring words on the other side? If yes, score the cut comparatively high."
+   }
+  }
+ ]
+}

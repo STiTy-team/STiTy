@@ -1,0 +1,77 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument or scope relations cross the cut so that separately translated pieces would fail to compose (e.g., verb without its object, head noun missing modifiers/determiners, broken verb+particle or multiword predicate, detached quantifier/negation). Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "text": "1) Incomplete-predicate/list test: For every marker, ask whether the left piece — when read on its own — leaves an action, relation, prepositional/argument slot, complement clause, quantified expression, or an enumerated list item that cannot be understood or that would be misleading without the following words. If the left fragment requires the remainder to supply a verb’s object/argument, the object or endpoint of a preposition, the completion of a complement clause, the continuation of a list, or the scope of a quantifier/negation, then treat cohesion as very low and raise contra sharply. In such cases the cut should be scored near the bottom. Always bias both cohesion down and contra up when any such dependency is present."
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "text": "2) Detached-head/modifier test: At each marker, decide whether the cut would separate a lexical head (person/place/thing) from modifiers or elements that determine its identity or grammatical role — for example, detaching a title from the person it modifies, splitting a multiword proper name, or removing determiners/modifiers that fix reference. If a cut would force a translator to guess an attachment or to split an identity-bearing phrase, sharply reduce cohesion; such cuts are poor even if the fragments look grammatical in isolation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": -156
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C8",
+    "chars_change": 521
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C9",
+    "chars_change": 375
+   }
+  ],
+  "result_chars": 9392,
+  "errors": [
+   "길이 초과: 9392 > 8664"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "text": "1) Incomplete-predicate/list test: Would the left fragment, read alone, leave an unfinished verb phrase or action, a missing object/argument, an open prepositional endpoint, an incomplete complement clause, a quantifier/negation whose scope is unresolved, or a split list item that only makes sense with the following words? If so, treat cohesion as very low and raise contra sharply; such cuts should be scored near the bottom."
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "text": "2) Detached-head/modifier test: Would the cut separate a lexical head (noun, proper name, title, role) from determiners, essential modifiers, or elements that fix its identity — for example detaching a title from a person, splitting a multiword name, or removing modifiers that determine reference? If yes, sharply reduce cohesion because separately translated pieces will likely misidentify the referent."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "chars_change": 213
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C9",
+    "chars_change": 239
+   }
+  ],
+  "result_chars": 9104,
+  "errors": [
+   "길이 초과: 9104 > 8664"
+  ]
+ }
+]

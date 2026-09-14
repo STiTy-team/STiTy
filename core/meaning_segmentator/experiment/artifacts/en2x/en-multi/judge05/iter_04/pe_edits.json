@@ -1,0 +1,57 @@
+[
+ {
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "C11: At every marker explicitly test for standalone-claim risk and for list-mapping risk. Standalone-claim risk: would the left fragment, read alone, assert a definite fact (a subject with an implied result, an item+ordinal/amount/role, or a verb that looks complete)? If yes, treat contra as near 1.0 and/or set cohesion very low. List-mapping risk: does the left fragment isolate one element together with an ordinal, quantity, or role that the remainder distributes or remaps? If yes, raise contra and sharply lower cohesion because such cuts commonly produce misleading, incomplete assertions."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 598
+   }
+  ],
+  "result_chars": 9250,
+  "errors": [
+   "길이 초과: 9250 > 9084"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "C11: At every marker explicitly test for standalone-claim risk and for list-mapping risk. Standalone-claim risk: would the left fragment, read alone, assert a definite fact or assignment (a subject that looks like a complete claim, an item plus an ordinal/amount/role, or a verb phrase that appears finished)? If yes, treat contra as near 1.0 and/or set cohesion very low — such cuts are highly likely to mislead. List-mapping risk: does the left fragment isolate one list element together with an ordinal/quantity/role that the remainder distributes, remaps, or completes? If yes, raise contra and sharply reduce cohesion because the isolated fragment commonly becomes false or misleading when read alone."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -805
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 707
+   }
+  ],
+  "result_chars": 8553,
+  "errors": null
+ }
+]

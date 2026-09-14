@@ -1,0 +1,51 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The model fails to mark cuts that break syntactically required complements, multiword prepositional/temporal chains, or list items as bad. Question to ask at a candidate cut: does either side end in a phrase that syntactically or semantically requires material on the other side to form a complete predicate, complement, prepositional/temporal chain, or coordinated list? If yes, raise contra and lower cohesion (treat the cut as very poor).",
+    "evidence": "Seen in 8 cases (both en_us_1427 variants, en_us_1593, en_us_1514, en_us_608, en_us_877, en_us_1192, plus examples where ordinal/placement phrases like “finished in fourth, fifth, and sixth…” were split). In each case the dropped-best set avoids cuts that leave an orphaned complement or split a tightly bound multiword phrase; the policy kept cuts whose individual H was very low because they left subordinating words, verbs without their objects, prepositional chains, or incomplete list/clausal fragments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Two explicit tests to apply at each marker and use to bias cohesion and contra:",
+     "text": "Two explicit tests to apply at each marker and use to bias cohesion and contra: 1) Incomplete-predicate/list test: Ask whether either side would be an unfinished predicate, a clause missing its required complement, a subordinating complement left dangling, or an incomplete item in a coordinated/list structure. If so, treat cohesion as very low and/or raise contra. 2) Bound-span test (replaces the old detached-head phrasing): Ask whether the cut falls inside a tightly bonded semantic span — for example a verb plus its required object/complement, a contiguous prepositional/temporal chain, or a coordinated ordinal/list phrase whose meaning depends on later elements. If the cut splits such a bound span, sharply reduce cohesion. If both tests flag the cut, score it near the bottom. These tests are about whether meaning or argument structure is left syntactically or semantically incomplete, not about surface token length."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The model over-penalizes cuts that split titles, honorifics, or name parts and so avoids useful small cuts there. Question to ask: is the fragment a short, self-explanatory premodifier or name component (titles, honorifics, name parts) that can be translated independently and then joined without changing scope or attachment? If yes, do not automatically collapse cohesion for a 'detached head'; assess its true translatability.",
+    "evidence": "Seen across 6 related cases (all variants of en_us_1591). The offline better segmentations repeatedly cut between title/role/first-name/last-name pieces (e.g. splitting 'Former / House Speaker / Newt / Gingrich') because those single-word fragments translate and join reliably; the policy penalized such splits under the detached-head test and retained lower-H cuts instead.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Exception for short modifiers and name parts: Single-word premodifiers, honorifics, titles, or name components should not be automatically treated as 'detached heads' if they carry a self-contained labeling/modifying meaning that can be translated independently and reattached without changing scope. When a fragment is a translatable label or name component that does not leave core argument structure unresolved, give cohesion its measured value rather than imposing a blanket penalty."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The model fails to mark cuts that break syntactically required complements, multiword prepositional/temporal chains, or list items as bad. Question to ask at a candidate cut: does either side end in a phrase that syntactically or semantically requires material on the other side to form a complete predicate, complement, prepositional/temporal chain, or coordinated list? If yes, raise contra and lower cohesion (treat the cut as very poor).",
+   "evidence": "Seen in 8 cases (both en_us_1427 variants, en_us_1593, en_us_1514, en_us_608, en_us_877, en_us_1192, plus examples where ordinal/placement phrases like “finished in fourth, fifth, and sixth…” were split). In each case the dropped-best set avoids cuts that leave an orphaned complement or split a tightly bound multiword phrase; the policy kept cuts whose individual H was very low because they left subordinating words, verbs without their objects, prepositional chains, or incomplete list/clausal fragments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Two explicit tests to apply at each marker and use to bias cohesion and contra:",
+    "text": "Two explicit tests to apply at each marker and use to bias cohesion and contra: 1) Incomplete-predicate/list test: Ask whether either side would be an unfinished predicate, a clause missing its required complement, a subordinating complement left dangling, or an incomplete item in a coordinated/list structure. If so, treat cohesion as very low and/or raise contra. 2) Bound-span test (replaces the old detached-head phrasing): Ask whether the cut falls inside a tightly bonded semantic span — for example a verb plus its required object/complement, a contiguous prepositional/temporal chain, or a coordinated ordinal/list phrase whose meaning depends on later elements. If the cut splits such a bound span, sharply reduce cohesion. If both tests flag the cut, score it near the bottom. These tests are about whether meaning or argument structure is left syntactically or semantically incomplete, not about surface token length."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The model over-penalizes cuts that split titles, honorifics, or name parts and so avoids useful small cuts there. Question to ask: is the fragment a short, self-explanatory premodifier or name component (titles, honorifics, name parts) that can be translated independently and then joined without changing scope or attachment? If yes, do not automatically collapse cohesion for a 'detached head'; assess its true translatability.",
+   "evidence": "Seen across 6 related cases (all variants of en_us_1591). The offline better segmentations repeatedly cut between title/role/first-name/last-name pieces (e.g. splitting 'Former / House Speaker / Newt / Gingrich') because those single-word fragments translate and join reliably; the policy penalized such splits under the detached-head test and retained lower-H cuts instead.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Exception for short modifiers and name parts: Single-word premodifiers, honorifics, titles, or name components should not be automatically treated as 'detached heads' if they carry a self-contained labeling/modifying meaning that can be translated independently and reattached without changing scope. When a fragment is a translatable label or name component that does not leave core argument structure unresolved, give cohesion its measured value rather than imposing a blanket penalty."
+   }
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+[
+ {
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "C7: Provisional-head rule: If the left span ends where the upcoming material supplies the main predicate, a required complement, or a disambiguating modifier for a head noun (including relative or 'that' clauses, appositives, or finalizing enumerations such as those with 'respectively'), treat Contra as high (near 1) and lower that marker's target substantially. Example: \"Eventually, wooden <SEG:?> wheels <SEG:?> were <SEG:?> replaced...\" — the cut after \"wooden\" should receive a very low score."
+   },
+   {
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "change",
+    "text": "E5: Input: Eventually, wooden <SEG:?> wheels <SEG:?> were <SEG:?> replaced <SEG:?> by <SEG:?> iron.\nOutput: Eventually, wooden <SEG:05> wheels <SEG:02> were <SEG:100> replaced <SEG:40> by <SEG:10> iron."
+   },
+   {
+    "op": "insert_after",
+    "id": "E5",
+    "kind": "change",
+    "text": "E6: Input: A, <SEG:?> B <SEG:?> and <SEG:?> C <SEG:?> finished <SEG:?> in <SEG:?> first, <SEG:?> second, <SEG:?> and <SEG:?> third <SEG:?> place, <SEG:?> respectively.\nOutput: A, <SEG:10> B <SEG:05> and <SEG:07> C <SEG:02> finished <SEG:50> in <SEG:20> first, <SEG:01> second, <SEG:15> and <SEG:30> third <SEG:40> place, <SEG:100> respectively."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -805
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 497
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "change",
+    "chars_change": 199
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edit 3: 없는 id 'E5'"
+  ]
+ }
+]

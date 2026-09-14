@@ -1,0 +1,52 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer fails to treat cuts that leave a fragment which already reads like a concrete factual claim (an item of a list, an ordinal result, or a finite predicate) as high-risk: when the left side can be read alone as asserting a specific outcome that the remainder can complete or overturn, the cut must be given very low score (via either very low cohesion or very high contra).",
+    "evidence": "Shows up repeatedly: all variants of the Gingrich sentence (where cuts leave \"X finished in fourth,\" or \"fifth, and sixth place,\" before the rest), the internal-poisoning sentence (cuts that split the clause that makes the diagnostic claim), the wooden-wheels sentence (splitting subject vs. predicate), the time sentence (splitting \"time\" from its predicate), the \"words infectious and contagious\" sentence, the fares example, and the inmates example — in each case the policy kept cuts whose own H was near zero because the left fragment asserts a specific fact that the continuation resolves or contradicts.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Incomplete-predicate/list test:",
+     "text": "1) Incomplete-predicate / standalone-assertion test: Ask whether the left chunk, read on its own, already makes a concrete factual claim (for example: a finite verb that looks complete, an ordinal or numbered/list item, or a statement of outcome) whose truth or interpretation depends on material that follows. If YES, treat the cut as very high-risk: either set cohesion near 0 or raise contra toward 1. Operational guidance: when the left fragment alone asserts a specific outcome that the continuation can modify or negate (e.g. an item of an enumeration followed later by 'respectively', or a verb whose required complement/argument appears later), increase contra strongly (e.g. >=0.8) or set cohesion very low. This rule overrides small-surface preferences for short pieces; prefer to keep such assertions attached to their disambiguating material."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer underweights the detached-head/modifier condition: cuts that separate a syntactic head (name, noun, verb) from an essential modifier, title, or multiword name often destroy compositional fidelity and must be scored very poorly.",
+    "evidence": "Appears across the Gingrich variants where splitting titles/names or breaking a multiword title/name produced much lower measured H; also in sentences where cutting between a determiner/modifier and its head (e.g. splitting 'wooden' from 'wheels' or 'the words' from 'meanings') produced poor standalone fragments. In the better (target) segmentations these boundaries were avoided or replaced by cuts that keep heads with their essential modifiers.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "2) Detached-head/modifier test:",
+     "text": "2) Detached-head / essential-modifier test: Ask whether the cut would separate a syntactic head (person/place name, noun phrase head, finite verb) from an essential modifier, determiner, title element, or other attached words that determine its interpretation. If YES, sharply reduce cohesion (treat the joined translation fidelity as very low). Operational guidance: splitting inside multiword names/titles or between a determiner/modifier and its head usually yields unfaithful isolated translations; prefer cuts that leave atomic names/titles or head+modifier units intact, or else score such internal cuts near the bottom."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer fails to treat cuts that leave a fragment which already reads like a concrete factual claim (an item of a list, an ordinal result, or a finite predicate) as high-risk: when the left side can be read alone as asserting a specific outcome that the remainder can complete or overturn, the cut must be given very low score (via either very low cohesion or very high contra).",
+   "evidence": "Shows up repeatedly: all variants of the Gingrich sentence (where cuts leave \"X finished in fourth,\" or \"fifth, and sixth place,\" before the rest), the internal-poisoning sentence (cuts that split the clause that makes the diagnostic claim), the wooden-wheels sentence (splitting subject vs. predicate), the time sentence (splitting \"time\" from its predicate), the \"words infectious and contagious\" sentence, the fares example, and the inmates example — in each case the policy kept cuts whose own H was near zero because the left fragment asserts a specific fact that the continuation resolves or contradicts.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Incomplete-predicate/list test:",
+    "text": "1) Incomplete-predicate / standalone-assertion test: Ask whether the left chunk, read on its own, already makes a concrete factual claim (for example: a finite verb that looks complete, an ordinal or numbered/list item, or a statement of outcome) whose truth or interpretation depends on material that follows. If YES, treat the cut as very high-risk: either set cohesion near 0 or raise contra toward 1. Operational guidance: when the left fragment alone asserts a specific outcome that the continuation can modify or negate (e.g. an item of an enumeration followed later by 'respectively', or a verb whose required complement/argument appears later), increase contra strongly (e.g. >=0.8) or set cohesion very low. This rule overrides small-surface preferences for short pieces; prefer to keep such assertions attached to their disambiguating material."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer underweights the detached-head/modifier condition: cuts that separate a syntactic head (name, noun, verb) from an essential modifier, title, or multiword name often destroy compositional fidelity and must be scored very poorly.",
+   "evidence": "Appears across the Gingrich variants where splitting titles/names or breaking a multiword title/name produced much lower measured H; also in sentences where cutting between a determiner/modifier and its head (e.g. splitting 'wooden' from 'wheels' or 'the words' from 'meanings') produced poor standalone fragments. In the better (target) segmentations these boundaries were avoided or replaced by cuts that keep heads with their essential modifiers.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "2) Detached-head/modifier test:",
+    "text": "2) Detached-head / essential-modifier test: Ask whether the cut would separate a syntactic head (person/place name, noun phrase head, finite verb) from an essential modifier, determiner, title element, or other attached words that determine its interpretation. If YES, sharply reduce cohesion (treat the joined translation fidelity as very low). Operational guidance: splitting inside multiword names/titles or between a determiner/modifier and its head usually yields unfaithful isolated translations; prefer cuts that leave atomic names/titles or head+modifier units intact, or else score such internal cuts near the bottom."
+   }
+  }
+ ]
+}

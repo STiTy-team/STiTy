@@ -1,0 +1,125 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, reports of opposite outcomes, moves from assertion into speculation, or later material that supplies the main clause's modal/temporal frame. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch. Parallel-list / respectively test: if the remainder provides the indexing or pairing (ranks, measurements, results, or an explicit marker like \"respectively\") that assigns properties to earlier list items, treat contra as high (near 1.0) or cohesion as very low; do not allow surface grammaticality of the left chunk to override this — the cut is unsafe."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Incomplete-predicate / multiword-frame rule (strengthened): if the left fragment would be missing an essential complement, particle, or the tail of a multiword prepositional/verb frame (i.e., the remainder supplies the core argument or particle that completes the predicate), set cohesion near 0 and raise contra; treat such cuts as very poor. Detached-head / modifier rule (clarified): if a cut separates a title/honorific or a determinative/essential modifier from the named head, or splits a multiword proper name or required postmodifier, sharply reduce cohesion (near 0); prefer keeping head+modifiers together so each piece can be independently translated without loss of reference. If both tests flag the cut, score it near the bottom."
+   },
+   {
+    "op": "delete",
+    "id": "C8"
+   },
+   {
+    "op": "delete",
+    "id": "C9"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": 308
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": 743
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "C8",
+    "chars_change": -216
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "C9",
+    "chars_change": -167
+   }
+  ],
+  "result_chars": 9320,
+  "errors": [
+   "길이 초과: 9320 > 8664"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "text": "   - Decide whether what follows the cut can reverse, negate, restrict, or materially change the claim made so far when the left fragment is read alone. Look for contrast, negation, exclusive exceptions, opposite outcomes, shifts into speculation, or later material that supplies the main clause's modal/temporal frame. Estimate this as a probability (0.0–1.0) that the remainder will contradict or materially change the prior stretch. Parallel-list/respectively test: if the remainder provides the indexing or pairing (ranks, measurements, results, or an explicit marker like \"respectively\") that assigns properties to earlier list items, treat contra as high (near 1.0) or cohesion as very low; such cuts are unsafe."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "text": "   - Judge whether essential argument structure, attachment, or scope relations cross the cut so that separately translated pieces would fail to compose. Estimate cohesion as a 0–100 fidelity percentage for the joined, separately translated pieces. Common risks: separating a predicate from its object or complement, splitting a head noun from required modifiers/possessives, breaking a verb+particle or other multiword predicate, forcing an attachment decision without disambiguating material, or detaching quantifiers/negation. Incomplete-predicate / multiword-frame rule: if the left fragment would be missing an essential complement, particle, or the tail of a multiword prepositional/verb frame (i.e., the remainder supplies the core argument or particle that completes the predicate), set cohesion near 0 and raise contra; treat such cuts as very poor. Detached-head / modifier clarification: if a cut separates a title/honorific or a determinative/essential modifier from the named head, or splits a multiword proper name or required postmodifier, sharply reduce cohesion (near 0); prefer keeping head+modifiers together so each piece can be independently translated without loss of reference."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "text": "Always make both judgments at every marker. Think how English builds propositions—subjects before finite verbs, auxiliaries and negation near the verb, modifiers that can attach before or after nouns, and subordinate material that can change scope. Do not apply token-based surface rules; apply the two semantic questions everywhere."
+   },
+   {
+    "op": "delete",
+    "id": "C8"
+   },
+   {
+    "op": "delete",
+    "id": "C9"
+   },
+   {
+    "op": "delete",
+    "id": "E1"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "chars_change": 211
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "chars_change": 671
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C6",
+    "chars_change": -27
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "C8",
+    "chars_change": -216
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "C9",
+    "chars_change": -167
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E1",
+    "chars_change": -805
+   }
+  ],
+  "result_chars": 8318,
+  "errors": null
+ }
+]
