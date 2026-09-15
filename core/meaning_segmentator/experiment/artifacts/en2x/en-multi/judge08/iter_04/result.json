@@ -1,0 +1,46 @@
+{
+ "iter": 4,
+ "candidate": 0,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00944,
+  "lo": -0.02488,
+  "hi": 0.00673,
+  "n": 410,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Replaced C8 to add two explicit, semantic checks (single-obligatory-completion and noun-head/apposition) that raise risk when a cut separates a head from its required completer or identifying modifiers; wording explicitly warns against rewarding moves that isolate tiny one-word completions on the right.",
+  "This change addresses the critic's findings that the prompt underestimated risk when the right fragment supplies the sole disambiguating/completing element and when cuts orphan noun-identifying modifiers."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C8",
+   "kind": "change",
+   "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+   "now": "Keep these as semantic judgments you can apply at every boundary: ask whether th"
+  }
+ ],
+ "findings": [
+  "The prompt underestimates the risk of cutting a clause or predicate off from its single obligatory completer (subordinators, finite verbs, auxiliaries, quantifiers, or verbs that require a specific object), so it often scores cuts that isolate the completer on the right as acceptable even though the right fragment, when heard alone, changes or incompletes the earlier claim.",
+  "The prompt fails to penalize cuts that split a noun head from identifying modifiers or appositives (titles, names, restrictive modifiers), producing fragments that lose referential clarity or are misleading when heard alone."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0014,
+   "≤5": -0.0087,
+   "≤7": -0.0182,
+   "≤10": -0.0504,
+   "≤99": -0.0015
+  },
+  "n_worse": 150,
+  "n_better": 114,
+  "why": "Replacing C8 introduced explicit checks that penalize isolating tiny right‑hand completions and that try to catch noun‑head/apposition separations; this slightly helped very short piece decisions (≤3 words) but shifted top scoring cuts in mid/long bins so the model often cut earlier inside clauses (splitting verbs from adverbs and detaching appositives), lowering H_set overall.",
+  "lesson": "When adding semantic checks, avoid asymmetric penalties that protect tiny right fragments at the cost of creating incentives to split heads from their modifiers or appositives—apply the checks so they do not encourage earlier, intra‑clausal cuts.",
+  "blamed": [
+   "C8"
+  ]
+ }
+}

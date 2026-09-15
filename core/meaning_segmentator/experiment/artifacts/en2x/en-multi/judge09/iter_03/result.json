@@ -1,0 +1,62 @@
+{
+ "iter": 3,
+ "candidate": 2,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00122,
+  "lo": -0.02711,
+  "hi": 0.02711,
+  "n": 410,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Replace Example E1 with labeled example en_us_1427 to teach the model to avoid cutting off clause cores and existential/predicate fragments (addresses finding: missing clause core raises contra).",
+  "Replace Example E2 with labeled example en_us_59 to show cohesion loss from splitting tightly bound name/title and noun+modifier packages (addresses finding: splitting multiword/name/title units).",
+  "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion and contradiction risks when cuts isolate preverbal fragments and split quantifier/list frames (addresses findings: preverbal/predicate isolation and list/quantifier splitting)."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:",
+   "now": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> imm"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p",
+   "now": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <S"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap",
+   "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+  }
+ ],
+ "findings": [
+  "The prompt underestimates how dangerous a cut is when the left stretch lacks the clause’s main predicate or leaves only subordinating/introductory material — later negation, qualification or the main verb routinely overturns such prefixes and must be treated as near-certain contra.",
+  "The prompt under‑weights cohesion loss from cutting inside noun phrases, modifier stacks, or between a verb and its essential object/particle; splitting a head from its determiners, quantifiers, postnominal modifiers or phrasal particle often breaks translation even when contra is low."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0007,
+   "≤5": 0.0052,
+   "≤7": -0.0177,
+   "≤10": -0.0082,
+   "≤99": 0.004
+  },
+  "n_worse": 150,
+  "n_better": 120,
+  "why": "The new E1 example succeeded at teaching the model to avoid cutting inside very short, tightly bound units (improving ≤3 and ≤5 bins, see en_us_1427), but the E2/E3 replacements caused the model to shift some cutpoints earlier in mid-length pieces (≤7–≤10), producing isolated preverbal/verb fragments and splitting multiword name/title/number packages (examples en_us_133, en_us_1108, en_us_248 show cuts moved so verbs or numeric/title tokens became standalone fragments).",
+  "lesson": "Keep examples that discourage cuts inside small cohesive packages while ensuring new examples do not incentivize earlier cuts that isolate verb/predicate cores or split multiword names/titles/numbers.",
+  "blamed": [
+   "E2",
+   "E3"
+  ]
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "n_sentences": 50,
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00589,
+    "lo": -0.01121,
+    "hi": 0.02337,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 7576,
+   "changelog": [
+    "Replace C3 to explicitly and concisely require checking for a missing clause core (addresses finding: missing predicate/clause core raises contra).",
+    "Paraphrase C4 to shorten and sharpen the warning that cuts leaving only introductory/subordinating material are high-risk (addresses finding: preverbal/subordinate fragments).",
+    "Change C6 to add a compact, actionable rule treating tightly bound name/title and noun+modifier packages as cohesion atoms and to warn to sharply reduce cohesion if split (addresses finding: splitting multiword/name/title units).",
+    "Paraphrase C8 to a shorter reminder to think in structural terms, reducing length while preserving guidance.",
+    "Replace Example E1 with the measured labeled example en_us_1591 to teach the model about name/title cohesion directly (per critique: prefer measured examples for this signal).",
+    "Delete Example E3 (hand-written) to recover space and ensure the edit set reduces prompt size sufficiently."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.02455,
+    "lo": 0.00557,
+    "hi": 0.04592,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 8920,
+   "changelog": [
+    "Replace Example E1 with labeled example en_us_1591 to teach the model to avoid cutting inside names/titles and keep multiword name/title units intact (addresses finding: splitting multiword/name/title units).",
+    "Replace Example E2 with labeled example en_us_1102 to show the danger of cuts that leave preverbal or predicate fragments (addresses finding: missing clause core / high contra).",
+    "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion loss when cuts split quantifier/list frames and to discourage cutting list/quantifier structures (addresses finding: quantifier/list splitting)."
+   ]
+  }
+ ]
+}

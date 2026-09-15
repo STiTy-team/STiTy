@@ -1,0 +1,51 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates how destructive a following predicate/qualification can be: cuts that leave a preverbal fragment, an incomplete predicate, or an existential/qualification (e.g. 'may be the presence ...') are often contradicted or made misleading by what follows and must be ranked far lower.",
+    "evidence": "10 cases (en_us_1591, en_us_1593, en_us_1102, en_us_1192, en_us_1427, en_us_1143, en_us_1108, en_us_608, en_us_594, en_us_388) where a single policy-kept cut had very high measured contra (>0.8) and that one cut alone zeroed or collapsed the set; in each the kept cut left a fragment that only gains its truth or qualification from later material (preverbal fragments, existential 'may be ...', or list disambiguation).",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Contra: Could the remainder",
+     "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken?  Treat this quantitatively and aggressively: compute target = cohesion * (1 - contra) and use that product to order cuts. Any candidate with contra >= 0.6 will make (1 - contra) <= 0.4 and thus should be given a substantially lower score than typical low‑contra candidates; in practice rank all high‑contra (>=0.6) positions below low‑contra positions so the downstream step does not keep them. Do not rely on intuition alone — estimate contra as a probability and let the (1 - contra) multiplier decisively push cuts that leave incomplete predicates or existential/qualification fragments toward the bottom of the ordering."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt downplays cohesion loss from splitting multiword units: breaking titles/names, a noun/verb head from its essential modifiers or objects, list items or quantifier frames frequently destroys translatability and should be penalised strongly.",
+    "evidence": "9 cases (en_us_1591, en_us_388, en_us_594, en_us_1108, en_us_1102, en_us_1143, en_us_1427, en_us_608, en_us_1192) where the policy cut inside named titles, noun phrases, verb+object frames or list/coordinate structures and kept those cuts despite high cohesion loss; the offline targets preserve such multiword units and score much higher.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: may be the presence <SEG:?> of an open container <SEG:?>\nOutput: may be the presence <SEG:5> of an open container <SEG:95>\n(Explanation: cutting after 'presence' separates the existential predicate from its object; cohesion drops sharply and the cut must receive a very low score so it is not selected under realistic latency budgets.)"
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates how destructive a following predicate/qualification can be: cuts that leave a preverbal fragment, an incomplete predicate, or an existential/qualification (e.g. 'may be the presence ...') are often contradicted or made misleading by what follows and must be ranked far lower.",
+   "evidence": "10 cases (en_us_1591, en_us_1593, en_us_1102, en_us_1192, en_us_1427, en_us_1143, en_us_1108, en_us_608, en_us_594, en_us_388) where a single policy-kept cut had very high measured contra (>0.8) and that one cut alone zeroed or collapsed the set; in each the kept cut left a fragment that only gains its truth or qualification from later material (preverbal fragments, existential 'may be ...', or list disambiguation).",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Contra: Could the remainder",
+    "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken?  Treat this quantitatively and aggressively: compute target = cohesion * (1 - contra) and use that product to order cuts. Any candidate with contra >= 0.6 will make (1 - contra) <= 0.4 and thus should be given a substantially lower score than typical low‑contra candidates; in practice rank all high‑contra (>=0.6) positions below low‑contra positions so the downstream step does not keep them. Do not rely on intuition alone — estimate contra as a probability and let the (1 - contra) multiplier decisively push cuts that leave incomplete predicates or existential/qualification fragments toward the bottom of the ordering."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt downplays cohesion loss from splitting multiword units: breaking titles/names, a noun/verb head from its essential modifiers or objects, list items or quantifier frames frequently destroys translatability and should be penalised strongly.",
+   "evidence": "9 cases (en_us_1591, en_us_388, en_us_594, en_us_1108, en_us_1102, en_us_1143, en_us_1427, en_us_608, en_us_1192) where the policy cut inside named titles, noun phrases, verb+object frames or list/coordinate structures and kept those cuts despite high cohesion loss; the offline targets preserve such multiword units and score much higher.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: may be the presence <SEG:?> of an open container <SEG:?>\nOutput: may be the presence <SEG:5> of an open container <SEG:95>\n(Explanation: cutting after 'presence' separates the existential predicate from its object; cohesion drops sharply and the cut must receive a very low score so it is not selected under realistic latency budgets.)"
+   }
+  }
+ ]
+}

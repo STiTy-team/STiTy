@@ -1,0 +1,61 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer underestimates contra-risk when the right-hand fragment contains the single disambiguating, negating, or specifying element (negation, quantifier/ordinal, list continuation, or the complement that decides truth) that determines the truth-conditions of the already-heard left fragment.",
+    "evidence": "Observed in 9 cases: policy cuts that left a fragment whose truth or scope was decided by material on the right (high measured contra ≈0.87–0.99). They share the pattern that the right piece contains the crucial polarity/numbering/completion (e.g. a negation or the remainder of an ordinal/list or the verb/complement that reverses or qualifies the earlier assertion), so the later fragment alone would overturn or change what the listener would have believed after the left fragment.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add an explicit contra checklist item: 'If the right fragment contains the single element that disambiguates, completes, or cancels the meaning of the left (negation/canceling verb, quantifier or ordinal that assigns positions, the continuation of an enumerated list, or the complement whose polarity decides the claim), treat contra as high. Concretely ask: “Does the right fragment, alone, supply the element that would make the left claim true vs. false or change its scope?” If yes, raise contra toward 1.'"
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer undervalues cohesion loss when a cut separates a grammatical head (main verb or noun head) from its required dependents, leaving modifiers, subordinators or complements orphaned so the two fragments cannot be concatenated without losing essential relations.",
+    "evidence": "Observed in 10 cases: policy cuts that split subject–predicate, a clause-introducer from its main predication, or modifiers from their head, producing low cohesion or making the left or right fragment uninterpretable on its own. These errors consistently improved when the better cut kept the head and its core dependents together.",
+    "edit": {
+     "where": "2) Cohesion assessment:",
+     "action": "replace",
+     "target": "2) Cohesion assessment:",
+     "text": "2) Cohesion assessment: Explicitly check whether a cut separates a grammatical head from its dependents. Ask: does the left fragment lack its main predicate or the right fragment contain the main predicate or noun that the left depends on? Does a subordinator, complementizer, numeral/ordinal, or list marker on one side need material on the other to form a complete assertion? If a head/dependent relation is severed (verb from subject/complement, complementizer from its clause, noun from its modifiers), penalize cohesion heavily (near 0)."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer treats coordinating/connective words (but, and, while, however, respectively, etc.) too lightly and therefore misses that cuts adjacent to these connectors typically indicate tight dependency or contrast and often carry high contra/cohesion risk.",
+    "evidence": "Seen across 6 cases where policy cuts fell immediately before/after conjunctions or contrastive connectives and produced high measured harm. The kept target cuts moved to keep the connective with the clause it connects or the contrast it completes.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add a connective rule: 'Treat explicit connectives and contrast markers as dependency signals: if a cut would leave a connective isolated from the clause that completes its contrast/comparison (e.g. but, however, while, respectively, and, or), increase both contra and cohesion penalty unless the connective clearly starts a self-contained clause. Ask: “Does this connective require the following fragment to complete its contrast/coordination?” If yes, avoid the cut.'"
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer underestimates contra-risk when the right-hand fragment contains the single disambiguating, negating, or specifying element (negation, quantifier/ordinal, list continuation, or the complement that decides truth) that determines the truth-conditions of the already-heard left fragment.",
+   "evidence": "Observed in 9 cases: policy cuts that left a fragment whose truth or scope was decided by material on the right (high measured contra ≈0.87–0.99). They share the pattern that the right piece contains the crucial polarity/numbering/completion (e.g. a negation or the remainder of an ordinal/list or the verb/complement that reverses or qualifies the earlier assertion), so the later fragment alone would overturn or change what the listener would have believed after the left fragment.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add an explicit contra checklist item: 'If the right fragment contains the single element that disambiguates, completes, or cancels the meaning of the left (negation/canceling verb, quantifier or ordinal that assigns positions, the continuation of an enumerated list, or the complement whose polarity decides the claim), treat contra as high. Concretely ask: “Does the right fragment, alone, supply the element that would make the left claim true vs. false or change its scope?” If yes, raise contra toward 1.'"
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer treats coordinating/connective words (but, and, while, however, respectively, etc.) too lightly and therefore misses that cuts adjacent to these connectors typically indicate tight dependency or contrast and often carry high contra/cohesion risk.",
+   "evidence": "Seen across 6 cases where policy cuts fell immediately before/after conjunctions or contrastive connectives and produced high measured harm. The kept target cuts moved to keep the connective with the clause it connects or the contrast it completes.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add a connective rule: 'Treat explicit connectives and contrast markers as dependency signals: if a cut would leave a connective isolated from the clause that completes its contrast/comparison (e.g. but, however, while, respectively, and, or), increase both contra and cohesion penalty unless the connective clearly starts a self-contained clause. Ask: “Does this connective require the following fragment to complete its contrast/coordination?” If yes, avoid the cut.'"
+   }
+  }
+ ]
+}

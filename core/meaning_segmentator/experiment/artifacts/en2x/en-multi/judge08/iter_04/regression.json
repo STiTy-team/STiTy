@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00944,
+  "lo": -0.02488,
+  "hi": 0.00673,
+  "n": 410,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": 0.0014,
+  "≤5": -0.0087,
+  "≤7": -0.0182,
+  "≤10": -0.0504,
+  "≤99": -0.0015
+ },
+ "n_worse": 150,
+ "n_better": 114,
+ "worst": [
+  {
+   "id": "en_us_1192",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.6739,
+   "before": "However, ‖ this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6683,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_133",
+   "k": 2,
+   "bin": "≤10",
+   "delta": -0.5773,
+   "before": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender is being investigated for trespassing rather than vandalism.",
+   "after": "Christopher Garcia, a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender ‖ is being investigated for trespassing rather than vandalism."
+  },
+  {
+   "id": "en_us_133",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.4743,
+   "before": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender is being investigated for trespassing ‖ rather than vandalism.",
+   "after": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender ‖ is being investigated for trespassing rather than vandalism."
+  },
+  {
+   "id": "en_us_388",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.4705,
+   "before": "He originally ‖ named the Hangeul ‖ alphabet ‖ Hunmin ‖ Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction ‖ of the people\".",
+   "after": "He ‖ originally ‖ named ‖ the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction ‖ of the people\"."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1427",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.711,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal ‖ poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.6632,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal ‖ poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 8,
+   "bin": "≤3",
+   "delta": 0.6117,
+   "before": "Internal poisoning ‖ may not be ‖ immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal ‖ poisoning ‖ may not be ‖ immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1108",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.4779,
+   "before": "Coalition and Afghan troops ‖ moved into the area ‖ to secure the site ‖ and other coalition aircraft ‖ have been sent ‖ to assist.",
+   "after": "Coalition and Afghan troops ‖ moved ‖ into the area ‖ to secure the site ‖ and other coalition aircraft have been sent ‖ to assist."
+  },
+  {
+   "id": "en_us_829",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.2605,
+   "before": "The advice assumes that travellers do not steal, ‖ trespass, ‖ participate in the illegal market, ‖ beg, or otherwise exploit other people ‖ for their own gain.",
+   "after": "The advice ‖ assumes that travellers do not steal, ‖ trespass, ‖ participate in the illegal market, ‖ beg, or otherwise exploit other people for their own gain."
+  }
+ ],
+ "why": "Replacing C8 introduced explicit checks that penalize isolating tiny right‑hand completions and that try to catch noun‑head/apposition separations; this slightly helped very short piece decisions (≤3 words) but shifted top scoring cuts in mid/long bins so the model often cut earlier inside clauses (splitting verbs from adverbs and detaching appositives), lowering H_set overall.",
+ "lesson": "When adding semantic checks, avoid asymmetric penalties that protect tiny right fragments at the cost of creating incentives to split heads from their modifiers or appositives—apply the checks so they do not encourage earlier, intra‑clausal cuts.",
+ "blamed": [
+  "C8"
+ ]
+}

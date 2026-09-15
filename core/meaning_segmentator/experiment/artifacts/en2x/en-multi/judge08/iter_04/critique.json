@@ -1,0 +1,52 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates the risk of cutting a clause or predicate off from its single obligatory completer (subordinators, finite verbs, auxiliaries, quantifiers, or verbs that require a specific object), so it often scores cuts that isolate the completer on the right as acceptable even though the right fragment, when heard alone, changes or incompletes the earlier claim.",
+    "evidence": "Observed in 10 of 12 cases: policy cuts separate left fragments that open or commit to a proposition (e.g. subordinate openers, auxiliaries, predicates expecting an object or clause) and leave the completing phrase on the right. The kept policy cuts produced very high measured contra or very low H when that right-side completer was later presented alone; offline targets instead kept the head+completer together and raised H_set substantially.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Single obligatory element check:",
+     "text": "Single-obligatory-completion check: Ask whether the left fragment, as heard alone, opens or commits to a propositional claim that requires one specific completer to make its truth-conditions determinate (examples: subordinate clause openers, auxiliaries/negation that scope over a following phrase, a verb that expects a particular object/clause, or a quantifier whose restrictor/complement is deferred). If the right fragment is that required completer, treat a cut as unsafe: lower cohesion and raise contra because isolating the completer on the right will either leave the left incoherent or let the right, when played alone, overturn the left. Do NOT reward moving the unique completer to the right as a general strategy."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt fails to penalize cuts that split a noun head from identifying modifiers or appositives (titles, names, restrictive modifiers), producing fragments that lose referential clarity or are misleading when heard alone.",
+    "evidence": "Seen in 4 of 12 cases: policy kept cuts that separated heads from titles/appositives (e.g. 'Former' / 'House Speaker Newt Gingrich', geographic/appositive names) or detached essential identifying material, yielding low per-cut H or high contra. Offline targets retained the head together with its identifying modifiers and returned much higher H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Noun-head and apposition check:",
+     "text": "Noun-head / apposition check: Ask whether the cut would separate a noun phrase's head (the referent) from the modifiers that identify or restrict it (titles, names, appositives, post‑nominal restrictive phrases). If the left fragment would lose the referent's identity or leave a dangling modifier when played alone, mark cohesion low and prefer keeping the head and its identifying modifiers together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates the risk of cutting a clause or predicate off from its single obligatory completer (subordinators, finite verbs, auxiliaries, quantifiers, or verbs that require a specific object), so it often scores cuts that isolate the completer on the right as acceptable even though the right fragment, when heard alone, changes or incompletes the earlier claim.",
+   "evidence": "Observed in 10 of 12 cases: policy cuts separate left fragments that open or commit to a proposition (e.g. subordinate openers, auxiliaries, predicates expecting an object or clause) and leave the completing phrase on the right. The kept policy cuts produced very high measured contra or very low H when that right-side completer was later presented alone; offline targets instead kept the head+completer together and raised H_set substantially.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Single obligatory element check:",
+    "text": "Single-obligatory-completion check: Ask whether the left fragment, as heard alone, opens or commits to a propositional claim that requires one specific completer to make its truth-conditions determinate (examples: subordinate clause openers, auxiliaries/negation that scope over a following phrase, a verb that expects a particular object/clause, or a quantifier whose restrictor/complement is deferred). If the right fragment is that required completer, treat a cut as unsafe: lower cohesion and raise contra because isolating the completer on the right will either leave the left incoherent or let the right, when played alone, overturn the left. Do NOT reward moving the unique completer to the right as a general strategy."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt fails to penalize cuts that split a noun head from identifying modifiers or appositives (titles, names, restrictive modifiers), producing fragments that lose referential clarity or are misleading when heard alone.",
+   "evidence": "Seen in 4 of 12 cases: policy kept cuts that separated heads from titles/appositives (e.g. 'Former' / 'House Speaker Newt Gingrich', geographic/appositive names) or detached essential identifying material, yielding low per-cut H or high contra. Offline targets retained the head together with its identifying modifiers and returned much higher H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Noun-head and apposition check:",
+    "text": "Noun-head / apposition check: Ask whether the cut would separate a noun phrase's head (the referent) from the modifiers that identify or restrict it (titles, names, appositives, post‑nominal restrictive phrases). If the left fragment would lose the referent's identity or leave a dangling modifier when played alone, mark cohesion low and prefer keeping the head and its identifying modifiers together."
+   }
+  }
+ ]
+}

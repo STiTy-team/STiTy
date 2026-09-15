@@ -1,0 +1,64 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Most declarative sentences in the sample place a clear subject before a verb then object/complements (e.g., 'Apple CEO Steve Jobs unveiled the device').",
+  "register": "formal written expository text (news, encyclopedia, technical instructions) — composed, edited prose rather than spontaneous speech.",
+  "fillers_and_hesitations": [
+    "Of course"
+  ],
+  "discourse_markers": [
+    "and",
+    "but",
+    "although",
+    "because",
+    "while",
+    "if",
+    "once",
+    "after",
+    "prior to",
+    "despite",
+    "who",
+    "which",
+    "that",
+    "when",
+    "of course"
+  ],
+  "clause_boundary_signals": [
+    "and",
+    "but",
+    "although",
+    "because",
+    "while",
+    "if",
+    "once",
+    "after",
+    "prior to",
+    "despite",
+    "who",
+    "which",
+    "that",
+    "when"
+  ],
+  "non_boundary_traps": [
+    "of",
+    "for",
+    "in",
+    "during",
+    "'s",
+    "as",
+    "percent",
+    "the"
+  ],
+  "unstable_prefix_signals": [
+    "although",
+    "because",
+    "while",
+    "if",
+    "that",
+    "who",
+    "which",
+    "as",
+    "for",
+    "once"
+  ],
+  "notes_for_prompt_writer": "This source is edited written English: expect long nested noun phrases and frequent subordinating conjunctions and relative clauses. Prefer to wait for completing a verb phrase or an independent clause before emitting a segment; avoid splitting immediately after prepositions (of, in, for), possessive 's, or determiners. Treat coordinating conjunctions (and, but) as safe split points only when they join independent clauses, but do not split right after relative/complement introducers (that, who, which) because the clause will usually continue."
+}

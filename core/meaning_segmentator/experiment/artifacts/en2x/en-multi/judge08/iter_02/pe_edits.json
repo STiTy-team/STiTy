@@ -1,0 +1,76 @@
+[
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Ask: If the listener had already heard the stretch up to this cut, would what comes after, taken alone and translated, contradict, reverse, or cancel the earlier stretch? Consider scope interactions (negation, modality, quantifiers), temporal reordering, corrections/contrast, or later complements that flip polarity or qualify an earlier claim. High contra risk = the right piece can deny or invalidate the left when heard alone."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Ask: If the left side is translated and played, then the right side is translated and played (in order) with no reanalysis, will their concatenation still convey the original sentence’s meaning? Watch for orphaned predicates/arguments, unresolved pronouns, modifiers needing a head, broken idioms, and incomplete subordinate/complement structures. Assign cohesion accordingly (1 = no loss; 0 = complete loss)."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- How English builds meaning: finite verbs and objects often appear later (SVO); splitting before a verb or inside auxiliary/negation sequences can leave scope unresolved. Subordinators and relative/complement openers usually need following material; possessives and post-modifiers attach to a noun head and should not be orphaned. Pronouns expect antecedents. Enumerations/lists can be safe after complete members; contrastive continuations and connectors are risky. Treat attached punctuation as part of the preceding word."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "Contra checklist: If the right fragment supplies the single element that disambiguates, completes, or cancels the left (e.g. a negation or canceling verb, a quantifier/ordinal that assigns position, the continuation that finishes an enumeration, or the complement that decides polarity), treat contra as high. Concretely ask: “Does the right fragment alone supply what makes the left true vs. false or change its scope?” If yes, raise contra toward 1."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "Connectives: Treat explicit connectives and contrast markers (but, however, while, respectively, and, or, etc.) as strong dependency signals. If a cut would isolate such a connective from the clause that completes its contrast or coordination, increase contra and lower cohesion unless the connective clearly begins a self-contained clause. Ask: “Does this connective require the following fragment to complete its coordination/contrast?”"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -345
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -426
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -497
+   },
+   {
+    "edit": 3,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 452
+   },
+   {
+    "edit": 4,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 439
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9700,
+  "errors": null
+ }
+]

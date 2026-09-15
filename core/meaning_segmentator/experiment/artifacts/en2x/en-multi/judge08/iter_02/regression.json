@@ -1,0 +1,110 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.01034,
+  "lo": -0.02062,
+  "hi": 0.0006,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "by_bin": {
+  "≤3": -0.0122,
+  "≤5": -0.0076,
+  "≤7": -0.0128,
+  "≤10": -0.0115,
+  "≤99": -0.0062
+ },
+ "n_worse": 431,
+ "n_better": 389,
+ "worst": [
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.742,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.703,
+   "before": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6919,
+   "before": "Eventually, ‖ wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.6739,
+   "before": "However, ‖ this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6702,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1041",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6873,
+   "before": "Like some other experts, ‖ he is skeptical about whether diabetes can be cured, ‖ noting that these findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other ‖ experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have no relevance to people who already have Type 1 diabetes."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.6724,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1167",
+   "k": 3,
+   "bin": "≤3",
+   "delta": 0.6691,
+   "before": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright as habitually.",
+   "after": "Their predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.6405,
+   "before": "Like some other experts, ‖ he is skeptical about whether diabetes can be cured, ‖ noting ‖ that these findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other ‖ experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have no relevance ‖ to people who already have Type 1 diabetes."
+  },
+  {
+   "id": "en_us_939",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6276,
+   "before": "While immigration check ‖ is usually absent or a formality when you arrive in your homeland, ‖ customs ‖ control ‖ can be a hassle.",
+   "after": "While immigration check is usually absent or a formality ‖ when you arrive ‖ in your homeland, ‖ customs control ‖ can be a hassle."
+  }
+ ],
+ "why": "The new items pushed the model to cut earlier so that finite verbs, short disambiguating words, and connective words often landed alone on the right fragment — e.g. subjects separated from verbs and list items or contrast markers isolated — which reduces cohesion and therefore lowered H_set, with the harm concentrated on very short pieces (≤3–≤7-word bins).",
+ "lesson": "A later revision should avoid wording that rewards isolating single-word disambiguators, connectives, or finite verbs into very-short right fragments (especially in ≤3–≤7 bins) because that produces many harmful subject/verb and list splits.",
+ "blamed": [
+  "C7",
+  "Contra checklist",
+  "Connectives"
+ ]
+}

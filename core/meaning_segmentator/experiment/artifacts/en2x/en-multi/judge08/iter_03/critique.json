@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt understates the risk when the right-hand fragment supplies the single obligatory element (a finite verb, nominal head, required complement, or explicit negation/reverser) that completes or sets the truth-conditions of the left; cutting there leaves the left fragment misleading or effectively contradicted when the right is heard alone.",
+    "evidence": "Seen in 9 cases (policy_worst_contra high / contra_kill=true): e.g. cuts that isolate a predicate head or essential complement before the word 'meanings', before adverbials like 'differently', before 'cannot be made', or before 'may be the presence'. These dropped positions share a pattern: the right fragment contains the single element that completes the left clause, producing very high contra or very low cohesion when evaluated alone.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Ask one more discrete question: 'Does the right fragment supply the single obligatory head or complement (a finite verb, a nominal head, an essential complement, or an explicit reversing/negating element) that the left needs to be interpretable or whose presence would flip the left's truth-conditions?' If yes, score cohesion low and/or contra high unless the left is already a self-contained clause that does not rely on that element."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt undervalues cohesion damage when a cut splits a noun phrase or apposition — i.e. separates a title/role, determiner, or modifier from the name or head noun it attaches to — producing orphaned modifiers or unnatural name translations.",
+    "evidence": "Appears in 4 cases: policy kept cuts that split role+name or appositive material (examples include splits around titles and names and appositive phrases), and the better targets group titles/roles with the name or keep appositives attached. The problematic cuts consistently produce low cohesion even though each boundary may look harmless in isolation.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add: 'Ask whether this cut would separate a head noun or proper name from its attached modifiers, titles, determiners, or appositive phrase (for example, a title plus a person name). If the right fragment is the name/head that the left modifiers attach to, prefer a lower cut score (lower cohesion).' "
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt understates the risk when the right-hand fragment supplies the single obligatory element (a finite verb, nominal head, required complement, or explicit negation/reverser) that completes or sets the truth-conditions of the left; cutting there leaves the left fragment misleading or effectively contradicted when the right is heard alone.",
+   "evidence": "Seen in 9 cases (policy_worst_contra high / contra_kill=true): e.g. cuts that isolate a predicate head or essential complement before the word 'meanings', before adverbials like 'differently', before 'cannot be made', or before 'may be the presence'. These dropped positions share a pattern: the right fragment contains the single element that completes the left clause, producing very high contra or very low cohesion when evaluated alone.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Ask one more discrete question: 'Does the right fragment supply the single obligatory head or complement (a finite verb, a nominal head, an essential complement, or an explicit reversing/negating element) that the left needs to be interpretable or whose presence would flip the left's truth-conditions?' If yes, score cohesion low and/or contra high unless the left is already a self-contained clause that does not rely on that element."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt undervalues cohesion damage when a cut splits a noun phrase or apposition — i.e. separates a title/role, determiner, or modifier from the name or head noun it attaches to — producing orphaned modifiers or unnatural name translations.",
+   "evidence": "Appears in 4 cases: policy kept cuts that split role+name or appositive material (examples include splits around titles and names and appositive phrases), and the better targets group titles/roles with the name or keep appositives attached. The problematic cuts consistently produce low cohesion even though each boundary may look harmless in isolation.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add: 'Ask whether this cut would separate a head noun or proper name from its attached modifiers, titles, determiners, or appositive phrase (for example, a title plus a person name). If the right fragment is the name/head that the left modifiers attach to, prefer a lower cut score (lower cohesion).' "
+   }
+  }
+ ]
+}

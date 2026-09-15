@@ -1,0 +1,67 @@
+{
+ "iter": 4,
+ "adopted": false,
+ "delta": {
+  "mean": -0.01448,
+  "lo": -0.03183,
+  "hi": 0.00337,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": -0.01448,
+  "lo": -0.03183,
+  "hi": 0.00337,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Replace example E1 with measured labeled example en_us_59 to teach preserving tightly bound name/title and honorific+name packages (reduces splitting of multiword names).",
+  "Replace example E2 with measured labeled example en_us_1427 to teach avoiding cuts that leave preverbal or predicate fragments (addresses high‑contra predicate/completion risk).",
+  "Replace example E3 with measured labeled example en_us_1192 to teach avoiding splitting quantifier/list frames and to preserve clause cores in longer lists."
+ ],
+ "findings": [
+  "The prompt lets high-contradiction cuts through: it underestimates positions where the remainder of the sentence will almost certainly overturn or complete the prefix (preverbal fragments, subordinating openings, subject-only prefixes, and tail fragments that need a qualifier). In practice, cuts with very high contra (≈0.9) systematically destroy set quality and must be treated as effectively unacceptable even if cohesion looks okay.",
+  "The prompt's examples and tie-breaking bias can push cuts earlier, producing isolated verb/predicate fragments or split multiword name/number/title packages. In trying to avoid cutting inside very short packages the model has learned to move cutpoints left, which can create preverbal or standalone-predicate fragments that are unsafe."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:",
+   "now": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <S"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p",
+   "now": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> imm"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap",
+   "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0333,
+   "≤5": -0.0113,
+   "≤7": 0.0024,
+   "≤10": 0.0002,
+   "≤99": 0.0144
+  },
+  "n_worse": 457,
+  "n_better": 380,
+  "why": "The new examples caused the model to stop cutting inside tightly bound name/title packages and to preserve list/quantifier frames and preverbal predicate chunks — e.g. it now joins “Former House Speaker Newt Gingrich” and keeps list cores together. That shift moved many cuts away from names and clause cores into adjacent very short pieces (≤3 and ≤5-word bins), increasing bad short-fragment splits enough to lower the overall H_set despite improvements on longer pieces.",
+  "lesson": "Preserving multiword names and list/clause cores helps longer pieces but can force harmful ultra-short fragments; future edits should avoid moving cuts in a way that produces many ≤3-word pieces.",
+  "blamed": [
+   "E1",
+   "E3"
+  ]
+ }
+}

@@ -1,0 +1,59 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00098,
+  "lo": -0.01239,
+  "hi": 0.01131,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": -0.00098,
+  "lo": -0.01239,
+  "hi": 0.01131,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Insert a discrete question about single obligatory heads/complements to correct the understating of risk when the right fragment supplies the sole element that completes or flips the left (addresses finding 1).",
+  "Insert guidance about separation of noun heads, titles, determiners or appositives to raise cohesion penalties when modifiers are orphaned (addresses finding 2)."
+ ],
+ "findings": [
+  "The prompt understates the risk when the right-hand fragment supplies the single obligatory element (a finite verb, nominal head, required complement, or explicit negation/reverser) that completes or sets the truth-conditions of the left; cutting there leaves the left fragment misleading or effectively contradicted when the right is heard alone.",
+  "The prompt undervalues cohesion damage when a cut splits a noun phrase or apposition — i.e. separates a title/role, determiner, or modifier from the name or head noun it attaches to — producing orphaned modifiers or unnatural name translations."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+   "now": "Single obligatory element check: Ask whether the right fragment provides the sin"
+  },
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+   "now": "Noun-head and apposition check: Ask whether this cut would separate a head noun "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0059,
+   "≤5": -0.0005,
+   "≤7": -0.015,
+   "≤10": -0.0077,
+   "≤99": -0.0005
+  },
+  "n_worse": 448,
+  "n_better": 417,
+  "why": "The new checks made the model move many cuts earlier in the sentence (hurt most for mid-length pieces, ≤7–≤10 words) so it began slicing off complements and list items instead of keeping them attached to their heads; this produced the large negative moves in the worst examples while slightly improving very-short bins (≤3). The wording for the single-obligatory-element check was interpreted as encouraging isolation of the completing element on the right, and the noun-head/apposition guidance caused the model to avoid some noun-boundary cuts by shifting cuts into predicates and enumerations.",
+  "lesson": "When revising, ensure checks discourage cutting between heads and their obligatory complements/appositions (don’t encourage isolating the completer on the right) because otherwise the model will shift cuts earlier and fragment predicates and enumerations, especially harming mid-length pieces.",
+  "blamed": [
+   "C8 (Single obligatory element check)",
+   "C8 (Noun-head and apposition check)"
+  ]
+ }
+}

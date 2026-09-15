@@ -1,0 +1,51 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates how dangerous a cut is when the left stretch lacks the clause’s main predicate or leaves only subordinating/introductory material — later negation, qualification or the main verb routinely overturns such prefixes and must be treated as near-certain contra.",
+    "evidence": "9 cases (en_us_1427, en_us_1143, en_us_608, en_us_1192, en_us_876, en_us_627, en_us_877, en_us_802, en_us_970) share the same pattern: the policy kept a cut that left a subordinating phrase, preverbal fragment, or an incomplete assertion on the left and a later clause that negates or completes it; those positions had very high measured contra and zeroed the set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Contra:",
+     "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken? Explicit additional test: if the left stretch does not contain the clause’s finite predicate (main verb/negation) or contains only subordinating/introductory material (e.g. initial adverbial/subordinate clause, auxiliaries without a main verb, or a fragment that looks like a subject or preface), treat the cut as extremely risky — raise contra toward 1. Put another way, if the truth‑conditions of the left stretch cannot be evaluated without material that follows (because the main assertion, negation, scope‑reversal, or essential qualification appears later), assume the remainder will likely change the meaning and penalize the cut accordingly. Do not treat such cases as mild or graded exceptions; they should generally be avoided under the latency budgets that permit preserving clause cores."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt under‑weights cohesion loss from cutting inside noun phrases, modifier stacks, or between a verb and its essential object/particle; splitting a head from its determiners, quantifiers, postnominal modifiers or phrasal particle often breaks translation even when contra is low.",
+    "evidence": "3 cases (en_us_59, en_us_409, en_us_194) show low-to-moderate contra but clear cohesion damage: policy cuts split noun‑phrase heads from their modifiers or separated clauses in ways that reduced joined translation quality even though no single cut was overtly contradicted.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Cohesion (additional rule): strongly penalize cuts that split a single noun phrase (determiner/quantifier + head noun + essential postnominal modifiers) or separate a verb from its core object/particle. When essential modifiers, relative/PP complements, numerals/quantifiers, or phrasal particles attach to a head on the other side of the cut, reduce cohesion sharply — such splits commonly produce lost references, detached modifiers, or wrong attachments in independent translations and should be avoided unless the rest of the sentence clearly neutralizes the dependency."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates how dangerous a cut is when the left stretch lacks the clause’s main predicate or leaves only subordinating/introductory material — later negation, qualification or the main verb routinely overturns such prefixes and must be treated as near-certain contra.",
+   "evidence": "9 cases (en_us_1427, en_us_1143, en_us_608, en_us_1192, en_us_876, en_us_627, en_us_877, en_us_802, en_us_970) share the same pattern: the policy kept a cut that left a subordinating phrase, preverbal fragment, or an incomplete assertion on the left and a later clause that negates or completes it; those positions had very high measured contra and zeroed the set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Contra:",
+    "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken? Explicit additional test: if the left stretch does not contain the clause’s finite predicate (main verb/negation) or contains only subordinating/introductory material (e.g. initial adverbial/subordinate clause, auxiliaries without a main verb, or a fragment that looks like a subject or preface), treat the cut as extremely risky — raise contra toward 1. Put another way, if the truth‑conditions of the left stretch cannot be evaluated without material that follows (because the main assertion, negation, scope‑reversal, or essential qualification appears later), assume the remainder will likely change the meaning and penalize the cut accordingly. Do not treat such cases as mild or graded exceptions; they should generally be avoided under the latency budgets that permit preserving clause cores."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt under‑weights cohesion loss from cutting inside noun phrases, modifier stacks, or between a verb and its essential object/particle; splitting a head from its determiners, quantifiers, postnominal modifiers or phrasal particle often breaks translation even when contra is low.",
+   "evidence": "3 cases (en_us_59, en_us_409, en_us_194) show low-to-moderate contra but clear cohesion damage: policy cuts split noun‑phrase heads from their modifiers or separated clauses in ways that reduced joined translation quality even though no single cut was overtly contradicted.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Cohesion (additional rule): strongly penalize cuts that split a single noun phrase (determiner/quantifier + head noun + essential postnominal modifiers) or separate a verb from its core object/particle. When essential modifiers, relative/PP complements, numerals/quantifiers, or phrasal particles attach to a head on the other side of the cut, reduce cohesion sharply — such splits commonly produce lost references, detached modifiers, or wrong attachments in independent translations and should be avoided unless the rest of the sentence clearly neutralizes the dependency."
+   }
+  }
+ ]
+}

@@ -1,0 +1,1554 @@
+[
+ {
+  "id": "en_us_1591",
+  "cuts": 7,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.7858,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9809,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    7,
+    9,
+    13,
+    16,
+    20
+   ],
+   "H_set": 0.0132,
+   "text": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor ‖ Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, ‖ fifth, and sixth place, ‖ respectively.",
+   "pieces": {
+    "Chinese": [
+     "前众议院议长",
+     "纽特·金里奇",
+     "德克萨斯州州长",
+     "里克·佩里",
+     "米歇尔·巴赫曼女士",
+     "排名第四,",
+     "第五和第六位,",
+     "分别为100%和100%。"
+    ],
+    "Japanese": [
+     "元下院議長",
+     "ニュート・ギングリッチ",
+     "テキサス州知事",
+     "リック・ペリー",
+     "下院議員のミシェル・バッハマンと",
+     "4位に入った",
+     "5位と6位の",
+     "それぞれの"
+    ],
+    "German": [
+     "Ehemaliger Sprecher des Repräsentantenhauses",
+     "Newt Gingrich,",
+     "Gouverneur von Texas",
+     "Rick Perry",
+     "und Kongressabgeordnete Michele Bachmann",
+     "Beendete in der vierten,",
+     "Fünfter und sechster Platz,",
+     "bzw. 1000 mAh."
+    ],
+    "Spanish": [
+     "Ex-Presidente de la Cámara",
+     "Newt Gingrich,",
+     "Gobernador de Texas",
+     "Rick Perry,",
+     "y la congresista Michele Bachmann",
+     "Terminó en cuarto lugar,",
+     "quinto y sexto lugar,",
+     "respectivamente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    10,
+    11,
+    12
+   ],
+   "H_set": 0.7989,
+   "text": "Former ‖ House Speaker ‖ Newt ‖ Gingrich, ‖ Texas governor Rick Perry, and ‖ Congresswoman ‖ Michele ‖ Bachmann finished in fourth, fifth, and sixth place, respectively.",
+   "pieces": {
+    "Chinese": [
+     "前任",
+     "众议院议长",
+     "紐特",
+     "金里奇",
+     "德克萨斯州州长里克·佩里",
+     "女议员",
+     "米切莱",
+     "巴赫曼分别以第四、第五和第六名完成比赛。"
+    ],
+    "Japanese": [
+     "元",
+     "下院議長",
+     "ニュート",
+     "ギングリッチ",
+     "テキサス州知事のリック・ペリーと",
+     "女議員",
+     "ミケーレ",
+     "バッハマンはそれぞれ4位、5位、6位に終わった。"
+    ],
+    "German": [
+     "Former",
+     "Sprecher des Repräsentantenhauses",
+     "Newt",
+     "Gingrich,",
+     "Texas-Gouverneur Rick Perry und",
+     "Kongressabgeordnete",
+     "Michele",
+     "Bachmann belegte den vierten, fünften und sechsten Platz."
+    ],
+    "Spanish": [
+     "Ex",
+     "Portavoz de la Cámara",
+     "Newt",
+     "Gingrich,",
+     "El gobernador de Texas, Rick Perry, y",
+     "Congresista",
+     "Michele",
+     "Bachmann terminó en cuarto, quinto y sexto lugar, respectivamente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "Newt Gingrich, Texas governor",
+     "right": "Rick Perry, and Congresswoman",
+     "H": 0.713,
+     "H_pct": 31.6,
+     "contra": 0.1504,
+     "cohesion": 0.8392
+    },
+    {
+     "pos": 9,
+     "left": "Texas governor Rick Perry,",
+     "right": "and Congresswoman Michele Bachmann",
+     "H": 0.7972,
+     "H_pct": 57.9,
+     "contra": 0.0392,
+     "cohesion": 0.8297
+    },
+    {
+     "pos": 13,
+     "left": "and Congresswoman Michele Bachmann",
+     "right": "finished in fourth, fifth,",
+     "H": 0.764,
+     "H_pct": 42.1,
+     "contra": 0.1025,
+     "cohesion": 0.8512
+    },
+    {
+     "pos": 16,
+     "left": "Bachmann finished in fourth,",
+     "right": "fifth, and sixth place,",
+     "H": 0.0153,
+     "H_pct": 0.0,
+     "contra": 0.9809,
+     "cohesion": 0.8027
+    },
+    {
+     "pos": 20,
+     "left": "fifth, and sixth place,",
+     "right": "respectively.",
+     "H": 0.7294,
+     "H_pct": 36.8,
+     "contra": 0.0417,
+     "cohesion": 0.7611
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Former",
+     "right": "House Speaker Newt Gingrich,",
+     "H": 0.8442,
+     "H_pct": 89.5,
+     "contra": 0.0139,
+     "cohesion": 0.8561
+    },
+    {
+     "pos": 4,
+     "left": "Former House Speaker Newt",
+     "right": "Gingrich, Texas governor Rick",
+     "H": 0.8474,
+     "H_pct": 94.7,
+     "contra": 0.0039,
+     "cohesion": 0.8507
+    },
+    {
+     "pos": 10,
+     "left": "governor Rick Perry, and",
+     "right": "Congresswoman Michele Bachmann finished",
+     "H": 0.8191,
+     "H_pct": 68.4,
+     "contra": 0.039,
+     "cohesion": 0.8524
+    },
+    {
+     "pos": 11,
+     "left": "Rick Perry, and Congresswoman",
+     "right": "Michele Bachmann finished in",
+     "H": 0.8268,
+     "H_pct": 73.7,
+     "contra": 0.0458,
+     "cohesion": 0.8665
+    },
+    {
+     "pos": 12,
+     "left": "Perry, and Congresswoman Michele",
+     "right": "Bachmann finished in fourth,",
+     "H": 0.8379,
+     "H_pct": 78.9,
+     "contra": 0.0366,
+     "cohesion": 0.8698
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1143",
+  "cuts": 6,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.6919,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9673,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    8,
+    12,
+    13,
+    20
+   ],
+   "H_set": 0.0222,
+   "text": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "pieces": {
+    "Chinese": [
+     "这是常见的做法",
+     "其他地方",
+     "英国的",
+     "但苏格兰司法系统的工作原理",
+     "不同",
+     "法院和法庭已经查看了照片的发布",
+     "可能有害。"
+    ],
+    "Japanese": [
+     "これは普通のやり方だ",
+     "どこかで",
+     "英国では",
+     "しかしスコットランドの司法は",
+     "違う",
+     "裁判所は 写真の公開を",
+     "危険なものとして 認識されるようになりました"
+    ],
+    "German": [
+     "Dies ist übliche Praxis",
+     "An anderer Stelle",
+     "Im Vereinigten Königreich",
+     "Aber die schottische Justiz funktioniert",
+     "anders",
+     "Veröffentlichung von Fotos und Videos",
+     "als potenziell schädlich."
+    ],
+    "Spanish": [
+     "Esta es una práctica común",
+     "en otros lugares",
+     "En el Reino Unido",
+     "Pero la justicia escocesa funciona",
+     "De manera diferente",
+     "y los tribunales han visto la publicación de fotos",
+     "como potencialmente perjudicial."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    8,
+    9,
+    10,
+    13,
+    14
+   ],
+   "H_set": 0.7141,
+   "text": "This ‖ is common practice elsewhere in the UK ‖ but ‖ Scottish ‖ justice works differently ‖ and ‖ courts have viewed publication of photos as potentially prejudicial.",
+   "pieces": {
+    "Chinese": [
+     "这个",
+     "是英国其他地方的常见做法",
+     "但",
+     "蘇格蘭",
+     "司法工作方式不同",
+     "以及",
+     "法院认为发表照片可能有害。"
+    ],
+    "Japanese": [
+     "これ",
+     "英国の他の地域でも よくあることです",
+     "でも あなたは",
+     "スコットランド",
+     "司法は違う",
+     "それに",
+     "裁判所は 写真の公開を 潜在的な損害と見なしてる"
+    ],
+    "German": [
+     "This",
+     "Dies ist üblich in anderen Teilen Großbritanniens",
+     "aber",
+     "Scottish",
+     "Justiz funktioniert anders",
+     "und",
+     "Die Gerichte haben die Veröffentlichung von Fotos als potenziell schädlich angesehen."
+    ],
+    "Spanish": [
+     "Este",
+     "Es una práctica común en otras partes del Reino Unido",
+     "pero",
+     "Escoceses",
+     "La justicia funciona de manera diferente",
+     "y",
+     "Los tribunales han considerado la publicación de fotos como potencialmente perjudicial."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "This is common practice",
+     "right": "elsewhere in the UK",
+     "H": 0.8018,
+     "H_pct": 61.9,
+     "contra": 0.0002,
+     "cohesion": 0.802
+    },
+    {
+     "pos": 5,
+     "left": "is common practice elsewhere",
+     "right": "in the UK but",
+     "H": 0.8226,
+     "H_pct": 71.4,
+     "contra": 0.0003,
+     "cohesion": 0.8229
+    },
+    {
+     "pos": 12,
+     "left": "but Scottish justice works",
+     "right": "differently and courts have",
+     "H": 0.024,
+     "H_pct": 0.0,
+     "contra": 0.9673,
+     "cohesion": 0.7351
+    },
+    {
+     "pos": 20,
+     "left": "viewed publication of photos",
+     "right": "as potentially prejudicial.",
+     "H": 0.7779,
+     "H_pct": 42.9,
+     "contra": 0.0043,
+     "cohesion": 0.7813
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "This",
+     "right": "is common practice elsewhere",
+     "H": 0.8377,
+     "H_pct": 85.7,
+     "contra": 0.0121,
+     "cohesion": 0.8479
+    },
+    {
+     "pos": 9,
+     "left": "in the UK but",
+     "right": "Scottish justice works differently",
+     "H": 0.8671,
+     "H_pct": 100.0,
+     "contra": 0.002,
+     "cohesion": 0.8688
+    },
+    {
+     "pos": 10,
+     "left": "the UK but Scottish",
+     "right": "justice works differently and",
+     "H": 0.8378,
+     "H_pct": 90.5,
+     "contra": 0.0073,
+     "cohesion": 0.844
+    },
+    {
+     "pos": 14,
+     "left": "justice works differently and",
+     "right": "courts have viewed publication",
+     "H": 0.8361,
+     "H_pct": 81.0,
+     "contra": 0.0066,
+     "cohesion": 0.8416
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_877",
+  "cuts": 1,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.6758,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.8731,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.1052,
+   "text": "For those unfamiliar with medical jargon, ‖ the words infectious and contagious have distinct meanings.",
+   "pieces": {
+    "Chinese": [
+     "对于那些不熟悉医学术语的人来说,",
+     "感染性和传染性这两个词有着不同的含义。"
+    ],
+    "Japanese": [
+     "医学用語に 馴染みのない方のために",
+     "感染性と伝染性は 異なる意味を持っています"
+    ],
+    "German": [
+     "Für diejenigen, die nicht mit medizinischem Jargon vertraut sind,",
+     "Die Wörter ansteckend und ansteckend haben unterschiedliche Bedeutungen."
+    ],
+    "Spanish": [
+     "Para aquellos que no están familiarizados con la jerga médica,",
+     "Las palabras infeccioso y contagioso tienen significados distintos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.7811,
+   "text": "For those unfamiliar with medical jargon, the words infectious and contagious have distinct ‖ meanings.",
+   "pieces": {
+    "Chinese": [
+     "对于那些不熟悉医学术语, 传染性和传染性的词有明显的",
+     "意义。"
+    ],
+    "Japanese": [
+     "医学用語に不慣れな方のために，感染性と伝染性という言葉には，異なる意味がある。",
+     "意味を"
+    ],
+    "German": [
+     "Für diejenigen, die nicht mit medizinischem Jargon vertraut sind, haben die Wörter infektiös und ansteckend unterschiedliche Bedeutungen.",
+     "Bedeutungen."
+    ],
+    "Spanish": [
+     "Para aquellos que no están familiarizados con la jerga médica, las palabras infeccioso y contagioso tienen",
+     "significados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "unfamiliar with medical jargon,",
+     "right": "the words infectious and",
+     "H": 0.1052,
+     "H_pct": 0.0,
+     "contra": 0.8731,
+     "cohesion": 0.8294
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "and contagious have distinct",
+     "right": "meanings.",
+     "H": 0.7811,
+     "H_pct": 100.0,
+     "contra": 0.0035,
+     "cohesion": 0.7838
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_409",
+  "cuts": 2,
+  "avg_chunk": 8.7,
+  "latency_bin": "≤10",
+  "gap": 0.2722,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.3828,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12,
+    20
+   ],
+   "H_set": 0.5264,
+   "text": "However, the discovery of his tomb in 1922 made him a celebrity. ‖ While many tombs of the past were robbed, ‖ this tomb was left virtually undisturbed.",
+   "pieces": {
+    "Chinese": [
+     "然而,1922年发现他的坟墓使他成为名人。",
+     "虽然许多过去的坟墓被抢劫,",
+     "这座坟墓几乎没有受到干扰。"
+    ],
+    "Japanese": [
+     "しかし、1922年に墓が発見され、有名になった。",
+     "過去の多くの墓が 略奪された間に",
+     "この墓は ほとんど 乱れることなく残されていました"
+    ],
+    "German": [
+     "Die Entdeckung seines Grabes im Jahre 1922 machte ihn jedoch zu einer Berühmtheit.",
+     "Während viele Gräber der Vergangenheit ausgeraubt wurden,",
+     "Dieses Grab wurde praktisch unberührt gelassen."
+    ],
+    "Spanish": [
+     "Sin embargo, el descubrimiento de su tumba en 1922 lo convirtió en una celebridad.",
+     "Mientras que muchas tumbas del pasado fueron robadas,",
+     "Esta tumba se dejó prácticamente intacta."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    12,
+    13
+   ],
+   "H_set": 0.7986,
+   "text": "However, the discovery of his tomb in 1922 made him a celebrity. ‖ While ‖ many tombs of the past were robbed, this tomb was left virtually undisturbed.",
+   "pieces": {
+    "Chinese": [
+     "然而,1922年发现他的坟墓使他成为名人。",
+     "虽然",
+     "过去的许多坟墓被抢劫,这个坟墓几乎没有受到干扰。"
+    ],
+    "Japanese": [
+     "しかし、1922年に墓が発見され、有名になった。",
+     "ワンド",
+     "過去の多くの墓は 略奪されたが この墓は ほとんど 乱暴なことはなかった"
+    ],
+    "German": [
+     "Die Entdeckung seines Grabes im Jahre 1922 machte ihn jedoch zu einer Berühmtheit.",
+     "While",
+     "Während viele Gräber der Vergangenheit ausgeraubt wurden, blieb dieses Grab nahezu unberührt."
+    ],
+    "Spanish": [
+     "Sin embargo, el descubrimiento de su tumba en 1922 lo convirtió en una celebridad.",
+     "Mientras",
+     "Mientras que muchas tumbas del pasado fueron saqueadas, esta tumba se dejó prácticamente intacta."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 20,
+     "left": "the past were robbed,",
+     "right": "this tomb was left",
+     "H": 0.4852,
+     "H_pct": 16.7,
+     "contra": 0.3828,
+     "cohesion": 0.7862
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "him a celebrity. While",
+     "right": "many tombs of the",
+     "H": 0.8206,
+     "H_pct": 95.8,
+     "contra": 0.0188,
+     "cohesion": 0.8364
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_194",
+  "cuts": 1,
+  "avg_chunk": 10.5,
+  "latency_bin": "≤99",
+  "gap": 0.1784,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.0502,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.6382,
+   "text": "Schumacher who retired in 2006 after winning the Formula 1 championship seven times, ‖ was due to replace the injured Felipe Massa.",
+   "pieces": {
+    "Chinese": [
+     "舒马赫谁在2006年退休后赢得了F1冠军七次,",
+     "费利佩·马萨 的车队"
+    ],
+    "Japanese": [
+     "2006年に引退したシューマッハは 7度のF1チャンピオンを獲得した",
+     "ケガをしたフェリペ・マッサの代わりに 参戦する予定でした"
+    ],
+    "German": [
+     "Schumacher, der 2006 nach sieben Formel-1-Siegen in den Ruhestand trat,",
+     "Der 25-Jährige sollte den verletzten Felipe Massa ersetzen."
+    ],
+    "Spanish": [
+     "Schumacher, que se retiró en 2006 después de ganar el campeonato de Fórmula 1 siete veces,",
+     "Felipe Massa se retiró de la Fórmula 1."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.8166,
+   "text": "Schumacher who retired ‖ in 2006 after winning the Formula 1 championship seven times, was due to replace the injured Felipe Massa.",
+   "pieces": {
+    "Chinese": [
+     "退役的舒马赫",
+     "2006年,在赢得了F1冠军七次后,是为了取代受伤的费利佩·马萨。"
+    ],
+    "Japanese": [
+     "現役引退したシューマッハ",
+     "2006年にF1世界チャンピオンを7度獲得した後 怪我をしたフェリペ・マッサの代わりに 選ばれた"
+    ],
+    "German": [
+     "Schumacher, der sich zurückzog",
+     "Nachdem er 2006 sieben Mal die Formel-1-Meisterschaft gewonnen hatte, sollte er den verletzten Felipe Massa ersetzen."
+    ],
+    "Spanish": [
+     "Schumacher que se retiró",
+     "En 2006, después de ganar el campeonato de Fórmula 1 siete veces, debía reemplazar al lesionado Felipe Massa."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "1 championship seven times,",
+     "right": "was due to replace",
+     "H": 0.6382,
+     "H_pct": 31.6,
+     "contra": 0.0502,
+     "cohesion": 0.6719
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Schumacher who retired",
+     "right": "in 2006 after winning",
+     "H": 0.8166,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8175
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1427",
+  "cuts": 6,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.7018,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9894,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    7,
+    8,
+    11,
+    14,
+    18
+   ],
+   "H_set": 0.0071,
+   "text": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "pieces": {
+    "Chinese": [
+     "内毒",
+     "可能不会立即显现。",
+     "症状",
+     "如呕吐",
+     "是足够一般性的",
+     "即时诊断",
+     "不能做到。"
+    ],
+    "Japanese": [
+     "内毒症",
+     "すぐには分からないかもしれません",
+     "症状，",
+     "吐き気などの症状が",
+     "十分に一般的で",
+     "即時診断が",
+     "作れない"
+    ],
+    "German": [
+     "Innere Vergiftung",
+     "Diese sind nicht sofort erkennbar.",
+     "Symptome,",
+     "Symptome wie Erbrechen",
+     "Sind ausreichend allgemein",
+     "Dass eine sofortige Diagnose",
+     "Es kann nicht gemacht werden."
+    ],
+    "Spanish": [
+     "Envenenamiento interno",
+     "Puede que no sea inmediatamente evidente.",
+     "Síntomas,",
+     "Síntomas como vómitos",
+     "son suficientemente generales",
+     "Que un diagnóstico inmediato",
+     "No se puede hacer."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8,
+    9,
+    11,
+    12,
+    14
+   ],
+   "H_set": 0.7089,
+   "text": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such ‖ as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "pieces": {
+    "Chinese": [
+     "内毒症可能不会立即显现。",
+     "症状",
+     "如此",
+     "如呕吐",
+     "是",
+     "足够一般性",
+     "不能立即做出诊断。"
+    ],
+    "Japanese": [
+     "内毒性は直ちに明らかにならないことがある。",
+     "症状，",
+     "こんな",
+     "吐き気のように",
+     "あなたは",
+     "十分に一般的なもので",
+     "すぐに診断がつかないということです"
+    ],
+    "German": [
+     "Eine innere Vergiftung ist möglicherweise nicht sofort erkennbar.",
+     "Symptome,",
+     "such",
+     "als Erbrechen",
+     "sind",
+     "ausreichend allgemein",
+     "Eine sofortige Diagnose kann nicht gestellt werden."
+    ],
+    "Spanish": [
+     "La intoxicación interna puede no ser inmediatamente evidente.",
+     "Síntomas,",
+     "tales",
+     "Como vómitos",
+     "son",
+     "suficientemente general",
+     "No se puede hacer un diagnóstico inmediato."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Internal poisoning",
+     "right": "may not be immediately",
+     "H": 0.7511,
+     "H_pct": 63.2,
+     "contra": 0.0037,
+     "cohesion": 0.7539
+    },
+    {
+     "pos": 18,
+     "left": "that an immediate diagnosis",
+     "right": "cannot be made.",
+     "H": 0.0058,
+     "H_pct": 0.0,
+     "contra": 0.9894,
+     "cohesion": 0.5453
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "immediately apparent. Symptoms, such",
+     "right": "as vomiting are sufficiently",
+     "H": 0.7837,
+     "H_pct": 84.2,
+     "contra": 0.0016,
+     "cohesion": 0.785
+    },
+    {
+     "pos": 12,
+     "left": "such as vomiting are",
+     "right": "sufficiently general that an",
+     "H": 0.7782,
+     "H_pct": 78.9,
+     "contra": 0.0021,
+     "cohesion": 0.7799
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1102",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.6453,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.991,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    10,
+    14,
+    16
+   ],
+   "H_set": 0.0059,
+   "text": "The best indication of internal poisoning ‖ may be the presence ‖ of an open container ‖ of medication ‖ or toxic household chemicals.",
+   "pieces": {
+    "Chinese": [
+     "内毒的最佳指标",
+     "可能是存在",
+     "开放容器的",
+     "药物的使用",
+     "或者有毒的家用化学品。"
+    ],
+    "Japanese": [
+     "内毒症の最良の指標",
+     "あるいは あなたが",
+     "開いた容器の中に",
+     "薬物の効果を",
+     "家庭用有毒化学物質も 含まれています"
+    ],
+    "German": [
+     "Das beste Indiz für eine innere Vergiftung",
+     "Die Anwesenheit kann sein",
+     "Einen offenen Behälter",
+     "Art der Medikation",
+     "oder giftige Haushaltschemikalien."
+    ],
+    "Spanish": [
+     "La mejor indicación de intoxicación interna",
+     "Puede ser la presencia",
+     "De un contenedor abierto",
+     "Tipos de medicación",
+     "o productos químicos domésticos tóxicos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    6,
+    14
+   ],
+   "H_set": 0.6513,
+   "text": "The best indication ‖ of ‖ internal poisoning ‖ may be the presence of an open container ‖ of medication or toxic household chemicals.",
+   "pieces": {
+    "Chinese": [
+     "最好的指标",
+     "的",
+     "内毒",
+     "可能是存在一个开放的容器",
+     "药物或有毒的家用化学品。"
+    ],
+    "Japanese": [
+     "最高の指標",
+     "の",
+     "内毒性",
+     "開いた容器の存在が",
+     "薬物や有毒な家庭用化学品の 汚染を防ぐことができます"
+    ],
+    "German": [
+     "Die beste Angabe",
+     "von",
+     "Innere Vergiftung",
+     "Das Vorhandensein eines offenen Behälters kann sein",
+     "Medikamente oder giftige Haushaltschemikalien."
+    ],
+    "Spanish": [
+     "La mejor indicación",
+     "de",
+     "Envenenamiento interno",
+     "Puede ser la presencia de un contenedor abierto",
+     "de medicamentos o productos químicos tóxicos para el hogar."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "may be the presence",
+     "right": "of an open container",
+     "H": 0.0069,
+     "H_pct": 16.7,
+     "contra": 0.991,
+     "cohesion": 0.7669
+    },
+    {
+     "pos": 16,
+     "left": "open container of medication",
+     "right": "or toxic household chemicals.",
+     "H": 0.043,
+     "H_pct": 33.3,
+     "contra": 0.9476,
+     "cohesion": 0.8197
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The best indication",
+     "right": "of internal poisoning may",
+     "H": 0.7219,
+     "H_pct": 88.9,
+     "contra": 0.0022,
+     "cohesion": 0.7235
+    },
+    {
+     "pos": 4,
+     "left": "The best indication of",
+     "right": "internal poisoning may be",
+     "H": 0.7013,
+     "H_pct": 83.3,
+     "contra": 0.0032,
+     "cohesion": 0.7035
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1192",
+  "cuts": 4,
+  "avg_chunk": 6.4,
+  "latency_bin": "≤7",
+  "gap": 0.668,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9701,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    6,
+    11,
+    24
+   ],
+   "H_set": 0.0209,
+   "text": "However, ‖ this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare ‖ for business, and eleven times for first class!",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "这是不便宜的:",
+     "作为粗略的经验法则,",
+     "您可以预期支付高达正常经济舱票价的四倍",
+     "商务舱11次,头等舱11次!"
+    ],
+    "Japanese": [
+     "しかし",
+     "これは安くはありません",
+     "私たちの知識を",
+     "普通のエコノミークラスの4倍の値段で",
+     "11回 ファーストクラス!"
+    ],
+    "German": [
+     "Allerdings",
+     "Das ist nicht billig:",
+     "als grobe Faustregeln,",
+     "Sie können damit rechnen, bis zu viermal so viel wie der normale Economy-Tarif zu bezahlen",
+     "Elfmal für Business und elfmal für First Class!"
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Esto no es barato:",
+     "como reglas aproximadas,",
+     "Puede esperar pagar hasta cuatro veces la tarifa normal de clase económica",
+     "¡Once veces para negocios y once veces para primera clase!"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    11,
+    15
+   ],
+   "H_set": 0.6889,
+   "text": "However, ‖ this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to ‖ pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "这是不便宜的:",
+     "作为粗略的经验法则,",
+     "您可以期待",
+     "商务舱最多支付四倍的正常经济舱票价,头等舱支付十一倍!"
+    ],
+    "Japanese": [
+     "しかし",
+     "これは安くはありません",
+     "私たちの知識を",
+     "あなたは こう期待できます",
+     "4倍のエコノミークラスで ビジネスクラス 11倍のファーストクラス!"
+    ],
+    "German": [
+     "Allerdings",
+     "Das ist nicht billig:",
+     "als grobe Faustregeln,",
+     "Was Sie erwarten können",
+     "Sie zahlen bis zu viermal den normalen Economy-Tarif für Business und elfmal für First Class!"
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Esto no es barato:",
+     "como reglas aproximadas,",
+     "¿Qué puedes esperar?",
+     "¡Paga hasta cuatro veces la tarifa económica normal para negocios y once veces para primera clase!"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 24,
+     "left": "the normal economy fare",
+     "right": "for business, and eleven",
+     "H": 0.0235,
+     "H_pct": 20.0,
+     "contra": 0.9701,
+     "cohesion": 0.7852
+    }
+   ],
+   "added": [
+    {
+     "pos": 15,
+     "left": "you can expect to",
+     "right": "pay up to four",
+     "H": 0.7856,
+     "H_pct": 100.0,
+     "contra": 0.0073,
+     "cohesion": 0.7913
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_339",
+  "cuts": 1,
+  "avg_chunk": 9.5,
+  "latency_bin": "≤10",
+  "gap": 0.2551,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.1147,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5
+   ],
+   "H_set": 0.5284,
+   "text": "While on his warm-up lap, ‖ Lenz fell off his bike, and was then struck by fellow racer Xavier Zayat.",
+   "pieces": {
+    "Chinese": [
+     "当他在他的热身膝盖,",
+     "伦茨从自行车上掉下来,然后被赛车手Xavier Zayat撞伤。"
+    ],
+    "Japanese": [
+     "彼がウォームアップの膝の上で",
+     "レンツは自転車から落ち、同僚のレーサーのザビエル・ザヤットに殴られた。"
+    ],
+    "German": [
+     "Während er auf seinem Aufwärmschulter,",
+     "Lenz fiel vom Fahrrad und wurde dann von seinem Teamkollegen Xavier Zayat angefahren."
+    ],
+    "Spanish": [
+     "Mientras estaba en su regazo de calentamiento,",
+     "Lenz se cayó de su moto, y luego fue golpeado por su compañero de equipo Xavier Zayat."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.7835,
+   "text": "While on his warm-up lap, Lenz fell off his bike, ‖ and was then struck by fellow racer Xavier Zayat.",
+   "pieces": {
+    "Chinese": [
+     "当他在热身赛中,伦兹从自行车上掉下来,",
+     "然后被赛车手朋友Xavier Zayat撞上。"
+    ],
+    "Japanese": [
+     "ウォームアップ中にレンツが 自転車から落ちて",
+     "レーサーのザビエル・ザヤットに 殴られました"
+    ],
+    "German": [
+     "Während der Aufwärmrunde fiel Lenz vom Fahrrad,",
+     "Er wurde dann von seinem Teamkollegen Xavier Zayat angefahren."
+    ],
+    "Spanish": [
+     "Mientras estaba en su vuelta de calentamiento, Lenz se cayó de su moto,",
+     "y luego fue golpeado por su compañero de equipo Xavier Zayat."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "on his warm-up lap,",
+     "right": "Lenz fell off his",
+     "H": 0.5284,
+     "H_pct": 29.4,
+     "contra": 0.1147,
+     "cohesion": 0.5969
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "fell off his bike,",
+     "right": "and was then struck",
+     "H": 0.7835,
+     "H_pct": 100.0,
+     "contra": 0.017,
+     "cohesion": 0.797
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1419",
+  "cuts": 1,
+  "avg_chunk": 14.5,
+  "latency_bin": "≤99",
+  "gap": 0.1602,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.009,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.7046,
+   "text": "In the 16th century Paraguay, formerly called \"The Giant Province of the Indies\", ‖ was born as a result of the encounter of Spanish conquerors with the native indigenous groups.",
+   "pieces": {
+    "Chinese": [
+     "16世纪,巴拉圭曾被称为\"印度的巨大省份 \",",
+     "西班牙语是西班牙征服者与当地土著群体的交流产生的。"
+    ],
+    "Japanese": [
+     "１６世紀のパラグアイは かつては 「インディアの巨大な州」と呼ばれていた",
+     "スペイン人征服者と 先住民族の出会いから生まれた"
+    ],
+    "German": [
+     "Im 16. Jahrhundert wurde Paraguay, früher \"Die Riesenprovinz der Indischen Inseln\" genannt,",
+     "Die Kultur der Inka entstand durch die Begegnung der spanischen Eroberer mit den einheimischen indigenen Gruppen."
+    ],
+    "Spanish": [
+     "En el siglo XVI Paraguay, antiguamente llamada \"La Provincia Gigante de las Indias\",",
+     "El arte de la escritura nació como resultado del encuentro de los conquistadores españoles con los grupos indígenas nativos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4
+   ],
+   "H_set": 0.8649,
+   "text": "In the 16th century ‖ Paraguay, formerly called \"The Giant Province of the Indies\", was born as a result of the encounter of Spanish conquerors with the native indigenous groups.",
+   "pieces": {
+    "Chinese": [
+     "16世纪",
+     "巴拉圭, 曾被称为\"印度的巨大省份 \", 是西班牙征服者与本地土著群体相遇的结果。"
+    ],
+    "Japanese": [
+     "16世紀",
+     "かつて「インディアンの巨大な州」と呼ばれていたパラグアイは、スペインの征服者と当地の先住民族の出会いの結果として生まれた。"
+    ],
+    "German": [
+     "Im 16. Jahrhundert",
+     "Paraguay, früher \"Die Riesenprovinz der Indios\" genannt, entstand als Ergebnis der Begegnung der spanischen Eroberer mit den einheimischen indigenen Gruppen."
+    ],
+    "Spanish": [
+     "En el siglo XVI",
+     "Paraguay, anteriormente llamado \"La Provincia Gigante de las Indias\", nació como resultado del encuentro de los conquistadores españoles con los grupos indígenas nativos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "Province of the Indies\",",
+     "right": "was born as a",
+     "H": 0.7047,
+     "H_pct": 37.0,
+     "contra": 0.009,
+     "cohesion": 0.711
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "In the 16th century",
+     "right": "Paraguay, formerly called \"The",
+     "H": 0.8649,
+     "H_pct": 100.0,
+     "contra": 0.0007,
+     "cohesion": 0.8655
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_802",
+  "cuts": 5,
+  "avg_chunk": 2.7,
+  "latency_bin": "≤3",
+  "gap": 0.6292,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.7115,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    6,
+    8,
+    9
+   ],
+   "H_set": 0.2143,
+   "text": "Drink alcoholic drinks ‖ with moderation. ‖ Alcohol ‖ affects everyone ‖ differently, ‖ and knowing your limit is very important.",
+   "pieces": {
+    "Chinese": [
+     "饮酒",
+     "适度地。",
+     "酒精",
+     "影响到每个人",
+     "不同",
+     "知道自己的极限是非常重要的。"
+    ],
+    "Japanese": [
+     "飲酒",
+     "適度に",
+     "アルコール",
+     "誰にでも影響を与えます",
+     "違う",
+     "限界を知ることはとても重要です"
+    ],
+    "German": [
+     "Alkoholische Getränke trinken",
+     "Mit Maß und Zucker.",
+     "Alkohol",
+     "Das betrifft jeden",
+     "anders,",
+     "Und deine Grenze zu kennen ist sehr wichtig."
+    ],
+    "Spanish": [
+     "Beber bebidas alcohólicas",
+     "Con moderación.",
+     "Alcohol",
+     "Afecta a todos",
+     "de manera diferente,",
+     "Y conocer tu límite es muy importante."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    9,
+    10,
+    13
+   ],
+   "H_set": 0.8434,
+   "text": "Drink alcoholic drinks with moderation. ‖ Alcohol ‖ affects everyone differently, ‖ and ‖ knowing your limit ‖ is very important.",
+   "pieces": {
+    "Chinese": [
+     "适度饮酒。",
+     "酒精",
+     "对每个人的影响都不一样,",
+     "以及",
+     "知道你的极限",
+     "是非常重要的。"
+    ],
+    "Japanese": [
+     "酒を適度に飲む。",
+     "アルコール",
+     "人によって違う影響を与えます",
+     "それに",
+     "限界を知ること",
+     "とても重要なことです"
+    ],
+    "German": [
+     "Trinke alkoholische Getränke in Maßen.",
+     "Alkohol",
+     "beeinflusst jeden anders,",
+     "und",
+     "Deine Grenze kennen",
+     "Das ist sehr wichtig."
+    ],
+    "Spanish": [
+     "Beba bebidas alcohólicas con moderación.",
+     "Alcohol",
+     "afecta a todos de manera diferente,",
+     "y",
+     "Conocer tu límite",
+     "Es muy importante."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Drink alcoholic drinks",
+     "right": "with moderation. Alcohol affects",
+     "H": 0.7192,
+     "H_pct": 57.1,
+     "contra": 0.0006,
+     "cohesion": 0.7196
+    },
+    {
+     "pos": 8,
+     "left": "moderation. Alcohol affects everyone",
+     "right": "differently, and knowing your",
+     "H": 0.2367,
+     "H_pct": 0.0,
+     "contra": 0.7115,
+     "cohesion": 0.8203
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "affects everyone differently, and",
+     "right": "knowing your limit is",
+     "H": 0.7694,
+     "H_pct": 78.6,
+     "contra": 0.0009,
+     "cohesion": 0.7701
+    },
+    {
+     "pos": 13,
+     "left": "and knowing your limit",
+     "right": "is very important.",
+     "H": 0.7544,
+     "H_pct": 71.4,
+     "contra": 0.0007,
+     "cohesion": 0.7549
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1041",
+  "cuts": 5,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.6299,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9949,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    13,
+    17,
+    18,
+    20
+   ],
+   "H_set": 0.0035,
+   "text": "Like some other experts, ‖ he is skeptical about whether diabetes can be cured, ‖ noting that these findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "pieces": {
+    "Chinese": [
+     "像其他一些专家一样,",
+     "他对糖尿病是否能够治愈持怀疑态度,",
+     "注意到这些结论",
+     "已",
+     "无关",
+     "1型糖尿病的发病原因有哪些?"
+    ],
+    "Japanese": [
+     "他の専門家と同様に",
+     "彼は糖尿病が治せるかどうか 懐疑的で",
+     "これらの発見は",
+     "ああ ああ",
+     "関係ない",
+     "1型糖尿病の人にも 効果があるということです"
+    ],
+    "German": [
+     "Wie einige andere Experten,",
+     "er ist skeptisch, ob Diabetes geheilt werden kann,",
+     "Beachten Sie, dass diese Ergebnisse",
+     "haben",
+     "Keine Relevanz",
+     "Bei Menschen, die bereits an Typ-1-Diabetes leiden."
+    ],
+    "Spanish": [
+     "Como algunos otros expertos,",
+     "Es escéptico acerca de si la diabetes puede curarse,",
+     "Observando que estas conclusiones",
+     "have",
+     "no pertinente",
+     "A las personas que ya tienen diabetes tipo 1."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "H_set": 0.6334,
+   "text": "Like ‖ some ‖ other ‖ experts, ‖ he ‖ is skeptical about whether diabetes can be cured, noting that these findings have no relevance to people who already have Type 1 diabetes.",
+   "pieces": {
+    "Chinese": [
+     "喜歡",
+     "一些",
+     "其他",
+     "专家，",
+     "是",
+     "对于糖尿病是否可以治愈,他持怀疑态度,指出这些发现与已经患有1型糖尿病的人没有关系。"
+    ],
+    "Japanese": [
+     "似ている",
+     "いくつか",
+     "その他",
+     "専門家たちは",
+     "ああ",
+     "糖尿病の治療に疑問を持ち 既に1型糖尿病を患っている人には 関係ないと指摘しています"
+    ],
+    "German": [
+     "Like",
+     "einige",
+     "Andere",
+     "Experten,",
+     "he",
+     "Die Forscher sind skeptisch, ob Diabetes geheilt werden kann, und weisen darauf hin, dass diese Ergebnisse für Menschen, die bereits an Typ-1-Diabetes leiden, keine Relevanz haben."
+    ],
+    "Spanish": [
+     "Like",
+     "Algunos",
+     "Otros",
+     "expertos,",
+     "he",
+     "El Dr. David A. McKenzie, de la Universidad de California, San Diego, es escéptico acerca de si la diabetes puede curarse, señalando que estos hallazgos no tienen relevancia para las personas que ya tienen diabetes tipo 1."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "diabetes can be cured,",
+     "right": "noting that these findings",
+     "H": 0.7818,
+     "H_pct": 76.9,
+     "contra": 0.0005,
+     "cohesion": 0.7822
+    },
+    {
+     "pos": 17,
+     "left": "noting that these findings",
+     "right": "have no relevance to",
+     "H": 0.7158,
+     "H_pct": 38.5,
+     "contra": 0.0044,
+     "cohesion": 0.7189
+    },
+    {
+     "pos": 18,
+     "left": "that these findings have",
+     "right": "no relevance to people",
+     "H": 0.0034,
+     "H_pct": 0.0,
+     "contra": 0.9949,
+     "cohesion": 0.6645
+    },
+    {
+     "pos": 20,
+     "left": "findings have no relevance",
+     "right": "to people who already",
+     "H": 0.6907,
+     "H_pct": 23.1,
+     "contra": 0.1231,
+     "cohesion": 0.7876
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Like",
+     "right": "some other experts, he",
+     "H": 0.8048,
+     "H_pct": 88.5,
+     "contra": 0.0263,
+     "cohesion": 0.8265
+    },
+    {
+     "pos": 2,
+     "left": "Like some",
+     "right": "other experts, he is",
+     "H": 0.8139,
+     "H_pct": 92.3,
+     "contra": 0.0003,
+     "cohesion": 0.8142
+    },
+    {
+     "pos": 3,
+     "left": "Like some other",
+     "right": "experts, he is skeptical",
+     "H": 0.7942,
+     "H_pct": 84.6,
+     "contra": 0.0006,
+     "cohesion": 0.7947
+    },
+    {
+     "pos": 5,
+     "left": "some other experts, he",
+     "right": "is skeptical about whether",
+     "H": 0.8299,
+     "H_pct": 96.2,
+     "contra": 0.0007,
+     "cohesion": 0.8305
+    }
+   ]
+  }
+ }
+]

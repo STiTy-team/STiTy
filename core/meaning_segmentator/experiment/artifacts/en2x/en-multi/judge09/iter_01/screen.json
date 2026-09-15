@@ -1,0 +1,53 @@
+{
+ "n_sentences": 50,
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00934,
+    "lo": -0.0117,
+    "hi": 0.02988,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 7553,
+   "changelog": [
+    "Paraphrased C4 to shorten and sharpen the warning about cuts that leave incomplete predicates or existential/qualification fragments (addresses finding: \"preverbal fragments / existential/qualification fragments\" — shorter to save space).",
+    "Paraphrased C6 to more directly forbid splitting rigid multiword units (addresses finding: \"splitting multiword units like titles/names, verb+object frames, lists\").",
+    "Replaced example E1 with the measured labeled example en_us_1591 (teaches the ranking directly where a principle only describes it).",
+    "Deleted example E3 (hand-written) to recover space and meet the size constraint."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00386,
+    "lo": -0.01661,
+    "hi": 0.02628,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 8710,
+   "changelog": [
+    "rewrite: [Core Principles]/[Examples] 를 새로 씀"
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.02455,
+    "lo": 0.00557,
+    "hi": 0.04592,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 8920,
+   "changelog": [
+    "Replace Example E1 with labeled example en_us_1591 to teach the model to avoid cutting inside names/titles and to prefer keeping multiword name/title units intact (addresses the 'splitting multiword units' finding).",
+    "Replace Example E2 with labeled example en_us_1102 to demonstrate the danger of cuts that leave existential or predicate fragments (e.g. 'may be the presence ...') so such high-contra positions rank very low (addresses the 'preverbal/existential fragments' finding).",
+    "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion loss when cuts split quantifier/numeral frames and lists, guiding the ordering away from such cuts (addresses the 'quantifier/list splitting' finding)."
+   ]
+  }
+ ]
+}

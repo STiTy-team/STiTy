@@ -1,0 +1,39 @@
+{
+ "n_sentences": 50,
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00455,
+    "lo": -0.03564,
+    "hi": 0.03353,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 8701,
+   "changelog": [
+    "Replace C3 to add the explicit high‑risk test for missing clause cores (addresses finding that cuts which omit the clause’s finite predicate are near‑certain contra) while placing it in the imagining‑the‑prefix unit to avoid reusing the previously tried C2 edit.",
+    "Paraphrase C4 to a much shorter, sharper warning that cuts leaving subordinating/preverbal/existential fragments are especially vulnerable (frees space while keeping the warning).",
+    "Change C6 to a concise, actionable cohesion rule that explicitly penalizes splitting noun‑phrase packages and separating verbs from core objects/particles (addresses cohesion finding while shrinking length and avoiding a new inserted unit).",
+    "Paraphrase C8 to a shorter reminder to reason structurally rather than by surface tokens (reduces length to recover budget)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00122,
+    "lo": -0.02711,
+    "hi": 0.02711,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 9684,
+   "changelog": [
+    "Replace Example E1 with labeled example en_us_1427 to teach the model to avoid cutting off clause cores and existential/predicate fragments (addresses finding: missing clause core raises contra).",
+    "Replace Example E2 with labeled example en_us_59 to show cohesion loss from splitting tightly bound name/title and noun+modifier packages (addresses finding: splitting multiword/name/title units).",
+    "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion and contradiction risks when cuts isolate preverbal fragments and split quantifier/list frames (addresses findings: preverbal/predicate isolation and list/quantifier splitting)."
+   ]
+  }
+ ]
+}

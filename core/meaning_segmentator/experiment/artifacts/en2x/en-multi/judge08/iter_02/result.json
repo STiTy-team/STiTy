@@ -1,0 +1,84 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.01034,
+  "lo": -0.02062,
+  "hi": 0.0006,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": -0.01034,
+  "lo": -0.02062,
+  "hi": 0.0006,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Paraphrased C3 to shorten and sharpen the contra-risk prompt so it is quicker to apply while preserving scope/negation/contrast guidance.",
+  "Paraphrased C5 to compress the cohesion guidance into a concise checklist-style prompt and free space for new rules.",
+  "Paraphrased C7 to keep the English-specific cues but shorter and more direct about verbs, subordinators, pronouns, lists, and punctuation.",
+  "Inserted a new explicit 'Contra checklist' unit (after C5) implementing the critic's finding that a single disambiguating element on the right should raise contra toward 1.",
+  "Inserted a new 'Connectives' unit (after C5) implementing the critic's finding that isolating connectives from their completing clause raises both contra and cohesion penalty."
+ ],
+ "findings": [
+  "The scorer underestimates contra-risk when the right-hand fragment contains the single disambiguating, negating, or specifying element (negation, quantifier/ordinal, list continuation, or the complement that decides truth) that determines the truth-conditions of the already-heard left fragment.",
+  "The scorer treats coordinating/connective words (but, and, while, however, respectively, etc.) too lightly and therefore misses that cuts adjacent to these connectors typically indicate tight dependency or contrast and often carry high contra/cohesion risk."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C3",
+   "kind": "paraphrase",
+   "was": "- Ask: If the listener had already heard the stretch up to this cut, would what ",
+   "now": "- Ask: If the listener had already heard the stretch up to this cut, would what "
+  },
+  {
+   "op": "replace",
+   "id": "C5",
+   "kind": "paraphrase",
+   "was": "- Ask: If the left side is translated and played, then the right side is transla",
+   "now": "- Ask: If the left side is translated and played, then the right side is transla"
+  },
+  {
+   "op": "replace",
+   "id": "C7",
+   "kind": "paraphrase",
+   "was": "- English tends to put the finite verb and its object later in a clause (SVO). A",
+   "now": "- How English builds meaning: finite verbs and objects often appear later (SVO);"
+  },
+  {
+   "op": "insert_after",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Ask: If the left side is translated and played, then the right side is transla",
+   "now": "Contra checklist: If the right fragment supplies the single element that disambi"
+  },
+  {
+   "op": "insert_after",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Ask: If the left side is translated and played, then the right side is transla",
+   "now": "Connectives: Treat explicit connectives and contrast markers (but, however, whil"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0122,
+   "≤5": -0.0076,
+   "≤7": -0.0128,
+   "≤10": -0.0115,
+   "≤99": -0.0062
+  },
+  "n_worse": 431,
+  "n_better": 389,
+  "why": "The new items pushed the model to cut earlier so that finite verbs, short disambiguating words, and connective words often landed alone on the right fragment — e.g. subjects separated from verbs and list items or contrast markers isolated — which reduces cohesion and therefore lowered H_set, with the harm concentrated on very short pieces (≤3–≤7-word bins).",
+  "lesson": "A later revision should avoid wording that rewards isolating single-word disambiguators, connectives, or finite verbs into very-short right fragments (especially in ≤3–≤7 bins) because that produces many harmful subject/verb and list splits.",
+  "blamed": [
+   "C7",
+   "Contra checklist",
+   "Connectives"
+  ]
+ }
+}

@@ -1,0 +1,63 @@
+[
+ {
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "When judging Contra risk, consider the whole remainder of the sentence, not just the immediate right fragment. Ask: could any later clause or phrase anywhere after this cut, when taken on its own, make the already-heard left fragment false, reversed, or misleading? If any downstream material can overturn the left fragment, raise the contra probability accordingly. In short: contra = the probability that any later material in the sentence, taken alone, would contradict or negate the left-side fragment."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Treat functionally open left fragments as inherently low-cohesion. If the left side ends with a clause-opener/subordinator, an auxiliary or negation that requires a following verb phrase, a predicate missing its object or complement, or a modifier/title that attaches forward to a later head (e.g. role + name, adjective + noun, a preposition expecting its object), assign a reduced cohesion score. Concretely ask: can the left fragment stand as a sensible, self-contained assertion when translated and played now? If not, lower cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 507
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 539
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11123,
+  "errors": [
+   "길이 초과: 11123 > 10580"
+  ]
+ },
+ {
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep these as semantic judgements you can apply at every boundary: assess whether the right-hand fragment can (1) contradict or negate the already-heard left fragment and (2) stand alone when translated without leaving essential relations unresolved. When judging Contra risk, consider the whole remainder of the sentence — could any later clause or phrase anywhere after this cut, when heard on its own, reverse, deny, or materially change the left fragment? If any downstream material can do so, raise the contra probability accordingly. For Cohesion, treat functionally open left fragments as low-cohesion: if the left side ends with a clause-opener/subordinator, an auxiliary or negation that requires a following verb phrase, a predicate missing its object/complement, or a modifier/title that attaches forward to a later head (e.g. role + name, adjective + noun, a preposition expecting its object), reduce cohesion. Concretely ask: can the left fragment be a sensible, self-contained assertion when translated and played now? If not, lower cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 754
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10831,
+  "errors": [
+   "길이 초과: 10831 > 10580"
+  ]
+ }
+]

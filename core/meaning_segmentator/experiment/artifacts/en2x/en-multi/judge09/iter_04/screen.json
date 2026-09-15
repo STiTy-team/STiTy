@@ -1,0 +1,51 @@
+{
+ "n_sentences": 50,
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00012,
+    "lo": -0.02989,
+    "hi": 0.03239,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 9473,
+   "changelog": [
+    "Replace C2 to add an explicit rule from the critique: very high contra should effectively disqualify a cut (assign very low score) while lower contra continues to combine multiplicatively with cohesion. This directly addresses the finding that high-contra cuts (preverbal fragments, subordinating openings, missing predicate) devastate set quality.",
+    "Insert a short worked example after E3 that demonstrates not preferring an earlier cut which leaves a subject/preverbal fragment (the team / will win). This teaches the model to delay one token to preserve the clause core and avoids encouraging earlier, unsafe cuts."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00916,
+    "lo": -0.02576,
+    "hi": 0.00878,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 9635,
+   "changelog": [
+    "rewrite: [Core Principles]/[Examples] 를 새로 씀"
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00702,
+    "lo": -0.02224,
+    "hi": 0.04422,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 9684,
+   "changelog": [
+    "Replace example E1 with measured labeled example en_us_59 to teach preserving tightly bound name/title and honorific+name packages (reduces splitting of multiword names).",
+    "Replace example E2 with measured labeled example en_us_1427 to teach avoiding cuts that leave preverbal or predicate fragments (addresses high‑contra predicate/completion risk).",
+    "Replace example E3 with measured labeled example en_us_1192 to teach avoiding splitting quantifier/list frames and to preserve clause cores in longer lists."
+   ]
+  }
+ ]
+}

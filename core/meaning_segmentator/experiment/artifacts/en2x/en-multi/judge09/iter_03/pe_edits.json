@@ -1,0 +1,187 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken? Explicit test: if the left stretch omits the clause’s finite predicate (the main verb or an explicit negation) or contains only subordinating/introductory material (initial adverbials, subordinate‑clause markers, auxiliaries without a main verb, or a fragment that reads like a subject or preface), treat the cut as highly risky and raise contra toward 1. Put another way, if the truth‑conditions of the left fragment cannot be evaluated without material that follows (because the main assertion, negation, scope‑reversal, or essential qualification appears later), assume the remainder will likely change or qualify the meaning and penalize the cut accordingly."
+   },
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "Cohesion (additional rule): strongly penalize cuts that split a single noun phrase (determiner/quantifier + head noun + essential post‑nominal modifiers) or that separate a verb from its core object or phrasal particle. When essential modifiers, relative/PP complements, numerals/quantifiers, or particles attach to a head on the other side of the cut, reduce cohesion sharply — such splits commonly produce lost references, detached modifiers, or wrong attachments in independent translations and should be avoided unless the remainder clearly neutralizes the dependency."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1427",
+    "text": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> immediately <SEG:?> apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as <SEG:?> vomiting <SEG:?> are <SEG:?> sufficiently <SEG:?> general <SEG:?> that <SEG:?> an <SEG:?> immediate <SEG:?> diagnosis <SEG:?> cannot <SEG:?> be <SEG:?> made.\nOutput: Internal <SEG:26> poisoning <SEG:63> may <SEG:53> not <SEG:37> be <SEG:42> immediately <SEG:58> apparent. <SEG:100> Symptoms, <SEG:95> such <SEG:84> as <SEG:68> vomiting <SEG:89> are <SEG:79> sufficiently <SEG:32> general <SEG:74> that <SEG:47> an <SEG:16> immediate <SEG:5> diagnosis <SEG:0> cannot <SEG:11> be <SEG:21> made."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 662
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 573
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 59
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10214,
+  "errors": [
+   "길이 초과: 10214 > 9812"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Imagine the prefix (everything up to the cut) presented alone. Would later material change the truth conditions, reverse the assertion, or add an essential qualification that makes the prefix misleading or false? Explicit test: if the left stretch omits the clause's finite predicate (the main verb or an explicit negation) or consists only of introductory/subordinating material (initial adverbials, subordinate‑clause markers, auxiliaries without a main verb, or a bare subject/preface), treat the cut as high‑risk and raise contra toward 1."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Cuts that leave only an initial subordinator, a preverbal fragment, or an existential/predicate preface are especially vulnerable to later negation, scope reversal, or qualification; avoid cutting before the clause core whenever possible."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Judge whether referents, scopes, heads and their modifiers, implicit arguments, and multiword units will survive separation. Strongly penalize cuts that split a single noun phrase (determiner/quantifier + head + essential post‑nominal modifiers) or that separate a verb from its core object or phrasal particle; such splits typically collapse referent links or produce wrong attachments, so reduce cohesion sharply."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "Use these semantic judgements everywhere; think in structural terms (subordination vs coordination, prepositional frames, determiner+noun packages, modifier chains, relative clauses, possessives, numerals/percent expressions, lists and coordinate structures) rather than relying on short keyword lists."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 297
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -262
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": -149
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -105
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8701,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 1680
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10600,
+  "errors": [
+   "길이 초과: 10600 > 9812"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1427",
+    "text": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> immediately <SEG:?> apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as <SEG:?> vomiting <SEG:?> are <SEG:?> sufficiently <SEG:?> general <SEG:?> that <SEG:?> an <SEG:?> immediate <SEG:?> diagnosis <SEG:?> cannot <SEG:?> be <SEG:?> made.\nOutput: Internal <SEG:26> poisoning <SEG:63> may <SEG:53> not <SEG:37> be <SEG:42> immediately <SEG:58> apparent. <SEG:100> Symptoms, <SEG:95> such <SEG:84> as <SEG:68> vomiting <SEG:89> are <SEG:79> sufficiently <SEG:32> general <SEG:74> that <SEG:47> an <SEG:16> immediate <SEG:5> diagnosis <SEG:0> cannot <SEG:11> be <SEG:21> made."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_59",
+    "text": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <SEG:?> upper <SEG:?> hand <SEG:?> because <SEG:?> he <SEG:?> had <SEG:?> been <SEG:?> Provenzano's <SEG:?> right-hand <SEG:?> man <SEG:?> in <SEG:?> Palermo <SEG:?> and <SEG:?> his <SEG:?> greater <SEG:?> experience <SEG:?> won <SEG:?> him <SEG:?> the <SEG:?> respect <SEG:?> of <SEG:?> the <SEG:?> older <SEG:?> generation <SEG:?> of <SEG:?> bosses <SEG:?> as <SEG:?> they <SEG:?> pursued <SEG:?> Provenzano's <SEG:?> policy <SEG:?> of <SEG:?> keeping <SEG:?> as <SEG:?> low <SEG:?> as <SEG:?> possible <SEG:?> while <SEG:?> strengthening <SEG:?> their <SEG:?> power <SEG:?> network.\nOutput: Police <SEG:80> said <SEG:98> Lo <SEG:84> Piccolo <SEG:47> had <SEG:31> the <SEG:33> upper <SEG:29> hand <SEG:60> because <SEG:9> he <SEG:4> had <SEG:16> been <SEG:44> Provenzano's <SEG:42> right-hand <SEG:89> man <SEG:87> in <SEG:38> Palermo <SEG:100> and <SEG:93> his <SEG:82> greater <SEG:64> experience <SEG:78> won <SEG:69> him <SEG:62> the <SEG:36> respect <SEG:91> of <SEG:71> the <SEG:58> older <SEG:96> generation <SEG:76> of <SEG:67> bosses <SEG:73> as <SEG:49> they <SEG:51> pursued <SEG:40> Provenzano's <SEG:56> policy <SEG:53> of <SEG:27> keeping <SEG:24> as <SEG:0> low <SEG:11> as <SEG:13> possible <SEG:18> while <SEG:2> strengthening <SEG:22> their <SEG:20> power <SEG:7> network."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1192",
+    "text": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap: <SEG:?> as <SEG:?> rough <SEG:?> rules <SEG:?> of <SEG:?> thumb, <SEG:?> you <SEG:?> can <SEG:?> expect <SEG:?> to <SEG:?> pay <SEG:?> up <SEG:?> to <SEG:?> four <SEG:?> times <SEG:?> the <SEG:?> normal <SEG:?> economy <SEG:?> fare <SEG:?> for <SEG:?> business, <SEG:?> and <SEG:?> eleven <SEG:?> times <SEG:?> for <SEG:?> first <SEG:?> class!\nOutput: However, <SEG:93> this <SEG:73> does <SEG:0> not <SEG:63> come <SEG:87> cheap: <SEG:97> as <SEG:80> rough <SEG:53> rules <SEG:83> of <SEG:50> thumb, <SEG:90> you <SEG:57> can <SEG:47> expect <SEG:77> to <SEG:100> pay <SEG:70> up <SEG:67> to <SEG:60> four <SEG:23> times <SEG:27> the <SEG:37> normal <SEG:17> economy <SEG:13> fare <SEG:20> for <SEG:43> business, <SEG:30> and <SEG:33> eleven <SEG:3> times <SEG:7> for <SEG:10> first <SEG:40> class!"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -16
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 780
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 0
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9684,
+  "errors": null
+ }
+]

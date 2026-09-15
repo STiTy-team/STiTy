@@ -1,0 +1,68 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01047,
+  "lo": -0.00448,
+  "hi": 0.02594,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": 0.01047,
+  "lo": -0.00448,
+  "hi": 0.02594,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "changelog": [
+  "Replace Example E1 with labeled example en_us_1591 to teach the model to avoid cutting inside names/titles and to prefer keeping multiword name/title units intact (addresses the 'splitting multiword units' finding).",
+  "Replace Example E2 with labeled example en_us_1102 to demonstrate the danger of cuts that leave existential or predicate fragments (e.g. 'may be the presence ...') so such high-contra positions rank very low (addresses the 'preverbal/existential fragments' finding).",
+  "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion loss when cuts split quantifier/numeral frames and lists, guiding the ordering away from such cuts (addresses the 'quantifier/list splitting' finding)."
+ ],
+ "findings": [
+  "The prompt underestimates how destructive a following predicate/qualification can be: cuts that leave a preverbal fragment, an incomplete predicate, or an existential/qualification (e.g. 'may be the presence ...') are often contradicted or made misleading by what follows and must be ranked far lower.",
+  "The prompt downplays cohesion loss from splitting multiword units: breaking titles/names, a noun/verb head from its essential modifiers or objects, list items or quantifier frames frequently destroys translatability and should be penalised strongly."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extr",
+   "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+   "now": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+   "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0133,
+   "≤5": 0.0066,
+   "≤7": 0.0158,
+   "≤10": 0.0139,
+   "≤99": -0.0032
+  },
+  "n_worse": 403,
+  "n_better": 430,
+  "why": "Replacing the three examples accidentally encouraged earlier, within-unit cuts (especially inside multiword names/titles and before predicates) while removing a clear anti-list-splitting signal; that made many short-span (≤3–10 word) cut positions look better but harmed long-span cohesion and increased harmful splits of lists/predicate frames in larger bins.",
+  "lesson": "A subsequent revision should preserve training signals that discourage cutting inside multiword names/titles and splitting coordinated/quantifier frames, and avoid examples that implicitly demonstrate or reward preverbal/predicate isolation.",
+  "blamed": [
+   "E1",
+   "E2",
+   "E3"
+  ]
+ }
+}

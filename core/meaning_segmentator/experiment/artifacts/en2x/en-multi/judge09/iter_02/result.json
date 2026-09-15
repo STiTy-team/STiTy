@@ -1,0 +1,83 @@
+{
+ "iter": 2,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01047,
+  "lo": -0.00448,
+  "hi": 0.02594,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "gain": {
+  "mean": 0.00804,
+  "lo": 0.0011,
+  "hi": 0.01584,
+  "n": 3383,
+  "n_clusters": 415,
+  "dev_a": {
+   "mean": 0.01047,
+   "lo": -0.00448,
+   "hi": 0.02594,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "dev_b": {
+   "mean": 0.00664,
+   "lo": -0.00053,
+   "hi": 0.0141,
+   "n": 2147,
+   "n_clusters": 265
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Replace Example E1 with labeled example en_us_1591 to teach the model to avoid cutting inside names/titles and keep multiword name/title units intact (addresses finding: splitting multiword/name/title units).",
+  "Replace Example E2 with labeled example en_us_1102 to show the danger of cuts that leave preverbal or predicate fragments (addresses finding: missing clause core / high contra).",
+  "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion loss when cuts split quantifier/list frames and to discourage cutting list/quantifier structures (addresses finding: quantifier/list splitting)."
+ ],
+ "findings": [
+  "The prompt systematically underestimates contradiction risk (contra) for cuts that leave a clause fragment without its clause core: if the left stretch omits the main predicate, an essential complement, or ends with a subordinating prelude, the remainder frequently reverses or completes the assertion and the cut should be given near‑zero score.",
+  "The prompt underweights cohesion loss when a cut separates tightly bound units (honorifics/titles + name, multiword proper nouns, or a noun head from its essential modifiers); such splits produce mistranslations even if the cut looks innocuous in isolation."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extr",
+   "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+   "now": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+   "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0133,
+   "≤5": 0.0066,
+   "≤7": 0.0158,
+   "≤10": 0.0139,
+   "≤99": -0.0032
+  },
+  "n_worse": 403,
+  "n_better": 430,
+  "why": "The replacement examples shifted the model toward inserting boundaries around name/title tokens and around small list elements (helping very short bins ≤3–10 where isolating those tokens raised cohesion), but also nudged it to delay or re-place cuts that previously kept clause cores intact—producing preverbal/predicate fragments and broken list/quantifier frames in mid-length pieces (notably the ≤5 regressions in en_us_1427 and en_us_970). E1 is responsible for the changed name/title segmentation behavior (big wins on en_us_1591), E2 appears to have driven the model to postpone predicate boundaries (explaining the worst examples), and E3 influenced list/quantifier splitting (mixed effect).",
+  "lesson": "When swapping examples, keep title/name demonstrations and predicate-preservation demonstrations distinct so that examples meant to protect multiword names do not accidentally teach postponing clause-core boundaries or splitting lists.",
+  "blamed": [
+   "E1",
+   "E2",
+   "E3"
+  ]
+ }
+}

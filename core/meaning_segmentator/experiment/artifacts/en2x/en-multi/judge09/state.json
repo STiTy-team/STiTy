@@ -1,0 +1,587 @@
+{
+ "done": 4,
+ "prompt": "[Role]\nYou are a scoring model for streaming speech translation segmentation. For one English source sentence at a time you must inspect every potential cut between words (each already marked <SEG:?>) and replace each ? with an integer 0–100. Those integers are used only to order cut candidates within that sentence; a deterministic downstream step chooses the top-scoring positions that fit latency constraints. Your job is to order positions so the chosen segmentation maximizes the measured target described below.\n\n[Core Principles]\nAt every candidate cut ask two central, semantic questions about meaning and how translation will behave:\n\n1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken? \n   - Imagine the prefix (everything up to the cut) presented alone. Would material that follows in the full sentence change the truth conditions, reverse the assertion, or supply a qualification that makes the prefix misleading or false on its own?\n   - Damage examples in English: a later clause that negates, reverses scope, supplies an essential exception, or relocates the main predicate so that the earlier fragment asserts something different. English often places the main predicate and its negation/qualification after auxiliary verbs and subordinating material; subordinating introductions can postpone the core of a claim. Cuts that leave only an initial subordinator or a preverbal fragment are especially vulnerable to later contradiction.\n\n2) Cohesion: If the prefix and the remainder are translated separately and then concatenated, will the joined translation still render the whole source sentence faithfully?\n   - Judge whether referents, scopes, heads and their modifiers, implicit arguments, and multiword units will survive separation. In English predicate-argument links (verb with its object), noun phrase internal modifiers, post‑nominal relative clauses, possessive attachments, prepositional objects, quantified expressions and multiword modifiers often rely on material on both sides of a cut. Separating a head from crucial modifiers or leaving determiners, possessives, numerals or prepositional frames stranded tends to reduce cohesion and produce mistranslation.\n   - Cohesion damage looks like lost referent links (a pronoun without its antecedent), broken scope for quantifiers or negation, split idiomatic or phrasal constructions, or detached modifiers that change which noun they modify.\n\nUse these semantic judgements everywhere; do not rely on a short list of words or surface tokens. Think in terms of devices English uses (subordination vs coordination, prepositional frames, determiner/noun packages, modifier chains, relative clauses, possessive constructions, numeral/percent expressions, lists and coordinate structures) and how translating the two halves independently would handle them.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n\nFor each candidate cut compute the target in the 0–1 range by estimating the cohesion (probability that separate translation + join faithfully renders the whole) and contra (probability the whole contradicts the left stretch). Multiply to get target. Then map that target to the required integer score in 0–100 as follows: multiply target by 100 and round to the nearest integer. Use the full 0–100 range across markers in a sentence and make every marker a different integer. Contra is a graded probability and affects the number only through the product; do not treat contra as a binary veto or a separate tier.\n\nRank markers by the numeric target; the resulting order is what the downstream deterministic step reads. Your numbers must reflect that order.\n\n[Decision Procedure]\nFor each <SEG:?> do this mental sequence:\n\n1. Is the left stretch, standing alone, likely to be contradicted or reversed by what follows? If yes, increase contra; cuts here will be harmful.\n\n2. If translated separately, would the left and right translations, when concatenated, preserve referent identity, predicate-argument relations, quantifier and negation scope, and intended modifier attachment? If important links cross the cut, reduce cohesion.\n\n3. Pay special attention to English clause-building patterns: initial subordinating material often requires waiting for the clause core (verb + its object) before a safe cut; coordinated independent clauses tolerate cuts more readily; prepositional frames, determiners, possessives, numerals/percent expressions, and modifier stacks frequently need adjacent material to keep sense. Think in terms of these devices, not particular words.\n\n4. Combine your estimates into target = cohesion * (1 - contra), map to 0–100 as described in Scoring Rules, and assign that integer to the marker. Ensure all markers in the sentence receive different integers; if two positions feel equally good pick which you prefer and score it higher. Use the full available range so the downstream step has a clear ordering.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively.\n\nInput: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> poisoning <SEG:?> may <SEG:?> be <SEG:?> the <SEG:?> presence <SEG:?> of <SEG:?> an <SEG:?> open <SEG:?> container <SEG:?> of <SEG:?> medication <SEG:?> or <SEG:?> toxic <SEG:?> household <SEG:?> chemicals.\nOutput: The <SEG:61> best <SEG:78> indication <SEG:89> of <SEG:83> internal <SEG:72> poisoning <SEG:100> may <SEG:50> be <SEG:44> the <SEG:0> presence <SEG:17> of <SEG:11> an <SEG:6> open <SEG:56> container <SEG:94> of <SEG:67> medication <SEG:33> or <SEG:28> toxic <SEG:39> household <SEG:22> chemicals.\n\nInput: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap: <SEG:?> as <SEG:?> rough <SEG:?> rules <SEG:?> of <SEG:?> thumb, <SEG:?> you <SEG:?> can <SEG:?> expect <SEG:?> to <SEG:?> pay <SEG:?> up <SEG:?> to <SEG:?> four <SEG:?> times <SEG:?> the <SEG:?> normal <SEG:?> economy <SEG:?> fare <SEG:?> for <SEG:?> business, <SEG:?> and <SEG:?> eleven <SEG:?> times <SEG:?> for <SEG:?> first <SEG:?> class!\nOutput: However, <SEG:93> this <SEG:73> does <SEG:0> not <SEG:63> come <SEG:87> cheap: <SEG:97> as <SEG:80> rough <SEG:53> rules <SEG:83> of <SEG:50> thumb, <SEG:90> you <SEG:57> can <SEG:47> expect <SEG:77> to <SEG:100> pay <SEG:70> up <SEG:67> to <SEG:60> four <SEG:23> times <SEG:27> the <SEG:37> normal <SEG:17> economy <SEG:13> fare <SEG:20> for <SEG:43> business, <SEG:30> and <SEG:33> eleven <SEG:3> times <SEG:7> for <SEG:10> first <SEG:40> class!",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.00934,
+    "lo": -0.0117,
+    "hi": 0.02988,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Paraphrased C4 to shorten and sharpen the warning about cuts that leave incomplete predicates or existential/qualification fragments (addresses finding: \"preverbal fragments / existential/qualification fragments\" — shorter to save space).",
+    "Paraphrased C6 to more directly forbid splitting rigid multiword units (addresses finding: \"splitting multiword units like titles/names, verb+object frames, lists\").",
+    "Replaced example E1 with the measured labeled example en_us_1591 (teaches the ranking directly where a principle only describes it).",
+    "Deleted example E3 (hand-written) to recover space and meet the size constraint."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "paraphrase",
+     "was": "   - Damage examples in English: a later clause that negates, reverses scope, su",
+     "now": "   - Cuts that leave incomplete predicates, existential/qualification fragments,"
+    },
+    {
+     "op": "replace",
+     "id": "C6",
+     "kind": "paraphrase",
+     "was": "   - Judge whether referents, scopes, heads and their modifiers, implicit argume",
+     "now": "   - Penalize cuts that split rigid multiword units: names and titles, verb+obje"
+    },
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extr",
+     "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+    },
+    {
+     "op": "delete",
+     "id": "E3",
+     "kind": "delete",
+     "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.00386,
+    "lo": -0.01661,
+    "hi": 0.02628,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "rewrite: [Core Principles]/[Examples] 를 새로 씀"
+   ],
+   "edits": []
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": 0.01047,
+    "lo": -0.00448,
+    "hi": 0.02594,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "gain": {
+    "mean": 0.01047,
+    "lo": -0.00448,
+    "hi": 0.02594,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "changelog": [
+    "Replace Example E1 with labeled example en_us_1591 to teach the model to avoid cutting inside names/titles and to prefer keeping multiword name/title units intact (addresses the 'splitting multiword units' finding).",
+    "Replace Example E2 with labeled example en_us_1102 to demonstrate the danger of cuts that leave existential or predicate fragments (e.g. 'may be the presence ...') so such high-contra positions rank very low (addresses the 'preverbal/existential fragments' finding).",
+    "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion loss when cuts split quantifier/numeral frames and lists, guiding the ordering away from such cuts (addresses the 'quantifier/list splitting' finding)."
+   ],
+   "findings": [
+    "The prompt underestimates how destructive a following predicate/qualification can be: cuts that leave a preverbal fragment, an incomplete predicate, or an existential/qualification (e.g. 'may be the presence ...') are often contradicted or made misleading by what follows and must be ranked far lower.",
+    "The prompt downplays cohesion loss from splitting multiword units: breaking titles/names, a noun/verb head from its essential modifiers or objects, list items or quantifier frames frequently destroys translatability and should be penalised strongly."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extr",
+     "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+     "now": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+     "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0133,
+     "≤5": 0.0066,
+     "≤7": 0.0158,
+     "≤10": 0.0139,
+     "≤99": -0.0032
+    },
+    "n_worse": 403,
+    "n_better": 430,
+    "why": "Replacing the three examples accidentally encouraged earlier, within-unit cuts (especially inside multiword names/titles and before predicates) while removing a clear anti-list-splitting signal; that made many short-span (≤3–10 word) cut positions look better but harmed long-span cohesion and increased harmful splits of lists/predicate frames in larger bins.",
+    "lesson": "A subsequent revision should preserve training signals that discourage cutting inside multiword names/titles and splitting coordinated/quantifier frames, and avoid examples that implicitly demonstrate or reward preverbal/predicate isolation.",
+    "blamed": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.00589,
+    "lo": -0.01121,
+    "hi": 0.02337,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Replace C3 to explicitly and concisely require checking for a missing clause core (addresses finding: missing predicate/clause core raises contra).",
+    "Paraphrase C4 to shorten and sharpen the warning that cuts leaving only introductory/subordinating material are high-risk (addresses finding: preverbal/subordinate fragments).",
+    "Change C6 to add a compact, actionable rule treating tightly bound name/title and noun+modifier packages as cohesion atoms and to warn to sharply reduce cohesion if split (addresses finding: splitting multiword/name/title units).",
+    "Paraphrase C8 to a shorter reminder to think in structural terms, reducing length while preserving guidance.",
+    "Replace Example E1 with the measured labeled example en_us_1591 to teach the model about name/title cohesion directly (per critique: prefer measured examples for this signal).",
+    "Delete Example E3 (hand-written) to recover space and ensure the edit set reduces prompt size sufficiently."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C3",
+     "kind": "change",
+     "was": "   - Imagine the prefix (everything up to the cut) presented alone. Would materi",
+     "now": "- Imagine the prefix (everything up to the cut) presented alone. Would later mat"
+    },
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "paraphrase",
+     "was": "   - Damage examples in English: a later clause that negates, reverses scope, su",
+     "now": "- Cuts that leave incomplete predicates or only introductory/subordinating mater"
+    },
+    {
+     "op": "replace",
+     "id": "C6",
+     "kind": "change",
+     "was": "   - Judge whether referents, scopes, heads and their modifiers, implicit argume",
+     "now": "- Judge whether referents, scopes, heads and their modifiers, implicit arguments"
+    },
+    {
+     "op": "replace",
+     "id": "C8",
+     "kind": "paraphrase",
+     "was": "Use these semantic judgements everywhere; do not rely on a short list of words o",
+     "now": "Use these semantic judgements everywhere; think in terms of structure (subordina"
+    },
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extr",
+     "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+    },
+    {
+     "op": "delete",
+     "id": "E3",
+     "kind": "delete",
+     "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": true,
+   "delta": {
+    "mean": 0.01047,
+    "lo": -0.00448,
+    "hi": 0.02594,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "gain": {
+    "mean": 0.00804,
+    "lo": 0.0011,
+    "hi": 0.01584,
+    "n": 3383,
+    "n_clusters": 415,
+    "dev_a": {
+     "mean": 0.01047,
+     "lo": -0.00448,
+     "hi": 0.02594,
+     "n": 1236,
+     "n_clusters": 150
+    },
+    "dev_b": {
+     "mean": 0.00664,
+     "lo": -0.00053,
+     "hi": 0.0141,
+     "n": 2147,
+     "n_clusters": 265
+    },
+    "pooled": true
+   },
+   "changelog": [
+    "Replace Example E1 with labeled example en_us_1591 to teach the model to avoid cutting inside names/titles and keep multiword name/title units intact (addresses finding: splitting multiword/name/title units).",
+    "Replace Example E2 with labeled example en_us_1102 to show the danger of cuts that leave preverbal or predicate fragments (addresses finding: missing clause core / high contra).",
+    "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion loss when cuts split quantifier/list frames and to discourage cutting list/quantifier structures (addresses finding: quantifier/list splitting)."
+   ],
+   "findings": [
+    "The prompt systematically underestimates contradiction risk (contra) for cuts that leave a clause fragment without its clause core: if the left stretch omits the main predicate, an essential complement, or ends with a subordinating prelude, the remainder frequently reverses or completes the assertion and the cut should be given near‑zero score.",
+    "The prompt underweights cohesion loss when a cut separates tightly bound units (honorifics/titles + name, multiword proper nouns, or a noun head from its essential modifiers); such splits produce mistranslations even if the cut looks innocuous in isolation."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Dr. <SEG:?> Tony <SEG:?> Moll <SEG:?> discovered <SEG:?> the <SEG:?> Extr",
+     "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+     "now": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+     "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0133,
+     "≤5": 0.0066,
+     "≤7": 0.0158,
+     "≤10": 0.0139,
+     "≤99": -0.0032
+    },
+    "n_worse": 403,
+    "n_better": 430,
+    "why": "The replacement examples shifted the model toward inserting boundaries around name/title tokens and around small list elements (helping very short bins ≤3–10 where isolating those tokens raised cohesion), but also nudged it to delay or re-place cuts that previously kept clause cores intact—producing preverbal/predicate fragments and broken list/quantifier frames in mid-length pieces (notably the ≤5 regressions in en_us_1427 and en_us_970). E1 is responsible for the changed name/title segmentation behavior (big wins on en_us_1591), E2 appears to have driven the model to postpone predicate boundaries (explaining the worst examples), and E3 influenced list/quantifier splitting (mixed effect).",
+    "lesson": "When swapping examples, keep title/name demonstrations and predicate-preservation demonstrations distinct so that examples meant to protect multiword names do not accidentally teach postponing clause-core boundaries or splitting lists.",
+    "blamed": [
+     "E1",
+     "E2",
+     "E3"
+    ]
+   }
+  },
+  {
+   "iter": 3,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": -0.00455,
+    "lo": -0.03564,
+    "hi": 0.03353,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Replace C3 to add the explicit high‑risk test for missing clause cores (addresses finding that cuts which omit the clause’s finite predicate are near‑certain contra) while placing it in the imagining‑the‑prefix unit to avoid reusing the previously tried C2 edit.",
+    "Paraphrase C4 to a much shorter, sharper warning that cuts leaving subordinating/preverbal/existential fragments are especially vulnerable (frees space while keeping the warning).",
+    "Change C6 to a concise, actionable cohesion rule that explicitly penalizes splitting noun‑phrase packages and separating verbs from core objects/particles (addresses cohesion finding while shrinking length and avoiding a new inserted unit).",
+    "Paraphrase C8 to a shorter reminder to reason structurally rather than by surface tokens (reduces length to recover budget)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C3",
+     "kind": "change",
+     "was": "   - Imagine the prefix (everything up to the cut) presented alone. Would materi",
+     "now": "- Imagine the prefix (everything up to the cut) presented alone. Would later mat"
+    },
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "paraphrase",
+     "was": "   - Damage examples in English: a later clause that negates, reverses scope, su",
+     "now": "- Cuts that leave only an initial subordinator, a preverbal fragment, or an exis"
+    },
+    {
+     "op": "replace",
+     "id": "C6",
+     "kind": "change",
+     "was": "   - Judge whether referents, scopes, heads and their modifiers, implicit argume",
+     "now": "- Judge whether referents, scopes, heads and their modifiers, implicit arguments"
+    },
+    {
+     "op": "replace",
+     "id": "C8",
+     "kind": "paraphrase",
+     "was": "Use these semantic judgements everywhere; do not rely on a short list of words o",
+     "now": "Use these semantic judgements everywhere; think in structural terms (subordinati"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 2,
+   "adopted": false,
+   "screened_only": true,
+   "delta": {
+    "mean": -0.00122,
+    "lo": -0.02711,
+    "hi": 0.02711,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Replace Example E1 with labeled example en_us_1427 to teach the model to avoid cutting off clause cores and existential/predicate fragments (addresses finding: missing clause core raises contra).",
+    "Replace Example E2 with labeled example en_us_59 to show cohesion loss from splitting tightly bound name/title and noun+modifier packages (addresses finding: splitting multiword/name/title units).",
+    "Replace Example E3 with labeled example en_us_1192 to illustrate cohesion and contradiction risks when cuts isolate preverbal fragments and split quantifier/list frames (addresses findings: preverbal/predicate isolation and list/quantifier splitting)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:",
+     "now": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> imm"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p",
+     "now": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <S"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap",
+     "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+    }
+   ],
+   "findings": [
+    "The prompt underestimates how dangerous a cut is when the left stretch lacks the clause’s main predicate or leaves only subordinating/introductory material — later negation, qualification or the main verb routinely overturns such prefixes and must be treated as near-certain contra.",
+    "The prompt under‑weights cohesion loss from cutting inside noun phrases, modifier stacks, or between a verb and its essential object/particle; splitting a head from its determiners, quantifiers, postnominal modifiers or phrasal particle often breaks translation even when contra is low."
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0007,
+     "≤5": 0.0052,
+     "≤7": -0.0177,
+     "≤10": -0.0082,
+     "≤99": 0.004
+    },
+    "n_worse": 150,
+    "n_better": 120,
+    "why": "The new E1 example succeeded at teaching the model to avoid cutting inside very short, tightly bound units (improving ≤3 and ≤5 bins, see en_us_1427), but the E2/E3 replacements caused the model to shift some cutpoints earlier in mid-length pieces (≤7–≤10), producing isolated preverbal/verb fragments and splitting multiword name/title/number packages (examples en_us_133, en_us_1108, en_us_248 show cuts moved so verbs or numeric/title tokens became standalone fragments).",
+    "lesson": "Keep examples that discourage cuts inside small cohesive packages while ensuring new examples do not incentivize earlier cuts that isolate verb/predicate cores or split multiword names/titles/numbers.",
+    "blamed": [
+     "E2",
+     "E3"
+    ]
+   }
+  },
+  {
+   "iter": 4,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": -0.00012,
+    "lo": -0.02989,
+    "hi": 0.03239,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Replace C2 to add an explicit rule from the critique: very high contra should effectively disqualify a cut (assign very low score) while lower contra continues to combine multiplicatively with cohesion. This directly addresses the finding that high-contra cuts (preverbal fragments, subordinating openings, missing predicate) devastate set quality.",
+    "Insert a short worked example after E3 that demonstrates not preferring an earlier cut which leaves a subject/preverbal fragment (the team / will win). This teaches the model to delay one token to preserve the clause core and avoids encouraging earlier, unsafe cuts."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C2",
+     "kind": "change",
+     "was": "1) Contra: Could the remainder of the sentence overturn or contradict the stretc",
+     "now": "1) Contra: Could the remainder of the sentence overturn or contradict the stretc"
+    },
+    {
+     "op": "insert_after",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap",
+     "now": "Input: The <SEG:?> team <SEG:?> will <SEG:?> win <SEG:?> the <SEG:?> match <SEG:"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": -0.00916,
+    "lo": -0.02576,
+    "hi": 0.00878,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "rewrite: [Core Principles]/[Examples] 를 새로 씀"
+   ],
+   "edits": []
+  },
+  {
+   "iter": 4,
+   "adopted": false,
+   "delta": {
+    "mean": -0.01448,
+    "lo": -0.03183,
+    "hi": 0.00337,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "gain": {
+    "mean": -0.01448,
+    "lo": -0.03183,
+    "hi": 0.00337,
+    "n": 1236,
+    "n_clusters": 150
+   },
+   "changelog": [
+    "Replace example E1 with measured labeled example en_us_59 to teach preserving tightly bound name/title and honorific+name packages (reduces splitting of multiword names).",
+    "Replace example E2 with measured labeled example en_us_1427 to teach avoiding cuts that leave preverbal or predicate fragments (addresses high‑contra predicate/completion risk).",
+    "Replace example E3 with measured labeled example en_us_1192 to teach avoiding splitting quantifier/list frames and to preserve clause cores in longer lists."
+   ],
+   "findings": [
+    "The prompt lets high-contradiction cuts through: it underestimates positions where the remainder of the sentence will almost certainly overturn or complete the prefix (preverbal fragments, subordinating openings, subject-only prefixes, and tail fragments that need a qualifier). In practice, cuts with very high contra (≈0.9) systematically destroy set quality and must be treated as effectively unacceptable even if cohesion looks okay.",
+    "The prompt's examples and tie-breaking bias can push cuts earlier, producing isolated verb/predicate fragments or split multiword name/number/title packages. In trying to avoid cutting inside very short packages the model has learned to move cutpoints left, which can create preverbal or standalone-predicate fragments that are unsafe."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:",
+     "now": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <S"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> p",
+     "now": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> imm"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap",
+     "now": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0333,
+     "≤5": -0.0113,
+     "≤7": 0.0024,
+     "≤10": 0.0002,
+     "≤99": 0.0144
+    },
+    "n_worse": 457,
+    "n_better": 380,
+    "why": "The new examples caused the model to stop cutting inside tightly bound name/title packages and to preserve list/quantifier frames and preverbal predicate chunks — e.g. it now joins “Former House Speaker Newt Gingrich” and keeps list cores together. That shift moved many cuts away from names and clause cores into adjacent very short pieces (≤3 and ≤5-word bins), increasing bad short-fragment splits enough to lower the overall H_set despite improvements on longer pieces.",
+    "lesson": "Preserving multiword names and list/clause cores helps longer pieces but can force harmful ultra-short fragments; future edits should avoid moving cuts in a way that produces many ≤3-word pieces.",
+    "blamed": [
+     "E1",
+     "E3"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 8228,
+ "total_cost": 27.957174,
+ "provenance": {
+  "At every candidate cut ask two central, semantic questions about meaning and how translation will behave:": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken? ": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 1
+  },
+  "   - Imagine the prefix (everything up to the cut) presented alone. Would material that follows in the full sentence change the truth conditions, reverse the assertion, or supply a qualification that makes the prefix misleading or false on its own?": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "   - Damage examples in English: a later clause that negates, reverses scope, supplies an essential exception, or relocates the main predicate so that the earlier fragment asserts something different. English often places the main predicate and its negation/qualification after auxiliary verbs and subordinating material; subordinating introductions can postpone the core of a claim. Cuts that leave only an initial subordinator or a preverbal fragment are especially vulnerable to later contradiction.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "2) Cohesion: If the prefix and the remainder are translated separately and then concatenated, will the joined translation still render the whole source sentence faithfully?": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "   - Judge whether referents, scopes, heads and their modifiers, implicit arguments, and multiword units will survive separation. In English predicate-argument links (verb with its object), noun phrase internal modifiers, post‑nominal relative clauses, possessive attachments, prepositional objects, quantified expressions and multiword modifiers often rely on material on both sides of a cut. Separating a head from crucial modifiers or leaving determiners, possessives, numerals or prepositional frames stranded tends to reduce cohesion and produce mistranslation.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "   - Cohesion damage looks like lost referent links (a pronoun without its antecedent), broken scope for quantifiers or negation, split idiomatic or phrasal constructions, or detached modifiers that change which noun they modify.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "Use these semantic judgements everywhere; do not rely on a short list of words or surface tokens. Think in terms of devices English uses (subordination vs coordination, prepositional frames, determiner/noun packages, modifier chains, relative clauses, possessive constructions, numeral/percent expressions, lists and coordinate structures) and how translating the two halves independently would handle them.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null,
+   "critic_hits": 0
+  },
+  "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively.": {
+   "origin": "iter 2",
+   "adopted_delta": 0.008,
+   "adopted_ci_lo": 0.0011,
+   "critic_hits": 0
+  },
+  "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> poisoning <SEG:?> may <SEG:?> be <SEG:?> the <SEG:?> presence <SEG:?> of <SEG:?> an <SEG:?> open <SEG:?> container <SEG:?> of <SEG:?> medication <SEG:?> or <SEG:?> toxic <SEG:?> household <SEG:?> chemicals.\nOutput: The <SEG:61> best <SEG:78> indication <SEG:89> of <SEG:83> internal <SEG:72> poisoning <SEG:100> may <SEG:50> be <SEG:44> the <SEG:0> presence <SEG:17> of <SEG:11> an <SEG:6> open <SEG:56> container <SEG:94> of <SEG:67> medication <SEG:33> or <SEG:28> toxic <SEG:39> household <SEG:22> chemicals.": {
+   "origin": "iter 2",
+   "adopted_delta": 0.008,
+   "adopted_ci_lo": 0.0011,
+   "critic_hits": 0
+  },
+  "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap: <SEG:?> as <SEG:?> rough <SEG:?> rules <SEG:?> of <SEG:?> thumb, <SEG:?> you <SEG:?> can <SEG:?> expect <SEG:?> to <SEG:?> pay <SEG:?> up <SEG:?> to <SEG:?> four <SEG:?> times <SEG:?> the <SEG:?> normal <SEG:?> economy <SEG:?> fare <SEG:?> for <SEG:?> business, <SEG:?> and <SEG:?> eleven <SEG:?> times <SEG:?> for <SEG:?> first <SEG:?> class!\nOutput: However, <SEG:93> this <SEG:73> does <SEG:0> not <SEG:63> come <SEG:87> cheap: <SEG:97> as <SEG:80> rough <SEG:53> rules <SEG:83> of <SEG:50> thumb, <SEG:90> you <SEG:57> can <SEG:47> expect <SEG:77> to <SEG:100> pay <SEG:70> up <SEG:67> to <SEG:60> four <SEG:23> times <SEG:27> the <SEG:37> normal <SEG:17> economy <SEG:13> fare <SEG:20> for <SEG:43> business, <SEG:30> and <SEG:33> eleven <SEG:3> times <SEG:7> for <SEG:10> first <SEG:40> class!": {
+   "origin": "iter 2",
+   "adopted_delta": 0.008,
+   "adopted_ci_lo": 0.0011,
+   "critic_hits": 0
+  }
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt lets high-contradiction cuts through: it underestimates positions where the remainder of the sentence will almost certainly overturn or complete the prefix (preverbal fragments, subordinating openings, subject-only prefixes, and tail fragments that need a qualifier). In practice, cuts with very high contra (≈0.9) systematically destroy set quality and must be treated as effectively unacceptable even if cohesion looks okay.",
+    "evidence": "Occurs in the majority of cases (≈9 of 13) across short and mid bins: policy kept cuts whose per-cut contra >0.85 and whose inclusion alone reduced H_set to near zero (contra_kill=true in many examples). The shared pattern is prefixes that lack their predicate/qualification or leave an essential modifier to follow.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Contra is a graded probability and affects the number only through the product;",
+     "text": "Treat very high contra as effectively disqualifying: if the estimated contra for a candidate exceeds a high threshold (choose a conservative value, e.g. 0.6–0.8), consider the cut unsafe and assign it a very low final score regardless of cohesion. Below that threshold, continue to combine cohesion * (1 - contra) as the target. This prevents strong contradiction risk (prefixes that will almost certainly be reversed or rendered misleading) from being rescued by moderate cohesion estimates."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt's examples and tie-breaking bias can push cuts earlier, producing isolated verb/predicate fragments or split multiword name/number/title packages. In trying to avoid cutting inside very short packages the model has learned to move cutpoints left, which can create preverbal or standalone-predicate fragments that are unsafe.",
+    "evidence": "Observed across mid-length bins (noted in the last_revision post‑mortem and visible in multiple cases in ≤7–≤10 bins). Revision history blamed example replacements for shifting cuts earlier; several sentences then had isolated verb or numeric/title fragments and worse H_set outcomes.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: The <SEG:?> team <SEG:?> will <SEG:?> win <SEG:?> the <SEG:?> match <SEG:?>.\nOutput: The <SEG:10> team <SEG:20> will <SEG:100> win <SEG:80> the <SEG:40> match <SEG:0>.\n(Example purpose: do not prefer an earlier cut that leaves a subject or other preverbal fragment when waiting one token preserves the verb/predicate and avoids a high-contra or low-cohesion fragment.)"
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt lets high-contradiction cuts through: it underestimates positions where the remainder of the sentence will almost certainly overturn or complete the prefix (preverbal fragments, subordinating openings, subject-only prefixes, and tail fragments that need a qualifier). In practice, cuts with very high contra (≈0.9) systematically destroy set quality and must be treated as effectively unacceptable even if cohesion looks okay.",
+   "evidence": "Occurs in the majority of cases (≈9 of 13) across short and mid bins: policy kept cuts whose per-cut contra >0.85 and whose inclusion alone reduced H_set to near zero (contra_kill=true in many examples). The shared pattern is prefixes that lack their predicate/qualification or leave an essential modifier to follow.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Contra is a graded probability and affects the number only through the product;",
+    "text": "Treat very high contra as effectively disqualifying: if the estimated contra for a candidate exceeds a high threshold (choose a conservative value, e.g. 0.6–0.8), consider the cut unsafe and assign it a very low final score regardless of cohesion. Below that threshold, continue to combine cohesion * (1 - contra) as the target. This prevents strong contradiction risk (prefixes that will almost certainly be reversed or rendered misleading) from being rescued by moderate cohesion estimates."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt's examples and tie-breaking bias can push cuts earlier, producing isolated verb/predicate fragments or split multiword name/number/title packages. In trying to avoid cutting inside very short packages the model has learned to move cutpoints left, which can create preverbal or standalone-predicate fragments that are unsafe.",
+   "evidence": "Observed across mid-length bins (noted in the last_revision post‑mortem and visible in multiple cases in ≤7–≤10 bins). Revision history blamed example replacements for shifting cuts earlier; several sentences then had isolated verb or numeric/title fragments and worse H_set outcomes.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: The <SEG:?> team <SEG:?> will <SEG:?> win <SEG:?> the <SEG:?> match <SEG:?>.\nOutput: The <SEG:10> team <SEG:20> will <SEG:100> win <SEG:80> the <SEG:40> match <SEG:0>.\n(Example purpose: do not prefer an earlier cut that leaves a subject or other preverbal fragment when waiting one token preserves the verb/predicate and avoids a high-contra or low-cohesion fragment.)"
+   }
+  }
+ ]
+}

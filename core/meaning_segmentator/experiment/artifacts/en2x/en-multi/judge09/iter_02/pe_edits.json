@@ -1,0 +1,252 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken? When you simulate the left stretch presented alone, ask specifically whether it contains the clause core needed to make a stable assertion (the main verb plus any required object or complement, i.e. a complete predication). If the left stretch is only introductory or subordinating material, a preverbal fragment, or otherwise ends before the main verb, an essential complement, or a negation/qualification that changes scope, treat contra as very high. Contra is graded, but missing the clause core or an essential complement should push (1 - contra) close to zero — such cuts almost always destroy truth conditions and must receive near‑zero final target scores."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Treat tightly bound noun/name/title packages as cohesion atoms: honorifics or titles plus a person’s name, fixed multiword proper nouns, and noun heads with essential modifiers (numerals, quantifiers, or adjectival chains that identify the referent) should not be separated. If a candidate cut would isolate an honorific from its name, split a multiword proper noun, or leave a head noun without modifiers that determine reference, reduce cohesion sharply — these splits reliably produce mistranslation when pieces are translated independently."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 664
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 545
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9437,
+  "errors": [
+   "길이 초과: 9437 > 9050"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Imagine the prefix (everything up to the cut) presented alone. Would later material change truth conditions, reverse the assertion, or add a qualification that makes the prefix misleading or false? If the prefix lacks the clause core (the main verb plus any required object or complement) or ends in subordinating or preverbal material, treat contradiction risk as very high."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Cuts that leave incomplete predicates or only introductory/subordinating material are especially vulnerable to later contradiction: a following verb, negation, or qualifying clause can reverse or complete the meaning. Such cuts should generally receive near‑zero final target."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Judge whether referents, scopes, heads and their modifiers, implicit arguments, and multiword units will survive separation. Treat tightly bound packages as cohesion atoms: honorifics/titles + a person’s name, fixed multiword proper nouns, and a noun head together with essential modifiers (numerals/quantifiers or identifying adjectival chains). If a cut would split these, reduce cohesion sharply."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "Use these semantic judgements everywhere; think in terms of structure (subordination vs coordination, prepositional frames, determiner+noun packages, modifier chains, relative clauses, possessives, quantifiers, and lists) and whether translating the two halves independently preserves intended links."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1591",
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively."
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -224
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": -165
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -107
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 163
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -447
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7576,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 3235
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11463,
+  "errors": [
+   "길이 초과: 11463 > 9050"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_59",
+    "text": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <SEG:?> upper <SEG:?> hand <SEG:?> because <SEG:?> he <SEG:?> had <SEG:?> been <SEG:?> Provenzano's <SEG:?> right-hand <SEG:?> man <SEG:?> in <SEG:?> Palermo <SEG:?> and <SEG:?> his <SEG:?> greater <SEG:?> experience <SEG:?> won <SEG:?> him <SEG:?> the <SEG:?> respect <SEG:?> of <SEG:?> the <SEG:?> older <SEG:?> generation <SEG:?> of <SEG:?> bosses <SEG:?> as <SEG:?> they <SEG:?> pursued <SEG:?> Provenzano's <SEG:?> policy <SEG:?> of <SEG:?> keeping <SEG:?> as <SEG:?> low <SEG:?> as <SEG:?> possible <SEG:?> while <SEG:?> strengthening <SEG:?> their <SEG:?> power <SEG:?> network.\nOutput: Police <SEG:80> said <SEG:98> Lo <SEG:84> Piccolo <SEG:47> had <SEG:31> the <SEG:33> upper <SEG:29> hand <SEG:60> because <SEG:9> he <SEG:4> had <SEG:16> been <SEG:44> Provenzano's <SEG:42> right-hand <SEG:89> man <SEG:87> in <SEG:38> Palermo <SEG:100> and <SEG:93> his <SEG:82> greater <SEG:64> experience <SEG:78> won <SEG:69> him <SEG:62> the <SEG:36> respect <SEG:91> of <SEG:71> the <SEG:58> older <SEG:96> generation <SEG:76> of <SEG:67> bosses <SEG:73> as <SEG:49> they <SEG:51> pursued <SEG:40> Provenzano's <SEG:56> policy <SEG:53> of <SEG:27> keeping <SEG:24> as <SEG:0> low <SEG:11> as <SEG:13> possible <SEG:18> while <SEG:2> strengthening <SEG:22> their <SEG:20> power <SEG:7> network."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1427",
+    "text": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> immediately <SEG:?> apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as <SEG:?> vomiting <SEG:?> are <SEG:?> sufficiently <SEG:?> general <SEG:?> that <SEG:?> an <SEG:?> immediate <SEG:?> diagnosis <SEG:?> cannot <SEG:?> be <SEG:?> made.\nOutput: Internal <SEG:26> poisoning <SEG:63> may <SEG:53> not <SEG:37> be <SEG:42> immediately <SEG:58> apparent. <SEG:100> Symptoms, <SEG:95> such <SEG:84> as <SEG:68> vomiting <SEG:89> are <SEG:79> sufficiently <SEG:32> general <SEG:74> that <SEG:47> an <SEG:16> immediate <SEG:5> diagnosis <SEG:0> cannot <SEG:11> be <SEG:21> made."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_388",
+    "text": "Input: He <SEG:?> originally <SEG:?> named <SEG:?> the <SEG:?> Hangeul <SEG:?> alphabet <SEG:?> Hunmin <SEG:?> Jeongeum, <SEG:?> which <SEG:?> means <SEG:?> \"the <SEG:?> correct <SEG:?> sounds <SEG:?> for <SEG:?> the <SEG:?> instruction <SEG:?> of <SEG:?> the <SEG:?> people\".\nOutput: He <SEG:65> originally <SEG:59> named <SEG:6> the <SEG:0> Hangeul <SEG:71> alphabet <SEG:88> Hunmin <SEG:94> Jeongeum, <SEG:100> which <SEG:76> means <SEG:24> \"the <SEG:12> correct <SEG:53> sounds <SEG:82> for <SEG:29> the <SEG:18> instruction <SEG:47> of <SEG:35> the <SEG:41> people\"."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 868
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 153
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 125
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9374,
+  "errors": [
+   "길이 초과: 9374 > 9050"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1591",
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1102",
+    "text": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> poisoning <SEG:?> may <SEG:?> be <SEG:?> the <SEG:?> presence <SEG:?> of <SEG:?> an <SEG:?> open <SEG:?> container <SEG:?> of <SEG:?> medication <SEG:?> or <SEG:?> toxic <SEG:?> household <SEG:?> chemicals.\nOutput: The <SEG:61> best <SEG:78> indication <SEG:89> of <SEG:83> internal <SEG:72> poisoning <SEG:100> may <SEG:50> be <SEG:44> the <SEG:0> presence <SEG:17> of <SEG:11> an <SEG:6> open <SEG:56> container <SEG:94> of <SEG:67> medication <SEG:33> or <SEG:28> toxic <SEG:39> household <SEG:22> chemicals."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1192",
+    "text": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap: <SEG:?> as <SEG:?> rough <SEG:?> rules <SEG:?> of <SEG:?> thumb, <SEG:?> you <SEG:?> can <SEG:?> expect <SEG:?> to <SEG:?> pay <SEG:?> up <SEG:?> to <SEG:?> four <SEG:?> times <SEG:?> the <SEG:?> normal <SEG:?> economy <SEG:?> fare <SEG:?> for <SEG:?> business, <SEG:?> and <SEG:?> eleven <SEG:?> times <SEG:?> for <SEG:?> first <SEG:?> class!\nOutput: However, <SEG:93> this <SEG:73> does <SEG:0> not <SEG:63> come <SEG:87> cheap: <SEG:97> as <SEG:80> rough <SEG:53> rules <SEG:83> of <SEG:50> thumb, <SEG:90> you <SEG:57> can <SEG:47> expect <SEG:77> to <SEG:100> pay <SEG:70> up <SEG:67> to <SEG:60> four <SEG:23> times <SEG:27> the <SEG:37> normal <SEG:17> economy <SEG:13> fare <SEG:20> for <SEG:43> business, <SEG:30> and <SEG:33> eleven <SEG:3> times <SEG:7> for <SEG:10> first <SEG:40> class!"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 163
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 94
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 435
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8920,
+  "errors": null
+ }
+]

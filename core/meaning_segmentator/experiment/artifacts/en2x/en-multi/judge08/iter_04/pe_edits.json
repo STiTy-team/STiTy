@@ -1,0 +1,111 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep these as semantic judgments you can apply at every boundary: ask whether the right-hand fragment can (1) contradict or negate the already-heard left fragment and (2) stand alone when translated without leaving essential relations unresolved. Two concrete checks to apply quickly: Single-obligatory-completion check: If the left fragment, as heard alone, opens or commits to a propositional claim that needs one specific completer (a finite verb or auxiliary that sets scope, a required object or complement clause, an explicit negator or quantifier whose complement decides truth), treat a cut that moves that unique completer to the right as unsafe. Prefer keeping the completer with the head on the left; otherwise lower cohesion and raise contra. Noun-head / apposition check: If a cut would separate a noun head from modifiers that identify or restrict it (titles, appositives, determiners, post‑nominal restrictors), mark cohesion low and prefer keeping the head and its identifying modifiers together. Explicit caution: do not reward strategies that isolate tiny one-word completions on the right—such isolation often creates incoherent left fragments or lets the right fragment, when heard alone, overturn the left."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 925
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11002,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "text": "Single-obligatory-completer rule: If the left fragment, heard alone, already opens or commits to a proposition that requires one specific continuator on the right (examples: subordinate openers, auxiliaries/negation that scope over a following phrase, a verb that expects a particular object/clause, or a quantifier whose complement is deferred), treat a cut there as unsafe. Lower cohesion and raise contra for such cuts and, crucially, prefer grouping the left with the minimal completing material. Do NOT reward moving that sole completer to the right; isolating a single-word completer on the right is especially likely to be misleading or to overturn the left when played alone."
+   },
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "text": "Noun-head and apposition guidance: Ask whether the cut would detach an identifying modifier, title, appositive, determiner, or restrictive post-modifier from its noun head (or separate a name from its role). If the left or right fragment would lose the referent's identity or leave a dangling modifier when played alone, mark cohesion low and prefer keeping the head together with its identifying modifiers so the referent remains clear in both halves."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1591",
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "chars_change": 684
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "chars_change": 453
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -136
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11078,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Ask: If the listener had already heard the stretch up to this cut, would what comes after, taken on its own and translated, contradict, reverse, or nullify the earlier stretch? Consider scope interactions (negation, modality, quantifiers), temporal reordering, correction or contrast, and later clauses that cancel an earlier claim. If the right fragment supplies the single disambiguating or obligatory completer — for example a subordinating complement, the finite verb (or its negation/auxiliary) that sets truth-conditions, a verb's required object/clause, or an explicit reverser — treat the cut as unsafe: raise contra and lower cohesion because isolating that completer will either leave the left indeterminate or let the right, when heard alone, overturn it. Do not reward a strategy that routinely pushes a unique completer onto a very short right fragment; prefer keeping the head and its completer together."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Ask: If the left side is translated and played, then the right side is translated and played (in order) with no reanalysis, will the concatenation still convey the original sentence’s meaning? Look for orphaned predicates or arguments, unresolved pronouns, modifiers that need a head to make sense, broken idioms or fixed expressions, attachments, and incomplete subordinate/complement structures. In particular, if a cut would detach a noun head from identifying modifiers, titles, appositives, possessive markers, or restrictive post‑nominal material, mark cohesion low and prefer keeping those elements together because separation harms referential clarity. Also penalize cuts that leave only a very short (one- or two-word) completing fragment on the right: such tiny completers rarely supply the determinative content reliably when translated alone."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 143
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 19
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10239,
+  "errors": null
+ }
+]

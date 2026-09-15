@@ -1,0 +1,1702 @@
+[
+ {
+  "id": "en_us_1591",
+  "cuts": 9,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.7767,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9809,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    7,
+    9,
+    13,
+    14,
+    16,
+    17,
+    20
+   ],
+   "H_set": 0.0118,
+   "text": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor ‖ Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, ‖ fifth, ‖ and sixth place, ‖ respectively.",
+   "pieces": {
+    "Chinese": [
+     "前众议院议长",
+     "纽特·金里奇",
+     "德克萨斯州州长",
+     "里克·佩里",
+     "米歇尔·巴赫曼女士",
+     "已完成",
+     "第四，",
+     "第五届",
+     "第六名,",
+     "分别为100%和100%。"
+    ],
+    "Japanese": [
+     "元下院議長",
+     "ニュート・ギングリッチ",
+     "テキサス州知事",
+     "リック・ペリー",
+     "下院議員のミシェル・バッハマンと",
+     "終わりだ",
+     "4つ目は",
+     "5番目に",
+     "6位は",
+     "それぞれの"
+    ],
+    "German": [
+     "Ehemaliger Sprecher des Repräsentantenhauses",
+     "Newt Gingrich,",
+     "Gouverneur von Texas",
+     "Rick Perry",
+     "und Kongressabgeordnete Michele Bachmann",
+     "Fertig",
+     "in der vierten,",
+     "fünftens,",
+     "und sechster Platz,",
+     "bzw. 1000 mAh."
+    ],
+    "Spanish": [
+     "Ex-Presidente de la Cámara",
+     "Newt Gingrich,",
+     "Gobernador de Texas",
+     "Rick Perry,",
+     "y la congresista Michele Bachmann",
+     "terminado",
+     "en cuarto lugar,",
+     "quinto,",
+     "y sexto lugar,",
+     "respectivamente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    9,
+    10,
+    11,
+    12
+   ],
+   "H_set": 0.7885,
+   "text": "Former ‖ House Speaker ‖ Newt ‖ Gingrich, ‖ Texas ‖ governor Rick Perry, ‖ and ‖ Congresswoman ‖ Michele ‖ Bachmann finished in fourth, fifth, and sixth place, respectively.",
+   "pieces": {
+    "Chinese": [
+     "前任",
+     "众议院议长",
+     "紐特",
+     "金里奇",
+     "德克萨斯州",
+     "州长里克·佩里",
+     "以及",
+     "女议员",
+     "米切莱",
+     "巴赫曼分别以第四、第五和第六名完成比赛。"
+    ],
+    "Japanese": [
+     "元",
+     "下院議長",
+     "ニュート",
+     "ギングリッチ",
+     "テキサス州",
+     "リック・ペリー知事は",
+     "それに",
+     "女議員",
+     "ミケーレ",
+     "バッハマンはそれぞれ4位、5位、6位に終わった。"
+    ],
+    "German": [
+     "Former",
+     "Sprecher des Repräsentantenhauses",
+     "Newt",
+     "Gingrich,",
+     "Texas",
+     "Gouverneur Rick Perry,",
+     "und",
+     "Kongressabgeordnete",
+     "Michele",
+     "Bachmann belegte den vierten, fünften und sechsten Platz."
+    ],
+    "Spanish": [
+     "Ex",
+     "Portavoz de la Cámara",
+     "Newt",
+     "Gingrich,",
+     "Texas",
+     "El gobernador Rick Perry,",
+     "y",
+     "Congresista",
+     "Michele",
+     "Bachmann terminó en cuarto, quinto y sexto lugar, respectivamente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "Newt Gingrich, Texas governor",
+     "right": "Rick Perry, and Congresswoman",
+     "H": 0.713,
+     "H_pct": 31.6,
+     "contra": 0.1504,
+     "cohesion": 0.8392
+    },
+    {
+     "pos": 13,
+     "left": "and Congresswoman Michele Bachmann",
+     "right": "finished in fourth, fifth,",
+     "H": 0.764,
+     "H_pct": 42.1,
+     "contra": 0.1025,
+     "cohesion": 0.8512
+    },
+    {
+     "pos": 14,
+     "left": "Congresswoman Michele Bachmann finished",
+     "right": "in fourth, fifth, and",
+     "H": 0.7767,
+     "H_pct": 47.4,
+     "contra": 0.0237,
+     "cohesion": 0.7956
+    },
+    {
+     "pos": 16,
+     "left": "Bachmann finished in fourth,",
+     "right": "fifth, and sixth place,",
+     "H": 0.0153,
+     "H_pct": 0.0,
+     "contra": 0.9809,
+     "cohesion": 0.8027
+    },
+    {
+     "pos": 17,
+     "left": "finished in fourth, fifth,",
+     "right": "and sixth place, respectively.",
+     "H": 0.3167,
+     "H_pct": 10.5,
+     "contra": 0.5689,
+     "cohesion": 0.7346
+    },
+    {
+     "pos": 20,
+     "left": "fifth, and sixth place,",
+     "right": "respectively.",
+     "H": 0.7294,
+     "H_pct": 36.8,
+     "contra": 0.0417,
+     "cohesion": 0.7611
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Former",
+     "right": "House Speaker Newt Gingrich,",
+     "H": 0.8442,
+     "H_pct": 89.5,
+     "contra": 0.0139,
+     "cohesion": 0.8561
+    },
+    {
+     "pos": 4,
+     "left": "Former House Speaker Newt",
+     "right": "Gingrich, Texas governor Rick",
+     "H": 0.8474,
+     "H_pct": 94.7,
+     "contra": 0.0039,
+     "cohesion": 0.8507
+    },
+    {
+     "pos": 6,
+     "left": "Speaker Newt Gingrich, Texas",
+     "right": "governor Rick Perry, and",
+     "H": 0.812,
+     "H_pct": 63.2,
+     "contra": 0.004,
+     "cohesion": 0.8153
+    },
+    {
+     "pos": 10,
+     "left": "governor Rick Perry, and",
+     "right": "Congresswoman Michele Bachmann finished",
+     "H": 0.8191,
+     "H_pct": 68.4,
+     "contra": 0.039,
+     "cohesion": 0.8524
+    },
+    {
+     "pos": 11,
+     "left": "Rick Perry, and Congresswoman",
+     "right": "Michele Bachmann finished in",
+     "H": 0.8268,
+     "H_pct": 73.7,
+     "contra": 0.0458,
+     "cohesion": 0.8665
+    },
+    {
+     "pos": 12,
+     "left": "Perry, and Congresswoman Michele",
+     "right": "Bachmann finished in fourth,",
+     "H": 0.8379,
+     "H_pct": 78.9,
+     "contra": 0.0366,
+     "cohesion": 0.8698
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1593",
+  "cuts": 4,
+  "avg_chunk": 3.2,
+  "latency_bin": "≤5",
+  "gap": 0.7113,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9932,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    8,
+    10,
+    14
+   ],
+   "H_set": 0.0044,
+   "text": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced.",
+   "pieces": {
+    "Chinese": [
+     "最终,木制车轮",
+     "被铁轮所取代。",
+     "1767年，",
+     "第一条全铁轨",
+     "提出了一些建议。"
+    ],
+    "Japanese": [
+     "木製の車輪が登場した。",
+     "鉄の車輪に置き換えられました",
+     "享保12年（1767年）",
+     "鉄製の鉄道が",
+     "導入されました"
+    ],
+    "German": [
+     "Schließlich Holzräder",
+     "Die Räder wurden durch eiserne Räder ersetzt.",
+     "Im Jahre 1767,",
+     "Die ersten Volleisenschienen",
+     "Neue Produkte wurden eingeführt."
+    ],
+    "Spanish": [
+     "Eventualmente, ruedas de madera",
+     "Las ruedas de hierro fueron reemplazadas por ruedas de hierro.",
+     "En 1767,",
+     "Los primeros rieles de hierro",
+     "se introdujeron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    7,
+    8
+   ],
+   "H_set": 0.7157,
+   "text": "Eventually, ‖ wooden wheels were replaced ‖ by iron ‖ wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "pieces": {
+    "Chinese": [
+     "最终，",
+     "木制车轮被更换",
+     "铁",
+     "轮子",
+     "1767年,第一条全铁轨被引入。"
+    ],
+    "Japanese": [
+     "結局",
+     "木製の車輪が交換され",
+     "鉄で",
+     "車輪だ",
+     "1767年（宝暦5年）、初めて全鉄製のレールが導入された。"
+    ],
+    "German": [
+     "Schließlich,",
+     "Holzräder wurden ersetzt",
+     "Von Eisen gefertigt",
+     "Räder.",
+     "1767 wurden die ersten Volleiserne Schienen eingeführt."
+    ],
+    "Spanish": [
+     "Eventualmente,",
+     "Las ruedas de madera fueron reemplazadas",
+     "Por el hierro",
+     "Ruedas de aluminio.",
+     "En 1767, se introdujeron los primeros rieles de hierro completo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Eventually, wooden wheels",
+     "right": "were replaced by iron",
+     "H": 0.0046,
+     "H_pct": 0.0,
+     "contra": 0.9932,
+     "cohesion": 0.6761
+    },
+    {
+     "pos": 10,
+     "left": "iron wheels. In 1767,",
+     "right": "the first full-iron rails",
+     "H": 0.6328,
+     "H_pct": 64.3,
+     "contra": 0.1525,
+     "cohesion": 0.7466
+    },
+    {
+     "pos": 14,
+     "left": "the first full-iron rails",
+     "right": "were introduced.",
+     "H": 0.5751,
+     "H_pct": 42.9,
+     "contra": 0.0292,
+     "cohesion": 0.5924
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Eventually,",
+     "right": "wooden wheels were replaced",
+     "H": 0.7533,
+     "H_pct": 78.6,
+     "contra": 0.0059,
+     "cohesion": 0.7577
+    },
+    {
+     "pos": 5,
+     "left": "wooden wheels were replaced",
+     "right": "by iron wheels. In",
+     "H": 0.7646,
+     "H_pct": 85.7,
+     "contra": 0.0049,
+     "cohesion": 0.7683
+    },
+    {
+     "pos": 7,
+     "left": "were replaced by iron",
+     "right": "wheels. In 1767, the",
+     "H": 0.824,
+     "H_pct": 92.9,
+     "contra": 0.049,
+     "cohesion": 0.8665
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1102",
+  "cuts": 2,
+  "avg_chunk": 6.7,
+  "latency_bin": "≤7",
+  "gap": 0.6991,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.991,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10,
+    16
+   ],
+   "H_set": 0.0065,
+   "text": "The best indication of internal poisoning may be the presence ‖ of an open container of medication ‖ or toxic household chemicals.",
+   "pieces": {
+    "Chinese": [
+     "内毒的最佳指标可能是存在",
+     "一个开放的药物容器",
+     "或者有毒的家用化学品。"
+    ],
+    "Japanese": [
+     "内毒性の最も良い指標は，血液中の血小板数の増加である。",
+     "薬の開いた容器の中に",
+     "家庭用有毒化学物質も 含まれています"
+    ],
+    "German": [
+     "Der beste Hinweis auf eine innere Vergiftung kann das Vorhandensein von",
+     "#40555599 - von einem offenen Behälter von Medikamenten",
+     "oder giftige Haushaltschemikalien."
+    ],
+    "Spanish": [
+     "La mejor indicación de intoxicación interna puede ser la presencia de",
+     "De un envase abierto de medicamentos",
+     "o productos químicos domésticos tóxicos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    14
+   ],
+   "H_set": 0.7056,
+   "text": "The best indication of internal poisoning ‖ may be the presence of an open container ‖ of medication or toxic household chemicals.",
+   "pieces": {
+    "Chinese": [
+     "内毒的最佳指标",
+     "可能是存在一个开放的容器",
+     "药物或有毒的家用化学品。"
+    ],
+    "Japanese": [
+     "内毒症の最良の指標",
+     "開いた容器の存在が",
+     "薬物や有毒な家庭用化学品の 汚染を防ぐことができます"
+    ],
+    "German": [
+     "Das beste Indiz für eine innere Vergiftung",
+     "Das Vorhandensein eines offenen Behälters kann sein",
+     "Medikamente oder giftige Haushaltschemikalien."
+    ],
+    "Spanish": [
+     "La mejor indicación de intoxicación interna",
+     "Puede ser la presencia de un contenedor abierto",
+     "de medicamentos o productos químicos tóxicos para el hogar."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "may be the presence",
+     "right": "of an open container",
+     "H": 0.0069,
+     "H_pct": 16.7,
+     "contra": 0.991,
+     "cohesion": 0.7669
+    },
+    {
+     "pos": 16,
+     "left": "open container of medication",
+     "right": "or toxic household chemicals.",
+     "H": 0.043,
+     "H_pct": 33.3,
+     "contra": 0.9476,
+     "cohesion": 0.8197
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "indication of internal poisoning",
+     "right": "may be the presence",
+     "H": 0.7851,
+     "H_pct": 100.0,
+     "contra": 0.0056,
+     "cohesion": 0.7895
+    },
+    {
+     "pos": 14,
+     "left": "of an open container",
+     "right": "of medication or toxic",
+     "H": 0.7385,
+     "H_pct": 94.4,
+     "contra": 0.0551,
+     "cohesion": 0.7816
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1192",
+  "cuts": 3,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.6565,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9421,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    11,
+    26
+   ],
+   "H_set": 0.0435,
+   "text": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "pieces": {
+    "Chinese": [
+     "然而,这并不便宜:",
+     "作为粗略的经验法则,",
+     "您可以预期支付高达四倍的正常经济舱票价为商务,",
+     "头等舱11次!"
+    ],
+    "Japanese": [
+     "しかし、これは安くは来ない。",
+     "私たちの知識を",
+     "会社の場合は 通常のエコノミーの4倍の料金を支払うことになります",
+     "ファーストクラスは11回!"
+    ],
+    "German": [
+     "Das ist jedoch nicht billig:",
+     "als grobe Faustregeln,",
+     "Sie können damit rechnen, bis zu viermal den normalen Economy-Tarif für Geschäftsreisen zu bezahlen,",
+     "Und elfmal für die erste Klasse!"
+    ],
+    "Spanish": [
+     "Sin embargo, esto no es barato:",
+     "como reglas aproximadas,",
+     "Puede esperar pagar hasta cuatro veces la tarifa normal de clase económica para viajes de negocios,",
+     "¡Y once veces para primera clase!"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    15
+   ],
+   "H_set": 0.7,
+   "text": "However, ‖ this does not come cheap: ‖ as rough rules of thumb, you can expect to ‖ pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "这是不便宜的:",
+     "当然,你也可以选择其他的方法。",
+     "商务舱最多支付四倍的正常经济舱票价,头等舱支付十一倍!"
+    ],
+    "Japanese": [
+     "しかし",
+     "これは安くはありません",
+     "基本的には あなたが",
+     "4倍のエコノミークラスで ビジネスクラス 11倍のファーストクラス!"
+    ],
+    "German": [
+     "Allerdings",
+     "Das ist nicht billig:",
+     "Als grobe Faustregeln können Sie erwarten,",
+     "Sie zahlen bis zu viermal den normalen Economy-Tarif für Business und elfmal für First Class!"
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Esto no es barato:",
+     "Como reglas generales, se puede esperar a",
+     "¡Paga hasta cuatro veces la tarifa económica normal para negocios y once veces para primera clase!"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "rough rules of thumb,",
+     "right": "you can expect to",
+     "H": 0.7684,
+     "H_pct": 90.0,
+     "contra": 0.014,
+     "cohesion": 0.7793
+    },
+    {
+     "pos": 26,
+     "left": "economy fare for business,",
+     "right": "and eleven times for",
+     "H": 0.0469,
+     "H_pct": 30.0,
+     "contra": 0.9421,
+     "cohesion": 0.8098
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "However,",
+     "right": "this does not come",
+     "H": 0.7775,
+     "H_pct": 93.3,
+     "contra": 0.0007,
+     "cohesion": 0.7781
+    },
+    {
+     "pos": 15,
+     "left": "you can expect to",
+     "right": "pay up to four",
+     "H": 0.7856,
+     "H_pct": 100.0,
+     "contra": 0.0073,
+     "cohesion": 0.7913
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_59",
+  "cuts": 3,
+  "avg_chunk": 11.8,
+  "latency_bin": "≤99",
+  "gap": 0.2106,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.3053,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8,
+    31,
+    42
+   ],
+   "H_set": 0.5199,
+   "text": "Police said Lo Piccolo had the upper hand ‖ because he had been Provenzano's right-hand man in Palermo and his greater experience won him the respect of the older generation of bosses ‖ as they pursued Provenzano's policy of keeping as low as possible ‖ while strengthening their power network.",
+   "pieces": {
+    "Chinese": [
+     "警方说洛皮科洛有优势",
+     "因为他曾是普罗文扎诺在巴勒莫的右手,他的经验让他赢得了老一代老板的尊重。",
+     "因为他们追求普罗文扎诺的政策,尽可能地保持低",
+     "并且加强他们的电力网络。"
+    ],
+    "Japanese": [
+     "警察はロ・ピッコロが優勢だと言ってる",
+     "彼はパレルモでプロヴェンツァーノの右腕で 彼の経験が 上層部の尊敬を得たからです",
+     "プロヴェンツァーノの できるだけ低くするという 政策を追求する中で",
+     "電力網を強化するために 必要なものです"
+    ],
+    "German": [
+     "Die Polizei sagte, Lo Piccolo hatte die Oberhand",
+     "Weil er in Palermo Provenzanos rechte Hand gewesen war und ihm seine größere Erfahrung den Respekt der älteren Generation der Chefs einbrachte.",
+     "Sie verfolgten Provenzanos Politik, die Kosten so niedrig wie möglich zu halten.",
+     "und gleichzeitig ihr Stromnetz stärken."
+    ],
+    "Spanish": [
+     "La policía dijo que Lo Piccolo tenía la ventaja",
+     "porque había sido la mano derecha de Provenzano en Palermo y su mayor experiencia le había ganado el respeto de la generación anterior de jefes",
+     "mientras perseguían la política de Provenzano de mantenerse lo más bajo posible",
+     "mientras fortalecen su red eléctrica."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    17,
+    28
+   ],
+   "H_set": 0.7305,
+   "text": "Police said ‖ Lo Piccolo had the upper hand because he had been Provenzano's right-hand man in Palermo ‖ and his greater experience won him the respect of the older ‖ generation of bosses as they pursued Provenzano's policy of keeping as low as possible while strengthening their power network.",
+   "pieces": {
+    "Chinese": [
+     "警方说",
+     "罗皮科洛有优势,因为他曾是普罗文扎诺在巴勒莫的右手",
+     "他的经验让他赢得了老人的尊重",
+     "他们追求普罗文扎诺的政策,在加强他们的权力网络的同时,尽可能地保持低。"
+    ],
+    "Japanese": [
+     "警察は",
+     "ピッコロはパレルモで プロヴェンツァーノの右腕だったので 優勢だった",
+     "彼の経験は 年上の人々の尊敬を得ました",
+     "プロヴェンツァーノの政策を追求し 可能な限り低いレベルに 維持しながら 権力ネットワークを強化した"
+    ],
+    "German": [
+     "Die Polizei sagte",
+     "Lo Piccolo hatte die Oberhand, weil er Provenzanos rechte Hand in Palermo gewesen war",
+     "Seine größere Erfahrung gewann ihm den Respekt der älteren",
+     "Die erste Generation von Bossen verfolgte Provenzanos Politik, so niedrig wie möglich zu bleiben und gleichzeitig ihr Machtnetzwerk zu stärken."
+    ],
+    "Spanish": [
+     "La policía dijo",
+     "Lo Piccolo tenía la ventaja porque había sido la mano derecha de Provenzano en Palermo",
+     "Su mayor experiencia le ganó el respeto de los mayores.",
+     "La nueva generación de jefes siguió la política de Provenzano de mantenerse lo más bajo posible mientras fortalecían su red de poder."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "had the upper hand",
+     "right": "because he had been",
+     "H": 0.7109,
+     "H_pct": 60.0,
+     "contra": 0.0008,
+     "cohesion": 0.7114
+    },
+    {
+     "pos": 31,
+     "left": "older generation of bosses",
+     "right": "as they pursued Provenzano's",
+     "H": 0.7373,
+     "H_pct": 73.3,
+     "contra": 0.0134,
+     "cohesion": 0.7473
+    },
+    {
+     "pos": 42,
+     "left": "as low as possible",
+     "right": "while strengthening their power",
+     "H": 0.4992,
+     "H_pct": 17.8,
+     "contra": 0.3053,
+     "cohesion": 0.7186
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Police said",
+     "right": "Lo Piccolo had the",
+     "H": 0.7657,
+     "H_pct": 97.8,
+     "contra": 0.0057,
+     "cohesion": 0.7701
+    },
+    {
+     "pos": 17,
+     "left": "right-hand man in Palermo",
+     "right": "and his greater experience",
+     "H": 0.7714,
+     "H_pct": 100.0,
+     "contra": 0.0039,
+     "cohesion": 0.7744
+    },
+    {
+     "pos": 28,
+     "left": "respect of the older",
+     "right": "generation of bosses as",
+     "H": 0.7643,
+     "H_pct": 95.6,
+     "contra": 0.0057,
+     "cohesion": 0.7687
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1427",
+  "cuts": 6,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.7018,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9894,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    7,
+    8,
+    11,
+    14,
+    18
+   ],
+   "H_set": 0.0071,
+   "text": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "pieces": {
+    "Chinese": [
+     "内毒",
+     "可能不会立即显现。",
+     "症状",
+     "如呕吐",
+     "是足够一般性的",
+     "即时诊断",
+     "不能做到。"
+    ],
+    "Japanese": [
+     "内毒症",
+     "すぐには分からないかもしれません",
+     "症状，",
+     "吐き気などの症状が",
+     "十分に一般的で",
+     "即時診断が",
+     "作れない"
+    ],
+    "German": [
+     "Innere Vergiftung",
+     "Diese sind nicht sofort erkennbar.",
+     "Symptome,",
+     "Symptome wie Erbrechen",
+     "Sind ausreichend allgemein",
+     "Dass eine sofortige Diagnose",
+     "Es kann nicht gemacht werden."
+    ],
+    "Spanish": [
+     "Envenenamiento interno",
+     "Puede que no sea inmediatamente evidente.",
+     "Síntomas,",
+     "Síntomas como vómitos",
+     "son suficientemente generales",
+     "Que un diagnóstico inmediato",
+     "No se puede hacer."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8,
+    9,
+    11,
+    12,
+    14
+   ],
+   "H_set": 0.7089,
+   "text": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such ‖ as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "pieces": {
+    "Chinese": [
+     "内毒症可能不会立即显现。",
+     "症状",
+     "如此",
+     "如呕吐",
+     "是",
+     "足够一般性",
+     "不能立即做出诊断。"
+    ],
+    "Japanese": [
+     "内毒性は直ちに明らかにならないことがある。",
+     "症状，",
+     "こんな",
+     "吐き気のように",
+     "あなたは",
+     "十分に一般的なもので",
+     "すぐに診断がつかないということです"
+    ],
+    "German": [
+     "Eine innere Vergiftung ist möglicherweise nicht sofort erkennbar.",
+     "Symptome,",
+     "such",
+     "als Erbrechen",
+     "sind",
+     "ausreichend allgemein",
+     "Eine sofortige Diagnose kann nicht gestellt werden."
+    ],
+    "Spanish": [
+     "La intoxicación interna puede no ser inmediatamente evidente.",
+     "Síntomas,",
+     "tales",
+     "Como vómitos",
+     "son",
+     "suficientemente general",
+     "No se puede hacer un diagnóstico inmediato."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Internal poisoning",
+     "right": "may not be immediately",
+     "H": 0.7511,
+     "H_pct": 63.2,
+     "contra": 0.0037,
+     "cohesion": 0.7539
+    },
+    {
+     "pos": 18,
+     "left": "that an immediate diagnosis",
+     "right": "cannot be made.",
+     "H": 0.0058,
+     "H_pct": 0.0,
+     "contra": 0.9894,
+     "cohesion": 0.5453
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "immediately apparent. Symptoms, such",
+     "right": "as vomiting are sufficiently",
+     "H": 0.7837,
+     "H_pct": 84.2,
+     "contra": 0.0016,
+     "cohesion": 0.785
+    },
+    {
+     "pos": 12,
+     "left": "such as vomiting are",
+     "right": "sufficiently general that an",
+     "H": 0.7782,
+     "H_pct": 78.9,
+     "contra": 0.0021,
+     "cohesion": 0.7799
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1143",
+  "cuts": 6,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.6903,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9673,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    8,
+    12,
+    13,
+    17,
+    20
+   ],
+   "H_set": 0.0239,
+   "text": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed ‖ publication of photos ‖ as potentially prejudicial.",
+   "pieces": {
+    "Chinese": [
+     "这是常见的做法",
+     "英国其他地方",
+     "但苏格兰司法系统的工作原理",
+     "不同",
+     "法院的判决",
+     "照片的出版",
+     "可能有害。"
+    ],
+    "Japanese": [
+     "これは普通のやり方だ",
+     "英国の他の地域では",
+     "しかしスコットランドの司法は",
+     "違う",
+     "裁判所は",
+     "写真の公開",
+     "危険なものとして 認識されるようになりました"
+    ],
+    "German": [
+     "Dies ist übliche Praxis",
+     "Ansonsten in Großbritannien",
+     "Aber die schottische Justiz funktioniert",
+     "anders",
+     "und Gerichte haben sich angesehen",
+     "Veröffentlichung von Fotos",
+     "als potenziell schädlich."
+    ],
+    "Spanish": [
+     "Esta es una práctica común",
+     "En otras partes del Reino Unido",
+     "Pero la justicia escocesa funciona",
+     "De manera diferente",
+     "y los tribunales han considerado",
+     "Publicación de fotos",
+     "como potencialmente perjudicial."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    8,
+    9,
+    10,
+    13,
+    14
+   ],
+   "H_set": 0.7141,
+   "text": "This ‖ is common practice elsewhere in the UK ‖ but ‖ Scottish ‖ justice works differently ‖ and ‖ courts have viewed publication of photos as potentially prejudicial.",
+   "pieces": {
+    "Chinese": [
+     "这个",
+     "是英国其他地方的常见做法",
+     "但",
+     "蘇格蘭",
+     "司法工作方式不同",
+     "以及",
+     "法院认为发表照片可能有害。"
+    ],
+    "Japanese": [
+     "これ",
+     "英国の他の地域でも よくあることです",
+     "でも あなたは",
+     "スコットランド",
+     "司法は違う",
+     "それに",
+     "裁判所は 写真の公開を 潜在的な損害と見なしてる"
+    ],
+    "German": [
+     "This",
+     "Dies ist üblich in anderen Teilen Großbritanniens",
+     "aber",
+     "Scottish",
+     "Justiz funktioniert anders",
+     "und",
+     "Die Gerichte haben die Veröffentlichung von Fotos als potenziell schädlich angesehen."
+    ],
+    "Spanish": [
+     "Este",
+     "Es una práctica común en otras partes del Reino Unido",
+     "pero",
+     "Escoceses",
+     "La justicia funciona de manera diferente",
+     "y",
+     "Los tribunales han considerado la publicación de fotos como potencialmente perjudicial."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "This is common practice",
+     "right": "elsewhere in the UK",
+     "H": 0.8018,
+     "H_pct": 61.9,
+     "contra": 0.0002,
+     "cohesion": 0.802
+    },
+    {
+     "pos": 12,
+     "left": "but Scottish justice works",
+     "right": "differently and courts have",
+     "H": 0.024,
+     "H_pct": 0.0,
+     "contra": 0.9673,
+     "cohesion": 0.7351
+    },
+    {
+     "pos": 17,
+     "left": "and courts have viewed",
+     "right": "publication of photos as",
+     "H": 0.7963,
+     "H_pct": 52.4,
+     "contra": 0.0139,
+     "cohesion": 0.8075
+    },
+    {
+     "pos": 20,
+     "left": "viewed publication of photos",
+     "right": "as potentially prejudicial.",
+     "H": 0.7779,
+     "H_pct": 42.9,
+     "contra": 0.0043,
+     "cohesion": 0.7813
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "This",
+     "right": "is common practice elsewhere",
+     "H": 0.8377,
+     "H_pct": 85.7,
+     "contra": 0.0121,
+     "cohesion": 0.8479
+    },
+    {
+     "pos": 9,
+     "left": "in the UK but",
+     "right": "Scottish justice works differently",
+     "H": 0.8671,
+     "H_pct": 100.0,
+     "contra": 0.002,
+     "cohesion": 0.8688
+    },
+    {
+     "pos": 10,
+     "left": "the UK but Scottish",
+     "right": "justice works differently and",
+     "H": 0.8378,
+     "H_pct": 90.5,
+     "contra": 0.0073,
+     "cohesion": 0.844
+    },
+    {
+     "pos": 14,
+     "left": "justice works differently and",
+     "right": "courts have viewed publication",
+     "H": 0.8361,
+     "H_pct": 81.0,
+     "contra": 0.0066,
+     "cohesion": 0.8416
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1108",
+  "cuts": 2,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.6976,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.8102,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    12,
+    16
+   ],
+   "H_set": 0.1329,
+   "text": "Coalition and Afghan troops moved into the area to secure the site ‖ and other coalition aircraft ‖ have been sent to assist.",
+   "pieces": {
+    "Chinese": [
+     "联军和阿富汗部队进入该地区，以保障该地点的安全",
+     "其他联军飞机",
+     "已经被派去协助。"
+    ],
+    "Japanese": [
+     "連合軍とアフガン軍が現場を確保するために 移動した",
+     "連合軍の飛行機が",
+     "助けに来たんだ"
+    ],
+    "German": [
+     "Koalition und afghanische Truppen bewegten sich in die Gegend, um die Website zu sichern",
+     "und andere Koalitionsflugzeuge",
+     "Wir sind geschickt worden, um zu helfen."
+    ],
+    "Spanish": [
+     "Las tropas de la coalición y afganas se trasladaron a la zona para asegurar el sitio",
+     "y otros aviones de la coalición",
+     "Se han enviado para ayudar."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2
+   ],
+   "H_set": 0.8305,
+   "text": "Coalition ‖ and ‖ Afghan troops moved into the area to secure the site and other coalition aircraft have been sent to assist.",
+   "pieces": {
+    "Chinese": [
+     "联盟",
+     "以及",
+     "阿富汗部队已进入该地区，以保障该地点的安全，并已派遣其他联军飞机提供协助。"
+    ],
+    "Japanese": [
+     "連合",
+     "それに",
+     "アフガン軍は現場を確保するために 地域に移動し 他の連合軍の飛行機も 支援に送られた"
+    ],
+    "German": [
+     "Koalition",
+     "und",
+     "Afghanische Truppen sind in das Gebiet eingezogen, um den Ort zu sichern, und andere Koalitionsflugzeuge wurden zur Unterstützung entsandt."
+    ],
+    "Spanish": [
+     "Coalición",
+     "y",
+     "Las tropas afganas se desplazaron a la zona para asegurar el lugar y se han enviado otras aeronaves de la coalición para ayudar."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "to secure the site",
+     "right": "and other coalition aircraft",
+     "H": 0.7342,
+     "H_pct": 63.2,
+     "contra": 0.0155,
+     "cohesion": 0.7457
+    },
+    {
+     "pos": 16,
+     "left": "and other coalition aircraft",
+     "right": "have been sent to",
+     "H": 0.1335,
+     "H_pct": 0.0,
+     "contra": 0.8102,
+     "cohesion": 0.7035
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Coalition",
+     "right": "and Afghan troops moved",
+     "H": 0.8004,
+     "H_pct": 94.7,
+     "contra": 0.0016,
+     "cohesion": 0.8017
+    },
+    {
+     "pos": 2,
+     "left": "Coalition and",
+     "right": "Afghan troops moved into",
+     "H": 0.8364,
+     "H_pct": 100.0,
+     "contra": 0.0099,
+     "cohesion": 0.8448
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_608",
+  "cuts": 1,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.4563,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.569,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.3463,
+   "text": "We experience time as a series of events ‖ passing from the future through the present to the past.",
+   "pieces": {
+    "Chinese": [
+     "我们将时间视为一系列事件",
+     "从未来到现在,从现在到过去。"
+    ],
+    "Japanese": [
+     "私たちは時間を一連の出来事として経験します",
+     "未来から現在へ 過去へと 移り変わる"
+    ],
+    "German": [
+     "Wir erleben die Zeit als eine Reihe von Ereignissen",
+     "Von der Zukunft durch die Gegenwart zur Vergangenheit."
+    ],
+    "Spanish": [
+     "Experimentamos el tiempo como una serie de eventos",
+     "Pasando del futuro a través del presente al pasado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2
+   ],
+   "H_set": 0.8027,
+   "text": "We experience ‖ time as a series of events passing from the future through the present to the past.",
+   "pieces": {
+    "Chinese": [
+     "我们经历",
+     "时间是从未来到现在,再到过去的一系列事件。"
+    ],
+    "Japanese": [
+     "私たちは",
+     "未来から現在へ 過去へと 流れる一連の出来事としての時間です"
+    ],
+    "German": [
+     "Wir erleben",
+     "Zeit als eine Reihe von Ereignissen, die von der Zukunft über die Gegenwart in die Vergangenheit übergehen."
+    ],
+    "Spanish": [
+     "Experimentamos",
+     "El tiempo como una serie de eventos que pasan del futuro a través del presente al pasado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "a series of events",
+     "right": "passing from the future",
+     "H": 0.3463,
+     "H_pct": 68.8,
+     "contra": 0.569,
+     "cohesion": 0.8036
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "We experience",
+     "right": "time as a series",
+     "H": 0.8026,
+     "H_pct": 100.0,
+     "contra": 0.0005,
+     "cohesion": 0.8031
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_194",
+  "cuts": 1,
+  "avg_chunk": 10.5,
+  "latency_bin": "≤99",
+  "gap": 0.1784,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.0502,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.6382,
+   "text": "Schumacher who retired in 2006 after winning the Formula 1 championship seven times, ‖ was due to replace the injured Felipe Massa.",
+   "pieces": {
+    "Chinese": [
+     "舒马赫谁在2006年退休后赢得了F1冠军七次,",
+     "费利佩·马萨 的车队"
+    ],
+    "Japanese": [
+     "2006年に引退したシューマッハは 7度のF1チャンピオンを獲得した",
+     "ケガをしたフェリペ・マッサの代わりに 参戦する予定でした"
+    ],
+    "German": [
+     "Schumacher, der 2006 nach sieben Formel-1-Siegen in den Ruhestand trat,",
+     "Der 25-Jährige sollte den verletzten Felipe Massa ersetzen."
+    ],
+    "Spanish": [
+     "Schumacher, que se retiró en 2006 después de ganar el campeonato de Fórmula 1 siete veces,",
+     "Felipe Massa se retiró de la Fórmula 1."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.8166,
+   "text": "Schumacher who retired ‖ in 2006 after winning the Formula 1 championship seven times, was due to replace the injured Felipe Massa.",
+   "pieces": {
+    "Chinese": [
+     "退役的舒马赫",
+     "2006年,在赢得了F1冠军七次后,是为了取代受伤的费利佩·马萨。"
+    ],
+    "Japanese": [
+     "現役引退したシューマッハ",
+     "2006年にF1世界チャンピオンを7度獲得した後 怪我をしたフェリペ・マッサの代わりに 選ばれた"
+    ],
+    "German": [
+     "Schumacher, der sich zurückzog",
+     "Nachdem er 2006 sieben Mal die Formel-1-Meisterschaft gewonnen hatte, sollte er den verletzten Felipe Massa ersetzen."
+    ],
+    "Spanish": [
+     "Schumacher que se retiró",
+     "En 2006, después de ganar el campeonato de Fórmula 1 siete veces, debía reemplazar al lesionado Felipe Massa."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "1 championship seven times,",
+     "right": "was due to replace",
+     "H": 0.6382,
+     "H_pct": 31.6,
+     "contra": 0.0502,
+     "cohesion": 0.6719
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Schumacher who retired",
+     "right": "in 2006 after winning",
+     "H": 0.8166,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8175
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_594",
+  "cuts": 7,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.6648,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9988,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9,
+    10,
+    11,
+    13,
+    14,
+    16
+   ],
+   "H_set": 0.0007,
+   "text": "Only animals have brains ‖ (though not even all animals ‖ do; ‖ jellyfish, ‖ for example, ‖ do ‖ not have ‖ brains).",
+   "pieces": {
+    "Chinese": [
+     "只有动物有大脑",
+     "(虽然不是所有的动物",
+     "二；",
+     "水母",
+     "例如，",
+     "至",
+     "没有",
+     "脑部。"
+    ],
+    "Japanese": [
+     "動物だけが脳を持っている",
+     "（動物全てが",
+     "どうして",
+     "クラゲ",
+     "例えば",
+     "どうして",
+     "持ってない",
+     "脳のことです"
+    ],
+    "German": [
+     "Nur Tiere haben Gehirne",
+     "(obwohl nicht alle Tiere",
+     "do;",
+     "Quallen,",
+     "Zum Beispiel,",
+     "do",
+     "Nicht haben",
+     "Gehirne)."
+    ],
+    "Spanish": [
+     "Solo los animales tienen cerebros",
+     "(aunque ni siquiera todos los animales",
+     "do;",
+     "Medusas,",
+     "Por ejemplo,",
+     "de",
+     "No tener",
+     "cerebros)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    7,
+    10,
+    11
+   ],
+   "H_set": 0.6655,
+   "text": "Only ‖ animals have ‖ brains ‖ (though ‖ not even ‖ all animals do; ‖ jellyfish, ‖ for example, do not have brains).",
+   "pieces": {
+    "Chinese": [
+     "只有",
+     "动物有",
+     "脑",
+     "虽然",
+     "甚至不",
+     "所有的动物都这样做;",
+     "水母",
+     "例如,没有大脑 ) 。"
+    ],
+    "Japanese": [
+     "オンリー",
+     "動物は",
+     "脳",
+     "ああ でも",
+     "あなたは あなたが",
+     "動物はみんなそうです",
+     "クラゲ",
+     "脳を持たないということです"
+    ],
+    "German": [
+     "Only",
+     "Tiere haben",
+     "Gehirn",
+     "(obwohl",
+     "Nicht einmal",
+     "Alle Tiere tun es;",
+     "Quallen,",
+     "Zum Beispiel haben sie kein Gehirn)."
+    ],
+    "Spanish": [
+     "Solo",
+     "Los animales tienen",
+     "cerebros",
+     "(aunque",
+     "Ni siquiera",
+     "todos los animales lo hacen;",
+     "Medusas,",
+     "Por ejemplo, no tienen cerebros)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not even all animals",
+     "right": "do; jellyfish, for example,",
+     "H": 0.7218,
+     "H_pct": 33.3,
+     "contra": 0.0821,
+     "cohesion": 0.7863
+    },
+    {
+     "pos": 13,
+     "left": "do; jellyfish, for example,",
+     "right": "do not have brains).",
+     "H": 0.754,
+     "H_pct": 53.3,
+     "contra": 0.055,
+     "cohesion": 0.7979
+    },
+    {
+     "pos": 14,
+     "left": "jellyfish, for example, do",
+     "right": "not have brains).",
+     "H": 0.0008,
+     "H_pct": 0.0,
+     "contra": 0.9988,
+     "cohesion": 0.6829
+    },
+    {
+     "pos": 16,
+     "left": "example, do not have",
+     "right": "brains).",
+     "H": 0.2816,
+     "H_pct": 13.3,
+     "contra": 0.6421,
+     "cohesion": 0.7867
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Only",
+     "right": "animals have brains (though",
+     "H": 0.7946,
+     "H_pct": 73.3,
+     "contra": 0.0128,
+     "cohesion": 0.8049
+    },
+    {
+     "pos": 3,
+     "left": "Only animals have",
+     "right": "brains (though not even",
+     "H": 0.8754,
+     "H_pct": 100.0,
+     "contra": 0.003,
+     "cohesion": 0.878
+    },
+    {
+     "pos": 5,
+     "left": "animals have brains (though",
+     "right": "not even all animals",
+     "H": 0.7886,
+     "H_pct": 66.7,
+     "contra": 0.0046,
+     "cohesion": 0.7923
+    },
+    {
+     "pos": 7,
+     "left": "brains (though not even",
+     "right": "all animals do; jellyfish,",
+     "H": 0.8311,
+     "H_pct": 86.7,
+     "contra": 0.0144,
+     "cohesion": 0.8432
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_388",
+  "cuts": 3,
+  "avg_chunk": 4.8,
+  "latency_bin": "≤5",
+  "gap": 0.6581,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.8543,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    8
+   ],
+   "H_set": 0.1075,
+   "text": "He originally named ‖ the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "pieces": {
+    "Chinese": [
+     "他最初命名",
+     "韩文字母",
+     "洪明正",
+     "意思是\"正确的声音,用于指导人民 \" 。"
+    ],
+    "Japanese": [
+     "彼はもともと",
+     "ハングルアルファベット",
+     "洪明正宗",
+     "意味は「人々の教えのための正しい音」"
+    ],
+    "German": [
+     "Er nannte ursprünglich",
+     "Das Hangeul-Alphabet",
+     "Hunmin Jeongeum,",
+     "Das bedeutet \"die richtigen Töne für die Unterweisung des Volkes\"."
+    ],
+    "Spanish": [
+     "Originalmente llamó",
+     "El alfabeto Hangeul",
+     "Hunmin Jeongeum,",
+     "que significa \"los sonidos correctos para la instrucción del pueblo\"."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    7,
+    8
+   ],
+   "H_set": 0.7656,
+   "text": "He originally named the Hangeul alphabet ‖ Hunmin ‖ Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "pieces": {
+    "Chinese": [
+     "他最初命名的汉字字母",
+     "洪民县",
+     "鄭金",
+     "意思是\"正确的声音,用于指导人民 \" 。"
+    ],
+    "Japanese": [
+     "元々は漢字を",
+     "雲民県",
+     "チョンギュム",
+     "意味は「人々の教えのための正しい音」"
+    ],
+    "German": [
+     "Er nannte das Hangeul-Alphabet ursprünglich",
+     "Hunmin",
+     "Jeongeum,",
+     "Das bedeutet \"die richtigen Töne für die Unterweisung des Volkes\"."
+    ],
+    "Spanish": [
+     "Originalmente nombró el alfabeto Hangeul",
+     "Hunmin",
+     "Jeongeum,",
+     "que significa \"los sonidos correctos para la instrucción del pueblo\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "He originally named",
+     "right": "the Hangeul alphabet Hunmin",
+     "H": 0.1097,
+     "H_pct": 5.9,
+     "contra": 0.8543,
+     "cohesion": 0.7529
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "the Hangeul alphabet Hunmin",
+     "right": "Jeongeum, which means \"the",
+     "H": 0.7767,
+     "H_pct": 94.1,
+     "contra": 0.0078,
+     "cohesion": 0.7828
+    }
+   ]
+  }
+ }
+]

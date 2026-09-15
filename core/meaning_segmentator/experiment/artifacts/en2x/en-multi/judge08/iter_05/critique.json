@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer underestimates contra risk when the right-hand fragment, however short, contains the clause-final predicate or any polarity/modality/corrective element that finalizes truth‑conditions; a tiny RHS that completes or flips the verb phrase can by itself overturn the meaning the listener has already heard and must be treated as high contra.",
+    "evidence": "Seen in 8 cases (ids: en_us_1591, en_us_1143, en_us_877, en_us_1427, en_us_1102, en_us_1192, en_us_802, en_us_1041). In each the policy cut isolated a short RHS that carried the finishing verb/negation or corrective complement and produced a very high measured contra (policy_worst_contra > 0.87) that zeroed the H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Explicit contra check for finishing predicates: if the right fragment begins with or contains the clause's finite verb, an auxiliary/negator that sets polarity or modality, or an explicit corrective/contrastive marker that completes or reverses a prior claim, treat the contra probability as high (raise contra toward 1.0). Brief, predicate‑final RHSs that finalize truth‑conditions should not be rescued by their short length."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The scorer underestimates cohesion loss when a cut separates a head from its required complements or modifiers (noun heads and their post‑modifiers, subordinate openers and their complements, appositives): the left fragment may look self‑contained but leaves essential relations unresolved and yields poor joined meaning.",
+    "evidence": "Observed across 10 cases (ids: en_us_1591, en_us_1143, en_us_877, en_us_1427, en_us_1102, en_us_1192, en_us_1041, en_us_802, en_us_339, en_us_194). These policy cuts split heads from objects/modifiers or left hanging subordinate/complement structures; measured cohesion for the lone cut or the set was low and the offline target avoided those splits.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Cohesion check for head–complement/modifier relations: ask whether the left fragment leaves a syntactic head (finite verb, main noun, clause opener, or preposition/subordinator) that requires material on the right to form a coherent predicate, argument, or attachment. If a required complement or the attachment site is on the right, lower cohesion substantially even when the right fragment is short."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer underestimates contra risk when the right-hand fragment, however short, contains the clause-final predicate or any polarity/modality/corrective element that finalizes truth‑conditions; a tiny RHS that completes or flips the verb phrase can by itself overturn the meaning the listener has already heard and must be treated as high contra.",
+   "evidence": "Seen in 8 cases (ids: en_us_1591, en_us_1143, en_us_877, en_us_1427, en_us_1102, en_us_1192, en_us_802, en_us_1041). In each the policy cut isolated a short RHS that carried the finishing verb/negation or corrective complement and produced a very high measured contra (policy_worst_contra > 0.87) that zeroed the H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Explicit contra check for finishing predicates: if the right fragment begins with or contains the clause's finite verb, an auxiliary/negator that sets polarity or modality, or an explicit corrective/contrastive marker that completes or reverses a prior claim, treat the contra probability as high (raise contra toward 1.0). Brief, predicate‑final RHSs that finalize truth‑conditions should not be rescued by their short length."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The scorer underestimates cohesion loss when a cut separates a head from its required complements or modifiers (noun heads and their post‑modifiers, subordinate openers and their complements, appositives): the left fragment may look self‑contained but leaves essential relations unresolved and yields poor joined meaning.",
+   "evidence": "Observed across 10 cases (ids: en_us_1591, en_us_1143, en_us_877, en_us_1427, en_us_1102, en_us_1192, en_us_1041, en_us_802, en_us_339, en_us_194). These policy cuts split heads from objects/modifiers or left hanging subordinate/complement structures; measured cohesion for the lone cut or the set was low and the offline target avoided those splits.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Cohesion check for head–complement/modifier relations: ask whether the left fragment leaves a syntactic head (finite verb, main noun, clause opener, or preposition/subordinator) that requires material on the right to form a coherent predicate, argument, or attachment. If a required complement or the attachment site is on the right, lower cohesion substantially even when the right fragment is short."
+   }
+  }
+ ]
+}

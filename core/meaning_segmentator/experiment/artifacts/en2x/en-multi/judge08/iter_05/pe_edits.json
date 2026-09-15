@@ -1,0 +1,221 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "1) Contra risk (does what follows overturn what came before?) - Ask: Could the right fragment, taken alone and translated, change the truth-conditions of the left (contradict, reverse, cancel, or qualify it so the earlier stretch would be judged false or incomplete)? Consider scope (negation, modality, quantifiers), corrective/contrastive markers, and temporal/causal reorderings. Special finishing-predicate check: if the right fragment begins with or contains the clause's finite verb, an auxiliary or negator that sets polarity or modality, or an explicit corrective/contrastive completer that finalizes meaning, treat the contra probability as high (approach 1.0) and prefer grouping that completing element with the left context instead of cutting before it. Do not let the short length of such an RHS make it seem safe."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "2) Cohesion loss (does translating the two halves separately still add up to the whole?) - Ask: If the left side is translated and played, then the right side is translated and played (in order) with no reanalysis, will the concatenation still convey the original sentence’s overall meaning? Check for orphaned predicates or arguments, unresolved pronouns, and broken idioms. Head–complement and modifier check: determine whether the cut separates a syntactic head (finite verb, main noun, preposition/subordinator) from required complements or identifying modifiers (direct objects, complements opened by subordinators, noun post-modifiers, appositives, possessives). If a required complement or the attachment site is on the right, lower cohesion substantially and prefer keeping the head and its complements/modifiers on the same side (avoid cuts that leave only a very short, one- or two-word completing fragment on the right). Cohesion damage shows up as missing participants, dangling subordinates, or truncated predicates that leave major expectations unmet."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 766
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 977
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11820,
+  "errors": [
+   "길이 초과: 11820 > 11084"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Ask: If the listener had already heard the stretch up to this cut, would what comes after, taken on its own and translated, contradict, reverse, or nullify the earlier stretch? Consider scope interactions (negation, modality, quantifiers), temporal or causal reorderings, and corrective/contrastive completions. Finishing‑predicate check: if the right fragment contains the clause's finite verb, an auxiliary or negator that establishes polarity/modality, or an explicit corrective/completer that finalizes meaning, treat the contra probability as high and prefer grouping that completing element with the left (do not let a short RHS length make it seem safe)."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Ask: If the left side is translated and played, then the right side is translated and played (in order) with no reanalysis, will the concatenation still convey the original sentence’s meaning? Look for orphaned predicates or arguments, unresolved pronouns, broken idioms, and attachments. Head–complement/modifier guidance: avoid cuts that detach a required syntactic head (finite verb, main noun, preposition or subordinator) from its essential complements or identifying modifiers (direct objects, complements opened by subordinators, noun post‑modifiers, appositives, possessives). Prefer grouping head+complement/modifier on the same side; do not reward isolating one‑ or two‑word completers on the right."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- English cues: finite verbs and core objects often appear later (SVO); auxiliaries and negation set scope; subordinators, relative clauses and postnominal modifiers attach rightward. Pronouns expect antecedents. Punctuation usually signals strong boundaries and is treated as attached to the preceding word."
+   },
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": -114
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": -126
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -714
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -802
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -447
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7872,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Explicit finishing‑predicate (contra) check: If the right fragment supplies the clause's finite verb, an auxiliary/negator that sets polarity or modality, or an explicit corrective/contrastive completer that finalizes truth‑conditions, raise the contra probability toward 1.0. Crucially, prefer to group such decisive elements with the left fragment rather than cutting them off into a tiny RHS; do not treat short RHS length as a safety signal when it finalizes meaning."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Head–complement and modifier (cohesion) check: Ask whether this cut would detach a syntactic head (finite verb, main noun, preposition, or clause opener) from required complements or identifying modifiers (objects, post‑nominal modifiers, appositives, possessives). If a required complement or identifying modifier falls on the right, lower cohesion substantially and prefer grouping head+complement on the same side. Also penalize cuts that leave only a one‑ or two‑word completing fragment on the right."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 472
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 506
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11055,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Explicit finishing-predicate (contra) check: If the right fragment contains the clause's decisive element — a finite verb that completes the predicate, an auxiliary or negator that sets polarity/modality, or an explicit corrective/contrastive marker that finalizes or reverses a prior claim — treat the contra probability as high (push it toward 1.0). In practice, prefer grouping such a completer with the left context rather than rewarding cuts that leave a very short RHS as the sole truth-conditional finisher."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Head–complement and modifier (cohesion) check: Ask whether this cut would detach a syntactic head (finite verb, main noun, preposition/subordinator) from required complements or identifying modifiers (objects, complements, possessives, appositives, restrictive postnominals). If a required complement or identifying modifier falls on the right, lower cohesion substantially. Prefer keeping head+complement/modifier together and avoid rewarding one- or two-word RHS completions that leave essential relations unresolved."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 515
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 520
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11112,
+  "errors": [
+   "길이 초과: 11112 > 11084"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- English cues: finite verbs and core objects often come later (SVO). Avoid splitting auxiliaries, negation, or modality from their verb; subordinators, relative openers, possessive and postnominal modifiers typically require following material; pronouns expect antecedents. Punctuation usually marks strong boundaries."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep these as semantic judgments you can apply at every boundary: (A) Finishing‑predicate (contra) check — if the right fragment, heard alone, supplies the clause's decisive element (a finite verb that completes the predicate, an auxiliary/negator/modal that sets polarity or modality, or an explicit corrective/contrastive completer), treat the contra probability as high (push toward 1.0) and prefer grouping that completer with the left rather than rewarding cuts that leave a very short RHS as the sole truth‑conditional finisher. (B) Head–complement/modifier (cohesion) check — ask whether the cut would detach a syntactic head (finite verb, main noun, preposition/subordinator) from required complements or identifying modifiers (objects, complements, possessives, appositives, restrictive postnominals). If so, lower cohesion substantially and prefer keeping head+complement/modifier together; avoid rewarding one‑ or two‑word RHS completions that leave essential relations unresolved."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -703
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 690
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10064,
+  "errors": null
+ }
+]

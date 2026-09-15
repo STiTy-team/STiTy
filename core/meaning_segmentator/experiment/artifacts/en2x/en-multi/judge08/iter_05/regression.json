@@ -1,0 +1,110 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00771,
+  "lo": -0.03046,
+  "hi": 0.01499,
+  "n": 410,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": -0.0093,
+  "≤5": -0.0187,
+  "≤7": 0.0054,
+  "≤10": 0.0041,
+  "≤99": 0.0073
+ },
+ "n_worse": 143,
+ "n_better": 126,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.7242,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6683,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_333",
+   "k": 5,
+   "bin": "≤3",
+   "delta": -0.6081,
+   "before": "The celebrations ‖ started ‖ with a special show ‖ by the world-renowned ‖ group ‖ Cirque du Soleil.",
+   "after": "The celebrations ‖ started ‖ with a special show ‖ by ‖ the world-renowned group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_333",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.5693,
+   "before": "The celebrations ‖ started ‖ with a special ‖ show ‖ by the world-renowned ‖ group ‖ Cirque du Soleil.",
+   "after": "The celebrations ‖ started ‖ with ‖ a special show ‖ by ‖ the world-renowned group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_170",
+   "k": 8,
+   "bin": "≤3",
+   "delta": -0.5316,
+   "before": "Perry ‖ specifically ‖ said, ‖ \"There are few places ‖ in the world ‖ better equipped ‖ to meet the challenge ‖ that is posed ‖ in this case.\"",
+   "after": "Perry ‖ specifically ‖ said, ‖ \"There are ‖ few places ‖ in the world ‖ better equipped to meet the challenge ‖ that is posed ‖ in this case.\""
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_133",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.538,
+   "before": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender ‖ is being investigated ‖ for trespassing ‖ rather than vandalism.",
+   "after": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said ‖ the suspected male offender is being investigated ‖ for trespassing ‖ rather than vandalism."
+  },
+  {
+   "id": "en_us_133",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.4891,
+   "before": "Christopher ‖ Garcia, ‖ a spokesperson of the Los Angeles ‖ Police Department, ‖ said the suspected male offender ‖ is being investigated ‖ for trespassing ‖ rather than vandalism.",
+   "after": "Christopher Garcia, ‖ a spokesperson of the Los Angeles ‖ Police ‖ Department, ‖ said ‖ the suspected male offender is being investigated ‖ for trespassing ‖ rather than vandalism."
+  },
+  {
+   "id": "en_us_133",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.476,
+   "before": "Christopher ‖ Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender ‖ is being investigated ‖ for trespassing ‖ rather than vandalism.",
+   "after": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police ‖ Department, ‖ said ‖ the suspected male offender is being investigated ‖ for trespassing ‖ rather than vandalism."
+  },
+  {
+   "id": "en_us_927",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.4572,
+   "before": "If using a drone, ‖ check ‖ well ‖ in advance ‖ as to what you are ‖ allowed ‖ to film ‖ and what permits ‖ or additional licensing ‖ are required.",
+   "after": "If using a drone, ‖ check ‖ well ‖ in advance ‖ as to what you ‖ are allowed ‖ to film ‖ and what permits ‖ or additional licensing ‖ are required."
+  },
+  {
+   "id": "en_us_927",
+   "k": 10,
+   "bin": "≤3",
+   "delta": 0.4564,
+   "before": "If using a drone, ‖ check ‖ well ‖ in ‖ advance ‖ as to what you are ‖ allowed ‖ to film ‖ and what permits ‖ or additional licensing ‖ are required.",
+   "after": "If using a drone, ‖ check ‖ well ‖ in advance ‖ as to what you ‖ are allowed ‖ to film ‖ and what permits ‖ or additional ‖ licensing ‖ are required."
+  }
+ ],
+ "why": "The two inserted checks made the scorer prefer attaching decisive predicates/complements to the left and penalize cuts that would leave 1–2 word completers on the right; that pushed many boundaries in very short pieces (≤3 and ≤5 words), producing isolated function words or single‑word fragments (e.g. isolated \"by\", \"differently\") and so hurt short‑bin H_set while modestly improving cohesion for longer fragments (bins ≥7).",
+ "lesson": "Future edits should preserve natural short-piece attachments and avoid aggressive regrouping that creates isolated one‑word function/complement fragments, since the new contra/cohesion checks help longer spans but damage very short bins.",
+ "blamed": [
+  "C8(finishing‑predicate)",
+  "C8(head–complement)"
+ ]
+}

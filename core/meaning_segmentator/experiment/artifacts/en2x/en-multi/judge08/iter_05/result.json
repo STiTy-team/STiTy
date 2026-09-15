@@ -1,0 +1,54 @@
+{
+ "iter": 5,
+ "candidate": 1,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00771,
+  "lo": -0.03046,
+  "hi": 0.01499,
+  "n": 410,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Add explicit contra check for finishing predicates: raises contra when a RHS contains the decisive predicate/auxiliary/negator/corrective and instructs preferring grouping that completer with the left (addresses finding 1).",
+  "Add head–complement/modifier cohesion check: penalizes cuts that detach a syntactic head from required complements or identifying modifiers and warns against leaving one- or two-word completers on the right (addresses finding 2)."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+   "now": "Explicit finishing‑predicate (contra) check: If the right fragment supplies the "
+  },
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+   "now": "Head–complement and modifier (cohesion) check: Ask whether this cut would detach"
+  }
+ ],
+ "findings": [
+  "The scorer underestimates contra risk when the right-hand fragment, however short, contains the clause-final predicate or any polarity/modality/corrective element that finalizes truth‑conditions; a tiny RHS that completes or flips the verb phrase can by itself overturn the meaning the listener has already heard and must be treated as high contra.",
+  "The scorer underestimates cohesion loss when a cut separates a head from its required complements or modifiers (noun heads and their post‑modifiers, subordinate openers and their complements, appositives): the left fragment may look self‑contained but leaves essential relations unresolved and yields poor joined meaning."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0093,
+   "≤5": -0.0187,
+   "≤7": 0.0054,
+   "≤10": 0.0041,
+   "≤99": 0.0073
+  },
+  "n_worse": 143,
+  "n_better": 126,
+  "why": "The two inserted checks made the scorer prefer attaching decisive predicates/complements to the left and penalize cuts that would leave 1–2 word completers on the right; that pushed many boundaries in very short pieces (≤3 and ≤5 words), producing isolated function words or single‑word fragments (e.g. isolated \"by\", \"differently\") and so hurt short‑bin H_set while modestly improving cohesion for longer fragments (bins ≥7).",
+  "lesson": "Future edits should preserve natural short-piece attachments and avoid aggressive regrouping that creates isolated one‑word function/complement fragments, since the new contra/cohesion checks help longer spans but damage very short bins.",
+  "blamed": [
+   "C8(finishing‑predicate)",
+   "C8(head–complement)"
+  ]
+ }
+}

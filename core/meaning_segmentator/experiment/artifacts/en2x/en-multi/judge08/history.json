@@ -1,0 +1,483 @@
+[
+ {
+  "iter": 1,
+  "adopted": false,
+  "reason": [
+   "길이 초과: 10831 > 10580"
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Keep these as semantic judgements you can apply at every boundary: assess whethe"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.01034,
+   "lo": -0.02062,
+   "hi": 0.0006,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "gain": {
+   "mean": -0.01034,
+   "lo": -0.02062,
+   "hi": 0.0006,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Paraphrased C3 to shorten and sharpen the contra-risk prompt so it is quicker to apply while preserving scope/negation/contrast guidance.",
+   "Paraphrased C5 to compress the cohesion guidance into a concise checklist-style prompt and free space for new rules.",
+   "Paraphrased C7 to keep the English-specific cues but shorter and more direct about verbs, subordinators, pronouns, lists, and punctuation.",
+   "Inserted a new explicit 'Contra checklist' unit (after C5) implementing the critic's finding that a single disambiguating element on the right should raise contra toward 1.",
+   "Inserted a new 'Connectives' unit (after C5) implementing the critic's finding that isolating connectives from their completing clause raises both contra and cohesion penalty."
+  ],
+  "findings": [
+   "The scorer underestimates contra-risk when the right-hand fragment contains the single disambiguating, negating, or specifying element (negation, quantifier/ordinal, list continuation, or the complement that decides truth) that determines the truth-conditions of the already-heard left fragment.",
+   "The scorer treats coordinating/connective words (but, and, while, however, respectively, etc.) too lightly and therefore misses that cuts adjacent to these connectors typically indicate tight dependency or contrast and often carry high contra/cohesion risk."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "was": "- Ask: If the listener had already heard the stretch up to this cut, would what ",
+    "now": "- Ask: If the listener had already heard the stretch up to this cut, would what "
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "was": "- Ask: If the left side is translated and played, then the right side is transla",
+    "now": "- Ask: If the left side is translated and played, then the right side is transla"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- English tends to put the finite verb and its object later in a clause (SVO). A",
+    "now": "- How English builds meaning: finite verbs and objects often appear later (SVO);"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Ask: If the left side is translated and played, then the right side is transla",
+    "now": "Contra checklist: If the right fragment supplies the single element that disambi"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Ask: If the left side is translated and played, then the right side is transla",
+    "now": "Connectives: Treat explicit connectives and contrast markers (but, however, whil"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0122,
+    "≤5": -0.0076,
+    "≤7": -0.0128,
+    "≤10": -0.0115,
+    "≤99": -0.0062
+   },
+   "n_worse": 431,
+   "n_better": 389,
+   "why": "The new items pushed the model to cut earlier so that finite verbs, short disambiguating words, and connective words often landed alone on the right fragment — e.g. subjects separated from verbs and list items or contrast markers isolated — which reduces cohesion and therefore lowered H_set, with the harm concentrated on very short pieces (≤3–≤7-word bins).",
+   "lesson": "A later revision should avoid wording that rewards isolating single-word disambiguators, connectives, or finite verbs into very-short right fragments (especially in ≤3–≤7 bins) because that produces many harmful subject/verb and list splits.",
+   "blamed": [
+    "C7",
+    "Contra checklist",
+    "Connectives"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01596,
+   "lo": -0.034,
+   "hi": 0.00055,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C7 to compress English-specific cues into a shorter, clearer checklist so we free space while preserving guidance (addresses critique about isolating short right fragments).",
+   "Rewrote C8 to add two compact, discrete checks (single-obligatory-element and noun-head/apposition) and an explicit caution against rewarding cuts that isolate tiny completing fragments; keeps the core two-question framing but makes the new checks concrete and brief (direct response to both findings)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- English tends to put the finite verb and its object later in a clause (SVO). A",
+    "now": "- English builds meaning so that finite verbs and their core objects often appea"
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Keep these as semantic judgements you can apply at every boundary: ask whether t"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01991,
+   "lo": -0.0381,
+   "hi": -0.00308,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C8 to keep the two-question framing but add two concise, discrete checks (single-obligatory-element and noun-head/apposition) and an explicit caution against rewarding cuts that isolate tiny one-word completions — addresses both critic findings about missed high-risk positions and orphaned modifiers."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Keep these as semantic judgements you can apply at every boundary: ask whether t"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00098,
+   "lo": -0.01239,
+   "hi": 0.01131,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "gain": {
+   "mean": -0.00098,
+   "lo": -0.01239,
+   "hi": 0.01131,
+   "n": 1236,
+   "n_clusters": 150
+  },
+  "changelog": [
+   "Insert a discrete question about single obligatory heads/complements to correct the understating of risk when the right fragment supplies the sole element that completes or flips the left (addresses finding 1).",
+   "Insert guidance about separation of noun heads, titles, determiners or appositives to raise cohesion penalties when modifiers are orphaned (addresses finding 2)."
+  ],
+  "findings": [
+   "The prompt understates the risk when the right-hand fragment supplies the single obligatory element (a finite verb, nominal head, required complement, or explicit negation/reverser) that completes or sets the truth-conditions of the left; cutting there leaves the left fragment misleading or effectively contradicted when the right is heard alone.",
+   "The prompt undervalues cohesion damage when a cut splits a noun phrase or apposition — i.e. separates a title/role, determiner, or modifier from the name or head noun it attaches to — producing orphaned modifiers or unnatural name translations."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Single obligatory element check: Ask whether the right fragment provides the sin"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Noun-head and apposition check: Ask whether this cut would separate a head noun "
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0059,
+    "≤5": -0.0005,
+    "≤7": -0.015,
+    "≤10": -0.0077,
+    "≤99": -0.0005
+   },
+   "n_worse": 448,
+   "n_better": 417,
+   "why": "The new checks made the model move many cuts earlier in the sentence (hurt most for mid-length pieces, ≤7–≤10 words) so it began slicing off complements and list items instead of keeping them attached to their heads; this produced the large negative moves in the worst examples while slightly improving very-short bins (≤3). The wording for the single-obligatory-element check was interpreted as encouraging isolation of the completing element on the right, and the noun-head/apposition guidance caused the model to avoid some noun-boundary cuts by shifting cuts into predicates and enumerations.",
+   "lesson": "When revising, ensure checks discourage cutting between heads and their obligatory complements/appositions (don’t encourage isolating the completer on the right) because otherwise the model will shift cuts earlier and fragment predicates and enumerations, especially harming mid-length pieces.",
+   "blamed": [
+    "C8 (Single obligatory element check)",
+    "C8 (Noun-head and apposition check)"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02248,
+   "lo": -0.03973,
+   "hi": -0.0075,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a clear 'Single-obligatory-completer' principle at the top to directly address the finding that cuts which leave a required completer on the right are unsafe; explicitly instruct to prefer grouping the completer with its head and warn that isolating a single-word completer is especially unsafe.",
+   "Insert a concise 'Noun-head and apposition' guidance at the top to address the finding that separating heads from identifying modifiers or appositives loses referential clarity; instruct preferring head+modifier grouping.",
+   "Replace Example E1 with a measured labeled example (en_us_1591) that demonstrates apposition/identifying-modifier issues so the scorer learns the ranking from a real case."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "was": "",
+    "now": "Single-obligatory-completer rule: If the left fragment, heard alone, already ope"
+   },
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "was": "",
+    "now": "Noun-head and apposition guidance: Ask whether the cut would detach an identifyi"
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+    "now": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01841,
+   "lo": -0.034,
+   "hi": -0.00283,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C3 (Contra risk) to add an explicit, semantic rule about single disambiguating/obligatory completers: if the right fragment is the sole completer (finite verb, subordinating complement, required object, explicit negator/reverser), treat the cut as unsafe; also warn not to reward pushing unique completers onto tiny right fragments.",
+   "Replace C5 (Cohesion loss) to emphasize noun-head/apposition harms: penalize cuts that detach identifying modifiers, appositives, possessives, or restrictive postnominal material from their head noun; also discourage cuts that leave only very short (one- or two-word) completing fragments on the right."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Ask: If the listener had already heard the stretch up to this cut, would what ",
+    "now": "- Ask: If the listener had already heard the stretch up to this cut, would what "
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Ask: If the left side is translated and played, then the right side is transla",
+    "now": "- Ask: If the left side is translated and played, then the right side is transla"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "screened_only": true,
+  "delta": {
+   "mean": -0.00944,
+   "lo": -0.02488,
+   "hi": 0.00673,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replaced C8 to add two explicit, semantic checks (single-obligatory-completion and noun-head/apposition) that raise risk when a cut separates a head from its required completer or identifying modifiers; wording explicitly warns against rewarding moves that isolate tiny one-word completions on the right.",
+   "This change addresses the critic's findings that the prompt underestimated risk when the right fragment supplies the sole disambiguating/completing element and when cuts orphan noun-identifying modifiers."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Keep these as semantic judgments you can apply at every boundary: ask whether th"
+   }
+  ],
+  "findings": [
+   "The prompt underestimates the risk of cutting a clause or predicate off from its single obligatory completer (subordinators, finite verbs, auxiliaries, quantifiers, or verbs that require a specific object), so it often scores cuts that isolate the completer on the right as acceptable even though the right fragment, when heard alone, changes or incompletes the earlier claim.",
+   "The prompt fails to penalize cuts that split a noun head from identifying modifiers or appositives (titles, names, restrictive modifiers), producing fragments that lose referential clarity or are misleading when heard alone."
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0014,
+    "≤5": -0.0087,
+    "≤7": -0.0182,
+    "≤10": -0.0504,
+    "≤99": -0.0015
+   },
+   "n_worse": 150,
+   "n_better": 114,
+   "why": "Replacing C8 introduced explicit checks that penalize isolating tiny right‑hand completions and that try to catch noun‑head/apposition separations; this slightly helped very short piece decisions (≤3 words) but shifted top scoring cuts in mid/long bins so the model often cut earlier inside clauses (splitting verbs from adverbs and detaching appositives), lowering H_set overall.",
+   "lesson": "When adding semantic checks, avoid asymmetric penalties that protect tiny right fragments at the cost of creating incentives to split heads from their modifiers or appositives—apply the checks so they do not encourage earlier, intra‑clausal cuts.",
+   "blamed": [
+    "C8"
+   ]
+  }
+ },
+ {
+  "iter": 5,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01041,
+   "lo": -0.03159,
+   "hi": 0.00843,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C3 to add a concise, explicit finishing‑predicate contra check that raises contra when a right fragment finalizes truth‑conditions and instructs preferring grouping the completer with the left (addresses finding 1).",
+   "Replace C5 to add a compact head–complement/modifier cohesion rule that penalizes cuts separating heads from required complements or identifying modifiers and warns against rewarding tiny right‑hand completers (addresses finding 2).",
+   "Paraphrase C7 to a much shorter summary of English cues (verbs, auxiliaries, subordinators, pronouns, punctuation) to free space while keeping language-specific guidance.",
+   "Delete example E1 (long hand-written example) to free budget for the new concise principles and avoid exceeding size limits.",
+   "Delete example E3 (hand-written example) to free additional budget and keep the prompt within the character cap."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Ask: If the listener had already heard the stretch up to this cut, would what ",
+    "now": "- Ask: If the listener had already heard the stretch up to this cut, would what "
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Ask: If the left side is translated and played, then the right side is transla",
+    "now": "- Ask: If the left side is translated and played, then the right side is transla"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- English tends to put the finite verb and its object later in a clause (SVO). A",
+    "now": "- English cues: finite verbs and core objects often appear later (SVO); auxiliar"
+   },
+   {
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.03446,
+   "lo": -0.05603,
+   "hi": -0.01411,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C7 to compress English-specific cues (verbs, auxiliaries, subordinators, pronouns, punctuation) so the prompt is shorter and quicker to apply.",
+   "Replaced C8 with a single, concise unit that merges the explicit finishing-predicate (contra) check and the head–complement/modifier (cohesion) check requested by the critic; this implements both findings while keeping the wording compact to respect size limits."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- English tends to put the finite verb and its object later in a clause (SVO). A",
+    "now": "- English cues: finite verbs and core objects often come later (SVO). Avoid spli"
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Keep these as semantic judgments you can apply at every boundary: (A) Finishing‑"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 1,
+  "adopted": false,
+  "screened_only": true,
+  "delta": {
+   "mean": -0.00771,
+   "lo": -0.03046,
+   "hi": 0.01499,
+   "n": 410,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Add explicit contra check for finishing predicates: raises contra when a RHS contains the decisive predicate/auxiliary/negator/corrective and instructs preferring grouping that completer with the left (addresses finding 1).",
+   "Add head–complement/modifier cohesion check: penalizes cuts that detach a syntactic head from required complements or identifying modifiers and warns against leaving one- or two-word completers on the right (addresses finding 2)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Explicit finishing‑predicate (contra) check: If the right fragment supplies the "
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep these as semantic judgements you can apply at every boundary: the assessmen",
+    "now": "Head–complement and modifier (cohesion) check: Ask whether this cut would detach"
+   }
+  ],
+  "findings": [
+   "The scorer underestimates contra risk when the right-hand fragment, however short, contains the clause-final predicate or any polarity/modality/corrective element that finalizes truth‑conditions; a tiny RHS that completes or flips the verb phrase can by itself overturn the meaning the listener has already heard and must be treated as high contra.",
+   "The scorer underestimates cohesion loss when a cut separates a head from its required complements or modifiers (noun heads and their post‑modifiers, subordinate openers and their complements, appositives): the left fragment may look self‑contained but leaves essential relations unresolved and yields poor joined meaning."
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0093,
+    "≤5": -0.0187,
+    "≤7": 0.0054,
+    "≤10": 0.0041,
+    "≤99": 0.0073
+   },
+   "n_worse": 143,
+   "n_better": 126,
+   "why": "The two inserted checks made the scorer prefer attaching decisive predicates/complements to the left and penalize cuts that would leave 1–2 word completers on the right; that pushed many boundaries in very short pieces (≤3 and ≤5 words), producing isolated function words or single‑word fragments (e.g. isolated \"by\", \"differently\") and so hurt short‑bin H_set while modestly improving cohesion for longer fragments (bins ≥7).",
+   "lesson": "Future edits should preserve natural short-piece attachments and avoid aggressive regrouping that creates isolated one‑word function/complement fragments, since the new contra/cohesion checks help longer spans but damage very short bins.",
+   "blamed": [
+    "C8(finishing‑predicate)",
+    "C8(head–complement)"
+   ]
+  }
+ }
+]

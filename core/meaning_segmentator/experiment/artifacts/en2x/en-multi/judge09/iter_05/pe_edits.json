@@ -1,0 +1,219 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Cuts that leave only an initial subordinator, a preverbal fragment, or an existential/qualification (for example constructions like 'may be the presence ...') are especially vulnerable: material that follows often supplies the main predicate, a negation, or a qualification that can reverse or misleadingly alter the standalone prefix."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Contra penalty heuristic: When you combine cohesion and contra into an internal ranking signal, treat very high contradiction probability as effectively near‑fatal. In practice, apply a strongly nonlinear collapse to (1 - contra) so that contra values close to 1 drive the combined estimate toward zero; this ensures markers whose left prefix is almost certainly overturned are ranked far below safer alternatives even if their cohesion estimate looks high. Still produce the final 0–100 integer per the Scoring Rules, but drive ordering with this nonlinear penalization of high‑contra cuts."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Neighbour interaction heuristic: Consider how nearby candidate cuts will interact under the downstream minimum‑distance selection. If two or more nearby markers could be chosen together, prefer the cut that preserves a semantically complete unit and avoids producing many ultra‑short fragments (≤3 words). Concretely: when neighboring cuts are similarly plausible, rank higher the one that leaves a longer, predicate‑complete or phrase‑complete left piece; deprioritize cuts that, when combined with plausible neighbours, would yield several ≤3‑word pieces."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -165
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 592
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 558
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9905,
+  "errors": [
+   "길이 초과: 9905 > 9812"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "At every candidate cut, ask the two central semantic questions (contra and cohesion). Also apply two practical heuristics: 1) High‑contra collapse — treat contradiction probabilities near 1 as effectively disqualifying by mapping (1 − contra) nonlinearly so very high contra drives the combined score toward zero and such cuts rank far below safer alternatives; 2) Neighbour interaction — when nearby candidates could be chosen together, prefer the cut that preserves a semantically complete unit (clause core or full NP) and avoid producing many ≤3‑word fragments."
+   },
+   {
+    "op": "delete",
+    "id": "C4"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "2) Cohesion: If the prefix and the remainder are translated separately and then joined, will that concatenation still render the whole source sentence faithfully?"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Cohesion damage: lost antecedents (pronouns without antecedents), broken scope for quantifiers or negation, split idioms/phrasal units, or detached modifiers that change attachment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 460
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "C4",
+    "kind": "delete",
+    "chars_change": -503
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -10
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -46
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8821,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 227
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9147,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1427",
+    "text": "Input: Internal <SEG:?> poisoning <SEG:?> may <SEG:?> not <SEG:?> be <SEG:?> immediately <SEG:?> apparent. <SEG:?> Symptoms, <SEG:?> such <SEG:?> as <SEG:?> vomiting <SEG:?> are <SEG:?> sufficiently <SEG:?> general <SEG:?> that <SEG:?> an <SEG:?> immediate <SEG:?> diagnosis <SEG:?> cannot <SEG:?> be <SEG:?> made.\nOutput: Internal <SEG:26> poisoning <SEG:63> may <SEG:53> not <SEG:37> be <SEG:42> immediately <SEG:58> apparent. <SEG:100> Symptoms, <SEG:95> such <SEG:84> as <SEG:68> vomiting <SEG:89> are <SEG:79> sufficiently <SEG:32> general <SEG:74> that <SEG:47> an <SEG:16> immediate <SEG:5> diagnosis <SEG:0> cannot <SEG:11> be <SEG:21> made."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_802",
+    "text": "Input: Drink <SEG:?> alcoholic <SEG:?> drinks <SEG:?> with <SEG:?> moderation. <SEG:?> Alcohol <SEG:?> affects <SEG:?> everyone <SEG:?> differently, <SEG:?> and <SEG:?> knowing <SEG:?> your <SEG:?> limit <SEG:?> is <SEG:?> very <SEG:?> important.\nOutput: Drink <SEG:21> alcoholic <SEG:36> drinks <SEG:57> with <SEG:43> moderation. <SEG:100> Alcohol <SEG:86> affects <SEG:64> everyone <SEG:0> differently, <SEG:93> and <SEG:79> knowing <SEG:50> your <SEG:14> limit <SEG:71> is <SEG:29> very <SEG:7> important."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1192",
+    "text": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap: <SEG:?> as <SEG:?> rough <SEG:?> rules <SEG:?> of <SEG:?> thumb, <SEG:?> you <SEG:?> can <SEG:?> expect <SEG:?> to <SEG:?> pay <SEG:?> up <SEG:?> to <SEG:?> four <SEG:?> times <SEG:?> the <SEG:?> normal <SEG:?> economy <SEG:?> fare <SEG:?> for <SEG:?> business, <SEG:?> and <SEG:?> eleven <SEG:?> times <SEG:?> for <SEG:?> first <SEG:?> class!\nOutput: However, <SEG:93> this <SEG:73> does <SEG:0> not <SEG:63> come <SEG:87> cheap: <SEG:97> as <SEG:80> rough <SEG:53> rules <SEG:83> of <SEG:50> thumb, <SEG:90> you <SEG:57> can <SEG:47> expect <SEG:77> to <SEG:100> pay <SEG:70> up <SEG:67> to <SEG:60> four <SEG:23> times <SEG:27> the <SEG:37> normal <SEG:17> economy <SEG:13> fare <SEG:20> for <SEG:43> business, <SEG:30> and <SEG:33> eleven <SEG:3> times <SEG:7> for <SEG:10> first <SEG:40> class!"
+   },
+   {
+    "op": "insert_after",
+    "id": "E_end",
+    "kind": "example",
+    "labeled_example": "en_us_59",
+    "text": "Input: Police <SEG:?> said <SEG:?> Lo <SEG:?> Piccolo <SEG:?> had <SEG:?> the <SEG:?> upper <SEG:?> hand <SEG:?> because <SEG:?> he <SEG:?> had <SEG:?> been <SEG:?> Provenzano's <SEG:?> right-hand <SEG:?> man <SEG:?> in <SEG:?> Palermo <SEG:?> and <SEG:?> his <SEG:?> greater <SEG:?> experience <SEG:?> won <SEG:?> him <SEG:?> the <SEG:?> respect <SEG:?> of <SEG:?> the <SEG:?> older <SEG:?> generation <SEG:?> of <SEG:?> bosses <SEG:?> as <SEG:?> they <SEG:?> pursued <SEG:?> Provenzano's <SEG:?> policy <SEG:?> of <SEG:?> keeping <SEG:?> as <SEG:?> low <SEG:?> as <SEG:?> possible <SEG:?> while <SEG:?> strengthening <SEG:?> their <SEG:?> power <SEG:?> network.\nOutput: Police <SEG:80> said <SEG:98> Lo <SEG:84> Piccolo <SEG:47> had <SEG:31> the <SEG:33> upper <SEG:29> hand <SEG:60> because <SEG:9> he <SEG:4> had <SEG:16> been <SEG:44> Provenzano's <SEG:42> right-hand <SEG:89> man <SEG:87> in <SEG:38> Palermo <SEG:100> and <SEG:93> his <SEG:82> greater <SEG:64> experience <SEG:78> won <SEG:69> him <SEG:62> the <SEG:36> respect <SEG:91> of <SEG:71> the <SEG:58> older <SEG:96> generation <SEG:76> of <SEG:67> bosses <SEG:73> as <SEG:49> they <SEG:51> pursued <SEG:40> Provenzano's <SEG:56> policy <SEG:53> of <SEG:27> keeping <SEG:24> as <SEG:0> low <SEG:11> as <SEG:13> possible <SEG:18> while <SEG:2> strengthening <SEG:22> their <SEG:20> power <SEG:7> network."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -16
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -82
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 0
+   },
+   {
+    "edit": 3,
+    "op": "insert_after",
+    "id": "E_end",
+    "kind": "example",
+    "chars_change": 1371
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10194,
+  "errors": [
+   "길이 초과: 10194 > 9812"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -882
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8037,
+  "errors": null
+ }
+]

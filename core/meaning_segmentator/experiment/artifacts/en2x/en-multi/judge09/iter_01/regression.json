@@ -1,0 +1,110 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.01047,
+  "lo": -0.00448,
+  "hi": 0.02594,
+  "n": 1236,
+  "n_clusters": 150
+ },
+ "by_bin": {
+  "≤3": 0.0133,
+  "≤5": 0.0066,
+  "≤7": 0.0158,
+  "≤10": 0.0139,
+  "≤99": -0.0032
+ },
+ "n_worse": 403,
+ "n_better": 430,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7444,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.7245,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_970",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6988,
+   "before": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains and boats connect ‖ the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_970",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6595,
+   "before": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect ‖ the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_970",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.623,
+   "before": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1591",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.7767,
+   "before": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor ‖ Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, ‖ fifth, ‖ and sixth place, ‖ respectively.",
+   "after": "Former ‖ House Speaker ‖ Newt ‖ Gingrich, ‖ Texas ‖ governor Rick Perry, ‖ and ‖ Congresswoman ‖ Michele ‖ Bachmann finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 8,
+   "bin": "≤3",
+   "delta": 0.7746,
+   "before": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor ‖ Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, ‖ fifth, and sixth place, ‖ respectively.",
+   "after": "Former ‖ House Speaker ‖ Newt ‖ Gingrich, ‖ Texas ‖ governor Rick Perry, and ‖ Congresswoman ‖ Michele ‖ Bachmann finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7418,
+   "before": "This is common practice elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6991,
+   "before": "The best indication of internal poisoning may be the presence ‖ of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container ‖ of medication or toxic household chemicals."
+  }
+ ],
+ "why": "Replacing the three examples accidentally encouraged earlier, within-unit cuts (especially inside multiword names/titles and before predicates) while removing a clear anti-list-splitting signal; that made many short-span (≤3–10 word) cut positions look better but harmed long-span cohesion and increased harmful splits of lists/predicate frames in larger bins.",
+ "lesson": "A subsequent revision should preserve training signals that discourage cutting inside multiword names/titles and splitting coordinated/quantifier frames, and avoid examples that implicitly demonstrate or reward preverbal/predicate isolation.",
+ "blamed": [
+  "E1",
+  "E2",
+  "E3"
+ ]
+}

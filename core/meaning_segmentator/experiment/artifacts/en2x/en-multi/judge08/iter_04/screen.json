@@ -1,0 +1,52 @@
+{
+ "n_sentences": 50,
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00944,
+    "lo": -0.02488,
+    "hi": 0.00673,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 11002,
+   "changelog": [
+    "Replaced C8 to add two explicit, semantic checks (single-obligatory-completion and noun-head/apposition) that raise risk when a cut separates a head from its required completer or identifying modifiers; wording explicitly warns against rewarding moves that isolate tiny one-word completions on the right.",
+    "This change addresses the critic's findings that the prompt underestimated risk when the right fragment supplies the sole disambiguating/completing element and when cuts orphan noun-identifying modifiers."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02248,
+    "lo": -0.03973,
+    "hi": -0.0075,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 11078,
+   "changelog": [
+    "Insert a clear 'Single-obligatory-completer' principle at the top to directly address the finding that cuts which leave a required completer on the right are unsafe; explicitly instruct to prefer grouping the completer with its head and warn that isolating a single-word completer is especially unsafe.",
+    "Insert a concise 'Noun-head and apposition' guidance at the top to address the finding that separating heads from identifying modifiers or appositives loses referential clarity; instruct preferring head+modifier grouping.",
+    "Replace Example E1 with a measured labeled example (en_us_1591) that demonstrates apposition/identifying-modifier issues so the scorer learns the ranking from a real case."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.01841,
+    "lo": -0.034,
+    "hi": -0.00283,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 10239,
+   "changelog": [
+    "Replace C3 (Contra risk) to add an explicit, semantic rule about single disambiguating/obligatory completers: if the right fragment is the sole completer (finite verb, subordinating complement, required object, explicit negator/reverser), treat the cut as unsafe; also warn not to reward pushing unique completers onto tiny right fragments.",
+    "Replace C5 (Cohesion loss) to emphasize noun-head/apposition harms: penalize cuts that detach identifying modifiers, appositives, possessives, or restrictive postnominal material from their head noun; also discourage cuts that leave only very short (one- or two-word) completing fragments on the right."
+   ]
+  }
+ ]
+}

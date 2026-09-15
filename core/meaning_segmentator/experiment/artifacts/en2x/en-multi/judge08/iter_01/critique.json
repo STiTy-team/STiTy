@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt evaluates 'contra' using only the immediate right fragment instead of checking whether any later material in the remainder of the sentence will overturn or contradict the left fragment.",
+    "evidence": "8 cases (en_us_1591, en_us_1143, en_us_877, en_us_1427, en_us_1102, en_us_1192, en_us_1041, en_us_802). In each the policy kept a cut that looked locally plausible from the next fragment but was later contradicted by material further down the sentence; the measured policy_worst_contra was very high and contra_kill=true in these cases.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When judging Contra risk, consider the whole remainder of the sentence, not just the immediate right fragment. Ask: could any later clause or phrase (anywhere after this cut) when heard on its own make the earlier left fragment false, reversed, or misleading? If any downstream material can overturn the left fragment, raise contra accordingly. In short: contra = probability that any later material in the sentence, taken alone, would contradict the left-side fragment."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underestimates cohesion loss for cuts that leave incomplete linguistic dependencies (clause openers, subordinators, auxiliaries, predicates missing their complement, or role/title modifiers separated from the name/head).",
+    "evidence": "10 cases (en_us_1591, en_us_1143, en_us_877, en_us_409, en_us_1427, en_us_1102, en_us_1041, en_us_1192, en_us_802, en_us_339). In these examples the policy scored cuts as acceptable even though they orphaned predicates, subordinators, or titles (e.g. leaving a subject without its predicate, a subordinating 'while' or 'but' without its complement, or a role/title separated from the person name), producing very low per-boundary H and collapsing the whole-set score.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Explicitly treat any left fragment that is functionally open as low-cohesion: if the left side ends with a clause-opener/subordinator, an auxiliary or negation that requires a following verb phrase, a predicate missing its object/complement, or a modifier/title that attaches forward to a later head (role + name, adjective + noun, preposition expecting its object), assign a low cohesion score. Ask: can the left fragment be a sensible, self-contained assertion when translated and played now? If not, reduce cohesion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt evaluates 'contra' using only the immediate right fragment instead of checking whether any later material in the remainder of the sentence will overturn or contradict the left fragment.",
+   "evidence": "8 cases (en_us_1591, en_us_1143, en_us_877, en_us_1427, en_us_1102, en_us_1192, en_us_1041, en_us_802). In each the policy kept a cut that looked locally plausible from the next fragment but was later contradicted by material further down the sentence; the measured policy_worst_contra was very high and contra_kill=true in these cases.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When judging Contra risk, consider the whole remainder of the sentence, not just the immediate right fragment. Ask: could any later clause or phrase (anywhere after this cut) when heard on its own make the earlier left fragment false, reversed, or misleading? If any downstream material can overturn the left fragment, raise contra accordingly. In short: contra = probability that any later material in the sentence, taken alone, would contradict the left-side fragment."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underestimates cohesion loss for cuts that leave incomplete linguistic dependencies (clause openers, subordinators, auxiliaries, predicates missing their complement, or role/title modifiers separated from the name/head).",
+   "evidence": "10 cases (en_us_1591, en_us_1143, en_us_877, en_us_409, en_us_1427, en_us_1102, en_us_1041, en_us_1192, en_us_802, en_us_339). In these examples the policy scored cuts as acceptable even though they orphaned predicates, subordinators, or titles (e.g. leaving a subject without its predicate, a subordinating 'while' or 'but' without its complement, or a role/title separated from the person name), producing very low per-boundary H and collapsing the whole-set score.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Explicitly treat any left fragment that is functionally open as low-cohesion: if the left side ends with a clause-opener/subordinator, an auxiliary or negation that requires a following verb phrase, a predicate missing its object/complement, or a modifier/title that attaches forward to a later head (role + name, adjective + noun, preposition expecting its object), assign a low cohesion score. Ask: can the left fragment be a sensible, self-contained assertion when translated and played now? If not, reduce cohesion."
+   }
+  }
+ ]
+}

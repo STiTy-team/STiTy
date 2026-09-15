@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt lets high 'cohesion' estimates override a serious contradiction risk: positions that the remainder of the sentence will overturn (high contra) are being ranked highly because their cohesion looks good.",
+    "evidence": "9 cases across latency bins show the policy kept cuts with very high per-cut contra (≈0.8–0.99) despite moderate-to-high cohesion; offline targets removed those cuts and recovered H_set. These cuts share the same pattern: a left prefix that is misleading or incomplete on its own (high contra) but seems locally cohesive, and the policy ranked them above safer alternatives.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Numerical decision step (required): For every candidate compute the numeric product target = cohesion * (1 - contra) and use that single number to order positions. Do not let a high cohesion estimate alone promote a cut when contra is large. In practice, cuts with contra ≥ 0.6 should be treated as high‑risk and placed near the bottom of the ordering for that sentence (they will normally map to scores in the sentence's lowest decile); conversely, differences in cohesion should not outweigh a large (1−contra) penalty. Implement this by computing target numerically and mapping target*100→integer as the only basis for ranking."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt fails to apply a simple syntactic/semantic sanity check: prefixes that are preverbal fragments, initial subordinators, or incomplete noun phrases (subjects, determiners) are frequently unsafe and should be strongly deprioritized.",
+    "evidence": "About 8 cases show the same structural pattern: the policy placed cuts that leave only a subject, a subordinating introducer, or a hardened pre-verbal fragment (e.g., initial subordinators or subject-only fragments). Offline targets consistently avoid those cuts and instead cut where a finite verb, predicate, or a self-contained phrase appears.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Syntactic sanity check (heuristic to apply before scoring): If the left stretch ends without a finite/main predicate (it is just a subject, determiner phrase, a subordinating introducer such as while/if/for those unfamiliar, or a preverbal fragment that postpones the clause core), treat the cut as unsafe—raise contra or directly lower the target substantially. In other words, prefer cuts that leave the left side a self-contained phrase (e.g., ends at a verb phrase boundary, clause core, or a natural punctuation break) and deprioritize cuts that strand subjects, determiners, or subordinating lead‑ins."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt lets high 'cohesion' estimates override a serious contradiction risk: positions that the remainder of the sentence will overturn (high contra) are being ranked highly because their cohesion looks good.",
+   "evidence": "9 cases across latency bins show the policy kept cuts with very high per-cut contra (≈0.8–0.99) despite moderate-to-high cohesion; offline targets removed those cuts and recovered H_set. These cuts share the same pattern: a left prefix that is misleading or incomplete on its own (high contra) but seems locally cohesive, and the policy ranked them above safer alternatives.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Numerical decision step (required): For every candidate compute the numeric product target = cohesion * (1 - contra) and use that single number to order positions. Do not let a high cohesion estimate alone promote a cut when contra is large. In practice, cuts with contra ≥ 0.6 should be treated as high‑risk and placed near the bottom of the ordering for that sentence (they will normally map to scores in the sentence's lowest decile); conversely, differences in cohesion should not outweigh a large (1−contra) penalty. Implement this by computing target numerically and mapping target*100→integer as the only basis for ranking."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt fails to apply a simple syntactic/semantic sanity check: prefixes that are preverbal fragments, initial subordinators, or incomplete noun phrases (subjects, determiners) are frequently unsafe and should be strongly deprioritized.",
+   "evidence": "About 8 cases show the same structural pattern: the policy placed cuts that leave only a subject, a subordinating introducer, or a hardened pre-verbal fragment (e.g., initial subordinators or subject-only fragments). Offline targets consistently avoid those cuts and instead cut where a finite verb, predicate, or a self-contained phrase appears.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Syntactic sanity check (heuristic to apply before scoring): If the left stretch ends without a finite/main predicate (it is just a subject, determiner phrase, a subordinating introducer such as while/if/for those unfamiliar, or a preverbal fragment that postpones the clause core), treat the cut as unsafe—raise contra or directly lower the target substantially. In other words, prefer cuts that leave the left side a self-contained phrase (e.g., ends at a verb phrase boundary, clause core, or a natural punctuation break) and deprioritize cuts that strand subjects, determiners, or subordinating lead‑ins."
+   }
+  }
+ ]
+}

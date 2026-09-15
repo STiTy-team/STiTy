@@ -1,0 +1,54 @@
+{
+ "n_sentences": 50,
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01041,
+    "lo": -0.03159,
+    "hi": 0.00843,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 7872,
+   "changelog": [
+    "Replace C3 to add a concise, explicit finishing‑predicate contra check that raises contra when a right fragment finalizes truth‑conditions and instructs preferring grouping the completer with the left (addresses finding 1).",
+    "Replace C5 to add a compact head–complement/modifier cohesion rule that penalizes cuts separating heads from required complements or identifying modifiers and warns against rewarding tiny right‑hand completers (addresses finding 2).",
+    "Paraphrase C7 to a much shorter summary of English cues (verbs, auxiliaries, subordinators, pronouns, punctuation) to free space while keeping language-specific guidance.",
+    "Delete example E1 (long hand-written example) to free budget for the new concise principles and avoid exceeding size limits.",
+    "Delete example E3 (hand-written example) to free additional budget and keep the prompt within the character cap."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00771,
+    "lo": -0.03046,
+    "hi": 0.01499,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 11055,
+   "changelog": [
+    "Add explicit contra check for finishing predicates: raises contra when a RHS contains the decisive predicate/auxiliary/negator/corrective and instructs preferring grouping that completer with the left (addresses finding 1).",
+    "Add head–complement/modifier cohesion check: penalizes cuts that detach a syntactic head from required complements or identifying modifiers and warns against leaving one- or two-word completers on the right (addresses finding 2)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.03446,
+    "lo": -0.05603,
+    "hi": -0.01411,
+    "n": 410,
+    "n_clusters": 50
+   },
+   "chars": 10064,
+   "changelog": [
+    "Paraphrased C7 to compress English-specific cues (verbs, auxiliaries, subordinators, pronouns, punctuation) so the prompt is shorter and quicker to apply.",
+    "Replaced C8 with a single, concise unit that merges the explicit finishing-predicate (contra) check and the head–complement/modifier (cohesion) check requested by the critic; this implements both findings while keeping the wording compact to respect size limits."
+   ]
+  }
+ ]
+}

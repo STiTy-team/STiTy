@@ -1,0 +1,122 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Single obligatory element check: Ask whether the right fragment provides the single, required element (a finite verb that completes the clause, the main nominal head/name, an essential complement, or an explicit negator/reverser) without which the left is uninterpretable or whose presence would change the left's truth-conditions. If yes, treat cohesion as low and/or contra as high, unless the left is already a self-contained clause or the missing element is clearly optional."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Noun-head and apposition check: Ask whether this cut would separate a head noun or proper name from attached material (titles, determiners, modifiers, or an appositive). If the right fragment is the name/head that the left's words modify or identify, prefer a lower cohesion score because translating them separately will orphan modifiers or distort the name/role relation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 480
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 374
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10931,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Single-obligatory-element & noun-head check: Ask whether the right fragment provides the single required element that the left needs to be interpretable or whose presence would flip the left's truth-conditions — for example a finite verb (including its auxiliary/negator), the main noun head of a NP, an essential complement, or an explicit reversing/negating word. If so, treat cohesion as low and/or contra as high unless the left is already a self-contained, complete clause that does not depend on that element. Do not reward cuts that leave that completer isolated as a tiny right fragment (avoid scoring high when the cut would create a one- to few-word right piece containing the only completing item); prefer keeping obligatory completions with the side they complete (e.g., keep verb with its subject and core dependents). Also ask whether this cut separates a head noun or proper name from attached determiners, titles, appositives, or modifiers (e.g., \"Mr X\", \"the president, John\", title+name). If it does, lower cohesion: prefer keeping modifiers and the head/name together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 1088
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11165,
+  "errors": [
+   "길이 초과: 11165 > 11084"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- English builds meaning so that finite verbs and their core objects often appear later (SVO). Splitting before a verb or inside an auxiliary/negator can leave scope or truth-conditions unresolved. Subordinate-clause openers, relative/complement markers, and preposition/verb complements normally need following material to complete their contribution. Possessive markers and post-nominal modifiers attach to a noun head; cutting inside these links can orphan modifiers. Pronouns and definite references expect antecedents. Lists and enumerations are usually safe once an item is complete; contrastive or corrective continuations are high risk. Punctuation here nearly always marks a strong boundary and is treated as attached to the preceding word."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep these as semantic judgements you can apply at every boundary: ask whether the right-hand fragment (1) can contradict or negate the already-heard left when taken alone, and (2) can stand alone when translated without leaving essential relations unresolved. Two short, discrete checks to apply every time: (A) Single-obligatory-element check — Does the right fragment supply the single required head or complement (a finite verb or its auxiliary/negator, the main noun head of an NP, or an essential complement/reverser) that the left needs to be interpretable or whose presence would flip the left's truth-conditions? If yes, treat cohesion as low and/or contra as high. Explicitly avoid rewarding cuts that isolate that completer as a tiny (one-to-few-word) right fragment; prefer keeping obligatory completers with the span they complete. (B) Noun-head / apposition check — Would the cut separate a head noun or proper name from attached determiners, titles, appositives, or modifiers (e.g. \"Mr X\", \"the president, John\")? If so, lower cohesion and prefer keeping modifiers and the head/name together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -273
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 805
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10609,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep these as semantic judgements you can apply at every boundary: ask whether the right-hand fragment can (1) contradict or negate the already-heard left fragment and (2) stand alone when translated without leaving essential relations unresolved. Also apply two quick discrete checks that raise risk when present:\n\n- Single-obligatory-element: Does the right fragment supply the single finite verb, nominal head, essential complement, or explicit negator/reverser that the left needs to be interpretable or whose presence would flip the left's truth-conditions? If so, treat cohesion as low and/or contra as high unless the left is already a self-contained clause.\n\n- Noun-head / apposition separation: Would this cut separate a head noun or proper name from attached modifiers, titles, determiners, or an appositive phrase? If so, lower cohesion because modifiers or titles will be orphaned or mistranslated.\n\nFinally, avoid rewarding cuts that isolate very short, single-word completions: if the right fragment is a tiny element whose only role is to complete or reverse the left, prefer a lower score rather than elevating such tiny completions."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 847
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10924,
+  "errors": null
+ }
+]

@@ -1,0 +1,185 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken?  Treat this quantitatively and aggressively: compute target = cohesion * (1 - contra) and use that product to order cuts. Any candidate with contra >= 0.6 will make (1 - contra) <= 0.4 and thus should be given a substantially lower score than typical low‑contra candidates; in practice rank all high‑contra (>=0.6) positions below low‑contra positions so the downstream step does not keep them. Do not rely on intuition alone — estimate contra as a probability and let the (1 - contra) multiplier decisively push cuts that leave incomplete predicates or existential/qualification fragments toward the bottom of the ordering."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_1591",
+    "kind": "example",
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "labeled_example": "en_us_1102",
+    "kind": "example",
+    "text": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> poisoning <SEG:?> may <SEG:?> be <SEG:?> the <SEG:?> presence <SEG:?> of <SEG:?> an <SEG:?> open <SEG:?> container <SEG:?> of <SEG:?> medication <SEG:?> or <SEG:?> toxic <SEG:?> household <SEG:?> chemicals.\nOutput: The <SEG:61> best <SEG:78> indication <SEG:89> of <SEG:83> internal <SEG:72> poisoning <SEG:100> may <SEG:50> be <SEG:44> the <SEG:0> presence <SEG:17> of <SEG:11> an <SEG:6> open <SEG:56> container <SEG:94> of <SEG:67> medication <SEG:33> or <SEG:28> toxic <SEG:39> household <SEG:22> chemicals."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 624
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 163
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 144
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9159,
+  "errors": [
+   "길이 초과: 9159 > 9050"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "   - Cuts that leave incomplete predicates, existential/qualification fragments, or preverbal fragments are especially likely to be contradicted or made misleading by later material. When a left prefix needs later words to supply the main predicate, its truth conditions, or an essential qualification, estimate contra high and rank that position much lower."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "   - Penalize cuts that split rigid multiword units: names and titles, verb+object frames, noun heads from essential modifiers, phrasal verbs, quantifier/percent frames, list items or coordinated elements. Such splits sharply reduce cohesion and tend to cause mistranslation when the halves are translated independently."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1591",
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively."
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -144
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -246
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 163
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -447
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7553,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 482
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8710,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1591",
+    "text": "Input: Former <SEG:?> House <SEG:?> Speaker <SEG:?> Newt <SEG:?> Gingrich, <SEG:?> Texas <SEG:?> governor <SEG:?> Rick <SEG:?> Perry, <SEG:?> and <SEG:?> Congresswoman <SEG:?> Michele <SEG:?> Bachmann <SEG:?> finished <SEG:?> in <SEG:?> fourth, <SEG:?> fifth, <SEG:?> and <SEG:?> sixth <SEG:?> place, <SEG:?> respectively.\nOutput: Former <SEG:89> House <SEG:53> Speaker <SEG:100> Newt <SEG:95> Gingrich, <SEG:84> Texas <SEG:63> governor <SEG:32> Rick <SEG:26> Perry, <SEG:58> and <SEG:68> Congresswoman <SEG:74> Michele <SEG:79> Bachmann <SEG:42> finished <SEG:47> in <SEG:21> fourth, <SEG:0> fifth, <SEG:11> and <SEG:5> sixth <SEG:16> place, <SEG:37> respectively."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1102",
+    "text": "Input: The <SEG:?> best <SEG:?> indication <SEG:?> of <SEG:?> internal <SEG:?> poisoning <SEG:?> may <SEG:?> be <SEG:?> the <SEG:?> presence <SEG:?> of <SEG:?> an <SEG:?> open <SEG:?> container <SEG:?> of <SEG:?> medication <SEG:?> or <SEG:?> toxic <SEG:?> household <SEG:?> chemicals.\nOutput: The <SEG:61> best <SEG:78> indication <SEG:89> of <SEG:83> internal <SEG:72> poisoning <SEG:100> may <SEG:50> be <SEG:44> the <SEG:0> presence <SEG:17> of <SEG:11> an <SEG:6> open <SEG:56> container <SEG:94> of <SEG:67> medication <SEG:33> or <SEG:28> toxic <SEG:39> household <SEG:22> chemicals."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1192",
+    "text": "Input: However, <SEG:?> this <SEG:?> does <SEG:?> not <SEG:?> come <SEG:?> cheap: <SEG:?> as <SEG:?> rough <SEG:?> rules <SEG:?> of <SEG:?> thumb, <SEG:?> you <SEG:?> can <SEG:?> expect <SEG:?> to <SEG:?> pay <SEG:?> up <SEG:?> to <SEG:?> four <SEG:?> times <SEG:?> the <SEG:?> normal <SEG:?> economy <SEG:?> fare <SEG:?> for <SEG:?> business, <SEG:?> and <SEG:?> eleven <SEG:?> times <SEG:?> for <SEG:?> first <SEG:?> class!\nOutput: However, <SEG:93> this <SEG:73> does <SEG:0> not <SEG:63> come <SEG:87> cheap: <SEG:97> as <SEG:80> rough <SEG:53> rules <SEG:83> of <SEG:50> thumb, <SEG:90> you <SEG:57> can <SEG:47> expect <SEG:77> to <SEG:100> pay <SEG:70> up <SEG:67> to <SEG:60> four <SEG:23> times <SEG:27> the <SEG:37> normal <SEG:17> economy <SEG:13> fare <SEG:20> for <SEG:43> business, <SEG:30> and <SEG:33> eleven <SEG:3> times <SEG:7> for <SEG:10> first <SEG:40> class!"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 163
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 94
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 435
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8920,
+  "errors": null
+ }
+]

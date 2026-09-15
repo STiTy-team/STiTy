@@ -1,0 +1,1630 @@
+[
+ {
+  "id": "en_us_1427",
+  "cuts": 6,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.7018,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9894,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    7,
+    8,
+    11,
+    14,
+    18
+   ],
+   "H_set": 0.0071,
+   "text": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "pieces": {
+    "Chinese": [
+     "内毒",
+     "可能不会立即显现。",
+     "症状",
+     "如呕吐",
+     "是足够一般性的",
+     "即时诊断",
+     "不能做到。"
+    ],
+    "Japanese": [
+     "内毒症",
+     "すぐには分からないかもしれません",
+     "症状，",
+     "吐き気などの症状が",
+     "十分に一般的で",
+     "即時診断が",
+     "作れない"
+    ],
+    "German": [
+     "Innere Vergiftung",
+     "Diese sind nicht sofort erkennbar.",
+     "Symptome,",
+     "Symptome wie Erbrechen",
+     "Sind ausreichend allgemein",
+     "Dass eine sofortige Diagnose",
+     "Es kann nicht gemacht werden."
+    ],
+    "Spanish": [
+     "Envenenamiento interno",
+     "Puede que no sea inmediatamente evidente.",
+     "Síntomas,",
+     "Síntomas como vómitos",
+     "son suficientemente generales",
+     "Que un diagnóstico inmediato",
+     "No se puede hacer."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8,
+    9,
+    11,
+    12,
+    14
+   ],
+   "H_set": 0.7089,
+   "text": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such ‖ as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "pieces": {
+    "Chinese": [
+     "内毒症可能不会立即显现。",
+     "症状",
+     "如此",
+     "如呕吐",
+     "是",
+     "足够一般性",
+     "不能立即做出诊断。"
+    ],
+    "Japanese": [
+     "内毒性は直ちに明らかにならないことがある。",
+     "症状，",
+     "こんな",
+     "吐き気のように",
+     "あなたは",
+     "十分に一般的なもので",
+     "すぐに診断がつかないということです"
+    ],
+    "German": [
+     "Eine innere Vergiftung ist möglicherweise nicht sofort erkennbar.",
+     "Symptome,",
+     "such",
+     "als Erbrechen",
+     "sind",
+     "ausreichend allgemein",
+     "Eine sofortige Diagnose kann nicht gestellt werden."
+    ],
+    "Spanish": [
+     "La intoxicación interna puede no ser inmediatamente evidente.",
+     "Síntomas,",
+     "tales",
+     "Como vómitos",
+     "son",
+     "suficientemente general",
+     "No se puede hacer un diagnóstico inmediato."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Internal poisoning",
+     "right": "may not be immediately",
+     "H": 0.7511,
+     "H_pct": 63.2,
+     "contra": 0.0037,
+     "cohesion": 0.7539
+    },
+    {
+     "pos": 18,
+     "left": "that an immediate diagnosis",
+     "right": "cannot be made.",
+     "H": 0.0058,
+     "H_pct": 0.0,
+     "contra": 0.9894,
+     "cohesion": 0.5453
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "immediately apparent. Symptoms, such",
+     "right": "as vomiting are sufficiently",
+     "H": 0.7837,
+     "H_pct": 84.2,
+     "contra": 0.0016,
+     "cohesion": 0.785
+    },
+    {
+     "pos": 12,
+     "left": "such as vomiting are",
+     "right": "sufficiently general that an",
+     "H": 0.7782,
+     "H_pct": 78.9,
+     "contra": 0.0021,
+     "cohesion": 0.7799
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1143",
+  "cuts": 6,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.6919,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9673,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    8,
+    12,
+    13,
+    20
+   ],
+   "H_set": 0.0222,
+   "text": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "pieces": {
+    "Chinese": [
+     "这是常见的做法",
+     "其他地方",
+     "英国的",
+     "但苏格兰司法系统的工作原理",
+     "不同",
+     "法院和法庭已经查看了照片的发布",
+     "可能有害。"
+    ],
+    "Japanese": [
+     "これは普通のやり方だ",
+     "どこかで",
+     "英国では",
+     "しかしスコットランドの司法は",
+     "違う",
+     "裁判所は 写真の公開を",
+     "危険なものとして 認識されるようになりました"
+    ],
+    "German": [
+     "Dies ist übliche Praxis",
+     "An anderer Stelle",
+     "Im Vereinigten Königreich",
+     "Aber die schottische Justiz funktioniert",
+     "anders",
+     "Veröffentlichung von Fotos und Videos",
+     "als potenziell schädlich."
+    ],
+    "Spanish": [
+     "Esta es una práctica común",
+     "en otros lugares",
+     "En el Reino Unido",
+     "Pero la justicia escocesa funciona",
+     "De manera diferente",
+     "y los tribunales han visto la publicación de fotos",
+     "como potencialmente perjudicial."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    8,
+    9,
+    10,
+    13,
+    14
+   ],
+   "H_set": 0.7141,
+   "text": "This ‖ is common practice elsewhere in the UK ‖ but ‖ Scottish ‖ justice works differently ‖ and ‖ courts have viewed publication of photos as potentially prejudicial.",
+   "pieces": {
+    "Chinese": [
+     "这个",
+     "是英国其他地方的常见做法",
+     "但",
+     "蘇格蘭",
+     "司法工作方式不同",
+     "以及",
+     "法院认为发表照片可能有害。"
+    ],
+    "Japanese": [
+     "これ",
+     "英国の他の地域でも よくあることです",
+     "でも あなたは",
+     "スコットランド",
+     "司法は違う",
+     "それに",
+     "裁判所は 写真の公開を 潜在的な損害と見なしてる"
+    ],
+    "German": [
+     "This",
+     "Dies ist üblich in anderen Teilen Großbritanniens",
+     "aber",
+     "Scottish",
+     "Justiz funktioniert anders",
+     "und",
+     "Die Gerichte haben die Veröffentlichung von Fotos als potenziell schädlich angesehen."
+    ],
+    "Spanish": [
+     "Este",
+     "Es una práctica común en otras partes del Reino Unido",
+     "pero",
+     "Escoceses",
+     "La justicia funciona de manera diferente",
+     "y",
+     "Los tribunales han considerado la publicación de fotos como potencialmente perjudicial."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "This is common practice",
+     "right": "elsewhere in the UK",
+     "H": 0.8018,
+     "H_pct": 61.9,
+     "contra": 0.0002,
+     "cohesion": 0.802
+    },
+    {
+     "pos": 5,
+     "left": "is common practice elsewhere",
+     "right": "in the UK but",
+     "H": 0.8226,
+     "H_pct": 71.4,
+     "contra": 0.0003,
+     "cohesion": 0.8229
+    },
+    {
+     "pos": 12,
+     "left": "but Scottish justice works",
+     "right": "differently and courts have",
+     "H": 0.024,
+     "H_pct": 0.0,
+     "contra": 0.9673,
+     "cohesion": 0.7351
+    },
+    {
+     "pos": 20,
+     "left": "viewed publication of photos",
+     "right": "as potentially prejudicial.",
+     "H": 0.7779,
+     "H_pct": 42.9,
+     "contra": 0.0043,
+     "cohesion": 0.7813
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "This",
+     "right": "is common practice elsewhere",
+     "H": 0.8377,
+     "H_pct": 85.7,
+     "contra": 0.0121,
+     "cohesion": 0.8479
+    },
+    {
+     "pos": 9,
+     "left": "in the UK but",
+     "right": "Scottish justice works differently",
+     "H": 0.8671,
+     "H_pct": 100.0,
+     "contra": 0.002,
+     "cohesion": 0.8688
+    },
+    {
+     "pos": 10,
+     "left": "the UK but Scottish",
+     "right": "justice works differently and",
+     "H": 0.8378,
+     "H_pct": 90.5,
+     "contra": 0.0073,
+     "cohesion": 0.844
+    },
+    {
+     "pos": 14,
+     "left": "justice works differently and",
+     "right": "courts have viewed publication",
+     "H": 0.8361,
+     "H_pct": 81.0,
+     "contra": 0.0066,
+     "cohesion": 0.8416
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_608",
+  "cuts": 2,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.6874,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9404,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    15
+   ],
+   "H_set": 0.0458,
+   "text": "We experience time as a series of events ‖ passing from the future through the present ‖ to the past.",
+   "pieces": {
+    "Chinese": [
+     "我们将时间视为一系列事件",
+     "从未来到现在",
+     "过去的事情。"
+    ],
+    "Japanese": [
+     "私たちは時間を一連の出来事として経験します",
+     "未来から現在へと",
+     "過去に戻る"
+    ],
+    "German": [
+     "Wir erleben die Zeit als eine Reihe von Ereignissen",
+     "Von der Zukunft durch die Gegenwart",
+     "Zurück in die Vergangenheit."
+    ],
+    "Spanish": [
+     "Experimentamos el tiempo como una serie de eventos",
+     "Pasando del futuro al presente",
+     "Al pasado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3
+   ],
+   "H_set": 0.7332,
+   "text": "We experience ‖ time ‖ as a series of events passing from the future through the present to the past.",
+   "pieces": {
+    "Chinese": [
+     "我们经历",
+     "时间",
+     "作为一系列事件从未来通过现在到过去。"
+    ],
+    "Japanese": [
+     "私たちは",
+     "時間",
+     "未来から現在へ 過去へと 移り変わる一連の出来事として"
+    ],
+    "German": [
+     "Wir erleben",
+     "Zeit",
+     "Als eine Reihe von Ereignissen, die von der Zukunft über die Gegenwart in die Vergangenheit übergehen."
+    ],
+    "Spanish": [
+     "Experimentamos",
+     "hora",
+     "La historia se entiende como una serie de acontecimientos que pasan del futuro al presente y al pasado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "a series of events",
+     "right": "passing from the future",
+     "H": 0.3463,
+     "H_pct": 68.8,
+     "contra": 0.569,
+     "cohesion": 0.8036
+    },
+    {
+     "pos": 15,
+     "left": "future through the present",
+     "right": "to the past.",
+     "H": 0.0423,
+     "H_pct": 25.0,
+     "contra": 0.9404,
+     "cohesion": 0.7097
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "We experience",
+     "right": "time as a series",
+     "H": 0.8026,
+     "H_pct": 100.0,
+     "contra": 0.0005,
+     "cohesion": 0.8031
+    },
+    {
+     "pos": 3,
+     "left": "We experience time",
+     "right": "as a series of",
+     "H": 0.7964,
+     "H_pct": 93.8,
+     "contra": 0.0008,
+     "cohesion": 0.7971
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1192",
+  "cuts": 3,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.6769,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9701,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    24,
+    26
+   ],
+   "H_set": 0.0232,
+   "text": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare ‖ for business, ‖ and eleven times for first class!",
+   "pieces": {
+    "Chinese": [
+     "然而,这并不便宜:",
+     "作为粗略的经验法则,您可以预期支付高达正常经济舱票价的四倍",
+     "商务旅行,",
+     "头等舱11次!"
+    ],
+    "Japanese": [
+     "しかし、これは安くは来ない。",
+     "基本的には 普通のエコノミークラスの4倍の値段で",
+     "仕事のために",
+     "ファーストクラスは11回!"
+    ],
+    "German": [
+     "Das ist jedoch nicht billig:",
+     "Als Faustregel gilt, dass Sie bis zu viermal so viel wie der normale Economy-Tarif bezahlen müssen.",
+     "für die Wirtschaft,",
+     "Und elfmal für die erste Klasse!"
+    ],
+    "Spanish": [
+     "Sin embargo, esto no es barato:",
+     "Como regla general, puede esperar pagar hasta cuatro veces la tarifa normal de clase económica",
+     "para los negocios,",
+     "¡Y once veces para primera clase!"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    15
+   ],
+   "H_set": 0.7,
+   "text": "However, ‖ this does not come cheap: ‖ as rough rules of thumb, you can expect to ‖ pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "这是不便宜的:",
+     "当然,你也可以选择其他的方法。",
+     "商务舱最多支付四倍的正常经济舱票价,头等舱支付十一倍!"
+    ],
+    "Japanese": [
+     "しかし",
+     "これは安くはありません",
+     "基本的には あなたが",
+     "4倍のエコノミークラスで ビジネスクラス 11倍のファーストクラス!"
+    ],
+    "German": [
+     "Allerdings",
+     "Das ist nicht billig:",
+     "Als grobe Faustregeln können Sie erwarten,",
+     "Sie zahlen bis zu viermal den normalen Economy-Tarif für Business und elfmal für First Class!"
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Esto no es barato:",
+     "Como reglas generales, se puede esperar a",
+     "¡Paga hasta cuatro veces la tarifa económica normal para negocios y once veces para primera clase!"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 24,
+     "left": "the normal economy fare",
+     "right": "for business, and eleven",
+     "H": 0.0235,
+     "H_pct": 20.0,
+     "contra": 0.9701,
+     "cohesion": 0.7852
+    },
+    {
+     "pos": 26,
+     "left": "economy fare for business,",
+     "right": "and eleven times for",
+     "H": 0.0469,
+     "H_pct": 30.0,
+     "contra": 0.9421,
+     "cohesion": 0.8098
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "However,",
+     "right": "this does not come",
+     "H": 0.7775,
+     "H_pct": 93.3,
+     "contra": 0.0007,
+     "cohesion": 0.7781
+    },
+    {
+     "pos": 15,
+     "left": "you can expect to",
+     "right": "pay up to four",
+     "H": 0.7856,
+     "H_pct": 100.0,
+     "contra": 0.0073,
+     "cohesion": 0.7913
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_59",
+  "cuts": 3,
+  "avg_chunk": 11.8,
+  "latency_bin": "≤99",
+  "gap": 0.2062,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.3053,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    17,
+    31,
+    42
+   ],
+   "H_set": 0.5243,
+   "text": "Police said Lo Piccolo had the upper hand because he had been Provenzano's right-hand man in Palermo ‖ and his greater experience won him the respect of the older generation of bosses ‖ as they pursued Provenzano's policy of keeping as low as possible ‖ while strengthening their power network.",
+   "pieces": {
+    "Chinese": [
+     "警方说洛皮科洛有优势 因为他是普罗文扎诺在巴勒莫的右手",
+     "他的经验让他赢得了老一代老板的尊重",
+     "因为他们追求普罗文扎诺的政策,尽可能地保持低",
+     "并且加强他们的电力网络。"
+    ],
+    "Japanese": [
+     "警察はロ・ピッコロが 優勢だと言ってる 彼はパレルモで プロヴェンツァーノの右腕だったから",
+     "彼の経験は 上層部の尊敬を集めました",
+     "プロヴェンツァーノの できるだけ低くするという 政策を追求する中で",
+     "電力網を強化するために 必要なものです"
+    ],
+    "German": [
+     "Die Polizei sagte, Lo Piccolo habe die Oberhand, weil er Provenzanos rechte Hand in Palermo gewesen sei.",
+     "Und seine größere Erfahrung gewann ihm den Respekt der älteren Generation von Chefs",
+     "Sie verfolgten Provenzanos Politik, die Kosten so niedrig wie möglich zu halten.",
+     "und gleichzeitig ihr Stromnetz stärken."
+    ],
+    "Spanish": [
+     "La policía dijo que Lo Piccolo tenía la ventaja porque había sido la mano derecha de Provenzano en Palermo",
+     "y su mayor experiencia le ganó el respeto de la generación anterior de jefes",
+     "mientras perseguían la política de Provenzano de mantenerse lo más bajo posible",
+     "mientras fortalecen su red eléctrica."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    17,
+    28
+   ],
+   "H_set": 0.7305,
+   "text": "Police said ‖ Lo Piccolo had the upper hand because he had been Provenzano's right-hand man in Palermo ‖ and his greater experience won him the respect of the older ‖ generation of bosses as they pursued Provenzano's policy of keeping as low as possible while strengthening their power network.",
+   "pieces": {
+    "Chinese": [
+     "警方说",
+     "罗皮科洛有优势,因为他曾是普罗文扎诺在巴勒莫的右手",
+     "他的经验让他赢得了老人的尊重",
+     "他们追求普罗文扎诺的政策,在加强他们的权力网络的同时,尽可能地保持低。"
+    ],
+    "Japanese": [
+     "警察は",
+     "ピッコロはパレルモで プロヴェンツァーノの右腕だったので 優勢だった",
+     "彼の経験は 年上の人々の尊敬を得ました",
+     "プロヴェンツァーノの政策を追求し 可能な限り低いレベルに 維持しながら 権力ネットワークを強化した"
+    ],
+    "German": [
+     "Die Polizei sagte",
+     "Lo Piccolo hatte die Oberhand, weil er Provenzanos rechte Hand in Palermo gewesen war",
+     "Seine größere Erfahrung gewann ihm den Respekt der älteren",
+     "Die erste Generation von Bossen verfolgte Provenzanos Politik, so niedrig wie möglich zu bleiben und gleichzeitig ihr Machtnetzwerk zu stärken."
+    ],
+    "Spanish": [
+     "La policía dijo",
+     "Lo Piccolo tenía la ventaja porque había sido la mano derecha de Provenzano en Palermo",
+     "Su mayor experiencia le ganó el respeto de los mayores.",
+     "La nueva generación de jefes siguió la política de Provenzano de mantenerse lo más bajo posible mientras fortalecían su red de poder."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 31,
+     "left": "older generation of bosses",
+     "right": "as they pursued Provenzano's",
+     "H": 0.7373,
+     "H_pct": 73.3,
+     "contra": 0.0134,
+     "cohesion": 0.7473
+    },
+    {
+     "pos": 42,
+     "left": "as low as possible",
+     "right": "while strengthening their power",
+     "H": 0.4992,
+     "H_pct": 17.8,
+     "contra": 0.3053,
+     "cohesion": 0.7186
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Police said",
+     "right": "Lo Piccolo had the",
+     "H": 0.7657,
+     "H_pct": 97.8,
+     "contra": 0.0057,
+     "cohesion": 0.7701
+    },
+    {
+     "pos": 28,
+     "left": "respect of the older",
+     "right": "generation of bosses as",
+     "H": 0.7643,
+     "H_pct": 95.6,
+     "contra": 0.0057,
+     "cohesion": 0.7687
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_876",
+  "cuts": 7,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.658,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9825,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    11,
+    12,
+    14,
+    16,
+    18,
+    19
+   ],
+   "H_set": 0.009,
+   "text": "If you live in a city ‖ with a varied drinking culture, ‖ go ‖ to bars ‖ or pubs ‖ in neighborhoods ‖ you ‖ don't frequent.",
+   "pieces": {
+    "Chinese": [
+     "如果你住在一个城市",
+     "带着多样化的饮用文化,",
+     "去",
+     "转换成条形码",
+     "酒吧",
+     "在社区",
+     "你",
+     "不要经常去"
+    ],
+    "Japanese": [
+     "都市に住んでいるなら",
+     "飲酒文化が多様で",
+     "行け",
+     "バーに行くと",
+     "あるいはパブ",
+     "近所の人々が",
+     "あなたは",
+     "よく来ないで"
+    ],
+    "German": [
+     "Wenn Sie in einer Stadt leben",
+     "mit einer vielfältigen Trinkkultur,",
+     "Go",
+     "Zu den Bars",
+     "Restaurants oder Pubs",
+     "Hotels in Nachbarschaften",
+     "Sie",
+     "Frequentieren Sie nicht."
+    ],
+    "Spanish": [
+     "Si vives en una ciudad",
+     "con una variada cultura de la bebida,",
+     "go",
+     "A las barras",
+     "Restaurantes o pubs",
+     "Hoteles en barrios",
+     "usted",
+     "No frecuentan."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    6,
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "H_set": 0.667,
+   "text": "If you live ‖ in a city ‖ with a varied drinking culture, ‖ go to ‖ bars ‖ or ‖ pubs ‖ in neighborhoods you don't frequent.",
+   "pieces": {
+    "Chinese": [
+     "如果你活着",
+     "在一个城市",
+     "带着多样化的饮用文化,",
+     "去看看",
+     "巴",
+     "或",
+     "酒吧",
+     "在你不经常去的社区里。"
+    ],
+    "Japanese": [
+     "生きてるなら",
+     "都市に住んでいる",
+     "飲酒文化が多様で",
+     "行って",
+     "バー",
+     "それとも",
+     "パブ",
+     "あなたがよく行かない近所で"
+    ],
+    "German": [
+     "Wenn du lebst",
+     "in einer Stadt",
+     "mit einer vielfältigen Trinkkultur,",
+     "Gehe zu",
+     "Bars",
+     "oder",
+     "Pubs",
+     "in Nachbarschaften, die Sie nicht besuchen."
+    ],
+    "Spanish": [
+     "Si vives",
+     "En una ciudad",
+     "con una variada cultura de la bebida,",
+     "Ir a",
+     "bars",
+     "o",
+     "pubs",
+     "en vecindarios que no frecuentas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "varied drinking culture, go",
+     "right": "to bars or pubs",
+     "H": 0.7026,
+     "H_pct": 47.4,
+     "contra": 0.0089,
+     "cohesion": 0.7089
+    },
+    {
+     "pos": 18,
+     "left": "or pubs in neighborhoods",
+     "right": "you don't frequent.",
+     "H": 0.695,
+     "H_pct": 42.1,
+     "contra": 0.0054,
+     "cohesion": 0.6988
+    },
+    {
+     "pos": 19,
+     "left": "pubs in neighborhoods you",
+     "right": "don't frequent.",
+     "H": 0.011,
+     "H_pct": 0.0,
+     "contra": 0.9825,
+     "cohesion": 0.6279
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "If you live",
+     "right": "in a city with",
+     "H": 0.7521,
+     "H_pct": 68.4,
+     "contra": 0.0062,
+     "cohesion": 0.7568
+    },
+    {
+     "pos": 13,
+     "left": "drinking culture, go to",
+     "right": "bars or pubs in",
+     "H": 0.7628,
+     "H_pct": 73.7,
+     "contra": 0.0215,
+     "cohesion": 0.7796
+    },
+    {
+     "pos": 15,
+     "left": "go to bars or",
+     "right": "pubs in neighborhoods you",
+     "H": 0.7662,
+     "H_pct": 78.9,
+     "contra": 0.0103,
+     "cohesion": 0.7742
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_627",
+  "cuts": 5,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.6596,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9952,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    10,
+    14,
+    17,
+    20
+   ],
+   "H_set": 0.0038,
+   "text": "The most important factor of this mindset ‖ is: there is ‖ only one correct answer. ‖ You only think ‖ of two answers, ‖ namely right or wrong.",
+   "pieces": {
+    "Chinese": [
+     "这种心态的最重要因素",
+     "是: 是",
+     "只有一个正确的答案。",
+     "你只想",
+     "两个答案,",
+     "即对或错。"
+    ],
+    "Japanese": [
+     "この考え方の最も重要な要素は",
+     "あるのです",
+     "正解は1つだけ",
+     "あなたはただ",
+     "2つの答えがあるでしょう",
+     "それは正しいか間違っているかです"
+    ],
+    "German": [
+     "Der wichtigste Faktor dieser Denkweise",
+     "ist: es gibt",
+     "Es gibt nur eine richtige Antwort.",
+     "Du denkst nur",
+     "von zwei Antworten,",
+     "nämlich richtig oder falsch."
+    ],
+    "Spanish": [
+     "El factor más importante de esta mentalidad",
+     "Es: hay",
+     "Solo una respuesta correcta.",
+     "Solo piensas",
+     "de dos respuestas,",
+     "Es decir, bien o mal."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    7,
+    13,
+    14,
+    15
+   ],
+   "H_set": 0.6634,
+   "text": "The most important factor ‖ of this mindset ‖ is: there is only one correct ‖ answer. ‖ You ‖ only think of two answers, namely right or wrong.",
+   "pieces": {
+    "Chinese": [
+     "最重要的因素",
+     "这个心态",
+     "只有一个正确的答案",
+     "回答",
+     "你",
+     "只想到两个答案,即对或错。"
+    ],
+    "Japanese": [
+     "もっとも重要な要因は",
+     "私たちの社会に",
+     "1つの正しい答えしかないということです",
+     "答えろ",
+     "あなた",
+     "2つの答えしか考えない つまり正しいか間違っているか"
+    ],
+    "German": [
+     "Der wichtigste Faktor",
+     "Dieser Denkweise",
+     "Es gibt nur eine richtige Antwort.",
+     "Antwort.",
+     "You",
+     "Ich kann nur an zwei Antworten denken, nämlich richtig oder falsch."
+    ],
+    "Spanish": [
+     "El factor más importante",
+     "De esta mentalidad",
+     "Es: solo hay una respuesta correcta",
+     "No hay respuesta.",
+     "Tú",
+     "Solo pienso en dos respuestas, a saber, correcto o incorrecto."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "mindset is: there is",
+     "right": "only one correct answer.",
+     "H": 0.7043,
+     "H_pct": 45.5,
+     "contra": 0.0382,
+     "cohesion": 0.7322
+    },
+    {
+     "pos": 17,
+     "left": "answer. You only think",
+     "right": "of two answers, namely",
+     "H": 0.0039,
+     "H_pct": 4.5,
+     "contra": 0.9952,
+     "cohesion": 0.812
+    },
+    {
+     "pos": 20,
+     "left": "think of two answers,",
+     "right": "namely right or wrong.",
+     "H": 0.533,
+     "H_pct": 31.8,
+     "contra": 0.3812,
+     "cohesion": 0.8613
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "The most important factor",
+     "right": "of this mindset is:",
+     "H": 0.8242,
+     "H_pct": 86.4,
+     "contra": 0.0009,
+     "cohesion": 0.825
+    },
+    {
+     "pos": 13,
+     "left": "is only one correct",
+     "right": "answer. You only think",
+     "H": 0.8296,
+     "H_pct": 95.5,
+     "contra": 0.0026,
+     "cohesion": 0.8317
+    },
+    {
+     "pos": 15,
+     "left": "one correct answer. You",
+     "right": "only think of two",
+     "H": 0.8275,
+     "H_pct": 90.9,
+     "contra": 0.007,
+     "cohesion": 0.8334
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_877",
+  "cuts": 1,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.6758,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.8731,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.1052,
+   "text": "For those unfamiliar with medical jargon, ‖ the words infectious and contagious have distinct meanings.",
+   "pieces": {
+    "Chinese": [
+     "对于那些不熟悉医学术语的人来说,",
+     "感染性和传染性这两个词有着不同的含义。"
+    ],
+    "Japanese": [
+     "医学用語に 馴染みのない方のために",
+     "感染性と伝染性は 異なる意味を持っています"
+    ],
+    "German": [
+     "Für diejenigen, die nicht mit medizinischem Jargon vertraut sind,",
+     "Die Wörter ansteckend und ansteckend haben unterschiedliche Bedeutungen."
+    ],
+    "Spanish": [
+     "Para aquellos que no están familiarizados con la jerga médica,",
+     "Las palabras infeccioso y contagioso tienen significados distintos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.7811,
+   "text": "For those unfamiliar with medical jargon, the words infectious and contagious have distinct ‖ meanings.",
+   "pieces": {
+    "Chinese": [
+     "对于那些不熟悉医学术语, 传染性和传染性的词有明显的",
+     "意义。"
+    ],
+    "Japanese": [
+     "医学用語に不慣れな方のために，感染性と伝染性という言葉には，異なる意味がある。",
+     "意味を"
+    ],
+    "German": [
+     "Für diejenigen, die nicht mit medizinischem Jargon vertraut sind, haben die Wörter infektiös und ansteckend unterschiedliche Bedeutungen.",
+     "Bedeutungen."
+    ],
+    "Spanish": [
+     "Para aquellos que no están familiarizados con la jerga médica, las palabras infeccioso y contagioso tienen",
+     "significados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "unfamiliar with medical jargon,",
+     "right": "the words infectious and",
+     "H": 0.1052,
+     "H_pct": 0.0,
+     "contra": 0.8731,
+     "cohesion": 0.8294
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "and contagious have distinct",
+     "right": "meanings.",
+     "H": 0.7811,
+     "H_pct": 100.0,
+     "contra": 0.0035,
+     "cohesion": 0.7838
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_409",
+  "cuts": 2,
+  "avg_chunk": 8.7,
+  "latency_bin": "≤10",
+  "gap": 0.2722,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.3828,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12,
+    20
+   ],
+   "H_set": 0.5264,
+   "text": "However, the discovery of his tomb in 1922 made him a celebrity. ‖ While many tombs of the past were robbed, ‖ this tomb was left virtually undisturbed.",
+   "pieces": {
+    "Chinese": [
+     "然而,1922年发现他的坟墓使他成为名人。",
+     "虽然许多过去的坟墓被抢劫,",
+     "这座坟墓几乎没有受到干扰。"
+    ],
+    "Japanese": [
+     "しかし、1922年に墓が発見され、有名になった。",
+     "過去の多くの墓が 略奪された間に",
+     "この墓は ほとんど 乱れることなく残されていました"
+    ],
+    "German": [
+     "Die Entdeckung seines Grabes im Jahre 1922 machte ihn jedoch zu einer Berühmtheit.",
+     "Während viele Gräber der Vergangenheit ausgeraubt wurden,",
+     "Dieses Grab wurde praktisch unberührt gelassen."
+    ],
+    "Spanish": [
+     "Sin embargo, el descubrimiento de su tumba en 1922 lo convirtió en una celebridad.",
+     "Mientras que muchas tumbas del pasado fueron robadas,",
+     "Esta tumba se dejó prácticamente intacta."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    12,
+    13
+   ],
+   "H_set": 0.7986,
+   "text": "However, the discovery of his tomb in 1922 made him a celebrity. ‖ While ‖ many tombs of the past were robbed, this tomb was left virtually undisturbed.",
+   "pieces": {
+    "Chinese": [
+     "然而,1922年发现他的坟墓使他成为名人。",
+     "虽然",
+     "过去的许多坟墓被抢劫,这个坟墓几乎没有受到干扰。"
+    ],
+    "Japanese": [
+     "しかし、1922年に墓が発見され、有名になった。",
+     "ワンド",
+     "過去の多くの墓は 略奪されたが この墓は ほとんど 乱暴なことはなかった"
+    ],
+    "German": [
+     "Die Entdeckung seines Grabes im Jahre 1922 machte ihn jedoch zu einer Berühmtheit.",
+     "While",
+     "Während viele Gräber der Vergangenheit ausgeraubt wurden, blieb dieses Grab nahezu unberührt."
+    ],
+    "Spanish": [
+     "Sin embargo, el descubrimiento de su tumba en 1922 lo convirtió en una celebridad.",
+     "Mientras",
+     "Mientras que muchas tumbas del pasado fueron saqueadas, esta tumba se dejó prácticamente intacta."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 20,
+     "left": "the past were robbed,",
+     "right": "this tomb was left",
+     "H": 0.4852,
+     "H_pct": 16.7,
+     "contra": 0.3828,
+     "cohesion": 0.7862
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "him a celebrity. While",
+     "right": "many tombs of the",
+     "H": 0.8206,
+     "H_pct": 95.8,
+     "contra": 0.0188,
+     "cohesion": 0.8364
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_194",
+  "cuts": 1,
+  "avg_chunk": 10.5,
+  "latency_bin": "≤99",
+  "gap": 0.1784,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.0502,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.6382,
+   "text": "Schumacher who retired in 2006 after winning the Formula 1 championship seven times, ‖ was due to replace the injured Felipe Massa.",
+   "pieces": {
+    "Chinese": [
+     "舒马赫谁在2006年退休后赢得了F1冠军七次,",
+     "费利佩·马萨 的车队"
+    ],
+    "Japanese": [
+     "2006年に引退したシューマッハは 7度のF1チャンピオンを獲得した",
+     "ケガをしたフェリペ・マッサの代わりに 参戦する予定でした"
+    ],
+    "German": [
+     "Schumacher, der 2006 nach sieben Formel-1-Siegen in den Ruhestand trat,",
+     "Der 25-Jährige sollte den verletzten Felipe Massa ersetzen."
+    ],
+    "Spanish": [
+     "Schumacher, que se retiró en 2006 después de ganar el campeonato de Fórmula 1 siete veces,",
+     "Felipe Massa se retiró de la Fórmula 1."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.8166,
+   "text": "Schumacher who retired ‖ in 2006 after winning the Formula 1 championship seven times, was due to replace the injured Felipe Massa.",
+   "pieces": {
+    "Chinese": [
+     "退役的舒马赫",
+     "2006年,在赢得了F1冠军七次后,是为了取代受伤的费利佩·马萨。"
+    ],
+    "Japanese": [
+     "現役引退したシューマッハ",
+     "2006年にF1世界チャンピオンを7度獲得した後 怪我をしたフェリペ・マッサの代わりに 選ばれた"
+    ],
+    "German": [
+     "Schumacher, der sich zurückzog",
+     "Nachdem er 2006 sieben Mal die Formel-1-Meisterschaft gewonnen hatte, sollte er den verletzten Felipe Massa ersetzen."
+    ],
+    "Spanish": [
+     "Schumacher que se retiró",
+     "En 2006, después de ganar el campeonato de Fórmula 1 siete veces, debía reemplazar al lesionado Felipe Massa."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "1 championship seven times,",
+     "right": "was due to replace",
+     "H": 0.6382,
+     "H_pct": 31.6,
+     "contra": 0.0502,
+     "cohesion": 0.6719
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Schumacher who retired",
+     "right": "in 2006 after winning",
+     "H": 0.8166,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8175
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_802",
+  "cuts": 5,
+  "avg_chunk": 2.7,
+  "latency_bin": "≤3",
+  "gap": 0.6461,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.7115,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    3,
+    5,
+    8,
+    9
+   ],
+   "H_set": 0.1974,
+   "text": "Drink ‖ alcoholic drinks ‖ with moderation. ‖ Alcohol affects everyone ‖ differently, ‖ and knowing your limit is very important.",
+   "pieces": {
+    "Chinese": [
+     "饮料",
+     "酒精饮料",
+     "适度地。",
+     "酒精影响每个人",
+     "不同",
+     "知道自己的极限是非常重要的。"
+    ],
+    "Japanese": [
+     "飲み物",
+     "アルコール飲料",
+     "適度に",
+     "アルコールは誰にでも影響する",
+     "違う",
+     "限界を知ることはとても重要です"
+    ],
+    "German": [
+     "Drink",
+     "Alkoholische Getränke",
+     "Mit Maß und Zucker.",
+     "Alkohol betrifft jeden",
+     "anders,",
+     "Und deine Grenze zu kennen ist sehr wichtig."
+    ],
+    "Spanish": [
+     "Bebida",
+     "Bebidas alcohólicas",
+     "Con moderación.",
+     "El alcohol afecta a todos",
+     "de manera diferente,",
+     "Y conocer tu límite es muy importante."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    9,
+    10,
+    13
+   ],
+   "H_set": 0.8434,
+   "text": "Drink alcoholic drinks with moderation. ‖ Alcohol ‖ affects everyone differently, ‖ and ‖ knowing your limit ‖ is very important.",
+   "pieces": {
+    "Chinese": [
+     "适度饮酒。",
+     "酒精",
+     "对每个人的影响都不一样,",
+     "以及",
+     "知道你的极限",
+     "是非常重要的。"
+    ],
+    "Japanese": [
+     "酒を適度に飲む。",
+     "アルコール",
+     "人によって違う影響を与えます",
+     "それに",
+     "限界を知ること",
+     "とても重要なことです"
+    ],
+    "German": [
+     "Trinke alkoholische Getränke in Maßen.",
+     "Alkohol",
+     "beeinflusst jeden anders,",
+     "und",
+     "Deine Grenze kennen",
+     "Das ist sehr wichtig."
+    ],
+    "Spanish": [
+     "Beba bebidas alcohólicas con moderación.",
+     "Alcohol",
+     "afecta a todos de manera diferente,",
+     "y",
+     "Conocer tu límite",
+     "Es muy importante."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "Drink",
+     "right": "alcoholic drinks with moderation.",
+     "H": 0.6883,
+     "H_pct": 21.4,
+     "contra": 0.0471,
+     "cohesion": 0.7224
+    },
+    {
+     "pos": 3,
+     "left": "Drink alcoholic drinks",
+     "right": "with moderation. Alcohol affects",
+     "H": 0.7192,
+     "H_pct": 57.1,
+     "contra": 0.0006,
+     "cohesion": 0.7196
+    },
+    {
+     "pos": 8,
+     "left": "moderation. Alcohol affects everyone",
+     "right": "differently, and knowing your",
+     "H": 0.2367,
+     "H_pct": 0.0,
+     "contra": 0.7115,
+     "cohesion": 0.8203
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "drinks with moderation. Alcohol",
+     "right": "affects everyone differently, and",
+     "H": 0.8227,
+     "H_pct": 85.7,
+     "contra": 0.0044,
+     "cohesion": 0.8264
+    },
+    {
+     "pos": 10,
+     "left": "affects everyone differently, and",
+     "right": "knowing your limit is",
+     "H": 0.7694,
+     "H_pct": 78.6,
+     "contra": 0.0009,
+     "cohesion": 0.7701
+    },
+    {
+     "pos": 13,
+     "left": "and knowing your limit",
+     "right": "is very important.",
+     "H": 0.7544,
+     "H_pct": 71.4,
+     "contra": 0.0007,
+     "cohesion": 0.7549
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_970",
+  "cuts": 6,
+  "avg_chunk": 3.7,
+  "latency_bin": "≤5",
+  "gap": 0.645,
+  "error_type": "boundary",
+  "policy_worst_contra": 0.9669,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    11,
+    12,
+    13,
+    15,
+    18,
+    20
+   ],
+   "H_set": 0.0206,
+   "text": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "pieces": {
+    "Chinese": [
+     "其中一个吸引力是缺乏明显的企业发展。",
+     "路径",
+     "列车",
+     "船只",
+     "连接村庄,",
+     "汽车",
+     "从外面来的东西不能到达他们。"
+    ],
+    "Japanese": [
+     "魅力の一部は、見えない企業の発展がないことである。",
+     "パス",
+     "列車",
+     "船も",
+     "村々をつなげる",
+     "車も",
+     "外からは 触れられないのです"
+    ],
+    "German": [
+     "Ein Teil seines Charmes ist das Fehlen einer sichtbaren Unternehmensentwicklung.",
+     "Pfade,",
+     "Züge",
+     "Boote und Boote",
+     "Verbinden Sie die Dörfer,",
+     "Autos und Autos",
+     "Sie können sie von außen nicht erreichen."
+    ],
+    "Spanish": [
+     "Parte de su encanto es la falta de desarrollo corporativo visible.",
+     "Caminos,",
+     "trenes",
+     "Barcos y embarcaciones",
+     "conectar los pueblos,",
+     "Autos y coches",
+     "No pueden alcanzarlos desde el exterior."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    11,
+    12,
+    13,
+    14,
+    21,
+    23
+   ],
+   "H_set": 0.6656,
+   "text": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats connect the villages, and cars cannot ‖ reach them ‖ from the outside.",
+   "pieces": {
+    "Chinese": [
+     "其中一个吸引力是缺乏明显的企业发展。",
+     "路径",
+     "列车",
+     "以及",
+     "船只连接村庄,汽车不能",
+     "达到他们",
+     "从外面来的。"
+    ],
+    "Japanese": [
+     "魅力の一部は、見えない企業の発展がないことである。",
+     "パス",
+     "列車",
+     "それに",
+     "村を結ぶのはボートで 車はできません",
+     "彼らに届ける",
+     "外から見てみましょう"
+    ],
+    "German": [
+     "Ein Teil seines Charmes ist das Fehlen einer sichtbaren Unternehmensentwicklung.",
+     "Pfade,",
+     "Züge",
+     "und",
+     "Boote verbinden die Dörfer, und Autos können nicht",
+     "Sie erreichen sie",
+     "Von außen."
+    ],
+    "Spanish": [
+     "Parte de su encanto es la falta de desarrollo corporativo visible.",
+     "Caminos,",
+     "trenes",
+     "y",
+     "Los barcos conectan los pueblos, y los coches no pueden",
+     "Cómo llegar a ellos",
+     "Desde el exterior."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 15,
+     "left": "Paths, trains and boats",
+     "right": "connect the villages, and",
+     "H": 0.7692,
+     "H_pct": 75.0,
+     "contra": 0.0008,
+     "cohesion": 0.7698
+    },
+    {
+     "pos": 18,
+     "left": "boats connect the villages,",
+     "right": "and cars cannot reach",
+     "H": 0.6681,
+     "H_pct": 25.0,
+     "contra": 0.001,
+     "cohesion": 0.6688
+    },
+    {
+     "pos": 20,
+     "left": "the villages, and cars",
+     "right": "cannot reach them from",
+     "H": 0.022,
+     "H_pct": 0.0,
+     "contra": 0.9669,
+     "cohesion": 0.6649
+    }
+   ],
+   "added": [
+    {
+     "pos": 14,
+     "left": "development. Paths, trains and",
+     "right": "boats connect the villages,",
+     "H": 0.7881,
+     "H_pct": 91.7,
+     "contra": 0.0009,
+     "cohesion": 0.7888
+    },
+    {
+     "pos": 21,
+     "left": "villages, and cars cannot",
+     "right": "reach them from the",
+     "H": 0.7835,
+     "H_pct": 87.5,
+     "contra": 0.0013,
+     "cohesion": 0.7845
+    },
+    {
+     "pos": 23,
+     "left": "cars cannot reach them",
+     "right": "from the outside.",
+     "H": 0.7788,
+     "H_pct": 83.3,
+     "contra": 0.0009,
+     "cohesion": 0.7795
+    }
+   ]
+  }
+ }
+]

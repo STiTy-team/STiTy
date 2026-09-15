@@ -1,0 +1,51 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt systematically underestimates contradiction risk (contra) for cuts that leave a clause fragment without its clause core: if the left stretch omits the main predicate, an essential complement, or ends with a subordinating prelude, the remainder frequently reverses or completes the assertion and the cut should be given near‑zero score.",
+    "evidence": "11 cases (en_us_1591, en_us_1593, en_us_1102, en_us_1427, en_us_1143, en_us_594, en_us_388, en_us_1108, en_us_608, en_us_194, en_us_1192) share the same pattern: the policy kept cuts that leave a preverbal or syntactically incomplete fragment (prepositionally or subordinatingly stranded, or missing the verb/object), those cuts show very high measured contra (≈0.9–1.0) and very low per‑cut H, and a single such cut zeroed the set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "1) Contra:",
+     "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken?  When you simulate the left stretch presented alone, ask specifically whether it contains the clause core needed to make a stable assertion (main verb + required object/complement, or a complete predication). If the left stretch is only introductory/subordinating material or a preverbal fragment (for example it ends before the main verb, before an essential complement, or before a negation/qualification that changes scope), treat contra as very high. Contra is graded, but missing the clause core or an essential complement should push (1 - contra) close to zero — such cuts almost always destroy truth‑conditions and must receive near‑zero final target scores."
+    }
+   },
+   {
+    "error_type": "boundary",
+    "diagnosis": "The prompt underweights cohesion loss when a cut separates tightly bound units (honorifics/titles + name, multiword proper nouns, or a noun head from its essential modifiers); such splits produce mistranslations even if the cut looks innocuous in isolation.",
+    "evidence": "6 cases (en_us_1591, en_us_594, en_us_388, en_us_1143, en_us_59, en_us_1192) where policy kept cuts that split honorifics/titles, multiword names or tightly bound noun/modifier packages. In each, the per‑cut cohesion was low and the better offline segmentation avoided cutting those units, so failure to treat these as cohesion units repeatedly produced bad cuts.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat tightly bound noun packages and named/title units as cohesion atoms: honorifics/titles + a person’s name, fixed multiword proper nouns, noun head + essential modifiers (numeral/quantifier frames, adjectival chains that identify the referent) should not be separated. If a candidate cut would isolate an honorific from its name, split a multiword proper noun, or leave a head noun without modifiers that determine its reference, reduce cohesion sharply — these splits reliably produce mistranslation when pieces are translated independently."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt systematically underestimates contradiction risk (contra) for cuts that leave a clause fragment without its clause core: if the left stretch omits the main predicate, an essential complement, or ends with a subordinating prelude, the remainder frequently reverses or completes the assertion and the cut should be given near‑zero score.",
+   "evidence": "11 cases (en_us_1591, en_us_1593, en_us_1102, en_us_1427, en_us_1143, en_us_594, en_us_388, en_us_1108, en_us_608, en_us_194, en_us_1192) share the same pattern: the policy kept cuts that leave a preverbal or syntactically incomplete fragment (prepositionally or subordinatingly stranded, or missing the verb/object), those cuts show very high measured contra (≈0.9–1.0) and very low per‑cut H, and a single such cut zeroed the set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "1) Contra:",
+    "text": "1) Contra: Could the remainder of the sentence overturn or contradict the stretch already spoken?  When you simulate the left stretch presented alone, ask specifically whether it contains the clause core needed to make a stable assertion (main verb + required object/complement, or a complete predication). If the left stretch is only introductory/subordinating material or a preverbal fragment (for example it ends before the main verb, before an essential complement, or before a negation/qualification that changes scope), treat contra as very high. Contra is graded, but missing the clause core or an essential complement should push (1 - contra) close to zero — such cuts almost always destroy truth‑conditions and must receive near‑zero final target scores."
+   }
+  },
+  {
+   "error_type": "boundary",
+   "diagnosis": "The prompt underweights cohesion loss when a cut separates tightly bound units (honorifics/titles + name, multiword proper nouns, or a noun head from its essential modifiers); such splits produce mistranslations even if the cut looks innocuous in isolation.",
+   "evidence": "6 cases (en_us_1591, en_us_594, en_us_388, en_us_1143, en_us_59, en_us_1192) where policy kept cuts that split honorifics/titles, multiword names or tightly bound noun/modifier packages. In each, the per‑cut cohesion was low and the better offline segmentation avoided cutting those units, so failure to treat these as cohesion units repeatedly produced bad cuts.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat tightly bound noun packages and named/title units as cohesion atoms: honorifics/titles + a person’s name, fixed multiword proper nouns, noun head + essential modifiers (numeral/quantifier frames, adjectival chains that identify the referent) should not be separated. If a candidate cut would isolate an honorific from its name, split a multiword proper noun, or leave a head noun without modifiers that determine its reference, reduce cohesion sharply — these splits reliably produce mistranslation when pieces are translated independently."
+   }
+  }
+ ]
+}
