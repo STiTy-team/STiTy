@@ -39,7 +39,8 @@ from core.meaning_segmentator.autoseg.runtime.pipeline import (JsonCache, LocalT
                                                                to_lang_code, truncate)
 
 p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-p.add_argument('--split', choices=('dev', 'test', 'train'), default='dev')
+p.add_argument('--split', choices=('dev', 'test', 'train', 'extra'), default='dev',
+               help="'extra' 는 run26 용 추가 문장 — 라벨만 만들고 분석은 건너뛴다")
 p.add_argument('--emit', action='store_true', help='test 절단을 gold 용으로 내보낸다')
 p.add_argument('--run-id', default='en2x/en-multi/run24')
 p.add_argument('--mt-cache-from', default='en2x/en-multi/run21',
@@ -118,6 +119,8 @@ else:
                                                for t in TG}
     out_path.write_text(json.dumps(blob, ensure_ascii=False), encoding='utf-8')
     print(f'-> {out_path}', flush=True)
+if a.split == 'extra':
+    sys.exit(0)
 
 # ── 3) 라벨 정의들 ──────────────────────────────────────────────────────
 TG_LAB = [t for t in TG if t in lab]        # adq/contra 라벨이 있는 타깃만 (새로 넣은 언어는 없다)

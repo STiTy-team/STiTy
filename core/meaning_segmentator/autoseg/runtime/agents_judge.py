@@ -16,7 +16,18 @@ from __future__ import annotations
 import json
 import re
 
-from .agents_distill import SECTIONS, check_skeleton, replace_section  # noqa: F401  (재수출)
+from .agents_distill import SECTIONS, replace_section  # noqa: F401  (재수출)
+from .agents_distill import check_skeleton as _check_skeleton
+
+# judge 루프의 골격 — distill 의 여섯 섹션에서 [Decision Procedure] 를 뺐다. 그 절은 [Core
+# Principles] 의 두 판단을 순서로 다시 쓴 것에 영어 힌트를 보탠 것이었고(judge09 v0), PE 가 원칙만
+# 고치므로 절차의 옛 힌트가 개정과 어긋난 채 남았다. 순위 규칙(다른 정수·넓은 범위)은 코드가 만드는
+# [Output Rules] 에 있다.
+JUDGE_SECTIONS = ["[Role]", "[Core Principles]", "[Scoring Rules]", "[Output Rules]", "[Examples]"]
+
+
+def check_skeleton(prompt: str) -> list[str]:
+    return _check_skeleton(prompt, JUDGE_SECTIONS)
 
 CRITIC_SYSTEM = """You diagnose a scoring prompt for streaming-translation cut positions.
 
@@ -47,13 +58,10 @@ You receive cases. Each case is one sentence at one budget T and contains:
 - "contra_kill": true when a single policy cut with a high contradiction ("policy_worst_contra")
   is what zeroed the set. Such a case says "this one position is overturned later" — not that
   short pieces or dense cuts are bad. Do not turn it into a general caution about cutting.
-- "error_type":
-    "boundary"    the policy kept a position whose own H is low. It is a bad cut on its own
-                  terms, and the prompt should have seen that from the source alone.
-    "interaction" the policy kept a position whose own H is HIGH, yet the better set does not
-                  use it. Cutting there is fine alone but wrong in combination — usually two
-                  cuts too close in meaning, a piece left too short to stand, or a better cut
-                  one or two words away that makes both neighbours whole.
+- "last_revision" (only after the first measured revision): what the previous revision did and
+  how it landed — its "edits", the measured "delta", "by_bin" (mean H_set change per latency bin),
+  "n_worse"/"n_better", and a post-mortem ("why", "blamed" units, "lesson"). If it was rejected,
+  do not ask for the same change again in other words; the bins say where it hurt.
 
 Your job: name the JUDGEMENT the prompt is getting wrong, not the tokens it fires on. A finding
 is worth reporting only if it recurs across cases — one sentence is an anecdote. Write it so a
@@ -61,14 +69,10 @@ reader scoring an unseen sentence could apply it: a question to ask, or a condit
 Never write token lists ("if the previous word is 'the'"), never quote more than 40 characters of
 source text, never name this sentence.
 
-For "interaction" findings, the fix is usually a rule about the SET, not the position: what to do
-when two candidates compete, or how the choice at one position constrains the next.
-
 Return ONLY JSON:
 {
   "findings": [
-    {"error_type": "boundary" | "interaction",
-     "diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
+    {"diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
      "evidence": "how many cases show it and what they share",
      "edit": {"where": "core_principles" | "examples",
               "action": "add" | "replace",
@@ -77,6 +81,30 @@ Return ONLY JSON:
   ]
 }
 At most 3 findings. Order them by how many cases they explain."""
+
+POSTMORTEM_SYSTEM = """You explain why one revision of a scoring prompt did or did not work.
+
+The prompt scores every possible cut position in a sentence; a deterministic step keeps the top
+scores for each number of cuts k, and the kept set is measured as H_set = cohesion x (1 - worst
+contradiction). You are given, for the revision that was just measured:
+- "verdict" and "delta": the paired result on dev-A (mean and 95% CI of H_set change).
+- "edits": which unit changed, "was" its text before, "now" after.
+- "by_bin": the mean H_set change per latency bin ("≤3" = pieces of about 3 words).
+- "n_worse" / "n_better": how many (sentence, k) pairs moved each way.
+- "worst" / "best": the five pairs that moved most in each direction, each with the cut set
+  before and after ("‖" marks a cut).
+
+Read the cut sets: say what the edits made the model DO differently (cut earlier, avoid cutting
+near heads, split enumerations, ...), and which edit is responsible. Be concrete about the bins —
+a revision that helps long pieces and hurts short ones is a different fact from one that hurts
+everywhere. Never propose a new rule here; that is the critic's job.
+
+Return ONLY JSON:
+{
+  "why": "one or two sentences: what changed in behaviour and why it moved the measurement",
+  "blamed": ["C3", "..."],
+  "lesson": "one sentence a later revision should respect"
+}"""
 
 ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iteration at a time, by EDITING
 numbered units of it. You do not rewrite the prompt — code applies your edits.
@@ -88,8 +116,7 @@ What you can edit:
     "origin"         "v0", or the iteration whose ADOPTED revision introduced this text
     "adopted_delta"  the measured gain of that adoption, "adopted_ci_lo" its lower bound
                      (null for v0 units — nothing was measured about them one by one)
-    "critic_hits"    how many times the critic has asked to change this unit
-- Every other section — [Role], [Scoring Rules], [Decision Procedure], [Output Rules] — stays as
+- Every other section — [Role], [Scoring Rules], [Output Rules] — stays as
   it is. [Scoring Rules] states how the target was measured, and the measurement did not change.
 
 Hard constraints:
@@ -97,16 +124,22 @@ Hard constraints:
    conditions anywhere.
 2. SIZE: the edited prompt must be at most __BUDGET__ characters (it is __CURLEN__ now) — a small
    growth over the last adopted prompt. You cannot count characters reliably, so code counts
-   them. When what you want to add does not fit, make room by EVIDENCE, not by length:
+   them and "size.headroom" tells you how much you may add NET, in characters and in WORDS
+   ("words" is what you can estimate: a typical [Core Principles] unit is
+   "typical_principle_words" words, and "headroom.principles" says how many such units fit).
+   Every insertion or lengthening must be paid for within that headroom, or by a deletion or
+   paraphrase in the same edit list. When what you want to add does not fit, make room by
+   EVIDENCE, not by length:
    - replace or delete the units with the weakest evidence first: "v0" units with no measured
-     gain, and above all units the critic keeps faulting (high "critic_hits");
+     gain, and units the current critique faults;
    - keep units whose "adopted_ci_lo" is positive — their gain was measured — unless you
      paraphrase them shorter with the same meaning;
    - paraphrasing any unit shorter without changing what it asks is allowed. Mark such an edit
      "kind": "paraphrase"; an edit that adds or changes a judgement is "kind": "change".
    If "size_feedback" is present, "your_previous_edits" produced a prompt "over_by" characters
-   too long, and "your_edits" shows the exact change each of those edits made. Return a complete
-   new edit list whose result fits.
+   ("over_by_words" words) too long, and "your_edits" shows the exact change each of those edits
+   made. Return a complete new edit list that removes at least that many words more than it
+   adds.
 3. At most 8 examples. An example unit is exactly "Input: ..." then a newline and "Output: ...",
    with <SEG:?> at every candidate position in the input and integers in the output.
 4. Never write token lists or punctuation rules. A token condition fires on a handful of
@@ -117,6 +150,22 @@ Hard constraints:
    which unit it changed ("was", the unit's text at the time) and into what ("now"). Do not make
    the same change to the same units again, even reworded.
 7. Every change must be traceable to a finding in the critique.
+8. If "sibling_candidates" is present, those revisions were already proposed in this iteration
+   and will be measured alongside yours. Propose a DIFFERENT revision: address other findings,
+   edit other units, or take a different direction on the same finding. Do not restate a sibling.
+9. If "labeled_examples" is present, each entry is a real sentence from the measured set with
+   its MEASURED scores already written as an Input/Output pair ("unit"), and the case it came
+   from ("id", its "latency_bin", and "gap" = how much the current prompt lost there). To put one
+   into [Examples], write an edit with "labeled_example": "<id>" INSTEAD of "text" — code pastes
+   the exact pair, e.g. {"op": "replace", "id": "E2", "labeled_example": "en_us_1591",
+   "kind": "example"} or {"op": "insert_after", "id": "E_end", "labeled_example": "..."}.
+   A measured example teaches the ranking directly where a principle only describes it; prefer
+   replacing a hand-written example with a measured one over adding another principle.
+10. If "constraint" is present, obey it — code enforces it by dropping edits that violate it:
+   "examples_only": edit only [Examples] units (replace or insert measured examples, delete a
+   weak hand-written one); no [Core Principles] edit at all.
+   "single_small": exactly ONE edit, and its new text is at most 60 words — a small, precise
+   change whose effect can be attributed.
 
 What the model is judged on: the cut sets its scores produce are translated piece by piece and
 scored against the source as a whole, with the worst contradiction risk in the set applied as a
@@ -156,7 +205,9 @@ from the SOURCE TEXT ALONE:
 
 Hard requirements:
 - Section headers, verbatim and in this order:
-  [Role], [Core Principles], [Scoring Rules], [Decision Procedure], [Output Rules], [Examples]
+  [Role], [Core Principles], [Scoring Rules], [Output Rules], [Examples]
+  No other section — in particular no [Decision Procedure]: the procedure IS the judgements in
+  [Core Principles], applied at every marker; do not restate them as steps.
 - [Output Rules] MUST be copied verbatim from the block given to you.
 - [Core Principles] is the substance. Write JUDGEMENTS — questions the model asks about MEANING at
   each position — not surface-form rules. Two judgements carry the measurement: whether what
@@ -200,6 +251,10 @@ def critic_system() -> str:
     return CRITIC_SYSTEM
 
 
+def postmortem_system() -> str:
+    return POSTMORTEM_SYSTEM
+
+
 def engineer_system(budget: int, cur_len: int) -> str:
     return (ENGINEER_SYSTEM.replace("__BUDGET__", str(budget))
             .replace("__CURLEN__", str(cur_len)))
@@ -218,8 +273,7 @@ def clean_findings(blob: dict) -> list[dict]:
             continue
         if edit.get("action") == "replace" and not (edit.get("target") or "").strip():
             continue
-        out.append({"error_type": f.get("error_type", "boundary"),
-                    "diagnosis": (f.get("diagnosis") or "").strip(),
+        out.append({"diagnosis": (f.get("diagnosis") or "").strip(),
                     "evidence": (f.get("evidence") or "").strip(),
                     "edit": {k: edit.get(k) for k in ("where", "action", "target", "text")}})
     return out[:3]
@@ -266,16 +320,39 @@ EDITABLE = tuple(ALLOWED_WHERE.values())
 
 
 def section_sizes(prompt: str) -> dict[str, int]:
-    return {h: len(section_of(prompt, h)) for h in SECTIONS}
+    return {h: len(section_of(prompt, h)) for h in JUDGE_SECTIONS if h in prompt}
+
+
+def words(text: str) -> int:
+    return len(text.split())
+
+
+def chars_per_word(prompt: str) -> float:
+    """이 프롬프트의 단어당 글자 수 — 글자 예산을 단어로 환산할 때 쓴다."""
+    return len(prompt) / max(1, words(prompt))
+
+
+def headroom(prompt: str, budget: int) -> dict:
+    """더 넣을 수 있는 순증가량. LLM 은 글자보다 단어 수를 훨씬 잘 어림하므로 둘 다 준다.
+
+    judge05~08 에서 상한 초과 6건 중 5건이 '추가만 하고 줄이지 않은' 편집이었다. 5% 여유(약
+    500자)가 원칙 하나(400~650자) 크기라는 것을 글자 수만으로는 가늠하지 못한 탓이다."""
+    cpw = chars_per_word(prompt)
+    free = budget - len(prompt)
+    principles = [u["chars"] for u in edit_units(prompt) if u["id"].startswith("C")]
+    typical = int(sum(principles) / len(principles)) if principles else 0
+    return {"chars": free, "words": int(free / cpw),
+            "typical_principle_words": int(typical / cpw),
+            "principles": round(free / typical, 1) if typical else None}
 
 
 def size_brief(prompt: str, budget: int) -> dict:
-    """PE 입력용 — 섹션별 길이와, 고칠 수 있는 두 섹션이 함께 가질 수 있는 최대 길이."""
+    """PE 입력용 — 섹션별 길이, 고칠 수 있는 두 섹션의 최대 길이, 남은 여유(글자·단어)."""
     sizes = section_sizes(prompt)
     fixed = len(prompt) - sum(sizes[h] for h in EDITABLE)
     return {"counted_by": "code", "budget": budget, "current_total": len(prompt),
             "sections": sizes, "editable_sections": list(EDITABLE),
-            "editable_cap": budget - fixed}
+            "editable_cap": budget - fixed, "headroom": headroom(prompt, budget)}
 
 
 def only_too_long(errs: list[str]) -> bool:
@@ -424,6 +501,47 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
     return out.rstrip("\n") + tail, errs, deltas
 
 
+ROLES = ("free", "examples_only", "single_small", "rewrite")
+
+
+def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
+    """후보 역할별 제약을 코드로 건다. 어기는 편집은 건너뛴다.
+
+    같은 이터에 보폭이 다른 후보를 섞기 위해서다 — 원칙을 통째로 갈아끼운 후보(judge05~08 의
+    기본형)는 매번 전 구간을 흔들었고, 어느 편집이 무엇을 바꿨는지도 남지 않았다."""
+    edits = [e for e in (edits or []) if isinstance(e, dict)]
+    if role == "examples_only":
+        keep = [e for e in edits if str(e.get("id") or "").startswith("E")]
+        bad = [{"edit": n, "id": e.get("id"), "reason": "examples_only 인데 예시 단위가 아니다"}
+               for n, e in enumerate(edits) if not str(e.get("id") or "").startswith("E")]
+        return keep, bad
+    if role == "single_small":
+        bad = [{"edit": n, "id": e.get("id"), "reason": "single_small 인데 둘째 이후 편집"}
+               for n, e in enumerate(edits) if n > 0]
+        keep = edits[:1]
+        if keep and len(str(keep[0].get("text") or "").split()) > 60 and "labeled_example" not in keep[0]:
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": f"single_small 인데 {len(str(keep[0]['text']).split())}단어 > 60"})
+            keep = []
+        return keep, bad
+    return edits, []
+
+
+def resolve_labeled_examples(edits, examples: dict[str, str]) -> tuple[list, list[dict]]:
+    """`labeled_example` 로 실측 예시를 가리킨 편집에 그 본문을 넣는다. 없는 id 는 건너뛴다."""
+    out, skipped = [], []
+    for n, e in enumerate(edits or []):
+        if isinstance(e, dict) and "labeled_example" in e and not e.get("text"):
+            ex = examples.get(str(e["labeled_example"]))
+            if ex is None:
+                skipped.append({"edit": n, "id": e.get("id"),
+                                "reason": f"없는 labeled_example {e['labeled_example']!r}"})
+                continue
+            e = {**e, "text": ex, "kind": e.get("kind") or "example"}
+        out.append(e)
+    return out, skipped
+
+
 def parse_edits(blob: dict, current: str, budget: int) -> tuple[
         str | None, list[str], str | None, list[dict], list[dict]]:
     """PE 편집 출력을 적용하고 검증한다 — (프롬프트 또는 None, 변경목록 또는 사유, 적용 결과,
@@ -443,8 +561,8 @@ def parse_edits(blob: dict, current: str, budget: int) -> tuple[
 
 def init_provenance(prompt: str) -> dict[str, dict]:
     """단위 본문 → 출처 기록. 시작 프롬프트의 단위는 전부 v0 이고 따로 잰 이득이 없다."""
-    return {u["text"]: {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None,
-                        "critic_hits": 0} for u in edit_units(prompt)}
+    return {u["text"]: {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None}
+            for u in edit_units(prompt)}
 
 
 def adopt_provenance(prov: dict, new_prompt: str, it: int, gain: dict) -> dict:
@@ -455,25 +573,33 @@ def adopt_provenance(prov: dict, new_prompt: str, it: int, gain: dict) -> dict:
         t = u["text"]
         out[t] = prov[t] if t in prov else {
             "origin": f"iter {it}", "adopted_delta": round(gain["mean"], 4),
-            "adopted_ci_lo": round(gain["lo"], 4), "critic_hits": 0}
+            "adopted_ci_lo": round(gain["lo"], 4)}
     return out
 
 
-def _head(s: str) -> str:
-    """앞부분 비교용 — 글머리 기호·번호를 떼고 공백·대소문자를 맞춘다."""
-    return " ".join(re.sub(r"^[\s\-*•\d).:]+", "", s).lower().split())
-
-
-def count_critic_hits(prov: dict, findings: list[dict]) -> None:
-    """Critic 이 고치라고 가리킨 단위의 지적 횟수를 올린다. finding 의 edit.target 은 "고칠 줄의
-    첫 몇 단어" 라 앞부분 일치로 찾는다. 너무 짧은 target 은 엉뚱한 줄에 걸리므로 센다지 않는다."""
-    for f in findings:
-        tgt = _head((f.get("edit") or {}).get("target") or "")[:40]
-        if len(tgt) < 12:
-            continue
-        for text, rec in prov.items():
-            if _head(text).startswith(tgt):
-                rec["critic_hits"] += 1
+def history_brief(history: list[dict]) -> list[dict]:
+    """PE 에게 주는 이력 — 방향을 되풀이하지 않게 하는 데 필요한 것만. 전체 이력은 후보마다
+    부트스트랩 전체·소견·부검을 다 담아 judge09 4이터에 이미 20KB 였다."""
+    out = []
+    for h in history:
+        d = h.get("gain") or h.get("delta") or {}
+        b = {"iter": h["iter"], "adopted": bool(h.get("adopted")),
+             "delta_mean": round(d["mean"], 4) if "mean" in d else None,
+             "delta_lo": round(d["lo"], 4) if "lo" in d else None,
+             "edits": h.get("edits") or []}
+        if h.get("candidate") is not None:
+            b["candidate"] = h["candidate"]
+        if h.get("screened_out"):
+            b["measured_on"] = "screen subset, lost to a sibling"
+        elif h.get("screened_only"):
+            b["measured_on"] = "screen subset only"
+        if h.get("reason"):
+            b["rejected_before_measuring"] = h["reason"]
+        lesson = (h.get("diagnosis") or {}).get("lesson")
+        if lesson:
+            b["lesson"] = lesson
+        out.append(b)
+    return out
 
 
 def edit_summary(prompt: str, edits) -> list[dict]:
@@ -494,13 +620,15 @@ def edit_summary(prompt: str, edits) -> list[dict]:
 
 def units_with_provenance(prompt: str, prov: dict) -> list[dict]:
     """PE 입력용 — 편집 단위에 출처 기록을 붙인다."""
-    blank = {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None, "critic_hits": 0}
+    blank = {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None}
     return [{**u, **prov.get(u["text"], blank)} for u in edit_units(prompt)]
 
 
 def edit_feedback(draft: str, current: str, budget: int, deltas: list[dict]) -> dict:
     """길이만 넘은 편집을 한 번 되돌려 보낼 때 붙이는 실측."""
     units = sorted(edit_units(current), key=lambda u: -u["chars"])
+    over = len(draft) - budget
     return {"counted_by": "code", "result_total": len(draft), "budget": budget,
-            "over_by": len(draft) - budget, "your_edits": deltas,
+            "over_by": over, "over_by_words": -(-over // int(chars_per_word(current))),
+            "your_edits": deltas,
             "largest_units": [{"id": u["id"], "chars": u["chars"]} for u in units[:6]]}

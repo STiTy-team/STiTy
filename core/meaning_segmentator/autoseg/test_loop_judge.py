@@ -22,28 +22,23 @@ def labels_for(texts, contra, coh):
     return {"X": per}
 
 
+class Promising(unittest.TestCase):
+    def test_promising(self):
+        self.assertTrue(lj.promising({"mean": 0.0105, "lo": -0.0045}))
+        self.assertFalse(lj.promising({"mean": 0.003, "lo": -0.004}))
+        self.assertFalse(lj.promising({"mean": 0.02, "lo": -0.02}))
+
+
 class Decide(unittest.TestCase):
-    def test_하한이_충분히_크면_바로_채택(self):
+    def test_accept(self):
         self.assertEqual(lj.decide({"lo": 0.02}), "accept")
 
-    def test_경계선은_재채점(self):
+    def test_confirm(self):
         self.assertEqual(lj.decide({"lo": 0.002}), "confirm")
 
-    def test_하한이_0_이하면_기각(self):
+    def test_reject(self):
         self.assertEqual(lj.decide({"lo": 0.0}), "reject")
         self.assertEqual(lj.decide({"lo": -0.01}), "reject")
-
-
-class ErrorType(unittest.TestCase):
-    def test_뺀_자리가_더_낮으면_경계오류(self):
-        self.assertEqual(lj.error_type([{"H": 0.2}], [{"H": 0.8}]), "boundary")
-
-    def test_뺀_자리가_더_높으면_상호작용오류(self):
-        """혼자서는 좋은 자리인데 조합에서 틀린 것 — 목표가 탐색 최적일 때만 나온다."""
-        self.assertEqual(lj.error_type([{"H": 0.9}], [{"H": 0.5}]), "interaction")
-
-    def test_한쪽이_비면_경계오류로_둔다(self):
-        self.assertEqual(lj.error_type([], [{"H": 0.5}]), "boundary")
 
 
 class Sets(unittest.TestCase):
@@ -51,12 +46,12 @@ class Sets(unittest.TestCase):
         self.texts = ["a b c d e f g h i j k l"]
         self.sents = [sent(0, self.texts[0])]
 
-    def test_오라클은_라벨_상위_k개(self):
+    def test_oracle_top_k(self):
         lab = labels_for(self.texts, lambda i, j: 0.0, lambda i, j: 1.0 if j == 6 else 0.1)
         got = lj.oracle_sets(lab, self.sents, spaced=True, min_gap=1)
         self.assertEqual(got[(0, 1)], (6,))
 
-    def test_k_를_1부터_훑는다(self):
+    def test_k_from_one(self):
         """T 격자와 달리 문장마다 k 가 1..kmax 로 전부 들어온다."""
         lab = labels_for(self.texts, lambda i, j: 0.0, lambda i, j: 0.1 * j)
         got = lj.oracle_sets(lab, self.sents, spaced=True, min_gap=1)
@@ -64,25 +59,25 @@ class Sets(unittest.TestCase):
         self.assertEqual(ks, [1, 2, 3, 4, 5])          # 12어절 / 평균 조각 2 이상
         self.assertEqual(len(got[(0, 3)]), 3)
 
-    def test_contra_가_높은_자리는_밀린다(self):
+    def test_contra_pushes_down(self):
         lab = labels_for(self.texts, lambda i, j: 0.99 if j == 6 else 0.0,
                          lambda i, j: 1.0 if j in (6, 9) else 0.1)
         got = lj.oracle_sets(lab, self.sents, spaced=True, min_gap=1)
         self.assertEqual(got[(0, 1)], (9,))
 
-    def test_정책은_채점_행에서_나온다(self):
+    def test_policy_from_rows(self):
         rows = [{"id": "s0", "positions": [3, 6, 9], "scores": [10, 90, 20]}]
         got = lj.policy_sets(rows, self.sents, spaced=True, min_gap=1)
         self.assertEqual(got[(0, 1)], (6,))
         self.assertEqual(got[(0, 2)], (6, 9))
 
-    def test_점수가_없는_문장은_건너뛴다(self):
+    def test_skip_unscored(self):
         rows = [{"id": "s0", "positions": [3], "scores": None}]
         self.assertEqual(lj.policy_sets(rows, self.sents, True, 1), {})
 
 
 class SearchSets(unittest.TestCase):
-    def test_T별_최고_집합을_고르고_값을_그대로_쓴다(self):
+    def test_best_per_t(self):
         import json, tempfile
         from pathlib import Path
         blob = {"0": {"6": {"greedy": [3], "sets": {"3": 0.70, "6": 0.81, "3,9": 0.66}},
@@ -97,7 +92,7 @@ class SearchSets(unittest.TestCase):
         self.assertEqual(sets[(0, 4)], (3, 9))
         self.assertNotIn((9, 6), sets)          # limit 밖 문장은 뺀다
 
-    def test_격자에_없는_T는_뺀다(self):
+    def test_t_outside_grid(self):
         import json, tempfile
         from pathlib import Path
         with tempfile.TemporaryDirectory() as d:
@@ -109,7 +104,7 @@ class SearchSets(unittest.TestCase):
 
 
 class Latency(unittest.TestCase):
-    def test_평균_조각으로_묶는다(self):
+    def test_bins_by_chunk(self):
         """12어절 문장: k=1 이면 조각 6.0 (≤7 칸), k=5 면 2.0 (≤3 칸)."""
         sents = [sent(0, " ".join(["w"] * 12))]
         got = lj.by_latency(sents, {(0, 1): 0.8, (0, 5): 0.4}, spaced=True)
@@ -123,13 +118,13 @@ class Cases(unittest.TestCase):
         self.lab = labels_for(self.texts, lambda i, j: 0.0,
                               lambda i, j: {3: 0.9, 6: 0.2, 9: 0.8}.get(j, 0.1))
 
-    def test_손해가_없으면_사례가_없다(self):
+    def test_no_loss_no_cases(self):
         pol = {(0, 1): (3,)}
         got = lj.build_cases(self.sents, self.lab, pol, pol, {(0, 1): 0.7}, {(0, 1): 0.7},
                              True, 1, 5)
         self.assertEqual(got, [])
 
-    def test_뺀_자리와_넣은_자리를_모두_싣는다(self):
+    def test_dropped_and_added(self):
         pol, ora = {(0, 1): (6,)}, {(0, 1): (3,)}
         got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.60}, {(0, 1): 0.75},
                              True, 1, 5)
@@ -142,19 +137,7 @@ class Cases(unittest.TestCase):
         self.assertAlmostEqual(c["gap"], 0.15, places=4)
         self.assertIn("‖", c["policy"]["text"])
 
-    def test_경계별_H_가_낮은_자리를_골랐으면_경계오류로_분류(self):
-        pol, ora = {(0, 1): (6,)}, {(0, 1): (3,)}    # 뺀 자리 H 0.2 < 넣은 자리 0.9
-        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.6}, {(0, 1): 0.75},
-                             True, 1, 5)
-        self.assertEqual(got[0]["error_type"], "boundary")
-
-    def test_경계별로는_좋은_자리를_골랐으면_상호작용오류(self):
-        pol, ora = {(0, 1): (3,)}, {(0, 1): (6,)}    # 뺀 자리 H 0.9 > 넣은 자리 0.2
-        got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.6}, {(0, 1): 0.75},
-                             True, 1, 5)
-        self.assertEqual(got[0]["error_type"], "interaction")
-
-    def test_손해_큰_순으로_자른다(self):
+    def test_cut_by_loss(self):
         texts = ["a b c d e f g h i j k l"] * 3
         sents = [sent(i, t) for i, t in enumerate(texts)]
         lab = labels_for(texts, lambda i, j: 0.0, lambda i, j: 0.5)
@@ -167,7 +150,7 @@ class Cases(unittest.TestCase):
 
 
 class PickCases(unittest.TestCase):
-    def test_구간을_돌며_문장당_하나씩(self):
+    def test_round_robin_bins(self):
         gaps = [(0.9, (0, 1)), (0.8, (1, 1)), (0.7, (0, 2)), (0.2, (2, 5)), (0.1, (3, 5)),
                 (-0.1, (4, 5))]
         bin_of = lambda key: "≤3" if key[1] >= 5 else "≤10"
@@ -176,7 +159,7 @@ class PickCases(unittest.TestCase):
         self.assertEqual([k for _g, k in lj.pick_cases(gaps, bin_of, 3)],
                          [(2, 5), (0, 1), (3, 5)])
 
-    def test_모순_절단_하나로_0_이_된_사례를_표시한다(self):
+    def test_contra_kill_flag(self):
         texts = ["a b c d e f g h i j k l"]
         lab = labels_for(texts, lambda i, j: 0.9 if j == 6 else 0.0, lambda i, j: 0.8)
         got = lj.build_cases([sent(0, texts[0])], lab, {(0, 1): (6,)}, {(0, 1): (3,)},
@@ -186,6 +169,55 @@ class PickCases(unittest.TestCase):
         self.assertEqual(got[0]["latency_bin"], "≤7")
 
 
+class RevisionDiagnosis(unittest.TestCase):
+    def test_bins_and_movers(self):
+        sents = [sent(i, " ".join(["w"] * 12)) for i in range(3)]
+        old_h = {(0, 1): 0.8, (1, 2): 0.6, (2, 5): 0.4}
+        new_h = {(0, 1): 0.75, (1, 2): 0.66, (2, 5): 0.5}
+        sets = {(0, 1): (6,), (1, 2): (4, 8), (2, 5): (2, 4, 6, 8, 10)}
+        d = lj.revision_diagnosis(sents, old_h, new_h, sets, sets, True)
+        self.assertEqual(d["n_worse"], 1)
+        self.assertEqual(d["n_better"], 2)
+        self.assertEqual(list(d["by_bin"]), ["≤3", "≤5", "≤7"])      # 구간은 짧은 쪽부터
+        self.assertEqual((d["worst"][0]["id"], d["worst"][0]["delta"]), ("s0", -0.05))
+        self.assertEqual(d["best"][0]["id"], "s2")
+        self.assertIn("‖", d["worst"][0]["after"])
+
+
+class Violations(unittest.TestCase):
+    def test_by_rule(self):
+        rows = [{"id": "a", "valid": True, "first_pass": True, "violations": []},
+                {"id": "b", "valid": False, "first_pass": False,
+                 "violations": ["too_few_tags", "text_modified"]},
+                {"id": "c", "valid": True, "first_pass": False, "violations": ["too_few_tags"]}]
+        got = lj.violation_summary(rows)
+        self.assertEqual((got["n_rows"], got["valid"], got["first_pass"]), (3, 2, 1))
+        self.assertEqual(list(got["by_rule"]), ["too_few_tags", "text_modified"])
+        self.assertEqual(got["by_rule"]["too_few_tags"], {"n": 2, "ids": ["b", "c"]})
+
+
+class FinalReport(unittest.TestCase):
+    def test_report(self):
+        md = lj.final_report(
+            "judge08",
+            {"prompt": 0.61, "v0": 0.59, "oracle": 0.67},
+            {"prompt": {"≤3": 0.45, "≤10": 0.77}, "v0": {"≤3": 0.44, "≤10": 0.76},
+             "oracle": {"≤3": 0.5, "≤10": 0.8}},
+            {"mean": 0.02, "lo": 0.005, "hi": 0.035, "n": 1236, "n_clusters": 100},
+            [{"iter": 1, "adopted": True, "gain": {"mean": 0.02, "lo": 0.005, "hi": 0.035},
+              "diagnosis": {"why": "짧은 조각에서 올랐다"}},
+             {"iter": 2, "adopted": False, "reason": ["길이 초과: 9 > 8"]},
+             {"iter": 3, "candidate": 1, "adopted": False, "screened_out": True,
+              "delta": {"mean": -0.01, "lo": -0.03, "hi": 0.01}}],
+            12.34, 1.0)
+        self.assertIn("judge08", md)
+        self.assertIn("| ≤3 |", md)
+        self.assertIn("+0.0200", md)
+        self.assertIn("반려", md)
+        self.assertIn("선별 탈락 (후보 1)", md)
+        self.assertIn("$12.34", md)
+
+
 class CheckpointVerdict(unittest.TestCase):
     H = {(i, k): 0.5 + 0.01 * ((i * 7 + k) % 5) for i in range(30) for k in (1, 2, 3)}
 
@@ -193,59 +225,58 @@ class CheckpointVerdict(unittest.TestCase):
         return {"iter": 2, "value": sum(h.values()) / len(h), "prompt": "P",
                 "h": [[i, k, v] for (i, k), v in h.items()]}
 
-    def test_처음이면_저장(self):
+    def test_first_saves(self):
         self.assertEqual(lj.checkpoint_verdict(None, self.H), ("save", None))
 
-    def test_잡음만큼_낮으면_롤백하지_않는다(self):
+    def test_noise_no_rollback(self):
         noisy = {key: v - 0.0024 + 0.01 * ((key[0] % 3) - 1) for key, v in self.H.items()}
         verdict, boot = lj.checkpoint_verdict(self.prev(self.H), noisy)
         self.assertEqual(verdict, "save")
         self.assertLess(boot["mean"], 0)
 
-    def test_분명히_낮으면_롤백(self):
+    def test_clear_drop_rollback(self):
         worse = {key: v - 0.05 for key, v in self.H.items()}
         self.assertEqual(lj.checkpoint_verdict(self.prev(self.H), worse)[0], "rollback")
 
-    def test_짝_기록이_없으면_점으로_비교(self):
+    def test_no_pairs_point_compare(self):
         old = {"iter": 2, "value": 0.6, "prompt": "P"}
         self.assertEqual(lj.checkpoint_verdict(old, self.H), ("rollback", None))
 
 
 class LengthCap(unittest.TestCase):
-    def test_직전_채택본_대비_증가율(self):
+    def test_growth(self):
         self.assertEqual(lj.length_cap(8652, 8664, 0.05, 1.3), int(8652 * 1.05))
 
-    def test_줄어든_뒤에도_여유가_남는다(self):
+    def test_headroom_after_shrink(self):
         """시작 길이 고정이면 채택 후 여유가 0 이 됐다 — 증가율은 줄어든 길이에서도 여유를 준다."""
         cap = lj.length_cap(8318, 8664, 0.05, 1.3)
         self.assertGreater(cap - 8318, 400)
 
-    def test_천장이_누적_증가를_막는다(self):
+    def test_ceiling(self):
         self.assertEqual(lj.length_cap(11000, 8664, 0.05, 1.3), int(8664 * 1.3))
 
 
 class State(unittest.TestCase):
-    def test_저장한_그대로_읽히고_임시파일이_안_남는다(self):
+    def test_roundtrip(self):
         import tempfile
         from pathlib import Path
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / lj.STATE_FILE
             ck = {"iter": 2, "value": 0.61, "prompt": "P2"}
-            prov = {"- rule": {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None,
-                               "critic_hits": 2}}
+            prov = {"- rule": {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None}}
             lj.save_state(p, 2, "P3", [{"iter": 1, "adopted": False}], ck, 9000, 12.5, prov)
             got = lj.load_state(p)
             self.assertEqual((got["done"], got["prompt"], got["checkpoint"], got["v0_len"],
                               got["provenance"]), (2, "P3", ck, 9000, prov))
             self.assertEqual([x.name for x in Path(d).iterdir()], [lj.STATE_FILE])
 
-    def test_없으면_None(self):
+    def test_missing(self):
         import tempfile
         from pathlib import Path
         with tempfile.TemporaryDirectory() as d:
             self.assertIsNone(lj.load_state(Path(d) / lj.STATE_FILE))
 
-    def test_앞선_지출은_기록들의_최댓값(self):
+    def test_prior_spend(self):
         """실행마다 게이트웨이 누적이 0 에서 다시 시작한다 — 합이 아니라 런 누적의 최댓값."""
         import json, tempfile
         from pathlib import Path
@@ -263,3 +294,50 @@ class State(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LabeledExamples(unittest.TestCase):
+    def test_pairs_from_labels(self):
+        sents = [sent(0, "a b c d e f"), sent(1, "p q r s t u")]
+        # s0: 위치 3 이 가장 좋고(contra 0, coh 1) 위치 1 이 가장 나쁘다
+        lab = labels_for([s.text for s in sents],
+                         lambda i, j: 0.9 if j == 1 else 0.0,
+                         lambda i, j: 1.0 if j == 3 else 0.5)
+        ex = lj.labeled_examples(sents, lab, [{"id": "s0"}, {"id": "없음"}], True, 1)
+        self.assertEqual(list(ex), ["s0"])
+        inp, out = ex["s0"].split("\n")
+        self.assertTrue(inp.startswith("Input: a <SEG:?> b <SEG:?> c <SEG:?> d <SEG:?> e <SEG:?> f"))
+        self.assertTrue(out.startswith("Output: a <SEG:0> b"))          # 최악 자리 0
+        self.assertIn("c <SEG:100> d", out)                              # 최선 자리 100
+        self.assertEqual(out.count("<SEG:"), 5)
+
+    def test_min_gap(self):
+        sents = [sent(0, "a b c d e f")]
+        lab = labels_for([sents[0].text], lambda i, j: 0.0, lambda i, j: 0.5)
+        inp, out = lj.labeled_examples(sents, lab, [{"id": "s0"}], True, 2)["s0"].split("\n")
+        self.assertEqual(inp.count("<SEG:?>"), 3)
+        self.assertEqual(out.count("<SEG:"), 3)
+        self.assertTrue(inp.startswith("Input: a b <SEG:?> c"))
+
+
+class ExampleSentences(unittest.TestCase):
+    def test_find_in_prompt(self):
+        sents = [sent(0, "a b c d e f"), sent(1, "p q r s t u"), sent(2, "x y z")]
+        pr = ("[Role]\nr\n\n[Core Principles]\n- one\n\n[Examples]\n"
+              "Input: a <SEG:?> b <SEG:?> c <SEG:?> d <SEG:?> e <SEG:?> f\n"
+              "Output: a <SEG:1> b <SEG:2> c <SEG:3> d <SEG:4> e <SEG:5> f\n\n"
+              "Input: hand <SEG:?> written\nOutput: hand <SEG:50> written\n\n"
+              "[Output Rules]\no\n")
+        self.assertEqual(lj.example_sentences(pr, sents), {0})
+        self.assertEqual(lj.example_sentences(pr, sents[1:]), set())
+
+
+class ScreenIndices(unittest.TestCase):
+    def test_rotates_with_fixed_seed(self):
+        a = lj.screen_indices(150, 50, 1)
+        b = lj.screen_indices(150, 50, 2)
+        self.assertEqual(len(a), 50)
+        self.assertEqual(a, sorted(a))
+        self.assertNotEqual(a, b)
+        self.assertEqual(a, lj.screen_indices(150, 50, 1))
+        self.assertEqual(lj.screen_indices(30, 50, 1), list(range(30)))

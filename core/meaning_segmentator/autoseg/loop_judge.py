@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+from concurrent.futures import ThreadPoolExecutor
 import json
 import statistics as st
 import time
@@ -112,25 +113,6 @@ def search_sets(path: Path, t_grid: list[int], limit: int) -> tuple[dict, dict]:
 
 # ── 사례 ────────────────────────────────────────────────────────────────
 
-def error_type(dropped: list[dict], added: list[dict]) -> str:
-    """뺐어야 할 자리와 넣었어야 할 자리의 **경계별 H** 를 견줘 오류를 가른다.
-
-    정책이 고른 자리가 전부 목표가 고른 자리보다 경계별로도 낮으면, 그 자리는 혼자 놓고
-    봐도 나쁘다 — 원문에서 판단 가능한 실수(boundary).
-    정책이 고른 자리 중 목표가 고른 자리만큼(또는 그보다) 높은 것이 있으면, 혼자서는 좋은
-    자리인데 조합에서 틀린 것이다(interaction).
-
-    목표가 그리디 오라클이면 interaction 은 드물다 — 그리디는 경계별 H 상위 k개를 고르니
-    보통 뺀 자리가 넣은 자리보다 낮다. 다만 `min_gap` 이 간격을 강제해 더 높은 자리를
-    건너뛰는 일이 있어 0 은 아니다 (스모크 4사례 중 1건). 이 구분이 제대로 사는 것은
-    목표가 집합 탐색 최적일 때다 (`--target-sets`).
-    """
-    if not dropped or not added:
-        return "boundary"
-    return "interaction" if max(d["H"] for d in dropped) >= min(d["H"] for d in added) \
-        else "boundary"
-
-
 LATENCY_BINS = (3, 5, 7, 10, 99)
 CONTRA_KILL = 0.5
 
@@ -198,7 +180,7 @@ def build_cases(sents: list, lab: dict, pol: dict, ora: dict, pol_h: dict, ora_h
         pw, tw = worst(pol[(i, kk)]), worst(ora[(i, kk)])
         case = {"id": s.id, "cuts": kk, "avg_chunk": round(hset.chunk_len(len(u), kk), 1),
                 "latency_bin": latency_bin(len(u), kk),
-                "gap": round(gap, 4), "error_type": error_type(dropped, added),
+                "gap": round(gap, 4),
                 "policy_worst_contra": round(pw, 4),
                 "contra_kill": pw >= CONTRA_KILL > tw,
                 "policy": {"cut": list(pol[(i, kk)]), "H_set": round(pol_h[(i, kk)], 4),
@@ -211,6 +193,53 @@ def build_cases(sents: list, lab: dict, pol: dict, ora: dict, pol_h: dict, ora_h
             case["target"]["pieces"] = pieces_tr(i, ora[(i, kk)])
         cases.append(case)
     return cases
+
+
+def labeled_examples(sents: list, lab: dict, cases: list[dict], spaced: bool,
+                     min_gap: int) -> dict[str, str]:
+    """사례 문장을 실측 라벨로 채운 Input/Output 예시로 만든다 — PE 가 원칙 대신 붙일 수 있게.
+
+    출력 숫자는 라벨의 순위 백분위(0~100)다. 분절기는 숫자의 순서만 쓰므로 절대값은 뜻이 없고,
+    v0 예시도 같은 꼴이다. judge03~08 에서 PE 는 예시(E)를 한 번도 고치지 않고 원칙(C)만 늘렸다."""
+    by_id = {s.id: i for i, s in enumerate(sents)}
+    out = {}
+    for c in cases:
+        i = by_id.get(c["id"])
+        if i is None:
+            continue
+        u = L.units_of(sents[i].text, spaced)
+        cand = ad.candidate_positions(len(u), min_gap)
+        if not cand:
+            continue
+        hb = {j: L.label_value(lab, i, j) for j in cand}
+        order = sorted(cand, key=lambda j: hb[j])
+        pct = {j: round(100.0 * order.index(j) / max(1, len(cand) - 1)) for j in cand}
+        scored = u[0]
+        for j in range(1, len(u)):
+            scored += (f" <SEG:{pct[j]}> {u[j]}" if j in pct else (" " if spaced else "") + u[j])
+        out[c["id"]] = f"Input: {ad.mark_candidates(u, cand)}\nOutput: {scored}"
+    return out
+
+
+def example_sentences(prompt: str, sents: list) -> set[int]:
+    """프롬프트 [Examples] 에 들어간 문장이 `sents` 에 있으면 그 인덱스 — 채택 판정에서 뺀다.
+
+    실측 예시(`labeled_examples`)는 dev-A 사례 문장으로 만든다. 그 문장이 라벨과 함께 프롬프트에
+    들어간 채 dev-A 에서 채점되면 그 문장만 정답을 보고 푸는 셈이다. judge09 iter 2 채택은 dev-A
+    Δ +0.0105 였는데 상위 5짝이 전부 예시로 넣은 문장(en_us_1591·1102)이었다. 예시 문장은 Input
+    줄에서 `<SEG:?>` 를 걷어 낸 본문으로 알아본다 — 손으로 쓴 v0 예시는 분할 밖 문장이라 안 걸린다."""
+    texts = {" ".join(s.text.split()): i for i, s in enumerate(sents)}
+    out = set()
+    for u in aj.edit_units(prompt):
+        if u["section"] != "[Examples]":
+            continue
+        first = u["text"].split("\n", 1)[0]
+        if not first.startswith("Input:"):
+            continue
+        body = " ".join(first[len("Input:"):].replace("<SEG:?>", " ").split())
+        if body in texts:
+            out.add(texts[body])
+    return out
 
 
 def _marked(units: list[str], cut: tuple[int, ...], spaced: bool) -> str:
@@ -236,6 +265,21 @@ def by_latency(sents: list, h: dict, spaced: bool,
 
 # ── 채택 판정 ───────────────────────────────────────────────────────────
 
+def screen_indices(n: int, size: int, it: int, seed: int = 20260915) -> list[int]:
+    """이터 `it` 의 선별 문장 인덱스 — 시드 고정이라 재개해도 같은 문장이다."""
+    import random
+    idx = list(range(n))
+    random.Random(seed + it).shuffle(idx)
+    return sorted(idx[:min(size, n)])
+
+
+def promising(boot: dict, min_mean: float = 0.005, min_lo: float = -0.01) -> bool:
+    """dev-A 에서 기각됐지만 평균이 양수이고 하한이 크게 음수는 아닌 개정 — 문장을 더 재면 판가름
+    날 수 있다. judge09 iter 1: +0.0105 [-0.0045, +0.0259] 가 하한 때문에 기각됐다. dev-A 150문장의
+    쌍체 CI 반폭이 약 0.015 라 +0.01 짜리 진짜 이득은 원래 통과 못 한다."""
+    return boot["mean"] > min_mean and boot["lo"] > min_lo
+
+
 def decide(boot: dict, strong: float = 0.005) -> str:
     """CI 하한으로 가른다. 종전 1 se 문턱은 재채점 잡음(+0.023±0.017)이 그냥 넘었다."""
     if boot["lo"] > strong:
@@ -250,6 +294,49 @@ def decide(boot: dict, strong: float = 0.005) -> str:
 # ── 재개 ────────────────────────────────────────────────────────────────
 
 STATE_FILE = "state.json"
+
+
+def violation_summary(rows: list[dict]) -> dict:
+    """포맷 위반 요약 — 무엇이 몇 건 깨졌나. 통과율 숫자만 로그에 찍으면 무엇이 깨졌는지 안 남아서,
+    1차 통과율이 떨어져도 원인을 재현 실험으로만 찾을 수 있었다."""
+    by_rule: dict[str, list[str]] = {}
+    for r in rows:
+        for v in r.get("violations") or []:
+            by_rule.setdefault(str(v), []).append(r["id"])
+    return {"n_rows": len(rows),
+            "valid": sum(1 for r in rows if r.get("valid")),
+            "first_pass": sum(1 for r in rows if r.get("first_pass")),
+            "by_rule": {k: {"n": len(v), "ids": v[:10]}
+                        for k, v in sorted(by_rule.items(), key=lambda kv: -len(kv[1]))}}
+
+
+def revision_diagnosis(sents: list, old_h: dict, new_h: dict, old_sets: dict, new_sets: dict,
+                       spaced: bool, n: int = 5) -> dict:
+    """개정이 어디서 좋아지고 어디서 나빠졌는지 — 이미 잰 값만 쓰므로 채점 비용이 0 이다.
+
+    이력에 평균 Δ 하나만 남기면 "무엇이 왜 나빠졌나" 를 아무도 못 본다. judge05 는 같은 방향의
+    개정이 네 번 연속 기각되는 동안 Critic 이 그 사실조차 몰랐다."""
+    keys = sorted(set(old_h) & set(new_h))
+    by_bin: dict[str, list[float]] = {}
+    for i, k in keys:
+        b = latency_bin(len(L.units_of(sents[i].text, spaced)), k)
+        by_bin.setdefault(b, []).append(new_h[(i, k)] - old_h[(i, k)])
+
+    def item(key):
+        i, k = key
+        u = L.units_of(sents[i].text, spaced)
+        return {"id": sents[i].id, "k": k, "bin": latency_bin(len(u), k),
+                "delta": round(new_h[key] - old_h[key], 4),
+                "before": _marked(u, old_sets[key], spaced)[:220],
+                "after": _marked(u, new_sets[key], spaced)[:220]}
+
+    ranked = sorted(keys, key=lambda key: new_h[key] - old_h[key])
+    return {"by_bin": {b: round(st.mean(v), 4)
+                       for b, v in sorted(by_bin.items(), key=lambda kv: float(kv[0].strip("≤>")))},
+            "n_worse": sum(1 for key in keys if new_h[key] < old_h[key]),
+            "n_better": sum(1 for key in keys if new_h[key] > old_h[key]),
+            "worst": [item(key) for key in ranked[:n]],
+            "best": [item(key) for key in reversed(ranked[-n:])]}
 
 
 def checkpoint_verdict(prev: dict | None, h: dict) -> tuple[str, dict | None]:
@@ -297,7 +384,7 @@ def prior_spend(run_dir: Path) -> float:
     `metrics.json` 에 앞선 실행 몫을 더한 `run_total_cost` 를 같이 적고, 그 최댓값을 쓴다.
     그 필드가 없는 기록은 그 실행 하나의 누적 `usage.cost` 로 본다."""
     best = 0.0
-    for p in run_dir.glob("iter_*/metrics.json"):
+    for p in list(run_dir.glob("iter_*/metrics.json")) + list(run_dir.glob("final/metrics.json")):
         try:
             blob = json.loads(p.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -308,6 +395,43 @@ def prior_spend(run_dir: Path) -> float:
     if state:
         best = max(best, float(state.get("total_cost", 0.0)))
     return best
+
+
+def final_report(run_id: str, means: dict, by_bin: dict, boot_v0: dict | None,
+                 history: list, cost: float, fmt: float) -> str:
+    """런이 끝나고 남기는 한 장짜리 보고서 — test 에서 잰 값과 이터 이력."""
+    bins = sorted({b for d in by_bin.values() for b in d},
+                  key=lambda b: float(b.strip("≤>")))
+    who = [k for k in ("prompt", "v0", "oracle") if k in by_bin]
+    lines = [f"# {run_id} — 최종", "",
+             f"채택본 test H_set **{means['prompt']:.4f}** / 오라클 {means['oracle']:.4f}"
+             + (f" / v0 {means['v0']:.4f}" if "v0" in means else " (v0 그대로 — 채택된 개정 없음)"),
+             ""]
+    if boot_v0:
+        lines += [f"v0 대비 Δ {boot_v0['mean']:+.4f} "
+                  f"[{boot_v0['lo']:+.4f}, {boot_v0['hi']:+.4f}] "
+                  f"(짝 {boot_v0['n']} / 문장 {boot_v0['n_clusters']})", ""]
+    lines += ["## 지연 구간별 test H_set", "",
+              "| 구간 | " + " | ".join(who) + " |",
+              "|---|" + "---|" * len(who)]
+    for b in bins:
+        lines.append(f"| {b} | " + " | ".join(f"{by_bin[w].get(b, float('nan')):.4f}" for w in who)
+                     + " |")
+    lines += ["", f"포맷 통과율 {fmt}", "", "## 이터레이션", "",
+              "| 이터 | 결과 | Δ (dev-A) | 비고 |", "|---|---|---|---|"]
+    for h in history:
+        d = h.get("gain") or h.get("delta")
+        delta = f"{d['mean']:+.4f} [{d['lo']:+.4f}, {d['hi']:+.4f}]" if d else "—"
+        note = "채택" if h.get("adopted") else ("반려: " + "; ".join(h["reason"])[:60]
+                                               if h.get("reason") else "기각")
+        if h.get("screened_out"):
+            note = f"선별 탈락 (후보 {h.get('candidate')})"
+        elif h.get("screened_only"):
+            note = f"선별 기각 (후보 {h.get('candidate')}, 본채점 생략)"
+        why = (h.get("diagnosis") or {}).get("why") or ""
+        lines.append(f"| {h['iter']} | {note} | {delta} | {str(why)[:80]} |")
+    lines += ["", f"비용 ${cost:.2f}", ""]
+    return "\n".join(lines)
 
 
 def main() -> int:
@@ -335,15 +459,35 @@ def main() -> int:
     p.add_argument("--n-cases", type=int, default=12)
     p.add_argument("--target-sets", default=None,
                    help="집합 탐색 산출물(set_scores_dev.json). 주면 목표가 그리디 오라클 대신 "
-                        "탐색 최적이 된다 — 상호작용 오류는 이때만 보인다")
+                        "탐색 최적이 된다")
     p.add_argument("--checkpoint-every", type=int, default=2, help="0 이면 dev-B 를 안 본다")
-    p.add_argument("--growth-per-iter", type=float, default=0.05,
+    p.add_argument("--skip-final", action="store_true",
+                   help="런 끝의 test 평가를 건너뛴다. 기본은 채택본과 v0 를 test 에서 한 번씩 재고 "
+                        "지연 구간별 표를 남긴다 (약 $2~4)")
+    p.add_argument("--growth-per-iter", type=float, default=0.10,
                    help="PE 개정본이 직전 채택본보다 길어질 수 있는 비율. 넘으면 PE 가 근거 약한 "
                         "단위를 갈아끼우거나 압축해야 한다")
     p.add_argument("--growth-ceiling", type=float, default=1.3,
                    help="런 전체 길이 천장 — 시작 프롬프트 길이의 배수. 증가율이 이터마다 쌓이는 "
                         "것을 막는다")
     p.add_argument("--k-samples", type=int, default=3)
+    p.add_argument("--pe-candidates", type=int, default=1,
+                   help="이터마다 받는 PE 개정 후보 수. 2 이상이면 dev-A 앞 --screen-n 문장에서 "
+                        "먼저 재고 Δ 평균이 가장 높은 후보만 본채점한다")
+    p.add_argument("--screen-n", type=int, default=50,
+                   help="후보 선별에 쓰는 dev-A 앞부분 문장 수 (캐시에 남아 본채점에서 재사용)")
+    p.add_argument("--screen-skip", action="store_true",
+                   help="선별 최고 후보의 Δ 평균이 0 이하면 본채점 없이 기각한다 (부검은 선별 문장으로)")
+    p.add_argument("--candidate-roles", default="",
+                   help="후보별 역할을 쉼표로: free / examples_only / single_small / rewrite. 후보 j 는 "
+                        "roles[j %% len] 을 받는다. rewrite 는 Writer 가 [Core Principles]·[Examples] "
+                        "를 새로 쓴다(--generate-v0 런에서만). 예: free,examples_only,rewrite")
+    p.add_argument("--confirm-dev-b", action="store_true",
+                   help="dev-A 에서 기각됐지만 평균 > 0.005, 하한 > -0.01 인 개정은 dev-B 를 더 재서 "
+                        "합산(415문장) CI 하한으로 다시 가른다. 유망한 개정 하나에 약 $5")
+    p.add_argument("--labeled-examples", action="store_true",
+                   help="사례 문장을 실측 라벨로 채운 Input/Output 예시로 만들어 PE 에 준다. PE 는 "
+                        "편집에 labeled_example: <사례 id> 로 그 예시를 그대로 붙일 수 있다")
     p.add_argument("--model", default="gpt-5-mini")
     p.add_argument("--seg-reasoning-effort", default="medium")
     p.add_argument("--agent-reasoning-effort", default="medium")
@@ -374,13 +518,33 @@ def main() -> int:
         return [data.Sentence(**r) for r in
                 json.loads((src / f"data/{split}.json").read_text(encoding="utf-8"))]
 
-    dev, train = load("dev"), load("train")
-    lab_dev = json.loads((src / "oracle_labels_dev.json").read_text(encoding="utf-8"))
-    lab_train = json.loads((src / "oracle_labels_train.json").read_text(encoding="utf-8"))
-    devA, devB = dev[:a.dev_a], dev[a.dev_a:] + train
-    labA = {t: per[:a.dev_a] for t, per in lab_dev.items()}
-    labB = {t: lab_dev[t][a.dev_a:] + lab_train[t] for t in lab_dev}
-    log(f"[data] dev-A {len(devA)} / dev-B {len(devB)} / k 1~{a.max_k} "
+    def load_labels(split):
+        return json.loads((src / f"oracle_labels_{split}.json").read_text(encoding="utf-8"))
+
+    # 3분할 런(run26~): train 은 사례·실측 예시의 출처, test_a 는 채택 판정, test_b 는 체크포인트·
+    # 유망 확인·최종 표. 2분할 런(run25)은 dev-A 가 사례와 판정을 겸해 실측 예시가 들어간 문장을
+    # 그 문장에서 채점했다(judge09 iter 2: dev-A Δ +0.0105 중 +0.006 이 예시 3문장 몫).
+    scheme3 = (src / "data/test_a.json").exists()
+    if scheme3:
+        case_sents, case_lab = load("train"), load_labels("train")
+        devA, labA = load("test_a"), load_labels("test_a")
+        devB, labB = load("test_b"), load_labels("test_b")
+        test_sents, lab_test = devB, labB
+        dev, train = devA + devB, case_sents
+        names = ("test-A", "test-B")
+        log(f"[data] 3분할 — train {len(case_sents)} (사례·예시) / test-A {len(devA)} (판정) / "
+            f"test-B {len(devB)} (체크포인트·확인·최종)")
+    else:
+        dev, train = load("dev"), load("train")
+        test_sents = load("test")
+        lab_test = load_labels("test")
+        lab_dev, lab_train = load_labels("dev"), load_labels("train")
+        devA, devB = dev[:a.dev_a], dev[a.dev_a:] + train
+        labA = {t: per[:a.dev_a] for t, per in lab_dev.items()}
+        labB = {t: lab_dev[t][a.dev_a:] + lab_train[t] for t in lab_dev}
+        case_sents, case_lab = devA, labA
+        names = ("dev-A", "dev-B")
+    log(f"[data] {names[0]} {len(devA)} / {names[1]} {len(devB)} / k 1~{a.max_k} "
         f"(평균 조각 ≥ {a.min_chunk}) / min_gap {min_gap}"
         f"{' (런 설정 %d 을 덮어씀)' % cfg['min_gap'] if min_gap != cfg['min_gap'] else ''}"
         f" / 타깃 {targets}")
@@ -436,13 +600,24 @@ def main() -> int:
     else:
         ora_A = oracle_sets(labA, devA, spaced, min_gap, a.min_chunk, a.max_k)
         ora_hA = hset_of(devA, labA, ora_A)
-        kind = "그리디 오라클 — 상호작용 오류는 드물게만 보인다"
-    log(f"[목표] {kind}: dev-A H_set 평균 {st.mean(ora_hA.values()):.4f} ({len(ora_hA)} 짝)")
+        kind = "그리디 오라클"
+    log(f"[목표] {kind}: {names[0]} H_set 평균 {st.mean(ora_hA.values()):.4f} ({len(ora_hA)} 짝)")
+    if scheme3:
+        ora_C = oracle_sets(case_lab, case_sents, spaced, min_gap, a.min_chunk, a.max_k)
+        ora_hC = hset_of(case_sents, case_lab, ora_C)
+        log(f"[목표] train H_set 오라클 평균 {st.mean(ora_hC.values()):.4f} ({len(ora_hC)} 짝)")
+    else:
+        ora_C, ora_hC = ora_A, ora_hA
     checkpoint = None
 
-    def score_prompt(pr, sents, lab, tag):
-        rows, m = evaluate(gw, pr, sents, lab, spaced, min_gap, t_grid, seg_cache,
-                           a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
+    def segment_rows(pr, sents, lab):
+        return evaluate(gw, pr, sents, lab, spaced, min_gap, t_grid, seg_cache,
+                        a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
+
+    def score_prompt(pr, sents, lab, tag, rows_m=None):
+        """분절(API) → 절단 집합 → H_set. `rows_m` 을 주면 이미 끝난 분절을 쓴다 — 후보 여럿을
+        동시에 분절해 두고 GPU 채점만 차례로 할 때."""
+        rows, m = rows_m or segment_rows(pr, sents, lab)
         seg_cache.flush()
         sets = policy_sets(rows, sents, spaced, min_gap, a.min_chunk, a.max_k)
         h = hset_of(sents, lab, sets)
@@ -456,18 +631,14 @@ def main() -> int:
             f"누적 ${gw.usage.snapshot()['cost']:.2f}")
         return rows, sets, h, m
 
-    v0_path = run_dir / "prompt_v0.txt"
-    if a.prompt:
-        prompt = Path(a.prompt).read_text(encoding="utf-8")
-    elif v0_path.exists():
-        prompt = v0_path.read_text(encoding="utf-8")
-        log("[v0] 런 산출물 재사용")
-    elif a.generate_v0:
-        # **프로파일·예시 문장은 어느 분할에도 안 쓰인 문장에서 뽑는다.** dev 에서 뽑으면 그
-        # 문장이 프롬프트 안에 그대로 들어간 채로 dev 에서 채점된다 — 라벨 유출은 아니지만
-        # 그 문장에서만 유리해진다.
-        pool_ids = {x.id for x in dev} | {x.id for x in train} | {
-            r["id"] for r in json.loads((src / "data/test.json").read_text(encoding="utf-8"))}
+    def writer_material() -> str:
+        """Writer 에게 주는 재료 — 프로파일·실측 사실·예시용 표본 문장·[Output Rules]. v0 생성과
+        후보 역할 "rewrite" 가 같이 쓴다. 프로파일은 파일이 있으면 읽으므로 재개해도 돈이 안 든다.
+
+        **프로파일·예시 문장은 어느 분할에도 안 쓰인 문장에서 뽑는다.** dev 에서 뽑으면 그
+        문장이 프롬프트 안에 그대로 들어간 채로 dev 에서 채점된다 — 라벨 유출은 아니지만
+        그 문장에서만 유리해진다."""
+        pool_ids = {x.id for x in dev} | {x.id for x in train} | {x.id for x in test_sents}
         spare = [x for x in data.load(cfg["dataset"]) if x.id not in pool_ids]
         if len(spare) < 20:
             log(f"[v0] 분할 밖 문장이 {len(spare)}개뿐 — dev-A 에서 뽑는다")
@@ -483,11 +654,24 @@ def main() -> int:
                                  encoding="utf-8")
         out_rules = ad.output_rules(spaced, "source", meaning_in_scoring_rules=True)
         facts = agents.measured_facts(measured)
-        user = (f"Language profile:\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
+        return (f"Language profile:\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
                 + (facts + "\n\n" if facts else "")
                 + "Sample source sentences to build the examples from:\n"
                 + "\n".join(f"{i+1}. {x.text}" for i, x in enumerate(spare[20:28])) + "\n\n"
                 + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{out_rules}")
+
+    v0_material = None      # Writer 에게 준 재료 — 후보 역할 "rewrite" 가 다시 쓴다
+    v0_path = run_dir / "prompt_v0.txt"
+    if a.prompt:
+        prompt = Path(a.prompt).read_text(encoding="utf-8")
+    elif v0_path.exists():
+        prompt = v0_path.read_text(encoding="utf-8")
+        log("[v0] 런 산출물 재사용")
+        if a.generate_v0:
+            v0_material = writer_material()
+    elif a.generate_v0:
+        user = v0_material = writer_material()
+        out_rules = ad.output_rules(spaced, "source", meaning_in_scoring_rules=True)
         cands = []
         for c in range(a.v0_candidates):
             cand_path = run_dir / f"prompt_v0_cand{c}.txt"
@@ -513,13 +697,18 @@ def main() -> int:
         if len(cands) == 1:
             prompt = cands[0]
         else:
+            # 후보는 판정 집합이 아니라 사례 집합(3분할: train)에서 고른다. 판정 집합에서 고르면
+            # 그 v0 의 판정값이 낙관 편향이 돼 이후 개정이 부풀려진 기준선을 넘어야 한다.
+            # 2분할 런은 둘이 같은 dev-A 라 편향이 남는다.
+            sel_sents, sel_lab, sel_name = ((case_sents, case_lab, "train") if scheme3
+                                            else (devA, labA, names[0]))
             scored = []
             for c, pr in enumerate(cands):
-                _r, _s, h, _m = score_prompt(pr, devA, labA, f"v0 후보 {c}")
+                _r, _s, h, _m = score_prompt(pr, sel_sents, sel_lab, f"v0 후보 {c} ({sel_name})")
                 save_usage(run_dir / "iter_00")
                 scored.append((st.mean(h.values()), c, pr))
             scored.sort(reverse=True)
-            log(f"[v0] 후보 H_set {[round(x[0], 4) for x in scored]} → {scored[0][1]} 채택")
+            log(f"[v0] 후보 {sel_name} H_set {[round(x[0], 4) for x in scored]} → {scored[0][1]} 채택")
             prompt = scored[0][2]
     else:
         log("[stop] --prompt 또는 --generate-v0 가 필요하다")
@@ -549,21 +738,32 @@ def main() -> int:
     # 재개 때도 다시 잰다 — 현재 프롬프트의 분절은 캐시에 있어 LLM 호출이 없고 QE 만 돈다.
     cur_rows, cur_sets, cur_h, cur_m = score_prompt(
         prompt, devA, labA, "iter 0" if start == 1 else f"iter {start - 1} 재개")
+    (run_dir / f"iter_{start - 1:02d}" / "violations.json").write_text(
+        json.dumps({"current": violation_summary(cur_rows)}, ensure_ascii=False, indent=1),
+        encoding="utf-8")
     save_usage(run_dir / f"iter_{start - 1:02d}")
 
     def snapshot_state(done: int) -> None:
         save_state(run_dir / STATE_FILE, done, prompt, history, checkpoint, v0_len,
                    spent_before + gw.usage.snapshot()["cost"], provenance)
 
-    def propose(it: int, idir: Path, cases: list, budget: int):
+    def propose(it: int, idir: Path, cases: list, budget: int, timing: dict,
+                examples: dict | None = None):
+        nonlocal checkpoint
         """Critic → PE → dev-A 채점·판정 한 번. 채택이면 (개정본, 절단집합, H, 지표, 채택 근거 Δ),
         아니면 None. 반려·기각 어느 쪽이든 돌아와야 뒤의 체크포인트가 돈다 — 반려 경로의
         continue 가 체크포인트를 건너뛰어 judge03·04 는 dev-B 를 한 번도 못 쟀다."""
-        crit = gw.chat_json(aj.critic_system(),
-                            json.dumps({"cases": cases, "prompt": prompt}, ensure_ascii=False),
+        t0 = time.perf_counter()
+        crit_user = {"cases": cases, "prompt": prompt}
+        prev = next((h for h in reversed(history) if h.get("diagnosis")), None)
+        if prev:        # 직전 개정이 어디서 무너졌는지 Critic 도 본다 — 같은 방향의 반복을 끊는다
+            crit_user["last_revision"] = {"iter": prev["iter"], "adopted": prev["adopted"],
+                                          "delta": prev.get("gain") or prev.get("delta"),
+                                          "edits": prev.get("edits"), **prev["diagnosis"]}
+        crit = gw.chat_json(aj.critic_system(), json.dumps(crit_user, ensure_ascii=False),
                             max_tokens=AGENT_MAX_TOKENS, purpose="critic")
+        timing["critic"] = round(time.perf_counter() - t0, 1)
         findings = aj.clean_findings(crit)
-        aj.count_critic_hits(provenance, findings)
         (idir / "critique.json").write_text(json.dumps({"raw": crit, "findings": findings},
                                                        ensure_ascii=False, indent=1),
                                             encoding="utf-8")
@@ -574,49 +774,250 @@ def main() -> int:
 
         # PE 는 프롬프트를 다시 쓰지 않고 번호 붙은 단위를 편집한다. 적용과 길이는 코드가 하고,
         # 단위마다 출처(들어온 이터·채택 Δ·Critic 지적 횟수)를 붙여 무엇을 갈아끼울지 고르게 한다.
-        pe_user = {"current_prompt": prompt,
+        # 편집 단위(units)가 두 섹션 본문을 이미 담으므로 프롬프트 전체는 안 준다 — 동결 섹션 중
+        # 측정 정의만 붙인다. 이력은 방향 반복을 막는 데 필요한 것만 요약한다.
+        pe_user = {"fixed_sections": {h: aj.section_of(prompt, h) for h in ("[Role]", "[Scoring Rules]")},
                    "units": aj.units_with_provenance(prompt, provenance),
-                   "findings": findings, "history": history,
+                   "findings": findings, "history": aj.history_brief(history),
                    "size": aj.size_brief(prompt, budget)}
-        pe = gw.chat_json(aj.engineer_system(budget, len(prompt)),
-                          json.dumps(pe_user, ensure_ascii=False),
-                          max_tokens=AGENT_MAX_TOKENS, purpose="engineer")
-        save_usage(idir)
-        cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
+        if examples:
+            by_id = {c["id"]: c for c in cases}
+            pe_user["labeled_examples"] = [
+                {"id": cid, "latency_bin": by_id[cid]["latency_bin"], "gap": by_id[cid]["gap"],
+                 "unit": ex} for cid, ex in examples.items() if cid in by_id]
 
-        def record(pe_blob, deltas, skipped, draft, cand, note):
+        def record(j, pe_blob, deltas, skipped, draft, cand, note):
             if skipped:
-                log(f"[iter {it}] PE 편집 {len(skipped)}개 무시: "
+                log(f"[iter {it}] 후보 {j}: PE 편집 {len(skipped)}개 무시: "
                     + "; ".join(f"edit {s['edit']} {s['reason']}" for s in skipped[:3]))
-            return {"edits": (pe_blob or {}).get("edits"), "deltas": deltas, "skipped": skipped,
-                    "result_chars": len(draft) if draft else None,
+            return {"candidate": j, "edits": (pe_blob or {}).get("edits"), "deltas": deltas,
+                    "skipped": skipped, "result_chars": len(draft) if draft else None,
                     "errors": None if cand else note}
 
-        tries = [record(pe, deltas, skipped, draft, cand, note)]
-        if cand is None and aj.only_too_long(note):
-            # 길이만 넘은 편집은 편집별 실측 증감과 초과량을 붙여 한 번 되돌린다 — 콜 하나가
-            # 이터레이션 하나를 통째로 날리는 것보다 싸다.
-            fb = aj.edit_feedback(draft, prompt, budget, deltas)
-            log(f"[iter {it}] PE 편집 결과 {len(draft)} > {budget} — 편집별 증감과 초과량 "
-                f"{fb['over_by']}자를 알려 한 번 더")
+        def resolve(pe_blob, role="free"):
+            """`labeled_example` 참조를 실측 예시 본문으로 바꾸고 후보 역할 제약을 건다. 어기거나
+            없는 id 를 가리킨 편집은 로그에 남기고 뺀다."""
+            if not isinstance(pe_blob, dict):
+                return pe_blob
+            edits, bad = aj.enforce_role(pe_blob.get("edits"), role)
+            if examples:
+                edits, bad2 = aj.resolve_labeled_examples(edits, examples)
+                bad += bad2
+            for b in bad:
+                log(f"[iter {it}] PE 편집 무시: edit {b['edit']} {b['reason']}")
+            return {**pe_blob, "edits": edits}
+
+        def revise(j: int, extra: dict, role: str = "free"):
+            """PE 호출 한 번. 길이만 넘으면 편집별 실측 증감과 초과량을 붙여 한 번 되돌린다 — 콜
+            하나가 이터레이션 하나를 통째로 날리는 것보다 싸다. (pe, cand, note, deltas, tries)."""
+            t0 = time.perf_counter()
             pe = gw.chat_json(aj.engineer_system(budget, len(prompt)),
-                              json.dumps({**pe_user, "your_previous_edits": tries[0]["edits"],
-                                          "size_feedback": fb}, ensure_ascii=False),
-                              max_tokens=AGENT_MAX_TOKENS, purpose="engineer:shorten")
+                              json.dumps({**pe_user, **extra}, ensure_ascii=False),
+                              max_tokens=AGENT_MAX_TOKENS, purpose="engineer")
+            timing["engineer"] = round(timing.get("engineer", 0) + time.perf_counter() - t0, 1)
             save_usage(idir)
+            pe = resolve(pe, role)
             cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
-            tries.append(record(pe, deltas, skipped, draft, cand, note))
-        (idir / "pe_edits.json").write_text(json.dumps(tries, ensure_ascii=False, indent=1),
+            tries = [record(j, pe, deltas, skipped, draft, cand, note)]
+            if cand is None and aj.only_too_long(note):
+                fb = aj.edit_feedback(draft, prompt, budget, deltas)
+                log(f"[iter {it}] 후보 {j}: PE 편집 결과 {len(draft)} > {budget} — 편집별 증감과 "
+                    f"초과량 {fb['over_by']}자({fb['over_by_words']}단어)를 알려 한 번 더")
+                pe = gw.chat_json(aj.engineer_system(budget, len(prompt)),
+                                  json.dumps({**pe_user, **extra,
+                                              "your_previous_edits": tries[0]["edits"],
+                                              "size_feedback": fb}, ensure_ascii=False),
+                                  max_tokens=AGENT_MAX_TOKENS, purpose="engineer:shorten")
+                save_usage(idir)
+                pe = resolve(pe, role)
+                cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
+                tries.append(record(j, pe, deltas, skipped, draft, cand, note))
+            return pe, cand, note, deltas, tries
+
+        # 개정 후보를 여러 개 받아 dev-A 앞부분에서 선별한다. 채택률이 낮을 때(judge03~08: 측정된
+        # 개정 9건 중 채택 1건) 후보 하나에 이터레이션 전체 채점($3)을 거는 것보다, 셋을 50문장에서
+        # 재고($1씩) 가장 나은 것만 끝까지 재는 쪽이 같은 돈으로 채택 기회를 늘린다. 선별에 쓴
+        # 문장은 캐시에 남아 본채점에서 다시 돈이 들지 않는다.
+        cands, all_tries = [], []
+        def rewrite(j: int):
+            """Writer 가 [Core Principles]·[Examples] 를 새로 쓴다 — 편집이 아니라 큰 보폭.
+
+            Writer 표본 사이의 H_set 차이(judge07 0.5918/0.5764, judge08 0.6027/0.5932)가 편집 하나의
+            효과(±0.01)보다 크다. 편집만으로는 그 분산을 못 쓰므로 후보 하나는 다시 쓴 것으로 채운다.
+            동결 섹션은 현재 프롬프트 것으로 되돌려 붙인다."""
+            lessons = [h["diagnosis"]["lesson"] for h in history
+                       if h.get("diagnosis") and h["diagnosis"].get("lesson")]
+            cpw = aj.chars_per_word(prompt)
+            msg = (v0_material
+                   + "\n\nA prompt of this skeleton is already in use (below) and was measured. "
+                     "Write a NEW prompt with the same skeleton whose [Core Principles] and "
+                     "[Examples] address the critic findings and the lessons below. Do not copy "
+                     "the current [Core Principles] — rewrite the judgements from scratch in your "
+                     "own structure; you may keep examples that still teach the right ranking. "
+                     f"The whole prompt must stay under {budget} characters "
+                     f"(about {int(budget / cpw)} words; it is {len(prompt)} now).\n\n"
+                   + f"Current prompt:\n{prompt}\n\n"
+                   + f"Critic findings:\n{json.dumps(findings, ensure_ascii=False)}\n\n"
+                   + (f"Lessons from measured revisions:\n{json.dumps(lessons, ensure_ascii=False)}\n\n"
+                      if lessons else "")
+                   + ("Measured examples you may paste into [Examples] verbatim:\n"
+                      + "\n\n".join(examples.values()) + "\n" if examples else ""))
+            def write(user_msg: str) -> str:
+                t0 = time.perf_counter()
+                pr = gw.chat(aj.writer_system(spaced, targets), user_msg, max_tokens=16000,
+                             reasoning_effort=(None if a.agent_reasoning_effort == "none"
+                                               else a.agent_reasoning_effort),
+                             purpose="rewrite").strip()
+                timing["engineer"] = round(timing.get("engineer", 0) + time.perf_counter() - t0, 1)
+                save_usage(idir)
+                for h in aj.FROZEN:
+                    pr = aj.replace_section(pr, h, aj.section_of(prompt, h))
+                return pr
+
+            pr = write(msg)
+            blob = {"prompt": pr, "changelog": ["rewrite: [Core Principles]/[Examples] 를 새로 씀"]}
+            cand, note = aj.parse_prompt(blob, prompt, budget)
+            if cand is None and aj.only_too_long(note):
+                # Writer 도 길이를 못 잰다(judge09 iter 2: 상한 9,050 에 11,463자). 초과량을 단어로
+                # 알려 한 번 되돌린다.
+                over_w = -(-(len(pr) - budget) // int(cpw))
+                log(f"[iter {it}] 후보 {j}: rewrite 결과 {len(pr)} > {budget} — 초과량 "
+                    f"{len(pr) - budget}자({over_w}단어)를 알려 한 번 더")
+                pr = write(msg + f"\n\nYour previous draft is below. It is {len(pr)} characters "
+                                 f"({aj.words(pr)} words), {len(pr) - budget} characters "
+                                 f"({over_w} words) over the limit. Write it again with "
+                                 f"[Core Principles] and [Examples] shorter by at least "
+                                 f"{over_w + 20} words; keep the same judgements.\n\n{pr}")
+                blob = {"prompt": pr, "changelog": blob["changelog"]}
+                cand, note = aj.parse_prompt(blob, prompt, budget)
+            deltas = [{"edit": 0, "op": "rewrite", "id": None, "kind": "rewrite",
+                       "chars_change": len(pr) - len(prompt)}]
+            pe = {"changelog": blob["changelog"], "edits": [], "rewrite": True}
+            tries = [{"candidate": j, "edits": [], "rewrite": True, "deltas": deltas,
+                      "skipped": [], "result_chars": len(pr), "errors": None if cand else note}]
+            return pe, cand, note, deltas, tries
+
+        roles = [r.strip() for r in (a.candidate_roles or "").split(",") if r.strip()]
+        for j in range(a.pe_candidates):
+            extra = {}
+            role = roles[j % len(roles)] if roles else "free"
+            if role == "rewrite" and not v0_material:
+                log(f"[iter {it}] 후보 {j}: rewrite 역할인데 v0 재료가 없다(--prompt 로 시작) — free 로")
+                role = "free"
+            if role not in ("free", "rewrite"):
+                extra["constraint"] = role
+            if cands:
+                extra["sibling_candidates"] = [
+                    {"changelog": c[2], "edits": aj.edit_summary(prompt, (c[0] or {}).get("edits"))}
+                    for c in cands if c[1]]
+            if role != "free":
+                log(f"[iter {it}] 후보 {j} 역할 {role}")
+            pe, cand, note, deltas, tries = (rewrite(j) if role == "rewrite"
+                                             else revise(j, extra, role))
+            cands.append((pe, cand, note, deltas))
+            all_tries += tries
+        (idir / "pe_edits.json").write_text(json.dumps(all_tries, ensure_ascii=False, indent=1),
                                             encoding="utf-8")
-        if cand is None:
+        valid = [(j, *c) for j, c in enumerate(cands) if c[1]]
+        if not valid:
+            pe, _c, note, _d = cands[-1]
             log(f"[iter] PE 출력 반려: {note} / 누적 ${gw.usage.snapshot()['cost']:.2f}")
             history.append({"iter": it, "adopted": False, "reason": note,
                             "edits": aj.edit_summary(prompt, (pe or {}).get("edits"))})
             return None
-        log(f"[iter {it}] PE 편집 {len(deltas)}개 → {len(cand)}자 / 상한 {budget}자")
+        for j, _pe, cand, _note, deltas in valid:
+            log(f"[iter {it}] 후보 {j}: PE 편집 {len(deltas)}개 → {len(cand)}자 / 상한 {budget}자")
 
-        _, c_sets, c_h, c_m = score_prompt(cand, devA, labA, f"iter {it} 후보")
-        keys = sorted(set(c_h) & set(cur_h))
+        if len(valid) > 1:
+            # 선별 문장은 이터마다 돌려 뽑는다. 늘 같은 앞 50문장이면 거기에 맞는 후보가 이터마다
+            # 살아남고, 그 50이 든 본판정 Δ 도 그만큼 부풀려진다(선택 편향). 현재 프롬프트 값은
+            # 판정 집합 전체에 있으므로 어느 부분집합이든 비용이 같다.
+            idx = screen_indices(len(devA), a.screen_n, it)
+            sub = [devA[i] for i in idx]
+            labS = {t: [per[i] for i in idx] for t, per in labA.items()}
+            t0 = time.perf_counter()
+            # 분절(API 대기)은 후보들을 동시에, GPU 채점(번역·QE)은 차례로. 선별 한 후보에 23분이
+            # 걸렸는데(judge08 iter 3) 대부분이 API 왕복 대기라 셋을 겹치면 그 시간에 다 끝난다.
+            with ThreadPoolExecutor(max_workers=len(valid)) as ex:
+                futs = {j: ex.submit(segment_rows, cand_j, sub, labS)
+                        for j, _pe, cand_j, _n, _d in valid}
+                rows_m = {j: f.result() for j, f in futs.items()}
+            screened = []
+            for j, pe_j, cand_j, note_j, deltas_j in valid:
+                (idir / f"candidate_{j}.txt").write_text(cand_j, encoding="utf-8")
+                _r, s_s, h_s, _m = score_prompt(cand_j, sub, labS, f"iter {it} 후보 {j} 선별",
+                                                rows_m=rows_m[j])
+                s_s = {(idx[i], k): v for (i, k), v in s_s.items()}     # 판정 집합 인덱스로
+                h_s = {(idx[i], k): v for (i, k), v in h_s.items()}
+                excl = example_sentences(prompt, devA) | example_sentences(cand_j, devA)
+                keys = sorted(k for k in set(h_s) & set(cur_h) if k[0] not in excl)
+                boot = hset.paired_bootstrap([h_s[k] for k in keys], [cur_h[k] for k in keys],
+                                             clusters=[i for i, _k in keys])
+                log(f"[iter {it}] 후보 {j} 선별 Δ {boot['mean']:+.4f} [{boot['lo']:+.4f}, "
+                    f"{boot['hi']:+.4f}] 짝 {boot['n']} / 문장 {boot['n_clusters']}")
+                screened.append({"candidate": j, "delta": boot, "chars": len(cand_j),
+                                 "changelog": note_j, "h": h_s, "sets": s_s})
+            timing["screen"] = round(time.perf_counter() - t0, 1)
+            best_sc = max(screened, key=lambda x: x["delta"]["mean"])
+            best = best_sc["candidate"]
+            (idir / "screen.json").write_text(
+                json.dumps({"n_sentences": len(sub), "indices": idx, "best": best,
+                            "candidates": [{k: v for k, v in sc.items() if k not in ("h", "sets")}
+                                           for sc in screened]}, ensure_ascii=False, indent=1),
+                encoding="utf-8")
+            for sc, (j, pe_j, _c, note_j, _d) in zip(screened, valid):
+                if j != best:     # 선별에서 진 후보도 이력에 남긴다 — PE 가 같은 방향을 또 내지 않게
+                    history.append({"iter": it, "candidate": j, "adopted": False,
+                                    "screened_out": True, "delta": sc["delta"],
+                                    "changelog": note_j,
+                                    "edits": aj.edit_summary(prompt, (pe_j or {}).get("edits"))})
+            _j, pe, cand, note, deltas = next(v for v in valid if v[0] == best)
+            if a.screen_skip and best_sc["delta"]["mean"] <= 0:
+                # 선별에서 최고 후보조차 평균 Δ 가 0 이하면 본채점($2, 30분)을 아낀다. 부검은 선별
+                # 문장으로 한다 — 다음 Critic 이 무엇이 무너졌는지는 봐야 한다.
+                log(f"[iter {it}] 후보 {best} 선별 Δ {best_sc['delta']['mean']:+.4f} ≤ 0 — "
+                    f"본채점 생략, 기각")
+                diag = revision_diagnosis(devA, cur_h, best_sc["h"], cur_sets, best_sc["sets"],
+                                          spaced)
+                edits_now = aj.edit_summary(prompt, (pe or {}).get("edits"))
+                pm = gw.chat_json(aj.postmortem_system(),
+                                  json.dumps({"verdict": "reject", "delta": best_sc["delta"],
+                                              "changelog": note, "edits": edits_now, **diag},
+                                             ensure_ascii=False),
+                                  max_tokens=AGENT_MAX_TOKENS, purpose="postmortem")
+                save_usage(idir)
+                for k in ("why", "lesson", "blamed"):
+                    diag[k] = (pm or {}).get(k)
+                (idir / "regression.json").write_text(
+                    json.dumps({"verdict": "reject", "screened_only": True,
+                                "delta": best_sc["delta"], **diag}, ensure_ascii=False, indent=1),
+                    encoding="utf-8")
+                log(f"[iter {it}] 부검(선별 {len(sub)}문장) 구간별 Δ {diag['by_bin']} / 나빠진 짝 "
+                    f"{diag['n_worse']} 좋아진 {diag['n_better']} / {str(diag.get('why'))[:90]}")
+                history.append({"iter": it, "candidate": best, "adopted": False,
+                                "screened_only": True, "delta": best_sc["delta"],
+                                "changelog": note, "edits": edits_now,
+                                "findings": [f["diagnosis"] for f in findings],
+                                "diagnosis": {k: diag[k] for k in ("by_bin", "n_worse",
+                                                                   "n_better", "why", "lesson",
+                                                                   "blamed")}})
+                (idir / "result.json").write_text(json.dumps(history[-1], ensure_ascii=False,
+                                                             indent=1), encoding="utf-8")
+                (idir / "prompt.txt").write_text(cand, encoding="utf-8")
+                return None
+        else:
+            _j, pe, cand, note, deltas = valid[0]
+
+        t0 = time.perf_counter()
+        c_rows, c_sets, c_h, c_m = score_prompt(cand, devA, labA, f"iter {it} 후보")
+        timing["score_candidate"] = round(time.perf_counter() - t0, 1)
+        (idir / "violations.json").write_text(
+            json.dumps({"candidate": violation_summary(c_rows)}, ensure_ascii=False, indent=1),
+            encoding="utf-8")
+        excl = example_sentences(prompt, devA) | example_sentences(cand, devA)
+        if excl:
+            log(f"[iter {it}] 예시로 들어간 dev-A 문장 {len(excl)}개는 판정에서 뺀다")
+        keys = sorted(k for k in set(c_h) & set(cur_h) if k[0] not in excl)
         boot = hset.paired_bootstrap([c_h[k] for k in keys], [cur_h[k] for k in keys],
                                      clusters=[i for i, _k in keys])
         verdict = decide(boot)
@@ -632,48 +1033,112 @@ def main() -> int:
             tmp.flush()
             s2 = policy_sets(rows2, devA, spaced, min_gap, a.min_chunk, a.max_k)
             h2 = hset_of(devA, labA, s2)
-            k2 = sorted(set(h2) & set(cur_h))
+            k2 = sorted(k for k in set(h2) & set(cur_h) if k[0] not in excl)
             gain = hset.paired_bootstrap([h2[k] for k in k2], [cur_h[k] for k in k2],
                                          clusters=[i for i, _k in k2])
             log(f"[iter {it}] 재채점 Δ {gain['mean']:+.4f} [{gain['lo']:+.4f}, {gain['hi']:+.4f}]")
             verdict = "accept" if gain["lo"] > 0 else "reject"
 
+        if verdict == "reject" and a.confirm_dev_b and promising(boot):
+            # 유망한 기각은 dev-B(265문장)를 더 재서 dev-A 와 합산해 다시 가른다. 문장이 415 로 늘면
+            # CI 반폭이 약 0.009 로 준다. 현재 프롬프트의 dev-B 값은 체크포인트에 있으면 그걸 쓰고,
+            # 없으면 재서 체크포인트로 남긴다(다음 정기 체크포인트가 그대로 쓴다).
+            log(f"[iter {it}] 유망(평균 {boot['mean']:+.4f}, 하한 {boot['lo']:+.4f}) — dev-B 로 확인")
+            t0 = time.perf_counter()
+            if checkpoint and checkpoint["prompt"] == prompt:
+                hB_cur = {(i, k): v for i, k, v in checkpoint["h"]}
+            else:
+                _, _s, hB_cur, _m = score_prompt(prompt, devB, labB, f"iter {it} dev-B 현재")
+                checkpoint = {"iter": it, "value": round(st.mean(hB_cur.values()), 5),
+                              "prompt": prompt, "provenance": copy.deepcopy(provenance),
+                              "h": [[i, k, v] for (i, k), v in sorted(hB_cur.items())]}
+                log(f"[체크포인트] dev-B {checkpoint['value']:.4f} 저장 (확인 채점을 겸함)")
+            _, _s, hB_c, _m = score_prompt(cand, devB, labB, f"iter {it} dev-B 후보")
+            exclB = example_sentences(prompt, devB) | example_sentences(cand, devB)
+            kB = sorted(k for k in set(hB_c) & set(hB_cur) if k[0] not in exclB)
+            bootB = hset.paired_bootstrap([hB_c[k] for k in kB], [hB_cur[k] for k in kB],
+                                          clusters=[i for i, _k in kB])
+            pooled = hset.paired_bootstrap(
+                [c_h[k] for k in keys] + [hB_c[k] for k in kB],
+                [cur_h[k] for k in keys] + [hB_cur[k] for k in kB],
+                clusters=[i for i, _k in keys] + [100000 + i for i, _k in kB])
+            timing["confirm_dev_b"] = round(time.perf_counter() - t0, 1)
+            verdict = "accept" if pooled["lo"] > 0 else "reject"
+            gain = {**pooled, "dev_a": boot, "dev_b": bootB, "pooled": True}
+            log(f"[iter {it}] dev-B Δ {bootB['mean']:+.4f} [{bootB['lo']:+.4f}, {bootB['hi']:+.4f}] "
+                f"짝 {bootB['n']} / 합산 Δ {pooled['mean']:+.4f} [{pooled['lo']:+.4f}, "
+                f"{pooled['hi']:+.4f}] 짝 {pooled['n']} / 문장 {pooled['n_clusters']} → {verdict}")
+
+        # 부검 — 어느 (문장, k) 가 어떻게 움직였는지 세고, 왜 그랬는지 한 문단을 받는다.
+        edits_now = aj.edit_summary(prompt, (pe or {}).get("edits"))
+        diag = revision_diagnosis(devA, cur_h, c_h, cur_sets, c_sets, spaced)
+        t0 = time.perf_counter()
+        pm = gw.chat_json(aj.postmortem_system(),
+                          json.dumps({"verdict": verdict, "delta": gain, "changelog": note,
+                                      "edits": edits_now, **diag}, ensure_ascii=False),
+                          max_tokens=AGENT_MAX_TOKENS, purpose="postmortem")
+        timing["postmortem"] = round(time.perf_counter() - t0, 1)
+        save_usage(idir)
+        for k in ("why", "lesson", "blamed"):
+            diag[k] = (pm or {}).get(k)
+        (idir / "regression.json").write_text(json.dumps({"verdict": verdict, "delta": gain,
+                                                          **diag}, ensure_ascii=False, indent=1),
+                                              encoding="utf-8")
+        log(f"[iter {it}] 부검 구간별 Δ {diag['by_bin']} / 나빠진 짝 {diag['n_worse']} "
+            f"좋아진 {diag['n_better']} / {str(diag.get('why'))[:90]}")
         history.append({"iter": it, "adopted": verdict == "accept", "delta": boot, "gain": gain,
                         "changelog": note, "findings": [f["diagnosis"] for f in findings],
-                        "edits": aj.edit_summary(prompt, (pe or {}).get("edits"))})
+                        "edits": edits_now,
+                        "diagnosis": {k: diag[k] for k in ("by_bin", "n_worse", "n_better",
+                                                           "why", "lesson", "blamed")}})
         (idir / "result.json").write_text(json.dumps(history[-1], ensure_ascii=False, indent=1),
                                           encoding="utf-8")
         (idir / "prompt.txt").write_text(cand, encoding="utf-8")
         return (cand, c_sets, c_h, c_m, gain) if verdict == "accept" else None
 
+    case_state = {"prompt": None, "sets": None, "h": None}
     for it in range(start, a.iterations + 1):
         snapshot_state(it - 1)
         idir = run_dir / f"iter_{it:02d}"
         idir.mkdir(parents=True, exist_ok=True)
+        t_iter = time.perf_counter()
+
+        if scheme3:
+            # 사례는 train 에서 뽑는다. 현재 프롬프트가 바뀐 이터에만 다시 잰다(같으면 캐시 적중).
+            if case_state["prompt"] != prompt:
+                _cr, case_state["sets"], case_state["h"], _cm = score_prompt(
+                    prompt, case_sents, case_lab, f"iter {it} train")
+                case_state["prompt"] = prompt
+            case_sets, case_h = case_state["sets"], case_state["h"]
+        else:
+            case_sets, case_h = cur_sets, cur_h
 
         def pieces_tr(i, cut):
-            u = L.units_of(devA[i].text, spaced)
+            u = L.units_of(case_sents[i].text, spaced)
             out = {}
             for tgt in targets:
-                out[tgt] = [scorer._tr_cache[tgt][(i, x, y)]
+                out[tgt] = [scorer.piece(tgt, u, x, y)
                             for x, y in hset.pieces_of(u, cut, spaced)]
             return out
 
-        cases = build_cases(devA, labA, cur_sets, ora_A, cur_h, ora_hA, spaced, min_gap,
-                            a.n_cases, pieces_tr)
+        cases = build_cases(case_sents, case_lab, case_sets, ora_C, case_h, ora_hC, spaced,
+                            min_gap, a.n_cases, pieces_tr)
         (idir / "cases.json").write_text(json.dumps(cases, ensure_ascii=False, indent=1),
                                          encoding="utf-8")
-        kinds = {k: sum(1 for c in cases if c["error_type"] == k)
-                 for k in ("boundary", "interaction")}
-        log(f"[iter {it}] 사례 {len(cases)} (경계 {kinds['boundary']} / 상호작용 "
-            f"{kinds['interaction']}), 손해 상위 {cases[0]['gap'] if cases else 0}")
+        log(f"[iter {it}] 사례 {len(cases)} / 손해 상위 {cases[0]['gap'] if cases else 0} / 구간 "
+            + ", ".join(f"{b}:{n}" for b, n in sorted(
+                {c["latency_bin"]: sum(1 for x in cases if x["latency_bin"] == c["latency_bin"])
+                 for c in cases}.items(), key=lambda kv: float(kv[0].strip("≤>")))))
         if not cases:
             log("[stop] 오라클보다 못한 (문장,T) 가 없다")
             break
 
         budget = length_cap(len(prompt), v0_len, a.growth_per_iter, a.growth_ceiling)
         log(f"[iter {it}] 길이 상한 {budget}자 (직전 채택본 {len(prompt)}자)")
-        adopted = propose(it, idir, cases, budget)
+        timing = {"cases": round(time.perf_counter() - t_iter, 1)}
+        examples = (labeled_examples(case_sents, case_lab, cases, spaced, min_gap)
+                    if a.labeled_examples else None)
+        adopted = propose(it, idir, cases, budget, timing, examples)
         if adopted:
             cand, c_sets, c_h, c_m, gain = adopted
             provenance = aj.adopt_provenance(provenance, cand, it, gain)
@@ -705,6 +1170,9 @@ def main() -> int:
                     json.dumps({k: v for k, v in (checkpoint or {}).items()
                                 if k not in ("prompt", "provenance", "h")},
                                ensure_ascii=False, indent=1), encoding="utf-8")
+        timing["total"] = round(time.perf_counter() - t_iter, 1)
+        (idir / "timing.json").write_text(json.dumps(timing, ensure_ascii=False, indent=1),
+                                          encoding="utf-8")
         save_usage(idir)
     else:
         snapshot_state(a.iterations)
@@ -712,8 +1180,45 @@ def main() -> int:
     (run_dir / "history.json").write_text(json.dumps(history, ensure_ascii=False, indent=1),
                                           encoding="utf-8")
     (run_dir / "best_prompt.txt").write_text(prompt, encoding="utf-8")
+
+    # ── 최종 test — 런 밖에서 손으로 돌리던 것을 루프 안에 둔다. 채택본과 v0 를 같은 자로 재야
+    #    "이 런이 실제로 올린 폭" 이 남는다. dev 는 개정을 고르는 데 이미 소진됐다.
+    if not a.skip_final:
+        t0 = time.perf_counter()
+        rows_t, _sets_t, h_t, m_t = score_prompt(prompt, test_sents, lab_test, "최종 test")
+        ora_t = oracle_sets(lab_test, test_sents, spaced, min_gap, a.min_chunk, a.max_k)
+        ora_h_t = hset_of(test_sents, lab_test, ora_t)
+        by_bin = {"prompt": by_latency(test_sents, h_t, spaced),
+                  "oracle": by_latency(test_sents, ora_h_t, spaced)}
+        means = {"prompt": round(st.mean(h_t.values()), 4),
+                 "oracle": round(st.mean(ora_h_t.values()), 4)}
+        v0_prompt = v0_path.read_text(encoding="utf-8")
+        boot_v0 = None
+        if v0_prompt != prompt:
+            _r0, _s0, h0, _m0 = score_prompt(v0_prompt, test_sents, lab_test, "최종 test v0")
+            by_bin["v0"] = by_latency(test_sents, h0, spaced)
+            means["v0"] = round(st.mean(h0.values()), 4)
+            kk = sorted(set(h_t) & set(h0))
+            boot_v0 = hset.paired_bootstrap([h_t[k] for k in kk], [h0[k] for k in kk],
+                                            clusters=[i for i, _k in kk])
+        (run_dir / "curve.json").write_text(
+            json.dumps({"split": "test_b" if scheme3 else "test", "means": means,
+                        "by_bin": by_bin, "vs_v0": boot_v0},
+                       ensure_ascii=False, indent=1), encoding="utf-8")
+        (run_dir / "violations_test.json").write_text(
+            json.dumps(violation_summary(rows_t), ensure_ascii=False, indent=1), encoding="utf-8")
+        save_usage(run_dir / "final")
+        (run_dir / "final_report.md").write_text(
+            final_report(a.run_id, means, by_bin, boot_v0, history,
+                         spent_before + gw.usage.snapshot()["cost"], m_t["format_pass_rate"]),
+            encoding="utf-8")
+        log(f"[최종] {'test-B' if scheme3 else 'test'} H_set {means['prompt']:.4f} / 오라클 {means['oracle']:.4f}"
+            + (f" / v0 {means['v0']:.4f} Δ {boot_v0['mean']:+.4f} "
+               f"[{boot_v0['lo']:+.4f}, {boot_v0['hi']:+.4f}]" if boot_v0 else " (v0 그대로)")
+            + f" / {by_bin['prompt']} / {time.perf_counter() - t0:.0f}초")
+
     u = gw.usage.snapshot()
-    log(f"[끝] dev-A H_set {st.mean(cur_h.values()):.4f} / 오라클 {st.mean(ora_hA.values()):.4f} "
+    log(f"[끝] {names[0]} H_set {st.mean(cur_h.values()):.4f} / 오라클 {st.mean(ora_hA.values()):.4f} "
         f"/ 비용 ${spent_before + u['cost']:.2f} (이번 실행 ${u['cost']:.2f}, {u['calls']} 호출)")
     gw.close()
     return 0

@@ -225,10 +225,14 @@ def mean_rank_scores(samples: list[list[float]]) -> list[float]:
             for t, w in zip(total, raw)]
 
 
-def check_skeleton(prompt: str) -> list[str]:
-    errs = []
+def check_skeleton(prompt: str, sections: list[str] = SECTIONS) -> list[str]:
+    """필수 섹션이 그 순서로 있는지. `sections` 밖의 알려진 섹션이 있으면 그것도 잘못이다 —
+    judge 루프는 [Decision Procedure] 를 뺐다(원칙과 겹치고, PE 가 못 고치는 채로 남아 옛 판단을
+    끌고 갔다)."""
+    errs = [f"허용하지 않는 섹션: {sec}" for sec in SECTIONS
+            if sec not in sections and sec in prompt]
     last = -1
-    for sec in SECTIONS:
+    for sec in sections:
         i = prompt.find(sec)
         if i < 0:
             errs.append(f"섹션 없음: {sec}")

@@ -100,19 +100,29 @@ class HsetScorer:
     qe: object
     spaced: bool
     target_spaced: dict          # 타깃 이름 → 조각 번역을 공백으로 이을지
-    _tr_cache: dict = field(default_factory=dict)
+    _tr_cache: dict = field(default_factory=dict)     # 타깃 → {조각 원문: 번역}
+
+    def piece(self, tgt: str, units: list[str], a: int, b: int) -> str:
+        """조각 `units[a:b]` 의 번역. 캐시 키는 **조각 원문**이다.
+
+        종전 키는 `(문장 index, 시작, 끝)` 이었다. 같은 채점기로 dev-A 다음에 dev-B 나 test 를
+        재면 같은 index·구간의 다른 문장이 앞서 번역된 조각을 그대로 받아 QE 가 엉뚱한 가설을
+        채점했다 — judge08 test 0.4919 (dev-A 0.6027), 오라클도 0.5595 (dev-A 0.6744) 로 같이
+        내려앉은 것이 그 흔적이다. dev-A 는 늘 먼저 재서 멀쩡했고 dev-B·test 만 오염됐다."""
+        return self._tr_cache[tgt][join_units(units[a:b], self.spaced)]
 
     def translate_spans(self, texts: list[str], spans: set[tuple[int, int, int]]) -> None:
-        """`(문장 index, 시작, 끝)` 구간을 타깃마다 번역해 둔다. 이미 있는 것은 건너뛴다."""
-        todo = sorted(s for s in spans if (self.translators and s not in self._tr_cache.get(
-            next(iter(self.translators)), {})))
-        if not todo:
+        """`(문장 index, 시작, 끝)` 구간을 타깃마다 번역해 둔다. 같은 원문 조각은 건너뛴다."""
+        if not self.translators:
             return
-        units = {i: units_of(texts[i], self.spaced) for i in {s[0] for s in todo}}
-        srcs = [join_units(units[i][a:b], self.spaced) for i, a, b in todo]
+        units = {i: units_of(texts[i], self.spaced) for i in {s[0] for s in spans}}
+        first = self._tr_cache.setdefault(next(iter(self.translators)), {})
+        srcs = sorted({join_units(units[i][a:b], self.spaced) for i, a, b in spans} - set(first))
+        if not srcs:
+            return
         for tgt, tr in self.translators.items():
             got = tr.full(srcs)
-            self._tr_cache.setdefault(tgt, {}).update(zip(todo, got))
+            self._tr_cache.setdefault(tgt, {}).update(zip(srcs, got))
 
     def score(self, texts: list[str], jobs: list[tuple[int, tuple[int, ...]]],
               contra_of) -> list[float]:
@@ -127,7 +137,7 @@ class HsetScorer:
         for n, (i, c) in enumerate(jobs):
             for tgt in self.translators:
                 join = " " if self.target_spaced[tgt] else ""
-                parts = [self._tr_cache[tgt][(i, a, b)]
+                parts = [self.piece(tgt, units[i], a, b)
                          for a, b in pieces_of(units[i], c, self.spaced)]
                 srcs.append(texts[i]); hyps.append(join.join(parts)); owner.append((n, tgt))
         got = self.qe.score(srcs, hyps)

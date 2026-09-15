@@ -149,6 +149,19 @@ def default_trailing_punct(sample: str) -> str:
 class JsonCache:
     """디스크 영속 캐시. 이터레이션 간 분절이 안 바뀐 문장의 재번역을 막는다."""
 
+    _shared: dict[Path, "JsonCache"] = {}
+    _shared_lock = threading.Lock()
+
+    @classmethod
+    def shared(cls, path: Path) -> "JsonCache":
+        """같은 경로면 같은 인스턴스. 스레드 둘이 각자 인스턴스를 만들면 서로의 항목을 모른 채
+        같은 파일을 덮어써 캐시가 사라진다 — 후보 여러 개를 동시에 채점할 때 그렇게 된다."""
+        key = path.resolve()
+        with cls._shared_lock:
+            if key not in cls._shared:
+                cls._shared[key] = cls(path)
+            return cls._shared[key]
+
     def __init__(self, path: Path):
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)

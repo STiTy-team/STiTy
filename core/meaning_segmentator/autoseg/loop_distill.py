@@ -96,7 +96,7 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
     idx = [i for i, c in enumerate(cand) if c]
     marked = [ad.mark_candidates(units[i], cand[i]) for i in idx]
     first_pass: list[dict] = []
-    caches = [seg_cache] + [JsonCache(seg_cache.path.with_name(f"segment_s{s}.json"))
+    caches = [seg_cache] + [JsonCache.shared(seg_cache.path.with_name(f"segment_s{s}.json"))
                             for s in range(1, k_samples)]
     outs_k: list[list[str]] = []
     ok_k: list[list[bool]] = []

@@ -14,13 +14,15 @@ RUN=${RUN:-judge01}          # 설정을 바꿔 다시 돌릴 때는 새 이름�
 BUDGET=${BUDGET:-35}         # 런 전체 상한. RESUME=1 이면 state.json 에서 잇고 앞선 지출을 뺀다
 V0ARGS=${V0:+--prompt $V0}   # V0=<프롬프트 파일> 이면 v0 를 생성하지 않고 그걸로 시작한다
 V0ARGS=${V0ARGS:---generate-v0 --v0-candidates 2}
+EXTRA=${EXTRA:-}             # 추가 플래그, 예: EXTRA="--pe-candidates 3 --screen-n 50"
+FROM=${FROM:-en2x/en-multi/run25}   # 소스 런. run26 이면 3분할(train 사례 / test-A 판정 / test-B 확인)
 LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/$RUN.log
 mkdir -p "$(dirname "$LOG")"
 echo "== $(date '+%F %T') $RUN start" >> $LOG
 $PY -u -m core.meaning_segmentator.autoseg.loop_judge \
-    --from-run en2x/en-multi/run25 --run-id en2x/en-multi/$RUN \
+    --from-run $FROM --run-id en2x/en-multi/$RUN \
     $V0ARGS \
     --dev-a 150 --min-gap 1 --min-chunk 2 --max-k 10 \
     --iterations 5 --n-cases 12 --checkpoint-every 2 \
-    --provider openai --model gpt-5-mini --budget $BUDGET ${RESUME:+--resume} >> $LOG 2>&1
+    --provider openai --model gpt-5-mini --budget $BUDGET ${RESUME:+--resume} $EXTRA >> $LOG 2>&1
 echo "== $(date '+%F %T') exit=$? DONE" >> $LOG
