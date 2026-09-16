@@ -93,6 +93,10 @@ def load_partial(path: Path) -> list[dict]:
     return out
 
 
+def _nmt_kw(args) -> dict:
+    return {"model_name": args.nmt_model} if args.nmt_model else {}
+
+
 def run_policy(policy: str, rows: list[dict], tgt: str, args,
                ckpt: "Checkpoint | None" = None) -> list[dict]:
     out: list[dict] = []
@@ -126,7 +130,7 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
     elif policy == "mu_prefix":
         from core.meaning_segmentator.autoseg.baselines.nmt import Nmt
 
-        nmt = Nmt(src="en", tgt=tgt, device=args.device)
+        nmt = Nmt(src="en", tgt=tgt, device=args.device, **_nmt_kw(args))
         for i, r in enumerate(rows):
             pieces = mu_prefix.segment(nmt, r["text"], SPACED[tgt], args.n_cands)
             add({**r, "pieces": pieces})
@@ -144,7 +148,7 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
         from core.meaning_segmentator.autoseg.baselines.nmt import Nmt
 
         nmt = Nmt(src="en", tgt=tgt, device=args.device,
-                  attentions=True, attn_layer=args.attn_layer)
+                  attentions=True, attn_layer=args.attn_layer, **_nmt_kw(args))
         for i, r in enumerate(rows):
             add({**r, "pieces": alignatt.segment(nmt, r["text"], args.f)})
             if (i + 1) % 25 == 0:
@@ -176,7 +180,12 @@ def main() -> int:
     p.add_argument("--device", default="cuda")
     p.add_argument("--n-cands", type=int, default=10, help="Zhang 2020 beam 후보 수")
     p.add_argument("--f", type=int, default=2, help="AlignAtt 노브 — 최근 f 어절")
-    p.add_argument("--attn-layer", type=int, default=5, help="AlignAtt 정렬 층")
+    p.add_argument("--attn-layer", type=int, default=None,
+                   help="AlignAtt 교차어텐션 층. 기본은 모델별 실측값 "
+                        "(nllb-600M 5 / madlad-3B 20 — `probe_attn_layer.py`)")
+    p.add_argument("--nmt-model", default=None,
+                   help="alignatt·mu_prefix 가 규칙 판정에 쓸 seq2seq. 기본은 평가 번역기와 "
+                        "같은 madlad (`nmt.MODEL`). 옛 NLLB 산출을 재현할 때만 바꾼다")
     p.add_argument("--max-chunk", type=int, default=7, help="SASST 최대 청크 어절")
     p.add_argument("--limit", type=int, default=0, help="스모크용 앞 N 문장")
     p.add_argument("--resume", action="store_true",
@@ -225,6 +234,7 @@ def main() -> int:
              "n_cands": args.n_cands if args.policy == "mu_prefix" else None,
              "f": args.f if args.policy == "alignatt" else None,
              "attn_layer": args.attn_layer if args.policy == "alignatt" else None,
+             "nmt_model": args.nmt_model if args.policy in ("alignatt", "mu_prefix") else None,
              "rows": res}, ensure_ascii=False, indent=2), encoding="utf-8")
         part.unlink(missing_ok=True)       # 최종본이 나왔으니 진행분은 버린다
         print(f"  → {path} ({len(res)}행)")
