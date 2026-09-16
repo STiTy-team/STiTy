@@ -1,0 +1,872 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01426,
+   "lo": -0.05085,
+   "hi": 0.02048,
+   "n": 437,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a new Core Principle that explicitly asks the scorer to check for immediately following scope-bearing material (negation, quantifiers, rescoping adverbials, contrastive coordinators, disambiguating head noun/verb) and to lower a cut's rank when present — directly addresses the primary finding.",
+   "Change C5 to keep the warning about cuts inside long noun groups but allow internal cuts when the left fragment is a clear head and the right only adds modifiers/clarifiers, enabling denser short-latency segmentation as the critique recommends.",
+   "Replace example E1 with the measured labeled example en_us_733 (high gap, scope-bearing immediate material) so the model sees a worked case showing the dangerous pattern."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Unstable openers (sentence-initial subordinators or adverbial frames) often ha",
+    "now": "- Ask: Does the following material contain scope-bearing elements (negation, qua"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Long noun groups and multiword modifiers accumulate referential content to the"
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van",
+    "labeled_example": "en_us_733"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.02148,
+   "lo": -0.0076,
+   "hi": 0.04943,
+   "n": 437,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C2 (Cohesion) to allow and prefer internal cuts inside noun groups when the left fragment is a clear identifiable head and the right only adds modifiers, addressing the primary finding that the prompt overgeneralizes 'don't cut inside long noun groups' and needs denser short-latency segmentation."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- Cohesion: If the left and right sides are translated independently and then co",
+    "now": "- Cohesion: When left and right pieces are translated separately and concatenate"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00915,
+   "lo": -0.03839,
+   "hi": 0.01919,
+   "n": 437,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with labeled example en_us_1116 to show an immediate scope-bearing reversal ('except' after comma) so scorers learn to lower ranks for cuts before such material (addresses the primary finding).",
+   "Replace E2 with labeled example en_us_103 to demonstrate a long noun-group where an internal cut can leave a clear head on the left and modifiers on the right, encouraging denser short-latency segmentation."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+    "labeled_example": "en_us_1116"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below ",
+    "labeled_example": "en_us_103"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.0059,
+   "lo": -0.00641,
+   "hi": 0.01878,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a new Core Principle after C5 that permits internal noun-group cuts when the left fragment is a clear syntactic head and the right only adds modifiers, to enable denser, cohesive short-latency segmentation (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Allow internal noun-group cuts when the left fragment contains the identifiabl"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00639,
+   "lo": -0.00603,
+   "hi": 0.01815,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00737,
+   "lo": -0.00027,
+   "hi": 0.01529,
+   "n": 3662,
+   "n_clusters": 400,
+   "dev_a": {
+    "mean": 0.00639,
+    "lo": -0.00603,
+    "hi": 0.01815,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "dev_b": {
+    "mean": 0.00838,
+    "lo": -0.00104,
+    "hi": 0.0182,
+    "n": 1811,
+    "n_clusters": 200
+   },
+   "pooled": true
+  },
+  "changelog": [
+   "Replace C2 (Cohesion) to allow and prefer internal cuts inside noun groups when the left fragment is a clear identifiable head and the right only adds modifiers, addressing the primary finding that the prompt overgeneralizes 'don't cut inside long noun groups' and needs denser short-latency segmentation."
+  ],
+  "findings": [
+   "The prompt underestimates scope-bearing material that appears immediately after a cut (quantifiers, negation, rescoping adverbials, contrastive coordinators, or disambiguating head verbs/nouns) and so ranks cuts before those words too high.",
+   "The prompt overgeneralizes \"don't cut inside long noun groups\" and thus avoids dense internal cuts that short-latency segmentation needs even when the left fragment remains an identifiable head and the right only adds modifiers or clarifiers."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- Cohesion: If the left and right sides are translated independently and then co",
+    "now": "- Cohesion: When left and right pieces are translated separately and concatenate"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0129,
+    "≤5": -0.0002,
+    "≤7": 0.0008,
+    "≤10": 0.0092,
+    "≤99": 0.0001
+   },
+   "n_worse": 677,
+   "n_better": 716,
+   "why": "The revised cohesion wording made the model more willing to place internal cuts that separate identifiable heads from their modifiers, which raised H_set for very short-latency pieces (≤3 words and some gains up to ≤10) but also induced new spurious splits (e.g., breaking predicates or fragmenting enumerations) that produced many degraded mid-length examples; the net effect is therefore small and inconclusive.",
+   "lesson": "A later revision should keep the gain in very-short (≤3-word) internal segmentation while avoiding a new bias that cuts apart predicates or fragments enumerations and mid-length pieces.",
+   "blamed": [
+    "C2 «- Cohesion: When left and right pieces are translated separa»"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.0084,
+   "lo": -0.04126,
+   "hi": 0.02616,
+   "n": 462,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Add a Core Principle that permits safe early cuts after short sentence-initial openers when the left fragment is self-contained and low‑contra, addressing the primary finding that the prompt over-penalizes such openers."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Unstable openers (sentence-initial subordinators or adverbial frames) often ha",
+    "now": "- Short initial openers: allow a cut right after brief, non‑committing openers ("
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01559,
+   "lo": -0.04629,
+   "hi": 0.01717,
+   "n": 462,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with labeled example en_us_741 to show a safe early cut after the sentence-initial opener 'It' and teach the model to allow such cuts.",
+   "Replace E2 with labeled example en_us_648 to show a safe early cut after the short initial adverbial 'So' and teach the model to allow such cuts.",
+   "Replace E3 with labeled example en_us_1570 to show a safe early cut after the opener 'It' in a short clause and teach allowance for non-committing openers.",
+   "Replace E4 with labeled example en_us_1081 to add a measured case with an initial adverbial ('Farther south') that the current prompt over-penalizes."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG",
+    "labeled_example": "en_us_741"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: So <SEG:?> many <SEG:?> of <SEG:?> us <SEG:?> find <SEG:?> ourselves <SEG",
+    "labeled_example": "en_us_648"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: It <SEG:?> also <SEG:?> had <SEG:?> no <SEG:?> authority <SEG:?> to <SEG:",
+    "labeled_example": "en_us_1570"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Farther <SEG:?> south <SEG:?> is <SEG:?> Niagara <SEG:?> Falls <SEG:?> an",
+    "labeled_example": "en_us_1081"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00575,
+   "lo": -0.02468,
+   "hi": 0.03983,
+   "n": 462,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C4 to forbid cuts that separate core predicates from required arguments and that split enumerations/verb phrases — addresses the primary finding that internal cuts detach predicates/arguments and degrade mid-length cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Embedded clauses, complements and relative material commonly supply roles or f",
+    "now": "- Do not cut between a core predicate and its required arguments, nor inside enu"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00366,
+   "lo": -0.01056,
+   "hi": 0.01872,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace C4 to forbid cuts that separate core predicates from required arguments and that split enumerations/verb phrases — addresses the primary finding that internal cuts detach predicates/arguments and degrade mid-length cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Embedded clauses, complements and relative material commonly supply roles or f",
+    "now": "- Do not cut between a core predicate and its required arguments, nor inside enu"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])",
+  "diagnosis": {
+   "vs_base": {
+    "delta": {
+     "mean": -0.0027,
+     "lo": null,
+     "hi": null,
+     "approx": "from logged bin means, CI not computed"
+    },
+    "by_bin": {
+     "≤3": -0.0089,
+     "≤5": 0.002,
+     "≤7": 0.0086,
+     "≤10": -0.0037,
+     "≤99": 0.0055
+    }
+   }
+  }
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00262,
+   "lo": -0.00854,
+   "hi": 0.01396,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00262,
+   "lo": -0.00854,
+   "hi": 0.01396,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a short Core Principle after C5 forbidding cuts that separate core predicates from required arguments or that split enumerations/verb phrases; this directly addresses the primary finding about harmful internal splits."
+  ],
+  "findings": [
+   "The prompt over-penalizes sentence‑initial short openers (The/It/In/short adverbials/pronouns), avoiding early cuts that are often safe and valuable for very-short latency.",
+   "The prompt is now too eager to insert internal cuts that detach required predicates/arguments or fragment enumerations, which degrades mid‑length cohesion."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Preserve predicate–argument and enumerations: do not cut between a core predic"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])",
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0047,
+    "≤5": 0.0039,
+    "≤7": -0.0048,
+    "≤10": -0.001,
+    "≤99": 0.0035
+   },
+   "n_worse": 714,
+   "n_better": 737,
+   "why": "Inserting the core-principle blocked cuts that split predicates/arguments and enumerations, so the scorer stopped keeping many short internal splits (improving the smallest latency bins ≤3 and ≤5). However the constraint caused the kept-cut budget to be reallocated in mid-length pieces (bins ≤7 and ≤10), producing more cuts that split subjects/verbs or other heads and so made many mid-length cases worse.",
+   "lesson": "A later revision should preserve the benefit of preventing internal predicate/argument and enumeration splits for short pieces while avoiding wholesale reallocation of cuts that creates new subject–verb or head splits in mid-length examples.",
+   "blamed": [
+    "C5 «- Long noun groups and multiword modifiers accumulate refere»"
+   ],
+   "vs_base": {
+    "delta": {
+     "mean": -0.0037,
+     "lo": null,
+     "hi": null,
+     "approx": "from logged bin means, CI not computed"
+    },
+    "by_bin": {
+     "≤3": -0.0083,
+     "≤5": 0.0041,
+     "≤7": -0.0056,
+     "≤10": -0.0102,
+     "≤99": 0.0034
+    }
+   }
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00117,
+   "lo": -0.02743,
+   "hi": 0.0301,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C5 to prioritize cuts that would leave an asserted predicate or an identified noun orphaned — mark such cuts unsafe while avoiding a blanket ban on internal short cuts; addresses the primary finding and the identifying-modifier finding."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Predicate & identifier safety: If the left fragment contains an asserted main "
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00915,
+   "lo": -0.01376,
+   "hi": 0.03171,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with measured labeled example en_us_140 to teach cuts that leave predicates/heads unresolved (primary finding).",
+   "Replace E2 with measured labeled example en_us_26 to show cases where left fragments assert predicates reversed later.",
+   "Replace E3 with measured labeled example en_us_1253 to demonstrate predicate/argument fragmentation and downstream contradiction risk.",
+   "Replace E4 with measured labeled example en_us_1488 to present a short-latency case where cutting before resolved scope causes errors."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gon",
+    "labeled_example": "en_us_140"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Ovechkin's <SEG:?> first <SEG:?> assist <SEG:?> of <SEG:?> the <SEG:?> ni",
+    "labeled_example": "en_us_26"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> ",
+    "labeled_example": "en_us_1253"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Edgar <SEG:?> Veguilla <SEG:?> received <SEG:?> arm <SEG:?> and <SEG:?> j",
+    "labeled_example": "en_us_1488"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.0096,
+   "lo": -0.0131,
+   "hi": 0.03129,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a brief, actionable rule after C6 to mark cuts that drop essential post‑nominal identifiers as unsafe, addressing the primary finding that splitting off identifying modifiers causes misidentification and high contradiction risk."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Appositives and parenthetical inserts supply clarifying or identifying detail;",
+    "now": "- Identifying modifiers: If a post‑nominal modifier (restrictive relative, essen"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00272,
+   "lo": -0.00829,
+   "hi": 0.01345,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a brief, actionable rule after C6 to mark cuts that drop essential post‑nominal identifiers as unsafe, addressing the primary finding that splitting off identifying modifiers causes misidentification and high contradiction risk."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Appositives and parenthetical inserts supply clarifying or identifying detail;",
+    "now": "- Identifying modifiers: If a post‑nominal modifier (restrictive relative, essen"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.003,
+   "lo": -0.00794,
+   "hi": 0.01437,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace E1 with measured labeled example en_us_140 to teach cuts that leave predicates/heads unresolved (primary finding).",
+   "Replace E2 with measured labeled example en_us_26 to show cases where left fragments assert predicates reversed later.",
+   "Replace E3 with measured labeled example en_us_1253 to demonstrate predicate/argument fragmentation and downstream contradiction risk.",
+   "Replace E4 with measured labeled example en_us_1488 to present a short-latency case where cutting before resolved scope causes errors."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gon",
+    "labeled_example": "en_us_140"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Ovechkin's <SEG:?> first <SEG:?> assist <SEG:?> of <SEG:?> the <SEG:?> ni",
+    "labeled_example": "en_us_26"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> ",
+    "labeled_example": "en_us_1253"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Edgar <SEG:?> Veguilla <SEG:?> received <SEG:?> arm <SEG:?> and <SEG:?> j",
+    "labeled_example": "en_us_1488"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])"
+ },
+ {
+  "iter": 3,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00716,
+   "lo": -0.00425,
+   "hi": 0.01926,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.0081,
+   "lo": 0.00032,
+   "hi": 0.01658,
+   "n": 3662,
+   "n_clusters": 400,
+   "dev_a": {
+    "mean": 0.00716,
+    "lo": -0.00425,
+    "hi": 0.01926,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "dev_b": {
+    "mean": 0.00905,
+    "lo": -0.00095,
+    "hi": 0.0198,
+    "n": 1811,
+    "n_clusters": 200
+   },
+   "pooled": true
+  },
+  "changelog": [
+   "Replace C6 to require marking cuts that drop essential post-nominal modifiers or appositives as unsafe — addresses the primary finding that splitting off identifying modifiers causes misidentification and high contradiction risk."
+  ],
+  "findings": [
+   "The scorer underestimates cuts that leave an asserted predicate or clause head unresolved: when the left fragment contains a main verb/clause whose arguments, scope, or negation are supplied later, that left piece can assert a claim that the rest of the sentence then reverses.",
+   "The scorer treats post-nominal modifiers and appositives as generally safe to split for density, but sometimes those right-hand modifiers are essential to identify the referent; cutting them produces misidentification or a contradictable assertion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Appositives and parenthetical inserts supply clarifying or identifying detail;",
+    "now": "- Appositives and post-nominal modifiers: if the right-side modifier is essentia"
+   }
+  ],
+  "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])",
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0053,
+    "≤5": 0.0073,
+    "≤7": 0.0098,
+    "≤10": 0.0092,
+    "≤99": 0.0105
+   },
+   "n_worse": 690,
+   "n_better": 719,
+   "why": "Replacing C6 caused the model to avoid cuts that would drop essential post‑nominal modifiers or appositives; measured against the prior near‑miss this edit has almost no net effect overall (vs_base mean Δ=0.00078, CI includes zero) but does hurt very short pieces (≤3: −0.0076) while improving longer spans (≤5..≤99: +0.0074..+0.0105), i.e. many examples moved cuts away from modifiers (improving cohesion) but in some short cases the cuts were pushed into positions that split heads/verbs or small NPs and so worsened H_set (roughly balanced: 676 worse vs 698 better).",
+   "lesson": "Keep the protection against dropping essential post‑nominal modifiers and appositives (it improves longer spans), but avoid forcing cuts into very short segments where they end up splitting heads from their dependents.",
+   "blamed": [
+    "C6 «- Appositives and post-nominal modifiers: if the right-side »"
+   ],
+   "vs_base": {
+    "delta": {
+     "mean": 0.00078,
+     "lo": -0.00993,
+     "hi": 0.01287,
+     "n": 1851,
+     "n_clusters": 200
+    },
+    "by_bin": {
+     "≤3": -0.0076,
+     "≤5": 0.0074,
+     "≤7": 0.0089,
+     "≤10": 0.0,
+     "≤99": 0.0105
+    },
+    "n_worse": 676,
+    "n_better": 698
+   }
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00938,
+   "lo": -0.01335,
+   "hi": 0.03141,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C5 to soften the blanket ban on internal noun-group cuts: instruct assessing whether a post-nominal modifier is essential and prefer keeping predicate+arguments together when preserving a modifier would force splitting predicates or create a stranded continuation head — addresses the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Noun groups & modifiers: do not ban internal cuts outright. Ask whether a post"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00673,
+   "lo": -0.01522,
+   "hi": 0.02826,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace example E1 with measured example en_us_733 so the prompt shows a real short‑latency case where a stranded continuation head (predicate needing its complement) causes high contradiction risk — addressing the primary finding while obeying the examples_only constraint."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van",
+    "labeled_example": "en_us_733"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00542,
+   "lo": -0.01007,
+   "hi": 0.02069,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C6 to keep protection for essential post‑nominal modifiers but explicitly allow abandoning modifier preservation when doing so would split predicate–argument structure or leave a continuation head on the left, protecting very short‑latency cases."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Appositives and post-nominal modifiers: if the right-side modifier is essentia",
+    "now": "Appositives and post‑nominal modifiers: if a right-side modifier is essential to"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.0085,
+   "lo": -0.0215,
+   "hi": 0.00407,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Paraphrased C3 to be shorter while keeping its warning about unresolved scope in unstable openers (freeing space).",
+   "Inserted a new principle immediately after C3 that defines and flags 'continuation heads' (verbs missing objects, prepositions without complements, subordinators/comparatives, quantifiers, auxiliaries) as high‑contra and advises avoiding cuts that leave them on the left — directly addressing the primary finding.",
+   "Inserted a new principle after C5 that clarifies the post‑nominal modifier guidance: do not ban internal noun‑group cuts outright; decide whether a modifier is essential, and if keeping it would force breaking predicate–argument integrity or create a continuation head, prefer keeping the predicate+arguments together — addressing the second finding without imposing an absolute prohibition."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "was": "- Unstable openers (sentence-initial subordinators or adverbial frames) often ha",
+    "now": "- Unstable openers (sentence-initial subordinators or adverbial frames) often le"
+   },
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Unstable openers (sentence-initial subordinators or adverbial frames) often ha",
+    "now": "- Continuation heads: verbs lacking their object, prepositions without a complem"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Modifiers vs predicate integrity: do not forbid internal noun-group cuts outri"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01272,
+   "lo": -0.02642,
+   "hi": 0.00092,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace C5 to soften the blanket ban on internal noun-group cuts: instruct assessing whether a post-nominal modifier is essential and prefer keeping predicate+arguments together when preserving a modifier would force splitting predicates or create a stranded continuation head — addresses the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+    "now": "- Noun groups & modifiers: do not ban internal cuts outright. Ask whether a post"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": false,
+  "delta": {
+   "mean": -0.0069,
+   "lo": -0.01719,
+   "hi": 0.00324,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -0.0069,
+   "lo": -0.01719,
+   "hi": 0.00324,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace example E1 with measured example en_us_733 so the prompt shows a real short‑latency case where a stranded continuation head (predicate needing its complement) causes high contradiction risk — addressing the primary finding while obeying the examples_only constraint."
+  ],
+  "findings": [
+   "The prompt underestimates the high contradiction risk of cuts that leave a 'continuation head' on the left (verbs needing their object, prepositions without an object, subordinators/causal/comparative markers, quantifiers, or auxiliaries). Such cuts produce a standalone fragment whose truth or entailments are often reversed or completed by the right context.",
+   "The prompt's protection of post‑nominal modifiers/appositives is applied too bluntly: forbidding any cut that might drop a modifier can push cuts into positions that split predicates or heads in very short segments, which harms the short‑latency bins."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van",
+    "labeled_example": "en_us_733"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0083,
+    "≤5": -0.007,
+    "≤7": -0.0031,
+    "≤10": -0.0046,
+    "≤99": -0.0082
+   },
+   "n_worse": 675,
+   "n_better": 690,
+   "why": "Replacing E1 with a real short‑latency example that emphasizes a stranded continuation head made the model avoid cuts that leave predicates waiting for complements, but that shift displaced cuts into very short spans (splitting auxiliaries, negation, and small noun‑phrase pieces). The effect is a small net drop overall, concentrated at the shortest latency bin (≤3) with only minor or mixed changes elsewhere.",
+   "lesson": "When adding a short‑latency example to discourage head‑stranding, avoid encouraging cut shifts that increase fragmentation inside ultra‑short pieces (≤3); keep the example's signal without trading fewer head‑stranding cuts for more splits of auxiliaries/negation or tiny noun phrases.",
+   "blamed": [
+    "E1 «Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG»"
+   ]
+  }
+ }
+]

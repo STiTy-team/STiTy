@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.0084,
+    "lo": -0.04126,
+    "hi": 0.02616,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7646,
+   "changelog": [
+    "Add a Core Principle that permits safe early cuts after short sentence-initial openers when the left fragment is self-contained and low‑contra, addressing the primary finding that the prompt over-penalizes such openers."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.01067,
+    "lo": -0.01552,
+    "hi": 0.03683,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7575,
+   "changelog": [
+    "Insert a short Core Principle after C5 forbidding cuts that separate core predicates from required arguments or that split enumerations/verb phrases; this directly addresses the primary finding about harmful internal splits."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.01559,
+    "lo": -0.04629,
+    "hi": 0.01717,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7029,
+   "changelog": [
+    "Replace E1 with labeled example en_us_741 to show a safe early cut after the sentence-initial opener 'It' and teach the model to allow such cuts.",
+    "Replace E2 with labeled example en_us_648 to show a safe early cut after the short initial adverbial 'So' and teach the model to allow such cuts.",
+    "Replace E3 with labeled example en_us_1570 to show a safe early cut after the opener 'It' in a short clause and teach allowance for non-committing openers.",
+    "Replace E4 with labeled example en_us_1081 to add a measured case with an initial adverbial ('Farther south') that the current prompt over-penalizes."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00575,
+    "lo": -0.02468,
+    "hi": 0.03983,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7447,
+   "changelog": [
+    "Replace C4 to forbid cuts that separate core predicates from required arguments and that split enumerations/verb phrases — addresses the primary finding that internal cuts detach predicates/arguments and degrade mid-length cohesion."
+   ]
+  }
+ ]
+}

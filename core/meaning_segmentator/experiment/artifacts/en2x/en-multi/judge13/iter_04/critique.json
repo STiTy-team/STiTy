@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates the high contradiction risk of cuts that leave a 'continuation head' on the left (verbs needing their object, prepositions without an object, subordinators/causal/comparative markers, quantifiers, or auxiliaries). Such cuts produce a standalone fragment whose truth or entailments are often reversed or completed by the right context.",
+    "evidence": "['en_us_733','en_us_738','en_us_1081','en_us_399','en_us_1113','en_us_1116','en_us_360','en_us_936','en_us_103','en_us_1617']: each policy kept a cut that left a predicate/complement marker or subordinating/comparative particle stranded on the left and that single cut had very high contra, killing the set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat 'continuation heads' (verbs lacking their object, prepositions without their complement, subordinators/causal/comparative markers, quantifiers, auxiliaries) as high‑contra: avoid cuts that leave such heads on the left because the remaining right context commonly reverses or completes the claim."
+    }
+   },
+   {
+    "diagnosis": "The prompt's protection of post‑nominal modifiers/appositives is applied too bluntly: forbidding any cut that might drop a modifier can push cuts into positions that split predicates or heads in very short segments, which harms the short‑latency bins.",
+    "evidence": "['en_us_399','en_us_360','en_us_103']: target edits reintroduced denser, local cuts (sometimes inside noun groups) to keep verbs and their arguments intact; the policy's blanket avoidance of splitting modifiers instead moved cuts into predicate/argument boundaries and produced high‑contra failures in short bins.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not absolutely prohibit cuts inside noun groups or before post‑nominal modifiers; ask whether the modifier is essential to the truth/identification. If preserving it would force a cut that breaks verb–argument integrity or creates a continuation head, prefer keeping predicate+arguments together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates the high contradiction risk of cuts that leave a 'continuation head' on the left (verbs needing their object, prepositions without an object, subordinators/causal/comparative markers, quantifiers, or auxiliaries). Such cuts produce a standalone fragment whose truth or entailments are often reversed or completed by the right context.",
+   "evidence": "['en_us_733','en_us_738','en_us_1081','en_us_399','en_us_1113','en_us_1116','en_us_360','en_us_936','en_us_103','en_us_1617']: each policy kept a cut that left a predicate/complement marker or subordinating/comparative particle stranded on the left and that single cut had very high contra, killing the set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat 'continuation heads' (verbs lacking their object, prepositions without their complement, subordinators/causal/comparative markers, quantifiers, auxiliaries) as high‑contra: avoid cuts that leave such heads on the left because the remaining right context commonly reverses or completes the claim."
+   }
+  },
+  {
+   "diagnosis": "The prompt's protection of post‑nominal modifiers/appositives is applied too bluntly: forbidding any cut that might drop a modifier can push cuts into positions that split predicates or heads in very short segments, which harms the short‑latency bins.",
+   "evidence": "['en_us_399','en_us_360','en_us_103']: target edits reintroduced denser, local cuts (sometimes inside noun groups) to keep verbs and their arguments intact; the policy's blanket avoidance of splitting modifiers instead moved cuts into predicate/argument boundaries and produced high‑contra failures in short bins.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not absolutely prohibit cuts inside noun groups or before post‑nominal modifiers; ask whether the modifier is essential to the truth/identification. If preserving it would force a cut that breaks verb–argument integrity or creates a continuation head, prefer keeping predicate+arguments together."
+   }
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt over-penalizes sentence‑initial short openers (The/It/In/short adverbials/pronouns), avoiding early cuts that are often safe and valuable for very-short latency.",
+    "evidence": "ids: [en_us_741, en_us_292, en_us_1179, en_us_1081, en_us_419, en_us_101, en_us_1570, en_us_648, en_us_936, en_us_538] — each target restores an early sentence‑initial cut the policy dropped; those added cuts have high H and low contra and improve short‑latency performance.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Permit cuts immediately after short, sentence‑initial openers (e.g. The/It/In/adverbial heads) when the left fragment is a self‑contained, non‑committing opener (low contra) and the cut preserves recoverable cohesion."
+    }
+   },
+   {
+    "diagnosis": "The prompt is now too eager to insert internal cuts that detach required predicates/arguments or fragment enumerations, which degrades mid‑length cohesion.",
+    "evidence": "ids: [en_us_538, en_us_648, en_us_101, en_us_419, en_us_655, en_us_936] — in each case the policy introduced internal splits that break predicates, verb‑argument structure, or enumerations; the target groups those spans to preserve meaning and raises H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a core predicate and its required arguments, nor inside enumerations or verb phrases where following material supplies essential scope or disambiguation; prefer cuts that leave a grammatically coherent, recoverable unit."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt over-penalizes sentence‑initial short openers (The/It/In/short adverbials/pronouns), avoiding early cuts that are often safe and valuable for very-short latency.",
+   "evidence": "ids: [en_us_741, en_us_292, en_us_1179, en_us_1081, en_us_419, en_us_101, en_us_1570, en_us_648, en_us_936, en_us_538] — each target restores an early sentence‑initial cut the policy dropped; those added cuts have high H and low contra and improve short‑latency performance.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Permit cuts immediately after short, sentence‑initial openers (e.g. The/It/In/adverbial heads) when the left fragment is a self‑contained, non‑committing opener (low contra) and the cut preserves recoverable cohesion."
+   }
+  },
+  {
+   "diagnosis": "The prompt is now too eager to insert internal cuts that detach required predicates/arguments or fragment enumerations, which degrades mid‑length cohesion.",
+   "evidence": "ids: [en_us_538, en_us_648, en_us_101, en_us_419, en_us_655, en_us_936] — in each case the policy introduced internal splits that break predicates, verb‑argument structure, or enumerations; the target groups those spans to preserve meaning and raises H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a core predicate and its required arguments, nor inside enumerations or verb phrases where following material supplies essential scope or disambiguation; prefer cuts that leave a grammatically coherent, recoverable unit."
+   }
+  }
+ ]
+}

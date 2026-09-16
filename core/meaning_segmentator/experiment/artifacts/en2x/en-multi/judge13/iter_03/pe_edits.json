@@ -1,0 +1,137 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Predicate & identifier safety: If the left fragment contains an asserted main predicate (a clause or verb head) or a head noun whose core arguments, scope, negation, or essential identifying material (restrictive relatives, essential appositives, or identifying PPs) are supplied by the right fragment, treat the cut as unsafe and score it lower. Allow internal short cuts only when the left already carries the predicate's truth and the referent is unambiguously identified."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 274
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7662,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Appositives and post-nominal modifiers: if the right-side modifier is essential to identify or restrict the noun (restrictive relative, essential appositive, identifying PP), mark cuts that drop it unsafe."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 11
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7399,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_140",
+    "text": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .\nOutput: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> ."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_26",
+    "text": "Input: Ovechkin's <SEG:?> first <SEG:?> assist <SEG:?> of <SEG:?> the <SEG:?> night <SEG:?> was <SEG:?> on <SEG:?> the <SEG:?> game-winning <SEG:?> goal <SEG:?> by <SEG:?> rookie <SEG:?> Nicklas <SEG:?> Backstrom;\nOutput: Ovechkin's <SEG:46> first <SEG:23> assist <SEG:31> of <SEG:62> the <SEG:15> night <SEG:100> was <SEG:38> on <SEG:54> the <SEG:8> game-winning <SEG:77> goal <SEG:85> by <SEG:0> rookie <SEG:92> Nicklas <SEG:69> Backstrom;"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1253",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1488",
+    "text": "Input: Edgar <SEG:?> Veguilla <SEG:?> received <SEG:?> arm <SEG:?> and <SEG:?> jaw <SEG:?> wounds <SEG:?> while <SEG:?> Kristoffer <SEG:?> Schneider <SEG:?> was <SEG:?> left <SEG:?> requiring <SEG:?> reconstructive <SEG:?> surgery <SEG:?> for <SEG:?> his <SEG:?> face.\nOutput: Edgar <SEG:88> Veguilla <SEG:75> received <SEG:44> arm <SEG:31> and <SEG:38> jaw <SEG:62> wounds <SEG:100> while <SEG:6> Kristoffer <SEG:19> Schneider <SEG:25> was <SEG:12> left <SEG:94> requiring <SEG:56> reconstructive <SEG:69> surgery <SEG:81> for <SEG:50> his <SEG:0> face."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 502
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -119
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 21
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -313
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7479,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Identifying modifiers: If a post‑nominal modifier (restrictive relative, essential appositive, or restrictive PP) is required to uniquely identify or correctly describe the left fragment's referent, treat cuts that drop it as unsafe (score them low). If the modifier merely adds optional detail, a dense internal cut is acceptable."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 334
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7722,
+  "errors": null
+ }
+]

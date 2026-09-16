@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00262,
+  "lo": -0.00854,
+  "hi": 0.01396,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": 0.0047,
+  "≤5": 0.0039,
+  "≤7": -0.0048,
+  "≤10": -0.001,
+  "≤99": 0.0035
+ },
+ "n_worse": 714,
+ "n_better": 737,
+ "worst": [
+  {
+   "id": "en_us_776",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.8295,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice they are not.",
+   "after": "Although in theory they can take place annually (so long as they are in different countries), ‖ in practice they ‖ are not."
+  },
+  {
+   "id": "en_us_776",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7723,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory they can take place annually (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6901,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1167",
+   "k": 3,
+   "bin": "≤3",
+   "delta": -0.6691,
+   "before": "Their predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually.",
+   "after": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright as habitually."
+  },
+  {
+   "id": "en_us_802",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.6204,
+   "before": "Drink alcoholic drinks with moderation. ‖ Alcohol affects everyone differently, ‖ and knowing your limit is very important.",
+   "after": "Drink alcoholic drinks with moderation. ‖ Alcohol affects everyone ‖ differently, and knowing your limit is very important."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.807,
+   "before": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6506,
+   "before": "He originally named ‖ the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_333",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5936,
+   "before": "The celebrations ‖ started ‖ with a special show ‖ by the world-renowned ‖ group ‖ Cirque ‖ du Soleil.",
+   "after": "The celebrations ‖ started ‖ with a special ‖ show ‖ by the world-renowned ‖ group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.5729,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication ‖ of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice ‖ works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.567,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, ‖ fifth, and sixth place, ‖ respectively.",
+   "after": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, fifth, and sixth place, ‖ respectively."
+  }
+ ],
+ "why": "Inserting the core-principle blocked cuts that split predicates/arguments and enumerations, so the scorer stopped keeping many short internal splits (improving the smallest latency bins ≤3 and ≤5). However the constraint caused the kept-cut budget to be reallocated in mid-length pieces (bins ≤7 and ≤10), producing more cuts that split subjects/verbs or other heads and so made many mid-length cases worse.",
+ "lesson": "A later revision should preserve the benefit of preventing internal predicate/argument and enumeration splits for short pieces while avoiding wholesale reallocation of cuts that creates new subject–verb or head splits in mid-length examples.",
+ "blamed": [
+  "C5 «- Long noun groups and multiword modifiers accumulate refere»"
+ ]
+}

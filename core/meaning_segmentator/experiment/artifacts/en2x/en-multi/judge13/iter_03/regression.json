@@ -1,0 +1,141 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.0081,
+  "lo": 0.00032,
+  "hi": 0.01658,
+  "n": 3662,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00716,
+   "lo": -0.00425,
+   "hi": 0.01926,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": 0.00905,
+   "lo": -0.00095,
+   "hi": 0.0198,
+   "n": 1811,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "by_bin": {
+  "≤3": 0.0053,
+  "≤5": 0.0073,
+  "≤7": 0.0098,
+  "≤10": 0.0092,
+  "≤99": 0.0105
+ },
+ "n_worse": 690,
+ "n_better": 719,
+ "worst": [
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7032,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1135",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.6152,
+   "before": "The first public reading of the document ‖ was ‖ by ‖ John ‖ Nixon ‖ in the yard of Independence Hall ‖ on July 8.",
+   "after": "The first public reading of the document ‖ was by John ‖ Nixon ‖ in the yard ‖ of Independence ‖ Hall ‖ on July 8."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.6114,
+   "before": "Internal poisoning may not be immediately ‖ apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6093,
+   "before": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6058,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication ‖ of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice ‖ works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.807,
+   "before": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7239,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.6886,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1102",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6695,
+   "before": "The best indication of internal poisoning may be the presence of an open container ‖ of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container ‖ of medication or toxic household chemicals."
+  }
+ ],
+ "vs_base": {
+  "delta": {
+   "mean": 0.00078,
+   "lo": -0.00993,
+   "hi": 0.01287,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "by_bin": {
+   "≤3": -0.0076,
+   "≤5": 0.0074,
+   "≤7": 0.0089,
+   "≤10": 0.0,
+   "≤99": 0.0105
+  },
+  "n_worse": 676,
+  "n_better": 698
+ },
+ "why": "Replacing C6 caused the model to avoid cuts that would drop essential post‑nominal modifiers or appositives; measured against the prior near‑miss this edit has almost no net effect overall (vs_base mean Δ=0.00078, CI includes zero) but does hurt very short pieces (≤3: −0.0076) while improving longer spans (≤5..≤99: +0.0074..+0.0105), i.e. many examples moved cuts away from modifiers (improving cohesion) but in some short cases the cuts were pushed into positions that split heads/verbs or small NPs and so worsened H_set (roughly balanced: 676 worse vs 698 better).",
+ "lesson": "Keep the protection against dropping essential post‑nominal modifiers and appositives (it improves longer spans), but avoid forcing cuts into very short segments where they end up splitting heads from their dependents.",
+ "blamed": [
+  "C6 «- Appositives and post-nominal modifiers: if the right-side »"
+ ]
+}

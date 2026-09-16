@@ -1,0 +1,116 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  13,
+  18,
+  22,
+  27,
+  31,
+  37,
+  44,
+  45,
+  55,
+  60,
+  62,
+  64,
+  67,
+  73,
+  74,
+  75,
+  80,
+  87,
+  90,
+  94,
+  100,
+  103,
+  104,
+  105,
+  115,
+  116,
+  117,
+  119,
+  133,
+  141,
+  142,
+  144,
+  146,
+  147,
+  151,
+  152,
+  153,
+  156,
+  164,
+  169,
+  173,
+  177,
+  181,
+  182,
+  187,
+  188,
+  190,
+  196,
+  197
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.01237,
+    "lo": -0.00989,
+    "hi": 0.0413,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7968,
+   "changelog": [
+    "Paraphrased C3 to be shorter while keeping its warning about unresolved scope in unstable openers (freeing space).",
+    "Inserted a new principle immediately after C3 that defines and flags 'continuation heads' (verbs missing objects, prepositions without complements, subordinators/comparatives, quantifiers, auxiliaries) as high‑contra and advises avoiding cuts that leave them on the left — directly addressing the primary finding.",
+    "Inserted a new principle after C5 that clarifies the post‑nominal modifier guidance: do not ban internal noun‑group cuts outright; decide whether a modifier is essential, and if keeping it would force breaking predicate–argument integrity or create a continuation head, prefer keeping the predicate+arguments together — addressing the second finding without imposing an absolute prohibition."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00938,
+    "lo": -0.01335,
+    "hi": 0.03141,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7478,
+   "changelog": [
+    "Replace C5 to soften the blanket ban on internal noun-group cuts: instruct assessing whether a post-nominal modifier is essential and prefer keeping predicate+arguments together when preserving a modifier would force splitting predicates or create a stranded continuation head — addresses the primary finding."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00673,
+    "lo": -0.01522,
+    "hi": 0.02826,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7496,
+   "changelog": [
+    "Replace example E1 with measured example en_us_733 so the prompt shows a real short‑latency case where a stranded continuation head (predicate needing its complement) causes high contradiction risk — addressing the primary finding while obeying the examples_only constraint."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00542,
+    "lo": -0.01007,
+    "hi": 0.02069,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7529,
+   "changelog": [
+    "Replace C6 to keep protection for essential post‑nominal modifiers but explicitly allow abandoning modifier preservation when doing so would split predicate–argument structure or leave a continuation head on the left, protecting very short‑latency cases."
+   ]
+  }
+ ]
+}

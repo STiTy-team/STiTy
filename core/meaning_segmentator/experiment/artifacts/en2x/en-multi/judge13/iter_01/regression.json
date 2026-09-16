@@ -1,0 +1,123 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00737,
+  "lo": -0.00027,
+  "hi": 0.01529,
+  "n": 3662,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00639,
+   "lo": -0.00603,
+   "hi": 0.01815,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": 0.00838,
+   "lo": -0.00104,
+   "hi": 0.0182,
+   "n": 1811,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "by_bin": {
+  "≤3": 0.0129,
+  "≤5": -0.0002,
+  "≤7": 0.0008,
+  "≤10": 0.0092,
+  "≤99": 0.0001
+ },
+ "n_worse": 677,
+ "n_better": 716,
+ "worst": [
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7364,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1629",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6873,
+   "before": "Some reports ‖ put the official death toll at eight, ‖ and official reports ‖ confirm ‖ that up to 30 were injured; ‖ but final numbers are not yet known.",
+   "after": "Some reports put the official death toll at eight, ‖ and official reports ‖ confirm that up to 30 were injured; ‖ but final ‖ numbers ‖ are not yet known."
+  },
+  {
+   "id": "en_us_1167",
+   "k": 3,
+   "bin": "≤3",
+   "delta": -0.6691,
+   "before": "Their predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually.",
+   "after": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright as habitually."
+  },
+  {
+   "id": "en_us_1629",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6194,
+   "before": "Some reports ‖ put the official death toll at eight, ‖ and official reports ‖ confirm ‖ that up to 30 ‖ were injured; ‖ but final numbers are not yet known.",
+   "after": "Some reports ‖ put the official death toll at eight, ‖ and official reports ‖ confirm that up to 30 were injured; ‖ but final ‖ numbers ‖ are not yet known."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6121,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting ‖ that these findings ‖ have no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have ‖ no relevance to people ‖ who already have Type 1 diabetes."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7239,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_776",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6636,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are ‖ not.",
+   "after": "Although in theory they ‖ can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6506,
+   "before": "He originally named ‖ the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_405",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6455,
+   "before": "German submarines ‖ were called ‖ U-Boats. ‖ The Germans were very good at navigating ‖ and operating their submarines.",
+   "after": "German submarines ‖ were called U-Boats. ‖ The Germans were very good ‖ at navigating ‖ and operating their submarines."
+  },
+  {
+   "id": "en_us_877",
+   "k": 1,
+   "bin": "≤7",
+   "delta": 0.6236,
+   "before": "For those unfamiliar with medical jargon, ‖ the words infectious and contagious have distinct meanings.",
+   "after": "For those unfamiliar with medical jargon, the words infectious and contagious ‖ have distinct meanings."
+  }
+ ],
+ "why": "The revised cohesion wording made the model more willing to place internal cuts that separate identifiable heads from their modifiers, which raised H_set for very short-latency pieces (≤3 words and some gains up to ≤10) but also induced new spurious splits (e.g., breaking predicates or fragmenting enumerations) that produced many degraded mid-length examples; the net effect is therefore small and inconclusive.",
+ "lesson": "A later revision should keep the gain in very-short (≤3-word) internal segmentation while avoiding a new bias that cuts apart predicates or fragments enumerations and mid-length pieces.",
+ "blamed": [
+  "C2 «- Cohesion: When left and right pieces are translated separa»"
+ ]
+}

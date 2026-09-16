@@ -1,0 +1,136 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Ask: Does the following material contain scope-bearing elements (negation, quantifiers/comparatives, rescoping adverbials, contrastive coordinators, or a disambiguating head noun or verb) that could reverse or complete the left fragment? If so, lower the cut's rank."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Long noun groups and multiword modifiers accumulate referential content to the right; cutting inside them often fragments the intended referent. However, if the left piece is a clear identifiable head and the right only supplies modifiers or clarifiers, an internal cut may be acceptable to enable denser, short-latency segments."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_733",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 269
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 128
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 97
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7791,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Cohesion: When left and right pieces are translated separately and concatenated, they should preserve participants, relations, events and recoverable meaning. Splitting inside noun groups is acceptable if the left fragment remains a clear head and the right only adds modifiers or clarifiers; prefer such internal cuts to support dense short-latency segmentation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 91
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7388,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_103",
+    "text": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below <SEG:?> the <SEG:?> tanks <SEG:?> capable <SEG:?> of <SEG:?> holding <SEG:?> 104,500 <SEG:?> barrels <SEG:?> was <SEG:?> not <SEG:?> yet <SEG:?> filled <SEG:?> to <SEG:?> capacity.\nOutput: Another <SEG:94> secondary <SEG:75> containment <SEG:62> area <SEG:69> below <SEG:88> the <SEG:6> tanks <SEG:100> capable <SEG:56> of <SEG:38> holding <SEG:81> 104,500 <SEG:19> barrels <SEG:44> was <SEG:0> not <SEG:12> yet <SEG:25> filled <SEG:50> to <SEG:31> capacity."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -22
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7404,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Allow internal noun-group cuts when the left fragment contains the identifiable syntactic head and retains core reference, and the right side only adds modifiers or clarifiers. Favor these internal cuts to enable denser, cohesive short-latency segmentation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 260
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7557,
+  "errors": null
+ }
+]

@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates scope-bearing material that appears immediately after a cut (quantifiers, negation, rescoping adverbials, contrastive coordinators, or disambiguating head verbs/nouns) and so ranks cuts before those words too high.",
+    "evidence": "ids: [\"en_us_733\",\"en_us_738\",\"en_us_1116\",\"en_us_399\",\"en_us_1113\",\"en_us_1527\",\"en_us_1617\",\"en_us_360\",\"en_us_103\",\"en_us_1497\",\"en_us_845\"] — each shows a policy-kept cut whose left fragment is later reversed or rescoped by immediately following scope-bearing material (policy_worst_contra high).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Ask: Does the following material contain scope-bearing elements (negation, quantifiers/comparatives, rescoping adverbials, contrastive coordinators, or a disambiguating head noun/verb) that could reverse or complete the left fragment? If so, lower the cut's rank."
+    }
+   },
+   {
+    "diagnosis": "The prompt overgeneralizes \"don't cut inside long noun groups\" and thus avoids dense internal cuts that short-latency segmentation needs even when the left fragment remains an identifiable head and the right only adds modifiers or clarifiers.",
+    "evidence": "ids: [\"en_us_733\",\"en_us_399\",\"en_us_360\",\"en_us_103\",\"en_us_1527\",\"en_us_1497\"] — in these short-bin sentences the target adds internal cuts that preserve cohesion by isolating identifiable heads; the policy thinned those cuts and lost score.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Example: If splitting a noun group leaves the left piece a clear identifiable head while the right only supplies modifiers/clarifiers, prefer the internal cut (assign it a higher rank) to enable denser, cohesive short-latency segments."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates scope-bearing material that appears immediately after a cut (quantifiers, negation, rescoping adverbials, contrastive coordinators, or disambiguating head verbs/nouns) and so ranks cuts before those words too high.",
+   "evidence": "ids: [\"en_us_733\",\"en_us_738\",\"en_us_1116\",\"en_us_399\",\"en_us_1113\",\"en_us_1527\",\"en_us_1617\",\"en_us_360\",\"en_us_103\",\"en_us_1497\",\"en_us_845\"] — each shows a policy-kept cut whose left fragment is later reversed or rescoped by immediately following scope-bearing material (policy_worst_contra high).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Ask: Does the following material contain scope-bearing elements (negation, quantifiers/comparatives, rescoping adverbials, contrastive coordinators, or a disambiguating head noun/verb) that could reverse or complete the left fragment? If so, lower the cut's rank."
+   }
+  },
+  {
+   "diagnosis": "The prompt overgeneralizes \"don't cut inside long noun groups\" and thus avoids dense internal cuts that short-latency segmentation needs even when the left fragment remains an identifiable head and the right only adds modifiers or clarifiers.",
+   "evidence": "ids: [\"en_us_733\",\"en_us_399\",\"en_us_360\",\"en_us_103\",\"en_us_1527\",\"en_us_1497\"] — in these short-bin sentences the target adds internal cuts that preserve cohesion by isolating identifiable heads; the policy thinned those cuts and lost score.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Example: If splitting a noun group leaves the left piece a clear identifiable head while the right only supplies modifiers/clarifiers, prefer the internal cut (assign it a higher rank) to enable denser, cohesive short-latency segments."
+   }
+  }
+ ]
+}

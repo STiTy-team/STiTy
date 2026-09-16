@@ -1,0 +1,121 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Unstable openers (sentence-initial subordinators or adverbial frames) often leave scope unresolved; cutting after them can make the earlier fragment ambiguous about what it governs."
+   },
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Continuation heads: verbs lacking their object, prepositions without a complement, subordinators or comparative markers, quantifiers, and auxiliaries frequently need later material to complete or reverse their meaning. Treat cuts that leave such a 'continuation head' on the left as high‑contra and avoid them."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Modifiers vs predicate integrity: do not forbid internal noun-group cuts outright. Judge whether a post‑nominal modifier is essential to identifying the noun; if preserving it would force splitting a predicate–argument or create a continuation head, prefer keeping the predicate and its arguments intact."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -51
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 313
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 307
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7968,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Noun groups & modifiers: do not ban internal cuts outright. Ask whether a post‑nominal modifier is essential to identify the noun; if preserving it would force splitting a predicate or creating a stranded continuation head, prefer keeping the predicate and its arguments together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 79
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7478,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_733",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 97
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7496,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "Appositives and post‑nominal modifiers: if a right-side modifier is essential to identify or restrict the noun, treat cuts that drop it as unsafe. However, do not preserve a modifier when doing so would split a predicate–argument relation or leave a continuation head on the left; prefer keeping predicates with their required arguments."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 130
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7529,
+  "errors": null
+ }
+]

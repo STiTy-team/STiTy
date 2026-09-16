@@ -1,0 +1,65 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00639,
+  "lo": -0.00603,
+  "hi": 0.01815,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00737,
+  "lo": -0.00027,
+  "hi": 0.01529,
+  "n": 3662,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00639,
+   "lo": -0.00603,
+   "hi": 0.01815,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": 0.00838,
+   "lo": -0.00104,
+   "hi": 0.0182,
+   "n": 1811,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Replace C2 (Cohesion) to allow and prefer internal cuts inside noun groups when the left fragment is a clear identifiable head and the right only adds modifiers, addressing the primary finding that the prompt overgeneralizes 'don't cut inside long noun groups' and needs denser short-latency segmentation."
+ ],
+ "findings": [
+  "The prompt underestimates scope-bearing material that appears immediately after a cut (quantifiers, negation, rescoping adverbials, contrastive coordinators, or disambiguating head verbs/nouns) and so ranks cuts before those words too high.",
+  "The prompt overgeneralizes \"don't cut inside long noun groups\" and thus avoids dense internal cuts that short-latency segmentation needs even when the left fragment remains an identifiable head and the right only adds modifiers or clarifiers."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "change",
+   "was": "- Cohesion: If the left and right sides are translated independently and then co",
+   "now": "- Cohesion: When left and right pieces are translated separately and concatenate"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0129,
+   "≤5": -0.0002,
+   "≤7": 0.0008,
+   "≤10": 0.0092,
+   "≤99": 0.0001
+  },
+  "n_worse": 677,
+  "n_better": 716,
+  "why": "The revised cohesion wording made the model more willing to place internal cuts that separate identifiable heads from their modifiers, which raised H_set for very short-latency pieces (≤3 words and some gains up to ≤10) but also induced new spurious splits (e.g., breaking predicates or fragmenting enumerations) that produced many degraded mid-length examples; the net effect is therefore small and inconclusive.",
+  "lesson": "A later revision should keep the gain in very-short (≤3-word) internal segmentation while avoiding a new bias that cuts apart predicates or fragments enumerations and mid-length pieces.",
+  "blamed": [
+   "C2 «- Cohesion: When left and right pieces are translated separa»"
+  ]
+ }
+}

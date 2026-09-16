@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01426,
+    "lo": -0.05085,
+    "hi": 0.02048,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7791,
+   "changelog": [
+    "Insert a new Core Principle that explicitly asks the scorer to check for immediately following scope-bearing material (negation, quantifiers, rescoping adverbials, contrastive coordinators, disambiguating head noun/verb) and to lower a cut's rank when present — directly addresses the primary finding.",
+    "Change C5 to keep the warning about cuts inside long noun groups but allow internal cuts when the left fragment is a clear head and the right only adds modifiers/clarifiers, enabling denser short-latency segmentation as the critique recommends.",
+    "Replace example E1 with the measured labeled example en_us_733 (high gap, scope-bearing immediate material) so the model sees a worked case showing the dangerous pattern."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.02148,
+    "lo": -0.0076,
+    "hi": 0.04943,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7388,
+   "changelog": [
+    "Replace C2 (Cohesion) to allow and prefer internal cuts inside noun groups when the left fragment is a clear identifiable head and the right only adds modifiers, addressing the primary finding that the prompt overgeneralizes 'don't cut inside long noun groups' and needs denser short-latency segmentation."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00915,
+    "lo": -0.03839,
+    "hi": 0.01919,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7404,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1116 to show an immediate scope-bearing reversal ('except' after comma) so scorers learn to lower ranks for cuts before such material (addresses the primary finding).",
+    "Replace E2 with labeled example en_us_103 to demonstrate a long noun-group where an internal cut can leave a clear head on the left and modifiers on the right, encouraging denser short-latency segmentation."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.02429,
+    "lo": -0.00402,
+    "hi": 0.05255,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7557,
+   "changelog": [
+    "Insert a new Core Principle after C5 that permits internal noun-group cuts when the left fragment is a clear syntactic head and the right only adds modifiers, to enable denser, cohesive short-latency segmentation (addresses the primary finding)."
+   ]
+  }
+ ]
+}

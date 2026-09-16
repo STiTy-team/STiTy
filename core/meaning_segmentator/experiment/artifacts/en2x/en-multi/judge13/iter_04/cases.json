@@ -1,0 +1,2028 @@
+[
+ {
+  "id": "en_us_733",
+  "cuts": 6,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.6689,
+  "policy_worst_contra": 0.974,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    6,
+    8,
+    10,
+    11,
+    14
+   ],
+   "H_set": 0.0173,
+   "text": "Whistler ‖ (1.5 hour drive from Vancouver) ‖ is expensive ‖ but well-known ‖ because ‖ of the 2010 ‖ Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(距离温哥华1.5小时车程)",
+     "是昂贵的",
+     "但众所周知",
+     "因为",
+     "2010年12月31日终了年度收入和支出及准备金和基金结余变动表",
+     "冬季奥林匹克运动会"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "（バンクーバーから車で1.5時間）",
+     "とても高価なものです",
+     "しかし よく知られた事実は",
+     "なぜなら",
+     "2010年の",
+     "冬季オリンピック。"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5 Stunden Fahrt von Vancouver)",
+     "Das ist teuer",
+     "Aber wohlbekannt",
+     "weil",
+     "Jahresbericht 2010",
+     "Olympische Winterspiele."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1.5 horas en coche desde Vancouver)",
+     "Es caro",
+     "Pero bien conocido",
+     "porque",
+     "de 2010",
+     "Juegos Olímpicos de Invierno."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.6862,
+   "text": "Whistler ‖ (1.5 ‖ hour drive from Vancouver) ‖ is ‖ expensive ‖ but ‖ well-known because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(1.5个百分点)",
+     "距离温哥华1小时车程)",
+     "是",
+     "昂贵",
+     "但",
+     "因为2010年冬季奥运会而闻名。"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "１．５",
+     "1時間の車で行ける場所です",
+     "はい",
+     "高い",
+     "でも あなたは",
+     "2010年の冬季オリンピックで有名です"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5",
+     "(1 Stunde Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "aber",
+     "Bekannt wurde die Stadt durch die Olympischen Winterspiele 2010."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1,5",
+     "(1 hora en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "pero",
+     "Es conocida por los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    },
+    {
+     "pos": 11,
+     "left": "expensive but well-known because",
+     "right": "of the 2010 Winter",
+     "H": 0.0206,
+     "H_pct": 14.3,
+     "contra": 0.974,
+     "cohesion": 0.792
+    },
+    {
+     "pos": 14,
+     "left": "because of the 2010",
+     "right": "Winter Olympics.",
+     "H": 0.7384,
+     "H_pct": 57.1,
+     "contra": 0.0758,
+     "cohesion": 0.799
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Whistler (1.5",
+     "right": "hour drive from Vancouver)",
+     "H": 0.7407,
+     "H_pct": 64.3,
+     "contra": 0.0102,
+     "cohesion": 0.7483
+    },
+    {
+     "pos": 7,
+     "left": "drive from Vancouver) is",
+     "right": "expensive but well-known because",
+     "H": 0.7823,
+     "H_pct": 71.4,
+     "contra": 0.0112,
+     "cohesion": 0.7912
+    },
+    {
+     "pos": 9,
+     "left": "Vancouver) is expensive but",
+     "right": "well-known because of the",
+     "H": 0.8724,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6793,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    9
+   ],
+   "H_set": 0.0038,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits ‖ more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "不发放公园许可证",
+     "预计抵达前一个月以上。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "許可証を発行しません",
+     "予定より1ヶ月以上早く"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación a la fecha de llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    11
+   ],
+   "H_set": 0.6832,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than ‖ one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "没有发放公园许可证超过",
+     "预计抵达前一个月。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "1000万ドル以上の 許可証を発行しない",
+     "予定より1ヶ月前に"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht mehr ausgestellt als",
+     "Einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque más de",
+     "Un mes antes de la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "park permits more than",
+     "right": "one month in advance",
+     "H": 0.735,
+     "H_pct": 87.5,
+     "contra": 0.0232,
+     "cohesion": 0.7524
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 2,
+  "avg_chunk": 6.7,
+  "latency_bin": "≤7",
+  "gap": 0.7007,
+  "policy_worst_contra": 0.9881,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    15
+   ],
+   "H_set": 0.0082,
+   "text": "Farther south is Niagara Falls ‖ and the north is home to the untapped natural beauty ‖ of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "北部是未开发的自然美景的家园",
+     "马斯科卡和以外的。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は未開発の自然の美しさが",
+     "見つけることができました"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "Und der Norden ist die Heimat der unerschlossenen Naturschönheit",
+     "Die Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "Y el norte es el hogar de la belleza natural sin explotar",
+     "Vistas de la Muskoka y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6
+   ],
+   "H_set": 0.7089,
+   "text": "Farther south is Niagara Falls ‖ and ‖ the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "以及",
+     "北部是马斯科卡及其以外未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "それに",
+     "北部は未開発の自然の美しさがある マスコカ川のほかにもあります"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "und",
+     "Der Norden ist die Heimat der unerschlossenen natürlichen Schönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "y",
+     "El norte es el hogar de la belleza natural sin explotar de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 15,
+     "left": "the untapped natural beauty",
+     "right": "of the Muskoka and",
+     "H": 0.0086,
+     "H_pct": 11.1,
+     "contra": 0.9881,
+     "cohesion": 0.7258
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "is Niagara Falls and",
+     "right": "the north is home",
+     "H": 0.6956,
+     "H_pct": 94.4,
+     "contra": 0.0736,
+     "cohesion": 0.7509
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_845",
+  "cuts": 2,
+  "avg_chunk": 7.3,
+  "latency_bin": "≤10",
+  "gap": 0.7038,
+  "policy_worst_contra": 0.8692,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    19
+   ],
+   "H_set": 0.1014,
+   "text": "While it's far from a modern phenomenon, ‖ most people probably associate it with youth vandalizing public and private property ‖ using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "大多数人可能会把它和年轻人破坏公共和私人财产联系起来",
+     "使用喷涂油漆。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "多くの人は 若者が公共財や私有財産を破壊すると",
+     "塗料を噴射して"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Die meisten Menschen assoziieren es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum vandalisieren",
+     "Mit Sprühfarbe."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "La mayoría de la gente probablemente lo asocia con jóvenes que vandalizan la propiedad pública y privada",
+     "Usando pintura en aerosol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8
+   ],
+   "H_set": 0.8052,
+   "text": "While it's far from a modern phenomenon, ‖ most ‖ people probably associate it with youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "桥梁",
+     "人们可能会把它与青年人用喷漆破坏公共和私人财产联系起来。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "橋",
+     "多分 人々は 若者が 塗料を使って 公共の物や 私有物を破壊すると 関連付けているでしょう"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Most",
+     "Viele Menschen assoziieren es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum mit Sprühfarbe vandalisieren."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "más",
+     "La gente probablemente lo asocia con jóvenes que vandalizan propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 19,
+     "left": "public and private property",
+     "right": "using spray paint.",
+     "H": 0.1028,
+     "H_pct": 15.0,
+     "contra": 0.8692,
+     "cohesion": 0.7857
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "a modern phenomenon, most",
+     "right": "people probably associate it",
+     "H": 0.8458,
+     "H_pct": 95.0,
+     "contra": 0.0102,
+     "cohesion": 0.8546
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1179",
+  "cuts": 1,
+  "avg_chunk": 16.5,
+  "latency_bin": "≤99",
+  "gap": 0.2663,
+  "policy_worst_contra": 0.2998,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.6083,
+   "text": "In 1895, after defeat in the First Sino-Japanese War (1894-1895), ‖ the Qing government signs the Treaty of Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,在第一次中日战争 (1894-1895)中被击败后,",
+     "清政府签署《下关条约 》, 将台湾主权割让给日本,日本统治台湾直至1945年。"
+    ],
+    "Japanese": [
+     "1895年（明治28年）、日清戦争（1894年-1895年）で敗北した後、",
+     "清政府は下関条約に調印し 台湾の主権を日本に譲渡し 1945年まで台湾を支配した。"
+    ],
+    "German": [
+     "Im Jahre 1895, nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895),",
+     "1937 unterzeichnet die Qing-Regierung den Vertrag von Shimonoseki, mit dem sie die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895),",
+     "El gobierno Qing firma el Tratado de Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    17
+   ],
+   "H_set": 0.8746,
+   "text": "In 1895, after defeat in the First Sino-Japanese War (1894-1895), the Qing government signs the Treaty of ‖ Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,清政府在第一次中日战争(1894-1895年)中战败后,签署了《南京条约 》 。",
+     "下关条约,将台湾主权让给日本,日本统治台湾直到1945年。"
+    ],
+    "Japanese": [
+     "1895年（明治28年）、日清戦争（1894年-1895年）で敗北した清政府は、日清条約を締結する。",
+     "下関条約により台湾の主権を日本に譲渡し、1945年まで統治。"
+    ],
+    "German": [
+     "Nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895) unterzeichnet die Qing-Regierung 1895 den Vertrag von",
+     "Shimonoseki, durch den es die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895), el gobierno Qing firma el Tratado de",
+     "Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "First Sino-Japanese War (1894-1895),",
+     "right": "the Qing government signs",
+     "H": 0.6083,
+     "H_pct": 12.9,
+     "contra": 0.2998,
+     "cohesion": 0.8688
+    }
+   ],
+   "added": [
+    {
+     "pos": 17,
+     "left": "signs the Treaty of",
+     "right": "Shimonoseki, by which it",
+     "H": 0.8746,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_399",
+  "cuts": 11,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.6289,
+  "policy_worst_contra": 0.9571,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    10,
+    11,
+    13,
+    15,
+    17,
+    18,
+    19,
+    24,
+    28
+   ],
+   "H_set": 0.0266,
+   "text": "Italy's main goals ‖ were African countries. ‖ To capture those countries, ‖ they ‖ would need ‖ to have ‖ a troop ‖ launching ‖ pad, ‖ so as troops could sail ‖ across the Mediterranean Sea ‖ and invade Africa.",
+   "pieces": {
+    "Chinese": [
+     "意大利的主要目标",
+     "非洲国家。",
+     "要抓住这些国家,",
+     "他们",
+     "需要",
+     "将要有",
+     "部队",
+     "发射",
+     "地板",
+     "军队可以航行",
+     "跨越地中海",
+     "并入侵非洲。"
+    ],
+    "Japanese": [
+     "イタリアの主要な目標",
+     "100カ国以上の国々でした",
+     "それらの国々を占領するために",
+     "彼らは",
+     "必要とするものです",
+     "あなたが",
+     "部隊",
+     "発射",
+     "パッド",
+     "軍隊が航海できるように",
+     "地中海を渡って",
+     "アフリカに侵攻するのです"
+    ],
+    "German": [
+     "Italiens Hauptziele",
+     "waren afrikanische Länder.",
+     "Um diese Länder zu erobern,",
+     "sie",
+     "Ich würde brauchen",
+     "zu haben",
+     "Truppe",
+     "Launching",
+     "Pad,",
+     "So als könnten Truppen segeln",
+     "Über das Mittelmeer",
+     "und dringen in Afrika ein."
+    ],
+    "Spanish": [
+     "Principales objetivos de Italia",
+     "eran países africanos.",
+     "Para capturar esos países,",
+     "they",
+     "Necesitaría",
+     "Que tener",
+     "a troop",
+     "lanzamiento",
+     "Pad,",
+     "Así que las tropas podrían navegar",
+     "A través del mar Mediterráneo",
+     "e invaden África."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    21,
+    27,
+    28
+   ],
+   "H_set": 0.6555,
+   "text": "Italy's main goals ‖ were ‖ African ‖ countries. ‖ To ‖ capture ‖ those ‖ countries, ‖ they would need to have a troop launching pad, so as ‖ troops could sail across the Mediterranean ‖ Sea ‖ and invade Africa.",
+   "pieces": {
+    "Chinese": [
+     "意大利的主要目标",
+     "是",
+     "非洲",
+     "各国。",
+     "二",
+     "捕获",
+     "那些",
+     "国家",
+     "他们需要一个部队发射台,这样",
+     "军队可以航行横跨地中海",
+     "海洋",
+     "并入侵非洲。"
+    ],
+    "Japanese": [
+     "イタリアの主要な目標",
+     "あれは",
+     "アフリカ",
+     "国々です",
+     "二",
+     "捕まえろ",
+     "あれは",
+     "国々の",
+     "部隊発進場が必要です",
+     "地中海を横断する軍隊が",
+     "海",
+     "アフリカに侵攻するのです"
+    ],
+    "German": [
+     "Italiens Hauptziele",
+     "waren",
+     "Afrikanische",
+     "Ländern.",
+     "To",
+     "Capture",
+     "those",
+     "Länder,",
+     "Sie müssten eine Truppenstartrampe haben, so dass",
+     "Truppen könnten über das Mittelmeer segeln",
+     "Sea",
+     "und dringen in Afrika ein."
+    ],
+    "Spanish": [
+     "Principales objetivos de Italia",
+     "fueron",
+     "Africano",
+     "países.",
+     "To",
+     "captura",
+     "those",
+     "países,",
+     "Necesitarían tener una plataforma de lanzamiento de tropas, para que",
+     "Las tropas alemanas podrían navegar a través del Mediterráneo",
+     "Mar",
+     "e invaden África."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "capture those countries, they",
+     "right": "would need to have",
+     "H": 0.7864,
+     "H_pct": 62.1,
+     "contra": 0.0768,
+     "cohesion": 0.8518
+    },
+    {
+     "pos": 13,
+     "left": "countries, they would need",
+     "right": "to have a troop",
+     "H": 0.7278,
+     "H_pct": 20.7,
+     "contra": 0.0966,
+     "cohesion": 0.8056
+    },
+    {
+     "pos": 15,
+     "left": "would need to have",
+     "right": "a troop launching pad,",
+     "H": 0.035,
+     "H_pct": 3.4,
+     "contra": 0.9571,
+     "cohesion": 0.8153
+    },
+    {
+     "pos": 17,
+     "left": "to have a troop",
+     "right": "launching pad, so as",
+     "H": 0.7354,
+     "H_pct": 27.6,
+     "contra": 0.0186,
+     "cohesion": 0.7493
+    },
+    {
+     "pos": 18,
+     "left": "have a troop launching",
+     "right": "pad, so as troops",
+     "H": 0.6894,
+     "H_pct": 13.8,
+     "contra": 0.0121,
+     "cohesion": 0.6978
+    },
+    {
+     "pos": 19,
+     "left": "a troop launching pad,",
+     "right": "so as troops could",
+     "H": 0.771,
+     "H_pct": 55.2,
+     "contra": 0.0072,
+     "cohesion": 0.7765
+    },
+    {
+     "pos": 24,
+     "left": "as troops could sail",
+     "right": "across the Mediterranean Sea",
+     "H": 0.76,
+     "H_pct": 48.3,
+     "contra": 0.0084,
+     "cohesion": 0.7664
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Italy's main goals were",
+     "right": "African countries. To capture",
+     "H": 0.7994,
+     "H_pct": 72.4,
+     "contra": 0.0128,
+     "cohesion": 0.8098
+    },
+    {
+     "pos": 5,
+     "left": "main goals were African",
+     "right": "countries. To capture those",
+     "H": 0.8439,
+     "H_pct": 89.7,
+     "contra": 0.0005,
+     "cohesion": 0.8443
+    },
+    {
+     "pos": 7,
+     "left": "were African countries. To",
+     "right": "capture those countries, they",
+     "H": 0.8616,
+     "H_pct": 93.1,
+     "contra": 0.0089,
+     "cohesion": 0.8694
+    },
+    {
+     "pos": 8,
+     "left": "African countries. To capture",
+     "right": "those countries, they would",
+     "H": 0.81,
+     "H_pct": 82.8,
+     "contra": 0.0018,
+     "cohesion": 0.8114
+    },
+    {
+     "pos": 9,
+     "left": "countries. To capture those",
+     "right": "countries, they would need",
+     "H": 0.8028,
+     "H_pct": 75.9,
+     "contra": 0.0022,
+     "cohesion": 0.8045
+    },
+    {
+     "pos": 21,
+     "left": "launching pad, so as",
+     "right": "troops could sail across",
+     "H": 0.793,
+     "H_pct": 69.0,
+     "contra": 0.0131,
+     "cohesion": 0.8035
+    },
+    {
+     "pos": 27,
+     "left": "sail across the Mediterranean",
+     "right": "Sea and invade Africa.",
+     "H": 0.7921,
+     "H_pct": 65.5,
+     "contra": 0.0144,
+     "cohesion": 0.8036
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1113",
+  "cuts": 3,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.6641,
+  "policy_worst_contra": 0.7721,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    11,
+    15
+   ],
+   "H_set": 0.1652,
+   "text": "After officials verify the voter's identity, the voter drops ‖ the envelope ‖ into the ballot box ‖ and signs the voting roll.",
+   "pieces": {
+    "Chinese": [
+     "官员验证选民身份后,选民将下降",
+     "信封",
+     "投入选票箱",
+     "并在表决名单上签字。"
+    ],
+    "Japanese": [
+     "官吏が有権者の身分を確認した後 投票者は投票箱を降ろす",
+     "封筒を見て",
+     "投票箱に入れ",
+     "投票用紙にサインします"
+    ],
+    "German": [
+     "Nachdem die Beamten die Identität des Wählers überprüft haben, fällt der Wähler ab",
+     "Der Umschlag",
+     "in die Wahlurne",
+     "Er unterzeichnet die Stimmliste."
+    ],
+    "Spanish": [
+     "Después de que los funcionarios verifiquen la identidad del votante, el votante se baja",
+     "En el sobre",
+     "En la urna electoral",
+     "y firma la lista de votantes."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    11,
+    15
+   ],
+   "H_set": 0.8292,
+   "text": "After officials verify the voter's identity, ‖ the voter drops the envelope ‖ into the ballot box ‖ and signs the voting roll.",
+   "pieces": {
+    "Chinese": [
+     "官员们验证了选民的身份后",
+     "选民放下信封",
+     "投入选票箱",
+     "并在表决名单上签字。"
+    ],
+    "Japanese": [
+     "当局が有権者の身元を確認した後",
+     "投票者は封筒を落とします",
+     "投票箱に入れ",
+     "投票用紙にサインします"
+    ],
+    "German": [
+     "Nachdem die Beamten die Identität des Wählers überprüft haben,",
+     "Der Wähler lässt den Umschlag fallen",
+     "in die Wahlurne",
+     "Er unterzeichnet die Stimmliste."
+    ],
+    "Spanish": [
+     "Después de que los funcionarios verifiquen la identidad del votante,",
+     "El votante deja caer el sobre",
+     "En la urna electoral",
+     "y firma la lista de votantes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "identity, the voter drops",
+     "right": "the envelope into the",
+     "H": 0.1535,
+     "H_pct": 11.1,
+     "contra": 0.7721,
+     "cohesion": 0.6736
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "verify the voter's identity,",
+     "right": "the voter drops the",
+     "H": 0.8648,
+     "H_pct": 94.4,
+     "contra": 0.0051,
+     "cohesion": 0.8692
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1617",
+  "cuts": 12,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.6146,
+  "policy_worst_contra": 0.9671,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    9,
+    12,
+    17,
+    19,
+    22,
+    23,
+    26,
+    30,
+    32,
+    33
+   ],
+   "H_set": 0.0189,
+   "text": "The Kruger National Park ‖ (KNP) ‖ lies in the north-east ‖ of South Africa ‖ and runs along the border ‖ of Mozambique ‖ in the east, ‖ Zimbabwe ‖ in the north, ‖ and the southern border ‖ is the ‖ Crocodile ‖ River.",
+   "pieces": {
+    "Chinese": [
+     "克鲁格国家公园",
+     "(克罗地亚国家警察)",
+     "位于东北部",
+     "南非共和国",
+     "沿着边界",
+     "莫桑比克共和国",
+     "东方,",
+     "津巴布韦 1999年12月15日",
+     "我们在北方,",
+     "南部边界",
+     "是什么?",
+     "鳄鱼",
+     "河流"
+    ],
+    "Japanese": [
+     "クルーガー国立公園",
+     "（クン・ニョンパ）",
+     "アメリカ合衆国北東部に位置し",
+     "南アフリカ共和国の",
+     "国境に沿って走り",
+     "モザンビークの国旗",
+     "東部では",
+     "ジンバブエ",
+     "北部では",
+     "南部の国境は",
+     "それは",
+     "ワニ",
+     "川だ"
+    ],
+    "German": [
+     "Der Krüger-Nationalpark",
+     "(KNP)",
+     "liegt im Nordosten",
+     "Südafrika",
+     "Und läuft entlang der Grenze",
+     "Geschichte Mosambiks",
+     "im Osten,",
+     "Simbabwe",
+     "im Norden,",
+     "und die südliche Grenze",
+     "Ist das der Fall?",
+     "Krokodil",
+     "River."
+    ],
+    "Spanish": [
+     "El Parque Nacional Kruger",
+     "(KNP)",
+     "Se encuentra en el noreste",
+     "de Sudáfrica",
+     "Y corre a lo largo de la frontera",
+     "de Mozambique",
+     "en el este,",
+     "Zimbabwe 1996",
+     "en el norte,",
+     "y la frontera sur",
+     "¿Cuál es el",
+     "Cocodrilo",
+     "River."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    12,
+    15,
+    17,
+    18,
+    19,
+    22,
+    26,
+    27
+   ],
+   "H_set": 0.6335,
+   "text": "The Kruger ‖ National ‖ Park ‖ (KNP) ‖ lies in the north-east of South Africa ‖ and runs along ‖ the border ‖ of ‖ Mozambique ‖ in the east, ‖ Zimbabwe in the north, ‖ and ‖ the southern border is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克魯格河",
+     "国家",
+     "帕克",
+     "(克罗地亚国家警察)",
+     "位于南非东北部",
+     "并且沿着",
+     "边界",
+     "的",
+     "莫桑比克 1999年12月15日",
+     "东方,",
+     "北部的津巴布韦",
+     "以及",
+     "南部边界是鳄鱼河。"
+    ],
+    "Japanese": [
+     "クルーガー",
+     "ナショナル",
+     "パーク",
+     "（クン・ニョンパ）",
+     "南アフリカ北東部に位置し",
+     "それは",
+     "国境",
+     "の",
+     "モザンビーク",
+     "東部では",
+     "北はジンバブエ",
+     "それに",
+     "南の境界は クロコダイル川です"
+    ],
+    "German": [
+     "Der Krüger",
+     "National",
+     "Park",
+     "(KNP)",
+     "Die Provinz liegt im Nordosten von Südafrika",
+     "Und läuft entlang",
+     "Über die Grenze",
+     "von",
+     "Mosambik",
+     "im Osten,",
+     "Simbabwe im Norden,",
+     "und",
+     "Die südliche Grenze ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Kruger",
+     "Nacional",
+     "Parque",
+     "(KNP)",
+     "Se encuentra en el noreste de Sudáfrica",
+     "Y corre a lo largo",
+     "En la frontera",
+     "de",
+     "Mozambique 1996",
+     "en el este,",
+     "Zimbabwe en el norte,",
+     "y",
+     "La frontera sur es el río Cocodrilo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "lies in the north-east",
+     "right": "of South Africa and",
+     "H": 0.7724,
+     "H_pct": 43.8,
+     "contra": 0.0008,
+     "cohesion": 0.773
+    },
+    {
+     "pos": 23,
+     "left": "in the east, Zimbabwe",
+     "right": "in the north, and",
+     "H": 0.6998,
+     "H_pct": 37.5,
+     "contra": 0.0338,
+     "cohesion": 0.7243
+    },
+    {
+     "pos": 30,
+     "left": "and the southern border",
+     "right": "is the Crocodile River.",
+     "H": 0.1194,
+     "H_pct": 9.4,
+     "contra": 0.842,
+     "cohesion": 0.7559
+    },
+    {
+     "pos": 32,
+     "left": "southern border is the",
+     "right": "Crocodile River.",
+     "H": 0.0263,
+     "H_pct": 0.0,
+     "contra": 0.9671,
+     "cohesion": 0.7998
+    },
+    {
+     "pos": 33,
+     "left": "border is the Crocodile",
+     "right": "River.",
+     "H": 0.4502,
+     "H_pct": 28.1,
+     "contra": 0.3996,
+     "cohesion": 0.7498
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The Kruger",
+     "right": "National Park (KNP) lies",
+     "H": 0.8308,
+     "H_pct": 87.5,
+     "contra": 0.0019,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 3,
+     "left": "The Kruger National",
+     "right": "Park (KNP) lies in",
+     "H": 0.8466,
+     "H_pct": 96.9,
+     "contra": 0.0014,
+     "cohesion": 0.8478
+    },
+    {
+     "pos": 15,
+     "left": "Africa and runs along",
+     "right": "the border of Mozambique",
+     "H": 0.8212,
+     "H_pct": 78.1,
+     "contra": 0.0039,
+     "cohesion": 0.8244
+    },
+    {
+     "pos": 18,
+     "left": "along the border of",
+     "right": "Mozambique in the east,",
+     "H": 0.8327,
+     "H_pct": 90.6,
+     "contra": 0.0125,
+     "cohesion": 0.8433
+    },
+    {
+     "pos": 27,
+     "left": "in the north, and",
+     "right": "the southern border is",
+     "H": 0.8441,
+     "H_pct": 93.8,
+     "contra": 0.0212,
+     "cohesion": 0.8624
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6332,
+  "policy_worst_contra": 0.9701,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    10,
+    16
+   ],
+   "H_set": 0.0217,
+   "text": "All the ships ‖ were sunk, except for one British cruiser. ‖ Nearly 200 American and German lives ‖ were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有船只",
+     "除了一个英国巡洋舰外,所有舰只都被击沉。",
+     "近200名美国和德国人丧生",
+     "失去了。"
+    ],
+    "Japanese": [
+     "すべての船",
+     "1隻のイギリス巡洋艦を除いて 沈没しました",
+     "アメリカ人とドイツ人の200人近くが死亡",
+     "失われた"
+    ],
+    "German": [
+     "Alle Schiffe",
+     "Alle Schiffe wurden versenkt, bis auf einen britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Leben",
+     "Sie waren verloren."
+    ],
+    "Spanish": [
+     "Todos los barcos",
+     "Todos los barcos fueron hundidos, excepto un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas",
+     "Se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    8
+   ],
+   "H_set": 0.6549,
+   "text": "All the ships were sunk, ‖ except ‖ for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有的船都沉没了,",
+     "除非",
+     "一个",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "船は全て沈没した",
+     "ただし",
+     "まず",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt,",
+     "außer",
+     "Für einen Tag",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos se hundieron,",
+     "except",
+     "Para uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "All the ships",
+     "right": "were sunk, except for",
+     "H": 0.0524,
+     "H_pct": 25.0,
+     "contra": 0.9337,
+     "cohesion": 0.7911
+    },
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    },
+    {
+     "pos": 16,
+     "left": "American and German lives",
+     "right": "were lost.",
+     "H": 0.0219,
+     "H_pct": 12.5,
+     "contra": 0.9701,
+     "cohesion": 0.7322
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "the ships were sunk,",
+     "right": "except for one British",
+     "H": 0.7326,
+     "H_pct": 93.8,
+     "contra": 0.0827,
+     "cohesion": 0.7987
+    },
+    {
+     "pos": 6,
+     "left": "ships were sunk, except",
+     "right": "for one British cruiser.",
+     "H": 0.6531,
+     "H_pct": 87.5,
+     "contra": 0.0354,
+     "cohesion": 0.677
+    },
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_936",
+  "cuts": 7,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5849,
+  "policy_worst_contra": 0.9369,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    9,
+    15,
+    16,
+    17,
+    18,
+    20
+   ],
+   "H_set": 0.037,
+   "text": "Unless you are a diplomat, working overseas generally ‖ means ‖ that you will have to file ‖ income ‖ tax ‖ in ‖ the country ‖ you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非你是外交官,一般在海外工作",
+     "意思",
+     "你将不得不提交",
+     "收入",
+     "税",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "国家",
+     "您所在的国家。"
+    ],
+    "Japanese": [
+     "外交官でない限り 海外で働くのは",
+     "意味は",
+     "申告する必要があります",
+     "収入",
+     "税金",
+     "ここに",
+     "国は",
+     "あなたは ここに居る"
+    ],
+    "German": [
+     "Wenn Sie kein Diplomat sind, arbeiten Sie im Allgemeinen im Ausland",
+     "Mittel",
+     "Dass Sie einreichen müssen",
+     "Einkommen",
+     "Steuer",
+     "in",
+     "Das Land",
+     "Sie sind in."
+    ],
+    "Spanish": [
+     "A menos que seas un diplomático, trabajando en el extranjero generalmente",
+     "significa",
+     "Que usted tendrá que presentar",
+     "ingresos",
+     "impuestos",
+     "en",
+     "El país",
+     "Usted está basado en."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    7,
+    15,
+    16,
+    17
+   ],
+   "H_set": 0.6219,
+   "text": "Unless ‖ you ‖ are a diplomat, ‖ working overseas ‖ generally means that you will have to file ‖ income ‖ tax ‖ in the country you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非",
+     "你",
+     "您是一名外交官,",
+     "海外工作",
+     "一般来说,这意味着你将不得不提交",
+     "收入",
+     "税",
+     "您所在国家的法律。"
+    ],
+    "Japanese": [
+     "もしも",
+     "あなたは",
+     "外交官なら",
+     "海外で働く",
+     "一般的には あなたが 申告をしなければならないということです",
+     "収入",
+     "税金",
+     "あなたが居る国で"
+    ],
+    "German": [
+     "Unless",
+     "Sie",
+     "Sie sind Diplomat,",
+     "Arbeiten im Ausland",
+     "Das bedeutet, dass Sie in der Regel einreichen müssen",
+     "Einkommen",
+     "Steuer",
+     "In dem Land, in dem Sie ansässig sind."
+    ],
+    "Spanish": [
+     "A menos que",
+     "usted",
+     "eres un diplomático,",
+     "Trabajar en el extranjero",
+     "Por lo general, significa que usted tendrá que presentar",
+     "ingresos",
+     "impuestos",
+     "En el país en el que estás basado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "diplomat, working overseas generally",
+     "right": "means that you will",
+     "H": 0.7385,
+     "H_pct": 68.2,
+     "contra": 0.1129,
+     "cohesion": 0.8325
+    },
+    {
+     "pos": 9,
+     "left": "working overseas generally means",
+     "right": "that you will have",
+     "H": 0.1271,
+     "H_pct": 4.5,
+     "contra": 0.8492,
+     "cohesion": 0.8426
+    },
+    {
+     "pos": 18,
+     "left": "file income tax in",
+     "right": "the country you are",
+     "H": 0.0477,
+     "H_pct": 0.0,
+     "contra": 0.9369,
+     "cohesion": 0.7553
+    },
+    {
+     "pos": 20,
+     "left": "tax in the country",
+     "right": "you are based in.",
+     "H": 0.6769,
+     "H_pct": 50.0,
+     "contra": 0.0014,
+     "cohesion": 0.6778
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Unless",
+     "right": "you are a diplomat,",
+     "H": 0.7718,
+     "H_pct": 86.4,
+     "contra": 0.0038,
+     "cohesion": 0.7747
+    },
+    {
+     "pos": 2,
+     "left": "Unless you",
+     "right": "are a diplomat, working",
+     "H": 0.7625,
+     "H_pct": 77.3,
+     "contra": 0.0077,
+     "cohesion": 0.7684
+    },
+    {
+     "pos": 5,
+     "left": "you are a diplomat,",
+     "right": "working overseas generally means",
+     "H": 0.8377,
+     "H_pct": 100.0,
+     "contra": 0.0128,
+     "cohesion": 0.8485
+    },
+    {
+     "pos": 7,
+     "left": "a diplomat, working overseas",
+     "right": "generally means that you",
+     "H": 0.7838,
+     "H_pct": 90.9,
+     "contra": 0.0263,
+     "cohesion": 0.805
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_360",
+  "cuts": 15,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.5805,
+  "policy_worst_contra": 0.9306,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    11,
+    12,
+    13,
+    16,
+    17,
+    20,
+    23,
+    25
+   ],
+   "H_set": 0.0319,
+   "text": "Scientists ‖ call ‖ this ‖ process ‖ \"stimulated ‖ emission ‖ of radiation\" ‖ because the atoms ‖ are ‖ stimulated ‖ by the bright ‖ light, ‖ causing the emission ‖ of a photon ‖ of light, ‖ and light is a type of radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家",
+     "呼叫",
+     "这个",
+     "进程",
+     "刺激",
+     "排放",
+     "辐射的危害",
+     "因为原子",
+     "是",
+     "刺激",
+     "以顯著者發誓，",
+     "光",
+     "造成排放的原因",
+     "光子的质量",
+     "光明的,",
+     "光是一种辐射。"
+    ],
+    "Japanese": [
+     "科学者",
+     "呼び出す",
+     "これは",
+     "プロセス",
+     "刺激されて",
+     "放出",
+     "放射線の危険性を",
+     "なぜなら 原子は",
+     "あなたは",
+     "刺激される",
+     "明るい夜において",
+     "光",
+     "放出される",
+     "光子の質量を",
+     "光の力を",
+     "光は放射の一種です"
+    ],
+    "German": [
+     "Wissenschaftler",
+     "Call",
+     "this",
+     "Prozess",
+     "\"stimuliert",
+     "Emission",
+     "\"Die Strahlung der Strahlung\"",
+     "Weil die Atome",
+     "sind",
+     "stimuliert",
+     "Bei dem hellen Tag",
+     "Licht,",
+     "Verursachen der Emission",
+     "Die Energie eines Photons",
+     "von Licht,",
+     "Licht ist eine Form der Strahlung."
+    ],
+    "Spanish": [
+     "Científicos",
+     "llamada",
+     "this",
+     "Proceso",
+     "\"estimulado",
+     "emission",
+     "\"Las causas de la radiación\"",
+     "Porque los átomos",
+     "son",
+     "estimulado",
+     "Por el brillante",
+     "luz,",
+     "Causando la emisión",
+     "De un fotón",
+     "de luz, de amor,",
+     "La luz es un tipo de radiación."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    8,
+    17,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    31
+   ],
+   "H_set": 0.6125,
+   "text": "Scientists ‖ call ‖ this ‖ process ‖ \"stimulated emission ‖ of ‖ radiation\" ‖ because the atoms are stimulated by the bright light, ‖ causing the emission of a photon ‖ of ‖ light, ‖ and ‖ light ‖ is ‖ a type of ‖ radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家",
+     "呼叫",
+     "这个",
+     "进程",
+     "刺激发射",
+     "的",
+     "辐射",
+     "因为原子被明亮的光刺激,",
+     "导致光子的发射",
+     "的",
+     "光",
+     "以及",
+     "光",
+     "是",
+     "一种类型",
+     "辐射。"
+    ],
+    "Japanese": [
+     "科学者",
+     "呼び出す",
+     "これは",
+     "プロセス",
+     "刺激放出",
+     "の",
+     "放射線\"",
+     "原子は明るい光に刺激され",
+     "光子を放出し",
+     "の",
+     "光",
+     "それに",
+     "光",
+     "はい",
+     "ある種の",
+     "放射線だ"
+    ],
+    "German": [
+     "Wissenschaftler",
+     "Call",
+     "this",
+     "Prozess",
+     "\"stimulierte Emission",
+     "von",
+     "\"Strahlung\"",
+     "weil die Atome durch das helle Licht angeregt werden,",
+     "Verursachen der Emission eines Photons",
+     "von",
+     "Licht,",
+     "und",
+     "Licht",
+     "ist",
+     "Eine Art von",
+     "Strahlung."
+    ],
+    "Spanish": [
+     "Científicos",
+     "llamada",
+     "this",
+     "Proceso",
+     "\"emisión estimulada",
+     "de",
+     "radiación\"",
+     "porque los átomos son estimulados por la luz brillante,",
+     "Causando la emisión de un fotón",
+     "de",
+     "luz,",
+     "y",
+     "luz",
+     "es",
+     "Un tipo de",
+     "radiación."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "call this process \"stimulated",
+     "right": "emission of radiation\" because",
+     "H": 0.6246,
+     "H_pct": 30.0,
+     "contra": 0.0518,
+     "cohesion": 0.6587
+    },
+    {
+     "pos": 11,
+     "left": "radiation\" because the atoms",
+     "right": "are stimulated by the",
+     "H": 0.6043,
+     "H_pct": 23.3,
+     "contra": 0.2167,
+     "cohesion": 0.7715
+    },
+    {
+     "pos": 12,
+     "left": "because the atoms are",
+     "right": "stimulated by the bright",
+     "H": 0.5371,
+     "H_pct": 13.3,
+     "contra": 0.2645,
+     "cohesion": 0.7302
+    },
+    {
+     "pos": 13,
+     "left": "the atoms are stimulated",
+     "right": "by the bright light,",
+     "H": 0.7291,
+     "H_pct": 40.0,
+     "contra": 0.1007,
+     "cohesion": 0.8107
+    },
+    {
+     "pos": 16,
+     "left": "stimulated by the bright",
+     "right": "light, causing the emission",
+     "H": 0.0503,
+     "H_pct": 3.3,
+     "contra": 0.9306,
+     "cohesion": 0.7241
+    },
+    {
+     "pos": 20,
+     "left": "light, causing the emission",
+     "right": "of a photon of",
+     "H": 0.6538,
+     "H_pct": 33.3,
+     "contra": 0.0335,
+     "cohesion": 0.6764
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "process \"stimulated emission of",
+     "right": "radiation\" because the atoms",
+     "H": 0.8033,
+     "H_pct": 66.7,
+     "contra": 0.0074,
+     "cohesion": 0.8093
+    },
+    {
+     "pos": 24,
+     "left": "of a photon of",
+     "right": "light, and light is",
+     "H": 0.7648,
+     "H_pct": 53.3,
+     "contra": 0.0223,
+     "cohesion": 0.7823
+    },
+    {
+     "pos": 26,
+     "left": "photon of light, and",
+     "right": "light is a type",
+     "H": 0.8299,
+     "H_pct": 93.3,
+     "contra": 0.0131,
+     "cohesion": 0.8409
+    },
+    {
+     "pos": 27,
+     "left": "of light, and light",
+     "right": "is a type of",
+     "H": 0.78,
+     "H_pct": 60.0,
+     "contra": 0.046,
+     "cohesion": 0.8176
+    },
+    {
+     "pos": 28,
+     "left": "light, and light is",
+     "right": "a type of radiation.",
+     "H": 0.785,
+     "H_pct": 63.3,
+     "contra": 0.038,
+     "cohesion": 0.816
+    },
+    {
+     "pos": 31,
+     "left": "is a type of",
+     "right": "radiation.",
+     "H": 0.8143,
+     "H_pct": 83.3,
+     "contra": 0.0249,
+     "cohesion": 0.8351
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_103",
+  "cuts": 5,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5798,
+  "policy_worst_contra": 0.967,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    12,
+    13,
+    16
+   ],
+   "H_set": 0.0203,
+   "text": "Another secondary containment area ‖ below the tanks ‖ capable of holding 104,500 barrels ‖ was ‖ not yet filled ‖ to capacity.",
+   "pieces": {
+    "Chinese": [
+     "另一个二级封闭区",
+     "下面的坦克",
+     "能容纳104 500桶的储油罐",
+     "是",
+     "尚未填补",
+     "能力。"
+    ],
+    "Japanese": [
+     "もう一つの二次的な封じ込め域",
+     "戦車の下に",
+     "10万4500バレルの油を",
+     "あれは",
+     "まだ満たされていない",
+     "能力に対してです"
+    ],
+    "German": [
+     "Ein weiterer sekundärer Eindämmungsbereich",
+     "Unter den Tanks",
+     "Kapazität: 104.500 Fässer",
+     "war",
+     "Noch nicht befüllt",
+     "Bis zur Kapazität."
+    ],
+    "Spanish": [
+     "Otra área de contención secundaria",
+     "Bajo los tanques",
+     "Capacidad de 104.500 barriles",
+     "fue",
+     "No lleno todavía",
+     "Hasta completar capacidad."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    7,
+    10
+   ],
+   "H_set": 0.6001,
+   "text": "Another ‖ secondary ‖ containment area below ‖ the tanks ‖ capable of holding ‖ 104,500 barrels was not yet filled to capacity.",
+   "pieces": {
+    "Chinese": [
+     "另一个",
+     "中学",
+     "下限以下的封闭区",
+     "坦克",
+     "能够承载",
+     "104 500桶尚未装满。"
+    ],
+    "Japanese": [
+     "もう一人",
+     "二次的な",
+     "下の封鎖区域",
+     "戦車は",
+     "持ち上げる事が出来る",
+     "104,500バレルはまだ満タンではなかった。"
+    ],
+    "German": [
+     "Another",
+     "Sekundär",
+     "Eindämmungsbereich unten",
+     "Die Panzer",
+     "Fähig zu halten",
+     "104.500 Fässer waren noch nicht vollständig gefüllt."
+    ],
+    "Spanish": [
+     "Otro",
+     "Secundaria",
+     "Área de contención por debajo",
+     "Los tanques",
+     "Capaz de sostener",
+     "104.500 barriles aún no estaban llenos a su capacidad."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "Another secondary containment area",
+     "right": "below the tanks capable",
+     "H": 0.7595,
+     "H_pct": 68.8,
+     "contra": 0.0005,
+     "cohesion": 0.7599
+    },
+    {
+     "pos": 12,
+     "left": "of holding 104,500 barrels",
+     "right": "was not yet filled",
+     "H": 0.7296,
+     "H_pct": 43.8,
+     "contra": 0.0028,
+     "cohesion": 0.7316
+    },
+    {
+     "pos": 13,
+     "left": "holding 104,500 barrels was",
+     "right": "not yet filled to",
+     "H": 0.0241,
+     "H_pct": 0.0,
+     "contra": 0.967,
+     "cohesion": 0.7295
+    },
+    {
+     "pos": 16,
+     "left": "was not yet filled",
+     "right": "to capacity.",
+     "H": 0.734,
+     "H_pct": 50.0,
+     "contra": 0.0009,
+     "cohesion": 0.7346
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Another",
+     "right": "secondary containment area below",
+     "H": 0.7948,
+     "H_pct": 93.8,
+     "contra": 0.0013,
+     "cohesion": 0.7959
+    },
+    {
+     "pos": 2,
+     "left": "Another secondary",
+     "right": "containment area below the",
+     "H": 0.7615,
+     "H_pct": 75.0,
+     "contra": 0.0004,
+     "cohesion": 0.7619
+    },
+    {
+     "pos": 5,
+     "left": "secondary containment area below",
+     "right": "the tanks capable of",
+     "H": 0.7871,
+     "H_pct": 87.5,
+     "contra": 0.001,
+     "cohesion": 0.7879
+    },
+    {
+     "pos": 10,
+     "left": "tanks capable of holding",
+     "right": "104,500 barrels was not",
+     "H": 0.7626,
+     "H_pct": 81.2,
+     "contra": 0.0078,
+     "cohesion": 0.7686
+    }
+   ]
+  }
+ }
+]

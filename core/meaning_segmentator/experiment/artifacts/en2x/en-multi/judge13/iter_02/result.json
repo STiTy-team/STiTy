@@ -1,0 +1,51 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00262,
+  "lo": -0.00854,
+  "hi": 0.01396,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00262,
+  "lo": -0.00854,
+  "hi": 0.01396,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a short Core Principle after C5 forbidding cuts that separate core predicates from required arguments or that split enumerations/verb phrases; this directly addresses the primary finding about harmful internal splits."
+ ],
+ "findings": [
+  "The prompt over-penalizes sentence‑initial short openers (The/It/In/short adverbials/pronouns), avoiding early cuts that are often safe and valuable for very-short latency.",
+  "The prompt is now too eager to insert internal cuts that detach required predicates/arguments or fragment enumerations, which degrades mid‑length cohesion."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Long noun groups and multiword modifiers accumulate referential content toward",
+   "now": "- Preserve predicate–argument and enumerations: do not cut between a core predic"
+  }
+ ],
+ "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])",
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0047,
+   "≤5": 0.0039,
+   "≤7": -0.0048,
+   "≤10": -0.001,
+   "≤99": 0.0035
+  },
+  "n_worse": 714,
+  "n_better": 737,
+  "why": "Inserting the core-principle blocked cuts that split predicates/arguments and enumerations, so the scorer stopped keeping many short internal splits (improving the smallest latency bins ≤3 and ≤5). However the constraint caused the kept-cut budget to be reallocated in mid-length pieces (bins ≤7 and ≤10), producing more cuts that split subjects/verbs or other heads and so made many mid-length cases worse.",
+  "lesson": "A later revision should preserve the benefit of preventing internal predicate/argument and enumeration splits for short pieces while avoiding wholesale reallocation of cuts that creates new subject–verb or head splits in mid-length examples.",
+  "blamed": [
+   "C5 «- Long noun groups and multiword modifiers accumulate refere»"
+  ]
+ }
+}

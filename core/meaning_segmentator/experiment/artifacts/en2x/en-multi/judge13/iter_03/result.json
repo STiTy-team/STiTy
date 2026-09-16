@@ -1,0 +1,84 @@
+{
+ "iter": 3,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00716,
+  "lo": -0.00425,
+  "hi": 0.01926,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.0081,
+  "lo": 0.00032,
+  "hi": 0.01658,
+  "n": 3662,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00716,
+   "lo": -0.00425,
+   "hi": 0.01926,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": 0.00905,
+   "lo": -0.00095,
+   "hi": 0.0198,
+   "n": 1811,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Replace C6 to require marking cuts that drop essential post-nominal modifiers or appositives as unsafe — addresses the primary finding that splitting off identifying modifiers causes misidentification and high contradiction risk."
+ ],
+ "findings": [
+  "The scorer underestimates cuts that leave an asserted predicate or clause head unresolved: when the left fragment contains a main verb/clause whose arguments, scope, or negation are supplied later, that left piece can assert a claim that the rest of the sentence then reverses.",
+  "The scorer treats post-nominal modifiers and appositives as generally safe to split for density, but sometimes those right-hand modifiers are essential to identify the referent; cutting them produces misidentification or a contradictable assertion."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C6",
+   "kind": "change",
+   "was": "- Appositives and parenthetical inserts supply clarifying or identifying detail;",
+   "now": "- Appositives and post-nominal modifiers: if the right-side modifier is essentia"
+  }
+ ],
+ "built_on": "iter 1 near miss (+0.0074 [-0.0003, +0.0153])",
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0053,
+   "≤5": 0.0073,
+   "≤7": 0.0098,
+   "≤10": 0.0092,
+   "≤99": 0.0105
+  },
+  "n_worse": 690,
+  "n_better": 719,
+  "why": "Replacing C6 caused the model to avoid cuts that would drop essential post‑nominal modifiers or appositives; measured against the prior near‑miss this edit has almost no net effect overall (vs_base mean Δ=0.00078, CI includes zero) but does hurt very short pieces (≤3: −0.0076) while improving longer spans (≤5..≤99: +0.0074..+0.0105), i.e. many examples moved cuts away from modifiers (improving cohesion) but in some short cases the cuts were pushed into positions that split heads/verbs or small NPs and so worsened H_set (roughly balanced: 676 worse vs 698 better).",
+  "lesson": "Keep the protection against dropping essential post‑nominal modifiers and appositives (it improves longer spans), but avoid forcing cuts into very short segments where they end up splitting heads from their dependents.",
+  "blamed": [
+   "C6 «- Appositives and post-nominal modifiers: if the right-side »"
+  ],
+  "vs_base": {
+   "delta": {
+    "mean": 0.00078,
+    "lo": -0.00993,
+    "hi": 0.01287,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "by_bin": {
+    "≤3": -0.0076,
+    "≤5": 0.0074,
+    "≤7": 0.0089,
+    "≤10": 0.0,
+    "≤99": 0.0105
+   },
+   "n_worse": 676,
+   "n_better": 698
+  }
+ }
+}

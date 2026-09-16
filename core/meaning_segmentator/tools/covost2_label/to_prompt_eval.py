@@ -31,6 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from core.meaning_segmentator.autoseg.runtime import pipeline as P
 from core.meaning_segmentator.autoseg.loop import target_is_spaced
+from core.meaning_segmentator.autoseg.paths import RUNS_DIR
 
 
 def main() -> int:
@@ -80,8 +81,11 @@ def main() -> int:
         rows_out.append({"id": r["utt_id"], "text": text, "seg_text": seg,
                          "valid": None, "full_trans": None, "by_T": by_T})
 
-    out_dir = (Path(__file__).resolve().parents[2] / "core" / "meaning_segmentator"
-               / "runs" / a.run_id / "prompt_eval")
+    # bleu_eval.py 와 같은 자로 풀어야 한다 (`RUNS_DIR / run_id`). 예전에는 `runs/`
+    # 아래를 직접 조립했는데, `paths.py` 가 RUNS_DIR 를 `experiment/artifacts/` 로
+    # 옮긴 뒤로 이 스크립트만 안 따라와 **엉뚱한 경로에 조용히 썼다** — bleu_eval 이
+    # "산출 없음"으로 보고 비교군만 평가하는데도 실패로 안 잡혔다.
+    out_dir = RUNS_DIR / a.run_id / "prompt_eval"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{a.label}_{a.split}.json"
     out_path.write_text(json.dumps({

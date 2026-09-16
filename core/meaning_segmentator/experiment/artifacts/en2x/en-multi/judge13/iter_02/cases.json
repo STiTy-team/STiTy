@@ -1,0 +1,2074 @@
+[
+ {
+  "id": "en_us_741",
+  "cuts": 4,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5626,
+  "policy_worst_contra": 0.7092,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    7,
+    12
+   ],
+   "H_set": 0.2039,
+   "text": "It is an archipelago ‖ with 15 ‖ islands ‖ spread out over 2.2 million ‖ km2 of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个成员",
+     "岛屿",
+     "分布在220万个国家",
+     "海洋面积"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15人で",
+     "島々",
+     "220万人以上の人々が",
+     "海洋の面積は 1平方キロメートルです"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "mit 15",
+     "Inseln",
+     "Verteilt auf 2,2 Millionen",
+     "km2 des Ozeans."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "con 15",
+     "Islas",
+     "distribuidos en más de 2,2 millones",
+     "km2 de océano."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    6,
+    7
+   ],
+   "H_set": 0.7665,
+   "text": "It is ‖ an archipelago ‖ with 15 ‖ islands ‖ spread out over 2.2 million km2 of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是的",
+     "群岛",
+     "15个成员",
+     "岛屿",
+     "分布在220万平方公里的海洋中。"
+    ],
+    "Japanese": [
+     "それは",
+     "群島のようなものです",
+     "15人で",
+     "島々",
+     "220万平方キロメートルの海に広がっています"
+    ],
+    "German": [
+     "Es ist",
+     "Ein Archipel",
+     "mit 15",
+     "Inseln",
+     "Die Inseln verteilen sich auf 2,2 Millionen km2 Ozean."
+    ],
+    "Spanish": [
+     "Es",
+     "Un archipiélago",
+     "con 15",
+     "Islas",
+     "Se extienden por 2,2 millones de km2 de océano."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "out over 2.2 million",
+     "right": "km2 of ocean.",
+     "H": 0.2134,
+     "H_pct": 0.0,
+     "contra": 0.7092,
+     "cohesion": 0.7338
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "It is",
+     "right": "an archipelago with 15",
+     "H": 0.8204,
+     "H_pct": 76.9,
+     "contra": 0.0026,
+     "cohesion": 0.8225
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 3,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.6246,
+  "policy_worst_contra": 0.9881,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    15,
+    18
+   ],
+   "H_set": 0.0081,
+   "text": "Farther south is Niagara Falls ‖ and the north is home to the untapped natural beauty ‖ of the Muskoka ‖ and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "北部是未开发的自然美景的家园",
+     "马斯科卡省",
+     "以及以后。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は未開発の自然の美しさが",
+     "マスコカ川の",
+     "それ以上に"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "Und der Norden ist die Heimat der unerschlossenen Naturschönheit",
+     "Die Muskoka-Region",
+     "und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "Y el norte es el hogar de la belleza natural sin explotar",
+     "El Museo de la Mujer",
+     "y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6
+   ],
+   "H_set": 0.6327,
+   "text": "Farther ‖ south is Niagara Falls ‖ and ‖ the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "远远",
+     "尼亚加拉大瀑布",
+     "以及",
+     "北部是马斯科卡及其以外未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "ファーザー",
+     "南はナイアガラの滝",
+     "それに",
+     "北部は未開発の自然の美しさがある マスコカ川のほかにもあります"
+    ],
+    "German": [
+     "Farther",
+     "Südlich sind die Niagarafälle",
+     "und",
+     "Der Norden ist die Heimat der unerschlossenen natürlichen Schönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Farther",
+     "Al sur están las Cataratas del Niágara",
+     "y",
+     "El norte es el hogar de la belleza natural sin explotar de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 15,
+     "left": "the untapped natural beauty",
+     "right": "of the Muskoka and",
+     "H": 0.0086,
+     "H_pct": 11.1,
+     "contra": 0.9881,
+     "cohesion": 0.7258
+    },
+    {
+     "pos": 18,
+     "left": "beauty of the Muskoka",
+     "right": "and beyond.",
+     "H": 0.0529,
+     "H_pct": 44.4,
+     "contra": 0.9292,
+     "cohesion": 0.7474
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Farther",
+     "right": "south is Niagara Falls",
+     "H": 0.6863,
+     "H_pct": 88.9,
+     "contra": 0.0118,
+     "cohesion": 0.6945
+    },
+    {
+     "pos": 6,
+     "left": "is Niagara Falls and",
+     "right": "the north is home",
+     "H": 0.6956,
+     "H_pct": 94.4,
+     "contra": 0.0736,
+     "cohesion": 0.7509
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_655",
+  "cuts": 3,
+  "avg_chunk": 5.2,
+  "latency_bin": "≤7",
+  "gap": 0.5733,
+  "policy_worst_contra": 0.8327,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    12,
+    16
+   ],
+   "H_set": 0.1144,
+   "text": "Crime, and ill-will toward foreigners in general, ‖ is virtually unknown in Greenland. ‖ Even in the towns, ‖ there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪和对外国人的恶意",
+     "在格陵兰几乎是不为人知的。",
+     "甚至在城市里,",
+     "没有\"粗糙的区域 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意",
+     "グリーンランドではほとんど知られていません",
+     "都市の中でも",
+     "荒地はありません"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen,",
+     "Die Art ist in Grönland kaum bekannt.",
+     "Auch in den Städten,",
+     "Es gibt keine \"rauen Bereiche\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general,",
+     "El pico de la vaca es prácticamente desconocido en Groenlandia.",
+     "Incluso en las ciudades,",
+     "No hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    12,
+    13
+   ],
+   "H_set": 0.6877,
+   "text": "Crime, and ill-will toward foreigners in general, is virtually unknown ‖ in Greenland. ‖ Even ‖ in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪,和对外国人的恶意,一般来说,几乎是未知的",
+     "格陵兰。",
+     "埃文",
+     "没有人能够在这里找到一份工作。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意はほとんど無い。",
+     "グリーンランドにある",
+     "イヴァン",
+     "都市部には 荒地はありません"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen ist praktisch unbekannt",
+     "In Grönland.",
+     "Even",
+     "In den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general, es prácticamente desconocido",
+     "en Groenlandia.",
+     "Even",
+     "En las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "toward foreigners in general,",
+     "right": "is virtually unknown in",
+     "H": 0.1049,
+     "H_pct": 36.8,
+     "contra": 0.8327,
+     "cohesion": 0.6271
+    },
+    {
+     "pos": 16,
+     "left": "Even in the towns,",
+     "right": "there are no \"rough",
+     "H": 0.4627,
+     "H_pct": 63.2,
+     "contra": 0.3819,
+     "cohesion": 0.7486
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "general, is virtually unknown",
+     "right": "in Greenland. Even in",
+     "H": 0.7602,
+     "H_pct": 94.7,
+     "contra": 0.0037,
+     "cohesion": 0.763
+    },
+    {
+     "pos": 13,
+     "left": "unknown in Greenland. Even",
+     "right": "in the towns, there",
+     "H": 0.7363,
+     "H_pct": 89.5,
+     "contra": 0.0201,
+     "cohesion": 0.7514
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1179",
+  "cuts": 3,
+  "avg_chunk": 8.2,
+  "latency_bin": "≤10",
+  "gap": 0.2118,
+  "policy_worst_contra": 0.2998,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10,
+    18,
+    27
+   ],
+   "H_set": 0.592,
+   "text": "In 1895, after defeat in the First Sino-Japanese War (1894-1895), ‖ the Qing government signs the Treaty of Shimonoseki, ‖ by which it cedes sovereignty over Taiwan to Japan, ‖ which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,在第一次中日战争 (1894-1895)中被击败后,",
+     "清政府签署了下关条约,",
+     "将台湾主权让与日本，",
+     "直到1945年。"
+    ],
+    "Japanese": [
+     "1895年（明治28年）、日清戦争（1894年-1895年）で敗北した後、",
+     "清政府が下関条約に調印し",
+     "台湾の主権を日本に譲渡するという",
+     "1945年まで島を支配しました"
+    ],
+    "German": [
+     "Im Jahre 1895, nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895),",
+     "Die Qing-Regierung unterzeichnet den Vertrag von Shimonoseki,",
+     "durch die es die Souveränität über Taiwan an Japan abtritt,",
+     "Die Insel wird bis 1945 von der japanischen Armee beherrscht."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895),",
+     "El gobierno Qing firma el Tratado de Shimonoseki,",
+     "por la que cede la soberanía sobre Taiwán al Japón,",
+     "que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    17
+   ],
+   "H_set": 0.8039,
+   "text": "In ‖ 1895, ‖ after defeat in the First Sino-Japanese War (1894-1895), the Qing government signs the Treaty of ‖ Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "内",
+     "1895年，",
+     "1894年,清政府在日俄战争中战败,签订了《日清条约 》 。",
+     "下关条约,将台湾主权让给日本,日本统治台湾直到1945年。"
+    ],
+    "Japanese": [
+     "入力",
+     "1895年生まれ。",
+     "日清戦争で敗北した清政府は",
+     "下関条約により台湾の主権を日本に譲渡し、1945年まで統治。"
+    ],
+    "German": [
+     "In",
+     "1895, dt.",
+     "Nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895) unterzeichnet die Qing-Regierung den Vertrag von",
+     "Shimonoseki, durch den es die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En",
+     "1895,",
+     "Después de la derrota en la Primera Guerra Sino-Japonesa (1894-1895), el gobierno Qing firma el Tratado de",
+     "Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "First Sino-Japanese War (1894-1895),",
+     "right": "the Qing government signs",
+     "H": 0.6083,
+     "H_pct": 12.9,
+     "contra": 0.2998,
+     "cohesion": 0.8688
+    },
+    {
+     "pos": 18,
+     "left": "the Treaty of Shimonoseki,",
+     "right": "by which it cedes",
+     "H": 0.8493,
+     "H_pct": 74.2,
+     "contra": 0.0225,
+     "cohesion": 0.8689
+    },
+    {
+     "pos": 27,
+     "left": "over Taiwan to Japan,",
+     "right": "which rules the island",
+     "H": 0.8506,
+     "H_pct": 80.6,
+     "contra": 0.0184,
+     "cohesion": 0.8665
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "In",
+     "right": "1895, after defeat in",
+     "H": 0.8742,
+     "H_pct": 96.8,
+     "contra": 0.0076,
+     "cohesion": 0.8809
+    },
+    {
+     "pos": 2,
+     "left": "In 1895,",
+     "right": "after defeat in the",
+     "H": 0.8609,
+     "H_pct": 93.5,
+     "contra": 0.0016,
+     "cohesion": 0.8622
+    },
+    {
+     "pos": 17,
+     "left": "signs the Treaty of",
+     "right": "Shimonoseki, by which it",
+     "H": 0.8746,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_292",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.2116,
+  "policy_worst_contra": 0.0067,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.603,
+   "text": "The significant earthquake activity resulting in the phase change had took place ‖ on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "导致相变的重大地震活动已经发生",
+     "火山口东北侧的火山口,火山口东北侧的火山口。"
+    ],
+    "Japanese": [
+     "地震活動の相転移を生じた。",
+     "3月10日に 火山の頂上カルデラの北東側で"
+    ],
+    "German": [
+     "Die bedeutende Erdbebenaktivität, die zum Phasenwechsel führte, hatte stattgefunden",
+     "Der Vulkan ist auf der Nordostseite der Gipfelcaldera gelegen."
+    ],
+    "Spanish": [
+     "La actividad sísmica significativa que resultó en el cambio de fase había tenido lugar",
+     "El volcán se encuentra en la parte noreste de la caldera de la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8146,
+   "text": "The ‖ significant earthquake activity resulting in the phase change had took place on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "3月10日,火山顶部火山口东北侧发生了导致相变的重大地震活动。"
+    ],
+    "Japanese": [
+     "あの",
+     "3月10日に 火山頂カルデラの北東側で 相変化を引き起こした 地震活動が起きた"
+    ],
+    "German": [
+     "The",
+     "Am 10. März hatte auf der Nordostseite der Gipfelkaldera des Vulkans eine bedeutende Erdbebenaktivität stattgefunden, die zu einem Phasenwechsel geführt hatte."
+    ],
+    "Spanish": [
+     "The",
+     "El 10 de marzo se produjo una actividad sísmica significativa que resultó en el cambio de fase en el lado noreste de la caldera de la cumbre del volcán."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "change had took place",
+     "right": "on March 10 on",
+     "H": 0.603,
+     "H_pct": 31.8,
+     "contra": 0.0067,
+     "cohesion": 0.607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "significant earthquake activity resulting",
+     "H": 0.8146,
+     "H_pct": 100.0,
+     "contra": 0.0112,
+     "cohesion": 0.8238
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_538",
+  "cuts": 9,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.5471,
+  "policy_worst_contra": 0.8977,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    17,
+    19,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+   ],
+   "H_set": 0.0722,
+   "text": "If the objective of one’s visit to a particular place is to get to know its history ‖ and culture ‖ then this ‖ type ‖ of ‖ tourism ‖ is ‖ known ‖ as ‖ cultural tourism.",
+   "pieces": {
+    "Chinese": [
+     "如果一个人访问某个特定地方的目的是了解其历史",
+     "文化",
+     "然后这",
+     "类型",
+     "的",
+     "旅游业",
+     "是",
+     "已知",
+     "作为",
+     "文化旅游。"
+    ],
+    "Japanese": [
+     "歴史を知るために訪れた場合",
+     "文化を",
+     "それから これ",
+     "タイプ",
+     "の",
+     "観光",
+     "はい",
+     "知ってる",
+     "ああ",
+     "文化観光です"
+    ],
+    "German": [
+     "Wenn das Ziel des Besuchs eines bestimmten Ortes darin besteht, seine Geschichte kennenzulernen",
+     "Kunst und Kultur",
+     "Dann ist das",
+     "Typ",
+     "von",
+     "Tourismus",
+     "ist",
+     "bekannt",
+     "as",
+     "Kulturtourismus in der Schweiz."
+    ],
+    "Spanish": [
+     "Si el objetivo de la visita a un lugar en particular es conocer su historia",
+     "y cultura",
+     "Entonces esto es",
+     "Tipo",
+     "de",
+     "turismo",
+     "es",
+     "conocido",
+     "as",
+     "Turismo cultural."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    10,
+    11,
+    12,
+    15,
+    19,
+    20,
+    21,
+    28
+   ],
+   "H_set": 0.6193,
+   "text": "If ‖ the objective of one’s visit to a particular place ‖ is ‖ to ‖ get to know ‖ its history and culture ‖ then ‖ this ‖ type of tourism is known as cultural ‖ tourism.",
+   "pieces": {
+    "Chinese": [
+     "假如",
+     "一个人访问某一特定地点的目的",
+     "是",
+     "至",
+     "了解更多",
+     "历史和文化",
+     "然后",
+     "这个",
+     "旅游业的类型被称为文化",
+     "旅游业。"
+    ],
+    "Japanese": [
+     "もし",
+     "特定の場所を訪れる目的は",
+     "はい",
+     "それは",
+     "知り合いになる",
+     "歴史と文化を",
+     "じゃあ あの",
+     "これは",
+     "文化観光と呼ばれるものは",
+     "観光だ"
+    ],
+    "German": [
+     "If",
+     "Das Ziel des Besuchs eines bestimmten Ortes",
+     "ist",
+     "to",
+     "Lernen Sie uns kennen",
+     "Geschichte und Kultur",
+     "dann",
+     "this",
+     "Diese Art des Tourismus ist als Kulturtourismus bekannt.",
+     "Tourismus."
+    ],
+    "Spanish": [
+     "Si",
+     "El objetivo de la visita a un lugar en particular",
+     "es",
+     "a",
+     "Conoce a los",
+     "Su historia y cultura",
+     "entonces",
+     "this",
+     "Este tipo de turismo se conoce como turismo cultural",
+     "turismo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 17,
+     "left": "to know its history",
+     "right": "and culture then this",
+     "H": 0.779,
+     "H_pct": 48.1,
+     "contra": 0.0019,
+     "cohesion": 0.7805
+    },
+    {
+     "pos": 22,
+     "left": "culture then this type",
+     "right": "of tourism is known",
+     "H": 0.7718,
+     "H_pct": 37.0,
+     "contra": 0.0283,
+     "cohesion": 0.7943
+    },
+    {
+     "pos": 23,
+     "left": "then this type of",
+     "right": "tourism is known as",
+     "H": 0.7723,
+     "H_pct": 40.7,
+     "contra": 0.029,
+     "cohesion": 0.7954
+    },
+    {
+     "pos": 24,
+     "left": "this type of tourism",
+     "right": "is known as cultural",
+     "H": 0.7983,
+     "H_pct": 66.7,
+     "contra": 0.0494,
+     "cohesion": 0.8398
+    },
+    {
+     "pos": 25,
+     "left": "type of tourism is",
+     "right": "known as cultural tourism.",
+     "H": 0.656,
+     "H_pct": 11.1,
+     "contra": 0.2065,
+     "cohesion": 0.8268
+    },
+    {
+     "pos": 26,
+     "left": "of tourism is known",
+     "right": "as cultural tourism.",
+     "H": 0.7583,
+     "H_pct": 25.9,
+     "contra": 0.069,
+     "cohesion": 0.8145
+    },
+    {
+     "pos": 27,
+     "left": "tourism is known as",
+     "right": "cultural tourism.",
+     "H": 0.0856,
+     "H_pct": 0.0,
+     "contra": 0.8977,
+     "cohesion": 0.8364
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "If",
+     "right": "the objective of one’s",
+     "H": 0.8122,
+     "H_pct": 74.1,
+     "contra": 0.0013,
+     "cohesion": 0.8133
+    },
+    {
+     "pos": 10,
+     "left": "to a particular place",
+     "right": "is to get to",
+     "H": 0.8055,
+     "H_pct": 70.4,
+     "contra": 0.0068,
+     "cohesion": 0.811
+    },
+    {
+     "pos": 11,
+     "left": "a particular place is",
+     "right": "to get to know",
+     "H": 0.8389,
+     "H_pct": 92.6,
+     "contra": 0.0068,
+     "cohesion": 0.8446
+    },
+    {
+     "pos": 12,
+     "left": "particular place is to",
+     "right": "get to know its",
+     "H": 0.8245,
+     "H_pct": 81.5,
+     "contra": 0.0286,
+     "cohesion": 0.8488
+    },
+    {
+     "pos": 15,
+     "left": "to get to know",
+     "right": "its history and culture",
+     "H": 0.8234,
+     "H_pct": 77.8,
+     "contra": 0.0085,
+     "cohesion": 0.8305
+    },
+    {
+     "pos": 20,
+     "left": "history and culture then",
+     "right": "this type of tourism",
+     "H": 0.8705,
+     "H_pct": 96.3,
+     "contra": 0.0177,
+     "cohesion": 0.8861
+    },
+    {
+     "pos": 28,
+     "left": "is known as cultural",
+     "right": "tourism.",
+     "H": 0.8316,
+     "H_pct": 88.9,
+     "contra": 0.0015,
+     "cohesion": 0.8328
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_419",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.5121,
+  "policy_worst_contra": 0.6933,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    8,
+    9,
+    16
+   ],
+   "H_set": 0.1992,
+   "text": "Estimates range from 340 million ‖ to 500 million ‖ speakers, ‖ and as many as 800 million people ‖ can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数从3.4亿美元到",
+     "5亿美元",
+     "发言者，",
+     "多达8亿人",
+     "能够理解语言。"
+    ],
+    "Japanese": [
+     "推定値は3億4000万から",
+     "5億人に増えました",
+     "話者は",
+     "8億人もの人々が",
+     "言語を理解できるのです"
+    ],
+    "German": [
+     "Schätzungen reichen von 340 Millionen",
+     "bis 500 Millionen",
+     "Lautsprecher,",
+     "Und so viele wie 800 Millionen Menschen",
+     "Ich kann die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Las estimaciones van desde 340 millones",
+     "a 500 millones",
+     "Altavoces,",
+     "y hasta 800 millones de personas",
+     "No entiendo el idioma."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    9
+   ],
+   "H_set": 0.7112,
+   "text": "Estimates ‖ range ‖ from ‖ 340 million to 500 million speakers, ‖ and as many as 800 million people can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数",
+     "范围",
+     "从",
+     "3.4亿到5亿人,",
+     "多达8亿人能够理解这种语言。"
+    ],
+    "Japanese": [
+     "推定",
+     "範囲",
+     "ここから",
+     "3億4千万から5億人の話者がいます",
+     "8億人がこの言語を理解できます"
+    ],
+    "German": [
+     "Schätzungen",
+     "Range",
+     "von",
+     "340 Millionen bis 500 Millionen Sprecher,",
+     "Und bis zu 800 Millionen Menschen können die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Estimaciones",
+     "Rango",
+     "de",
+     "340 millones a 500 millones de hablantes,",
+     "Y hasta 800 millones de personas pueden entender el idioma."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "range from 340 million",
+     "right": "to 500 million speakers,",
+     "H": 0.7512,
+     "H_pct": 61.1,
+     "contra": 0.0165,
+     "cohesion": 0.7639
+    },
+    {
+     "pos": 8,
+     "left": "million to 500 million",
+     "right": "speakers, and as many",
+     "H": 0.2189,
+     "H_pct": 0.0,
+     "contra": 0.6933,
+     "cohesion": 0.7138
+    },
+    {
+     "pos": 16,
+     "left": "as 800 million people",
+     "right": "can understand the language.",
+     "H": 0.5254,
+     "H_pct": 11.1,
+     "contra": 0.2515,
+     "cohesion": 0.7019
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Estimates",
+     "right": "range from 340 million",
+     "H": 0.8521,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8533
+    },
+    {
+     "pos": 2,
+     "left": "Estimates range",
+     "right": "from 340 million to",
+     "H": 0.815,
+     "H_pct": 83.3,
+     "contra": 0.0006,
+     "cohesion": 0.8155
+    },
+    {
+     "pos": 3,
+     "left": "Estimates range from",
+     "right": "340 million to 500",
+     "H": 0.8191,
+     "H_pct": 88.9,
+     "contra": 0.0279,
+     "cohesion": 0.8427
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_48",
+  "cuts": 9,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.5236,
+  "policy_worst_contra": 0.8759,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    9,
+    10,
+    12,
+    16,
+    20,
+    22,
+    24
+   ],
+   "H_set": 0.0712,
+   "text": "Jonny Reid, ‖ co-driver ‖ for the A1GP New Zealand team, ‖ today ‖ made history ‖ by driving the fastest ‖ over the 48-year-old Auckland ‖ Harbour Bridge, ‖ New Zealand, ‖ legally.",
+   "pieces": {
+    "Chinese": [
+     "乔尼·里德",
+     "副驾驶",
+     "为A1GP新西兰队,",
+     "今天",
+     "创造历史",
+     "通过驾驶最快",
+     "48岁的奥克兰",
+     "海港大桥",
+     "新西兰",
+     "合法。"
+    ],
+    "Japanese": [
+     "ジョニー・リード",
+     "助手席",
+     "A1GPニュージーランドチームの",
+     "今日は",
+     "歴史を作りました",
+     "最高速度で走り",
+     "48歳のオークランド市民が",
+     "ハーバーブリッジ",
+     "ニュージーランド",
+     "合法的に"
+    ],
+    "German": [
+     "Jonny Reid",
+     "Beifahrer",
+     "für das A1GP Neuseeland Team,",
+     "heute",
+     "Geschichte geschrieben",
+     "Durch das Fahren der schnellsten",
+     "Über den 48-jährigen Auckland",
+     "Hafenbrücke von Sydney,",
+     "Neuseeland,",
+     "Rechtmäßig."
+    ],
+    "Spanish": [
+     "Jonny Reid,",
+     "Co-driver",
+     "para el equipo A1GP de Nueva Zelanda,",
+     "Hoy",
+     "Ha hecho historia",
+     "Conduciendo el más rápido",
+     "Sobre el Auckland de 48 años",
+     "Puente del puerto,",
+     "Nueva Zelandia,",
+     "legalmente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    9,
+    10,
+    11,
+    12,
+    22,
+    24
+   ],
+   "H_set": 0.5949,
+   "text": "Jonny ‖ Reid, ‖ co-driver for the A1GP ‖ New Zealand team, ‖ today ‖ made ‖ history ‖ by driving the fastest over the 48-year-old Auckland Harbour Bridge, ‖ New Zealand, ‖ legally.",
+   "pieces": {
+    "Chinese": [
+     "強尼",
+     "里德",
+     "为A1GP的副驾驶",
+     "新西兰队,",
+     "今天",
+     "已完成",
+     "历史",
+     "通过在48年前建成的奥克兰海港大桥上驾驶最快的速度,",
+     "新西兰",
+     "合法。"
+    ],
+    "Japanese": [
+     "ジョニー",
+     "リード",
+     "A1GPのコードライバー",
+     "ニュージーランドチーム",
+     "今日は",
+     "作った",
+     "歴史",
+     "48年の歴史を持つオークランド・ハーバーブリッジを 最速で走り抜けることで",
+     "ニュージーランド",
+     "合法的に"
+    ],
+    "German": [
+     "Jonny",
+     "Reid.",
+     "Beifahrer für den A1GP",
+     "Neuseeland-Team,",
+     "heute",
+     "gemacht",
+     "Geschichte",
+     "indem er am schnellsten über die 48 Jahre alte Auckland Harbour Bridge fuhr,",
+     "Neuseeland,",
+     "Rechtmäßig."
+    ],
+    "Spanish": [
+     "Jonny",
+     "Reid,",
+     "Co-piloto para el A1GP",
+     "Equipo de Nueva Zelanda,",
+     "Hoy",
+     "made",
+     "Historia",
+     "conduciendo el más rápido sobre el puente del puerto de Auckland, de 48 años,",
+     "Nueva Zelandia,",
+     "legalmente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Jonny Reid, co-driver",
+     "right": "for the A1GP New",
+     "H": 0.6532,
+     "H_pct": 52.2,
+     "contra": 0.0007,
+     "cohesion": 0.6537
+    },
+    {
+     "pos": 16,
+     "left": "by driving the fastest",
+     "right": "over the 48-year-old Auckland",
+     "H": 0.6311,
+     "H_pct": 43.5,
+     "contra": 0.0019,
+     "cohesion": 0.6323
+    },
+    {
+     "pos": 20,
+     "left": "over the 48-year-old Auckland",
+     "right": "Harbour Bridge, New Zealand,",
+     "H": 0.076,
+     "H_pct": 0.0,
+     "contra": 0.8759,
+     "cohesion": 0.6123
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Jonny",
+     "right": "Reid, co-driver for the",
+     "H": 0.7313,
+     "H_pct": 100.0,
+     "contra": 0.0004,
+     "cohesion": 0.7316
+    },
+    {
+     "pos": 6,
+     "left": "co-driver for the A1GP",
+     "right": "New Zealand team, today",
+     "H": 0.6903,
+     "H_pct": 73.9,
+     "contra": 0.0005,
+     "cohesion": 0.6907
+    },
+    {
+     "pos": 11,
+     "left": "Zealand team, today made",
+     "right": "history by driving the",
+     "H": 0.683,
+     "H_pct": 69.6,
+     "contra": 0.0005,
+     "cohesion": 0.6833
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_936",
+  "cuts": 6,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.4898,
+  "policy_worst_contra": 0.7895,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    11,
+    15,
+    17,
+    20
+   ],
+   "H_set": 0.1329,
+   "text": "Unless you are a diplomat, ‖ working overseas ‖ generally means that you ‖ will have to file ‖ income tax ‖ in the country ‖ you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非你是外交官",
+     "海外工作",
+     "一般意味着你",
+     "将不得不提交",
+     "所得税",
+     "国家的",
+     "您所在的国家。"
+    ],
+    "Japanese": [
+     "外交官じゃないと",
+     "海外で働く",
+     "一般的には あなたが",
+     "申告しなければならない",
+     "所得税",
+     "国中で",
+     "あなたは ここに居る"
+    ],
+    "German": [
+     "Wenn Sie kein Diplomat sind,",
+     "Arbeiten im Ausland",
+     "Das bedeutet, dass Sie",
+     "Wird einreichen müssen",
+     "Einkommensteuer",
+     "Im Land",
+     "Sie sind in."
+    ],
+    "Spanish": [
+     "A menos que seas un diplomático,",
+     "Trabajar en el extranjero",
+     "Generalmente significa que usted",
+     "Tendrá que presentar",
+     "Impuesto sobre la renta",
+     "En el país",
+     "Usted está basado en."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    7,
+    16,
+    17
+   ],
+   "H_set": 0.6227,
+   "text": "Unless ‖ you ‖ are a diplomat, ‖ working overseas ‖ generally means that you will have to file income ‖ tax ‖ in the country you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非",
+     "你",
+     "您是一名外交官,",
+     "海外工作",
+     "一般来说,这意味着你将不得不提交收入",
+     "税",
+     "您所在国家的法律。"
+    ],
+    "Japanese": [
+     "もしも",
+     "あなたは",
+     "外交官なら",
+     "海外で働く",
+     "一般的には 所得税を申告しなければなりません",
+     "税金",
+     "あなたが居る国で"
+    ],
+    "German": [
+     "Unless",
+     "Sie",
+     "Sie sind Diplomat,",
+     "Arbeiten im Ausland",
+     "Das bedeutet in der Regel, dass Sie Einkommensteuer einreichen müssen",
+     "Steuer",
+     "In dem Land, in dem Sie ansässig sind."
+    ],
+    "Spanish": [
+     "A menos que",
+     "usted",
+     "eres un diplomático,",
+     "Trabajar en el extranjero",
+     "Esto generalmente significa que usted tendrá que declarar sus ingresos",
+     "impuestos",
+     "En el país en el que estás basado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "generally means that you",
+     "right": "will have to file",
+     "H": 0.1784,
+     "H_pct": 18.2,
+     "contra": 0.7895,
+     "cohesion": 0.8473
+    },
+    {
+     "pos": 15,
+     "left": "will have to file",
+     "right": "income tax in the",
+     "H": 0.7583,
+     "H_pct": 72.7,
+     "contra": 0.0323,
+     "cohesion": 0.7836
+    },
+    {
+     "pos": 20,
+     "left": "tax in the country",
+     "right": "you are based in.",
+     "H": 0.6769,
+     "H_pct": 50.0,
+     "contra": 0.0014,
+     "cohesion": 0.6778
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Unless",
+     "right": "you are a diplomat,",
+     "H": 0.7718,
+     "H_pct": 86.4,
+     "contra": 0.0038,
+     "cohesion": 0.7747
+    },
+    {
+     "pos": 2,
+     "left": "Unless you",
+     "right": "are a diplomat, working",
+     "H": 0.7625,
+     "H_pct": 77.3,
+     "contra": 0.0077,
+     "cohesion": 0.7684
+    },
+    {
+     "pos": 16,
+     "left": "have to file income",
+     "right": "tax in the country",
+     "H": 0.7715,
+     "H_pct": 81.8,
+     "contra": 0.0132,
+     "cohesion": 0.7818
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_648",
+  "cuts": 13,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.5069,
+  "policy_worst_contra": 0.9972,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    12,
+    13,
+    15,
+    16,
+    18,
+    21,
+    24
+   ],
+   "H_set": 0.0014,
+   "text": "So many of us ‖ find ‖ ourselves ‖ watching ‖ a television ‖ show ‖ that informs ‖ us ‖ of a ‖ process ‖ or experience ‖ in which we ‖ will never participate ‖ or apply that knowledge.",
+   "pieces": {
+    "Chinese": [
+     "我们这么多人",
+     "找到",
+     "我们自己",
+     "观看",
+     "电视机",
+     "展示",
+     "提供信息的",
+     "美国",
+     "的",
+     "进程",
+     "经验",
+     "我们在其中",
+     "永远不会参加",
+     "或者应用这些知识。"
+    ],
+    "Japanese": [
+     "私たちの多くは",
+     "見つける",
+     "私たち自身",
+     "見てる",
+     "テレビを見て",
+     "見せて",
+     "私たちの脳が",
+     "俺たち",
+     "あの",
+     "プロセス",
+     "経験を",
+     "私たちが",
+     "決して参加しない",
+     "知識を活用するのです"
+    ],
+    "German": [
+     "So viele von uns",
+     "Finden",
+     "uns selbst",
+     "Beobachtung",
+     "Ein Fernseher",
+     "Show",
+     "Das, was informiert",
+     "us",
+     "of a",
+     "Prozess",
+     "Erfahrung oder Erfahrung",
+     "In dem wir",
+     "Werde niemals teilnehmen",
+     "oder dieses Wissen anwenden."
+    ],
+    "Spanish": [
+     "Tantos de nosotros",
+     "encontrar",
+     "nosotros mismos",
+     "mirando",
+     "Un televisor",
+     "show",
+     "Que informa",
+     "us",
+     "de un",
+     "Proceso",
+     "O experiencia",
+     "En el que nosotros",
+     "Nunca participaré",
+     "o aplicar ese conocimiento."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10,
+    11,
+    18,
+    20,
+    24,
+    25,
+    27
+   ],
+   "H_set": 0.5083,
+   "text": "So ‖ many of ‖ us ‖ find ‖ ourselves ‖ watching a ‖ television show ‖ that ‖ informs us of a process or experience ‖ in which ‖ we will never participate ‖ or ‖ apply that ‖ knowledge.",
+   "pieces": {
+    "Chinese": [
+     "是的",
+     "许多",
+     "美国",
+     "找到",
+     "我们自己",
+     "一个",
+     "电视节目",
+     "该",
+     "告诉我们一个过程或经验",
+     "其中",
+     "我们永远不会参与",
+     "或",
+     "适用该",
+     "知识。"
+    ],
+    "Japanese": [
+     "だから",
+     "多くの人々が",
+     "俺たち",
+     "見つける",
+     "私たち自身",
+     "見てる",
+     "テレビ番組で",
+     "あれは",
+     "プロセスや経験を伝えます",
+     "それは",
+     "私たちは決して参加しません",
+     "それとも",
+     "それを応用して",
+     "知識"
+    ],
+    "German": [
+     "So",
+     "Viele von ihnen",
+     "us",
+     "Finden",
+     "uns selbst",
+     "Beobachten Sie ein",
+     "Fernsehshow",
+     "that",
+     "informiert uns über einen Prozess oder eine Erfahrung",
+     "in dem",
+     "Wir werden niemals teilnehmen",
+     "oder",
+     "Anwenden Sie, dass",
+     "Wissen."
+    ],
+    "Spanish": [
+     "Así que",
+     "Muchos de ellos",
+     "us",
+     "encontrar",
+     "nosotros mismos",
+     "Mirando a un hombre",
+     "Show de televisión",
+     "that",
+     "Nos informa de un proceso o experiencia",
+     "en que",
+     "Nunca participaremos",
+     "o",
+     "Aplicar que",
+     "conocimiento."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "us find ourselves watching",
+     "right": "a television show that",
+     "H": 0.7638,
+     "H_pct": 50.0,
+     "contra": 0.0019,
+     "cohesion": 0.7652
+    },
+    {
+     "pos": 9,
+     "left": "ourselves watching a television",
+     "right": "show that informs us",
+     "H": 0.7299,
+     "H_pct": 15.4,
+     "contra": 0.0015,
+     "cohesion": 0.731
+    },
+    {
+     "pos": 12,
+     "left": "television show that informs",
+     "right": "us of a process",
+     "H": 0.7336,
+     "H_pct": 19.2,
+     "contra": 0.0302,
+     "cohesion": 0.7564
+    },
+    {
+     "pos": 13,
+     "left": "show that informs us",
+     "right": "of a process or",
+     "H": 0.7491,
+     "H_pct": 26.9,
+     "contra": 0.0184,
+     "cohesion": 0.7631
+    },
+    {
+     "pos": 15,
+     "left": "informs us of a",
+     "right": "process or experience in",
+     "H": 0.752,
+     "H_pct": 38.5,
+     "contra": 0.0079,
+     "cohesion": 0.758
+    },
+    {
+     "pos": 16,
+     "left": "us of a process",
+     "right": "or experience in which",
+     "H": 0.7512,
+     "H_pct": 34.6,
+     "contra": 0.0059,
+     "cohesion": 0.7556
+    },
+    {
+     "pos": 21,
+     "left": "experience in which we",
+     "right": "will never participate or",
+     "H": 0.0022,
+     "H_pct": 3.8,
+     "contra": 0.9972,
+     "cohesion": 0.7745
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "So",
+     "right": "many of us find",
+     "H": 0.8267,
+     "H_pct": 100.0,
+     "contra": 0.0025,
+     "cohesion": 0.8287
+    },
+    {
+     "pos": 3,
+     "left": "So many of",
+     "right": "us find ourselves watching",
+     "H": 0.7865,
+     "H_pct": 76.9,
+     "contra": 0.0008,
+     "cohesion": 0.7872
+    },
+    {
+     "pos": 8,
+     "left": "find ourselves watching a",
+     "right": "television show that informs",
+     "H": 0.7778,
+     "H_pct": 69.2,
+     "contra": 0.002,
+     "cohesion": 0.7794
+    },
+    {
+     "pos": 11,
+     "left": "a television show that",
+     "right": "informs us of a",
+     "H": 0.7878,
+     "H_pct": 80.8,
+     "contra": 0.0267,
+     "cohesion": 0.8094
+    },
+    {
+     "pos": 20,
+     "left": "or experience in which",
+     "right": "we will never participate",
+     "H": 0.7911,
+     "H_pct": 84.6,
+     "contra": 0.0167,
+     "cohesion": 0.8045
+    },
+    {
+     "pos": 25,
+     "left": "will never participate or",
+     "right": "apply that knowledge.",
+     "H": 0.773,
+     "H_pct": 61.5,
+     "contra": 0.0085,
+     "cohesion": 0.7796
+    },
+    {
+     "pos": 27,
+     "left": "participate or apply that",
+     "right": "knowledge.",
+     "H": 0.7675,
+     "H_pct": 53.8,
+     "contra": 0.0126,
+     "cohesion": 0.7773
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1570",
+  "cuts": 5,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.5045,
+  "policy_worst_contra": 0.9986,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    7,
+    9,
+    11
+   ],
+   "H_set": 0.0007,
+   "text": "It also had ‖ no authority ‖ to override ‖ tax laws ‖ and tariffs ‖ between states.",
+   "pieces": {
+    "Chinese": [
+     "该国还",
+     "无权限",
+     "要覆盖的",
+     "税法",
+     "关税和关税",
+     "各州之间。"
+    ],
+    "Japanese": [
+     "また，１９９０年代における日本の医療の現状を分析した。",
+     "権威がない",
+     "上書きするために",
+     "税法",
+     "関税を課すことで",
+     "州間でのみです"
+    ],
+    "German": [
+     "Es hatte auch",
+     "Keine Autorität",
+     "Zu überschreiben",
+     "Steuergesetze",
+     "Preise und Tarife",
+     "Zwischen den Staaten."
+    ],
+    "Spanish": [
+     "También tenía",
+     "No hay autoridad",
+     "Para sobreescribir",
+     "Leyes de impuestos",
+     "Tarifas y tarifas",
+     "entre los estados."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6,
+    9,
+    11
+   ],
+   "H_set": 0.5052,
+   "text": "It ‖ also had no authority ‖ to ‖ override tax laws ‖ and tariffs ‖ between states.",
+   "pieces": {
+    "Chinese": [
+     "意大利",
+     "没有权力",
+     "至",
+     "取代税法",
+     "关税和关税",
+     "各州之间。"
+    ],
+    "Japanese": [
+     "それ",
+     "権限もありませんでした",
+     "それは",
+     "税法を覆すことになるでしょう",
+     "関税を課すことで",
+     "州間でのみです"
+    ],
+    "German": [
+     "It",
+     "Auch hatte keine Autorität",
+     "to",
+     "Steuergesetze außer Kraft setzen",
+     "Preise und Tarife",
+     "Zwischen den Staaten."
+    ],
+    "Spanish": [
+     "It",
+     "Tampoco tenía autoridad",
+     "a",
+     "anular las leyes fiscales",
+     "Tarifas y tarifas",
+     "entre los estados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "It also had",
+     "right": "no authority to override",
+     "H": 0.0011,
+     "H_pct": 0.0,
+     "contra": 0.9986,
+     "cohesion": 0.7693
+    },
+    {
+     "pos": 7,
+     "left": "no authority to override",
+     "right": "tax laws and tariffs",
+     "H": 0.7349,
+     "H_pct": 54.5,
+     "contra": 0.0013,
+     "cohesion": 0.7359
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "It",
+     "right": "also had no authority",
+     "H": 0.7579,
+     "H_pct": 72.7,
+     "contra": 0.0842,
+     "cohesion": 0.8276
+    },
+    {
+     "pos": 6,
+     "left": "had no authority to",
+     "right": "override tax laws and",
+     "H": 0.7439,
+     "H_pct": 63.6,
+     "contra": 0.0013,
+     "cohesion": 0.7449
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_101",
+  "cuts": 11,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.4996,
+  "policy_worst_contra": 0.9087,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    4,
+    7,
+    10,
+    12,
+    13,
+    16,
+    19,
+    24,
+    26
+   ],
+   "H_set": 0.0455,
+   "text": "The valves ‖ opening ‖ allowed ‖ a pressure release ‖ for the system ‖ and oil ‖ flowed ‖ on a pad ‖ to a tank ‖ that can hold 55,000 barrels ‖ (2.3 million ‖ gallons).",
+   "pieces": {
+    "Chinese": [
+     "阀门",
+     "开幕",
+     "允许",
+     "压力释放",
+     "系统的",
+     "石油",
+     "流动",
+     "一个垫子上",
+     "到一个坦克",
+     "能容纳55000桶的油罐",
+     "(230万美元)",
+     "加仑)。"
+    ],
+    "Japanese": [
+     "弁",
+     "開店",
+     "許可",
+     "圧力を解放する",
+     "私たちのシステムにとって",
+     "石油も",
+     "流れました",
+     "ここにあるのは",
+     "戦車に",
+     "5万5千バレルの油を",
+     "230万人",
+     "ガロン)"
+    ],
+    "German": [
+     "Die Ventile",
+     "Eröffnung",
+     "erlaubt",
+     "Eine Druckauslösung",
+     "Für das System",
+     "Öl und Öl",
+     "flowed",
+     "Auf einem Pad",
+     "Zu einem Tank",
+     "Das 55.000 Fässer aufnehmen kann",
+     "(2,3 Millionen Euro)",
+     "1000 Liter)."
+    ],
+    "Spanish": [
+     "Las válvulas de",
+     "apertura",
+     "permitido",
+     "Una liberación de presión",
+     "Para el sistema",
+     "Aceite y aceite",
+     "flowed",
+     "En una almohadilla",
+     "A un tanque",
+     "Que puede contener 55.000 barriles",
+     "(2,3 millones de dólares",
+     "galones)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    8,
+    10,
+    11,
+    13,
+    16,
+    19,
+    20,
+    22,
+    24
+   ],
+   "H_set": 0.5451,
+   "text": "The ‖ valves ‖ opening allowed a pressure release for ‖ the system ‖ and ‖ oil flowed ‖ on a pad ‖ to a tank ‖ that ‖ can hold ‖ 55,000 barrels ‖ (2.3 million gallons).",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "阀门",
+     "开口允许压力释放",
+     "系统",
+     "以及",
+     "石油流量",
+     "一个垫子上",
+     "到一个坦克",
+     "该",
+     "可以持有",
+     "55 000桶",
+     "230万加仑)。"
+    ],
+    "Japanese": [
+     "あの",
+     "弁",
+     "開けると 圧力が解放され",
+     "あのシステムは",
+     "それに",
+     "石油が流れました",
+     "ここにあるのは",
+     "戦車に",
+     "あれは",
+     "持ち上げることができます",
+     "55,000バレル",
+     "230万ガロン)"
+    ],
+    "German": [
+     "The",
+     "Ventile",
+     "Öffnung ermöglichte eine Druckentlastung für",
+     "Das System",
+     "und",
+     "Öl floss",
+     "Auf einem Pad",
+     "Zu einem Tank",
+     "that",
+     "Kann halten",
+     "55.000 Barrel",
+     "(2,3 Millionen Gallonen)."
+    ],
+    "Spanish": [
+     "The",
+     "válvulas",
+     "La abertura permitió una liberación de presión para",
+     "El sistema",
+     "y",
+     "Fluyó el aceite",
+     "En una almohadilla",
+     "A un tanque",
+     "that",
+     "Puede sostener",
+     "55.000 barriles",
+     "(2,3 millones de galones)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "The valves opening",
+     "right": "allowed a pressure release",
+     "H": 0.6865,
+     "H_pct": 24.0,
+     "contra": 0.0007,
+     "cohesion": 0.687
+    },
+    {
+     "pos": 4,
+     "left": "The valves opening allowed",
+     "right": "a pressure release for",
+     "H": 0.6617,
+     "H_pct": 12.0,
+     "contra": 0.002,
+     "cohesion": 0.663
+    },
+    {
+     "pos": 7,
+     "left": "allowed a pressure release",
+     "right": "for the system and",
+     "H": 0.7205,
+     "H_pct": 44.0,
+     "contra": 0.0006,
+     "cohesion": 0.7209
+    },
+    {
+     "pos": 12,
+     "left": "the system and oil",
+     "right": "flowed on a pad",
+     "H": 0.7269,
+     "H_pct": 52.0,
+     "contra": 0.0049,
+     "cohesion": 0.7305
+    },
+    {
+     "pos": 26,
+     "left": "55,000 barrels (2.3 million",
+     "right": "gallons).",
+     "H": 0.0678,
+     "H_pct": 0.0,
+     "contra": 0.9087,
+     "cohesion": 0.7423
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "valves opening allowed a",
+     "H": 0.7924,
+     "H_pct": 92.0,
+     "contra": 0.022,
+     "cohesion": 0.8103
+    },
+    {
+     "pos": 8,
+     "left": "a pressure release for",
+     "right": "the system and oil",
+     "H": 0.7399,
+     "H_pct": 64.0,
+     "contra": 0.0043,
+     "cohesion": 0.743
+    },
+    {
+     "pos": 11,
+     "left": "for the system and",
+     "right": "oil flowed on a",
+     "H": 0.7789,
+     "H_pct": 80.0,
+     "contra": 0.013,
+     "cohesion": 0.7891
+    },
+    {
+     "pos": 20,
+     "left": "to a tank that",
+     "right": "can hold 55,000 barrels",
+     "H": 0.7866,
+     "H_pct": 84.0,
+     "contra": 0.021,
+     "cohesion": 0.8035
+    },
+    {
+     "pos": 22,
+     "left": "tank that can hold",
+     "right": "55,000 barrels (2.3 million",
+     "H": 0.7776,
+     "H_pct": 76.0,
+     "contra": 0.0087,
+     "cohesion": 0.7844
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.0069,
+  "lo": -0.01719,
+  "hi": 0.00324,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0083,
+  "≤5": -0.007,
+  "≤7": -0.0031,
+  "≤10": -0.0046,
+  "≤99": -0.0082
+ },
+ "n_worse": 675,
+ "n_better": 690,
+ "worst": [
+  {
+   "id": "en_us_1298",
+   "k": 9,
+   "bin": "≤3",
+   "delta": -0.695,
+   "before": "Travelling ‖ by plane ‖ can be a scary ‖ experience ‖ for people ‖ of all ‖ ages ‖ and backgrounds, ‖ particularly if they've not flown before ‖ or have experienced a traumatic event.",
+   "after": "Travelling by plane ‖ can be a scary experience ‖ for people ‖ of all ages ‖ and backgrounds, ‖ particularly ‖ if they've ‖ not flown ‖ before ‖ or have experienced a traumatic event."
+  },
+  {
+   "id": "en_us_970",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6729,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect ‖ the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, trains and boats ‖ connect ‖ the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.665,
+   "before": "The best indication of internal poisoning ‖ may be the presence of an open container ‖ of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication ‖ or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1298",
+   "k": 12,
+   "bin": "≤3",
+   "delta": -0.6501,
+   "before": "Travelling ‖ by plane ‖ can ‖ be ‖ a scary ‖ experience ‖ for people ‖ of all ‖ ages ‖ and ‖ backgrounds, ‖ particularly if they've not flown before ‖ or have experienced a traumatic event.",
+   "after": "Travelling by plane ‖ can be a scary ‖ experience ‖ for people ‖ of all ages ‖ and backgrounds, ‖ particularly ‖ if they've ‖ not flown ‖ before ‖ or have ‖ experienced ‖ a traumatic event."
+  },
+  {
+   "id": "en_us_1298",
+   "k": 10,
+   "bin": "≤3",
+   "delta": -0.6495,
+   "before": "Travelling ‖ by plane ‖ can ‖ be a scary ‖ experience ‖ for people ‖ of all ‖ ages ‖ and backgrounds, ‖ particularly if they've not flown before ‖ or have experienced a traumatic event.",
+   "after": "Travelling by plane ‖ can be a scary experience ‖ for people ‖ of all ages ‖ and backgrounds, ‖ particularly ‖ if they've ‖ not flown ‖ before ‖ or have experienced ‖ a traumatic event."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1514",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.6393,
+   "before": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in ‖ the yard ‖ and refused ‖ to return ‖ to their cells.",
+   "after": "When the fighting ceased ‖ after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in the yard ‖ and refused ‖ to return ‖ to their cells."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6363,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, ‖ fifth, and sixth place, ‖ respectively.",
+   "after": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, ‖ respectively."
+  },
+  {
+   "id": "en_us_1514",
+   "k": 8,
+   "bin": "≤5",
+   "delta": 0.6317,
+   "before": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 ‖ of the other remaining inmates ‖ stayed ‖ in ‖ the yard ‖ and refused ‖ to return ‖ to their cells.",
+   "after": "When the fighting ceased ‖ after the wounded were transported ‖ to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in the yard ‖ and refused ‖ to return ‖ to their cells."
+  },
+  {
+   "id": "en_us_877",
+   "k": 1,
+   "bin": "≤7",
+   "delta": 0.6236,
+   "before": "For those unfamiliar with medical jargon, ‖ the words infectious and contagious have distinct meanings.",
+   "after": "For those unfamiliar with medical jargon, the words infectious and contagious ‖ have distinct meanings."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5662,
+   "before": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, ‖ fifth, and sixth place, ‖ respectively.",
+   "after": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, fifth, and sixth place, ‖ respectively."
+  }
+ ],
+ "why": "Replacing E1 with a real short‑latency example that emphasizes a stranded continuation head made the model avoid cuts that leave predicates waiting for complements, but that shift displaced cuts into very short spans (splitting auxiliaries, negation, and small noun‑phrase pieces). The effect is a small net drop overall, concentrated at the shortest latency bin (≤3) with only minor or mixed changes elsewhere.",
+ "lesson": "When adding a short‑latency example to discourage head‑stranding, avoid encouraging cut shifts that increase fragmentation inside ultra‑short pieces (≤3); keep the example's signal without trading fewer head‑stranding cuts for more splits of auxiliaries/negation or tiny noun phrases.",
+ "blamed": [
+  "E1 «Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG»"
+ ]
+}

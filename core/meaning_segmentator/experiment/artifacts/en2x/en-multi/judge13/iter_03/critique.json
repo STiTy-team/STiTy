@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer underestimates cuts that leave an asserted predicate or clause head unresolved: when the left fragment contains a main verb/clause whose arguments, scope, or negation are supplied later, that left piece can assert a claim that the rest of the sentence then reverses.",
+    "evidence": "['en_us_140','en_us_432','en_us_26','en_us_276','en_us_1137','en_us_33','en_us_1253','en_us_1488','en_us_87'] — these cases share that the policy kept cuts which isolate a predicate/clause head on the left and a later fragment overturns or qualifies it (each listed case shows a policy-kept cut with very high contra).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the left fragment contains a main predicate or clause head whose arguments, scope, or negation remain unresolved and could be reversed or qualified by later text, mark the cut unsafe (score it low)."
+    }
+   },
+   {
+    "diagnosis": "The scorer treats post-nominal modifiers and appositives as generally safe to split for density, but sometimes those right-hand modifiers are essential to identify the referent; cutting them produces misidentification or a contradictable assertion.",
+    "evidence": "['en_us_140','en_us_276','en_us_1253','en_us_482'] — these cases share that the policy cut orphaned right-side modifiers or identifying clauses (restrictive/appositive/PP) that are necessary to fix the noun's identity or truth, producing high downstream contradiction or low cohesion.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cuts that orphan essential identifying modifiers (restrictive relatives, essential appositives, or identifying prepositional phrases); if dropping the right side would change who/what the left names, mark the cut unsafe."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer underestimates cuts that leave an asserted predicate or clause head unresolved: when the left fragment contains a main verb/clause whose arguments, scope, or negation are supplied later, that left piece can assert a claim that the rest of the sentence then reverses.",
+   "evidence": "['en_us_140','en_us_432','en_us_26','en_us_276','en_us_1137','en_us_33','en_us_1253','en_us_1488','en_us_87'] — these cases share that the policy kept cuts which isolate a predicate/clause head on the left and a later fragment overturns or qualifies it (each listed case shows a policy-kept cut with very high contra).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the left fragment contains a main predicate or clause head whose arguments, scope, or negation remain unresolved and could be reversed or qualified by later text, mark the cut unsafe (score it low)."
+   }
+  },
+  {
+   "diagnosis": "The scorer treats post-nominal modifiers and appositives as generally safe to split for density, but sometimes those right-hand modifiers are essential to identify the referent; cutting them produces misidentification or a contradictable assertion.",
+   "evidence": "['en_us_140','en_us_276','en_us_1253','en_us_482'] — these cases share that the policy cut orphaned right-side modifiers or identifying clauses (restrictive/appositive/PP) that are necessary to fix the noun's identity or truth, producing high downstream contradiction or low cohesion.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cuts that orphan essential identifying modifiers (restrictive relatives, essential appositives, or identifying prepositional phrases); if dropping the right side would change who/what the left names, mark the cut unsafe."
+   }
+  }
+ ]
+}

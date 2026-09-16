@@ -195,7 +195,11 @@ def main() -> int:
         return stop
 
     P.SEG_MAX_TOKENS = a.max_tokens
-    gw = Gateway.from_args(a, model=a.model, budget=a.budget, timeout=a.timeout)
+    gw = Gateway.from_args(a, model=a.model, budget=a.budget, timeout=a.timeout,
+                           max_connections=max(16, a.workers))
+    if len(gw._keys) > 1:
+        print(f"[gateway] 키 {len(gw._keys)}개 라운드로빈 / 동시 연결 {max(16, a.workers)}",
+              flush=True)
     cache = LiveCache(Path(a.cache), every=a.cache_every)
     first: list = []
     t0 = time.time()
