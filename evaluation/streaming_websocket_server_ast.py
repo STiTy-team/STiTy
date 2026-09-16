@@ -736,10 +736,13 @@ class ASTStreamingHandler(fsl_server.FSLStreamingHandler):
             # 값이라, `--model seg` 로 띄운 클라이언트를 `--always-commit` 서버에 붙이면
             # 라벨이 조용히 거짓말을 한다. 곡선을 그릴 때 점이 뒤바뀌는 사고가 정확히
             # 여기서 난다. 채점기는 이 값으로 그룹핑하고 `args.model` 과 교차검증한다.
+            # `--ast-hide-seg` 를 주면 dot 축은 `<SEG>` 를 못 보므로 구두점 전용이다
+            # (punct). 안 주면 같은 설정이 dot 과 `<SEG>` 를 **둘 다** 커밋 트리거로
+            # 쓰므로 다른 정책이다 — 라벨을 갈라야 채점기가 두 축을 안 섞는다.
             if self.config.always_commit:
                 axis = "static"
             elif self.config.enable_dot_commit:
-                axis = "punct"
+                axis = "punct" if HIDE_SEG else "segdot"
             else:
                 axis = "seg"
             cfg["axis"] = axis
@@ -1119,6 +1122,8 @@ def _install_trans_guard() -> None:
         local_wait=args.trans_local_wait,
         local_max_new_tokens=args.trans_local_max_new_tokens,
     )
+    # 번역기는 여기서 올린다 — 첫 커밋이 적재를 기다리면 그 지연이 CA 지표로 들어간다.
+    trans_guard.warmup()
 
 
 def main():

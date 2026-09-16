@@ -562,6 +562,44 @@ def install(base_module, **opts) -> None:
     )
 
 
+def warmup() -> bool:
+    """`local` 백엔드의 MADLAD 를 **미리** 올린다. 안 하면 첫 커밋이 적재를 기다린다.
+
+    왜 필요한가
+    ----------
+    적재는 첫 번역 호출에서야 시작되고(`_local_model`), 그동안 워커 스레드가 큐를
+    잡고 있으므로 **그 사이 커밋이 전부 대기한다.** 서버 쪽에서는 flush 가 락에 줄을
+    서서 쌓인다. 실측(ACL60/60 90초 스모크, 2026-09-14): 커밋 28건이 전부 번역 대기,
+    완료 0건, `[AST-OVERLAP] 앞선 flush 418개` 까지 쌓이고 빈 가설로 끝났다.
+
+    긴 런이면 결국 풀리지만 **처음 몇 분 커밋의 계산인지 지연(CA)이 통째로 오염된다.**
+    적재 시간은 정책과 무관하므로 지연으로 세면 안 된다. 기동 때 한 번 치르고 만다.
+
+    vLLM 보다 먼저 올라간다(`_install_trans_guard` 가 `fsl_server.main()` 앞이다).
+    fp16 약 7.2GiB 를 먼저 잡으므로 `--gpu-memory-utilization` 은 남는 양이 아니라
+    **전체 대비 비율**임을 잊지 말 것 — 0.5 면 12.3GiB 를 요구하고, 남은 16.8GiB 로
+    충분하다. 둘을 더해 24GiB 를 넘기는 조합은 여기서 기동이 실패한다.
+
+    `AST_TRANS_NO_WARMUP=1` 로 끄면 예전(게으른 적재) 동작으로 돌아간다.
+    """
+    if _CFG.backend != "local":
+        return False
+    if os.environ.get("AST_TRANS_NO_WARMUP") == "1":
+        logger.info("[TRANS-GUARD] AST_TRANS_NO_WARMUP=1 — 번역기 예열을 건너뛴다")
+        return False
+    t0 = time.time()
+    try:
+        _local_model()
+        # 첫 generate 에는 커널 컴파일이 얹힌다. 한 문장 태워서 그것까지 끝내 둔다.
+        _local_generate(["This is a warmup sentence."], ["de"])
+    except Exception as exc:  # noqa: BLE001 — 예열 실패로 런을 죽이지 않는다
+        logger.error("[TRANS-GUARD] 번역기 예열 실패 (%.1fs) — 게으른 적재로 진행한다: %s",
+                     time.time() - t0, exc)
+        return False
+    logger.info("[TRANS-GUARD] 번역기 예열 완료 (%.1fs)", time.time() - t0)
+    return True
+
+
 def uninstall() -> None:
     if _orig_translate is not None and _target_module is not None:
         _target_module.google_translate_async = _orig_translate

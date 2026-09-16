@@ -12,7 +12,7 @@
 #   런당 대략 "가장 긴 발표 길이" ≈ 12분이다.
 #
 # 환경변수
-#   AXES           기본 "static punct seg"
+#   AXES           기본 "static punct seg" — segdot(dot+SEG 동시 커밋) 도 쓸 수 있다
 #   LANGS          기본 "de ja zh" — 매니페스트가 일부 언어만 있는 split(repro110 등)은 좁힌다
 #   CHUNK          기본 2.0
 #   TRANS_BACKEND  기본 local — MADLAD-400-3B(greedy)를 같은 GPU 에 올린다 —
@@ -29,7 +29,23 @@
 set -u
 
 REPO="${REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-PY="$REPO/.venv/bin/python"
+# 파이썬 환경은 머신마다 다르다 — `.venv` 가 있어도 그게 평가용이라는 보장이 없다.
+# 실제로 skkai 의 `.venv` 는 autoseg 용(COMET/NLI)이라 vllm·websockets 가 없고, 평가
+# 스택은 conda `stity` 에 있다. 경로를 못 박으면 "No module named 'websockets'" 로
+# 서버 기동만 실패하고 원인이 안 보인다. vllm 을 import 할 수 있는 것을 골라 쓴다.
+pick_python() {
+  local c
+  for c in "${PY:-}" "$REPO/.venv/bin/python" "$HOME/miniforge3/envs/stity/bin/python"; do
+    [ -n "$c" ] && [ -x "$c" ] || continue
+    "$c" -c "import vllm, websockets" 2>/dev/null && { echo "$c"; return 0; }
+  done
+  return 1
+}
+if ! PY="$(pick_python)"; then
+  echo "!! vllm 과 websockets 를 갖춘 파이썬을 못 찾았습니다."
+  echo "   PY=/path/to/python 으로 직접 지정하세요."
+  exit 1
+fi
 STOP="$REPO/evaluation/LibriSpeech/paper_result/ASR/scripts/stop_server.sh"
 # 카드 하나에서 두 런을 동시에 돌릴 때는 포트를 갈라야 한다. 번역기는 한 프로세스로
 # 올려 두고 두 서버가 --local-translation-url 로 같이 쓴다(EXTRA_SERVER_ARGS).
@@ -52,14 +68,21 @@ TRANS_BACKEND="${TRANS_BACKEND:-local}"
 # 로컬 번역기 배치. punct/seg 는 커밋이 문장 단위라 길어서, 16 이면 활성값이
 # 커져 OOM 이 난다(실측 2026-08-30: punct/de 에서 OutOfMemoryError 61건).
 TRANS_BATCH="${TRANS_BATCH:-8}"
-STAMP="$(date +%Y%m%d_%H%M%S)"
+# 여러 번 나눠 띄운 config 들을 한 태그로 묶어야 채점기가 `--tag` 하나로 전부 집는다.
+# 스윕 스크립트가 이 값을 고정해서 물려준다.
+STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 LOGDIR="$REPO/evaluation/ast/results/_runlogs/acl_${SPLIT}_$STAMP"
 mkdir -p "$LOGDIR"
 
 set -a && . "$REPO/.env" && set +a
-if [ -z "${GOOGLE_TRANSLATE_API_KEY:-}" ]; then
-  echo "!! GOOGLE_TRANSLATE_API_KEY 가 없습니다 (.env 확인)"; exit 1
-fi
+# 키가 필요한 건 구글 백엔드뿐이다. 로컬 MADLAD 가 기본이 된 뒤로도 이 관문이 남아
+# 있어서, 키 없는 머신에서는 로컬 번역으로 돌리려 해도 시작조차 못 했다.
+case "$TRANS_BACKEND" in
+  google*|gtx|v2)
+    if [ -z "${GOOGLE_TRANSLATE_API_KEY:-}" ]; then
+      echo "!! GOOGLE_TRANSLATE_API_KEY 가 없습니다 (.env 확인) — TRANS_BACKEND=$TRANS_BACKEND"; exit 1
+    fi ;;
+esac
 
 # LAAL 단위는 CoVoST2 와 같은 규칙(de=word, ja/zh=char). StreamLAAL 채점에서도
 # 같은 단위를 써야 하므로 채점기가 이 값을 meta.json 에서 읽는다.
@@ -86,6 +109,10 @@ run_axis() {
   local server_args=("$@")
   local label; label="$(axis_label "$axis")"
   local slog="$LOGDIR/${label}_server.log"
+  # segdot 축만 `<SEG>` 를 살려 둔다 — dot 과 `<SEG>` 를 둘 다 커밋 트리거로 쓰는 축이다.
+  # 나머지 축은 숨겨야 static/punct 가 seg 에 오염되지 않는다(서버 주석 참조).
+  local hide_seg="--ast-hide-seg"
+  [ "$axis" = "segdot" ] && hide_seg=""
 
   echo "═══ [$label] 서버 기동 ═══ $(date '+%T')"
   "$PY" "$REPO/evaluation/streaming_websocket_server_ast.py" \
@@ -93,7 +120,7 @@ run_axis() {
       --port "$PORT" --no-idle-shutdown \
       --gpu-memory-utilization "$GPU_UTIL" \
       --trans-local-batch "$TRANS_BATCH" \
-      --ast-hide-seg \
+      ${hide_seg} \
       --trans-backend "$TRANS_BACKEND" \
       --trans-stats-out "$LOGDIR/${label}_trans_stats.json" \
       ${EXTRA_SERVER_ARGS:-} \
@@ -157,7 +184,8 @@ for axis in $AXES; do
     static) run_axis static "--always-commit" "--disable-dot-commit" ;;
     punct)  run_axis punct  "--enable-dot-commit" "--no-rep-dedup" ;;
     seg)    run_axis seg    "--disable-dot-commit" ;;
-    *) echo "!! 알 수 없는 축: $axis (static|punct|seg)"; exit 1 ;;
+    segdot) run_axis segdot "--enable-dot-commit" ;;
+    *) echo "!! 알 수 없는 축: $axis (static|punct|seg|segdot)"; exit 1 ;;
   esac
 done
 
