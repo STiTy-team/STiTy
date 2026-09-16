@@ -2238,7 +2238,28 @@ class Qwen3ASRStreamingHandler:
                     _accum_now = int(state.audio_accum.shape[0]) if state.audio_accum is not None else 0
                     _pending_accum = slot.get("pending_dot_accum", -1)
                     tail_tokens = self._count_tokens(after)
-                    if tail_tokens > state.unfixed_token_num:
+                    _seg_in_tail = (after.find("<SEG>")
+                                    if tail_tokens <= state.unfixed_token_num else -1)
+                    if _seg_in_tail >= 0:
+                        # 규칙 0: 마침표가 롤백 창 안인데 그 창 안에 <SEG> 가 있다.
+                        # <SEG> 는 모델이 "여기서 끝" 이라고 직접 찍은 신호라 수정을
+                        # 기다릴 이유가 없다 — seg 축이라면 즉시 커밋될 자리다. 이걸
+                        # dot 게이트에 넣으면 규칙 1 은 꼬리가 짧아 불발, 규칙 3 은
+                        # `after` 가 비어 있지 않아 불발이라 규칙 2(다음 청크 끝)까지
+                        # 최소 한 청크를 그냥 기다린다. 실측(ACL 60/60 dev seg 축 가설)
+                        # <SEG> 직전 문자의 55% 가 `.`/`?` 였다. 마침표 문장부터 <SEG>
+                        # 까지를 한 덩어리로, seg 축과 같은 단위로 자른다.
+                        _seg_end = match.end() + _seg_in_tail + len("<SEG>")
+                        sentence = remaining[:_seg_end].strip()
+                        after = remaining[_seg_end:]
+                        trigger = "seg"
+                        slot.pop("pending_dot_text", None)
+                        slot.pop("pending_dot_accum", None)
+                        self.log.info(
+                            f"[DOT-CONFIRM] rule=seg slot={slot_key} "
+                            f"tail_tokens={tail_tokens} text={sentence!r}"
+                        )
+                    elif tail_tokens > state.unfixed_token_num:
                         # 규칙 1: 마침표가 롤백 창 밖 → 다음 청크에서 수정되지 않음
                         slot.pop("pending_dot_text", None)
                         slot.pop("pending_dot_accum", None)
