@@ -147,6 +147,13 @@ MANIFESTS = {
     "fleurs-de-en": _AST / "fleurs_nway_de-en_multi2en_loop405.jsonl",
     "fleurs-ja-en": _AST / "fleurs_nway_ja-en_multi2en_loop405.jsonl",
     "fleurs-zh-en": _AST / "fleurs_nway_zh-en_multi2en_loop405.jsonl",
+    # **x→en judge 루프용 905.** loop405 + 같은 층화 정렬(`fleurs_nway_{lang}_multi2en_eval500_order.json`,
+    # 1,405문장)의 미사용 구간 240~739. loop240(0~239)·eval500(740~1239, BLEU 홀드아웃)·
+    # tail165(1240~1404)와 교집합 0. judge 4분할(200×4)+프로파일 재료 20 이 405 로는 안 들어간다.
+    # 만든 스크립트는 en 과 같은 `evaluation/ast/extend_manifest_loop_tail.py`.
+    "fleurs-de-en-x": _AST / "fleurs_nway_de-en_multi2en_loop905.jsonl",
+    "fleurs-ja-en-x": _AST / "fleurs_nway_ja-en_multi2en_loop905.jsonl",
+    "fleurs-zh-en-x": _AST / "fleurs_nway_zh-en_multi2en_loop905.jsonl",
     # **영어 소스 루프용.** 종전 `fleurs-en-de`(346문장, FLEURS test 스플릿)로는
     # `train 40 / dev 265 / test 100` = 405 가 안 들어간다. de/ja/zh 와 같은 방식으로
     # 층화 정렬(`fleurs_nway_en_clean500_order.json`, 1,405문장)의 500~904 구간을 쓴다 —

@@ -39,8 +39,9 @@ from core.meaning_segmentator.autoseg.runtime.pipeline import (JsonCache, LocalT
                                                                to_lang_code, truncate)
 
 p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-p.add_argument('--split', choices=('dev', 'test', 'train', 'extra'), default='dev',
-               help="'extra' 는 run26 용 추가 문장 — 라벨만 만들고 분석은 건너뛴다")
+p.add_argument('--split', default='dev',
+               help="data/<split>.json 의 분할 이름 (dev/test/train/test_a/test_b/extra). "
+                    "'extra' 는 run26 용 추가 문장 — 라벨만 만들고 분석은 건너뛴다")
 p.add_argument('--emit', action='store_true', help='test 절단을 gold 용으로 내보낸다')
 p.add_argument('--run-id', default='en2x/en-multi/run24')
 p.add_argument('--mt-cache-from', default='en2x/en-multi/run21',
