@@ -46,6 +46,10 @@ def main() -> int:
     ap.add_argument("--spaced", default=None, choices=["yes", "no"],
                     help="기본은 라벨의 src_lang 으로 판정")
     ap.add_argument("--prompt-file", default=None, help="기록용 (채점에는 안 쓰임)")
+    ap.add_argument("--tag-order", choices=["rank", "score"], default="rank",
+                    help="태그 숫자의 뜻. rank: 옛 순위제(`<SEG:1>` 이 최고 확신, run13 계열). "
+                         "score: 0..100 점수제(`<SEG:100>` 이 최고, judge 루프 계열). "
+                         "**라벨을 만든 프롬프트에 맞춰야 한다** — 틀리면 절단이 거꾸로 돈다")
     a = ap.parse_args()
 
     rows_in = [json.loads(l) for l in open(a.labels, encoding="utf-8") if l.strip()]
@@ -72,9 +76,10 @@ def main() -> int:
         text, seg = r["src_text"], r["seg_text"]
         by_T = {}
         for T in t_grid:
-            # 이 라벨은 순위제(`<SEG:1>` 이 최고 확신)로 달린 것이다 — 점수제 기본값으로
-            # 자르면 거꾸로 돈다.
-            cut, missing = P.truncate(seg, T, spaced, a.min_gap, higher_first=False)
+            # 순위제 라벨(`<SEG:1>` 이 최고 확신)은 점수제 기본값으로 자르면 거꾸로 돈다.
+            # 점수제 라벨(judge 루프, `<SEG:100>` 이 최고)은 루프와 같은 기본값이어야 한다.
+            cut, missing = P.truncate(seg, T, spaced, a.min_gap,
+                                      higher_first=(a.tag_order == "score"))
             pieces = P.split_segments(cut) or [text]
             by_T[str(T)] = {"seg_text": cut, "k": len(pieces),
                             "missing_boundaries": missing, "pieces_src": pieces}
@@ -94,6 +99,7 @@ def main() -> int:
         "split": a.split,
         "t_grid": t_grid,
         "min_gap": a.min_gap,
+        "tag_order": a.tag_order,
         "src_spaced": spaced,
         "rows": rows_out,
     }, ensure_ascii=False, indent=2), encoding="utf-8")

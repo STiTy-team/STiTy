@@ -104,6 +104,38 @@ class _CometBase:
         return [float(s) for s in out.scores]
 
 
+# ── 참조 기반 COMET (`baselines/comet_score.py` 전용) ─────────────────────────
+# 루프의 목적함수는 참조 없는 adequacy 뿐이다. 이 백엔드는 논문 표의 참조 기반 COMET
+# (CoVoST2 참조 번역 대비) 을 재는 자리이며, 무분절 조건처럼 가설과 참조가 같은 문자열이면
+# 1.0, 빈 문자열이면 0.0 으로 고정한다 — 종전 `covost2/full` 수치와 같은 규약이다.
+
+def _identity_shortcut(hyps: list[str], refs: list[str]) -> tuple[list[float], list[int]]:
+    scores = [1.0] * len(hyps)
+    pending: list[int] = []
+    for i, (h, r) in enumerate(zip(hyps, refs)):
+        if not h or not r:
+            scores[i] = 0.0
+        elif h != r:
+            pending.append(i)
+    return scores, pending
+
+
+class CometBackend(_CometBase):
+    def __init__(self, model_name: str = "Unbabel/wmt22-comet-da",
+                 batch_size: int = 16, gpus: int = 1, name: str = "comet"):
+        _CometBase.__init__(self, model_name, batch_size, gpus)
+        self.name = name
+
+    def score(self, srcs: list[str], hyps: list[str], refs: list[str]) -> list[float]:
+        scores, pending = _identity_shortcut(hyps, refs)
+        if not pending:
+            return scores
+        batch = [{"src": srcs[i], "mt": hyps[i], "ref": refs[i]} for i in pending]
+        for i, s in zip(pending, self._predict(batch)):
+            scores[i] = s
+        return scores
+
+
 # ── adequacy 백엔드 (참조 없음) ──────────────────────────────────────────
 
 # **참조를 두지 않는 것이 요점이다.** 참조를 full 번역으로 두면 어순을 단조화한 좋은
