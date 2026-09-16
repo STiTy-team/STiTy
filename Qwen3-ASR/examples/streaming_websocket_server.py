@@ -151,6 +151,14 @@ VAD_THRESHOLD = 0.5
 VAD_MIN_SILENCE_MS = 800
 VAD_SPEECH_PAD_MS = 160        # 발화 경계에 추가하는 패딩
 VAD_WINDOW_SIZE_SAMPLES = 512  # 16kHz 기준 silero 권장 윈도우 크기
+# --speech-start-gate: 연결 시작의 무음·잡음 구간은 디코딩하지 않는다.
+# 발화 확률이 문턱을 넘는 창이 이만큼 연속돼야 발화 시작으로 본다. 짧은 잡음(숨소리,
+# 마이크 툭) 하나에 게이트가 열리지 않게 한다.
+SPEECH_GATE_MIN_SPEECH_MS = 250
+# 게이트가 열릴 때 직전 오디오를 이만큼 같이 넘긴다. silero 는 발화 시작을 음량이 오르는
+# 지점보다 수백 ms 늦게 잡고(실측 ACL60/60 talk 410: 음량 1.75초, silero 2.11초), 위의
+# 연속 조건만큼 또 늦으므로 첫 음절이 잘리지 않게 여유를 둔다.
+SPEECH_GATE_PREROLL_MS = 500
 
 
 def _infer_dot_commit_default(model_path: str) -> bool:
@@ -189,6 +197,7 @@ class StreamingConfig:
 
     # VAD 설정
     no_vad: bool = False  # True면 silero-vad 비활성화 (VAD 없이 SEG/finish 커밋만 사용)
+    speech_start_gate: bool = False  # True면 연결의 첫 발화를 silero 가 잡기 전까지 디코딩하지 않음
 
     # vLLM 컴파일 설정
     enforce_eager: bool = False  # True면 Triton 컴파일 우회 (sm_121a 등 미지원 GPU)
@@ -686,7 +695,9 @@ class Qwen3ASRStreamingHandler:
         # 서버에서 미리 로드한 vad_model_bytes로 클라이언트마다 독립 인스턴스 생성.
         self.vad_enabled = False
         self.vad_iterator = None
-        if _SILERO_VAD_AVAILABLE and vad_model_bytes is not None:
+        # --speech-start-gate 만 켜고 --no-vad 인 경우에도 서버는 모델 bytes 를 넘긴다.
+        # 그때 VAD 커밋까지 켜지면 --no-vad 의 뜻이 깨지므로 여기서 한 번 더 막는다.
+        if _SILERO_VAD_AVAILABLE and vad_model_bytes is not None and not config.no_vad:
             try:
                 vad_model = torch.jit.load(io.BytesIO(vad_model_bytes))
                 self.vad_iterator = VADIterator(
@@ -705,6 +716,27 @@ class Qwen3ASRStreamingHandler:
                 "silero-vad 패키지가 설치되지 않았습니다. "
                 "VAD 없이 동작합니다. 설치: pip install silero-vad"
             )
+
+        # ── 시작 게이트 (--speech-start-gate) ──
+        # 연결의 첫 발화를 silero 가 잡기 전까지 디코딩하지 않는다. 한 번 열리면 연결이
+        # 끝날 때까지 열어 둔다 — 발화 사이 휴지까지 막으면 꼬리 전사가 밀린다.
+        # VAD 커밋용 VADIterator 와는 별개 인스턴스다(상태가 섞이면 안 된다).
+        self._gate_model = None
+        self._gate_open = True
+        if getattr(config, "speech_start_gate", False):
+            if _SILERO_VAD_AVAILABLE and vad_model_bytes is not None:
+                try:
+                    self._gate_model = torch.jit.load(io.BytesIO(vad_model_bytes))
+                    if hasattr(self._gate_model, "reset_states"):
+                        self._gate_model.reset_states()
+                    self._gate_open = False
+                    self._gate_rem = np.zeros(0, dtype=np.float32)
+                    self._gate_hold = np.zeros(0, dtype=np.float32)
+                    self._gate_run = 0
+                except Exception as e:
+                    self.log.warning(f"[SPEECH-GATE] 모델 로드 실패 — 게이트 없이 진행: {e}")
+            else:
+                self.log.warning("[SPEECH-GATE] silero 를 쓸 수 없어 게이트 없이 진행한다")
 
     async def send_message(self, msg_type: str, **kwargs):
         """JSON 메시지 전송"""
@@ -1785,6 +1817,14 @@ class Qwen3ASRStreamingHandler:
         """
         if self.always_commit or not sentence_display:
             return sentence_display
+        # seg-boundary-dedup 이 "문장은 살리고 겹친 첫 단어만 떼라" 고 남긴 표시. 한 번만 쓴다.
+        head = slot.pop("seg_boundary_head", None)
+        if head:
+            _ws = sentence_display.split()
+            if _ws and re.sub(r'[.,!?;:。？！]+$', '', _ws[0]).lower() == head:
+                sentence_display = ' '.join(_ws[1:]).lstrip(' ,.;:!?')
+                if not sentence_display:
+                    return sentence_display
         words = sentence_display.split()
         norm = [re.sub(r"[^a-z']", '', w.lower()) for w in words]
         for prev in slot.get("committed_fuzzy_keys", ()):
@@ -1912,14 +1952,28 @@ class Qwen3ASRStreamingHandler:
             first_word = _strip_p(words[0]) if words else ""
             last_word = _strip_p(seg_reset_last.split()[-1]) if seg_reset_last.split() else ""
             if first_word and last_word and (first_word == last_word or last_word.endswith(first_word)):
-                return "seg-boundary-dedup"
+                # 새 문장이 그 경계 단어뿐이면(`Learned.`, `Here,`) 버린다. 뒤에 새 내용이
+                # 붙어 있으면 문장째 버리지 않고 겹친 첫 단어만 뗀다 — 떼는 건 커밋 단계의
+                # `_strip_committed_prefix` 가 이 표시를 보고 한다. 예전엔 통째로 버려서
+                # 실제 발화가 사라졌다(실측 ACL60/60 talk 567: `...before and after
+                # training.` 뒤의 `Training or fine-tuning to see whether a data set helps
+                # models improve` 12어절, `...a truthful description.` 뒤의 `Description
+                # of the image,` — 언어당 약 5건).
+                if len(words) <= 2:
+                    return "seg-boundary-dedup"
+                slot["seg_boundary_head"] = first_word
+                return None
             # 헤더 리셋은 앞 문장이 든 청크부터 다시 디코딩하므로 앞 문장 꼬리가 짧은
             # 문장으로 한 번 더 나온다 — `Yes, this is my first time.` 뒤에 `It's my first
             # time.`, `we say cake.` 뒤에 `A cake.`. 첫 어절만 봐서는 못 잡는다. 새 문장이
             # 짧고 직전 커밋의 끝 어절들과 절반 이상 겹치면 같은 꼬리로 본다.
             prev_words = [_strip_p(w) for w in seg_reset_last.split()]
             new_words = [_strip_p(w) for w in words]
-            if 1 <= len(new_words) <= 5 and prev_words:
+            # 끝 어절까지 같아야 같은 꼬리다. 잡으려던 사례는 전부 끝이 같다(`time`,
+            # `cake`). 끝이 다르면 화자가 실제로 고쳐 말한 구절이다 — `...achieve the best
+            # result.` 뒤의 `The best performance,` 가 절반 겹침만으로 버려졌다.
+            if (1 <= len(new_words) <= 5 and prev_words
+                    and new_words[-1] and new_words[-1] == prev_words[-1]):
                 tail = prev_words[-len(new_words):]
                 hits = sum(1 for a, b in zip(tail, new_words)
                            if a and b and (a == b or a.endswith(b) or b.endswith(a)))
@@ -2621,6 +2675,42 @@ class Qwen3ASRStreamingHandler:
             return None
         return vad_end_local_indices
 
+    def _speech_gate_feed(self, chunk: np.ndarray) -> Optional[np.ndarray]:
+        """시작 게이트에 오디오를 넣는다. 발화가 시작되면 디코딩할 오디오를, 아니면 None.
+
+        돌려주는 오디오는 직전 `SPEECH_GATE_PREROLL_MS` 를 앞에 붙인 것이다. 게이트가
+        닫혀 있는 동안의 나머지 오디오는 버린다.
+        """
+        preroll = int(SAMPLING_RATE * SPEECH_GATE_PREROLL_MS / 1000)
+        need = max(1, int(np.ceil(SAMPLING_RATE * SPEECH_GATE_MIN_SPEECH_MS / 1000
+                                  / VAD_WINDOW_SIZE_SAMPLES)))
+        buf = np.concatenate([self._gate_rem, chunk]) if self._gate_rem.size else chunk
+        n = buf.size // VAD_WINDOW_SIZE_SAMPLES * VAD_WINDOW_SIZE_SAMPLES
+        opened = False
+        try:
+            for off in range(0, n, VAD_WINDOW_SIZE_SAMPLES):
+                win = torch.from_numpy(np.ascontiguousarray(buf[off:off + VAD_WINDOW_SIZE_SAMPLES]))
+                prob = float(self._gate_model(win, SAMPLING_RATE).item())
+                self._gate_run = self._gate_run + 1 if prob >= VAD_THRESHOLD else 0
+                if self._gate_run >= need:
+                    opened = True
+                    break
+        except Exception as e:
+            # 판정이 실패했다고 전사를 막으면 안 된다. 게이트를 열고 원래대로 간다.
+            self.log.warning(f"[SPEECH-GATE] 판정 실패 — 게이트를 연다: {e}")
+            opened = True
+
+        if not opened:
+            self._gate_rem = buf[n:].copy()
+            self._gate_hold = np.concatenate([self._gate_hold, chunk])[-preroll:]
+            return None
+
+        feed = np.concatenate([self._gate_hold[-preroll:], chunk]) if self._gate_hold.size else chunk
+        self._gate_open = True
+        self._gate_model = None
+        self._gate_rem = self._gate_hold = np.zeros(0, dtype=np.float32)
+        return feed
+
     async def process_audio_chunk(self, audio_data: bytes):
         if not audio_data:
             return
@@ -2733,6 +2823,25 @@ class Qwen3ASRStreamingHandler:
             # 실제 오디오를 받았으면 그 뒤의 0 도 넣는다 — 발화 끝의 침묵이 있어야
             # VAD 커밋과 꼬리 디코딩이 돈다.
             slot = self.stream_slots[self.active_slot]
+            # **첫 발화 전의 조용한 잡음도 디코딩하지 않는다** (--speech-start-gate).
+            # 아래의 디지털 무음 검사는 샘플이 정확히 0 일 때만 걸린다. 실제 녹음의 시작은
+            # 0 이 아니라 -50~-70 dBFS 잡음이라 그대로 디코딩되고, 모델이 없는 말을 지어낸다.
+            # 실측(ACL60/60 eval talk 410, 1.9초부터 발화): 1초 이하 청크의 12개 런 전부
+            # 첫 커밋이 "I'm not sure" / "I'm gonna get you out of here" 였고, 그중 6개는
+            # 반복 루프로 굳어 앞 30~96초의 발화가 통째로 사라졌다. 3초 이상 청크(static)는
+            # 첫 청크에 발화가 들어 있어 한 번도 걸리지 않았다.
+            if not self._gate_open:
+                opened = self._speech_gate_feed(tail_chunk)
+                if opened is None:
+                    return
+                # 슬롯 기준 시각을 실제로 넣기 시작한 오디오의 첫 샘플에 맞춘다. 앞 오디오를
+                # 버렸으므로 연결 시작(0초)을 기준으로 두면 VAD 재시도 경로의 자르기가 어긋난다.
+                slot["audio_anchor_sec"] = (self.sample_cursor - opened.size) / SAMPLING_RATE
+                self.log.info(
+                    f"[SPEECH-GATE] 발화 시작 — {self.sample_cursor / SAMPLING_RATE:.2f}s, "
+                    f"앞 {opened.size - tail_chunk.size} 샘플 포함해 디코딩 시작"
+                )
+                tail_chunk = opened
             if not slot.get("real_audio") and not np.any(tail_chunk):
                 return
             slot["real_audio"] = True
@@ -3412,9 +3521,10 @@ class Qwen3ASRStreamingServer:
         use_lora = bool(adapter_en_path or adapter_ko_path)
 
         # VAD 모델을 한 번만 로드해 bytes로 보관 — 클라이언트마다 이 bytes로 독립 인스턴스 생성
+        # --no-vad 여도 시작 게이트가 켜져 있으면 모델은 올린다(핸들러가 VAD 커밋은 켜지 않는다).
         if self.config.no_vad:
             logger.info("VAD disabled via --no-vad flag")
-        elif _SILERO_VAD_AVAILABLE:
+        if (not self.config.no_vad or self.config.speech_start_gate) and _SILERO_VAD_AVAILABLE:
             try:
                 _buf = io.BytesIO()
                 torch.jit.save(load_silero_vad(), _buf)
@@ -3763,6 +3873,11 @@ def parse_args():
         help="Silero VAD 비활성화 — SEG/finish 커밋만 사용 (VAD 없이 동작)",
     )
     parser.add_argument(
+        "--speech-start-gate", action="store_true",
+        help="연결의 첫 발화를 silero 가 잡기 전까지 디코딩하지 않는다. 시작 잡음에서 "
+             "모델이 말을 지어내는 것을 막는다. 커밋 정책과 무관하고 --no-vad 와 함께 쓸 수 있다",
+    )
+    parser.add_argument(
         "--log-json", action="store_true",
         help="로그를 JSON 형식으로 출력",
     )
@@ -3843,6 +3958,7 @@ def main():
         max_lora_rank=args.max_lora_rank,
         enforce_eager=args.enforce_eager,
         no_vad=args.no_vad,
+        speech_start_gate=args.speech_start_gate,
         enable_dot_commit=args.enable_dot_commit,
         dot_commit_confirm=args.dot_commit_confirm,
         dot_commit_stall_chunks=args.dot_commit_stall_chunks,

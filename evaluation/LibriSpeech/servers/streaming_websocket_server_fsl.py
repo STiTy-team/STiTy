@@ -800,6 +800,7 @@ def main():
         max_lora_rank=args.max_lora_rank,
         enforce_eager=args.enforce_eager,
         no_vad=args.no_vad,
+        speech_start_gate=args.speech_start_gate,
         enable_dot_commit=args.enable_dot_commit,
         dot_commit_confirm=args.dot_commit_confirm,
         dot_commit_stall_chunks=args.dot_commit_stall_chunks,
