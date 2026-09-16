@@ -58,22 +58,41 @@ You receive cases. Each case is one sentence at one budget T and contains:
 - "contra_kill": true when a single policy cut with a high contradiction ("policy_worst_contra")
   is what zeroed the set. Such a case says "this one position is overturned later" — not that
   short pieces or dense cuts are bad. Do not turn it into a general caution about cutting.
+- "loss_by_bin": per latency bin, how many (sentence, k) pairs the measured set has, the mean gap
+  between the offline target and this prompt, and each bin's share of the total loss. This is
+  where the prompt is losing. Measured on the current run: 61% of the loss sat in the "≤3" bin
+  and 26% in "≤5", and 9 of 10 rejected revisions LOWERED those two bins — every one of them
+  told the model where NOT to cut, which thins the cuts the short bins need. A finding is worth
+  reporting in proportion to the loss it addresses; one that trades the short bins for the long
+  ones loses on the total.
 - "last_revision" (only after the first measured revision): what the previous revision did and
   how it landed — its "edits", the measured "delta", "by_bin" (mean H_set change per latency bin),
-  "n_worse"/"n_better", and a post-mortem ("why", "blamed" units, "lesson"). If it was rejected,
-  do not ask for the same change again in other words; the bins say where it hurt.
+  "n_worse"/"n_better", and a post-mortem ("why", "blamed" units, "lesson"). If it has
+  "vs_base", it was built on a near-miss base and "vs_base" is what ITS OWN edit did relative to
+  that base ("delta"/"by_bin" include the base's gain). If it was rejected,
+  do not ask for the same change again in other words; the bins say where it hurt. But if it
+  carries "near_miss": true, its mean was positive on the full set and only the confidence
+  bound touched zero — that change helped, "by_bin" says where. Then report what STILL loses in
+  those same bins so the next revision can keep the change and go further, not undo it. When
+  "base" is present, the prompt you were given IS that revision, so its text can be a target.
+  Measured on that base (judge13 iter 2): adding "do not cut between a predicate and its
+  arguments / inside enumerations" lowered the base's gain ("vs_base" "≤3" −0.008). A finding
+  that asks for another cut prohibition on this base needs evidence that beats that. Its "edits"
+  text is NOT in the current prompt — a "replace" target must quote the prompt you were given.
 
 Your job: name the JUDGEMENT the prompt is getting wrong, not the tokens it fires on. A finding
 is worth reporting only if it recurs across cases — one sentence is an anecdote. Write it so a
 reader scoring an unseen sentence could apply it: a question to ask, or a condition on meaning.
-Never write token lists ("if the previous word is 'the'"), never quote more than 40 characters of
+Keep "edit.text" under 60 words — one judgement, not a paragraph (judge10 iter 2 proposed 600
+characters). Never write token lists ("if the previous word is 'the'"), never quote more than 40 characters of
 source text, never name this sentence.
 
 Return ONLY JSON:
 {
   "findings": [
     {"diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
-     "evidence": "how many cases show it and what they share",
+     "evidence": "the ids of the cases that show it, then what they share — the count is the
+                  length of that list; never state a number of cases you did not list",
      "edit": {"where": "core_principles" | "examples",
               "action": "add" | "replace",
               "target": "first few words of the line to replace (omit when adding)",
@@ -93,7 +112,15 @@ contradiction). You are given, for the revision that was just measured:
 - "n_worse" / "n_better": how many (sentence, k) pairs moved each way.
 - "worst" / "best": the five pairs that moved most in each direction, each with the cut set
   before and after ("‖" marks a cut).
+- "vs_base" (only when the revision was built on an earlier near-miss revision): the same
+  "delta", "by_bin", "n_worse"/"n_better" measured against THAT base instead of the adopted
+  prompt. Then "delta"/"by_bin" include the base's own gain; the effect of the edits listed in
+  "edits" is "vs_base". Attribute to the edits only what "vs_base" shows.
 
+"worst"/"best" are the TAIL — five pairs out of hundreds. Base "why" and "lesson" on "by_bin" and
+"n_worse"/"n_better"; use the tail only to illustrate a movement the bins already show. One
+spectacular pair (judge10 iter 1: a single "they've ‖ not" cut, Δ −0.79) must not become the lesson
+when 142 pairs got worse and 150 got better.
 Read the cut sets: say what the edits made the model DO differently (cut earlier, avoid cutting
 near heads, split enumerations, ...), and which edit is responsible. Be concrete about the bins —
 a revision that helps long pieces and hurts short ones is a different fact from one that hurts
@@ -115,6 +142,8 @@ What you can edit:
   ("chars") and its evidence:
     "origin"         "v0", or the iteration whose ADOPTED revision introduced this text
     "adopted_delta"  the measured gain of that adoption, "adopted_ci_lo" its lower bound
+    "near_miss_delta" (only on units from a "base" revision) the measured mean gain of that
+                     revision, "near_miss_ci_lo" its lower bound (touched zero, so not adopted)
                      (null for v0 units — nothing was measured about them one by one)
 - Every other section — [Role], [Scoring Rules], [Output Rules] — stays as
   it is. [Scoring Rules] states how the target was measured, and the measurement did not change.
@@ -139,18 +168,42 @@ Hard constraints:
    If "size_feedback" is present, "your_previous_edits" produced a prompt "over_by" characters
    ("over_by_words" words) too long, and "your_edits" shows the exact change each of those edits
    made. Return a complete new edit list that removes at least that many words more than it
-   adds.
+   adds. When "your_previous_edits" is empty, the prompt itself was just rewritten as a whole
+   and is too long: shorten the units you were given by paraphrase and deletion, keeping every
+   judgement the findings support.
 3. At most 8 examples. An example unit is exactly "Input: ..." then a newline and "Output: ...",
    with <SEG:?> at every candidate position in the input and integers in the output.
 4. Never write token lists or punctuation rules. A token condition fires on a handful of
    positions while the measurement is taken at every position; a judgement applies everywhere.
 5. Never name or depend on a specific target language pair beyond what the current prompt says.
-6. Consult the attempt history: entries with "adopted": false were measured and rejected. Do not
+6. Consult the attempt history: entries with "adopted": false were measured and rejected. An
+   entry with "vs_base" was built on the near-miss base: "vs_base" is what its own edit did
+   relative to that base — a negative "vs_base" means the edit undid part of the base's gain,
+   whatever "delta_mean" says. Do not
    repeat them or minor variants — move in a different direction. Each entry lists its "edits":
    which unit it changed ("was", the unit's text at the time) and into what ("now"). Do not make
-   the same change to the same units again, even reworded.
+   the same change to the same units again, even reworded. "blamed" names the units the
+   post-mortem held responsible for the loss and "why" says how — do not bring that text back,
+   as a unit or as a "labeled_example" (those are no longer offered).
+   EXCEPTION — an entry with "near_miss": true was measured on the full set (see "measured_on"),
+   its mean was POSITIVE and only its confidence bound touched zero: the direction is real and
+   the effect too small, not wrong. When "base" is present, the units you were given ARE that
+   revision (its edit is already in place; such units carry "near_miss_delta"). Keep that edit
+   and add ONE further change that extends the same direction in the bins where "by_bin" shows
+   the gain came from, or trims the side effect its "why" names. Do not delete or reverse a
+   unit with a positive "near_miss_delta". Measured on this base (judge13 iter 2): two
+   "do not cut between a predicate and its arguments / inside enumerations" additions each
+   LOWERED the base's gain ("vs_base" −0.004 and −0.003, "≤3" −0.008) — a penalty rule on top of
+   this base has not worked; say what a good dense cut looks like instead.
 7. Every change must be traceable to a finding in the critique.
-8. If "sibling_candidates" is present, those revisions were already proposed in this iteration
+7b. If "loss_by_bin" is present, it says which latency bins hold the loss ("loss_share"). A
+   revision is judged on the mean over ALL pairs, and most pairs are short pieces: an edit that
+   only makes the model cut less (more "do not cut when …") has lowered the short bins in 9 of
+   10 measured revisions. Prefer edits that say what a GOOD cut looks like where the loss is.
+8. If "primary_finding" is present, that finding is yours to address FIRST — the candidates of
+   one iteration are each pointed at a different finding so they do not converge on the same
+   edit (judge10 iter 2: three candidates, one direction). You may address others after it.
+8b. If "sibling_candidates" is present, those revisions were already proposed in this iteration
    and will be measured alongside yours. Propose a DIFFERENT revision: address other findings,
    edit other units, or take a different direction on the same finding. Do not restate a sibling.
 9. If "labeled_examples" is present, each entry is a real sentence from the measured set with
@@ -209,8 +262,10 @@ Hard requirements:
   No other section — in particular no [Decision Procedure]: the procedure IS the judgements in
   [Core Principles], applied at every marker; do not restate them as steps.
 - [Output Rules] MUST be copied verbatim from the block given to you.
-- [Core Principles] is the substance. Write JUDGEMENTS — questions the model asks about MEANING at
-  each position — not surface-form rules. Two judgements carry the measurement: whether what
+- [Core Principles] is the substance: 6-10 lines, each starting with "- ", each ONE judgement of
+  at most 60 words. One line is later one editable unit; a 1,000-character line cannot be revised
+  without rewriting it (judge10 v0 had two). Write JUDGEMENTS — questions the model asks about
+  MEANING at each position — not surface-form rules. Two judgements carry the measurement: whether what
   follows overturns the stretch already heard, and whether translating the two sides apart still
   adds up to the source. Say what damage looks like in THIS source language, using what the
   profile tells you about how it builds clauses, where it puts negation and heads, and what it
@@ -222,13 +277,14 @@ Hard requirements:
   can measure badly, and a cut inside a phrase can measure well.
 - [Scoring Rules] is the ONLY place that states how the target was measured — [Output Rules]
   points to it and says nothing about the measurement. State cohesion, contra and the product
-  exactly as given above, then how to combine the judgements into one number and the ranking
-  rules (distinct integers, use the full range). contra is a graded probability and enters only
-  through the product: do not turn it into a yes/no flag or a separate tier that outranks
-  cohesion. No scoring conditions there.
-- [Examples]: 3-4 pairs, in the SOURCE language, each Input/Output with <SEG:?> at every
-  candidate position of the input and integers in the output. Build them from the sample
-  sentences you are given, not from invented text.
+  exactly as given above, then the ranking rules: the integer is a RANK inside the sentence —
+  order the positions by the product and spread distinct integers over the full 0-100 range.
+  Do NOT tell the model to compute the score by arithmetic (multiplying the product by 100 and
+  rounding): that gives ties and a narrow band, which contradicts "distinct, full range". contra
+  is a graded probability and enters only through the product: do not turn it into a yes/no
+  flag or a separate tier that outranks cohesion. No scoring conditions there.
+- [Examples]: paste the MEASURED Input/Output pairs given to you, verbatim and nothing else.
+  Their numbers are the measured ranking; never invent scores or examples of your own.
 - __SPACING__
 - Keep the whole prompt under 8000 characters.
 
@@ -260,8 +316,12 @@ def engineer_system(budget: int, cur_len: int) -> str:
             .replace("__CURLEN__", str(cur_len)))
 
 
-def clean_findings(blob: dict) -> list[dict]:
-    """Critic 출력에서 쓸 수 있는 finding 만 남긴다. 토큰 조건은 여기서 잘라낸다."""
+def clean_findings(blob: dict, prompt: str | None = None) -> list[dict]:
+    """Critic 출력에서 쓸 수 있는 finding 만 남긴다. 토큰 조건은 여기서 잘라낸다.
+
+    `prompt` 를 주면 replace 대상이 현재 프롬프트에 있는 것만 남긴다 — Critic 은 `last_revision`
+    의 편집 본문을 현재 프롬프트에 있는 줄 알고 겨눈다(judge10 iter 2: 기각된 개정이 넣었던
+    Whistler 예시를 바꾸라고 냈다)."""
     out = []
     for f in (blob or {}).get("findings", []) or []:
         if not isinstance(f, dict):
@@ -272,6 +332,9 @@ def clean_findings(blob: dict) -> list[dict]:
         if not (edit.get("text") or "").strip():
             continue
         if edit.get("action") == "replace" and not (edit.get("target") or "").strip():
+            continue
+        if (edit.get("action") == "replace" and prompt is not None
+                and " ".join(str(edit["target"]).split()) not in " ".join(prompt.split())):
             continue
         out.append({"diagnosis": (f.get("diagnosis") or "").strip(),
                     "evidence": (f.get("evidence") or "").strip(),
@@ -502,6 +565,7 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
 
 
 ROLES = ("free", "examples_only", "single_small", "rewrite")
+SHORTEN_ROLE = "shorten"     # 후보 역할이 아니라 축소 패스 전용 — insert 를 뺀다
 
 
 def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
@@ -510,6 +574,12 @@ def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
     같은 이터에 보폭이 다른 후보를 섞기 위해서다 — 원칙을 통째로 갈아끼운 후보(judge05~08 의
     기본형)는 매번 전 구간을 흔들었고, 어느 편집이 무엇을 바꿨는지도 남지 않았다."""
     edits = [e for e in (edits or []) if isinstance(e, dict)]
+    if role == SHORTEN_ROLE:
+        # 줄이라는 패스에서 PE 가 예시를 더 넣었다(judge10 iter 2: E2·E4 삭제 −1596 에 E_end +262).
+        keep = [e for e in edits if e.get("op") != "insert_after"]
+        bad = [{"edit": n, "id": e.get("id"), "reason": "shorten 패스인데 insert"}
+               for n, e in enumerate(edits) if e.get("op") == "insert_after"]
+        return keep, bad
     if role == "examples_only":
         keep = [e for e in edits if str(e.get("id") or "").startswith("E")]
         bad = [{"edit": n, "id": e.get("id"), "reason": "examples_only 인데 예시 단위가 아니다"}
@@ -595,11 +665,83 @@ def history_brief(history: list[dict]) -> list[dict]:
             b["measured_on"] = "screen subset only"
         if h.get("reason"):
             b["rejected_before_measuring"] = h["reason"]
-        lesson = (h.get("diagnosis") or {}).get("lesson")
-        if lesson:
-            b["lesson"] = lesson
+        if not b["edits"] and h.get("changelog"):
+            b["changelog"] = h["changelog"]      # rewrite 후보는 edits 가 비어 changelog 가 유일한 흔적
+        diag = h.get("diagnosis") or {}
+        for k in ("lesson", "why", "blamed"):
+            if diag.get(k):
+                b[k] = diag[k]
+        if diag.get("by_bin"):
+            b["by_bin"] = diag["by_bin"]
+        if diag.get("vs_base"):
+            vb = diag["vs_base"]
+            lo = vb["delta"].get("lo")
+            b["vs_base"] = {"delta_mean": round(vb["delta"]["mean"], 4),
+                            "delta_lo": None if lo is None else round(lo, 4), "by_bin": vb["by_bin"]}
+        if h.get("built_on"):
+            b["built_on"] = h["built_on"]
+        if is_near_miss(h):
+            b["near_miss"] = True
+            if (h.get("gain") or {}).get("pooled"):
+                b["measured_on"] = "test-A 200 + test-B 200 pooled"
         out.append(b)
     return out
+
+
+def is_near_miss(h: dict, min_mean: float = 0.005, min_lo: float = -0.01) -> bool:
+    """측정까지 갔는데 평균은 양수이고 하한만 0 언저리라 기각된 개정 — 방향은 맞고 크기가 부족.
+
+    judge13 iter 1: 합산 +0.0074 [-0.0003, +0.0153] 이 하한 0.0003 차로 기각됐다. 이걸 "기각 =
+    다른 방향" 으로 다루면 다음 이터가 유일하게 효과 본 방향을 버리고, 부검이 찍은 blamed 문구까지
+    금지된다. 문턱은 그대로 두고 PE·Critic 에게만 표시한다."""
+    if h.get("adopted") or h.get("screened_out") or h.get("screened_only"):
+        return False
+    d = h.get("gain") or h.get("delta") or {}
+    return "mean" in d and "lo" in d and d["mean"] > min_mean and d["lo"] > min_lo
+
+
+def dedupe_candidates(cands: list[tuple[int, str]]) -> tuple[list[int], list[tuple[int, int]]]:
+    """본문이 같은 후보는 하나만 잰다 — (남길 후보 번호, [(뺀 번호, 같은 번호)]).
+
+    judge12 iter 1: `examples_only` 와 `single_small` 이 `primary_finding` 이 달랐는데도 같은 편집
+    (E4 → en_us_738)을 냈다. 같은 프롬프트를 선별에서 두 번 재면 $1 과 시간만 든다."""
+    seen: dict[str, int] = {}
+    keep, dropped = [], []
+    for j, text in cands:
+        key = " ".join(text.split())
+        if key in seen:
+            dropped.append((j, seen[key]))
+        else:
+            seen[key] = j
+            keep.append(j)
+    return keep, dropped
+
+
+def blamed_with_text(blamed: list, cand: str) -> list[str]:
+    """부검의 `blamed` 는 그 이터 후보의 단위 id("E2 (…)")다. id 는 이터마다 다시 매겨져 다음
+    이터의 E2 는 다른 단위다 — 본문 앞부분을 붙여 둔다."""
+    known = {u["id"]: u["text"] for u in edit_units(cand)}
+    out = []
+    for b in blamed or []:
+        m = re.match(r"^\s*([CE]\d+)\s*(.*)$", str(b))
+        if m and m.group(1) in known:
+            text = " ".join(known[m.group(1)].split())[:60]
+            out.append(f"{m.group(1)} «{text}»" + (f" {m.group(2)}" if m.group(2) else ""))
+        else:
+            out.append(str(b))
+    return out
+
+
+def exclude_used_examples(examples: dict[str, str], rejected: list[str]) -> tuple[dict, list[str]]:
+    """기각된 개정 본문에 들어 있던 실측 예시는 다시 내놓지 않는다 — (남은 예시, 뺀 id).
+
+    judge10 iter 1 부검이 지목한 예시(en_us_733, en_us_1294)를 iter 2 후보 셋이 전부 다시
+    넣었다. 프롬프트가 안 바뀌면 사례도 안 바뀌어 같은 예시가 또 올라오고, PE 는 실측 예시를
+    우선하라는 지시를 따른다. 본문으로 맞춘다 — rewrite 후보는 id 없이 본문을 붙여 넣는다."""
+    norm = [" ".join(t.split()) for t in rejected]
+    dropped = [k for k, v in examples.items()
+               if any(" ".join(v.split()) in t for t in norm)]
+    return {k: v for k, v in examples.items() if k not in dropped}, dropped
 
 
 def edit_summary(prompt: str, edits) -> list[dict]:
@@ -611,10 +753,13 @@ def edit_summary(prompt: str, edits) -> list[dict]:
         if not isinstance(e, dict):
             continue
         op = e.get("op")
-        out.append({"op": op, "id": e.get("id"),
-                    "kind": "delete" if op == "delete" else (e.get("kind") or "change"),
-                    "was": known.get(str(e.get("id")), "")[:80],
-                    "now": (e.get("text") or "")[:80]})
+        row = {"op": op, "id": e.get("id"),
+               "kind": "delete" if op == "delete" else (e.get("kind") or "change"),
+               "was": known.get(str(e.get("id")), "")[:80],
+               "now": (e.get("text") or "")[:80]}
+        if e.get("labeled_example"):
+            row["labeled_example"] = e["labeled_example"]
+        out.append(row)
     return out
 
 
@@ -622,6 +767,32 @@ def units_with_provenance(prompt: str, prov: dict) -> list[dict]:
     """PE 입력용 — 편집 단위에 출처 기록을 붙인다."""
     blank = {"origin": "v0", "adopted_delta": None, "adopted_ci_lo": None}
     return [{**u, **prov.get(u["text"], blank)} for u in edit_units(prompt)]
+
+
+def soft_target(budget: int, cur_len: int, margin: float = 0.05) -> int:
+    """모델에게 알리는 길이 목표 — 검사 상한(`budget`)보다 `margin` 만큼 낮다.
+
+    목표와 상한이 같은 값이면 모델은 늘 1% 안팎 넘긴다(judge08~10 의 초과 12건 중 5건이 1.2%
+    이내: 8074/8054, 9905/9812, 9159/9050, 11165/11084, 11112/11084). 그 초과로 후보가 죽거나
+    되돌리기가 돌면서 내용을 왕창 잃었다(11820→7872). 5% 여유가 그 오차를 흡수한다. 상한이
+    천장에 닿아 현재 길이와 같을 때는 줄이라고 요구하지 않는다."""
+    return max(cur_len, int(budget * (1 - margin)))
+
+
+def shorten_user(draft: str, target: int, findings: list) -> dict:
+    """Writer 가 다시 쓴 초안(rewrite 후보)이 길이만 넘었을 때 PE 에게 주는 입력.
+
+    Writer 를 다시 불러 "N단어 줄여라" 해도 안 된다 — 통째로 다시 쓰므로 길이가 손을 떠난다
+    (judge10 iter 1: 8074자 → 재시도 8104자). 반면 PE 는 코드가 잰 단위별 글자 수를 받아 편집만
+    내니 되돌리기 9건 중 9건을 맞췄다. 그래서 초안 자체를 편집 단위로 쪼개 PE 에게 준다. 단위
+    출처는 전부 "rewrite" — 하나씩 잰 이득이 없다. 한 패스에 15% 남짓 깎이므로(judge10 iter 2:
+    9748 → 8339) 호출 쪽이 맞을 때까지 몇 번 반복한다."""
+    units = [{**u, "origin": "rewrite", "adopted_delta": None, "adopted_ci_lo": None}
+             for u in edit_units(draft)]
+    return {"fixed_sections": {h: section_of(draft, h) for h in ("[Role]", "[Scoring Rules]")},
+            "units": units, "findings": findings,
+            "size": size_brief(draft, target),
+            "size_feedback": edit_feedback(draft, draft, target, [])}
 
 
 def edit_feedback(draft: str, current: str, budget: int, deltas: list[dict]) -> dict:

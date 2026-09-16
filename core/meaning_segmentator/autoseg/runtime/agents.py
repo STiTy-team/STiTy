@@ -413,14 +413,18 @@ Return ONLY a JSON object with exactly these keys:
   "source_language": "language name",
   "word_order": "SOV | SVO | VSO | other, with a one-line justification from the sample",
   "register": "what kind of text this is (spontaneous speech, read-aloud prose, meeting, ...)",
-  "fillers_and_hesitations": ["actual tokens observed or expected in this language"],
-  "discourse_markers": ["tokens that open or link clauses"],
-  "clause_boundary_signals": ["concrete surface forms that mark a clause boundary in THIS language"],
-  "non_boundary_traps": ["surface forms that LOOK like boundaries but are not"],
-  "unstable_prefix_signals": ["surface forms in THIS language after which a prefix's reading is\n                              still likely to be overturned by what follows — stated WITHOUT naming\n                              or assuming any particular target language"],
-  "notes_for_prompt_writer": "2-4 sentences of practical guidance"
+  "fillers_and_hesitations": ["DEVICES this language uses, each named as a category with at most two\n                              illustrative tokens in parentheses — e.g. 'hesitation particles (um, uh)'"],
+  "discourse_markers": ["devices that open or link clauses, named the same way"],
+  "clause_boundary_signals": ["devices that mark a clause boundary in THIS language, named the same way"],
+  "non_boundary_traps": ["devices that LOOK like boundaries but are not, named the same way"],
+  "unstable_prefix_signals": ["devices in THIS language after which a prefix's reading is still likely\n                              to be overturned by what follows — stated WITHOUT naming or assuming\n                              any particular target language"],
+  "notes_for_prompt_writer": "2-4 sentences of linguistic facts the prompt writer needs"
 }
-No prose outside the JSON."""
+Name DEVICES (categories of construction), never bare token lists: the prompt written from this
+profile must contain judgements about meaning, and a token list turns into a token rule.
+Describe the language only. Do NOT give segmentation strategy or latency advice — no "prefer to
+wait for the verb phrase", no "avoid splitting after X": what a good cut is gets MEASURED, and
+such advice biased the first prompt toward long pieces (judge10). No prose outside the JSON."""
 
 def measured_facts(measured: dict | None) -> str:
     """실측 프로파일을 프롬프트 작성기·PE 가 읽을 문단으로. 없으면 빈 문자열.

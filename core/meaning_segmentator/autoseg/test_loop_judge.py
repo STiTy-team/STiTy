@@ -121,13 +121,13 @@ class Cases(unittest.TestCase):
     def test_no_loss_no_cases(self):
         pol = {(0, 1): (3,)}
         got = lj.build_cases(self.sents, self.lab, pol, pol, {(0, 1): 0.7}, {(0, 1): 0.7},
-                             True, 1, 5)
+                             True, 1, 5)[0]
         self.assertEqual(got, [])
 
     def test_dropped_and_added(self):
         pol, ora = {(0, 1): (6,)}, {(0, 1): (3,)}
         got = lj.build_cases(self.sents, self.lab, pol, ora, {(0, 1): 0.60}, {(0, 1): 0.75},
-                             True, 1, 5)
+                             True, 1, 5)[0]
         self.assertEqual(len(got), 1)
         c = got[0]
         self.assertEqual(c["cuts"], 1)
@@ -145,7 +145,7 @@ class Cases(unittest.TestCase):
         ora = {(i, 1): (3,) for i in range(3)}
         pol_h = {(0, 1): 0.5, (1, 1): 0.1, (2, 1): 0.3}
         ora_h = {(0, 1): 0.6, (1, 1): 0.9, (2, 1): 0.5}
-        got = lj.build_cases(sents, lab, pol, ora, pol_h, ora_h, True, 1, 2)
+        got = lj.build_cases(sents, lab, pol, ora, pol_h, ora_h, True, 1, 2)[0]
         self.assertEqual([c["id"] for c in got], ["s1", "s2"])
 
 
@@ -163,7 +163,7 @@ class PickCases(unittest.TestCase):
         texts = ["a b c d e f g h i j k l"]
         lab = labels_for(texts, lambda i, j: 0.9 if j == 6 else 0.0, lambda i, j: 0.8)
         got = lj.build_cases([sent(0, texts[0])], lab, {(0, 1): (6,)}, {(0, 1): (3,)},
-                             {(0, 1): 0.05}, {(0, 1): 0.8}, True, 1, 5)
+                             {(0, 1): 0.05}, {(0, 1): 0.8}, True, 1, 5)[0]
         self.assertTrue(got[0]["contra_kill"])
         self.assertAlmostEqual(got[0]["policy_worst_contra"], 0.9)
         self.assertEqual(got[0]["latency_bin"], "≤7")
@@ -341,3 +341,87 @@ class ScreenIndices(unittest.TestCase):
         self.assertNotEqual(a, b)
         self.assertEqual(a, lj.screen_indices(150, 50, 1))
         self.assertEqual(lj.screen_indices(30, 50, 1), list(range(30)))
+
+
+class CaseRotation(unittest.TestCase):
+    def test_exclude_previous_sentences(self):
+        # 채택이 없으면 손해 순위가 같아 같은 12문장이 또 뽑힌다(judge10 iter 1·2 동일) — 직전 이터 문장은 뺀다
+        gaps = [(0.9, (0, 1)), (0.8, (1, 1)), (0.7, (2, 2)), (0.2, (3, 5))]
+        bin_of = lambda key: "≤3" if key[1] >= 5 else "≤10"
+        got = [k for _g, k in lj.pick_cases(gaps, bin_of, 3, exclude={0, 3})]
+        self.assertEqual(got, [(1, 1), (2, 2)])
+        self.assertEqual(len(lj.pick_cases(gaps, bin_of, 3)), 3)
+
+
+class V0Examples(unittest.TestCase):
+    def test_spread_by_length(self):
+        class S:
+            def __init__(self, i, n): self.id, self.text = f"s{i}", " ".join(["w"] * n)
+        sents = [S(i, n) for i, n in enumerate([5, 30, 12, 8, 20, 15, 25, 10])]
+        ids = lj.pick_example_ids(sents, spaced=True, n=4)
+        self.assertEqual(len(ids), 4)
+        by_id = {s.id: s for s in sents}
+        lens = [len(by_id[i].text.split()) for i in ids]
+        self.assertEqual(lens, sorted(lens))
+        self.assertLess(min(lens), 12)
+        self.assertGreater(max(lens), 20)
+        self.assertEqual(ids, lj.pick_example_ids(sents, spaced=True, n=4))
+
+    def test_examples_section_from_measured(self):
+        body = lj.examples_section({"a": "Input: x <SEG:?> y\nOutput: x <SEG:50> y",
+                                    "b": "Input: p <SEG:?> q\nOutput: p <SEG:10> q"})
+        self.assertTrue(body.startswith("[Examples]\n"))
+        self.assertEqual(body.count("Input:"), 2)
+        self.assertIn("\n\n", body)
+
+
+class LossByBin(unittest.TestCase):
+    def test_share_and_quota(self):
+        # test-A 실측: 손실의 61% 가 ≤3, 26% 가 ≤5 — 사례 균등 배분(3/3/2/2/2)은 그 몫을 못 본다
+        gaps = [(0.2, (0, 5)), (0.2, (1, 5)), (0.2, (2, 5)), (0.1, (3, 2)), (0.02, (4, 1)), (-0.1, (5, 1))]
+        bin_of = lambda key: {5: "≤3", 2: "≤5", 1: "≤99"}[key[1]]
+        lb = lj.loss_by_bin(gaps, bin_of)
+        self.assertEqual(lb["≤3"]["pairs"], 3)
+        self.assertAlmostEqual(lb["≤3"]["loss_share"], 0.6 / 0.72, places=3)
+        self.assertAlmostEqual(lb["≤99"]["gap_mean"], (0.02 - 0.1) / 2, places=6)
+        q = lj.case_quota(lb, 12)
+        self.assertEqual(sum(q.values()), 12)
+        self.assertGreaterEqual(min(q.values()), 1)
+        self.assertGreater(q["≤3"], q["≤5"])
+
+    def test_pick_with_quota(self):
+        gaps = [(0.9, (0, 5)), (0.8, (1, 5)), (0.7, (2, 5)), (0.6, (3, 2)), (0.5, (4, 2)), (0.1, (5, 1))]
+        bin_of = lambda key: {5: "≤3", 2: "≤5", 1: "≤99"}[key[1]]
+        got = [k for _g, k in lj.pick_cases(gaps, bin_of, 4, quota={"≤3": 2, "≤5": 1, "≤99": 1})]
+        self.assertEqual(sorted(got), [(0, 5), (1, 5), (3, 2), (5, 1)])
+
+
+class NearMissBase(unittest.TestCase):
+    def test_picks_highest_lo_since_last_adoption(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as d:
+            rd = Path(d)
+            for it, files in ((1, {"prompt.txt": "P1", "candidate_3.txt": "C13"}),
+                              (2, {"prompt.txt": "P2"})):
+                (rd / f"iter_{it:02d}").mkdir()
+                for fn, body in files.items():
+                    (rd / f"iter_{it:02d}" / fn).write_text(body, encoding="utf-8")
+            hist = [
+                {"iter": 1, "candidate": 3, "adopted": False, "full_scored": True,
+                 "delta": {"mean": 0.0059, "lo": -0.0064, "hi": 0.0188}},
+                {"iter": 1, "adopted": False, "delta": {"mean": 0.0064, "lo": -0.006, "hi": 0.018},
+                 "gain": {"mean": 0.0074, "lo": -0.0003, "hi": 0.0153, "pooled": True},
+                 "diagnosis": {"by_bin": {}}},
+                {"iter": 2, "adopted": False, "delta": {"mean": -0.01, "lo": -0.02, "hi": 0.0},
+                 "diagnosis": {"by_bin": {}}},
+            ]
+            text, h = lj.near_miss_base(hist, rd)
+            self.assertEqual(text, "P1")
+            self.assertEqual(h["iter"], 1)
+            self.assertNotIn("candidate", h)
+            # 채택 뒤의 것만 본다
+            hist2 = hist + [{"iter": 3, "adopted": True, "gain": {"mean": 0.02, "lo": 0.01, "hi": 0.03}}]
+            self.assertIsNone(lj.near_miss_base(hist2, rd))
+            # 근소 기각이 없으면 None
+            self.assertIsNone(lj.near_miss_base([hist[2]], rd))

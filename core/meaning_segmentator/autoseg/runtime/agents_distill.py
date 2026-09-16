@@ -134,6 +134,51 @@ def drop_extra_markers(marked: str, out: str) -> str:
     return " ".join(kept)
 
 
+def realign_tags(marked: str, out: str, spaced: bool, max_changed_frac: float = 0.2) -> str | None:
+    """모델이 원문 글자를 살짝 바꾼 출력의 태그를 **원문** 어절 경계로 옮긴다. 못 옮기면 None.
+
+    `text_modified` 는 재시도의 유일한 사유인데 그 재시도가 분절 호출의 60%(judge11 test-A:
+    묶음 100 에 문장 재호출 145), 시간의 30~40%, 비용의 45% 다. 따옴표·철자 수준의 차이면
+    LLM 을 다시 부를 이유가 없다 — 어절을 맞춰 태그 자리만 옮기면 된다.
+
+    포기하는 경우: 바뀐 어절이 max(2, 전체의 `max_changed_frac`) 를 넘음, 태그가 바뀐 구간
+    **안**에 떨어짐, 옮긴 자리가 입력 마커 자리와 하나라도 다름(어절이 빠지면 여기 걸린다).
+    그때는 종전대로 재시도한다."""
+    import difflib
+    plain = marked.replace("<SEG:?>", "<SEG>")
+    orig_units = strip_tags(plain, spaced).split() if spaced else list(strip_tags(plain, spaced))
+    want, _n = tag_positions(plain, spaced)
+    parts = TAG_RE.split(out.strip())
+    pieces, tags = parts[::2], [m.group(0) for m in TAG_RE.finditer(out.strip())]
+    out_units, bounds = [], []
+    for k, piece in enumerate(pieces):
+        u = piece.split() if spaced else list(re.sub(r"\s+", "", piece))
+        out_units += u
+        if k < len(pieces) - 1:
+            bounds.append(len(out_units))
+    if out_units == orig_units:
+        return out
+    sm = difflib.SequenceMatcher(None, out_units, orig_units, autojunk=False)
+    ops = sm.get_opcodes()
+    changed = sum(max(i2 - i1, j2 - j1) for op, i1, i2, j1, j2 in ops if op != "equal")
+    if changed > max(2, int(max_changed_frac * len(orig_units))):
+        return None
+    equal = [(i1, i2, j1, j2) for op, i1, i2, j1, j2 in ops if op == "equal"]
+
+    def to_orig(b: int) -> int | None:
+        for i1, i2, j1, j2 in equal:
+            if i1 <= b <= i2:
+                return j1 + (b - i1)
+        return None
+
+    mapped = [to_orig(b) for b in bounds]
+    if any(m is None for m in mapped) or mapped != want:
+        return None
+    at = dict(zip(mapped, tags))
+    sep = " " if spaced else ""
+    return sep.join(u + (sep + at[j + 1] if j + 1 in at else "") for j, u in enumerate(orig_units))
+
+
 def normalize_scored(marked: str, out: str) -> str:
     """표기를 고친다: 태그 좌우 공백, 점수 범위, **마커 자리에 맨 숫자만 쓴 출력**,
     그리고 입력에 없는 자리의 마커 제거(`drop_extra_markers`).

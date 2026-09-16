@@ -101,6 +101,8 @@ def main() -> int:
         print(f" {mark}{name:44s} 호출 {u.get('calls', 0):5d}  ${float(u.get('cost', 0.0)):8.4f}")
         for k, v in sorted(u.get("by_purpose", {}).items(), key=lambda x: -x[1]["cost"]):
             print(f"      {k:18s} {v['calls']:5d}콜  ${v['cost']:7.4f}")
+        for k, v in sorted(u.get("by_key", {}).items()):      # 키(조직)별 — 청구서가 따로 온다
+            print(f"      key{k:15s} {v['calls']:5d}콜  ${v['cost']:7.4f}")
     print(f"  {'* 표시가 합계에 든 것 (나머지는 같은 지출의 중간 스냅샷)':44s}")
     print(f"  {'기록된 합계':44s} {'':10s} ${total:8.4f}")
 

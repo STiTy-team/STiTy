@@ -64,3 +64,35 @@ class ScoreMeaningBySource(unittest.TestCase):
         self.assertNotIn("whole source sentence", ad.output_rules(True))
 if __name__ == "__main__":
     unittest.main()
+
+
+class RealignTags(unittest.TestCase):
+    """모델이 원문 글자를 살짝 바꾼 출력 — 재시도 대신 태그만 원문 어절 경계로 옮긴다.
+    judge11 test-A 채점: 문장-표본 1,800건 중 424건(24%)이 `text_modified` 로 재호출됐다."""
+
+    MARKED = "He <SEG:?> said <SEG:?> \"hi\" <SEG:?> to <SEG:?> the <SEG:?> colour <SEG:?> guard <SEG:?> yesterday."
+
+    def test_curly_quotes(self):
+        out = "He <SEG:10> said <SEG:80> “hi” <SEG:30> to <SEG:20> the <SEG:5> colour <SEG:60> guard <SEG:40> yesterday."
+        got = ad.realign_tags(self.MARKED, out, spaced=True)
+        self.assertEqual(got, "He <SEG:10> said <SEG:80> \"hi\" <SEG:30> to <SEG:20> the <SEG:5> colour <SEG:60> guard <SEG:40> yesterday.")
+        self.assertEqual(ad.validate_scored("", self.MARKED, got, True), [])
+
+    def test_one_word_respelled(self):
+        out = "He <SEG:10> said <SEG:80> \"hi\" <SEG:30> to <SEG:20> the <SEG:5> color <SEG:60> guard <SEG:40> yesterday."
+        got = ad.realign_tags(self.MARKED, out, spaced=True)
+        self.assertIn("colour", got)
+        self.assertEqual(ad.validate_scored("", self.MARKED, got, True), [])
+
+    def test_word_dropped_gives_up(self):
+        # 어절이 빠지면 그 자리 태그가 바뀐 구간 안에 떨어진다 — 포기하고 재시도로
+        out = "He <SEG:10> said <SEG:80> \"hi\" <SEG:30> to <SEG:20> the <SEG:60> guard <SEG:40> yesterday."
+        self.assertIsNone(ad.realign_tags(self.MARKED, out, spaced=True))
+
+    def test_too_different_gives_up(self):
+        out = "She <SEG:10> whispered <SEG:80> \"bye\" <SEG:30> at <SEG:20> a <SEG:5> flag <SEG:60> bearer <SEG:40> today."
+        self.assertIsNone(ad.realign_tags(self.MARKED, out, spaced=True))
+
+    def test_identical_text_passthrough(self):
+        out = "He <SEG:10> said <SEG:80> \"hi\" <SEG:30> to <SEG:20> the <SEG:5> colour <SEG:60> guard <SEG:40> yesterday."
+        self.assertEqual(ad.realign_tags(self.MARKED, out, spaced=True), out)

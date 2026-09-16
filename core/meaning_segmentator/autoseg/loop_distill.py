@@ -105,7 +105,8 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
             gw, prompt, marked, cache=cache, workers=workers,
             validate_fn=lambda t, o: ad.validate_scored("", t, o, spaced),
             normalize_fn=ad.normalize_scored, reasoning_effort=reasoning_effort,
-            batch_size=batch_size, first_pass_sink=first_pass)
+            batch_size=batch_size, first_pass_sink=first_pass,
+            realign_fn=lambda t, o: ad.realign_tags(t, o, spaced))
         outs_k.append(outs)
         ok_k.append(ok1)
     for cache in caches[1:]:
@@ -212,6 +213,8 @@ def evaluate(gw: Gateway, prompt: str, sents: list[data.Sentence], labels: dict,
         # 1차 시도 위반 — 재시도 전 상태. 무엇이 깨지는지 안 남기면 재시도 비용의 원인을 못 찾는다.
         "first_pass_violations": {
             "counts": dict(sorted(collections.Counter(v["rule"] for v in first_pass).items())),
+            # 재시도 없이 태그 재정렬로 살린 건수 — 재시도 비용이 얼마나 줄었는지의 근거
+            "realigned": sum(1 for v in first_pass if v.get("realigned")),
             "samples": [{"rule": v["rule"], "detail": v["detail"], "seg_text": v["seg_text"][:300]}
                         for v in first_pass[:3]],
         },

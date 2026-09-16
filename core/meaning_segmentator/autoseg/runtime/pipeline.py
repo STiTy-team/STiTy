@@ -216,6 +216,7 @@ def segment_batch(
     batch_size: int = 1,
     first_pass_sink: list | None = None,
     need_fn=None,
+    realign_fn=None,
 ) -> tuple[list[str], list[bool]]:
     """프롬프트 주입형 분절. 동일 (프롬프트, 문장) 조합은 캐시 재사용.
 
@@ -224,7 +225,9 @@ def segment_batch(
          **`validate_fn` 과 같은 (원문, 출력) 형태다** — 무엇을 고쳤는지 기록하려면
          어느 문장인지 알아야 하는데, 출력만 받으면 그 연결이 끊긴다.
          LLM 호출이 없고 경계 위치를 안 바꾸므로 무료이고 안전하다.
-      2. LLM 복구 재시도 1회 — 정규화로 못 고치는 것(`text_modified`)만 남는다.
+      2. `realign_fn(원문, 출력)` — 위반이 `text_modified` 뿐이면 태그를 원문 어절 경계로
+         옮겨 본다. 성공하면 재시도 없이 쓴다(1차 통과로는 안 센다, `realigned` 로 따로 센다).
+      3. LLM 복구 재시도 1회 — 그래도 남는 것만.
 
     복구가 프롬프트 품질을 가리면 안 되므로 **1차 통과 여부를 따로 반환**한다.
     다만 1차 판정은 정규화 **이후**에 한다 — 표기 흔들림은 프롬프트 품질이 아니다.
@@ -298,10 +301,21 @@ def segment_batch(
             vs = validate_fn(t, out)
             if vs:
                 first_ok = False
+                fixed = None
+                if realign_fn is not None and all(v.rule == "text_modified" for v in vs):
+                    fixed = realign_fn(t, out)
+                    if fixed is not None and validate_fn(t, fixed):
+                        fixed = None
                 if first_pass_sink is not None:
                     first_pass_sink.extend(
-                        {"rule": v.rule, "detail": v.detail, "text": t, "seg_text": out}
+                        {"rule": v.rule, "detail": v.detail, "text": t, "seg_text": out,
+                         "realigned": fixed is not None}
                         for v in vs)
+                if fixed is not None:
+                    out = fixed
+                    if cache is not None:
+                        cache.put(cache_key(t), [out, first_ok])
+                    return out, first_ok
                 detail = "; ".join(f"{v.rule}: {v.detail}" for v in vs)
                 # **규칙을 여기 다시 쓰지 않는다.** `system=prompt` 로 프롬프트를 통째로
                 # 다시 주므로 `[Output Rules]` 가 이미 들어가 있다. 예전에는 번호 규약

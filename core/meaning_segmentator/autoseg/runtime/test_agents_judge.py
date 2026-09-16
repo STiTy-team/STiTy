@@ -352,3 +352,150 @@ class Skeleton(unittest.TestCase):
         self.assertEqual(aj.check_skeleton(with_dp), ["허용하지 않는 섹션: [Decision Procedure]"])
         self.assertIn("섹션 없음: [Examples]", aj.check_skeleton(BASE.split("[Examples]")[0]))
         self.assertNotIn("[Decision Procedure]", aj.size_brief(BASE, len(BASE))["sections"])
+
+
+class LengthTarget(unittest.TestCase):
+    """모델에게 알리는 길이 목표는 검사 상한보다 낮다 — 모델은 상한을 1% 안팎 넘긴다."""
+
+    def test_margin_below_cap(self):
+        self.assertEqual(aj.soft_target(8054, 7322), int(8054 * 0.95))
+
+    def test_never_below_current(self):
+        # 천장에 닿아 상한 == 현재 길이일 때 줄이라고 요구하지 않는다
+        self.assertEqual(aj.soft_target(7322, 7322), 7322)
+        self.assertEqual(aj.soft_target(7400, 7322), 7322)
+
+
+class RewriteShorten(unittest.TestCase):
+    """Writer 가 다시 쓴 초안이 길이만 넘으면 초안 자체를 편집 단위로 쪼개 PE 에게 준다."""
+
+    def test_shorten_user(self):
+        draft = BASE.replace("- (2) ask that", "- (2) ask that " + "y" * 40)
+        findings = [{"diagnosis": "d", "evidence": "e", "edit": {}}]
+        u = aj.shorten_user(draft, len(BASE), findings)
+        self.assertEqual([x["id"] for x in u["units"]], ["C1", "C2", "E1"])
+        self.assertTrue(all(x["origin"] == "rewrite" for x in u["units"]))
+        self.assertIn("[Role]", u["fixed_sections"])
+        self.assertEqual(u["findings"], findings)
+        self.assertEqual(u["size"]["budget"], len(BASE))
+        fb = u["size_feedback"]
+        self.assertEqual(fb["over_by"], len(draft) - len(BASE))
+        self.assertGreater(fb["over_by"], 0)
+        self.assertEqual(fb["your_edits"], [])
+        self.assertEqual(fb["largest_units"][0]["id"], "C2")
+
+    def test_pe_edits_apply_to_draft(self):
+        # PE 가 초안의 id 로 낸 편집이 초안에 적용되고 상한 검사를 통과한다
+        draft = BASE.replace("- (2) ask that", "- (2) ask that " + "y" * 40)
+        pe = {"changelog": ["shorter"],
+              "edits": [{"op": "replace", "id": "C2", "kind": "paraphrase", "text": "- (2) ask that"}]}
+        pr, note, _d, deltas, skipped = aj.parse_edits(pe, draft, budget=len(BASE))
+        self.assertEqual(pr, BASE)
+        self.assertEqual(skipped, [])
+        self.assertEqual(deltas[0]["chars_change"], -41)
+
+    def test_shorten_role_drops_inserts(self):
+        # 줄이라는 패스에서 PE 가 예시를 더 넣은 것(judge10 iter 2: E_end +262자)은 코드가 뺀다
+        edits = [{"op": "delete", "id": "E2"},
+                 {"op": "insert_after", "id": "E_end", "labeled_example": "x"},
+                 {"op": "replace", "id": "C1", "kind": "paraphrase", "text": "- (1) ask"}]
+        keep, bad = aj.enforce_role(edits, "shorten")
+        self.assertEqual([e["op"] for e in keep], ["delete", "replace"])
+        self.assertEqual([(b["edit"], b["id"]) for b in bad], [(1, "E_end")])
+        self.assertEqual(aj.SHORTEN_ROLE, "shorten")
+        self.assertNotIn(aj.SHORTEN_ROLE, aj.ROLES)   # 후보 역할이 아니라 축소 패스 전용
+
+
+class PostmortemReachesNextIter(unittest.TestCase):
+    """부검이 지목한 것이 다음 이터의 후보에 실제로 닿는가 — judge10 iter 2 는 세 후보 전부
+    iter 1 부검이 지목한 실측 예시(en_us_733, en_us_1294)를 다시 넣었다."""
+
+    def test_history_brief_carries_blamed(self):
+        hist = [{"iter": 1, "adopted": False, "delta": {"mean": -0.01, "lo": -0.03},
+                 "edits": [], "diagnosis": {"why": "w", "lesson": "L", "blamed": ["E2 (x)"]}}]
+        b = aj.history_brief(hist)[0]
+        self.assertEqual(b["blamed"], ["E2 (x)"])
+        self.assertEqual(b["why"], "w")
+
+    def test_edit_summary_keeps_labeled_id(self):
+        edits = [{"op": "replace", "id": "E1", "labeled_example": "en_us_733", "text": "Input: W"}]
+        self.assertEqual(aj.edit_summary(BASE, edits)[0]["labeled_example"], "en_us_733")
+        self.assertNotIn("labeled_example", aj.edit_summary(BASE, [{"op": "delete", "id": "E1"}])[0])
+
+    def test_exclude_examples_used_by_rejected(self):
+        examples = {"a": "Input: x <SEG:?> y\nOutput: x <SEG:10> y",
+                    "b": "Input: p <SEG:?> q\nOutput: p <SEG:20> q"}
+        rejected = ["[Examples]\nInput: x <SEG:?> y\nOutput: x <SEG:10> y\n"]
+        kept, dropped = aj.exclude_used_examples(examples, rejected)
+        self.assertEqual(list(kept), ["b"])
+        self.assertEqual(dropped, ["a"])
+        self.assertEqual(aj.exclude_used_examples(examples, [])[0], examples)
+
+    def test_critic_replace_target_must_exist(self):
+        # Critic 이 last_revision 본문을 현재 프롬프트에 있는 줄 알고 겨눈 것(judge10 iter 2 Whistler)
+        got = aj.clean_findings({"findings": [
+            {"edit": {"where": "examples", "action": "replace", "target": "Input: Whistler", "text": "y"}},
+            {"edit": {"where": "core_principles", "action": "replace", "target": "- (1) ask this", "text": "z"}},
+            {"edit": {"where": "core_principles", "action": "add", "text": "w"}}]}, prompt=BASE)
+        self.assertEqual([f["edit"]["action"] for f in got], ["replace", "add"])
+        self.assertEqual(got[0]["edit"]["target"], "- (1) ask this")
+
+    def test_blamed_ids_become_text(self):
+        # 부검의 "E2 (…)" 는 그 이터 후보의 id — 다음 이터엔 다른 단위가 E2 다. 본문을 붙인다
+        cand = BASE.replace("- (2) ask that", "- (2) ask that about negation scope")
+        got = aj.blamed_with_text(["C2 (encouraged early cuts)", "E9 (missing)", "nonsense"], cand)
+        self.assertEqual(got[0], "C2 «- (2) ask that about negation scope» (encouraged early cuts)")
+        self.assertEqual(got[1], "E9 (missing)")
+        self.assertEqual(got[2], "nonsense")
+
+    def test_history_brief_keeps_changelog_for_rewrite(self):
+        hist = [{"iter": 2, "candidate": 1, "adopted": False, "screened_only": True,
+                 "delta": {"mean": -0.01, "lo": -0.03}, "edits": [],
+                 "changelog": ["rewrite: [Core Principles]/[Examples] 를 새로 씀"]}]
+        self.assertEqual(aj.history_brief(hist)[0]["changelog"], hist[0]["changelog"])
+        hist[0]["edits"] = [{"op": "delete", "id": "E1"}]
+        self.assertNotIn("changelog", aj.history_brief(hist)[0])
+
+    def test_exclude_examples_already_in_prompt(self):
+        examples = {"a": "Input: a <SEG:?> b\nOutput: a <SEG:50> b", "b": "Input: p\nOutput: p"}
+        kept, dropped = aj.exclude_used_examples(examples, [BASE])
+        self.assertEqual(dropped, ["a"])
+
+
+class DedupeCandidates(unittest.TestCase):
+    def test_identical_text_dropped(self):
+        # judge12 iter 1: examples_only 와 single_small 이 같은 편집(E4 → en_us_738)을 냈다 — 선별 두 번은 낭비
+        keep, dropped = aj.dedupe_candidates([(0, "A"), (1, "B"), (2, "A"), (3, "B ")])
+        self.assertEqual(keep, [0, 1])
+        self.assertEqual(dropped, [(2, 0), (3, 1)])
+
+
+class NearMiss(unittest.TestCase):
+    def test_near_miss_flagged_in_history_brief(self):
+        h = {"iter": 1, "adopted": False, "edits": [],
+             "gain": {"mean": 0.0074, "lo": -0.0003, "hi": 0.0153, "pooled": True},
+             "diagnosis": {"by_bin": {"≤3": 0.0129}, "lesson": "keep"}}
+        self.assertTrue(aj.is_near_miss(h))
+        b = aj.history_brief([h])[0]
+        self.assertTrue(b["near_miss"])
+        self.assertEqual(b["measured_on"], "test-A 200 + test-B 200 pooled")
+        self.assertEqual(b["by_bin"], {"≤3": 0.0129})
+
+    def test_near_miss_not_for_screened_or_negative(self):
+        base = {"iter": 1, "adopted": False, "edits": []}
+        self.assertFalse(aj.is_near_miss({**base, "screened_only": True,
+                                          "delta": {"mean": 0.02, "lo": -0.001}}))
+        self.assertFalse(aj.is_near_miss({**base, "delta": {"mean": -0.006, "lo": -0.018}}))
+        self.assertFalse(aj.is_near_miss({**base, "delta": {"mean": 0.006, "lo": -0.02}}))
+        self.assertNotIn("near_miss", aj.history_brief([{**base, "delta": {"mean": -0.006, "lo": -0.018}}])[0])
+
+    def test_history_brief_carries_vs_base(self):
+        h = {"iter": 2, "adopted": False, "edits": [], "built_on": "iter 1 near miss (+0.0074)",
+             "delta": {"mean": 0.0026, "lo": -0.0085, "hi": 0.014},
+             "diagnosis": {"by_bin": {"≤3": 0.0047},
+                           "vs_base": {"delta": {"mean": -0.0038, "lo": -0.01, "hi": 0.003},
+                                       "by_bin": {"≤3": -0.0083}, "n_worse": 1, "n_better": 0}}}
+        b = aj.history_brief([h])[0]
+        self.assertEqual(b["built_on"], "iter 1 near miss (+0.0074)")
+        self.assertEqual(b["vs_base"], {"delta_mean": -0.0038, "delta_lo": -0.01, "by_bin": {"≤3": -0.0083}})
+        self.assertNotIn("near_miss", b)

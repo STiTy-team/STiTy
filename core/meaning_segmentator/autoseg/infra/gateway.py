@@ -100,6 +100,9 @@ def add_provider_args(p) -> None:
                         f"기본 {DEFAULT_PROVIDER}")
     p.add_argument("--base-url", default=None,
                    help="프로바이더 기본 엔드포인트 대신 쓸 URL (로컬 서버 포트 등)")
+    p.add_argument("--extra-key-envs", default="",
+                   help="기본 키에 더해 호출마다 돌려 쓸 키의 환경변수 이름(쉼표). 다른 조직의 "
+                        "키여야 처리 큐가 나뉜다 — 같은 조직이면 효과 없다. 예: OPENAI_API_KEY_2")
 
 
 # OpenAI 단가 (USD / 1M 토큰, 2026-08 developers.openai.com/api/docs/pricing).
@@ -168,9 +171,11 @@ class Usage:
     price: tuple[float, float, float] | None = None
     # 용도별 집계 — "어디에 썼는가". 합계만으로는 병목이 안 보인다 (tracing.py 참조).
     by_purpose: dict = field(default_factory=dict)
+    # 키(조직)별 집계 — 키를 돌려 쓰면 청구서가 조직마다 따로 온다. 어느 쪽에 얼마인지 남긴다.
+    by_key: dict = field(default_factory=dict)
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-    def add(self, payload: dict, purpose: str = "other") -> None:
+    def add(self, payload: dict, purpose: str = "other", key: int = 0) -> None:
         u = payload.get("usage") or {}
         c = payload.get("estimated_cost") or {}
         prompt = u.get("prompt_tokens", 0) or 0
@@ -207,6 +212,12 @@ class Usage:
             b["reasoning_tokens"] += reasoning
             b["cached_tokens"] += cached
             b["cost"] += delta_cost
+            k = self.by_key.setdefault(str(key), {"calls": 0, "prompt_tokens": 0,
+                                                  "completion_tokens": 0, "cost": 0.0})
+            k["calls"] += 1
+            k["prompt_tokens"] += prompt
+            k["completion_tokens"] += completion
+            k["cost"] += delta_cost
 
     def snapshot(self) -> dict:
         with self._lock:
@@ -220,6 +231,8 @@ class Usage:
                 "by_purpose": {k: {**v, "cost": round(v["cost"], 6)}
                                for k, v in sorted(self.by_purpose.items(),
                                                   key=lambda kv: -kv[1]["cost"])},
+                "by_key": {k: {**v, "cost": round(v["cost"], 6)}
+                           for k, v in sorted(self.by_key.items())},
             }
 
 
@@ -244,6 +257,11 @@ class Gateway:
         # 32768 로 올린 뒤로는 사고가 길어진 호출이 420s 도 넘길 수 있어 함께 올렸다.
         timeout: float = 900.0,
         max_retries: int = 5,
+        # 동시 연결 상한. **워커 수와 맞춰야 한다** — 16 으로 고정돼 있던 동안 `--workers 64`
+        # 는 스레드만 늘리고 실제 동시 호출은 16 이었다(judge12: 16→64 에 채점 시간 불변).
+        max_connections: int = 16,
+        # 호출마다 돌려 쓸 키 목록(다른 조직). 없으면 api_key 하나.
+        api_keys: list[str] | None = None,
     ):
         if provider not in PROVIDERS:
             raise ValueError(f"모르는 provider: {provider!r}. {sorted(PROVIDERS)} 중 하나여야 한다")
@@ -254,6 +272,9 @@ class Gateway:
             # ollama 는 무시하고, 인증을 켠 로컬 서버는 자기 키를 환경변수로 받는다.
             api_key = load_api_key(spec.key_env) if spec.key_env else "local"
         self.api_key = api_key
+        self._keys = list(api_keys) if api_keys else [api_key]
+        self._key_turn = 0
+        self._key_lock = threading.Lock()
         self.base_url = (base_url or spec.base_url).rstrip("/")
         self.model = model
         self.budget = budget
@@ -282,12 +303,27 @@ class Gateway:
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
-            limits=httpx.Limits(max_connections=16, max_keepalive_connections=16),
+            limits=httpx.Limits(max_connections=max_connections,
+                                max_keepalive_connections=max_connections),
         )
+
+    def _next_key(self) -> tuple[int, str]:
+        """라운드로빈 — (키 번호, 키)."""
+        with self._key_lock:
+            i = self._key_turn % len(self._keys)
+            self._key_turn += 1
+            return i, self._keys[i]
 
     @classmethod
     def from_args(cls, args, **kw) -> "Gateway":
-        """`add_provider_args` 로 받은 인자를 그대로 넘겨 만든다."""
+        """`add_provider_args` 로 받은 인자를 그대로 넘겨 만든다. `--extra-key-envs` 가 있으면
+        기본 키 뒤에 그 키들을 붙여 돌려 쓴다."""
+        extra = [e.strip() for e in (getattr(args, "extra_key_envs", "") or "").split(",") if e.strip()]
+        if extra and "api_keys" not in kw:
+            spec = PROVIDERS[args.provider]
+            primary = kw.get("api_key") or (load_api_key(spec.key_env) if spec.key_env else "local")
+            kw["api_key"] = primary
+            kw["api_keys"] = [primary] + [load_api_key(e) for e in extra]
         return cls(provider=args.provider, base_url=args.base_url, **kw)
 
     def close(self) -> None:
@@ -326,9 +362,11 @@ class Gateway:
             return False
 
         last_err: Exception | None = None
+        key_i, key = self._next_key()
         for attempt in range(self.max_retries):
             try:
-                r = self._client.post(f"{self.base_url}{path}", json=body)
+                r = self._client.post(f"{self.base_url}{path}", json=body,
+                                      headers={"Authorization": f"Bearer {key}"})
                 # 추론 계열(o4-mini, gpt-5-mini …)은 temperature 를 기본값 1 로만 받는다.
                 # **이 모델들은 분절기를 비결정론적으로 만든다** — 루프가 검출하려는
                 # 프롬프트 차이가 0.003 규모라 표집 잡음이 신호를 덮을 수 있다
@@ -372,7 +410,7 @@ class Gateway:
                     continue
                 r.raise_for_status()
                 payload = r.json()
-                self.usage.add(payload, purpose)
+                self.usage.add(payload, purpose, key=key_i)
                 return payload
             except httpx.HTTPError as e:
                 last_err = e
