@@ -1,0 +1,28 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats head–complement splits too crudely: it does not consistently recognize when a predicate, required complement, or scope-bearing operator (objects, prepositional complements, negation, complement clauses) is cohesion-critical, so cuts that strand these elements are ranked as if harmless and produce misleading or contradictory fragments.",
+    "evidence": "en_us_1507,en_us_1280,en_us_154,en_us_1342,en_us_1600,en_us_1497,en_us_1428,en_us_1285 — all contain policy cuts that separate predicates or required complements (prepositions/objects, negation scopes, complement clauses) producing low H_set or high contra while the target reunites them.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Watch for incomplete subordinate or conditional fragments whose complement appears later;",
+     "text": "Penalize cuts that leave a predicate or an obligatory complement/scope-bearing element (verb objects, prepositional complements, complement clauses, negation scope) on the other side when the pre-cut span alone would assert or plausibly imply a claim; allow cuts inside optional modifiers or long NPs when they do not create a standalone misleading assertion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats head–complement splits too crudely: it does not consistently recognize when a predicate, required complement, or scope-bearing operator (objects, prepositional complements, negation, complement clauses) is cohesion-critical, so cuts that strand these elements are ranked as if harmless and produce misleading or contradictory fragments.",
+   "evidence": "en_us_1507,en_us_1280,en_us_154,en_us_1342,en_us_1600,en_us_1497,en_us_1428,en_us_1285 — all contain policy cuts that separate predicates or required complements (prepositions/objects, negation scopes, complement clauses) producing low H_set or high contra while the target reunites them.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Watch for incomplete subordinate or conditional fragments whose complement appears later;",
+    "text": "Penalize cuts that leave a predicate or an obligatory complement/scope-bearing element (verb objects, prepositional complements, complement clauses, negation scope) on the other side when the pre-cut span alone would assert or plausibly imply a claim; allow cuts inside optional modifiers or long NPs when they do not create a standalone misleading assertion."
+   }
+  }
+ ]
+}

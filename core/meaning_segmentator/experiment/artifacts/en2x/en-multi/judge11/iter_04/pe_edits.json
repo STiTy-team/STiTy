@@ -1,0 +1,225 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- Assess harm to BOTH fragments: would either side, taken alone, be incomplete, misleading, or too short to translate faithfully (e.g., a lone predicate/auxiliary/negation or a one-word NP)? Prefer keeping verbs with their required complements rather than shifting a cut into an adjacent noun phrase."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Treat tightly bound expressions as atomic: do not cut inside numerals paired with units, measurement phrases, numeric ranges, fixed date/month or time ranges, or compact location/place names and compound nouns. Separating quantity from unit or range from its scope changes factual meaning."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": 72
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 292
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7340,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 5206
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12182,
+  "errors": [
+   "길이 초과: 12182 > 7673"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Assess harm to BOTH fragments: avoid cuts that leave an incomplete predicate, a one-word NP, or a predicate-only fragment on either side. Prefer keeping verbs with their required complements rather than shifting damage into a neighboring NP or isolating a verb head."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Do not cut inside atomic measurement or tight temporal/location expressions: numerals plus units, measurements, numeric ranges, date/month ranges, and fixed place/time phrases must stay intact, since separating quantity from unit or parts of a range changes the factual claim."
+   },
+   {
+    "op": "delete",
+    "id": "E5"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E12"
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": 5
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": 16
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E5",
+    "kind": "delete",
+    "chars_change": -921
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "E12",
+    "kind": "delete",
+    "chars_change": -828
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -692
+   },
+   {
+    "edit": 6,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 7,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -646
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7571,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_767",
+    "text": "Input: The <SEG:?> city <SEG:?> of <SEG:?> Beijing <SEG:?> in <SEG:?> China <SEG:?> will <SEG:?> be <SEG:?> the <SEG:?> host <SEG:?> city <SEG:?> of <SEG:?> the <SEG:?> Olympic <SEG:?> Winter <SEG:?> Games <SEG:?> in <SEG:?> 2022, <SEG:?> which <SEG:?> will <SEG:?> make <SEG:?> it <SEG:?> the <SEG:?> first <SEG:?> city <SEG:?> to <SEG:?> have <SEG:?> hosted <SEG:?> both <SEG:?> the <SEG:?> summer <SEG:?> and <SEG:?> winter <SEG:?> Olympics.\nOutput: The <SEG:78> city <SEG:94> of <SEG:97> Beijing <SEG:91> in <SEG:84> China <SEG:38> will <SEG:50> be <SEG:16> the <SEG:41> host <SEG:66> city <SEG:81> of <SEG:47> the <SEG:44> Olympic <SEG:19> Winter <SEG:62> Games <SEG:59> in <SEG:0> 2022, <SEG:100> which <SEG:88> will <SEG:72> make <SEG:69> it <SEG:53> the <SEG:28> first <SEG:31> city <SEG:3> to <SEG:9> have <SEG:6> hosted <SEG:34> both <SEG:25> the <SEG:12> summer <SEG:56> and <SEG:22> winter <SEG:75> Olympics."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_419",
+    "text": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> to <SEG:?> 500 <SEG:?> million <SEG:?> speakers, <SEG:?> and <SEG:?> as <SEG:?> many <SEG:?> as <SEG:?> 800 <SEG:?> million <SEG:?> people <SEG:?> can <SEG:?> understand <SEG:?> the <SEG:?> language.\nOutput: Estimates <SEG:100> range <SEG:83> from <SEG:89> 340 <SEG:39> million <SEG:61> to <SEG:6> 500 <SEG:50> million <SEG:0> speakers, <SEG:94> and <SEG:72> as <SEG:28> many <SEG:78> as <SEG:67> 800 <SEG:56> million <SEG:17> people <SEG:11> can <SEG:33> understand <SEG:44> the <SEG:22> language."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1253",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_70",
+    "text": "Input: The <SEG:?> band <SEG:?> canceled <SEG:?> the <SEG:?> show <SEG:?> at <SEG:?> Maui's <SEG:?> War <SEG:?> Memorial <SEG:?> Stadium, <SEG:?> which <SEG:?> was <SEG:?> set <SEG:?> to <SEG:?> be <SEG:?> attended <SEG:?> by <SEG:?> 9,000 <SEG:?> people, <SEG:?> and <SEG:?> apologized <SEG:?> to <SEG:?> fans.\nOutput: The <SEG:86> band <SEG:81> canceled <SEG:52> the <SEG:76> show <SEG:33> at <SEG:0> Maui's <SEG:38> War <SEG:24> Memorial <SEG:67> Stadium, <SEG:43> which <SEG:29> was <SEG:10> set <SEG:14> to <SEG:62> be <SEG:57> attended <SEG:48> by <SEG:5> 9,000 <SEG:95> people, <SEG:100> and <SEG:71> apologized <SEG:90> to <SEG:19> fans."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 537
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 18
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 21
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -222
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7330,
+  "errors": null
+ }
+]

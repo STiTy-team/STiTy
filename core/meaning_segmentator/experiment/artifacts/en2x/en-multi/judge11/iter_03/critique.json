@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer has a leftward cut bias that often isolates predicates, auxiliaries, negation, or required complements onto very short pieces, producing standalone fragments whose meaning is reversed or incomplete when joined later.",
+    "evidence": "Shows in 9 cases (en_us_733, en_us_738, en_us_845, en_us_1116, en_us_990, en_us_538, en_us_655, en_us_1567, en_us_1081): all keep an early cut that separates a verb/negation or its complement and a single later cut with high contradiction zeroes the H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut so a very short fragment (≈≤4 words) contains only a predicate/auxiliary/negation or its particle while its required complement, object, or licensing head appears later; prefer keeping verb + its complements and scope-bearing operators together."
+    }
+   },
+   {
+    "diagnosis": "The scorer underweights high post-cut contradiction: positions that leave a later fragment which, on its own, strongly contradicts or overturns the earlier fragment are not being penalized enough.",
+    "evidence": "Appears in the same 9 cases where a single policy cut has very high 'contra' and causes the set to fail (policy_worst_contra ≈0.8–0.99); targets avoid those cuts and obtain much higher H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When the material after a cut has a high probability of contradicting the prior fragment (contra > ~0.5), mark that cut unsafe and drop its rank substantially — such high contra should heavily lower the cut’s score regardless of moderate cohesion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer has a leftward cut bias that often isolates predicates, auxiliaries, negation, or required complements onto very short pieces, producing standalone fragments whose meaning is reversed or incomplete when joined later.",
+   "evidence": "Shows in 9 cases (en_us_733, en_us_738, en_us_845, en_us_1116, en_us_990, en_us_538, en_us_655, en_us_1567, en_us_1081): all keep an early cut that separates a verb/negation or its complement and a single later cut with high contradiction zeroes the H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut so a very short fragment (≈≤4 words) contains only a predicate/auxiliary/negation or its particle while its required complement, object, or licensing head appears later; prefer keeping verb + its complements and scope-bearing operators together."
+   }
+  },
+  {
+   "diagnosis": "The scorer underweights high post-cut contradiction: positions that leave a later fragment which, on its own, strongly contradicts or overturns the earlier fragment are not being penalized enough.",
+   "evidence": "Appears in the same 9 cases where a single policy cut has very high 'contra' and causes the set to fail (policy_worst_contra ≈0.8–0.99); targets avoid those cuts and obtain much higher H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When the material after a cut has a high probability of contradicting the prior fragment (contra > ~0.5), mark that cut unsafe and drop its rank substantially — such high contra should heavily lower the cut’s score regardless of moderate cohesion."
+   }
+  }
+ ]
+}

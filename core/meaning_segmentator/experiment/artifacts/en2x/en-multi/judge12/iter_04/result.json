@@ -1,0 +1,49 @@
+{
+ "iter": 4,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00683,
+  "lo": -0.01896,
+  "hi": 0.00567,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00683,
+  "lo": -0.01896,
+  "hi": 0.00567,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C7 to explicitly demote cuts that separate scope-bearing operators (negation, modals, auxiliaries, quantifiers, complementizers) from their arguments or complements when the pre-cut span would assert a claim — addresses the primary finding about stranded predicates/obligatory complements causing contradictions."
+ ],
+ "findings": [
+  "The prompt treats head–complement splits too crudely: it does not consistently recognize when a predicate, required complement, or scope-bearing operator (objects, prepositional complements, negation, complement clauses) is cohesion-critical, so cuts that strand these elements are ranked as if harmless and produce misleading or contradictory fragments."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C7",
+   "kind": "change",
+   "was": "- Negation and narrow-focus devices in English often await auxiliaries or follow",
+   "now": "- Demote cuts that separate scope-bearing operators (negation, modals, auxiliari"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0058,
+   "≤5": -0.0078,
+   "≤7": -0.0126,
+   "≤10": -0.0044,
+   "≤99": -0.0011
+  },
+  "n_worse": 775,
+  "n_better": 624,
+  "why": "Replacing C7 to demote cuts that separate scope-bearing operators made the model avoid cutting immediately after verbs/modals/negation and instead shift cuts rightward into their complements or inside noun/prepositional phrases; that reduced contradictions in some long/clause-level cases but produced more bad tiny fragments overall, with the harm concentrated in short–medium latency bins (≤5 and ≤7) as shown by the by_bin and the larger n_worse than n_better.",
+  "lesson": "A later revision should keep scope-bearing operators attached when necessary but not indiscriminately push cuts into short/medium-length complements or inside noun/prepositional phrases (the ≤5–≤7 bins), since that rightward shift creates many small, low-cohesion fragments.",
+  "blamed": [
+   "C7 «- Demote cuts that separate scope-bearing operators (negatio»"
+  ]
+ }
+}

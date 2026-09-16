@@ -1,0 +1,91 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01505,
+    "lo": -0.04962,
+    "hi": 0.01577,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "chars": 7483,
+   "changelog": [
+    "Paraphrased C1 to be more concise and explicit about the two core questions so overall prompt size stayed controlled (addresses general clarity).",
+    "Replaced C2 to keep the original contra guidance but add an explicit instruction to treat very short, scope-bearing continuations as high-risk (addresses finding 1).",
+    "Rewrote C3 to keep cohesion guidance while adding an explicit penalty for cuts that isolate function-word–only fragments and to be more concise (addresses finding 3).",
+    "Replaced example E2 with the measured labeled example en_us_738 so the model learns a real-case ranking where short negation/auxiliary continuations are high-risk (addresses finding 1 directly)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00148,
+    "lo": -0.03779,
+    "hi": 0.03316,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "chars": 6786,
+   "changelog": [
+    "Replaced E1 with labeled example en_us_1294 to teach the risk from short, scope-bearing continuations (negation/predicate fragments).",
+    "Replaced E2 with labeled example en_us_733 to teach preferring early cuts that isolate an initial head/preamble so the predicate stays intact.",
+    "Replaced E3 with labeled example en_us_337 to teach penalizing cuts that leave function-word–only fragments (e.g., isolated determiners) and to show a tight preamble/predicate split."
+   ]
+  }
+ ]
+}

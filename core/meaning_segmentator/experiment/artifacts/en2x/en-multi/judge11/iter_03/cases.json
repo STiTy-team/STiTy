@@ -1,0 +1,1560 @@
+[
+ {
+  "id": "en_us_733",
+  "cuts": 6,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.6518,
+  "policy_worst_contra": 0.9549,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    6,
+    8,
+    10,
+    14,
+    15
+   ],
+   "H_set": 0.0344,
+   "text": "Whistler ‖ (1.5 hour drive from Vancouver) ‖ is expensive ‖ but well-known ‖ because of the 2010 ‖ Winter ‖ Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(距离温哥华1.5小时车程)",
+     "是昂贵的",
+     "但众所周知",
+     "因为2010年",
+     "冬季",
+     "奥林匹克运动会。"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "（バンクーバーから車で1.5時間）",
+     "とても高価なものです",
+     "しかし よく知られた事実は",
+     "2010年の",
+     "冬",
+     "オリンピック"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5 Stunden Fahrt von Vancouver)",
+     "Das ist teuer",
+     "Aber wohlbekannt",
+     "Wegen der 2010",
+     "Winter",
+     "Olympia."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1.5 horas en coche desde Vancouver)",
+     "Es caro",
+     "Pero bien conocido",
+     "Debido al 2010",
+     "Invierno",
+     "Juegos Olímpicos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.6862,
+   "text": "Whistler ‖ (1.5 ‖ hour drive from Vancouver) ‖ is ‖ expensive ‖ but ‖ well-known because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(1.5个百分点)",
+     "距离温哥华1小时车程)",
+     "是",
+     "昂贵",
+     "但",
+     "因为2010年冬季奥运会而闻名。"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "１．５",
+     "1時間の車で行ける場所です",
+     "はい",
+     "高い",
+     "でも あなたは",
+     "2010年の冬季オリンピックで有名です"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5",
+     "(1 Stunde Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "aber",
+     "Bekannt wurde die Stadt durch die Olympischen Winterspiele 2010."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1,5",
+     "(1 hora en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "pero",
+     "Es conocida por los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    },
+    {
+     "pos": 14,
+     "left": "because of the 2010",
+     "right": "Winter Olympics.",
+     "H": 0.7384,
+     "H_pct": 57.1,
+     "contra": 0.0758,
+     "cohesion": 0.799
+    },
+    {
+     "pos": 15,
+     "left": "of the 2010 Winter",
+     "right": "Olympics.",
+     "H": 0.0357,
+     "H_pct": 21.4,
+     "contra": 0.9549,
+     "cohesion": 0.7906
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Whistler (1.5",
+     "right": "hour drive from Vancouver)",
+     "H": 0.7407,
+     "H_pct": 64.3,
+     "contra": 0.0102,
+     "cohesion": 0.7483
+    },
+    {
+     "pos": 7,
+     "left": "drive from Vancouver) is",
+     "right": "expensive but well-known because",
+     "H": 0.7823,
+     "H_pct": 71.4,
+     "contra": 0.0112,
+     "cohesion": 0.7912
+    },
+    {
+     "pos": 9,
+     "left": "Vancouver) is expensive but",
+     "right": "well-known because of the",
+     "H": 0.8724,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6796,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9,
+    15
+   ],
+   "H_set": 0.0035,
+   "text": "The Park Service (MINAE) ‖ does not issue park permits ‖ more than one month in advance ‖ of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "公园服务(MINAE)",
+     "不发放公园许可证",
+     "提前一个月以上",
+     "预计抵达时间。"
+    ],
+    "Japanese": [
+     "公園局（外務省）",
+     "許可証を発行しません",
+     "1ヶ月以上前に",
+     "予想される到着時刻です"
+    ],
+    "German": [
+     "Der Park Service (MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat im Voraus",
+     "Ankunftszeit."
+    ],
+    "Spanish": [
+     "El Servicio de Parques (MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación",
+     "de su llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    11
+   ],
+   "H_set": 0.6832,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than ‖ one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "没有发放公园许可证超过",
+     "预计抵达前一个月。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "1000万ドル以上の 許可証を発行しない",
+     "予定より1ヶ月前に"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht mehr ausgestellt als",
+     "Einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque más de",
+     "Un mes antes de la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    },
+    {
+     "pos": 15,
+     "left": "one month in advance",
+     "right": "of anticipated arrival.",
+     "H": 0.6569,
+     "H_pct": 50.0,
+     "contra": 0.072,
+     "cohesion": 0.7078
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The Park Service",
+     "right": "(MINAE) does not issue",
+     "H": 0.8269,
+     "H_pct": 100.0,
+     "contra": 0.0027,
+     "cohesion": 0.8291
+    },
+    {
+     "pos": 11,
+     "left": "park permits more than",
+     "right": "one month in advance",
+     "H": 0.735,
+     "H_pct": 87.5,
+     "contra": 0.0232,
+     "cohesion": 0.7524
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_845",
+  "cuts": 3,
+  "avg_chunk": 5.5,
+  "latency_bin": "≤7",
+  "gap": 0.7596,
+  "policy_worst_contra": 0.9796,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    19,
+    21
+   ],
+   "H_set": 0.0143,
+   "text": "While it's far from a modern phenomenon, ‖ most people probably associate it with youth vandalizing public and private property ‖ using spray ‖ paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "大多数人可能会把它和年轻人破坏公共和私人财产联系起来",
+     "使用喷雾",
+     "油漆"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "多くの人は 若者が公共財や私有財産を破壊すると",
+     "噴霧を使って",
+     "ペンキ"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Die meisten Menschen assoziieren es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum vandalisieren",
+     "Verwendung von Spray",
+     "Farbe."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "La mayoría de la gente probablemente lo asocia con jóvenes que vandalizan la propiedad pública y privada",
+     "Usando el spray",
+     "Pintura."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    7,
+    8
+   ],
+   "H_set": 0.7739,
+   "text": "While it's ‖ far from a modern phenomenon, ‖ most ‖ people probably associate it with youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然它是",
+     "远远不是一种现代现象,",
+     "桥梁",
+     "人们可能会把它与青年人用喷漆破坏公共和私人财产联系起来。"
+    ],
+    "Japanese": [
+     "それは",
+     "近代的な現象とは 遠く離れています",
+     "橋",
+     "多分 人々は 若者が 塗料を使って 公共の物や 私有物を破壊すると 関連付けているでしょう"
+    ],
+    "German": [
+     "Während es ist",
+     "weit entfernt von einem modernen Phänomen,",
+     "Most",
+     "Viele Menschen assoziieren es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum mit Sprühfarbe vandalisieren."
+    ],
+    "Spanish": [
+     "Mientras que es",
+     "lejos de ser un fenómeno moderno,",
+     "más",
+     "La gente probablemente lo asocia con jóvenes que vandalizan propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 19,
+     "left": "public and private property",
+     "right": "using spray paint.",
+     "H": 0.1028,
+     "H_pct": 15.0,
+     "contra": 0.8692,
+     "cohesion": 0.7857
+    },
+    {
+     "pos": 21,
+     "left": "private property using spray",
+     "right": "paint.",
+     "H": 0.0138,
+     "H_pct": 10.0,
+     "contra": 0.9796,
+     "cohesion": 0.6756
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "While it's",
+     "right": "far from a modern",
+     "H": 0.8196,
+     "H_pct": 90.0,
+     "contra": 0.0248,
+     "cohesion": 0.8404
+    },
+    {
+     "pos": 8,
+     "left": "a modern phenomenon, most",
+     "right": "people probably associate it",
+     "H": 0.8458,
+     "H_pct": 95.0,
+     "contra": 0.0102,
+     "cohesion": 0.8546
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 1,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.5012,
+  "policy_worst_contra": 0.6495,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.3115,
+   "text": "All the ships were sunk, except for one British cruiser. ‖ Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一艘英国巡洋舰外,所有船只都被击沉。",
+     "近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻のイギリス巡洋艦を除いて全艦が沈没した。",
+     "アメリカ人とドイツ人は200人近くが死亡した。"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf einen britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Menschen kamen ums Leben."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.8127,
+   "text": "All the ships were sunk, except for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一个船只外,所有船只都沉没了。",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻を除いて全て沈没した",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf ein",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1179",
+  "cuts": 2,
+  "avg_chunk": 11.0,
+  "latency_bin": "≤99",
+  "gap": 0.2624,
+  "policy_worst_contra": 0.2998,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10,
+    18
+   ],
+   "H_set": 0.5945,
+   "text": "In 1895, after defeat in the First Sino-Japanese War (1894-1895), ‖ the Qing government signs the Treaty of Shimonoseki, ‖ by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,在第一次中日战争 (1894-1895)中被击败后,",
+     "清政府签署了下关条约,",
+     "根据该协定,日本将台湾主权让与日本,日本统治台湾直到1945年。"
+    ],
+    "Japanese": [
+     "1895年（明治28年）、日清戦争（1894年-1895年）で敗北した後、",
+     "清政府が下関条約に調印し",
+     "台湾の主権を日本に譲渡し 1945年まで台湾を支配した"
+    ],
+    "German": [
+     "Im Jahre 1895, nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895),",
+     "Die Qing-Regierung unterzeichnet den Vertrag von Shimonoseki,",
+     "1941: China tritt die Souveränität über Taiwan an Japan ab, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895),",
+     "El gobierno Qing firma el Tratado de Shimonoseki,",
+     "Por el cual cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    17
+   ],
+   "H_set": 0.8569,
+   "text": "In ‖ 1895, after defeat in the First Sino-Japanese War (1894-1895), the Qing government signs the Treaty of ‖ Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "内",
+     "1895年,在第一次中日战争(1894-1895)中被击败后,清政府签署了《南京条约 》 。",
+     "下关条约,将台湾主权让给日本,日本统治台湾直到1945年。"
+    ],
+    "Japanese": [
+     "入力",
+     "1895年、日清戦争（1894年-1895年）で敗北した清政府は、日清条約を締結する。",
+     "下関条約により台湾の主権を日本に譲渡し、1945年まで統治。"
+    ],
+    "German": [
+     "In",
+     "1895, nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895), unterzeichnet die Qing-Regierung den Vertrag von",
+     "Shimonoseki, durch den es die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En",
+     "1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895), el gobierno Qing firma el Tratado de",
+     "Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "First Sino-Japanese War (1894-1895),",
+     "right": "the Qing government signs",
+     "H": 0.6083,
+     "H_pct": 12.9,
+     "contra": 0.2998,
+     "cohesion": 0.8688
+    },
+    {
+     "pos": 18,
+     "left": "the Treaty of Shimonoseki,",
+     "right": "by which it cedes",
+     "H": 0.8493,
+     "H_pct": 74.2,
+     "contra": 0.0225,
+     "cohesion": 0.8689
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "In",
+     "right": "1895, after defeat in",
+     "H": 0.8742,
+     "H_pct": 96.8,
+     "contra": 0.0076,
+     "cohesion": 0.8809
+    },
+    {
+     "pos": 17,
+     "left": "signs the Treaty of",
+     "right": "Shimonoseki, by which it",
+     "H": 0.8746,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_990",
+  "cuts": 8,
+  "avg_chunk": 2.4,
+  "latency_bin": "≤3",
+  "gap": 0.6057,
+  "policy_worst_contra": 0.9932,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11,
+    15
+   ],
+   "H_set": 0.0041,
+   "text": "The glaciers ‖ are not stable, ‖ but flow ‖ down ‖ the ‖ mountain. ‖ This ‖ will cause cracks, crevasses, ‖ which may be obscured by snow bridges.",
+   "pieces": {
+    "Chinese": [
+     "冰川",
+     "不是稳定的,",
+     "但流动",
+     "下降",
+     "该",
+     "山",
+     "这个",
+     "会造成裂缝,裂缝,",
+     "可能被雪桥遮挡。"
+    ],
+    "Japanese": [
+     "氷河",
+     "それは安定していません",
+     "でもフローは",
+     "下がって",
+     "あの",
+     "山だ",
+     "これ",
+     "割れ目や溝を生じます",
+     "雪橋に隠されるかもしれません"
+    ],
+    "German": [
+     "Die Gletscher",
+     "sind nicht stabil,",
+     "Aber fließen",
+     "down",
+     "the",
+     "Auf dem Berg.",
+     "This",
+     "wird Risse, Spalten verursachen,",
+     "Die durch Schneebrücken verdeckt werden können."
+    ],
+    "Spanish": [
+     "Los glaciares de la Sierra",
+     "no son estables,",
+     "Pero el flujo",
+     "abajo",
+     "the",
+     "La montaña.",
+     "Este",
+     "Causará grietas, fisuras,",
+     "que pueden estar oscurecidos por puentes de nieve."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    8,
+    10,
+    11,
+    14,
+    15,
+    19
+   ],
+   "H_set": 0.6098,
+   "text": "The ‖ glaciers are not stable, ‖ but flow down ‖ the mountain. ‖ This ‖ will cause cracks, ‖ crevasses, ‖ which may be obscured ‖ by snow bridges.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "冰川不稳定,",
+     "但却流下来",
+     "山上",
+     "这个",
+     "会造成裂缝,",
+     "裂缝",
+     "可能被掩盖",
+     "由雪桥。"
+    ],
+    "Japanese": [
+     "あの",
+     "氷河は安定していません",
+     "流れ下りて",
+     "山だ",
+     "これ",
+     "割れ目を生じます",
+     "亀裂",
+     "暗くなってしまうかもしれません",
+     "雪の橋で渡るんです"
+    ],
+    "German": [
+     "The",
+     "Gletscher sind nicht stabil,",
+     "Aber fließen Sie nach unten",
+     "Der Berg.",
+     "This",
+     "wird Risse verursachen,",
+     "Spalten,",
+     "Die verdunkelt werden können",
+     "Durch Schneebrücken."
+    ],
+    "Spanish": [
+     "The",
+     "los glaciares no son estables,",
+     "Pero fluye hacia abajo",
+     "La montaña.",
+     "Este",
+     "causará grietas,",
+     "grietas,",
+     "que pueden ser oscurecidos",
+     "Por puentes de nieve."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "The glaciers",
+     "right": "are not stable, but",
+     "H": 0.7034,
+     "H_pct": 20.0,
+     "contra": 0.0012,
+     "cohesion": 0.7042
+    },
+    {
+     "pos": 7,
+     "left": "not stable, but flow",
+     "right": "down the mountain. This",
+     "H": 0.7379,
+     "H_pct": 45.0,
+     "contra": 0.0006,
+     "cohesion": 0.7384
+    },
+    {
+     "pos": 9,
+     "left": "but flow down the",
+     "right": "mountain. This will cause",
+     "H": 0.0049,
+     "H_pct": 0.0,
+     "contra": 0.9932,
+     "cohesion": 0.7167
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "glaciers are not stable,",
+     "H": 0.7761,
+     "H_pct": 80.0,
+     "contra": 0.0709,
+     "cohesion": 0.8353
+    },
+    {
+     "pos": 14,
+     "left": "This will cause cracks,",
+     "right": "crevasses, which may be",
+     "H": 0.7991,
+     "H_pct": 90.0,
+     "contra": 0.0022,
+     "cohesion": 0.8008
+    },
+    {
+     "pos": 19,
+     "left": "which may be obscured",
+     "right": "by snow bridges.",
+     "H": 0.7596,
+     "H_pct": 70.0,
+     "contra": 0.0067,
+     "cohesion": 0.7647
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_538",
+  "cuts": 5,
+  "avg_chunk": 4.8,
+  "latency_bin": "≤5",
+  "gap": 0.6319,
+  "policy_worst_contra": 0.8977,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    17,
+    24,
+    26,
+    27,
+    28
+   ],
+   "H_set": 0.0789,
+   "text": "If the objective of one’s visit to a particular place is to get to know its history ‖ and culture then this type of tourism ‖ is known ‖ as ‖ cultural ‖ tourism.",
+   "pieces": {
+    "Chinese": [
+     "如果一个人访问某个特定地方的目的是了解其历史",
+     "文化,然后这种类型的旅游",
+     "已知",
+     "作为",
+     "文化",
+     "旅游业。"
+    ],
+    "Japanese": [
+     "歴史を知るために訪れた場合",
+     "文化を通じて このような観光を",
+     "知られています",
+     "ああ",
+     "文化的な",
+     "観光だ"
+    ],
+    "German": [
+     "Wenn das Ziel des Besuchs eines bestimmten Ortes darin besteht, seine Geschichte kennenzulernen",
+     "und Kultur dann diese Art von Tourismus",
+     "Ist bekannt",
+     "as",
+     "Kultur",
+     "Tourismus."
+    ],
+    "Spanish": [
+     "Si el objetivo de la visita a un lugar en particular es conocer su historia",
+     "y cultura, entonces este tipo de turismo",
+     "Se conoce",
+     "as",
+     "cultural",
+     "turismo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    11,
+    19,
+    20,
+    21,
+    28
+   ],
+   "H_set": 0.7108,
+   "text": "If the objective of one’s visit to a particular place is ‖ to get to know its history and culture ‖ then ‖ this ‖ type of tourism is known as cultural ‖ tourism.",
+   "pieces": {
+    "Chinese": [
+     "一个人访问某一特定地点的目的是",
+     "了解其历史和文化",
+     "然后",
+     "这个",
+     "旅游业的类型被称为文化",
+     "旅游业。"
+    ],
+    "Japanese": [
+     "特定の場所を訪れる目的が",
+     "歴史や文化を知るために",
+     "じゃあ あの",
+     "これは",
+     "文化観光と呼ばれるものは",
+     "観光だ"
+    ],
+    "German": [
+     "Wenn das Ziel des Besuchs eines bestimmten Ortes ist,",
+     "Um die Geschichte und Kultur kennenzulernen",
+     "dann",
+     "this",
+     "Diese Art des Tourismus ist als Kulturtourismus bekannt.",
+     "Tourismus."
+    ],
+    "Spanish": [
+     "Si el objetivo de la visita a un lugar en particular es",
+     "Para conocer su historia y cultura",
+     "entonces",
+     "this",
+     "Este tipo de turismo se conoce como turismo cultural",
+     "turismo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 17,
+     "left": "to know its history",
+     "right": "and culture then this",
+     "H": 0.779,
+     "H_pct": 48.1,
+     "contra": 0.0019,
+     "cohesion": 0.7805
+    },
+    {
+     "pos": 24,
+     "left": "this type of tourism",
+     "right": "is known as cultural",
+     "H": 0.7983,
+     "H_pct": 66.7,
+     "contra": 0.0494,
+     "cohesion": 0.8398
+    },
+    {
+     "pos": 26,
+     "left": "of tourism is known",
+     "right": "as cultural tourism.",
+     "H": 0.7583,
+     "H_pct": 25.9,
+     "contra": 0.069,
+     "cohesion": 0.8145
+    },
+    {
+     "pos": 27,
+     "left": "tourism is known as",
+     "right": "cultural tourism.",
+     "H": 0.0856,
+     "H_pct": 0.0,
+     "contra": 0.8977,
+     "cohesion": 0.8364
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "a particular place is",
+     "right": "to get to know",
+     "H": 0.8389,
+     "H_pct": 92.6,
+     "contra": 0.0068,
+     "cohesion": 0.8446
+    },
+    {
+     "pos": 19,
+     "left": "its history and culture",
+     "right": "then this type of",
+     "H": 0.8815,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8855
+    },
+    {
+     "pos": 20,
+     "left": "history and culture then",
+     "right": "this type of tourism",
+     "H": 0.8705,
+     "H_pct": 96.3,
+     "contra": 0.0177,
+     "cohesion": 0.8861
+    },
+    {
+     "pos": 21,
+     "left": "and culture then this",
+     "right": "type of tourism is",
+     "H": 0.8295,
+     "H_pct": 85.2,
+     "contra": 0.0286,
+     "cohesion": 0.8539
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_655",
+  "cuts": 2,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.6795,
+  "policy_worst_contra": 0.8327,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    12
+   ],
+   "H_set": 0.1165,
+   "text": "Crime, and ill-will toward foreigners in general, ‖ is virtually unknown in Greenland. ‖ Even in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪和对外国人的恶意",
+     "在格陵兰几乎是不为人知的。",
+     "即使在城镇,也没有\"粗糙的地区 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意",
+     "グリーンランドではほとんど知られていません",
+     "町でも「荒地」はない。"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen,",
+     "Die Art ist in Grönland kaum bekannt.",
+     "Auch in den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general,",
+     "El pico de la vaca es prácticamente desconocido en Groenlandia.",
+     "Incluso en las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    12
+   ],
+   "H_set": 0.796,
+   "text": "Crime, and ill-will toward foreigners in general, is virtually unknown ‖ in Greenland. ‖ Even in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪,和对外国人的恶意,一般来说,几乎是未知的",
+     "格陵兰。",
+     "即使在城镇,也没有\"粗糙的地区 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意はほとんど無い。",
+     "グリーンランドにある",
+     "町でも「荒地」はない。"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen ist praktisch unbekannt",
+     "In Grönland.",
+     "Auch in den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general, es prácticamente desconocido",
+     "en Groenlandia.",
+     "Incluso en las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "toward foreigners in general,",
+     "right": "is virtually unknown in",
+     "H": 0.1049,
+     "H_pct": 36.8,
+     "contra": 0.8327,
+     "cohesion": 0.6271
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "general, is virtually unknown",
+     "right": "in Greenland. Even in",
+     "H": 0.7602,
+     "H_pct": 94.7,
+     "contra": 0.0037,
+     "cohesion": 0.763
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_288",
+  "cuts": 2,
+  "avg_chunk": 7.3,
+  "latency_bin": "≤10",
+  "gap": 0.1946,
+  "policy_worst_contra": 0.0033,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8,
+    17
+   ],
+   "H_set": 0.6353,
+   "text": "RSPCA New South Wales chief inspector David O'Shannessy ‖ told the ABC that surveillance and inspections of abattoirs ‖ should be commonplace in Australia.",
+   "pieces": {
+    "Chinese": [
+     "RSPCA新南威尔士州首席检查员大卫·奥沙尼西",
+     "说,这是对你的一个挑战。",
+     "应该是澳大利亚的常态。"
+    ],
+    "Japanese": [
+     "RSPCAニューサウスウェールズ州監察官デイヴィッド・オシャネシー",
+     "ABCに対して 屠殺場の監視と検査が",
+     "オーストラリアでは普通のことでしょう"
+    ],
+    "German": [
+     "RSPCA New South Wales Chefinspektor David O'Shannessy",
+     "Er sagte dem ABC, dass die Überwachung und Inspektion von Schlachthöfen",
+     "Das sollte in Australien selbstverständlich sein."
+    ],
+    "Spanish": [
+     "El inspector jefe de la RSPCA de Nueva Gales del Sur, David O'Shannessy",
+     "dijo a ABC que la vigilancia y las inspecciones de los mataderos",
+     "La violencia doméstica debería ser común en Australia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6
+   ],
+   "H_set": 0.8299,
+   "text": "RSPCA ‖ New South Wales chief inspector ‖ David O'Shannessy told the ABC that surveillance and inspections of abattoirs should be commonplace in Australia.",
+   "pieces": {
+    "Chinese": [
+     "保护野生动物协会",
+     "新南威尔士州首席检查员",
+     "大卫·奥沙尼西告诉ABC,监督和检查屠宰场应该是澳大利亚的常态。"
+    ],
+    "Japanese": [
+     "RSPCA",
+     "ニューサウスウェールズ州検事総長",
+     "デイヴィッド・オシャネシーはABCに対し、オーストラリアでは屠殺場の監視と検査が普通のことであるべきだと述べた。"
+    ],
+    "German": [
+     "RSPCA",
+     "Chefinspektor von New South Wales",
+     "David O'Shannessy sagte dem ABC, dass Überwachung und Inspektion von Schlachthöfen in Australien selbstverständlich sein sollten."
+    ],
+    "Spanish": [
+     "RSPCA",
+     "Inspector jefe de Nueva Gales del Sur",
+     "David O'Shannessy dijo a ABC que la vigilancia y las inspecciones de los mataderos deberían ser comunes en Australia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "chief inspector David O'Shannessy",
+     "right": "told the ABC that",
+     "H": 0.7477,
+     "H_pct": 20.0,
+     "contra": 0.0022,
+     "cohesion": 0.7494
+    },
+    {
+     "pos": 17,
+     "left": "and inspections of abattoirs",
+     "right": "should be commonplace in",
+     "H": 0.7694,
+     "H_pct": 25.0,
+     "contra": 0.0033,
+     "cohesion": 0.772
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "RSPCA",
+     "right": "New South Wales chief",
+     "H": 0.8623,
+     "H_pct": 100.0,
+     "contra": 0.0046,
+     "cohesion": 0.8663
+    },
+    {
+     "pos": 6,
+     "left": "South Wales chief inspector",
+     "right": "David O'Shannessy told the",
+     "H": 0.8595,
+     "H_pct": 95.0,
+     "contra": 0.003,
+     "cohesion": 0.8621
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_292",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.2116,
+  "policy_worst_contra": 0.0067,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.603,
+   "text": "The significant earthquake activity resulting in the phase change had took place ‖ on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "导致相变的重大地震活动已经发生",
+     "火山口东北侧的火山口,火山口东北侧的火山口。"
+    ],
+    "Japanese": [
+     "地震活動の相転移を生じた。",
+     "3月10日に 火山の頂上カルデラの北東側で"
+    ],
+    "German": [
+     "Die bedeutende Erdbebenaktivität, die zum Phasenwechsel führte, hatte stattgefunden",
+     "Der Vulkan ist auf der Nordostseite der Gipfelcaldera gelegen."
+    ],
+    "Spanish": [
+     "La actividad sísmica significativa que resultó en el cambio de fase había tenido lugar",
+     "El volcán se encuentra en la parte noreste de la caldera de la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8146,
+   "text": "The ‖ significant earthquake activity resulting in the phase change had took place on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "3月10日,火山顶部火山口东北侧发生了导致相变的重大地震活动。"
+    ],
+    "Japanese": [
+     "あの",
+     "3月10日に 火山頂カルデラの北東側で 相変化を引き起こした 地震活動が起きた"
+    ],
+    "German": [
+     "The",
+     "Am 10. März hatte auf der Nordostseite der Gipfelkaldera des Vulkans eine bedeutende Erdbebenaktivität stattgefunden, die zu einem Phasenwechsel geführt hatte."
+    ],
+    "Spanish": [
+     "The",
+     "El 10 de marzo se produjo una actividad sísmica significativa que resultó en el cambio de fase en el lado noreste de la caldera de la cumbre del volcán."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "change had took place",
+     "right": "on March 10 on",
+     "H": 0.603,
+     "H_pct": 31.8,
+     "contra": 0.0067,
+     "cohesion": 0.607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "significant earthquake activity resulting",
+     "H": 0.8146,
+     "H_pct": 100.0,
+     "contra": 0.0112,
+     "cohesion": 0.8238
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1567",
+  "cuts": 7,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.5974,
+  "policy_worst_contra": 0.9926,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    8,
+    10,
+    13,
+    14,
+    15
+   ],
+   "H_set": 0.0033,
+   "text": "The largest tournament ‖ of the year ‖ takes place ‖ in December ‖ at the polo ‖ fields ‖ in ‖ Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "最大的比赛",
+     "年度",
+     "发生",
+     "12月份",
+     "在马球",
+     "外地",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     " <0xE9><0xB0><0x93>蓋骨。"
+    ],
+    "Japanese": [
+     "最大のトーナメント",
+     "年間最優秀",
+     "起こる",
+     "12月に",
+     "ここでポロをすると",
+     "フィールド",
+     "ここに",
+     " 犬のこと。"
+    ],
+    "German": [
+     "Das größte Turnier",
+     "Die Jahreszeiten",
+     "Die Veranstaltung findet statt",
+     "im Dezember",
+     "Am Polo",
+     "Felder",
+     "in",
+     "Die Kaninchen."
+    ],
+    "Spanish": [
+     "El torneo más grande",
+     "El año pasado",
+     "Se lleva a cabo",
+     "en diciembre",
+     "En el polo",
+     "campos",
+     "en",
+     "Las Cañitas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.6007,
+   "text": "The ‖ largest tournament ‖ of ‖ the ‖ year ‖ takes place ‖ in December ‖ at the polo fields in Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "最大的比赛",
+     "的",
+     "该",
+     "年份",
+     "发生",
+     "12月份",
+     "拉斯卡尼塔斯的马球场"
+    ],
+    "Japanese": [
+     "あの",
+     "世界最大のトーナメント",
+     "の",
+     "あの",
+     "年",
+     "起こる",
+     "12月に",
+     "ラスカニタスのポロフィールドで"
+    ],
+    "German": [
+     "The",
+     "Das größte Turnier",
+     "von",
+     "the",
+     "Jahr",
+     "Die Veranstaltung findet statt",
+     "im Dezember",
+     "Auf den Polofeldern in Las Cañitas."
+    ],
+    "Spanish": [
+     "The",
+     "El torneo más grande",
+     "de",
+     "the",
+     "año",
+     "Se lleva a cabo",
+     "en diciembre",
+     "En los campos de polo de Las Cañitas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "December at the polo",
+     "right": "fields in Las Cañitas.",
+     "H": 0.661,
+     "H_pct": 26.7,
+     "contra": 0.0006,
+     "cohesion": 0.6614
+    },
+    {
+     "pos": 14,
+     "left": "at the polo fields",
+     "right": "in Las Cañitas.",
+     "H": 0.7324,
+     "H_pct": 33.3,
+     "contra": 0.0016,
+     "cohesion": 0.7336
+    },
+    {
+     "pos": 15,
+     "left": "the polo fields in",
+     "right": "Las Cañitas.",
+     "H": 0.0046,
+     "H_pct": 0.0,
+     "contra": 0.9926,
+     "cohesion": 0.6225
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "largest tournament of the",
+     "H": 0.8277,
+     "H_pct": 80.0,
+     "contra": 0.0131,
+     "cohesion": 0.8387
+    },
+    {
+     "pos": 4,
+     "left": "The largest tournament of",
+     "right": "the year takes place",
+     "H": 0.8057,
+     "H_pct": 60.0,
+     "contra": 0.0004,
+     "cohesion": 0.8061
+    },
+    {
+     "pos": 5,
+     "left": "largest tournament of the",
+     "right": "year takes place in",
+     "H": 0.8122,
+     "H_pct": 66.7,
+     "contra": 0.0009,
+     "cohesion": 0.8129
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 3,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.5861,
+  "policy_worst_contra": 0.9292,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    8,
+    18
+   ],
+   "H_set": 0.0465,
+   "text": "Farther south is Niagara Falls ‖ and the north ‖ is home to the untapped natural beauty of the Muskoka ‖ and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "与北方",
+     "是马斯科卡未开发的自然美景的家园",
+     "以及以后。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は",
+     "マスコカの未開拓の自然の美しさを",
+     "それ以上に"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "und der Norden",
+     "Die Region Muskoka ist die Heimat der unberührten Naturschönheit",
+     "und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "Y el norte",
+     "El parque nacional de Muskoka es el hogar de la belleza natural sin explotar de la región.",
+     "y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6
+   ],
+   "H_set": 0.6327,
+   "text": "Farther ‖ south is Niagara Falls ‖ and ‖ the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "远远",
+     "尼亚加拉大瀑布",
+     "以及",
+     "北部是马斯科卡及其以外未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "ファーザー",
+     "南はナイアガラの滝",
+     "それに",
+     "北部は未開発の自然の美しさがある マスコカ川のほかにもあります"
+    ],
+    "German": [
+     "Farther",
+     "Südlich sind die Niagarafälle",
+     "und",
+     "Der Norden ist die Heimat der unerschlossenen natürlichen Schönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Farther",
+     "Al sur están las Cataratas del Niágara",
+     "y",
+     "El norte es el hogar de la belleza natural sin explotar de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Falls and the north",
+     "right": "is home to the",
+     "H": 0.0496,
+     "H_pct": 38.9,
+     "contra": 0.9291,
+     "cohesion": 0.6997
+    },
+    {
+     "pos": 18,
+     "left": "beauty of the Muskoka",
+     "right": "and beyond.",
+     "H": 0.0529,
+     "H_pct": 44.4,
+     "contra": 0.9292,
+     "cohesion": 0.7474
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Farther",
+     "right": "south is Niagara Falls",
+     "H": 0.6863,
+     "H_pct": 88.9,
+     "contra": 0.0118,
+     "cohesion": 0.6945
+    },
+    {
+     "pos": 6,
+     "left": "is Niagara Falls and",
+     "right": "the north is home",
+     "H": 0.6956,
+     "H_pct": 94.4,
+     "contra": 0.0736,
+     "cohesion": 0.7509
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,73 @@
+{
+ "iter": 1,
+ "candidate": 0,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.0091,
+  "lo": -0.0367,
+  "hi": 0.01966,
+  "n": 399,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Paraphrased C8 to a much shorter formulation so we can add two new principles within the size budget; keeps the original caution that commas don't guarantee safe cuts (addresses size constraint and preserves judgement).",
+  "Inserted a new core principle after C8 instructing scorers to treat multiword names, event titles, dates, compound nouns, and measure expressions as atomic units and to score cuts inside them low (addresses finding 1).",
+  "Appended a new core principle asking scorers to check whether the following fragment supplies an essential complement, numeric quantifier, or relative/clausal modifier that fixes scope/truth, and to mark such cuts unsafe (addresses finding 2).",
+  "Replaced example E2 with the measured labeled example en_us_733 which demonstrates unsafe cuts inside numeric/measure expressions and event dates, so scorers learn a measured case rather than a handwritten one (follows the suggestion to prefer labeled examples)."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C8",
+   "kind": "paraphrase",
+   "was": "- Even when punctuation or commas appear, would translating the two sides indepe",
+   "now": "- Even when commas or punctuation appear, translating the two sides independentl"
+  },
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Even when punctuation or commas appear, would translating the two sides indepe",
+   "now": "- Treat multiword names, event titles, dates, compound nouns, and measure/numeri"
+  },
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Ask whether the following fragment supplies an essential complement (object, p"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+   "now": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van",
+   "labeled_example": "en_us_733"
+  }
+ ],
+ "findings": [
+  "The scorer treats internal boundaries of multiword noun phrases, named events, dates, and compound measure expressions as safe cuts, when in fact those tokens form atomic semantic units whose separation makes earlier fragments misleading or contradictory.",
+  "The scorer underestimates the harm of separating essential complements, quantifiers, or relative/clausal modifiers: later material often supplies objects, prepositional complements, numeric scope, or a relative clause that flips entailments of the preceding fragment."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.016,
+   "≤5": -0.0115,
+   "≤7": -0.0003,
+   "≤10": 0.0014,
+   "≤99": 0.0061
+  },
+  "n_worse": 157,
+  "n_better": 154,
+  "why": "The added guidance to treat multiword names/dates/measures as atomic (and the new numeric/date example) made the scorer avoid cuts inside those spans, improving H_set on longer pieces. However, the shortened paraphrase of C8 together with the new complement-check wording caused scorers to overprotect those spans and shift cuts earlier (splitting verbs/heads and producing many tiny pieces), harming the short-piece bins (≤3 and ≤5).",
+  "lesson": "Keep the explicit caution about punctuation/commas and balance atomic-unit protection so it doesn't push cuts onto verb heads or create many tiny fragments (which mainly hurts the ≤3 and ≤5 bins).",
+  "blamed": [
+   "C8 «- Even when commas or punctuation appear, translating the tw» (paraphrase)",
+   "insert_after C8 (atomic-units principle)",
+   "insert_after C_end (essential-complement principle)",
+   "E2 «Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG» (replaced example)"
+  ]
+ }
+}

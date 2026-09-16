@@ -1,0 +1,47 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer habitually prefers cutting after content heads instead of moving the cut left to leave a non-assertive / functional prefix; that choice produces fragments that assert misleading facts when the later piece arrives.",
+    "evidence": "9 cases (en_us_888, en_us_767, en_us_1488, en_us_1253, en_us_741, en_us_419, en_us_924, en_us_1615, en_us_1199). In each, the offline target moves the cut earlier (often to a determiner/pronoun/auxiliary), making the preceding fragment inert and raising H_set.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: He <SEG:?> announced <SEG:?> the <SEG:?> plan <SEG:?> would <SEG:?> fail.\nOutput: He <SEG:10> announced <SEG:100> the <SEG:5> plan <SEG:0> would <SEG:2> fail."
+    }
+   },
+   {
+    "diagnosis": "The scorer underweights high contradiction risk: positions whose suffix alone plausibly overturns or negates the prefix are being ranked safe despite high contra, which kills sets.",
+    "evidence": "6 cases with contra_kill=true (en_us_888, en_us_767, en_us_741, en_us_419, en_us_924, en_us_105). In each the policy kept a high-contra cut that the target removed, and removing it restored H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Does the material after this cut,",
+     "text": "Ask: would the following fragment, taken alone, plausibly negate, reverse, or assert the opposite truth of the preceding fragment? If so (high contradiction risk), mark the cut unsafe even when cohesion seems high."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer habitually prefers cutting after content heads instead of moving the cut left to leave a non-assertive / functional prefix; that choice produces fragments that assert misleading facts when the later piece arrives.",
+   "evidence": "9 cases (en_us_888, en_us_767, en_us_1488, en_us_1253, en_us_741, en_us_419, en_us_924, en_us_1615, en_us_1199). In each, the offline target moves the cut earlier (often to a determiner/pronoun/auxiliary), making the preceding fragment inert and raising H_set.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: He <SEG:?> announced <SEG:?> the <SEG:?> plan <SEG:?> would <SEG:?> fail.\nOutput: He <SEG:10> announced <SEG:100> the <SEG:5> plan <SEG:0> would <SEG:2> fail."
+   }
+  },
+  {
+   "diagnosis": "The scorer underweights high contradiction risk: positions whose suffix alone plausibly overturns or negates the prefix are being ranked safe despite high contra, which kills sets.",
+   "evidence": "6 cases with contra_kill=true (en_us_888, en_us_767, en_us_741, en_us_419, en_us_924, en_us_105). In each the policy kept a high-contra cut that the target removed, and removing it restored H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Does the material after this cut,",
+    "text": "Ask: would the following fragment, taken alone, plausibly negate, reverse, or assert the opposite truth of the preceding fragment? If so (high contradiction risk), mark the cut unsafe even when cohesion seems high."
+   }
+  }
+ ]
+}

@@ -1,0 +1,384 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- If the span before a cut is a short subject/NP or a clause fragment that lacks its predicate, auxiliary, negation scope, or required complement, treat that cut as high contradiction risk and give it a low rank."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 213
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7126,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 8445
+   }
+  ],
+  "skipped": [],
+  "result_chars": 15358,
+  "errors": [
+   "길이 초과: 15358 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "- Cuts where the following span reverses, denies, or substantially re‑scopes earlier assertions are high contradiction risk; rank them lower."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- If the span before a cut is a short subject/NP or a clause fragment lacking its predicate, auxiliary, negation scope, or required complement, treat that cut as high contradiction risk and rank it low."
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Penalize cuts that break referents, argument links, or event ordering; scattering agents, patients, or core arguments reduces cohesion."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Avoid cuts that separate heads from their required complements (prepositions + objects, \"of\" phrases, verb complements, or a noun and its postnominal modifiers); such splits markedly reduce cohesion and should be scored lower."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Subordinate, conditional, or complement fragments that leave interpretation provisional are high risk when isolated; rank such cuts lower."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "- Parenthetical discourse adverbials and stance phrases are often detachable; cuts inside truly parenthetical material carry lower cost."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Do not separate negation, narrow-focus devices, or other scope-bearing particles from the material they scope; such splits can flip meaning."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Cuts immediately after a clearly complete clause usually have higher cohesion and lower contradiction risk; prefer them when available."
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E16"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": -50
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 6
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -90
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": -20
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -57
+   },
+   {
+    "edit": 5,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -98
+   },
+   {
+    "edit": 6,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -74
+   },
+   {
+    "edit": 7,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -70
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -561
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -894
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -852
+   },
+   {
+    "edit": 13,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -968
+   },
+   {
+    "edit": 14,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -886
+   },
+   {
+    "edit": 15,
+    "op": "delete",
+    "id": "E16",
+    "kind": "delete",
+    "chars_change": -930
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8267,
+  "errors": [
+   "길이 초과: 8267 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- Short pre-cut spans (a subject/NP or a clause fragment missing its predicate, auxiliary, negation scope, or required complement) are high contradiction risk; rank such cuts low."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Do not cut between heads and their required complements (prepositions + objects, 'of' phrases, verb complements, or a noun with post‑nominal modifiers); these splits reduce cohesion and should be ranked lower."
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": -23
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -17
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -798
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7428,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1570",
+    "text": "Input: It <SEG:?> also <SEG:?> had <SEG:?> no <SEG:?> authority <SEG:?> to <SEG:?> override <SEG:?> tax <SEG:?> laws <SEG:?> and <SEG:?> tariffs <SEG:?> between <SEG:?> states.\nOutput: It <SEG:73> also <SEG:27> had <SEG:0> no <SEG:9> authority <SEG:100> to <SEG:64> override <SEG:55> tax <SEG:45> laws <SEG:91> and <SEG:36> tariffs <SEG:82> between <SEG:18> states."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_87",
+    "text": "Input: The <SEG:?> amount <SEG:?> and <SEG:?> thickness <SEG:?> of <SEG:?> the <SEG:?> pack <SEG:?> ice, <SEG:?> according <SEG:?> to <SEG:?> Pittman, <SEG:?> is <SEG:?> the <SEG:?> worst <SEG:?> it <SEG:?> has <SEG:?> been <SEG:?> for <SEG:?> sealers <SEG:?> in <SEG:?> the <SEG:?> past <SEG:?> 15 <SEG:?> years.\nOutput: The <SEG:68> amount <SEG:32> and <SEG:55> thickness <SEG:18> of <SEG:14> the <SEG:5> pack <SEG:9> ice, <SEG:91> according <SEG:82> to <SEG:50> Pittman, <SEG:95> is <SEG:100> the <SEG:0> worst <SEG:45> it <SEG:59> has <SEG:77> been <SEG:64> for <SEG:23> sealers <SEG:86> in <SEG:36> the <SEG:27> past <SEG:73> 15 <SEG:41> years."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_455",
+    "text": "Input: The <SEG:?> disadvantage <SEG:?> of <SEG:?> zoom <SEG:?> lenses <SEG:?> is <SEG:?> that <SEG:?> the <SEG:?> focal <SEG:?> complexity <SEG:?> and <SEG:?> number <SEG:?> of <SEG:?> lens <SEG:?> elements <SEG:?> required <SEG:?> to <SEG:?> achieve <SEG:?> a <SEG:?> range <SEG:?> of <SEG:?> focal <SEG:?> lengths <SEG:?> is <SEG:?> much <SEG:?> greater <SEG:?> than <SEG:?> for <SEG:?> prime <SEG:?> lenses.\nOutput: The <SEG:75> disadvantage <SEG:93> of <SEG:25> zoom <SEG:89> lenses <SEG:79> is <SEG:100> that <SEG:82> the <SEG:0> focal <SEG:43> complexity <SEG:86> and <SEG:96> number <SEG:71> of <SEG:61> lens <SEG:57> elements <SEG:36> required <SEG:32> to <SEG:29> achieve <SEG:18> a <SEG:21> range <SEG:14> of <SEG:4> focal <SEG:7> lengths <SEG:39> is <SEG:50> much <SEG:54> greater <SEG:64> than <SEG:11> for <SEG:46> prime <SEG:68> lenses."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_360",
+    "text": "Input: Scientists <SEG:?> call <SEG:?> this <SEG:?> process <SEG:?> \"stimulated <SEG:?> emission <SEG:?> of <SEG:?> radiation\" <SEG:?> because <SEG:?> the <SEG:?> atoms <SEG:?> are <SEG:?> stimulated <SEG:?> by <SEG:?> the <SEG:?> bright <SEG:?> light, <SEG:?> causing <SEG:?> the <SEG:?> emission <SEG:?> of <SEG:?> a <SEG:?> photon <SEG:?> of <SEG:?> light, <SEG:?> and <SEG:?> light <SEG:?> is <SEG:?> a <SEG:?> type <SEG:?> of <SEG:?> radiation.\nOutput: Scientists <SEG:97> call <SEG:80> this <SEG:87> process <SEG:77> \"stimulated <SEG:30> emission <SEG:70> of <SEG:67> radiation\" <SEG:100> because <SEG:27> the <SEG:10> atoms <SEG:23> are <SEG:13> stimulated <SEG:40> by <SEG:7> the <SEG:0> bright <SEG:3> light, <SEG:57> causing <SEG:20> the <SEG:37> emission <SEG:33> of <SEG:43> a <SEG:17> photon <SEG:73> of <SEG:53> light, <SEG:90> and <SEG:93> light <SEG:60> is <SEG:63> a <SEG:47> type <SEG:50> of <SEG:83> radiation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -18
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 89
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 181
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": 62
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7227,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Avoid cuts that separate heads from required complements (prepositions with their objects, 'of' phrases, verb complements, or a noun plus its postnominal modifiers). Such splits markedly reduce cohesion; treat these cuts as higher-risk and rank them lower."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 259
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7172,
+  "errors": null
+ }
+]

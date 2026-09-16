@@ -1,0 +1,1754 @@
+[
+ {
+  "id": "en_us_1118",
+  "cuts": 5,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.4194,
+  "policy_worst_contra": 0.8573,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    5,
+    6,
+    8
+   ],
+   "H_set": 0.0722,
+   "text": "She directed ‖ officers ‖ to her ‖ black ‖ Oldsmobile Intrigue ‖ which was 500 feet away.",
+   "pieces": {
+    "Chinese": [
+     "她指导",
+     "干事",
+     "给她",
+     "黑色",
+     "奥尔德斯摩比尔阴谋",
+     "距离500英尺远。"
+    ],
+    "Japanese": [
+     "彼女は",
+     "警官達",
+     "彼女に",
+     "ブラック",
+     "オールドモービル・イントリグ",
+     "150メートル離れた場所にあります"
+    ],
+    "German": [
+     "Sie führte Regie",
+     "Offiziere",
+     "Zu ihr",
+     "Schwarz",
+     "Oldsmobile Intrigue",
+     "Das war 500 Fuß entfernt."
+    ],
+    "Spanish": [
+     "Ella dirigió",
+     "oficiales",
+     "A ella",
+     "negro",
+     "Oldsmobile Intrigue",
+     "que estaba a 500 pies de distancia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    8
+   ],
+   "H_set": 0.4916,
+   "text": "She ‖ directed ‖ officers to her black ‖ Oldsmobile ‖ Intrigue ‖ which was 500 feet away.",
+   "pieces": {
+    "Chinese": [
+     "她",
+     "指挥",
+     "警官对她的黑色",
+     "奥尔德斯摩比尔",
+     "陰謀",
+     "距离500英尺远。"
+    ],
+    "Japanese": [
+     "彼女",
+     "指揮",
+     "黒人警官が",
+     "オールドモービル",
+     "イントリグ",
+     "150メートル離れた場所にあります"
+    ],
+    "German": [
+     "She",
+     "directed",
+     "Offiziere zu ihrem schwarzen",
+     "Oldsmobile",
+     "Intrige",
+     "Das war 500 Fuß entfernt."
+    ],
+    "Spanish": [
+     "She",
+     "dirigido",
+     "Oficiales a su negro",
+     "Oldsmobile",
+     "Intrigue",
+     "que estaba a 500 pies de distancia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "She directed officers",
+     "right": "to her black Oldsmobile",
+     "H": 0.5256,
+     "H_pct": 45.5,
+     "contra": 0.0011,
+     "cohesion": 0.5262
+    },
+    {
+     "pos": 5,
+     "left": "directed officers to her",
+     "right": "black Oldsmobile Intrigue which",
+     "H": 0.0886,
+     "H_pct": 0.0,
+     "contra": 0.8573,
+     "cohesion": 0.6206
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "She",
+     "right": "directed officers to her",
+     "H": 0.6113,
+     "H_pct": 81.8,
+     "contra": 0.0322,
+     "cohesion": 0.6316
+    },
+    {
+     "pos": 7,
+     "left": "to her black Oldsmobile",
+     "right": "Intrigue which was 500",
+     "H": 0.6103,
+     "H_pct": 72.7,
+     "contra": 0.0579,
+     "cohesion": 0.6478
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1137",
+  "cuts": 4,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.1673,
+  "policy_worst_contra": 0.0026,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    4,
+    6,
+    11
+   ],
+   "H_set": 0.5968,
+   "text": "The village ‖ of Haldarsvík ‖ offer views ‖ of the nearby island Eysturoy ‖ and has an unusual octagonal church.",
+   "pieces": {
+    "Chinese": [
+     "村庄",
+     "哈爾達斯維克",
+     "提供的意见",
+     "附近岛屿的Eysturoy",
+     "并且有一个不寻常的八角形教堂。"
+    ],
+    "Japanese": [
+     "村",
+     "ハルダルスヴィーク",
+     "見た目を提供する",
+     "近くのアイスロイ島の",
+     "変わった八角形の教会があります"
+    ],
+    "German": [
+     "Das Dorf von",
+     "Haldarsvík",
+     "Angebotsansichten ansehen",
+     "Die nahe gelegene Insel Eysturoy",
+     "Die Kirche ist eine ungewöhnliche achteckige Kirche."
+    ],
+    "Spanish": [
+     "El pueblo de",
+     "Mapa de Haldarsvík",
+     "Ofrecer vistas",
+     "Vista de la cercana isla de Eysturoy",
+     "Tiene una inusual iglesia octogonal."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    10,
+    11
+   ],
+   "H_set": 0.7642,
+   "text": "The village of ‖ Haldarsvík ‖ offer views of the nearby island ‖ Eysturoy ‖ and has an unusual octagonal church.",
+   "pieces": {
+    "Chinese": [
+     "村庄的",
+     "哈爾達斯維克",
+     "享有附近岛屿的景致",
+     "埃斯圖羅伊島",
+     "并且有一个不寻常的八角形教堂。"
+    ],
+    "Japanese": [
+     "村の",
+     "ハルダルスヴィク",
+     "近くの島の眺めを提供します",
+     "エイストロイ島",
+     "変わった八角形の教会があります"
+    ],
+    "German": [
+     "Das Dorf von",
+     "Haldarsvík",
+     "Blick auf die nahegelegene Insel",
+     "Eysturoy",
+     "Die Kirche ist eine ungewöhnliche achteckige Kirche."
+    ],
+    "Spanish": [
+     "El pueblo de",
+     "Haldarsvík",
+     "Ofrecen vistas a la isla cercana",
+     "Eysturoy",
+     "Tiene una inusual iglesia octogonal."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "The village",
+     "right": "of Haldarsvík offer views",
+     "H": 0.7285,
+     "H_pct": 53.3,
+     "contra": 0.0014,
+     "cohesion": 0.7296
+    },
+    {
+     "pos": 6,
+     "left": "of Haldarsvík offer views",
+     "right": "of the nearby island",
+     "H": 0.6952,
+     "H_pct": 46.7,
+     "contra": 0.0004,
+     "cohesion": 0.6955
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The village of",
+     "right": "Haldarsvík offer views of",
+     "H": 0.7887,
+     "H_pct": 80.0,
+     "contra": 0.0014,
+     "cohesion": 0.7898
+    },
+    {
+     "pos": 10,
+     "left": "of the nearby island",
+     "right": "Eysturoy and has an",
+     "H": 0.797,
+     "H_pct": 86.7,
+     "contra": 0.0018,
+     "cohesion": 0.7984
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1527",
+  "cuts": 4,
+  "avg_chunk": 5.6,
+  "latency_bin": "≤7",
+  "gap": 0.1392,
+  "policy_worst_contra": 0.089,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    5,
+    11,
+    13
+   ],
+   "H_set": 0.6343,
+   "text": "Poland's men's ‖ visually impaired skier ‖ Maciej Krezel and guide Anna Ogarzynska ‖ finished thirteenth ‖ in the Super-G. South Korea's Jong Seork Park finished twenty-fourth in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波蘭男子",
+     "视力障碍者滑雪者",
+     "Maciej Krezel和导游Anna Ogarzynska",
+     "排名第十三",
+     "韩国的朴钟秀在男子坐式超级大回转比赛中排名第24。"
+    ],
+    "Japanese": [
+     "ポーランドの男子",
+     "視覚障害者のスキーヤーが",
+     "マチェイ・クレゼルとガイドのアンナ・オガジンスカ",
+     "13位に入った",
+     "韓国のパク・ジョンソクが 男性の座り込みスーパーGで24位に入賞しました"
+    ],
+    "German": [
+     "Navigationsleiste Männer-Fußball in Polen",
+     "Sehbehinderter Skifahrer",
+     "Maciej Krezel und Guide Anna Ogarzynska",
+     "Beendete als dreizehnter",
+     "Der Südkoreaner Jong Seork Park wurde im Super-G der Männer Vierundzwanzigster."
+    ],
+    "Spanish": [
+     "Selección de Polonia de fútbol",
+     "Esquiador con discapacidad visual",
+     "Maciej Krezel y guía Anna Ogarzynska",
+     "Terminó decimotercero",
+     "El coreano Jong Seork Park terminó vigésimo cuarto en el Super-G sentado masculino."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    6,
+    16
+   ],
+   "H_set": 0.7736,
+   "text": "Poland's men's visually impaired ‖ skier ‖ Maciej ‖ Krezel and guide Anna Ogarzynska finished thirteenth in the Super-G. ‖ South Korea's Jong Seork Park finished twenty-fourth in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波蘭男子視力障礙運動員",
+     "滑雪者",
+     "马齐耶",
+     "克雷泽尔和导游安娜·奥加日斯卡在超级大回转中排名第十三。",
+     "韩国的朴钟秀在男子坐式超级大回转中排名第24。"
+    ],
+    "Japanese": [
+     "ポーランドの視覚障害者",
+     "スキーヤー",
+     "マチエフ",
+     "クレゼルとガイドのアンナ・オガジンスカはスーパーGで13位に終わった。",
+     "韓国のパク・ジョンソクは男子の座りスーパーGで24位に終わった。"
+    ],
+    "German": [
+     "Polnische Männer-Sehbehinderte",
+     "Skifahrer",
+     "Maciej",
+     "Krezel und Guide Anna Ogarzynska wurden im Super-G dreizehnte.",
+     "Der Südkoreaner Jong Seork Park wurde Vierundzwanzigster im Super-G der Männer."
+    ],
+    "Spanish": [
+     "Los hombres con discapacidad visual de Polonia",
+     "esquiador",
+     "Maciej",
+     "Krezel y la guía Anna Ogarzynska terminaron decimotercera en el Super-G.",
+     "El surcoreano Jong Seork Park terminó vigésimo cuarto en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Poland's men's",
+     "right": "visually impaired skier Maciej",
+     "H": 0.7692,
+     "H_pct": 84.6,
+     "contra": 0.0036,
+     "cohesion": 0.772
+    },
+    {
+     "pos": 11,
+     "left": "and guide Anna Ogarzynska",
+     "right": "finished thirteenth in the",
+     "H": 0.6481,
+     "H_pct": 38.5,
+     "contra": 0.089,
+     "cohesion": 0.7114
+    },
+    {
+     "pos": 13,
+     "left": "Anna Ogarzynska finished thirteenth",
+     "right": "in the Super-G. South",
+     "H": 0.7687,
+     "H_pct": 80.8,
+     "contra": 0.0027,
+     "cohesion": 0.7708
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Poland's men's visually impaired",
+     "right": "skier Maciej Krezel and",
+     "H": 0.7847,
+     "H_pct": 92.3,
+     "contra": 0.0036,
+     "cohesion": 0.7875
+    },
+    {
+     "pos": 6,
+     "left": "visually impaired skier Maciej",
+     "right": "Krezel and guide Anna",
+     "H": 0.7698,
+     "H_pct": 88.5,
+     "contra": 0.0018,
+     "cohesion": 0.7712
+    },
+    {
+     "pos": 16,
+     "left": "thirteenth in the Super-G.",
+     "right": "South Korea's Jong Seork",
+     "H": 0.8003,
+     "H_pct": 96.2,
+     "contra": 0.0161,
+     "cohesion": 0.8134
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_464",
+  "cuts": 2,
+  "avg_chunk": 10.0,
+  "latency_bin": "≤10",
+  "gap": 0.1114,
+  "policy_worst_contra": 0.0552,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    6
+   ],
+   "H_set": 0.6859,
+   "text": "Unfortunately, ‖ when you make a DVD, ‖ it's borders will most likely be cut too, and if the video had subtitles too close to the bottom, they won't be fully shown.",
+   "pieces": {
+    "Chinese": [
+     "不幸的是，",
+     "当你制作DVD时,",
+     "边框也很可能被剪切,如果视频的字幕太靠近底部,它们将不会完全显示。"
+    ],
+    "Japanese": [
+     "残念ながら",
+     "DVDを作る時",
+     "字幕が下に近いと 完全に表示されない"
+    ],
+    "German": [
+     "Leider ist es so,",
+     "wenn man eine DVD macht,",
+     "Die Ränder werden wahrscheinlich auch abgeschnitten, und wenn das Video Untertitel zu nah am Ende hatte, werden sie nicht vollständig angezeigt."
+    ],
+    "Spanish": [
+     "Desafortunadamente,",
+     "cuando haces un DVD,",
+     "Es probable que sus bordes también se recorten, y si el video tenía subtítulos demasiado cerca de la parte inferior, no se mostrarán por completo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    14
+   ],
+   "H_set": 0.7973,
+   "text": "Unfortunately, ‖ when you make a DVD, it's borders will most likely be cut too, ‖ and if the video had subtitles too close to the bottom, they won't be fully shown.",
+   "pieces": {
+    "Chinese": [
+     "不幸的是，",
+     "当你制作DVD时,它的边缘也很可能被剪掉,",
+     "如果视频的字幕太靠近底部,它们将不会完全显示。"
+    ],
+    "Japanese": [
+     "残念ながら",
+     "DVDを作るときは 境界線も切り取られます",
+     "字幕が下に近いと 完全に表示されないのです"
+    ],
+    "German": [
+     "Leider ist es so,",
+     "Wenn man eine DVD macht, werden die Ränder höchstwahrscheinlich auch geschnitten,",
+     "Und wenn das Video Untertitel zu nah am Ende hatte, werden sie nicht vollständig angezeigt."
+    ],
+    "Spanish": [
+     "Desafortunadamente,",
+     "cuando haces un DVD, sus bordes probablemente también se cortarán,",
+     "Y si el vídeo tenía subtítulos demasiado cerca de la parte inferior, no se mostrarán completamente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "you make a DVD,",
+     "right": "it's borders will most",
+     "H": 0.6676,
+     "H_pct": 46.4,
+     "contra": 0.0552,
+     "cohesion": 0.7066
+    }
+   ],
+   "added": [
+    {
+     "pos": 14,
+     "left": "likely be cut too,",
+     "right": "and if the video",
+     "H": 0.7939,
+     "H_pct": 100.0,
+     "contra": 0.0035,
+     "cohesion": 0.7967
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1059",
+  "cuts": 1,
+  "avg_chunk": 11.5,
+  "latency_bin": "≤99",
+  "gap": 0.0567,
+  "policy_worst_contra": 0.006,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.7251,
+   "text": "The willingness of governments to issue passports with gender not stated (X) ‖ or documents updated to match a desired name and gender varies.",
+   "pieces": {
+    "Chinese": [
+     "各国政府愿意发放不注明性别的护照的程度(X)",
+     "更新以匹配所需的姓名和性别的文件。"
+    ],
+    "Japanese": [
+     "性別不明のパスポートを発行する政府の意思（X）",
+     "希望の名前と性別に合わせて 更新された文書もあります"
+    ],
+    "German": [
+     "Die Bereitschaft der Regierungen, Pässe mit nicht angegebenem Geschlecht auszustellen (X)",
+     "Die Anzahl der Dokumente, die aktualisiert werden, um einem gewünschten Namen und Geschlecht zu entsprechen, variiert."
+    ],
+    "Spanish": [
+     "La voluntad de los gobiernos de emitir pasaportes sin indicar el género (X)",
+     "El número de documentos actualizados para coincidir con un nombre deseado y el género varía."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    22
+   ],
+   "H_set": 0.7818,
+   "text": "The willingness of governments to issue passports with gender not stated (X) or documents updated to match a desired name and gender ‖ varies.",
+   "pieces": {
+    "Chinese": [
+     "各国政府愿意发放未注明性别(X)的护照或更新文件以符合所需姓名和性别的情况",
+     "差异很大。"
+    ],
+    "Japanese": [
+     "性別を明記しない（X）パスポートを発行する意思あるいは、望ましい名前と性別に合わせて更新する文書を発行する意思",
+     "様々だ"
+    ],
+    "German": [
+     "Bereitschaft der Regierungen, Pässe mit nicht angegebenem Geschlecht (X) oder Dokumente auszustellen, die aktualisiert wurden, um einem gewünschten Namen und Geschlecht zu entsprechen",
+     "Variiert."
+    ],
+    "Spanish": [
+     "La voluntad de los gobiernos de emitir pasaportes sin indicar el género (X) o documentos actualizados para que coincidan con el nombre y el género deseados",
+     "Varies."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "gender not stated (X)",
+     "right": "or documents updated to",
+     "H": 0.7251,
+     "H_pct": 85.7,
+     "contra": 0.006,
+     "cohesion": 0.7295
+    }
+   ],
+   "added": [
+    {
+     "pos": 22,
+     "left": "desired name and gender",
+     "right": "varies.",
+     "H": 0.7818,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.7823
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_767",
+  "cuts": 16,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.409,
+  "policy_worst_contra": 0.9607,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    7,
+    8,
+    10,
+    11,
+    16,
+    17,
+    18,
+    20,
+    21,
+    22,
+    24,
+    25,
+    28,
+    31
+   ],
+   "H_set": 0.0165,
+   "text": "The city of Beijing ‖ in China ‖ will ‖ be ‖ the host ‖ city ‖ of the Olympic Winter Games ‖ in ‖ 2022, ‖ which will ‖ make ‖ it ‖ the first ‖ city ‖ to have hosted ‖ both the summer ‖ and winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "北京市",
+     "中国的",
+     "威尔",
+     "是",
+     "主机",
+     "城市",
+     "冬季奥林匹克运动会",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "2022年，第四次会议",
+     "将",
+     "制造",
+     "意大利",
+     "第一次",
+     "城市",
+     "主办的会议",
+     "两个夏天",
+     "冬季奥运会。"
+    ],
+    "Japanese": [
+     "北京市",
+     "中国で",
+     "ウィル",
+     "ああ",
+     "ホストは",
+     "都市",
+     "冬季オリンピックの",
+     "ここに",
+     "2022年",
+     "それは",
+     "作る",
+     "それは",
+     "初めての",
+     "都市",
+     "私たちの国で",
+     "夏と冬の両方で",
+     "冬季オリンピックです"
+    ],
+    "German": [
+     "Die Stadt Peking",
+     "in China",
+     "Will",
+     "be",
+     "Der Gastgeber",
+     "Stadt",
+     "Olympische Winterspiele 1994",
+     "in",
+     "2022",
+     "Was wird passieren?",
+     "Marke",
+     "it",
+     "Die erste",
+     "Stadt",
+     "zu haben gehostet",
+     "Sowohl den Sommer",
+     "Olympische Spiele und Winterspiele."
+    ],
+    "Spanish": [
+     "La ciudad de Pekín",
+     "en China",
+     "Will",
+     "be",
+     "El anfitrión",
+     "Ciudad",
+     "Juegos Olímpicos de Invierno de 1984",
+     "en",
+     "2022,",
+     "que se",
+     "Make",
+     "it",
+     "La primera vez",
+     "Ciudad",
+     "para haber hospedado",
+     "Tanto el verano",
+     "Juegos Olímpicos de invierno."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    10,
+    11,
+    15,
+    16,
+    18,
+    19,
+    20,
+    21,
+    22,
+    31,
+    33
+   ],
+   "H_set": 0.4256,
+   "text": "The ‖ city ‖ of ‖ Beijing ‖ in ‖ China will be the host ‖ city ‖ of the Olympic Winter ‖ Games ‖ in 2022, ‖ which ‖ will ‖ make ‖ it ‖ the first city to have hosted both the summer ‖ and winter ‖ Olympics.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "城市",
+     "的",
+     "北京",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "中国将主办",
+     "城市",
+     "冬季奥林匹克运动会",
+     "游戏",
+     "2022年，",
+     "其中",
+     "威尔",
+     "制造",
+     "意大利",
+     "是第一个主办了夏季奥运会的城市",
+     "冬季",
+     "奥林匹克运动会。"
+    ],
+    "Japanese": [
+     "あの",
+     "都市",
+     "の",
+     "北京",
+     "ここに",
+     "中国が主催する",
+     "都市",
+     "冬季オリンピックの",
+     "ゲーム",
+     "2022年には",
+     "それは",
+     "ウィル",
+     "作る",
+     "それは",
+     "夏季オリンピックと冬季オリンピックを",
+     "冬は",
+     "オリンピック"
+    ],
+    "German": [
+     "The",
+     "Stadt",
+     "von",
+     "Beijing",
+     "in",
+     "China wird Gastgeber sein",
+     "Stadt",
+     "Die Olympischen Winterspiele",
+     "Spiele",
+     "im Jahr 2022,",
+     "which",
+     "Will",
+     "Marke",
+     "it",
+     "Die erste Stadt, die sowohl den Sommer als auch den Winter ausgerichtet hat",
+     "Sommer und Winter",
+     "Olympia."
+    ],
+    "Spanish": [
+     "The",
+     "Ciudad",
+     "de",
+     "Beijing",
+     "en",
+     "China será el anfitrión",
+     "Ciudad",
+     "Juegos Olímpicos de Invierno",
+     "Juegos",
+     "en 2022,",
+     "which",
+     "Will",
+     "Make",
+     "it",
+     "La primera ciudad en haber acogido tanto el verano",
+     "Otoño e invierno",
+     "Juegos Olímpicos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "of Beijing in China",
+     "right": "will be the host",
+     "H": 0.7799,
+     "H_pct": 37.5,
+     "contra": 0.0004,
+     "cohesion": 0.7802
+    },
+    {
+     "pos": 7,
+     "left": "Beijing in China will",
+     "right": "be the host city",
+     "H": 0.7901,
+     "H_pct": 50.0,
+     "contra": 0.0005,
+     "cohesion": 0.7905
+    },
+    {
+     "pos": 8,
+     "left": "in China will be",
+     "right": "the host city of",
+     "H": 0.7574,
+     "H_pct": 15.6,
+     "contra": 0.001,
+     "cohesion": 0.7582
+    },
+    {
+     "pos": 17,
+     "left": "Olympic Winter Games in",
+     "right": "2022, which will make",
+     "H": 0.0314,
+     "H_pct": 0.0,
+     "contra": 0.9607,
+     "cohesion": 0.7994
+    },
+    {
+     "pos": 24,
+     "left": "make it the first",
+     "right": "city to have hosted",
+     "H": 0.7689,
+     "H_pct": 31.2,
+     "contra": 0.0528,
+     "cohesion": 0.8118
+    },
+    {
+     "pos": 25,
+     "left": "it the first city",
+     "right": "to have hosted both",
+     "H": 0.3074,
+     "H_pct": 3.1,
+     "contra": 0.6027,
+     "cohesion": 0.7737
+    },
+    {
+     "pos": 28,
+     "left": "city to have hosted",
+     "right": "both the summer and",
+     "H": 0.779,
+     "H_pct": 34.4,
+     "contra": 0.0198,
+     "cohesion": 0.7947
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "city of Beijing in",
+     "H": 0.8624,
+     "H_pct": 78.1,
+     "contra": 0.0233,
+     "cohesion": 0.883
+    },
+    {
+     "pos": 2,
+     "left": "The city",
+     "right": "of Beijing in China",
+     "H": 0.8752,
+     "H_pct": 93.8,
+     "contra": 0.0006,
+     "cohesion": 0.8757
+    },
+    {
+     "pos": 3,
+     "left": "The city of",
+     "right": "Beijing in China will",
+     "H": 0.8775,
+     "H_pct": 96.9,
+     "contra": 0.0005,
+     "cohesion": 0.8779
+    },
+    {
+     "pos": 5,
+     "left": "city of Beijing in",
+     "right": "China will be the",
+     "H": 0.8649,
+     "H_pct": 84.4,
+     "contra": 0.0009,
+     "cohesion": 0.8657
+    },
+    {
+     "pos": 15,
+     "left": "of the Olympic Winter",
+     "right": "Games in 2022, which",
+     "H": 0.8138,
+     "H_pct": 62.5,
+     "contra": 0.001,
+     "cohesion": 0.8146
+    },
+    {
+     "pos": 19,
+     "left": "Games in 2022, which",
+     "right": "will make it the",
+     "H": 0.8689,
+     "H_pct": 87.5,
+     "contra": 0.0014,
+     "cohesion": 0.8701
+    },
+    {
+     "pos": 33,
+     "left": "the summer and winter",
+     "right": "Olympics.",
+     "H": 0.8418,
+     "H_pct": 75.0,
+     "contra": 0.0052,
+     "cohesion": 0.8462
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_651",
+  "cuts": 8,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.1648,
+  "policy_worst_contra": 0.1089,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12,
+    13,
+    14,
+    16,
+    21,
+    24,
+    28,
+    33
+   ],
+   "H_set": 0.5781,
+   "text": "Your hotel or hosts (if staying in a guesthouse or private home) ‖ will ‖ likely ‖ have wifi ‖ or an internet connected PC, ‖ and all settlements ‖ have an internet cafe ‖ or some location with public ‖ wifi.",
+   "pieces": {
+    "Chinese": [
+     "您的酒店或主人(如果住在宾馆或私人住宅)",
+     "威尔",
+     "可能",
+     "有 wifi 上网",
+     "或是连接到互联网的电脑,",
+     "所有定居点",
+     "拥有网吧",
+     "或某个位置与公共",
+     "无线网络"
+    ],
+    "Japanese": [
+     "ホテルやホスト（ゲストハウスや民家に宿泊する場合）",
+     "ウィル",
+     "確かに",
+     "ワイヤレス接続がある",
+     "インターネットに接続したPCを",
+     "すべての入植地は",
+     "インターネットカフェを開き",
+     "あるいは公共の場所で",
+     "ワイヤレスだ"
+    ],
+    "German": [
+     "Ihr Hotel oder Ihre Gastgeber (wenn Sie in einem Gästehaus oder Privathaushalt übernachten)",
+     "Will",
+     "Wahrscheinlich",
+     "Haben Sie WiFi",
+     "oder ein mit dem Internet verbundener PC,",
+     "und alle Siedlungen",
+     "Ein Internetcafé haben",
+     "oder irgendeine Lage mit öffentlichem",
+     "WLAN."
+    ],
+    "Spanish": [
+     "Su hotel o anfitriones (si se aloja en una casa de huéspedes o en una casa privada)",
+     "Will",
+     "probable",
+     "No tienen wifi",
+     "o un PC conectado a Internet,",
+     "y todos los asentamientos",
+     "Tener un cibercafé",
+     "o algún lugar con acceso público",
+     "Wifi."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    12,
+    16,
+    19,
+    20,
+    21,
+    22,
+    23
+   ],
+   "H_set": 0.7429,
+   "text": "Your hotel or ‖ hosts (if staying in a guesthouse or private home) ‖ will likely have wifi ‖ or an internet ‖ connected ‖ PC, ‖ and ‖ all ‖ settlements have an internet cafe or some location with public wifi.",
+   "pieces": {
+    "Chinese": [
+     "您的酒店或",
+     "主人(如果住在宾馆或私人住宅)",
+     "可能会有wifi",
+     "或互联网",
+     "连接",
+     "个人计算机，",
+     "以及",
+     "所有",
+     "定居点有一个网吧或一些位置与公共无线网络。"
+    ],
+    "Japanese": [
+     "ホテルか",
+     "ホスト（ゲストハウスや民家に泊まる場合）",
+     "たぶんWiFiがついてるでしょう",
+     "あるいはインターネット",
+     "つながってる",
+     "パーソナルコンピュータ",
+     "それに",
+     "すべて",
+     "住民はインターネットカフェや 公共Wi-Fiを持っている場所を持っています"
+    ],
+    "German": [
+     "Ihr Hotel oder",
+     "Gastgeber (bei Aufenthalt in einem Gästehaus oder Privathaushalt)",
+     "Wird wahrscheinlich wifi haben",
+     "oder ein Internet",
+     "verbunden",
+     "PC,",
+     "und",
+     "all",
+     "In den meisten Siedlungen gibt es ein Internetcafé oder eine öffentliche WLAN-Verbindung."
+    ],
+    "Spanish": [
+     "Su hotel o",
+     "Anfitriones (si se alojan en una casa de huéspedes o en una casa privada)",
+     "Probablemente tendrá wifi",
+     "o un internet",
+     "conectado",
+     "PC,",
+     "y",
+     "todos",
+     "Los asentamientos tienen un cibercafé o algún lugar con wifi público."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "or private home) will",
+     "right": "likely have wifi or",
+     "H": 0.7856,
+     "H_pct": 71.9,
+     "contra": 0.0003,
+     "cohesion": 0.7858
+    },
+    {
+     "pos": 14,
+     "left": "private home) will likely",
+     "right": "have wifi or an",
+     "H": 0.7273,
+     "H_pct": 37.5,
+     "contra": 0.0004,
+     "cohesion": 0.7276
+    },
+    {
+     "pos": 24,
+     "left": "PC, and all settlements",
+     "right": "have an internet cafe",
+     "H": 0.7432,
+     "H_pct": 43.8,
+     "contra": 0.0247,
+     "cohesion": 0.7621
+    },
+    {
+     "pos": 28,
+     "left": "have an internet cafe",
+     "right": "or some location with",
+     "H": 0.7264,
+     "H_pct": 31.2,
+     "contra": 0.1089,
+     "cohesion": 0.8152
+    },
+    {
+     "pos": 33,
+     "left": "some location with public",
+     "right": "wifi.",
+     "H": 0.7342,
+     "H_pct": 40.6,
+     "contra": 0.0495,
+     "cohesion": 0.7725
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Your hotel or",
+     "right": "hosts (if staying in",
+     "H": 0.8195,
+     "H_pct": 96.9,
+     "contra": 0.0009,
+     "cohesion": 0.8202
+    },
+    {
+     "pos": 19,
+     "left": "wifi or an internet",
+     "right": "connected PC, and all",
+     "H": 0.7992,
+     "H_pct": 84.4,
+     "contra": 0.0009,
+     "cohesion": 0.7999
+    },
+    {
+     "pos": 20,
+     "left": "or an internet connected",
+     "right": "PC, and all settlements",
+     "H": 0.7968,
+     "H_pct": 78.1,
+     "contra": 0.0008,
+     "cohesion": 0.7975
+    },
+    {
+     "pos": 22,
+     "left": "internet connected PC, and",
+     "right": "all settlements have an",
+     "H": 0.8036,
+     "H_pct": 87.5,
+     "contra": 0.0184,
+     "cohesion": 0.8187
+    },
+    {
+     "pos": 23,
+     "left": "connected PC, and all",
+     "right": "settlements have an internet",
+     "H": 0.7988,
+     "H_pct": 81.2,
+     "contra": 0.0042,
+     "cohesion": 0.8021
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_847",
+  "cuts": 1,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.1378,
+  "policy_worst_contra": 0.0003,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.7074,
+   "text": "Boomerang throwing is a popular skill ‖ that many tourists want to acquire.",
+   "pieces": {
+    "Chinese": [
+     "飞去来器投掷是一个流行的技能",
+     "很多游客想要获得。"
+    ],
+    "Japanese": [
+     "ブーメラン投げは人気のある技。",
+     "多くの観光客が 購入したいと思っているものです"
+    ],
+    "German": [
+     "Bumerang-Werfen ist eine beliebte Fähigkeit",
+     "Das ist ein Geheimnis, das viele Touristen erwerben wollen."
+    ],
+    "Spanish": [
+     "El lanzamiento de bumerán es una habilidad popular",
+     "Es un tesoro que muchos turistas quieren adquirir."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.8451,
+   "text": "Boomerang throwing is ‖ a popular skill that many tourists want to acquire.",
+   "pieces": {
+    "Chinese": [
+     "回旋镖投掷是",
+     "很多游客想要获得的流行技能。"
+    ],
+    "Japanese": [
+     "ブーメラン投げは",
+     "多くの観光客が習いたい人気の技です"
+    ],
+    "German": [
+     "Bumerangwerfen ist",
+     "Eine beliebte Fähigkeit, die viele Touristen erwerben wollen."
+    ],
+    "Spanish": [
+     "El lanzamiento de boomerang es",
+     "Una habilidad popular que muchos turistas quieren adquirir."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "is a popular skill",
+     "right": "that many tourists want",
+     "H": 0.7074,
+     "H_pct": 20.0,
+     "contra": 0.0003,
+     "cohesion": 0.7076
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Boomerang throwing is",
+     "right": "a popular skill that",
+     "H": 0.8451,
+     "H_pct": 100.0,
+     "contra": 0.0037,
+     "cohesion": 0.8483
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_912",
+  "cuts": 2,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.1052,
+  "policy_worst_contra": 0.0375,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    11
+   ],
+   "H_set": 0.6655,
+   "text": "Because calls are routed over the Internet, ‖ you do not need ‖ to use a phone company located where you live or where you travel.",
+   "pieces": {
+    "Chinese": [
+     "因为通话是通过互联网进行的,",
+     "你不需要",
+     "使用您居住或旅行所在地的电话公司。"
+    ],
+    "Japanese": [
+     "電話はインターネットを経由して",
+     "あなたは必要ありません",
+     "住んでいる場所や旅行先の電話会社を 使うことになります"
+    ],
+    "German": [
+     "Da Anrufe über das Internet geführt werden,",
+     "Sie brauchen nicht",
+     "Sie können eine Telefongesellschaft nutzen, die sich in Ihrem Wohnort oder auf Ihrer Reise befindet."
+    ],
+    "Spanish": [
+     "Debido a que las llamadas se enrutan a través de Internet,",
+     "No necesitas",
+     "Para usar una compañía telefónica ubicada donde usted vive o donde usted viaja."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8
+   ],
+   "H_set": 0.7706,
+   "text": "Because calls are routed over the Internet, ‖ you ‖ do not need to use a phone company located where you live or where you travel.",
+   "pieces": {
+    "Chinese": [
+     "因为通话是通过互联网进行的,",
+     "你",
+     "您不需要使用位于您居住或旅行地的电话公司。"
+    ],
+    "Japanese": [
+     "電話はインターネットを経由して",
+     "あなたは",
+     "住んでいる場所や 旅行先の電話会社を 使う必要はありません"
+    ],
+    "German": [
+     "Da Anrufe über das Internet geführt werden,",
+     "Sie",
+     "Sie müssen nicht eine Telefongesellschaft nutzen, die sich dort befindet, wo Sie wohnen oder wohin Sie reisen."
+    ],
+    "Spanish": [
+     "Debido a que las llamadas se enrutan a través de Internet,",
+     "usted",
+     "No necesitas usar una compañía telefónica ubicada donde vives o donde viajas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "you do not need",
+     "right": "to use a phone",
+     "H": 0.7133,
+     "H_pct": 31.8,
+     "contra": 0.001,
+     "cohesion": 0.714
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "over the Internet, you",
+     "right": "do not need to",
+     "H": 0.7901,
+     "H_pct": 100.0,
+     "contra": 0.0053,
+     "cohesion": 0.7944
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_950",
+  "cuts": 1,
+  "avg_chunk": 13.5,
+  "latency_bin": "≤99",
+  "gap": 0.0565,
+  "policy_worst_contra": 0.0748,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    26
+   ],
+   "H_set": 0.7629,
+   "text": "Basically you'll be putting up notices offering your help, pacing the docks, approaching people cleaning their yachts, trying to make contact with sailors in the bar, ‖ etc.",
+   "pieces": {
+    "Chinese": [
+     "基本上你会张贴公告 提供你的帮助 走在码头 接近人们清理他们的游艇 试图与酒吧的水手联系",
+     "等等。"
+    ],
+    "Japanese": [
+     "基本的には あなたは あなたの助けを求める 告知を掲示し 港を歩き回り ヨットを掃除する人に 近づき バーの船乗りと 接触しようとする",
+     "など"
+    ],
+    "German": [
+     "Grundsätzlich wirst du Aushänge aufhängen, die deine Hilfe anbieten, durch die Docks gehen, dich an Leute wenden, die ihre Yachten reinigen, versuchen, Kontakt mit Seglern in der Bar aufzunehmen,",
+     "etc."
+    ],
+    "Spanish": [
+     "Básicamente estarás poniendo avisos ofreciendo tu ayuda, caminando por los muelles, acercándote a la gente limpiando sus yates, tratando de hacer contacto con los marineros en el bar,",
+     "etc."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8195,
+   "text": "Basically ‖ you'll be putting up notices offering your help, pacing the docks, approaching people cleaning their yachts, trying to make contact with sailors in the bar, etc.",
+   "pieces": {
+    "Chinese": [
+     "基本上",
+     "你会张贴通知,提供你的帮助,在码头走动,接近人们清理他们的游艇,试图与酒吧的水手联系,等等。"
+    ],
+    "Japanese": [
+     "基本的に",
+     "あなたは 助けを求める広告を掲げ 港を歩き回り ヨットを掃除する人に近づき バーの船乗りと 接触しようとする"
+    ],
+    "German": [
+     "Grundsätzlich",
+     "Du wirst Aushänge aufhängen, die deine Hilfe anbieten, durch die Docks laufen, dich an Leute wenden, die ihre Yachten reinigen, versuchen, Kontakt zu Seglern in der Bar aufzunehmen, usw."
+    ],
+    "Spanish": [
+     "Básicamente",
+     "Estarás poniendo avisos ofreciendo tu ayuda, caminando por los muelles, acercándote a la gente limpiando sus yates, tratando de hacer contacto con los marineros en el bar, etc."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 26,
+     "left": "sailors in the bar,",
+     "right": "etc.",
+     "H": 0.7629,
+     "H_pct": 72.0,
+     "contra": 0.0748,
+     "cohesion": 0.8246
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Basically",
+     "right": "you'll be putting up",
+     "H": 0.8195,
+     "H_pct": 100.0,
+     "contra": 0.0024,
+     "cohesion": 0.8215
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_936",
+  "cuts": 8,
+  "avg_chunk": 2.7,
+  "latency_bin": "≤3",
+  "gap": 0.3975,
+  "policy_worst_contra": 0.7895,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    8,
+    11,
+    15,
+    16,
+    17,
+    20
+   ],
+   "H_set": 0.1302,
+   "text": "Unless you are a diplomat, ‖ working overseas ‖ generally ‖ means that you ‖ will have to file ‖ income ‖ tax ‖ in the country ‖ you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非你是外交官",
+     "海外工作",
+     "一般",
+     "意味着你",
+     "将不得不提交",
+     "收入",
+     "税",
+     "国家的",
+     "您所在的国家。"
+    ],
+    "Japanese": [
+     "外交官じゃないと",
+     "海外で働く",
+     "一般的に",
+     "つまり あなたが",
+     "申告しなければならない",
+     "収入",
+     "税金",
+     "国中で",
+     "あなたは ここに居る"
+    ],
+    "German": [
+     "Wenn Sie kein Diplomat sind,",
+     "Arbeiten im Ausland",
+     "allgemein",
+     "Das bedeutet, dass Sie",
+     "Wird einreichen müssen",
+     "Einkommen",
+     "Steuer",
+     "Im Land",
+     "Sie sind in."
+    ],
+    "Spanish": [
+     "A menos que seas un diplomático,",
+     "Trabajar en el extranjero",
+     "General",
+     "Significa que usted",
+     "Tendrá que presentar",
+     "ingresos",
+     "impuestos",
+     "En el país",
+     "Usted está basado en."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    7,
+    8,
+    15,
+    16,
+    17
+   ],
+   "H_set": 0.5276,
+   "text": "Unless ‖ you ‖ are a diplomat, ‖ working overseas ‖ generally ‖ means that you will have to file ‖ income ‖ tax ‖ in the country you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非",
+     "你",
+     "您是一名外交官,",
+     "海外工作",
+     "一般",
+     "您将需要提交",
+     "收入",
+     "税",
+     "您所在国家的法律。"
+    ],
+    "Japanese": [
+     "もしも",
+     "あなたは",
+     "外交官なら",
+     "海外で働く",
+     "一般的に",
+     "つまり あなたは あなたが",
+     "収入",
+     "税金",
+     "あなたが居る国で"
+    ],
+    "German": [
+     "Unless",
+     "Sie",
+     "Sie sind Diplomat,",
+     "Arbeiten im Ausland",
+     "allgemein",
+     "Das bedeutet, dass Sie einreichen müssen",
+     "Einkommen",
+     "Steuer",
+     "In dem Land, in dem Sie ansässig sind."
+    ],
+    "Spanish": [
+     "A menos que",
+     "usted",
+     "eres un diplomático,",
+     "Trabajar en el extranjero",
+     "General",
+     "Esto significa que usted tendrá que presentar",
+     "ingresos",
+     "impuestos",
+     "En el país en el que estás basado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "generally means that you",
+     "right": "will have to file",
+     "H": 0.1784,
+     "H_pct": 18.2,
+     "contra": 0.7895,
+     "cohesion": 0.8473
+    },
+    {
+     "pos": 20,
+     "left": "tax in the country",
+     "right": "you are based in.",
+     "H": 0.6769,
+     "H_pct": 50.0,
+     "contra": 0.0014,
+     "cohesion": 0.6778
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Unless",
+     "right": "you are a diplomat,",
+     "H": 0.7718,
+     "H_pct": 86.4,
+     "contra": 0.0038,
+     "cohesion": 0.7747
+    },
+    {
+     "pos": 2,
+     "left": "Unless you",
+     "right": "are a diplomat, working",
+     "H": 0.7625,
+     "H_pct": 77.3,
+     "contra": 0.0077,
+     "cohesion": 0.7684
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_233",
+  "cuts": 5,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.1629,
+  "policy_worst_contra": 0.2286,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    5,
+    7,
+    11,
+    15
+   ],
+   "H_set": 0.4897,
+   "text": "His name ‖ is still unknown ‖ to authorities, ‖ although they do know ‖ he is a member ‖ of the Uighur ethnic group.",
+   "pieces": {
+    "Chinese": [
+     "他的名字",
+     "仍然不明",
+     "向当局提出的申诉，",
+     "虽然他们知道",
+     "他是成员",
+     "维吾尔族的民族。"
+    ],
+    "Japanese": [
+     "彼の名前は",
+     "まだ分かっていません",
+     "当局にも",
+     "彼らは知っているが",
+     "彼は 私の",
+     "彼らはウイグル族の 民族的な集団です"
+    ],
+    "German": [
+     "Sein Name ist",
+     "Ist noch unbekannt",
+     "an Behörden,",
+     "Obwohl sie es wissen",
+     "Er ist Mitglied",
+     "Die Uiguren sind eine ethnische Gruppe in China."
+    ],
+    "Spanish": [
+     "Su nombre",
+     "Es todavía desconocido",
+     "a las autoridades,",
+     "Aunque ellos sí saben",
+     "Él es un miembro",
+     "del grupo étnico uigur."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    7,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.6526,
+   "text": "His name is still unknown to ‖ authorities, ‖ although they do know ‖ he ‖ is ‖ a member of the Uighur ethnic group.",
+   "pieces": {
+    "Chinese": [
+     "他的名字仍然不为人知",
+     "当局，",
+     "虽然他们知道",
+     "是",
+     "是",
+     "维吾尔族成员。"
+    ],
+    "Japanese": [
+     "彼の名前はまだ不明です",
+     "当局に",
+     "彼らは知っているが",
+     "ああ",
+     "はい",
+     "ウイグル族の一員です"
+    ],
+    "German": [
+     "Sein Name ist noch unbekannt.",
+     "Behörden,",
+     "Obwohl sie es wissen",
+     "he",
+     "ist",
+     "Sie gehört zur ethnischen Gruppe der Uiguren."
+    ],
+    "Spanish": [
+     "Su nombre es aún desconocido para",
+     "autoridades,",
+     "Aunque ellos sí saben",
+     "he",
+     "es",
+     "Un miembro del grupo étnico uigur."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "His name",
+     "right": "is still unknown to",
+     "H": 0.5989,
+     "H_pct": 0.0,
+     "contra": 0.2286,
+     "cohesion": 0.7764
+    },
+    {
+     "pos": 5,
+     "left": "name is still unknown",
+     "right": "to authorities, although they",
+     "H": 0.8014,
+     "H_pct": 61.1,
+     "contra": 0.0011,
+     "cohesion": 0.8023
+    },
+    {
+     "pos": 15,
+     "left": "he is a member",
+     "right": "of the Uighur ethnic",
+     "H": 0.7331,
+     "H_pct": 27.8,
+     "contra": 0.0177,
+     "cohesion": 0.7463
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "is still unknown to",
+     "right": "authorities, although they do",
+     "H": 0.8302,
+     "H_pct": 83.3,
+     "contra": 0.0076,
+     "cohesion": 0.8366
+    },
+    {
+     "pos": 12,
+     "left": "they do know he",
+     "right": "is a member of",
+     "H": 0.8393,
+     "H_pct": 94.4,
+     "contra": 0.0193,
+     "cohesion": 0.8558
+    },
+    {
+     "pos": 13,
+     "left": "do know he is",
+     "right": "a member of the",
+     "H": 0.8257,
+     "H_pct": 77.8,
+     "contra": 0.0315,
+     "cohesion": 0.8526
+    }
+   ]
+  }
+ }
+]

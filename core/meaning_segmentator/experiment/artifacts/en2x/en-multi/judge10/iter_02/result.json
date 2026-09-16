@@ -1,0 +1,46 @@
+{
+ "iter": 2,
+ "candidate": 1,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.01376,
+  "lo": -0.04264,
+  "hi": 0.0124,
+  "n": 411,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Paraphrased C4 to be much shorter while keeping the new low-contra guidance for short adjuncts/parentheticals; addresses finding that scorers overestimate contradiction risk for short continuations.",
+  "Paraphrased C6 to a more concise cohesion checklist to save space while preserving guidance about dependencies crossing cuts; supports finding about attachment and orphaning.",
+  "Paraphrased C8 to shorten wording about applying both judgements and using English tendencies only as soft guidance; reduces overall prompt length.",
+  "Replaced E1 with the Whistler example from the critique to correct example-driven bias toward unsafe singleton fragments and illustrate low-contra for parentheticals.",
+  "Replaced E2 with the Pacific Tsunami example from the critique to further correct example-driven biases about single-token continuations and scope.",
+  "Deleted E3 (the previous 'Humans can be affected...' example) to reduce prompt size and remove an example that contributed to miscalibration."
+ ],
+ "edits": [],
+ "findings": [
+  "The scorer systematically overestimates contradiction risk when the continuation is a short adjunct/parenthetical or begins with a function word, and therefore avoids earlier cuts that isolate a self-contained preamble (named entity, date, NP head). This makes the policy leave cuts later in the clause whose isolated prefixes are then overturned by the continuation (high contra), killing set quality.",
+  "The examples in the prompt have pushed scorers to prefer keeping long predicate-attached spans but have been misread as encouraging single-token cuts of auxiliaries/negation or other function words, producing unsafe singleton fragments in short-latency bins."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0046,
+   "≤5": -0.0326,
+   "≤7": -0.0108,
+   "≤10": -0.0094,
+   "≤99": 0.0088
+  },
+  "n_worse": 153,
+  "n_better": 156,
+  "why": "By shortening C4/C6 and swapping/removing examples, the prompt became more permissive about chopping off very short continuations and placing cuts adjacent to heads: that produced small gains for tiny pieces (≤3 tokens) but caused more harmful splits in the ≤5 bin where essential complements or verb–argument material were severed (e.g. turning 'that an immediate diagnosis cannot be made' into a fragment 'cannot be made').",
+  "lesson": "When shortening guidance, preserve explicit prohibitions and clear examples that prevent cutting essential complements or splitting dependency heads, so brevity doesn't trade away constraints that protect short but necessary continuations.",
+  "blamed": [
+   "C4",
+   "C6",
+   "E1",
+   "E2",
+   "E3"
+  ]
+ }
+}

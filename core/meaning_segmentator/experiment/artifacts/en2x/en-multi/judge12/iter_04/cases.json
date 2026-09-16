@@ -1,0 +1,1684 @@
+[
+ {
+  "id": "en_us_1507",
+  "cuts": 6,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.4573,
+  "policy_worst_contra": 0.999,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    5,
+    8,
+    10,
+    11
+   ],
+   "H_set": 0.0006,
+   "text": "Travellers may encounter ‖ animal ‖ pests ‖ that they are ‖ not familiar ‖ with ‖ in their home regions.",
+   "pieces": {
+    "Chinese": [
+     "旅行者可能遇到的问题",
+     "动物",
+     "害虫",
+     "他们是",
+     "不熟悉",
+     "与",
+     "在他们的家乡地区。"
+    ],
+    "Japanese": [
+     "旅行者が遭遇する",
+     "動物",
+     "害虫",
+     "彼らは",
+     "知らない",
+     "あなたと",
+     "彼らの地域で 生きていくことになります"
+    ],
+    "German": [
+     "Reisende können begegnen",
+     "Tier",
+     "Schädlinge",
+     "Dass sie sind",
+     "Nicht vertraut",
+     "mit",
+     "in ihren Heimatregionen."
+    ],
+    "Spanish": [
+     "Los viajeros pueden encontrar",
+     "animal",
+     "Plagas",
+     "Que ellos son",
+     "No es familiar",
+     "con",
+     "en sus regiones de origen."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.4578,
+   "text": "Travellers ‖ may ‖ encounter animal pests ‖ that they are not familiar with ‖ in ‖ their ‖ home regions.",
+   "pieces": {
+    "Chinese": [
+     "游民",
+     "5月(半天会议)",
+     "遇到动物害虫",
+     "他们不熟悉的",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "他们",
+     "家乡地区。"
+    ],
+    "Japanese": [
+     "旅人",
+     "5月",
+     "動物の害虫に遭遇すると",
+     "彼らが知らないことを",
+     "ここに",
+     "彼らの",
+     "家族の地域です"
+    ],
+    "German": [
+     "Travellers",
+     "Mai",
+     "Begegnung mit Tierschädlingen",
+     "Dass sie nicht vertraut sind",
+     "in",
+     "their",
+     "Heimatregionen."
+    ],
+    "Spanish": [
+     "Viajeros",
+     "May",
+     "Encuentro de plagas animales",
+     "Que no están familiarizados con",
+     "en",
+     "their",
+     "Regiones de origen."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Travellers may encounter",
+     "right": "animal pests that they",
+     "H": 0.6728,
+     "H_pct": 46.2,
+     "contra": 0.0005,
+     "cohesion": 0.6732
+    },
+    {
+     "pos": 4,
+     "left": "Travellers may encounter animal",
+     "right": "pests that they are",
+     "H": 0.576,
+     "H_pct": 23.1,
+     "contra": 0.082,
+     "cohesion": 0.6275
+    },
+    {
+     "pos": 8,
+     "left": "pests that they are",
+     "right": "not familiar with in",
+     "H": 0.0006,
+     "H_pct": 0.0,
+     "contra": 0.999,
+     "cohesion": 0.6196
+    },
+    {
+     "pos": 10,
+     "left": "they are not familiar",
+     "right": "with in their home",
+     "H": 0.6989,
+     "H_pct": 53.8,
+     "contra": 0.0025,
+     "cohesion": 0.7006
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Travellers",
+     "right": "may encounter animal pests",
+     "H": 0.735,
+     "H_pct": 76.9,
+     "contra": 0.0024,
+     "cohesion": 0.7367
+    },
+    {
+     "pos": 2,
+     "left": "Travellers may",
+     "right": "encounter animal pests that",
+     "H": 0.746,
+     "H_pct": 84.6,
+     "contra": 0.0004,
+     "cohesion": 0.7463
+    },
+    {
+     "pos": 12,
+     "left": "not familiar with in",
+     "right": "their home regions.",
+     "H": 0.7261,
+     "H_pct": 69.2,
+     "contra": 0.0215,
+     "cohesion": 0.7421
+    },
+    {
+     "pos": 13,
+     "left": "familiar with in their",
+     "right": "home regions.",
+     "H": 0.7182,
+     "H_pct": 61.5,
+     "contra": 0.0034,
+     "cohesion": 0.7206
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1497",
+  "cuts": 5,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.208,
+  "policy_worst_contra": 0.2748,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    7,
+    9,
+    10,
+    13
+   ],
+   "H_set": 0.4778,
+   "text": "British pounds ‖ will generally be accepted anywhere ‖ in the ‖ islands ‖ and within Stanley ‖ credit cards and United States dollars are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英镑",
+     "一般会被接受的任何地方",
+     "2008年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "岛屿",
+     "斯坦利及其周边地区",
+     "信用卡和美元也经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンド",
+     "どこでも受け入れられるようになるでしょう",
+     "あの あの あの",
+     "島々",
+     "スタンレーの中では",
+     "クレジットカードや米ドルもよく受け入れられます"
+    ],
+    "German": [
+     "Britisches Pfund",
+     "Wird generell überall akzeptiert",
+     "in der Stadt",
+     "Inseln",
+     "In und um Stanley",
+     "Kreditkarten und US-Dollar werden ebenfalls oft akzeptiert."
+    ],
+    "Spanish": [
+     "Libras británicas",
+     "Generalmente se aceptará en cualquier lugar",
+     "en el",
+     "Islas",
+     "En y alrededor de Stanley",
+     "También se aceptan tarjetas de crédito y dólares estadounidenses."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    7,
+    10,
+    11,
+    13
+   ],
+   "H_set": 0.6858,
+   "text": "British pounds will generally be accepted ‖ anywhere ‖ in the islands ‖ and ‖ within Stanley ‖ credit cards and United States dollars are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "一般接受英镑",
+     "任何地方",
+     "岛上",
+     "以及",
+     "斯坦利内的酒店",
+     "信用卡和美元也经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンドは一般的に受け入れられる",
+     "どこでも",
+     "島々に住む人々は",
+     "それに",
+     "スタンリーの中で",
+     "クレジットカードや米ドルもよく受け入れられます"
+    ],
+    "German": [
+     "Britische Pfund werden in der Regel akzeptiert",
+     "überall",
+     "Auf den Inseln",
+     "und",
+     "Unterkünfte in Stanley",
+     "Kreditkarten und US-Dollar werden ebenfalls oft akzeptiert."
+    ],
+    "Spanish": [
+     "En general se aceptarán libras británicas",
+     "En cualquier lugar",
+     "En las islas",
+     "y",
+     "Turismo en Stanley",
+     "También se aceptan tarjetas de crédito y dólares estadounidenses."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "British pounds",
+     "right": "will generally be accepted",
+     "H": 0.7627,
+     "H_pct": 61.9,
+     "contra": 0.0005,
+     "cohesion": 0.7631
+    },
+    {
+     "pos": 9,
+     "left": "accepted anywhere in the",
+     "right": "islands and within Stanley",
+     "H": 0.5901,
+     "H_pct": 19.0,
+     "contra": 0.2748,
+     "cohesion": 0.8138
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "will generally be accepted",
+     "right": "anywhere in the islands",
+     "H": 0.7897,
+     "H_pct": 81.0,
+     "contra": 0.0004,
+     "cohesion": 0.79
+    },
+    {
+     "pos": 11,
+     "left": "in the islands and",
+     "right": "within Stanley credit cards",
+     "H": 0.7925,
+     "H_pct": 85.7,
+     "contra": 0.0128,
+     "cohesion": 0.8027
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1600",
+  "cuts": 2,
+  "avg_chunk": 6.3,
+  "latency_bin": "≤7",
+  "gap": 0.2033,
+  "policy_worst_contra": 0.1154,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8,
+    10
+   ],
+   "H_set": 0.6302,
+   "text": "Examples of on-site activities include hunting, fishing, photography, ‖ bird watching, ‖ and visiting parks and studying information about the ecosystem.",
+   "pieces": {
+    "Chinese": [
+     "酒店内的活动包括打猎、钓鱼、摄影、骑自行车和骑自行车。",
+     "观鸟, 骑自行车,",
+     "参观公园,研究生态系统的信息。"
+    ],
+    "Japanese": [
+     "狩猟、釣り、写真撮影、",
+     "鳥の観察",
+     "生態系の情報を学ぶことになります"
+    ],
+    "German": [
+     "Zu den Aktivitäten in der Unterkunft gehören Jagen, Angeln, Fotografieren,",
+     "Vogelbeobachtung,",
+     "Besuch von Parks und Studieren von Informationen über das Ökosystem."
+    ],
+    "Spanish": [
+     "Algunos ejemplos de actividades en el sitio incluyen caza, pesca, fotografía,",
+     "Observación de aves,",
+     "Visitando parques y estudiando información sobre el ecosistema."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5
+   ],
+   "H_set": 0.8335,
+   "text": "Examples of on-site activities ‖ include ‖ hunting, fishing, photography, bird watching, and visiting parks and studying information about the ecosystem.",
+   "pieces": {
+    "Chinese": [
+     "现场活动实例",
+     "包括",
+     "打猎,钓鱼,摄影,观鸟,参观公园和研究有关生态系统的信息。"
+    ],
+    "Japanese": [
+     "現場活動の例",
+     "含む",
+     "狩猟 釣り 写真撮影 鳥の観察 公園を訪れ 生態系の情報を学ぶ"
+    ],
+    "German": [
+     "Beispiele für Aktivitäten vor Ort",
+     "include",
+     "Jagen, Angeln, Fotografieren, Vogelbeobachtung und Besuch von Parks und Studieren von Informationen über das Ökosystem."
+    ],
+    "Spanish": [
+     "Ejemplos de actividades in situ",
+     "incluye",
+     "Caza, pesca, fotografía, observación de aves, visitas a parques y estudio de información sobre el ecosistema."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "include hunting, fishing, photography,",
+     "right": "bird watching, and visiting",
+     "H": 0.7284,
+     "H_pct": 47.1,
+     "contra": 0.0534,
+     "cohesion": 0.7694
+    },
+    {
+     "pos": 10,
+     "left": "fishing, photography, bird watching,",
+     "right": "and visiting parks and",
+     "H": 0.628,
+     "H_pct": 17.6,
+     "contra": 0.1154,
+     "cohesion": 0.71
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Examples of on-site activities",
+     "right": "include hunting, fishing, photography,",
+     "H": 0.8666,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8675
+    },
+    {
+     "pos": 5,
+     "left": "of on-site activities include",
+     "right": "hunting, fishing, photography, bird",
+     "H": 0.8572,
+     "H_pct": 94.1,
+     "contra": 0.0066,
+     "cohesion": 0.8629
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1132",
+  "cuts": 1,
+  "avg_chunk": 7.5,
+  "latency_bin": "≤10",
+  "gap": 0.1359,
+  "policy_worst_contra": 0.0003,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.7171,
+   "text": "Japanese work culture is more hierarchical and formal ‖ that what Westerners may be used to.",
+   "pieces": {
+    "Chinese": [
+     "日本的工作文化更加等级化和正式化",
+     "西方人可能习惯了。"
+    ],
+    "Japanese": [
+     "日本の職場文化は階層的で形式的である",
+     "違うものを見つけることができます"
+    ],
+    "German": [
+     "Die japanische Arbeitskultur ist hierarchischer und formaler",
+     "Das, was Westler gewohnt sein mögen."
+    ],
+    "Spanish": [
+     "La cultura laboral japonesa es más jerárquica y formal",
+     "que lo que los occidentales pueden estar acostumbrados."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.853,
+   "text": "Japanese ‖ work culture is more hierarchical and formal that what Westerners may be used to.",
+   "pieces": {
+    "Chinese": [
+     "日语",
+     "工作文化比西方人习惯的更加等级化和正式化。"
+    ],
+    "Japanese": [
+     "日本語",
+     "職場の文化は 西洋人が慣れているよりも 階層的で 形式的です"
+    ],
+    "German": [
+     "Japanisch",
+     "Die Arbeitskultur ist hierarchischer und formaler als das, was Westler gewohnt sein mögen."
+    ],
+    "Spanish": [
+     "Japonés",
+     "La cultura de trabajo en China es más jerárquica y formal que la que los occidentales están acostumbrados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "more hierarchical and formal",
+     "right": "that what Westerners may",
+     "H": 0.7172,
+     "H_pct": 23.1,
+     "contra": 0.0003,
+     "cohesion": 0.7174
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Japanese",
+     "right": "work culture is more",
+     "H": 0.853,
+     "H_pct": 100.0,
+     "contra": 0.0023,
+     "cohesion": 0.855
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_380",
+  "cuts": 2,
+  "avg_chunk": 11.0,
+  "latency_bin": "≤99",
+  "gap": 0.0677,
+  "policy_worst_contra": 0.0752,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    17
+   ],
+   "H_set": 0.6422,
+   "text": "Phases happen ‖ because only the side of Venus (or of the Moon) facing the Sun is lighted. ‖ The phases of Venus supported the theory of Copernicus that the planets go around the Sun.",
+   "pieces": {
+    "Chinese": [
+     "阶段发生",
+     "因为只有金星(或月球)面对太阳的一面被照亮。",
+     "金星的相位支持哥白尼的理论,即行星绕太阳运行。"
+    ],
+    "Japanese": [
+     "フェーズが起こる",
+     "金星（月）の太陽に向かう側だけが光るからです",
+     "金星の相は、惑星が太陽の周りを回っているというコペルニクスの理論を支持した。"
+    ],
+    "German": [
+     "Phasen passieren",
+     "Die Sonne ist nur von der Seite der Venus (oder des Mondes) beleuchtet.",
+     "Die Phasen der Venus unterstützten die Theorie von Kopernikus, dass die Planeten um die Sonne kreisen."
+    ],
+    "Spanish": [
+     "Las fases suceden",
+     "La Luna es el planeta más brillante del Sistema Solar, y es el planeta más brillante del Sistema Solar.",
+     "Las fases de Venus apoyaron la teoría de Copérnico de que los planetas giran alrededor del Sol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    18,
+    20
+   ],
+   "H_set": 0.7098,
+   "text": "Phases happen because only the side of Venus (or of the Moon) facing the Sun is lighted. The ‖ phases of ‖ Venus supported the theory of Copernicus that the planets go around the Sun.",
+   "pieces": {
+    "Chinese": [
+     "金星的相位是因为金星(或月球)面对太阳的一侧被照亮。",
+     "各阶段",
+     "金星支持的理论哥白尼,行星绕太阳。"
+    ],
+    "Japanese": [
+     "金星（または月）の太陽に向かう側のみが照らされているために、相が生じる。",
+     "あの あの あの あの",
+     "金星は、惑星が太陽の周りを回っているというコペルニクスの理論を支持した。"
+    ],
+    "German": [
+     "Phasen treten auf, weil nur die Seite der Venus (oder des Mondes), die der Sonne zugewandt ist, beleuchtet wird.",
+     "Phasen der Entwicklung",
+     "Venus unterstützte die Theorie von Kopernikus, dass die Planeten um die Sonne kreisen."
+    ],
+    "Spanish": [
+     "Las fases ocurren porque solo el lado de Venus (o de la Luna) que mira al Sol está iluminado.",
+     "fases de",
+     "Venus apoyó la teoría de Copérnico de que los planetas giran alrededor del Sol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Phases happen",
+     "right": "because only the side",
+     "H": 0.593,
+     "H_pct": 41.9,
+     "contra": 0.0004,
+     "cohesion": 0.5933
+    },
+    {
+     "pos": 17,
+     "left": "the Sun is lighted.",
+     "right": "The phases of Venus",
+     "H": 0.794,
+     "H_pct": 90.3,
+     "contra": 0.0752,
+     "cohesion": 0.8585
+    }
+   ],
+   "added": [
+    {
+     "pos": 18,
+     "left": "Sun is lighted. The",
+     "right": "phases of Venus supported",
+     "H": 0.8422,
+     "H_pct": 100.0,
+     "contra": 0.017,
+     "cohesion": 0.8568
+    },
+    {
+     "pos": 20,
+     "left": "lighted. The phases of",
+     "right": "Venus supported the theory",
+     "H": 0.796,
+     "H_pct": 96.8,
+     "contra": 0.009,
+     "cohesion": 0.8033
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1280",
+  "cuts": 12,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.4479,
+  "policy_worst_contra": 0.8122,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    3,
+    6,
+    9,
+    10,
+    12,
+    14,
+    16,
+    17,
+    18,
+    19,
+    21
+   ],
+   "H_set": 0.099,
+   "text": "Plans ‖ for vaccines ‖ to be delivered ‖ to the historically ‖ most ‖ affected areas ‖ this year ‖ were delayed ‖ due ‖ to ‖ lack ‖ of funds ‖ and low prioritisation relative to other diseases.",
+   "pieces": {
+    "Chinese": [
+     "计划",
+     "疫苗的",
+     "待交付",
+     "对历史上",
+     "桥梁",
+     "受影响地区",
+     "今年",
+     "延迟",
+     "应付",
+     "至",
+     "缺乏",
+     "资金来源",
+     "相对于其他疾病而言,它的优先级较低。"
+    ],
+    "Japanese": [
+     "プラン",
+     "ワクチンを作るために",
+     "送られてくる",
+     "歴史的に",
+     "橋",
+     "影響を受けた地域は",
+     "今年は",
+     "遅れていたのです",
+     "期限",
+     "それは",
+     "欠ける",
+     "資金の流れを",
+     "他の疾患に比べて 優先度が低いのです"
+    ],
+    "German": [
+     "Plans",
+     "Für Impfstoffe",
+     "Zu liefernde Artikel",
+     "An die historisch",
+     "Most",
+     "Die betroffenen Gebiete",
+     "Dieses Jahr",
+     "Die Flüge wurden verspätet",
+     "fällig",
+     "to",
+     "Lack",
+     "Verwendung von Mitteln",
+     "und geringe Priorisierung im Vergleich zu anderen Krankheiten."
+    ],
+    "Spanish": [
+     "Planes",
+     "para vacunas",
+     "A entregar",
+     "a los históricamente",
+     "más",
+     "zonas afectadas",
+     "Este año",
+     "se retrasaron",
+     "Vencido",
+     "a",
+     "Lack",
+     "de fondos",
+     "y baja prioridad en relación con otras enfermedades."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    6,
+    10,
+    11,
+    12,
+    14,
+    16,
+    21,
+    24,
+    27
+   ],
+   "H_set": 0.5468,
+   "text": "Plans for ‖ vaccines ‖ to ‖ be delivered ‖ to the historically most ‖ affected ‖ areas ‖ this year ‖ were delayed ‖ due to lack of funds ‖ and low prioritisation ‖ relative to other ‖ diseases.",
+   "pieces": {
+    "Chinese": [
+     "2008-2009年计划",
+     "疫苗",
+     "至",
+     "交付",
+     "到历史上最",
+     "受影响",
+     "地区",
+     "今年",
+     "延迟",
+     "由于缺乏资金",
+     "低优先级",
+     "相对于其他",
+     "疾病。"
+    ],
+    "Japanese": [
+     "計画",
+     "ワクチン",
+     "それは",
+     "送られてくる",
+     "歴史上最も",
+     "影響を受けた",
+     "地域",
+     "今年は",
+     "遅れていたのです",
+     "資金不足で",
+     "優先順位を下げて",
+     "私たちは他の人々と比べて",
+     "病気です"
+    ],
+    "German": [
+     "Pläne für die Zukunft",
+     "Impfstoffe",
+     "to",
+     "Wird geliefert werden",
+     "Zu den historisch bedeutendsten",
+     "betroffen",
+     "Gebiete",
+     "Dieses Jahr",
+     "Die Flüge wurden verspätet",
+     "Wegen fehlender Mittel",
+     "Niedrige Priorisierung",
+     "Relativ zu anderen",
+     "Krankheiten."
+    ],
+    "Spanish": [
+     "Planes para",
+     "vacunas",
+     "a",
+     "Se entregará",
+     "a los niveles históricamente más altos",
+     "afectados",
+     "áreas",
+     "Este año",
+     "se retrasaron",
+     "por falta de fondos",
+     "Priorización baja y baja",
+     "en relación con otros",
+     "enfermedades."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "Plans",
+     "right": "for vaccines to be",
+     "H": 0.7487,
+     "H_pct": 42.3,
+     "contra": 0.0041,
+     "cohesion": 0.7518
+    },
+    {
+     "pos": 9,
+     "left": "delivered to the historically",
+     "right": "most affected areas this",
+     "H": 0.6997,
+     "H_pct": 26.9,
+     "contra": 0.0058,
+     "cohesion": 0.7037
+    },
+    {
+     "pos": 17,
+     "left": "year were delayed due",
+     "right": "to lack of funds",
+     "H": 0.6297,
+     "H_pct": 15.4,
+     "contra": 0.178,
+     "cohesion": 0.766
+    },
+    {
+     "pos": 18,
+     "left": "were delayed due to",
+     "right": "lack of funds and",
+     "H": 0.1454,
+     "H_pct": 0.0,
+     "contra": 0.8122,
+     "cohesion": 0.7744
+    },
+    {
+     "pos": 19,
+     "left": "delayed due to lack",
+     "right": "of funds and low",
+     "H": 0.6884,
+     "H_pct": 23.1,
+     "contra": 0.1012,
+     "cohesion": 0.7659
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Plans for",
+     "right": "vaccines to be delivered",
+     "H": 0.7958,
+     "H_pct": 76.9,
+     "contra": 0.0041,
+     "cohesion": 0.7991
+    },
+    {
+     "pos": 4,
+     "left": "Plans for vaccines to",
+     "right": "be delivered to the",
+     "H": 0.7787,
+     "H_pct": 65.4,
+     "contra": 0.0036,
+     "cohesion": 0.7815
+    },
+    {
+     "pos": 11,
+     "left": "the historically most affected",
+     "right": "areas this year were",
+     "H": 0.7938,
+     "H_pct": 73.1,
+     "contra": 0.0031,
+     "cohesion": 0.7963
+    },
+    {
+     "pos": 24,
+     "left": "funds and low prioritisation",
+     "right": "relative to other diseases.",
+     "H": 0.7739,
+     "H_pct": 57.7,
+     "contra": 0.012,
+     "cohesion": 0.7833
+    },
+    {
+     "pos": 27,
+     "left": "prioritisation relative to other",
+     "right": "diseases.",
+     "H": 0.7781,
+     "H_pct": 61.5,
+     "contra": 0.0181,
+     "cohesion": 0.7924
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1428",
+  "cuts": 5,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.2055,
+  "policy_worst_contra": 0.1415,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    13,
+    16,
+    21,
+    23,
+    25
+   ],
+   "H_set": 0.5759,
+   "text": "Downhill skiing as a sport goes back to at least the 17th century, ‖ and in 1861 ‖ the first recreational ski club ‖ was opened ‖ by Norwegians ‖ in Australia.",
+   "pieces": {
+    "Chinese": [
+     "作为一种运动,高山滑雪至少可以追溯到17世纪,",
+     "1861年和",
+     "第一个休闲滑雪俱乐部",
+     "开放",
+     "挪威人",
+     "澳大利亚的情况。"
+    ],
+    "Japanese": [
+     "スポーツとしてのスキーは 少なくとも17世紀に遡る",
+     "1861年には",
+     "初のレクリエーションスキークラブを",
+     "開かれたのは",
+     "ノルウェー人によって",
+     "オーストラリアで"
+    ],
+    "German": [
+     "Der Skiabfahrtssport geht mindestens bis ins 17. Jahrhundert zurück,",
+     "und im Jahre 1861",
+     "Der erste Freizeit-Skiclub",
+     "wurde eröffnet",
+     "Gespielt von Norwegern",
+     "in Australien."
+    ],
+    "Spanish": [
+     "El esquí alpino como deporte se remonta al menos al siglo XVII,",
+     "y en 1861",
+     "El primer club de esquí recreativo",
+     "Se abrió",
+     "by Norwegians",
+     "en Australia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6,
+    13,
+    14
+   ],
+   "H_set": 0.7814,
+   "text": "Downhill ‖ skiing as a sport ‖ goes ‖ back to at least the 17th century, ‖ and ‖ in 1861 the first recreational ski club was opened by Norwegians in Australia.",
+   "pieces": {
+    "Chinese": [
+     "下坡",
+     "滑雪作为一种运动",
+     "去",
+     "至少可以追溯到17世纪,",
+     "以及",
+     "1861年,挪威人在澳大利亚开设了第一个休闲滑雪俱乐部。"
+    ],
+    "Japanese": [
+     "ダウンヒル",
+     "スキーはスポーツとして",
+     "行くぞ",
+     "少なくとも17世紀に遡ります",
+     "それに",
+     "1861年にオーストラリアで最初の レクリエーション用スキークラブが ノルウェー人によって開かれました"
+    ],
+    "German": [
+     "Downhill",
+     "Skifahren als Sport",
+     "geht",
+     "zurück bis mindestens ins 17. Jahrhundert,",
+     "und",
+     "1861 wurde der erste Freizeit-Skiclub von Norwegern in Australien eröffnet."
+    ],
+    "Spanish": [
+     "Downhill",
+     "El esquí como deporte",
+     "va",
+     "se remonta al menos al siglo XVII,",
+     "y",
+     "En 1861, el primer club de esquí recreativo fue abierto por noruegos en Australia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "century, and in 1861",
+     "right": "the first recreational ski",
+     "H": 0.7167,
+     "H_pct": 16.0,
+     "contra": 0.1328,
+     "cohesion": 0.8264
+    },
+    {
+     "pos": 21,
+     "left": "first recreational ski club",
+     "right": "was opened by Norwegians",
+     "H": 0.7853,
+     "H_pct": 48.0,
+     "contra": 0.0503,
+     "cohesion": 0.8269
+    },
+    {
+     "pos": 23,
+     "left": "ski club was opened",
+     "right": "by Norwegians in Australia.",
+     "H": 0.7472,
+     "H_pct": 28.0,
+     "contra": 0.052,
+     "cohesion": 0.7882
+    },
+    {
+     "pos": 25,
+     "left": "was opened by Norwegians",
+     "right": "in Australia.",
+     "H": 0.7064,
+     "H_pct": 12.0,
+     "contra": 0.1415,
+     "cohesion": 0.8228
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Downhill",
+     "right": "skiing as a sport",
+     "H": 0.8541,
+     "H_pct": 92.0,
+     "contra": 0.0038,
+     "cohesion": 0.8574
+    },
+    {
+     "pos": 5,
+     "left": "skiing as a sport",
+     "right": "goes back to at",
+     "H": 0.8394,
+     "H_pct": 84.0,
+     "contra": 0.0013,
+     "cohesion": 0.8405
+    },
+    {
+     "pos": 6,
+     "left": "as a sport goes",
+     "right": "back to at least",
+     "H": 0.846,
+     "H_pct": 88.0,
+     "contra": 0.0076,
+     "cohesion": 0.8525
+    },
+    {
+     "pos": 14,
+     "left": "the 17th century, and",
+     "right": "in 1861 the first",
+     "H": 0.8675,
+     "H_pct": 96.0,
+     "contra": 0.0068,
+     "cohesion": 0.8735
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_424",
+  "cuts": 2,
+  "avg_chunk": 5.7,
+  "latency_bin": "≤7",
+  "gap": 0.1527,
+  "policy_worst_contra": 0.0022,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    11
+   ],
+   "H_set": 0.6667,
+   "text": "As time passed, many words ‖ that were borrowed from German coalesced. ‖ This was the beginning of enlightenment.",
+   "pieces": {
+    "Chinese": [
+     "随着时间的推移,许多词语",
+     "从德国借用的词汇",
+     "这是启蒙运动的开始。"
+    ],
+    "Japanese": [
+     "時間が経つにつれて 多くの言葉が",
+     "ドイツから借りたものです",
+     "これが啓蒙の始まりである。"
+    ],
+    "German": [
+     "Als die Zeit verging, viele Worte",
+     "Die aus dem Deutschen entlehnten Wörter verschmolzen.",
+     "Dies war der Anfang der Aufklärung."
+    ],
+    "Spanish": [
+     "Con el paso del tiempo, muchas palabras",
+     "que fueron tomados prestados de la fusión alemana.",
+     "Este fue el comienzo de la iluminación."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    11,
+    12
+   ],
+   "H_set": 0.8194,
+   "text": "As time passed, many words that were borrowed from German coalesced. ‖ This ‖ was the beginning of enlightenment.",
+   "pieces": {
+    "Chinese": [
+     "随着时间的推移,许多从德语借用的词汇融合了起来。",
+     "这个",
+     "是启蒙运动的开始。"
+    ],
+    "Japanese": [
+     "時代が経つにつれ、ドイツ語からの借用語が多く融合した。",
+     "これ",
+     "啓蒙の始まりでした"
+    ],
+    "German": [
+     "Im Laufe der Zeit verschmolzen viele Wörter, die aus dem Deutschen entlehnt wurden.",
+     "This",
+     "Das war der Anfang der Aufklärung."
+    ],
+    "Spanish": [
+     "Con el paso del tiempo, muchas palabras que fueron tomadas prestadas del alemán se fusionaron.",
+     "Este",
+     "Fue el comienzo de la iluminación."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "time passed, many words",
+     "right": "that were borrowed from",
+     "H": 0.5297,
+     "H_pct": 13.3,
+     "contra": 0.0007,
+     "cohesion": 0.5301
+    }
+   ],
+   "added": [
+    {
+     "pos": 12,
+     "left": "from German coalesced. This",
+     "right": "was the beginning of",
+     "H": 0.8255,
+     "H_pct": 93.3,
+     "contra": 0.0065,
+     "cohesion": 0.8309
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1543",
+  "cuts": 1,
+  "avg_chunk": 7.5,
+  "latency_bin": "≤10",
+  "gap": 0.1329,
+  "policy_worst_contra": 0.0004,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.6376,
+   "text": "The patient had been to Nigeria, ‖ where some cases of the Ebola virus have occurred.",
+   "pieces": {
+    "Chinese": [
+     "病人曾去过尼日利亚,",
+     "埃博拉病毒的传播途径"
+    ],
+    "Japanese": [
+     "患者はナイジェリアに行っていた",
+     "何人かのエボラ患者が出た場所です"
+    ],
+    "German": [
+     "Der Patient war in Nigeria gewesen,",
+     "Es gibt keine offizielle Erklärung für die Entstehung des Ebola-Virus."
+    ],
+    "Spanish": [
+     "El paciente había estado en Nigeria,",
+     "El virus del Ébola es una enfermedad infecciosa que afecta a los seres humanos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.7704,
+   "text": "The ‖ patient had been to Nigeria, where some cases of the Ebola virus have occurred.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "埃博拉病毒的病例在世界各地都有发生。"
+    ],
+    "Japanese": [
+     "あの",
+     "患者はナイジェリアに行っていて エボラウイルスの症例が 発生した場所です"
+    ],
+    "German": [
+     "The",
+     "Der Patient war in Nigeria gewesen, wo einige Fälle des Ebola-Virus aufgetreten sind."
+    ],
+    "Spanish": [
+     "The",
+     "El paciente había estado en Nigeria, donde se han producido algunos casos del virus del Ébola."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "had been to Nigeria,",
+     "right": "where some cases of",
+     "H": 0.6376,
+     "H_pct": 7.7,
+     "contra": 0.0004,
+     "cohesion": 0.6378
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "patient had been to",
+     "H": 0.7704,
+     "H_pct": 100.0,
+     "contra": 0.007,
+     "cohesion": 0.7759
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1285",
+  "cuts": 1,
+  "avg_chunk": 11.0,
+  "latency_bin": "≤99",
+  "gap": 0.0653,
+  "policy_worst_contra": 0.0025,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7
+   ],
+   "H_set": 0.7618,
+   "text": "However, people who know a little Spanish ‖ may hastily conclude that Portuguese is close enough that it need not be studied separately.",
+   "pieces": {
+    "Chinese": [
+     "然而,懂一点西班牙语的人",
+     "可能匆忙地得出结论,葡萄牙是足够接近,它不需要单独研究。"
+    ],
+    "Japanese": [
+     "しかし スペイン語を少し知っている人は",
+     "分離して学ぶ必要がないほど ポルトガル語は近いと 結論付けるかもしれません"
+    ],
+    "German": [
+     "Aber Leute, die ein wenig Spanisch sprechen,",
+     "Man kann schnell schließen, dass Portugiesisch so nahe ist, dass es nicht separat studiert werden muss."
+    ],
+    "Spanish": [
+     "Sin embargo, las personas que saben un poco de español",
+     "Se puede concluir apresuradamente que el portugués está lo suficientemente cerca como para no necesitar ser estudiado por separado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    11
+   ],
+   "H_set": 0.8271,
+   "text": "However, people who know a little Spanish may hastily conclude that ‖ Portuguese is close enough that it need not be studied separately.",
+   "pieces": {
+    "Chinese": [
+     "然而,懂一点西班牙语的人可能会匆忙地得出结论,",
+     "葡萄牙语与西班牙语相近,因此不需要单独学习。"
+    ],
+    "Japanese": [
+     "しかし、スペイン語を少し知っている人は、急いで結論付けるかもしれません。",
+     "ポルトガル語は十分に近いので、別々に学ぶ必要はない。"
+    ],
+    "German": [
+     "Jedoch können Leute, die ein wenig Spanisch können, überstürzt schließen, dass",
+     "Portugiesisch ist nahe genug, dass es nicht separat studiert werden muss."
+    ],
+    "Spanish": [
+     "Sin embargo, las personas que saben un poco de español pueden concluir apresuradamente que",
+     "El portugués está lo suficientemente cerca que no necesita ser estudiado por separado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "know a little Spanish",
+     "right": "may hastily conclude that",
+     "H": 0.7618,
+     "H_pct": 75.0,
+     "contra": 0.0025,
+     "cohesion": 0.7637
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "may hastily conclude that",
+     "right": "Portuguese is close enough",
+     "H": 0.8271,
+     "H_pct": 100.0,
+     "contra": 0.0031,
+     "cohesion": 0.8297
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_154",
+  "cuts": 10,
+  "avg_chunk": 2.4,
+  "latency_bin": "≤3",
+  "gap": 0.4313,
+  "policy_worst_contra": 0.8059,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.0904,
+   "text": "This ‖ is ‖ believed ‖ to be the ‖ fifth ‖ time ‖ in history ‖ that ‖ people ‖ have ‖ observed what turned out to be chemically confirmed martian material falling to Earth.",
+   "pieces": {
+    "Chinese": [
+     "这个",
+     "是",
+     "相信",
+     "是否要加入?",
+     "第五次",
+     "时间",
+     "历史上的",
+     "该",
+     "人数",
+     "已",
+     "观察到,事实证明,化学上确认的火星物质落到地球上。"
+    ],
+    "Japanese": [
+     "これ",
+     "はい",
+     "信じてた",
+     "あなたが ここにいるのは",
+     "5番目",
+     "時間",
+     "歴史上",
+     "あれは",
+     "人々",
+     "ああ ああ",
+     "火星の物質が地球に落ちてくるのを 化学的に確認したのです"
+    ],
+    "German": [
+     "This",
+     "ist",
+     "Glaubt",
+     "Die Welt zu sein",
+     "Fünfte",
+     "Zeit",
+     "in der Geschichte",
+     "that",
+     "Person",
+     "haben",
+     "Die NASA hat beobachtet, was sich als chemisch bestätigtes Marsmaterial herausstellte, das auf die Erde fällt."
+    ],
+    "Spanish": [
+     "Este",
+     "es",
+     "Creí",
+     "Para ser el",
+     "quinto",
+     "hora",
+     "en la historia",
+     "that",
+     "personas",
+     "have",
+     "Observó lo que resultó ser material marciano químicamente confirmado cayendo a la Tierra."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    10,
+    11,
+    15,
+    20,
+    21,
+    22
+   ],
+   "H_set": 0.5217,
+   "text": "This ‖ is ‖ believed ‖ to ‖ be the fifth time in history ‖ that ‖ people have observed what ‖ turned out to be chemically ‖ confirmed ‖ martian ‖ material falling to Earth.",
+   "pieces": {
+    "Chinese": [
+     "这个",
+     "是",
+     "相信",
+     "至",
+     "是历史上第五次",
+     "该",
+     "人们已经观察到什么",
+     "结果是化学上",
+     "确认",
+     "火星人",
+     "物质落到地球上。"
+    ],
+    "Japanese": [
+     "これ",
+     "はい",
+     "信じてた",
+     "それは",
+     "歴史上5回目になるでしょう",
+     "あれは",
+     "人々は 人間が",
+     "化学的に",
+     "確認しました",
+     "火星人",
+     "地球に落ちてくる物質です"
+    ],
+    "German": [
+     "This",
+     "ist",
+     "Glaubt",
+     "to",
+     "Zum fünften Mal in der Geschichte",
+     "that",
+     "Menschen haben beobachtet, was",
+     "Es stellte sich heraus, dass es chemisch",
+     "bestätigt",
+     "Mars",
+     "Material, das auf die Erde fällt."
+    ],
+    "Spanish": [
+     "Este",
+     "es",
+     "Creí",
+     "a",
+     "Será la quinta vez en la historia",
+     "that",
+     "La gente ha observado lo que",
+     "Resultó ser químicamente",
+     "confirmado",
+     "marciano",
+     "Material cayendo a la Tierra."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "believed to be the",
+     "right": "fifth time in history",
+     "H": 0.1432,
+     "H_pct": 0.0,
+     "contra": 0.8059,
+     "cohesion": 0.7377
+    },
+    {
+     "pos": 7,
+     "left": "to be the fifth",
+     "right": "time in history that",
+     "H": 0.6528,
+     "H_pct": 4.2,
+     "contra": 0.0033,
+     "cohesion": 0.655
+    },
+    {
+     "pos": 8,
+     "left": "be the fifth time",
+     "right": "in history that people",
+     "H": 0.7119,
+     "H_pct": 20.8,
+     "contra": 0.0013,
+     "cohesion": 0.7128
+    },
+    {
+     "pos": 12,
+     "left": "in history that people",
+     "right": "have observed what turned",
+     "H": 0.7426,
+     "H_pct": 58.3,
+     "contra": 0.0045,
+     "cohesion": 0.746
+    },
+    {
+     "pos": 13,
+     "left": "history that people have",
+     "right": "observed what turned out",
+     "H": 0.7199,
+     "H_pct": 29.2,
+     "contra": 0.0106,
+     "cohesion": 0.7276
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "This is believed to",
+     "right": "be the fifth time",
+     "H": 0.7446,
+     "H_pct": 62.5,
+     "contra": 0.0156,
+     "cohesion": 0.7565
+    },
+    {
+     "pos": 15,
+     "left": "people have observed what",
+     "right": "turned out to be",
+     "H": 0.8012,
+     "H_pct": 95.8,
+     "contra": 0.0028,
+     "cohesion": 0.8035
+    },
+    {
+     "pos": 20,
+     "left": "out to be chemically",
+     "right": "confirmed martian material falling",
+     "H": 0.7462,
+     "H_pct": 66.7,
+     "contra": 0.0162,
+     "cohesion": 0.7585
+    },
+    {
+     "pos": 21,
+     "left": "to be chemically confirmed",
+     "right": "martian material falling to",
+     "H": 0.7746,
+     "H_pct": 83.3,
+     "contra": 0.0165,
+     "cohesion": 0.7876
+    },
+    {
+     "pos": 22,
+     "left": "be chemically confirmed martian",
+     "right": "material falling to Earth.",
+     "H": 0.752,
+     "H_pct": 75.0,
+     "contra": 0.0112,
+     "cohesion": 0.7605
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1342",
+  "cuts": 3,
+  "avg_chunk": 3.5,
+  "latency_bin": "≤5",
+  "gap": 0.1813,
+  "policy_worst_contra": 0.1749,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    10,
+    12
+   ],
+   "H_set": 0.5206,
+   "text": "\"They are cooler than the surrounding surface ‖ in the day ‖ and warmer ‖ at night.",
+   "pieces": {
+    "Chinese": [
+     "\"它们比周围的表面要冷",
+     "日间",
+     "更暖和",
+     "晚上"
+    ],
+    "Japanese": [
+     "周囲の表面よりも冷たい",
+     "昼間は",
+     "暖かく",
+     "夜に"
+    ],
+    "German": [
+     "\"Sie sind kühler als die umgebende Oberfläche",
+     "Im Tageslicht",
+     "Weiß und wärmer",
+     "Nachts."
+    ],
+    "Spanish": [
+     "\"Son más fríos que la superficie circundante",
+     "En el día",
+     "Más caliente y más caliente",
+     "Por la noche."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    7,
+    10
+   ],
+   "H_set": 0.7019,
+   "text": "\"They ‖ are cooler than the surrounding surface ‖ in the day ‖ and warmer at night.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "比周围的表面要冷",
+     "日间",
+     "夜里更暖和。"
+    ],
+    "Japanese": [
+     "\"彼らは",
+     "周囲の表面よりも冷たいので",
+     "昼間は",
+     "夜は暖かくなります"
+    ],
+    "German": [
+     "\"Sie",
+     "sind kühler als die umgebende Oberfläche",
+     "Im Tageslicht",
+     "Nachts ist es kühler und wärmer."
+    ],
+    "Spanish": [
+     "\"Ellos",
+     "Son más fríos que la superficie circundante",
+     "En el día",
+     "y más cálido por la noche."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "the day and warmer",
+     "right": "at night.",
+     "H": 0.5939,
+     "H_pct": 25.0,
+     "contra": 0.1749,
+     "cohesion": 0.7198
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "\"They",
+     "right": "are cooler than the",
+     "H": 0.7905,
+     "H_pct": 100.0,
+     "contra": 0.01,
+     "cohesion": 0.7985
+    }
+   ]
+  }
+ }
+]

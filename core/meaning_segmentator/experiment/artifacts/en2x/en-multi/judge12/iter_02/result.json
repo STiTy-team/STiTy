@@ -1,0 +1,45 @@
+{
+ "iter": 2,
+ "candidate": 0,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00943,
+  "lo": -0.0367,
+  "hi": 0.01782,
+  "n": 462,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Added a core principle that forbids avoiding contradiction risk by moving cuts onto function-word boundaries and instructs keeping short function words attached to content words — to address the primary finding that scorers dodge high-contradiction positions by splitting determiners/auxiliaries/list items, which reduces cohesion."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Clause-final punctuation and full clause completions usually mark semantic clo",
+   "now": "- Do not avoid contradiction risk by relocating cuts onto function-word boundari"
+  }
+ ],
+ "findings": [
+  "The prompt pushes scorers to avoid high-contradiction positions by relocating cuts onto function-word boundaries (splitting determiners, auxiliaries, or list items), which preserves no-contradiction at the cost of much lower cohesion.",
+  "The prompt under-emphasizes preserving predicate-argument and noun-phrase integrity: scorers sometimes cut inside verb+object, determiner+noun, or compound-name spans, harming cohesion especially at longer latency bins."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0314,
+   "≤5": 0.025,
+   "≤7": -0.002,
+   "≤10": -0.0205,
+   "≤99": -0.0148
+  },
+  "n_worse": 196,
+  "n_better": 150,
+  "why": "By forbidding cuts on function-word boundaries the scorer stopped splitting off short determiners/auxiliaries and instead attached them to neighboring content, which moved many cut positions; this helped some mid-length pieces (≤5 bin +0.025) but harmed very-short pieces (≤3 bin −0.0314) and produced more overall declines than gains (196 worse vs 150 better). For example, en_us_1465 shows the cut before 'the' was removed (now 'visit the historic city'), while en_us_1427 illustrates a mid-length improvement where joining reduced contradiction.",
+  "lesson": "Do not apply a blanket prohibition on relocating cuts to function-word boundaries — the change helps some bins (≈≤5) but hurts very-short pieces (≤3), so later revisions should avoid uniform application that degrades the smallest-latency buckets.",
+  "blamed": [
+   "C8 «- Clause-final punctuation and full clause completions usual»"
+  ]
+ }
+}

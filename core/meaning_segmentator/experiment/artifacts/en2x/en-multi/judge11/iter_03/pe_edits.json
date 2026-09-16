@@ -1,0 +1,347 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Avoid cuts that leave a very short fragment (roughly ≤4 words) consisting only of a predicate, auxiliary, negation, or verbal particle while its required complement, object, or licensing head appears later; prefer keeping verbs together with their complements and scope-bearing operators, but do not shift the cut earlier if that would create many tiny fragments."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- When the following fragment, taken alone, has a substantial chance of contradicting or overturning the preceding material (contra ≳ 0.5), mark that cut unsafe and lower its rank substantially — high post-cut contradiction should heavily reduce a cut's score regardless of modest cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 366
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 291
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7633,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 7336
+   }
+  ],
+  "skipped": [],
+  "result_chars": 14312,
+  "errors": [
+   "길이 초과: 14312 > 7673"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "- Would translating the material after this cut, taken alone and appended later, overturn, negate, or reverse the truth of what precedes? Cuts that separate scope-bearing operators from their predicates often cause such contradiction and should be penalized."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Do not make a cut that leaves a very short fragment (≈≤4 words) consisting only of a predicate, auxiliary, negation, or particle while its required complement, object, or licensing head appears later; such cuts are unsafe and should be avoided."
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Does the material after the cut supply antecedents or disambiguating referents for pronouns, definites, or indices so that the earlier fragment becomes referentially vague or misresolved when translated alone?"
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Does the following material license tense, aspect, modality, or negation for an embedded clause so that detaching it would flip entailments or truth conditions of the prior fragment?"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Is the part after the cut a temporal, aspectual, or sequencing adjunct whose separation would reorder events or change factuality for the portion before the cut?"
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "- Does the material after the cut express a sentential connective or discourse relation (cause, concession, contrast, condition) essential to how the preceding clause is interpreted? If so, the cut is risky."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Does the following text belong inside the same noun phrase (possessor, restrictive modifier, appositive)? Separating it can change which entity is named or its properties; commas alone don't guarantee safety."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Protect atomic units (names, noun compounds, enumerations) but avoid a leftward bias that isolates verb heads, auxiliaries, negation, or particles on tiny fragments; prefer keeping verbs with their complements and scope-bearing operators together."
+   },
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E5"
+   },
+   {
+    "op": "delete",
+    "id": "E6"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E12"
+   },
+   {
+    "op": "delete",
+    "id": "E13"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": -41
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": -71
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -11
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -25
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": 0
+   },
+   {
+    "edit": 5,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -7
+   },
+   {
+    "edit": 6,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -87
+   },
+   {
+    "edit": 7,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -18
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -384
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E5",
+    "kind": "delete",
+    "chars_change": -519
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E6",
+    "kind": "delete",
+    "chars_change": -661
+   },
+   {
+    "edit": 13,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -969
+   },
+   {
+    "edit": 14,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -633
+   },
+   {
+    "edit": 15,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -793
+   },
+   {
+    "edit": 16,
+    "op": "delete",
+    "id": "E12",
+    "kind": "delete",
+    "chars_change": -675
+   },
+   {
+    "edit": 17,
+    "op": "delete",
+    "id": "E13",
+    "kind": "delete",
+    "chars_change": -700
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7169,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_990",
+    "text": "Input: The <SEG:?> glaciers <SEG:?> are <SEG:?> not <SEG:?> stable, <SEG:?> but <SEG:?> flow <SEG:?> down <SEG:?> the <SEG:?> mountain. <SEG:?> This <SEG:?> will <SEG:?> cause <SEG:?> cracks, <SEG:?> crevasses, <SEG:?> which <SEG:?> may <SEG:?> be <SEG:?> obscured <SEG:?> by <SEG:?> snow <SEG:?> bridges.\nOutput: The <SEG:80> glaciers <SEG:20> are <SEG:15> not <SEG:10> stable, <SEG:75> but <SEG:35> flow <SEG:45> down <SEG:95> the <SEG:0> mountain. <SEG:100> This <SEG:85> will <SEG:55> cause <SEG:40> cracks, <SEG:90> crevasses, <SEG:65> which <SEG:30> may <SEG:50> be <SEG:60> obscured <SEG:70> by <SEG:25> snow <SEG:5> bridges."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_845",
+    "text": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.\nOutput: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 135
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 72
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -10
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -355
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6818,
+  "errors": null
+ }
+]

@@ -1,0 +1,255 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- In dense or short-latency contexts, avoid shifting cuts rightward into short complements or inside noun/prepositional phrases. Prefer keeping multiword names and short noun phrases intact so referents, modifiers and cohesion are preserved."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 242
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7155,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 7231
+   }
+  ],
+  "skipped": [],
+  "result_chars": 14144,
+  "errors": [
+   "길이 초과: 14144 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "- In dense/short-latency settings, avoid shifting cuts into short complements or inside compact noun/prepositional phrases; prefer keeping multiword names and short noun phrases intact to preserve referent cohesion."
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E12"
+   },
+   {
+    "op": "delete",
+    "id": "E13"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 29
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -561
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -828
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -670
+   },
+   {
+    "edit": 6,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -921
+   },
+   {
+    "edit": 7,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -959
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E12",
+    "kind": "delete",
+    "chars_change": -658
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E13",
+    "kind": "delete",
+    "chars_change": -799
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7229,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_651",
+    "text": "Input: Your <SEG:?> hotel <SEG:?> or <SEG:?> hosts <SEG:?> (if <SEG:?> staying <SEG:?> in <SEG:?> a <SEG:?> guesthouse <SEG:?> or <SEG:?> private <SEG:?> home) <SEG:?> will <SEG:?> likely <SEG:?> have <SEG:?> wifi <SEG:?> or <SEG:?> an <SEG:?> internet <SEG:?> connected <SEG:?> PC, <SEG:?> and <SEG:?> all <SEG:?> settlements <SEG:?> have <SEG:?> an <SEG:?> internet <SEG:?> cafe <SEG:?> or <SEG:?> some <SEG:?> location <SEG:?> with <SEG:?> public <SEG:?> wifi.\nOutput: Your <SEG:66> hotel <SEG:69> or <SEG:97> hosts <SEG:50> (if <SEG:59> staying <SEG:25> in <SEG:19> a <SEG:6> guesthouse <SEG:16> or <SEG:9> private <SEG:28> home) <SEG:91> will <SEG:72> likely <SEG:38> have <SEG:12> wifi <SEG:100> or <SEG:75> an <SEG:34> internet <SEG:84> connected <SEG:78> PC, <SEG:94> and <SEG:88> all <SEG:81> settlements <SEG:44> have <SEG:56> an <SEG:0> internet <SEG:62> cafe <SEG:31> or <SEG:53> some <SEG:47> location <SEG:22> with <SEG:3> public <SEG:41> wifi."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1137",
+    "text": "Input: The <SEG:?> village <SEG:?> of <SEG:?> Haldarsvík <SEG:?> offer <SEG:?> views <SEG:?> of <SEG:?> the <SEG:?> nearby <SEG:?> island <SEG:?> Eysturoy <SEG:?> and <SEG:?> has <SEG:?> an <SEG:?> unusual <SEG:?> octagonal <SEG:?> church.\nOutput: The <SEG:73> village <SEG:53> of <SEG:80> Haldarsvík <SEG:93> offer <SEG:40> views <SEG:47> of <SEG:60> the <SEG:0> nearby <SEG:20> island <SEG:87> Eysturoy <SEG:100> and <SEG:27> has <SEG:67> an <SEG:33> unusual <SEG:13> octagonal <SEG:7> church."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1118",
+    "text": "Input: She <SEG:?> directed <SEG:?> officers <SEG:?> to <SEG:?> her <SEG:?> black <SEG:?> Oldsmobile <SEG:?> Intrigue <SEG:?> which <SEG:?> was <SEG:?> 500 <SEG:?> feet <SEG:?> away.\nOutput: She <SEG:82> directed <SEG:91> officers <SEG:45> to <SEG:18> her <SEG:0> black <SEG:64> Oldsmobile <SEG:73> Intrigue <SEG:100> which <SEG:36> was <SEG:9> 500 <SEG:27> feet <SEG:55> away."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_767",
+    "text": "Input: The <SEG:?> city <SEG:?> of <SEG:?> Beijing <SEG:?> in <SEG:?> China <SEG:?> will <SEG:?> be <SEG:?> the <SEG:?> host <SEG:?> city <SEG:?> of <SEG:?> the <SEG:?> Olympic <SEG:?> Winter <SEG:?> Games <SEG:?> in <SEG:?> 2022, <SEG:?> which <SEG:?> will <SEG:?> make <SEG:?> it <SEG:?> the <SEG:?> first <SEG:?> city <SEG:?> to <SEG:?> have <SEG:?> hosted <SEG:?> both <SEG:?> the <SEG:?> summer <SEG:?> and <SEG:?> winter <SEG:?> Olympics.\nOutput: The <SEG:78> city <SEG:94> of <SEG:97> Beijing <SEG:91> in <SEG:84> China <SEG:38> will <SEG:50> be <SEG:16> the <SEG:41> host <SEG:66> city <SEG:81> of <SEG:47> the <SEG:44> Olympic <SEG:19> Winter <SEG:62> Games <SEG:59> in <SEG:0> 2022, <SEG:100> which <SEG:88> will <SEG:72> make <SEG:69> it <SEG:53> the <SEG:28> first <SEG:31> city <SEG:3> to <SEG:9> have <SEG:6> hosted <SEG:34> both <SEG:25> the <SEG:12> summer <SEG:56> and <SEG:22> winter <SEG:75> Olympics."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 575
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -65
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -293
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": 53
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7183,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- In dense/short-latency contexts, prefer keeping multiword names, short noun phrases and prepositional complements intact; avoid moving cuts rightward into short complements or inside noun/prepositional phrases, since that creates tiny fragments with low cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 25
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6938,
+  "errors": null
+ }
+]

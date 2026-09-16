@@ -1,0 +1,261 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- If the left-side fragment, read alone, yields a plausible but contradicted or misleading proposition (high contra), treat that cut as high-risk: strongly demote it even when cohesion appears high; prioritize avoiding standalone misleading claims."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "labeled_example": "en_us_738",
+    "kind": "example",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 59
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -349
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6623,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 7600
+   }
+  ],
+  "skipped": [],
+  "result_chars": 14513,
+  "errors": [
+   "길이 초과: 14513 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- If the left-side fragment, read alone, yields a plausible but contradictory or misleading proposition (high contra), treat that as the primary safety signal: strongly demote that cut even when cohesion appears high. Avoid cuts that leave scope-bearing words (negation, quantifiers, exception markers, comparatives) or required complements behind the cut."
+   },
+   {
+    "op": "delete",
+    "id": "C8"
+   },
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E5"
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E16"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 124
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -288
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -384
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -561
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 6,
+    "op": "delete",
+    "id": "E5",
+    "kind": "delete",
+    "chars_change": -961
+   },
+   {
+    "edit": 7,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -746
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -513
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -700
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -539
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -733
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E16",
+    "kind": "delete",
+    "chars_change": -579
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7083,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -349
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6564,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -349
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6564,
+  "errors": null
+ }
+]

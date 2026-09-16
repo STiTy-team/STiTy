@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt pushes scorers to avoid high-contradiction positions by relocating cuts onto function-word boundaries (splitting determiners, auxiliaries, or list items), which preserves no-contradiction at the cost of much lower cohesion.",
+    "evidence": "['en_us_399','en_us_845','en_us_345','en_us_655','en_us_1253','en_us_167'] — each policy set contains a single high-contradiction cut that zeroed the H_set and other kept cuts were shifted to create many tiny function-word fragments or broken enumerations, collapsing overall cohesion.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not avoid contradiction risk by relocating cuts onto function-word boundaries. Prefer keeping short function words (determiners, auxiliaries, conjunctions) attached to adjacent content words; avoid segmentations that split determiners/auxiliaries from their noun or verb phrases merely to dodge a risky boundary."
+    }
+   },
+   {
+    "diagnosis": "The prompt under-emphasizes preserving predicate-argument and noun-phrase integrity: scorers sometimes cut inside verb+object, determiner+noun, or compound-name spans, harming cohesion especially at longer latency bins.",
+    "evidence": "['en_us_1024','en_us_1087','en_us_957','en_us_1415','en_us_1179'] — in each target the better segmentation keeps heads with their complements (verb+object, determiner+noun, or full NP titles) and yields much higher H_set than policy which split those spans.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Example guidance: prefer cuts that keep verb+object and determiner+noun together; avoid cutting between auxiliaries and their complements or inside long noun phrases or compound names, since those attachments strongly preserve cohesion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt pushes scorers to avoid high-contradiction positions by relocating cuts onto function-word boundaries (splitting determiners, auxiliaries, or list items), which preserves no-contradiction at the cost of much lower cohesion.",
+   "evidence": "['en_us_399','en_us_845','en_us_345','en_us_655','en_us_1253','en_us_167'] — each policy set contains a single high-contradiction cut that zeroed the H_set and other kept cuts were shifted to create many tiny function-word fragments or broken enumerations, collapsing overall cohesion.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not avoid contradiction risk by relocating cuts onto function-word boundaries. Prefer keeping short function words (determiners, auxiliaries, conjunctions) attached to adjacent content words; avoid segmentations that split determiners/auxiliaries from their noun or verb phrases merely to dodge a risky boundary."
+   }
+  },
+  {
+   "diagnosis": "The prompt under-emphasizes preserving predicate-argument and noun-phrase integrity: scorers sometimes cut inside verb+object, determiner+noun, or compound-name spans, harming cohesion especially at longer latency bins.",
+   "evidence": "['en_us_1024','en_us_1087','en_us_957','en_us_1415','en_us_1179'] — in each target the better segmentation keeps heads with their complements (verb+object, determiner+noun, or full NP titles) and yields much higher H_set than policy which split those spans.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Example guidance: prefer cuts that keep verb+object and determiner+noun together; avoid cutting between auxiliaries and their complements or inside long noun phrases or compound names, since those attachments strongly preserve cohesion."
+   }
+  }
+ ]
+}

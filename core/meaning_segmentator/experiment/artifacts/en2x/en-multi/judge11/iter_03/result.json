@@ -1,0 +1,58 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 1e-05,
+  "lo": -0.01311,
+  "hi": 0.01211,
+  "n": 1651,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 1e-05,
+  "lo": -0.01311,
+  "hi": 0.01211,
+  "n": 1651,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Inserted a principle to avoid creating very short predicate-only fragments and to prefer keeping verbs, their complements, and scope-bearing operators together — addresses the leftward-cut bias that isolates predicates.",
+  "Inserted a principle to strongly penalize cuts whose following fragment has high probability of contradicting or overturning the prior material (contra ≳0.5) — addresses underweighting of high post-cut contradiction."
+ ],
+ "findings": [
+  "The scorer has a leftward cut bias that often isolates predicates, auxiliaries, negation, or required complements onto very short pieces, producing standalone fragments whose meaning is reversed or incomplete when joined later.",
+  "The scorer underweights high post-cut contradiction: positions that leave a later fragment which, on its own, strongly contradicts or overturns the earlier fragment are not being penalized enough."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Avoid cuts that leave a very short fragment (roughly ≤4 words) consisting only"
+  },
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- When the following fragment, taken alone, has a substantial chance of contradi"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0003,
+   "≤5": -0.0029,
+   "≤7": 0.0011,
+   "≤10": 0.0065,
+   "≤99": 0.003
+  },
+  "n_worse": 587,
+  "n_better": 634,
+  "why": "The two inserted principles caused the scorer to avoid cut positions that would leave a tiny predicate-only right-hand fragment and to strongly downweight cuts whose following fragment looks likely to contradict; that moved many cuts away from verbs/complements (improving cohesion for longer pieces and reducing contradiction in the ≤7–≤99 bins). However, because the avoidance was implemented by shifting cuts leftward, it often pushed cuts into adjacent noun phrases and modifiers, producing many single-word or very-short left fragments and slightly hurting the shortest bins (≤3, ≤5), yielding an overall near-zero net change.",
+  "lesson": "A follow-up edit should keep verbs with their complements and avoid high-contradiction right-hand fragments without simply shifting cuts into neighboring NPs or creating new one-word fragments (i.e., account for the symmetric effect on the left-hand fragment).",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

@@ -1,0 +1,159 @@
+{
+ "done": 1,
+ "prompt": "[Role]\nYou are a scorer that inspects an English source sentence with a marker at every possible cut and assigns a distinct integer 0–100 to each marker. Your judgments must reflect two semantic measurements taken at every candidate cut, derived only from the source sentence:\n\n[Core Principles]\nAt each candidate cut ask two focused semantic questions about meaning and the cost of separating the text there. Answer these questions by imagining the two stretches as independently translated and then concatenated in order.\n\n- Contra judgement (does the continuation overturn what preceded?): Would the material that begins after this cut, read by itself, change, negate, reverse, or materially contradict the main assertion, claim, or factual status established before the cut? Ask whether the continuation can introduce a different truth-condition, an opposite claim, a rescission, or a change of referent that a listener who cannot go back would plausibly interpret as contradicting or canceling the earlier stretch. In English this risk often arises when later material resolves scope (negation, modality, temporal sequencing), reassigns the subject or patient, or presents a corrective or contrast that reverses expectations set earlier. Look for cases where the later clause can flip the truth of the prior clause, where a later adverbial or subordinate clause scopes over and negates an earlier assertion, or where a later discourse unit supplies corrective information that would make the earlier fragment false or misleading on its own.\n\n- Cohesion judgement (does translating the two sides apart preserve the whole?): If the text is split here and each side is translated in isolation, will the two translations, when simply joined in order, still convey the same combined meaning as the intact sentence? Consider whether essential syntactic dependencies, modifier–head relations, referent resolution, scope of quantifiers or negation, or embedded clause attachments would be broken by the cut. In English, danger often comes from splitting within long nested noun phrases, across verb phrases that carry scope, mid-stream inside relative or complement clauses, or between possessive/attribution and its head; these separations can cause wrong attachment, orphaned modifiers, unresolved pronouns, or loss of intended scope. Cohesion damage looks like ambiguity about which noun a modifier belongs to, missing the intended subject or object, truncated predicate meaning, or loss of the relation (temporal, causal, contrastive) that links clauses.\n\nApply these two judgements at every marker. Both are graded: the first is a graded probability that the continuation contradicts or overturns the prefix; the second is a graded quality score for how well separated translation would reconstruct the whole when concatenated.\n\n[Scoring Rules]\n- cohesion: a graded quality estimate (0.0–1.0) of how faithfully the joined translations of the two independent pieces render the WHOLE source sentence. Higher means the two-piece translation, when concatenated, reliably preserves the original combined meaning; lower means important dependencies or attachments are broken and the joined result loses meaning or becomes ambiguous.\n- contra: a graded probability (0.0–1.0) that the text beginning after the cut, considered alone, contradicts, negates, or materially overturns the stretch before the cut.\n- target per marker = cohesion × (1 − contra). Both cohesion and contra are evaluated from the source sentence alone; contra is not thresholded into a binary flag and enters only through the product.\n- Convert the target (a 0.0–1.0 real) into an integer 0–100 by multiplying by 100 and rounding to an integer. Use that integer as the marker score.\n- Ranking rules for outputs you produce: assign every marker in the sentence a DIFFERENT integer in the full 0–100 range so that the order of numbers within the sentence reflects your preference for where cuts should occur. Distinctness is required; ties are broken later by position, but you must avoid ties by choosing distinct integers yourself.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.\nOutput: The <SEG:10> great <SEG:12> pyramid <SEG:15> was <SEG:20> created <SEG:22> to <SEG:25> honor <SEG:30> the <SEG:35> Pharaoh <SEG:40> Khufu, <SEG:100> and <SEG:50> many <SEG:45> of <SEG:18> the <SEG:28> smaller <SEG:95> pyramids, <SEG:90> tombs, <SEG:85> and <SEG:60> temples <SEG:55> were <SEG:48> built <SEG:43> to <SEG:33> honor <SEG:38> Khufu's <SEG:42> wives <SEG:32> and <SEG:24> family <SEG:16> members.\n\nInput: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclear <SEG:?> power <SEG:?> generation <SEG:?> becomes <SEG:?> economically <SEG:?> viable, <SEG:?> Australia <SEG:?> should <SEG:?> pursue <SEG:?> its <SEG:?> use.\nOutput: Mr <SEG:05> Costello <SEG:06> said <SEG:08> that <SEG:20> when <SEG:12> nuclear <SEG:09> power <SEG:14> generation <SEG:16> becomes <SEG:30> economically <SEG:22> viable, <SEG:100> Australia <SEG:85> should <SEG:70> pursue <SEG:60> its <SEG:40> use.\n\nInput: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.\nOutput: Humans <SEG:10> can <SEG:12> be <SEG:15> affected <SEG:100> by <SEG:60> breathing <SEG:55> affected <SEG:20> water <SEG:50> taken <SEG:40> into <SEG:35> the <SEG:25> air <SEG:30> by <SEG:28> wind <SEG:22> and <SEG:18> waves.",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": -0.01505,
+    "lo": -0.04962,
+    "hi": 0.01577,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Paraphrased C1 to be more concise and explicit about the two core questions so overall prompt size stayed controlled (addresses general clarity).",
+    "Replaced C2 to keep the original contra guidance but add an explicit instruction to treat very short, scope-bearing continuations as high-risk (addresses finding 1).",
+    "Rewrote C3 to keep cohesion guidance while adding an explicit penalty for cuts that isolate function-word–only fragments and to be more concise (addresses finding 3).",
+    "Replaced example E2 with the measured labeled example en_us_738 so the model learns a real-case ranking where short negation/auxiliary continuations are high-risk (addresses finding 1 directly)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C1",
+     "kind": "paraphrase",
+     "was": "At each candidate cut ask two focused semantic questions about meaning and the c",
+     "now": "At each candidate cut, ask two focused semantic questions by imagining the two s"
+    },
+    {
+     "op": "replace",
+     "id": "C2",
+     "kind": "change",
+     "was": "- Contra judgement (does the continuation overturn what preceded?): Would the ma",
+     "now": "- Contra judgement (does the continuation overturn what preceded?): Ask whether "
+    },
+    {
+     "op": "replace",
+     "id": "C3",
+     "kind": "change",
+     "was": "- Cohesion judgement (does translating the two sides apart preserve the whole?):",
+     "now": "- Cohesion judgement (does translating the two sides apart preserve the whole?):"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+     "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 2,
+   "adopted": false,
+   "screened_only": true,
+   "delta": {
+    "mean": -0.00148,
+    "lo": -0.03779,
+    "hi": 0.03316,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Replaced E1 with labeled example en_us_1294 to teach the risk from short, scope-bearing continuations (negation/predicate fragments).",
+    "Replaced E2 with labeled example en_us_733 to teach preferring early cuts that isolate an initial head/preamble so the predicate stays intact.",
+    "Replaced E3 with labeled example en_us_337 to teach penalizing cuts that leave function-word–only fragments (e.g., isolated determiners) and to show a tight preamble/predicate split."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+     "now": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> "
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+     "now": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+     "now": "Input: To <SEG:?> finish, <SEG:?> Turkish <SEG:?> dance <SEG:?> group <SEG:?> Fi"
+    }
+   ],
+   "findings": [
+    "The scorer underestimates the risk when the continuation is a very short scope-bearing fragment (operators that can flip truth: negation, auxiliaries that complete a predicate, temporal or corrective subordinators). It often gives such continuations low contra even though, read alone, they can overturn or rescind the prefix; that causes kept cuts to be later overturned and zero out the set.",
+    "The scorer undervalues cuts that isolate an initial head/preamble (short topical words, names, or the sentence's leftmost noun phrase), preferring later splits that leave the predicate or critical attachment stranded. Better segmentations often cut early so the remainder contains the predicate and necessary attachments, improving cohesion and avoiding contradictions.",
+    "The scorer does not penalize enough splits that leave tiny, function-word–only fragments (stranded determiners, prepositions, or short auxiliaries). Translations of such isolated function-word fragments rarely reattach cleanly to the following piece, so cohesion is worse than the scorer predicts."
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.001,
+     "≤5": 0.0002,
+     "≤7": -0.007,
+     "≤10": -0.0035,
+     "≤99": 0.0038
+    },
+    "n_worse": 142,
+    "n_better": 150,
+    "why": "The new examples pushed the model to keep larger predicate-attached spans (fewer cuts inside long NP/postmodifiers), which helps long-piece H_set, but also made it over-sensitive to short scope-bearing tokens and function words so it began producing singleton cuts (e.g. isolating \"they've\" / \"not\"), hurting short/mid bins — net effect small and mixed.",
+    "lesson": "Later revisions should preserve the preference to keep predicate-attached spans intact while avoiding examples that can be read as encouraging single-token cuts of auxiliaries/negation or other function words.",
+    "blamed": [
+     "E2 (encouraged early preamble/predicate isolation)",
+     "E1 (over-emphasized short, scope-bearing continuations)",
+     "E3 (intended to penalize function-word fragments but misgeneralized)"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 7322,
+ "total_cost": 13.893319,
+ "provenance": {
+  "At each candidate cut ask two focused semantic questions about meaning and the cost of separating the text there. Answer these questions by imagining the two stretches as independently translated and then concatenated in order.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Contra judgement (does the continuation overturn what preceded?): Would the material that begins after this cut, read by itself, change, negate, reverse, or materially contradict the main assertion, claim, or factual status established before the cut? Ask whether the continuation can introduce a different truth-condition, an opposite claim, a rescission, or a change of referent that a listener who cannot go back would plausibly interpret as contradicting or canceling the earlier stretch. In English this risk often arises when later material resolves scope (negation, modality, temporal sequencing), reassigns the subject or patient, or presents a corrective or contrast that reverses expectations set earlier. Look for cases where the later clause can flip the truth of the prior clause, where a later adverbial or subordinate clause scopes over and negates an earlier assertion, or where a later discourse unit supplies corrective information that would make the earlier fragment false or misleading on its own.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Cohesion judgement (does translating the two sides apart preserve the whole?): If the text is split here and each side is translated in isolation, will the two translations, when simply joined in order, still convey the same combined meaning as the intact sentence? Consider whether essential syntactic dependencies, modifier–head relations, referent resolution, scope of quantifiers or negation, or embedded clause attachments would be broken by the cut. In English, danger often comes from splitting within long nested noun phrases, across verb phrases that carry scope, mid-stream inside relative or complement clauses, or between possessive/attribution and its head; these separations can cause wrong attachment, orphaned modifiers, unresolved pronouns, or loss of intended scope. Cohesion damage looks like ambiguity about which noun a modifier belongs to, missing the intended subject or object, truncated predicate meaning, or loss of the relation (temporal, causal, contrastive) that links clauses.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Apply these two judgements at every marker. Both are graded: the first is a graded probability that the continuation contradicts or overturns the prefix; the second is a graded quality score for how well separated translation would reconstruct the whole when concatenated.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to <SEG:?> honor <SEG:?> the <SEG:?> Pharaoh <SEG:?> Khufu, <SEG:?> and <SEG:?> many <SEG:?> of <SEG:?> the <SEG:?> smaller <SEG:?> pyramids, <SEG:?> tombs, <SEG:?> and <SEG:?> temples <SEG:?> were <SEG:?> built <SEG:?> to <SEG:?> honor <SEG:?> Khufu's <SEG:?> wives <SEG:?> and <SEG:?> family <SEG:?> members.\nOutput: The <SEG:10> great <SEG:12> pyramid <SEG:15> was <SEG:20> created <SEG:22> to <SEG:25> honor <SEG:30> the <SEG:35> Pharaoh <SEG:40> Khufu, <SEG:100> and <SEG:50> many <SEG:45> of <SEG:18> the <SEG:28> smaller <SEG:95> pyramids, <SEG:90> tombs, <SEG:85> and <SEG:60> temples <SEG:55> were <SEG:48> built <SEG:43> to <SEG:33> honor <SEG:38> Khufu's <SEG:42> wives <SEG:32> and <SEG:24> family <SEG:16> members.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclear <SEG:?> power <SEG:?> generation <SEG:?> becomes <SEG:?> economically <SEG:?> viable, <SEG:?> Australia <SEG:?> should <SEG:?> pursue <SEG:?> its <SEG:?> use.\nOutput: Mr <SEG:05> Costello <SEG:06> said <SEG:08> that <SEG:20> when <SEG:12> nuclear <SEG:09> power <SEG:14> generation <SEG:16> becomes <SEG:30> economically <SEG:22> viable, <SEG:100> Australia <SEG:85> should <SEG:70> pursue <SEG:60> its <SEG:40> use.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathing <SEG:?> affected <SEG:?> water <SEG:?> taken <SEG:?> into <SEG:?> the <SEG:?> air <SEG:?> by <SEG:?> wind <SEG:?> and <SEG:?> waves.\nOutput: Humans <SEG:10> can <SEG:12> be <SEG:15> affected <SEG:100> by <SEG:60> breathing <SEG:55> affected <SEG:20> water <SEG:50> taken <SEG:40> into <SEG:35> the <SEG:25> air <SEG:30> by <SEG:28> wind <SEG:22> and <SEG:18> waves.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

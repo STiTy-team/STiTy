@@ -1,0 +1,393 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Penalize cuts that leave a predicate or an obligatory complement/scope-bearing element (verb objects, prepositional complements, complement clauses, negation scope) on the other side when the pre-cut span alone would assert or plausibly imply a claim; allow cuts inside optional modifiers or long NPs when they do not create a standalone misleading assertion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 147
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7060,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 7498
+   }
+  ],
+  "skipped": [],
+  "result_chars": 14411,
+  "errors": [
+   "길이 초과: 14411 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "Penalize cuts that leave a predicate or an obligatory complement/scope-bearing element (verb objects, prepositional complements, complement clauses, negation scope) on the other side when the pre-cut span alone would assert or plausibly imply a claim; allow cuts inside optional modifiers or long NPs when they do not create a standalone misleading assertion."
+   },
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "- Cuts are risky if what follows reverses, denies, or narrows an earlier assertion; listeners who cannot return may hold a wrong claim."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- Avoid cuts that break referents, argument links, or event sequencing; such breaks lower cohesion when spans are translated independently and then joined."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Allow cuts inside optional modifiers, enumerations, or inside long noun phrases when the separated pieces do not assert a different claim or break key reference."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Treat relative clauses and postnominal modifiers cautiously: cutting an attachment that identifies or restricts a noun can make the pre-cut fragment ambiguous or false."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "- Parenthetical discourse adverbials and stance phrases are often detachable, provided they do not alter truth-conditions or the scope of negation or modality."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Negation, narrow-focus operators, and subordinators often leave earlier material provisional; cuts that isolate their complements or auxiliaries can flip meaning and should be penalized."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- For very-short latency buckets, prefer cuts that yield minimally coherent predications; avoid producing single-word, subject–verb, or isolated-function-word fragments."
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E6"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E15"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 103
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": -83
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": -77
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -24
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -12
+   },
+   {
+    "edit": 5,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -25
+   },
+   {
+    "edit": 6,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -30
+   },
+   {
+    "edit": 7,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -72
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -561
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E6",
+    "kind": "delete",
+    "chars_change": -686
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -917
+   },
+   {
+    "edit": 13,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -812
+   },
+   {
+    "edit": 14,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -755
+   },
+   {
+    "edit": 15,
+    "op": "delete",
+    "id": "E15",
+    "kind": "delete",
+    "chars_change": -744
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8169,
+  "errors": [
+   "길이 초과: 8169 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "Penalize cuts that leave a predicate or an obligatory complement/scope-bearing element (verb objects, prepositional complements, complement clauses, negation scope) on the other side when the pre-cut span alone would assert or plausibly imply a claim; allow cuts inside optional modifiers or long NPs when they do not create a standalone misleading assertion."
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E5"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 0
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -641
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -620
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E5",
+    "kind": "delete",
+    "chars_change": -506
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6399,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1507",
+    "text": "Input: Travellers <SEG:?> may <SEG:?> encounter <SEG:?> animal <SEG:?> pests <SEG:?> that <SEG:?> they <SEG:?> are <SEG:?> not <SEG:?> familiar <SEG:?> with <SEG:?> in <SEG:?> their <SEG:?> home <SEG:?> regions.\nOutput: Travellers <SEG:77> may <SEG:85> encounter <SEG:46> animal <SEG:23> pests <SEG:92> that <SEG:31> they <SEG:8> are <SEG:0> not <SEG:15> familiar <SEG:54> with <SEG:100> in <SEG:69> their <SEG:62> home <SEG:38> regions."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1280",
+    "text": "Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?> be <SEG:?> delivered <SEG:?> to <SEG:?> the <SEG:?> historically <SEG:?> most <SEG:?> affected <SEG:?> areas <SEG:?> this <SEG:?> year <SEG:?> were <SEG:?> delayed <SEG:?> due <SEG:?> to <SEG:?> lack <SEG:?> of <SEG:?> funds <SEG:?> and <SEG:?> low <SEG:?> prioritisation <SEG:?> relative <SEG:?> to <SEG:?> other <SEG:?> diseases.\nOutput: Plans <SEG:42> for <SEG:77> vaccines <SEG:92> to <SEG:65> be <SEG:35> delivered <SEG:81> to <SEG:50> the <SEG:54> historically <SEG:27> most <SEG:85> affected <SEG:73> areas <SEG:96> this <SEG:31> year <SEG:69> were <SEG:46> delayed <SEG:88> due <SEG:15> to <SEG:0> lack <SEG:23> of <SEG:8> funds <SEG:100> and <SEG:4> low <SEG:12> prioritisation <SEG:58> relative <SEG:38> to <SEG:19> other <SEG:62> diseases."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1285",
+    "text": "Input: However, <SEG:?> people <SEG:?> who <SEG:?> know <SEG:?> a <SEG:?> little <SEG:?> Spanish <SEG:?> may <SEG:?> hastily <SEG:?> conclude <SEG:?> that <SEG:?> Portuguese <SEG:?> is <SEG:?> close <SEG:?> enough <SEG:?> that <SEG:?> it <SEG:?> need <SEG:?> not <SEG:?> be <SEG:?> studied <SEG:?> separately.\nOutput: However, <SEG:95> people <SEG:45> who <SEG:40> know <SEG:15> a <SEG:5> little <SEG:70> Spanish <SEG:75> may <SEG:55> hastily <SEG:30> conclude <SEG:90> that <SEG:100> Portuguese <SEG:65> is <SEG:60> close <SEG:85> enough <SEG:80> that <SEG:50> it <SEG:25> need <SEG:0> not <SEG:20> be <SEG:10> studied <SEG:35> separately."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1543",
+    "text": "Input: The <SEG:?> patient <SEG:?> had <SEG:?> been <SEG:?> to <SEG:?> Nigeria, <SEG:?> where <SEG:?> some <SEG:?> cases <SEG:?> of <SEG:?> the <SEG:?> Ebola <SEG:?> virus <SEG:?> have <SEG:?> occurred.\nOutput: The <SEG:100> patient <SEG:62> had <SEG:38> been <SEG:0> to <SEG:69> Nigeria, <SEG:8> where <SEG:92> some <SEG:54> cases <SEG:31> of <SEG:85> the <SEG:77> Ebola <SEG:46> virus <SEG:23> have <SEG:15> occurred."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 54
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 251
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -30
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -448
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6740,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Demote cuts that separate scope-bearing operators (negation, modals, auxiliaries, quantifiers, complementizers) from their arguments or complements. If the pre-cut span alone would assert or plausibly imply a claim, treat such cuts as high-risk for contradiction."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 81
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6994,
+  "errors": null
+ }
+]

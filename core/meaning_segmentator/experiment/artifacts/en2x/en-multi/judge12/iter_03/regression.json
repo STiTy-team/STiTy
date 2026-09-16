@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.0104,
+  "lo": -0.03275,
+  "hi": 0.00999,
+  "n": 476,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": -0.0198,
+  "≤5": 0.0015,
+  "≤7": -0.0185,
+  "≤10": -0.0073,
+  "≤99": 0.0063
+ },
+ "n_worse": 199,
+ "n_better": 167,
+ "worst": [
+  {
+   "id": "en_us_1143",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7448,
+   "before": "This is common practice elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice elsewhere in the UK ‖ but Scottish justice works ‖ differently and courts ‖ have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_776",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.5592,
+   "before": "Although in theory ‖ they can take place ‖ annually ‖ (so long as they ‖ are ‖ in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory ‖ they ‖ can ‖ take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_776",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.5564,
+   "before": "Although in theory ‖ they can take place ‖ annually ‖ (so long as they are ‖ in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory ‖ they ‖ can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_534",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.5112,
+   "before": "The game is played on grass, ‖ and the grass around the hole ‖ is mown shorter ‖ and called the green.",
+   "after": "The game is played on grass, ‖ and the grass around the hole ‖ is mown shorter and called ‖ the green."
+  },
+  {
+   "id": "en_us_534",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.4905,
+   "before": "The game is played ‖ on grass, ‖ and the grass around the hole ‖ is mown shorter ‖ and called the green.",
+   "after": "The game is played on grass, ‖ and the grass around the hole ‖ is mown ‖ shorter and called ‖ the green."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_939",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6184,
+   "before": "While immigration check ‖ is usually absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs control ‖ can be a hassle.",
+   "after": "While immigration check is usually absent or a formality ‖ when you arrive ‖ in your homeland, ‖ customs ‖ control ‖ can be a hassle."
+  },
+  {
+   "id": "en_us_1108",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.5684,
+   "before": "Coalition and Afghan troops ‖ moved into the area ‖ to secure the site and other coalition aircraft ‖ have been sent to assist.",
+   "after": "Coalition and Afghan troops ‖ moved ‖ into the area to secure the site ‖ and other coalition aircraft have been sent to assist."
+  },
+  {
+   "id": "en_us_320",
+   "k": 5,
+   "bin": "≤3",
+   "delta": 0.5587,
+   "before": "The first economic ‖ reforms ‖ were made ‖ under the ‖ leadership ‖ of Deng Xiaoping.",
+   "after": "The first economic ‖ reforms ‖ were ‖ made ‖ under the leadership ‖ of Deng Xiaoping."
+  },
+  {
+   "id": "en_us_1465",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.5476,
+   "before": "This means you can visit ‖ the historic ‖ city ‖ for a couple ‖ of full ‖ days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means ‖ you ‖ can ‖ visit ‖ the historic city ‖ for a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night."
+  },
+  {
+   "id": "en_us_1465",
+   "k": 10,
+   "bin": "≤3",
+   "delta": 0.5304,
+   "before": "This means you can visit ‖ the ‖ historic ‖ city ‖ for a couple ‖ of full ‖ days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means ‖ you ‖ can ‖ visit ‖ the ‖ historic city ‖ for a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night."
+  }
+ ],
+ "why": "The inserted principle forbidding cuts that separate heads from required complements caused the model to avoid splitting prepositional/complement spans and instead shift cuts earlier (often between verbs/subjects and following prepositions), which helps cohesion for long pieces but produced many harmful single-word or very-short pieces — hurting the ≤3 and ≤7 bins and yielding slightly more worse (199) than better (167) pairs.",
+ "lesson": "A later revision should respect that banning head–complement splits can force cuts into short-span head–dependent links (creating isolated words or subject–verb splits); avoid changes that improve long-span cohesion while degrading small-bin coherence.",
+ "blamed": [
+  "insert_after C2 (new principle: avoid cuts that separate heads from required complements)"
+ ]
+}

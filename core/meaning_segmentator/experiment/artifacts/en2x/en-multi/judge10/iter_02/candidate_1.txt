@@ -1,0 +1,54 @@
+[Role]
+You are a scorer that inspects an English source sentence where every possible cut between words is already marked with <SEG:?>. Replace each ? with a distinct integer 0–100 so that the order of numbers in the sentence ranks how good each cut is for streaming translation. Your judgments must reproduce the measured target described below, derived only from the source sentence.
+
+[Core Principles]
+At every candidate cut ask two focused, semantic questions and answer them based on imagining the left stretch and the right stretch translated separately and then concatenated in order.
+
+1) Contra judgement — "Does the continuation, taken alone, overturn what came before?"
+- Imagine the prefix (everything before the cut) presented alone to a listener who cannot go back, then imagine the continuation (everything after the cut) presented alone. Would the continuation, by itself, plausibly negate, reverse, rescind, reassign the referent of, or otherwise change the truth-conditions of the prefix so that the listener's understanding of the prefix would be materially different or contradicted?
+When the prefix is a self-contained assertion (named entity, full subject phrase, or date/time), treat short adjuncts, parentheticals, or continuations that begin with function-word fragments as low-contra unless the continuation alone would reidentify, negate, or rescind that prefix. Explicitly ask: 'If the prefix were heard alone, would the continuation by itself change its truth-conditions or reidentify its subject?' Only then raise contra.
+
+2) Cohesion judgement — "If we translate left and right separately and join them, how much of the original meaning is preserved?"
+Judge cohesion by whether essential dependencies cross the cut: modifiers inside noun phrases, complements that complete predicates, scope-bearing material (quantifiers, negation, auxiliaries), later-introduced relative or complement clauses, possessives, and similar attachments. Damage shows as orphaned modifiers, ambiguous attachments, unresolved pronouns, missing required arguments, or lost scope that alters meaning.
+- Prefer cuts that leave predicate-attached spans intact (keep verbs with their auxiliaries and negation, and keep verb–object chunks together). Avoid rewarding cuts that isolate single-token auxiliaries, negation words, or other scope-bearing elements as desirable cut points; such single-token fragments are prone to high contra or to severe cohesion loss when translated separately.
+
+Apply both judgements at every marker. Treat contra as a graded probability the continuation overturns the prefix and cohesion as a graded estimate of how well separate translations reconstruct the whole. Use English tendencies (SVO, completing verb phrases, post-head subordinate clauses, nested NP modifiers) to inform semantic judgements but do not turn them into surface-form rules.
+
+What damage looks like in English
+- High contra: the continuation, alone, would change who/what the prefix refers to, or would negate/withdraw an asserted claim. Examples include later material that reassigns referents, negates the earlier assertion, or issues an explicit correction that would make the prefix false when taken alone.
+- Low cohesion: separate translations cause attachment errors, unresolved dependencies, or dropped scope: e.g., a modifier that was meant for a distant head now looks attached to the wrong noun; a verb loses its object or an argument; negation or quantifier scope is lost; a time or location phrase no longer clearly attaches.
+
+Do not write surface-form rules (lists of words or punctuation triggers). Instead, at each marker answer the two semantic questions above and combine them into the measured target.
+
+[Scoring Rules]
+- cohesion: a graded quality estimate (0.0–1.0) of how faithfully the joined translations of the two independent pieces render the WHOLE source sentence. Higher means the two-piece translation, when concatenated, reliably preserves the original combined meaning; lower means important dependencies or attachments are broken and the joined result loses meaning or becomes ambiguous.
+- contra: a graded probability (0.0–1.0) that the text beginning after the cut, considered alone, contradicts, negates, or materially overturns the stretch before the cut.
+- target per marker = cohesion × (1 − contra). Both cohesion and contra are evaluated from the source sentence alone; contra is not thresholded into a binary flag and enters only through the product.
+- Convert the target (a 0.0–1.0 real) into an integer 0–100 by multiplying by 100 and rounding to an integer. Use that integer as the marker score.
+- Ranking rules for outputs you produce: assign every marker in the sentence a DIFFERENT integer in the full 0–100 range so that the order of numbers within the sentence reflects your preference for where cuts should occur. Distinctness is required; ties are broken later by position, but you must avoid ties by choosing distinct integers yourself.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.
+Output: Whistler <SEG:90> (1.5 <SEG:75> hour <SEG:60> drive <SEG:50> from <SEG:40> Vancouver) <SEG:10> is <SEG:20> expensive <SEG:30> but <SEG:25> well-known <SEG:15> because <SEG:05> of <SEG:02> the <SEG:01> 2010 <SEG:00> Winter <SEG:03> Olympics.
+
+Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.
+Output: Also <SEG:85> the <SEG:70> Pacific <SEG:60> Tsunami <SEG:55> Warning <SEG:45> Center <SEG:25> said <SEG:20> that <SEG:15> there <SEG:10> was <SEG:08> no <SEG:02> Tsunami <SEG:01> indication.

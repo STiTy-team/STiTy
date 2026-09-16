@@ -1,0 +1,410 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Even when commas or punctuation appear, translating the two sides independently can still misrepresent the whole; commas alone do not make a cut safe."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Treat multiword names, event titles, dates, compound nouns, and measure/numeric expressions as atomic units: cuts inside them are unsafe and should be scored low."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Ask whether the following fragment supplies an essential complement (object, prepositional complement, particle), a numeric quantifier, or a relative/clausal modifier that determines scope or truth; if so, mark the boundary unsafe (low score)."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "en_us_733",
+    "kind": "example",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -97
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 165
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 246
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -80
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7210,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 7845
+   }
+  ],
+  "skipped": [],
+  "result_chars": 14821,
+  "errors": [
+   "길이 초과: 14821 > 7673"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "- Would translating the following fragment separately reverse, negate, or change the truth or scope of what came before? Watch separated negation, modality, and quantifiers."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- Does the next fragment supply an essential complement, particle, prepositional object, or numeric scope whose absence makes the earlier fragment misleading?"
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Does it provide an antecedent or disambiguating referent for a pronoun or definite description so the prior fragment would be vague if split?"
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Does it supply licensing or truth‑conditional information from an embedded clause (subordinate or relative) that determines tense, aspect, negation, or entailment?"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Is the following material part of the same atomic nominal unit (multiword named entity, event name, date, compound noun, measure) whose split would misidentify or garble it?"
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "- Does the following carry a sentential connective or discourse relation (cause, concession, contrast, condition) essential to interpret the earlier clause?"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Would detaching temporal or aspectual adjuncts or numeric quantifiers from their clause change event order, factuality, or numerical scope when translated separately?"
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Even with commas or parentheses, would translating the two sides independently still produce a faithful joined rendering? Commas often mark appositives or adjuncts, not clause completion."
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "kind": "paraphrase",
+    "text": "- Prefer low scores for cuts that create alternative readings, lost counts/measures, missing complements, or wrong referents; prefer high scores where the preceding fragment is self-contained."
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E6"
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E13"
+   },
+   {
+    "op": "delete",
+    "id": "E14"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": -94
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": -70
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -47
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -46
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -54
+   },
+   {
+    "edit": 5,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -50
+   },
+   {
+    "edit": 6,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -21
+   },
+   {
+    "edit": 7,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -47
+   },
+   {
+    "edit": 8,
+    "op": "replace",
+    "id": "C9",
+    "kind": "paraphrase",
+    "chars_change": -66
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E6",
+    "kind": "delete",
+    "chars_change": -519
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -661
+   },
+   {
+    "edit": 13,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -513
+   },
+   {
+    "edit": 14,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -969
+   },
+   {
+    "edit": 15,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -793
+   },
+   {
+    "edit": 16,
+    "op": "delete",
+    "id": "E13",
+    "kind": "delete",
+    "chars_change": -675
+   },
+   {
+    "edit": 17,
+    "op": "delete",
+    "id": "E14",
+    "kind": "delete",
+    "chars_change": -700
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7948,
+  "errors": [
+   "길이 초과: 7948 > 7673"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E5"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -633
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E5",
+    "kind": "delete",
+    "chars_change": -618
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6695,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1567",
+    "text": "Input: The <SEG:?> largest <SEG:?> tournament <SEG:?> of <SEG:?> the <SEG:?> year <SEG:?> takes <SEG:?> place <SEG:?> in <SEG:?> December <SEG:?> at <SEG:?> the <SEG:?> polo <SEG:?> fields <SEG:?> in <SEG:?> Las <SEG:?> Cañitas.\nOutput: The <SEG:80> largest <SEG:47> tournament <SEG:73> of <SEG:60> the <SEG:67> year <SEG:100> takes <SEG:53> place <SEG:93> in <SEG:40> December <SEG:87> at <SEG:20> the <SEG:13> polo <SEG:27> fields <SEG:33> in <SEG:0> Las <SEG:7> Cañitas."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1179",
+    "text": "Input: In <SEG:?> 1895, <SEG:?> after <SEG:?> defeat <SEG:?> in <SEG:?> the <SEG:?> First <SEG:?> Sino-Japanese <SEG:?> War <SEG:?> (1894-1895), <SEG:?> the <SEG:?> Qing <SEG:?> government <SEG:?> signs <SEG:?> the <SEG:?> Treaty <SEG:?> of <SEG:?> Shimonoseki, <SEG:?> by <SEG:?> which <SEG:?> it <SEG:?> cedes <SEG:?> sovereignty <SEG:?> over <SEG:?> Taiwan <SEG:?> to <SEG:?> Japan, <SEG:?> which <SEG:?> rules <SEG:?> the <SEG:?> island <SEG:?> until <SEG:?> 1945.\nOutput: In <SEG:97> 1895, <SEG:94> after <SEG:68> defeat <SEG:77> in <SEG:45> the <SEG:6> First <SEG:90> Sino-Japanese <SEG:55> War <SEG:84> (1894-1895), <SEG:13> the <SEG:0> Qing <SEG:16> government <SEG:29> signs <SEG:39> the <SEG:3> Treaty <SEG:35> of <SEG:100> Shimonoseki, <SEG:74> by <SEG:32> which <SEG:48> it <SEG:19> cedes <SEG:26> sovereignty <SEG:52> over <SEG:10> Taiwan <SEG:87> to <SEG:58> Japan, <SEG:81> which <SEG:42> rules <SEG:71> the <SEG:61> island <SEG:65> until <SEG:23> 1945."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_288",
+    "text": "Input: RSPCA <SEG:?> New <SEG:?> South <SEG:?> Wales <SEG:?> chief <SEG:?> inspector <SEG:?> David <SEG:?> O'Shannessy <SEG:?> told <SEG:?> the <SEG:?> ABC <SEG:?> that <SEG:?> surveillance <SEG:?> and <SEG:?> inspections <SEG:?> of <SEG:?> abattoirs <SEG:?> should <SEG:?> be <SEG:?> commonplace <SEG:?> in <SEG:?> Australia.\nOutput: RSPCA <SEG:100> New <SEG:50> South <SEG:35> Wales <SEG:60> chief <SEG:65> inspector <SEG:95> David <SEG:85> O'Shannessy <SEG:20> told <SEG:30> the <SEG:0> ABC <SEG:90> that <SEG:80> surveillance <SEG:40> and <SEG:75> inspections <SEG:10> of <SEG:55> abattoirs <SEG:25> should <SEG:15> be <SEG:45> commonplace <SEG:70> in <SEG:5> Australia."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -87
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 298
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -193
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7123,
+  "errors": null
+ }
+]

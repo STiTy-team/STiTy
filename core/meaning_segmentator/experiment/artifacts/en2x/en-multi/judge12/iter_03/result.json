@@ -1,0 +1,45 @@
+{
+ "iter": 3,
+ "candidate": 3,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.0104,
+  "lo": -0.03275,
+  "hi": 0.00999,
+  "n": 476,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Insert a new core principle after C2 to address the primary finding: explicitly forbid cuts that separate heads from required complements because they reduce cohesion; rank such cuts lower."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C2",
+   "kind": "change",
+   "was": "- Would translating the preceding span and the following span independently and ",
+   "now": "- Avoid cuts that separate heads from required complements (prepositions with th"
+  }
+ ],
+ "findings": [
+  "The scorer underestimates contradiction risk when a cut leaves a short clause fragment (a subject/NP or function-word-only span) that lacks its predicate, auxiliary, negation scope, or required complement; such pre-cut fragments, read alone, often assert something the rest of the sentence later reverses.",
+  "The scorer undervalues cohesion loss from splitting heads from their required complements (prepositions and their objects, 'of' phrases, verb complements, or a main noun and its postnominal modifiers); cuts that sever these relationships often degrade joined translation quality."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0198,
+   "≤5": 0.0015,
+   "≤7": -0.0185,
+   "≤10": -0.0073,
+   "≤99": 0.0063
+  },
+  "n_worse": 199,
+  "n_better": 167,
+  "why": "The inserted principle forbidding cuts that separate heads from required complements caused the model to avoid splitting prepositional/complement spans and instead shift cuts earlier (often between verbs/subjects and following prepositions), which helps cohesion for long pieces but produced many harmful single-word or very-short pieces — hurting the ≤3 and ≤7 bins and yielding slightly more worse (199) than better (167) pairs.",
+  "lesson": "A later revision should respect that banning head–complement splits can force cuts into short-span head–dependent links (creating isolated words or subject–verb splits); avoid changes that improve long-span cohesion while degrading small-bin coherence.",
+  "blamed": [
+   "insert_after C2 (new principle: avoid cuts that separate heads from required complements)"
+  ]
+ }
+}

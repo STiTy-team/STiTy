@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.01336,
+    "lo": -0.00764,
+    "hi": 0.03777,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 6623,
+   "changelog": [
+    "Replace C1 to make high contradiction risk an explicit, primary safety signal and instruct scorers to strongly demote such cuts (addresses the primary finding that contra is underweighted).",
+    "Replace example E4 with measured labeled example en_us_738 demonstrating a cut that isolates negation/scope ('does not issue ... more than one month'), so scorers learn to penalize cuts that separate scope-bearing words from their complements."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00252,
+    "lo": -0.01866,
+    "hi": 0.02587,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7083,
+   "changelog": [
+    "Strengthened C2 to make high contradiction risk the dominant safety signal (addresses primary finding that contra is underweighted).",
+    "Deleted C8 (parentheticals/closure) to reduce prompt length and simplify overlapping guidance.",
+    "Removed 11 long example units (E1, E2, E3, E4, E5, E7, E8, E9, E10, E11, E16) to meet the size budget while retaining representative examples (kept E6, E12, E13, E14, E15)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00576,
+    "lo": -0.01905,
+    "hi": 0.03344,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 6564,
+   "changelog": [
+    "Replace example E4 with measured labeled_example en_us_738 to teach scorers to strongly demote cuts that isolate negation/scope (addresses the primary finding under the examples_only constraint)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00576,
+    "lo": -0.01905,
+    "hi": 0.03344,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 6564,
+   "changelog": [
+    "Replace example E4 with measured labeled example en_us_738 (Park Service 'does not issue ... more than one month') so the prompt contains a concrete, measured case showing cuts that isolate negation/scope should be strongly demoted; addresses the primary finding."
+   ]
+  }
+ ]
+}

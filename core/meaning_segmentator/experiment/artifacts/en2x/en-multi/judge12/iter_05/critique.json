@@ -1,0 +1,37 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats cuts immediately after scope-bearing operators (negation, modals, auxiliaries) as uniformly risky and therefore demotes them indiscriminately.",
+    "evidence": "['en_us_767','en_us_1118','en_us_936'] — each shows a policy cut following or splitting around an auxiliary/conditional that produced a high contra or contra_kill; the offline targets only avoid those cuts when the left fragment would alone assert something the remainder could plausibly reverse.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "- Demote cuts that separate scope-bearing operators (negatio",
+     "text": "- Only demote cuts after scope-bearing operators when the left fragment, read alone, would assert a proposition the remainder could plausibly negate or reverse."
+    }
+   },
+   {
+    "diagnosis": "The prompt over-corrects by pushing cuts rightward into short complements or inside noun/prepositional phrases in dense (low-latency) settings, which harms cohesion.",
+    "evidence": "['en_us_651','en_us_1527','en_us_1137'] — all show the policy moving cuts into multiword names or short complements (to keep operators attached) and suffering lower cohesion/H_set in short–medium latency bins compared with targets that preserve compact phrases.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "- In dense/short-latency contexts, avoid shifting cuts into short complements or inside noun/prepositional phrases; prefer keeping multiword names and short noun phrases intact to preserve referent cohesion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt over-corrects by pushing cuts rightward into short complements or inside noun/prepositional phrases in dense (low-latency) settings, which harms cohesion.",
+   "evidence": "['en_us_651','en_us_1527','en_us_1137'] — all show the policy moving cuts into multiword names or short complements (to keep operators attached) and suffering lower cohesion/H_set in short–medium latency bins compared with targets that preserve compact phrases.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "- In dense/short-latency contexts, avoid shifting cuts into short complements or inside noun/prepositional phrases; prefer keeping multiword names and short noun phrases intact to preserve referent cohesion."
+   }
+  }
+ ]
+}

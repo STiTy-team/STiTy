@@ -1,0 +1,64 @@
+{
+ "iter": 1,
+ "candidate": 2,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00148,
+  "lo": -0.03779,
+  "hi": 0.03316,
+  "n": 399,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Replaced E1 with labeled example en_us_1294 to teach the risk from short, scope-bearing continuations (negation/predicate fragments).",
+  "Replaced E2 with labeled example en_us_733 to teach preferring early cuts that isolate an initial head/preamble so the predicate stays intact.",
+  "Replaced E3 with labeled example en_us_337 to teach penalizing cuts that leave function-word–only fragments (e.g., isolated determiners) and to show a tight preamble/predicate split."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: The <SEG:?> great <SEG:?> pyramid <SEG:?> was <SEG:?> created <SEG:?> to ",
+   "now": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> "
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Mr <SEG:?> Costello <SEG:?> said <SEG:?> that <SEG:?> when <SEG:?> nuclea",
+   "now": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Humans <SEG:?> can <SEG:?> be <SEG:?> affected <SEG:?> by <SEG:?> breathi",
+   "now": "Input: To <SEG:?> finish, <SEG:?> Turkish <SEG:?> dance <SEG:?> group <SEG:?> Fi"
+  }
+ ],
+ "findings": [
+  "The scorer underestimates the risk when the continuation is a very short scope-bearing fragment (operators that can flip truth: negation, auxiliaries that complete a predicate, temporal or corrective subordinators). It often gives such continuations low contra even though, read alone, they can overturn or rescind the prefix; that causes kept cuts to be later overturned and zero out the set.",
+  "The scorer undervalues cuts that isolate an initial head/preamble (short topical words, names, or the sentence's leftmost noun phrase), preferring later splits that leave the predicate or critical attachment stranded. Better segmentations often cut early so the remainder contains the predicate and necessary attachments, improving cohesion and avoiding contradictions.",
+  "The scorer does not penalize enough splits that leave tiny, function-word–only fragments (stranded determiners, prepositions, or short auxiliaries). Translations of such isolated function-word fragments rarely reattach cleanly to the following piece, so cohesion is worse than the scorer predicts."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.001,
+   "≤5": 0.0002,
+   "≤7": -0.007,
+   "≤10": -0.0035,
+   "≤99": 0.0038
+  },
+  "n_worse": 142,
+  "n_better": 150,
+  "why": "The new examples pushed the model to keep larger predicate-attached spans (fewer cuts inside long NP/postmodifiers), which helps long-piece H_set, but also made it over-sensitive to short scope-bearing tokens and function words so it began producing singleton cuts (e.g. isolating \"they've\" / \"not\"), hurting short/mid bins — net effect small and mixed.",
+  "lesson": "Later revisions should preserve the preference to keep predicate-attached spans intact while avoiding examples that can be read as encouraging single-token cuts of auxiliaries/negation or other function words.",
+  "blamed": [
+   "E2 (encouraged early preamble/predicate isolation)",
+   "E1 (over-emphasized short, scope-bearing continuations)",
+   "E3 (intended to penalize function-word fragments but misgeneralized)"
+  ]
+ }
+}

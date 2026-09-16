@@ -1,0 +1,288 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Do not avoid contradiction risk by relocating cuts onto function-word boundaries. Prefer keeping short function words (determiners, auxiliaries, conjunctions, list particles) attached to adjacent content words; avoid segmentations that split a determiner/auxiliary from its noun or verb phrase merely to dodge a risky boundary, because such splits degrade downstream cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 379
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7292,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 8443
+   }
+  ],
+  "skipped": [],
+  "result_chars": 15356,
+  "errors": [
+   "길이 초과: 15356 > 7604"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Will this cut sever a verb from its object, split a determiner from its noun, or leave a subordinate/relative/conditional whose head appears later? Avoid cuts that leave predicates or noun heads without their required dependents; such splits harm cohesion."
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E5"
+   },
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   },
+   {
+    "op": "delete",
+    "id": "E9"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E13"
+   },
+   {
+    "op": "delete",
+    "id": "E14"
+   },
+   {
+    "op": "delete",
+    "id": "E15"
+   },
+   {
+    "op": "delete",
+    "id": "E16"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 6
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E5",
+    "kind": "delete",
+    "chars_change": -903
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -526
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -969
+   },
+   {
+    "edit": 6,
+    "op": "delete",
+    "id": "E9",
+    "kind": "delete",
+    "chars_change": -662
+   },
+   {
+    "edit": 7,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -734
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -618
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E13",
+    "kind": "delete",
+    "chars_change": -449
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E14",
+    "kind": "delete",
+    "chars_change": -678
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E15",
+    "kind": "delete",
+    "chars_change": -692
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E16",
+    "kind": "delete",
+    "chars_change": -679
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6901,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_399",
+    "text": "Input: Italy's <SEG:?> main <SEG:?> goals <SEG:?> were <SEG:?> African <SEG:?> countries. <SEG:?> To <SEG:?> capture <SEG:?> those <SEG:?> countries, <SEG:?> they <SEG:?> would <SEG:?> need <SEG:?> to <SEG:?> have <SEG:?> a <SEG:?> troop <SEG:?> launching <SEG:?> pad, <SEG:?> so <SEG:?> as <SEG:?> troops <SEG:?> could <SEG:?> sail <SEG:?> across <SEG:?> the <SEG:?> Mediterranean <SEG:?> Sea <SEG:?> and <SEG:?> invade <SEG:?> Africa.\nOutput: Italy's <SEG:59> main <SEG:24> goals <SEG:79> were <SEG:72> African <SEG:90> countries. <SEG:100> To <SEG:93> capture <SEG:83> those <SEG:76> countries, <SEG:97> they <SEG:62> would <SEG:52> need <SEG:21> to <SEG:7> have <SEG:3> a <SEG:0> troop <SEG:28> launching <SEG:14> pad, <SEG:55> so <SEG:45> as <SEG:69> troops <SEG:31> could <SEG:41> sail <SEG:48> across <SEG:34> the <SEG:17> Mediterranean <SEG:66> Sea <SEG:86> and <SEG:10> invade <SEG:38> Africa."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_845",
+    "text": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.\nOutput: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_345",
+    "text": "Input: Already <SEG:?> reporting <SEG:?> in <SEG:?> English <SEG:?> and <SEG:?> Japanese, <SEG:?> the <SEG:?> global <SEG:?> organization <SEG:?> is <SEG:?> launching <SEG:?> Spanish, <SEG:?> Italian, <SEG:?> and <SEG:?> Korean-language <SEG:?> programs, <SEG:?> for <SEG:?> television, <SEG:?> the <SEG:?> web, <SEG:?> and <SEG:?> mobile <SEG:?> devices.\nOutput: Already <SEG:76> reporting <SEG:29> in <SEG:0> English <SEG:38> and <SEG:5> Japanese, <SEG:90> the <SEG:86> global <SEG:52> organization <SEG:43> is <SEG:33> launching <SEG:95> Spanish, <SEG:71> Italian, <SEG:19> and <SEG:10> Korean-language <SEG:62> programs, <SEG:100> for <SEG:81> television, <SEG:57> the <SEG:14> web, <SEG:24> and <SEG:67> mobile <SEG:48> devices."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1253",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 519
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 100
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 63
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -176
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7419,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Prefer cuts that keep predicate-argument and noun-phrase integrity: keep verbs with their auxiliaries and objects, and determiners/pronouns with their nouns. Do not cut inside compound names, long NPs, or between verb and object; such splits greatly reduce cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 36
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6949,
+  "errors": null
+ }
+]

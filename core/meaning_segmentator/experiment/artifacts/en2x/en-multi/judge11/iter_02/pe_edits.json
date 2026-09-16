@@ -1,0 +1,358 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Would the following fragment, taken alone, plausibly negate, reverse, or assert the opposite of the preceding fragment? If so (high contradiction risk), mark the cut unsafe even when cohesion seems high. Prefer moving the cut left onto non-assertive/function words (determiners, pronouns, auxiliaries, particles) so the earlier fragment is inert rather than asserting a misleading claim."
+   },
+   {
+    "op": "insert_after",
+    "id": "E_end",
+    "kind": "example",
+    "text": "Input: He <SEG:?> announced <SEG:?> the <SEG:?> plan <SEG:?> would <SEG:?> fail.\nOutput: He <SEG:10> announced <SEG:100> the <SEG:5> plan <SEG:0> would <SEG:2> fail."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 117
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "E_end",
+    "kind": "example",
+    "chars_change": 166
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7260,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 7739
+   }
+  ],
+  "skipped": [],
+  "result_chars": 14715,
+  "errors": [
+   "길이 초과: 14715 > 7673"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- If the suffix alone could negate, reverse, or overturn the prefix's claim, treat contradiction risk as high: rank that cut low even when cohesion appears strong."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- Does the following material contain essential complements (objects, particles, prepositional complements) whose absence leaves the prefix incomplete or misleading?"
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Does the suffix supply an antecedent or disambiguating modifier for a pronoun or definite description, so the prefix becomes referentially vague when isolated?"
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Does the following text license tense, aspect, polarity, or other truth-conditional info for an embedded clause so that separating it would flip entailments?"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Is the suffix inside the same noun phrase (possessor, restrictive modifier, appositive) so cutting separates modifiers and alters which entity or property is named?"
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "- Does the following fragment carry temporal, aspectual, or sequencing adjuncts that reorder events or change factuality when detached from the clause they modify?"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Does the suffix introduce a discourse relation (cause, concession, contrast, condition, result) whose absence would leave the prefix logically unsupported or misleading?"
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Prefer moving a risky cut left so the prefix is non-assertive (determiner, pronoun, auxiliary). Avoid cutting immediately after content heads (verb or noun) which create tiny asserted fragments."
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E6"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E12"
+   },
+   {
+    "op": "delete",
+    "id": "E13"
+   },
+   {
+    "op": "delete",
+    "id": "E14"
+   },
+   {
+    "op": "delete",
+    "id": "E15"
+   },
+   {
+    "op": "delete",
+    "id": "E16"
+   },
+   {
+    "op": "delete",
+    "id": "E17"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": -53
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": -77
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -27
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -32
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -32
+   },
+   {
+    "edit": 5,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": 0
+   },
+   {
+    "edit": 6,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -25
+   },
+   {
+    "edit": 7,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": -75
+   },
+   {
+    "edit": 8,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -561
+   },
+   {
+    "edit": 9,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 10,
+    "op": "delete",
+    "id": "E6",
+    "kind": "delete",
+    "chars_change": -731
+   },
+   {
+    "edit": 11,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -646
+   },
+   {
+    "edit": 12,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -410
+   },
+   {
+    "edit": 13,
+    "op": "delete",
+    "id": "E12",
+    "kind": "delete",
+    "chars_change": -579
+   },
+   {
+    "edit": 14,
+    "op": "delete",
+    "id": "E13",
+    "kind": "delete",
+    "chars_change": -482
+   },
+   {
+    "edit": 15,
+    "op": "delete",
+    "id": "E14",
+    "kind": "delete",
+    "chars_change": -444
+   },
+   {
+    "edit": 16,
+    "op": "delete",
+    "id": "E15",
+    "kind": "delete",
+    "chars_change": -828
+   },
+   {
+    "edit": 17,
+    "op": "delete",
+    "id": "E16",
+    "kind": "delete",
+    "chars_change": -798
+   },
+   {
+    "edit": 18,
+    "op": "delete",
+    "id": "E17",
+    "kind": "delete",
+    "chars_change": -583
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7453,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_888",
+    "text": "Input: Tourist <SEG:?> visits <SEG:?> are <SEG:?> costly, <SEG:?> demand <SEG:?> physical <SEG:?> fitness, <SEG:?> can <SEG:?> only <SEG:?> take <SEG:?> place <SEG:?> in <SEG:?> summer <SEG:?> Nov-Feb, <SEG:?> and <SEG:?> are <SEG:?> largely <SEG:?> limited <SEG:?> to <SEG:?> the <SEG:?> Peninsula, <SEG:?> Islands <SEG:?> and <SEG:?> Ross <SEG:?> Sea.\nOutput: Tourist <SEG:83> visits <SEG:87> are <SEG:78> costly, <SEG:100> demand <SEG:43> physical <SEG:74> fitness, <SEG:96> can <SEG:39> only <SEG:35> take <SEG:26> place <SEG:17> in <SEG:9> summer <SEG:91> Nov-Feb, <SEG:70> and <SEG:48> are <SEG:30> largely <SEG:52> limited <SEG:57> to <SEG:4> the <SEG:0> Peninsula, <SEG:65> Islands <SEG:61> and <SEG:22> Ross <SEG:13> Sea."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_741",
+    "text": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG:?> islands <SEG:?> spread <SEG:?> out <SEG:?> over <SEG:?> 2.2 <SEG:?> million <SEG:?> km2 <SEG:?> of <SEG:?> ocean.\nOutput: It <SEG:69> is <SEG:77> an <SEG:31> archipelago <SEG:92> with <SEG:46> 15 <SEG:85> islands <SEG:100> spread <SEG:62> out <SEG:54> over <SEG:38> 2.2 <SEG:23> million <SEG:0> km2 <SEG:15> of <SEG:8> ocean."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_105",
+    "text": "Input: They <SEG:?> include <SEG:?> financial <SEG:?> restrictions <SEG:?> and <SEG:?> a <SEG:?> ban <SEG:?> by <SEG:?> the <SEG:?> European <SEG:?> Union <SEG:?> on <SEG:?> the <SEG:?> export <SEG:?> of <SEG:?> crude <SEG:?> oil, <SEG:?> from <SEG:?> which <SEG:?> the <SEG:?> Iranian <SEG:?> economy <SEG:?> receives <SEG:?> 80% <SEG:?> of <SEG:?> its <SEG:?> foreign <SEG:?> income.\nOutput: They <SEG:81> include <SEG:100> financial <SEG:73> restrictions <SEG:96> and <SEG:85> a <SEG:35> ban <SEG:19> by <SEG:8> the <SEG:0> European <SEG:46> Union <SEG:92> on <SEG:27> the <SEG:4> export <SEG:62> of <SEG:58> crude <SEG:77> oil, <SEG:88> from <SEG:54> which <SEG:42> the <SEG:69> Iranian <SEG:50> economy <SEG:65> receives <SEG:38> 80% <SEG:12> of <SEG:15> its <SEG:23> foreign <SEG:31> income."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_924",
+    "text": "Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG:?> is <SEG:?> often <SEG:?> through <SEG:?> a <SEG:?> toll-free <SEG:?> telephone <SEG:?> number <SEG:?> that <SEG:?> can <SEG:?> be <SEG:?> called <SEG:?> from <SEG:?> most <SEG:?> phones <SEG:?> without <SEG:?> charge.\nOutput: Access <SEG:61> to <SEG:56> these <SEG:44> services <SEG:89> is <SEG:83> often <SEG:94> through <SEG:78> a <SEG:0> toll-free <SEG:22> telephone <SEG:33> number <SEG:100> that <SEG:67> can <SEG:50> be <SEG:72> called <SEG:28> from <SEG:17> most <SEG:11> phones <SEG:39> without <SEG:6> charge."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 347
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -151
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 127
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -285
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7014,
+  "errors": null
+ }
+]

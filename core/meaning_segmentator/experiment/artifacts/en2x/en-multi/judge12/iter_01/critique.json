@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underweights high contradiction risk: it ranks cuts highly even when the pre-cut fragment, read alone, becomes a plausible but misleading or contradicted claim (scope/negation/complement appears after the cut).",
+    "evidence": "Cases: [\"en_us_1617\",\"en_us_738\",\"en_us_113\",\"en_us_1116\",\"en_us_103\",\"en_us_432\",\"en_us_1081\",\"en_us_1567\",\"en_us_419\"] — each policy kept a cut whose post-cut fragment, by itself, had a high contradiction probability (contra) and the set failed; targets move the cut earlier to avoid leaving a stand-alone misleading fragment.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the left-side fragment, read alone, yields a plausible but contradictory or misleading proposition (high contra), strongly demote that cut—even when cohesion is high; treat high contra as a primary safety signal."
+    }
+   },
+   {
+    "diagnosis": "The prompt lacks concrete examples showing how to penalize cuts that isolate scope-bearing words (negation, quantifiers, 'except', comparatives) so scorers favor cohesion over safety.",
+    "evidence": "Cases: [\"en_us_738\",\"en_us_113\",\"en_us_103\",\"en_us_419\",\"en_us_1567\"] — targets avoid cuts that separate negation/complements or scope words from their complements; policies did the opposite, producing high contra.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: does not issue park permits <SEG:?> more than one month\nOutput: does not issue park permits <SEG:0> more than one month <SEG:100>"
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underweights high contradiction risk: it ranks cuts highly even when the pre-cut fragment, read alone, becomes a plausible but misleading or contradicted claim (scope/negation/complement appears after the cut).",
+   "evidence": "Cases: [\"en_us_1617\",\"en_us_738\",\"en_us_113\",\"en_us_1116\",\"en_us_103\",\"en_us_432\",\"en_us_1081\",\"en_us_1567\",\"en_us_419\"] — each policy kept a cut whose post-cut fragment, by itself, had a high contradiction probability (contra) and the set failed; targets move the cut earlier to avoid leaving a stand-alone misleading fragment.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the left-side fragment, read alone, yields a plausible but contradictory or misleading proposition (high contra), strongly demote that cut—even when cohesion is high; treat high contra as a primary safety signal."
+   }
+  },
+  {
+   "diagnosis": "The prompt lacks concrete examples showing how to penalize cuts that isolate scope-bearing words (negation, quantifiers, 'except', comparatives) so scorers favor cohesion over safety.",
+   "evidence": "Cases: [\"en_us_738\",\"en_us_113\",\"en_us_103\",\"en_us_419\",\"en_us_1567\"] — targets avoid cuts that separate negation/complements or scope words from their complements; policies did the opposite, producing high contra.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: does not issue park permits <SEG:?> more than one month\nOutput: does not issue park permits <SEG:0> more than one month <SEG:100>"
+   }
+  }
+ ]
+}

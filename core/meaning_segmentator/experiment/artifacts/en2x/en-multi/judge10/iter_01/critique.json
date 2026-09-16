@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer underestimates the risk when the continuation is a very short scope-bearing fragment (operators that can flip truth: negation, auxiliaries that complete a predicate, temporal or corrective subordinators). It often gives such continuations low contra even though, read alone, they can overturn or rescind the prefix; that causes kept cuts to be later overturned and zero out the set.",
+    "evidence": "Observed in 9 cases (many with contra_kill=true). In these cases the policy kept a cut just before a short continuation whose measured contra was ≈0.8–1.0 (examples share continuations that carry negation, the main verb/predicate, or a corrective/temporal scoping element). The offline target avoids those dangerous splits by moving the cut earlier so the following piece includes the operator and predicate together.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When judging contra, first ask whether the continuation (even if very short) contains a scope-bearing element that can change the truth-conditions of the prefix — e.g. negation or an auxiliary/complement that completes the predicate, a temporal or corrective subordinator, or any short fragment that resolves modality or subject/predicate reference. If the continuation can plausibly reverse, negate, rescind, or reassign what the prefix asserts when read alone, raise the contra probability substantially regardless of the continuation's length."
+    }
+   },
+   {
+    "diagnosis": "The scorer undervalues cuts that isolate an initial head/preamble (short topical words, names, or the sentence's leftmost noun phrase), preferring later splits that leave the predicate or critical attachment stranded. Better segmentations often cut early so the remainder contains the predicate and necessary attachments, improving cohesion and avoiding contradictions.",
+    "evidence": "Seen in 7 cases across short and mid latency bins. Targets routinely add early cuts (isolating the initial token(s) or short preamble) and achieve much higher H_set; the policy kept later internal cuts that produced high contra or broken cohesion. The shared pattern: isolating the head lets the following piece carry the verb/complement and prevents orphaned or reinterpreted fragments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When considering a cut near the sentence start or just after a named/topic phrase, ask: does isolating the initial short token(s) let the following piece contain the predicate, complements, and required attachments so they can be translated together? If yes, prefer the earlier cut: a small first piece plus a self-contained predicate piece generally yields higher cohesion and lower contra than leaving the predicate split across a later boundary."
+    }
+   },
+   {
+    "diagnosis": "The scorer does not penalize enough splits that leave tiny, function-word–only fragments (stranded determiners, prepositions, or short auxiliaries). Translations of such isolated function-word fragments rarely reattach cleanly to the following piece, so cohesion is worse than the scorer predicts.",
+    "evidence": "Appears in 5 cases where targets add cuts to avoid fragments made mostly of function words; policy kept those function-word fragments and measured cohesion drops. The common trait: dropped positions left one side consisting primarily of function words/attachments, and offline cuts grouped those with content words to preserve attachment.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When assessing cohesion, explicitly penalize cuts that would leave a piece consisting chiefly of function words or isolated attachment morphemes (short determiners, prepositional heads, standalone auxiliaries) because such fragments, when translated alone, produce stranded elements that do not reattach reliably. Prefer cuts that keep a function word with its content head or that move the attachment into the same piece as its governor."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer underestimates the risk when the continuation is a very short scope-bearing fragment (operators that can flip truth: negation, auxiliaries that complete a predicate, temporal or corrective subordinators). It often gives such continuations low contra even though, read alone, they can overturn or rescind the prefix; that causes kept cuts to be later overturned and zero out the set.",
+   "evidence": "Observed in 9 cases (many with contra_kill=true). In these cases the policy kept a cut just before a short continuation whose measured contra was ≈0.8–1.0 (examples share continuations that carry negation, the main verb/predicate, or a corrective/temporal scoping element). The offline target avoids those dangerous splits by moving the cut earlier so the following piece includes the operator and predicate together.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When judging contra, first ask whether the continuation (even if very short) contains a scope-bearing element that can change the truth-conditions of the prefix — e.g. negation or an auxiliary/complement that completes the predicate, a temporal or corrective subordinator, or any short fragment that resolves modality or subject/predicate reference. If the continuation can plausibly reverse, negate, rescind, or reassign what the prefix asserts when read alone, raise the contra probability substantially regardless of the continuation's length."
+   }
+  },
+  {
+   "diagnosis": "The scorer undervalues cuts that isolate an initial head/preamble (short topical words, names, or the sentence's leftmost noun phrase), preferring later splits that leave the predicate or critical attachment stranded. Better segmentations often cut early so the remainder contains the predicate and necessary attachments, improving cohesion and avoiding contradictions.",
+   "evidence": "Seen in 7 cases across short and mid latency bins. Targets routinely add early cuts (isolating the initial token(s) or short preamble) and achieve much higher H_set; the policy kept later internal cuts that produced high contra or broken cohesion. The shared pattern: isolating the head lets the following piece carry the verb/complement and prevents orphaned or reinterpreted fragments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When considering a cut near the sentence start or just after a named/topic phrase, ask: does isolating the initial short token(s) let the following piece contain the predicate, complements, and required attachments so they can be translated together? If yes, prefer the earlier cut: a small first piece plus a self-contained predicate piece generally yields higher cohesion and lower contra than leaving the predicate split across a later boundary."
+   }
+  },
+  {
+   "diagnosis": "The scorer does not penalize enough splits that leave tiny, function-word–only fragments (stranded determiners, prepositions, or short auxiliaries). Translations of such isolated function-word fragments rarely reattach cleanly to the following piece, so cohesion is worse than the scorer predicts.",
+   "evidence": "Appears in 5 cases where targets add cuts to avoid fragments made mostly of function words; policy kept those function-word fragments and measured cohesion drops. The common trait: dropped positions left one side consisting primarily of function words/attachments, and offline cuts grouped those with content words to preserve attachment.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When assessing cohesion, explicitly penalize cuts that would leave a piece consisting chiefly of function words or isolated attachment morphemes (short determiners, prepositional heads, standalone auxiliaries) because such fragments, when translated alone, produce stranded elements that do not reattach reliably. Prefer cuts that keep a function word with its content head or that move the attachment into the same piece as its governor."
+   }
+  }
+ ]
+}

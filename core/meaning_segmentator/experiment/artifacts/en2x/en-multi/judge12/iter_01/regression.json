@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.0055,
+  "lo": -0.01633,
+  "hi": 0.00601,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0077,
+  "≤5": -0.0019,
+  "≤7": 0.0002,
+  "≤10": -0.0104,
+  "≤99": -0.0117
+ },
+ "n_worse": 759,
+ "n_better": 648,
+ "worst": [
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7422,
+   "before": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1465",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.5651,
+   "before": "This means you can visit ‖ the historic ‖ city ‖ for a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means you can visit the historic city ‖ for a couple ‖ of ‖ full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night."
+  },
+  {
+   "id": "en_us_1465",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.5589,
+   "before": "This means you can visit the historic ‖ city ‖ for a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means you can visit the historic city ‖ for a couple ‖ of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.5515,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman ‖ Michele Bachmann ‖ finished ‖ in fourth, fifth, and sixth place, ‖ respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, ‖ fifth, and sixth place, ‖ respectively."
+  },
+  {
+   "id": "en_us_1640",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.536,
+   "before": "On icy and snowy roadways, ‖ friction ‖ is low ‖ and you cannot drive as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.8011,
+   "before": "Eventually, wooden wheels ‖ were replaced ‖ by iron wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "after": "Eventually, ‖ wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.721,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7045,
+   "before": "This is common practice elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6628,
+   "before": "Eventually, wooden wheels ‖ were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, ‖ wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_876",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.5998,
+   "before": "If you live in a city ‖ with a varied drinking culture, ‖ go ‖ to ‖ bars ‖ or ‖ pubs ‖ in neighborhoods ‖ you ‖ don't frequent.",
+   "after": "If you live in a city ‖ with a varied ‖ drinking ‖ culture, ‖ go ‖ to ‖ bars ‖ or ‖ pubs ‖ in neighborhoods you don't frequent."
+  }
+ ],
+ "why": "Making high-contradiction risk an explicit, primary signal (C1) — reinforced by the negation example swap (E4) — caused scorers to avoid cuts that isolate negation/scope or obvious contradiction sites and instead shift cuts to other, weaker junctions (e.g., splitting function words and list items). That redistribution produced a small net loss in H_set (n_worse>n_better) concentrated in longer-latency bins (≤10 and ≤99) with modest harm also for the shortest pieces (≤3), matching the by_bin pattern.",
+ "lesson": "A later revision should keep contradiction-risk demotion but avoid prompting scorers to systematically relocate cuts into positions that split function words or enumerations and thereby reduce cohesion for longer-latency cut sets.",
+ "blamed": [
+  "C1 «- If the left-side fragment, read alone, yields a plausible »",
+  "E4 «Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG»"
+ ]
+}

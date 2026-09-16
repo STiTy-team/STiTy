@@ -1,0 +1,1654 @@
+[
+ {
+  "id": "en_us_733",
+  "cuts": 6,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.668,
+  "policy_worst_contra": 0.974,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "H_set": 0.0182,
+   "text": "Whistler (1.5 hour drive from Vancouver) ‖ is ‖ expensive ‖ but ‖ well-known ‖ because ‖ of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒(距离温哥华1.5小时车程)",
+     "是",
+     "昂贵",
+     "但",
+     "众所周知",
+     "因为",
+     "2010年冬季奥林匹克运动会"
+    ],
+    "Japanese": [
+     "ウィスラー（バンクーバーから車で1.5時間）",
+     "はい",
+     "高い",
+     "でも あなたは",
+     "よく知られた",
+     "なぜなら",
+     "2010年の冬季オリンピックの 開催地になりました"
+    ],
+    "German": [
+     "Whistler (1,5 Stunden Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "aber",
+     "well-known",
+     "weil",
+     "Olympische Winterspiele 2010 in Vancouver"
+    ],
+    "Spanish": [
+     "Whistler (1,5 horas en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "pero",
+     "well-known",
+     "porque",
+     "Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.6862,
+   "text": "Whistler ‖ (1.5 ‖ hour drive from Vancouver) ‖ is ‖ expensive ‖ but ‖ well-known because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(1.5个百分点)",
+     "距离温哥华1小时车程)",
+     "是",
+     "昂贵",
+     "但",
+     "因为2010年冬季奥运会而闻名。"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "１．５",
+     "1時間の車で行ける場所です",
+     "はい",
+     "高い",
+     "でも あなたは",
+     "2010年の冬季オリンピックで有名です"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5",
+     "(1 Stunde Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "aber",
+     "Bekannt wurde die Stadt durch die Olympischen Winterspiele 2010."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1,5",
+     "(1 hora en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "pero",
+     "Es conocida por los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    },
+    {
+     "pos": 11,
+     "left": "expensive but well-known because",
+     "right": "of the 2010 Winter",
+     "H": 0.0206,
+     "H_pct": 14.3,
+     "contra": 0.974,
+     "cohesion": 0.792
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Whistler",
+     "right": "(1.5 hour drive from",
+     "H": 0.8198,
+     "H_pct": 85.7,
+     "contra": 0.001,
+     "cohesion": 0.8206
+    },
+    {
+     "pos": 2,
+     "left": "Whistler (1.5",
+     "right": "hour drive from Vancouver)",
+     "H": 0.7407,
+     "H_pct": 64.3,
+     "contra": 0.0102,
+     "cohesion": 0.7483
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1527",
+  "cuts": 5,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.7088,
+  "policy_worst_contra": 0.9803,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    12,
+    16,
+    21,
+    22,
+    23
+   ],
+   "H_set": 0.0115,
+   "text": "Poland's men's visually impaired skier Maciej Krezel and guide Anna Ogarzynska finished ‖ thirteenth in the Super-G. ‖ South Korea's Jong Seork Park ‖ finished ‖ twenty-fourth ‖ in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波兰男子视力障碍滑雪运动员Maciej Krezel和导游Anna Ogarzynska完成了比赛",
+     "世界上最好的女人",
+     "韩国的钟西尔公园",
+     "已完成",
+     "第二十四届",
+     "是男子坐式超级大回转比赛。"
+    ],
+    "Japanese": [
+     "ポーランドの視覚障害者スキー選手マチェイ・クレゼルとガイドのアンナ・オガジンスカが完走した。",
+     "スーパーGで13位だ",
+     "チョン・ソルク公園",
+     "終わりだ",
+     "24番目",
+     "男性の座り込みスーパーGで"
+    ],
+    "German": [
+     "Polens sehbehinderter Skifahrer Maciej Krezel und Guide Anna Ogarzynska haben das Ziel erreicht",
+     "Dreizehnter im Super-G.",
+     "Südkoreas Jong Seork Park",
+     "Fertig",
+     "24.",
+     "Im Sitz-Super-G der Herren."
+    ],
+    "Spanish": [
+     "El esquiador polaco Maciej Krezel y su guía Anna Ogarzynska terminaron la prueba de esquí de fondo",
+     "Decimotercera en el Super-G.",
+     "El parque Jong Seork de Corea del Sur",
+     "terminado",
+     "24º período de sesiones",
+     "en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    5,
+    6,
+    16
+   ],
+   "H_set": 0.7202,
+   "text": "Poland's men's ‖ visually impaired ‖ skier ‖ Maciej ‖ Krezel and guide Anna Ogarzynska finished thirteenth in the Super-G. ‖ South Korea's Jong Seork Park finished twenty-fourth in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波蘭男子",
+     "视力障碍者",
+     "滑雪者",
+     "马齐耶",
+     "克雷泽尔和导游安娜·奥加日斯卡在超级大回转中排名第十三。",
+     "韩国的朴钟秀在男子坐式超级大回转中排名第24。"
+    ],
+    "Japanese": [
+     "ポーランドの男子",
+     "視覚障害者の",
+     "スキーヤー",
+     "マチエフ",
+     "クレゼルとガイドのアンナ・オガジンスカはスーパーGで13位に終わった。",
+     "韓国のパク・ジョンソクは男子の座りスーパーGで24位に終わった。"
+    ],
+    "German": [
+     "Navigationsleiste Männer-Fußball in Polen",
+     "Sehbehinderte",
+     "Skifahrer",
+     "Maciej",
+     "Krezel und Guide Anna Ogarzynska wurden im Super-G dreizehnte.",
+     "Der Südkoreaner Jong Seork Park wurde Vierundzwanzigster im Super-G der Männer."
+    ],
+    "Spanish": [
+     "Selección de Polonia de fútbol",
+     "Discapacidad visual",
+     "esquiador",
+     "Maciej",
+     "Krezel y la guía Anna Ogarzynska terminaron decimotercera en el Super-G.",
+     "El surcoreano Jong Seork Park terminó vigésimo cuarto en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "guide Anna Ogarzynska finished",
+     "right": "thirteenth in the Super-G.",
+     "H": 0.2674,
+     "H_pct": 7.7,
+     "contra": 0.6264,
+     "cohesion": 0.7157
+    },
+    {
+     "pos": 21,
+     "left": "Korea's Jong Seork Park",
+     "right": "finished twenty-fourth in the",
+     "H": 0.013,
+     "H_pct": 0.0,
+     "contra": 0.9803,
+     "cohesion": 0.6607
+    },
+    {
+     "pos": 22,
+     "left": "Jong Seork Park finished",
+     "right": "twenty-fourth in the men's",
+     "H": 0.4127,
+     "H_pct": 15.4,
+     "contra": 0.4175,
+     "cohesion": 0.7085
+    },
+    {
+     "pos": 23,
+     "left": "Seork Park finished twenty-fourth",
+     "right": "in the men's sitting",
+     "H": 0.76,
+     "H_pct": 76.9,
+     "contra": 0.0237,
+     "cohesion": 0.7784
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Poland's men's",
+     "right": "visually impaired skier Maciej",
+     "H": 0.7692,
+     "H_pct": 84.6,
+     "contra": 0.0036,
+     "cohesion": 0.772
+    },
+    {
+     "pos": 4,
+     "left": "Poland's men's visually impaired",
+     "right": "skier Maciej Krezel and",
+     "H": 0.7847,
+     "H_pct": 92.3,
+     "contra": 0.0036,
+     "cohesion": 0.7875
+    },
+    {
+     "pos": 5,
+     "left": "men's visually impaired skier",
+     "right": "Maciej Krezel and guide",
+     "H": 0.8054,
+     "H_pct": 100.0,
+     "contra": 0.0018,
+     "cohesion": 0.8068
+    },
+    {
+     "pos": 6,
+     "left": "visually impaired skier Maciej",
+     "right": "Krezel and guide Anna",
+     "H": 0.7698,
+     "H_pct": 88.5,
+     "contra": 0.0018,
+     "cohesion": 0.7712
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 2,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.7783,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9
+   ],
+   "H_set": 0.0038,
+   "text": "The Park Service (MINAE) ‖ does not issue park permits ‖ more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "公园服务(MINAE)",
+     "不发放公园许可证",
+     "预计抵达前一个月以上。"
+    ],
+    "Japanese": [
+     "公園局（外務省）",
+     "許可証を発行しません",
+     "予定より1ヶ月以上早く"
+    ],
+    "German": [
+     "Der Park Service (MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El Servicio de Parques (MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación a la fecha de llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4
+   ],
+   "H_set": 0.7822,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "旅游局不会在预计抵达日期前一个月以上发放公园许可证。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "予定到着の1ヶ月前より 前に公園許可を発行しない"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Die Parkverwaltung stellt Parkgenehmigungen nicht mehr als einen Monat vor der voraussichtlichen Ankunft aus."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "El parque no emite permisos de parque con más de un mes de anticipación a la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The Park Service",
+     "right": "(MINAE) does not issue",
+     "H": 0.8269,
+     "H_pct": 100.0,
+     "contra": 0.0027,
+     "cohesion": 0.8291
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_845",
+  "cuts": 2,
+  "avg_chunk": 7.3,
+  "latency_bin": "≤10",
+  "gap": 0.7967,
+  "policy_worst_contra": 0.9891,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    13
+   ],
+   "H_set": 0.0085,
+   "text": "While it's far from a modern phenomenon, ‖ most people probably associate it with ‖ youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "大多数人可能会把它和",
+     "青年人使用喷漆破坏公共和私人财产。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "多くの人は 恐らく",
+     "若者がスプレーペンで 公共財や私有財産を破壊する"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Die meisten Leute assoziieren es wahrscheinlich mit",
+     "Jugendliche vandalisieren öffentliches und privates Eigentum mit Sprühfarbe."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "La mayoría de la gente probablemente lo asocia con",
+     "Los jóvenes vandalizan la propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8
+   ],
+   "H_set": 0.8052,
+   "text": "While it's far from a modern phenomenon, ‖ most ‖ people probably associate it with youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "桥梁",
+     "人们可能会把它与青年人用喷漆破坏公共和私人财产联系起来。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "橋",
+     "多分 人々は 若者が 塗料を使って 公共の物や 私有物を破壊すると 関連付けているでしょう"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Most",
+     "Viele Menschen assoziieren es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum mit Sprühfarbe vandalisieren."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "más",
+     "La gente probablemente lo asocia con jóvenes que vandalizan propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "probably associate it with",
+     "right": "youth vandalizing public and",
+     "H": 0.0086,
+     "H_pct": 5.0,
+     "contra": 0.9891,
+     "cohesion": 0.7907
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "a modern phenomenon, most",
+     "right": "people probably associate it",
+     "H": 0.8458,
+     "H_pct": 95.0,
+     "contra": 0.0102,
+     "cohesion": 0.8546
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1179",
+  "cuts": 2,
+  "avg_chunk": 11.0,
+  "latency_bin": "≤99",
+  "gap": 0.2666,
+  "policy_worst_contra": 0.2998,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    10
+   ],
+   "H_set": 0.5903,
+   "text": "In 1895, ‖ after defeat in the First Sino-Japanese War (1894-1895), ‖ the Qing government signs the Treaty of Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年，",
+     "1894年,日俄战争爆发。",
+     "清政府签署《下关条约 》, 将台湾主权割让给日本,日本统治台湾直至1945年。"
+    ],
+    "Japanese": [
+     "明治27年（1895年）",
+     "日清戦争で敗北した後",
+     "清政府は下関条約に調印し 台湾の主権を日本に譲渡し 1945年まで台湾を支配した。"
+    ],
+    "German": [
+     "Im Jahr 1895,",
+     "nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895),",
+     "1937 unterzeichnet die Qing-Regierung den Vertrag von Shimonoseki, mit dem sie die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En 1895,",
+     "después de la derrota en la Primera Guerra Sino-Japonesa (1894-1895),",
+     "El gobierno Qing firma el Tratado de Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    17
+   ],
+   "H_set": 0.8569,
+   "text": "In ‖ 1895, after defeat in the First Sino-Japanese War (1894-1895), the Qing government signs the Treaty of ‖ Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "内",
+     "1895年,在第一次中日战争(1894-1895)中被击败后,清政府签署了《南京条约 》 。",
+     "下关条约,将台湾主权让给日本,日本统治台湾直到1945年。"
+    ],
+    "Japanese": [
+     "入力",
+     "1895年、日清戦争（1894年-1895年）で敗北した清政府は、日清条約を締結する。",
+     "下関条約により台湾の主権を日本に譲渡し、1945年まで統治。"
+    ],
+    "German": [
+     "In",
+     "1895, nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895), unterzeichnet die Qing-Regierung den Vertrag von",
+     "Shimonoseki, durch den es die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En",
+     "1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895), el gobierno Qing firma el Tratado de",
+     "Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "In 1895,",
+     "right": "after defeat in the",
+     "H": 0.8609,
+     "H_pct": 93.5,
+     "contra": 0.0016,
+     "cohesion": 0.8622
+    },
+    {
+     "pos": 10,
+     "left": "First Sino-Japanese War (1894-1895),",
+     "right": "the Qing government signs",
+     "H": 0.6083,
+     "H_pct": 12.9,
+     "contra": 0.2998,
+     "cohesion": 0.8688
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "In",
+     "right": "1895, after defeat in",
+     "H": 0.8742,
+     "H_pct": 96.8,
+     "contra": 0.0076,
+     "cohesion": 0.8809
+    },
+    {
+     "pos": 17,
+     "left": "signs the Treaty of",
+     "right": "Shimonoseki, by which it",
+     "H": 0.8746,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1294",
+  "cuts": 4,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.6484,
+  "policy_worst_contra": 0.9993,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    7,
+    8,
+    10
+   ],
+   "H_set": 0.0004,
+   "text": "Also the Pacific Tsunami Warning Center ‖ said ‖ that ‖ there was ‖ no Tsunami indication.",
+   "pieces": {
+    "Chinese": [
+     "太平洋海啸警报中心",
+     "说",
+     "该",
+     "还有一个",
+     "没有海啸迹象。"
+    ],
+    "Japanese": [
+     "太平洋津波警報センター",
+     "言った",
+     "あれは",
+     "あった",
+     "津波の兆候はありません"
+    ],
+    "German": [
+     "Auch das Pacific Tsunami Warning Center",
+     "sagte",
+     "that",
+     "Es gab",
+     "Keine Tsunami-Anzeige."
+    ],
+    "Spanish": [
+     "También el Centro de Alerta de Tsunami del Pacífico",
+     "said",
+     "that",
+     "No había",
+     "No hay indicación de Tsunami."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "H_set": 0.6488,
+   "text": "Also ‖ the ‖ Pacific Tsunami Warning Center said ‖ that ‖ there was no Tsunami indication.",
+   "pieces": {
+    "Chinese": [
+     "还有",
+     "该",
+     "太平洋海啸警报中心说",
+     "该",
+     "没有海啸迹象。"
+    ],
+    "Japanese": [
+     "それに",
+     "あの",
+     "太平洋津波警報センターは",
+     "あれは",
+     "津波の兆候はありませんでした"
+    ],
+    "German": [
+     "Also",
+     "the",
+     "Pacific Tsunami Warning Center sagte",
+     "that",
+     "Es gab keine Tsunami-Anzeige."
+    ],
+    "Spanish": [
+     "También",
+     "the",
+     "Centro de Alerta de Tsunami del Pacífico dijo",
+     "that",
+     "No hubo ninguna indicación de Tsunami."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "Pacific Tsunami Warning Center",
+     "right": "said that there was",
+     "H": 0.6698,
+     "H_pct": 36.4,
+     "contra": 0.0027,
+     "cohesion": 0.6716
+    },
+    {
+     "pos": 10,
+     "left": "said that there was",
+     "right": "no Tsunami indication.",
+     "H": 0.0005,
+     "H_pct": 0.0,
+     "contra": 0.9993,
+     "cohesion": 0.7046
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Also",
+     "right": "the Pacific Tsunami Warning",
+     "H": 0.8096,
+     "H_pct": 90.9,
+     "contra": 0.0028,
+     "cohesion": 0.8118
+    },
+    {
+     "pos": 2,
+     "left": "Also the",
+     "right": "Pacific Tsunami Warning Center",
+     "H": 0.8,
+     "H_pct": 81.8,
+     "contra": 0.0017,
+     "cohesion": 0.8014
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_399",
+  "cuts": 9,
+  "avg_chunk": 3.1,
+  "latency_bin": "≤5",
+  "gap": 0.6613,
+  "policy_worst_contra": 0.9571,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    10,
+    13,
+    15,
+    19,
+    24,
+    28,
+    30
+   ],
+   "H_set": 0.0306,
+   "text": "Italy's main goals ‖ were African countries. ‖ To capture those countries, ‖ they would need ‖ to have ‖ a troop launching pad, ‖ so as troops could sail ‖ across the Mediterranean Sea ‖ and invade ‖ Africa.",
+   "pieces": {
+    "Chinese": [
+     "意大利的主要目标",
+     "非洲国家。",
+     "要抓住这些国家,",
+     "他们需要",
+     "将要有",
+     "一个部队发射台,",
+     "军队可以航行",
+     "跨越地中海",
+     "并入侵",
+     "非洲。"
+    ],
+    "Japanese": [
+     "イタリアの主要な目標",
+     "100カ国以上の国々でした",
+     "それらの国々を占領するために",
+     "彼らは",
+     "あなたが",
+     "部隊発進場",
+     "軍隊が航海できるように",
+     "地中海を渡って",
+     "侵略して",
+     "アフリカ"
+    ],
+    "German": [
+     "Italiens Hauptziele",
+     "waren afrikanische Länder.",
+     "Um diese Länder zu erobern,",
+     "Sie würden brauchen",
+     "zu haben",
+     "Ein Truppenstartplatz,",
+     "So als könnten Truppen segeln",
+     "Über das Mittelmeer",
+     "Und eindringen",
+     "Afrika."
+    ],
+    "Spanish": [
+     "Principales objetivos de Italia",
+     "eran países africanos.",
+     "Para capturar esos países,",
+     "que necesitarían",
+     "Que tener",
+     "una plataforma de lanzamiento de tropas,",
+     "Así que las tropas podrían navegar",
+     "A través del mar Mediterráneo",
+     "Y invadir",
+     "África."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    28
+   ],
+   "H_set": 0.6919,
+   "text": "Italy's main goals ‖ were ‖ African ‖ countries. ‖ To ‖ capture ‖ those ‖ countries, ‖ they would need to have a troop launching pad, so as troops could sail across the Mediterranean Sea ‖ and invade Africa.",
+   "pieces": {
+    "Chinese": [
+     "意大利的主要目标",
+     "是",
+     "非洲",
+     "各国。",
+     "二",
+     "捕获",
+     "那些",
+     "国家",
+     "他们需要一个军队发射台,这样军队就可以横渡地中海",
+     "并入侵非洲。"
+    ],
+    "Japanese": [
+     "イタリアの主要な目標",
+     "あれは",
+     "アフリカ",
+     "国々です",
+     "二",
+     "捕まえろ",
+     "あれは",
+     "国々の",
+     "地中海を横断するための 軍隊発進場が必要になるでしょう",
+     "アフリカに侵攻するのです"
+    ],
+    "German": [
+     "Italiens Hauptziele",
+     "waren",
+     "Afrikanische",
+     "Ländern.",
+     "To",
+     "Capture",
+     "those",
+     "Länder,",
+     "Sie müssten eine Truppenstartrampe haben, damit Truppen über das Mittelmeer segeln könnten",
+     "und dringen in Afrika ein."
+    ],
+    "Spanish": [
+     "Principales objetivos de Italia",
+     "fueron",
+     "Africano",
+     "países.",
+     "To",
+     "captura",
+     "those",
+     "países,",
+     "Necesitarían tener una plataforma de lanzamiento de tropas, para que las tropas pudieran navegar a través del Mar Mediterráneo",
+     "e invaden África."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "countries, they would need",
+     "right": "to have a troop",
+     "H": 0.7278,
+     "H_pct": 20.7,
+     "contra": 0.0966,
+     "cohesion": 0.8056
+    },
+    {
+     "pos": 15,
+     "left": "would need to have",
+     "right": "a troop launching pad,",
+     "H": 0.035,
+     "H_pct": 3.4,
+     "contra": 0.9571,
+     "cohesion": 0.8153
+    },
+    {
+     "pos": 19,
+     "left": "a troop launching pad,",
+     "right": "so as troops could",
+     "H": 0.771,
+     "H_pct": 55.2,
+     "contra": 0.0072,
+     "cohesion": 0.7765
+    },
+    {
+     "pos": 24,
+     "left": "as troops could sail",
+     "right": "across the Mediterranean Sea",
+     "H": 0.76,
+     "H_pct": 48.3,
+     "contra": 0.0084,
+     "cohesion": 0.7664
+    },
+    {
+     "pos": 30,
+     "left": "Mediterranean Sea and invade",
+     "right": "Africa.",
+     "H": 0.7518,
+     "H_pct": 37.9,
+     "contra": 0.009,
+     "cohesion": 0.7587
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Italy's main goals were",
+     "right": "African countries. To capture",
+     "H": 0.7994,
+     "H_pct": 72.4,
+     "contra": 0.0128,
+     "cohesion": 0.8098
+    },
+    {
+     "pos": 5,
+     "left": "main goals were African",
+     "right": "countries. To capture those",
+     "H": 0.8439,
+     "H_pct": 89.7,
+     "contra": 0.0005,
+     "cohesion": 0.8443
+    },
+    {
+     "pos": 7,
+     "left": "were African countries. To",
+     "right": "capture those countries, they",
+     "H": 0.8616,
+     "H_pct": 93.1,
+     "contra": 0.0089,
+     "cohesion": 0.8694
+    },
+    {
+     "pos": 8,
+     "left": "African countries. To capture",
+     "right": "those countries, they would",
+     "H": 0.81,
+     "H_pct": 82.8,
+     "contra": 0.0018,
+     "cohesion": 0.8114
+    },
+    {
+     "pos": 9,
+     "left": "countries. To capture those",
+     "right": "countries, they would need",
+     "H": 0.8028,
+     "H_pct": 75.9,
+     "contra": 0.0022,
+     "cohesion": 0.8045
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_655",
+  "cuts": 2,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.6795,
+  "policy_worst_contra": 0.8327,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    12
+   ],
+   "H_set": 0.1165,
+   "text": "Crime, and ill-will toward foreigners in general, ‖ is virtually unknown in Greenland. ‖ Even in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪和对外国人的恶意",
+     "在格陵兰几乎是不为人知的。",
+     "即使在城镇,也没有\"粗糙的地区 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意",
+     "グリーンランドではほとんど知られていません",
+     "町でも「荒地」はない。"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen,",
+     "Die Art ist in Grönland kaum bekannt.",
+     "Auch in den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general,",
+     "El pico de la vaca es prácticamente desconocido en Groenlandia.",
+     "Incluso en las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    12
+   ],
+   "H_set": 0.796,
+   "text": "Crime, and ill-will toward foreigners in general, is virtually unknown ‖ in Greenland. ‖ Even in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪,和对外国人的恶意,一般来说,几乎是未知的",
+     "格陵兰。",
+     "即使在城镇,也没有\"粗糙的地区 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意はほとんど無い。",
+     "グリーンランドにある",
+     "町でも「荒地」はない。"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen ist praktisch unbekannt",
+     "In Grönland.",
+     "Auch in den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general, es prácticamente desconocido",
+     "en Groenlandia.",
+     "Incluso en las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "toward foreigners in general,",
+     "right": "is virtually unknown in",
+     "H": 0.1049,
+     "H_pct": 36.8,
+     "contra": 0.8327,
+     "cohesion": 0.6271
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "general, is virtually unknown",
+     "right": "in Greenland. Even in",
+     "H": 0.7602,
+     "H_pct": 94.7,
+     "contra": 0.0037,
+     "cohesion": 0.763
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 1,
+  "avg_chunk": 10.0,
+  "latency_bin": "≤10",
+  "gap": 0.7653,
+  "policy_worst_contra": 0.9291,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.0496,
+   "text": "Farther south is Niagara Falls and the north ‖ is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布的景色",
+     "马斯科卡是马斯科卡及其周边未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "南はナイアガラの滝 北は",
+     "マスコカ川の未開発の美しい自然の住処です"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle und der Norden",
+     "Muskoka ist die Heimat der unerschlossenen natürlichen Schönheit der Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara y el norte",
+     "Muskoka es el hogar de la belleza natural sin explotar de la Muskoka y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5
+   ],
+   "H_set": 0.8149,
+   "text": "Farther south is Niagara Falls ‖ and the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "北部则是马斯科卡及其周边未开发的自然美景之所。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は未開発の自然の美しさがある マスコカ川の源流地域とその周辺地域です"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "Der Norden ist die Heimat der unerschlossenen Naturschönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "El norte es el hogar de la belleza natural inexplorada de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Falls and the north",
+     "right": "is home to the",
+     "H": 0.0496,
+     "H_pct": 38.9,
+     "contra": 0.9291,
+     "cohesion": 0.6997
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "south is Niagara Falls",
+     "right": "and the north is",
+     "H": 0.8149,
+     "H_pct": 100.0,
+     "contra": 0.0048,
+     "cohesion": 0.8188
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_292",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.2116,
+  "policy_worst_contra": 0.0067,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.603,
+   "text": "The significant earthquake activity resulting in the phase change had took place ‖ on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "导致相变的重大地震活动已经发生",
+     "火山口东北侧的火山口,火山口东北侧的火山口。"
+    ],
+    "Japanese": [
+     "地震活動の相転移を生じた。",
+     "3月10日に 火山の頂上カルデラの北東側で"
+    ],
+    "German": [
+     "Die bedeutende Erdbebenaktivität, die zum Phasenwechsel führte, hatte stattgefunden",
+     "Der Vulkan ist auf der Nordostseite der Gipfelcaldera gelegen."
+    ],
+    "Spanish": [
+     "La actividad sísmica significativa que resultó en el cambio de fase había tenido lugar",
+     "El volcán se encuentra en la parte noreste de la caldera de la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8146,
+   "text": "The ‖ significant earthquake activity resulting in the phase change had took place on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "3月10日,火山顶部火山口东北侧发生了导致相变的重大地震活动。"
+    ],
+    "Japanese": [
+     "あの",
+     "3月10日に 火山頂カルデラの北東側で 相変化を引き起こした 地震活動が起きた"
+    ],
+    "German": [
+     "The",
+     "Am 10. März hatte auf der Nordostseite der Gipfelkaldera des Vulkans eine bedeutende Erdbebenaktivität stattgefunden, die zu einem Phasenwechsel geführt hatte."
+    ],
+    "Spanish": [
+     "The",
+     "El 10 de marzo se produjo una actividad sísmica significativa que resultó en el cambio de fase en el lado noreste de la caldera de la cumbre del volcán."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "change had took place",
+     "right": "on March 10 on",
+     "H": 0.603,
+     "H_pct": 31.8,
+     "contra": 0.0067,
+     "cohesion": 0.607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "significant earthquake activity resulting",
+     "H": 0.8146,
+     "H_pct": 100.0,
+     "contra": 0.0112,
+     "cohesion": 0.8238
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_337",
+  "cuts": 5,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.6411,
+  "policy_worst_contra": 0.8875,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    8,
+    9,
+    10,
+    11
+   ],
+   "H_set": 0.0671,
+   "text": "To finish, ‖ Turkish dance group Fire of Anatolia ‖ performed ‖ the ‖ show ‖ \"Troy\".",
+   "pieces": {
+    "Chinese": [
+     "最后，",
+     "土耳其舞蹈团体安纳托利亚之火",
+     "已执行",
+     "该",
+     "展示",
+     "特洛伊"
+    ],
+    "Japanese": [
+     "最後に",
+     "ファイア・オブ・アナトリア",
+     "実行した",
+     "あの",
+     "見せて",
+     "トロイ"
+    ],
+    "German": [
+     "Zum Schluss noch,",
+     "Türkische Tanzgruppe Feuer von Anatolien",
+     "durchgeführt",
+     "the",
+     "Show",
+     "Troy."
+    ],
+    "Spanish": [
+     "Para terminar,",
+     "Grupo de danza turco Fuego de Anatolia",
+     "realizadas",
+     "the",
+     "show",
+     "«Troy»."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    5,
+    7,
+    8,
+    11
+   ],
+   "H_set": 0.7082,
+   "text": "To finish, ‖ Turkish dance group ‖ Fire of ‖ Anatolia ‖ performed the show ‖ \"Troy\".",
+   "pieces": {
+    "Chinese": [
+     "最后，",
+     "土耳其舞蹈团体",
+     "火灾",
+     "安纳托利亚",
+     "演出的节目",
+     "特洛伊"
+    ],
+    "Japanese": [
+     "最後に",
+     "トルコのダンスグループ",
+     "火の",
+     "アナトリア",
+     "ショーをやったんです",
+     "トロイ"
+    ],
+    "German": [
+     "Zum Schluss noch,",
+     "Türkische Tanzgruppe",
+     "Feuer von",
+     "Anatolien",
+     "Die Show wurde aufgeführt",
+     "Troy."
+    ],
+    "Spanish": [
+     "Para terminar,",
+     "Grupo de baile turco",
+     "Fuego de",
+     "Anatolia",
+     "Realizó el espectáculo",
+     "«Troy»."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "Fire of Anatolia performed",
+     "right": "the show \"Troy\".",
+     "H": 0.7401,
+     "H_pct": 30.0,
+     "contra": 0.0455,
+     "cohesion": 0.7754
+    },
+    {
+     "pos": 10,
+     "left": "of Anatolia performed the",
+     "right": "show \"Troy\".",
+     "H": 0.0869,
+     "H_pct": 0.0,
+     "contra": 0.8875,
+     "cohesion": 0.7722
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "finish, Turkish dance group",
+     "right": "Fire of Anatolia performed",
+     "H": 0.8246,
+     "H_pct": 80.0,
+     "contra": 0.0012,
+     "cohesion": 0.8256
+    },
+    {
+     "pos": 7,
+     "left": "dance group Fire of",
+     "right": "Anatolia performed the show",
+     "H": 0.8187,
+     "H_pct": 70.0,
+     "contra": 0.0146,
+     "cohesion": 0.8308
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1617",
+  "cuts": 8,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.6424,
+  "policy_worst_contra": 0.842,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    12,
+    14,
+    17,
+    19,
+    22,
+    23,
+    26,
+    30
+   ],
+   "H_set": 0.0904,
+   "text": "The Kruger National Park (KNP) lies in the north-east of South Africa ‖ and runs ‖ along the border ‖ of Mozambique ‖ in the east, ‖ Zimbabwe ‖ in the north, ‖ and the southern border ‖ is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克鲁格国家公园(KNP)位于南非东北部",
+     "跑步",
+     "边境沿线",
+     "莫桑比克共和国",
+     "东方,",
+     "津巴布韦 1999年12月15日",
+     "我们在北方,",
+     "南部边界",
+     "是鳄鱼河"
+    ],
+    "Japanese": [
+     "南アフリカ共和国北東部にあるクルーガー国立公園（KNP）",
+     "走り出す",
+     "国境に沿って",
+     "モザンビークの国旗",
+     "東部では",
+     "ジンバブエ",
+     "北部では",
+     "南部の国境は",
+     "ワニ川です"
+    ],
+    "German": [
+     "Der Krüger Nationalpark (KNP) liegt im Nordosten Südafrikas",
+     "Strecken und Läufe",
+     "Entlang der Grenze",
+     "Geschichte Mosambiks",
+     "im Osten,",
+     "Simbabwe",
+     "im Norden,",
+     "und die südliche Grenze",
+     "Der Fluss ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Parque Nacional Kruger (KNP) se encuentra en el noreste de Sudáfrica",
+     "Carreras y carreras",
+     "A lo largo de la frontera",
+     "de Mozambique",
+     "en el este,",
+     "Zimbabwe 1996",
+     "en el norte,",
+     "y la frontera sur",
+     "El río más grande es el Río Cocodrilo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    15,
+    18,
+    22,
+    27
+   ],
+   "H_set": 0.7328,
+   "text": "The Kruger ‖ National ‖ Park ‖ (KNP) ‖ lies in the north-east of South Africa and runs along ‖ the border of ‖ Mozambique in the east, ‖ Zimbabwe in the north, and ‖ the southern border is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克魯格河",
+     "国家",
+     "帕克",
+     "(克罗地亚国家警察)",
+     "位于南非东北部,沿着",
+     "边界",
+     "东部是莫桑比克,",
+     "北部的津巴布韦，",
+     "南部边界是鳄鱼河。"
+    ],
+    "Japanese": [
+     "クルーガー",
+     "ナショナル",
+     "パーク",
+     "（クン・ニョンパ）",
+     "南アフリカ北東部にあり",
+     "国境の",
+     "東はモザンビーク",
+     "北はジンバブエ",
+     "南の境界は クロコダイル川です"
+    ],
+    "German": [
+     "Der Krüger",
+     "National",
+     "Park",
+     "(KNP)",
+     "Die Provinz liegt im Nordosten Südafrikas und verläuft entlang",
+     "Die Grenze von",
+     "Mosambik im Osten,",
+     "Simbabwe im Norden und",
+     "Die südliche Grenze ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Kruger",
+     "Nacional",
+     "Parque",
+     "(KNP)",
+     "Se encuentra en el noreste de Sudáfrica y discurre a lo largo de",
+     "La frontera de",
+     "Mozambique en el este,",
+     "Zimbabwe en el norte, y",
+     "La frontera sur es el río Cocodrilo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "north-east of South Africa",
+     "right": "and runs along the",
+     "H": 0.8009,
+     "H_pct": 68.8,
+     "contra": 0.0008,
+     "cohesion": 0.8015
+    },
+    {
+     "pos": 14,
+     "left": "South Africa and runs",
+     "right": "along the border of",
+     "H": 0.7768,
+     "H_pct": 50.0,
+     "contra": 0.0019,
+     "cohesion": 0.7782
+    },
+    {
+     "pos": 17,
+     "left": "runs along the border",
+     "right": "of Mozambique in the",
+     "H": 0.8008,
+     "H_pct": 65.6,
+     "contra": 0.0045,
+     "cohesion": 0.8044
+    },
+    {
+     "pos": 19,
+     "left": "the border of Mozambique",
+     "right": "in the east, Zimbabwe",
+     "H": 0.8193,
+     "H_pct": 75.0,
+     "contra": 0.015,
+     "cohesion": 0.8318
+    },
+    {
+     "pos": 23,
+     "left": "in the east, Zimbabwe",
+     "right": "in the north, and",
+     "H": 0.6998,
+     "H_pct": 37.5,
+     "contra": 0.0338,
+     "cohesion": 0.7243
+    },
+    {
+     "pos": 26,
+     "left": "Zimbabwe in the north,",
+     "right": "and the southern border",
+     "H": 0.8143,
+     "H_pct": 71.9,
+     "contra": 0.0455,
+     "cohesion": 0.8531
+    },
+    {
+     "pos": 30,
+     "left": "and the southern border",
+     "right": "is the Crocodile River.",
+     "H": 0.1194,
+     "H_pct": 9.4,
+     "contra": 0.842,
+     "cohesion": 0.7559
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The Kruger",
+     "right": "National Park (KNP) lies",
+     "H": 0.8308,
+     "H_pct": 87.5,
+     "contra": 0.0019,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 3,
+     "left": "The Kruger National",
+     "right": "Park (KNP) lies in",
+     "H": 0.8466,
+     "H_pct": 96.9,
+     "contra": 0.0014,
+     "cohesion": 0.8478
+    },
+    {
+     "pos": 4,
+     "left": "The Kruger National Park",
+     "right": "(KNP) lies in the",
+     "H": 0.8674,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8683
+    },
+    {
+     "pos": 5,
+     "left": "Kruger National Park (KNP)",
+     "right": "lies in the north-east",
+     "H": 0.8231,
+     "H_pct": 81.2,
+     "contra": 0.0009,
+     "cohesion": 0.8238
+    },
+    {
+     "pos": 15,
+     "left": "Africa and runs along",
+     "right": "the border of Mozambique",
+     "H": 0.8212,
+     "H_pct": 78.1,
+     "contra": 0.0039,
+     "cohesion": 0.8244
+    },
+    {
+     "pos": 18,
+     "left": "along the border of",
+     "right": "Mozambique in the east,",
+     "H": 0.8327,
+     "H_pct": 90.6,
+     "contra": 0.0125,
+     "cohesion": 0.8433
+    },
+    {
+     "pos": 27,
+     "left": "in the north, and",
+     "right": "the southern border is",
+     "H": 0.8441,
+     "H_pct": 93.8,
+     "contra": 0.0212,
+     "cohesion": 0.8624
+    }
+   ]
+  }
+ }
+]

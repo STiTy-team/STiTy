@@ -1,0 +1,1634 @@
+[
+ {
+  "id": "en_us_888",
+  "cuts": 9,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.5805,
+  "policy_worst_contra": 0.9285,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    11,
+    13,
+    14,
+    17,
+    20,
+    21,
+    22
+   ],
+   "H_set": 0.0507,
+   "text": "Tourist visits are costly, ‖ demand physical fitness, ‖ can only take place ‖ in summer ‖ Nov-Feb, ‖ and are largely ‖ limited to the ‖ Peninsula, ‖ Islands ‖ and Ross Sea.",
+   "pieces": {
+    "Chinese": [
+     "游客的访问是昂贵的,",
+     "要求身体健康,",
+     "只能发生",
+     "夏天",
+     "11月至2月",
+     "并且大多数是",
+     "限于",
+     "半岛",
+     "群岛",
+     "罗斯海。"
+    ],
+    "Japanese": [
+     "観光客の訪問は高価で",
+     "体力を要求し",
+     "実現するには",
+     "夏には",
+     "11月〜2月",
+     "ほとんどが",
+     "限られたものに限られた",
+     "半島",
+     "島",
+     "ロス海です"
+    ],
+    "German": [
+     "Touristische Besuche sind teuer,",
+     "körperliche Fitness erfordern,",
+     "Kann nur stattfinden",
+     "Im Sommer im Sommer",
+     "Nov-Feb,",
+     "und sind weitgehend",
+     "Beschränkt auf die",
+     "Peninsula,",
+     "Insel",
+     "und Rosssee."
+    ],
+    "Spanish": [
+     "Las visitas turísticas son costosas,",
+     "exigen aptitud física,",
+     "Solo puede tener lugar",
+     "En verano",
+     "Nov-Feb,",
+     "y son en gran parte",
+     "Limitada a la",
+     "Península de Yucatán,",
+     "Islas",
+     "y el Mar de Ross."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    13,
+    14,
+    21
+   ],
+   "H_set": 0.6313,
+   "text": "Tourist ‖ visits ‖ are ‖ costly, ‖ demand physical ‖ fitness, ‖ can only take place in summer ‖ Nov-Feb, ‖ and are largely limited to the Peninsula, ‖ Islands and Ross Sea.",
+   "pieces": {
+    "Chinese": [
+     "旅游",
+     "访问",
+     "是",
+     "费用高昂，",
+     "需求物理",
+     "健身",
+     "只能在夏天举行",
+     "11月至2月",
+     "并且大多数都局限在半岛,",
+     "群岛和罗斯海。"
+    ],
+    "Japanese": [
+     "観光客",
+     "訪問",
+     "あなたは",
+     "費用がかかる",
+     "物理的なものを要求する",
+     "フィットネス",
+     "夏にしか行われない",
+     "11月〜2月",
+     "半島に限られています",
+     "島とロス海"
+    ],
+    "German": [
+     "Tourist",
+     "Besuche",
+     "sind",
+     "kostspielig,",
+     "Nachfrage physisch",
+     "Fitness,",
+     "Kann nur im Sommer stattfinden",
+     "Nov-Feb,",
+     "und sind weitgehend auf die Halbinsel beschränkt,",
+     "Inseln und Rosssee."
+    ],
+    "Spanish": [
+     "Turista",
+     "Visitas",
+     "son",
+     "costosos,",
+     "demanda física",
+     "fitness,",
+     "Solo puede tener lugar en verano",
+     "Nov-Feb,",
+     "y se limitan en gran medida a la Península,",
+     "Islas y Mar de Ross."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "can only take place",
+     "right": "in summer Nov-Feb, and",
+     "H": 0.518,
+     "H_pct": 17.4,
+     "contra": 0.3599,
+     "cohesion": 0.8092
+    },
+    {
+     "pos": 17,
+     "left": "Nov-Feb, and are largely",
+     "right": "limited to the Peninsula,",
+     "H": 0.7644,
+     "H_pct": 52.2,
+     "contra": 0.0529,
+     "cohesion": 0.8071
+    },
+    {
+     "pos": 20,
+     "left": "largely limited to the",
+     "right": "Peninsula, Islands and Ross",
+     "H": 0.0581,
+     "H_pct": 0.0,
+     "contra": 0.9285,
+     "cohesion": 0.8121
+    },
+    {
+     "pos": 22,
+     "left": "to the Peninsula, Islands",
+     "right": "and Ross Sea.",
+     "H": 0.7887,
+     "H_pct": 60.9,
+     "contra": 0.0294,
+     "cohesion": 0.8126
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Tourist",
+     "right": "visits are costly, demand",
+     "H": 0.8154,
+     "H_pct": 82.6,
+     "contra": 0.0243,
+     "cohesion": 0.8357
+    },
+    {
+     "pos": 2,
+     "left": "Tourist visits",
+     "right": "are costly, demand physical",
+     "H": 0.834,
+     "H_pct": 87.0,
+     "contra": 0.003,
+     "cohesion": 0.8366
+    },
+    {
+     "pos": 3,
+     "left": "Tourist visits are",
+     "right": "costly, demand physical fitness,",
+     "H": 0.8138,
+     "H_pct": 78.3,
+     "contra": 0.0279,
+     "cohesion": 0.8372
+    },
+    {
+     "pos": 6,
+     "left": "are costly, demand physical",
+     "right": "fitness, can only take",
+     "H": 0.8134,
+     "H_pct": 73.9,
+     "contra": 0.0031,
+     "cohesion": 0.816
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_767",
+  "cuts": 6,
+  "avg_chunk": 4.9,
+  "latency_bin": "≤5",
+  "gap": 0.53,
+  "policy_worst_contra": 0.6027,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    11,
+    16,
+    25,
+    31
+   ],
+   "H_set": 0.2496,
+   "text": "The city of Beijing ‖ in China ‖ will be the host city ‖ of the Olympic Winter Games ‖ in 2022, which will make it the first city ‖ to have hosted both the summer ‖ and winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "北京市",
+     "中国的",
+     "将是主办城市",
+     "冬季奥林匹克运动会",
+     "2022年,这将使它成为第一个城市",
+     "主办了两个夏天",
+     "冬季奥运会。"
+    ],
+    "Japanese": [
+     "北京市",
+     "中国で",
+     "開催都市になるでしょう",
+     "冬季オリンピックの",
+     "2022年には 世界で初めて",
+     "夏と冬の2つのシーズンを",
+     "冬季オリンピックです"
+    ],
+    "German": [
+     "Die Stadt Peking",
+     "in China",
+     "Die Gastgeberstadt ist",
+     "Olympische Winterspiele 1994",
+     "2022, was sie zur ersten Stadt macht,",
+     "Sowohl den Sommer als auch den Winter",
+     "Olympische Spiele und Winterspiele."
+    ],
+    "Spanish": [
+     "La ciudad de Pekín",
+     "en China",
+     "La ciudad anfitriona será",
+     "Juegos Olímpicos de Invierno de 1984",
+     "en 2022, lo que la convertirá en la primera ciudad",
+     "Por haber acogido tanto el verano",
+     "Juegos Olímpicos de invierno."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    18,
+    19
+   ],
+   "H_set": 0.7796,
+   "text": "The city ‖ of ‖ Beijing ‖ in ‖ China will be the host city of the Olympic Winter Games in 2022, ‖ which ‖ will make it the first city to have hosted both the summer and winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "城市",
+     "的",
+     "北京",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "中国将于2022年举办冬季奥运会,",
+     "其中",
+     "将使它成为第一个同时举办夏季和冬季奥运会的城市。"
+    ],
+    "Japanese": [
+     "都市",
+     "の",
+     "北京",
+     "ここに",
+     "中国は２０２２年冬季オリンピックの開催都市となる。",
+     "それは",
+     "夏季と冬季の両方のオリンピックを開催した 初めての都市になるでしょう"
+    ],
+    "German": [
+     "Die Stadt",
+     "von",
+     "Beijing",
+     "in",
+     "China wird die Gastgeberstadt der Olympischen Winterspiele im Jahr 2022 sein,",
+     "which",
+     "Die Stadt wird damit die erste sein, die sowohl die Sommer- als auch die Winterspiele ausgerichtet hat."
+    ],
+    "Spanish": [
+     "La ciudad de",
+     "de",
+     "Beijing",
+     "en",
+     "China será la ciudad anfitriona de los Juegos Olímpicos de Invierno en 2022,",
+     "which",
+     "Será la primera ciudad en haber acogido los Juegos Olímpicos de verano e invierno."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "of Beijing in China",
+     "right": "will be the host",
+     "H": 0.7799,
+     "H_pct": 37.5,
+     "contra": 0.0004,
+     "cohesion": 0.7802
+    },
+    {
+     "pos": 11,
+     "left": "be the host city",
+     "right": "of the Olympic Winter",
+     "H": 0.8638,
+     "H_pct": 81.2,
+     "contra": 0.0005,
+     "cohesion": 0.8642
+    },
+    {
+     "pos": 16,
+     "left": "the Olympic Winter Games",
+     "right": "in 2022, which will",
+     "H": 0.8007,
+     "H_pct": 59.4,
+     "contra": 0.0007,
+     "cohesion": 0.8012
+    },
+    {
+     "pos": 25,
+     "left": "it the first city",
+     "right": "to have hosted both",
+     "H": 0.3074,
+     "H_pct": 3.1,
+     "contra": 0.6027,
+     "cohesion": 0.7737
+    },
+    {
+     "pos": 31,
+     "left": "hosted both the summer",
+     "right": "and winter Olympics.",
+     "H": 0.7957,
+     "H_pct": 56.2,
+     "contra": 0.0097,
+     "cohesion": 0.8035
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The city",
+     "right": "of Beijing in China",
+     "H": 0.8752,
+     "H_pct": 93.8,
+     "contra": 0.0006,
+     "cohesion": 0.8757
+    },
+    {
+     "pos": 3,
+     "left": "The city of",
+     "right": "Beijing in China will",
+     "H": 0.8775,
+     "H_pct": 96.9,
+     "contra": 0.0005,
+     "cohesion": 0.8779
+    },
+    {
+     "pos": 5,
+     "left": "city of Beijing in",
+     "right": "China will be the",
+     "H": 0.8649,
+     "H_pct": 84.4,
+     "contra": 0.0009,
+     "cohesion": 0.8657
+    },
+    {
+     "pos": 18,
+     "left": "Winter Games in 2022,",
+     "right": "which will make it",
+     "H": 0.8924,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.893
+    },
+    {
+     "pos": 19,
+     "left": "Games in 2022, which",
+     "right": "will make it the",
+     "H": 0.8689,
+     "H_pct": 87.5,
+     "contra": 0.0014,
+     "cohesion": 0.8701
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1488",
+  "cuts": 2,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.2736,
+  "policy_worst_contra": 0.348,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    10
+   ],
+   "H_set": 0.4748,
+   "text": "Edgar Veguilla received arm and jaw wounds ‖ while Kristoffer Schneider ‖ was left requiring reconstructive surgery for his face.",
+   "pieces": {
+    "Chinese": [
+     "Edgar Veguilla受伤，手臂和下巴受伤",
+     "克里斯托弗·施奈德",
+     "他的脸上露出了微微的笑容。"
+    ],
+    "Japanese": [
+     "エドガー・ベギーラは腕と顎に傷を負った",
+     "クリストファー・シュナイダーは",
+     "顔の再建手術を必要とした"
+    ],
+    "German": [
+     "Edgar Veguilla erhielt Arm- und Kieferverletzungen",
+     "während Kristoffer Schneider",
+     "Er musste eine rekonstruktive Operation für sein Gesicht durchführen."
+    ],
+    "Spanish": [
+     "Edgar Veguilla recibió heridas en brazo y mandíbula",
+     "Mientras Kristoffer Schneider",
+     "Se quedó con una cirugía reconstructiva para su cara."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    12
+   ],
+   "H_set": 0.7484,
+   "text": "Edgar Veguilla received arm and jaw wounds ‖ while Kristoffer Schneider was left ‖ requiring reconstructive surgery for his face.",
+   "pieces": {
+    "Chinese": [
+     "Edgar Veguilla受伤，手臂和下巴受伤",
+     "克里斯托弗·施耐德留下来",
+     "需要面部重建手术。"
+    ],
+    "Japanese": [
+     "エドガー・ベギーラは腕と顎に傷を負った",
+     "クリストファー・シュナイダーは",
+     "顔の再建手術が必要だった"
+    ],
+    "German": [
+     "Edgar Veguilla erhielt Arm- und Kieferverletzungen",
+     "Während Kristoffer Schneider zurückblieb",
+     "Er brauchte eine rekonstruktive Operation für sein Gesicht."
+    ],
+    "Spanish": [
+     "Edgar Veguilla recibió heridas en brazo y mandíbula",
+     "Mientras que Kristoffer Schneider se quedó",
+     "Requiere cirugía reconstructiva para su cara."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "wounds while Kristoffer Schneider",
+     "right": "was left requiring reconstructive",
+     "H": 0.4702,
+     "H_pct": 25.0,
+     "contra": 0.348,
+     "cohesion": 0.7211
+    }
+   ],
+   "added": [
+    {
+     "pos": 12,
+     "left": "Kristoffer Schneider was left",
+     "right": "requiring reconstructive surgery for",
+     "H": 0.7775,
+     "H_pct": 93.8,
+     "contra": 0.0073,
+     "cohesion": 0.7832
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1253",
+  "cuts": 2,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.1769,
+  "policy_worst_contra": 0.3486,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    15,
+    21
+   ],
+   "H_set": 0.523,
+   "text": "They did two experiments marking either the DNA in the phage with a radioactive phosphorus ‖ or the protein of the phage ‖ with radioactive sulfur.",
+   "pieces": {
+    "Chinese": [
+     "他们做了两个实验,用放射性磷酸盐标记噬菌体中的DNA,",
+     "或者是噬菌体的蛋白质",
+     "放射性硫。"
+    ],
+    "Japanese": [
+     "２つの実験を行い，ファージのＤＮＡを放射性リンで標識した。",
+     "ファージのタンパク質を",
+     "放射性硫黄で 処理してるんだ"
+    ],
+    "German": [
+     "Sie führten zwei Experimente durch, in denen sie entweder die DNA im Phagen mit einem radioaktiven Phosphor markierten",
+     "oder das Protein der Phage",
+     "Mit radioaktivem Schwefel."
+    ],
+    "Spanish": [
+     "Hicieron dos experimentos marcando el ADN en el fago con un fósforo radiactivo",
+     "o la proteína del fago",
+     "Con azufre radiactivo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4
+   ],
+   "H_set": 0.6999,
+   "text": "They did ‖ two experiments ‖ marking either the DNA in the phage with a radioactive phosphorus or the protein of the phage with radioactive sulfur.",
+   "pieces": {
+    "Chinese": [
+     "他们做到了",
+     "两个实验",
+     "用放射性磷标记噬菌体中的DNA,或用放射性硫标记噬菌体中的蛋白质。"
+    ],
+    "Japanese": [
+     "彼らは",
+     "2つの実験を行いました",
+     "放射性リンをファージのDNAに 放射性硫黄をタンパク質に付けて"
+    ],
+    "German": [
+     "Sie haben es getan",
+     "Zwei Experimente",
+     "Markierung entweder der DNA im Phagen mit einem radioaktiven Phosphor oder des Proteins des Phagens mit radioaktivem Schwefel."
+    ],
+    "Spanish": [
+     "Lo hicieron",
+     "Dos experimentos",
+     "Marcado del ADN en el fago con fósforo radiactivo o de la proteína del fago con azufre radiactivo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 15,
+     "left": "with a radioactive phosphorus",
+     "right": "or the protein of",
+     "H": 0.7219,
+     "H_pct": 72.7,
+     "contra": 0.117,
+     "cohesion": 0.8175
+    },
+    {
+     "pos": 21,
+     "left": "protein of the phage",
+     "right": "with radioactive sulfur.",
+     "H": 0.5044,
+     "H_pct": 45.5,
+     "contra": 0.3486,
+     "cohesion": 0.7743
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "They did",
+     "right": "two experiments marking either",
+     "H": 0.7801,
+     "H_pct": 95.5,
+     "contra": 0.0004,
+     "cohesion": 0.7804
+    },
+    {
+     "pos": 4,
+     "left": "They did two experiments",
+     "right": "marking either the DNA",
+     "H": 0.7852,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.786
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_70",
+  "cuts": 1,
+  "avg_chunk": 11.5,
+  "latency_bin": "≤99",
+  "gap": 0.1323,
+  "policy_worst_contra": 0.0032,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.7132,
+   "text": "The band canceled the show at Maui's War Memorial Stadium, ‖ which was set to be attended by 9,000 people, and apologized to fans.",
+   "pieces": {
+    "Chinese": [
+     "乐队取消了在毛伊岛战争纪念体育场的演出,",
+     "被人看见,就会有一种不安,不安的感觉。"
+    ],
+    "Japanese": [
+     "バンドはマウイの戦争記念スタジアムでの コンサートをキャンセルしました",
+     "9000人が出席する予定だった ファンに謝罪した"
+    ],
+    "German": [
+     "Die Band hat die Show im War Memorial Stadium auf Maui abgesagt.",
+     "Die Band gab eine Pressekonferenz ab, die von 9.000 Menschen besucht werden sollte, und entschuldigte sich bei den Fans."
+    ],
+    "Spanish": [
+     "La banda canceló el concierto en el War Memorial Stadium de Maui,",
+     "El cantante se disculpó con sus fans en un evento que estaba programado para ser asistido por 9,000 personas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    19
+   ],
+   "H_set": 0.8455,
+   "text": "The band canceled the show at Maui's War Memorial Stadium, which was set to be attended by 9,000 people, ‖ and apologized to fans.",
+   "pieces": {
+    "Chinese": [
+     "乐队取消了在毛伊岛战争纪念体育场的演出,该场演出原定有9000人参加,但最终演出被取消。",
+     "并向粉丝道歉。"
+    ],
+    "Japanese": [
+     "バンドはマウイの戦争記念スタジアムでの 9,000人の出演予定だった ショーをキャンセルした",
+     "ファンに謝罪した"
+    ],
+    "German": [
+     "Die Band hat die Show im War Memorial Stadium auf Maui abgesagt, die von 9.000 Menschen besucht werden sollte,",
+     "Und entschuldigte sich bei den Fans."
+    ],
+    "Spanish": [
+     "La banda canceló el concierto en el War Memorial Stadium de Maui, al que debían asistir 9.000 personas,",
+     "y se disculpó con los fans."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "Maui's War Memorial Stadium,",
+     "right": "which was set to",
+     "H": 0.7133,
+     "H_pct": 42.9,
+     "contra": 0.0032,
+     "cohesion": 0.7156
+    }
+   ],
+   "added": [
+    {
+     "pos": 19,
+     "left": "attended by 9,000 people,",
+     "right": "and apologized to fans.",
+     "H": 0.8456,
+     "H_pct": 100.0,
+     "contra": 0.0037,
+     "cohesion": 0.8487
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_741",
+  "cuts": 4,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.573,
+  "policy_worst_contra": 0.7092,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    12,
+    13
+   ],
+   "H_set": 0.1935,
+   "text": "It is an archipelago ‖ with 15 islands ‖ spread out over 2.2 million ‖ km2 ‖ of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个岛屿",
+     "分布在220万个国家",
+     "平方公里",
+     "海洋的。"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15の島々がある",
+     "220万人以上の人々が",
+     "平方キロメートル",
+     "海の中にある"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "mit 15 Inseln",
+     "Verteilt auf 2,2 Millionen",
+     "km2",
+     "Die Welt des Ozeans."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "Con 15 islas",
+     "distribuidos en más de 2,2 millones",
+     "km2",
+     "El océano."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    6,
+    7
+   ],
+   "H_set": 0.7665,
+   "text": "It is ‖ an archipelago ‖ with 15 ‖ islands ‖ spread out over 2.2 million km2 of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是的",
+     "群岛",
+     "15个成员",
+     "岛屿",
+     "分布在220万平方公里的海洋中。"
+    ],
+    "Japanese": [
+     "それは",
+     "群島のようなものです",
+     "15人で",
+     "島々",
+     "220万平方キロメートルの海に広がっています"
+    ],
+    "German": [
+     "Es ist",
+     "Ein Archipel",
+     "mit 15",
+     "Inseln",
+     "Die Inseln verteilen sich auf 2,2 Millionen km2 Ozean."
+    ],
+    "Spanish": [
+     "Es",
+     "Un archipiélago",
+     "con 15",
+     "Islas",
+     "Se extienden por 2,2 millones de km2 de océano."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "out over 2.2 million",
+     "right": "km2 of ocean.",
+     "H": 0.2134,
+     "H_pct": 0.0,
+     "contra": 0.7092,
+     "cohesion": 0.7338
+    },
+    {
+     "pos": 13,
+     "left": "over 2.2 million km2",
+     "right": "of ocean.",
+     "H": 0.4401,
+     "H_pct": 15.4,
+     "contra": 0.4218,
+     "cohesion": 0.7611
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "It is",
+     "right": "an archipelago with 15",
+     "H": 0.8204,
+     "H_pct": 76.9,
+     "contra": 0.0026,
+     "cohesion": 0.8225
+    },
+    {
+     "pos": 6,
+     "left": "an archipelago with 15",
+     "right": "islands spread out over",
+     "H": 0.8507,
+     "H_pct": 84.6,
+     "contra": 0.0018,
+     "cohesion": 0.8522
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_419",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.5211,
+  "policy_worst_contra": 0.6933,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    9,
+    15,
+    16
+   ],
+   "H_set": 0.1901,
+   "text": "Estimates range from 340 million to 500 million ‖ speakers, ‖ and as many as 800 million ‖ people ‖ can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数从3.4亿到5亿不等",
+     "发言者，",
+     "多达8亿",
+     "人数",
+     "能够理解语言。"
+    ],
+    "Japanese": [
+     "推定値は3億4000万から5億ドル",
+     "話者は",
+     "8億人もの人々が",
+     "人々",
+     "言語を理解できるのです"
+    ],
+    "German": [
+     "Schätzungen reichen von 340 Millionen bis 500 Millionen",
+     "Lautsprecher,",
+     "Und so viele wie 800 Millionen",
+     "Person",
+     "Ich kann die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Las estimaciones oscilan entre 340 millones y 500 millones",
+     "Altavoces,",
+     "y hasta 800 millones",
+     "personas",
+     "No entiendo el idioma."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    9
+   ],
+   "H_set": 0.7112,
+   "text": "Estimates ‖ range ‖ from ‖ 340 million to 500 million speakers, ‖ and as many as 800 million people can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数",
+     "范围",
+     "从",
+     "3.4亿到5亿人,",
+     "多达8亿人能够理解这种语言。"
+    ],
+    "Japanese": [
+     "推定",
+     "範囲",
+     "ここから",
+     "3億4千万から5億人の話者がいます",
+     "8億人がこの言語を理解できます"
+    ],
+    "German": [
+     "Schätzungen",
+     "Range",
+     "von",
+     "340 Millionen bis 500 Millionen Sprecher,",
+     "Und bis zu 800 Millionen Menschen können die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Estimaciones",
+     "Rango",
+     "de",
+     "340 millones a 500 millones de hablantes,",
+     "Y hasta 800 millones de personas pueden entender el idioma."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "million to 500 million",
+     "right": "speakers, and as many",
+     "H": 0.2189,
+     "H_pct": 0.0,
+     "contra": 0.6933,
+     "cohesion": 0.7138
+    },
+    {
+     "pos": 15,
+     "left": "many as 800 million",
+     "right": "people can understand the",
+     "H": 0.5364,
+     "H_pct": 16.7,
+     "contra": 0.2524,
+     "cohesion": 0.7175
+    },
+    {
+     "pos": 16,
+     "left": "as 800 million people",
+     "right": "can understand the language.",
+     "H": 0.5254,
+     "H_pct": 11.1,
+     "contra": 0.2515,
+     "cohesion": 0.7019
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Estimates",
+     "right": "range from 340 million",
+     "H": 0.8521,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8533
+    },
+    {
+     "pos": 2,
+     "left": "Estimates range",
+     "right": "from 340 million to",
+     "H": 0.815,
+     "H_pct": 83.3,
+     "contra": 0.0006,
+     "cohesion": 0.8155
+    },
+    {
+     "pos": 3,
+     "left": "Estimates range from",
+     "right": "340 million to 500",
+     "H": 0.8191,
+     "H_pct": 88.9,
+     "contra": 0.0279,
+     "cohesion": 0.8427
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1615",
+  "cuts": 2,
+  "avg_chunk": 5.7,
+  "latency_bin": "≤7",
+  "gap": 0.1802,
+  "policy_worst_contra": 0.3002,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    9
+   ],
+   "H_set": 0.5431,
+   "text": "Thousands of years ago, ‖ a man called Aristarchus said ‖ that the Solar System moved around the Sun.",
+   "pieces": {
+    "Chinese": [
+     "几千年前,",
+     "一个叫亚里斯多德的人说",
+     "太阳系围绕太阳运行。"
+    ],
+    "Japanese": [
+     "数千年前",
+     "アリスタルコスという男が言いました",
+     "太陽系が太陽の周りを回っていると 考えられていました"
+    ],
+    "German": [
+     "Vor Tausenden von Jahren,",
+     "Ein Mann namens Aristarchus sagte",
+     "Das Sonnensystem ist ein System von Planeten."
+    ],
+    "Spanish": [
+     "Hace miles de años,",
+     "Un hombre llamado Aristarco dijo",
+     "El Sistema Solar se mueve alrededor del Sol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5
+   ],
+   "H_set": 0.7233,
+   "text": "Thousands of years ago, ‖ a ‖ man called Aristarchus said that the Solar System moved around the Sun.",
+   "pieces": {
+    "Chinese": [
+     "几千年前,",
+     "2004年12月31日终了年度的收入和支出及准备金和基金结余变动表",
+     "一个叫做阿里斯塔克斯的人说太阳系围绕着太阳运动。"
+    ],
+    "Japanese": [
+     "数千年前",
+     "これは",
+     "アリスタルコスという男が 太陽系が太陽の周りを回っていると言った"
+    ],
+    "German": [
+     "Vor Tausenden von Jahren,",
+     "Ein",
+     "Ein Mann namens Aristarchus sagte, dass das Sonnensystem sich um die Sonne bewegt."
+    ],
+    "Spanish": [
+     "Hace miles de años,",
+     "a",
+     "Un hombre llamado Aristarco dijo que el Sistema Solar se movía alrededor del Sol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "man called Aristarchus said",
+     "right": "that the Solar System",
+     "H": 0.5498,
+     "H_pct": 13.3,
+     "contra": 0.3002,
+     "cohesion": 0.7856
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "of years ago, a",
+     "right": "man called Aristarchus said",
+     "H": 0.834,
+     "H_pct": 93.3,
+     "contra": 0.016,
+     "cohesion": 0.8476
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1199",
+  "cuts": 1,
+  "avg_chunk": 7.5,
+  "latency_bin": "≤10",
+  "gap": 0.1612,
+  "policy_worst_contra": 0.005,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.6278,
+   "text": "Virtual team members ‖ often function as the point of contact for their immediate physical group.",
+   "pieces": {
+    "Chinese": [
+     "虚拟团队成员",
+     "他们往往是他们直接的实体团体的联系点。"
+    ],
+    "Japanese": [
+     "仮想チームメンバー",
+     "直接的な物理的なグループとの 接触点として機能するのです"
+    ],
+    "German": [
+     "Virtuelle Teammitglieder",
+     "(290.1) 26:1.1 Die Seelen der Paradies-Gruppe fungieren oft als Kontaktpunkt für ihre unmittelbare physische Gruppe."
+    ],
+    "Spanish": [
+     "Miembros del equipo virtual",
+     "(210.1) 18:3.1 Los Ancianos de la Tierra a menudo funcionan como el punto de contacto de su grupo físico inmediato."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5
+   ],
+   "H_set": 0.789,
+   "text": "Virtual team members often function ‖ as the point of contact for their immediate physical group.",
+   "pieces": {
+    "Chinese": [
+     "虚拟团队成员经常发挥",
+     "作为他们直接的实体团体的联系点。"
+    ],
+    "Japanese": [
+     "仮想チームメンバーは",
+     "直接的な物理的なグループとの 接触点として使うのです"
+    ],
+    "German": [
+     "Virtuelle Teammitglieder funktionieren oft",
+     "Als Kontaktpunkt für ihre unmittelbare physische Gruppe."
+    ],
+    "Spanish": [
+     "Los miembros del equipo virtual a menudo funcionan",
+     "como el punto de contacto para su grupo físico inmediato."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Virtual team members",
+     "right": "often function as the",
+     "H": 0.6278,
+     "H_pct": 38.5,
+     "contra": 0.005,
+     "cohesion": 0.631
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "team members often function",
+     "right": "as the point of",
+     "H": 0.7889,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.7897
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_464",
+  "cuts": 1,
+  "avg_chunk": 15.0,
+  "latency_bin": "≤99",
+  "gap": 0.1263,
+  "policy_worst_contra": 0.0552,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.6676,
+   "text": "Unfortunately, when you make a DVD, ‖ it's borders will most likely be cut too, and if the video had subtitles too close to the bottom, they won't be fully shown.",
+   "pieces": {
+    "Chinese": [
+     "不幸的是,当你制作DVD时,",
+     "边框也很可能被剪切,如果视频的字幕太靠近底部,它们将不会完全显示。"
+    ],
+    "Japanese": [
+     "残念ながらDVDを作る時",
+     "字幕が下に近いと 完全に表示されない"
+    ],
+    "German": [
+     "Leider, wenn man eine DVD macht,",
+     "Die Ränder werden wahrscheinlich auch abgeschnitten, und wenn das Video Untertitel zu nah am Ende hatte, werden sie nicht vollständig angezeigt."
+    ],
+    "Spanish": [
+     "Desafortunadamente, cuando haces un DVD,",
+     "Es probable que sus bordes también se recorten, y si el video tenía subtítulos demasiado cerca de la parte inferior, no se mostrarán por completo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    14
+   ],
+   "H_set": 0.7939,
+   "text": "Unfortunately, when you make a DVD, it's borders will most likely be cut too, ‖ and if the video had subtitles too close to the bottom, they won't be fully shown.",
+   "pieces": {
+    "Chinese": [
+     "不幸的是,当你制作DVD时,它的边缘也很可能被剪掉,",
+     "如果视频的字幕太靠近底部,它们将不会完全显示。"
+    ],
+    "Japanese": [
+     "残念ながらDVDを作る時 境界線も切られてしまう",
+     "字幕が下に近いと 完全に表示されないのです"
+    ],
+    "German": [
+     "Leider werden bei der Erstellung einer DVD die Ränder höchstwahrscheinlich auch geschnitten,",
+     "Und wenn das Video Untertitel zu nah am Ende hatte, werden sie nicht vollständig angezeigt."
+    ],
+    "Spanish": [
+     "Desafortunadamente, cuando haces un DVD, sus bordes probablemente también se cortarán,",
+     "Y si el vídeo tenía subtítulos demasiado cerca de la parte inferior, no se mostrarán completamente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "you make a DVD,",
+     "right": "it's borders will most",
+     "H": 0.6676,
+     "H_pct": 46.4,
+     "contra": 0.0552,
+     "cohesion": 0.7066
+    }
+   ],
+   "added": [
+    {
+     "pos": 14,
+     "left": "likely be cut too,",
+     "right": "and if the video",
+     "H": 0.7939,
+     "H_pct": 100.0,
+     "contra": 0.0035,
+     "cohesion": 0.7967
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_105",
+  "cuts": 9,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.5417,
+  "policy_worst_contra": 0.9892,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9,
+    10,
+    11,
+    14,
+    17,
+    21,
+    22,
+    27
+   ],
+   "H_set": 0.007,
+   "text": "They include financial restrictions ‖ and a ban by the ‖ European ‖ Union ‖ on the export ‖ of crude oil, ‖ from which the Iranian ‖ economy ‖ receives 80% of its foreign ‖ income.",
+   "pieces": {
+    "Chinese": [
+     "包括财政限制",
+     "并禁止",
+     "欧洲",
+     "联盟",
+     "关于出口",
+     "原油,",
+     "其中伊朗",
+     "经济",
+     "80%的外国投资",
+     "收入。"
+    ],
+    "Japanese": [
+     "財政的制約も含まれます",
+     "禁止されました",
+     "ヨーロッパ",
+     "ユニオン",
+     "輸出に関しては",
+     "原油の輸出量は",
+     "それはイランの",
+     "経済",
+     "外国からの投資の80%は",
+     "収入"
+    ],
+    "German": [
+     "Sie beinhalten finanzielle Einschränkungen",
+     "Und ein Verbot durch die",
+     "Europäische",
+     "Union",
+     "Auf den Export",
+     "von Rohöl,",
+     "Von dem die iranische",
+     "Wirtschaft",
+     "80% seiner Auslandsinvestitionen",
+     "Einkommen."
+    ],
+    "Spanish": [
+     "Incluyen restricciones financieras",
+     "y una prohibición por parte de la",
+     "Europeo",
+     "Unión",
+     "sobre la exportación",
+     "de petróleo crudo,",
+     "de los cuales el Irán",
+     "Economía",
+     "Recibe el 80% de sus ingresos extranjeros",
+     "income."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    16,
+    17,
+    20
+   ],
+   "H_set": 0.5487,
+   "text": "They ‖ include ‖ financial ‖ restrictions ‖ and ‖ a ban by the European Union ‖ on the export of crude ‖ oil, ‖ from which the ‖ Iranian economy receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "包括",
+     "财务",
+     "限制",
+     "以及",
+     "欧洲联盟的禁令",
+     "原油出口的",
+     "油",
+     "其中",
+     "伊朗经济收到80%的外国收入。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "含む",
+     "金融的に",
+     "制限",
+     "それに",
+     "欧州連合の禁止令が",
+     "原油輸出に関して",
+     "石油",
+     "それから",
+     "イラン経済は外国からの収入の80%を受け取っている。"
+    ],
+    "German": [
+     "They",
+     "include",
+     "Finanziell",
+     "Einschränkungen",
+     "und",
+     "Ein Verbot durch die Europäische Union",
+     "auf den Export von Rohöl",
+     "Öl,",
+     "Von dem die",
+     "Die iranische Wirtschaft erhält 80% ihrer ausländischen Einnahmen."
+    ],
+    "Spanish": [
+     "They",
+     "incluye",
+     "financiero",
+     "restrictions",
+     "y",
+     "Una prohibición por parte de la Unión Europea",
+     "sobre la exportación de petróleo crudo",
+     "aceite,",
+     "de los cuales",
+     "La economía iraní recibe el 80% de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "a ban by the",
+     "right": "European Union on the",
+     "H": 0.0088,
+     "H_pct": 0.0,
+     "contra": 0.9892,
+     "cohesion": 0.8162
+    },
+    {
+     "pos": 10,
+     "left": "ban by the European",
+     "right": "Union on the export",
+     "H": 0.7504,
+     "H_pct": 46.2,
+     "contra": 0.011,
+     "cohesion": 0.7588
+    },
+    {
+     "pos": 14,
+     "left": "Union on the export",
+     "right": "of crude oil, from",
+     "H": 0.7899,
+     "H_pct": 61.5,
+     "contra": 0.036,
+     "cohesion": 0.8194
+    },
+    {
+     "pos": 21,
+     "left": "from which the Iranian",
+     "right": "economy receives 80% of",
+     "H": 0.7775,
+     "H_pct": 50.0,
+     "contra": 0.008,
+     "cohesion": 0.7838
+    },
+    {
+     "pos": 22,
+     "left": "which the Iranian economy",
+     "right": "receives 80% of its",
+     "H": 0.794,
+     "H_pct": 65.4,
+     "contra": 0.0138,
+     "cohesion": 0.8052
+    },
+    {
+     "pos": 27,
+     "left": "80% of its foreign",
+     "right": "income.",
+     "H": 0.6641,
+     "H_pct": 30.8,
+     "contra": 0.1761,
+     "cohesion": 0.806
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "They",
+     "right": "include financial restrictions and",
+     "H": 0.8228,
+     "H_pct": 80.8,
+     "contra": 0.0212,
+     "cohesion": 0.8406
+    },
+    {
+     "pos": 2,
+     "left": "They include",
+     "right": "financial restrictions and a",
+     "H": 0.8647,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8687
+    },
+    {
+     "pos": 3,
+     "left": "They include financial",
+     "right": "restrictions and a ban",
+     "H": 0.8038,
+     "H_pct": 73.1,
+     "contra": 0.0023,
+     "cohesion": 0.8056
+    },
+    {
+     "pos": 5,
+     "left": "include financial restrictions and",
+     "right": "a ban by the",
+     "H": 0.8266,
+     "H_pct": 84.6,
+     "contra": 0.0491,
+     "cohesion": 0.8693
+    },
+    {
+     "pos": 16,
+     "left": "the export of crude",
+     "right": "oil, from which the",
+     "H": 0.8107,
+     "H_pct": 76.9,
+     "contra": 0.0297,
+     "cohesion": 0.8355
+    },
+    {
+     "pos": 20,
+     "left": "oil, from which the",
+     "right": "Iranian economy receives 80%",
+     "H": 0.7977,
+     "H_pct": 69.2,
+     "contra": 0.0484,
+     "cohesion": 0.8382
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_924",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.509,
+  "policy_worst_contra": 0.6309,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    8,
+    11,
+    18
+   ],
+   "H_set": 0.25,
+   "text": "Access to these services ‖ is often through a ‖ toll-free telephone number ‖ that can be called from most phones ‖ without charge.",
+   "pieces": {
+    "Chinese": [
+     "获取这些服务",
+     "是经常通过一个",
+     "免费电话号码",
+     "从大多数手机上都可以拨打",
+     "免费。"
+    ],
+    "Japanese": [
+     "サービスへのアクセス",
+     "しばしば 人間の",
+     "無料電話番号",
+     "ほとんどの携帯電話から",
+     "無料で"
+    ],
+    "German": [
+     "Zugang zu diesen Diensten",
+     "Oftmals durch eine",
+     "Gebührenfreie Telefonnummer",
+     "Die von den meisten Telefonen aus angerufen werden kann",
+     "Kostenlos."
+    ],
+    "Spanish": [
+     "Acceso a estos servicios",
+     "Es a menudo a través de un",
+     "Número de teléfono gratuito",
+     "Se puede llamar desde la mayoría de los teléfonos",
+     "Sin cargo adicional."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    6,
+    11
+   ],
+   "H_set": 0.759,
+   "text": "Access to these services ‖ is ‖ often ‖ through a toll-free telephone number ‖ that can be called from most phones without charge.",
+   "pieces": {
+    "Chinese": [
+     "获取这些服务",
+     "是",
+     "经常",
+     "通过免费电话号码",
+     "从大多数手机上免费拨打。"
+    ],
+    "Japanese": [
+     "サービスへのアクセス",
+     "はい",
+     "よく",
+     "無料電話番号を通じて",
+     "ほとんどの携帯電話から無料で通話できます"
+    ],
+    "German": [
+     "Zugang zu diesen Diensten",
+     "ist",
+     "häufig",
+     "Über eine gebührenfreie Telefonnummer",
+     "Dieser Anruf kann von den meisten Telefonen kostenlos getätigt werden."
+    ],
+    "Spanish": [
+     "Acceso a estos servicios",
+     "es",
+     "a menudo",
+     "A través de un número de teléfono gratuito",
+     "Se puede llamar desde la mayoría de los teléfonos sin cargo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "is often through a",
+     "right": "toll-free telephone number that",
+     "H": 0.295,
+     "H_pct": 0.0,
+     "contra": 0.6309,
+     "cohesion": 0.7993
+    },
+    {
+     "pos": 18,
+     "left": "called from most phones",
+     "right": "without charge.",
+     "H": 0.7767,
+     "H_pct": 38.9,
+     "contra": 0.0018,
+     "cohesion": 0.7781
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "to these services is",
+     "right": "often through a toll-free",
+     "H": 0.8207,
+     "H_pct": 83.3,
+     "contra": 0.0044,
+     "cohesion": 0.8243
+    },
+    {
+     "pos": 6,
+     "left": "these services is often",
+     "right": "through a toll-free telephone",
+     "H": 0.8352,
+     "H_pct": 94.4,
+     "contra": 0.0015,
+     "cohesion": 0.8365
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,136 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "At each candidate cut, ask two focused semantic questions by imagining the two stretches translated separately and then concatenated: (1) does the continuation overturn, negate, or reassign what the prefix asserts? (2) will the joined translations still convey the full intended meaning? Answer both to judge the cut."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Contra judgement (does the continuation overturn what preceded?): Ask whether the material beginning after this cut, read by itself, would change, negate, reverse, or materially contradict the main assertion or factual status established before the cut. Consider whether the continuation can introduce different truth-conditions, an opposite claim, a rescission, or a change of referent that a listener who cannot go back would plausibly interpret as cancelling or reversing the earlier stretch. In English this risk commonly appears when later material resolves scope (negation, modality, temporal ordering), reassigns the subject or object, or presents corrective/contrastive information.\n\nWhen judging contra, treat very short continuations that are scope-bearing as especially risky: if the following fragment (even a single token or short phrase) contains negation, an auxiliary or complement that completes the predicate, a temporal or corrective subordinator, or any element that resolves modality or reference, raise the contra probability substantially regardless of its length. Shortness alone does not make a continuation harmless when it changes truth-conditions."
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Cohesion judgement (does translating the two sides apart preserve the whole?): If the sentence is split here and each side is translated in isolation, will simply joining those translations still convey the combined meaning? Consider broken syntactic dependencies, modifier–head attachment, unresolved pronouns or quantifier/negation scope, and lost relations (temporal, causal, contrastive). Cohesion problems look like wrong attachments, orphaned modifiers, or truncated predicates.\n\nExplicitly penalize cuts that would leave a piece made chiefly of function words or isolated attachment morphemes (stranded determiners, prepositional heads, or standalone auxiliaries): such fragments rarely reattach reliably when translated alone. Prefer cuts that keep function words with their content head or that group attachments with their governor so the translated pieces recompose the intended relations."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": 90
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 157
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": -106
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 20
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7483,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 782
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8104,
+  "errors": [
+   "길이 초과: 8104 > 8054"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1294",
+    "text": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_733",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_337",
+    "text": "Input: To <SEG:?> finish, <SEG:?> Turkish <SEG:?> dance <SEG:?> group <SEG:?> Fire <SEG:?> of <SEG:?> Anatolia <SEG:?> performed <SEG:?> the <SEG:?> show <SEG:?> \"Troy\".\nOutput: To <SEG:10> finish, <SEG:90> Turkish <SEG:20> dance <SEG:40> group <SEG:80> Fire <SEG:50> of <SEG:70> Anatolia <SEG:60> performed <SEG:30> the <SEG:0> show <SEG:100> \"Troy\"."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -421
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -18
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -97
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6786,
+  "errors": null
+ }
+]

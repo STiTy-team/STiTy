@@ -1,0 +1,120 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  13,
+  18,
+  22,
+  27,
+  31,
+  37,
+  44,
+  45,
+  55,
+  60,
+  62,
+  64,
+  67,
+  73,
+  74,
+  75,
+  80,
+  87,
+  90,
+  94,
+  100,
+  103,
+  104,
+  105,
+  115,
+  116,
+  117,
+  119,
+  133,
+  141,
+  142,
+  144,
+  146,
+  147,
+  151,
+  152,
+  153,
+  156,
+  164,
+  169,
+  173,
+  177,
+  181,
+  182,
+  187,
+  188,
+  190,
+  196,
+  197
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00426,
+    "lo": -0.02824,
+    "hi": 0.03892,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7060,
+   "changelog": [
+    "Replaced C3 to explicitly penalize cuts that strand predicates or obligatory complements/scope-bearing elements, addressing the primary finding that head–complement splits are treated too crudely."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02067,
+    "lo": -0.04158,
+    "hi": -0.00228,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 6399,
+   "changelog": [
+    "Replace C3 to directly address the primary finding: make the rule explicitly penalize cuts that strand predicates, required complements, or scope-bearing operators (per the diagnosis and its example evidence).",
+    "Delete E7 because it is one of the largest example units and removing it reclaims prompt space (size_feedback required net shortening).",
+    "Delete E3 because it is large and hand-crafted; removing it reduces total chars to meet the budget.",
+    "Delete E5 because it is large and hand-crafted; removing it further ensures the prompt falls under the character budget."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00538,
+    "lo": -0.03275,
+    "hi": 0.01939,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 6740,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1507 to teach head–complement / relative-clause splits (addresses primary finding about stranded complements).",
+    "Replace E2 with labeled example en_us_1280 to illustrate prepositional-complement and object attachment risks (predicate-argument cohesion).",
+    "Replace E3 with labeled example en_us_1285 to show negation/scope-bearing operator risks (cuts that flip meaning if stranded).",
+    "Replace E4 with labeled example en_us_1543 to demonstrate complement-clause ('where' clause) attachments and their cohesion impact."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00852,
+    "lo": -0.01823,
+    "hi": 0.04001,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 6994,
+   "changelog": [
+    "Replace C7 to explicitly demote cuts that separate scope-bearing operators (negation, modals, auxiliaries, quantifiers, complementizers) from their arguments or complements when the pre-cut span would assert a claim — addresses the primary finding about stranded predicates/obligatory complements causing contradictions."
+   ]
+  }
+ ]
+}

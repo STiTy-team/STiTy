@@ -1,0 +1,30 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Subjects precede verbs and direct objects follow verbs in the samples (e.g. 'Steve Jobs unveiled the device', 'Krushchev sent in tanks').",
+  "register": "Edited, formal written informational prose — news/encyclopedic/technical descriptions with complete, grammatically well-formed sentences and frequent subordination and parentheticals.",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "subordinating conjunctions (although, because)",
+    "coordinating conjunctions (and, but)",
+    "sentence-initial comment/stance phrases (of course, in reality)",
+    "temporal/adverbial prepositional phrases that link clauses (after, following)"
+  ],
+  "clause_boundary_signals": [
+    "subordinators/complementizers that introduce dependent clauses (that, if)",
+    "relative pronouns introducing relative clauses (who, which)",
+    "clause-final punctuation (period, semicolon)",
+    "comma + coordinating conjunction pausing into a new clause (, + and)"
+  ],
+  "non_boundary_traps": [
+    "initial prepositional or temporal adverbials that look like separate clauses but modify the main clause (for over a thousand years, around 60 cases)",
+    "title/possessive + name sequences and noun compounds that resemble clause starts (Apple CEO Steve Jobs; Sir Richard Branson's Virgin Group)",
+    "parenthetical stance phrases and adverbials that resemble clause boundaries (of course, in reality)",
+    "appositive and enumerative commas inside noun phrases (Auckland's National Women's Hospital)"
+  ],
+  "unstable_prefix_signals": [
+    "subordinating/conditional markers that leave the clause incomplete (although, if)",
+    "narrow-focus/limiting particles that can reverse scope with following material (only)",
+    "negation/contrast markers whose scope depends on following auxiliaries or phrases (not, but)"
+  ],
+  "notes_for_prompt_writer": "Source is standard English with rigid SVO order and many long noun phrases (titles, possessives, compounds) that are internal to single clauses. Subordinate clauses and relative clauses are explicitly marked (although, because, who/which), and many discourse adverbials (of course, in reality) are parenthetical. Negation and narrow-focus particles (not, only) and subordinators commonly leave the interpretation of preceding material provisional until their complement appears."
+}

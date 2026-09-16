@@ -1,0 +1,107 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.04856,
+    "lo": -0.08797,
+    "hi": -0.01404,
+    "n": 411,
+    "n_clusters": 50
+   },
+   "chars": 7260,
+   "changelog": [
+    "Replaced C1 to emphasize checking the suffix-alone contradiction risk and to instruct preferring leftward cuts onto non-assertive/function words so prefixes stay inert — addresses both findings.",
+    "Inserted a worked example (append) showing a mistaken post-assertive cut: 'He announced the plan would fail.' so scorers learn to move cuts left onto function words."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.03891,
+    "lo": -0.07974,
+    "hi": 0.00176,
+    "n": 401,
+    "n_clusters": 49
+   },
+   "chars": 7453,
+   "changelog": [
+    "Replace C1 to make high-contradiction risk explicit and actionable (addresses underweighting of contra in findings).",
+    "Paraphrase C2–C7 to shorten and keep their judgments while reducing prompt length (size reduction).",
+    "Replace C8 to emphasize preferring non-assertive prefixes (move cut left) and to warn against cutting after content heads (addresses habit of cutting after heads).",
+    "Delete examples E2, E4, E6, E10, E11, E12, E13, E14, E15, E16, E17 to meet size budget and keep a focused set of representative examples that illustrate the failures named in the critique."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.01428,
+    "lo": -0.04587,
+    "hi": 0.01756,
+    "n": 411,
+    "n_clusters": 50
+   },
+   "chars": 7014,
+   "changelog": [
+    "Replace E1 with measured example en_us_888 to teach moving cuts left onto non-assertive prefixes (addresses finding that scorer cuts after content heads).",
+    "Replace E2 with measured example en_us_741 to show danger of splitting numeric/measure phrases and the need to treat suffixes that can overturn factual claims as unsafe (addresses underweighted contra risk).",
+    "Replace E3 with measured example en_us_105 to illustrate high-contradiction suffixes (relative clauses like 'from which ...' that can negate or change preceding assertion).",
+    "Replace E4 with measured example en_us_924 to emphasize that suffixes supplying essential instrumentation or scope (e.g. 'that can be called ... without charge') raise contra and should be ranked unsafe."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer treats internal boundaries of multiword noun phrases, named events, dates, and compound measure expressions as safe cuts, when in fact those tokens form atomic semantic units whose separation makes earlier fragments misleading or contradictory.",
+    "evidence": "Seen in 11 cases (e.g. splits inside “2010 Winter Olympics”, “polo fields in Las Cañitas”, multiword named places/events, and compound nouns). In every case the offline target rejoined the multiword unit and H_set rose sharply.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat multiword named entities, event names, dates, numeric/measure expressions and compound nouns as atomic units: cuts inside them are unsafe and should be scored low."
+    }
+   },
+   {
+    "diagnosis": "The scorer underestimates the harm of separating essential complements, quantifiers, or relative/clausal modifiers: later material often supplies objects, prepositional complements, numeric scope, or a relative clause that flips entailments of the preceding fragment.",
+    "evidence": "Seen in 7 cases (e.g. splits that detach complements like “more than one month in advance”, numeric scope “Nearly 200…”, verb objects, and relative clauses). Targets restored attachment and eliminated high-contradiction cuts.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Ask: does the following fragment supply an essential complement, numeric quantifier, or a relative/clausal modifier that determines truth/scope? If yes, mark the boundary unsafe (low score)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer treats internal boundaries of multiword noun phrases, named events, dates, and compound measure expressions as safe cuts, when in fact those tokens form atomic semantic units whose separation makes earlier fragments misleading or contradictory.",
+   "evidence": "Seen in 11 cases (e.g. splits inside “2010 Winter Olympics”, “polo fields in Las Cañitas”, multiword named places/events, and compound nouns). In every case the offline target rejoined the multiword unit and H_set rose sharply.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat multiword named entities, event names, dates, numeric/measure expressions and compound nouns as atomic units: cuts inside them are unsafe and should be scored low."
+   }
+  },
+  {
+   "diagnosis": "The scorer underestimates the harm of separating essential complements, quantifiers, or relative/clausal modifiers: later material often supplies objects, prepositional complements, numeric scope, or a relative clause that flips entailments of the preceding fragment.",
+   "evidence": "Seen in 7 cases (e.g. splits that detach complements like “more than one month in advance”, numeric scope “Nearly 200…”, verb objects, and relative clauses). Targets restored attachment and eliminated high-contradiction cuts.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Ask: does the following fragment supply an essential complement, numeric quantifier, or a relative/clausal modifier that determines truth/scope? If yes, mark the boundary unsafe (low score)."
+   }
+  }
+ ]
+}

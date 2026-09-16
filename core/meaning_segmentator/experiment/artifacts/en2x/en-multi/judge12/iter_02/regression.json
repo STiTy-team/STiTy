@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00943,
+  "lo": -0.0367,
+  "hi": 0.01782,
+  "n": 462,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": -0.0314,
+  "≤5": 0.025,
+  "≤7": -0.002,
+  "≤10": -0.0205,
+  "≤99": -0.0148
+ },
+ "n_worse": 196,
+ "n_better": 150,
+ "worst": [
+  {
+   "id": "en_us_1465",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.5652,
+   "before": "This means you can visit ‖ the historic ‖ city ‖ for a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means you can visit the historic city ‖ for a couple ‖ of full days ‖ while ‖ returning ‖ and sleeping ‖ on the ship ‖ at night."
+  },
+  {
+   "id": "en_us_1465",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.5589,
+   "before": "This means you can visit the historic ‖ city ‖ for a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means you can visit the historic city ‖ for a couple ‖ of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night."
+  },
+  {
+   "id": "en_us_1640",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.536,
+   "before": "On icy and snowy roadways, ‖ friction ‖ is low ‖ and you cannot drive as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_194",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.4835,
+   "before": "Schumacher ‖ who retired in 2006 after winning ‖ the Formula 1 championship ‖ seven times, ‖ was ‖ due to replace ‖ the injured Felipe Massa.",
+   "after": "Schumacher ‖ who retired in 2006 ‖ after winning the Formula 1 championship ‖ seven ‖ times, ‖ was ‖ due to replace the injured Felipe Massa."
+  },
+  {
+   "id": "en_us_194",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.4574,
+   "before": "Schumacher ‖ who retired in 2006 ‖ after winning ‖ the Formula 1 championship ‖ seven times, ‖ was ‖ due to replace ‖ the injured Felipe Massa.",
+   "after": "Schumacher ‖ who retired ‖ in 2006 ‖ after winning the Formula 1 championship ‖ seven ‖ times, ‖ was ‖ due to replace the injured Felipe Massa."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.744,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6908,
+   "before": "Eventually, wooden wheels ‖ were replaced ‖ by iron wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "after": "Eventually, ‖ wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_970",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6756,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.6315,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently ‖ general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6312,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently ‖ general ‖ that an immediate diagnosis cannot be made."
+  }
+ ],
+ "why": "By forbidding cuts on function-word boundaries the scorer stopped splitting off short determiners/auxiliaries and instead attached them to neighboring content, which moved many cut positions; this helped some mid-length pieces (≤5 bin +0.025) but harmed very-short pieces (≤3 bin −0.0314) and produced more overall declines than gains (196 worse vs 150 better). For example, en_us_1465 shows the cut before 'the' was removed (now 'visit the historic city'), while en_us_1427 illustrates a mid-length improvement where joining reduced contradiction.",
+ "lesson": "Do not apply a blanket prohibition on relocating cuts to function-word boundaries — the change helps some bins (≈≤5) but hurts very-short pieces (≤3), so later revisions should avoid uniform application that degrades the smallest-latency buckets.",
+ "blamed": [
+  "C8 «- Clause-final punctuation and full clause completions usual»"
+ ]
+}

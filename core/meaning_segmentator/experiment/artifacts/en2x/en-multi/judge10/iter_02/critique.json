@@ -1,0 +1,47 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer systematically overestimates contradiction risk when the continuation is a short adjunct/parenthetical or begins with a function word, and therefore avoids earlier cuts that isolate a self-contained preamble (named entity, date, NP head). This makes the policy leave cuts later in the clause whose isolated prefixes are then overturned by the continuation (high contra), killing set quality.",
+    "evidence": "Observed in 10 of 13 cases (en_us_733, en_us_1527, en_us_738, en_us_845, en_us_1294, en_us_399, en_us_337, en_us_1617, en_us_655, en_us_1081). In each, the offline target moves a cut earlier to isolate a self-contained unit (e.g. the named head before a parenthesis or a complete subject phrase) — those added cuts have very low contra and high cohesion — while the policy kept a later boundary whose continuation carries a high contra (often >0.8) and zeroed the H_set. The pattern repeats across latency bins, especially short-piece bins where the safe early cut is small but crucial.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When the prefix already expresses a self-contained assertion (a named entity, a complete subject or a date/time phrase), treat short adjuncts, parentheticals, and leading function-word fragments that merely modify or localize that assertion as low-contra unless the continuation clearly reassigns the referent or negates the prefix. Do not raise contra simply because the continuation is short or starts with a function word; explicitly ask: 'If the prefix were heard alone, would the continuation — by itself — change its truth-conditions or reidentify its subject?' Only if the continuation by itself would plausibly flip or rescind the prefix should contra be high."
+    }
+   },
+   {
+    "diagnosis": "The examples in the prompt have pushed scorers to prefer keeping long predicate-attached spans but have been misread as encouraging single-token cuts of auxiliaries/negation or other function words, producing unsafe singleton fragments in short-latency bins.",
+    "evidence": "Last revision notes flag this exact failure: the recent example edits increased preservation of predicate-attached spans but caused an over-sensitivity to short, scope-bearing tokens (blamed examples E1/E2/E3). Measured deltas and by_bin diagnostics show short/mid bins worsened and many policy sets were 'contra_kill' because singleton function-word cuts (or their avoidance) produced high-contrast continuations.",
+    "edit": {
+     "where": "examples",
+     "action": "replace",
+     "target": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van",
+     "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:90> (1.5 <SEG:75> hour <SEG:60> drive <SEG:50> from <SEG:40> Vancouver) <SEG:10> is <SEG:20> expensive <SEG:30> but <SEG:25> well-known <SEG:15> because <SEG:05> of <SEG:02> the <SEG:01> 2010 <SEG:00> Winter <SEG:03> Olympics.\n\nInput: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:85> the <SEG:70> Pacific <SEG:60> Tsunami <SEG:55> Warning <SEG:45> Center <SEG:25> said <SEG:20> that <SEG:15> there <SEG:10> was <SEG:08> no <SEG:02> Tsunami <SEG:01> indication."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer systematically overestimates contradiction risk when the continuation is a short adjunct/parenthetical or begins with a function word, and therefore avoids earlier cuts that isolate a self-contained preamble (named entity, date, NP head). This makes the policy leave cuts later in the clause whose isolated prefixes are then overturned by the continuation (high contra), killing set quality.",
+   "evidence": "Observed in 10 of 13 cases (en_us_733, en_us_1527, en_us_738, en_us_845, en_us_1294, en_us_399, en_us_337, en_us_1617, en_us_655, en_us_1081). In each, the offline target moves a cut earlier to isolate a self-contained unit (e.g. the named head before a parenthesis or a complete subject phrase) — those added cuts have very low contra and high cohesion — while the policy kept a later boundary whose continuation carries a high contra (often >0.8) and zeroed the H_set. The pattern repeats across latency bins, especially short-piece bins where the safe early cut is small but crucial.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When the prefix already expresses a self-contained assertion (a named entity, a complete subject or a date/time phrase), treat short adjuncts, parentheticals, and leading function-word fragments that merely modify or localize that assertion as low-contra unless the continuation clearly reassigns the referent or negates the prefix. Do not raise contra simply because the continuation is short or starts with a function word; explicitly ask: 'If the prefix were heard alone, would the continuation — by itself — change its truth-conditions or reidentify its subject?' Only if the continuation by itself would plausibly flip or rescind the prefix should contra be high."
+   }
+  },
+  {
+   "diagnosis": "The examples in the prompt have pushed scorers to prefer keeping long predicate-attached spans but have been misread as encouraging single-token cuts of auxiliaries/negation or other function words, producing unsafe singleton fragments in short-latency bins.",
+   "evidence": "Last revision notes flag this exact failure: the recent example edits increased preservation of predicate-attached spans but caused an over-sensitivity to short, scope-bearing tokens (blamed examples E1/E2/E3). Measured deltas and by_bin diagnostics show short/mid bins worsened and many policy sets were 'contra_kill' because singleton function-word cuts (or their avoidance) produced high-contrast continuations.",
+   "edit": {
+    "where": "examples",
+    "action": "replace",
+    "target": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Van",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:90> (1.5 <SEG:75> hour <SEG:60> drive <SEG:50> from <SEG:40> Vancouver) <SEG:10> is <SEG:20> expensive <SEG:30> but <SEG:25> well-known <SEG:15> because <SEG:05> of <SEG:02> the <SEG:01> 2010 <SEG:00> Winter <SEG:03> Olympics.\n\nInput: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:85> the <SEG:70> Pacific <SEG:60> Tsunami <SEG:55> Warning <SEG:45> Center <SEG:25> said <SEG:20> that <SEG:15> there <SEG:10> was <SEG:08> no <SEG:02> Tsunami <SEG:01> indication."
+   }
+  }
+ ]
+}

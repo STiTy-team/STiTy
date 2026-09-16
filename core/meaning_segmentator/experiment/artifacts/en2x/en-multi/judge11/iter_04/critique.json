@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer judges cuts by the right-hand fragment alone and over-penalizes high-contradiction short right fragments, causing it to shift cuts left into adjacent NPs and create tiny or predicate-only left fragments; it must evaluate the completeness and harm on both sides of a cut.",
+    "evidence": "6 cases (en_us_888, en_us_767, en_us_741, en_us_419, en_us_924, en_us_105) keep a high-contra cut that kills the set. Targets avoid those cuts by keeping verbs with their complements or by preventing one-word/predicate-only left fragments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When judging a cut, assess harm to BOTH fragments: avoid cuts that leave an incomplete predicate or a one-word/NP-only fragment on either side; prefer keeping verbs with required complements rather than shifting the cut into neighboring noun phrases."
+    }
+   },
+   {
+    "diagnosis": "The scorer allows cuts inside atomic measurement, date, and fixed temporal/location expressions, which breaks units or ranges and produces misleading standalone pieces.",
+    "evidence": "4 cases (en_us_741, en_us_419, en_us_888, en_us_70) split numbers/units or tight temporal ranges (e.g., \"2.2 million km2\", \"340 million to 500 million\", \"in summer Nov-Feb\", \"9,000 people\"), and targets keep those as single units.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat numerals+units, measurement phrases, date/month ranges, and fixed temporal/location expressions as atomic—do not cut inside them, since separating unit from quantity or range changes factual meaning."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer judges cuts by the right-hand fragment alone and over-penalizes high-contradiction short right fragments, causing it to shift cuts left into adjacent NPs and create tiny or predicate-only left fragments; it must evaluate the completeness and harm on both sides of a cut.",
+   "evidence": "6 cases (en_us_888, en_us_767, en_us_741, en_us_419, en_us_924, en_us_105) keep a high-contra cut that kills the set. Targets avoid those cuts by keeping verbs with their complements or by preventing one-word/predicate-only left fragments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When judging a cut, assess harm to BOTH fragments: avoid cuts that leave an incomplete predicate or a one-word/NP-only fragment on either side; prefer keeping verbs with required complements rather than shifting the cut into neighboring noun phrases."
+   }
+  },
+  {
+   "diagnosis": "The scorer allows cuts inside atomic measurement, date, and fixed temporal/location expressions, which breaks units or ranges and produces misleading standalone pieces.",
+   "evidence": "4 cases (en_us_741, en_us_419, en_us_888, en_us_70) split numbers/units or tight temporal ranges (e.g., \"2.2 million km2\", \"340 million to 500 million\", \"in summer Nov-Feb\", \"9,000 people\"), and targets keep those as single units.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat numerals+units, measurement phrases, date/month ranges, and fixed temporal/location expressions as atomic—do not cut inside them, since separating unit from quantity or range changes factual meaning."
+   }
+  }
+ ]
+}

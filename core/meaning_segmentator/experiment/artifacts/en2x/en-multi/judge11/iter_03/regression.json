@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 1e-05,
+  "lo": -0.01311,
+  "hi": 0.01211,
+  "n": 1651,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0003,
+  "≤5": -0.0029,
+  "≤7": 0.0011,
+  "≤10": 0.0065,
+  "≤99": 0.003
+ },
+ "n_worse": 587,
+ "n_better": 634,
+ "worst": [
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.703,
+   "before": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_492",
+   "k": 4,
+   "bin": "≤7",
+   "delta": -0.651,
+   "before": "The Indus Valley Civilization ‖ was a Bronze Age civilisation ‖ in the northwest Indian subcontinent ‖ encompassing most of modern-day Pakistan ‖ and some regions in northwest India and northeast Afghanistan.",
+   "after": "The Indus Valley Civilization was a Bronze Age civilisation in the northwest Indian subcontinent ‖ encompassing most of modern-day ‖ Pakistan ‖ and some regions in northwest ‖ India and northeast Afghanistan."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6093,
+   "before": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced."
+  },
+  {
+   "id": "en_us_862",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6083,
+   "before": "At home, ‖ due to this constant exposure to the local germs, ‖ odds ‖ are ‖ very high ‖ that you're already immune to them.",
+   "after": "At home, ‖ due to this constant ‖ exposure ‖ to the local germs, ‖ odds are very high ‖ that you're already immune to them."
+  },
+  {
+   "id": "en_us_722",
+   "k": 10,
+   "bin": "≤3",
+   "delta": -0.5656,
+   "before": "The island ‖ was ‖ first ‖ inhabited ‖ by the Taínos ‖ and Caribes. ‖ The ‖ Caribes ‖ were ‖ an Arawakan-speaking ‖ people who had arrived around 10,000 BCE.",
+   "after": "The island was first inhabited by the ‖ Taínos ‖ and ‖ Caribes. ‖ The ‖ Caribes ‖ were an ‖ Arawakan-speaking ‖ people ‖ who had arrived around 10,000 ‖ BCE."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.6886,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_371",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6871,
+   "before": "These plants ‖ look like a small palm ‖ tree ‖ with a crown of sharp, spiky leaves.",
+   "after": "These plants ‖ look like a small palm tree ‖ with a crown ‖ of sharp, spiky leaves."
+  },
+  {
+   "id": "en_us_939",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6553,
+   "before": "While immigration check ‖ is usually absent ‖ or a formality when you arrive ‖ in your homeland, ‖ customs control ‖ can be a hassle.",
+   "after": "While immigration check is usually absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs ‖ control ‖ can be a hassle."
+  },
+  {
+   "id": "en_us_939",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6415,
+   "before": "While immigration check ‖ is usually absent ‖ or a formality when you arrive in your homeland, ‖ customs control ‖ can be a hassle.",
+   "after": "While immigration check is usually absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs ‖ control can be a hassle."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6381,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication ‖ of photos as potentially prejudicial."
+  }
+ ],
+ "why": "The two inserted principles caused the scorer to avoid cut positions that would leave a tiny predicate-only right-hand fragment and to strongly downweight cuts whose following fragment looks likely to contradict; that moved many cuts away from verbs/complements (improving cohesion for longer pieces and reducing contradiction in the ≤7–≤99 bins). However, because the avoidance was implemented by shifting cuts leftward, it often pushed cuts into adjacent noun phrases and modifiers, producing many single-word or very-short left fragments and slightly hurting the shortest bins (≤3, ≤5), yielding an overall near-zero net change.",
+ "lesson": "A follow-up edit should keep verbs with their complements and avoid high-contradiction right-hand fragments without simply shifting cuts into neighboring NPs or creating new one-word fragments (i.e., account for the symmetric effect on the left-hand fragment).",
+ "blamed": [
+  "C_end"
+ ]
+}

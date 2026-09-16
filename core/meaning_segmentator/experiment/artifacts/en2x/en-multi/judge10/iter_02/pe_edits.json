@@ -1,0 +1,306 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "Apply both judgements at every marker; both are graded. Contra is a probability that the continuation, by itself, contradicts or overturns the prefix. Cohesion is how well two separately translated halves, concatenated, reproduce the whole. When the prefix already expresses a self-contained assertion (a named entity, a complete subject phrase, or a date/time), treat short adjuncts, parentheticals, or leading function-word fragments that merely modify or localize that assertion as low-contra unless the continuation, taken alone, would plausibly reassign the referent, negate, or rescind the prefix. Concretely ask: 'If the prefix were heard alone, would this continuation by itself flip its truth-conditions or reidentify its subject?' Only then raise contra."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_733",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 492
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -324
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7490,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 2217
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9539,
+  "errors": [
+   "길이 초과: 9539 > 8054"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "When the prefix already expresses a self-contained assertion (a named entity, a complete subject phrase, or a date/time), treat short adjuncts, parentheticals, or continuations that begin with a function-word fragment as low-contra unless the continuation, by itself, would reidentify, negate, or rescind that prefix. Explicitly ask: 'If the prefix were heard alone, would the continuation alone change its truth-conditions or identify its subject?' Only if the continuation alone plausibly flips or rescinds the prefix should contra be high."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "Judge whether essential dependencies or attachments cross the cut: modifier–head links inside long noun phrases, complement clauses that complete predicates, scope-bearing material (quantifiers, negation, auxiliaries), relative/complement clauses introduced later, possessives, and similar attachments. Damage shows as orphaned modifiers, ambiguous attachment, unresolved pronouns, missing required arguments, or lost scope that changes combined meaning."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "Apply both judgements at every marker. Contra is a graded probability the continuation overturns the prefix; cohesion is a graded estimate of how well two separate translations reconstruct the whole when concatenated. Use English tendencies (SVO order, preference for completing verb phrases and clauses, post-head subordinate clauses, nested noun modifiers) to inform these semantic judgements, but do not convert them into surface-form rules."
+   },
+   {
+    "op": "delete",
+    "id": "E1"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": -315
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -132
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -154
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -805
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8132,
+  "errors": [
+   "길이 초과: 8132 > 8054"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "When the prefix is a self-contained assertion (named entity, full subject phrase, or date/time), treat short adjuncts, parentheticals, or continuations that begin with function-word fragments as low-contra unless the continuation alone would reidentify, negate, or rescind that prefix. Explicitly ask: 'If the prefix were heard alone, would the continuation by itself change its truth-conditions or reidentify its subject?' Only then raise contra."
+   },
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "text": "Judge cohesion by whether essential dependencies cross the cut: modifiers inside noun phrases, complements that complete predicates, scope-bearing material (quantifiers, negation, auxiliaries), later-introduced relative or complement clauses, possessives, and similar attachments. Damage shows as orphaned modifiers, ambiguous attachments, unresolved pronouns, missing required arguments, or lost scope that alters meaning."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "Apply both judgements at every marker. Treat contra as a graded probability the continuation overturns the prefix and cohesion as a graded estimate of how well separate translations reconstruct the whole. Use English tendencies (SVO, completing verb phrases, post-head subordinate clauses, nested NP modifiers) to inform semantic judgements but do not turn them into surface-form rules."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:90> (1.5 <SEG:75> hour <SEG:60> drive <SEG:50> from <SEG:40> Vancouver) <SEG:10> is <SEG:20> expensive <SEG:30> but <SEG:25> well-known <SEG:15> because <SEG:05> of <SEG:02> the <SEG:01> 2010 <SEG:00> Winter <SEG:03> Olympics."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "text": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:85> the <SEG:70> Pacific <SEG:60> Tsunami <SEG:55> Warning <SEG:45> Center <SEG:25> said <SEG:20> that <SEG:15> there <SEG:10> was <SEG:08> no <SEG:02> Tsunami <SEG:01> indication."
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -95
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C6",
+    "kind": "paraphrase",
+    "chars_change": -31
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -58
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -36
+   },
+   {
+    "edit": 4,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -123
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -458
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7330,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1179",
+    "text": "Input: In <SEG:?> 1895, <SEG:?> after <SEG:?> defeat <SEG:?> in <SEG:?> the <SEG:?> First <SEG:?> Sino-Japanese <SEG:?> War <SEG:?> (1894-1895), <SEG:?> the <SEG:?> Qing <SEG:?> government <SEG:?> signs <SEG:?> the <SEG:?> Treaty <SEG:?> of <SEG:?> Shimonoseki, <SEG:?> by <SEG:?> which <SEG:?> it <SEG:?> cedes <SEG:?> sovereignty <SEG:?> over <SEG:?> Taiwan <SEG:?> to <SEG:?> Japan, <SEG:?> which <SEG:?> rules <SEG:?> the <SEG:?> island <SEG:?> until <SEG:?> 1945.\nOutput: In <SEG:97> 1895, <SEG:94> after <SEG:68> defeat <SEG:77> in <SEG:45> the <SEG:6> First <SEG:90> Sino-Japanese <SEG:55> War <SEG:84> (1894-1895), <SEG:13> the <SEG:0> Qing <SEG:16> government <SEG:29> signs <SEG:39> the <SEG:3> Treaty <SEG:35> of <SEG:100> Shimonoseki, <SEG:74> by <SEG:32> which <SEG:48> it <SEG:19> cedes <SEG:26> sovereignty <SEG:52> over <SEG:10> Taiwan <SEG:87> to <SEG:58> Japan, <SEG:81> which <SEG:42> rules <SEG:71> the <SEG:61> island <SEG:65> until <SEG:23> 1945."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_845",
+    "text": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.\nOutput: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_399",
+    "text": "Input: Italy's <SEG:?> main <SEG:?> goals <SEG:?> were <SEG:?> African <SEG:?> countries. <SEG:?> To <SEG:?> capture <SEG:?> those <SEG:?> countries, <SEG:?> they <SEG:?> would <SEG:?> need <SEG:?> to <SEG:?> have <SEG:?> a <SEG:?> troop <SEG:?> launching <SEG:?> pad, <SEG:?> so <SEG:?> as <SEG:?> troops <SEG:?> could <SEG:?> sail <SEG:?> across <SEG:?> the <SEG:?> Mediterranean <SEG:?> Sea <SEG:?> and <SEG:?> invade <SEG:?> Africa.\nOutput: Italy's <SEG:59> main <SEG:24> goals <SEG:79> were <SEG:72> African <SEG:90> countries. <SEG:100> To <SEG:93> capture <SEG:83> those <SEG:76> countries, <SEG:97> they <SEG:62> would <SEG:52> need <SEG:21> to <SEG:7> have <SEG:3> a <SEG:0> troop <SEG:28> launching <SEG:14> pad, <SEG:55> so <SEG:45> as <SEG:69> troops <SEG:31> could <SEG:41> sail <SEG:48> across <SEG:34> the <SEG:17> Mediterranean <SEG:66> Sea <SEG:86> and <SEG:10> invade <SEG:38> Africa."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 164
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 162
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 454
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8102,
+  "errors": [
+   "길이 초과: 8102 > 8054"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1294",
+    "text": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication."
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -421
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -499
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -449
+   }
+  ],
+  "skipped": [],
+  "result_chars": 5951,
+  "errors": null
+ }
+]

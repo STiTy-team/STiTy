@@ -1,0 +1,107 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  3,
+  6,
+  10,
+  13,
+  18,
+  20,
+  23,
+  27,
+  30,
+  32,
+  37,
+  38,
+  50,
+  52,
+  54,
+  56,
+  65,
+  68,
+  73,
+  75,
+  82,
+  85,
+  87,
+  93,
+  101,
+  104,
+  105,
+  111,
+  112,
+  113,
+  118,
+  120,
+  122,
+  125,
+  128,
+  131,
+  134,
+  135,
+  138,
+  143,
+  146,
+  149,
+  159,
+  173,
+  178,
+  179,
+  188,
+  197,
+  199
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00868,
+    "lo": -0.0215,
+    "hi": 0.03771,
+    "n": 426,
+    "n_clusters": 50
+   },
+   "chars": 7633,
+   "changelog": [
+    "Inserted a principle to avoid creating very short predicate-only fragments and to prefer keeping verbs, their complements, and scope-bearing operators together — addresses the leftward-cut bias that isolates predicates.",
+    "Inserted a principle to strongly penalize cuts whose following fragment has high probability of contradicting or overturning the prior material (contra ≳0.5) — addresses underweighting of high post-cut contradiction."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00518,
+    "lo": -0.0176,
+    "hi": 0.02671,
+    "n": 426,
+    "n_clusters": 50
+   },
+   "chars": 7169,
+   "changelog": [
+    "Paraphrased C1–C8 to shorter, clearer judgments to cut overall prompt length and reduce leftward bias while preserving intent (addresses size overbudget and many critique points).",
+    "Strengthened C2 into an explicit prohibition against leaving tiny fragments containing only a predicate/auxiliary/negation without required complements (addresses finding about isolating predicates).",
+    "Inserted a new core principle (after C2) that requires marking cuts with high post-cut contradiction (contra ≳ 0.5) as unsafe and lowering their rank substantially (directly addresses finding about underweighting high contra).",
+    "Deleted ten largest Examples (E1, E3, E4, E5, E6, E8, E9, E10, E12, E13) to bring the prompt under the size budget and keep the example set within the 8-example limit."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.016,
+    "lo": -0.04458,
+    "hi": 0.01022,
+    "n": 426,
+    "n_clusters": 50
+   },
+   "chars": 6818,
+   "changelog": [
+    "Replace E1 with labeled example en_us_738 to teach the scorer about predicate/negation isolation (addresses leftward-cut bias that creates tiny predicate-only fragments).",
+    "Replace E2 with labeled example en_us_990 to show how separating negation/predicate can invert or mislead meaning in short fragments (reinforces keeping verbs and scope together).",
+    "Replace E3 with labeled example en_us_845 to demonstrate discourse/connective risks and cases where post-cut material can change the preceding clause's force (addresses underweighting of contra).",
+    "Replace E4 with labeled example en_us_1116 to illustrate high post-cut contradiction from exceptions/contrast (teaches strong penalties when contra ≳ 0.5)."
+   ]
+  }
+ ]
+}

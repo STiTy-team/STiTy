@@ -1,0 +1,60 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.0055,
+  "lo": -0.01633,
+  "hi": 0.00601,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.0055,
+  "lo": -0.01633,
+  "hi": 0.00601,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C1 to make high contradiction risk an explicit, primary safety signal and instruct scorers to strongly demote such cuts (addresses the primary finding that contra is underweighted).",
+  "Replace example E4 with measured labeled example en_us_738 demonstrating a cut that isolates negation/scope ('does not issue ... more than one month'), so scorers learn to penalize cuts that separate scope-bearing words from their complements."
+ ],
+ "findings": [
+  "The prompt underweights high contradiction risk: it ranks cuts highly even when the pre-cut fragment, read alone, becomes a plausible but misleading or contradicted claim (scope/negation/complement appears after the cut).",
+  "The prompt lacks concrete examples showing how to penalize cuts that isolate scope-bearing words (negation, quantifiers, 'except', comparatives) so scorers favor cohesion over safety."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C1",
+   "kind": "change",
+   "was": "- Does the material after this cut, taken on its own, reverse or deny an asserti",
+   "now": "- If the left-side fragment, read alone, yields a plausible but contradicted or "
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "example",
+   "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+   "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+   "labeled_example": "en_us_738"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0077,
+   "≤5": -0.0019,
+   "≤7": 0.0002,
+   "≤10": -0.0104,
+   "≤99": -0.0117
+  },
+  "n_worse": 759,
+  "n_better": 648,
+  "why": "Making high-contradiction risk an explicit, primary signal (C1) — reinforced by the negation example swap (E4) — caused scorers to avoid cuts that isolate negation/scope or obvious contradiction sites and instead shift cuts to other, weaker junctions (e.g., splitting function words and list items). That redistribution produced a small net loss in H_set (n_worse>n_better) concentrated in longer-latency bins (≤10 and ≤99) with modest harm also for the shortest pieces (≤3), matching the by_bin pattern.",
+  "lesson": "A later revision should keep contradiction-risk demotion but avoid prompting scorers to systematically relocate cuts into positions that split function words or enumerations and thereby reduce cohesion for longer-latency cut sets.",
+  "blamed": [
+   "C1 «- If the left-side fragment, read alone, yields a plausible »",
+   "E4 «Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG»"
+  ]
+ }
+}

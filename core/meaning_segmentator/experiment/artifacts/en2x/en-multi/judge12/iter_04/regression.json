@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00683,
+  "lo": -0.01896,
+  "hi": 0.00567,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0058,
+  "≤5": -0.0078,
+  "≤7": -0.0126,
+  "≤10": -0.0044,
+  "≤99": -0.0011
+ },
+ "n_worse": 775,
+ "n_better": 624,
+ "worst": [
+  {
+   "id": "en_us_333",
+   "k": 1,
+   "bin": "≤7",
+   "delta": -0.7382,
+   "before": "The celebrations started ‖ with a special show by the world-renowned group Cirque du Soleil.",
+   "after": "The celebrations started with a special show by ‖ the world-renowned group Cirque du Soleil."
+  },
+  {
+   "id": "en_us_333",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.7189,
+   "before": "The celebrations started ‖ with a special show ‖ by the world-renowned group ‖ Cirque du Soleil.",
+   "after": "The celebrations started ‖ with a special show ‖ by ‖ the world-renowned group Cirque du Soleil."
+  },
+  {
+   "id": "en_us_333",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.7179,
+   "before": "The celebrations started ‖ with a special show ‖ by the world-renowned group Cirque du Soleil.",
+   "after": "The celebrations started ‖ with a special show by ‖ the world-renowned group Cirque du Soleil."
+  },
+  {
+   "id": "en_us_939",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.6647,
+   "before": "While immigration check is usually absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs control ‖ can be a hassle.",
+   "after": "While immigration check ‖ is usually absent or a formality when you arrive ‖ in your homeland, ‖ customs control ‖ can be a hassle."
+  },
+  {
+   "id": "en_us_1514",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6549,
+   "before": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in the yard ‖ and ‖ refused to return ‖ to their cells.",
+   "after": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in ‖ the yard ‖ and refused ‖ to return to their cells."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.744,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_970",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.7006,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6827,
+   "before": "This is common practice elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts ‖ have viewed publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_970",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.6587,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6312,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently ‖ general ‖ that an immediate diagnosis cannot be made."
+  }
+ ],
+ "why": "Replacing C7 to demote cuts that separate scope-bearing operators made the model avoid cutting immediately after verbs/modals/negation and instead shift cuts rightward into their complements or inside noun/prepositional phrases; that reduced contradictions in some long/clause-level cases but produced more bad tiny fragments overall, with the harm concentrated in short–medium latency bins (≤5 and ≤7) as shown by the by_bin and the larger n_worse than n_better.",
+ "lesson": "A later revision should keep scope-bearing operators attached when necessary but not indiscriminately push cuts into short/medium-length complements or inside noun/prepositional phrases (the ≤5–≤7 bins), since that rightward shift creates many small, low-cohesion fragments.",
+ "blamed": [
+  "C7 «- Demote cuts that separate scope-bearing operators (negatio»"
+ ]
+}

@@ -1,0 +1,108 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.02859,
+    "lo": -0.06195,
+    "hi": 0.00283,
+    "n": 411,
+    "n_clusters": 50
+   },
+   "chars": 7490,
+   "changelog": [
+    "C4 changed to add a concise operational rule addressing the finding that short adjuncts/parentheticals and leading function-word fragments should not automatically raise contra when the prefix already conveys a self-contained assertion; this makes the contra check explicit and actionable.",
+    "Replaced example E1 with the measured labeled example en_us_733 (Whistler sentence) so scorers see a real short-adjunct case and learn to prefer isolating self-contained prefixes."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.01376,
+    "lo": -0.04264,
+    "hi": 0.0124,
+    "n": 411,
+    "n_clusters": 50
+   },
+   "chars": 7330,
+   "changelog": [
+    "Paraphrased C4 to be much shorter while keeping the new low-contra guidance for short adjuncts/parentheticals; addresses finding that scorers overestimate contradiction risk for short continuations.",
+    "Paraphrased C6 to a more concise cohesion checklist to save space while preserving guidance about dependencies crossing cuts; supports finding about attachment and orphaning.",
+    "Paraphrased C8 to shorten wording about applying both judgements and using English tendencies only as soft guidance; reduces overall prompt length.",
+    "Replaced E1 with the Whistler example from the critique to correct example-driven bias toward unsafe singleton fragments and illustrate low-contra for parentheticals.",
+    "Replaced E2 with the Pacific Tsunami example from the critique to further correct example-driven biases about single-token continuations and scope.",
+    "Deleted E3 (the previous 'Humans can be affected...' example) to reduce prompt size and remove an example that contributed to miscalibration."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.01527,
+    "lo": -0.03514,
+    "hi": 0.00449,
+    "n": 411,
+    "n_clusters": 50
+   },
+   "chars": 5951,
+   "changelog": [
+    "Replace hand-written pyramid example (E1) with a measured short-adjunct case (en_us_1294) so scorers see a real example where an early self-contained prefix has low contra; this targets the finding that short continuations/leading function words were being over-weighted.",
+    "Delete example E2 (Costello/Whistler-style placeholder) because it contributed to example-driven bias toward singleton function-word cuts and to prompt over-length.",
+    "Delete example E3 (Humans affected... example) to further remove misleading guidance and bring the prompt back under the size budget."
+   ]
+  }
+ ]
+}

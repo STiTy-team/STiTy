@@ -1,0 +1,116 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  0,
+  4,
+  11,
+  12,
+  14,
+  15,
+  20,
+  25,
+  29,
+  34,
+  40,
+  44,
+  45,
+  50,
+  51,
+  53,
+  57,
+  59,
+  60,
+  67,
+  72,
+  73,
+  81,
+  84,
+  86,
+  87,
+  89,
+  95,
+  97,
+  101,
+  102,
+  117,
+  124,
+  141,
+  147,
+  149,
+  157,
+  165,
+  170,
+  173,
+  178,
+  180,
+  183,
+  187,
+  189,
+  190,
+  193,
+  194,
+  197,
+  198
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00098,
+    "lo": -0.02383,
+    "hi": 0.0228,
+    "n": 498,
+    "n_clusters": 50
+   },
+   "chars": 7155,
+   "changelog": [
+    "Insert a context-limited principle preventing rightward shifts into short complements or inside noun/prepositional phrases in dense/short-latency contexts — addresses the primary finding that the prompt over-corrects by pushing cuts into short multiword names or complements and so harms cohesion (evidence: en_us_651, en_us_1527, en_us_1137)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00527,
+    "lo": -0.02177,
+    "hi": 0.03239,
+    "n": 498,
+    "n_clusters": 50
+   },
+   "chars": 7229,
+   "changelog": [
+    "Replace C8 to address the primary finding: make the principle explicitly prefer keeping multiword names and short noun phrases intact in dense/short-latency settings.",
+    "Delete E2, E3, E4, E7, E8, E9, E10, E12, E13 — remove nine large examples to meet the size budget and the 'at most 8 examples' constraint; kept a representative small set of worked cases."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.01073,
+    "lo": -0.01761,
+    "hi": 0.03698,
+    "n": 498,
+    "n_clusters": 50
+   },
+   "chars": 7183,
+   "changelog": [
+    "Replace the four handcrafted example units with measured, labeled examples that illustrate the primary finding (cuts pushed rightward into short complements or inside noun/prepositional phrases in dense/low-latency contexts). This gives scorers worked cases directly showing the failure modes (en_us_651, en_us_1137) and additional short-latency instances (en_us_1118, en_us_767).",
+    "Edits obey the 'examples_only' constraint and do not change any Core Principles, so the change is traceable to the diagnosis about over-correction into short multiword names/complements."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.009,
+    "lo": -0.00849,
+    "hi": 0.02902,
+    "n": 498,
+    "n_clusters": 50
+   },
+   "chars": 6938,
+   "changelog": [
+    "Replace C6 to add a concise, targeted principle that in dense/short-latency contexts scorers should avoid shifting cuts rightward into short complements or inside noun/prepositional phrases; this directly addresses the primary finding about over-correction that harms cohesion."
+   ]
+  }
+ ]
+}

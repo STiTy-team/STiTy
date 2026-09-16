@@ -1,0 +1,109 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.0091,
+    "lo": -0.0367,
+    "hi": 0.01966,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "chars": 7210,
+   "changelog": [
+    "Paraphrased C8 to a much shorter formulation so we can add two new principles within the size budget; keeps the original caution that commas don't guarantee safe cuts (addresses size constraint and preserves judgement).",
+    "Inserted a new core principle after C8 instructing scorers to treat multiword names, event titles, dates, compound nouns, and measure expressions as atomic units and to score cuts inside them low (addresses finding 1).",
+    "Appended a new core principle asking scorers to check whether the following fragment supplies an essential complement, numeric quantifier, or relative/clausal modifier that fixes scope/truth, and to mark such cuts unsafe (addresses finding 2).",
+    "Replaced example E2 with the measured labeled example en_us_733 which demonstrates unsafe cuts inside numeric/measure expressions and event dates, so scorers learn a measured case rather than a handwritten one (follows the suggestion to prefer labeled examples)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.01822,
+    "lo": -0.04913,
+    "hi": 0.00889,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "chars": 6695,
+   "changelog": [
+    "Deleted large example E4 to reclaim chars and reduce prompt size.",
+    "Deleted large example E5 to further reduce prompt size below the budget.",
+    "Added a Core Principle making multiword named entities, event names, dates, numeric/measure expressions and compound nouns atomic (cuts inside them unsafe) — addresses finding about splitting atomic nominal units.",
+    "Added a Core Principle requiring explicit checking for essential complements, objects, numeric scope, or relative/clausal modifiers supplied by the following fragment, marking such boundaries unsafe — addresses finding about detached complements/quantifiers."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.01605,
+    "lo": -0.04236,
+    "hi": 0.00538,
+    "n": 399,
+    "n_clusters": 50
+   },
+   "chars": 7123,
+   "changelog": [
+    "Replaced example E1 with labeled example en_us_1116 to teach scorers about numeric-scope and complement risks (e.g. “Nearly 200 …” separates scope).",
+    "Replaced example E2 with labeled example en_us_1567 to show that multiword place/event names (e.g. “polo fields in Las Cañitas”) are atomic and unsafe to split.",
+    "Replaced example E3 with labeled example en_us_1179 to illustrate event names and dates (e.g. “First Sino-Japanese War (1894-1895) … 1945”) that should not be separated.",
+    "Replaced example E4 with labeled example en_us_288 to teach avoiding splits in multiword organization/place names (e.g. “RSPCA New South Wales”) and related noun phrases."
+   ]
+  }
+ ]
+}

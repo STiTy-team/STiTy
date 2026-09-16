@@ -1,0 +1,1608 @@
+[
+ {
+  "id": "en_us_1617",
+  "cuts": 12,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.5828,
+  "policy_worst_contra": 0.889,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    6,
+    9,
+    11,
+    12,
+    14,
+    19,
+    21,
+    22,
+    23,
+    26
+   ],
+   "H_set": 0.0507,
+   "text": "The Kruger National Park ‖ (KNP) ‖ lies ‖ in the north-east ‖ of South ‖ Africa ‖ and runs ‖ along the border of Mozambique ‖ in the ‖ east, ‖ Zimbabwe ‖ in the north, ‖ and the southern border is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克鲁格国家公园",
+     "(克罗地亚国家警察)",
+     "谎言",
+     "东北部",
+     "南非",
+     "非洲",
+     "跑步",
+     "莫桑比克边界沿线",
+     "2008年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "东",
+     "津巴布韦 1999年12月15日",
+     "我们在北方,",
+     "南部边界是鳄鱼河。"
+    ],
+    "Japanese": [
+     "クルーガー国立公園",
+     "（クン・ニョンパ）",
+     "嘘だ",
+     "北東部では",
+     "南部の",
+     "アフリカ",
+     "走り出す",
+     "モザンビークとの国境に沿って",
+     "あの あの あの",
+     "東に",
+     "ジンバブエ",
+     "北部では",
+     "南の境界は クロコダイル川です"
+    ],
+    "German": [
+     "Der Krüger-Nationalpark",
+     "(KNP)",
+     "Lügen",
+     "Im Nordosten",
+     "Königreich Südafrika",
+     "Afrika",
+     "Strecken und Läufe",
+     "Entlang der Grenze zu Mosambik",
+     "in der Stadt",
+     "Osten,",
+     "Simbabwe",
+     "im Norden,",
+     "Die südliche Grenze ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Parque Nacional Kruger",
+     "(KNP)",
+     "mentiras",
+     "En el noreste",
+     "de Sur",
+     "África",
+     "Carreras y carreras",
+     "a lo largo de la frontera de Mozambique",
+     "en el",
+     "Este,",
+     "Zimbabwe 1996",
+     "en el norte,",
+     "La frontera sur es el río Cocodrilo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    12,
+    15,
+    17,
+    18,
+    19,
+    22,
+    26,
+    27
+   ],
+   "H_set": 0.6335,
+   "text": "The Kruger ‖ National ‖ Park ‖ (KNP) ‖ lies in the north-east of South Africa ‖ and runs along ‖ the border ‖ of ‖ Mozambique ‖ in the east, ‖ Zimbabwe in the north, ‖ and ‖ the southern border is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克魯格河",
+     "国家",
+     "帕克",
+     "(克罗地亚国家警察)",
+     "位于南非东北部",
+     "并且沿着",
+     "边界",
+     "的",
+     "莫桑比克 1999年12月15日",
+     "东方,",
+     "北部的津巴布韦",
+     "以及",
+     "南部边界是鳄鱼河。"
+    ],
+    "Japanese": [
+     "クルーガー",
+     "ナショナル",
+     "パーク",
+     "（クン・ニョンパ）",
+     "南アフリカ北東部に位置し",
+     "それは",
+     "国境",
+     "の",
+     "モザンビーク",
+     "東部では",
+     "北はジンバブエ",
+     "それに",
+     "南の境界は クロコダイル川です"
+    ],
+    "German": [
+     "Der Krüger",
+     "National",
+     "Park",
+     "(KNP)",
+     "Die Provinz liegt im Nordosten von Südafrika",
+     "Und läuft entlang",
+     "Über die Grenze",
+     "von",
+     "Mosambik",
+     "im Osten,",
+     "Simbabwe im Norden,",
+     "und",
+     "Die südliche Grenze ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Kruger",
+     "Nacional",
+     "Parque",
+     "(KNP)",
+     "Se encuentra en el noreste de Sudáfrica",
+     "Y corre a lo largo",
+     "En la frontera",
+     "de",
+     "Mozambique 1996",
+     "en el este,",
+     "Zimbabwe en el norte,",
+     "y",
+     "La frontera sur es el río Cocodrilo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "National Park (KNP) lies",
+     "right": "in the north-east of",
+     "H": 0.7858,
+     "H_pct": 59.4,
+     "contra": 0.0006,
+     "cohesion": 0.7863
+    },
+    {
+     "pos": 9,
+     "left": "lies in the north-east",
+     "right": "of South Africa and",
+     "H": 0.7724,
+     "H_pct": 43.8,
+     "contra": 0.0008,
+     "cohesion": 0.773
+    },
+    {
+     "pos": 11,
+     "left": "the north-east of South",
+     "right": "Africa and runs along",
+     "H": 0.0866,
+     "H_pct": 3.1,
+     "contra": 0.889,
+     "cohesion": 0.7804
+    },
+    {
+     "pos": 14,
+     "left": "South Africa and runs",
+     "right": "along the border of",
+     "H": 0.7768,
+     "H_pct": 50.0,
+     "contra": 0.0019,
+     "cohesion": 0.7782
+    },
+    {
+     "pos": 21,
+     "left": "of Mozambique in the",
+     "right": "east, Zimbabwe in the",
+     "H": 0.1899,
+     "H_pct": 12.5,
+     "contra": 0.7594,
+     "cohesion": 0.7894
+    },
+    {
+     "pos": 23,
+     "left": "in the east, Zimbabwe",
+     "right": "in the north, and",
+     "H": 0.6998,
+     "H_pct": 37.5,
+     "contra": 0.0338,
+     "cohesion": 0.7243
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The Kruger",
+     "right": "National Park (KNP) lies",
+     "H": 0.8308,
+     "H_pct": 87.5,
+     "contra": 0.0019,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 3,
+     "left": "The Kruger National",
+     "right": "Park (KNP) lies in",
+     "H": 0.8466,
+     "H_pct": 96.9,
+     "contra": 0.0014,
+     "cohesion": 0.8478
+    },
+    {
+     "pos": 15,
+     "left": "Africa and runs along",
+     "right": "the border of Mozambique",
+     "H": 0.8212,
+     "H_pct": 78.1,
+     "contra": 0.0039,
+     "cohesion": 0.8244
+    },
+    {
+     "pos": 17,
+     "left": "runs along the border",
+     "right": "of Mozambique in the",
+     "H": 0.8008,
+     "H_pct": 65.6,
+     "contra": 0.0045,
+     "cohesion": 0.8044
+    },
+    {
+     "pos": 18,
+     "left": "along the border of",
+     "right": "Mozambique in the east,",
+     "H": 0.8327,
+     "H_pct": 90.6,
+     "contra": 0.0125,
+     "cohesion": 0.8433
+    },
+    {
+     "pos": 27,
+     "left": "in the north, and",
+     "right": "the southern border is",
+     "H": 0.8441,
+     "H_pct": 93.8,
+     "contra": 0.0212,
+     "cohesion": 0.8624
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6793,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    9
+   ],
+   "H_set": 0.0038,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits ‖ more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "不发放公园许可证",
+     "预计抵达前一个月以上。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "許可証を発行しません",
+     "予定より1ヶ月以上早く"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación a la fecha de llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    11
+   ],
+   "H_set": 0.6832,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than ‖ one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "没有发放公园许可证超过",
+     "预计抵达前一个月。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "1000万ドル以上の 許可証を発行しない",
+     "予定より1ヶ月前に"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht mehr ausgestellt als",
+     "Einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque más de",
+     "Un mes antes de la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "park permits more than",
+     "right": "one month in advance",
+     "H": 0.735,
+     "H_pct": 87.5,
+     "contra": 0.0232,
+     "cohesion": 0.7524
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_113",
+  "cuts": 3,
+  "avg_chunk": 6.5,
+  "latency_bin": "≤7",
+  "gap": 0.7244,
+  "policy_worst_contra": 0.968,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    13,
+    21
+   ],
+   "H_set": 0.0229,
+   "text": "Mr. Rudd's decision to sign the Kyoto climate accord ‖ isolates the United States, ‖ which will now be the only developed nation ‖ not to ratify the agreement.",
+   "pieces": {
+    "Chinese": [
+     "陆克文先生签署京都气候协定的决定",
+     "孤立美国,",
+     "现在将成为唯一的发达国家",
+     "该协议的签署国"
+    ],
+    "Japanese": [
+     "ラッド氏の京都議定書に署名する決定",
+     "アメリカを孤立させ",
+     "世界で唯一の先進国となるでしょう",
+     "合意を批准しないことです"
+    ],
+    "German": [
+     "Herr Rudd's Entscheidung, das Kyoto-Klimaabkommen zu unterzeichnen",
+     "isoliert die Vereinigten Staaten,",
+     "Das wird nun die einzige entwickelte Nation sein",
+     "Das Abkommen nicht zu ratifizieren."
+    ],
+    "Spanish": [
+     "La decisión del Sr. Rudd de firmar el acuerdo climático de Kyoto",
+     "aísla a los Estados Unidos,",
+     "que ahora será la única nación desarrollada",
+     "No ratificar el acuerdo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    12,
+    13,
+    14
+   ],
+   "H_set": 0.7473,
+   "text": "Mr. Rudd's decision to sign the Kyoto climate accord isolates the United ‖ States, ‖ which ‖ will now be the only developed nation not to ratify the agreement.",
+   "pieces": {
+    "Chinese": [
+     "陆克文先生签署京都气候协定的决定孤立了美国",
+     "各国，",
+     "其中",
+     "现在,美国将是唯一一个没有批准该协定的发达国家。"
+    ],
+    "Japanese": [
+     "ラッド氏の京都議定書署名決定は アメリカを孤立させる",
+     "州",
+     "それは",
+     "唯一の先進国で 条約を批准しないことになります"
+    ],
+    "German": [
+     "Die Entscheidung von Herrn Rudd, das Kyoto-Klimaabkommen zu unterzeichnen, isoliert die Vereinigten Staaten",
+     "Staaten,",
+     "which",
+     "Die USA werden nun das einzige Industrieland sein, das das Abkommen nicht ratifiziert."
+    ],
+    "Spanish": [
+     "La decisión de Rudd de firmar el acuerdo climático de Kioto aísla a Estados Unidos",
+     "Estados,",
+     "which",
+     "Ahora será el único país desarrollado que no ratifique el acuerdo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "the Kyoto climate accord",
+     "right": "isolates the United States,",
+     "H": 0.7551,
+     "H_pct": 50.0,
+     "contra": 0.0033,
+     "cohesion": 0.7576
+    },
+    {
+     "pos": 21,
+     "left": "the only developed nation",
+     "right": "not to ratify the",
+     "H": 0.0234,
+     "H_pct": 0.0,
+     "contra": 0.968,
+     "cohesion": 0.7299
+    }
+   ],
+   "added": [
+    {
+     "pos": 12,
+     "left": "accord isolates the United",
+     "right": "States, which will now",
+     "H": 0.8218,
+     "H_pct": 95.8,
+     "contra": 0.0092,
+     "cohesion": 0.8295
+    },
+    {
+     "pos": 14,
+     "left": "the United States, which",
+     "right": "will now be the",
+     "H": 0.8178,
+     "H_pct": 91.7,
+     "contra": 0.0026,
+     "cohesion": 0.8199
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 1,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.5012,
+  "policy_worst_contra": 0.6495,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.3115,
+   "text": "All the ships were sunk, except for one British cruiser. ‖ Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一艘英国巡洋舰外,所有船只都被击沉。",
+     "近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻のイギリス巡洋艦を除いて全艦が沈没した。",
+     "アメリカ人とドイツ人は200人近くが死亡した。"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf einen britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Menschen kamen ums Leben."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.8127,
+   "text": "All the ships were sunk, except for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一个船只外,所有船只都沉没了。",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻を除いて全て沈没した",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf ein",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_292",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.2116,
+  "policy_worst_contra": 0.0067,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.603,
+   "text": "The significant earthquake activity resulting in the phase change had took place ‖ on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "导致相变的重大地震活动已经发生",
+     "火山口东北侧的火山口,火山口东北侧的火山口。"
+    ],
+    "Japanese": [
+     "地震活動の相転移を生じた。",
+     "3月10日に 火山の頂上カルデラの北東側で"
+    ],
+    "German": [
+     "Die bedeutende Erdbebenaktivität, die zum Phasenwechsel führte, hatte stattgefunden",
+     "Der Vulkan ist auf der Nordostseite der Gipfelcaldera gelegen."
+    ],
+    "Spanish": [
+     "La actividad sísmica significativa que resultó en el cambio de fase había tenido lugar",
+     "El volcán se encuentra en la parte noreste de la caldera de la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8146,
+   "text": "The ‖ significant earthquake activity resulting in the phase change had took place on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "3月10日,火山顶部火山口东北侧发生了导致相变的重大地震活动。"
+    ],
+    "Japanese": [
+     "あの",
+     "3月10日に 火山頂カルデラの北東側で 相変化を引き起こした 地震活動が起きた"
+    ],
+    "German": [
+     "The",
+     "Am 10. März hatte auf der Nordostseite der Gipfelkaldera des Vulkans eine bedeutende Erdbebenaktivität stattgefunden, die zu einem Phasenwechsel geführt hatte."
+    ],
+    "Spanish": [
+     "The",
+     "El 10 de marzo se produjo una actividad sísmica significativa que resultó en el cambio de fase en el lado noreste de la caldera de la cumbre del volcán."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "change had took place",
+     "right": "on March 10 on",
+     "H": 0.603,
+     "H_pct": 31.8,
+     "contra": 0.0067,
+     "cohesion": 0.607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "significant earthquake activity resulting",
+     "H": 0.8146,
+     "H_pct": 100.0,
+     "contra": 0.0112,
+     "cohesion": 0.8238
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_103",
+  "cuts": 6,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.5788,
+  "policy_worst_contra": 0.967,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    11,
+    12,
+    13,
+    16
+   ],
+   "H_set": 0.0192,
+   "text": "Another secondary containment area ‖ below the tanks ‖ capable of holding 104,500 ‖ barrels ‖ was ‖ not yet filled ‖ to capacity.",
+   "pieces": {
+    "Chinese": [
+     "另一个二级封闭区",
+     "下面的坦克",
+     "能容纳104 500人的",
+     "桶",
+     "是",
+     "尚未填补",
+     "能力。"
+    ],
+    "Japanese": [
+     "もう一つの二次的な封じ込め域",
+     "戦車の下に",
+     "10万4500人を収容できる",
+     "桶",
+     "あれは",
+     "まだ満たされていない",
+     "能力に対してです"
+    ],
+    "German": [
+     "Ein weiterer sekundärer Eindämmungsbereich",
+     "Unter den Tanks",
+     "Fähig, 104.500 zu halten",
+     "Fässer",
+     "war",
+     "Noch nicht befüllt",
+     "Bis zur Kapazität."
+    ],
+    "Spanish": [
+     "Otra área de contención secundaria",
+     "Bajo los tanques",
+     "capacidad de albergar 104.500",
+     "barriles",
+     "fue",
+     "No lleno todavía",
+     "Hasta completar capacidad."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    7,
+    10
+   ],
+   "H_set": 0.5979,
+   "text": "Another ‖ secondary ‖ containment area ‖ below ‖ the tanks ‖ capable of holding ‖ 104,500 barrels was not yet filled to capacity.",
+   "pieces": {
+    "Chinese": [
+     "另一个",
+     "中学",
+     "封闭区",
+     "下面",
+     "坦克",
+     "能够承载",
+     "104 500桶尚未装满。"
+    ],
+    "Japanese": [
+     "もう一人",
+     "二次的な",
+     "封鎖区域",
+     "下に",
+     "戦車は",
+     "持ち上げる事が出来る",
+     "104,500バレルはまだ満タンではなかった。"
+    ],
+    "German": [
+     "Another",
+     "Sekundär",
+     "Containment Area",
+     "unten",
+     "Die Panzer",
+     "Fähig zu halten",
+     "104.500 Fässer waren noch nicht vollständig gefüllt."
+    ],
+    "Spanish": [
+     "Otro",
+     "Secundaria",
+     "Área de contención",
+     "abajo",
+     "Los tanques",
+     "Capaz de sostener",
+     "104.500 barriles aún no estaban llenos a su capacidad."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "capable of holding 104,500",
+     "right": "barrels was not yet",
+     "H": 0.6727,
+     "H_pct": 18.8,
+     "contra": 0.0133,
+     "cohesion": 0.6817
+    },
+    {
+     "pos": 12,
+     "left": "of holding 104,500 barrels",
+     "right": "was not yet filled",
+     "H": 0.7296,
+     "H_pct": 43.8,
+     "contra": 0.0028,
+     "cohesion": 0.7316
+    },
+    {
+     "pos": 13,
+     "left": "holding 104,500 barrels was",
+     "right": "not yet filled to",
+     "H": 0.0241,
+     "H_pct": 0.0,
+     "contra": 0.967,
+     "cohesion": 0.7295
+    },
+    {
+     "pos": 16,
+     "left": "was not yet filled",
+     "right": "to capacity.",
+     "H": 0.734,
+     "H_pct": 50.0,
+     "contra": 0.0009,
+     "cohesion": 0.7346
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Another",
+     "right": "secondary containment area below",
+     "H": 0.7948,
+     "H_pct": 93.8,
+     "contra": 0.0013,
+     "cohesion": 0.7959
+    },
+    {
+     "pos": 2,
+     "left": "Another secondary",
+     "right": "containment area below the",
+     "H": 0.7615,
+     "H_pct": 75.0,
+     "contra": 0.0004,
+     "cohesion": 0.7619
+    },
+    {
+     "pos": 5,
+     "left": "secondary containment area below",
+     "right": "the tanks capable of",
+     "H": 0.7871,
+     "H_pct": 87.5,
+     "contra": 0.001,
+     "cohesion": 0.7879
+    },
+    {
+     "pos": 10,
+     "left": "tanks capable of holding",
+     "right": "104,500 barrels was not",
+     "H": 0.7626,
+     "H_pct": 81.2,
+     "contra": 0.0078,
+     "cohesion": 0.7686
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_432",
+  "cuts": 5,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6065,
+  "policy_worst_contra": 0.9276,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    8,
+    14,
+    20,
+    26
+   ],
+   "H_set": 0.0564,
+   "text": "Turkey is encircled ‖ by seas on three sides: ‖ the Aegean Sea to the west, ‖ the Black Sea to the north ‖ and the Mediterranean Sea to the ‖ south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其被包围",
+     "与三海相交,",
+     "爱琴海 西部,",
+     "黑海 向北",
+     "地中海和北海",
+     "南方。"
+    ],
+    "Japanese": [
+     "トルコは包囲されている",
+     "3つの海に囲まれています",
+     "西はエーゲ海",
+     "北は黒海",
+     "地中海から",
+     "南だ"
+    ],
+    "German": [
+     "Die Türkei ist umzingelt",
+     "Von drei Seiten von Meeren umgeben:",
+     "Die Ägäis im Westen,",
+     "Das Schwarze Meer im Norden",
+     "und das Mittelmeer bis zum",
+     "Süden."
+    ],
+    "Spanish": [
+     "Turquía está rodeada",
+     "Por los mares en tres lados:",
+     "El mar Egeo al oeste,",
+     "El Mar Negro al norte",
+     "y el Mar Mediterráneo al Atlántico",
+     "Al sur."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.663,
+   "text": "Turkey is encircled ‖ by seas ‖ on ‖ three sides: ‖ the Aegean ‖ Sea to the west, the Black Sea to the north and the Mediterranean Sea to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其被包围",
+     "海运",
+     "上",
+     "三个方面：",
+     "爱琴海",
+     "海西,黑海北部和地中海南部。"
+    ],
+    "Japanese": [
+     "トルコは包囲されている",
+     "海を渡って",
+     "ああ",
+     "3つの側面があります",
+     "エーゲ海",
+     "西は海、北は黒海、南は地中海。"
+    ],
+    "German": [
+     "Die Türkei ist umzingelt",
+     "Von den Meeren",
+     "on",
+     "Drei Seiten:",
+     "Die Ägäis",
+     "Im Westen das Meer, im Norden das Schwarze Meer und im Süden das Mittelmeer."
+    ],
+    "Spanish": [
+     "Turquía está rodeada",
+     "Por mar",
+     "on",
+     "Tres lados:",
+     "El Egeo",
+     "Mar al oeste, el Mar Negro al norte y el Mar Mediterráneo al sur."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "Sea to the west,",
+     "right": "the Black Sea to",
+     "H": 0.7669,
+     "H_pct": 64.0,
+     "contra": 0.0207,
+     "cohesion": 0.7831
+    },
+    {
+     "pos": 20,
+     "left": "Sea to the north",
+     "right": "and the Mediterranean Sea",
+     "H": 0.347,
+     "H_pct": 48.0,
+     "contra": 0.6041,
+     "cohesion": 0.8766
+    },
+    {
+     "pos": 26,
+     "left": "Mediterranean Sea to the",
+     "right": "south.",
+     "H": 0.0577,
+     "H_pct": 8.0,
+     "contra": 0.9276,
+     "cohesion": 0.7966
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "is encircled by seas",
+     "right": "on three sides: the",
+     "H": 0.8292,
+     "H_pct": 92.0,
+     "contra": 0.0005,
+     "cohesion": 0.8296
+    },
+    {
+     "pos": 6,
+     "left": "encircled by seas on",
+     "right": "three sides: the Aegean",
+     "H": 0.835,
+     "H_pct": 96.0,
+     "contra": 0.0176,
+     "cohesion": 0.85
+    },
+    {
+     "pos": 10,
+     "left": "three sides: the Aegean",
+     "right": "Sea to the west,",
+     "H": 0.8067,
+     "H_pct": 84.0,
+     "contra": 0.05,
+     "cohesion": 0.8492
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 2,
+  "avg_chunk": 6.7,
+  "latency_bin": "≤7",
+  "gap": 0.6584,
+  "policy_worst_contra": 0.9292,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    18
+   ],
+   "H_set": 0.0505,
+   "text": "Farther south is Niagara Falls ‖ and the north is home to the untapped natural beauty of the Muskoka ‖ and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "马斯科卡的北部是未开发的自然美景之家",
+     "以及以后。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は未開発の自然の美しさを持つ マスコカ川の源流地で",
+     "それ以上に"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "Und im Norden liegt die unberührte Naturschönheit der Muskoka Valley.",
+     "und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "Y el norte es el hogar de la belleza natural sin explotar de la región de Muskoka",
+     "y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6
+   ],
+   "H_set": 0.7089,
+   "text": "Farther south is Niagara Falls ‖ and ‖ the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "以及",
+     "北部是马斯科卡及其以外未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "それに",
+     "北部は未開発の自然の美しさがある マスコカ川のほかにもあります"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "und",
+     "Der Norden ist die Heimat der unerschlossenen natürlichen Schönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "y",
+     "El norte es el hogar de la belleza natural sin explotar de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 18,
+     "left": "beauty of the Muskoka",
+     "right": "and beyond.",
+     "H": 0.0529,
+     "H_pct": 44.4,
+     "contra": 0.9292,
+     "cohesion": 0.7474
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "is Niagara Falls and",
+     "right": "the north is home",
+     "H": 0.6956,
+     "H_pct": 94.4,
+     "contra": 0.0736,
+     "cohesion": 0.7509
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_733",
+  "cuts": 1,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.2624,
+  "policy_worst_contra": 0.2237,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.61,
+   "text": "Whistler (1.5 hour drive from Vancouver) is expensive but well-known ‖ because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒(距离温哥华1.5小时车程)价格昂贵,但很有名",
+     "因为2010年冬奥会。"
+    ],
+    "Japanese": [
+     "ウィスラー（バンクーバーから車で1.5時間）は高価だが有名",
+     "2010年の冬季オリンピックのためです"
+    ],
+    "German": [
+     "Whistler (1,5 Stunden Fahrt von Vancouver) ist teuer, aber bekannt",
+     "Die Olympischen Winterspiele 2010 in Sotschi."
+    ],
+    "Spanish": [
+     "Whistler (1,5 horas en coche desde Vancouver) es caro pero bien conocido",
+     "Los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    9
+   ],
+   "H_set": 0.8724,
+   "text": "Whistler (1.5 hour drive from Vancouver) is expensive but ‖ well-known because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒(距离温哥华1.5小时车程)很贵,但",
+     "因为2010年冬季奥运会而闻名。"
+    ],
+    "Japanese": [
+     "ウィスラー（バンクーバーから車で1.5時間）は高価だが",
+     "2010年の冬季オリンピックで有名です"
+    ],
+    "German": [
+     "Whistler (1,5 Stunden Fahrt von Vancouver) ist teuer, aber",
+     "Bekannt wurde die Stadt durch die Olympischen Winterspiele 2010."
+    ],
+    "Spanish": [
+     "Whistler (1,5 horas en coche desde Vancouver) es caro pero",
+     "Es conocida por los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "Vancouver) is expensive but",
+     "right": "well-known because of the",
+     "H": 0.8724,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_70",
+  "cuts": 1,
+  "avg_chunk": 11.5,
+  "latency_bin": "≤99",
+  "gap": 0.1323,
+  "policy_worst_contra": 0.0032,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.7132,
+   "text": "The band canceled the show at Maui's War Memorial Stadium, ‖ which was set to be attended by 9,000 people, and apologized to fans.",
+   "pieces": {
+    "Chinese": [
+     "乐队取消了在毛伊岛战争纪念体育场的演出,",
+     "被人看见,就会有一种不安,不安的感觉。"
+    ],
+    "Japanese": [
+     "バンドはマウイの戦争記念スタジアムでの コンサートをキャンセルしました",
+     "9000人が出席する予定だった ファンに謝罪した"
+    ],
+    "German": [
+     "Die Band hat die Show im War Memorial Stadium auf Maui abgesagt.",
+     "Die Band gab eine Pressekonferenz ab, die von 9.000 Menschen besucht werden sollte, und entschuldigte sich bei den Fans."
+    ],
+    "Spanish": [
+     "La banda canceló el concierto en el War Memorial Stadium de Maui,",
+     "El cantante se disculpó con sus fans en un evento que estaba programado para ser asistido por 9,000 personas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    19
+   ],
+   "H_set": 0.8455,
+   "text": "The band canceled the show at Maui's War Memorial Stadium, which was set to be attended by 9,000 people, ‖ and apologized to fans.",
+   "pieces": {
+    "Chinese": [
+     "乐队取消了在毛伊岛战争纪念体育场的演出,该场演出原定有9000人参加,但最终演出被取消。",
+     "并向粉丝道歉。"
+    ],
+    "Japanese": [
+     "バンドはマウイの戦争記念スタジアムでの 9,000人の出演予定だった ショーをキャンセルした",
+     "ファンに謝罪した"
+    ],
+    "German": [
+     "Die Band hat die Show im War Memorial Stadium auf Maui abgesagt, die von 9.000 Menschen besucht werden sollte,",
+     "Und entschuldigte sich bei den Fans."
+    ],
+    "Spanish": [
+     "La banda canceló el concierto en el War Memorial Stadium de Maui, al que debían asistir 9.000 personas,",
+     "y se disculpó con los fans."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "Maui's War Memorial Stadium,",
+     "right": "which was set to",
+     "H": 0.7133,
+     "H_pct": 42.9,
+     "contra": 0.0032,
+     "cohesion": 0.7156
+    }
+   ],
+   "added": [
+    {
+     "pos": 19,
+     "left": "attended by 9,000 people,",
+     "right": "and apologized to fans.",
+     "H": 0.8456,
+     "H_pct": 100.0,
+     "contra": 0.0037,
+     "cohesion": 0.8487
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1567",
+  "cuts": 7,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.576,
+  "policy_worst_contra": 0.9515,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    8,
+    10,
+    12,
+    13,
+    14
+   ],
+   "H_set": 0.0247,
+   "text": "The largest tournament ‖ of the year ‖ takes place ‖ in December ‖ at the ‖ polo ‖ fields ‖ in Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "最大的比赛",
+     "年度",
+     "发生",
+     "12月份",
+     "会议期间",
+     "波罗",
+     "外地",
+     "拉斯卡尼塔斯"
+    ],
+    "Japanese": [
+     "最大のトーナメント",
+     "年間最優秀",
+     "起こる",
+     "12月に",
+     "あの時",
+     "ポロ",
+     "フィールド",
+     "ラスカニタスで"
+    ],
+    "German": [
+     "Das größte Turnier",
+     "Die Jahreszeiten",
+     "Die Veranstaltung findet statt",
+     "im Dezember",
+     "An der Küste",
+     "Polo",
+     "Felder",
+     "Ferienwohnungen in Las Cañitas."
+    ],
+    "Spanish": [
+     "El torneo más grande",
+     "El año pasado",
+     "Se lleva a cabo",
+     "en diciembre",
+     "en el",
+     "polo",
+     "campos",
+     "Casa en Las Cañitas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.6007,
+   "text": "The ‖ largest tournament ‖ of ‖ the ‖ year ‖ takes place ‖ in December ‖ at the polo fields in Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "最大的比赛",
+     "的",
+     "该",
+     "年份",
+     "发生",
+     "12月份",
+     "拉斯卡尼塔斯的马球场"
+    ],
+    "Japanese": [
+     "あの",
+     "世界最大のトーナメント",
+     "の",
+     "あの",
+     "年",
+     "起こる",
+     "12月に",
+     "ラスカニタスのポロフィールドで"
+    ],
+    "German": [
+     "The",
+     "Das größte Turnier",
+     "von",
+     "the",
+     "Jahr",
+     "Die Veranstaltung findet statt",
+     "im Dezember",
+     "Auf den Polofeldern in Las Cañitas."
+    ],
+    "Spanish": [
+     "The",
+     "El torneo más grande",
+     "de",
+     "the",
+     "año",
+     "Se lleva a cabo",
+     "en diciembre",
+     "En los campos de polo de Las Cañitas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "in December at the",
+     "right": "polo fields in Las",
+     "H": 0.0388,
+     "H_pct": 13.3,
+     "contra": 0.9515,
+     "cohesion": 0.7994
+    },
+    {
+     "pos": 13,
+     "left": "December at the polo",
+     "right": "fields in Las Cañitas.",
+     "H": 0.661,
+     "H_pct": 26.7,
+     "contra": 0.0006,
+     "cohesion": 0.6614
+    },
+    {
+     "pos": 14,
+     "left": "at the polo fields",
+     "right": "in Las Cañitas.",
+     "H": 0.7324,
+     "H_pct": 33.3,
+     "contra": 0.0016,
+     "cohesion": 0.7336
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "largest tournament of the",
+     "H": 0.8277,
+     "H_pct": 80.0,
+     "contra": 0.0131,
+     "cohesion": 0.8387
+    },
+    {
+     "pos": 4,
+     "left": "The largest tournament of",
+     "right": "the year takes place",
+     "H": 0.8057,
+     "H_pct": 60.0,
+     "contra": 0.0004,
+     "cohesion": 0.8061
+    },
+    {
+     "pos": 5,
+     "left": "largest tournament of the",
+     "right": "year takes place in",
+     "H": 0.8122,
+     "H_pct": 66.7,
+     "contra": 0.0009,
+     "cohesion": 0.8129
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_419",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.5211,
+  "policy_worst_contra": 0.6933,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    9,
+    15,
+    16
+   ],
+   "H_set": 0.1901,
+   "text": "Estimates range from 340 million to 500 million ‖ speakers, ‖ and as many as 800 million ‖ people ‖ can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数从3.4亿到5亿不等",
+     "发言者，",
+     "多达8亿",
+     "人数",
+     "能够理解语言。"
+    ],
+    "Japanese": [
+     "推定値は3億4000万から5億ドル",
+     "話者は",
+     "8億人もの人々が",
+     "人々",
+     "言語を理解できるのです"
+    ],
+    "German": [
+     "Schätzungen reichen von 340 Millionen bis 500 Millionen",
+     "Lautsprecher,",
+     "Und so viele wie 800 Millionen",
+     "Person",
+     "Ich kann die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Las estimaciones oscilan entre 340 millones y 500 millones",
+     "Altavoces,",
+     "y hasta 800 millones",
+     "personas",
+     "No entiendo el idioma."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    9
+   ],
+   "H_set": 0.7112,
+   "text": "Estimates ‖ range ‖ from ‖ 340 million to 500 million speakers, ‖ and as many as 800 million people can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数",
+     "范围",
+     "从",
+     "3.4亿到5亿人,",
+     "多达8亿人能够理解这种语言。"
+    ],
+    "Japanese": [
+     "推定",
+     "範囲",
+     "ここから",
+     "3億4千万から5億人の話者がいます",
+     "8億人がこの言語を理解できます"
+    ],
+    "German": [
+     "Schätzungen",
+     "Range",
+     "von",
+     "340 Millionen bis 500 Millionen Sprecher,",
+     "Und bis zu 800 Millionen Menschen können die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Estimaciones",
+     "Rango",
+     "de",
+     "340 millones a 500 millones de hablantes,",
+     "Y hasta 800 millones de personas pueden entender el idioma."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "million to 500 million",
+     "right": "speakers, and as many",
+     "H": 0.2189,
+     "H_pct": 0.0,
+     "contra": 0.6933,
+     "cohesion": 0.7138
+    },
+    {
+     "pos": 15,
+     "left": "many as 800 million",
+     "right": "people can understand the",
+     "H": 0.5364,
+     "H_pct": 16.7,
+     "contra": 0.2524,
+     "cohesion": 0.7175
+    },
+    {
+     "pos": 16,
+     "left": "as 800 million people",
+     "right": "can understand the language.",
+     "H": 0.5254,
+     "H_pct": 11.1,
+     "contra": 0.2515,
+     "cohesion": 0.7019
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Estimates",
+     "right": "range from 340 million",
+     "H": 0.8521,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8533
+    },
+    {
+     "pos": 2,
+     "left": "Estimates range",
+     "right": "from 340 million to",
+     "H": 0.815,
+     "H_pct": 83.3,
+     "contra": 0.0006,
+     "cohesion": 0.8155
+    },
+    {
+     "pos": 3,
+     "left": "Estimates range from",
+     "right": "340 million to 500",
+     "H": 0.8191,
+     "H_pct": 88.9,
+     "contra": 0.0279,
+     "cohesion": 0.8427
+    }
+   ]
+  }
+ }
+]

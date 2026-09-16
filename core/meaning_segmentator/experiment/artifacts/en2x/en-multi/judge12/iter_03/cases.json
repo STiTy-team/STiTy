@@ -1,0 +1,1816 @@
+[
+ {
+  "id": "en_us_1570",
+  "cuts": 5,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.5045,
+  "policy_worst_contra": 0.9986,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    7,
+    9,
+    11
+   ],
+   "H_set": 0.0007,
+   "text": "It also had ‖ no authority ‖ to override ‖ tax laws ‖ and tariffs ‖ between states.",
+   "pieces": {
+    "Chinese": [
+     "该国还",
+     "无权限",
+     "要覆盖的",
+     "税法",
+     "关税和关税",
+     "各州之间。"
+    ],
+    "Japanese": [
+     "また，１９９０年代における日本の医療の現状を分析した。",
+     "権威がない",
+     "上書きするために",
+     "税法",
+     "関税を課すことで",
+     "州間でのみです"
+    ],
+    "German": [
+     "Es hatte auch",
+     "Keine Autorität",
+     "Zu überschreiben",
+     "Steuergesetze",
+     "Preise und Tarife",
+     "Zwischen den Staaten."
+    ],
+    "Spanish": [
+     "También tenía",
+     "No hay autoridad",
+     "Para sobreescribir",
+     "Leyes de impuestos",
+     "Tarifas y tarifas",
+     "entre los estados."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6,
+    9,
+    11
+   ],
+   "H_set": 0.5052,
+   "text": "It ‖ also had no authority ‖ to ‖ override tax laws ‖ and tariffs ‖ between states.",
+   "pieces": {
+    "Chinese": [
+     "意大利",
+     "没有权力",
+     "至",
+     "取代税法",
+     "关税和关税",
+     "各州之间。"
+    ],
+    "Japanese": [
+     "それ",
+     "権限もありませんでした",
+     "それは",
+     "税法を覆すことになるでしょう",
+     "関税を課すことで",
+     "州間でのみです"
+    ],
+    "German": [
+     "It",
+     "Auch hatte keine Autorität",
+     "to",
+     "Steuergesetze außer Kraft setzen",
+     "Preise und Tarife",
+     "Zwischen den Staaten."
+    ],
+    "Spanish": [
+     "It",
+     "Tampoco tenía autoridad",
+     "a",
+     "anular las leyes fiscales",
+     "Tarifas y tarifas",
+     "entre los estados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "It also had",
+     "right": "no authority to override",
+     "H": 0.0011,
+     "H_pct": 0.0,
+     "contra": 0.9986,
+     "cohesion": 0.7693
+    },
+    {
+     "pos": 7,
+     "left": "no authority to override",
+     "right": "tax laws and tariffs",
+     "H": 0.7349,
+     "H_pct": 54.5,
+     "contra": 0.0013,
+     "cohesion": 0.7359
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "It",
+     "right": "also had no authority",
+     "H": 0.7579,
+     "H_pct": 72.7,
+     "contra": 0.0842,
+     "cohesion": 0.8276
+    },
+    {
+     "pos": 6,
+     "left": "had no authority to",
+     "right": "override tax laws and",
+     "H": 0.7439,
+     "H_pct": 63.6,
+     "contra": 0.0013,
+     "cohesion": 0.7449
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_741",
+  "cuts": 3,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.3487,
+  "policy_worst_contra": 0.4218,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    13
+   ],
+   "H_set": 0.4316,
+   "text": "It is an archipelago ‖ with 15 islands ‖ spread out over 2.2 million km2 ‖ of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个岛屿",
+     "分布在220万平方公里",
+     "海洋的。"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15の島々がある",
+     "220万平方キロメートルに広がり",
+     "海の中にある"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "mit 15 Inseln",
+     "Auf 2,2 Millionen km2 verteilt",
+     "Die Welt des Ozeans."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "Con 15 islas",
+     "Se extiende por más de 2,2 millones de km2",
+     "El océano."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    6,
+    7
+   ],
+   "H_set": 0.7803,
+   "text": "It is an archipelago ‖ with 15 ‖ islands ‖ spread out over 2.2 million km2 of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个成员",
+     "岛屿",
+     "分布在220万平方公里的海洋中。"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15人で",
+     "島々",
+     "220万平方キロメートルの海に広がっています"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "mit 15",
+     "Inseln",
+     "Die Inseln verteilen sich auf 2,2 Millionen km2 Ozean."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "con 15",
+     "Islas",
+     "Se extienden por 2,2 millones de km2 de océano."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "over 2.2 million km2",
+     "right": "of ocean.",
+     "H": 0.4401,
+     "H_pct": 15.4,
+     "contra": 0.4218,
+     "cohesion": 0.7611
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "an archipelago with 15",
+     "right": "islands spread out over",
+     "H": 0.8507,
+     "H_pct": 84.6,
+     "contra": 0.0018,
+     "cohesion": 0.8522
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1352",
+  "cuts": 5,
+  "avg_chunk": 5.3,
+  "latency_bin": "≤7",
+  "gap": 0.2091,
+  "policy_worst_contra": 0.0018,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    14,
+    18,
+    20,
+    26
+   ],
+   "H_set": 0.5399,
+   "text": "For some, ‖ understanding something about how aircraft work and what happens during a flight ‖ may help to overcome ‖ a fear ‖ which is based on the unknown ‖ or on not being in control.",
+   "pieces": {
+    "Chinese": [
+     "对于一些人来说，",
+     "了解飞机如何工作以及飞行期间发生了什么",
+     "可能有助于克服",
+     "一个男人",
+     "基于未知的",
+     "或者是不掌控。"
+    ],
+    "Japanese": [
+     "ある人々は",
+     "飛行機の動作や飛行中に起こる事象を理解するために",
+     "人間の心の中にある",
+     "男性",
+     "未知の世界に基づいています",
+     "またはコントロールできないことに関してです"
+    ],
+    "German": [
+     "Für einige von uns,",
+     "Ein Verständnis dafür, wie Flugzeuge funktionieren und was während eines Fluges passiert",
+     "Kann helfen, zu überwinden",
+     "Ein Mann",
+     "Das Unbekannte ist das Unbekannte.",
+     "oder nicht die Kontrolle zu haben."
+    ],
+    "Spanish": [
+     "Para algunos,",
+     "Comprender algo sobre cómo funcionan los aviones y qué sucede durante un vuelo",
+     "Puede ayudar a superar",
+     "Un hombre",
+     "que se basa en lo desconocido",
+     "o en no estar en control."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    8,
+    9,
+    17,
+    18
+   ],
+   "H_set": 0.749,
+   "text": "For some, ‖ understanding something about how aircraft work ‖ and ‖ what happens during a flight may help to ‖ overcome ‖ a fear which is based on the unknown or on not being in control.",
+   "pieces": {
+    "Chinese": [
+     "对于一些人来说，",
+     "了解一些关于飞机如何工作的东西",
+     "以及",
+     "飞行过程中发生的事情可能有助于",
+     "克服",
+     "一种基于未知或无法控制的恐惧。"
+    ],
+    "Japanese": [
+     "ある人々は",
+     "飛行機の仕組みを理解すると",
+     "それに",
+     "飛行中に起こる事象は",
+     "克服する",
+     "未知やコントロールが取れないことに基づく恐怖です"
+    ],
+    "German": [
+     "Für einige von uns,",
+     "Ein wenig über die Funktionsweise von Flugzeugen verstehen",
+     "und",
+     "Was während eines Fluges passiert, kann helfen,",
+     "überwunden",
+     "Eine Angst, die auf dem Unbekannten oder auf dem Nicht-Haben der Kontrolle basiert."
+    ],
+    "Spanish": [
+     "Para algunos,",
+     "Comprender algo sobre cómo funcionan los aviones",
+     "y",
+     "Lo que sucede durante un vuelo puede ayudar a",
+     "superados",
+     "Un miedo que se basa en lo desconocido o en no estar en control."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "happens during a flight",
+     "right": "may help to overcome",
+     "H": 0.7775,
+     "H_pct": 46.7,
+     "contra": 0.0009,
+     "cohesion": 0.7782
+    },
+    {
+     "pos": 20,
+     "left": "to overcome a fear",
+     "right": "which is based on",
+     "H": 0.8184,
+     "H_pct": 73.3,
+     "contra": 0.0007,
+     "cohesion": 0.8189
+    },
+    {
+     "pos": 26,
+     "left": "based on the unknown",
+     "right": "or on not being",
+     "H": 0.8118,
+     "H_pct": 66.7,
+     "contra": 0.0018,
+     "cohesion": 0.8132
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "about how aircraft work",
+     "right": "and what happens during",
+     "H": 0.8347,
+     "H_pct": 86.7,
+     "contra": 0.0006,
+     "cohesion": 0.8352
+    },
+    {
+     "pos": 9,
+     "left": "how aircraft work and",
+     "right": "what happens during a",
+     "H": 0.8472,
+     "H_pct": 96.7,
+     "contra": 0.0039,
+     "cohesion": 0.8505
+    },
+    {
+     "pos": 17,
+     "left": "flight may help to",
+     "right": "overcome a fear which",
+     "H": 0.8561,
+     "H_pct": 100.0,
+     "contra": 0.0017,
+     "cohesion": 0.8576
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_455",
+  "cuts": 2,
+  "avg_chunk": 10.0,
+  "latency_bin": "≤10",
+  "gap": 0.1804,
+  "policy_worst_contra": 0.1095,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    20,
+    23
+   ],
+   "H_set": 0.6096,
+   "text": "The disadvantage of zoom lenses is that the focal complexity and number of lens elements required to achieve a range ‖ of focal lengths ‖ is much greater than for prime lenses.",
+   "pieces": {
+    "Chinese": [
+     "变焦镜头的缺点是焦点复杂性和镜头元件数量需要达到一定的范围",
+     "焦距",
+     "比固定镜头要大得多。"
+    ],
+    "Japanese": [
+     "ズームレンズの欠点は，焦点の複雑さとレンズ素子の数が必要である。",
+     "焦点距離の違いを",
+     "固定レンズよりもずっと大きいのです"
+    ],
+    "German": [
+     "Der Nachteil von Zoomobjektiven ist, dass die Fokuskomplexität und die Anzahl der Objektivelemente, die erforderlich sind, um eine Reichweite zu erreichen",
+     "Anzahl der Brennweiten",
+     "Die Bildqualität ist viel besser als bei Festbrennweitenobjektiven."
+    ],
+    "Spanish": [
+     "La desventaja de los objetivos zoom es que la complejidad focal y el número de elementos de lente necesarios para lograr un rango",
+     "Distancias focales",
+     "Es mucho mayor que para los objetivos de focal fija."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    11
+   ],
+   "H_set": 0.79,
+   "text": "The disadvantage of zoom lenses is ‖ that the focal complexity and ‖ number of lens elements required to achieve a range of focal lengths is much greater than for prime lenses.",
+   "pieces": {
+    "Chinese": [
+     "变焦镜头的缺点是",
+     "焦点复杂性和",
+     "相对于固定镜头,实现一定范围的焦距所需的镜头元件数量要大得多。"
+    ],
+    "Japanese": [
+     "ズームレンズの欠点は",
+     "焦点の複雑さと",
+     "焦点距離の範囲を達成するために必要なレンズ素子の数は，単焦点レンズよりもずっと大きい。"
+    ],
+    "German": [
+     "Der Nachteil von Zoomobjektiven ist",
+     "Dass die fokale Komplexität und",
+     "Die Anzahl der Objektivelemente, die für einen bestimmten Brennweitenbereich benötigt werden, ist viel größer als bei Festbrennweitenobjektiven."
+    ],
+    "Spanish": [
+     "La desventaja de los objetivos zoom es",
+     "Que la complejidad focal y",
+     "El número de elementos de lente necesarios para lograr un rango de longitudes focales es mucho mayor que para los lentes de focal fija."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 20,
+     "left": "to achieve a range",
+     "right": "of focal lengths is",
+     "H": 0.6495,
+     "H_pct": 14.3,
+     "contra": 0.1095,
+     "cohesion": 0.7294
+    },
+    {
+     "pos": 23,
+     "left": "range of focal lengths",
+     "right": "is much greater than",
+     "H": 0.7185,
+     "H_pct": 39.3,
+     "contra": 0.0259,
+     "cohesion": 0.7376
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "of zoom lenses is",
+     "right": "that the focal complexity",
+     "H": 0.8092,
+     "H_pct": 100.0,
+     "contra": 0.0117,
+     "cohesion": 0.8188
+    },
+    {
+     "pos": 11,
+     "left": "the focal complexity and",
+     "right": "number of lens elements",
+     "H": 0.8024,
+     "H_pct": 96.4,
+     "contra": 0.0091,
+     "cohesion": 0.8097
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_553",
+  "cuts": 1,
+  "avg_chunk": 15.0,
+  "latency_bin": "≤99",
+  "gap": 0.0838,
+  "policy_worst_contra": 0.0137,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    17
+   ],
+   "H_set": 0.7895,
+   "text": "Maintaining a healthy energy balance, practicing effective hydration habits, and understanding the various aspects of supplementation practices ‖ can help athletes improve their performance and increase their enjoyment of the sport.",
+   "pieces": {
+    "Chinese": [
+     "保持健康的能量平衡,实践有效的水合习惯,并了解补充实践的各个方面",
+     "能够帮助运动员提高表现,增加他们对运动的享受。"
+    ],
+    "Japanese": [
+     "健康なエネルギーバランスを維持し，効果的な水分補給習慣を実践し，サプリメント実践の各方面を理解すること。",
+     "スポーツ選手のパフォーマンスを向上させ スポーツの楽しさを増やすことができるのです"
+    ],
+    "German": [
+     "Aufrechterhaltung eines gesunden Energiehaushalts, Übung effektiver Hydratationsgewohnheiten und Verständnis der verschiedenen Aspekte der Nahrungsergänzungsmittel",
+     "Die Leistungssteigerung kann Sportlern helfen, ihre Leistung zu verbessern und ihre Freude am Sport zu erhöhen."
+    ],
+    "Spanish": [
+     "Mantener un equilibrio energético saludable, practicar hábitos de hidratación efectivos y comprender los diversos aspectos de las prácticas de suplementación",
+     "Los suplementos de glutamina pueden ayudar a los atletas a mejorar su rendimiento y aumentar su disfrute del deporte."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    23
+   ],
+   "H_set": 0.8733,
+   "text": "Maintaining a healthy energy balance, practicing effective hydration habits, and understanding the various aspects of supplementation practices can help athletes improve their performance ‖ and increase their enjoyment of the sport.",
+   "pieces": {
+    "Chinese": [
+     "保持健康的能量平衡,实践有效的水分补充习惯,并了解补充实践的各个方面,可以帮助运动员提高他们的表现",
+     "并增加他们对运动的享受。"
+    ],
+    "Japanese": [
+     "健康なエネルギーバランスを維持し，効果的な水分補給習慣を実践し，サプリメントの様々な側面を理解することは，スポーツ選手のパフォーマンスを向上させる助けとなる。",
+     "スポーツの楽しさを増やすことができるのです"
+    ],
+    "German": [
+     "Die Aufrechterhaltung eines gesunden Energiehaushalts, die Praxis effektiver Hydratationsgewohnheiten und das Verständnis der verschiedenen Aspekte der Nahrungsergänzungsmittel können Athleten helfen, ihre Leistung zu verbessern",
+     "und erhöhen ihre Freude am Sport."
+    ],
+    "Spanish": [
+     "Mantener un equilibrio energético saludable, practicar hábitos de hidratación efectivos y comprender los diversos aspectos de las prácticas de suplementación pueden ayudar a los atletas a mejorar su rendimiento",
+     "y aumentar su disfrute del deporte."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 17,
+     "left": "aspects of supplementation practices",
+     "right": "can help athletes improve",
+     "H": 0.7895,
+     "H_pct": 21.4,
+     "contra": 0.0137,
+     "cohesion": 0.8005
+    }
+   ],
+   "added": [
+    {
+     "pos": 23,
+     "left": "athletes improve their performance",
+     "right": "and increase their enjoyment",
+     "H": 0.8733,
+     "H_pct": 100.0,
+     "contra": 0.0008,
+     "cohesion": 0.874
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_87",
+  "cuts": 7,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.4977,
+  "policy_worst_contra": 0.9808,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    8,
+    11,
+    13,
+    14,
+    17,
+    19
+   ],
+   "H_set": 0.0093,
+   "text": "The amount and thickness ‖ of the pack ice, ‖ according to Pittman, ‖ is the ‖ worst ‖ it has been ‖ for sealers ‖ in the past 15 years.",
+   "pieces": {
+    "Chinese": [
+     "数量和厚度",
+     "包冰的,",
+     "根据皮特曼的说法,",
+     "是什么?",
+     "最差",
+     "已经过去了",
+     "用于密封机",
+     "过去15年来。"
+    ],
+    "Japanese": [
+     "量と厚さ",
+     "氷の塊の中に",
+     "ピットマンによると",
+     "それは",
+     "最悪だ",
+     "それは",
+     "海賊のために",
+     "15年間で 1000万人以上の人が死んだのです"
+    ],
+    "German": [
+     "Die Menge und Dicke",
+     "des Packeises,",
+     "Laut Pittman,",
+     "Ist das der Fall?",
+     "worst",
+     "Es ist gewesen",
+     "Für Siegelmaschinen",
+     "in den letzten 15 Jahren."
+    ],
+    "Spanish": [
+     "La cantidad y el grosor",
+     "del hielo de la bolsa,",
+     "De acuerdo con Pittman,",
+     "¿Cuál es el",
+     "peor",
+     "Ha sido",
+     "Para selladores de plástico",
+     "en los últimos 15 años."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8,
+    9,
+    11,
+    12,
+    16,
+    19,
+    22
+   ],
+   "H_set": 0.507,
+   "text": "The amount and thickness of the pack ice, ‖ according ‖ to Pittman, ‖ is ‖ the worst it has ‖ been for sealers ‖ in the past ‖ 15 years.",
+   "pieces": {
+    "Chinese": [
+     "冰块的数量和厚度,",
+     "根据",
+     "给皮特曼",
+     "是",
+     "是最糟糕的",
+     "一直为密封工",
+     "过去的",
+     "15年"
+    ],
+    "Japanese": [
+     "氷の量と厚さ",
+     "それに従えば",
+     "ピットマンに",
+     "はい",
+     "最悪の場合は",
+     "海賊のために",
+     "過去に",
+     "15年間"
+    ],
+    "German": [
+     "Die Menge und Dicke des Packeises,",
+     "nach",
+     "An Pittman,",
+     "ist",
+     "Das Schlimmste, was es hat",
+     "Bestand für Versiegelungen",
+     "in der Vergangenheit",
+     "15 Jahre."
+    ],
+    "Spanish": [
+     "La cantidad y el grosor del hielo de la bolsa,",
+     "de acuerdo",
+     "A Pittman,",
+     "es",
+     "Lo peor que tiene",
+     "Ha sido para selladores",
+     "En el pasado",
+     "15 años."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "The amount and thickness",
+     "right": "of the pack ice,",
+     "H": 0.4989,
+     "H_pct": 18.2,
+     "contra": 0.1313,
+     "cohesion": 0.5743
+    },
+    {
+     "pos": 13,
+     "left": "to Pittman, is the",
+     "right": "worst it has been",
+     "H": 0.0115,
+     "H_pct": 0.0,
+     "contra": 0.9808,
+     "cohesion": 0.6
+    },
+    {
+     "pos": 14,
+     "left": "Pittman, is the worst",
+     "right": "it has been for",
+     "H": 0.5947,
+     "H_pct": 45.5,
+     "contra": 0.0007,
+     "cohesion": 0.5951
+    },
+    {
+     "pos": 17,
+     "left": "worst it has been",
+     "right": "for sealers in the",
+     "H": 0.6041,
+     "H_pct": 63.6,
+     "contra": 0.0019,
+     "cohesion": 0.6052
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "the pack ice, according",
+     "right": "to Pittman, is the",
+     "H": 0.6278,
+     "H_pct": 81.8,
+     "contra": 0.0112,
+     "cohesion": 0.6349
+    },
+    {
+     "pos": 12,
+     "left": "according to Pittman, is",
+     "right": "the worst it has",
+     "H": 0.6839,
+     "H_pct": 100.0,
+     "contra": 0.0071,
+     "cohesion": 0.6887
+    },
+    {
+     "pos": 16,
+     "left": "the worst it has",
+     "right": "been for sealers in",
+     "H": 0.6226,
+     "H_pct": 77.3,
+     "contra": 0.0086,
+     "cohesion": 0.628
+    },
+    {
+     "pos": 22,
+     "left": "sealers in the past",
+     "right": "15 years.",
+     "H": 0.6146,
+     "H_pct": 72.7,
+     "contra": 0.0311,
+     "cohesion": 0.6344
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_140",
+  "cuts": 9,
+  "avg_chunk": 3.2,
+  "latency_bin": "≤5",
+  "gap": 0.2806,
+  "policy_worst_contra": 0.4928,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    11,
+    13,
+    16,
+    19,
+    25,
+    27,
+    31
+   ],
+   "H_set": 0.2775,
+   "text": "At its peak, ‖ Tropical Cyclone Gonu, ‖ named for a bag of ‖ palm leaves ‖ in the language ‖ of the Maldives, ‖ reached sustained winds of 240 kilometers ‖ an hour ‖ (149 miles per hour) ‖ .",
+   "pieces": {
+    "Chinese": [
+     "在其高峰期,",
+     "热带气旋戈努",
+     "一个人在家里",
+     "棕榈叶",
+     "语言",
+     "马尔代夫共和国",
+     "达到240公里的持续风速",
+     "一个小时",
+     "(每小时149英里)",
+     "1998年12月1日至1999年12月31日期间的收入和支出及准备金和基金结余变动表"
+    ],
+    "Japanese": [
+     "ピーク時には",
+     "熱帯低気圧ゴヌ",
+     "これは 1袋の",
+     "ヤシの葉",
+     "言語の中に",
+     "モルディブの",
+     "240キロメートルの風を持続的に吹き",
+     "1時間",
+     "149マイル毎時",
+     "ああ　そうだ"
+    ],
+    "German": [
+     "Auf seinem Höhepunkt,",
+     "Tropischer Wirbelsturm Gonu,",
+     "Benannt nach einer Tasche mit",
+     "Palmblätter und -blätter",
+     "in der Sprache",
+     "Die Malediven,",
+     "Anhaltende Winde von 240 Kilometern erreicht",
+     "Eine Stunde",
+     "(149 Meilen pro Stunde)",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En su apogeo,",
+     "Ciclón tropical Gonu,",
+     "Nombrado por una bolsa de",
+     "Hojas de palma",
+     "En el idioma",
+     "de las Maldivas,",
+     "Alcanza vientos sostenidos de 240 kilómetros",
+     "Una hora",
+     "(149 millas por hora)",
+     "."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    5,
+    20,
+    21,
+    22,
+    23,
+    27,
+    31
+   ],
+   "H_set": 0.5581,
+   "text": "At ‖ its peak, ‖ Tropical Cyclone ‖ Gonu, named for a bag of palm leaves in the language of the Maldives, reached ‖ sustained ‖ winds ‖ of ‖ 240 kilometers an hour ‖ (149 miles per hour) ‖ .",
+   "pieces": {
+    "Chinese": [
+     "阿特",
+     "最高点",
+     "热带气旋",
+     "马尔代夫的语言中,Gonu的名字来自于棕榈叶的袋子,它的高度达到",
+     "持续",
+     "风",
+     "的",
+     "240公里每小时",
+     "(每小时149英里)",
+     "1998年12月1日至1999年12月31日期间的收入和支出及准备金和基金结余变动表"
+    ],
+    "Japanese": [
+     "あなた",
+     "ピーク時には",
+     "熱帯低気圧",
+     "ゴヌはモルディブ語でヤシの葉の袋を意味する。",
+     "持続的な",
+     "風",
+     "の",
+     "時速240キロメートル",
+     "149マイル毎時",
+     "ああ　そうだ"
+    ],
+    "German": [
+     "At",
+     "auf seinem Gipfel,",
+     "Tropischer Wirbelsturm",
+     "Gonu, benannt nach einem Beutel mit Palmblättern in der Sprache der Malediven, erreichte",
+     "Sustained",
+     "Winde",
+     "von",
+     "240 Kilometer pro Stunde",
+     "(149 Meilen pro Stunde)",
+     "- Ja."
+    ],
+    "Spanish": [
+     "At",
+     "en su pico,",
+     "Ciclón tropical",
+     "Gonu, llamado así por una bolsa de hojas de palma en el idioma de las Maldivas, alcanzó",
+     "sostenida",
+     "winds",
+     "de",
+     "240 kilómetros por hora",
+     "(149 millas por hora)",
+     "."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "peak, Tropical Cyclone Gonu,",
+     "right": "named for a bag",
+     "H": 0.7525,
+     "H_pct": 60.0,
+     "contra": 0.0091,
+     "cohesion": 0.7594
+    },
+    {
+     "pos": 11,
+     "left": "for a bag of",
+     "right": "palm leaves in the",
+     "H": 0.3512,
+     "H_pct": 13.3,
+     "contra": 0.4928,
+     "cohesion": 0.6925
+    },
+    {
+     "pos": 13,
+     "left": "bag of palm leaves",
+     "right": "in the language of",
+     "H": 0.7571,
+     "H_pct": 63.3,
+     "contra": 0.0086,
+     "cohesion": 0.7636
+    },
+    {
+     "pos": 16,
+     "left": "leaves in the language",
+     "right": "of the Maldives, reached",
+     "H": 0.6333,
+     "H_pct": 30.0,
+     "contra": 0.0716,
+     "cohesion": 0.6821
+    },
+    {
+     "pos": 19,
+     "left": "language of the Maldives,",
+     "right": "reached sustained winds of",
+     "H": 0.7595,
+     "H_pct": 66.7,
+     "contra": 0.0184,
+     "cohesion": 0.7738
+    },
+    {
+     "pos": 25,
+     "left": "winds of 240 kilometers",
+     "right": "an hour (149 miles",
+     "H": 0.713,
+     "H_pct": 46.7,
+     "contra": 0.0081,
+     "cohesion": 0.7188
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "At",
+     "right": "its peak, Tropical Cyclone",
+     "H": 0.7904,
+     "H_pct": 93.3,
+     "contra": 0.003,
+     "cohesion": 0.7927
+    },
+    {
+     "pos": 5,
+     "left": "its peak, Tropical Cyclone",
+     "right": "Gonu, named for a",
+     "H": 0.7894,
+     "H_pct": 90.0,
+     "contra": 0.014,
+     "cohesion": 0.8006
+    },
+    {
+     "pos": 20,
+     "left": "of the Maldives, reached",
+     "right": "sustained winds of 240",
+     "H": 0.7867,
+     "H_pct": 86.7,
+     "contra": 0.0054,
+     "cohesion": 0.791
+    },
+    {
+     "pos": 21,
+     "left": "the Maldives, reached sustained",
+     "right": "winds of 240 kilometers",
+     "H": 0.7721,
+     "H_pct": 73.3,
+     "contra": 0.0032,
+     "cohesion": 0.7745
+    },
+    {
+     "pos": 22,
+     "left": "Maldives, reached sustained winds",
+     "right": "of 240 kilometers an",
+     "H": 0.7852,
+     "H_pct": 83.3,
+     "contra": 0.0033,
+     "cohesion": 0.7877
+    },
+    {
+     "pos": 23,
+     "left": "reached sustained winds of",
+     "right": "240 kilometers an hour",
+     "H": 0.7765,
+     "H_pct": 76.7,
+     "contra": 0.0021,
+     "cohesion": 0.7781
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_884",
+  "cuts": 2,
+  "avg_chunk": 5.3,
+  "latency_bin": "≤7",
+  "gap": 0.2083,
+  "policy_worst_contra": 0.001,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    13
+   ],
+   "H_set": 0.5804,
+   "text": "In the past 20 years, ‖ the amount of child-friendly options in Uptown Charlotte ‖ has grown exponentially.",
+   "pieces": {
+    "Chinese": [
+     "在过去的20年里,",
+     "查看更多夏洛特市中心的酒店",
+     "已经成长了指数。"
+    ],
+    "Japanese": [
+     "過去20年間で",
+     "子供に優しい選択肢が どれだけあるかを",
+     "指数的に成長しています"
+    ],
+    "German": [
+     "In den letzten 20 Jahren",
+     "Die Anzahl der kinderfreundlichen Optionen in Uptown Charlotte",
+     "Die Zahl der Online-Shops ist exponentiell gewachsen."
+    ],
+    "Spanish": [
+     "En los últimos 20 años,",
+     "La cantidad de opciones para niños en Uptown Charlotte",
+     "El comercio electrónico ha crecido exponencialmente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5
+   ],
+   "H_set": 0.7886,
+   "text": "In ‖ the past 20 years, ‖ the amount of child-friendly options in Uptown Charlotte has grown exponentially.",
+   "pieces": {
+    "Chinese": [
+     "内",
+     "过去20年,",
+     "夏洛特市中心的儿童友好选择数量已经成倍增长。"
+    ],
+    "Japanese": [
+     "入力",
+     "過去20年間",
+     "子供に優しい選択肢の数は シャーロットの上流街で 指数的に増えてきました"
+    ],
+    "German": [
+     "In",
+     "in den letzten 20 Jahren,",
+     "Die Anzahl der kinderfreundlichen Optionen in Uptown Charlotte ist exponentiell gewachsen."
+    ],
+    "Spanish": [
+     "En",
+     "los últimos 20 años,",
+     "Desde 2009, la cantidad de opciones para niños en Uptown Charlotte ha crecido exponencialmente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "options in Uptown Charlotte",
+     "right": "has grown exponentially.",
+     "H": 0.63,
+     "H_pct": 0.0,
+     "contra": 0.001,
+     "cohesion": 0.6306
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "In",
+     "right": "the past 20 years,",
+     "H": 0.8353,
+     "H_pct": 100.0,
+     "contra": 0.0017,
+     "cohesion": 0.8367
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1199",
+  "cuts": 1,
+  "avg_chunk": 7.5,
+  "latency_bin": "≤10",
+  "gap": 0.1612,
+  "policy_worst_contra": 0.005,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.6278,
+   "text": "Virtual team members ‖ often function as the point of contact for their immediate physical group.",
+   "pieces": {
+    "Chinese": [
+     "虚拟团队成员",
+     "他们往往是他们直接的实体团体的联系点。"
+    ],
+    "Japanese": [
+     "仮想チームメンバー",
+     "直接的な物理的なグループとの 接触点として機能するのです"
+    ],
+    "German": [
+     "Virtuelle Teammitglieder",
+     "(290.1) 26:1.1 Die Seelen der Paradies-Gruppe fungieren oft als Kontaktpunkt für ihre unmittelbare physische Gruppe."
+    ],
+    "Spanish": [
+     "Miembros del equipo virtual",
+     "(210.1) 18:3.1 Los Ancianos de la Tierra a menudo funcionan como el punto de contacto de su grupo físico inmediato."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5
+   ],
+   "H_set": 0.789,
+   "text": "Virtual team members often function ‖ as the point of contact for their immediate physical group.",
+   "pieces": {
+    "Chinese": [
+     "虚拟团队成员经常发挥",
+     "作为他们直接的实体团体的联系点。"
+    ],
+    "Japanese": [
+     "仮想チームメンバーは",
+     "直接的な物理的なグループとの 接触点として使うのです"
+    ],
+    "German": [
+     "Virtuelle Teammitglieder funktionieren oft",
+     "Als Kontaktpunkt für ihre unmittelbare physische Gruppe."
+    ],
+    "Spanish": [
+     "Los miembros del equipo virtual a menudo funcionan",
+     "como el punto de contacto para su grupo físico inmediato."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Virtual team members",
+     "right": "often function as the",
+     "H": 0.6278,
+     "H_pct": 38.5,
+     "contra": 0.005,
+     "cohesion": 0.631
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "team members often function",
+     "right": "as the point of",
+     "H": 0.7889,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.7897
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_482",
+  "cuts": 1,
+  "avg_chunk": 10.5,
+  "latency_bin": "≤99",
+  "gap": 0.0738,
+  "policy_worst_contra": 0.0429,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    16
+   ],
+   "H_set": 0.7555,
+   "text": "Mysticism is the pursuit of communion with, identity with, or conscious awareness of an ultimate reality, ‖ divinity, spiritual truth, or God.",
+   "pieces": {
+    "Chinese": [
+     "神秘主义是追求与共融,与身份,或有意识地认识到一个终极的现实,",
+     "神性,精神真理,或神。"
+    ],
+    "Japanese": [
+     "神秘主義とは 究極の現実との共有 認識 意識的な認識の追求",
+     "神性 精神的真理 神"
+    ],
+    "German": [
+     "Mystik ist das Streben nach Gemeinschaft mit, Identität mit oder bewusstes Bewusstsein einer ultimativen Realität,",
+     "Gottheit, spirituelle Wahrheit oder Gott."
+    ],
+    "Spanish": [
+     "El misticismo es la búsqueda de la comunión con, la identidad con, o la conciencia consciente de una realidad última,",
+     "La divinidad, la verdad espiritual, o Dios."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2
+   ],
+   "H_set": 0.8293,
+   "text": "Mysticism is ‖ the pursuit of communion with, identity with, or conscious awareness of an ultimate reality, divinity, spiritual truth, or God.",
+   "pieces": {
+    "Chinese": [
+     "神秘主义是",
+     "追求与某种终极现实、神性、精神真理或上帝的交流、认同或有意识的认识。"
+    ],
+    "Japanese": [
+     "神秘主義は",
+     "究極の現実 神性 精神的真理 神との共有 認識 意識の追求です"
+    ],
+    "German": [
+     "Mystik ist",
+     "Das Streben nach Gemeinschaft mit, Identität mit oder bewusstes Bewusstsein einer ultimativen Realität, Göttlichkeit, spirituelle Wahrheit oder Gott."
+    ],
+    "Spanish": [
+     "El misticismo es",
+     "La búsqueda de la comunión con, la identidad con, o la conciencia consciente de una realidad última, divinidad, verdad espiritual, o Dios."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "of an ultimate reality,",
+     "right": "divinity, spiritual truth, or",
+     "H": 0.7555,
+     "H_pct": 52.6,
+     "contra": 0.0429,
+     "cohesion": 0.7893
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Mysticism is",
+     "right": "the pursuit of communion",
+     "H": 0.8293,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8302
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_105",
+  "cuts": 12,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.4753,
+  "policy_worst_contra": 0.8917,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    4,
+    7,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    22,
+    23,
+    24
+   ],
+   "H_set": 0.0634,
+   "text": "They include ‖ financial restrictions ‖ and a ban ‖ by the European Union ‖ on ‖ the ‖ export ‖ of crude ‖ oil, ‖ from which the Iranian economy ‖ receives ‖ 80% ‖ of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "这些措施包括：",
+     "财政限制",
+     "禁止",
+     "欧洲联盟的声明",
+     "上",
+     "该",
+     "出口",
+     "原油",
+     "油",
+     "其中伊朗经济",
+     "收到",
+     "80%的成员",
+     "外国收入的税收。"
+    ],
+    "Japanese": [
+     "これらは",
+     "財政的な制約が",
+     "禁止令が出た",
+     "欧州連合によって",
+     "ああ",
+     "あの",
+     "エクスポート",
+     "石油の",
+     "石油",
+     "これはイラン経済が",
+     "受信",
+     "80% の確率で",
+     "外国からの収入の 10%を占めています"
+    ],
+    "German": [
+     "Dazu gehören:",
+     "Finanzielle Einschränkungen",
+     "Und ein Verbot",
+     "von der Europäischen Union",
+     "on",
+     "the",
+     "Export",
+     "von Rohöl",
+     "Öl,",
+     "Von denen die iranische Wirtschaft",
+     "empfängt",
+     "80 %",
+     "von ihren ausländischen Einkünften."
+    ],
+    "Spanish": [
+     "Entre ellos se incluyen:",
+     "Restricciones financieras",
+     "y una prohibición",
+     "por la Unión Europea",
+     "on",
+     "the",
+     "exportación",
+     "de crudo",
+     "aceite,",
+     "de los cuales la economía iraní",
+     "recibe",
+     "80%",
+     "de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    14,
+    15,
+    16,
+    17,
+    20,
+    22
+   ],
+   "H_set": 0.5387,
+   "text": "They ‖ include ‖ financial ‖ restrictions ‖ and ‖ a ban by the European Union ‖ on the export ‖ of ‖ crude ‖ oil, ‖ from which the ‖ Iranian economy ‖ receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "包括",
+     "财务",
+     "限制",
+     "以及",
+     "欧洲联盟的禁令",
+     "关于出口",
+     "的",
+     "原油",
+     "油",
+     "其中",
+     "伊朗經濟",
+     "80%的外国收入来自于这些国家。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "含む",
+     "金融的に",
+     "制限",
+     "それに",
+     "欧州連合の禁止令が",
+     "輸出に関しては",
+     "の",
+     "粗い",
+     "石油",
+     "それから",
+     "イランの経済",
+     "80%の収入を海外から得ています"
+    ],
+    "German": [
+     "They",
+     "include",
+     "Finanziell",
+     "Einschränkungen",
+     "und",
+     "Ein Verbot durch die Europäische Union",
+     "Auf den Export",
+     "von",
+     "Roh",
+     "Öl,",
+     "Von dem die",
+     "Wirtschaft ",
+     "80% seiner Einnahmen aus dem Ausland."
+    ],
+    "Spanish": [
+     "They",
+     "incluye",
+     "financiero",
+     "restrictions",
+     "y",
+     "Una prohibición por parte de la Unión Europea",
+     "sobre la exportación",
+     "de",
+     "crudo",
+     "aceite,",
+     "de los cuales",
+     "Economía de Irán",
+     "Recibe el 80% de sus ingresos del exterior."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "restrictions and a ban",
+     "right": "by the European Union",
+     "H": 0.5571,
+     "H_pct": 19.2,
+     "contra": 0.3181,
+     "cohesion": 0.817
+    },
+    {
+     "pos": 12,
+     "left": "the European Union on",
+     "right": "the export of crude",
+     "H": 0.5992,
+     "H_pct": 26.9,
+     "contra": 0.2613,
+     "cohesion": 0.8111
+    },
+    {
+     "pos": 13,
+     "left": "European Union on the",
+     "right": "export of crude oil,",
+     "H": 0.0859,
+     "H_pct": 3.8,
+     "contra": 0.8917,
+     "cohesion": 0.7928
+    },
+    {
+     "pos": 23,
+     "left": "the Iranian economy receives",
+     "right": "80% of its foreign",
+     "H": 0.7442,
+     "H_pct": 38.5,
+     "contra": 0.0744,
+     "cohesion": 0.804
+    },
+    {
+     "pos": 24,
+     "left": "Iranian economy receives 80%",
+     "right": "of its foreign income.",
+     "H": 0.4539,
+     "H_pct": 11.5,
+     "contra": 0.4561,
+     "cohesion": 0.8346
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "They",
+     "right": "include financial restrictions and",
+     "H": 0.8228,
+     "H_pct": 80.8,
+     "contra": 0.0212,
+     "cohesion": 0.8406
+    },
+    {
+     "pos": 3,
+     "left": "They include financial",
+     "right": "restrictions and a ban",
+     "H": 0.8038,
+     "H_pct": 73.1,
+     "contra": 0.0023,
+     "cohesion": 0.8056
+    },
+    {
+     "pos": 5,
+     "left": "include financial restrictions and",
+     "right": "a ban by the",
+     "H": 0.8266,
+     "H_pct": 84.6,
+     "contra": 0.0491,
+     "cohesion": 0.8693
+    },
+    {
+     "pos": 15,
+     "left": "on the export of",
+     "right": "crude oil, from which",
+     "H": 0.7809,
+     "H_pct": 57.7,
+     "contra": 0.0616,
+     "cohesion": 0.8322
+    },
+    {
+     "pos": 20,
+     "left": "oil, from which the",
+     "right": "Iranian economy receives 80%",
+     "H": 0.7977,
+     "H_pct": 69.2,
+     "contra": 0.0484,
+     "cohesion": 0.8382
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_360",
+  "cuts": 8,
+  "avg_chunk": 3.6,
+  "latency_bin": "≤5",
+  "gap": 0.2321,
+  "policy_worst_contra": 0.2556,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8,
+    11,
+    17,
+    18,
+    20,
+    23,
+    25,
+    27
+   ],
+   "H_set": 0.4429,
+   "text": "Scientists call this process \"stimulated emission of radiation\" ‖ because the atoms ‖ are stimulated by the bright light, ‖ causing ‖ the emission ‖ of a photon ‖ of light, ‖ and light ‖ is a type of radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家们称这一过程为\"刺激发射辐射\"",
+     "因为原子",
+     "被明亮的光刺激,",
+     "造成",
+     "排放量",
+     "光子的质量",
+     "光明的,",
+     "光和光",
+     "是一种放射性。"
+    ],
+    "Japanese": [
+     "科学者はこの過程を「放射線の刺激放出」と呼んでいる",
+     "なぜなら 原子は",
+     "明るい光で刺激され",
+     "それが原因で",
+     "放出は",
+     "光子の質量を",
+     "光の力を",
+     "光と",
+     "放射線の一種です"
+    ],
+    "German": [
+     "Wissenschaftler nennen diesen Prozess \"stimulierte Emission von Strahlung\"",
+     "Weil die Atome",
+     "werden durch das helle Licht angeregt,",
+     "Verursachen",
+     "Die Emission",
+     "Die Energie eines Photons",
+     "von Licht,",
+     "Licht und Licht",
+     "ist eine Art von Strahlung."
+    ],
+    "Spanish": [
+     "Los científicos llaman a este proceso \"emisión estimulada de radiación\"",
+     "Porque los átomos",
+     "son estimulados por la luz brillante,",
+     "causing",
+     "La emisión",
+     "De un fotón",
+     "de luz, de amor,",
+     "Luz y luz",
+     "Es un tipo de radiación."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    8,
+    25,
+    26,
+    31
+   ],
+   "H_set": 0.6751,
+   "text": "Scientists ‖ call ‖ this ‖ process ‖ \"stimulated emission of radiation\" ‖ because the atoms are stimulated by the bright light, causing the emission of a photon of light, ‖ and ‖ light is a type of ‖ radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家",
+     "呼叫",
+     "这个",
+     "进程",
+     "辐射的激发发射",
+     "因为原子被明亮的光刺激,导致发射光子,",
+     "以及",
+     "光是一种类型的",
+     "辐射。"
+    ],
+    "Japanese": [
+     "科学者",
+     "呼び出す",
+     "これは",
+     "プロセス",
+     "放射線の誘導放出",
+     "原子が明るい光に刺激され 光子を放出するからです",
+     "それに",
+     "光は",
+     "放射線だ"
+    ],
+    "German": [
+     "Wissenschaftler",
+     "Call",
+     "this",
+     "Prozess",
+     "\"stimulierte Emission von Strahlung\"",
+     "weil die Atome durch das helle Licht angeregt werden, was die Emission eines Photons des Lichts verursacht,",
+     "und",
+     "Licht ist eine Art von",
+     "Strahlung."
+    ],
+    "Spanish": [
+     "Científicos",
+     "llamada",
+     "this",
+     "Proceso",
+     "\"emisión estimulada de radiación\"",
+     "porque los átomos son estimulados por la luz brillante, causando la emisión de un fotón de luz,",
+     "y",
+     "La luz es un tipo de",
+     "radiación."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "radiation\" because the atoms",
+     "right": "are stimulated by the",
+     "H": 0.6043,
+     "H_pct": 23.3,
+     "contra": 0.2167,
+     "cohesion": 0.7715
+    },
+    {
+     "pos": 17,
+     "left": "by the bright light,",
+     "right": "causing the emission of",
+     "H": 0.7741,
+     "H_pct": 56.7,
+     "contra": 0.0117,
+     "cohesion": 0.7833
+    },
+    {
+     "pos": 18,
+     "left": "the bright light, causing",
+     "right": "the emission of a",
+     "H": 0.5672,
+     "H_pct": 20.0,
+     "contra": 0.2556,
+     "cohesion": 0.7619
+    },
+    {
+     "pos": 20,
+     "left": "light, causing the emission",
+     "right": "of a photon of",
+     "H": 0.6538,
+     "H_pct": 33.3,
+     "contra": 0.0335,
+     "cohesion": 0.6764
+    },
+    {
+     "pos": 23,
+     "left": "emission of a photon",
+     "right": "of light, and light",
+     "H": 0.8055,
+     "H_pct": 73.3,
+     "contra": 0.0202,
+     "cohesion": 0.8221
+    },
+    {
+     "pos": 27,
+     "left": "of light, and light",
+     "right": "is a type of",
+     "H": 0.78,
+     "H_pct": 60.0,
+     "contra": 0.046,
+     "cohesion": 0.8176
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Scientists",
+     "right": "call this process \"stimulated",
+     "H": 0.8407,
+     "H_pct": 96.7,
+     "contra": 0.0011,
+     "cohesion": 0.8417
+    },
+    {
+     "pos": 2,
+     "left": "Scientists call",
+     "right": "this process \"stimulated emission",
+     "H": 0.8133,
+     "H_pct": 80.0,
+     "contra": 0.0024,
+     "cohesion": 0.8153
+    },
+    {
+     "pos": 3,
+     "left": "Scientists call this",
+     "right": "process \"stimulated emission of",
+     "H": 0.8271,
+     "H_pct": 86.7,
+     "contra": 0.0026,
+     "cohesion": 0.8293
+    },
+    {
+     "pos": 4,
+     "left": "Scientists call this process",
+     "right": "\"stimulated emission of radiation\"",
+     "H": 0.8094,
+     "H_pct": 76.7,
+     "contra": 0.0036,
+     "cohesion": 0.8123
+    },
+    {
+     "pos": 26,
+     "left": "photon of light, and",
+     "right": "light is a type",
+     "H": 0.8299,
+     "H_pct": 93.3,
+     "contra": 0.0131,
+     "cohesion": 0.8409
+    },
+    {
+     "pos": 31,
+     "left": "is a type of",
+     "right": "radiation.",
+     "H": 0.8143,
+     "H_pct": 83.3,
+     "contra": 0.0249,
+     "cohesion": 0.8351
+    }
+   ]
+  }
+ }
+]

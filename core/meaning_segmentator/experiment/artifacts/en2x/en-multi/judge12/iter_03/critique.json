@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer underestimates contradiction risk when a cut leaves a short clause fragment (a subject/NP or function-word-only span) that lacks its predicate, auxiliary, negation scope, or required complement; such pre-cut fragments, read alone, often assert something the rest of the sentence later reverses.",
+    "evidence": "['en_us_1570','en_us_87','en_us_105','en_us_140','en_us_741']: these cases all show the policy keeping cuts that isolate brief subject/fragment spans or split scope-bearing items (negation/auxiliaries), producing high contra or contra_kill. (5)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the span before a cut is a short subject/NP or a clause fragment lacking its predicate, auxiliary, negation scope, or required complement, treat that cut as high contradiction risk and rank it low."
+    }
+   },
+   {
+    "diagnosis": "The scorer undervalues cohesion loss from splitting heads from their required complements (prepositions and their objects, 'of' phrases, verb complements, or a main noun and its postnominal modifiers); cuts that sever these relationships often degrade joined translation quality.",
+    "evidence": "['en_us_455','en_us_360','en_us_140','en_us_105','en_us_1352']: these examples show the policy cutting between prepositions/heads and their complements or inside long noun/modifier sequences, harming cohesion in the joined text. (5)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cuts that separate heads from their required complements (prepositions + objects, 'of' phrases, verb complements, or a noun and its postnominal modifiers); such splits markedly reduce cohesion and should be scored lower."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer underestimates contradiction risk when a cut leaves a short clause fragment (a subject/NP or function-word-only span) that lacks its predicate, auxiliary, negation scope, or required complement; such pre-cut fragments, read alone, often assert something the rest of the sentence later reverses.",
+   "evidence": "['en_us_1570','en_us_87','en_us_105','en_us_140','en_us_741']: these cases all show the policy keeping cuts that isolate brief subject/fragment spans or split scope-bearing items (negation/auxiliaries), producing high contra or contra_kill. (5)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the span before a cut is a short subject/NP or a clause fragment lacking its predicate, auxiliary, negation scope, or required complement, treat that cut as high contradiction risk and rank it low."
+   }
+  },
+  {
+   "diagnosis": "The scorer undervalues cohesion loss from splitting heads from their required complements (prepositions and their objects, 'of' phrases, verb complements, or a main noun and its postnominal modifiers); cuts that sever these relationships often degrade joined translation quality.",
+   "evidence": "['en_us_455','en_us_360','en_us_140','en_us_105','en_us_1352']: these examples show the policy cutting between prepositions/heads and their complements or inside long noun/modifier sequences, harming cohesion in the joined text. (5)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cuts that separate heads from their required complements (prepositions + objects, 'of' phrases, verb complements, or a noun and its postnominal modifiers); such splits markedly reduce cohesion and should be scored lower."
+   }
+  }
+ ]
+}

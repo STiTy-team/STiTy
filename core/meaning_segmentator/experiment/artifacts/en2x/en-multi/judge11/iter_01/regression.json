@@ -1,0 +1,112 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.0091,
+  "lo": -0.0367,
+  "hi": 0.01966,
+  "n": 399,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": -0.016,
+  "≤5": -0.0115,
+  "≤7": -0.0003,
+  "≤10": 0.0014,
+  "≤99": 0.0061
+ },
+ "n_worse": 157,
+ "n_better": 154,
+ "worst": [
+  {
+   "id": "en_us_1167",
+   "k": 3,
+   "bin": "≤3",
+   "delta": -0.6691,
+   "before": "Their predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually.",
+   "after": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright as habitually."
+  },
+  {
+   "id": "en_us_1026",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.6085,
+   "before": "The luminosity ‖ and rotation ‖ are used ‖ together ‖ to determine a star's ‖ Rossby ‖ number, ‖ which is related to plasma flow.",
+   "after": "The luminosity and rotation ‖ are ‖ used ‖ together ‖ to ‖ determine ‖ a star's Rossby number, ‖ which is related to plasma flow."
+  },
+  {
+   "id": "en_us_1026",
+   "k": 8,
+   "bin": "≤3",
+   "delta": -0.5383,
+   "before": "The luminosity ‖ and rotation ‖ are used ‖ together ‖ to determine a star's ‖ Rossby ‖ number, ‖ which is related ‖ to plasma flow.",
+   "after": "The ‖ luminosity and rotation ‖ are ‖ used ‖ together ‖ to ‖ determine ‖ a star's Rossby number, ‖ which is related to plasma flow."
+  },
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.5014,
+   "before": "He ‖ originally ‖ named the Hangeul alphabet Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named the Hangeul alphabet Hunmin Jeongeum, ‖ which ‖ means \"the ‖ correct sounds for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 9,
+   "bin": "≤3",
+   "delta": -0.4921,
+   "before": "Like some other experts, ‖ he ‖ is skeptical ‖ about whether diabetes can be cured, ‖ noting that these ‖ findings ‖ have no relevance ‖ to ‖ people ‖ who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he ‖ is ‖ skeptical ‖ about whether diabetes can be cured, ‖ noting that these ‖ findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7404,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.7157,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice ‖ works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This ‖ is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.6251,
+   "before": "This is common ‖ practice ‖ elsewhere in the UK ‖ but Scottish justice ‖ works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This ‖ is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice ‖ works differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.565,
+   "before": "This is common ‖ practice ‖ elsewhere in the UK ‖ but Scottish justice ‖ works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This ‖ is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice ‖ works differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_802",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.5156,
+   "before": "Drink alcoholic drinks with moderation. ‖ Alcohol affects everyone ‖ differently, ‖ and knowing your limit is very important.",
+   "after": "Drink alcoholic drinks ‖ with moderation. ‖ Alcohol affects everyone differently, ‖ and knowing your limit is very important."
+  }
+ ],
+ "why": "The added guidance to treat multiword names/dates/measures as atomic (and the new numeric/date example) made the scorer avoid cuts inside those spans, improving H_set on longer pieces. However, the shortened paraphrase of C8 together with the new complement-check wording caused scorers to overprotect those spans and shift cuts earlier (splitting verbs/heads and producing many tiny pieces), harming the short-piece bins (≤3 and ≤5).",
+ "lesson": "Keep the explicit caution about punctuation/commas and balance atomic-unit protection so it doesn't push cuts onto verb heads or create many tiny fragments (which mainly hurts the ≤3 and ≤5 bins).",
+ "blamed": [
+  "C8 «- Even when commas or punctuation appear, translating the tw» (paraphrase)",
+  "insert_after C8 (atomic-units principle)",
+  "insert_after C_end (essential-complement principle)",
+  "E2 «Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG» (replaced example)"
+ ]
+}
