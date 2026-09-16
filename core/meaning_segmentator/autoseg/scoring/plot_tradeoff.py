@@ -123,6 +123,12 @@ _ap.add_argument("--point-labels", default="ours",
                       "native=네이티브 f 만. 어느 모드든 네이티브 f 는 항상 적는다")
 _ap.add_argument("--no-native", action="store_true",
                  help="네이티브 노브 곡선을 안 그린다")
+_ap.add_argument("--variant", action="append", default=[], metavar="PREFIX:LABEL",
+                 help="제안 곡선의 **변형**을 같은 패널에 겹쳐 그린다 (예: 같은 루프의 v0). "
+                      "여러 번 줄 수 있다. 조건은 `<PREFIX>_T*` 로 한 파일 안에 있어야 "
+                      "하며, 두 런의 산출을 합치는 것은 `merge_variant.py` 가 한다. "
+                      "제안 곡선과 같은 색에 파선·빈 마커로 그린다 — 같은 정책의 다른 "
+                      "프롬프트라는 뜻이고, 비교군 5색은 그대로 둔다")
 _ap.add_argument("--no-header", action="store_true",
                  help="상단 제목·설명 문단을 안 그린다. 논문/슬라이드에 캡션이 따로 붙는 "
                       "경우 그림 안의 제목은 중복이고 패널 높이만 먹는다")
@@ -156,6 +162,12 @@ if ARGS.no_cite:
     SERIES = [(*x[:4], _strip(x[4])) for x in SERIES]
     SINGLE = [(*x[:3], _strip(x[3])) for x in SINGLE]
     NATIVE = [(*x[:4], _strip(x[4]), x[5]) for x in NATIVE]
+# 변형 곡선의 파선 패턴. 색은 제안 곡선과 같은 BLUE 로 두고 선 모양으로만 가른다.
+_VDASH = [(0, (6, 3)), (0, (2, 2)), (0, (7, 2, 1, 2))]
+VARIANTS = []
+for _i, _spec in enumerate(ARGS.variant):
+    _pre, _, _lbl = _spec.partition(":")
+    VARIANTS.append((_pre, BLUE, _VDASH[_i % len(_VDASH)], "o", _lbl or _pre))
 SERIES = [x for x in SERIES if x[0] not in ARGS.drop]
 SINGLE = [x for x in SINGLE if x[0] not in ARGS.drop]
 NATIVE = [x for x in NATIVE if x[0] not in ARGS.drop]
@@ -285,6 +297,19 @@ for ax, tgt in zip(axes, TARGETS):
         elif ARGS.point_labels == "ends" and len(pts) >= 2:
             label_points(ax, [pts[0], pts[-1]], color, "T", _dy)
 
+    for vi, (prefix, color, ls, mk, label) in enumerate(VARIANTS):
+        pts = curve(C, prefix)
+        if not pts:
+            continue
+        ax.plot([p[0] for p in pts], [p[1] for p in pts], ls=ls, marker=mk,
+                color=color, lw=2.1, ms=6.5, mfc="none", mew=1.6, zorder=5,
+                label=label)
+        # **`ours` 모드에서는 변형에 노브 라벨을 안 적는다.** 변형은 같은 정책의 다른
+        # 프롬프트라 점이 기준 곡선과 거의 겹치는데, 양쪽에 같은 수를 적으면 글자만
+        # 두 겹으로 쌓인다. 계열 구분은 빈 마커와 파선이 한다.
+        if ARGS.point_labels == "all":
+            label_points(ax, pts, color, "T", -10 - vi * 11)
+
     _native = [] if ARGS.no_native else NATIVE
     for prefix, color, ls, mk, label, entries in _native:
         pts = native_curve(C, entries)
@@ -306,11 +331,14 @@ for ax, tgt in zip(axes, TARGETS):
     single = [C[p] for p, *_ in SINGLE
               if p in C and C[p].get("laal_ms") is not None]
     _nat_pts = [q for *_h, e in _native for q in native_curve(C, e)]
+    _var_pts = [q for p, *_ in VARIANTS for q in curve(C, p)]
     ys = ([y for p, *_ in SERIES for _, y, _ in curve(C, p)]
           + [c[M] for c in single] + [y for _, y, _ in _nat_pts]
+          + [y for _, y, _ in _var_pts]
           + ([unseg[M]] if ARGS.ceiling_in_ylim else []))
     xs = ([x for p, *_ in SERIES for x, _, _ in curve(C, p)]
-          + [c["laal_ms"] for c in single] + [x for x, _, _ in _nat_pts])
+          + [c["laal_ms"] for c in single] + [x for x, _, _ in _nat_pts]
+          + [x for x, _, _ in _var_pts])
     ylo, yhi = min(ys) - pad, max(ys) + pad * 1.6
     # offline 상한 — gtx 통번역을 데이터셋 정답 번역으로 채점한 값.
     # 상한의 지연(x)은 축 밖이라 선으로만 긋고 값·지연은 주석으로 적는다.

@@ -1,0 +1,73 @@
+% table_en->x.tex — en2x/covost2/full_judge13_cmp, n=15530, comet
+% 생성: core/meaning_segmentator/tools/covost2_chain/en2x_table.py
+% Requires: \usepackage{booktabs}
+%           \usepackage{graphicx}
+
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.05}
+
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule
+& \multicolumn{3}{c}{EN--ZH}
+& \multicolumn{3}{c}{EN--DE}
+& \multicolumn{3}{c}{EN--JA} \\
+\cmidrule(lr){2-4}
+\cmidrule(lr){5-7}
+\cmidrule(lr){8-10}
+
+Method
+& 1.0\,s & 1.2\,s & 1.4\,s
+& 0.85\,s & 1.1\,s & 1.35\,s
+& 1.25\,s & 1.4\,s & 1.55\,s \\
+\midrule
+
+AlignAtt~\cite{papi-2023}
+& .668 & .707 & .732
+& \textbf{.629} & \textbf{.701} & .744
+& .720 & .749 & .772 \\
+
+Causal Align~\cite{koshkin-etal-2024-transllama}
+& .658 & .702 & .733
+& .621 & .695 & .739
+& .718 & .751 & .778 \\
+
+SASST~\cite{yang2026sasst}
+& .679 & .721 & .746
+& .619 & .697 & .743
+& \textbf{.738} & \textbf{.764} & .783 \\
+
+Multi-Agent (Ours; initial)
+& .677 & .726 & .759
+& .625 & .700 & \textbf{.756}
+& .733 & .762 & .785 \\
+
+Multi-Agent (Ours; adopted)
+& \textbf{.680} & \textbf{.728} & \textbf{.760}
+& .623 & .698 & .754
+& .737 & .763 & \textbf{.786} \\
+
+\midrule
+\multicolumn{10}{l}{
+\textit{Outside matched band (own latency in parentheses)}
+} \\
+
+Prefix-match MU~\cite{zhang2020learning}
+& \multicolumn{3}{c}{.708 (1.5\,s)}
+& \multicolumn{3}{c}{.715 (1.3\,s)}
+& \multicolumn{3}{c}{.805 (2.0\,s)} \\
+
+Punctuation
+& \multicolumn{3}{c}{.830 (2.3\,s)}
+& \multicolumn{3}{c}{.865 (2.3\,s)}
+& \multicolumn{3}{c}{.869 (2.4\,s)} \\
+
+Full-sentence offline
+& \multicolumn{3}{c}{.837 (2.7\,s)}
+& \multicolumn{3}{c}{.883 (2.7\,s)}
+& \multicolumn{3}{c}{.884 (2.8\,s)} \\
+
+\bottomrule
+\end{tabular}%
+}
