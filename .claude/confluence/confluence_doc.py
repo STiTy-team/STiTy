@@ -814,17 +814,21 @@ def main() -> None:
     title = resolve_title(cf, d, kind_ko,
                           autonumber=not (args.no_autonumber or args.update))
     labels = [kind_ko, f'{d["round"]}차', slug(d["major"]), slug(d["minor"])]
-    # 문서는 두 단계 아래에 들어간다 — 문서 정리 > <n>차 업무 분담 > 계획|보고 문서.
-    # 차수 폴더에 계획과 보고를 섞어 두면 늘어날수록 찾기 어렵다.
+    fields = d.get("fields", {})
+    # 문서는 세 단계 아래에 들어간다 —
+    # 문서 정리 > <n>차 업무 분담 > 대범주 > 계획|보고 문서.
+    # 차수 폴더에 대범주를 섞어 두면 늘어날수록 찾기 어렵다.
     round_folder = f'{d["round"]}차 업무 분담'
+    # 대범주 폴더는 차수 아래에서만 유일하면 되므로 이름에 차수를 넣지 않는다
+    # (다른 차수에 같은 대범주 이름이 있어도 부모로 구분된다).
+    major_folder = d["major"]
     # 폴더 제목은 스페이스 전체에서 유일해야 하므로 차수를 이름에 넣는다.
     # 예전 이름('계획 문서', '계획 문서_2')도 계속 찾을 수 있게 alias 로 넘긴다.
     kind_folder = f'{d["round"]}차 {kind_ko} 문서'
     kind_folder_alias = f"{kind_ko} 문서"
-    folder_path = f"{round_folder} > {kind_folder}"
+    folder_path = " > ".join([round_folder, major_folder, kind_folder])
 
     template = cf.get_storage(CONFIG["guide"][kind])
-    fields = d.get("fields", {})
     jira_keys, planned = resolve_jira(d.get("jira"), fields, d["major"], args.dry_run)
     if planned:
         head = "만들 이슈 (dry-run 이라 아직 안 만듦)" if args.dry_run else "만든 이슈"
@@ -871,7 +875,9 @@ def main() -> None:
 
     round_id = cf.find_folder(round_folder) or cf.create_folder(
         CONFIG["docs_folder_id"], round_folder)
-    folder_id = cf.resolve_folder(round_id, kind_folder,
+    major_id = cf.find_folder(major_folder, parent_id=round_id) or cf.create_folder(
+        round_id, major_folder)
+    folder_id = cf.resolve_folder(major_id, kind_folder,
                                   aliases=(kind_folder_alias,))
     page = cf.create_page(folder_id, title, body)
     cf.add_labels(page["id"], labels)
