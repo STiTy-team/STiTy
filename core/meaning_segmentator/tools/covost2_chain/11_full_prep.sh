@@ -1,10 +1,15 @@
 #!/bin/bash
-# CoVoST2 en test **전체** (15,531 발화) 준비 — wav 추출 + 매니페스트 + 강제정렬.
+# CoVoST2 en test **전체** (15,531행 -> 15,530 발화) 준비 — wav 추출 + 매니페스트 + 강제정렬.
 # 여기까지는 API 비용 0 이다. 라벨링(12번)만 돈이 든다.
 # 매니페스트 빌더와 정렬기는 둘 다 .venv 다 — soundfile / qwen_asr 가 .venv-autoseg 에 없다.
 #
-# en->{de,ja,zh} 는 **같은 영어 클립 15,531개를 공유**한다. wav 캐시는 config 을 안 타고
+# en->{de,ja,zh} 는 **같은 영어 클립을 공유**한다. wav 캐시는 config 을 안 타고
 # `en_test/` 하나이므로 세 매니페스트가 같은 파일을 가리킨다 (build_manifest 헤더 참조).
+#
+# `--min-duration 0` 이 필요하다. 기본값 1.0 은 무음 제거 후 1초가 안 되는 최단문
+# 100개를 떨어뜨려 15,430개만 남긴다 (0.576~0.992초, "She likes you." 류).
+# 빠지는 1행은 common_voice_en_16759015 로, 세 config 모두 번역문이 비어 있어
+# 참조가 없다 — 채점이 불가능하므로 뺀다.
 . core/meaning_segmentator/tools/covost2_chain/common.sh
 M=evaluation/ast/manifests
 TAG=full
@@ -14,6 +19,7 @@ build_man () {   # <config> <출력 타깃 이름>
   "$REPO/.venv/bin/python" -u evaluation/ast/build_manifest_covost2.py \
     --covost-root ~/datasets/covost2 --config $1 --split test --mode single \
     --audio-cache ~/datasets/covost2_single \
+    --min-duration 0 \
     --out $M/covost2_en-$2_$TAG.jsonl 2>&1 | tail -6
   return ${PIPESTATUS[0]}
 }
@@ -23,7 +29,7 @@ build_man en_ja    ja || { mark full_prep.failed "manifest ja"; exit 1; }
 build_man en_zh-CN zh || { mark full_prep.failed "manifest zh"; exit 1; }
 
 for t in de ja zh; do
-  echo "  covost2_en-$t_$TAG.jsonl: $(wc -l < $M/covost2_en-$t_$TAG.jsonl) 줄"
+  echo "  covost2_en-${t}_$TAG.jsonl: $(wc -l < $M/covost2_en-${t}_$TAG.jsonl) 줄"
 done
 
 # 강제정렬 — 소스가 영어 하나뿐이라 한 번만 돌린다. **.venv 를 써야 한다** (qwen_asr).
