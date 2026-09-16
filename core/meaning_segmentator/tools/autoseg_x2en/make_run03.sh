@@ -3,8 +3,9 @@
 #   tmux new-session -d -s x2en-labels -c <저장소> "bash core/meaning_segmentator/tools/autoseg_x2en/make_run03.sh"
 # LANGS 로 언어(기본 de zh ja, 순차), SPLITS 로 분할(기본 train test_a test_b)을 고른다.
 # 언어마다 끝나면 <run>/labels.done 에 분할 목록을 한 줄 남긴다. 두 언어를 동시에 띄우려면 세션 둘:
-#   LANGS=de tmux new-session -d -s x2en-labels-de -c <저장소> "bash .../make_run03.sh"
-#   LANGS=zh tmux new-session -d -s x2en-labels-zh -c <저장소> "bash .../make_run03.sh"
+#   tmux new-session -d -s x2en-labels-de -c <저장소> "LANGS=de bash .../make_run03.sh"
+#   tmux new-session -d -s x2en-labels-zh -c <저장소> "LANGS=zh bash .../make_run03.sh"
+#   (환경변수는 명령 문자열 안에 — 서버가 떠 있으면 클라이언트 환경이 세션에 안 넘어간다)
 set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
 set -a; [ -f ./.env ] && . ./.env; set +a
