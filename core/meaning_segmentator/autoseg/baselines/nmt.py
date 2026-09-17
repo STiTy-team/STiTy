@@ -31,6 +31,20 @@ NLLB_CODE = {"en": "eng_Latn", "de": "deu_Latn", "ja": "jpn_Jpan",
              "zh": "zho_Hans", "ko": "kor_Hang", "es": "spa_Latn"}
 
 
+def hit_cap(seq, n_prefix: int, max_new: int, stop_ids: set,
+            budget: int | None = None) -> bool:
+    """이 행이 `max_new` 에 걸려 끊겼는가 — 끊겼으면 상한 없이 다시 돌려야 한다.
+
+    끝까지 간 행은 마지막이 eos 이고, 먼저 끝난 행은 그 뒤가 pad 다. 둘 다 없이 `max_new`
+    개를 채웠다면 상한이 문 것이다. `budget`(= `max_new_tokens`) 과 같은 상한은 상한 없는
+    경우 그 자체라 다시 돌릴 것이 없다.
+    """
+    if budget is not None and max_new >= budget:
+        return False
+    gen = [int(t) for t in seq[n_prefix:n_prefix + max_new]]
+    return len(gen) == max_new and not any(t in stop_ids for t in gen)
+
+
 class Nmt:
     def __init__(self, src: str = "en", tgt: str = "de", device: str = "cuda",
                  model_name: str = MODEL, max_new_tokens: int = 128,
@@ -197,6 +211,18 @@ class Nmt:
         w = max((len(t.split()) for t in texts), default=1)
         return min(self.max_new_tokens, 4 * w + 16)
 
+    @property
+    def _stop_ids(self) -> set:
+        return {i for i in (self.eos_id, self.tok.pad_token_id) if i is not None}
+
+    def _uncapped(self, fn, *a):
+        """상한을 끄고 한 번 부른다 — 상한에 닿은 행을 다시 돌릴 때만 쓴다."""
+        old, self.cap_tokens = self.cap_tokens, False
+        try:
+            return fn(*a)
+        finally:
+            self.cap_tokens = old
+
     def _decoder_prefix_batch(self, forced_rows: list[list[int] | None]) -> torch.Tensor:
         """행마다 **자기** forced 를 깐다.
 
@@ -229,15 +255,22 @@ class Nmt:
     @torch.inference_mode()
     def emit_with_alignment_batch(self, items: list[tuple[str, list[int] | None]],
                                   max_batch: int = 32) -> list[list[tuple[int, int]]]:
-        """`emit_with_alignment` 의 배치판. 반환 순서는 입력 순서다."""
+        """`emit_with_alignment` 의 배치판. 반환 순서는 입력 순서다.
+
+        **상한에 닿은 행은 상한 없이 다시 돌린다.** AlignAtt 은 여기서 받은 토큰을 그대로
+        `forced` 로 커밋하므로, 폭주 행을 자른 위치가 이후 회차를 전부 바꾼다. 다시 도는 행은
+        ja 긴문장 기준 1% 미만이라 상한이 벌어 준 속도는 거의 그대로 남는다.
+        """
         res: list[list[tuple[int, int]]] = [[] for _ in items]
+        retry: list[int] = []
         for idxs in self._by_prefix_len(items, max_batch):
             texts = [items[i][0] for i in idxs]
             enc = self._encode_batch(texts)
             dec = self._decoder_prefix_batch([items[i][1] for i in idxs])
+            cap = self._cap_new(texts)
             out = self.model.generate(
                 **enc, decoder_input_ids=dec,
-                num_beams=1, do_sample=False, max_new_tokens=self._cap_new(texts),
+                num_beams=1, do_sample=False, max_new_tokens=cap,
                 output_attentions=True, return_dict_in_generate=True)
             n_prefix = dec.shape[1]
             real = enc["attention_mask"].sum(1).tolist()
@@ -249,6 +282,9 @@ class Nmt:
                 n_src = len(w_of)
                 lo = next((k for k, x in enumerate(w_of) if x >= 0), 1)
                 seq = out.sequences[b]
+                if hit_cap(seq, n_prefix, cap, self._stop_ids, self.max_new_tokens):
+                    retry.append(i)
+                    continue
                 for step in range(len(att)):
                     if n_prefix + step >= len(seq):
                         break
@@ -258,23 +294,41 @@ class Nmt:
                     a = att[step][b][:n_src]
                     j = int(a[lo:n_src - 1].argmax()) + lo
                     res[i].append((tok_id, w_of[j]))
+        if retry:
+            sub = self._uncapped(self.emit_with_alignment_batch,
+                                 [items[i] for i in retry], max_batch)
+            for k, i in enumerate(retry):
+                res[i] = sub[k]
         return res
 
     @torch.inference_mode()
     def translate_prefix_batch(self, items: list[tuple[str, list[int] | None]],
                                max_batch: int = 64) -> list[tuple[str, list[int]]]:
-        """`translate_prefix` 의 배치판. 반환 순서는 입력 순서다."""
+        """`translate_prefix` 의 배치판. 반환 순서는 입력 순서다.
+
+        상한에 닿은 행은 상한 없이 다시 돌린다 — `emit_with_alignment_batch` 와 같은 이유다.
+        """
         res: list[tuple[str, list[int]]] = [("", [])] * len(items)
+        retry: list[int] = []
         for idxs in self._by_prefix_len(items, max_batch):
             texts = [items[i][0] for i in idxs]
             enc = self._encode_batch(texts)
+            dec = self._decoder_prefix_batch([items[i][1] for i in idxs])
+            cap = self._cap_new(texts)
             out = self.model.generate(
-                **enc, decoder_input_ids=self._decoder_prefix_batch(
-                    [items[i][1] for i in idxs]),
-                num_beams=1, do_sample=False, max_new_tokens=self._cap_new(texts))
+                **enc, decoder_input_ids=dec,
+                num_beams=1, do_sample=False, max_new_tokens=cap)
             for b, i in enumerate(idxs):
+                if hit_cap(out[b], dec.shape[1], cap, self._stop_ids, self.max_new_tokens):
+                    retry.append(i)
+                    continue
                 ids = self._strip(out[b])
                 res[i] = (self.tok.decode(ids, skip_special_tokens=True), ids)
+        if retry:
+            sub = self._uncapped(self.translate_prefix_batch,
+                                 [items[i] for i in retry], max_batch)
+            for k, i in enumerate(retry):
+                res[i] = sub[k]
         return res
 
     @torch.inference_mode()
@@ -285,15 +339,29 @@ class Nmt:
         빔이 배치 안에서 곱해지므로 예산은 문장 수가 아니라 **문장 수 × n** 으로 잡는다.
         n=50 이면 한 번에 두 문장뿐이다."""
         res: list[list[str]] = []
+        retry: list[int] = []
         step = max(1, max_beams // max(n, 1))
         for s in range(0, len(texts), step):
             chunk = texts[s:s + step]
             enc = self._encode_batch(chunk)
+            dec = self._decoder_prefix_batch([None] * len(chunk))
+            cap = self._cap_new(chunk)
             out = self.model.generate(
-                **enc, decoder_input_ids=self._decoder_prefix_batch([None] * len(chunk)),
+                **enc, decoder_input_ids=dec,
                 num_beams=n, num_return_sequences=n,
-                max_new_tokens=self._cap_new(chunk), do_sample=False)
+                max_new_tokens=cap, do_sample=False)
             for b in range(len(chunk)):
+                rows = out[b * n:(b + 1) * n]
+                # 후보 하나라도 상한에 닿았으면 그 문장을 통째로 다시 돌린다 — 후보 순위가
+                # 잘린 후보에 걸려 바뀔 수 있다.
+                if any(hit_cap(x, dec.shape[1], cap, self._stop_ids, self.max_new_tokens)
+                       for x in rows):
+                    retry.append(s + b)
                 res.append([self.tok.decode(self._strip(x), skip_special_tokens=True)
-                            for x in out[b * n:(b + 1) * n]])
+                            for x in rows])
+        if retry:
+            sub = self._uncapped(self.full_candidates_batch,
+                                 [texts[i] for i in retry], n, max_beams)
+            for k, i in enumerate(retry):
+                res[i] = sub[k]
         return res

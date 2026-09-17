@@ -39,7 +39,12 @@ mkdir -p "$(dirname "$LOG")"
 BATCH=${BATCH:-128}
 POOL=${POOL:-4096}
 BEAMS=${BEAMS:-512}
-B="$PY -u -m core.meaning_segmentator.autoseg.baselines.build --run-id $RUN --dataset covost2 --manifest-tag full --targets $TGT --resume --batch-size $BATCH --pool $POOL --max-beams $BEAMS"
+# 토큰 상한은 기본으로 끈다. 상한을 켜면 AlignAtt 결과가 달라지고(폭주 생성을 자른 위치가
+# 그대로 forced 커밋 길이가 되어 이후 회차가 전부 갈린다), 상한에 닿은 행을 다시 돌려
+# 등가를 맞추면 ja 300문장 실측에서 상한 없는 쪽보다 오히려 느렸다 (159초 vs 135초).
+TOKEN_CAP=${TOKEN_CAP:-off}
+[ "$TOKEN_CAP" = off ] && CAPFLAG=--no-token-cap || CAPFLAG=
+B="$PY -u -m core.meaning_segmentator.autoseg.baselines.build --run-id $RUN --dataset covost2 --manifest-tag full --targets $TGT --resume --batch-size $BATCH --pool $POOL --max-beams $BEAMS $CAPFLAG"
 
 # 이미 나온 최종본은 건너뛴다. 최종본이 생기면 진행분(.partial.jsonl)은 지워지므로
 # --resume 이 물 게 없어, 건너뛰지 않으면 끝난 config 를 처음부터 다시 돈다.
@@ -56,9 +61,11 @@ for f in 2 4 6 8; do
   echo "== $(date '+%F %T') alignatt f=$f start" >> $LOG
   $B --policy alignatt --f $f --out-name alignatt_mad_f$f \
      >> $F/logs/baselines/alignatt_mad_f${f}_$TGT.log 2>&1
-  echo "== $(date '+%F %T') alignatt f=$f exit=$?" >> $LOG
+  rc=$?
+  echo "== $(date '+%F %T') alignatt f=$f exit=$rc" >> $LOG
+  [ $rc -ne 0 ] && fail=1
 done
-touch $F/baselines/madlad_alignatt_$TGT.done
+[ "${fail:-0}" = 0 ] && touch $F/baselines/madlad_alignatt_$TGT.done
 fi
 
 if [ "${STAGE:-both}" != alignatt ]; then
@@ -70,8 +77,10 @@ for n in 10 2 50; do
   echo "== $(date '+%F %T') mu_prefix n_cands=$n start" >> $LOG
   $B --policy mu_prefix --n-cands $n --out-name mu_prefix_mad_n$n \
      >> $F/logs/baselines/mu_prefix_mad_n${n}_$TGT.log 2>&1
-  echo "== $(date '+%F %T') mu_prefix n_cands=$n exit=$?" >> $LOG
+  rc=$?
+  echo "== $(date '+%F %T') mu_prefix n_cands=$n exit=$rc" >> $LOG
+  [ $rc -ne 0 ] && fail=1
 done
-touch $F/baselines/madlad_mu_$TGT.done
+[ "${fail:-0}" = 0 ] && touch $F/baselines/madlad_mu_$TGT.done
 fi
 echo "== $(date '+%F %T') ALL DONE" >> $LOG
