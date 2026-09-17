@@ -69,7 +69,8 @@ done
 fi
 
 if [ "${STAGE:-both}" != alignatt ]; then
-for n in 10 2 50; do
+# n 이 작을수록 빔이 적어 싸다. 싼 것부터 돌려야 중간에 멈춰도 산출이 더 많이 남는다.
+for n in 2 10 50; do
   if done_already mu_prefix_mad_n$n; then
     echo "== $(date '+%F %T') mu_prefix n_cands=$n skip (최종본 있음)" >> $LOG
     continue
