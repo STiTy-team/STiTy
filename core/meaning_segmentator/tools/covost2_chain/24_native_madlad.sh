@@ -41,8 +41,18 @@ POOL=${POOL:-4096}
 BEAMS=${BEAMS:-512}
 B="$PY -u -m core.meaning_segmentator.autoseg.baselines.build --run-id $RUN --dataset covost2 --manifest-tag full --targets $TGT --resume --batch-size $BATCH --pool $POOL --max-beams $BEAMS"
 
+# 이미 나온 최종본은 건너뛴다. 최종본이 생기면 진행분(.partial.jsonl)은 지워지므로
+# --resume 이 물 게 없어, 건너뛰지 않으면 끝난 config 를 처음부터 다시 돈다.
+done_already() {
+  [ -s "$F/baselines/$1_${TGT}_test.json" ]
+}
+
 if [ "${STAGE:-both}" != mu ]; then
 for f in 2 4 6 8; do
+  if done_already alignatt_mad_f$f; then
+    echo "== $(date '+%F %T') alignatt f=$f skip (최종본 있음)" >> $LOG
+    continue
+  fi
   echo "== $(date '+%F %T') alignatt f=$f start" >> $LOG
   $B --policy alignatt --f $f --out-name alignatt_mad_f$f \
      >> $F/logs/baselines/alignatt_mad_f${f}_$TGT.log 2>&1
@@ -53,6 +63,10 @@ fi
 
 if [ "${STAGE:-both}" != alignatt ]; then
 for n in 10 2 50; do
+  if done_already mu_prefix_mad_n$n; then
+    echo "== $(date '+%F %T') mu_prefix n_cands=$n skip (최종본 있음)" >> $LOG
+    continue
+  fi
   echo "== $(date '+%F %T') mu_prefix n_cands=$n start" >> $LOG
   $B --policy mu_prefix --n-cands $n --out-name mu_prefix_mad_n$n \
      >> $F/logs/baselines/mu_prefix_mad_n${n}_$TGT.log 2>&1

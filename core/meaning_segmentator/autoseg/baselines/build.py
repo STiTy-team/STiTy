@@ -97,6 +97,21 @@ def _nmt_kw(args) -> dict:
     return {"model_name": args.nmt_model} if args.nmt_model else {}
 
 
+def effective_nmt_model(args) -> str | None:
+    """규칙 판정에 **실제로 쓴** seq2seq 이름.
+
+    종전에는 `args.nmt_model` 을 그대로 산출에 적어서, 기본값으로 돌리면 `nmt_model`
+    이 `null` 로 남았다 — 파일만 봐서는 madlad 인지 NLLB 인지 알 수 없고 파일명의
+    `mad` 에만 기댔다. 두 산출은 한 곡선에 못 섞으므로 이건 파일 안에 있어야 한다.
+    """
+    if args.policy not in ("alignatt", "mu_prefix"):
+        return None
+    if args.nmt_model:
+        return args.nmt_model
+    from core.meaning_segmentator.autoseg.baselines.nmt import MODEL
+    return MODEL
+
+
 def _progress(rows, add, tgt, total, t0):
     """배치 드라이버가 문장을 끝낼 때마다 부를 콜백 — 진행분 기록 + ETA.
 
@@ -150,6 +165,7 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
         from core.meaning_segmentator.autoseg.baselines.nmt import Nmt
 
         nmt = Nmt(src="en", tgt=tgt, device=args.device, **_nmt_kw(args))
+        print(f"  [{tgt}] NMT {nmt.model_name}", flush=True)
         if args.batch_size > 1:
             mu_prefix.segment_batch(
                 nmt, [r["text"] for r in rows], SPACED[tgt], args.n_cands,
@@ -174,6 +190,7 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
 
         nmt = Nmt(src="en", tgt=tgt, device=args.device,
                   attentions=True, attn_layer=args.attn_layer, **_nmt_kw(args))
+        print(f"  [{tgt}] NMT {nmt.model_name}  attn_layer={nmt.attn_layer}", flush=True)
         if args.batch_size > 1:
             alignatt.segment_batch(
                 nmt, [r["text"] for r in rows], args.f,
@@ -276,7 +293,7 @@ def main() -> int:
              "n_cands": args.n_cands if args.policy == "mu_prefix" else None,
              "f": args.f if args.policy == "alignatt" else None,
              "attn_layer": args.attn_layer if args.policy == "alignatt" else None,
-             "nmt_model": args.nmt_model if args.policy in ("alignatt", "mu_prefix") else None,
+             "nmt_model": effective_nmt_model(args),
              "rows": res}, ensure_ascii=False, indent=2), encoding="utf-8")
         part.unlink(missing_ok=True)       # 최종본이 나왔으니 진행분은 버린다
         print(f"  → {path} ({len(res)}행)")
