@@ -162,8 +162,16 @@ class JsonCache:
                 cls._shared[key] = cls(path)
             return cls._shared[key]
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, flush_every: int = 20):
+        """`flush_every` 는 몇 건마다 파일을 다시 쓸지다.
+
+        **한 번의 flush 가 파일 전체를 다시 쓴다.** 항목이 수천 건일 때는 20 이 싸지만,
+        수십만 건 규모(CoVoST2 전체 라벨링은 타깃당 25만 번역)에서는 쓰기량이
+        `건수²/40 × 항목크기` 로 불어나 번역보다 디스크가 더 오래 걸린다. 그런 배치에서만
+        올려 잡는다 — 죽었을 때 잃는 건수가 그만큼 늘어나므로 기본값은 그대로 20 이다.
+        """
         self.path = path
+        self.flush_every = max(1, flush_every)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._data: dict[str, object] = {}
         self._lock = threading.Lock()
@@ -186,7 +194,7 @@ class JsonCache:
         with self._lock:
             self._data[k] = v
             self._dirty += 1
-            if self._dirty >= 20:
+            if self._dirty >= self.flush_every:
                 self._flush_locked()
 
     def flush(self) -> None:

@@ -1,0 +1,30 @@
+===== [1/3] 라벨 + 절단 2026-09-16 21:59:00 =====
+  emit exit=0 2026-09-17 00:20:45
+[23:43:25] [labels/test] Japanese: 완료 4018s -> oracle_labels_test.json
+[23:46:03] [labels/test] Chinese: full 15430 / prefix 125491 번역
+[00:19:53] [labels/test] Chinese: 완료 2189s -> oracle_labels_test.json
+[00:20:41] [labels] 소스 NLI contra 125491쌍 48s (번역 contra 는 contra_mt 로 보관)
+[00:20:43] 라벨 완료 — contra 출처 source
+[00:20:44] emit -> /home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/prompt_eval/oracle_greedy_test.json (15430문장), 평균 조각 수 {'2': 4.805, '3': 3.042, '4': 2.402, '6': 1.59}
+===== [2/3] BLEU 2026-09-17 00:20:45 =====
+----- zh 2026-09-17 00:20:45
+  zh exit=0 2026-09-17 01:15:19
+[zh] local:google/madlad400-3b-mt / 컨텍스트 줄수 불일치 0건 → /home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/bleu/zh.json
+
+/home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/bleu/report.md
+----- de 2026-09-17 01:15:19
+===== BLEU de·ja 2026-09-17 01:24:39 =====
+----- de 2026-09-17 01:24:39
+  de exit=0 2026-09-17 01:45:18
+[de] local:google/madlad400-3b-mt / 컨텍스트 줄수 불일치 0건 → /home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/bleu/de.json
+
+/home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/bleu/report.md
+----- ja 2026-09-17 01:45:18
+===== BLEU ja (재개) 2026-09-17 02:20:59 =====
+----- ja 2026-09-17 02:20:59
+  ja exit=0 2026-09-17 02:59:22
+[ja] local:google/madlad400-3b-mt / 컨텍스트 줄수 불일치 0건 → /home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/bleu/ja.json
+
+/home/skkai/STiTy/core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_oracle_greedy/bleu/report.md
+===== COMET 2026-09-17 02:59:22 =====
+  COMET exit=1 2026-09-17 02:59:22

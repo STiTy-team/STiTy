@@ -279,6 +279,9 @@ def main() -> int:
                    help="조건별 문장 BLEU 평균을 안 낸다. corpus BLEU·chrF2 는 그대로 "
                         "나온다 (한 번만 토크나이즈하므로 싸다)")
     p.add_argument("--conditions", nargs="+", default=None, help="미지정 시 전부")
+    p.add_argument("--cache-flush-every", type=int, default=5000,
+                   help="번역 캐시를 몇 건마다 파일에 쓸지. flush 는 파일 전체를 다시 "
+                        "쓰므로 캐시가 커질수록 비싸다")
     p.add_argument("--wordtimes", default="qwen", choices=["qwen", "ctc", "interp"],
                    help="지연 시각의 출처. 기본 `qwen` — Table 3/4 가 Qwen3-ASR 를 쓰므로 "
                         "지연축을 같은 자로 재고, 비영어 소스로 확장할 때도 쓸 수 있다. "
@@ -361,7 +364,13 @@ def main() -> int:
         if args.conditions:
             conds_t = {k: v for k, v in conds_t.items() if k in args.conditions}
 
-        cache = JsonCache(run_dir / "cache" / f"translate_{code}.json")
+        # **flush 주기를 크게 잡는다.** 기본 20 은 한 번의 flush 가 파일 전체를 다시
+        # 쓰는 구조라, 캐시가 수십만 건(20MB+)이 되는 전체 평가에서는 번역이 아니라
+        # 디스크가 병목이 된다 — CoVoST2 15,430문장에서 같은 디스크의 다른 작업이
+        # 파일 하나 읽고 쓰는 데 25초씩 걸릴 만큼 I/O 를 먹었다 (2026-09-17 실측).
+        # 죽었을 때 잃는 것은 마지막 flush 이후의 번역뿐이고, 그건 다시 돌리면 된다.
+        cache = JsonCache(run_dir / "cache" / f"translate_{code}.json",
+                          flush_every=args.cache_flush_every)
         tr = make_translator(args, cfg, code, cache)
         full_trans = tr.full([rows[i]["text"] for i in keep])
         per_cond = {}
