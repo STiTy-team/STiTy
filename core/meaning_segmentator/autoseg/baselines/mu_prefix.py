@@ -61,3 +61,64 @@ def segment(nmt, text: str, tgt_spaced: bool, n_cands: int = 10,
     if k < len(toks):                       # 남은 꼬리는 마지막 MU
         pieces.append(" ".join(toks[k:]))
     return pieces or [text.strip()]
+
+
+class _St:
+    """문장 하나의 진행 상태. t = 지금까지 읽은 어절 수, k = 마지막으로 끊은 자리."""
+    __slots__ = ("i", "text", "toks", "n", "t", "k", "forced", "pieces", "cands")
+
+    def __init__(self, i: int, text: str, toks: list[str], cands: list[str]):
+        self.i, self.text, self.toks, self.n = i, text, toks, len(toks)
+        self.cands = cands
+        self.t, self.k, self.forced, self.pieces = 1, 0, [], []
+
+
+def segment_batch(nmt, texts: list[str], tgt_spaced: bool, n_cands: int = 10,
+                  pool: int = 512, max_batch: int = 64, max_beams: int = 128,
+                  on_done=None) -> list[list[str]]:
+    """여러 문장을 한 파장으로 밀어 `segment` 와 같은 결과를 배치로 낸다.
+
+    구조는 `alignatt.segment_batch` 와 같다 — 문장 안에서는 `forced` 때문에 순차지만
+    문장끼리는 독립이므로 같은 회차를 묶는다. 후보 집합 `cands` 는 `t` 와 무관하므로
+    풀 단위로 미리 배치 계산한다. 빔이 배치 안에서 곱해져 `n_cands` 가 클수록 그 배치가
+    작아지므로 `max_beams` 로 따로 잡는다.
+
+    `t = len(toks)` 회차는 돌지 않는다. 원래 구현도 그 회차의 번역 결과를 쓰지 않는다
+    (`t < len(toks)` 조건에서 걸러진다) — 결과는 같고 호출만 1/n 줄어든다.
+    """
+    out: list[list[str] | None] = [None] * len(texts)
+    todo: list[tuple[int, str, list[str]]] = []
+    for i, text in enumerate(texts):
+        toks = _WS.split(text.strip())
+        if len(toks) < 2:
+            out[i] = [text.strip()]
+            if on_done:
+                on_done(i, out[i])
+        else:
+            todo.append((i, text, toks))
+
+    for s in range(0, len(todo), pool):
+        chunk = todo[s:s + pool]
+        cands = nmt.full_candidates_batch([c[1] for c in chunk], n=n_cands,
+                                          max_beams=max_beams)
+        active = [_St(i, text, toks, cd) for (i, text, toks), cd in zip(chunk, cands)]
+        while active:
+            items = [(" ".join(st.toks[:st.t]), st.forced or None) for st in active]
+            res = nmt.translate_prefix_batch(items, max_batch=max_batch)
+            nxt: list[_St] = []
+            for st, (hyp, ids) in zip(active, res):
+                if is_prefix_of_any(hyp, st.cands, tgt_spaced):
+                    st.pieces.append(" ".join(st.toks[st.k:st.t]))
+                    st.k = st.t
+                    st.forced = ids
+                st.t += 1
+                if st.t < st.n:
+                    nxt.append(st)
+                    continue
+                if st.k < st.n:                 # 남은 꼬리는 마지막 MU
+                    st.pieces.append(" ".join(st.toks[st.k:]))
+                out[st.i] = st.pieces or [st.text.strip()]
+                if on_done:
+                    on_done(st.i, out[st.i])
+            active = nxt
+    return out

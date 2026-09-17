@@ -97,6 +97,25 @@ def _nmt_kw(args) -> dict:
     return {"model_name": args.nmt_model} if args.nmt_model else {}
 
 
+def _progress(rows, add, tgt, total, t0):
+    """배치 드라이버가 문장을 끝낼 때마다 부를 콜백 — 진행분 기록 + ETA.
+
+    **끝나는 순서가 입력 순서가 아니다** (짧은 문장이 먼저 끝난다). 진행분 jsonl 은
+    순서를 안 보고, 최종 산출은 `main` 이 매니페스트 순서로 되돌린다.
+    """
+    n = [0]
+
+    def on_done(i, pieces):
+        add({**rows[i], "pieces": pieces})
+        n[0] += 1
+        if n[0] % 100 == 0:
+            el = time.time() - t0
+            eta = el / n[0] * (total - n[0])
+            print(f"  [{tgt}] {n[0]}/{total}  {el:.0f}s  ETA {eta / 60:.1f}m", flush=True)
+
+    return on_done
+
+
 def run_policy(policy: str, rows: list[dict], tgt: str, args,
                ckpt: "Checkpoint | None" = None) -> list[dict]:
     out: list[dict] = []
@@ -131,14 +150,20 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
         from core.meaning_segmentator.autoseg.baselines.nmt import Nmt
 
         nmt = Nmt(src="en", tgt=tgt, device=args.device, **_nmt_kw(args))
-        for i, r in enumerate(rows):
-            pieces = mu_prefix.segment(nmt, r["text"], SPACED[tgt], args.n_cands)
-            add({**r, "pieces": pieces})
-            if (i + 1) % 25 == 0:
-                el = time.time() - t0
-                eta = el / (i + 1) * (len(rows) - i - 1)
-                print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m",
-                      flush=True)
+        if args.batch_size > 1:
+            mu_prefix.segment_batch(
+                nmt, [r["text"] for r in rows], SPACED[tgt], args.n_cands,
+                pool=args.pool, max_batch=args.batch_size, max_beams=args.max_beams,
+                on_done=_progress(rows, add, tgt, len(rows), t0))
+        else:
+            for i, r in enumerate(rows):
+                pieces = mu_prefix.segment(nmt, r["text"], SPACED[tgt], args.n_cands)
+                add({**r, "pieces": pieces})
+                if (i + 1) % 25 == 0:
+                    el = time.time() - t0
+                    eta = el / (i + 1) * (len(rows) - i - 1)
+                    print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m",
+                          flush=True)
     elif policy == "syntax":
         seg = syntax_sasst.SyntaxSegmenter(max_chunk=args.max_chunk)
         for r in rows:
@@ -149,13 +174,19 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
 
         nmt = Nmt(src="en", tgt=tgt, device=args.device,
                   attentions=True, attn_layer=args.attn_layer, **_nmt_kw(args))
-        for i, r in enumerate(rows):
-            add({**r, "pieces": alignatt.segment(nmt, r["text"], args.f)})
-            if (i + 1) % 25 == 0:
-                el = time.time() - t0
-                eta = el / (i + 1) * (len(rows) - i - 1)
-                print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m",
-                      flush=True)
+        if args.batch_size > 1:
+            alignatt.segment_batch(
+                nmt, [r["text"] for r in rows], args.f,
+                pool=args.pool, max_batch=args.batch_size,
+                on_done=_progress(rows, add, tgt, len(rows), t0))
+        else:
+            for i, r in enumerate(rows):
+                add({**r, "pieces": alignatt.segment(nmt, r["text"], args.f)})
+                if (i + 1) % 25 == 0:
+                    el = time.time() - t0
+                    eta = el / (i + 1) * (len(rows) - i - 1)
+                    print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m",
+                          flush=True)
     else:
         raise SystemExit(f"unknown policy: {policy}")
 
@@ -188,6 +219,17 @@ def main() -> int:
                         "같은 madlad (`nmt.MODEL`). 옛 NLLB 산출을 재현할 때만 바꾼다")
     p.add_argument("--max-chunk", type=int, default=7, help="SASST 최대 청크 어절")
     p.add_argument("--limit", type=int, default=0, help="스모크용 앞 N 문장")
+    p.add_argument("--batch-size", type=int, default=32,
+                   help="alignatt·mu_prefix 의 마이크로배치 상한. 1 이면 옛 문장 단위 경로를 "
+                        "쓴다 (배치 결과를 대조할 때만). 배치 1 디코드는 스텝마다 디코더 "
+                        "가중치를 통째로 읽으므로 대역폭이 좁은 기계에서 특히 느리다")
+    p.add_argument("--pool", type=int, default=512,
+                   help="동시에 진행하는 문장 수. 회차마다 `forced` 길이가 여러 가지로 "
+                        "갈리고 길이가 같은 것끼리만 묶이므로, 배치를 채우려면 이게 "
+                        "--batch-size 의 몇 배여야 한다")
+    p.add_argument("--max-beams", type=int, default=128,
+                   help="mu_prefix 의 후보 생성 배치 예산. 빔이 배치 안에서 곱해지므로 "
+                        "한 번에 도는 문장 수는 이 값 / --n-cands 다")
     p.add_argument("--resume", action="store_true",
                    help="`<out>.partial.jsonl` 을 읽어 **이미 끝난 문장은 건너뛴다.** "
                         "CUDA 오류로 죽은 뒤 이어 돌릴 때 쓴다")

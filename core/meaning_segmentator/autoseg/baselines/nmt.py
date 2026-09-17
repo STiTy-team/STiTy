@@ -20,6 +20,8 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
+
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
@@ -155,4 +157,114 @@ class Nmt:
             lo = next((k for k, x in enumerate(w_of) if x >= 0), 1)
             j = int(a[lo:n_src - 1].argmax()) + lo
             res.append((tok_id, w_of[j]))
+        return res
+
+    # ── 배치 ────────────────────────────────────────────────────────────────
+    # 배치 1 디코드는 스텝마다 디코더 가중치(3B fp16 의 절반쯤)를 통째로 읽고 그 한 줄에만
+    # 쓴다. GB10 처럼 통합메모리 대역폭(~273GB/s)이 병목인 기계에서는 이게 곧 속도다.
+    # 여러 문장의 같은 회차를 한 배치로 묶으면 그 읽기를 배치 전체가 나눠 쓴다.
+
+    def _encode_batch(self, texts: list[str]):
+        if not self.is_nllb:
+            texts = [f"<2{self.tgt_code}> {t}" for t in texts]
+        return self.tok(texts, return_tensors="pt", padding=True,
+                        truncation=True, max_length=256).to(self.device)
+
+    def _decoder_prefix_batch(self, forced_rows: list[list[int] | None]) -> torch.Tensor:
+        """행마다 **자기** forced 를 깐다.
+
+        길이가 같다고 내용이 같은 것이 아니다 — 한 행의 forced 를 배치 전체에 복제하면
+        다른 문장의 확정 번역 위에서 이어 디코딩하게 되고, 결과가 조용히 틀린다
+        (실측: mu_prefix 평균 조각수 4.70 → 2.53).
+        """
+        head = [self.start_id] + ([self.tgt_id] if self.is_nllb else [])
+        return torch.tensor([head + list(f or []) for f in forced_rows], device=self.device)
+
+    @staticmethod
+    def _by_prefix_len(items, max_batch: int):
+        """`(소스, forced)` 목록을 **forced 길이가 같은 것끼리** 묶어 인덱스로 낸다.
+
+        **디코더 접두사는 패딩하면 안 된다.** 좌패딩 + `decoder_attention_mask` 로 길이를
+        맞추면 패드 자리의 self-attention 이 전부 마스크돼 softmax 가 NaN 이 되고, 실제
+        토큰이 그 자리를 0 가중치로 곱해도 NaN 은 남아 배치가 통째로 망가진다 (실측:
+        패딩된 행이 `decoder_start` 만 반복 출력하고 교차어텐션이 NaN). 길이가 같은
+        것끼리만 묶으면 패딩이 아예 없고, 4문장 실측에서 생성 토큰과 교차어텐션 argmax 가
+        단건과 정확히 일치했다. 인코더 쪽 우패딩은 무해하다 — 질의마다 실제 키가 있어
+        NaN 이 안 나고, 어절 매핑은 행별 실제 길이로 자른다.
+        """
+        g: dict[int, list[int]] = defaultdict(list)
+        for i, it in enumerate(items):
+            g[len(it[1] or [])].append(i)
+        for idxs in g.values():
+            for s in range(0, len(idxs), max_batch):
+                yield idxs[s:s + max_batch]
+
+    @torch.inference_mode()
+    def emit_with_alignment_batch(self, items: list[tuple[str, list[int] | None]],
+                                  max_batch: int = 32) -> list[list[tuple[int, int]]]:
+        """`emit_with_alignment` 의 배치판. 반환 순서는 입력 순서다."""
+        res: list[list[tuple[int, int]]] = [[] for _ in items]
+        for idxs in self._by_prefix_len(items, max_batch):
+            enc = self._encode_batch([items[i][0] for i in idxs])
+            dec = self._decoder_prefix_batch([items[i][1] for i in idxs])
+            out = self.model.generate(
+                **enc, decoder_input_ids=dec,
+                num_beams=1, do_sample=False, max_new_tokens=self.max_new_tokens,
+                output_attentions=True, return_dict_in_generate=True)
+            n_prefix = dec.shape[1]
+            real = enc["attention_mask"].sum(1).tolist()
+            # 32층을 다 들고 있으면 메모리가 커진다. 쓰는 층만 스텝별로 꺼내 둔다.
+            att = [out.cross_attentions[s][self.attn_layer].float().mean(1)[:, -1]
+                   for s in range(len(out.cross_attentions))]
+            for b, i in enumerate(idxs):
+                w_of = self._word_of_token(enc["input_ids"][b][:real[b]])
+                n_src = len(w_of)
+                lo = next((k for k, x in enumerate(w_of) if x >= 0), 1)
+                seq = out.sequences[b]
+                for step in range(len(att)):
+                    if n_prefix + step >= len(seq):
+                        break
+                    tok_id = int(seq[n_prefix + step])
+                    if tok_id in (self.eos_id, self.tok.pad_token_id):
+                        break
+                    a = att[step][b][:n_src]
+                    j = int(a[lo:n_src - 1].argmax()) + lo
+                    res[i].append((tok_id, w_of[j]))
+        return res
+
+    @torch.inference_mode()
+    def translate_prefix_batch(self, items: list[tuple[str, list[int] | None]],
+                               max_batch: int = 64) -> list[tuple[str, list[int]]]:
+        """`translate_prefix` 의 배치판. 반환 순서는 입력 순서다."""
+        res: list[tuple[str, list[int]]] = [("", [])] * len(items)
+        for idxs in self._by_prefix_len(items, max_batch):
+            enc = self._encode_batch([items[i][0] for i in idxs])
+            out = self.model.generate(
+                **enc, decoder_input_ids=self._decoder_prefix_batch(
+                    [items[i][1] for i in idxs]),
+                num_beams=1, do_sample=False, max_new_tokens=self.max_new_tokens)
+            for b, i in enumerate(idxs):
+                ids = self._strip(out[b])
+                res[i] = (self.tok.decode(ids, skip_special_tokens=True), ids)
+        return res
+
+    @torch.inference_mode()
+    def full_candidates_batch(self, texts: list[str], n: int = 10,
+                              max_beams: int = 128) -> list[list[str]]:
+        """`full_candidates` 의 배치판.
+
+        빔이 배치 안에서 곱해지므로 예산은 문장 수가 아니라 **문장 수 × n** 으로 잡는다.
+        n=50 이면 한 번에 두 문장뿐이다."""
+        res: list[list[str]] = []
+        step = max(1, max_beams // max(n, 1))
+        for s in range(0, len(texts), step):
+            chunk = texts[s:s + step]
+            enc = self._encode_batch(chunk)
+            out = self.model.generate(
+                **enc, decoder_input_ids=self._decoder_prefix_batch([None] * len(chunk)),
+                num_beams=n, num_return_sequences=n,
+                max_new_tokens=self.max_new_tokens, do_sample=False)
+            for b in range(len(chunk)):
+                res.append([self.tok.decode(self._strip(x), skip_special_tokens=True)
+                            for x in out[b * n:(b + 1) * n]])
         return res
