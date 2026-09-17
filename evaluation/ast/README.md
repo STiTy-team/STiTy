@@ -109,6 +109,7 @@ vLLM 기본값은 **0.8** 이고, 이건 "모델이 필요한 양"이 아니라 
 | `laal_ms` | 비계산인지 LAAL. d = `decisionAudioSec`(커밋을 번역으로 넘긴 순간까지 서버가 받은 소스 오디오, `dispatchAudioSec` 과 같은 값). 번역이 끝난 뒤의 위치(`payloadAtAudioSec`)를 쓰면 비동기로 번역한 커밋에만 번역 대기가 섞인다. 정책만 평가하므로 GPU 가 달라도 재현된다. **주지표.** |
 | `laal_ca_ms` | 계산인지 LAAL. d = 클라이언트가 `final` 을 받은 실시간 경과. 실제 체감 지연. |
 | `bleu` | sacrebleu corpus BLEU. 발화별 세그먼트 번역을 이어붙인 것 vs 참조. |
+| `contra` | 커밋 경계의 위험도. `max(0, NLI(premise = gold 소스 문장, hypothesis = 경계까지의 소스 조각) − c0(길이))` — `c0` 는 길이별 잡음 바닥이고 안 빼면 값의 절반 이상이 바닥이다. 소스만 보므로 참조 번역도 타깃 언어도 필요 없다(정책당 한 값). 집계 주지표는 **B = Σcontra ÷ 전체 문장** 으로, 문장 안을 안 끊은 문장은 0 을 기여한다 — 지연이 x축에 있어 안 끊는 것이 공짜가 아니기 때문이다. BLEU·COMET 는 mwerSegmenter 로 봉합한 뒤 채점해 **어디서 끊었는지가 지워지므로** 이 축이 따로 필요하다. 장문 전용, [`contra_acl6060.py`](contra_acl6060.py). |
 
 ```
 LAAL = (1/τ) · Σ_{i=1..τ} [ d_i − (i−1) · T / max(|Y_hyp|, |Y_ref|) ]
