@@ -18,6 +18,14 @@
 # 프로세스당 VRAM 6.5GB (NLLB 의 1.7GB 대비) 라 셋이면 19.5GB 다. judge 루프가 돌고 있으면
 # 자리가 없다 — 시작 전에 `nvidia-smi` 로 20GB 이상 비어 있는지 확인할 것.
 # STAGE=alignatt|mu|both (기본 both).
+#
+# BATCH/POOL 은 문장 단위 배치의 크기다. 한 문장 안에서는 직전 회차가 정한 강제 접두사
+# 때문에 순차지만 문장끼리는 독립이라, 여러 문장의 같은 회차를 한 배치로 묶는다. 배치 1
+# 디코드는 스텝마다 디코더 가중치를 통째로 읽으므로 대역폭이 좁은 기계에서 특히 느리다
+# (GB10 실측: 단건 4.33초/문장 -> 배치 32 에서 1초 남짓).
+# **POOL 은 BATCH 의 몇 배여야 한다.** 묶음은 강제 접두사 길이가 같은 것끼리만 만들어지고
+# 한 회차에 그 길이가 20~40가지로 갈리므로, 동시 진행 문장이 적으면 배치가 안 찬다.
+# PY 로 인터프리터를 갈아끼울 수 있다 (예: conda 환경의 python).
 set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
 export PYTHONPATH=. PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
@@ -28,7 +36,10 @@ F=core/meaning_segmentator/experiment/artifacts/$RUN
 LOG=$F/logs/baselines/madlad_$TGT.log
 mkdir -p "$(dirname "$LOG")"
 # --nmt-model 을 안 주면 nmt.MODEL 기본값(madlad)이다. 이름에 mad 를 박아 NLLB 산출과 가른다.
-B="$PY -u -m core.meaning_segmentator.autoseg.baselines.build --run-id $RUN --dataset covost2 --manifest-tag full --targets $TGT --resume"
+BATCH=${BATCH:-128}
+POOL=${POOL:-4096}
+BEAMS=${BEAMS:-512}
+B="$PY -u -m core.meaning_segmentator.autoseg.baselines.build --run-id $RUN --dataset covost2 --manifest-tag full --targets $TGT --resume --batch-size $BATCH --pool $POOL --max-beams $BEAMS"
 
 if [ "${STAGE:-both}" != mu ]; then
 for f in 2 4 6 8; do
