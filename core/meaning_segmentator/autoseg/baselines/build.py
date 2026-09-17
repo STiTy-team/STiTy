@@ -94,7 +94,10 @@ def load_partial(path: Path) -> list[dict]:
 
 
 def _nmt_kw(args) -> dict:
-    return {"model_name": args.nmt_model} if args.nmt_model else {}
+    kw: dict = {"cap_tokens": not args.no_token_cap}
+    if args.nmt_model:
+        kw["model_name"] = args.nmt_model
+    return kw
 
 
 def effective_nmt_model(args) -> str | None:
@@ -244,6 +247,11 @@ def main() -> int:
                    help="동시에 진행하는 문장 수. 회차마다 `forced` 길이가 여러 가지로 "
                         "갈리고 길이가 같은 것끼리만 묶이므로, 배치를 채우려면 이게 "
                         "--batch-size 의 몇 배여야 한다")
+    p.add_argument("--no-token-cap", action="store_true",
+                   help="배치의 max_new_tokens 상한(소스 어절수 기반)을 끈다. 배치는 모든 "
+                        "행이 EOS 를 낼 때까지 도는데 en→ja 는 EOS 를 안 내는 행이 섞여 "
+                        "배치 전체를 128 스텝까지 끌고 간다 — 상한이 그걸 끊는다. 상한 "
+                        "없이 낸 옛 산출을 재현할 때만 준다")
     p.add_argument("--max-beams", type=int, default=128,
                    help="mu_prefix 의 후보 생성 배치 예산. 빔이 배치 안에서 곱해지므로 "
                         "한 번에 도는 문장 수는 이 값 / --n-cands 다")

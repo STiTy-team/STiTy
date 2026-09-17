@@ -34,9 +34,11 @@ NLLB_CODE = {"en": "eng_Latn", "de": "deu_Latn", "ja": "jpn_Jpan",
 class Nmt:
     def __init__(self, src: str = "en", tgt: str = "de", device: str = "cuda",
                  model_name: str = MODEL, max_new_tokens: int = 128,
-                 attentions: bool = False, attn_layer: int | None = None):
+                 attentions: bool = False, attn_layer: int | None = None,
+                 cap_tokens: bool = True):
         self.device = device
         self.max_new_tokens = max_new_tokens
+        self.cap_tokens = cap_tokens
         self.model_name = model_name
         self.is_nllb = "nllb" in model_name.lower()
         self.tgt_code = tgt
@@ -170,6 +172,31 @@ class Nmt:
         return self.tok(texts, return_tensors="pt", padding=True,
                         truncation=True, max_length=256).to(self.device)
 
+    def _cap_new(self, texts: list[str]) -> int:
+        """이 묶음에 쓸 `max_new_tokens`.
+
+        **배치는 모든 행이 EOS 를 낼 때까지 돈다.** 한 행이 안 멈추면 이미 끝난 나머지도
+        같이 돈다. en→ja 는 madlad 가 같은 말을 되풀이하며 EOS 를 안 내는 행이 섞이고,
+        그 한 행이 배치 전체를 128 스텝까지 끌고 갔다 — 6어절 접두사 128문장 실측에서
+        배치스텝 128 에 낭비 90% 였다 (de 16 스텝 36%, zh 18 스텝 44%). ja 가 de 의
+        3배 느렸던 원인이 이것이고, 접두사가 길수록 폭주 행이 늘어 회차가 갈수록 나빠진다
+        (8어절 1/128, 20어절 2/128).
+
+        상한은 소스 어절수로 잡는다. 접두사 어절수별 출력 길이 실측에서 **정상 분포의 위쪽과
+        폭주 사이가 비어 있다** — ja 20어절이 p90 40 인데 그 위는 곧바로 128 이고, 그 사이
+        값이 없다. 그래서 `4×어절 + 16` 으로 자르면 정상 번역은 못 건드리고 폭주만 끊긴다.
+        측정한 모든 점에서 정상 최대 대비 33% 이상 여유가 있다 (ja 8어절 최대 36 vs 상한 48,
+        de 20어절 최대 52 vs 96).
+
+        묶음 안에 어절수가 다른 행이 섞이므로 **최댓값**을 쓴다 — 짧은 행이 손해 보지 않는다.
+        `forced` 가 번역의 앞부분을 이미 깔고 있으면 남겨야 할 새 토큰은 더 적으므로, 접두사
+        전체 길이로 잡는 이 상한은 그만큼 더 넉넉하다.
+        """
+        if not self.cap_tokens:
+            return self.max_new_tokens
+        w = max((len(t.split()) for t in texts), default=1)
+        return min(self.max_new_tokens, 4 * w + 16)
+
     def _decoder_prefix_batch(self, forced_rows: list[list[int] | None]) -> torch.Tensor:
         """행마다 **자기** forced 를 깐다.
 
@@ -205,11 +232,12 @@ class Nmt:
         """`emit_with_alignment` 의 배치판. 반환 순서는 입력 순서다."""
         res: list[list[tuple[int, int]]] = [[] for _ in items]
         for idxs in self._by_prefix_len(items, max_batch):
-            enc = self._encode_batch([items[i][0] for i in idxs])
+            texts = [items[i][0] for i in idxs]
+            enc = self._encode_batch(texts)
             dec = self._decoder_prefix_batch([items[i][1] for i in idxs])
             out = self.model.generate(
                 **enc, decoder_input_ids=dec,
-                num_beams=1, do_sample=False, max_new_tokens=self.max_new_tokens,
+                num_beams=1, do_sample=False, max_new_tokens=self._cap_new(texts),
                 output_attentions=True, return_dict_in_generate=True)
             n_prefix = dec.shape[1]
             real = enc["attention_mask"].sum(1).tolist()
@@ -238,11 +266,12 @@ class Nmt:
         """`translate_prefix` 의 배치판. 반환 순서는 입력 순서다."""
         res: list[tuple[str, list[int]]] = [("", [])] * len(items)
         for idxs in self._by_prefix_len(items, max_batch):
-            enc = self._encode_batch([items[i][0] for i in idxs])
+            texts = [items[i][0] for i in idxs]
+            enc = self._encode_batch(texts)
             out = self.model.generate(
                 **enc, decoder_input_ids=self._decoder_prefix_batch(
                     [items[i][1] for i in idxs]),
-                num_beams=1, do_sample=False, max_new_tokens=self.max_new_tokens)
+                num_beams=1, do_sample=False, max_new_tokens=self._cap_new(texts))
             for b, i in enumerate(idxs):
                 ids = self._strip(out[b])
                 res[i] = (self.tok.decode(ids, skip_special_tokens=True), ids)
@@ -263,7 +292,7 @@ class Nmt:
             out = self.model.generate(
                 **enc, decoder_input_ids=self._decoder_prefix_batch([None] * len(chunk)),
                 num_beams=n, num_return_sequences=n,
-                max_new_tokens=self.max_new_tokens, do_sample=False)
+                max_new_tokens=self._cap_new(chunk), do_sample=False)
             for b in range(len(chunk)):
                 res.append([self.tok.decode(self._strip(x), skip_special_tokens=True)
                             for x in out[b * n:(b + 1) * n]])
