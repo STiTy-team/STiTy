@@ -59,9 +59,18 @@ SINGLE = [("punct", BROWN, "X", "Punctuation (no latency knob)")]
 # 라벨들이다 — AlignAtt 는 `f`(최근 f 어절). f 를 바꾸면 강제 디코딩 경로가 통째로
 # 달라지므로 f 마다 라벨을 새로 만들어야 하고 사후 병합으로는 못 만든다.
 # (조건 이름, 노브 값). 조건이 하나도 없으면 그냥 안 그린다.
+# 마지막 칸은 점에 적을 노브 이름이다 — AlignAtt 는 `f`, MU 는 후보 수 `n` 이다.
 NATIVE = [
     ("alignatt_native", ORANGE, "--", "^", "AlignAtt native f-sweep (Papi et al., 2023)",
-     [("alignatt", 2), ("alignatt_f4", 4), ("alignatt_f6", 6), ("alignatt_f8", 8)]),
+     [("alignatt", 2), ("alignatt_f4", 4), ("alignatt_f6", 6), ("alignatt_f8", 8)], "f="),
+    # 판정용 내부 NMT 를 평가 번역기와 같은 madlad 로 맞춘 라벨들 (`*_mad_*`).
+    # 옛 NLLB 산출과는 한 곡선에 못 섞는다 — 판정 모델이 다르면 다른 정책이다.
+    ("alignatt_mad", ORANGE, "--", "^", "AlignAtt native f-sweep (Papi et al., 2023)",
+     [("alignatt_mad_f2", 2), ("alignatt_mad_f4", 4),
+      ("alignatt_mad_f6", 6), ("alignatt_mad_f8", 8)], "f="),
+    ("mu_prefix_mad", MAGENTA, "--", "v", "Prefix-match MU native n-sweep (Zhang et al., 2020)",
+     [("mu_prefix_mad_n2", 2), ("mu_prefix_mad_n10", 10),
+      ("mu_prefix_mad_n50", 50)], "n="),
 ]
 T_GRID = [4, 6, 8, 12]   # 기본값. 실제로는 아래에서 blob 의 조건 이름으로 덮어쓴다
 GAP_MIN = 0.20   # 이보다 넓은 빈 구간만 축약 (전체 x 폭 대비).
@@ -161,7 +170,7 @@ if ARGS.no_cite:
         return re.sub(r"\s*\(\)", "", lbl)
     SERIES = [(*x[:4], _strip(x[4])) for x in SERIES]
     SINGLE = [(*x[:3], _strip(x[3])) for x in SINGLE]
-    NATIVE = [(*x[:4], _strip(x[4]), x[5]) for x in NATIVE]
+    NATIVE = [(*x[:4], _strip(x[4]), x[5], x[6]) for x in NATIVE]
 # 변형 곡선의 파선 패턴. 색은 제안 곡선과 같은 BLUE 로 두고 선 모양으로만 가른다.
 _VDASH = [(0, (6, 3)), (0, (2, 2)), (0, (7, 2, 1, 2))]
 VARIANTS = []
@@ -311,7 +320,7 @@ for ax, tgt in zip(axes, TARGETS):
             label_points(ax, pts, color, "T", -10 - vi * 11)
 
     _native = [] if ARGS.no_native else NATIVE
-    for prefix, color, ls, mk, label, entries in _native:
+    for prefix, color, ls, mk, label, entries, knob in _native:
         pts = native_curve(C, entries)
         if len(pts) < 2:
             continue
@@ -319,7 +328,7 @@ for ax, tgt in zip(axes, TARGETS):
                 color=color, lw=2.3, ms=7.0, mfc="none", mew=1.6, zorder=6,
                 label=label)
         if ARGS.point_labels != "none":
-            label_points(ax, pts, color, "f=", -11)
+            label_points(ax, pts, color, knob, -11)
 
     for prefix, color, mk, label in SINGLE:
         c = C.get(prefix)
@@ -330,7 +339,7 @@ for ax, tgt in zip(axes, TARGETS):
 
     single = [C[p] for p, *_ in SINGLE
               if p in C and C[p].get("laal_ms") is not None]
-    _nat_pts = [q for *_h, e in _native for q in native_curve(C, e)]
+    _nat_pts = [q for *_h, e, _k in _native for q in native_curve(C, e)]
     _var_pts = [q for p, *_ in VARIANTS for q in curve(C, p)]
     ys = ([y for p, *_ in SERIES for _, y, _ in curve(C, p)]
           + [c[M] for c in single] + [y for _, y, _ in _nat_pts]
