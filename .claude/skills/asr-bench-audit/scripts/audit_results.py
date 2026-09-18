@@ -206,12 +206,24 @@ def check_itn(run):
     if with_d and without:
         gap = " · 숫자클립 %.4f vs 그 외 %.4f" % (sum(with_d) / len(with_d),
                                                   sum(without) / len(without))
+    # 이미 정규화해 채점한 JSON 인지 본다. smoke_client 는 채점 시점에 표기를
+    # 맞추고 `score_norm` 에 무엇으로 맞췄는지 적는다. 그걸 보지 않으면 이미 한
+    # 일을 다시 하라고 말하게 된다.
+    normed = run["summary"].get("score_norm")
     if not hyp_d:
-        say("FAIL", "숫자 표기 " + tag,
-            "참조 %d클립에 숫자가 있는데 가설엔 0건 — 재채점으로 해결(GPU 불필요)%s"
-            % (len(ref_d), gap))
+        if normed:
+            say("WARN", "숫자 표기 " + tag,
+                "가설에 아라비아 숫자 0건 — 이 백엔드는 수를 말로 쓴다. 채점은 "
+                "`%s` 로 이미 맞췄으니 표에는 정규화 값을 싣고 원값(_raw)을 나란히 "
+                "적을 것. 막는 항목은 아니다%s" % (normed, gap))
+        else:
+            say("FAIL", "숫자 표기 " + tag,
+                "참조 %d클립에 숫자가 있는데 가설엔 0건 · 이 JSON 은 정규화 전이다 "
+                "— `itn_rescore.py` 로 재채점(GPU 불필요)%s" % (len(ref_d), gap))
     else:
-        say("PASS", "숫자 표기 " + tag, "가설 %d클립에 숫자 출력%s" % (len(hyp_d), gap))
+        say("PASS", "숫자 표기 " + tag,
+            "가설 %d클립에 숫자 출력%s%s"
+            % (len(hyp_d), (" · 채점 정규화 `%s`" % normed) if normed else "", gap))
 
 
 def check_pieces(group, lang):
