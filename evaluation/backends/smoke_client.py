@@ -38,7 +38,7 @@ LANG_DIR = {"ko": "ko_kr", "en": "en_us"}
 
 # -- 채점 -----------------------------------------------------------------
 # -- 데이터 ---------------------------------------------------------------
-def load_fleurs(lang: str, limit: int):
+def load_fleurs(lang: str, limit: int, file_ids: str | None = None):
     d = FLEURS_ROOT / LANG_DIR[lang]
     tsv, audio_dir = d / "test.tsv", d / "audio" / "test"
     rows = []
@@ -53,6 +53,15 @@ def load_fleurs(lang: str, limit: int):
             rows.append({"file_id": p[1].replace(".wav", ""),
                          "path": str(wav), "reference": p[2]})
     rows.sort(key=lambda r: r["file_id"])
+    if file_ids:
+        # 성질로 고른 클립만 돌린다(`pick_smoke_clips.py`). 앞에서 N 개를 자르면
+        # 숫자·연도·단위·긴 것·저레벨이 표본에 안 들어와 그 함정이 안 걸린다.
+        want = [i.strip() for i in file_ids.split(",") if i.strip()]
+        have = {r["file_id"]: r for r in rows}
+        missing = [i for i in want if i not in have]
+        if missing:
+            raise SystemExit("없는 file_id: %s" % ", ".join(missing))
+        return [have[i] for i in want]
     # 결정적 부분집합 - 실행 간 같은 클립을 쓴다.
     return rows[:limit]
 
@@ -319,7 +328,7 @@ async def run_one(ws, audio: np.ndarray, target_lang: str, trailing_ms: int,
 
 async def main_async(a) -> int:
     unit = "cer" if a.lang == "ko" else "wer"
-    rows = load_fleurs(a.lang, a.limit)
+    rows = load_fleurs(a.lang, a.limit, a.file_ids)
     if not rows:
         print(json.dumps({"error": "no FLEURS rows", "lang": a.lang}))
         return 1
@@ -428,6 +437,9 @@ def main():
     ap.add_argument("--ws", default="ws://127.0.0.1:8765")
     ap.add_argument("--lang", choices=["ko", "en"], default="ko")
     ap.add_argument("--limit", type=int, default=20)
+    ap.add_argument("--file-ids", default=None,
+                    help="쉼표로 구분한 file_id 만 돌린다. 주면 --limit 을 무시한다. "
+                         "`pick_smoke_clips.py --ids-only` 출력을 그대로 넘기면 된다")
     ap.add_argument("--trailing-ms", type=int, default=1000)
     ap.add_argument("--peak-normalize", type=float, default=0.0,
                     metavar="PEAK",

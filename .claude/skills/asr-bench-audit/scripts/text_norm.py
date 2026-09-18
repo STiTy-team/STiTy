@@ -31,6 +31,7 @@
 """
 from __future__ import print_function
 import re
+import sys
 import unicodedata
 
 SINO = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"]
@@ -108,7 +109,13 @@ def en_read(n):
         out.append(_en_small(th) + " thousand" + (" " + _en_small(rest) if rest else ""))
         if 1100 <= n < 10000:                      # 2011 -> twenty eleven
             hi, lo = n // 100, n % 100
-            out.append(_en_small(hi) + (" " + _en_small(lo) if lo else " hundred"))
+            if not lo:
+                tail = " hundred"                  # 1900 -> nineteen hundred
+            elif lo < 10:
+                tail = " oh " + ONES[lo]           # 1905 -> nineteen oh five
+            else:
+                tail = " " + _en_small(lo)         # 1925 -> nineteen twenty five
+            out.append(_en_small(hi) + tail)
     return [o for o in out if o]
 
 
@@ -144,17 +151,41 @@ def canon_numbers_ko(ref, hyp):
     return hyp
 
 
+# 한국어 쪽 `before in SINO_CH` 와 같은 역할. 영어에는 이 가드가 없어서 "five hundred"
+# 안의 five 가 5 로 바뀌는 식의 오검출이 났다.
+NUMWORD_EN = set(w for w in ONES if w) | set(w for w in TENS if w) | {"oh"}
+SCALE_EN = ("hundred", "thousand", "million", "billion")
+
+
+def _en_sub_guarded(hyp, pat, value):
+    """수사에 붙어 있는 자리는 건드리지 않는다.
+
+    앞 낱말이 수사면 더 긴 수의 뒷부분이고("twenty five" 의 five), 뒤 낱말이 자릿수
+    이름이면 더 긴 수의 앞부분이다("five hundred" 의 five). 뒤에서부터 바꿔야 앞선
+    치환이 뒤 위치를 밀지 않는다.
+    """
+    spans = []
+    for m in pat.finditer(hyp):
+        prev = re.search(r"[\w]+\s*$", hyp[:m.start()])
+        nxt = re.match(r"\s*([\w]+)", hyp[m.end():])
+        if prev is not None and prev.group().strip().lower() in NUMWORD_EN:
+            continue
+        if nxt is not None and nxt.group(1).lower() in SCALE_EN:
+            continue
+        spans.append((m.start(), m.end()))
+    for a, b in reversed(spans):
+        hyp = hyp[:a] + value + hyp[b:]
+    return hyp
+
+
 def canon_numbers_en(ref, hyp):
-    low = hyp.lower()
     for m in re.finditer(r"\d+", ref):
         n = int(m.group())
         if n == 1:
             continue                                # 'one' 은 대명사와 겹친다
         for f in sorted(en_read(n), key=len, reverse=True):
             pat = re.compile(r"\b" + f.replace(" ", r"[\s-]+") + r"\b", re.I)
-            if pat.search(low):
-                hyp = pat.sub(str(n), hyp)
-                low = hyp.lower()
+            hyp = _en_sub_guarded(hyp, pat, str(n))
     return hyp
 
 
@@ -170,8 +201,20 @@ def canon_units(text, lang):
     return text
 
 
+# 자릿점은 표기 차이일 뿐인데, 문장부호를 공백으로 바꾸는 채점 단계에서 "10,000" 이
+# "10 000" 두 낱말로 쪼개진다. 그러면 참조의 수 하나가 `\d+` 검색에 10 과 000 으로
+# 잡혀, "ten thousand" 가 "10 thousand" 로 반쪽만 치환됐다. 양쪽에서 먼저 없앤다.
+GROUP_SEP = re.compile(r"(?<=\d),(?=\d{3}\b)")
+
+
+def strip_group_sep(text):
+    """1,000 -> 1000."""
+    return GROUP_SEP.sub("", text or "")
+
+
 def canon_pair(ref, hyp, lang):
     """채점 직전 (참조, 가설) 정규화. 같은 변환을 양쪽에 적용한다."""
+    ref, hyp = strip_group_sep(ref), strip_group_sep(hyp)
     if lang == "ko":
         hyp = canon_numbers_ko(ref, hyp)
     else:
@@ -219,6 +262,8 @@ def score_pair(ref, hyp, unit, lang):
     raw = score(ref, hyp, unit)
     try:
         r2, h2 = canon_pair(ref, hyp, lang)
-    except Exception:                                       # noqa: BLE001
+    except Exception as exc:                                # noqa: BLE001
+        # 조용히 원값으로 떨어지면 런 전체가 정규화된 줄 알고 지나간다.
+        sys.stderr.write("[text_norm] 정규화 실패, 원값 사용: %r\n" % (exc,))
         return raw, raw
     return score(r2, h2, unit), raw
