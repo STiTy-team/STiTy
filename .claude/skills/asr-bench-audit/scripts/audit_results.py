@@ -127,7 +127,12 @@ def check_warmup(run):
         return
     v = [r[k] for r in run["rows"] if r.get(k) is not None]
     if len(v) < 5:
-        say("SKIP", "워밍업 오염 " + tag, "표본 부족")
+        s = run["summary"]
+        hint = ""
+        if (s.get("n_ok") or 0) < (s.get("n_total") or 0):
+            # 이 검사가 못 도는 크기일수록 콜드 스타트 피해는 크다. 놓치지 않게 짚는다.
+            hint = " · 완주 실패가 있다 — 첫 클립 콜드 스타트를 의심할 것(`--warmup`)"
+        say("SKIP", "워밍업 오염 " + tag, "표본 부족" + hint)
         return
     med = median(v[1:])
     if med and v[0] > 2 * med:
@@ -149,10 +154,15 @@ def check_tail(run):
         else:
             ratios.append(len(hyp.split()) / float(max(len(ref.split()), 1)))
     m = median(ratios)
+    n = len(ratios)
     if m is None:
         say("SKIP", "꼬리 잘림 " + tag)
     elif 0.95 <= m <= 1.05:
-        say("PASS", "꼬리 잘림 " + tag, "길이비 중앙 %.3f" % m)
+        say("PASS", "꼬리 잘림 " + tag, "길이비 중앙 %.3f (n=%d)" % (m, n))
+    elif n < 10:
+        # 표본이 작으면 중앙값이 한두 클립에 좌우된다. 신호로는 남기되 막지 않는다.
+        say("WARN", "꼬리 잘림 " + tag,
+            "길이비 중앙 %.3f — n=%d 라 한두 클립이 중앙값을 정한다. 본 런에서 다시 볼 것" % (m, n))
     else:
         say("FAIL", "꼬리 잘림 " + tag,
             "길이비 중앙 %.3f — 발화 앞뒤를 놓치거나 덧붙이고 있다" % m)
@@ -167,12 +177,18 @@ def check_mean_domination(run):
     total = sum(v)
     worst = max(v)
     share = worst / total if total else 0
-    if share > 0.30:
+    # 고른 분포에서 한 클립의 몫은 1/n 이다. n=50 이면 2% 라 30% 는 "제 몫의 15배"
+    # 지만, n=5 면 이미 20% 라 30% 가 1.5배에 불과해 거의 항상 걸린다. 임계를 표본
+    # 수에 맞춰 "제 몫의 3배"로 두되, 큰 표본에서는 기존 30% 를 그대로 쓴다.
+    limit = max(0.30, 3.0 / len(v))
+    if share > limit:
         say("WARN", "평균 지배 " + tag,
-            "최악 1클립이 평균의 %.0f%% — 중앙값(%.4f)도 같이 볼 것" % (100 * share, median(v)))
+            "최악 1클립이 평균의 %.0f%% (n=%d, 기준 %.0f%%) — 중앙값(%.4f)도 같이 볼 것"
+            % (100 * share, len(v), 100 * limit, median(v)))
     else:
         say("PASS", "평균 지배 " + tag,
-            "평균 %.4f / 중앙 %.4f" % (total / len(v), median(v)))
+            "평균 %.4f / 중앙 %.4f (n=%d, 최악 %.0f%%)"
+            % (total / len(v), median(v), len(v), 100 * share))
 
 
 def check_itn(run):

@@ -343,6 +343,27 @@ async def main_async(a) -> int:
     except Exception:
         pass
 
+    if a.warmup:
+        # 첫 요청에 모델을 로드하는 백엔드가 있다. 그 비용이 첫 클립에 얹히면 작은
+        # 표본에서는 타임아웃으로 통째로 빠진다 - 5클립 스모크에서 20% 가 날아갔다.
+        # 한 클립을 버리는 셈 치고 먼저 흘려보낸다. 채점하지 않는다.
+        print("[smoke] 워밍업 1클립 (채점하지 않는다)", flush=True)
+        try:
+            await run_one(ws, load_audio(rows[0]["path"], a.peak_normalize),
+                          a.lang, a.trailing_ms, utt_id="warmup")
+        except Exception as e:                                  # noqa: BLE001
+            print(f"  워밍업 실패(무시) {type(e).__name__}: {e}", flush=True)
+            try:
+                await ws.close()
+            except Exception:
+                pass
+            ws = await websockets.connect(a.ws, ping_interval=None, open_timeout=60,
+                                          max_size=10 * 1024 * 1024)
+            try:
+                await asyncio.wait_for(ws.recv(), timeout=15)
+            except Exception:
+                pass
+
     try:
         for i, r in enumerate(rows, 1):
             audio = load_audio(r["path"], a.peak_normalize)
@@ -437,6 +458,9 @@ def main():
     ap.add_argument("--ws", default="ws://127.0.0.1:8765")
     ap.add_argument("--lang", choices=["ko", "en"], default="ko")
     ap.add_argument("--limit", type=int, default=20)
+    ap.add_argument("--warmup", action="store_true",
+                    help="채점 전에 한 클립을 버리는 셈 치고 먼저 흘린다. 첫 요청에 "
+                         "모델을 로드하는 백엔드에서 첫 클립이 타임아웃하는 것을 막는다")
     ap.add_argument("--file-ids", default=None,
                     help="쉼표로 구분한 file_id 만 돌린다. 주면 --limit 을 무시한다. "
                          "`pick_smoke_clips.py --ids-only` 출력을 그대로 넘기면 된다")

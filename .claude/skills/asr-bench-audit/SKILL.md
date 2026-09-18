@@ -53,8 +53,12 @@ python3 scripts/pick_smoke_clips.py --lang ko --ids-only   # file_id 만
 ```bash
 IDS=$(python3 scripts/pick_smoke_clips.py --lang ko --ids-only)
 python3 evaluation/backends/smoke_client.py --ws ws://127.0.0.1:8765 --lang ko \
-  --file-ids "$IDS" --tag smoke --out smoke_ko.json
+  --file-ids "$IDS" --warmup --tag smoke --out smoke_ko.json
 ```
+
+`--warmup` 을 빼지 말 것. 첫 요청에 모델을 로드하는 백엔드가 있어서, 그 비용이 첫 클립에
+얹히면 타임아웃으로 통째로 빠진다. 50클립에서는 1/50 이라 묻히지만 **5클립에서는 20% 가
+날아가고 완주 검사가 실패한다.** 실제로 Nemotron 에서 그렇게 됐다.
 
 다섯 클립이면 1분 남짓이다. 상용 API 백엔드도 몇 센트이므로 비용은 건너뛸 이유가 못 된다.
 다만 호출마다 usage 를 남기는 수단은 있어야 한다.
@@ -84,6 +88,15 @@ python3 evaluation/backends/smoke_client.py --ws ws://127.0.0.1:8765 --lang ko \
 **1단계가 먹을 JSON 을 싸게 만드는 것**이다. 산출물을 그대로 1단계에 넘긴다.
 
 판정: 불변식이 하나라도 깨지면 **실패**. 고치기 전에 50클립을 돌리지 않는다.
+
+### 작은 표본에서 흔들리는 검사는 구분한다
+
+1단계 검사 중 **통계로 판정하는 것**(꼬리 잘림, 평균 지배, 워밍업 오염)은 다섯 클립에서
+중앙값이 한두 클립에 좌우된다. 그래서 작은 표본에서는 FAIL 이 아니라 WARN 으로 나오고
+표본 수를 함께 찍는다. **0단계에서 이 셋이 걸리면 본 런에서 다시 본다** — 여기서 막지 않는다.
+
+반대로 **세면 끝나는 것**(빈 전사, 조각 수, 완주, 출력 채널, 숫자 표기)은 다섯 클립에서도
+그대로 유효하다. 이쪽이 걸리면 막는다.
 
 ---
 
