@@ -147,7 +147,7 @@ async def run_one(url, model, audio, lang, trailing_ms=0, start_delay_sec=0.0):
 
 async def main_async(a) -> int:
     unit = "cer" if a.lang == "ko" else "wer"
-    rows = load_fleurs(a.lang, a.limit)
+    rows = load_fleurs(a.lang, a.limit, a.file_ids)
     if not rows:
         print(json.dumps({"error": "no FLEURS rows", "lang": a.lang}))
         return 1
@@ -155,6 +155,16 @@ async def main_async(a) -> int:
     url = "%s/v1/realtime?model=%s" % (ws_base, a.model)
     print("[smoke] voxtral %s %d clips -> %s (unit=%s)" % (a.lang, len(rows), url, unit),
           flush=True)
+
+    if a.warmup:
+        # 첫 요청에 모델을 로드하거나 세션을 세우는 백엔드가 있다. 그 비용이 첫
+        # 클립에 얹히면 작은 표본에서 통째로 빠진다. 한 클립을 버리는 셈 친다.
+        print("[smoke] 워밍업 1클립 (채점하지 않는다)", flush=True)
+        try:
+            await run_one(url, a.model, load_audio(rows[0]["path"], a.peak_normalize),
+                          a.lang, start_delay_sec=a.start_delay_sec)
+        except Exception as e:                                  # noqa: BLE001
+            print("  워밍업 실패(무시) %s: %s" % (type(e).__name__, e), flush=True)
 
     results, t_start = [], time.perf_counter()
     for i, r in enumerate(rows, 1):
@@ -180,6 +190,7 @@ async def main_async(a) -> int:
         print("      HYP %s" % out["transcript"][:80], flush=True)
 
     vals = [r[unit] for r in results if r.get(unit) is not None]
+    raws = [r[unit + "_raw"] for r in results if r.get(unit + "_raw") is not None]
     fin = [r["finalization_lag_sec"] for r in results
            if r.get("finalization_lag_sec") is not None]
     dn = [r["done_lag_sec"] for r in results if r.get("done_lag_sec") is not None]
@@ -193,7 +204,11 @@ async def main_async(a) -> int:
         "start_delay_sec": a.start_delay_sec,
         "laal_unit": LAAL_UNIT.get(a.lang, "word"),
         "n_ok": len(results), "n_total": len(rows),
+        # avg_<unit> 은 표기 정규화 후 값이다. score_norm 을 안 남기면 감사가
+        # "이 JSON 은 정규화 전이다" 로 잘못 읽는다(smoke_client 와 같은 계약).
         "avg_" + unit: round(mean(vals), 4) if vals else None,
+        "avg_" + unit + "_raw": round(mean(raws), 4) if raws else None,
+        "score_norm": "numbers+units",
         "laal_ms": round(mean(laal), 1) if laal else None,
         "laal_ca_ms": round(mean(laal_ca), 1) if laal_ca else None,
         "finalization_lag_sec": round(mean(fin), 3) if fin else None,
@@ -215,6 +230,11 @@ def main():
     ap.add_argument("--model", default="mistralai/Voxtral-Mini-4B-Realtime-2602")
     ap.add_argument("--lang", choices=["ko", "en"], default="ko")
     ap.add_argument("--limit", type=int, default=20)
+    ap.add_argument("--file-ids", default=None,
+                    help="쉼표로 구분한 file_id 만 돌린다. 주면 --limit 을 무시한다. "
+                         "`pick_smoke_clips.py --ids-only` 출력을 그대로 넘기면 된다")
+    ap.add_argument("--warmup", action="store_true",
+                    help="채점 전에 한 클립을 버리는 셈 치고 먼저 흘린다")
     ap.add_argument("--trailing-ms", type=int, default=0,
                     help="이 백엔드는 VAD 가 없어 무음 패딩이 필요 없다. 0 이 맞다.")
     ap.add_argument("--peak-normalize", type=float, default=0.0, metavar="PEAK",
