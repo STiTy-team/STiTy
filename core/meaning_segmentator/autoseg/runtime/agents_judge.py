@@ -170,11 +170,18 @@ contradiction). You are given, for the revision that was just measured:
   "delta", "by_bin", "n_worse"/"n_better" measured against THAT base instead of the adopted
   prompt. Then "delta"/"by_bin" include the base's own gain; the effect of the edits listed in
   "edits" is "vs_base". Attribute to the edits only what "vs_base" shows.
+- "rank_depth": for each depth d, how often the prompt's top-d positions coincide with the
+  measurement's top-d, as a multiple of what coincidence alone would give (1.0 = no information),
+  "base" before the edit and "revision" after, with the "delta". Which depths moved decides who
+  the edit could have helped: a long latency budget keeps only the first one or two positions,
+  a short one keeps many. So an edit that moved only the first depths cannot have helped the
+  short bins whatever "delta" says, and one that moved the deeper ones cannot be dismissed by a
+  flat overall mean. Say which of the two happened.
 
-"worst"/"best" are the TAIL — five pairs out of hundreds. Base "why" and "lesson" on "by_bin" and
-"n_worse"/"n_better"; use the tail only to illustrate a movement the bins already show. One
-spectacular pair (judge10 iter 1: a single "they've ‖ not" cut, Δ −0.79) must not become the lesson
-when 142 pairs got worse and 150 got better.
+"worst"/"best" are the TAIL — five pairs out of hundreds. Base "why" and "lesson" on "by_bin",
+"n_worse"/"n_better" and "rank_depth"; use the tail only to illustrate a movement those already
+show. A single spectacular pair must not become the lesson when the counts moved both ways in
+comparable numbers.
 Read the cut sets: say what the edits made the model DO differently (cut earlier, avoid cutting
 near heads, split enumerations, ...), and which edit is responsible. Be concrete about the bins —
 a revision that helps long pieces and hurts short ones is a different fact from one that hurts
@@ -245,18 +252,18 @@ Hard constraints:
    revision (its edit is already in place; such units carry "near_miss_delta"). Keep that edit
    and add ONE further change that extends the same direction in the bins where "by_bin" shows
    the gain came from, or trims the side effect its "why" names. Do not delete or reverse a
-   unit with a positive "near_miss_delta". Measured on this base (judge13 iter 2): two
-   "do not cut between a predicate and its arguments / inside enumerations" additions each
-   LOWERED the base's gain ("vs_base" −0.004 and −0.003, "≤3" −0.008) — a penalty rule on top of
-   this base has not worked; say what a good dense cut looks like instead.
+   unit with a positive "near_miss_delta". A prohibition stacked on such a base tends to give the
+   gain back: the base gained in a bin by making cuts available there, and a new "do not cut"
+   removes them again. Say what a good dense cut looks like instead.
 7. Every change must be traceable to a finding in the critique.
 7b. If "loss_by_bin" is present, it says which latency bins hold the loss ("loss_share"). A
-   revision is judged on the mean over ALL pairs, and most pairs are short pieces: an edit that
-   only makes the model cut less (more "do not cut when …") has lowered the short bins in 9 of
-   10 measured revisions. Prefer edits that say what a GOOD cut looks like where the loss is.
+   revision is judged on the mean over ALL pairs, and most pairs are short pieces. An edit that
+   only makes the model cut less (more "do not cut when …") lowers those bins by construction: the
+   number of cuts they need is set by the budget, so removing candidates cannot help them, it can
+   only force a worse one. Prefer edits that say what a GOOD cut looks like where the loss is.
 8. If "primary_finding" is present, that finding is yours to address FIRST — the candidates of
    one iteration are each pointed at a different finding so they do not converge on the same
-   edit (judge10 iter 2: three candidates, one direction). You may address others after it.
+   edit. You may address others after it.
 8b. If "sibling_candidates" is present, those revisions were already proposed in this iteration
    and will be measured alongside yours. Propose a DIFFERENT revision: address other findings,
    edit other units, or take a different direction on the same finding. Do not restate a sibling.
@@ -304,21 +311,15 @@ Hard constraints:
    be recognised in the SOURCE surface form alone (a specific construction, a token class and
    what must stay with it), not a change in how strongly an existing principle applies.
    Write it as a BINDING ("keep X together with the Y that completes it"), not as a prohibition
-   ("do not cut after X"). Measured: the three adopted revisions all named what must travel
-   together (an essential post-nominal modifier with its head; a numeral with its unit), while
-   every revision phrased as a place not to cut was rejected and took the short-latency bins down
-   with it — a prohibition thins the cuts those bins need, a binding only moves them.
-   Measured: revisions that added a narrow surface check were adopted (judge13 iter 3 keeping an
-   essential post-nominal modifier, judge15 iter 3 keeping a numeral with its unit); revisions
-   that retuned the weight or scope of an existing principle failed five times out of five and
-   dropped the short-latency bins first.
+   ("do not cut after X"): a prohibition removes candidate positions while a binding only moves
+   them, and the short budgets need a fixed number of positions either way. And state a condition
+   recognisable in the SOURCE surface alone rather than a change in how strongly an existing
+   principle applies — reweighting gives the model no new way to tell two positions apart.
    "prune": REMOVE one [Core Principles] unit. Exactly one edit, op "delete", a "C" unit, and
    nothing added anywhere. Pick the principle that earns its place least — one that restates
-   another, or that names a condition the measured target does not actually punish. Measured:
-   twenty-four candidates across judge17 and judge18 all ADDED a rule and every one of them came
-   out negative, on the construction it targeted (mean -0.0116) and on sentences without it
-   (mean -0.0089) alike. The prompt already carries eight principles; one more divides the
-   judge's attention more than it adds. Removing is the direction nothing has tested yet.
+   another, or that names a condition the measured target does not actually punish. When the
+   prompt already carries many principles, one more divides the model's attention more than it
+   adds, and removing is the one direction an added rule cannot test.
 
 What the model is judged on: the cut sets its scores produce are translated piece by piece and
 scored against the source as a whole, with the worst contradiction risk in the set applied as a
@@ -330,11 +331,10 @@ ranked exactly as it ranks now. So do not write wording that reaches every sente
 "generally prefer", no "in all cases", no "always", no "tend to", and do not restate or reweight
 a principle that is already in the prompt. Name the surface trigger, say what it does at that
 trigger, and stop.
-Measured: across judge17 and judge18 two of three findings hurt the sentences WITHOUT the
-targeted construction MORE than the ones with it (-0.0294 vs -0.0069, and -0.0194 vs -0.0025).
-In judge21 the best revision gained +0.0055 on the short-latency operating points of the final
-holdout and lost -0.0081 on the long-latency ones, netting -0.0019 — the aim was right and the
-leak ate it. A revision that changes nothing outside its trigger cannot lose that way.
+Wording that reaches past its trigger routinely damages the sentences WITHOUT the targeted
+configuration more than the ones with it, and a revision can be right about its target and still
+lose overall because of that leak — the gain sits in a few sentences and the leak is spread over
+all of them. A revision that changes nothing outside its trigger cannot lose that way.
 
 Return ONLY JSON:
 {
@@ -376,7 +376,7 @@ Hard requirements:
 - [Output Rules] MUST be copied verbatim from the block given to you.
 - [Core Principles] is the substance: 6-10 lines, each starting with "- ", each ONE judgement of
   at most 60 words. One line is later one editable unit; a 1,000-character line cannot be revised
-  without rewriting it (judge10 v0 had two). Write JUDGEMENTS — questions the model asks about
+  without rewriting it. Write JUDGEMENTS — questions the model asks about
   MEANING at each position — not surface-form rules. Two judgements carry the measurement: whether what
   follows overturns the stretch already heard, and whether translating the two sides apart still
   adds up to the source. Say what damage looks like in THIS source language, using what the

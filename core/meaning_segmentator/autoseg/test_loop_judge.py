@@ -855,3 +855,41 @@ class FindingKind(unittest.TestCase):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         got = aj.clean_findings(self.blob("order", None, "ORDER ", "nonsense"), cap=9)
         self.assertEqual([f["kind"] for f in got], ["order", "check", "order", "check"])
+
+
+class CandidatePlanKinds(unittest.TestCase):
+    """형식이 내용을 담을 수 있는 짝만 곱한다. `order`(두 자리 비교)는 선호문 역할만,
+    `check`(단항 조건)는 결속문·귀납 역할만. `prune` 은 발견과 무관하게 하나."""
+
+    ROLES = ["fallback", "single_small", "induce", "prune"]
+
+    def test_pairs_by_kind(self):
+        plan = lj.candidate_plan(self.ROLES, 3, True, 4, 16,
+                                 kinds=["check", "order", "check"])
+        self.assertEqual(plan, [("fallback", 1),
+                                ("single_small", 0), ("single_small", 2),
+                                ("induce", 0), ("induce", 2),
+                                ("prune", 0)])
+
+    def test_prune_appears_once_even_with_many_findings(self):
+        plan = lj.candidate_plan(["prune"], 3, True, 4, 16, kinds=["check"] * 3)
+        self.assertEqual(plan, [("prune", 0)])
+
+    def test_unknown_role_takes_both(self):
+        plan = lj.candidate_plan(["free"], 2, True, 4, 16, kinds=["check", "order"])
+        self.assertEqual(plan, [("free", 0), ("free", 1)])
+
+    def test_falls_back_when_no_pair_survives(self):
+        """`order` 만 나왔는데 역할이 결속문뿐이면 이터를 버리는 대신 종전 곱으로 돈다."""
+        plan = lj.candidate_plan(["single_small"], 1, True, 4, 16, kinds=["order"])
+        self.assertEqual(plan, [("single_small", 0)])
+
+    def test_without_kinds_is_the_old_product(self):
+        old = lj.candidate_plan(self.ROLES, 2, True, 4, 16)
+        self.assertEqual(len(old), 8)
+        self.assertEqual(old[0], ("fallback", 0))
+        self.assertEqual(old[-1], ("prune", 1))
+
+    def test_cap(self):
+        plan = lj.candidate_plan(self.ROLES, 3, True, 4, 3, kinds=["check", "order", "check"])
+        self.assertEqual(len(plan), 3)

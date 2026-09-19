@@ -614,16 +614,41 @@ def guard_breaches(bins: dict[str, dict], guard: float, thin: int = 300) -> list
             if v["mean"] < -(guard * (2 if v["pairs"] < thin else 1))]
 
 
+# 역할이 담을 수 있는 발견의 형태. **형식과 내용이 맞아야 한다** — 두 자리를 가르는 비교를
+# 결속문 역할(`single_small`)에 넣으면 비교가 단항으로 납작해지고, 단항 조건을 선호문 역할
+# (`fallback`)에 넣으면 비교가 아닌 것을 비교문처럼 쓰느라 군더더기가 붙는다.
+# 목록에 없는 역할(`free`·`rewrite` 등)은 둘 다 받는다. `prune` 은 발견을 구현하는 역할이
+# 아니라 단위를 지우는 역할이라 짝을 짓지 않고 이터당 하나 둔다.
+ROLE_KINDS = {"fallback": {"order"},
+              "single_small": {"check"},
+              "induce": {"check"},
+              "narrow_rule": {"check"},
+              "examples_only": {"check"}}
+UNPAIRED_ROLES = {"prune"}
+
+
 def candidate_plan(roles: list[str], n_find: int, cross: bool, n_default: int,
-                   cap: int = 16) -> list[tuple[str, int]]:
+                   cap: int = 16, kinds: list[str] | None = None) -> list[tuple[str, int]]:
     """후보 j 에게 줄 (역할, finding 인덱스) 표.
 
     기본 배정은 역할·finding 이 **각각 독립 나머지 연산**이라 주기가 LCM(역할수, finding수) 이다 —
     역할 4 · finding 4 · 후보 12 면 4쌍이 3번 반복되고 시도 폭이 안 는다. `cross` 는 (역할 × finding)
     을 한 번씩 전부 돌려 후보 수를 finding 수에 맞춰 자동으로 정한다. `cap` 은 게이트 비용 상한
-    (게이트는 후보 × 홀드아웃 문장을 분절한다)."""
+    (게이트는 후보 × 홀드아웃 문장을 분절한다).
+
+    `kinds` (finding 별 "check"/"order") 를 주면 **형식이 내용을 담을 수 있는 짝만** 곱한다
+    (`ROLE_KINDS`). 후보 수가 줄어 이터당 GPU 큐와 비용이 내려가고, 관문을 들여다보는 횟수가
+    줄어 우연 통과 압력도 낮아진다. 걸러낸 뒤 짝이 하나도 안 남으면 이터를 버리는 대신 종전
+    곱으로 되돌린다."""
     n_find = max(1, n_find)
     if cross and roles:
+        if kinds:
+            pairs = [(r, i) for r in roles if r not in UNPAIRED_ROLES
+                     for i, k in enumerate(kinds[:n_find])
+                     if k in ROLE_KINDS.get(r, {"check", "order"})]
+            pairs += [(r, 0) for r in roles if r in UNPAIRED_ROLES]
+            if pairs:
+                return pairs[:cap]
         n = min(len(roles) * n_find, cap)
         return [(roles[j // n_find], j % n_find) for j in range(n)]
     return [((roles[j % len(roles)] if roles else "free"), j % n_find) for j in range(n_default)]
@@ -1817,10 +1842,12 @@ def main() -> int:
         # 는 (역할 × finding) 을 한 번씩 전부 돌려 시도 폭을 finding 수에 맞춰 자동으로 맞춘다.
         n_find = max(1, len(findings))
         cross = bool(a.candidates_cross and roles and findings)
-        plan = candidate_plan(roles, n_find, cross, a.pe_candidates, a.candidates_cap)
+        kinds = [str(f.get("kind") or "check") for f in findings]
+        plan = candidate_plan(roles, n_find, cross, a.pe_candidates, a.candidates_cap, kinds)
         if cross:
-            log(f"[iter {it}] 후보 {len(plan)} = 역할 {len(roles)} × finding {n_find}"
-                + (f" (상한 {a.candidates_cap} 로 잘림)" if len(roles) * n_find > a.candidates_cap else ""))
+            log(f"[iter {it}] 후보 {len(plan)} — finding {n_find}개 "
+                f"({'/'.join(kinds)}) 와 역할 {len(roles)}개를 형태가 맞는 짝만 곱했다: "
+                + ", ".join(f"{r}×f{i}" for r, i in plan))
         # 후보 생성은 **순차여야 한다.** 앞 후보의 편집을 `sibling_candidates` 로 보여주고 앞
         # 후보가 쓴 실측 예시를 `used_examples` 로 빼는데, 그게 다양성 장치다 — judge12 iter 1 은
         # 후보 넷 중 셋이 같은 예시(E4 → en_us_738)를 넣었고 그래서 이 의존을 넣었다. 병렬로
