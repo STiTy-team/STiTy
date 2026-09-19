@@ -893,3 +893,44 @@ class CandidatePlanKinds(unittest.TestCase):
     def test_cap(self):
         plan = lj.candidate_plan(self.ROLES, 3, True, 4, 3, kinds=["check", "order", "check"])
         self.assertEqual(len(plan), 3)
+
+
+class HistoryDepth(unittest.TestCase):
+    """PE 는 이력으로 직전 개정을 읽는다. `by_bin` 만으로는 앞쪽 순위만 고친 편집과 깊은 쪽을
+    고친 편집이 구별되지 않으므로 깊이 변화도 같이 넘긴다."""
+
+    def brief(self, diag):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        return aj.history_brief([{"iter": 1, "adopted": False, "edits": [],
+                                  "delta": {"mean": -0.002, "lo": -0.01},
+                                  "diagnosis": diag}])[0]
+
+    def test_passes_depth_delta(self):
+        b = self.brief({"by_bin": {"≤3": {"mean": -0.001}},
+                        "rank_depth": {"base": {"1": 6.8}, "revision": {"1": 7.0},
+                                       "delta": {"1": 0.21, "8": -0.01}}})
+        self.assertEqual(b["rank_depth_delta"], {"1": 0.21, "8": -0.01})
+
+    def test_absent_when_not_measured(self):
+        b = self.brief({"by_bin": {"≤3": {"mean": -0.001}}})
+        self.assertNotIn("rank_depth_delta", b)
+        b = self.brief({"rank_depth": {"base": {}, "revision": {}}})
+        self.assertNotIn("rank_depth_delta", b)
+
+
+class PromptsAreEnvironmentFree(unittest.TestCase):
+    """**에이전트 지시문에 이 저장소의 런 이름이나 그 런에서 잰 값을 넣지 않는다.** 다른 코퍼스나
+    언어로 옮기면 검증할 수 없는 주장이 되고, 모델은 그것을 사실로 읽는다. 런에서 나오는 수치는
+    페이로드(`loss_by_bin`·`rank_depth`·`misorder_cost`·`rejected_by_bin`)로 매 런 다시 계산해
+    넘긴다. 사람이 읽는 자리(코드 주석·argparse 도움말)는 이 규칙의 대상이 아니다."""
+
+    def test_no_run_names_or_measurements(self):
+        import re
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        bad = re.compile(r'judge\d+|\brun\d\d\b|\d+\.\d+x|\d+ of \d+ measured'
+                         r'|five times out of five')
+        for name in dir(aj):
+            v = getattr(aj, name)
+            if name.isupper() and isinstance(v, str) and len(v) > 150:
+                self.assertIsNone(bad.search(v), f"{name} 에 런 고유 정보가 있다: "
+                                                 f"{(bad.search(v) or '').group(0) if bad.search(v) else ''}")

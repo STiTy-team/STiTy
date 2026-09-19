@@ -1667,6 +1667,10 @@ def main() -> int:
             pe_user["base"] = base_tag["built_on"] + " — the units you were given already contain that revision's edit; candidates are measured against the current best prompt"
         if loss_bins:
             pe_user["loss_by_bin"] = loss_bins
+        if depth:
+            pe_user["rank_depth"] = depth
+        if misorder:
+            pe_user["misorder_cost"] = misorder
         if examples:
             by_id = {c["id"]: c for c in cases}
             pe_user["labeled_examples"] = [
@@ -1861,6 +1865,12 @@ def main() -> int:
                 extra["constraint"] = role
             if findings and role != "induce":
                 extra["primary_finding"] = findings[f_idx]["diagnosis"]
+                extra["primary_finding_kind"] = findings[f_idx].get("kind") or "check"
+                # 이항 발견에는 **압축 전 쌍**을 같이 준다 — 비교문을 쓰려면 어느 두 자리를
+                # 갈라야 하는지가 필요한데 진단 한 문장에는 그것이 없다. 단항 발견에는 넣지
+                # 않는다(토큰만 늘고 쓸 자리가 없다).
+                if inversions and extra["primary_finding_kind"] == "order":
+                    extra["rank_inversions"] = inversions
             if role == "induce":
                 # **진단을 주지 않는다.** 이 역할의 요지가 "압축 전 증거만 보고 귀납한다" 이므로
                 # Critic 의 한 문장을 같이 주면 그 압축에 끌려가고, 결과가 나와도 귀납 덕인지

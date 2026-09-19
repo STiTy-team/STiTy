@@ -255,7 +255,11 @@ Hard constraints:
    unit with a positive "near_miss_delta". A prohibition stacked on such a base tends to give the
    gain back: the base gained in a bin by making cuts available there, and a new "do not cut"
    removes them again. Say what a good dense cut looks like instead.
-7. Every change must be traceable to a finding in the critique.
+7. Every change must be traceable to a finding in the critique. Each finding carries a "kind":
+   "check" is a UNARY condition on one position, "order" is a BINARY comparison between two. Write
+   what the kind asks for — a comparison rewritten as a condition stops separating the two
+   positions it was for, and a condition rewritten as a comparison invents a second position that
+   the finding never named.
 7b. If "loss_by_bin" is present, it says which latency bins hold the loss ("loss_share"). A
    revision is judged on the mean over ALL pairs, and most pairs are short pieces. An edit that
    only makes the model cut less (more "do not cut when …") lowers those bins by construction: the
@@ -271,7 +275,7 @@ Hard constraints:
    its MEASURED scores already written as an Input/Output pair ("unit"), and the case it came
    from ("id", its "latency_bin", and "gap" = how much the current prompt lost there). To put one
    into [Examples], write an edit with "labeled_example": "<id>" INSTEAD of "text" — code pastes
-   the exact pair, e.g. {"op": "replace", "id": "E2", "labeled_example": "en_us_1591",
+   the exact pair, e.g. {"op": "replace", "id": "E2", "labeled_example": "<an id from labeled_examples>",
    "kind": "example"} or {"op": "insert_after", "id": "E_end", "labeled_example": "..."}.
    A measured example teaches the ranking directly where a principle only describes it; prefer
    replacing a hand-written example with a measured one over adding another principle.
@@ -285,12 +289,15 @@ Hard constraints:
    form ("prefer a cut at A over one at B", "as a last resort take C") — not a prohibition
    ("do not cut after X") and not a binding ("keep X with Y"); both of those have been tried.
    A short ladder of tiers counts, as long as it is one unit and states an ORDER.
-   Measured: the ranking this prompt produces is 6.5x better than chance at rank 1, 1.6x at
-   rank 5, 1.2x at rank 8 and 1.00x at rank 13 — it stops ordering anything past the top few.
-   The short-latency operating points consume ranks 1 through 8 (mean 8.5 cuts in the <=3 bin)
-   and so read the part that is already random, while long-latency points use rank 1 alone.
-   Every principle now in the prompt pushes bad positions down; none says which of the
-   pushed-down positions to take.
+   Why this role exists: "rank_depth" says how far down the ranking still carries information —
+   a value near 1.0 at some depth means the order there is no better than chance — and
+   "misorder_cost" says what one wrong pick at that depth costs. Where the first has flattened and
+   the second has not, those depths are being paid for and nothing is ordering them. A short
+   latency budget keeps many positions per sentence and so reads that part of the order; a long
+   one keeps the first position alone. Every principle now in the prompt pushes bad positions
+   down; none says which of the pushed-down positions to take. When "rank_inversions" is present,
+   each entry is a pair from those depths with the words around both positions — the comparison
+   you write has to separate pairs like those.
    "induce": read the MEASURED cases you were given — each shows a sentence, where the current
    prompt cut it, and where the measured target says the cuts should have been — and write ONE
    rule that REPRODUCES those target choices. Work bottom-up: list to yourself what the target
@@ -965,6 +972,10 @@ def history_brief(history: list[dict]) -> list[dict]:
                 b[k] = diag[k]
         if diag.get("by_bin"):
             b["by_bin"] = diag["by_bin"]
+        # 깊이별 변화 — 어느 깊이가 움직였나가 "그 편집이 누구를 도울 수 있었나" 를 정한다.
+        # `by_bin` 만으로는 앞쪽만 고친 편집과 깊은 쪽을 고친 편집이 구별되지 않는다.
+        if (diag.get("rank_depth") or {}).get("delta"):
+            b["rank_depth_delta"] = diag["rank_depth"]["delta"]
         if diag.get("vs_base"):
             vb = diag["vs_base"]
             lo = vb["delta"].get("lo")
