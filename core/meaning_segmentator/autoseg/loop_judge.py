@@ -487,10 +487,21 @@ def induce_picks(cases: list[dict], excl: set, n: int, part: int = 0,
     pool = [c for c in cases if c.get("id") not in excl]
     if not pool or n <= 0:
         return []
+    # **상위 절반만 쓴다.** gap 은 그 자리에서 오라클 대비 잃은 양이라, 하위 절반은 프롬프트가
+    # 거의 맞힌 자리다. 거기서 "공통점을 규칙으로 써라" 하면 설명할 차이가 없는데 설명을 만들어야
+    # 하고, 그 잡음이 규칙으로 굳어 다른 문장에서 손해가 된다. judge24 네 이터가 전부 그랬다 —
+    # 상위 묶음 대 하위 묶음이 +0.0056/+0.0048, −0.0028/−0.0058, −0.0076/−0.0126,
+    # −0.0015/−0.0146 으로 네 번 다 상위가 낫고 하위는 세 번 음수, 두 번은 구간 전체가 0 아래였다.
+    # 절대 하한(gap ≥ 0.4)은 못 쓴다 — 프롬프트가 나아지면 사례 전체가 얕아져 이터 4 에서는
+    # 0.4 이상이 3개뿐이었다. 상대 기준이라야 이터가 가도 묶음이 나온다.
+    ranked = sorted(pool, key=lambda x: -float(x.get("gap") or 0))
+    top = ranked[:max(n * max(1, parts), len(ranked) // 2)]
     if parts > 1:
-        ranked = sorted(pool, key=lambda x: -float(x.get("gap") or 0))
-        size = max(n, len(ranked) // parts)
-        pool = ranked[part * size:(part + 1) * size] or ranked[:size]
+        # 상위 절반 **안에서** 겹치지 않게 자른다. 묶음마다 아래의 구간 층화가 다시 걸린다.
+        size = max(n, len(top) // parts)
+        pool = top[part * size:(part + 1) * size] or top[:size]
+    else:
+        pool = top
     by_bin: dict[str, list[dict]] = {}
     for c in sorted(pool, key=lambda x: -float(x.get("gap") or 0)):
         by_bin.setdefault(c.get("latency_bin") or "?", []).append(c)
@@ -518,14 +529,22 @@ def induce_picks(cases: list[dict], excl: set, n: int, part: int = 0,
             out.append(c)
             took += 1
             n_killed += killed(c)
-    if len(out) < n:        # 할당이 모자라면 gap 순으로 채운다 (여기서도 상한을 지킨다)
+    # 할당이 모자라면 gap 순으로 채운다. **상한을 먼저 지켜 보고, 그래도 모자라면 풀어서 개수를
+    # 맞춘다** — 상위 절반으로 좁히면 그 안이 대부분 모순으로 죽은 사례라(gap 큰 자리가 곧 그런
+    # 자리다) 상한을 끝까지 지키면 묶음이 8개에서 6개로 줄어든다. 개수를 채우는 쪽이 낫다.
+    for relax in (False, True):
+        if len(out) >= n:
+            break
         seen = {id(c) for c in out}
         for c in sorted(pool, key=lambda x: -float(x.get("gap") or 0)):
             if len(out) >= n:
                 break
-            if id(c) in seen or (killed(c) and n_killed >= cap_killed):
+            if id(c) in seen:
+                continue
+            if not relax and killed(c) and n_killed >= cap_killed:
                 continue
             out.append(c)
+            seen.add(id(c))
             n_killed += killed(c)
     return out[:n]
 
@@ -902,10 +921,12 @@ def main() -> int:
                    help="사례 문장을 실측 라벨로 채운 Input/Output 예시로 만들어 PE 에 준다. PE 는 "
                         "편집에 labeled_example: <사례 id> 로 그 예시를 그대로 붙일 수 있다")
     p.add_argument("--adopt-strong", type=float, default=0.005,
-                   help="--adopt-rule lo 의 하한 문턱. 판정 집합이 커지면 낮춰 잡는다 — 200문장"
-                        "(반폭 0.013)에서는 하한 > 0.005 가 평균 0.0125 를 요구해 진짜 효과"
-                        "(0.003~0.01)가 원리적으로 못 넘었고 열여섯 이터에서 채택 0 이었다. "
-                        "dev 600(반폭 0.0075)이면 0 으로 두어 '하한 > 0' 을 쓸 수 있다")
+                   help="**재추출 확인 없이 바로 채택하는 하한 문턱이다.** 하한이 0 과 이 값 "
+                        "사이면 양쪽을 새 분절로 다시 재고(verdict 'confirm') 거기서도 하한 > 0 "
+                        "이어야 채택한다. **0 으로 두면 확인이 아예 안 탄다** — judge20~25 여섯 "
+                        "런이 그렇게 돌아 관문이 꺼진 채였고, judge25 의 채택(dev 하한 +0.0032)이 "
+                        "test 560 에서 −0.0070 으로 뒤집혔다. 사후 재추출로 그 dev Δ 는 "
+                        "+0.0138 → +0.0037 이었다. 확인을 늘 켜려면 도달 불가능한 값(0.05)을 준다")
     p.add_argument("--adopt-rule", default="lo", choices=("lo", "mean"),
                    help="채택 문턱 — lo: CI 하한 > 0.005 (종전) / mean: 평균 > 0 + 퇴행 가드. "
                         "스텝 효과(+0.003~0.01)가 200문장 se 보다 작아 lo 는 원리적으로 못 넘는다")
@@ -937,9 +958,12 @@ def main() -> int:
                         "안 써서 --workers 를 다 못 채운다 — dev 500·batch 6 이면 84콜에 워커 128 로 "
                         "활용률 66%%. 2 로 두면 후보당 벽시계가 약 65%% 로 준다. GPU 채점(QE·NLI)은 "
                         "락으로 직렬화되므로 3 이상은 이득이 작다.")
-    p.add_argument("--induce-cases", type=int, default=8,
-                   help="induce 역할에게 보여줄 사례 수 — 손해(gap)가 큰 것부터. 오라클 절단과 "
-                        "현재 절단을 나란히 주고 그 선택을 재현하는 규칙을 귀납하게 한다.")
+    p.add_argument("--induce-cases", type=int, default=24,
+                   help="induce 역할에게 보여줄 사례 수. 오라클 절단과 현재 절단을 조각 번역까지 "
+                        "나란히 주고 그 선택을 재현하는 규칙을 귀납하게 한다. 사례 풀의 **상위 절반**에서 "
+                        "구간 층화로 뽑는다(`induce_picks`). 건당 약 750 토큰이고 PE 입력 여유는 "
+                        "330K 쯤이라 100건도 들어가지만, 8건에서는 Critic(사례 100개를 본다)보다 증거가 "
+                        "12배 적어 압축 우회의 이득이 상쇄됐다 — judge24 에서 네 이터 내내 중간 성적이었다.")
     p.add_argument("--inversions-max", type=int, default=15,
                    help="Critic 에 넘길 깊은 구간 역전 쌍 수. 사례와 총량을 맞춰 쓴다 — 사례 60 "
                         "그대로 두고 더하면 Critic 입력이 그만큼 길어진다")
@@ -1164,15 +1188,17 @@ def main() -> int:
         ora_C, ora_hC = ora_A, ora_hA
     checkpoint = None
 
-    def segment_rows(pr, sents, lab):
-        return evaluate(gw, pr, sents, lab, spaced, min_gap, t_grid, seg_cache,
+    def segment_rows(pr, sents, lab, cache=None):
+        # `cache` 를 따로 주면 **같은 프롬프트라도 모델이 분절을 다시 뽑는다** — 캐시 키에
+        # 프롬프트 해시가 들어가므로 파일이 다르면 전부 미스다. 재추출 확인이 이걸로 돈다.
+        return evaluate(gw, pr, sents, lab, spaced, min_gap, t_grid, cache or seg_cache,
                         a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
 
-    def score_prompt(pr, sents, lab, tag, rows_m=None):
+    def score_prompt(pr, sents, lab, tag, rows_m=None, cache=None):
         """분절(API) → 절단 집합 → H_set. `rows_m` 을 주면 이미 끝난 분절을 쓴다 — 후보 여럿을
         동시에 분절해 두고 GPU 채점만 차례로 할 때."""
-        rows, m = rows_m or segment_rows(pr, sents, lab)
-        seg_cache.flush()
+        rows, m = rows_m or segment_rows(pr, sents, lab, cache)
+        (cache or seg_cache).flush()
         sets = policy_sets(rows, sents, spaced, min_gap, a.min_chunk, a.max_k)
         h = hset_of(sents, lab, sets)
         # 번역 캐시는 20건마다만 쓴다. 채점이 끝날 때 비우지 않으면 프로세스가 죽을 때 남은 번역이
@@ -1484,6 +1510,16 @@ def main() -> int:
         # 단위마다 출처(들어온 이터·채택 Δ·Critic 지적 횟수)를 붙여 무엇을 갈아끼울지 고르게 한다.
         # 편집 단위(units)가 두 섹션 본문을 이미 담으므로 프롬프트 전체는 안 준다 — 동결 섹션 중
         # 측정 정의만 붙인다. 이력은 방향 반복을 막는 데 필요한 것만 요약한다.
+        # **이미 시도한 삭제를 모은다.** 같은 이터의 앞 후보(`used_deletes` 로 누적)와 이전
+        # 이터의 이력을 함께 본다. `edit_summary` 가 `was` 에 지워진 단위 본문 앞 80자를 남겨
+        # 두는데, 그 주석이 "id 는 이터마다 다시 매겨지므로 원문 앞부분을 싣는다" 로 이 쓰임을
+        # 이미 예견했다. judge23·24 에서 `prune` 이 일곱 번 전부 같은 원칙을 지웠다.
+        spent_deletes: set[str] = set()
+        for h in history:
+            for e in (h.get("edits") or []):
+                if isinstance(e, dict) and e.get("kind") == "delete" and e.get("was"):
+                    spent_deletes.add(str(e["was"]))
+
         pe_user = {"fixed_sections": {h: aj.section_of(prompt, h) for h in ("[Role]", "[Scoring Rules]")},
                    "units": aj.units_with_provenance(prompt, prov),
                    "findings": findings, "history": aj.history_brief(history),
@@ -1513,7 +1549,14 @@ def main() -> int:
             없는 id, 앞 후보가 이미 쓴 id 를 가리킨 편집은 로그에 남기고 뺀다."""
             if not isinstance(pe_blob, dict):
                 return pe_blob, []
-            edits, bad = aj.enforce_role(pe_blob.get("edits"), role)
+            # 삭제 편집에 **지워질 단위의 본문**을 붙인다 — `enforce_role` 이 이미 시도한 삭제를
+            # 막는 데 쓴다. id 는 이터마다 다시 매겨져 못 쓴다(`C2` 가 매번 다른 원칙이다).
+            units_now = {u["id"]: u["text"] for u in aj.edit_units(prompt)}
+            for e in (pe_blob.get("edits") or []):
+                if isinstance(e, dict) and e.get("op") == "delete":
+                    e["_was"] = units_now.get(str(e.get("id")), "")
+            edits, bad = aj.enforce_role(pe_blob.get("edits"), role,
+                                         {"deleted": spent_deletes})
             if examples:
                 # 앞 후보가 쓴 예시는 없는 것으로 친다 — judge12 iter 1 은 후보 넷 중 셋이 같은
                 # 예시(E4 → en_us_738)를 넣었다. 제약이 강한 역할은 선택지가 그것뿐이었다.
@@ -1522,6 +1565,9 @@ def main() -> int:
                 bad += bad2
                 used_examples.update(str(e["labeled_example"]) for e in edits
                                      if e.get("labeled_example"))
+            # 같은 이터의 뒤 후보가 같은 원칙을 또 지우지 못하게 누적한다.
+            spent_deletes.update(str(e["_was"]) for e in edits
+                                 if e.get("op") == "delete" and e.get("_was"))
             for b in bad:
                 log(f"[iter {it}] PE 편집 무시: edit {b['edit']} {b['reason']}")
             return {**pe_blob, "edits": edits}, bad
@@ -1693,10 +1739,16 @@ def main() -> int:
                                    if any(c["latency_bin"] == b for c in picked))
                         + f" / gap {min(c['gap'] for c in picked):.3f}~"
                           f"{max(c['gap'] for c in picked):.3f}")
+                # **조각 번역을 함께 준다.** 이것이 "왜 그 자리가 나쁜가" 의 증거다 — 조각을 따로
+                # 번역해 이어붙인 결과를 보면 모델이 원문만 보고 추측하지 않는다. 건당 356 → 750
+                # 토큰이 되지만 PE 입력에 여유가 크다(실측: 호출 하나 37,700 토큰 중 사례가 2,851,
+                # 나머지 34,849 가 시스템·단위·이력·예시다. 컨텍스트 400K).
                 extra["measured_cases"] = [
                     {"id": c["id"], "latency_bin": c["latency_bin"], "gap": c["gap"],
                      "current_cuts": (c.get("policy") or {}).get("text"),
+                     "current_pieces": (c.get("policy") or {}).get("pieces"),
                      "target_cuts": (c.get("target") or {}).get("text"),
+                     "target_pieces": (c.get("target") or {}).get("pieces"),
                      "cuts_the_target_drops": [d for d in (c.get("diff") or {}).get("dropped", [])][:4],
                      "cuts_the_target_adds": [d for d in (c.get("diff") or {}).get("added", [])][:4]}
                     for c in picked]
@@ -2091,17 +2143,35 @@ def main() -> int:
             verdict = "reject"
 
         if verdict == "confirm":
-            log("[iter] 경계선 — 신선한 캐시로 재채점")
-            tmp = JsonCache(run_dir / "cache" / f"segment_confirm_{it}.json")
-            rows2, _m2 = evaluate(gw, cand, devA, labA, spaced, min_gap, t_grid, tmp,
-                                  a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
+            # **양쪽을 새로 뽑아 다시 잰다.** 후보만 다시 뽑으면 반쪽이다 — 2026-09-19 judge25 를
+            # 사후에 재현해 보니 사라진 이득 0.0101 중 **0.0064 가 기준선 쪽**이었다(같은 dev 500·
+            # 같은 v0 인데 분절만 새로 뽑으니 0.5514 → 0.5578). 기준선 한 벌은 후보 전부가 공유해서
+            # 그게 낮게 뽑히면 후보가 다 같이 올라간다 — judge25 이터 2 는 서로 다른 편집 넷 중
+            # **셋이 동시에** 하한 > 0 이었다. 그 채택이 test 560 에서 −0.0070 으로 뒤집혔다.
+            log(f"[iter {it}] 경계선(하한 {boot['lo']:+.4f}) — 양쪽을 새 추출로 재채점")
+            t0 = time.perf_counter()
+            # 파일 이름에 **런 이름**이 들어가야 한다 — `cache/` 는 from-run 으로의 심볼릭
+            # 링크라 여러 런이 한 디렉토리를 쓴다. 이터 번호만 넣으면 다음 런의 같은 이터가
+            # 이 파일을 그대로 읽어 "새 추출" 이 아니게 된다(v0 가 고정이라 기준선에서 반드시
+            # 부딪힌다).
+            tmp = JsonCache(run_dir / "cache" / f"segment_confirm_{run_dir.name}_{it}.json")
+            with ThreadPoolExecutor(max_workers=2) as ex:
+                f_c = ex.submit(segment_rows, cand, devA, labA, tmp)
+                f_b = ex.submit(segment_rows, best, devA, labA, tmp)
+                rows2, _m2 = f_c.result()
+                rows2b, _m2b = f_b.result()
             tmp.flush()
-            s2 = policy_sets(rows2, devA, spaced, min_gap, a.min_chunk, a.max_k)
-            h2 = hset_of(devA, labA, s2)
-            k2 = sorted(k for k in set(h2) & set(cur_h) if k[0] not in excl)
-            gain = hset.paired_bootstrap([h2[k] for k in k2], [cur_h[k] for k in k2],
+            h2 = hset_of(devA, labA, policy_sets(rows2, devA, spaced, min_gap,
+                                                 a.min_chunk, a.max_k))
+            h2b = hset_of(devA, labA, policy_sets(rows2b, devA, spaced, min_gap,
+                                                  a.min_chunk, a.max_k))
+            k2 = sorted(k for k in set(h2) & set(h2b) if k[0] not in excl)
+            gain = hset.paired_bootstrap([h2[k] for k in k2], [h2b[k] for k in k2],
                                          clusters=[i for i, _k in k2])
-            log(f"[iter {it}] 재채점 Δ {gain['mean']:+.4f} [{gain['lo']:+.4f}, {gain['hi']:+.4f}]")
+            timing["confirm_redraw"] = round(time.perf_counter() - t0, 1)
+            log(f"[iter {it}] 재추출 확인 Δ {gain['mean']:+.4f} [{gain['lo']:+.4f}, "
+                f"{gain['hi']:+.4f}] 짝 {gain['n']} / 기준선 {st.mean(h2b.values()):.4f} "
+                f"(원 추출 {st.mean(cur_h.values()):.4f}) / {timing['confirm_redraw']:.0f}초")
             verdict = "accept" if gain["lo"] > 0 else "reject"
 
         if verdict == "reject" and a.confirm_dev_b and promising(boot):

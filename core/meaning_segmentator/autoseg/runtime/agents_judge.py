@@ -716,11 +716,18 @@ def is_prohibition(text: str) -> bool:
     return not any(m in t for m in BINDING_MARKERS)
 
 
-def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
+def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, list[dict]]:
     """후보 역할별 제약을 코드로 건다. 어기는 편집은 건너뛴다.
 
     같은 이터에 보폭이 다른 후보를 섞기 위해서다 — 원칙을 통째로 갈아끼운 후보(judge05~08 의
-    기본형)는 매번 전 구간을 흔들었고, 어느 편집이 무엇을 바꿨는지도 남지 않았다."""
+    기본형)는 매번 전 구간을 흔들었고, 어느 편집이 무엇을 바꿨는지도 남지 않았다.
+
+    `spent` 는 `{"deleted": {본문 앞부분, ...}}` — **이미 시도한 삭제를 막는다.** `prune` 은
+    judge23·24 에서 일곱 번 전부 같은 원칙을 지웠다. finding 을 갈라 줘도, 채택으로 프롬프트가
+    바뀐 뒤에도 그랬다 — 기각되면 프롬프트가 안 바뀌고 프롬프트가 같으면 "가장 근거 약한 원칙"
+    도 같다. `sibling_candidates` 로 보여주기만 하면 무시하므로 코드로 거부해야 하고, 그러면
+    재시도 경로(`engineer:role_retry`)가 사유를 주고 다시 부른다. **id 로 추적하면 안 된다** —
+    id 는 이터마다 다시 매겨져 `C2` 가 매번 다른 원칙을 가리킨다. 본문으로 본다."""
     edits = [e for e in (edits or []) if isinstance(e, dict)]
     if role == SHORTEN_ROLE:
         # 줄이라는 패스에서 PE 가 예시를 더 넣었다(judge10 iter 2: E2·E4 삭제 −1596 에 E_end +262).
@@ -743,6 +750,23 @@ def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
             keep = []
         return keep, bad
     if role == "prune":
+        # **이미 시도한 삭제는 막는다.** 위 `spent` 주석 참고 — 일곱 번 연속 같은 원칙을 지웠다.
+        gone = set((spent or {}).get("deleted") or ())
+        if gone:
+            bad0 = []
+            keep0 = []
+            for n, e in enumerate(edits):
+                was = str(e.get("_was") or "")[:80]
+                if was and any(was[:60] and was[:60] == g[:60] for g in gone):
+                    bad0.append({"edit": n, "id": e.get("id"),
+                                 "reason": "prune 인데 이미 시도한 원칙을 또 지운다 — "
+                                           "다른 단위를 고를 것"})
+                else:
+                    keep0.append(e)
+            if bad0:
+                edits = keep0
+                if not edits:
+                    return [], bad0
         # 빼기 — 더하기만 스물넷 연속 음수였으므로 반대 방향을 시험한다. 한 건, 삭제, 원칙 단위만.
         bad = [{"edit": n, "id": e.get("id"), "reason": "prune 인데 둘째 이후 편집"}
                for n, e in enumerate(edits) if n > 0]

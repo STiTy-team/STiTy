@@ -727,16 +727,22 @@ class InducePicksTest(unittest.TestCase):
     """`induce` 사례 선정 — 구간 비중을 사례 배분과 맞추고, 예시와 극단을 제한한다."""
 
     def cases(self):
+        """실측 분포를 흉내 낸다 — ≤3 이 57%, gap 은 구간과 무관하게 퍼져 있다.
+
+        gap 을 한 구간에 몰아 두면(≤5 만 0.7대) 상위 절반을 잘랐을 때 그 구간만 남아 층화가
+        의미를 잃는다. judge24 실측은 gap 중앙 0.17~0.52 에 구간이 고르게 섞여 있었다."""
         out = []
-        # ≤3 이 많고 gap 은 ≤5 쪽이 크게 나오는 실제 분포를 흉내 낸다
-        for i in range(12):
-            out.append({"id": f"a{i}", "latency_bin": "≤3", "gap": 0.60 - i * 0.01,
-                        "policy": {"H_set": 0.01 if i < 8 else 0.30}})
+        for i in range(57):
+            out.append({"id": f"a{i}", "latency_bin": "≤3", "gap": 0.80 - i * 0.01,
+                        "policy": {"H_set": 0.01 if i % 2 == 0 else 0.30}})
+        for i in range(28):
+            out.append({"id": f"b{i}", "latency_bin": "≤5", "gap": 0.78 - i * 0.01,
+                        "policy": {"H_set": 0.01 if i % 2 == 0 else 0.30}})
+        for i in range(9):
+            out.append({"id": f"c{i}", "latency_bin": "≤7", "gap": 0.75 - i * 0.02,
+                        "policy": {"H_set": 0.20}})
         for i in range(6):
-            out.append({"id": f"b{i}", "latency_bin": "≤5", "gap": 0.75 - i * 0.01,
-                        "policy": {"H_set": 0.01}})
-        for i in range(2):
-            out.append({"id": f"c{i}", "latency_bin": "≤7", "gap": 0.70,
+            out.append({"id": f"d{i}", "latency_bin": "≤10", "gap": 0.70 - i * 0.03,
                         "policy": {"H_set": 0.20}})
         return out
 
@@ -752,9 +758,25 @@ class InducePicksTest(unittest.TestCase):
         self.assertFalse({c["id"] for c in got} & {"a0", "b0", "b1"})
 
     def test_caps_contra_killed(self):
+        """모순으로 죽은 사례는 절반까지 — **채울 수 있을 때만** 지킨다.
+
+        상위 절반으로 좁히면 그 안이 대부분 죽은 사례라(gap 큰 자리가 곧 그런 자리다) 상한을
+        끝까지 지키면 묶음이 8개에서 6개로 줄어든다. 개수를 채우는 쪽이 낫다고 판단했다."""
         got = lj.induce_picks(self.cases(), set(), 8)
+        self.assertEqual(len(got), 8, "개수를 못 채웠다")
         killed = sum(1 for c in got if c["policy"]["H_set"] < 0.05)
-        self.assertLessEqual(killed, 4, "모순으로 죽은 사례가 절반을 넘는다")
+        self.assertLessEqual(killed, 4, "살아 있는 사례가 충분한데 상한을 넘었다")
+
+    def test_uses_only_top_half(self):
+        """하위 절반(거의 맞힌 자리)은 쓰지 않는다 — judge24 에서 네 번 다 해로웠다."""
+        cs = self.cases()
+        median = sorted(c["gap"] for c in cs)[len(cs) // 2]
+        for part in (0, 1):
+            got = lj.induce_picks(cs, set(), 8, part=part, parts=2)
+            self.assertEqual(len(got), 8)
+            worst = min(c["gap"] for c in got)
+            self.assertGreaterEqual(worst, median - 1e-9,
+                                    f"part {part} 가 중앙값 {median:.3f} 아래를 썼다({worst:.3f})")
 
     def test_empty_pool(self):
         self.assertEqual(lj.induce_picks([], set(), 8), [])
