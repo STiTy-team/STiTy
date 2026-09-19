@@ -933,6 +933,100 @@ class KindEnforced(unittest.TestCase):
                                     "fallback")
         self.assertEqual((len(keep), bad), (1, []))
 
+    def test_fallback_instruction_names_the_section_that_survives(self):
+        """역할 지시문이 가리키는 칸과 `enforce_kind` 가 허용하는 칸이 같아야 한다.
+
+        같지 않으면 그 역할의 후보는 **매 이터 조용히 사라진다.** 지시문이 이항 편집을
+        `[Core Principles]` 에 넣으라고 적혀 있던 동안, PE 는 적힌 대로 C 단위에 넣었고
+        `enforce_kind` 는 적힌 대로 버렸다. 두 번 시도하고 후보가 반려되는데, 로그만 보면
+        PE 가 말을 안 들은 것처럼 보인다. 점수에 안 잡히는 종류의 손실이라 지시문 쪽을
+        문자열로 못 박는다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        spec = aj.ENGINEER_SYSTEM[aj.ENGINEER_SYSTEM.index('"fallback"'):]
+        spec = spec[:spec.index('"induce"')]          # 다음 역할 설명이 시작되는 자리까지
+        self.assertIn('"insert_after" into [Order Principles]', spec)
+        self.assertNotIn('"insert_after" into [Core Principles]', spec)
+
+
+class ProcedureRole(unittest.TestCase):
+    """`procedure` 는 **점수를 만드는 절차**를 고치는 역할이다. 지금까지 실측된 이득이 그 절에서만
+    나왔는데(홀드아웃 560문장 +0.0084) 루프는 그 절을 건드릴 수 없었다 — 이득이 있는 자리를 빼고
+    없는 자리만 뒤지고 있었다는 뜻이다. 제약이 좁은 이유는 그 절이 **측정의 정의**와 **절차**를
+    한 섹션에 같이 담고 있어서다. 정의가 바뀌면 프롬프트가 측정과 다른 말을 하고, 그때 오르는
+    점수는 판단이 나아진 것이 아니다."""
+
+    PROC = "- Work in bands, then order inside each band by repeated selection."
+
+    def edit(self, uid, text, was, op="replace"):
+        return [{"op": op, "id": uid, "text": text, "_was": was}]
+
+    def test_rewrites_a_procedure_line(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            self.edit("S7", self.PROC + " Compare the pair on the target itself.", self.PROC),
+            "procedure")
+        self.assertEqual((len(keep), bad), (1, []))
+
+    def test_refuses_the_measurement_definitions(self):
+        """S1~S3 은 무엇을 측정했는지를 말하는 줄이다 — `- ` 로 시작하지 않는 것으로 가린다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            self.edit("S3", "- target = cohesion", "target = cohesion x (1 - contra)"),
+            "procedure")
+        self.assertEqual(keep, [])
+        self.assertIn("측정의 정의", bad[0]["reason"])
+
+    def test_only_replace(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for op in ("insert_after", "delete"):
+            keep, bad = aj.enforce_role(self.edit("S7", "- x", self.PROC, op=op), "procedure")
+            self.assertEqual(keep, [], op)
+            self.assertIn("replace 만 된다", bad[0]["reason"])
+
+    def test_refuses_other_sections(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.edit("C1", "- x", "- a"), "procedure")
+        self.assertEqual(keep, [])
+        self.assertIn("[Scoring Rules] 단위가 아니다", bad[0]["reason"])
+
+    def test_refuses_extra_lines(self):
+        """줄 수가 변하면 다음 이터의 S 번호가 밀려 S1~S3 이 정의가 아니게 된다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            self.edit("S7", "- first line\n- second line", self.PROC), "procedure")
+        self.assertEqual(keep, [])
+        self.assertIn("여러 줄", bad[0]["reason"])
+
+    def test_caps_growth(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        big = self.PROC + "x" * (aj.PROCEDURE_SLACK + 1)
+        keep, bad = aj.enforce_role(self.edit("S7", big, self.PROC), "procedure")
+        self.assertEqual(keep, [])
+        self.assertIn("늘었다", bad[0]["reason"])
+
+    def test_finding_roles_may_not_touch_the_procedure(self):
+        """발견을 구현하는 역할이 절차를 고치면 무엇이 점수를 움직였는지 갈라지지 않는다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for kind in ("check", "order"):
+            keep, bad = aj.enforce_kind(
+                [{"op": "replace", "id": "S7", "text": "- x"}], kind)
+            self.assertEqual(keep, [], kind)
+            self.assertIn("[Scoring Rules]", bad[0]["reason"])
+
+    def test_takes_no_finding_and_runs_once_per_iter(self):
+        import core.meaning_segmentator.autoseg.loop_judge as lj
+        self.assertIn("procedure", lj.UNPAIRED_ROLES)
+        plan = lj.candidate_plan(["fallback", "single_small", "replace", "procedure"],
+                                 2, True, 4, 8, ["check", "order"])
+        self.assertEqual([r for r, _ in plan].count("procedure"), 1)
+
+    def test_instruction_points_at_the_measured_lever(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        spec = aj.ENGINEER_SYSTEM[aj.ENGINEER_SYSTEM.index('"procedure"'):]
+        spec = spec[:spec.index('"fallback"')]
+        self.assertIn('"replace" on an "S" unit', spec)
+        self.assertIn("cohesion, contra", spec)          # 못 고치는 줄이 무엇인지 말해 준다
+
 
 class FixedSkeleton(unittest.TestCase):
     """`[Scoring Rules]` 는 **사람이 정하고 코드가 주입하는** 골격이다. Writer 에게 맡기면 선언형
@@ -959,7 +1053,14 @@ class FixedSkeleton(unittest.TestCase):
         self.assertNotIn("spread distinct integers\n", fixed)
         self.assertEqual(aj.check_skeleton(fixed, base=fixed), [])
         # 판단 두 칸과 예시는 그대로 남는다.
-        self.assertEqual([u["id"] for u in aj.edit_units(fixed)], ["C1", "O1", "E1"])
+        self.assertEqual([u["id"] for u in aj.edit_units(fixed) if u["id"][0] != "S"],
+                         ["C1", "O1", "E1"])
+        # 주입한 골격은 정의 세 줄(S1~S3)과 절차 네 줄(S4~S7)로 쪼개진다 — `procedure` 역할이
+        # 고칠 수 있는 것은 뒤의 넷이고, 앞의 셋은 무엇을 측정했는지를 말하는 줄이다.
+        srule = [u for u in aj.edit_units(fixed) if u["id"][0] == "S"]
+        self.assertEqual(len(srule), 7)
+        self.assertEqual([u["id"] for u in srule if u["text"].startswith("- ")],
+                         ["S4", "S5", "S6", "S7"])
 
     def test_writer_is_told_what_each_section_decides(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj

@@ -614,6 +614,11 @@ def guard_breaches(bins: dict[str, dict], guard: float, thin: int = 300) -> list
             if v["mean"] < -(guard * (2 if v["pairs"] < thin else 1))]
 
 
+# v0 후보 둘의 H_set 차이가 이 값 안이면 점수로 고르지 않고 포맷 준수로 고른다. dev 500 한 벌
+# 채점의 표준편차 실측값(0.0039)이다 — 그보다 작은 차이는 프롬프트의 차이가 아니라 분절의 비결정론이다.
+V0_TIE_BAND = 0.004
+
+
 # 역할이 담을 수 있는 발견의 형태. **형식과 내용이 맞아야 한다** — 두 자리를 가르는 비교를
 # 결속문 역할(`single_small`)에 넣으면 비교가 단항으로 납작해지고, 단항 조건을 선호문 역할
 # (`fallback`)에 넣으면 비교가 아닌 것을 비교문처럼 쓰느라 군더더기가 붙는다.
@@ -624,7 +629,9 @@ ROLE_KINDS = {"fallback": {"order"},
               "induce": {"check"},
               "narrow_rule": {"check"},
               "examples_only": {"check"}}
-UNPAIRED_ROLES = {"prune"}
+# 발견과 짝짓지 않는 역할 — 이터당 하나다. `prune` 은 단위를 지우는 일이고, `procedure` 는
+# 점수를 만드는 절차를 다시 쓰는 일이라 둘 다 Critic 의 발견을 구현하는 역할이 아니다.
+UNPAIRED_ROLES = {"prune", "procedure"}
 
 
 def candidate_plan(roles: list[str], n_find: int, cross: bool, n_default: int,
@@ -961,7 +968,10 @@ def main() -> int:
                         "narrow_rule 은 [Core Principles] 에 **추가**만 한다(insert_after 1개) — "
                         "실측상 채택된 둘은 좁은 점검 추가였고 원칙 재조정 다섯은 전부 실패했다. 후보 j 는 "
                         "roles[j %% len] 을 받는다. rewrite 는 Writer 가 [Core Principles]·[Examples] "
-                        "를 새로 쓴다(--generate-v0 런에서만). 예: free,examples_only,rewrite")
+                        "를 새로 쓴다(--generate-v0 런에서만). procedure 는 [Scoring Rules] 의 "
+                        "절차 줄 하나를 다시 쓴다 — 지금까지 실측된 이득은 그 절에서만 나왔고"
+                        "(홀드아웃 560문장 +0.0084) 루프는 그 절을 건드릴 수 없었다. 발견과 짝짓지 "
+                        "않으므로 이터당 하나다. 예: free,examples_only,rewrite")
     p.add_argument("--case-alloc", default="uniform", choices=("uniform", "loss"),
                    help="구간별 사례 수 — uniform: 한 바퀴씩 균등 / loss: 구간별 손실 몫에 비례(최소 1). "
                         "test-A 실측은 손실의 61%% 가 ≤3, 26%% 가 ≤5 인데 균등 배분은 그 둘에 6/12 만 준다")
@@ -1022,6 +1032,11 @@ def main() -> int:
                         "올린다(선별). lo=하한 > 0 만 올린다. **기준선을 새로 뽑으면 하한 > 0 은 거의 "
                         "안 나온다** — 세 런 후보 66개를 기준선 보정해 세어 보니 하한 > 0 은 1개(1.5%%)고 "
                         "평균 > 0 은 13개(20%%)였다. lo 로 두면 2차가 한 번도 안 돌 수 있다")
+    p.add_argument("--gate-min", type=float, default=0.0,
+                   help="1차 문턱의 값. 기본 0 은 '부호만 맞으면 올린다' 라서 **효과가 없는 후보의 "
+                        "절반이 통과한다** — 잡음이 양수로 떨어진 쪽이 전부 올라간다. 2차가 채택할 수 "
+                        "있는 하한(3벌 대 3벌이면 +0.0062)의 절반쯤을 요구하면, 거기 닿을 수 없는 "
+                        "후보에 2차 채점을 쓰지 않는다. 후보당 2벌이 약 $5 라 이 문턱이 곧 비용이다")
     p.add_argument("--adopt-rule", default="lo", choices=("lo", "mean"),
                    help="채택 문턱 — lo: CI 하한 > 0.005 (종전) / mean: 평균 > 0 + 퇴행 가드. "
                         "스텝 효과(+0.003~0.01)가 200문장 se 보다 작아 lo 는 원리적으로 못 넘는다")
@@ -1440,14 +1455,35 @@ def main() -> int:
                                             else (devA, labA, names[0]))
             scored = []
             for c, pr in enumerate(cands):
-                _r, _s, h, _m = score_prompt(pr, sel_sents, sel_lab, f"v0 후보 {c} ({sel_name})")
+                _r, _s, h, m = score_prompt(pr, sel_sents, sel_lab, f"v0 후보 {c} ({sel_name})")
                 save_usage(run_dir / "iter_00")
-                scored.append((st.mean(h.values()), c, pr))
+                scored.append((st.mean(h.values()), c, pr,
+                               m.get("format_pass_rate_no_retry", 0.0),
+                               -m.get("first_pass_violations", {}).get("realigned", 0)))
             scored.sort(reverse=True)
-            log(f"[v0] 후보 {sel_name} H_set {[round(x[0], 4) for x in scored]} → {scored[0][1]} 채택")
-            prompt = scored[0][2]
+            # **잡음 폭 안에서는 H_set 으로 고르지 않는다.** judge33b 에서 후보 둘이 0.5589 / 0.5588
+            # 로 갈렸다 — 한 벌 sd 가 0.0039 이므로 그 차이는 sd 의 1/40 이고, 이긴 쪽이 1차 포맷
+            # 통과율 0.734 / 재정렬 129 로 진 쪽(0.81 / 95)보다 나빴다. 재정렬은 모델이 순서 규약을
+            # 어긴 것을 코드가 고쳐 준 횟수다. 그 비율이 높은 v0 위에서 개정을 재면 포맷 준수가
+            # 흔들리는 몫이 Δ 에 섞인다 — 순위 품질이 아닌 것으로 이기고 지는 후보가 생긴다.
+            # 그래서 최고점에서 한 벌 sd 안에 있는 후보들 중에서는 **1차 통과율이 높고 재정렬이
+            # 적은 쪽**을 고른다. 둘 다 같으면 먼저 생성된 후보다.
+            band = [x for x in scored if scored[0][0] - x[0] <= V0_TIE_BAND]
+            pick = max(band, key=lambda x: (x[3], x[4], -x[1]))
+            log(f"[v0] 후보 {sel_name} H_set {[round(x[0], 4) for x in scored]} / "
+                f"1차 {[(x[1], x[3], -x[4]) for x in scored]} "
+                f"→ 동점대 {[x[1] for x in band]} 중 {pick[1]} 채택")
+            prompt = pick[2]
     else:
         log("[stop] --prompt 또는 --generate-v0 가 필요하다")
+        return 2
+    # **역할 이름은 자유 문자열이라 오타가 조용히 통과한다.** `enforce_role` 은 모르는 역할에
+    # 제약을 걸지 않으므로 `procedre` 라고 쓰면 아무 제약 없는 후보가 되고, 그 후보의 Δ 는
+    # 어느 역할의 값도 아니다. 런을 태우기 전에 여기서 죽인다.
+    unknown = [r for r in (a.candidate_roles or "").split(",")
+               if r.strip() and r.strip() not in aj.ROLES]
+    if unknown:
+        log(f"[stop] 모르는 후보 역할: {unknown} — 쓸 수 있는 것은 {list(aj.ROLES)}")
         return 2
     if not a.score_only:
         v0_path.write_text(prompt, encoding="utf-8")
@@ -1970,7 +2006,7 @@ def main() -> int:
                                                  if x["id"] not in used_examples]
             if role != "free":
                 log(f"[iter {it}] 후보 {j} 역할 {role}")
-            f_cur = (findings[f_idx] if findings and role not in ("induce", "rewrite")
+            f_cur = (findings[f_idx] if findings and role not in ("induce", "rewrite", "procedure")
                      else None)
             pe, cand, note, deltas, tries = (rewrite(j) if role == "rewrite"
                                              else revise(j, extra, role, f_cur))
@@ -2377,8 +2413,8 @@ def main() -> int:
             # 통과가 거의 안 난다(세 런 후보 66개를 보정해 세니 1개, 1.5%). 평균 > 0 이면 20% 다.
             gkey = (lambda b: b["mean"]) if a.gate_rule == "mean" else (lambda b: b["lo"])
             gname = "평균" if a.gate_rule == "mean" else "하한"
-            passers = [f for f in pool if gkey(f["boot"]) > 0]
-            log(f"[iter {it}] 1차({gname} > 0) 통과 {len(passers)}/{len(pool)}개"
+            passers = [f for f in pool if gkey(f["boot"]) > a.gate_min]
+            log(f"[iter {it}] 1차({gname} > {a.gate_min:+.4f}) 통과 {len(passers)}/{len(pool)}개"
                 + (" — " + ", ".join(f"후보 {f['j']}" for f in passers) if passers else ""))
             confirm_draws(passers)
             ok = [f for f in passers if f["boot_avg"]["lo"] > 0]

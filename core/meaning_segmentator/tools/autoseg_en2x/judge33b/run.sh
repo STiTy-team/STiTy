@@ -54,11 +54,23 @@
 # `--resume` 은 첫 실행을 $2.81 에서 멈추고 예산만 올려 이은 것이다 — v0 후보 파일 둘이 남아
 # Writer 를 다시 부르지 않고, 후보 0 의 train 채점은 분절 캐시에서 그대로 읽는다.
 #
+# **두 번째 재개 (01:4x).** 첫 이터에서 `fallback` 후보가 두 번 연속 반려됐다 — PE 가 편집을
+# [Core Principles] 에 넣었고(C7, 그다음 C_end) 이항 발견은 `[Order Principles]` 단위여야 하므로
+# `enforce_kind` 가 둘 다 버렸다. PE 가 틀린 게 아니라 **역할 지시문이 [Core Principles] 에 넣으라고
+# 적혀 있었다.** 그대로 두면 세 이터 모두 네 후보 중 하나를 같은 이유로 잃고, 이 런이 답하려던
+# "이항 문장을 제 칸에 넣으면 원칙 칸에 넣었을 때보다 나은가" 의 직접 비교 대상이 사라진다.
+# 지시문을 고쳤고, 돌던 프로세스는 옛 모듈을 물고 있어 재시작해야 새 지시문을 읽는다.
+# 기준선 3벌은 분절 캐시에 남아 있어(segment_base2/base3_judge33b.json) 재개 손실은 첫 이터의
+# 에이전트 호출뿐이다.
+#
 #   tmux new-session -d -s judge33b -c <저장소> "bash core/meaning_segmentator/tools/autoseg_en2x/judge33b/run.sh"
 set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
 set -a; [ -f ./.env ] && . ./.env; set +a
 export PYTHONPATH=. PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+# 추적은 끈다 — 월 한도가 소진돼 429 만 돌아오고 로그가 그 오류로 가득 찬다(23분에 152KB).
+# 비용 집계는 `Usage.by_purpose` 가 맡아 추적과 무관하다.
+export LANGSMITH_TRACING=0
 LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/judge33b.log
 
 .venv-autoseg/bin/python -u -m core.meaning_segmentator.autoseg.loop_judge \
