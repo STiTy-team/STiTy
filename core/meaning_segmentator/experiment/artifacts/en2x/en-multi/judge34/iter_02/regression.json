@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00181,
+  "lo": -0.00934,
+  "hi": 0.00606,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": -0.008,
+  "≤5": 0.0038,
+  "≤7": -0.0009,
+  "≤10": 0.0014,
+  "≤99": 0.0077
+ },
+ "n_worse": 1985,
+ "n_better": 2071,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7436,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6438,
+   "before": "Internal poisoning may not be immediately ‖ apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_486",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.6188,
+   "before": "Sikhism is a religion ‖ from the Indian sub-continent. ‖ It originated in the Punjab ‖ region ‖ during the 15th century ‖ from a sectarian split ‖ within the Hindu ‖ tradition.",
+   "after": "Sikhism is a religion ‖ from the Indian sub-continent. ‖ It originated in the Punjab region ‖ during the 15th century ‖ from a sectarian split ‖ within the ‖ Hindu ‖ tradition."
+  },
+  {
+   "id": "en_us_915",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6133,
+   "before": "Real-time text translator ‖ apps ‖ – applications ‖ that are capable of automatically translating whole segments of text from one language into another.",
+   "after": "Real-time text translator apps ‖ – applications that are capable of automatically translating whole segments of text ‖ from one language ‖ into another."
+  },
+  {
+   "id": "en_us_1536",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.613,
+   "before": "Local authorities are warning residents in the vicinity of the plant ‖ to stay indoors, ‖ turn off air-conditioners ‖ and ‖ not to drink tap water.",
+   "after": "Local authorities are warning residents in the vicinity of the plant ‖ to stay indoors, ‖ turn off air-conditioners ‖ and not to drink tap ‖ water."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7364,
+   "before": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7028,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, ‖ 2020\".",
+   "after": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, ‖ but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_1630",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.6571,
+   "before": "Arly Velasquez of Mexico ‖ finished fifteenth in the men's sitting Super-G. ‖ New Zealand's Adam Hall ‖ finished ninth in the men's standing Super-G.",
+   "after": "Arly Velasquez of Mexico finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall finished ninth ‖ in the men's standing Super-G."
+  },
+  {
+   "id": "en_us_1450",
+   "k": 3,
+   "bin": "≤10",
+   "delta": 0.6508,
+   "before": "They found the Sun operated on the same basic principles ‖ as other stars: ‖ The activity of all stars in the system was found to be driven by their luminosity, ‖ their rotation, and nothing else.",
+   "after": "They found the Sun operated on the same basic principles ‖ as other stars: ‖ The activity of all stars in the system was found to be driven by their luminosity, their rotation, ‖ and nothing else."
+  },
+  {
+   "id": "en_us_877",
+   "k": 1,
+   "bin": "≤7",
+   "delta": 0.6236,
+   "before": "For those unfamiliar with medical jargon, ‖ the words infectious and contagious have distinct meanings.",
+   "after": "For those unfamiliar with medical jargon, the words infectious and contagious ‖ have distinct meanings."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 6.55,
+   "2": 3.893,
+   "3": 2.72,
+   "4": 2.109,
+   "5": 1.725,
+   "6": 1.525,
+   "7": 1.38,
+   "8": 1.283,
+   "9": 1.213,
+   "10": 1.162,
+   "11": 1.12,
+   "12": 1.087,
+   "13": 1.074
+  },
+  "revision": {
+   "1": 6.478,
+   "2": 3.941,
+   "3": 2.687,
+   "4": 2.114,
+   "5": 1.734,
+   "6": 1.524,
+   "7": 1.384,
+   "8": 1.28,
+   "9": 1.208,
+   "10": 1.162,
+   "11": 1.124,
+   "12": 1.101,
+   "13": 1.076
+  },
+  "delta": {
+   "1": -0.072,
+   "2": 0.048,
+   "3": -0.033,
+   "4": 0.005,
+   "5": 0.009,
+   "6": -0.001,
+   "7": 0.004,
+   "8": -0.003,
+   "9": -0.005,
+   "10": 0.0,
+   "11": 0.004,
+   "12": 0.014,
+   "13": 0.002
+  }
+ },
+ "why": "The inserted fallback made the model prefer later intra-clause cuts that ‘complete the predicate’ (avoiding verb–object splits). That moved the rank-2 position up while slightly lowering rank-1, producing small gains for long-latency bins but removing many early intra-clause cut options that short-latency bins rely on, so harms concentrate in the short bins (notably ≤3/≤7) even though the overall mean is near zero.",
+ "lesson": "Keep the predicate-completion preference narrowly scoped so it does not eliminate early intra-clause cut options that short-latency budgets need (i.e., avoid suppressing top-1 early cuts while promoting later predicate-completing cuts).",
+ "blamed": [
+  "O_end"
+ ]
+}

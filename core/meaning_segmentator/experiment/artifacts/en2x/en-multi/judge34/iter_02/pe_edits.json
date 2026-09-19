@@ -1,0 +1,120 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "When two cuts are inside the same clause and one completes the clause's predicate while the other splits the predicate and its object, prefer the later, predicate-completing cut."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 179
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9397,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Do not cut between a verb (or verbal phrase) and its object/complement; keep the verb plus its object/complement in the same segment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 134
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9352,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "text": "When two cuts are inside the same clause and one completes the clause's predicate while the other splits the predicate and its object, prefer the later, predicate-completing cut.",
+    "_was": "- When one marker ends a self-contained assertion (the preceding stretch reads as a full statement) and another falls earlier inside that same clause, prefer the marker that ends the assertion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "chars_change": -15
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9203,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "Do not cut between a verb (or verbal phrase) and its object/complement; keep the verb plus its object/complement in the same segment.",
+    "_was": "- Would placing a cut here leave trailing sentence-final material attached to the preceding word, producing an impossible or misleading fragment if the following text is withheld?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": -46
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9172,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "S7",
+    "kind": "change",
+    "text": "- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide, and the lower bands usually hold the most positions. Inside a band, when two positions are otherwise alike, if they lie in the same clause and one completes the clause's predicate while the other splits that predicate from its object or complement, prefer the predicate-completing (later) cut; a line in the Order Principles may override this preference for the configuration it names. Otherwise, prefer the position whose preceding stretch can stand alone as a statement; if both can, prefer the later one. Then fill in the numbers band by band: inside a band, repeatedly select the best remaining position, give it the highest unused integer in that band's range, remove it from consideration, and repeat until every position — including those in the lowest bands — has its own distinct number.",
+    "_was": "- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide, and the lower bands usually hold the most positions. Inside a band, when two positions are otherwise alike, prefer the one whose preceding stretch can stand alone as a statement; if both can, prefer the later one. A line in the Order Principles section overrides that default for the configuration it names; those lines settle the order within a band and never move a position into another band. When neither settles the pair, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "S7",
+    "kind": "change",
+    "chars_change": -202
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9016,
+  "errors": null
+ }
+]

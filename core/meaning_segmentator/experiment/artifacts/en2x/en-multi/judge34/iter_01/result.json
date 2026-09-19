@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00202,
+  "lo": -0.01002,
+  "hi": 0.00639,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00202,
+  "lo": -0.01002,
+  "hi": 0.00639,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Replace O1 to prefer assertion-ending cuts (and, if tied, the later one) to correct the prompt's bias for earlier intra-clause cuts that produced harmful misorderings."
+ ],
+ "findings": [
+  "The prompt prefers earlier intra-clause cuts over markers that end a self-contained assertion, misordering cuts that leave the preceding stretch as a full statement (later assertion-ending cuts are safer).",
+  "The prompt treats as acceptable cuts that detach a short sentence-final complement (object/complement or quoted title/measurement/location), producing misleading or contradictory preceding fragments when that small tail is withheld."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "O1",
+   "kind": "change",
+   "was": "- When one marker ends a self-contained assertion (the preceding stretch reads a",
+   "now": "Prefer the marker that ends a self-contained assertion over an earlier marker in"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0023,
+   "≤5": -0.0043,
+   "≤7": -0.0009,
+   "≤10": 0.0021,
+   "≤99": 0.002
+  },
+  "n_worse": 1979,
+  "n_better": 2052,
+  "why": "Changing O1 to prefer markers that end a self-contained assertion pushed the scorer to pick later, assertion-ending cuts and avoid earlier intra-clause cuts; that shift improved cohesion for longer-latency bins (≤10 and overall) but degraded short-latency bins (≤3 and ≤5). Rank_depth drops at the top positions show the edit changed the model's early choices (so it could and did hurt short-budget behavior), and the tails illustrate this trade — e.g. better grouping of names/enumerations but worse attachment/splitting of dependent clauses like the 'Symptoms, such as vomiting...' example.",
+  "lesson": "Do not globally prefer later assertion-ending markers at the cost of removing earlier intra-clause cut candidates needed by short-latency budgets; preserve early cut options (or scope the preference) so short-depth rankings are not degraded.",
+  "blamed": [
+   "O1"
+  ]
+ }
+}

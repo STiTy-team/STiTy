@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt permits cuts that split a verb (or verbal phrase) from the words that complete its object or complement, producing misleading or contradiction-prone preceding fragments.",
+    "evidence": "en_us_381, en_us_633, en_us_936, en_us_738 — each policy kept a cut immediately after a verb or verbal phrase while the following words complete its object/complement; the offline target keeps the verb+object together.",
+    "type_predicate": "Positions immediately after a verb or verbal phrase where the next words continue or complete that verb's direct object or complement (the object/complement begins at the next word).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a verb (or verbal phrase) and its object/complement; keep the verb plus its object/complement in the same segment."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts lie in the same clause, the prompt sometimes prefers an earlier intra-clause cut over the later cut that completes the clause's predicate, worsening cohesion.",
+    "evidence": "en_us_633, en_us_381, en_us_1116 — in each sentence the prompt preferred an earlier cut that splits predicate structure while the offline target prefers the later cut that yields a self-contained preceding predicate.",
+    "type_predicate": "Sentences where two candidate cuts occur inside the same clause and one cut falls between a verb and its object/complement while the other falls after the object/complement (both markers present).",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two cuts are inside the same clause and one completes the clause's predicate while the other splits the predicate and its object, prefer the later, predicate-completing cut."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts lie in the same clause, the prompt sometimes prefers an earlier intra-clause cut over the later cut that completes the clause's predicate, worsening cohesion.",
+   "evidence": "en_us_633, en_us_381, en_us_1116 — in each sentence the prompt preferred an earlier cut that splits predicate structure while the offline target prefers the later cut that yields a self-contained preceding predicate.",
+   "type_predicate": "Sentences where two candidate cuts occur inside the same clause and one cut falls between a verb and its object/complement while the other falls after the object/complement (both markers present).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two cuts are inside the same clause and one completes the clause's predicate while the other splits the predicate and its object, prefer the later, predicate-completing cut.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt permits cuts that split a verb (or verbal phrase) from the words that complete its object or complement, producing misleading or contradiction-prone preceding fragments.",
+   "evidence": "en_us_381, en_us_633, en_us_936, en_us_738 — each policy kept a cut immediately after a verb or verbal phrase while the following words complete its object/complement; the offline target keeps the verb+object together.",
+   "type_predicate": "Positions immediately after a verb or verbal phrase where the next words continue or complete that verb's direct object or complement (the object/complement begins at the next word).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a verb (or verbal phrase) and its object/complement; keep the verb plus its object/complement in the same segment.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

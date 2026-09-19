@@ -1,0 +1,55 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt treats as acceptable cuts that detach a short sentence-final complement (object/complement or quoted title/measurement/location), producing misleading or contradictory preceding fragments when that small tail is withheld.",
+    "evidence": "en_us_337, en_us_378, en_us_738, en_us_1144, en_us_1434, en_us_872, en_us_1601, en_us_936, en_us_334, en_us_89 — in each case the policy kept a cut immediately before a 1–3 word sentence-final phrase (name/location/quoted title or short measurement/object) whose omission made the preceding fragment misleading or contradicted the whole sentence.",
+    "type_predicate": "Markers immediately followed (before sentence end) by a 1–3 word span that functions as the required object or complement completing the preceding clause (e.g. a person/place name, quoted title, short measurement, or noun phrase).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut where the following 1–3 words (ending the sentence) form the required object/complement that completes the preceding clause (names, quoted titles, short measurements, locations)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "The prompt prefers earlier intra-clause cuts over markers that end a self-contained assertion, misordering cuts that leave the preceding stretch as a full statement (later assertion-ending cuts are safer).",
+    "evidence": "en_us_89, en_us_174, en_us_156, en_us_633 — each shows the prompt choosing an earlier marker while the better choice (offline target) is the marker that ends a self-contained preceding assertion or comes after a completed subordinate clause.",
+    "type_predicate": "Pairs of markers in the same clause where one marker ends a self-contained assertion (the preceding stretch reads as a full statement) and the other falls earlier inside that same clause.",
+    "edit": {
+     "where": "order_principles",
+     "action": "replace",
+     "target": "When one marker ends a self-contained assertion",
+     "text": "Prefer the marker that ends a self-contained assertion over an earlier marker inside the same clause; if both end assertions prefer the later marker (later cuts give more disambiguating context)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "The prompt prefers earlier intra-clause cuts over markers that end a self-contained assertion, misordering cuts that leave the preceding stretch as a full statement (later assertion-ending cuts are safer).",
+   "evidence": "en_us_89, en_us_174, en_us_156, en_us_633 — each shows the prompt choosing an earlier marker while the better choice (offline target) is the marker that ends a self-contained preceding assertion or comes after a completed subordinate clause.",
+   "type_predicate": "Pairs of markers in the same clause where one marker ends a self-contained assertion (the preceding stretch reads as a full statement) and the other falls earlier inside that same clause.",
+   "edit": {
+    "action": "replace",
+    "target": "When one marker ends a self-contained assertion",
+    "text": "Prefer the marker that ends a self-contained assertion over an earlier marker inside the same clause; if both end assertions prefer the later marker (later cuts give more disambiguating context).",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt treats as acceptable cuts that detach a short sentence-final complement (object/complement or quoted title/measurement/location), producing misleading or contradictory preceding fragments when that small tail is withheld.",
+   "evidence": "en_us_337, en_us_378, en_us_738, en_us_1144, en_us_1434, en_us_872, en_us_1601, en_us_936, en_us_334, en_us_89 — in each case the policy kept a cut immediately before a 1–3 word sentence-final phrase (name/location/quoted title or short measurement/object) whose omission made the preceding fragment misleading or contradicted the whole sentence.",
+   "type_predicate": "Markers immediately followed (before sentence end) by a 1–3 word span that functions as the required object or complement completing the preceding clause (e.g. a person/place name, quoted title, short measurement, or noun phrase).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut where the following 1–3 words (ending the sentence) form the required object/complement that completes the preceding clause (names, quoted titles, short measurements, locations).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

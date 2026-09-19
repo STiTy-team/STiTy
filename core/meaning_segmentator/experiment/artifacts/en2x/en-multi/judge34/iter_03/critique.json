@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that split sentence-initial multiword names or the head of the initial NP, producing incoherent or misleading preceding stretches.",
+    "evidence": "en_us_1281, en_us_312, en_us_423, en_us_1024, en_us_767 — each case shows the policy cutting inside a sentence-initial multiword proper name or NP while the target keeps the whole name/NP intact so the preceding stretch is a coherent subject.",
+    "type_predicate": "Sentences whose first content words form a multiword named entity or a sentence-initial NP with two or more proper-name words (e.g. X Y Z or The X Y).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside an initial multiword named entity or inside the head of a sentence‑initial NP; keep the full name/NP together so the preceding stretch is a coherent subject."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "For cuts that fall inside the same clause the prompt often prefers earlier intra-clause positions, but the better choice is the later cut that completes the clause's predicate so the preceding segment reads as a standalone assertion.",
+    "evidence": "en_us_633, en_us_9, en_us_174 — in each sentence two candidate cuts lie inside the same clause and the target prefers the later cut that finishes the verb phrase or object, producing a self-contained preceding stretch.",
+    "type_predicate": "Sentences with two candidate cuts inside the same finite clause where the later cut immediately follows the main verb phrase or its object (i.e. it completes the clause's predicate).",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two cuts fall inside the same clause, prefer the later cut if it follows or completes the main verb phrase (i.e. it ends the clause's predicate), because the preceding stretch then reads as a self-contained assertion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "For cuts that fall inside the same clause the prompt often prefers earlier intra-clause positions, but the better choice is the later cut that completes the clause's predicate so the preceding segment reads as a standalone assertion.",
+   "evidence": "en_us_633, en_us_9, en_us_174 — in each sentence two candidate cuts lie inside the same clause and the target prefers the later cut that finishes the verb phrase or object, producing a self-contained preceding stretch.",
+   "type_predicate": "Sentences with two candidate cuts inside the same finite clause where the later cut immediately follows the main verb phrase or its object (i.e. it completes the clause's predicate).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two cuts fall inside the same clause, prefer the later cut if it follows or completes the main verb phrase (i.e. it ends the clause's predicate), because the preceding stretch then reads as a self-contained assertion.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that split sentence-initial multiword names or the head of the initial NP, producing incoherent or misleading preceding stretches.",
+   "evidence": "en_us_1281, en_us_312, en_us_423, en_us_1024, en_us_767 — each case shows the policy cutting inside a sentence-initial multiword proper name or NP while the target keeps the whole name/NP intact so the preceding stretch is a coherent subject.",
+   "type_predicate": "Sentences whose first content words form a multiword named entity or a sentence-initial NP with two or more proper-name words (e.g. X Y Z or The X Y).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside an initial multiword named entity or inside the head of a sentence‑initial NP; keep the full name/NP together so the preceding stretch is a coherent subject.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

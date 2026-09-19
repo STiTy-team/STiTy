@@ -1,0 +1,438 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01298,
+   "lo": -0.02146,
+   "hi": -0.00457,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback Order Principle that prefers cuts which end a self-contained assertion over earlier intra-clause cuts; addresses the primary finding that the prompt often picks an earlier intra-clause cut when the safer cut ends the preceding statement."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "was": "",
+    "now": "Prefer the marker that ends a self-contained assertion over an earlier marker in"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00458,
+   "lo": -0.01296,
+   "hi": 0.00333,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a narrow, binding Core Principle to keep short sentence-final complements with the preceding clause — addresses the primary finding that cuts before 1–3 word objects/quoted titles/locations produce misleading or contradictory fragments."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Do not cut where the following 1–3 words (ending the sentence) form the required"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00866,
+   "lo": -0.01696,
+   "hi": -0.00025,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C7 with a narrow Core Principle that binds 1–3 word sentence-final complements to the preceding clause and places such markers in the 0–14 'must not be cut' band — addresses the primary finding that cuts before short sentence-final objects/quoted titles/locations produce misleading or contradictory fragments."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Would placing a cut here leave trailing sentence-final material attached to th",
+    "now": "Do not cut where the following 1–3 words (ending the sentence) form the required"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00202,
+   "lo": -0.01002,
+   "hi": 0.00639,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00202,
+   "lo": -0.01002,
+   "hi": 0.00639,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O1 to prefer assertion-ending cuts (and, if tied, the later one) to correct the prompt's bias for earlier intra-clause cuts that produced harmful misorderings."
+  ],
+  "findings": [
+   "The prompt prefers earlier intra-clause cuts over markers that end a self-contained assertion, misordering cuts that leave the preceding stretch as a full statement (later assertion-ending cuts are safer).",
+   "The prompt treats as acceptable cuts that detach a short sentence-final complement (object/complement or quoted title/measurement/location), producing misleading or contradictory preceding fragments when that small tail is withheld."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "was": "- When one marker ends a self-contained assertion (the preceding stretch reads a",
+    "now": "Prefer the marker that ends a self-contained assertion over an earlier marker in"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0023,
+    "≤5": -0.0043,
+    "≤7": -0.0009,
+    "≤10": 0.0021,
+    "≤99": 0.002
+   },
+   "n_worse": 1979,
+   "n_better": 2052,
+   "why": "Changing O1 to prefer markers that end a self-contained assertion pushed the scorer to pick later, assertion-ending cuts and avoid earlier intra-clause cuts; that shift improved cohesion for longer-latency bins (≤10 and overall) but degraded short-latency bins (≤3 and ≤5). Rank_depth drops at the top positions show the edit changed the model's early choices (so it could and did hurt short-budget behavior), and the tails illustrate this trade — e.g. better grouping of names/enumerations but worse attachment/splitting of dependent clauses like the 'Symptoms, such as vomiting...' example.",
+   "lesson": "Do not globally prefer later assertion-ending markers at the cost of removing earlier intra-clause cut candidates needed by short-latency budgets; preserve early cut options (or scope the preference) so short-depth rankings are not degraded.",
+   "blamed": [
+    "O1"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00802,
+   "lo": -0.01708,
+   "hi": 0.00077,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a narrow Core Principle check preventing cuts immediately after a verb or verbal phrase when the following word(s) begin its direct object or complement; this prevents splitting predicates and addresses the primary finding."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Do not cut between a verb (or verbal phrase) and its object/complement; keep the"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00447,
+   "lo": -0.0119,
+   "hi": 0.00291,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O1 with a scoped ordering: prefer an assertion-ending cut over an earlier intra-clause cut only when the earlier cut splits a verb (or verbal phrase) from its object/complement. This targets the primary finding (intra-clause verb-object splits) while avoiding the previous global later-preference that hurt short-latency budgets."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "was": "- When one marker ends a self-contained assertion (the preceding stretch reads a",
+    "now": "When two cuts are inside the same clause and one completes the clause's predicat"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01569,
+   "lo": -0.02506,
+   "hi": -0.00662,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C7 with a precise Core Principle: forbid cuts that split a verb (or verbal phrase) from the word(s) that begin its direct object/complement. This addresses the primary finding (predicate-splitting) by naming a narrow, surface-recognisable trigger and binding the cut to keep verb+object together."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Would placing a cut here leave trailing sentence-final material attached to th",
+    "now": "Do not cut between a verb (or verbal phrase) and its object/complement; keep the"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00278,
+   "lo": -0.01028,
+   "hi": 0.00492,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace S7 to add a narrowly scoped tie-breaker in the repeated-selection step: when two positions in the same band are inside the same clause and one completes the clause's predicate while the other splits that predicate from its object/complement, prefer the predicate-completing (later) cut. This targets the primary finding (intra-clause verb/object splits) while keeping the banding and repeated-selection procedure intact and allowing Order Principles to override the default."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "S7",
+    "kind": "change",
+    "was": "- Work in bands, then order inside each band by repeated selection. First place ",
+    "now": "- Work in bands, then order inside each band by repeated selection. First place "
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00181,
+   "lo": -0.00934,
+   "hi": 0.00606,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00181,
+   "lo": -0.00934,
+   "hi": 0.00606,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow fallback ordering rule in [Order Principles]: when two cuts lie in the same clause and one splits a verb (or verbal phrase) from its object/complement while the other completes the predicate, prefer the predicate-completing (later) cut. This addresses the primary finding (intra-clause verb-object splits) while scoping the preference to avoid removing early intra-clause options that short-latency budgets need."
+  ],
+  "findings": [
+   "When two candidate cuts lie in the same clause, the prompt sometimes prefers an earlier intra-clause cut over the later cut that completes the clause's predicate, worsening cohesion.",
+   "The prompt permits cuts that split a verb (or verbal phrase) from the words that complete its object or complement, producing misleading or contradiction-prone preceding fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "was": "",
+    "now": "When two cuts are inside the same clause and one completes the clause's predicat"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.008,
+    "≤5": 0.0038,
+    "≤7": -0.0009,
+    "≤10": 0.0014,
+    "≤99": 0.0077
+   },
+   "n_worse": 1985,
+   "n_better": 2071,
+   "why": "The inserted fallback made the model prefer later intra-clause cuts that ‘complete the predicate’ (avoiding verb–object splits). That moved the rank-2 position up while slightly lowering rank-1, producing small gains for long-latency bins but removing many early intra-clause cut options that short-latency bins rely on, so harms concentrate in the short bins (notably ≤3/≤7) even though the overall mean is near zero.",
+   "lesson": "Keep the predicate-completion preference narrowly scoped so it does not eliminate early intra-clause cut options that short-latency budgets need (i.e., avoid suppressing top-1 early cuts while promoting later predicate-completing cuts).",
+   "blamed": [
+    "O_end"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00276,
+   "lo": -0.01061,
+   "hi": 0.00481,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a narrowly scoped fallback Order Principle: when two cuts lie inside the same finite clause, prefer the later cut that immediately follows or completes the main verb phrase (i.e. ends the clause's predicate) over the earlier intra-clause cut. This resolves the primary finding's tie-breaks while staying in the Order Principles so banding (and early cut availability) is preserved."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "was": "",
+    "now": "When two cuts fall inside the same clause, prefer the later cut if it follows or"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00259,
+   "lo": -0.01052,
+   "hi": 0.005,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O2 with a narrowly scoped Order Principle that, when two cuts lie inside the same finite clause, prefers the later cut that immediately follows or completes the main verb phrase (ending the predicate) over the earlier intra-clause cut — addresses the primary finding's tie-breaking need while leaving banding (Core Principles) and early-cut availability intact."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "was": "- When one marker follows a completed subordinate or relative clause that resolv",
+    "now": "When two cuts fall inside the same clause, prefer the later cut if it follows or"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00356,
+   "lo": -0.01153,
+   "hi": 0.00405,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C7 with a narrowly scoped Core Principle that downgrades cuts splitting a sentence-initial multiword named entity or the head of the initial NP to the 'bad' band (15–39), so the full name/NP is kept together and the preceding stretch reads as a coherent subject — directly addressing the primary finding."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Would placing a cut here leave trailing sentence-final material attached to th",
+    "now": "Do not cut inside an initial multiword named entity or inside the head of a sent"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00365,
+   "lo": -0.01171,
+   "hi": 0.00393,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace S7 to make Order Principles apply only as tie-breakers for near-tied targets (not to move items between bands) and to clarify repeated-selection inside bands, preserving early intra-clause cut options for short-depth budgets."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "S7",
+    "kind": "change",
+    "was": "- Work in bands, then order inside each band by repeated selection. First place ",
+    "now": "- Work in bands, then order inside each band by repeated selection. First place "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00102,
+   "lo": -0.00691,
+   "hi": 0.00855,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": 0.00102,
+   "lo": -0.00691,
+   "hi": 0.00855,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a narrowly scoped Core Principle that downgrades cuts splitting a sentence-initial multiword proper name or an initial NP (2+ content words) to the 'bad' band (15–39), so the scorer prefers leaving the full name/NP intact while not removing early cut options elsewhere."
+  ],
+  "findings": [
+   "For cuts that fall inside the same clause the prompt often prefers earlier intra-clause positions, but the better choice is the later cut that completes the clause's predicate so the preceding segment reads as a standalone assertion.",
+   "The prompt allows cuts that split sentence-initial multiword names or the head of the initial NP, producing incoherent or misleading preceding stretches."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Do not cut inside an initial multiword named entity or inside the head of a sent"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0014,
+    "≤5": -0.0007,
+    "≤7": -0.0005,
+    "≤10": 0.0057,
+    "≤99": 0.0029
+   },
+   "n_worse": 1938,
+   "n_better": 2137,
+   "why": "The inserted rule forbidding cuts inside an initial multiword named entity/NP made the scorer prefer leaving the full initial name/NP intact, which moved many early cuts later. That change improved the top-ranked positions (rank_depth gains at depths 1–3 and positive changes for longer bins ≤10/≤99) but removed useful early cut choices for short-latency bins (small negative by_bin at ≤5 and ≤7), producing roughly balanced wins and losses and a negligible overall mean change.",
+   "lesson": "A later revision should preserve the benefit of keeping initial multiword names for the top one-to-three cut choices while not eliminating the early cut options relied on by short-latency bins (≤5–7).",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ }
+]

@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00202,
+  "lo": -0.01002,
+  "hi": 0.00639,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": -0.0023,
+  "≤5": -0.0043,
+  "≤7": -0.0009,
+  "≤10": 0.0021,
+  "≤99": 0.002
+ },
+ "n_worse": 1979,
+ "n_better": 2052,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.7943,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting are sufficiently general that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7708,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7436,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_391",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7146,
+   "before": "The earliest known book ‖ in the world ‖ was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit just faded due to hierarchy.",
+   "after": "The earliest known book in the world was written ‖ in Sanskrit. ‖ After the compilation of Upanishads, Sanskrit ‖ just faded ‖ due to hierarchy."
+  },
+  {
+   "id": "en_us_1536",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6814,
+   "before": "Local authorities are warning residents in the vicinity of the plant ‖ to stay indoors, ‖ turn off air-conditioners ‖ and not to drink tap water.",
+   "after": "Local authorities are warning residents in the vicinity of the plant ‖ to stay indoors, ‖ turn ‖ off air-conditioners and not to drink tap water."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_86",
+   "k": 2,
+   "bin": "≤5",
+   "delta": 0.6739,
+   "before": "Pittman suggested ‖ that conditions wouldn't improve ‖ until sometime next week.",
+   "after": "Pittman suggested ‖ that conditions wouldn't improve until sometime ‖ next week."
+  },
+  {
+   "id": "en_us_333",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.6142,
+   "before": "The celebrations ‖ started ‖ with a special show ‖ by the world-renowned group ‖ Cirque ‖ du ‖ Soleil.",
+   "after": "The celebrations ‖ started ‖ with a special ‖ show ‖ by the world-renowned ‖ group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_133",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.5682,
+   "before": "Christopher Garcia, ‖ a spokesperson of the Los Angeles Police Department, ‖ said the suspected male offender ‖ is being investigated for trespassing rather than vandalism.",
+   "after": "Christopher Garcia, ‖ a spokesperson ‖ of the Los Angeles Police Department, ‖ said the suspected male offender is being investigated for trespassing rather than vandalism."
+  },
+  {
+   "id": "en_us_970",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.5542,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats connect ‖ the villages, ‖ and cars ‖ cannot reach them ‖ from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, trains and boats connect ‖ the villages, ‖ and cars cannot reach ‖ them ‖ from ‖ the ‖ outside."
+  },
+  {
+   "id": "en_us_1051",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.519,
+   "before": "Japan's Ministry of Economy, ‖ Trade ‖ and Industry ‖ (METI) ‖ said ‖ that ‖ it had been aware of 27 ‖ accidents ‖ related ‖ to the devices.",
+   "after": "Japan's Ministry ‖ of ‖ Economy, ‖ Trade ‖ and ‖ Industry ‖ (METI) ‖ said ‖ that it had been aware of 27 accidents ‖ related to the devices."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 6.55,
+   "2": 3.893,
+   "3": 2.72,
+   "4": 2.109,
+   "5": 1.725,
+   "6": 1.525,
+   "7": 1.38,
+   "8": 1.283,
+   "9": 1.213,
+   "10": 1.162,
+   "11": 1.12,
+   "12": 1.087,
+   "13": 1.074
+  },
+  "revision": {
+   "1": 6.264,
+   "2": 3.777,
+   "3": 2.604,
+   "4": 2.041,
+   "5": 1.716,
+   "6": 1.517,
+   "7": 1.377,
+   "8": 1.269,
+   "9": 1.205,
+   "10": 1.147,
+   "11": 1.121,
+   "12": 1.094,
+   "13": 1.074
+  },
+  "delta": {
+   "1": -0.286,
+   "2": -0.116,
+   "3": -0.116,
+   "4": -0.068,
+   "5": -0.009,
+   "6": -0.008,
+   "7": -0.003,
+   "8": -0.014,
+   "9": -0.008,
+   "10": -0.015,
+   "11": 0.001,
+   "12": 0.007,
+   "13": 0.0
+  }
+ },
+ "why": "Changing O1 to prefer markers that end a self-contained assertion pushed the scorer to pick later, assertion-ending cuts and avoid earlier intra-clause cuts; that shift improved cohesion for longer-latency bins (≤10 and overall) but degraded short-latency bins (≤3 and ≤5). Rank_depth drops at the top positions show the edit changed the model's early choices (so it could and did hurt short-budget behavior), and the tails illustrate this trade — e.g. better grouping of names/enumerations but worse attachment/splitting of dependent clauses like the 'Symptoms, such as vomiting...' example.",
+ "lesson": "Do not globally prefer later assertion-ending markers at the cost of removing earlier intra-clause cut candidates needed by short-latency budgets; preserve early cut options (or scope the preference) so short-depth rankings are not degraded.",
+ "blamed": [
+  "O1"
+ ]
+}

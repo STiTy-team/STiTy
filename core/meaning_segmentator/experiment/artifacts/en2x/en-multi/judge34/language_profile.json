@@ -1,0 +1,30 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Subjects precede verbs and then objects in examples like 'Steve Jobs unveiled the device' and 'Mutations can have a variety of different effects.'",
+  "register": "edited written expository prose (news / encyclopedic / technical), formal and non-spontaneous",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "subordinating conjunctions (although, because)",
+    "coordinating conjunctions (and)",
+    "temporal connectors (after, once)",
+    "sentence-initial adverbials/parentheticals (of course, only)"
+  ],
+  "clause_boundary_signals": [
+    "relative pronouns introducing subordinate clauses (who, that)",
+    "subordinating conjunctions that introduce dependent clauses (although, because)",
+    "coordinating conjunctions that join independent clauses (and)",
+    "reduced participial clauses that attach as separate propositions (causing, leaving)"
+  ],
+  "non_boundary_traps": [
+    "sentence-initial prepositional/temporal adjuncts that look like full clauses (For over a thousand years, Around 60 cases)",
+    "numerical/quantifier noun-phrases that fill the left periphery but are not complete clauses (Eighteen percent, Around 60 cases)",
+    "appositive or title-bearing noun phrases that contain internal structure (Sir Richard Branson's Virgin Group)",
+    "reduced participial/nominal phrases that resemble clauses but function as modifiers (going across the sky, emitting photons)"
+  ],
+  "unstable_prefix_signals": [
+    "initial nominal/quantifier phrases (Eighteen percent...) where continuation may decide predicate scope",
+    "sentence-initial prepositional/temporal phrases (For over a thousand years...) whose attachment is still unresolved",
+    "contrastive subordinators that can serve multiple discourse roles (while, although)"
+  ],
+  "notes_for_prompt_writer": "The source uses English SVO order with frequent subordination and coordination; clauses are often linked by subordinators and relative pronouns. Sentence-initial adjuncts (temporal/prepositional) and numeral/quantifier noun-phrases commonly occupy the left periphery and can be structurally ambiguous. Reduced participial clauses and appositive noun phrases appear regularly and should be treated as clause-like material in the source."
+}

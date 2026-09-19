@@ -1,0 +1,120 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "When two cuts fall inside the same clause, prefer the later cut if it follows or completes the main verb phrase (i.e. it ends the clause's predicate), because the preceding stretch then reads as a self-contained assertion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 223
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9441,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Do not cut inside an initial multiword named entity or inside the head of a sentence‑initial NP; keep the full name/NP together so the preceding stretch is a coherent subject."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 176
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9394,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When two cuts fall inside the same clause, prefer the later cut if it follows or completes the main verb phrase (i.e. it ends the clause's predicate), because the preceding stretch then reads as a self-contained assertion.",
+    "_was": "- When one marker follows a completed subordinate or relative clause that resolves attachment and another falls earlier inside the matrix clause, prefer the marker after the completed subordinate clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": 19
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9237,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "Do not cut inside an initial multiword named entity or inside the head of a sentence‑initial NP; keep the full name/NP together so the preceding stretch is a coherent subject.",
+    "_was": "- Would placing a cut here leave trailing sentence-final material attached to the preceding word, producing an impossible or misleading fragment if the following text is withheld?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": -4
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9214,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "S7",
+    "kind": "change",
+    "text": "- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut; choosing the band is what the Core Principles decide. Inside a band, use the Order Principles only to settle comparisons between positions that are otherwise close on the measured target (treat them as tie-breakers when the target differs by at most a small margin); do not use Order Principles to move a position into a different band. When neither an Order Principle nor a near-tied target value settles the pair, prefer the position whose preceding stretch can stand alone as a statement; if both can, prefer the later one. Then fill in numbers band by band: within a band, repeatedly pick the unnumbered position that is best by these rules, give it the highest remaining number in that band's range, remove it, and continue until every position has its own distinct number.",
+    "_was": "- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide, and the lower bands usually hold the most positions. Inside a band, when two positions are otherwise alike, prefer the one whose preceding stretch can stand alone as a statement; if both can, prefer the later one. A line in the Order Principles section overrides that default for the configuration it names; those lines settle the order within a band and never move a position into another band. When neither settles the pair, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "S7",
+    "kind": "change",
+    "chars_change": -274
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8944,
+  "errors": null
+ }
+]

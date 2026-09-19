@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00181,
+  "lo": -0.00934,
+  "hi": 0.00606,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00181,
+  "lo": -0.00934,
+  "hi": 0.00606,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a narrow fallback ordering rule in [Order Principles]: when two cuts lie in the same clause and one splits a verb (or verbal phrase) from its object/complement while the other completes the predicate, prefer the predicate-completing (later) cut. This addresses the primary finding (intra-clause verb-object splits) while scoping the preference to avoid removing early intra-clause options that short-latency budgets need."
+ ],
+ "findings": [
+  "When two candidate cuts lie in the same clause, the prompt sometimes prefers an earlier intra-clause cut over the later cut that completes the clause's predicate, worsening cohesion.",
+  "The prompt permits cuts that split a verb (or verbal phrase) from the words that complete its object or complement, producing misleading or contradiction-prone preceding fragments."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "O_end",
+   "kind": "change",
+   "was": "",
+   "now": "When two cuts are inside the same clause and one completes the clause's predicat"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.008,
+   "≤5": 0.0038,
+   "≤7": -0.0009,
+   "≤10": 0.0014,
+   "≤99": 0.0077
+  },
+  "n_worse": 1985,
+  "n_better": 2071,
+  "why": "The inserted fallback made the model prefer later intra-clause cuts that ‘complete the predicate’ (avoiding verb–object splits). That moved the rank-2 position up while slightly lowering rank-1, producing small gains for long-latency bins but removing many early intra-clause cut options that short-latency bins rely on, so harms concentrate in the short bins (notably ≤3/≤7) even though the overall mean is near zero.",
+  "lesson": "Keep the predicate-completion preference narrowly scoped so it does not eliminate early intra-clause cut options that short-latency budgets need (i.e., avoid suppressing top-1 early cuts while promoting later predicate-completing cuts).",
+  "blamed": [
+   "O_end"
+  ]
+ }
+}
