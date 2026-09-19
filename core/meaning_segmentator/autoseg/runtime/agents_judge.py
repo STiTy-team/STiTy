@@ -26,8 +26,20 @@ from .agents_distill import check_skeleton as _check_skeleton
 JUDGE_SECTIONS = ["[Role]", "[Core Principles]", "[Scoring Rules]", "[Output Rules]", "[Examples]"]
 
 
-def check_skeleton(prompt: str) -> list[str]:
-    return _check_skeleton(prompt, JUDGE_SECTIONS)
+OPTIONAL_SECTIONS = ("[Scoring Rules]",)
+
+
+def check_skeleton(prompt: str, base: str | None = None) -> list[str]:
+    """`base` 를 주면 **그 프롬프트가 가진 섹션만** 요구한다.
+
+    v0 갈래가 `[Scoring Rules]` 를 통째로 뺀 채 시작할 수 있게 하려는 것이다 — 그 섹션은
+    측정 절차를 말로 푼 것인데, 이식 실험에서 채점 척도 설명을 뺀 프롬프트가 가장 높았다
+    (probe_port p3_no_ladder 0.5738 vs v0 0.5669). 빼고 시작했으면 PE 가 도로 넣는 것은
+    `frozen_intact` 이 막는다 (before 가 "" 인데 after 가 차 있으면 변경으로 잡힌다).
+    """
+    want = [s for s in JUDGE_SECTIONS
+            if base is None or s not in OPTIONAL_SECTIONS or s in base]
+    return _check_skeleton(prompt, want)
 
 CRITIC_SYSTEM = """You diagnose a scoring prompt for streaming-translation cut positions.
 
@@ -80,6 +92,14 @@ You receive cases. Each case is one sentence at one budget T and contains:
   that asks for another cut prohibition on this base needs evidence that beats that. Its "edits"
   text is NOT in the current prompt — a "replace" target must quote the prompt you were given.
 
+Prefer a finding that ADDS a missing check over one that retunes an existing principle. Measured
+across judge13-judge15: the two revisions that were adopted each added one narrow condition that a
+reader can recognise in the source alone (keep an essential post-nominal modifier with its head;
+keep a numeral with its unit). The five that changed how strongly an existing principle applies —
+relaxing a prohibition, reordering priorities, widening a scope — were all rejected, and each one
+lowered the short-latency bins first. If your finding is "this principle is too strong/too weak",
+say instead which specific construction the prompt is failing to check for.
+
 Your job: name the JUDGEMENT the prompt is getting wrong, not the tokens it fires on. A finding
 is worth reporting only if it recurs across cases — one sentence is an anecdote. Write it so a
 reader scoring an unseen sentence could apply it: a question to ask, or a condition on meaning.
@@ -93,13 +113,21 @@ Return ONLY JSON:
     {"diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
      "evidence": "the ids of the cases that show it, then what they share — the count is the
                   length of that list; never state a number of cases you did not list",
+     "type_predicate": "ONE sentence naming the sentences this finding applies to, as a condition
+                  on the SOURCE text alone: a construction that can be spotted by reading the
+                  sentence, with no reference to this prompt, to any candidate, or to any score.
+                  It is used to select unseen sentences of the same kind, so it must be decidable
+                  ('a numeral or quantifier is immediately followed by its unit or measurement
+                  phrase') and NOT a restatement of the damage ('cuts that harm cohesion').
+                  Narrow enough that a minority of sentences match: a condition that holds of
+                  almost every sentence selects nothing and the finding is dropped.",
      "edit": {"where": "core_principles" | "examples",
               "action": "add" | "replace",
               "target": "first few words of the line to replace (omit when adding)",
               "text": "the new line, or an Input/Output example pair"}}
   ]
 }
-At most 3 findings. Order them by how many cases they explain."""
+At most __NFIND__ findings. Order them by how many cases they explain."""
 
 POSTMORTEM_SYSTEM = """You explain why one revision of a scoring prompt did or did not work.
 
@@ -215,14 +243,72 @@ Hard constraints:
    A measured example teaches the ranking directly where a principle only describes it; prefer
    replacing a hand-written example with a measured one over adding another principle.
 10. If "constraint" is present, obey it — code enforces it by dropping edits that violate it:
-   "examples_only": edit only [Examples] units (replace or insert measured examples, delete a
-   weak hand-written one); no [Core Principles] edit at all.
+   "examples_only": edit only [Examples] units; no [Core Principles] edit at all. Add, replace
+   or delete as many as you judge right — there is no cap. An example shows the WHOLE ordering
+   of a sentence at once, so it teaches the lower ranks that prose cannot reach; pick the ones
+   whose "latency_bin" is short and whose "gap" is large.
+   "fallback": ADD a rule that ORDERS the positions every other principle rejects. Exactly one
+   edit, an "insert_after" into [Core Principles]. Write it as a COMPARISON on the source surface
+   form ("prefer a cut at A over one at B", "as a last resort take C") — not a prohibition
+   ("do not cut after X") and not a binding ("keep X with Y"); both of those have been tried.
+   A short ladder of tiers counts, as long as it is one unit and states an ORDER.
+   Measured: the ranking this prompt produces is 6.5x better than chance at rank 1, 1.6x at
+   rank 5, 1.2x at rank 8 and 1.00x at rank 13 — it stops ordering anything past the top few.
+   The short-latency operating points consume ranks 1 through 8 (mean 8.5 cuts in the <=3 bin)
+   and so read the part that is already random, while long-latency points use rank 1 alone.
+   Every principle now in the prompt pushes bad positions down; none says which of the
+   pushed-down positions to take.
+   "induce": read the MEASURED cases you were given — each shows a sentence, where the current
+   prompt cut it, and where the measured target says the cuts should have been — and write ONE
+   rule that REPRODUCES those target choices. Work bottom-up: list to yourself what the target
+   cuts have in common on the SOURCE SURFACE (a token class, a construction, what sits either
+   side of the boundary), then state that commonality as a rule. Exactly one edit, an
+   "insert_after" into [Core Principles].
+   Do NOT copy a case sentence or its markers into the rule — a rule names the configuration,
+   it does not quote an instance. Do NOT write it as a prohibition. Binding ("keep X with the Y
+   that completes it") and ordering ("prefer a cut at A over one at B") are both fine; let the
+   cases decide which fits.
+   Why this role exists: every other role reads the Critic's DIAGNOSIS, which has already
+   compressed the cases into one sentence. That compression is where a wrong generalisation
+   enters. Here you see the evidence before it was compressed.
    "single_small": exactly ONE edit, and its new text is at most 60 words — a small, precise
    change whose effect can be attributed.
+   "narrow_rule": ADD a check, do not retune an existing one. Exactly one edit, it must be an
+   "insert_after" into [Core Principles], and its text must state a concrete condition that can
+   be recognised in the SOURCE surface form alone (a specific construction, a token class and
+   what must stay with it), not a change in how strongly an existing principle applies.
+   Write it as a BINDING ("keep X together with the Y that completes it"), not as a prohibition
+   ("do not cut after X"). Measured: the three adopted revisions all named what must travel
+   together (an essential post-nominal modifier with its head; a numeral with its unit), while
+   every revision phrased as a place not to cut was rejected and took the short-latency bins down
+   with it — a prohibition thins the cuts those bins need, a binding only moves them.
+   Measured: revisions that added a narrow surface check were adopted (judge13 iter 3 keeping an
+   essential post-nominal modifier, judge15 iter 3 keeping a numeral with its unit); revisions
+   that retuned the weight or scope of an existing principle failed five times out of five and
+   dropped the short-latency bins first.
+   "prune": REMOVE one [Core Principles] unit. Exactly one edit, op "delete", a "C" unit, and
+   nothing added anywhere. Pick the principle that earns its place least — one that restates
+   another, or that names a condition the measured target does not actually punish. Measured:
+   twenty-four candidates across judge17 and judge18 all ADDED a rule and every one of them came
+   out negative, on the construction it targeted (mean -0.0116) and on sentences without it
+   (mean -0.0089) alike. The prompt already carries eight principles; one more divides the
+   judge's attention more than it adds. Removing is the direction nothing has tested yet.
 
 What the model is judged on: the cut sets its scores produce are translated piece by piece and
 scored against the source as a whole, with the worst contradiction risk in the set applied as a
 penalty. Only the ORDER of the numbers inside one sentence is ever read.
+
+Containment — this decides the outcome more than the aim does. Your rule must fire ONLY on the
+configuration you name. A sentence that does not contain that configuration has to come out
+ranked exactly as it ranks now. So do not write wording that reaches every sentence: no
+"generally prefer", no "in all cases", no "always", no "tend to", and do not restate or reweight
+a principle that is already in the prompt. Name the surface trigger, say what it does at that
+trigger, and stop.
+Measured: across judge17 and judge18 two of three findings hurt the sentences WITHOUT the
+targeted construction MORE than the ones with it (-0.0294 vs -0.0069, and -0.0194 vs -0.0025).
+In judge21 the best revision gained +0.0055 on the short-latency operating points of the final
+holdout and lost -0.0081 on the long-latency ones, netting -0.0019 — the aim was right and the
+leak ate it. A revision that changes nothing outside its trigger cannot lose that way.
 
 Return ONLY JSON:
 {
@@ -303,8 +389,8 @@ ALLOWED_WHERE = {"core_principles": "[Core Principles]", "examples": "[Examples]
 FROZEN = ("[Output Rules]", "[Scoring Rules]")
 
 
-def critic_system() -> str:
-    return CRITIC_SYSTEM
+def critic_system(findings_max: int = 3) -> str:
+    return CRITIC_SYSTEM.replace("__NFIND__", str(findings_max))
 
 
 def postmortem_system() -> str:
@@ -316,7 +402,7 @@ def engineer_system(budget: int, cur_len: int) -> str:
             .replace("__CURLEN__", str(cur_len)))
 
 
-def clean_findings(blob: dict, prompt: str | None = None) -> list[dict]:
+def clean_findings(blob: dict, prompt: str | None = None, cap: int = 3) -> list[dict]:
     """Critic 출력에서 쓸 수 있는 finding 만 남긴다. 토큰 조건은 여기서 잘라낸다.
 
     `prompt` 를 주면 replace 대상이 현재 프롬프트에 있는 것만 남긴다 — Critic 은 `last_revision`
@@ -338,8 +424,9 @@ def clean_findings(blob: dict, prompt: str | None = None) -> list[dict]:
             continue
         out.append({"diagnosis": (f.get("diagnosis") or "").strip(),
                     "evidence": (f.get("evidence") or "").strip(),
+                    "type_predicate": (f.get("type_predicate") or "").strip(),
                     "edit": {k: edit.get(k) for k in ("where", "action", "target", "text")}})
-    return out[:3]
+    return out[:cap]
 
 
 def frozen_intact(before: str, after: str) -> list[str]:
@@ -366,7 +453,7 @@ def parse_prompt(blob: dict, current: str, budget: int) -> tuple[str | None, lis
     pr = (blob or {}).get("prompt") or ""
     if not pr.strip():
         return None, ["prompt 가 비었다"]
-    errs += check_skeleton(pr)
+    errs += check_skeleton(pr, base=current)
     errs += [f"동결 섹션이 바뀌었다: {h}" for h in frozen_intact(current, pr)]
     if len(pr) > budget:
         errs.append(f"길이 초과: {len(pr)} > {budget}")
@@ -564,8 +651,69 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
     return out.rstrip("\n") + tail, errs, deltas
 
 
-ROLES = ("free", "examples_only", "single_small", "rewrite")
+ROLES = ("free", "examples_only", "single_small", "narrow_rule", "prune", "rewrite",
+         "fallback", "induce")
 SHORTEN_ROLE = "shorten"     # 후보 역할이 아니라 축소 패스 전용 — insert 를 뺀다
+
+
+CLASSIFY_SYSTEM = """You label sentences by whether one stated structural condition holds in them.
+
+You are given a CONDITION about the surface form of a sentence, and a numbered list of sentences.
+Return the numbers of the sentences in which the condition holds.
+
+Rules:
+- Judge the SOURCE text only. Nothing about translation, segmentation, cut positions or quality
+  enters this decision; if the condition mentions a cut, read it as "the sentence contains the
+  construction the cut would break".
+- Be strict. Include a sentence only if the construction is actually present, not if it could be
+  argued for. A label set that covers almost every sentence is useless downstream.
+- Do not explain, do not re-word the condition, do not add sentences that "almost" match.
+
+Return ONLY JSON: {"matching": [3, 7, 11]}"""
+
+
+NARROW_SYSTEM = """A condition you wrote to select sentences matched too many of them, so it
+selects nothing useful: a set that covers most sentences cannot isolate the failure the finding
+is about. Write a NARROWER condition for the same finding — name the specific construction, not
+the general category it belongs to (e.g. not "a modifier follows a noun" but "a post-nominal
+modifier identifies which entity the head noun refers to"). Same rules as before: source form
+only, decidable by reading the sentence, no mention of cuts, prompts, candidates or scores.
+
+Return ONLY JSON: {"type_predicate": "..."}"""
+
+
+def classify_user(predicate: str, sents: list, ids: list[int]) -> str:
+    """분류 호출의 user 메시지 — 술어 + 번호 매긴 문장들."""
+    lines = [f"{i}. {sents[i].text}" for i in ids]
+    return json.dumps({"condition": predicate, "sentences": lines}, ensure_ascii=False)
+
+
+PROHIBITION_OPENERS = ("do not cut", "don't cut", "never cut", "avoid cutting", "do not split",
+                       "never split", "avoid splitting", "do not place a cut", "no cut")
+BINDING_MARKERS = ("keep ", "hold ", "travel together", "stay together", "same piece",
+                   "together with", "remain with")
+# `fallback` 이 서열문인지 가르는 표지. 금지(자리를 지운다)도 결속(자리를 옮긴다)도 아니고
+# **남은 자리들 사이의 순서**를 말해야 한다.
+ORDERING_MARKERS = ("prefer", "rather than", " over ", "before ", "ahead of", "closer to",
+                    "higher than", "lower than", "last resort", "least bad")
+
+
+def is_ordering(text: str) -> bool:
+    """서열문인가 — 자리끼리 비교하는 말이 들어 있으면 참."""
+    return any(m in " ".join((text or "").lower().split()) for m in ORDERING_MARKERS)
+
+
+def is_prohibition(text: str) -> bool:
+    """금지문인가 — 금지로 시작하면서 결속절이 하나도 없으면 참.
+
+    judge13·15·16 의 채택본 셋은 전부 "무엇을 함께 유지하라" 를 적었고, "어디서 자르지 마라" 로만
+    쓴 개정은 다섯 번 모두 기각되며 ≤3·≤5 구간을 먼저 떨어뜨렸다. 금지는 절단을 성기게 만들고
+    결속은 절단을 옮기기만 한다."""
+    t = " ".join((text or "").lower().split())
+    t = t.lstrip("- ").lstrip()
+    if not t.startswith(PROHIBITION_OPENERS):
+        return False
+    return not any(m in t for m in BINDING_MARKERS)
 
 
 def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
@@ -592,6 +740,94 @@ def enforce_role(edits, role: str) -> tuple[list, list[dict]]:
         if keep and len(str(keep[0].get("text") or "").split()) > 60 and "labeled_example" not in keep[0]:
             bad.append({"edit": 0, "id": keep[0].get("id"),
                         "reason": f"single_small 인데 {len(str(keep[0]['text']).split())}단어 > 60"})
+            keep = []
+        return keep, bad
+    if role == "prune":
+        # 빼기 — 더하기만 스물넷 연속 음수였으므로 반대 방향을 시험한다. 한 건, 삭제, 원칙 단위만.
+        bad = [{"edit": n, "id": e.get("id"), "reason": "prune 인데 둘째 이후 편집"}
+               for n, e in enumerate(edits) if n > 0]
+        keep = edits[:1]
+        if keep and keep[0].get("op") != "delete":
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": f"prune 인데 {keep[0].get('op')} — delete 만 된다"})
+            keep = []
+        elif keep and not str(keep[0].get("id") or "").startswith("C"):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "prune 인데 [Core Principles] 단위가 아니다"})
+            keep = []
+        return keep, bad
+    if role == "induce":
+        # **오라클 절단에서 규칙을 귀납하게 한다.** 다른 역할은 Critic 의 진단을 읽고 규칙을 쓰는데,
+        # 그 진단이 이미 사례를 한 문장으로 압축한 것이다. 여기서는 압축 전 자료(어디를 잘라야
+        # 했는지)를 직접 보고 공통점을 찾게 한다 — 진단 단계의 오류가 안 섞인다.
+        # 형식은 결속이든 순서든 자유다(귀납 결과가 정하게 둔다). 금지문만 막는다 — judge13~16
+        # 에서 금지로 쓴 개정은 다섯 번 모두 기각됐다.
+        bad = [{"edit": n, "id": e.get("id"), "reason": "induce 인데 둘째 이후 편집"}
+               for n, e in enumerate(edits) if n > 0]
+        keep = edits[:1]
+        if keep and keep[0].get("op") != "insert_after":
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": f"induce 인데 {keep[0].get('op')} — insert_after 만 된다"})
+            keep = []
+        elif keep and not str(keep[0].get("id") or "").startswith("C"):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "induce 인데 [Core Principles] 단위가 아니다"})
+            keep = []
+        elif keep and is_prohibition(str(keep[0].get("text") or "")):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "induce 인데 금지문이다 — 무엇이 함께 가야 하는지, "
+                                  "또는 어느 자리를 먼저 택할지로 쓸 것"})
+            keep = []
+        elif keep and "<SEG:" in str(keep[0].get("text") or ""):
+            # 예시를 그대로 옮겨 적으면 규칙이 아니다 — 그건 examples_only 의 일이다.
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "induce 인데 예시 문장을 그대로 넣었다 — 규칙으로 일반화할 것"})
+            keep = []
+        return keep, bad
+    if role == "fallback":
+        # **밀려난 자리들끼리의 서열**을 적게 한다. 지금 원칙 여덟은 전부 밀어내기만 해서
+        # 순위 아래쪽이 비어 있다 — 실측으로 1위는 무작위 대비 6.5배인데 8위는 1.2배,
+        # 13위는 1.00배다(`diag/rank_depth.json`). 짧은 지연은 그 무작위 구간을 쓴다
+        # (≤3 의 평균 절단 수 8.5). 금지도 결속도 그 구간을 안 건드린다.
+        bad = [{"edit": n, "id": e.get("id"), "reason": "fallback 인데 둘째 이후 편집"}
+               for n, e in enumerate(edits) if n > 0]
+        keep = edits[:1]
+        if keep and keep[0].get("op") != "insert_after":
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": f"fallback 인데 {keep[0].get('op')} — insert_after 만 된다"})
+            keep = []
+        elif keep and not str(keep[0].get("id") or "").startswith("C"):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "fallback 인데 [Core Principles] 단위가 아니다"})
+            keep = []
+        elif keep and is_prohibition(str(keep[0].get("text") or "")):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "fallback 인데 금지문이다 — 무엇을 차선으로 고를지로 쓸 것"})
+            keep = []
+        elif keep and not is_ordering(str(keep[0].get("text") or "")):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "fallback 인데 자리끼리 비교하는 말이 없다 "
+                                  "(prefer / rather than / over / last resort 류)"})
+            keep = []
+        return keep, bad
+    if role == "narrow_rule":
+        # 추가만 허용한다 — 기존 원칙을 고치는 순간 "재조정" 이 되고, 실측 5/5 가 그쪽에서 실패했다.
+        bad = [{"edit": n, "id": e.get("id"), "reason": "narrow_rule 인데 둘째 이후 편집"}
+               for n, e in enumerate(edits) if n > 0]
+        keep = edits[:1]
+        # 결속문 강제 — judge16 은 세 이터 연속 금지문("~ 직후 자르지 마라")을 냈고 전부 실패했다.
+        # 결속절이 뒤에 붙어 있으면 통과시킨다(judge16 채택본이 그 꼴이다).
+        if keep and is_prohibition(str(keep[0].get("text") or "")):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "narrow_rule 인데 금지문이다 — 무엇을 함께 유지하는지로 쓸 것"})
+            keep = []
+        if keep and keep[0].get("op") != "insert_after":
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": f"narrow_rule 인데 {keep[0].get('op')} — insert_after 만 된다"})
+            keep = []
+        elif keep and not str(keep[0].get("id") or "").startswith("C"):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "narrow_rule 인데 [Core Principles] 단위가 아니다"})
             keep = []
         return keep, bad
     return edits, []

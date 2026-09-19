@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 import random
 import re
 import threading
@@ -1347,7 +1348,12 @@ class LocalTranslator:
     tgt_code: str
     cache: JsonCache | None = None
     model_id: str = LOCAL_MT_DEFAULT
-    batch: int = 48
+    # 처리량 실험용. 기본값은 48 그대로 — `AUTOSEG_MT_BATCH` 를 준 실행만 바뀐다.
+    # 키운다고 빨라진다는 보장은 없다: `_generate` 가 `padding=True` 로 배치 내 최장
+    # 길이에 맞춰 패딩하는데 큐가 FIFO 라 길이가 섞여 들어온다. 배치가 클수록 짧은
+    # 프리픽스가 긴 것에 끌려가 낭비가 커지고, 디코더도 배치에서 가장 긴 출력이
+    # 끝날 때까지 돈다.
+    batch: int = int(os.environ.get("AUTOSEG_MT_BATCH", "48"))
     wait: float = 0.05
     max_new_tokens: int = 192
     device: str = "cuda"

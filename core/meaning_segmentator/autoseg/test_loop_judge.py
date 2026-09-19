@@ -425,3 +425,337 @@ class NearMissBase(unittest.TestCase):
             self.assertIsNone(lj.near_miss_base(hist2, rd))
             # 근소 기각이 없으면 None
             self.assertIsNone(lj.near_miss_base([hist[2]], rd))
+
+
+class DecideMean(unittest.TestCase):
+    """--adopt-rule mean — 평균 > 0 + 퇴행 가드."""
+
+    def test_mean_positive_accepts(self):
+        bins = {"≤3": {"mean": 0.02, "pairs": 700}, "≤99": {"mean": 0.001, "pairs": 400}}
+        self.assertEqual(lj.decide({"mean": 0.004, "lo": -0.01}, rule="mean",
+                                   bins=bins, guard=0.01), "accept")
+
+    def test_mean_zero_rejects(self):
+        self.assertEqual(lj.decide({"mean": 0.0, "lo": 0.0}, rule="mean", bins={}, guard=0.01),
+                         "reject")
+
+    def test_guard_blocks_collapsed_bin(self):
+        # judge14 iter 1 실측 꼴 — 평균은 양수인데 ≤99 가 무너졌다
+        bins = {"≤3": {"mean": 0.02, "pairs": 700}, "≤99": {"mean": -0.0226, "pairs": 400}}
+        self.assertEqual(lj.decide({"mean": 0.005, "lo": -0.01}, rule="mean",
+                                   bins=bins, guard=0.01), "reject_guard")
+
+    def test_thin_bin_gets_double_slack(self):
+        bins = {"≤99": {"mean": -0.015, "pairs": 100}}      # 짝 300 미만 → −0.02 까지 봐준다
+        self.assertEqual(lj.decide({"mean": 0.005}, rule="mean", bins=bins, guard=0.01), "accept")
+
+    def test_lo_rule_unchanged(self):
+        self.assertEqual(lj.decide({"lo": 0.02, "mean": 0.0}), "accept")
+
+
+class CaseExclusion(unittest.TestCase):
+    """이터 간 제외 — (문장, 구간) 키와 절단집합 겹침."""
+
+    def setUp(self):
+        self.texts = ["a b c d e f g h i j k l"]
+        self.sents = [sent(0, self.texts[0])]
+        self.lab = labels_for(self.texts, lambda i, j: 0.0,
+                              lambda i, j: {3: 0.9, 6: 0.2, 9: 0.8}.get(j, 0.1))
+        self.pol = {(0, 1): (6,), (0, 3): (2, 6, 10)}
+        self.ora = {(0, 1): (3,), (0, 3): (3, 6, 9)}
+        self.pol_h = {(0, 1): 0.60, (0, 3): 0.50}
+        self.ora_h = {(0, 1): 0.75, (0, 3): 0.70}
+
+    def build(self, **kw):
+        return lj.build_cases(self.sents, self.lab, self.pol, self.ora, self.pol_h, self.ora_h,
+                              True, 1, 5, **kw)[0]
+
+    def test_sentence_exclusion_drops_every_bin(self):
+        self.assertEqual(self.build(exclude_ids={"s0"}), [])
+
+    def test_bin_key_keeps_other_bins(self):
+        shown = self.build()[0]
+        got = self.build(exclude_keys={(shown["id"], shown["latency_bin"])})
+        self.assertTrue(got)
+        self.assertNotIn(shown["latency_bin"], [c["latency_bin"] for c in got])
+
+    def test_overlapping_cut_set_is_skipped(self):
+        # (0,1) 의 절단 (6,) 은 (0,3) 의 (2,6,10) 과 Jaccard 1/3 — 기본 0.5 에서는 안 걸린다
+        self.assertEqual(len(self.build(shown_cuts={"s0": [(6,)]}, jaccard_max=0.3)), 0)
+        self.assertTrue(self.build(shown_cuts={"s0": [(6,)]}, jaccard_max=0.9))
+
+
+class CandidatePlan(unittest.TestCase):
+    """--candidates-cross — (역할 × finding) 한 번씩."""
+
+    R4 = ["free", "narrow_rule", "examples_only", "single_small"]
+
+    def test_cross_covers_every_pair_once(self):
+        got = lj.candidate_plan(self.R4, 3, True, 6)
+        self.assertEqual(len(got), 12)
+        self.assertEqual(len(set(got)), 12)
+        self.assertEqual({r for r, _f in got}, set(self.R4))
+        self.assertEqual({f for _r, f in got}, {0, 1, 2})
+
+    def test_cross_adapts_to_finding_count(self):
+        self.assertEqual(len(lj.candidate_plan(self.R4, 4, True, 6)), 16)
+        self.assertEqual(len(lj.candidate_plan(self.R4, 1, True, 6)), 4)
+
+    def test_cap_limits_gate_cost(self):
+        got = lj.candidate_plan(self.R4, 5, True, 6, cap=16)
+        self.assertEqual(len(got), 16)
+
+    def test_default_is_independent_modulo(self):
+        # 종전 배정 — 역할 4 · finding 4 면 주기가 4 라 같은 쌍이 반복된다
+        got = lj.candidate_plan(self.R4, 4, False, 12)
+        self.assertEqual(len(got), 12)
+        self.assertEqual(len(set(got)), 4)
+
+    def test_no_roles_falls_back_to_free(self):
+        self.assertEqual(lj.candidate_plan([], 3, True, 2), [("free", 0), ("free", 1)])
+
+
+class MergeWinners(unittest.TestCase):
+    """유형별 1등 합치기 — 같은 단위를 두 번 고치는 편집은 하나만 남긴다."""
+
+    BASE = ("[Role]\nr\n\n[Core Principles]\n- C one\n- C two\n\n[Scoring Rules]\ns\n\n"
+            "[Output Rules]\no\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+
+    def win(self, lo, edits):
+        return {"delta": {"lo": lo, "mean": lo + 0.01}, "pe": {"changelog": ["c"], "edits": edits}}
+
+    def test_two_inserts_merge(self):
+        w1 = self.win(0.01, [{"op": "insert_after", "id": "C1", "kind": "change",
+                              "text": "- keep a numeral with its unit"}])
+        w2 = self.win(0.02, [{"op": "insert_after", "id": "C2", "kind": "change",
+                              "text": "- keep a head noun with the modifier that identifies it"}])
+        cand, _note, _d, dropped = lj.merge_winners(self.BASE, [w1, w2], 9999)
+        self.assertIsNotNone(cand)
+        self.assertIn("keep a numeral", cand)
+        self.assertIn("keep a head noun", cand)
+        self.assertEqual(dropped, [])
+
+    def test_same_unit_keeps_higher_lo(self):
+        lowlo = self.win(0.005, [{"op": "replace", "id": "C1", "kind": "change", "text": "- low"}])
+        highlo = self.win(0.03, [{"op": "replace", "id": "C1", "kind": "change", "text": "- high"}])
+        cand, _note, _d, dropped = lj.merge_winners(self.BASE, [lowlo, highlo], 9999)
+        self.assertIn("- high", cand)
+        self.assertNotIn("- low", cand)
+        self.assertEqual(dropped, ["C1"])
+
+    def test_no_edits_returns_none(self):
+        cand, note, _d, _dr = lj.merge_winners(self.BASE, [self.win(0.01, [])], 9999)
+        self.assertIsNone(cand)
+        self.assertEqual(note, ["합칠 편집이 없다"])
+
+
+class PickKey(unittest.TestCase):
+    """선별과 채택은 같은 자로 본다 — 갈리면 평균이 높고 분산이 큰 후보가 조용히 떨어진다."""
+
+    BOLD = {"mean": 0.0120, "lo": -0.0076, "hi": 0.0316}   # 합본 — 크게 움직여 se 가 크다
+    MEEK = {"mean": 0.0040, "lo": 0.0001, "hi": 0.0079}    # 단일 — 작게 움직여 se 가 작다
+
+    def test_mean_rule_prefers_higher_mean(self):
+        key = lj.pick_key("mean")
+        self.assertIs(max([self.BOLD, self.MEEK], key=key), self.BOLD)
+
+    def test_lo_rule_prefers_higher_lower_bound(self):
+        key = lj.pick_key("lo")
+        self.assertIs(max([self.BOLD, self.MEEK], key=key), self.MEEK)
+
+    def test_mean_rule_screens_on_mean(self):
+        key = lj.pick_key("mean")
+        self.assertGreater(key(self.BOLD), 0)      # 하한은 음수지만 평균으로는 선별을 통과한다
+        self.assertLess(key({"mean": -0.001, "lo": -0.02, "hi": 0.018}), 0)
+
+
+class GuardBeforeSelection(unittest.TestCase):
+    """퇴행 가드는 뽑기 전에 후보마다 매긴다 — 뒤에 매기면 본채점 두 번이 통째로 버려진다."""
+
+    GUARD = 0.01
+
+    def fulls(self):
+        ok = {"j": 0, "boot": {"mean": 0.004, "lo": 0.0001},
+              "bins": {"≤5": {"mean": 0.002, "pairs": 400}, "≤99": {"mean": 0.005, "pairs": 400}}}
+        breach = {"j": 900, "boot": {"mean": 0.012, "lo": -0.008},
+                  "bins": {"≤5": {"mean": -0.025, "pairs": 400}, "≤99": {"mean": 0.02, "pairs": 400}}}
+        return [ok, breach]
+
+    def clean(self, fulls):
+        return [f for f in fulls if not lj.guard_breaches(f["bins"], self.GUARD)]
+
+    def test_breaching_candidate_dropped_before_pick(self):
+        fulls = self.fulls()
+        clean = self.clean(fulls)
+        self.assertEqual([f["j"] for f in clean], [0])
+        chosen = max(clean or fulls, key=lambda f: lj.pick_key("mean")(f["boot"]))
+        self.assertEqual(chosen["j"], 0)           # 평균은 합본이 높지만 구간을 무너뜨린다
+
+    def test_all_breaching_falls_back_to_full_list(self):
+        fulls = self.fulls()
+        fulls[0]["bins"]["≤5"] = {"mean": -0.03, "pairs": 400}
+        clean = self.clean(fulls)
+        self.assertEqual(clean, [])
+        chosen = max(clean or fulls, key=lambda f: lj.pick_key("mean")(f["boot"]))
+        self.assertEqual(chosen["j"], 900)         # 전부 걸리면 종전대로 decide 가 기각한다
+        self.assertEqual(lj.decide(chosen["boot"], rule="mean", bins=chosen["bins"],
+                                   guard=self.GUARD), "reject_guard")
+
+    def test_no_guard_keeps_every_candidate(self):
+        fulls = self.fulls()
+        self.assertEqual(len([f for f in fulls if not lj.guard_breaches(f["bins"], 0.0)]), 2)
+
+
+class ClassifyType(unittest.TestCase):
+    """분류는 덩이로 끊어 부르고, 한 덩이가 깨져도 런은 죽지 않는다."""
+
+    class Sent:
+        def __init__(self, i):
+            self.id, self.text = f"s{i}", f"sentence {i}"
+
+    class Cache:
+        def __init__(self):
+            self.d = {}
+
+        def get(self, k):
+            return self.d.get(k)
+
+        def put(self, k, v):
+            self.d[k] = v
+
+    class GW:
+        """짝수 덩이는 앞 두 개를 맞다고 하고, 홀수 덩이는 빈 응답으로 파싱 실패를 낸다."""
+
+        def __init__(self, fail_every=0):
+            self.calls, self.fail_every, self.max_tokens = [], fail_every, []
+
+        def chat_json(self, _system, user, **kw):
+            import json as _j
+            nums = [int(x.split(".")[0]) for x in _j.loads(user)["sentences"]]
+            self.calls.append(nums)
+            self.max_tokens.append(kw.get("max_tokens"))
+            if self.fail_every and len(self.calls) % self.fail_every == 0:
+                raise ValueError("JSON 파싱 실패: ")
+            return {"matching": nums[:2]}
+
+    def setUp(self):
+        self.sents = [self.Sent(i) for i in range(100)]
+        self.ids = list(range(100))
+
+    def test_chunks_and_merges(self):
+        gw = self.GW()
+        got = lj.classify_type(gw, "a numeral precedes a unit", self.sents, self.ids,
+                               self.Cache(), chunk=40)
+        self.assertEqual([len(c) for c in gw.calls], [40, 40, 20])
+        self.assertEqual(got, [0, 1, 40, 41, 80, 81])
+
+    def test_failed_chunk_is_skipped_not_raised(self):
+        gw = self.GW(fail_every=2)          # 두 번째 덩이가 깨진다
+        lines = []
+        got = lj.classify_type(gw, "pred", self.sents, self.ids, self.Cache(),
+                               log_fn=lines.append, chunk=40)
+        self.assertEqual(got, [0, 1, 80, 81])
+        self.assertIn("분류 실패 1덩이", lines[0])
+
+    def test_cache_key_is_per_chunk(self):
+        cache, gw = self.Cache(), self.GW()
+        lj.classify_type(gw, "pred", self.sents, self.ids, cache, chunk=40)
+        again = self.GW()
+        got = lj.classify_type(again, "pred", self.sents, self.ids, cache, chunk=40)
+        self.assertEqual(again.calls, [])           # 세 덩이 모두 캐시 적중
+        self.assertEqual(got, [0, 1, 40, 41, 80, 81])
+
+    def test_budget_is_raised_above_reasoning(self):
+        gw = self.GW()
+        lj.classify_type(gw, "pred", self.sents, self.ids[:10], self.Cache(), chunk=40)
+        self.assertEqual(gw.max_tokens, [8000])     # 4000 은 사고 토큰이 다 먹었다
+
+
+class FailureBrief(unittest.TestCase):
+    """Writer 가 다시 쓸 때 Critic 요약이 아니라 원본 실패(현재 절단 vs 오라클 절단)를 본다."""
+
+    def case(self, cid, gap, bin_="≤3"):
+        return {"id": cid, "gap": gap, "latency_bin": bin_,
+                "policy": {"text": f"{cid} now ‖ text", "cut": [1]},
+                "target": {"text": f"{cid} best ‖ text", "cut": [2]}}
+
+    def test_sorted_by_gap_and_capped(self):
+        cases = [self.case(f"s{i}", i / 100) for i in range(12)]
+        out = lj.failure_brief(cases, n=3)
+        self.assertEqual(out.count("now :"), 3)
+        self.assertIn("s11", out.splitlines()[0] + out)      # 가장 큰 gap 이 먼저
+        self.assertNotIn("s0 now", out)
+
+    def test_shows_both_cut_sets(self):
+        out = lj.failure_brief([self.case("s1", 0.5)])
+        self.assertIn("now : s1 now ‖ text", out)
+        self.assertIn("best: s1 best ‖ text", out)
+        self.assertIn("gap 0.500", out)
+
+    def test_empty_is_empty_string(self):
+        self.assertEqual(lj.failure_brief([]), "")
+
+    def test_missing_fields_do_not_raise(self):
+        self.assertIn("gap 0.000", lj.failure_brief([{"id": "x"}]))
+
+
+class AdoptKeysTest(unittest.TestCase):
+    """`--adopt-bin` 은 채택 판정에 쓸 짝만 남긴다 — 채점 자체는 건드리지 않는다."""
+
+    def setUp(self):
+        self.sents = [sent(0, " ".join(f"w{i}" for i in range(12))),
+                      sent(1, " ".join(f"w{i}" for i in range(40)))]
+
+    def test_none_keeps_all(self):
+        keys = [(0, 1), (0, 3), (1, 1), (1, 9)]
+        self.assertEqual(lj.adopt_keys(self.sents, keys, True, None), keys)
+
+    def test_bin_filters(self):
+        keys = [(0, k) for k in (1, 2, 3, 5, 99)] + [(1, k) for k in (1, 5, 99)]
+        got = lj.adopt_keys(self.sents, keys, True, "≤3")
+        self.assertTrue(got, "≤3 짝이 하나도 없다 — latency_bin 규약이 바뀌었는지 본다")
+        for i, k in got:
+            n = len(lj.L.units_of(self.sents[i].text, True))
+            self.assertEqual(lj.latency_bin(n, k), "≤3")
+
+    def test_bin_unknown_gives_empty(self):
+        keys = [(0, 1), (1, 5)]
+        self.assertEqual(lj.adopt_keys(self.sents, keys, True, "없는구간"), [])
+
+
+class InducePicksTest(unittest.TestCase):
+    """`induce` 사례 선정 — 구간 비중을 사례 배분과 맞추고, 예시와 극단을 제한한다."""
+
+    def cases(self):
+        out = []
+        # ≤3 이 많고 gap 은 ≤5 쪽이 크게 나오는 실제 분포를 흉내 낸다
+        for i in range(12):
+            out.append({"id": f"a{i}", "latency_bin": "≤3", "gap": 0.60 - i * 0.01,
+                        "policy": {"H_set": 0.01 if i < 8 else 0.30}})
+        for i in range(6):
+            out.append({"id": f"b{i}", "latency_bin": "≤5", "gap": 0.75 - i * 0.01,
+                        "policy": {"H_set": 0.01}})
+        for i in range(2):
+            out.append({"id": f"c{i}", "latency_bin": "≤7", "gap": 0.70,
+                        "policy": {"H_set": 0.20}})
+        return out
+
+    def test_follows_bin_share(self):
+        got = lj.induce_picks(self.cases(), set(), 8)
+        self.assertEqual(len(got), 8)
+        n3 = sum(1 for c in got if c["latency_bin"] == "≤3")
+        # ≤3 이 전체의 60% 이므로 gap 이 작아도 가장 많이 들어가야 한다
+        self.assertGreaterEqual(n3, 4, f"≤3 이 {n3} 개뿐이다 — gap 순 정렬로 되돌아갔다")
+
+    def test_excludes_example_sentences(self):
+        got = lj.induce_picks(self.cases(), {"a0", "b0", "b1"}, 8)
+        self.assertFalse({c["id"] for c in got} & {"a0", "b0", "b1"})
+
+    def test_caps_contra_killed(self):
+        got = lj.induce_picks(self.cases(), set(), 8)
+        killed = sum(1 for c in got if c["policy"]["H_set"] < 0.05)
+        self.assertLessEqual(killed, 4, "모순으로 죽은 사례가 절반을 넘는다")
+
+    def test_empty_pool(self):
+        self.assertEqual(lj.induce_picks([], set(), 8), [])
+        self.assertEqual(lj.induce_picks(self.cases(), set(), 0), [])

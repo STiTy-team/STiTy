@@ -499,3 +499,70 @@ class NearMiss(unittest.TestCase):
         self.assertEqual(b["built_on"], "iter 1 near miss (+0.0074)")
         self.assertEqual(b["vs_base"], {"delta_mean": -0.0038, "delta_lo": -0.01, "by_bin": {"≤3": -0.0083}})
         self.assertNotIn("near_miss", b)
+
+
+class ProhibitionForm(unittest.TestCase):
+    """narrow_rule 은 결속문이어야 한다 — 금지문만으로 쓰면 코드가 버린다."""
+
+    def test_pure_prohibition_rejected(self):
+        self.assertTrue(aj.is_prohibition("Do not cut immediately after a main verb."))
+        self.assertTrue(aj.is_prohibition("- Avoid cutting between a determiner and its noun."))
+
+    def test_prohibition_with_binding_clause_allowed(self):
+        # judge16 채택본의 실제 문면
+        self.assertFalse(aj.is_prohibition(
+            "- Narrow check: do not cut between a numeral and an immediately following unit "
+            "phrase that completes it; keep the number and its unit together."))
+
+    def test_binding_allowed(self):
+        self.assertFalse(aj.is_prohibition(
+            "Keep a head noun together with the post-nominal modifier that identifies it."))
+
+    def test_enforce_role_drops_prohibition(self):
+        edits = [{"op": "insert_after", "id": "C3", "text": "Do not cut after a main verb."}]
+        keep, bad = aj.enforce_role(edits, "narrow_rule")
+        self.assertEqual(keep, [])
+        self.assertIn("금지문", bad[0]["reason"])
+
+    def test_enforce_role_keeps_binding(self):
+        edits = [{"op": "insert_after", "id": "C3", "text": "Keep a numeral with its unit."}]
+        keep, bad = aj.enforce_role(edits, "narrow_rule")
+        self.assertEqual(len(keep), 1)
+        self.assertEqual(bad, [])
+
+    def test_findings_cap_is_configurable(self):
+        blob = {"findings": [{"diagnosis": f"d{i}", "evidence": "e",
+                              "type_predicate": f"p{i}",
+                              "edit": {"where": "core_principles", "action": "add",
+                                       "text": "t"}} for i in range(6)]}
+        self.assertEqual(len(aj.clean_findings(blob, cap=4)), 4)
+        self.assertEqual(aj.clean_findings(blob, cap=4)[0]["type_predicate"], "p0")
+
+
+class PruneRole(unittest.TestCase):
+    """빼기 후보 — 원칙 하나를 지우는 것만 허용한다. 더하기는 스물넷 연속 음수였다."""
+
+    def test_single_delete_of_principle_passes(self):
+        keep, bad = aj.enforce_role([{"op": "delete", "id": "C5"}], "prune")
+        self.assertEqual(len(keep), 1)
+        self.assertEqual(bad, [])
+
+    def test_insert_is_dropped(self):
+        keep, bad = aj.enforce_role(
+            [{"op": "insert_after", "id": "C3", "text": "Keep a numeral with its unit."}], "prune")
+        self.assertEqual(keep, [])
+        self.assertIn("delete 만 된다", bad[0]["reason"])
+
+    def test_example_unit_is_dropped(self):
+        keep, bad = aj.enforce_role([{"op": "delete", "id": "E2"}], "prune")
+        self.assertEqual(keep, [])
+        self.assertIn("[Core Principles] 단위가 아니다", bad[0]["reason"])
+
+    def test_second_edit_is_dropped(self):
+        keep, bad = aj.enforce_role([{"op": "delete", "id": "C5"},
+                                     {"op": "delete", "id": "C6"}], "prune")
+        self.assertEqual([e["id"] for e in keep], ["C5"])
+        self.assertIn("둘째 이후 편집", bad[0]["reason"])
+
+    def test_prune_is_a_known_role(self):
+        self.assertIn("prune", aj.ROLES)

@@ -38,7 +38,7 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO_ROOT))
 
-from core.meaning_segmentator.autoseg import data as autoseg_data  # noqa: E402
+from core.meaning_segmentator.autoseg.runtime import data as autoseg_data  # noqa: E402
 
 LANG_CODE = {
     "en_us": "en", "de_de": "de", "ko_kr": "ko", "ja_jp": "ja",
