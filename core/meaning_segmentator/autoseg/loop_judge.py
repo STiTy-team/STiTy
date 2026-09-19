@@ -1733,7 +1733,9 @@ def main() -> int:
                 if isinstance(e, dict) and e.get("kind") == "delete" and e.get("was"):
                     spent_deletes.add(str(e["was"]))
 
-        pe_user = {"fixed_sections": {h: aj.section_of(prompt, h) for h in ("[Role]", "[Scoring Rules]")},
+        # `[Scoring Rules]` 는 빼고 units 로만 준다 — 같은 2.9KB 를 두 번 실을 일이 없고, "고정
+        # 섹션" 이라는 이름이 `procedure` 역할과 모순된다. 못 고치는 줄은 S 태그 쪽에서 가린다.
+        pe_user = {"fixed_sections": {h: aj.section_of(prompt, h) for h in ("[Role]",)},
                    "units": aj.units_with_provenance(prompt, prov),
                    "findings": findings, "history": aj.history_brief(history),
                    "size": aj.size_brief(prompt, target)}

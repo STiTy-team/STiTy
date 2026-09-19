@@ -288,7 +288,8 @@ ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iterat
 numbered units of it. You do not rewrite the prompt — code applies your edits.
 
 What you can edit:
-- "units" lists every unit of [Core Principles] (ids C1, C2, ...; one line each), of
+- "units" lists every unit of [Scoring Rules] (ids S1, S2, ...; one line each), of
+  [Core Principles] (ids C1, C2, ...; one line each), of
   [Order Principles] (ids O1, O2, ...; one line each) and of
   [Examples] (ids E1, E2, ...; one Input/Output pair each), with its exact text, its length
   ("chars") and its evidence:
@@ -297,9 +298,12 @@ What you can edit:
     "near_miss_delta" (only on units from a "base" revision) the measured mean gain of that
                      revision, "near_miss_ci_lo" its lower bound (touched zero, so not adopted)
                      (null for v0 units — nothing was measured about them one by one)
-- Every other section — [Role], [Scoring Rules], [Output Rules] — stays as
-  it is. [Scoring Rules] states how the target was measured and the procedure for turning that
-  into numbers; neither changed.
+- The S units of [Scoring Rules] are editable by ONE role only, "procedure", and only the ones
+  whose text begins with "- ": those state the PROCEDURE for turning the measurement into numbers.
+  The ones that do not begin with "- " say what was MEASURED (cohesion, contra, target) and are
+  never editable by any role — the prompt has to keep saying what the measurement actually is.
+  Under any other role, leave every S unit alone; code drops an edit that touches one.
+- Every other section — [Role], [Output Rules] — stays as it is.
 
 Hard constraints:
 1. The two principle sections are read at different moments by the scoring procedure and are not
@@ -1506,7 +1510,7 @@ def shorten_user(draft: str, target: int, findings: list) -> dict:
     9748 → 8339) 호출 쪽이 맞을 때까지 몇 번 반복한다."""
     units = [{**u, "origin": "rewrite", "adopted_delta": None, "adopted_ci_lo": None}
              for u in edit_units(draft)]
-    return {"fixed_sections": {h: section_of(draft, h) for h in ("[Role]", "[Scoring Rules]")},
+    return {"fixed_sections": {h: section_of(draft, h) for h in ("[Role]",)},
             "units": units, "findings": findings,
             "size": size_brief(draft, target),
             "size_feedback": edit_feedback(draft, draft, target, [])}

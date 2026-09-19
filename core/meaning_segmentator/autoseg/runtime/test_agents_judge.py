@@ -291,8 +291,11 @@ class MeasurementInOnePlace(unittest.TestCase):
     def test_scoring_rules_is_the_place(self):
         flat = " ".join(aj.writer_system(True, ["German"]).split())
         self.assertIn("ONLY place that states how the target was measured", flat)
-        self.assertIn("[Scoring Rules] states how the target was measured",
-                      aj.engineer_system(100, 100))
+        # PE 에게도 측정이 어디에 적혀 있는지, 그리고 그 줄은 누구도 못 고친다는 것을 말한다.
+        # `procedure` 역할이 이 절을 열었으므로 "통째로 고정" 이 아니라 **정의 줄만** 고정이다.
+        pe = " ".join(aj.engineer_system(100, 100).split())
+        self.assertIn("say what was MEASURED (cohesion, contra, target)", pe)
+        self.assertIn("never editable by any role", pe)
 
 
 if __name__ == "__main__":
