@@ -927,6 +927,27 @@ def main() -> int:
                         "런이 그렇게 돌아 관문이 꺼진 채였고, judge25 의 채택(dev 하한 +0.0032)이 "
                         "test 560 에서 −0.0070 으로 뒤집혔다. 사후 재추출로 그 dev Δ 는 "
                         "+0.0138 → +0.0037 이었다. 확인을 늘 켜려면 도달 불가능한 값(0.05)을 준다")
+    p.add_argument("--baseline-draws", type=int, default=1,
+                   help="기준선(현재 프롬프트)을 몇 벌의 분절로 재서 (문장, k) 별로 평균할지. "
+                        "**기준선 한 벌은 후보 전부가 공유하므로 그 벌의 오차가 모든 후보 Δ 에 "
+                        "같은 방향으로 얹힌다** — 2026-09-19 실측으로 v0 를 dev 500 에서 네 번 뽑으니 "
+                        "0.5514 / 0.5578 / 0.5588 / 0.5591 이었고, judge24~26 이 판정에 쓴 첫 벌이 "
+                        "나머지 평균보다 0.0072 낮아 후보 Δ 전부가 그만큼 올려 잡혔다. 3 이면 그 "
+                        "공통 편향이 √3 로 줄고 짝 비교 sd 도 함께 내려간다")
+    p.add_argument("--confirm-draws", type=int, default=1,
+                   help="1차를 통과한 후보를 **총 몇 벌**로 다시 재는지(1차에서 쓴 벌 포함). 2 이상이면 "
+                        "1차는 선별이 되고 판정은 이 다벌 평균이 한다 — 통과자 전부를 재고, 하한 > 0 인 "
+                        "것 중 하한 최고를 채택한다. 1 이면 종전 경로(최고 하나만 --adopt-strong 구간에서 "
+                        "새 추출 확인). 벌을 3 으로 하고 기준선도 3 벌이면 Δ 의 sd 가 0.0058 → 0.0033 "
+                        "으로 줄어 하한 > 0 문턱이 +0.011 에서 +0.0065 로 내려간다")
+    p.add_argument("--final-draws", type=int, default=1,
+                   help="최종 test 를 몇 벌로 재서 평균할지. 판정을 다벌로 해 놓고 최종 숫자만 한 벌로 "
+                        "재면 결론이 다시 ±0.011 잡음에 묻힌다 — 채택본과 v0 를 같은 벌 수로 잰다")
+    p.add_argument("--gate-rule", default="lo", choices=("lo", "mean"),
+                   help="--confirm-draws 2 이상일 때 1차 문턱. mean=평균 > 0 인 후보 **전부**를 2차로 "
+                        "올린다(선별). lo=하한 > 0 만 올린다. **기준선을 새로 뽑으면 하한 > 0 은 거의 "
+                        "안 나온다** — 세 런 후보 66개를 기준선 보정해 세어 보니 하한 > 0 은 1개(1.5%%)고 "
+                        "평균 > 0 은 13개(20%%)였다. lo 로 두면 2차가 한 번도 안 돌 수 있다")
     p.add_argument("--adopt-rule", default="lo", choices=("lo", "mean"),
                    help="채택 문턱 — lo: CI 하한 > 0.005 (종전) / mean: 평균 > 0 + 퇴행 가드. "
                         "스텝 효과(+0.003~0.01)가 200문장 se 보다 작아 lo 는 원리적으로 못 넘는다")
@@ -1194,6 +1215,12 @@ def main() -> int:
         return evaluate(gw, pr, sents, lab, spaced, min_gap, t_grid, cache or seg_cache,
                         a.workers, a.batch_size, seg_effort, k_samples=a.k_samples)
 
+    def draw_cache(tag: str) -> JsonCache:
+        """벌마다 다른 캐시 파일. **런 이름이 들어가야 한다** — `cache/` 는 `--from-run` 쪽으로의
+        심볼릭 링크라 여러 런이 한 디렉토리를 쓰고, 이름이 겹치면 다음 런이 그 벌을 그대로 읽어
+        "새로 뽑은 것" 이 아니게 된다."""
+        return JsonCache(run_dir / "cache" / f"segment_{tag}_{run_dir.name}.json")
+
     def score_prompt(pr, sents, lab, tag, rows_m=None, cache=None):
         """분절(API) → 절단 집합 → H_set. `rows_m` 을 주면 이미 끝난 분절을 쓴다 — 후보 여럿을
         동시에 분절해 두고 GPU 채점만 차례로 할 때."""
@@ -1211,6 +1238,32 @@ def main() -> int:
             f"(1차 {m['format_pass_rate_no_retry']}, 재정렬 {m['first_pass_violations'].get('realigned', 0)}) / "
             f"누적 ${gw.usage.snapshot()['cost']:.2f}")
         return rows, sets, h, m
+
+    def score_avg(pr, sents, lab, tag, draws, kind):
+        """분절을 `draws` 벌 뽑아 (문장, k) 별 H 를 평균한다. 첫 벌은 공용 캐시를 쓰고(다른 경로와
+        공유되어 공짜일 수 있다), 둘째부터는 `kind` 전용 캐시라 반드시 새로 뽑힌다. rows·sets·metrics
+        는 첫 벌 것을 그대로 돌려준다 — 위반 집계와 예시 판정에만 쓰고 판정 수치에는 안 들어간다."""
+        if draws <= 1:
+            return score_prompt(pr, sents, lab, tag)
+
+        def one(d):
+            # 첫 벌만 공용 캐시 — 다른 경로가 이미 뽑아 뒀으면 공짜다. 둘째부터는 전용 캐시라 새로 뽑힌다.
+            return score_prompt(pr, sents, lab, f"{tag} {d}/{draws}",
+                                cache=None if d == 1 else draw_cache(f"{kind}{d}"))
+
+        # **벌끼리 병렬로 던진다.** 한 벌이 dev 500 에 6분인데 대부분이 분절 API 왕복 대기라,
+        # 겹치면 3벌이 한 벌 시간에 가깝게 끝난다. GPU 채점은 `hset_of` 의 락이 줄을 세운다.
+        with ThreadPoolExecutor(max_workers=min(draws, max(1, a.score_workers))) as ex:
+            res = list(ex.map(one, range(1, draws + 1)))
+        rows, sets, _h0, m = res[0]
+        hs = [r[2] for r in res]
+        ks = set(hs[0])
+        for h_d in hs[1:]:
+            ks &= set(h_d)
+        avg = {k: sum(h_d[k] for h_d in hs) / len(hs) for k in ks}
+        log(f"[{tag}] {draws}벌 평균 H_set {st.mean(avg.values()):.4f} "
+            f"(벌별 {[round(st.mean(x.values()), 4) for x in hs]})")
+        return rows, sets, avg, m
 
     v0_examples = labeled_examples(case_sents, case_lab,
                                    [{"id": i} for i in pick_example_ids(case_sents, spaced)],
@@ -1336,8 +1389,9 @@ def main() -> int:
         log("[score-only] 이터를 돌지 않는다 — 최종 분할에서 --prompt 와 prompt_v0.txt 만 잰다")
     else:
         # 재개 때도 다시 잰다 — 현재 프롬프트의 분절은 캐시에 있어 LLM 호출이 없고 QE 만 돈다.
-        cur_rows, cur_sets, cur_h, cur_m = score_prompt(
-            prompt, devA, labA, "iter 0" if start == 1 else f"iter {start - 1} 재개")
+        cur_rows, cur_sets, cur_h, cur_m = score_avg(
+            prompt, devA, labA, "iter 0" if start == 1 else f"iter {start - 1} 재개",
+            a.baseline_draws, "base")
     # v0 를 생성하지 않고 `--prompt` 로 받은 런은 이 디렉토리를 만든 적이 없다 — 생성 경로만
     # iter_00 을 만들어 두므로, 여기서 보장해야 한다.
     (run_dir / f"iter_{start - 1:02d}").mkdir(parents=True, exist_ok=True)
@@ -2091,6 +2145,52 @@ def main() -> int:
                     "rows": c_rows, "sets": c_sets, "h": c_h, "m": c_m, "excl": excl, "boot": boot,
                     "keys": keys, "bins": bin_deltas(devA, cur_h, c_h, keys, spaced)}
 
+        def confirm_draws(passers):
+            """1차를 통과한 후보들을 추가 벌로 다시 재서 (1차 벌 포함) `--confirm-draws` 벌 평균으로
+            기준선과 짝 비교한다. 1차의 한 벌로 판정하면 **고르기 편향이 그대로 들어간다** —
+            judge26 에서 1차 +0.0143 [+0.0029] 이던 후보가 새 벌에서 −0.0019 였다. 문장은 같게 두고
+            분절만 새로 뽑는 것이 핵심이다(같은 문장이라 짝 비교가 유지되고, 가릴 대상이 추출이다).
+
+            **(후보 × 벌) 을 한 풀에 던진다.** 통과자 3개에 2벌씩이면 6회 채점인데 차례로 하면
+            36분이고 겹치면 분절 대기가 포개져 한 자릿수 분이 된다."""
+            t0 = time.perf_counter()
+            tasks = [(f, d) for f in passers for d in range(2, a.confirm_draws + 1)]
+
+            def one(t):
+                f, d = t
+                _r, _s, h_d, _m = score_prompt(
+                    f["cand"], devA, labA,
+                    f"iter {it} 후보 {f['j']} 확인 {d}/{a.confirm_draws}",
+                    cache=draw_cache(f"conf{d}"))
+                return f["j"], h_d
+
+            got = []
+            if tasks:
+                with ThreadPoolExecutor(max_workers=min(len(tasks),
+                                                        max(1, a.score_workers))) as ex:
+                    got = list(ex.map(one, tasks))
+            save_usage(idir)            # 크래시해도 여기까지의 지출이 남는다
+            extra: dict = {}
+            for j, h_d in got:
+                extra.setdefault(j, []).append(h_d)
+            for f in passers:
+                hs = [f["h"]] + extra.get(f["j"], [])
+                ks = set(hs[0])
+                for h_d in hs[1:]:
+                    ks &= set(h_d)
+                avg = {k: sum(h_d[k] for h_d in hs) / len(hs) for k in ks}
+                jk = sorted(k for k in set(avg) & set(cur_h) if k[0] not in f["excl"])
+                boot = hset.paired_bootstrap([avg[k] for k in jk], [cur_h[k] for k in jk],
+                                             clusters=[i for i, _k in jk])
+                f["h_avg"], f["boot_avg"] = avg, boot
+                f["bins_avg"] = bin_deltas(devA, cur_h, avg, jk, spaced)
+                log(f"[iter {it}] 후보 {f['j']} {a.confirm_draws}벌 확인 Δ {boot['mean']:+.4f} "
+                    f"[{boot['lo']:+.4f}, {boot['hi']:+.4f}] 짝 {boot['n']} / 벌별 H "
+                    f"{[round(st.mean(x.values()), 4) for x in hs]}")
+            timing["confirm_draws"] = round(time.perf_counter() - t0, 1)
+            log(f"[iter {it}] 2차 {len(passers)}개 × 추가 {a.confirm_draws - 1}벌 = "
+                f"{len(tasks)}회 채점을 병렬로 — {timing['confirm_draws']:.0f}초")
+
         t0 = time.perf_counter()
         if a.score_workers > 1 and len(to_full) > 1:
             # 후보 하나는 dev 문장수/batch_size 만큼의 콜밖에 안 써서 워커가 남는다 — dev 500·
@@ -2113,27 +2213,57 @@ def main() -> int:
         if len(fulls) > 1 and clean and len(clean) < len(fulls):
             log(f"[iter {it}] 퇴행 가드에 걸린 후보 "
                 + ", ".join(str(f["j"]) for f in fulls if f not in clean) + " 는 선택에서 뺀다")
-        chosen = max(clean or fulls, key=lambda f: fkey(f["boot"]))
+        pool = clean or fulls
+        multi = a.confirm_draws > 1
+        if multi:
+            # **1차는 선별, 2차가 판정이다.** 1차 문턱을 하한 > 0 으로 두면 기준선을 제대로 뽑은 뒤엔
+            # 통과가 거의 안 난다(세 런 후보 66개를 보정해 세니 1개, 1.5%). 평균 > 0 이면 20% 다.
+            gkey = (lambda b: b["mean"]) if a.gate_rule == "mean" else (lambda b: b["lo"])
+            gname = "평균" if a.gate_rule == "mean" else "하한"
+            passers = [f for f in pool if gkey(f["boot"]) > 0]
+            log(f"[iter {it}] 1차({gname} > 0) 통과 {len(passers)}/{len(pool)}개"
+                + (" — " + ", ".join(f"후보 {f['j']}" for f in passers) if passers else ""))
+            confirm_draws(passers)
+            ok = [f for f in passers if f["boot_avg"]["lo"] > 0]
+            if ok:
+                chosen = max(ok, key=lambda f: f["boot_avg"]["lo"])
+                log(f"[iter {it}] 2차 통과 {len(ok)}/{len(passers)}개 — 하한 최고 후보 "
+                    f"{chosen['j']} 채택")
+            else:
+                chosen = max(pool, key=lambda f: fkey(f["boot"]))
+                log(f"[iter {it}] 2차 통과 0/{len(passers)}개 — 기각 "
+                    f"(부검은 1차 최고 후보 {chosen['j']} 로 한다)")
+        else:
+            chosen = max(pool, key=lambda f: fkey(f["boot"]))
         for f in fulls:
             if f is not chosen:     # 본채점까지 갔지만 뽑히지 않은 후보 — 이력에 남긴다
                 history.append({"iter": it, "candidate": f["j"], "adopted": False,
                                 "full_scored": True, "delta": f["boot"], "changelog": f["note"],
+                                "delta_confirm": f.get("boot_avg"),
                                 "edits": aj.edit_summary(prompt, (f["pe"] or {}).get("edits")),
                                 **base_tag})
-        if len(fulls) > 1:
+        if len(fulls) > 1 and not multi:
             kn = "평균" if a.adopt_rule == "mean" else "하한"
             log(f"[iter {it}] 본채점 {len(fulls)}개 중 {kn} 최고 후보 {chosen['j']} 선택")
         pe, cand, note, deltas = chosen["pe"], chosen["cand"], chosen["note"], chosen["deltas"]
         c_rows, c_sets, c_h, c_m, excl, boot = (chosen["rows"], chosen["sets"], chosen["h"],
                                                  chosen["m"], chosen["excl"], chosen["boot"])
+        if "boot_avg" in chosen:
+            # 채택되면 이 값이 **다음 이터의 기준선**이 된다 — 1차 한 벌을 물려주면 그 벌의 오차가
+            # 다음 이터 후보 전부에 다시 얹힌다. 다벌 평균을 넘긴다.
+            c_h, boot = chosen["h_avg"], chosen["boot_avg"]
         (idir / "violations.json").write_text(
             json.dumps({"candidate": violation_summary(c_rows)}, ensure_ascii=False, indent=1),
             encoding="utf-8")
         if excl:
             log(f"[iter {it}] 예시로 들어간 dev-A 문장 {len(excl)}개는 판정에서 뺀다")
-        keys, vbins = chosen["keys"], chosen["bins"]
-        verdict = decide(boot, strong=a.adopt_strong, rule=a.adopt_rule,
-                         bins=vbins, guard=a.guard_bin)
+        keys, vbins = chosen["keys"], chosen.get("bins_avg") or chosen["bins"]
+        if multi:
+            # 2차가 이미 갈랐다 — 하한 > 0 인 후보 중에서만 chosen 이 나온다.
+            verdict = "accept" if "boot_avg" in chosen and boot["lo"] > 0 else "reject"
+        else:
+            verdict = decide(boot, strong=a.adopt_strong, rule=a.adopt_rule,
+                             bins=vbins, guard=a.guard_bin)
         gain = boot
         log(f"[iter {it}] Δ H_set {boot['mean']:+.4f} [{boot['lo']:+.4f}, {boot['hi']:+.4f}] "
             f"짝 {boot['n']} / 문장 {boot['n_clusters']} → {verdict}")
@@ -2470,8 +2600,9 @@ def main() -> int:
                     prompt = checkpoint["prompt"]
                     provenance = copy.deepcopy(checkpoint.get("provenance")
                                                or aj.init_provenance(prompt))
-                    cur_rows, cur_sets, cur_h, cur_m = score_prompt(prompt, devA, labA,
-                                                                    f"iter {it} 롤백 후")
+                    cur_rows, cur_sets, cur_h, cur_m = score_avg(prompt, devA, labA,
+                                                                 f"iter {it} 롤백 후",
+                                                                 a.baseline_draws, "base")
                 else:
                     checkpoint = {"iter": it, "value": round(st.mean(hB.values()), 5),
                                   "prompt": prompt, "provenance": copy.deepcopy(provenance),
@@ -2516,12 +2647,15 @@ def main() -> int:
         need_v0 = v0_prompt != prompt
         if need_v0 and a.score_workers > 1:
             with ThreadPoolExecutor(max_workers=2) as ex:
-                f_t = ex.submit(score_prompt, prompt, test_sents, lab_test, "최종 test")
-                f_0 = ex.submit(score_prompt, v0_prompt, test_sents, lab_test, "최종 test v0")
+                f_t = ex.submit(score_avg, prompt, test_sents, lab_test, "최종 test",
+                                a.final_draws, "fin")
+                f_0 = ex.submit(score_avg, v0_prompt, test_sents, lab_test, "최종 test v0",
+                                a.final_draws, "fin")
                 rows_t, _sets_t, h_t, m_t = f_t.result()
                 _r0, _s0, h0_raw, _m0 = f_0.result()
         else:
-            rows_t, _sets_t, h_t, m_t = score_prompt(prompt, test_sents, lab_test, "최종 test")
+            rows_t, _sets_t, h_t, m_t = score_avg(prompt, test_sents, lab_test, "최종 test",
+                                                  a.final_draws, "fin")
             h0_raw = None
         ora_t = oracle_sets(lab_test, test_sents, spaced, min_gap, a.min_chunk, a.max_k)
         ora_h_t = hset_of(test_sents, lab_test, ora_t)
@@ -2533,8 +2667,8 @@ def main() -> int:
         boot_v0 = None
         if need_v0:
             if h0_raw is None:
-                _r0, _s0, h0_raw, _m0 = score_prompt(v0_prompt, test_sents, lab_test,
-                                                     "최종 test v0")
+                _r0, _s0, h0_raw, _m0 = score_avg(v0_prompt, test_sents, lab_test,
+                                                  "최종 test v0", a.final_draws, "fin")
             h0 = keep(h0_raw)
             by_bin["v0"] = by_latency(test_sents, h0, spaced)
             means["v0"] = round(st.mean(h0.values()), 4)
