@@ -1,0 +1,51 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": -0.0001,
+  "lo": -0.00731,
+  "hi": 0.00736,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.0001,
+  "lo": -0.00731,
+  "hi": 0.00736,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Delete C4: it largely restates C3 (clausal material supplying predicate/argument/scope) and encourages attention to noun-phrase internal boundaries; removing this redundant rule reduces rule competition that can push cuts into multiword names/NPs (the critique and history show clausal-attachment rules can force cuts inside NPs and named entities)."
+ ],
+ "findings": [
+  "The prompt allows cuts inside multiword proper names or titles, treating internal boundaries as acceptable splits and so fragmenting named entities.",
+  "The prompt cuts immediately after fronted temporal/adverbial phrases, detaching them from their governing verb and producing incoherent or misleading early pieces.",
+  "When forced to choose between two imperfect internal cuts, the prompt prefers cuts that break verb–object adjacency; instead it should prefer cuts that avoid separating a verb from its core object/complement."
+ ],
+ "edits": [
+  {
+   "op": "delete",
+   "id": "C4",
+   "kind": "delete",
+   "was": "- Does a following relative clause or clausal complement restrict or redefine a ",
+   "now": ""
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0006,
+   "≤5": -0.0,
+   "≤7": 0.0004,
+   "≤10": -0.0044,
+   "≤99": 0.0001
+  },
+  "n_worse": 1926,
+  "n_better": 2287,
+  "why": "Removing C4 removed a protection against cutting at noun-phrase / name-internal boundaries, so the scorer began placing earlier cuts inside multiword NPs/named entities (examples: 'John ‖ Nixon', 'Cirque ‖ du Soleil', 'We ‖ will ‖ never...'). That change raised agreement at rank‑1 but worsened ranks 2–3 (rank_depth: +0.124 at depth1, −0.216/−0.098 at depths2–3), produced mixed counts (n_better 2287 vs n_worse 1926), and caused a measurable drop in the mid‑length bin (≤10: −0.0044).",
+  "lesson": "If you remove a rule that overlaps clausal-attachment checks, keep an explicit constraint (or reweighting) that prevents cuts inside multiword names/NP-internal boundaries so top choice gains don’t come at the expense of deeper-ranked cuts used by shorter-latency budgets.",
+  "blamed": [
+   "C4 «- Do fronted adverbials, temporal adjuncts, or parenthetical»"
+  ]
+ }
+}

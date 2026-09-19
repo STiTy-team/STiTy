@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00883,
+  "lo": -0.01569,
+  "hi": -0.00159,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": -0.0105,
+  "≤5": -0.0117,
+  "≤7": -0.0038,
+  "≤10": -0.0013,
+  "≤99": -0.0053
+ },
+ "n_worse": 2064,
+ "n_better": 2136,
+ "worst": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.807,
+   "before": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1629",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7703,
+   "before": "Some reports ‖ put the official death toll at eight, ‖ and official reports confirm that up to 30 were injured; ‖ but final numbers are not yet known.",
+   "after": "Some reports put the official death toll at eight, ‖ and official reports confirm that up to 30 were injured; ‖ but final ‖ numbers are not yet known."
+  },
+  {
+   "id": "en_us_1629",
+   "k": 4,
+   "bin": "≤7",
+   "delta": -0.6967,
+   "before": "Some reports ‖ put the official death toll at eight, ‖ and official reports ‖ confirm that up to 30 were injured; ‖ but final numbers are not yet known.",
+   "after": "Some reports put the official death toll at eight, ‖ and official reports ‖ confirm that up to 30 were injured; ‖ but final ‖ numbers are not yet known."
+  },
+  {
+   "id": "en_us_260",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.6628,
+   "before": "Dump trucks ‖ were used to block tube entrances ‖ and assistance of 80 police were on hand to direct motorists to detours.",
+   "after": "Dump trucks were used to block tube entrances ‖ and assistance of 80 police ‖ were on hand to direct motorists to detours."
+  },
+  {
+   "id": "en_us_1649",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6601,
+   "before": "In Japan, ‖ the first cherry blossom parties ‖ were ‖ hosted by the emperor ‖ only for himself and other members of the aristocracy ‖ around the Imperial Court.",
+   "after": "In Japan, ‖ the first cherry blossom parties ‖ were hosted ‖ by the emperor ‖ only for himself ‖ and other members of the aristocracy around the Imperial Court."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_939",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6068,
+   "before": "While immigration check ‖ is usually ‖ absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs control can be a hassle.",
+   "after": "While immigration check is usually absent ‖ or a formality ‖ when you arrive ‖ in your homeland, ‖ customs control ‖ can be a hassle."
+  },
+  {
+   "id": "en_us_1450",
+   "k": 4,
+   "bin": "≤7",
+   "delta": 0.5847,
+   "before": "They found the Sun operated on the same basic principles ‖ as other stars: ‖ The activity of all stars in the system ‖ was found to be driven by their luminosity, ‖ their rotation, and nothing else.",
+   "after": "They found the Sun operated on the same basic principles ‖ as other stars: ‖ The activity of all stars in the system ‖ was found to be driven by their luminosity, their rotation, ‖ and nothing else."
+  },
+  {
+   "id": "en_us_669",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5723,
+   "before": "While this is a very common activity, ‖ it is prohibited ‖ by ‖ Disney: ‖ the tickets ‖ are ‖ non-transferable.",
+   "after": "While ‖ this ‖ is ‖ a very common activity, ‖ it is prohibited ‖ by Disney: ‖ the tickets are non-transferable."
+  },
+  {
+   "id": "en_us_405",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.5509,
+   "before": "German ‖ submarines ‖ were called ‖ U-Boats. ‖ The Germans ‖ were ‖ very good at navigating ‖ and operating their submarines.",
+   "after": "German submarines ‖ were called U-Boats. ‖ The Germans ‖ were very ‖ good ‖ at navigating ‖ and operating ‖ their submarines."
+  },
+  {
+   "id": "en_us_939",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5475,
+   "before": "While immigration ‖ check ‖ is usually ‖ absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs control can be a hassle.",
+   "after": "While immigration check is usually absent ‖ or a formality ‖ when you arrive ‖ in your homeland, ‖ customs control ‖ can ‖ be a hassle."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.338,
+   "2": 4.33,
+   "3": 2.854,
+   "4": 2.174,
+   "5": 1.788,
+   "6": 1.573,
+   "7": 1.422,
+   "8": 1.307,
+   "9": 1.214,
+   "10": 1.167,
+   "11": 1.137,
+   "12": 1.108,
+   "13": 1.093
+  },
+  "revision": {
+   "1": 7.894,
+   "2": 4.176,
+   "3": 2.803,
+   "4": 2.181,
+   "5": 1.793,
+   "6": 1.546,
+   "7": 1.398,
+   "8": 1.307,
+   "9": 1.229,
+   "10": 1.173,
+   "11": 1.143,
+   "12": 1.107,
+   "13": 1.091
+  },
+  "delta": {
+   "1": 0.556,
+   "2": -0.154,
+   "3": -0.051,
+   "4": 0.007,
+   "5": 0.005,
+   "6": -0.027,
+   "7": -0.024,
+   "8": 0.0,
+   "9": 0.015,
+   "10": 0.006,
+   "11": 0.006,
+   "12": -0.001,
+   "13": -0.002
+  }
+ },
+ "why": "Deleting C7 removed the explicit discouragement of cutting before subordinators/contrastive adverbials, so the model began inserting more cuts that split subordinate clauses and contrastive phrases. That shift raised agreement at rank‑1 (depth1 +0.556) — helping long‑latency budgets — but degraded deeper ranks (depths 2–3 slightly down) and hurt the short‑latency bins (≤3 and ≤5 showed the largest negative changes of about −0.01), producing the small net drop.",
+ "lesson": "If you remove the rule discouraging cuts immediately before subordinators/contrastive adverbials, preserve an equivalent constraint for deeper-ranked choices because otherwise the model will create extra intra‑clausal cuts that harm short‑latency (many‑position) performance.",
+ "blamed": [
+  "C7 «- Is the material after the marker a self-contained constitu»"
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00598,
+  "lo": -0.0129,
+  "hi": 0.00094,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00598,
+  "lo": -0.0129,
+  "hi": 0.00094,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a fallback ordering principle that prefers a cut after a dependent/clausal complement over a cut immediately before it, to keep head+complement together and address the primary 'order' finding."
+ ],
+ "findings": [
+  "The prompt lets cuts split a phrase from a following dependent clause or clausal complement (subordinating/relative/‘that’–type clauses), underestimating how much meaning and entailment are lost when the clause is separated.",
+  "When multiple candidate cuts are all bad for the same attachment, the prompt fails to prefer the safer (later) cut that preserves a head with its clausal complement, causing misordered choices among similarly judged positions."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- When a marker A immediately precedes a dependent clause (subordinating clause,"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0039,
+   "≤5": -0.0141,
+   "≤7": -0.0004,
+   "≤10": -0.0008,
+   "≤99": -0.0012
+  },
+  "n_worse": 2115,
+  "n_better": 2097,
+  "why": "The inserted fallback to keep a marker together with a following dependent/clausal complement shifted the model's top-ranked cut choices (depth‑1 improved slightly but depth‑2 worsened notably), so the edit mainly changed the first one or two preferred cuts. That behavior helped examples where an adverbial or clause was kept with its head, but it also caused cuts to move into noun phrases, enumerations, and multiword names (e.g. splitting 'Cirque du Soleil' or 'assistance of 80 police'), producing balanced wins and losses and largest harm in the ≤5 bin.",
+  "lesson": "Limit the fallback to true subordinating/clausal markers and avoid applying it when the 'marker' is part of an NP, named entity, or enumeration, because this change mainly alters top-ranked choices and will hurt short/medium-latency settings if it forces cuts inside multiword noun phrases.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

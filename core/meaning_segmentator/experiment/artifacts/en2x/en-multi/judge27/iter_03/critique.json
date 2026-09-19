@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that separate a finite (main or light) verb from the core complement or predicate that immediately follows it.",
+    "evidence": "['en_us_1161','en_us_1144','en_us_360','en_us_1036','en_us_1050','en_us_1150','en_us_356','en_us_1659'] — each shows the policy placing a cut between a conjugated verb/light verb and its required complement or clausal continuation (e.g. verb + object, verb + clausal complement, verb + 'be' + adjective), which either creates contradictions or loses essential predicate information when pieces are translated separately.",
+    "type_predicate": "a finite (conjugated) main or light verb is immediately followed (no intervening comma) by a complement that supplies the verb's core predicate (direct object NP, prepositional complement, subordinate clause, or clausal complement).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a finite (main or light) verb and the immediately following core complement or clausal continuation (direct object, essential PP, 'that'/infinitival complement, or clause) — keep them bound."
+    }
+   },
+   {
+    "diagnosis": "The prompt underestimates harm from cutting a noun head away from its immediately following essential post‑nominal modifier (name, apposition, 'named/called' phrase, 'of' PP, or restrictive relative clause).",
+    "evidence": "['en_us_381','en_us_1144','en_us_437','en_us_1096','en_us_1127','en_us_337'] — in each case the policy split a noun head from a post‑nominal modifier that identifies or restricts it (e.g. 'named X', apposition, 'of' phrase, or relative clause), producing loss of identification or wrong reference when pieces are translated separately.",
+    "type_predicate": "a noun phrase whose head noun is immediately followed by an essential post‑nominal modifier that names or restricts it (apposition, 'named/called' label, 'of' prepositional phrase, or a relative clause beginning with who/which/that).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Keep a noun head bound to any immediately following essential post‑nominal modifier (named/appositive/‘of’ PP or restrictive relative clause); do not cut between them."
+    }
+   },
+   {
+    "diagnosis": "The prompt treats fronted adjuncts (temporal, locative, conditional, parenthetical) as safe cut points instead of binding them to their governing clause, causing scope or attachment errors.",
+    "evidence": "['en_us_152','en_us_1179','en_us_1017','en_us_1415','en_us_156'] — in these examples the policy cut between an initial temporal/conditional/parenthetical adjunct (e.g. 'In 2010,', 'In 1895, after...', 'Just after 11:00,', 'between the 10th - 11th centuries') and the clause that resolves its scope or attachment, producing mistranslation or incoherence.",
+    "type_predicate": "a sentence begins with a fronted adjunct (temporal, locative, conditional, or parenthetical phrase) whose governing finite verb or main clause appears later in the sentence.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a sentence‑initial fronted adjunct (temporal/locative/conditional/parenthetical) and its governing main clause; keep the adjunct attached to the verb/clause it scopes over."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that separate a finite (main or light) verb from the core complement or predicate that immediately follows it.",
+   "evidence": "['en_us_1161','en_us_1144','en_us_360','en_us_1036','en_us_1050','en_us_1150','en_us_356','en_us_1659'] — each shows the policy placing a cut between a conjugated verb/light verb and its required complement or clausal continuation (e.g. verb + object, verb + clausal complement, verb + 'be' + adjective), which either creates contradictions or loses essential predicate information when pieces are translated separately.",
+   "type_predicate": "a finite (conjugated) main or light verb is immediately followed (no intervening comma) by a complement that supplies the verb's core predicate (direct object NP, prepositional complement, subordinate clause, or clausal complement).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a finite (main or light) verb and the immediately following core complement or clausal continuation (direct object, essential PP, 'that'/infinitival complement, or clause) — keep them bound."
+   }
+  },
+  {
+   "diagnosis": "The prompt underestimates harm from cutting a noun head away from its immediately following essential post‑nominal modifier (name, apposition, 'named/called' phrase, 'of' PP, or restrictive relative clause).",
+   "evidence": "['en_us_381','en_us_1144','en_us_437','en_us_1096','en_us_1127','en_us_337'] — in each case the policy split a noun head from a post‑nominal modifier that identifies or restricts it (e.g. 'named X', apposition, 'of' phrase, or relative clause), producing loss of identification or wrong reference when pieces are translated separately.",
+   "type_predicate": "a noun phrase whose head noun is immediately followed by an essential post‑nominal modifier that names or restricts it (apposition, 'named/called' label, 'of' prepositional phrase, or a relative clause beginning with who/which/that).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Keep a noun head bound to any immediately following essential post‑nominal modifier (named/appositive/‘of’ PP or restrictive relative clause); do not cut between them."
+   }
+  },
+  {
+   "diagnosis": "The prompt treats fronted adjuncts (temporal, locative, conditional, parenthetical) as safe cut points instead of binding them to their governing clause, causing scope or attachment errors.",
+   "evidence": "['en_us_152','en_us_1179','en_us_1017','en_us_1415','en_us_156'] — in these examples the policy cut between an initial temporal/conditional/parenthetical adjunct (e.g. 'In 2010,', 'In 1895, after...', 'Just after 11:00,', 'between the 10th - 11th centuries') and the clause that resolves its scope or attachment, producing mistranslation or incoherence.",
+   "type_predicate": "a sentence begins with a fronted adjunct (temporal, locative, conditional, or parenthetical phrase) whose governing finite verb or main clause appears later in the sentence.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a sentence‑initial fronted adjunct (temporal/locative/conditional/parenthetical) and its governing main clause; keep the adjunct attached to the verb/clause it scopes over."
+   }
+  }
+ ]
+}

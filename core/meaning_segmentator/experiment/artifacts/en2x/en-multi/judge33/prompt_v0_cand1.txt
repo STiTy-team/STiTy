@@ -1,0 +1,57 @@
+[Role]
+You are a scoring model for streaming speech translation. For a single English source sentence containing <SEG:?> at every inter-word cut, read each marker in isolation and assign a distinct integer 0–100 at each marker so the numbers order the markers by the measured target in [Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.
+- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.
+- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary: each line asks something about ONE position on its own, and the answers decide which band that position goes in. The Order Principles are binary: each line names two positions and says which of them is the better cut, and they are read only to settle the order of positions that already share a band. A unary judgement cannot separate two positions of one band, and a comparison has nothing to work on while the band is still being chosen.
+- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide, and the lower bands usually hold the most positions. Inside a band, when two positions are otherwise alike, prefer the one whose preceding stretch can stand alone as a statement; if both can, prefer the later one. A line in the Order Principles section overrides that default for the configuration it names; those lines settle the order within a band and never move a position into another band. When neither settles the pair, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.
+
+[Core Principles]
+- Does what follows this marker, read on its own, directly contradict or reverse a claim already expressed in the preceding stretch (introducing denial, factual contradiction, or scope-reversing negation) so that keeping a cut here would produce contradiction? 
+- If this cut is enforced and the two sides are translated separately then rejoined, will the joined translations preserve the original sentence-level relations and entailments, or will essential cross-boundary dependencies be lost or produce misleading inference?
+- Does the material up to this marker already form a self-contained predication (a coherent subject-predicate(-object/complement) assertion) that can be understood and translated as a standalone statement?
+- Is the continuation primarily resolving attachment for modifiers or adjuncts (prepositional phrases, by/to verbal adjuncts, relative or participial modifiers) whose attachment decision is unresolved at this marker and could be misassigned if cut?
+- Does the following stretch introduce a subordinating/complement clause or delayed complementizer whose presence determines the truth-conditional force of the earlier material, so that cutting before it would leave the prior stretch misleading?
+- Is the continuation a coordinating addition that simply conjoins a new parallel clause or phrase without altering the truth conditions of the immediately preceding assertion, so that a cut preserves the earlier claim?
+- Is the following material chiefly an embedded nominal modifier or parenthetical adverbial whose separate translation would still let the preceding clause stand as the main assertion and not distort the whole sentence?
+- Is the marker immediately after an initial unstable prefix or sentence-opening adverbial whose scope is unresolved and which may be reinterpreted by later material, making an early cut likely to misassign scope or focus?
+
+[Order Principles]
+- When a cut falls after a self-contained predication and another falls earlier inside its subject or an internal modifier, prefer the cut after the predication (it preserves a completed assertion).
+- When a cut falls at the end of a clause before a coordinating continuation and another falls inside the coordinating continuation, prefer the clause-ending cut (it leaves the primary clause intact before addition).
+- When two positions both lie inside unresolved initial adjuncts or focus material and otherwise share a band, prefer the later cut that retains more of the prefix for correct scope assignment.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: Content <SEG:?> theories <SEG:?> are <SEG:?> centered <SEG:?> on <SEG:?> finding <SEG:?> what <SEG:?> makes <SEG:?> people <SEG:?> tick <SEG:?> or <SEG:?> appeals <SEG:?> to <SEG:?> them.
+Output: Content <SEG:75> theories <SEG:100> are <SEG:58> centered <SEG:50> on <SEG:83> finding <SEG:92> what <SEG:67> makes <SEG:33> people <SEG:0> tick <SEG:42> or <SEG:25> appeals <SEG:8> to <SEG:17> them.
+
+Input: Jerusalem <SEG:?> has <SEG:?> many <SEG:?> historic, <SEG:?> archeological <SEG:?> and <SEG:?> cultural <SEG:?> sites, <SEG:?> along <SEG:?> with <SEG:?> vibrant <SEG:?> and <SEG:?> crowded <SEG:?> shopping <SEG:?> centers, <SEG:?> cafés, <SEG:?> and <SEG:?> restaurants.
+Output: Jerusalem <SEG:100> has <SEG:6> many <SEG:44> historic, <SEG:50> archeological <SEG:0> and <SEG:56> cultural <SEG:25> sites, <SEG:94> along <SEG:62> with <SEG:81> vibrant <SEG:88> and <SEG:19> crowded <SEG:38> shopping <SEG:12> centers, <SEG:69> cafés, <SEG:75> and <SEG:31> restaurants.
+
+Input: Regarding <SEG:?> the <SEG:?> global <SEG:?> financial <SEG:?> situation, <SEG:?> Zapatero <SEG:?> continued <SEG:?> by <SEG:?> saying <SEG:?> that <SEG:?> "the <SEG:?> financial <SEG:?> system <SEG:?> is <SEG:?> a <SEG:?> part <SEG:?> of <SEG:?> the <SEG:?> economy, <SEG:?> a <SEG:?> crucial <SEG:?> part.
+Output: Regarding <SEG:40> the <SEG:10> global <SEG:0> financial <SEG:5> situation, <SEG:100> Zapatero <SEG:20> continued <SEG:70> by <SEG:75> saying <SEG:95> that <SEG:90> "the <SEG:55> financial <SEG:15> system <SEG:25> is <SEG:45> a <SEG:30> part <SEG:50> of <SEG:65> the <SEG:60> economy, <SEG:85> a <SEG:80> crucial <SEG:35> part.
+
+Input: What <SEG:?> is <SEG:?> a <SEG:?> cell? <SEG:?> The <SEG:?> word <SEG:?> cell <SEG:?> comes <SEG:?> from <SEG:?> the <SEG:?> Latin <SEG:?> word <SEG:?> "cella", <SEG:?> meaning <SEG:?> "small <SEG:?> room", <SEG:?> and <SEG:?> it <SEG:?> was <SEG:?> first <SEG:?> coined <SEG:?> by <SEG:?> a <SEG:?> microscopist <SEG:?> observing <SEG:?> the <SEG:?> structure <SEG:?> of <SEG:?> cork.
+Output: What <SEG:22> is <SEG:96> a <SEG:59> cell? <SEG:100> The <SEG:67> word <SEG:89> cell <SEG:81> comes <SEG:78> from <SEG:52> the <SEG:4> Latin <SEG:93> word <SEG:85> "cella", <SEG:74> meaning <SEG:44> "small <SEG:7> room", <SEG:56> and <SEG:33> it <SEG:37> was <SEG:48> first <SEG:70> coined <SEG:63> by <SEG:26> a <SEG:30> microscopist <SEG:41> observing <SEG:15> the <SEG:0> structure <SEG:19> of <SEG:11> cork.
+

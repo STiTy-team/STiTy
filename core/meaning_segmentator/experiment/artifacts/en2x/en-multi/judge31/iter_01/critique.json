@@ -1,0 +1,31 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "kind": "check",
+    "diagnosis": "The prompt cuts too early when the next segment is a clausal attachment or complement that completes or qualifies what came before, producing contradiction or loss of necessary scope.",
+    "evidence": "en_us_1570,en_us_1144,en_us_1042,en_us_1294,en_us_101,en_us_738,en_us_1527,en_us_381,en_us_574 — these 9 cases share: each policy cut separates a head or predicate from an immediately following relative/complement/infinitival or temporal clause (which/that/who, to+verb, 'in <YEAR>') that the target keeps with its governor.",
+    "type_predicate": "Any sentence where a candidate cut immediately precedes a clause introduced by which/that/who, an infinitival “to” + verb, or a temporal adjunct like “in <YEAR>” that grammatically attaches to the previous phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before clausal attachments (relative clauses beginning with which/that/who, infinitival complements 'to' + verb, or temporal adjuncts like 'in 1639'); translate such attachments with their head or governing verb as one piece."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "check",
+   "diagnosis": "The prompt cuts too early when the next segment is a clausal attachment or complement that completes or qualifies what came before, producing contradiction or loss of necessary scope.",
+   "evidence": "en_us_1570,en_us_1144,en_us_1042,en_us_1294,en_us_101,en_us_738,en_us_1527,en_us_381,en_us_574 — these 9 cases share: each policy cut separates a head or predicate from an immediately following relative/complement/infinitival or temporal clause (which/that/who, to+verb, 'in <YEAR>') that the target keeps with its governor.",
+   "type_predicate": "Any sentence where a candidate cut immediately precedes a clause introduced by which/that/who, an infinitival “to” + verb, or a temporal adjunct like “in <YEAR>” that grammatically attaches to the previous phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before clausal attachments (relative clauses beginning with which/that/who, infinitival complements 'to' + verb, or temporal adjuncts like 'in 1639'); translate such attachments with their head or governing verb as one piece."
+   }
+  }
+ ]
+}

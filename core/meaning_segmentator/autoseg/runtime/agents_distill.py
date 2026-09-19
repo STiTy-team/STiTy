@@ -139,6 +139,59 @@ def drop_extra_markers(marked: str, out: str) -> str:
     return " ".join(kept)
 
 
+# ── ORDER 줄 (프롬프트가 서열을 먼저 쓰게 하는 변형용) ──────────────────────────
+#
+# 종전 규약은 마커에 0~100 을 채우는 것뿐이어서, 모델이 **어절 순서대로** 숫자를 내놓는다.
+# 품질 순서가 아니다. 그래서 앞쪽 마커의 수를 쓰는 시점에 뒤쪽 서열은 확정되지 않고, 깊은
+# 순위가 채움수가 된다 — 2026-09-19 실측으로 상위 d 집합 적중이 d=7 부터 무작위에 가까워지는데
+# 한 번 잘못 고르는 손해는 깊이와 무관하게 0.115~0.14 로 일정했다.
+#
+# ORDER 변형은 **첫 줄에 마커 번호를 좋은 순서대로** 쓰게 한다(1부터, 왼쪽부터 센다).
+# 점수는 그 서열에서 코드가 만든다 — "서로 다른 정수 22개를 0~100 에 흩어라" 는 장부 부담이
+# 사라지고 그 주의가 비교로 돌아간다. 뒤쪽 항목을 쓰려면 그 시점에 실제로 비교를 해야 하므로
+# 텍스트 순서로 도망갈 자리가 없다.
+#
+# 본문(마커 채운 텍스트)은 그대로 요구한다 — 기존 검증·재정렬·누락 복구가 전부 본문 기준이고,
+# ORDER 줄이 깨졌을 때 되돌아갈 자리가 된다.
+_ORDER_RE = re.compile(r"^[ \t]*ORDER[ \t]*:[ \t]*([0-9][0-9,\s>|]*)", re.IGNORECASE)
+
+
+def split_order(out: str) -> tuple[list[int] | None, str]:
+    """`(서열, 본문)`. ORDER 가 없으면 `(None, 원문 그대로)`.
+
+    **한 줄 형태가 정본이다** — `ORDER: 7 2 11 ; <본문>`. 배치 규약이 문장당 한 줄을 요구하고
+    `[n]` 접두어로 파싱하므로(`pipeline._BATCH_LINE`) 두 줄로 쓰면 배치가 깨진다. 줄바꿈
+    형태도 받아 준다(batch_size 1 이면 규약이 안 붙는다).
+
+    끝을 `;` 로 끊는 것이 필요하다. 숫자·공백만으로 끝을 잡으면 본문이 숫자로 시작하는 문장
+    ("2019 was ...")에서 첫 어절을 서열로 먹는다.
+    """
+    head, sep, rest = out.lstrip("\n").partition(";")
+    if not sep:
+        head, sep, rest = out.lstrip("\n").partition("\n")
+        if not sep:
+            return None, out
+    m = _ORDER_RE.match(head)
+    if not m:
+        return None, out
+    nums = [int(x) for x in re.findall(r"\d+", m.group(1))]
+    return (nums or None), rest
+
+
+def order_scores(order: list[int], m: int) -> list[int] | None:
+    """서열 → 마커 순서대로의 점수. **1..m 의 순열이 아니면 None** (본문 숫자로 되돌린다).
+
+    빠뜨림·중복·범위 밖을 다 걸러야 한다. 모델이 마커 개수를 잘못 세는 일이 실제로 있고,
+    그때 서열을 그대로 믿으면 엉뚱한 자리에 높은 점수가 간다.
+    """
+    if m <= 0 or sorted(order) != list(range(1, m + 1)):
+        return None
+    if m == 1:
+        return [50]
+    rank = {pos: r for r, pos in enumerate(order, start=1)}
+    return [round(100 * (m - rank[p]) / (m - 1)) for p in range(1, m + 1)]
+
+
 def realign_tags(marked: str, out: str, spaced: bool, max_changed_frac: float = 0.2) -> str | None:
     """모델이 원문 글자를 살짝 바꾼 출력의 태그를 **원문** 어절 경계로 옮긴다. 못 옮기면 None.
 
@@ -150,6 +203,10 @@ def realign_tags(marked: str, out: str, spaced: bool, max_changed_frac: float = 
     **안**에 떨어짐, 옮긴 자리가 입력 마커 자리와 하나라도 다름(어절이 빠지면 여기 걸린다).
     그때는 종전대로 재시도한다."""
     import difflib
+    order_line, body = split_order(out)
+    if order_line is not None:
+        fixed = realign_tags(marked, body, spaced, max_changed_frac)
+        return None if fixed is None else f"ORDER: {' '.join(map(str, order_line))} ; {fixed}"
     plain = marked.replace("<SEG:?>", "<SEG>")
     orig_units = strip_tags(plain, spaced).split() if spaced else list(strip_tags(plain, spaced))
     want, _n = tag_positions(plain, spaced)
@@ -191,6 +248,10 @@ def normalize_scored(marked: str, out: str) -> str:
     실측(smoke): 모델이 `<SEG:?>` 를 통째로 숫자로 바꿔 `other 0 parts 5 of` 처럼 냈다.
     토큰 수가 입력과 같고 마커 자리에 정수가 있으면 `<SEG:n>` 으로 되돌린다.
     """
+    order_line, body = split_order(out)
+    if order_line is not None:
+        return (f"ORDER: {' '.join(map(str, order_line))} ; "
+                + normalize_scored(marked, body))
     s = out.strip()
     s = re.sub(r"\s*<SEG:\s*(\?|\d+)\s*>\s*", lambda m: f" <SEG:{m.group(1)}> ", s)
     s = re.sub(r"\s+", " ", s).strip()
@@ -211,6 +272,9 @@ def normalize_scored(marked: str, out: str) -> str:
 
 
 def validate_scored(sent_id: str, marked: str, out: str, spaced: bool) -> list[Violation]:
+    # ORDER 줄은 본문이 아니다 — 떼어내고 종전 검증을 그대로 돌린다. 서열이 순열이 아닌 경우는
+    # 위반이 아니라 **본문 숫자로 되돌아가는** 경우다 (`scores_of` 가 처리한다).
+    _order, out = split_order(out)
     # `TAG_RE` 는 `<SEG:?>` 를 태그로 안 본다 — 입력 마커를 점수 없는 태그로 바꿔 비교한다.
     marked = marked.replace("<SEG:?>", "<SEG>")
     v: list[Violation] = []
@@ -232,7 +296,13 @@ def validate_scored(sent_id: str, marked: str, out: str, spaced: bool) -> list[V
 
 
 def scores_of(out: str) -> list[int]:
-    return [int(m.group(1)) for m in TAG_RE.finditer(out) if m.group(1)]
+    order, body = split_order(out)
+    inline = [int(m.group(1)) for m in TAG_RE.finditer(body) if m.group(1)]
+    if order is not None:
+        derived = order_scores(order, len(inline))
+        if derived is not None:
+            return derived
+    return inline
 
 
 def mean_rank_scores(samples: list[list[float]]) -> list[float]:

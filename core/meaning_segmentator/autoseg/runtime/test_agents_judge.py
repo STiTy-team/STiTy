@@ -6,12 +6,12 @@ from . import agents_judge as aj
 BASE = """[Role]
 r
 
+[Scoring Rules]
+- combine as (1 - contradiction) x cohesion
+
 [Core Principles]
 - (1) ask this
 - (2) ask that
-
-[Scoring Rules]
-- combine as (1 - contradiction) x cohesion
 
 [Output Rules]
 frozen text
@@ -287,8 +287,8 @@ class MeasurementInOnePlace(unittest.TestCase):
         self.assertEqual(aj.section_of(once, "[Output Rules]"), s.strip())
 
     def test_scoring_rules_is_the_place(self):
-        self.assertIn("ONLY place that states how the target was measured",
-                      aj.writer_system(True, ["German"]))
+        flat = " ".join(aj.writer_system(True, ["German"]).split())
+        self.assertIn("ONLY place that states how the target was measured", flat)
         self.assertIn("[Scoring Rules] states how the target was measured",
                       aj.engineer_system(100, 100))
 
@@ -346,7 +346,7 @@ class CandidateRoles(unittest.TestCase):
 
 
 class Skeleton(unittest.TestCase):
-    def test_five_sections(self):
+    def test_section_order(self):
         self.assertEqual(aj.check_skeleton(BASE), [])
         with_dp = BASE.replace("[Output Rules]", "[Decision Procedure]\nd\n\n[Output Rules]")
         self.assertEqual(aj.check_skeleton(with_dp), ["허용하지 않는 섹션: [Decision Procedure]"])
@@ -556,7 +556,7 @@ class PruneRole(unittest.TestCase):
     def test_example_unit_is_dropped(self):
         keep, bad = aj.enforce_role([{"op": "delete", "id": "E2"}], "prune")
         self.assertEqual(keep, [])
-        self.assertIn("[Core Principles] 단위가 아니다", bad[0]["reason"])
+        self.assertIn("[Order Principles] 단위가 아니다", bad[0]["reason"])
 
     def test_second_edit_is_dropped(self):
         keep, bad = aj.enforce_role([{"op": "delete", "id": "C5"},

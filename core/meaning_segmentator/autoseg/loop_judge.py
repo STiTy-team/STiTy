@@ -955,7 +955,10 @@ def main() -> int:
                    help="선별 최고 후보의 Δ 평균이 0 이하면 본채점 없이 기각한다 (부검은 선별 문장으로)")
     p.add_argument("--candidate-roles", default="",
                    help="후보별 역할을 쉼표로: free / examples_only / single_small / narrow_rule / "
-                        "rewrite. narrow_rule 은 [Core Principles] 에 **추가**만 한다(insert_after 1개) — "
+                        "replace / rewrite. replace 는 원칙 하나를 지우고 그 자리에 발견을 넣는다 "
+                        "(delete 1개 + insert_after 1개, 순증가 상한). 문장을 더한 스물세 번 중 "
+                        "스물두 번이 음수인데 지운 편집은 0 이었으므로 길이 중립을 시험한다. "
+                        "narrow_rule 은 [Core Principles] 에 **추가**만 한다(insert_after 1개) — "
                         "실측상 채택된 둘은 좁은 점검 추가였고 원칙 재조정 다섯은 전부 실패했다. 후보 j 는 "
                         "roles[j %% len] 을 받는다. rewrite 는 Writer 가 [Core Principles]·[Examples] "
                         "를 새로 쓴다(--generate-v0 런에서만). 예: free,examples_only,rewrite")
@@ -1061,6 +1064,12 @@ def main() -> int:
                         "그대로 두고 더하면 Critic 입력이 그만큼 길어진다")
     p.add_argument("--findings-max", type=int, default=3,
                    help="Critic finding 상한 — 유형 수가 곧 후보 폭(역할 × 유형)이 된다")
+    p.add_argument("--pe-verbatim", action="store_true",
+                   help="PE 가 쓴 문면을 Critic 의 finding 문면으로 되돌린다 — 형태(단항/이항)를 "
+                        "고쳐 쓰지 못하게. PE 에 남는 일은 어느 단위 옆에 넣을지와 무엇을 지울지다")
+    p.add_argument("--critic-both-kinds", action="store_true",
+                   help="Critic 이 check·order 를 각각 최소 하나 내게 한다. 한쪽이 비고 사유도 "
+                        "없으면 한 번 다시 부른다 — 한쪽이 비면 그 형태를 쓰는 역할이 안 돈다")
     p.add_argument("--type-holdout-max", type=int, default=40,
                    help="유형 홀드아웃 문장 수 상한. 너무 작으면 유형 Δ 의 se 가 커진다")
     p.add_argument("--score-baseline",
@@ -1374,7 +1383,9 @@ def main() -> int:
                 + (facts + "\n\n" if facts else "")
                 + "Measured examples — paste them verbatim as the whole [Examples] section:\n\n"
                 + "\n\n".join(v0_examples.values()) + "\n\n"
-                + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{out_rules}")
+                + "Copy these two sections verbatim into the prompt — they are fixed, and the "
+                  "Scoring Rules block is the procedure your two judgement sections have to "
+                  f"feed:\n\n{aj.scoring_rules(targets)}\n\n{out_rules}")
 
     v0_material = None      # Writer 에게 준 재료 — 후보 역할 "rewrite" 가 다시 쓴다
     v0_path = run_dir / "prompt_v0.txt"
@@ -1405,6 +1416,8 @@ def main() -> int:
                                                else a.agent_reasoning_effort),
                              purpose="prompt_v0").strip()
                 save_usage(run_dir / "iter_00")
+                pr = aj.strip_inline_headers(pr)
+                pr = aj.replace_section(pr, "[Scoring Rules]", aj.scoring_rules(targets))
                 pr = aj.replace_section(pr, "[Output Rules]", out_rules)
                 pr = aj.replace_section(pr, "[Examples]", examples_section(v0_examples))
                 cand_path.write_text(pr, encoding="utf-8")
@@ -1557,6 +1570,30 @@ def main() -> int:
                             max_tokens=AGENT_MAX_TOKENS, purpose="critic")
         timing["critic"] = round(time.perf_counter() - t0, 1)
         findings = aj.clean_findings(crit, prompt, cap=a.findings_max)
+        # **종류별로 최소 하나를 요구한다.** 한쪽이 비면 그 형태를 쓰는 역할이 짝을 못 찾아 아예
+        # 돌지 않는다 — judge31 이터 1 은 `check` 하나만 나와 후보가 9개 계획에서 2개로 줄었다.
+        # 이유를 적어 비운 것은 그대로 받는다(없는 것을 억지로 내게 하면 잡음이 굳는다).
+        if a.critic_both_kinds and findings:
+            miss = [k for k, key in (("order", "orders_skipped"), ("check", "checks_skipped"))
+                    if not any(f["kind"] == k for f in findings)
+                    and not str((crit or {}).get(key) or "").strip()]
+            if miss:
+                log(f"[iter {it}] Critic 이 {'/'.join(miss)} 형태를 안 냈고 사유도 없다 — 한 번 더")
+                t1 = time.perf_counter()
+                crit2 = gw.chat_json(
+                    aj.critic_system(a.findings_max),
+                    json.dumps({**crit_user, "missing_shapes": miss,
+                                "your_previous_findings": crit}, ensure_ascii=False),
+                    max_tokens=AGENT_MAX_TOKENS, purpose="critic:shape_retry")
+                timing["critic"] = round(timing["critic"] + time.perf_counter() - t1, 1)
+                f2 = aj.clean_findings(crit2, prompt, cap=a.findings_max)
+                got = {f["kind"] for f in f2}
+                if f2 and all(k in got for k in miss):
+                    crit, findings = crit2, f2
+                    log(f"[iter {it}] 두 번째 호출이 {len(findings)}개를 냈다 — "
+                        + " ".join(f"{f['kind']}" for f in findings))
+                else:
+                    log(f"[iter {it}] 두 번째 호출도 {'/'.join(miss)} 를 안 냈다 — 첫 결과로 간다")
         n_raw = len(aj.clean_findings(crit, cap=a.findings_max))
         if n_raw > len(findings):
             log(f"[iter {it}] Critic finding {n_raw - len(findings)}개 버림 — replace 대상이 현재 "
@@ -1687,7 +1724,7 @@ def main() -> int:
 
         used_examples: set[str] = set()     # 같은 이터에서 앞 후보가 이미 넣은 실측 예시 id
 
-        def resolve(pe_blob, role="free"):
+        def resolve(pe_blob, role="free", finding=None, pin=True):
             """`labeled_example` 참조를 실측 예시 본문으로 바꾸고 후보 역할 제약을 건다. 어기거나
             없는 id, 앞 후보가 이미 쓴 id 를 가리킨 편집은 로그에 남기고 뺀다."""
             if not isinstance(pe_blob, dict):
@@ -1696,10 +1733,25 @@ def main() -> int:
             # 막는 데 쓴다. id 는 이터마다 다시 매겨져 못 쓴다(`C2` 가 매번 다른 원칙이다).
             units_now = {u["id"]: u["text"] for u in aj.edit_units(prompt)}
             for e in (pe_blob.get("edits") or []):
-                if isinstance(e, dict) and e.get("op") == "delete":
+                if isinstance(e, dict) and e.get("op") in ("delete", "replace"):
                     e["_was"] = units_now.get(str(e.get("id")), "")
-            edits, bad = aj.enforce_role(pe_blob.get("edits"), role,
-                                         {"deleted": spent_deletes})
+            pending = pe_blob.get("edits")
+            if a.pe_verbatim and finding and pin:
+                # **PE 가 쓴 문면을 Critic 문면으로 되돌린다.** 형태(단항/이항)가 역할 배분의
+                # 근거인데 judge31 에서 PE 가 그것을 바꿔 썼다.
+                pending, pinned = aj.pin_finding_text(pending, finding)
+                for c in pinned:
+                    log(f"[iter {it}] PE 문면을 발견 문면으로 되돌렸다: edit {c['edit']} "
+                        f"{c['id']} — PE 가 쓴 것은 {c['was']!r}")
+            edits, bad = aj.enforce_role(
+                pending, role,
+                {"deleted": spent_deletes,
+                 # 그 칸의 마지막 한 줄은 지울 수 없다 — 비면 골격이 참조할 것이 없다.
+                 "order_units": sum(1 for k in units_now if k.startswith("O"))})
+            if finding:
+                edits, bad_k = aj.enforce_kind(edits, finding.get("kind"),
+                                               "[Order Principles]" in prompt)
+                bad += bad_k
             if examples:
                 # 앞 후보가 쓴 예시는 없는 것으로 친다 — judge12 iter 1 은 후보 넷 중 셋이 같은
                 # 예시(E4 → en_us_738)를 넣었다. 제약이 강한 역할은 선택지가 그것뿐이었다.
@@ -1710,12 +1762,12 @@ def main() -> int:
                                      if e.get("labeled_example"))
             # 같은 이터의 뒤 후보가 같은 원칙을 또 지우지 못하게 누적한다.
             spent_deletes.update(str(e["_was"]) for e in edits
-                                 if e.get("op") == "delete" and e.get("_was"))
+                                 if e.get("op") in ("delete", "replace") and e.get("_was"))
             for b in bad:
                 log(f"[iter {it}] PE 편집 무시: edit {b['edit']} {b['reason']}")
             return {**pe_blob, "edits": edits}, bad
 
-        def revise(j: int, extra: dict, role: str = "free"):
+        def revise(j: int, extra: dict, role: str = "free", finding=None):
             """PE 호출 한 번. 길이만 넘으면 편집별 실측 증감과 초과량을 붙여 한 번 되돌린다 — 콜
             하나가 이터레이션 하나를 통째로 날리는 것보다 싸다. (pe, cand, note, deltas, tries)."""
             t0 = time.perf_counter()
@@ -1724,7 +1776,7 @@ def main() -> int:
                               max_tokens=AGENT_MAX_TOKENS, purpose="engineer")
             timing["engineer"] = round(timing.get("engineer", 0) + time.perf_counter() - t0, 1)
             save_usage(idir)
-            pe, bad = resolve(pe, role)
+            pe, bad = resolve(pe, role, finding)
             cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
             tries = [record(j, pe, deltas, skipped, draft, cand, note)]
             # 역할 제약을 어겨 **편집이 하나도 안 남으면** 그 후보는 원본 그대로가 되어 슬롯을
@@ -1740,7 +1792,7 @@ def main() -> int:
                                              ensure_ascii=False),
                                   max_tokens=AGENT_MAX_TOKENS, purpose="engineer:role_retry")
                 save_usage(idir)
-                pe, _bad2 = resolve(pe, role)
+                pe, _bad2 = resolve(pe, role, finding)
                 cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
                 tries.append(record(j, pe, deltas, skipped, draft, cand, note))
             if cand is None and aj.only_too_long(note):
@@ -1753,7 +1805,7 @@ def main() -> int:
                                               "size_feedback": fb}, ensure_ascii=False),
                                   max_tokens=AGENT_MAX_TOKENS, purpose="engineer:shorten")
                 save_usage(idir)
-                pe, _bad3 = resolve(pe, role)
+                pe, _bad3 = resolve(pe, role, finding, pin=False)
                 cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
                 tries.append(record(j, pe, deltas, skipped, draft, cand, note))
             return pe, cand, note, deltas, tries
@@ -1798,8 +1850,14 @@ def main() -> int:
                              purpose="rewrite").strip()
                 timing["engineer"] = round(timing.get("engineer", 0) + time.perf_counter() - t0, 1)
                 save_usage(idir)
+                pr = aj.strip_inline_headers(pr)
                 for h in aj.FROZEN:
                     pr = aj.replace_section(pr, h, aj.section_of(prompt, h))
+                # 사람이 골격에 넣은 칸은 Writer 가 다시 쓰지 않는다 — 복원하지 않으면 통째로
+                # 사라지고(Writer 는 그 칸을 모른다) 골격이 참조하는 자리가 비게 된다.
+                for h in aj.ALWAYS_OPTIONAL:
+                    if h in prompt:
+                        pr = aj.replace_section(pr, h, aj.section_of(prompt, h))
                 return pr
 
             pr = write(msg)
@@ -1912,8 +1970,10 @@ def main() -> int:
                                                  if x["id"] not in used_examples]
             if role != "free":
                 log(f"[iter {it}] 후보 {j} 역할 {role}")
+            f_cur = (findings[f_idx] if findings and role not in ("induce", "rewrite")
+                     else None)
             pe, cand, note, deltas, tries = (rewrite(j) if role == "rewrite"
-                                             else revise(j, extra, role))
+                                             else revise(j, extra, role, f_cur))
             cands.append((pe, cand, note, deltas))
             all_tries += tries
             if cand is None:

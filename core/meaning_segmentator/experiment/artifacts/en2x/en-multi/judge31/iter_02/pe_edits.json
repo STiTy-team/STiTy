@@ -1,0 +1,70 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- When a marker A immediately precedes a dependent clause (subordinating clause, relative clause, or clausal 'that' complement) that completes, restricts, or names the preceding phrase, and a marker B also exists immediately after that clause, prefer B (the later cut after the clause) over A. This ordering preserves the head plus its clausal complement on the source surface."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 378
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8137,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep dependent clauses attached to their head: when a marker immediately precedes a subordinating, relative, or clausal complement that completes or restricts the preceding phrase, rank the cut after that clause higher than the cut before it (i.e. prefer the later cut)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 271
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8030,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "_was": "- Is the material after the marker a self-contained constituent (completes a verb, supplies a prepositional complement, names an entity) so that translating separately preserves the whole meaning? If yes, cohesion is likely high; if not, expect damage."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -253
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7506,
+  "errors": null
+ }
+]

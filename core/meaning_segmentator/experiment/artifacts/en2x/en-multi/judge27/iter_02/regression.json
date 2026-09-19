@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.0011,
+  "lo": -0.00817,
+  "hi": 0.00628,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": -0.0077,
+  "≤5": 0.0023,
+  "≤7": 0.0081,
+  "≤10": 0.0049,
+  "≤99": 0.0007
+ },
+ "n_worse": 1925,
+ "n_better": 2295,
+ "worst": [
+  {
+   "id": "en_us_333",
+   "k": 4,
+   "bin": "≤3",
+   "delta": -0.6508,
+   "before": "The celebrations ‖ started ‖ with a special show ‖ by the world-renowned group ‖ Cirque du Soleil.",
+   "after": "The celebrations ‖ started with a special show ‖ by the world-renowned group ‖ Cirque ‖ du Soleil."
+  },
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6421,
+   "before": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction of the people\".",
+   "after": "He originally named ‖ the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_313",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.6052,
+   "before": "The 30-year-old husband, ‖ who was born in Buffalo, ‖ was one of the four killed ‖ in the shooting, ‖ but his wife was not hurt.",
+   "after": "The 30-year-old husband, ‖ who was born in Buffalo, ‖ was one of the four killed in the shooting, ‖ but his wife ‖ was not hurt."
+  },
+  {
+   "id": "en_us_170",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.5926,
+   "before": "Perry ‖ specifically ‖ said, ‖ \"There are few places in the world ‖ better equipped to meet the challenge that is posed in this case.\"",
+   "after": "Perry specifically said, ‖ \"There ‖ are ‖ few places in the world ‖ better equipped to meet the challenge that is posed in this case.\""
+  },
+  {
+   "id": "en_us_163",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.5846,
+   "before": "They also said in a statement, ‖ \"The crew is ‖ currently ‖ working ‖ to determine the best method of safely extracting the ship\".",
+   "after": "They also said ‖ in a statement, ‖ \"The ‖ crew ‖ is currently working to determine the best method of safely extracting the ship\"."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_86",
+   "k": 2,
+   "bin": "≤5",
+   "delta": 0.6672,
+   "before": "Pittman suggested ‖ that conditions wouldn't improve ‖ until sometime next week.",
+   "after": "Pittman suggested ‖ that ‖ conditions wouldn't improve until sometime next week."
+  },
+  {
+   "id": "en_us_86",
+   "k": 3,
+   "bin": "≤3",
+   "delta": 0.5744,
+   "before": "Pittman suggested ‖ that conditions wouldn't improve ‖ until sometime ‖ next week.",
+   "after": "Pittman suggested ‖ that ‖ conditions ‖ wouldn't improve until sometime next week."
+  },
+  {
+   "id": "en_us_1405",
+   "k": 13,
+   "bin": "≤3",
+   "delta": 0.5081,
+   "before": "However, ‖ a nationwide road network ‖ is ‖ not economically viable for just a handful of cars, ‖ so ‖ new ‖ methods ‖ of production ‖ are ‖ developed ‖ to ‖ reduce ‖ the cost ‖ of car ownership.",
+   "after": "However, a nationwide road network is not economically viable ‖ for just a handful of cars, ‖ so ‖ new ‖ methods ‖ of production ‖ are ‖ developed ‖ to ‖ reduce ‖ the ‖ cost ‖ of car ‖ ownership."
+  },
+  {
+   "id": "en_us_365",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.5061,
+   "before": "First, the switch for the light fixture needs to be turned off ‖ or the ‖ cable ‖ disconnected.",
+   "after": "First, ‖ the switch for the light fixture ‖ needs to be turned off ‖ or the cable disconnected."
+  },
+  {
+   "id": "en_us_842",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.4886,
+   "before": "Beware: small-town bars ‖ here ‖ are ‖ not always ‖ good ‖ places ‖ for the out-of-state visitor ‖ to hang out.",
+   "after": "Beware: ‖ small-town ‖ bars ‖ here ‖ are not always good ‖ places ‖ for the out-of-state visitor ‖ to hang out."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.5,
+   "2": 3.981,
+   "3": 2.737,
+   "4": 2.123,
+   "5": 1.754,
+   "6": 1.537,
+   "7": 1.371,
+   "8": 1.275,
+   "9": 1.209,
+   "10": 1.164,
+   "11": 1.134,
+   "12": 1.099,
+   "13": 1.079
+  },
+  "revision": {
+   "1": 7.604,
+   "2": 4.261,
+   "3": 2.866,
+   "4": 2.249,
+   "5": 1.836,
+   "6": 1.568,
+   "7": 1.403,
+   "8": 1.281,
+   "9": 1.199,
+   "10": 1.159,
+   "11": 1.122,
+   "12": 1.094,
+   "13": 1.071
+  },
+  "delta": {
+   "1": 0.104,
+   "2": 0.28,
+   "3": 0.129,
+   "4": 0.126,
+   "5": 0.082,
+   "6": 0.031,
+   "7": 0.032,
+   "8": 0.006,
+   "9": -0.01,
+   "10": -0.005,
+   "11": -0.012,
+   "12": -0.005,
+   "13": -0.008
+  }
+ },
+ "why": "Adding the short binding rule shifted mass toward earlier cuts (rank depth up at shallow depths and a negative effect in the ≤3 bin) because the insertion was implemented/parsed incorrectly: instead of merging a finite/light verb with its following complement it caused boundaries to move before or around verbs and multiword complements (isolating verbs or splitting names like “Cirque ‖ du Soleil”, “There ‖ are”, or separating verb from its object).",
+ "lesson": "When adding this binding, ensure it actually merges the finite/light verb with the immediately following core complement (don’t invert or truncate the rule) and validate specifically on very-short pieces (≤3 words) and multiword names so verbs and complements are not isolated or multiword entities split.",
+ "blamed": [
+  "C_end"
+ ]
+}

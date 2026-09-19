@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.0011,
+  "lo": -0.00817,
+  "hi": 0.00628,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.0011,
+  "lo": -0.00817,
+  "hi": 0.00628,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a short binding rule that keeps a finite verb or light verb with the immediately following core complement, to prevent unsafe splits that separate predicates from required complements (addresses the primary finding)."
+ ],
+ "findings": [
+  "The prompt under-rates cuts that split a predicate from the core material that completes its assertion: it often places a cut before a verb's required complement (direct object, prepositional complement, 'by'‑agent, or clausal complement), producing high contradiction or loss.",
+  "The prompt misses that relative and clausal complementizers are unsafe cut points: it permits cuts immediately before 'which/that/who' (and similar subordinators), separating modifiers that redefine or complete the previous noun/clause and so harming cohesion or causing contradiction."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "Keep a finite verb or light verb together with the immediately following core co"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0077,
+   "≤5": 0.0023,
+   "≤7": 0.0081,
+   "≤10": 0.0049,
+   "≤99": 0.0007
+  },
+  "n_worse": 1925,
+  "n_better": 2295,
+  "why": "Adding the short binding rule shifted mass toward earlier cuts (rank depth up at shallow depths and a negative effect in the ≤3 bin) because the insertion was implemented/parsed incorrectly: instead of merging a finite/light verb with its following complement it caused boundaries to move before or around verbs and multiword complements (isolating verbs or splitting names like “Cirque ‖ du Soleil”, “There ‖ are”, or separating verb from its object).",
+  "lesson": "When adding this binding, ensure it actually merges the finite/light verb with the immediately following core complement (don’t invert or truncate the rule) and validate specifically on very-short pieces (≤3 words) and multiword names so verbs and complements are not isolated or multiword entities split.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

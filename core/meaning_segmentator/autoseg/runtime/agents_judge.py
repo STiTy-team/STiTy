@@ -16,17 +16,67 @@ from __future__ import annotations
 import json
 import re
 
-from .agents_distill import SECTIONS, replace_section  # noqa: F401  (재수출)
+from .agents_distill import SECTIONS  # noqa: F401  (재수출)
 from .agents_distill import check_skeleton as _check_skeleton
 
 # judge 루프의 골격 — distill 의 여섯 섹션에서 [Decision Procedure] 를 뺐다. 그 절은 [Core
 # Principles] 의 두 판단을 순서로 다시 쓴 것에 영어 힌트를 보탠 것이었고(judge09 v0), PE 가 원칙만
 # 고치므로 절차의 옛 힌트가 개정과 어긋난 채 남았다. 순위 규칙(다른 정수·넓은 범위)은 코드가 만드는
 # [Output Rules] 에 있다.
-JUDGE_SECTIONS = ["[Role]", "[Core Principles]", "[Scoring Rules]", "[Output Rules]", "[Examples]"]
+# `[Order Principles]` 는 **같은 등급 안에서 두 자리 중 어느 쪽을 먼저 택할지**만 담는 칸이다.
+# `[Core Principles]` 와 갈라 두는 이유는 `[Scoring Rules]` 의 절차가 두 단계이기 때문이다 —
+# 등급을 고르는 단계와 등급 안에서 하나씩 뽑아 비교하는 단계. 원칙 여덟은 전부 단항 질문이라
+# 앞 단계용이고, 뒤 단계에 쓸 근거를 주지 않는다. 판별한 것(judge31): 이항 비교문을 원칙 칸에
+# 넣은 후보 둘이 −0.0060·−0.0077 이고 깊이 8·13위가 안 움직였다. 칸을 갈라야 골격이 그 문장을
+# 뒤 단계에서 읽는다.
+# 순서: 골격이 판단 절보다 **먼저** 온다. [Scoring Rules] 가 목표와, 점수를 만드는 절차와, 두
+# 판단 절이 각각 무엇을 정하는지를 말하므로 그것을 읽고 나서 판단 절을 읽는 것이 맞다.
+JUDGE_SECTIONS = ["[Role]", "[Scoring Rules]", "[Core Principles]", "[Order Principles]",
+                  "[Output Rules]", "[Examples]"]
 
 
-OPTIONAL_SECTIONS = ("[Scoring Rules]",)
+OPTIONAL_SECTIONS = ("[Scoring Rules]", "[Order Principles]")
+# 이 칸은 **사람이 골격에 넣을 때만** 생긴다. Writer 는 만들지 않고 PE 도 새로 만들 수 없으므로
+# 없는 프롬프트를 틀렸다고 하지 않는다 — 대신 있으면 위치·중복을 검사한다.
+ALWAYS_OPTIONAL = ("[Order Principles]",)
+
+
+# `section_of`·`replace_section` 이 섹션의 끝을 찾을 때 쓰는 경계 목록. **distill 의 `SECTIONS`
+# 를 직접 늘리면 안 된다** — 그 루프의 `check_skeleton` 기본값이 곧 그 목록이어서 judge 전용 칸을
+# 필수 섹션으로 요구하게 되고 distill 프롬프트가 깨진다. 여기에 없는 헤더는 경계로 인식되지 않아
+# **앞 섹션이 그것을 삼킨다** — `[Core Principles]` 를 편집하는 순간 뒤따르는 칸이 통째로 사라진다.
+BOUNDARIES = tuple(dict.fromkeys([*SECTIONS, *JUDGE_SECTIONS]))
+
+
+def replace_section(prompt: str, header: str, body: str) -> str:
+    """`header` 섹션을 `body` 로 통째로 바꾼다 (다음 섹션 헤더 직전까지).
+
+    distill 판과 같은 일을 하지만 경계 목록이 `BOUNDARIES` 다."""
+    i = prompt.find(header)
+    if i < 0:
+        return prompt.rstrip() + "\n\n" + body
+    nxt = [prompt.find(sec, i + len(header)) for sec in BOUNDARIES if sec != header]
+    nxt = [k for k in nxt if k > i]
+    end = min(nxt) if nxt else len(prompt)
+    return prompt[:i] + body.rstrip() + "\n\n" + prompt[end:].lstrip("\n")
+
+
+def strip_inline_headers(prompt: str) -> str:
+    """본문 **중간**에 쓰인 섹션 헤더의 대괄호를 뗀다 — 참조 의도는 살리고 경계만 없앤다.
+
+    `section_of`/`replace_section` 은 헤더 문자열을 그대로 찾으므로 본문 속 "[Scoring Rules]" 가
+    경계로 잡혀 **그 자리에서 섹션이 잘린다.** judge33 의 v0 후보 둘이 [Role] 안에서 골격을
+    대괄호째 참조했고("must feed the banding-and-ordering procedure in [Scoring Rules]"), 주입이
+    그 문장 중간부터 갈아 끼워 [Role] 이 끊긴 채 골격이 삽입됐다. 골격 검사는 그것을 못 잡는다 —
+    문자열이 있으니 "섹션 없음" 이 아니다.
+
+    줄 맨 앞의 헤더는 진짜 섹션이므로 건드리지 않는다."""
+    out = prompt
+    for h in BOUNDARIES:
+        for i in reversed([m.start() for m in re.finditer(re.escape(h), out)]):
+            if i > 0 and out[i - 1] != "\n":
+                out = out[:i] + h.strip("[]") + " section" + out[i + len(h):]
+    return out
 
 
 def check_skeleton(prompt: str, base: str | None = None) -> list[str]:
@@ -37,9 +87,27 @@ def check_skeleton(prompt: str, base: str | None = None) -> list[str]:
     (probe_port p3_no_ladder 0.5738 vs v0 0.5669). 빼고 시작했으면 PE 가 도로 넣는 것은
     `frozen_intact` 이 막는다 (before 가 "" 인데 after 가 차 있으면 변경으로 잡힌다).
     """
-    want = [s for s in JUDGE_SECTIONS
-            if base is None or s not in OPTIONAL_SECTIONS or s in base]
-    return _check_skeleton(prompt, want)
+    want = []
+    for sec in JUDGE_SECTIONS:
+        if sec in ALWAYS_OPTIONAL:
+            if sec in prompt or (base is not None and sec in base):
+                want.append(sec)    # 있으면 위치와 중복을 본다
+            continue
+        if base is not None and sec in OPTIONAL_SECTIONS and sec not in base:
+            continue
+        want.append(sec)
+    errs = _check_skeleton(prompt, want)
+    # `_check_skeleton` 은 distill 의 `SECTIONS` 만 "알려진 섹션" 으로 보므로 judge 전용 칸의
+    # 순서·중복은 안 본다. 여기서 본다 — 삼켜지거나 두 번 생긴 칸을 조용히 넘기면 안 된다.
+    for sec in want:
+        if prompt.count(sec) > 1:
+            errs.append(f"섹션 중복: {sec}")
+        elif sec not in prompt and sec not in SECTIONS:
+            errs.append(f"섹션 없음: {sec}")
+    order = [prompt.find(sec) for sec in want if sec in prompt]
+    if order != sorted(order):
+        errs.append("섹션 순서 어긋남: " + ", ".join(want))
+    return errs
 
 CRITIC_SYSTEM = """You diagnose a scoring prompt for streaming-translation cut positions.
 
@@ -116,6 +184,17 @@ An "order" is BINARY — a comparison between two positions ("when neither is cl
 has already judged alike. Once several positions all satisfy "do not cut here", no unary check
 says which of them to cut first, and the short bins have to cut some of them anyway.
 
+The prompt keeps the two shapes in two sections and the scoring procedure reads them at different
+moments: [Core Principles] decides which band a position goes in, and [Order Principles] decides, among
+positions of the SAME band, which one to take first. So a "check" belongs in "core_principles" and
+an "order" in "order_principles". A comparison written into [Core Principles] is only read while bands
+are being chosen, where there is no second position to compare against yet.
+
+An existing line can be traded instead of added to: "action": "replace" with "target" quoting its
+opening words. The opening line of [Order Principles] is one of those — it was written by hand before
+any of these cases were read and has never been measured on its own, so when the inversions point
+at a better comparison, replacing it is as legitimate as adding beside it.
+
 Prefer adding a missing judgement over retuning how strongly an existing one applies: retuning
 ("relax this prohibition", "reorder these priorities", "widen this scope") gives the model no new
 way to tell two positions apart. And before proposing a check, look for it among the units you
@@ -130,11 +209,23 @@ reader scoring an unseen sentence could apply it: a question to ask, or a condit
 Keep "edit.text" under 60 words — one judgement, not a paragraph. Never write token lists ("if the previous word is 'the'"), never quote more than 40 characters of
 source text, never name this sentence.
 
-Return ONLY JSON:
+Return ONLY JSON, with the two shapes in SEPARATE lists:
 {
-  "findings": [
-    {"kind": "check" | "order",
-     "diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
+  "checks": [ {a UNARY finding, fields below} ],
+  "orders": [ {a BINARY finding, same fields} ],
+  "checks_skipped": "only when "checks" is empty: one sentence on why no unary condition is worth
+                  reporting from these cases",
+  "orders_skipped": "only when "orders" is empty: same, for comparisons"
+}
+REPORT AT LEAST ONE IN EACH LIST. The two shapes answer different questions and a downstream step
+pairs each list with a different kind of revision, so an empty list means that revision is not
+attempted at all this round. If you genuinely have none for a list, leave it empty and say why in
+the matching "*_skipped" field — never pad it with a reworded member of the other list. An "order"
+is always available in principle: "rank_inversions" gives pairs the ordering got wrong, and every
+position in them is one no prohibition separates.
+
+Each member of either list has these fields:
+    {"diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
      "evidence": "the ids of the cases that show it, then what they share — the count is the
                   length of that list; never state a number of cases you did not list",
      "type_predicate": "ONE sentence naming the sentences this finding applies to, as a condition
@@ -147,13 +238,12 @@ Return ONLY JSON:
                   almost every sentence selects nothing and the finding is dropped. For
                   "kind": "order" it must name a configuration in which BOTH positions of the
                   comparison occur in the same sentence — the comparison is untestable otherwise.",
-     "edit": {"where": "core_principles" | "examples",
+     "edit": {"where": "core_principles" | "order_principles" | "examples",
               "action": "add" | "replace",
               "target": "first few words of the line to replace (omit when adding)",
               "text": "the new line, or an Input/Output example pair"}}
-  ]
-}
-At most __NFIND__ findings. Order them by how many cases they explain."""
+At most __NFIND__ findings IN TOTAL across both lists. Inside each list, order them by how many
+cases they explain."""
 
 POSTMORTEM_SYSTEM = """You explain why one revision of a scoring prompt did or did not work.
 
@@ -198,7 +288,8 @@ ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iterat
 numbered units of it. You do not rewrite the prompt — code applies your edits.
 
 What you can edit:
-- "units" lists every unit of [Core Principles] (ids C1, C2, ...; one line each) and of
+- "units" lists every unit of [Core Principles] (ids C1, C2, ...; one line each), of
+  [Order Principles] (ids O1, O2, ...; one line each) and of
   [Examples] (ids E1, E2, ...; one Input/Output pair each), with its exact text, its length
   ("chars") and its evidence:
     "origin"         "v0", or the iteration whose ADOPTED revision introduced this text
@@ -207,11 +298,18 @@ What you can edit:
                      revision, "near_miss_ci_lo" its lower bound (touched zero, so not adopted)
                      (null for v0 units — nothing was measured about them one by one)
 - Every other section — [Role], [Scoring Rules], [Output Rules] — stays as
-  it is. [Scoring Rules] states how the target was measured, and the measurement did not change.
+  it is. [Scoring Rules] states how the target was measured and the procedure for turning that
+  into numbers; neither changed.
 
 Hard constraints:
-1. Judgements belong in [Core Principles], worked cases in [Examples]. Do not add scoring
-   conditions anywhere.
+1. The two principle sections are read at different moments by the scoring procedure and are not
+   interchangeable. [Core Principles] holds UNARY judgements — a condition on one position, used
+   to put it in a band. [Order Principles] holds BINARY comparisons — which of two positions in the
+   SAME band to take first; each unit there must name both sides ("prefer a cut at ... over one
+   at ..."). Worked cases belong in [Examples]. Do not add scoring conditions anywhere else.
+   A finding's "kind" says which section it belongs in: "check" → [Core Principles],
+   "order" → [Order Principles]. Code drops an edit that puts one in the other section, and an edit
+   whose text compares two positions when the finding was unary.
 2. SIZE: the edited prompt must be at most __BUDGET__ characters (it is __CURLEN__ now) — a small
    growth over the last adopted prompt. You cannot count characters reliably, so code counts
    them and "size.headroom" tells you how much you may add NET, in characters and in WORDS
@@ -284,6 +382,20 @@ Hard constraints:
    or delete as many as you judge right — there is no cap. An example shows the WHOLE ordering
    of a sentence at once, so it teaches the lower ranks that prose cannot reach; pick the ones
    whose "latency_bin" is short and whose "gap" is large.
+   "replace": TRADE one existing line for the finding's judgement, at no net length. Either ONE
+   edit with "op": "replace" on the unit you are trading away (same slot, so length stays put), or
+   one "delete" plus one "insert_after" when the new line belongs in the other section (a unary
+   finding goes to [Core Principles], a binary one to [Order Principles]). Units of BOTH sections are
+   fair game, [Order Principles] included — its opening line was written by hand and never measured on
+   its own, so replacing it with something the cases support is exactly what this role is for. The
+   one limit: [Order Principles] must not end up empty, so its last remaining line can be replaced but
+   not deleted. The new line may exceed the old one by at most a few words — code measures it and
+   drops the edit otherwise, so pick a unit long enough to pay for what you write. Choose what to delete by
+   EVIDENCE, exactly as constraint 2 says: a "v0" unit with no measured gain, or one the current
+   critique faults, and never a unit whose "adopted_ci_lo" is positive. Why this role exists:
+   adding a line has lost every time it was measured, while deleting a unit that the measurement
+   does not depend on came out at zero — if the cost is length rather than content, a trade starts
+   from zero instead of below it.
    "fallback": ADD a rule that ORDERS the positions every other principle rejects. Exactly one
    edit, an "insert_after" into [Core Principles]. Write it as a COMPARISON on the source surface
    form ("prefer a cut at A over one at B", "as a last resort take C") — not a prohibition
@@ -358,6 +470,29 @@ appends at the BOTTOM — use those instead of inventing an id past the last one
 every iteration, so name only ids from the "units" list you were given. Each existing id may be
 replaced or deleted at most once."""
 
+SCORING_RULES_BODY = """cohesion   the pieces were translated separately into __TARGETS__, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.
+- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.
+- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary: each line asks something about ONE position on its own, and the answers decide which band that position goes in. The Order Principles are binary: each line names two positions and says which of them is the better cut, and they are read only to settle the order of positions that already share a band. A unary judgement cannot separate two positions of one band, and a comparison has nothing to work on while the band is still being chosen.
+- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide, and the lower bands usually hold the most positions. Inside a band, when two positions are otherwise alike, prefer the one whose preceding stretch can stand alone as a statement; if both can, prefer the later one. A line in the Order Principles section overrides that default for the configuration it names; those lines settle the order within a band and never move a position into another band. When neither settles the pair, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing."""
+
+
+def scoring_rules(targets: list[str]) -> str:
+    """`[Scoring Rules]` 섹션 전문 — **사람이 정하고 코드가 주입하는 골격이다.**
+
+    Writer 에게 맡기지 않는 이유: 이 절은 측정 설명뿐 아니라 **점수를 만드는 절차**를 담는다.
+    선언형("결과가 순위여야 한다")과 절차형(등급을 고르고 등급 안에서 하나씩 뽑아 비교한다)의
+    차이가 test 560 에서 3벌씩 재어 +0.0084 였고, Writer 의 지시문은 선언형만 안다. v0 를
+    생성하는 런에서도 이 절을 덮어써 골격을 고정한다 — `[Output Rules]` 와 같은 방식이다.
+
+    루프는 이 절을 고치지 않는다(`FROZEN`). 사람이 바꿀 때만 바뀌고, 바꾸면 그 자체를
+    `--score-only` 로 다시 재야 한다.
+    """
+    return "[Scoring Rules]\n" + SCORING_RULES_BODY.replace("__TARGETS__", ", ".join(targets))
+
+
 WRITER_SYSTEM = """You write the system prompt for a scoring model used in streaming speech translation.
 
 The model receives one source sentence in which EVERY possible cut position is already marked
@@ -377,16 +512,24 @@ from the SOURCE TEXT ALONE:
 
 Hard requirements:
 - Section headers, verbatim and in this order:
-  [Role], [Core Principles], [Scoring Rules], [Output Rules], [Examples]
+  [Role], [Scoring Rules], [Core Principles], [Order Principles], [Output Rules], [Examples]
   No other section — in particular no [Decision Procedure]: the procedure IS the judgements in
-  [Core Principles], applied at every marker; do not restate them as steps.
-- [Output Rules] MUST be copied verbatim from the block given to you.
-- [Core Principles] is the substance: 6-10 lines, each starting with "- ", each ONE judgement of
-  at most 60 words. One line is later one editable unit; a 1,000-character line cannot be revised
-  without rewriting it. Write JUDGEMENTS — questions the model asks about
-  MEANING at each position — not surface-form rules. Two judgements carry the measurement: whether what
-  follows overturns the stretch already heard, and whether translating the two sides apart still
-  adds up to the source. Say what damage looks like in THIS source language, using what the
+  [Core Principles] and [Order Principles], applied at every marker; do not restate them as steps.
+- NEVER write a bracketed section header inside the body of a section. Write "the Scoring Rules
+  section", not the bracketed form. The bracketed string is how code finds where one section ends,
+  so one sitting in a body splits that section at that spot.
+- [Output Rules] and [Scoring Rules] MUST be copied verbatim from the blocks given to you. The
+  Scoring Rules block already states the measurement and the procedure that turns judgements into
+  numbers: every position goes into one of five bands, then the numbers inside a band are filled
+  one at a time by repeatedly picking the best of the positions left. Write the two judgement
+  sections so that they feed that procedure.
+- [Core Principles] decides WHICH BAND a position goes in: 6-10 lines, each starting with "- ",
+  each ONE judgement of at most 60 words. Every line is UNARY — a question asked about one
+  position on its own ("does what follows the marker overturn what came before?"), so that reading
+  it at a marker tells you which band that marker belongs in. One line is later one editable unit,
+  so a 1,000-character line cannot be revised without rewriting it. Two of the judgements carry the
+  measurement: whether what follows overturns the stretch already heard, and whether translating
+  the two sides apart still adds up to the source. Say what damage looks like in THIS source language, using what the
   profile tells you about how it builds clauses, where it puts negation and heads, and what it
   leaves implicit. Name the language's own devices; do not name individual tokens as triggers.
 - **Do NOT write surface-form rules** — no lists of function words, no punctuation rules, no
@@ -394,18 +537,20 @@ Hard requirements:
   nothing about the rest, while the measurement is taken at every position; a judgement applies
   everywhere. Grammar labels are not the criterion either: a cut between two complete clauses
   can measure badly, and a cut inside a phrase can measure well.
-- [Scoring Rules] is the ONLY place that states how the target was measured — [Output Rules]
-  points to it and says nothing about the measurement. State cohesion, contra and the product
-  exactly as given above, then the ranking rules: the integer is a RANK inside the sentence —
-  order the positions by the product and spread distinct integers over the full 0-100 range.
-  Do NOT tell the model to compute the score by arithmetic (multiplying the product by 100 and
-  rounding): that gives ties and a narrow band, which contradicts "distinct, full range". contra
-  is a graded probability and enters only through the product: do not turn it into a yes/no
-  flag or a separate tier that outranks cohesion. No scoring conditions there.
+- [Order Principles] decides, among positions the Core Principles put in the SAME band, which one to
+  take first: 2-4 lines, each starting with "- ", each at most 60 words. Every line is BINARY — it
+  names two positions and says which is the better cut ("when a cut falls between X and its Y and
+  another falls earlier in the clause, prefer ..."). A unary condition belongs in Core Principles,
+  not here: once two positions share a band, no condition asked of one of them separates them, and
+  the short latency budgets have to cut several positions per sentence, so that order is read.
+  Anchor the comparisons in what the profile says about how this language builds clauses.
+- [Scoring Rules] is given to you — copy it verbatim. It is the ONLY place that states how the
+  target was measured, and [Output Rules] points to it.
 - [Examples]: paste the MEASURED Input/Output pairs given to you, verbatim and nothing else.
   Their numbers are the measured ranking; never invent scores or examples of your own.
 - __SPACING__
-- Keep the whole prompt under 8000 characters.
+- Keep the whole prompt under 9500 characters. The two blocks given to you already take about
+  3,000 of that; the rest is your two judgement sections, [Role] and the examples.
 
 Return ONLY the prompt text. No commentary, no code fences."""
 
@@ -418,7 +563,8 @@ def writer_system(spaced: bool, targets: list[str]) -> str:
                      f"The source is written in {unit}; a cut position sits between two {unit}."))
 
 
-ALLOWED_WHERE = {"core_principles": "[Core Principles]", "examples": "[Examples]"}
+ALLOWED_WHERE = {"core_principles": "[Core Principles]", "order_principles": "[Order Principles]",
+                 "examples": "[Examples]"}
 FROZEN = ("[Output Rules]", "[Scoring Rules]")
 
 
@@ -435,14 +581,35 @@ def engineer_system(budget: int, cur_len: int) -> str:
             .replace("__CURLEN__", str(cur_len)))
 
 
+# 문면이 두 자리를 비교하는지 가르는 **좁은** 표지. `ORDERING_MARKERS` 는 `fallback` 역할의
+# 통과 기준이라 "before " 처럼 넓은 말을 담는데, 재판정에 그걸 쓰면 "do not cut immediately
+# before X" 같은 단항 금지문이 이항으로 승격된다(judge31 이터 1 의 finding 이 그 꼴이었다).
+BINARY_MARKERS = ("prefer", "rather than", " over ", "ahead of", "higher than", "lower than",
+                  "last resort", "least bad", "better than", "worse than", "which of the two",
+                  "take the later", "take the earlier", "choose the later", "choose the earlier")
+
+
+def looks_binary(text: str) -> bool:
+    """문면이 두 자리를 견주는가 — `kind` 재판정에 쓴다."""
+    return any(m in " ".join((text or "").lower().split()) for m in BINARY_MARKERS)
+
+
 def clean_findings(blob: dict, prompt: str | None = None, cap: int = 3) -> list[dict]:
     """Critic 출력에서 쓸 수 있는 finding 만 남긴다. 토큰 조건은 여기서 잘라낸다.
 
     `prompt` 를 주면 replace 대상이 현재 프롬프트에 있는 것만 남긴다 — Critic 은 `last_revision`
     의 편집 본문을 현재 프롬프트에 있는 줄 알고 겨눈다(judge10 iter 2: 기각된 개정이 넣었던
     Whistler 예시를 바꾸라고 냈다)."""
+    # 두 배열(`checks`/`orders`)이 들어오면 배열이 형태를 정한다. 옛 단일 `findings` 배열도
+    # 계속 읽는다 — 앞선 런의 출력을 다시 돌릴 때를 위해서다.
+    src: list[dict] = []
+    for key, k in (("orders", "order"), ("checks", "check")):
+        for f in (blob or {}).get(key, []) or []:
+            if isinstance(f, dict):
+                src.append({**f, "kind": k})
+    src += [f for f in ((blob or {}).get("findings", []) or []) if isinstance(f, dict)]
     out = []
-    for f in (blob or {}).get("findings", []) or []:
+    for f in src:
         if not isinstance(f, dict):
             continue
         edit = f.get("edit") or {}
@@ -460,12 +627,43 @@ def clean_findings(blob: dict, prompt: str | None = None, cap: int = 3) -> list[
         # 납작해지고, 비교를 결속문 역할에 넣으면 비교가 사라진다). 값이 없으면 종전과 같은
         # 단항으로 본다.
         kind = str(f.get("kind") or "check").strip().lower()
-        out.append({"kind": kind if kind in ("check", "order") else "check",
-                    "diagnosis": (f.get("diagnosis") or "").strip(),
-                    "evidence": (f.get("evidence") or "").strip(),
-                    "type_predicate": (f.get("type_predicate") or "").strip(),
-                    "edit": {k: edit.get(k) for k in ("where", "action", "target", "text")}})
-    return out[:cap]
+        if kind not in ("check", "order"):
+            kind = "check"
+        # **라벨은 문면으로 다시 판정한다 — Critic 이 스스로 붙이는 값을 믿지 않는다.** 이 값으로
+        # 역할 배분과 편집 칸이 갈리는데, 뒤에서 PE 가 형태를 바꿔 쓰면 라벨과 실제가 어긋난다
+        # (judge31 이터 1·2: PE 가 단항 금지문을 서열문으로 고쳐 써 `check` 후보가 이항 편집이
+        # 됐다). 그래서 형태는 여기서 확정하고 PE 에는 문면을 그대로 넘긴다.
+        shaped = "order" if looks_binary(edit.get("text")) else "check"
+        relabeled = shaped != kind
+        kind = shaped
+        where = edit.get("where")
+        # 이항은 `[Order Principles]` 칸으로 보낸다. 그 섹션이 없는 프롬프트(옛 v0)로 도는 런에서는
+        # 보낼 곳이 없으므로 원칙 칸에 그대로 둔다 — `kind` 는 살려서 역할 배분은 유지한다.
+        if kind == "order" and where == "core_principles" and (
+                prompt is None or "[Order Principles]" in prompt):
+            where = "order_principles"
+        elif kind == "check" and where == "order_principles":
+            where = "core_principles"
+        rec = {"kind": kind,
+               "diagnosis": (f.get("diagnosis") or "").strip(),
+               "evidence": (f.get("evidence") or "").strip(),
+               "type_predicate": (f.get("type_predicate") or "").strip(),
+               "edit": {**{k: edit.get(k) for k in ("action", "target", "text")}, "where": where}}
+        if relabeled:
+            rec["kind_relabeled"] = True
+        out.append(rec)
+    # **cap 을 종류별로 번갈아 적용한다.** 앞에서 자르면 `order` 가 사라질 수 있고, 그러면
+    # 이항 편집을 요구하는 역할이 짝을 못 찾아 아예 돌지 않는다(judge31 이터 1: finding 이
+    # `check` 하나뿐이어서 후보가 9개 계획에서 2개로 줄었다).
+    orders = [f for f in out if f["kind"] == "order"]
+    checks = [f for f in out if f["kind"] == "check"]
+    woven: list[dict] = []
+    while (orders or checks) and len(woven) < cap:
+        if orders:
+            woven.append(orders.pop(0))
+        if checks and len(woven) < cap:
+            woven.append(checks.pop(0))
+    return woven
 
 
 def frozen_intact(before: str, after: str) -> list[str]:
@@ -481,7 +679,7 @@ def section_of(prompt: str, header: str) -> str:
     i = prompt.find(header)
     if i < 0:
         return ""
-    nxt = [prompt.find(s, i + len(header)) for s in SECTIONS if s != header]
+    nxt = [prompt.find(sec, i + len(header)) for sec in BOUNDARIES if sec != header]
     nxt = [k for k in nxt if k > i]
     return prompt[i:min(nxt)].strip() if nxt else prompt[i:].strip()
 
@@ -509,7 +707,7 @@ EDITABLE = tuple(ALLOWED_WHERE.values())
 
 
 def section_sizes(prompt: str) -> dict[str, int]:
-    return {h: len(section_of(prompt, h)) for h in JUDGE_SECTIONS if h in prompt}
+    return {h: len(section_of(prompt, h)) for h in JUDGE_SECTIONS}
 
 
 def words(text: str) -> int:
@@ -553,7 +751,11 @@ def only_too_long(errs: list[str]) -> bool:
 # judge03 에서 초과량을 알려 되돌려도 다섯 번 중 네 번이 상한을 못 맞췄다(두 번은 더 길어졌다).
 # 1만 자를 통째로 다시 쓰는 한 길이는 모델 손을 떠난다. 편집만 받고 적용과 길이는 코드가 한다.
 
-UNIT_TAGS = {"[Core Principles]": "C", "[Examples]": "E"}
+UNIT_TAGS = {"[Core Principles]": "C", "[Order Principles]": "O", "[Examples]": "E"}
+# 단위 id 의 머리글자 집합 — 정규식 문자 클래스로 쓴다. 칸을 늘릴 때 여기 하드코딩된 글자를
+# 놓치면 새 칸의 `_end` 앵커가 "없는 id" 로 반려된다.
+TAG_CLASS = "".join(UNIT_TAGS.values())
+TAG_HEADER = {v: k for k, v in UNIT_TAGS.items()}
 MAX_EXAMPLES = 8
 
 
@@ -606,10 +808,12 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
         없어서 PE 가 그 번호를 만들어 썼고, judge07 은 그 때문에 다섯 이터 중 넷을 날렸다."""
         if uid in known:
             return uid
-        m = re.fullmatch(r"([CE])(?:_(?:end|last)|(\d+))", uid or "")
+        m = re.fullmatch(rf"([{TAG_CLASS}])(?:_(?:end|last)|(\d+))", uid or "")
         if not m or m.group(1) not in last:
             return None
         tag, num = m.group(1), m.group(2)
+        if TAG_HEADER.get(tag, "\0") not in prompt:
+            return None     # 그 칸이 이 프롬프트에 없다 (비어 있는 것과 다르다 — 빈 칸에는 넣는다)
         if num is None:
             return f"{tag}_end"
         n = int(num)
@@ -628,7 +832,7 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
         text = e["text"].strip("\n") if isinstance(e.get("text"), str) else ""
         # PE 가 단위 id 를 본문 머리에 써 넣는다("C11: At every marker …", judge05 iter 4). 그 글자는
         # 분절기 프롬프트에 그대로 들어가므로 뗀다.
-        text = re.sub(r"^\s*[CE]\d+\s*[:.)\-–]\s*", "", text)
+        text = re.sub(rf"^\s*[{TAG_CLASS}]\d+\s*[:.)\-–]\s*", "", text)
         if op not in ("replace", "delete", "insert_after"):
             errs.append({"edit": n, "id": uid, "reason": f"모르는 op {op!r}"})
             continue
@@ -640,7 +844,9 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
             if not text.strip():
                 errs.append({"edit": n, "id": uid, "reason": "text 가 비었다"})
                 continue
-            if any(h in text for h in SECTIONS):
+            # 본문에 섹션 헤더 문자열이 들어가면 그것이 경계로 잡혀 **그 자리에서 섹션이
+            # 잘린다** — `section_of` 는 헤더를 그대로 찾는다. judge 전용 칸까지 막아야 한다.
+            if any(h in text for h in BOUNDARIES):
                 errs.append({"edit": n, "id": uid, "reason": "text 에 섹션 헤더가 들어 있다"})
                 continue
             if uid.startswith("E") and not (text.lstrip().startswith("Input:")
@@ -664,6 +870,8 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
         return None, errs, deltas
     out = prompt
     for header, tag in UNIT_TAGS.items():
+        if header not in prompt:
+            continue        # 없는 칸을 편집이 새로 만들지 않는다 — 골격은 사람이 정한다
         gap = [""] if header == "[Examples]" else []        # 예시 쌍 사이는 빈 줄
         lines: list[str] = []
         for t in inserts.get(f"{tag}0", []):
@@ -691,7 +899,11 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
 
 
 ROLES = ("free", "examples_only", "single_small", "narrow_rule", "prune", "rewrite",
-         "fallback", "induce")
+         "fallback", "induce", "replace")
+# `replace` 역할이 허용하는 **순증가** 상한. 0 으로 두면 PE 가 지운 것보다 한 글자라도 길게 쓰면
+# 거부돼 재시도만 태운다. 원칙 하나가 200~300자이고 Critic 의 문면이 60단어 이하(350자 안팎)라
+# 한 줄을 지우고 비슷한 한 줄을 넣는 폭을 준다.
+REPLACE_SLACK = 80
 SHORTEN_ROLE = "shorten"     # 후보 역할이 아니라 축소 패스 전용 — insert 를 뺀다
 
 
@@ -814,9 +1026,15 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
             bad.append({"edit": 0, "id": keep[0].get("id"),
                         "reason": f"prune 인데 {keep[0].get('op')} — delete 만 된다"})
             keep = []
-        elif keep and not str(keep[0].get("id") or "").startswith("C"):
+        elif keep and not str(keep[0].get("id") or "").startswith(("C", "O")):
             bad.append({"edit": 0, "id": keep[0].get("id"),
-                        "reason": "prune 인데 [Core Principles] 단위가 아니다"})
+                        "reason": "prune 인데 [Core Principles]·[Order Principles] 단위가 아니다"})
+            keep = []
+        elif (keep and str(keep[0].get("id") or "").startswith("O")
+              and (spent or {}).get("order_units", 99) <= 1):
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "prune 인데 [Order Principles] 의 마지막 한 줄을 지운다 — 그 칸이 "
+                                  "비면 골격이 참조할 것이 없다"})
             keep = []
         return keep, bad
     if role == "induce":
@@ -859,9 +1077,9 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
             bad.append({"edit": 0, "id": keep[0].get("id"),
                         "reason": f"fallback 인데 {keep[0].get('op')} — insert_after 만 된다"})
             keep = []
-        elif keep and not str(keep[0].get("id") or "").startswith("C"):
+        elif keep and not str(keep[0].get("id") or "").startswith(("C", "O")):
             bad.append({"edit": 0, "id": keep[0].get("id"),
-                        "reason": "fallback 인데 [Core Principles] 단위가 아니다"})
+                        "reason": "fallback 인데 [Core Principles]·[Order Principles] 단위가 아니다"})
             keep = []
         elif keep and is_prohibition(str(keep[0].get("text") or "")):
             bad.append({"edit": 0, "id": keep[0].get("id"),
@@ -872,6 +1090,55 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                         "reason": "fallback 인데 자리끼리 비교하는 말이 없다 "
                                   "(prefer / rather than / over / last resort 류)"})
             keep = []
+        return keep, bad
+    if role == "replace":
+        # **길이 중립 편집.** 원칙 목록에 문장을 더한 스물세 번 가운데 스물두 번이 음수였고
+        # (−0.006 ~ −0.011), 무엇을 쓰든 크기가 비슷했다. 반면 judge31 에서 C4 를 지운 편집은
+        # 길이가 229자 줄면서 Δ 가 −0.0001 이었고 CI 가 0 을 정중앙에 뒀다. 손해가 내용이 아니라
+        # 길이·주의 분산에서 온다면, **지운 만큼만 넣는 편집은 0 에서 출발한다.** 그래서 삭제 한
+        # 건과 추가 한 건을 한 후보에 묶고 순증가를 `REPLACE_SLACK` 으로 막는다.
+        gone = set((spent or {}).get("deleted") or ())
+        n_order = (spent or {}).get("order_units", 99)
+        # 한 자리 교체(`op="replace"`)면 편집 한 건으로 끝난다 — 지우는 자리와 넣는 자리가 같아
+        # 길이 중립이 저절로 가깝다. 자리를 옮겨야 할 때는 삭제 한 건 + 추가 한 건이다.
+        keep = edits[:1] if (edits and edits[0].get("op") == "replace") else edits[:2]
+        bad = [{"edit": n, "id": e.get("id"), "reason": "replace 인데 허용 개수를 넘는 편집"}
+               for n, e in enumerate(edits) if n >= len(keep)]
+        if len(keep) == 1 and keep[0].get("op") == "replace":
+            dele = ins = keep[0]
+        else:
+            ops = sorted(str(e.get("op")) for e in keep)
+            if ops != ["delete", "insert_after"]:
+                bad.append({"edit": 0, "id": None,
+                            "reason": f"replace 는 한 단위를 replace 하거나, delete 한 건과 "
+                                      f"insert_after 한 건이어야 한다 (받은 것: {ops})"})
+                return [], bad
+            dele = next(e for e in keep if e.get("op") == "delete")
+            ins = next(e for e in keep if e.get("op") == "insert_after")
+        did = str(dele.get("id") or "")
+        # **[Order Principles] 단위도 대상이다.** 사람이 박아 둔 시작 문장을 루프가 실측으로 교체할 수
+        # 있어야 한다 — 손댈 수 없게 두면 그 문장이 검증 없이 런 끝까지 남는다. 칸이 비는 것만
+        # 막는다: 마지막 한 줄은 지우지 못하고(골격이 그 칸을 참조한다) 교체는 언제나 된다.
+        if not did.startswith(("C", "O")):
+            bad.append({"edit": 0, "id": did,
+                        "reason": "replace 인데 대상이 [Core Principles]·[Order Principles] 단위가 아니다"})
+            return [], bad
+        if did.startswith("O") and dele.get("op") == "delete" and n_order <= 1:
+            bad.append({"edit": 0, "id": did,
+                        "reason": "replace 인데 [Order Principles] 의 마지막 한 줄을 지운다 — 그 칸이 "
+                                  "비면 골격이 참조할 것이 없다. 지우지 말고 replace 로 바꿀 것"})
+            return [], bad
+        was = str(dele.get("_was") or "")
+        if was and any(was[:60] == g[:60] for g in gone):
+            bad.append({"edit": 0, "id": did,
+                        "reason": "replace 인데 이미 손댄 단위를 또 고친다 — 다른 단위를 고를 것"})
+            return [], bad
+        grew = len(str(ins.get("text") or "")) - len(was)
+        if grew > REPLACE_SLACK:
+            bad.append({"edit": 0, "id": ins.get("id"),
+                        "reason": f"replace 인데 길이 중립이 아니다 — 순증가 {grew}자 > "
+                                  f"{REPLACE_SLACK}자. 더 긴 단위를 고르거나 새 문장을 줄일 것"})
+            return [], bad
         return keep, bad
     if role == "narrow_rule":
         # 추가만 허용한다 — 기존 원칙을 고치는 순간 "재조정" 이 되고, 실측 5/5 가 그쪽에서 실패했다.
@@ -894,6 +1161,68 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
             keep = []
         return keep, bad
     return edits, []
+
+
+def enforce_kind(edits, kind: str | None, has_order_section: bool = True) -> tuple[list, list[dict]]:
+    """발견의 형태(`kind`)와 편집의 **칸·문면**을 맞춘다. 역할 검사와는 따로 걸린다.
+
+    `[Order Principles]` 는 등급 안에서 두 자리를 견주는 문장만 담는 칸이고 `[Core Principles]` 는
+    한 자리를 판정하는 칸이다. 칸이 형태를 정하므로 PE 가 형태를 바꿔 쓸 여지가 없어진다 —
+    judge31 에서는 그 장치가 없어 `check` 발견을 받은 후보가 이항 편집이 됐다.
+
+    `has_order_section` 이 거짓이면(그 섹션이 없는 프롬프트로 도는 런) 칸 검사를 건너뛴다."""
+    edits = [e for e in (edits or []) if isinstance(e, dict)]
+    if kind not in ("check", "order"):
+        return edits, []
+    keep, bad = [], []
+    for n, e in enumerate(edits):
+        uid = str(e.get("id") or "")
+        text = str(e.get("text") or "")
+        if kind == "order" and has_order_section and e.get("op") != "delete" \
+                and not uid.startswith("O"):
+            bad.append({"edit": n, "id": uid,
+                        "reason": "이항 발견인데 [Order Principles] 칸이 아니다 — O_end 에 넣을 것"})
+            continue
+        if kind == "check" and uid.startswith("O"):
+            bad.append({"edit": n, "id": uid,
+                        "reason": "단항 발견인데 [Order Principles] 칸을 고친다 — 그 칸은 두 자리를 "
+                                  "견주는 문장만 담는다"})
+            continue
+        if kind == "check" and text and looks_binary(text):
+            bad.append({"edit": n, "id": uid,
+                        "reason": "단항 발견인데 문면이 두 자리를 견준다 (prefer / rather than / "
+                                  "over 류) — 발견이 명명한 자리는 하나다"})
+            continue
+        keep.append(e)
+    return keep, bad
+
+
+def pin_finding_text(edits, finding: dict | None) -> tuple[list, list[dict]]:
+    """PE 가 쓴 문면을 Critic 이 낸 finding 의 문면으로 되돌린다 — **형태를 고쳐 쓰지 못하게.**
+
+    judge31 이터 1·2 에서 PE 가 단항 금지문("Do not cut …")을 서열문("rank the cut after that
+    clause higher …")으로 고쳐 썼다. `ENGINEER_SYSTEM` 규칙 7 이 말로 금지하는데도 그랬고, 그
+    형태가 역할 배분의 근거이므로 말로 두면 안 된다. PE 에게 남는 일은 **어느 단위 옆에 넣을지,
+    무엇을 지워 자리를 만들지**다.
+
+    `delete` 와 `labeled_example` 은 문면을 만들지 않으므로 건드리지 않는다. 길이가 예산을 넘으면
+    되돌리기 경로(`shorten`)가 따로 줄인다."""
+    edits = [e for e in (edits or []) if isinstance(e, dict)]
+    want = ((finding or {}).get("edit") or {}).get("text")
+    want = str(want or "").strip()
+    if not want:
+        return edits, []
+    out, changed = [], []
+    for n, e in enumerate(edits):
+        if e.get("op") == "delete" or e.get("labeled_example") or not str(e.get("text") or "").strip():
+            out.append(e)
+            continue
+        if " ".join(str(e["text"]).split()) == " ".join(want.split()):
+            out.append(e)
+            continue
+        changed.append({"edit": n, "id": e.get("id"), "was": str(e["text"])[:120]})
+        out.append({**e, "text": want})
+    return out, changed
 
 
 def resolve_labeled_examples(edits, examples: dict[str, str]) -> tuple[list, list[dict]]:

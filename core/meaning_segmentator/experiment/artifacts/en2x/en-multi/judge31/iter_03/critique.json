@@ -1,0 +1,77 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "kind": "check",
+    "diagnosis": "The prompt allows cuts inside multiword proper names or titles, treating internal boundaries as acceptable splits and so fragmenting named entities.",
+    "evidence": "['en_us_1527','en_us_152','en_us_1179','en_us_288','en_us_381','en_us_1296'] then what they share — each source contains a multiword proper name or title (two or more adjacent capitalized words) that the policy split but the target kept intact",
+    "type_predicate": "a multiword proper name: two or more adjacent words that each start with a capital letter (e.g. personal name, organization, treaty or official title)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside multiword proper names or titles (two or more adjacent capitalized words); keep such name sequences intact."
+    }
+   },
+   {
+    "kind": "check",
+    "diagnosis": "The prompt cuts immediately after fronted temporal/adverbial phrases, detaching them from their governing verb and producing incoherent or misleading early pieces.",
+    "evidence": "['en_us_1179','en_us_152','en_us_381','en_us_1615','en_us_1412'] then what they share — each source begins with a fronted temporal or adverbial phrase (e.g. 'In 1895,', 'Then, a few years later', 'At the extremes of the poll,') that the policy separated from its main clause",
+    "type_predicate": "an initial/fronted temporal or adverbial phrase that ends with a comma (e.g. starts the sentence and is followed by a comma)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Keep fronted adverbials/temporal adjuncts attached to their main clause: do not cut immediately after an initial adverbial phrase ending in a comma."
+    }
+   },
+   {
+    "kind": "order",
+    "diagnosis": "When forced to choose between two imperfect internal cuts, the prompt prefers cuts that break verb–object adjacency; instead it should prefer cuts that avoid separating a verb from its core object/complement.",
+    "evidence": "['en_us_633','en_us_1113','en_us_381','en_us_1116'] then what they share — each sentence offers two internal cut candidates where one would split a verb from its object/complement while the other splits earlier material; the measurement prefers keeping verb and object together",
+    "type_predicate": "a clause containing two candidate cut positions: one cut lies between a finite verb and its core direct object or essential complement, the other cut lies earlier in the clause (e.g. between subject or initial adjunct and that verb)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When ordering two internal cuts in the same clause, prefer the cut that does not separate a verb from its direct object or essential complement; keep verbs adjacent to their core arguments."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts inside multiword proper names or titles, treating internal boundaries as acceptable splits and so fragmenting named entities.",
+   "evidence": "['en_us_1527','en_us_152','en_us_1179','en_us_288','en_us_381','en_us_1296'] then what they share — each source contains a multiword proper name or title (two or more adjacent capitalized words) that the policy split but the target kept intact",
+   "type_predicate": "a multiword proper name: two or more adjacent words that each start with a capital letter (e.g. personal name, organization, treaty or official title)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside multiword proper names or titles (two or more adjacent capitalized words); keep such name sequences intact."
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt cuts immediately after fronted temporal/adverbial phrases, detaching them from their governing verb and producing incoherent or misleading early pieces.",
+   "evidence": "['en_us_1179','en_us_152','en_us_381','en_us_1615','en_us_1412'] then what they share — each source begins with a fronted temporal or adverbial phrase (e.g. 'In 1895,', 'Then, a few years later', 'At the extremes of the poll,') that the policy separated from its main clause",
+   "type_predicate": "an initial/fronted temporal or adverbial phrase that ends with a comma (e.g. starts the sentence and is followed by a comma)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Keep fronted adverbials/temporal adjuncts attached to their main clause: do not cut immediately after an initial adverbial phrase ending in a comma."
+   }
+  },
+  {
+   "kind": "order",
+   "diagnosis": "When forced to choose between two imperfect internal cuts, the prompt prefers cuts that break verb–object adjacency; instead it should prefer cuts that avoid separating a verb from its core object/complement.",
+   "evidence": "['en_us_633','en_us_1113','en_us_381','en_us_1116'] then what they share — each sentence offers two internal cut candidates where one would split a verb from its object/complement while the other splits earlier material; the measurement prefers keeping verb and object together",
+   "type_predicate": "a clause containing two candidate cut positions: one cut lies between a finite verb and its core direct object or essential complement, the other cut lies earlier in the clause (e.g. between subject or initial adjunct and that verb)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When ordering two internal cuts in the same clause, prefer the cut that does not separate a verb from its direct object or essential complement; keep verbs adjacent to their core arguments."
+   }
+  }
+ ]
+}

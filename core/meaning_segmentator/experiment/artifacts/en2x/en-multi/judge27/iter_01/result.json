@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00171,
+  "lo": -0.01063,
+  "hi": 0.0064,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00171,
+  "lo": -0.01063,
+  "hi": 0.0064,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a short binding that keeps a noun head with any immediately following essential post‑nominal modifier (restrictive relative clause, appositive, title/multiword name, or prepositional complement) so cuts do not separate a noun from the modifier that identifies or restricts it — addresses the primary finding about cohesion loss."
+ ],
+ "findings": [
+  "The prompt routinely treats a pre-verbal fragment as self-contained and allows cuts immediately before a clause’s main finite verb or copula, leaving the preceding piece without its predicate and producing high-contradiction/low-cohesion outputs.",
+  "The prompt allows cuts that split a noun head from an essential post‑nominal modifier (appositive, restrictive 'which/that' clause, prepositional complement, title or multiword name), underestimating the cohesion loss when the modifier defines or identifies the noun."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Keep a noun head together with any immediately following essential post‑nomina"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.002,
+   "≤5": -0.0068,
+   "≤7": 0.0006,
+   "≤10": -0.0015,
+   "≤99": -0.0085
+  },
+  "n_worse": 2026,
+  "n_better": 2194,
+  "why": "The inserted binding (keep a noun head with any immediately following essential post‑nominal modifier) caused the model to avoid cuts that would split a head+modifier, so it often moved cuts earlier (placing the cut before the noun) to keep the noun+modifier together. That change helps very short pieces and list/title splits (bins ≤3/≤5, best examples) but harms longer, multi‑clause sentences (overall ≤99 negative and a big drop in rank for k=1) by fragmenting adjacent clauses and moving cuts into preceding material.",
+  "lesson": "When adding a noun‑head+modifier binding, ensure it does not force earlier cuts that fragment adjacent clauses or long spans — only apply it when it can be satisfied without shifting cuts into preceding material.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

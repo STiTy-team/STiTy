@@ -1,0 +1,29 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | subjects precede verbs and verbs precede objects in examples such as 'Steve Jobs unveiled the device' and 'The capsule will look much like a shooting star'.",
+  "register": "edited written informational prose (news reports, encyclopedic and technical descriptive text)",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "coordinating conjunctions (and, but)",
+    "subordinating conjunctions (although, because)",
+    "stance/stance-adverbials (of course, in the end)",
+    "temporal prepositional linkers (after the war, prior to)"
+  ],
+  "clause_boundary_signals": [
+    "complementizers/subordinators that introduce clauses (that, if)",
+    "relative pronouns introducing embedded clauses (who, which)",
+    "coordinating conjunctions joining clauses (and, but)"
+  ],
+  "non_boundary_traps": [
+    "initial temporal/prepositional adjuncts that look like sentence-openers but attach to a following clause (for over a thousand years, around 60)",
+    "verbal adjuncts/gerundial phrases introduced by by/to that are subordinate (by walking, to have)",
+    "embedded relative or participial modifiers inside NPs that contain clause-like structure (those who are employed, the atoms emitting photons)",
+    "parenthetical adverbials that look clause-final or -initial but do not end the clause (in the end, of course)"
+  ],
+  "unstable_prefix_signals": [
+    "sentence-initial focusing/limiting item whose scope can be revised by continuation (only)",
+    "initial subordinating/adverbial linkers whose function and scope are resolved only after the main clause appears (although, because)",
+    "approximate quantifiers that may narrow or shift scope as continuation arrives (around)"
+  ],
+  "notes_for_prompt_writer": "The samples are formal written English with canonical SVO order and frequent embedded clauses introduced by complementizers and relative pronouns. Many modifiers (prepositional phrases, by-/to- verbal phrases, relative clauses) are clause-internal and should not be taken as sentence boundaries. Sentence-initial focused items (e.g. only) and subordinating adverbials leave scope and attachment ambiguous until the remainder of the sentence is seen."
+}

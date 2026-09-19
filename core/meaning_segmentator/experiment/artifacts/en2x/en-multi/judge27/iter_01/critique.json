@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt routinely treats a pre-verbal fragment as self-contained and allows cuts immediately before a clause’s main finite verb or copula, leaving the preceding piece without its predicate and producing high-contradiction/low-cohesion outputs.",
+    "evidence": "['en_us_89','en_us_378','en_us_574','en_us_360','en_us_399','en_us_381','en_us_1144','en_us_577'] — each contains a kept marker that falls immediately before the clause's main finite verb or copula so the left-side fragment lacks its predicate or essential verbal complement.",
+    "type_predicate": "a marker that immediately precedes a finite verb or copula which serves as the main predicate of the clause",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before a clause’s main finite verb or copula; keep the verb (and any auxiliary) together with its subject and essential complements."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that split a noun head from an essential post‑nominal modifier (appositive, restrictive 'which/that' clause, prepositional complement, title or multiword name), underestimating the cohesion loss when the modifier defines or identifies the noun.",
+    "evidence": "['en_us_1355','en_us_998','en_us_119','en_us_1215'] — each case has a kept marker placed between a noun head and an immediately following essential post‑nominal modifier (relative clause, appositive, title or multiword name) that the offline target preserves.",
+    "type_predicate": "a marker that falls between a noun (head) and an immediately following post‑nominal modifier that identifies, restricts, or names that noun (appositive/which‑clause/prepositional complement/title/multiword name)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a noun head and its essential post‑nominal modifier (appositive, restrictive 'which/that' clause, prepositional complement, title, or multiword name)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt routinely treats a pre-verbal fragment as self-contained and allows cuts immediately before a clause’s main finite verb or copula, leaving the preceding piece without its predicate and producing high-contradiction/low-cohesion outputs.",
+   "evidence": "['en_us_89','en_us_378','en_us_574','en_us_360','en_us_399','en_us_381','en_us_1144','en_us_577'] — each contains a kept marker that falls immediately before the clause's main finite verb or copula so the left-side fragment lacks its predicate or essential verbal complement.",
+   "type_predicate": "a marker that immediately precedes a finite verb or copula which serves as the main predicate of the clause",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before a clause’s main finite verb or copula; keep the verb (and any auxiliary) together with its subject and essential complements."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that split a noun head from an essential post‑nominal modifier (appositive, restrictive 'which/that' clause, prepositional complement, title or multiword name), underestimating the cohesion loss when the modifier defines or identifies the noun.",
+   "evidence": "['en_us_1355','en_us_998','en_us_119','en_us_1215'] — each case has a kept marker placed between a noun head and an immediately following essential post‑nominal modifier (relative clause, appositive, title or multiword name) that the offline target preserves.",
+   "type_predicate": "a marker that falls between a noun (head) and an immediately following post‑nominal modifier that identifies, restricts, or names that noun (appositive/which‑clause/prepositional complement/title/multiword name)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a noun head and its essential post‑nominal modifier (appositive, restrictive 'which/that' clause, prepositional complement, title, or multiword name)."
+   }
+  }
+ ]
+}

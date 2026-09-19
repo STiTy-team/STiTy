@@ -1,0 +1,377 @@
+{
+ "done": 3,
+ "prompt": "[Role]\nYou are a specialist annotator who reads one English source sentence with a <SEG:?> marker at every possible cut and assigns a distinct integer 0–100 to each marker to indicate how good a cut there is for streaming translation. Use only the source words and the language profile.\n\n[Core Principles]\n- Does what follows the marker, if presented alone, overturn or contradict the meaning asserted before it? Look for later clauses that negate, reverse, or qualify prior claims; such outcomes increase contradiction risk.\n- Does translating the two sides separately still allow a faithful reconstruction of the whole sentence? If an essential attachment or complement would be lost, cohesion is reduced.\n- Does the following material supply essential predicate, argument, or scope information that the already-heard stretch cannot bear alone? Missing these makes the earlier stretch incomplete or misleading.\n- Does a following relative clause or clausal complement restrict or redefine a preceding noun phrase so that separating them changes reference? Separating head and modifier lowers cohesion.\n- Do fronted adverbials, temporal adjuncts, or parentheticals have ambiguous scope that requires the subsequent clause to resolve attachment? Cutting before their governing verb or clause risks misinterpretation.\n- Does a later auxiliary, modal, or negation change the polarity, modality, or commitment of the prior stretch? If so, placing the cut before them raises contradiction probability.\n- Are subordinators or contrastive adverbials (for example subordinizing conjunctions or contrast markers) coming after the cut that might reverse or qualify the earlier content? These often raise contradiction or cohesion loss.\n- Is the material after the marker a self-contained constituent (completes a verb, supplies a prepositional complement, names an entity) so that translating separately preserves the whole meaning? If yes, cohesion is likely high; if not, expect damage.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.\n- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.\n- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is where the judgement goes, and the lower bands usually hold the most positions. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Content <SEG:?> theories <SEG:?> are <SEG:?> centered <SEG:?> on <SEG:?> finding <SEG:?> what <SEG:?> makes <SEG:?> people <SEG:?> tick <SEG:?> or <SEG:?> appeals <SEG:?> to <SEG:?> them.\nOutput: Content <SEG:75> theories <SEG:100> are <SEG:58> centered <SEG:50> on <SEG:83> finding <SEG:92> what <SEG:67> makes <SEG:33> people <SEG:0> tick <SEG:42> or <SEG:25> appeals <SEG:8> to <SEG:17> them.\n\nInput: Jerusalem <SEG:?> has <SEG:?> many <SEG:?> historic, <SEG:?> archeological <SEG:?> and <SEG:?> cultural <SEG:?> sites, <SEG:?> along <SEG:?> with <SEG:?> vibrant <SEG:?> and <SEG:?> crowded <SEG:?> shopping <SEG:?> centers, <SEG:?> cafés, <SEG:?> and <SEG:?> restaurants.\nOutput: Jerusalem <SEG:100> has <SEG:6> many <SEG:44> historic, <SEG:50> archeological <SEG:0> and <SEG:56> cultural <SEG:25> sites, <SEG:94> along <SEG:62> with <SEG:81> vibrant <SEG:88> and <SEG:19> crowded <SEG:38> shopping <SEG:12> centers, <SEG:69> cafés, <SEG:75> and <SEG:31> restaurants.\n\nInput: Regarding <SEG:?> the <SEG:?> global <SEG:?> financial <SEG:?> situation, <SEG:?> Zapatero <SEG:?> continued <SEG:?> by <SEG:?> saying <SEG:?> that <SEG:?> \"the <SEG:?> financial <SEG:?> system <SEG:?> is <SEG:?> a <SEG:?> part <SEG:?> of <SEG:?> the <SEG:?> economy, <SEG:?> a <SEG:?> crucial <SEG:?> part.\nOutput: Regarding <SEG:40> the <SEG:10> global <SEG:0> financial <SEG:5> situation, <SEG:100> Zapatero <SEG:20> continued <SEG:70> by <SEG:75> saying <SEG:95> that <SEG:90> \"the <SEG:55> financial <SEG:15> system <SEG:25> is <SEG:45> a <SEG:30> part <SEG:50> of <SEG:65> the <SEG:60> economy, <SEG:85> a <SEG:80> crucial <SEG:35> part.\n\nInput: What <SEG:?> is <SEG:?> a <SEG:?> cell? <SEG:?> The <SEG:?> word <SEG:?> cell <SEG:?> comes <SEG:?> from <SEG:?> the <SEG:?> Latin <SEG:?> word <SEG:?> \"cella\", <SEG:?> meaning <SEG:?> \"small <SEG:?> room\", <SEG:?> and <SEG:?> it <SEG:?> was <SEG:?> first <SEG:?> coined <SEG:?> by <SEG:?> a <SEG:?> microscopist <SEG:?> observing <SEG:?> the <SEG:?> structure <SEG:?> of <SEG:?> cork.\nOutput: What <SEG:22> is <SEG:96> a <SEG:59> cell? <SEG:100> The <SEG:67> word <SEG:89> cell <SEG:81> comes <SEG:78> from <SEG:52> the <SEG:4> Latin <SEG:93> word <SEG:85> \"cella\", <SEG:74> meaning <SEG:44> \"small <SEG:7> room\", <SEG:56> and <SEG:33> it <SEG:37> was <SEG:48> first <SEG:70> coined <SEG:63> by <SEG:26> a <SEG:30> microscopist <SEG:41> observing <SEG:15> the <SEG:0> structure <SEG:19> of <SEG:11> cork.\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01124,
+    "lo": -0.01928,
+    "hi": -0.00281,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Inserted a concise binding rule to keep clausal attachments with their head so cuts do not separate heads from immediately following relative/infinitival/temporal clauses (addresses primary finding about early cuts before clausal attachments)."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "Keep clausal attachments with their head: when a cut immediately precedes a rela"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00883,
+    "lo": -0.01569,
+    "hi": -0.00159,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": -0.00883,
+    "lo": -0.01569,
+    "hi": -0.00159,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Delete C7 — removed the redundant principle about subordinators/contrastive adverbials because it largely duplicates C1 and C3 and distracts from the primary finding about clausal attachments; pruning reduces overlap so the remaining rules can better target cuts before clausal attachments."
+   ],
+   "findings": [
+    "The prompt cuts too early when the next segment is a clausal attachment or complement that completes or qualifies what came before, producing contradiction or loss of necessary scope."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C7",
+     "kind": "delete",
+     "was": "- Are subordinators or contrastive adverbials (for example subordinizing conjunc",
+     "now": ""
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0105,
+     "≤5": -0.0117,
+     "≤7": -0.0038,
+     "≤10": -0.0013,
+     "≤99": -0.0053
+    },
+    "n_worse": 2064,
+    "n_better": 2136,
+    "why": "Deleting C7 removed the explicit discouragement of cutting before subordinators/contrastive adverbials, so the model began inserting more cuts that split subordinate clauses and contrastive phrases. That shift raised agreement at rank‑1 (depth1 +0.556) — helping long‑latency budgets — but degraded deeper ranks (depths 2–3 slightly down) and hurt the short‑latency bins (≤3 and ≤5 showed the largest negative changes of about −0.01), producing the small net drop.",
+    "lesson": "If you remove the rule discouraging cuts immediately before subordinators/contrastive adverbials, preserve an equivalent constraint for deeper-ranked choices because otherwise the model will create extra intra‑clausal cuts that harm short‑latency (many‑position) performance.",
+    "blamed": [
+     "C7 «- Is the material after the marker a self-contained constitu»"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00954,
+    "lo": -0.0183,
+    "hi": -0.0006,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Add a short binding that keeps dependent clauses attached to their head, preferring the cut after the clause over the cut before it — fixes primary finding about splitting subordinating/relative/‘that’ clauses."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "Keep dependent clauses attached to their head: when a marker immediately precede"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00915,
+    "lo": -0.01729,
+    "hi": -0.00099,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Delete C8: it's redundant with C2/C3/C4 (all address cohesion/completeness) and divides the model's attention; pruning it addresses the critique that the prompt needs fewer, sharper principles so a focused rule keeping dependent clauses attached can be effective against cuts that split heads from their clausal complements (the primary finding)."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "- Is the material after the marker a self-contained constituent (completes a ver",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00598,
+    "lo": -0.0129,
+    "hi": 0.00094,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": -0.00598,
+    "lo": -0.0129,
+    "hi": 0.00094,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a fallback ordering principle that prefers a cut after a dependent/clausal complement over a cut immediately before it, to keep head+complement together and address the primary 'order' finding."
+   ],
+   "findings": [
+    "The prompt lets cuts split a phrase from a following dependent clause or clausal complement (subordinating/relative/‘that’–type clauses), underestimating how much meaning and entailment are lost when the clause is separated.",
+    "When multiple candidate cuts are all bad for the same attachment, the prompt fails to prefer the safer (later) cut that preserves a head with its clausal complement, causing misordered choices among similarly judged positions."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- When a marker A immediately precedes a dependent clause (subordinating clause,"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0039,
+     "≤5": -0.0141,
+     "≤7": -0.0004,
+     "≤10": -0.0008,
+     "≤99": -0.0012
+    },
+    "n_worse": 2115,
+    "n_better": 2097,
+    "why": "The inserted fallback to keep a marker together with a following dependent/clausal complement shifted the model's top-ranked cut choices (depth‑1 improved slightly but depth‑2 worsened notably), so the edit mainly changed the first one or two preferred cuts. That behavior helped examples where an adverbial or clause was kept with its head, but it also caused cuts to move into noun phrases, enumerations, and multiword names (e.g. splitting 'Cirque du Soleil' or 'assistance of 80 police'), producing balanced wins and losses and largest harm in the ≤5 bin.",
+    "lesson": "Limit the fallback to true subordinating/clausal markers and avoid applying it when the 'marker' is part of an NP, named entity, or enumeration, because this change mainly alters top-ranked choices and will hurt short/medium-latency settings if it forces cuts inside multiword noun phrases.",
+    "blamed": [
+     "C_end"
+    ]
+   }
+  },
+  {
+   "iter": 3,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00769,
+    "lo": -0.01597,
+    "hi": 0.00064,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a fallback ordering principle that prefers cuts which keep a finite verb adjacent to its core object/essential complement; addresses the primary finding (avoid verb–object splits) and supplies the required fallback ordering when other principles do not decide."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Fallback ordering: when two candidate cuts are otherwise indistinguishable, an"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00877,
+    "lo": -0.0172,
+    "hi": -0.00116,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a short binding rule that keeps multiword proper names/titles intact so cuts are not placed inside sequences of adjacent capitalized words — addresses the primary finding about fragmenting named entities."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "Keep multiword proper names and titles together: when two or more adjacent words"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01099,
+    "lo": -0.0184,
+    "hi": -0.00285,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a single small binding rule: keep initial/fronted temporal/adverbial phrases (that start the sentence and end with a comma) attached to their following main clause to avoid cuts that detach fronted adjuncts."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Keep an initial/fronted temporal or adverbial phrase (it starts the sentence a"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "adopted": false,
+   "delta": {
+    "mean": -0.0001,
+    "lo": -0.00731,
+    "hi": 0.00736,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": -0.0001,
+    "lo": -0.00731,
+    "hi": 0.00736,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Delete C4: it largely restates C3 (clausal material supplying predicate/argument/scope) and encourages attention to noun-phrase internal boundaries; removing this redundant rule reduces rule competition that can push cuts into multiword names/NPs (the critique and history show clausal-attachment rules can force cuts inside NPs and named entities)."
+   ],
+   "findings": [
+    "The prompt allows cuts inside multiword proper names or titles, treating internal boundaries as acceptable splits and so fragmenting named entities.",
+    "The prompt cuts immediately after fronted temporal/adverbial phrases, detaching them from their governing verb and producing incoherent or misleading early pieces.",
+    "When forced to choose between two imperfect internal cuts, the prompt prefers cuts that break verb–object adjacency; instead it should prefer cuts that avoid separating a verb from its core object/complement."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C4",
+     "kind": "delete",
+     "was": "- Does a following relative clause or clausal complement restrict or redefine a ",
+     "now": ""
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0006,
+     "≤5": -0.0,
+     "≤7": 0.0004,
+     "≤10": -0.0044,
+     "≤99": 0.0001
+    },
+    "n_worse": 1926,
+    "n_better": 2287,
+    "why": "Removing C4 removed a protection against cutting at noun-phrase / name-internal boundaries, so the scorer began placing earlier cuts inside multiword NPs/named entities (examples: 'John ‖ Nixon', 'Cirque ‖ du Soleil', 'We ‖ will ‖ never...'). That change raised agreement at rank‑1 but worsened ranks 2–3 (rank_depth: +0.124 at depth1, −0.216/−0.098 at depths2–3), produced mixed counts (n_better 2287 vs n_worse 1926), and caused a measurable drop in the mid‑length bin (≤10: −0.0044).",
+    "lesson": "If you remove a rule that overlaps clausal-attachment checks, keep an explicit constraint (or reweighting) that prevents cuts inside multiword names/NP-internal boundaries so top choice gains don’t come at the expense of deeper-ranked cuts used by shorter-latency budgets.",
+    "blamed": [
+     "C4 «- Do fronted adverbials, temporal adjuncts, or parenthetical»"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 7759,
+ "total_cost": 30.184319,
+ "provenance": {
+  "- Does what follows the marker, if presented alone, overturn or contradict the meaning asserted before it? Look for later clauses that negate, reverse, or qualify prior claims; such outcomes increase contradiction risk.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does translating the two sides separately still allow a faithful reconstruction of the whole sentence? If an essential attachment or complement would be lost, cohesion is reduced.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the following material supply essential predicate, argument, or scope information that the already-heard stretch cannot bear alone? Missing these makes the earlier stretch incomplete or misleading.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does a following relative clause or clausal complement restrict or redefine a preceding noun phrase so that separating them changes reference? Separating head and modifier lowers cohesion.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Do fronted adverbials, temporal adjuncts, or parentheticals have ambiguous scope that requires the subsequent clause to resolve attachment? Cutting before their governing verb or clause risks misinterpretation.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does a later auxiliary, modal, or negation change the polarity, modality, or commitment of the prior stretch? If so, placing the cut before them raises contradiction probability.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Are subordinators or contrastive adverbials (for example subordinizing conjunctions or contrast markers) coming after the cut that might reverse or qualify the earlier content? These often raise contradiction or cohesion loss.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is the material after the marker a self-contained constituent (completes a verb, supplies a prepositional complement, names an entity) so that translating separately preserves the whole meaning? If yes, cohesion is likely high; if not, expect damage.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Content <SEG:?> theories <SEG:?> are <SEG:?> centered <SEG:?> on <SEG:?> finding <SEG:?> what <SEG:?> makes <SEG:?> people <SEG:?> tick <SEG:?> or <SEG:?> appeals <SEG:?> to <SEG:?> them.\nOutput: Content <SEG:75> theories <SEG:100> are <SEG:58> centered <SEG:50> on <SEG:83> finding <SEG:92> what <SEG:67> makes <SEG:33> people <SEG:0> tick <SEG:42> or <SEG:25> appeals <SEG:8> to <SEG:17> them.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Jerusalem <SEG:?> has <SEG:?> many <SEG:?> historic, <SEG:?> archeological <SEG:?> and <SEG:?> cultural <SEG:?> sites, <SEG:?> along <SEG:?> with <SEG:?> vibrant <SEG:?> and <SEG:?> crowded <SEG:?> shopping <SEG:?> centers, <SEG:?> cafés, <SEG:?> and <SEG:?> restaurants.\nOutput: Jerusalem <SEG:100> has <SEG:6> many <SEG:44> historic, <SEG:50> archeological <SEG:0> and <SEG:56> cultural <SEG:25> sites, <SEG:94> along <SEG:62> with <SEG:81> vibrant <SEG:88> and <SEG:19> crowded <SEG:38> shopping <SEG:12> centers, <SEG:69> cafés, <SEG:75> and <SEG:31> restaurants.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Regarding <SEG:?> the <SEG:?> global <SEG:?> financial <SEG:?> situation, <SEG:?> Zapatero <SEG:?> continued <SEG:?> by <SEG:?> saying <SEG:?> that <SEG:?> \"the <SEG:?> financial <SEG:?> system <SEG:?> is <SEG:?> a <SEG:?> part <SEG:?> of <SEG:?> the <SEG:?> economy, <SEG:?> a <SEG:?> crucial <SEG:?> part.\nOutput: Regarding <SEG:40> the <SEG:10> global <SEG:0> financial <SEG:5> situation, <SEG:100> Zapatero <SEG:20> continued <SEG:70> by <SEG:75> saying <SEG:95> that <SEG:90> \"the <SEG:55> financial <SEG:15> system <SEG:25> is <SEG:45> a <SEG:30> part <SEG:50> of <SEG:65> the <SEG:60> economy, <SEG:85> a <SEG:80> crucial <SEG:35> part.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: What <SEG:?> is <SEG:?> a <SEG:?> cell? <SEG:?> The <SEG:?> word <SEG:?> cell <SEG:?> comes <SEG:?> from <SEG:?> the <SEG:?> Latin <SEG:?> word <SEG:?> \"cella\", <SEG:?> meaning <SEG:?> \"small <SEG:?> room\", <SEG:?> and <SEG:?> it <SEG:?> was <SEG:?> first <SEG:?> coined <SEG:?> by <SEG:?> a <SEG:?> microscopist <SEG:?> observing <SEG:?> the <SEG:?> structure <SEG:?> of <SEG:?> cork.\nOutput: What <SEG:22> is <SEG:96> a <SEG:59> cell? <SEG:100> The <SEG:67> word <SEG:89> cell <SEG:81> comes <SEG:78> from <SEG:52> the <SEG:4> Latin <SEG:93> word <SEG:85> \"cella\", <SEG:74> meaning <SEG:44> \"small <SEG:7> room\", <SEG:56> and <SEG:33> it <SEG:37> was <SEG:48> first <SEG:70> coined <SEG:63> by <SEG:26> a <SEG:30> microscopist <SEG:41> observing <SEG:15> the <SEG:0> structure <SEG:19> of <SEG:11> cork.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00883,
+  "lo": -0.01569,
+  "hi": -0.00159,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00883,
+  "lo": -0.01569,
+  "hi": -0.00159,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Delete C7 — removed the redundant principle about subordinators/contrastive adverbials because it largely duplicates C1 and C3 and distracts from the primary finding about clausal attachments; pruning reduces overlap so the remaining rules can better target cuts before clausal attachments."
+ ],
+ "findings": [
+  "The prompt cuts too early when the next segment is a clausal attachment or complement that completes or qualifies what came before, producing contradiction or loss of necessary scope."
+ ],
+ "edits": [
+  {
+   "op": "delete",
+   "id": "C7",
+   "kind": "delete",
+   "was": "- Are subordinators or contrastive adverbials (for example subordinizing conjunc",
+   "now": ""
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0105,
+   "≤5": -0.0117,
+   "≤7": -0.0038,
+   "≤10": -0.0013,
+   "≤99": -0.0053
+  },
+  "n_worse": 2064,
+  "n_better": 2136,
+  "why": "Deleting C7 removed the explicit discouragement of cutting before subordinators/contrastive adverbials, so the model began inserting more cuts that split subordinate clauses and contrastive phrases. That shift raised agreement at rank‑1 (depth1 +0.556) — helping long‑latency budgets — but degraded deeper ranks (depths 2–3 slightly down) and hurt the short‑latency bins (≤3 and ≤5 showed the largest negative changes of about −0.01), producing the small net drop.",
+  "lesson": "If you remove the rule discouraging cuts immediately before subordinators/contrastive adverbials, preserve an equivalent constraint for deeper-ranked choices because otherwise the model will create extra intra‑clausal cuts that harm short‑latency (many‑position) performance.",
+  "blamed": [
+   "C7 «- Is the material after the marker a self-contained constitu»"
+  ]
+ }
+}

@@ -1,0 +1,308 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01124,
+   "lo": -0.01928,
+   "hi": -0.00281,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Inserted a concise binding rule to keep clausal attachments with their head so cuts do not separate heads from immediately following relative/infinitival/temporal clauses (addresses primary finding about early cuts before clausal attachments)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep clausal attachments with their head: when a cut immediately precedes a rela"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00883,
+   "lo": -0.01569,
+   "hi": -0.00159,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00883,
+   "lo": -0.01569,
+   "hi": -0.00159,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C7 — removed the redundant principle about subordinators/contrastive adverbials because it largely duplicates C1 and C3 and distracts from the primary finding about clausal attachments; pruning reduces overlap so the remaining rules can better target cuts before clausal attachments."
+  ],
+  "findings": [
+   "The prompt cuts too early when the next segment is a clausal attachment or complement that completes or qualifies what came before, producing contradiction or loss of necessary scope."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C7",
+    "kind": "delete",
+    "was": "- Are subordinators or contrastive adverbials (for example subordinizing conjunc",
+    "now": ""
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0105,
+    "≤5": -0.0117,
+    "≤7": -0.0038,
+    "≤10": -0.0013,
+    "≤99": -0.0053
+   },
+   "n_worse": 2064,
+   "n_better": 2136,
+   "why": "Deleting C7 removed the explicit discouragement of cutting before subordinators/contrastive adverbials, so the model began inserting more cuts that split subordinate clauses and contrastive phrases. That shift raised agreement at rank‑1 (depth1 +0.556) — helping long‑latency budgets — but degraded deeper ranks (depths 2–3 slightly down) and hurt the short‑latency bins (≤3 and ≤5 showed the largest negative changes of about −0.01), producing the small net drop.",
+   "lesson": "If you remove the rule discouraging cuts immediately before subordinators/contrastive adverbials, preserve an equivalent constraint for deeper-ranked choices because otherwise the model will create extra intra‑clausal cuts that harm short‑latency (many‑position) performance.",
+   "blamed": [
+    "C7 «- Is the material after the marker a self-contained constitu»"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00954,
+   "lo": -0.0183,
+   "hi": -0.0006,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a short binding that keeps dependent clauses attached to their head, preferring the cut after the clause over the cut before it — fixes primary finding about splitting subordinating/relative/‘that’ clauses."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep dependent clauses attached to their head: when a marker immediately precede"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00915,
+   "lo": -0.01729,
+   "hi": -0.00099,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C8: it's redundant with C2/C3/C4 (all address cohesion/completeness) and divides the model's attention; pruning it addresses the critique that the prompt needs fewer, sharper principles so a focused rule keeping dependent clauses attached can be effective against cuts that split heads from their clausal complements (the primary finding)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "- Is the material after the marker a self-contained constituent (completes a ver",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00598,
+   "lo": -0.0129,
+   "hi": 0.00094,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00598,
+   "lo": -0.0129,
+   "hi": 0.00094,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering principle that prefers a cut after a dependent/clausal complement over a cut immediately before it, to keep head+complement together and address the primary 'order' finding."
+  ],
+  "findings": [
+   "The prompt lets cuts split a phrase from a following dependent clause or clausal complement (subordinating/relative/‘that’–type clauses), underestimating how much meaning and entailment are lost when the clause is separated.",
+   "When multiple candidate cuts are all bad for the same attachment, the prompt fails to prefer the safer (later) cut that preserves a head with its clausal complement, causing misordered choices among similarly judged positions."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- When a marker A immediately precedes a dependent clause (subordinating clause,"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0039,
+    "≤5": -0.0141,
+    "≤7": -0.0004,
+    "≤10": -0.0008,
+    "≤99": -0.0012
+   },
+   "n_worse": 2115,
+   "n_better": 2097,
+   "why": "The inserted fallback to keep a marker together with a following dependent/clausal complement shifted the model's top-ranked cut choices (depth‑1 improved slightly but depth‑2 worsened notably), so the edit mainly changed the first one or two preferred cuts. That behavior helped examples where an adverbial or clause was kept with its head, but it also caused cuts to move into noun phrases, enumerations, and multiword names (e.g. splitting 'Cirque du Soleil' or 'assistance of 80 police'), producing balanced wins and losses and largest harm in the ≤5 bin.",
+   "lesson": "Limit the fallback to true subordinating/clausal markers and avoid applying it when the 'marker' is part of an NP, named entity, or enumeration, because this change mainly alters top-ranked choices and will hurt short/medium-latency settings if it forces cuts inside multiword noun phrases.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00769,
+   "lo": -0.01597,
+   "hi": 0.00064,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering principle that prefers cuts which keep a finite verb adjacent to its core object/essential complement; addresses the primary finding (avoid verb–object splits) and supplies the required fallback ordering when other principles do not decide."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Fallback ordering: when two candidate cuts are otherwise indistinguishable, an"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00877,
+   "lo": -0.0172,
+   "hi": -0.00116,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a short binding rule that keeps multiword proper names/titles intact so cuts are not placed inside sequences of adjacent capitalized words — addresses the primary finding about fragmenting named entities."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep multiword proper names and titles together: when two or more adjacent words"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01099,
+   "lo": -0.0184,
+   "hi": -0.00285,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a single small binding rule: keep initial/fronted temporal/adverbial phrases (that start the sentence and end with a comma) attached to their following main clause to avoid cuts that detach fronted adjuncts."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep an initial/fronted temporal or adverbial phrase (it starts the sentence a"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": -0.0001,
+   "lo": -0.00731,
+   "hi": 0.00736,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.0001,
+   "lo": -0.00731,
+   "hi": 0.00736,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C4: it largely restates C3 (clausal material supplying predicate/argument/scope) and encourages attention to noun-phrase internal boundaries; removing this redundant rule reduces rule competition that can push cuts into multiword names/NPs (the critique and history show clausal-attachment rules can force cuts inside NPs and named entities)."
+  ],
+  "findings": [
+   "The prompt allows cuts inside multiword proper names or titles, treating internal boundaries as acceptable splits and so fragmenting named entities.",
+   "The prompt cuts immediately after fronted temporal/adverbial phrases, detaching them from their governing verb and producing incoherent or misleading early pieces.",
+   "When forced to choose between two imperfect internal cuts, the prompt prefers cuts that break verb–object adjacency; instead it should prefer cuts that avoid separating a verb from its core object/complement."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C4",
+    "kind": "delete",
+    "was": "- Does a following relative clause or clausal complement restrict or redefine a ",
+    "now": ""
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0006,
+    "≤5": -0.0,
+    "≤7": 0.0004,
+    "≤10": -0.0044,
+    "≤99": 0.0001
+   },
+   "n_worse": 1926,
+   "n_better": 2287,
+   "why": "Removing C4 removed a protection against cutting at noun-phrase / name-internal boundaries, so the scorer began placing earlier cuts inside multiword NPs/named entities (examples: 'John ‖ Nixon', 'Cirque ‖ du Soleil', 'We ‖ will ‖ never...'). That change raised agreement at rank‑1 but worsened ranks 2–3 (rank_depth: +0.124 at depth1, −0.216/−0.098 at depths2–3), produced mixed counts (n_better 2287 vs n_worse 1926), and caused a measurable drop in the mid‑length bin (≤10: −0.0044).",
+   "lesson": "If you remove a rule that overlaps clausal-attachment checks, keep an explicit constraint (or reweighting) that prevents cuts inside multiword names/NP-internal boundaries so top choice gains don’t come at the expense of deeper-ranked cuts used by shorter-latency budgets.",
+   "blamed": [
+    "C4 «- Do fronted adverbials, temporal adjuncts, or parenthetical»"
+   ]
+  }
+ }
+]

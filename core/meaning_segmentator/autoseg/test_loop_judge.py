@@ -323,7 +323,7 @@ class LabeledExamples(unittest.TestCase):
 class ExampleSentences(unittest.TestCase):
     def test_find_in_prompt(self):
         sents = [sent(0, "a b c d e f"), sent(1, "p q r s t u"), sent(2, "x y z")]
-        pr = ("[Role]\nr\n\n[Core Principles]\n- one\n\n[Examples]\n"
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- one\n\n[Examples]\n"
               "Input: a <SEG:?> b <SEG:?> c <SEG:?> d <SEG:?> e <SEG:?> f\n"
               "Output: a <SEG:1> b <SEG:2> c <SEG:3> d <SEG:4> e <SEG:5> f\n\n"
               "Input: hand <SEG:?> written\nOutput: hand <SEG:50> written\n\n"
@@ -518,7 +518,7 @@ class CandidatePlan(unittest.TestCase):
 class MergeWinners(unittest.TestCase):
     """유형별 1등 합치기 — 같은 단위를 두 번 고치는 편집은 하나만 남긴다."""
 
-    BASE = ("[Role]\nr\n\n[Core Principles]\n- C one\n- C two\n\n[Scoring Rules]\ns\n\n"
+    BASE = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- C one\n- C two\n\n"
             "[Output Rules]\no\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
 
     def win(self, lo, edits):
@@ -841,20 +841,360 @@ class RejectedByBin(unittest.TestCase):
 
 
 class FindingKind(unittest.TestCase):
-    """`kind` 가 역할 배분을 가르므로 파싱에서 살아남아야 하고, 없으면 종전과 같은
-    단항(`check`)으로 떨어져야 한다."""
+    """`kind` 는 **문면**이 정한다 — Critic 이 붙인 라벨을 믿지 않는다. 그 값으로 편집 칸과 역할
+    배분이 갈리는데, judge31 에서 PE 가 뒤에서 형태를 바꿔 써 라벨과 실제가 어긋났다."""
 
-    def blob(self, *kinds):
+    ORDER_SEC = "[Order Principles]\n- keep order\n"
+
+    def blob(self, *pairs):
+        """(라벨, 문면) 쌍들."""
         return {"findings": [
             {**({"kind": k} if k is not None else {}), "diagnosis": f"d{i}",
              "evidence": "e", "type_predicate": "t",
-             "edit": {"where": "core_principles", "action": "add", "text": "- x"}}
-            for i, k in enumerate(kinds)]}
+             "edit": {"where": "core_principles", "action": "add", "text": t}}
+            for i, (k, t) in enumerate(pairs)]}
 
-    def test_normalises(self):
+    def test_text_decides_not_label(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        got = aj.clean_findings(self.blob("order", None, "ORDER ", "nonsense"), cap=9)
-        self.assertEqual([f["kind"] for f in got], ["order", "check", "order", "check"])
+        # 라벨이 뒤집혀 있어도 문면대로 간다.
+        got = aj.clean_findings(self.blob(("check", "- prefer a cut at A over one at B"),
+                                         ("order", "- keep a head with its modifier")), cap=9)
+        self.assertEqual([f["kind"] for f in got], ["order", "check"])
+        self.assertTrue(all(f.get("kind_relabeled") for f in got))
+
+    def test_prohibition_with_before_stays_unary(self):
+        """`is_ordering` 의 넓은 표지("before ")로 판정하면 단항 금지문이 이항으로 승격된다 —
+        judge31 이터 1 의 finding 이 그 꼴이었다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        got = aj.clean_findings(self.blob(
+            (None, "- Do not cut immediately before a clausal attachment; keep it with its head.")),
+            cap=9)
+        self.assertEqual([f["kind"] for f in got], ["check"])
+
+    def test_order_routes_to_order_principles(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        b = self.blob(("order", "- prefer a cut at A over one at B"))
+        self.assertEqual(aj.clean_findings(b, self.ORDER_SEC, cap=9)[0]["edit"]["where"],
+                         "order_principles")
+        # 그 섹션이 없는 프롬프트로 도는 런에서는 원칙 칸에 그대로 둔다 — `kind` 는 살린다.
+        got = aj.clean_findings(b, "[Core Principles]\n- y\n", cap=9)[0]
+        self.assertEqual((got["kind"], got["edit"]["where"]), ("order", "core_principles"))
+
+    def test_two_lists_and_cap_keeps_one_of_each(self):
+        """cap 에 앞에서 잘리면 `order` 가 사라지고 이항 편집을 쓰는 역할이 안 돈다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        mk = lambda t: {"diagnosis": "d", "evidence": "e", "type_predicate": "t",
+                        "edit": {"where": "core_principles", "action": "add", "text": t}}
+        b = {"checks": [mk("- keep A with B"), mk("- keep C with D"), mk("- keep E with F")],
+             "orders": [mk("- prefer A over B")]}
+        got = aj.clean_findings(b, self.ORDER_SEC, cap=3)
+        self.assertEqual([f["kind"] for f in got], ["order", "check", "check"])
+
+    def test_empty_list_is_allowed(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        mk = {"diagnosis": "d", "evidence": "e", "type_predicate": "t",
+              "edit": {"where": "core_principles", "action": "add", "text": "- keep A with B"}}
+        got = aj.clean_findings({"checks": [mk], "orders": []}, self.ORDER_SEC, cap=3)
+        self.assertEqual([f["kind"] for f in got], ["check"])
+
+
+class KindEnforced(unittest.TestCase):
+    """칸이 형태를 정한다 — PE 가 형태를 바꿔 쓸 여지를 없앤다."""
+
+    def edit(self, uid, text):
+        return [{"op": "insert_after", "id": uid, "text": text}]
+
+    def test_order_must_use_order_section(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_kind(self.edit("C_end", "prefer A over B"), "order")
+        self.assertEqual((keep, len(bad)), ([], 1))
+        keep, bad = aj.enforce_kind(self.edit("O_end", "prefer A over B"), "order")
+        self.assertEqual((len(keep), bad), (1, []))
+
+    def test_check_may_not_compare(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_kind(self.edit("C_end", "rank A higher than B"), "check")
+        self.assertEqual((keep, len(bad)), ([], 1))
+        keep, bad = aj.enforce_kind(self.edit("O_end", "keep A with B"), "check")
+        self.assertEqual((keep, len(bad)), ([], 1))
+        keep, bad = aj.enforce_kind(self.edit("C_end", "keep A with B"), "check")
+        self.assertEqual((len(keep), bad), (1, []))
+
+    def test_skipped_without_order_section(self):
+        """그 섹션이 없는 프롬프트로 도는 런에서는 칸 검사를 건너뛴다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_kind(self.edit("C_end", "prefer A over B"), "order",
+                                    has_order_section=False)
+        self.assertEqual((len(keep), bad), (1, []))
+
+    def test_fallback_role_accepts_order_unit(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.edit("O_end", "prefer a cut at A over one at B"),
+                                    "fallback")
+        self.assertEqual((len(keep), bad), (1, []))
+
+
+class FixedSkeleton(unittest.TestCase):
+    """`[Scoring Rules]` 는 **사람이 정하고 코드가 주입하는** 골격이다. Writer 에게 맡기면 선언형
+    ("결과가 순위여야 한다")으로 돌아가는데, 절차형과의 차이가 test 560 에서 +0.0084 였다."""
+
+    def test_carries_the_band_procedure(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        sr = aj.scoring_rules(["Chinese", "German"])
+        self.assertTrue(sr.startswith("[Scoring Rules]"))
+        for must in ("five bands", "one position at a time", "choose again among the rest",
+                     "Core Principles decide", "Order Principles section"):
+            self.assertIn(must, sr)
+        self.assertIn("Chinese, German", sr)
+        self.assertNotIn("__TARGETS__", sr)
+
+    def test_overwrites_a_writer_declarative_section(self):
+        """Writer 가 쓴 선언형 절을 주입본이 덮는다 — v0 생성 런에서 이것이 골격을 지킨다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        wrote = ("[Role]\nr\n\n[Scoring Rules]\n- the integer is a RANK; spread distinct integers\n\n"
+                 "[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
+                 "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        fixed = aj.replace_section(wrote, "[Scoring Rules]", aj.scoring_rules(["German"]))
+        self.assertIn("five bands", fixed)
+        self.assertNotIn("spread distinct integers\n", fixed)
+        self.assertEqual(aj.check_skeleton(fixed, base=fixed), [])
+        # 판단 두 칸과 예시는 그대로 남는다.
+        self.assertEqual([u["id"] for u in aj.edit_units(fixed)], ["C1", "O1", "E1"])
+
+    def test_writer_is_told_what_each_section_decides(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        ws = " ".join(aj.writer_system(True, ["German"]).split())
+        self.assertIn("[Core Principles] decides WHICH BAND", ws)
+        self.assertIn("Every line is UNARY", ws)
+        self.assertIn("[Order Principles] decides, among positions the Core Principles put in the SAME "
+                      "band", ws)
+        self.assertIn("Every line is BINARY", ws)
+        self.assertIn("[Scoring Rules], [Core Principles], [Order Principles], [Output Rules], "
+                      "[Examples]", ws)
+        # 두 골격 절은 받아서 그대로 쓴다.
+        self.assertIn("[Output Rules] and [Scoring Rules] MUST be copied verbatim", ws)
+
+
+class InlineHeaders(unittest.TestCase):
+    """본문 중간에 쓰인 섹션 헤더는 **경계로 잡혀 그 자리에서 섹션을 자른다.** judge33 의 v0 후보
+    둘이 [Role] 안에서 골격을 대괄호째 참조해("must feed the procedure in [Scoring Rules]"),
+    골격 주입이 그 문장 중간부터 다음 경계까지를 갈아 [Role] 뒷부분이 유실됐다. 골격 검사는
+    그것을 못 잡는다 — 문자열이 있으니 "섹션 없음" 이 아니다."""
+
+    BAD = ("[Role]\nYou must feed the procedure in [Scoring Rules]. Score every marker.\n\n"
+           "[Core Principles]\n- a\n\n[Output Rules]\n- x\n\n"
+           "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+
+    def test_strips_only_inline(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        fixed = aj.strip_inline_headers(self.BAD)
+        self.assertNotIn("[Scoring Rules]", fixed)
+        self.assertIn("Scoring Rules section", fixed)      # 참조 의도는 남는다
+        for h in ("[Role]", "[Core Principles]", "[Output Rules]", "[Examples]"):
+            self.assertEqual(fixed.count(h), 1, h)         # 줄 맨 앞 헤더는 건드리지 않는다
+        self.assertIn("Score every marker.", fixed)        # 뒤 문장이 남아 있다
+
+    def test_role_survives_injection_after_stripping(self):
+        """치환을 주입 **전에** 해야 한다 — 순서가 바뀌면 그 자리가 경계가 된 뒤다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        bad_injected = aj.replace_section(self.BAD, "[Scoring Rules]",
+                                          aj.scoring_rules(["German"]))
+        self.assertNotIn("Score every marker.", bad_injected)   # 유실된다
+        good = aj.replace_section(aj.strip_inline_headers(self.BAD), "[Scoring Rules]",
+                                  aj.scoring_rules(["German"]))
+        self.assertIn("Score every marker.", good)              # 살아남는다
+        self.assertIn("five bands", good)
+
+    def test_writer_is_forbidden_to_write_them(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        ws = " ".join(aj.writer_system(True, ["German"]).split())
+        self.assertIn("NEVER write a bracketed section header inside the body", ws)
+
+
+class ReplaceRole(unittest.TestCase):
+    """길이 중립 편집 — 원칙 하나를 지우고 그 자리에 발견을 넣는다. 문장을 더한 스물세 번 중
+    스물두 번이 음수였고, 지운 편집(C4)은 −0.0001 이었다. 손해가 길이에서 온다면 여기서 0 에서
+    출발한다."""
+
+    WAS = ("- Does a following relative clause restrict a preceding noun phrase so that separating "
+           "them changes reference? Separating head and modifier lowers cohesion.")
+
+    def pair(self, text, del_id="C4", ins_id="O_end"):
+        return [{"op": "delete", "id": del_id, "_was": self.WAS},
+                {"op": "insert_after", "id": ins_id, "text": text}]
+
+    def test_accepts_length_neutral_pair(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            self.pair("- prefer a cut at A over one at B when both sit in the same band."),
+            "replace")
+        self.assertEqual((len(keep), bad), (2, []))
+
+    def test_rejects_growth(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.pair("- " + "word " * 120), "replace")
+        self.assertEqual(keep, [])
+        self.assertIn("길이 중립", bad[0]["reason"])
+
+    def test_requires_both_ops(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for edits in ([{"op": "insert_after", "id": "C_end", "text": "- keep X with Y"}],
+                      [{"op": "delete", "id": "C4", "_was": self.WAS}]):
+            keep, bad = aj.enforce_role(edits, "replace")
+            self.assertEqual(keep, [], edits)
+            self.assertTrue(bad)
+
+    def test_order_principles_line_is_replaceable(self):
+        """사람이 박아 둔 [Order Principles] 시작 문장을 **루프가 실측으로 교체할 수 있어야 한다.**
+        손댈 수 없게 두면 검증되지 않은 한 줄이 런 끝까지 남는다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        one = [{"op": "replace", "id": "O1", "_was": "- " + "word " * 70,
+                "text": "- prefer the cut that does not split a verb from its object."}]
+        keep, bad = aj.enforce_role(one, "replace", {"order_units": 1})
+        self.assertEqual((len(keep), bad), (1, []))
+        self.assertEqual(aj.enforce_kind(one, "order")[1], [])
+
+    def test_last_order_line_may_not_be_deleted(self):
+        """칸이 비면 골격이 참조할 것이 없다 — 교체는 되고 삭제는 안 된다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pair = [{"op": "delete", "id": "O1", "_was": "- " + "word " * 70},
+                {"op": "insert_after", "id": "C_end", "text": "- keep X with Y"}]
+        keep, bad = aj.enforce_role(pair, "replace", {"order_units": 1})
+        self.assertEqual(keep, [])
+        self.assertIn("마지막 한 줄", bad[0]["reason"])
+        # 줄이 둘 이상이면 지울 수 있다.
+        self.assertEqual(len(aj.enforce_role(pair, "replace", {"order_units": 2})[0]), 2)
+        # `prune` 도 같은 규칙을 지킨다.
+        solo = [{"op": "delete", "id": "O1", "_was": "- prefer A over B"}]
+        self.assertEqual(aj.enforce_role(solo, "prune", {"order_units": 1})[0], [])
+        self.assertEqual(len(aj.enforce_role(solo, "prune", {"order_units": 2})[0]), 1)
+
+    def test_rejects_non_unit_target(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            [{"op": "delete", "id": "E2", "_was": "Input: a\nOutput: b"},
+             {"op": "insert_after", "id": "C_end", "text": "- keep X with Y"}], "replace")
+        self.assertEqual(keep, [])
+        self.assertIn("[Order Principles] 단위가 아니다", bad[0]["reason"])
+
+    def test_refuses_repeat_deletion(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.pair("- prefer a cut at A over one at B."), "replace",
+                                    {"deleted": {self.WAS}})
+        self.assertEqual(keep, [])
+        self.assertIn("이미 손댄", bad[0]["reason"])
+
+    def test_kind_check_still_bars_binary_text(self):
+        """이 역할도 `enforce_kind` 를 지난다 — 단항 발견에 비교문을 쓸 수는 없다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, _bad = aj.enforce_role(
+            self.pair("- prefer a cut at A over one at B.", ins_id="C_end"), "replace")
+        kept, bad = aj.enforce_kind(keep, "check")
+        self.assertTrue(bad)
+        # 이항 발견이면 추가는 O 칸으로 가고, 삭제는 C 여도 통과한다.
+        kept2, bad2 = aj.enforce_kind(
+            aj.enforce_role(self.pair("- prefer a cut at A over one at B."), "replace")[0], "order")
+        self.assertEqual((len(kept2), bad2), (2, []))
+
+    def test_pairs_with_both_kinds(self):
+        """`ROLE_KINDS` 에 없으므로 check·order 양쪽과 짝지어진다 — 어느 칸에든 넣을 수 있다."""
+        plan = lj.candidate_plan(["fallback", "single_small", "replace", "prune"], 3, True, 4, 16,
+                                 kinds=["order", "check", "check"])
+        self.assertEqual([r for r, _i in plan].count("replace"), 3)
+        self.assertEqual(sorted(i for r, i in plan if r == "replace"), [0, 1, 2])
+
+
+class PinFindingText(unittest.TestCase):
+    """PE 가 쓴 문면을 Critic 문면으로 되돌린다."""
+
+    FIND = {"kind": "check", "edit": {"text": "Keep a head with its modifier."}}
+
+    def test_replaces_text(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        out, ch = aj.pin_finding_text(
+            [{"op": "insert_after", "id": "C_end", "text": "rank the later cut higher"}], self.FIND)
+        self.assertEqual(out[0]["text"], "Keep a head with its modifier.")
+        self.assertEqual(len(ch), 1)
+
+    def test_leaves_delete_and_examples(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        edits = [{"op": "delete", "id": "C2", "_was": "old"},
+                 {"op": "insert_after", "id": "E_end", "labeled_example": "en_us_1"}]
+        out, ch = aj.pin_finding_text(edits, self.FIND)
+        self.assertEqual((out, ch), (edits, []))
+
+    def test_noop_when_already_same(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        out, ch = aj.pin_finding_text(
+            [{"op": "insert_after", "id": "C_end",
+              "text": "Keep  a head   with its modifier."}], self.FIND)
+        self.assertEqual(ch, [])
+
+
+class OrderRulesSection(unittest.TestCase):
+    """`[Order Principles]` 는 편집 가능한 칸이어야 하고, 없는 프롬프트도 골격 검사를 통과해야 한다."""
+
+    def test_unit_ids(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- a\n\n[Order Principles]\n- o1\n- o2\n\n"
+              "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        ids = [u["id"] for u in aj.edit_units(pr)]
+        self.assertIn("O1", ids)
+        self.assertIn("O2", ids)
+        self.assertEqual(aj.check_skeleton(pr, base=pr), [])
+
+    def test_section_name_in_body_is_caught(self):
+        """본문에 섹션 헤더 문자열을 쓰면 그것이 경계로 잡혀 **그 자리에서 섹션이 잘린다.**
+        프롬프트를 손으로 쓸 때 실제로 밟은 함정이다 — 골격 검사가 잡아야 한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- a\n\n"
+              "[Order Principles]\n- these refine what [Core Principles] decided\n\n"
+              "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        self.assertTrue(aj.check_skeleton(pr, base=pr))
+        # 편집으로도 들어갈 수 없다.
+        _pr, errs, _d = aj.apply_edits(
+            pr, [{"op": "insert_after", "id": "O_end", "text": "- see [Order Principles]"}])
+        self.assertTrue(errs)
+
+    def test_editing_principles_keeps_order_principles(self):
+        """경계 목록에 이 칸이 없으면 `[Core Principles]` 를 고치는 순간 뒤 칸이 통째로 사라진다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
+              "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        new, errs, _d = aj.apply_edits(
+            pr, [{"op": "insert_after", "id": "C_end", "text": "- keep X with Y"}])
+        self.assertEqual(errs, [])
+        self.assertIn("[Order Principles]", new)
+        self.assertIn("prefer A over B", new)
+        self.assertEqual(aj.check_skeleton(new, base=pr), [])
+
+    def test_order_end_anchor(self):
+        """`O_end` 가 앵커로 풀려야 한다 — 정규식에 머리글자를 놓치면 "없는 id" 로 반려된다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
+              "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        for uid in ("O_end", "O2", "O0"):
+            new, errs, _d = aj.apply_edits(
+                pr, [{"op": "insert_after", "id": uid, "text": "- prefer C over D"}])
+            self.assertEqual(errs, [], uid)
+            self.assertEqual(len([u for u in aj.edit_units(new) if u["id"].startswith("O")]), 2, uid)
+
+    def test_units_reach_pe_payload(self):
+        """PE 입력의 단위 목록과 출처표에 새 칸이 실려야 한다 — 실리지 않으면 PE 는 그 칸을
+        모르고, 골격이 참조하는 자리가 비어 있는 채로 이터가 돈다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
+              "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        prov = aj.init_provenance(pr)
+        ids = [u["id"] for u in aj.units_with_provenance(pr, prov)]
+        self.assertIn("O1", ids)
+        self.assertIn("[Order Principles]", aj.section_sizes(pr))
+
+    def test_optional_when_absent_from_base(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = ("[Role]\nr\n\n[Scoring Rules]\ns\n\n[Core Principles]\n- a\n\n[Output Rules]\n- x\n\n"
+              "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        self.assertEqual(aj.check_skeleton(pr, base=pr), [])
 
 
 class CandidatePlanKinds(unittest.TestCase):

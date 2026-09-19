@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "kind": "check",
+    "diagnosis": "The prompt lets cuts split a phrase from a following dependent clause or clausal complement (subordinating/relative/‘that’–type clauses), underestimating how much meaning and entailment are lost when the clause is separated.",
+    "evidence": "en_us_577, en_us_1527, en_us_1144, en_us_381, en_us_633, en_us_872, en_us_101, en_us_549, en_us_738, en_us_1570, en_us_1601, en_us_368, en_us_309, en_us_276, en_us_543 — each policy cut occurs immediately before a dependent (subordinating or relative) clause or clausal complement that the target keeps attached; those policy cuts raise contradiction or destroy cohesion.",
+    "type_predicate": "Markers that immediately precede a dependent clause (a subordinating clause, relative clause, or clausal complement that completes/restricts the preceding phrase).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut where the next constituent is a dependent clause (subordinating clause, relative clause, or clausal complement) that completes, restricts, or names the preceding phrase; keep that clause attached to its head."
+    }
+   },
+   {
+    "kind": "order",
+    "diagnosis": "When multiple candidate cuts are all bad for the same attachment, the prompt fails to prefer the safer (later) cut that preserves a head with its clausal complement, causing misordered choices among similarly judged positions.",
+    "evidence": "en_us_633, en_us_381, en_us_30, en_us_481, en_us_1116 — each sentence contains a pair of candidate cuts where one cut would split a head from its clausal complement and the other would preserve them; the measurement prefers preserving the head+complement but the prompt ranks the splitter higher.",
+    "type_predicate": "Sentences that contain two candidate cuts around the same clause: one immediately before a dependent/clausal complement and another immediately after that complement (both markers present).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Order rule: when choosing between two cuts that either split or preserve a head plus its clausal complement, prefer the cut that preserves the head and its complement (i.e., the later cut)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "check",
+   "diagnosis": "The prompt lets cuts split a phrase from a following dependent clause or clausal complement (subordinating/relative/‘that’–type clauses), underestimating how much meaning and entailment are lost when the clause is separated.",
+   "evidence": "en_us_577, en_us_1527, en_us_1144, en_us_381, en_us_633, en_us_872, en_us_101, en_us_549, en_us_738, en_us_1570, en_us_1601, en_us_368, en_us_309, en_us_276, en_us_543 — each policy cut occurs immediately before a dependent (subordinating or relative) clause or clausal complement that the target keeps attached; those policy cuts raise contradiction or destroy cohesion.",
+   "type_predicate": "Markers that immediately precede a dependent clause (a subordinating clause, relative clause, or clausal complement that completes/restricts the preceding phrase).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut where the next constituent is a dependent clause (subordinating clause, relative clause, or clausal complement) that completes, restricts, or names the preceding phrase; keep that clause attached to its head."
+   }
+  },
+  {
+   "kind": "order",
+   "diagnosis": "When multiple candidate cuts are all bad for the same attachment, the prompt fails to prefer the safer (later) cut that preserves a head with its clausal complement, causing misordered choices among similarly judged positions.",
+   "evidence": "en_us_633, en_us_381, en_us_30, en_us_481, en_us_1116 — each sentence contains a pair of candidate cuts where one cut would split a head from its clausal complement and the other would preserve them; the measurement prefers preserving the head+complement but the prompt ranks the splitter higher.",
+   "type_predicate": "Sentences that contain two candidate cuts around the same clause: one immediately before a dependent/clausal complement and another immediately after that complement (both markers present).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Order rule: when choosing between two cuts that either split or preserve a head plus its clausal complement, prefer the cut that preserves the head and its complement (i.e., the later cut)."
+   }
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when two candidate cuts are otherwise indistinguishable, and one cut falls directly between a finite verb and the immediately following noun phrase or pronoun that serves as its core direct object or essential complement, prefer the cut that keeps the verb adjacent to that NP/pronoun over the cut that places the boundary between them."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 358
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8117,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep multiword proper names and titles together: when two or more adjacent words each begin with a capital letter, treat that sequence as one unit and prefer cuts outside it rather than between its words."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 205
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7964,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep an initial/fronted temporal or adverbial phrase (it starts the sentence and ends with a comma) attached to its following main clause: prefer cuts after the clause's governing verb rather than immediately after that comma."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 229
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7988,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C4",
+    "_was": "- Does a following relative clause or clausal complement restrict or redefine a preceding noun phrase so that separating them changes reference? Separating head and modifier lowers cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C4",
+    "kind": "delete",
+    "chars_change": -191
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7568,
+  "errors": null
+ }
+]

@@ -1,0 +1,543 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00533,
+   "lo": -0.01301,
+   "hi": 0.0024,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Append a fallback ordering rule that prefers cuts after a clause's finite verb and its essential complements over cuts placed immediately before that verb — fixes the primary finding about pre-verbal fragments."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Prefer a cut after a clause's main finite verb or copula (including its immedi"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01117,
+   "lo": -0.01961,
+   "hi": -0.0027,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a fallback ordering rule that prefers cuts after a clause's main finite verb (with auxiliaries and immediate essential complements) and prefers cuts that keep a noun together with its immediately following essential post‑nominal modifier — addresses the primary finding and orders positions other principles push down."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Prefer a cut after a clause's main finite verb or copula (including its auxili"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00672,
+   "lo": -0.0154,
+   "hi": 0.00139,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a single compact binding that keeps a clause’s main finite verb/coupla (with auxiliaries) with its subject and immediate essential complements and prefers cuts after that verb — to prevent pre-verbal fragments that lack their predicate (addresses the primary finding)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a clause’s main finite verb or copula (including auxiliaries) together with"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00372,
+   "lo": -0.01217,
+   "hi": 0.00402,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C3: remove a broad, redundant principle about following material supplying predicate/argument/scope information. It overlaps C1/C2/C6 and can diffuse the prompt's guidance; pruning this unit reduces redundancy so future, targeted rules (needed to fix the primary finding about pre-verbal fragments) can be added without conflicting generalities."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C3",
+    "kind": "delete",
+    "was": "- Does the following material supply essential predicate, argument, or scope inf",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 5,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00908,
+   "lo": -0.01766,
+   "hi": -0.0008,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C8: it largely restates the cohesion check in C2 (self-contained vs. not) and so adds redundancy; pruning it reduces overlap and keeps guidance focused."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "- Is the material after the marker a self-contained constituent (completes a ver",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00171,
+   "lo": -0.01063,
+   "hi": 0.0064,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00171,
+   "lo": -0.01063,
+   "hi": 0.0064,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a short binding that keeps a noun head with any immediately following essential post‑nominal modifier (restrictive relative clause, appositive, title/multiword name, or prepositional complement) so cuts do not separate a noun from the modifier that identifies or restricts it — addresses the primary finding about cohesion loss."
+  ],
+  "findings": [
+   "The prompt routinely treats a pre-verbal fragment as self-contained and allows cuts immediately before a clause’s main finite verb or copula, leaving the preceding piece without its predicate and producing high-contradiction/low-cohesion outputs.",
+   "The prompt allows cuts that split a noun head from an essential post‑nominal modifier (appositive, restrictive 'which/that' clause, prepositional complement, title or multiword name), underestimating the cohesion loss when the modifier defines or identifies the noun."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a noun head together with any immediately following essential post‑nomina"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.002,
+    "≤5": -0.0068,
+    "≤7": 0.0006,
+    "≤10": -0.0015,
+    "≤99": -0.0085
+   },
+   "n_worse": 2026,
+   "n_better": 2194,
+   "why": "The inserted binding (keep a noun head with any immediately following essential post‑nominal modifier) caused the model to avoid cuts that would split a head+modifier, so it often moved cuts earlier (placing the cut before the noun) to keep the noun+modifier together. That change helps very short pieces and list/title splits (bins ≤3/≤5, best examples) but harms longer, multi‑clause sentences (overall ≤99 negative and a big drop in rank for k=1) by fragmenting adjacent clauses and moving cuts into preceding material.",
+   "lesson": "When adding a noun‑head+modifier binding, ensure it does not force earlier cuts that fragment adjacent clauses or long spans — only apply it when it can be satisfied without shifting cuts into preceding material.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01069,
+   "lo": -0.019,
+   "hi": -0.00288,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering rule that prefers a cut after a predicate's complete core complement over a cut between the predicate and that complement — to address the primary finding about splits that separate a verb from its required complement."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "As a last resort, when a finite verb or light‑verb is immediately followed by it"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00313,
+   "lo": -0.01143,
+   "hi": 0.00457,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a fallback ordering that prefers cutting after a relative or clausal complement rather than immediately before its introducer, to reduce cuts that split noun/clause heads from their modifying clause (addresses the primary finding about unsafe cuts before which/that/who)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- As a last resort, prefer a cut after the end of a relative or clausal compleme"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00461,
+   "lo": -0.01312,
+   "hi": 0.00343,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a short binding rule to keep relative/clausal introducers with the clause they begin so modifiers remain attached to their noun or clause — addresses the primary finding that cuts before which/that/who split modifiers and harm cohesion/entailment."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a relative or clausal introducer (which/that/who or similar subordinators"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00412,
+   "lo": -0.01242,
+   "hi": 0.00405,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C7: remove a redundant rule about subordinators/contrast markers that largely restates the general contradiction checks in C1/C6. This reduces overlapping guidance that divides the judge's attention (per the 'prune' finding that extra principles hurt) and frees capacity to focus edits addressing the primary predicate–complement split."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C7",
+    "kind": "delete",
+    "was": "- Are subordinators or contrastive adverbials (for example subordinizing conjunc",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.0011,
+   "lo": -0.00817,
+   "hi": 0.00628,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.0011,
+   "lo": -0.00817,
+   "hi": 0.00628,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a short binding rule that keeps a finite verb or light verb with the immediately following core complement, to prevent unsafe splits that separate predicates from required complements (addresses the primary finding)."
+  ],
+  "findings": [
+   "The prompt under-rates cuts that split a predicate from the core material that completes its assertion: it often places a cut before a verb's required complement (direct object, prepositional complement, 'by'‑agent, or clausal complement), producing high contradiction or loss.",
+   "The prompt misses that relative and clausal complementizers are unsafe cut points: it permits cuts immediately before 'which/that/who' (and similar subordinators), separating modifiers that redefine or complete the previous noun/clause and so harming cohesion or causing contradiction."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a finite verb or light verb together with the immediately following core co"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0077,
+    "≤5": 0.0023,
+    "≤7": 0.0081,
+    "≤10": 0.0049,
+    "≤99": 0.0007
+   },
+   "n_worse": 1925,
+   "n_better": 2295,
+   "why": "Adding the short binding rule shifted mass toward earlier cuts (rank depth up at shallow depths and a negative effect in the ≤3 bin) because the insertion was implemented/parsed incorrectly: instead of merging a finite/light verb with its following complement it caused boundaries to move before or around verbs and multiword complements (isolating verbs or splitting names like “Cirque ‖ du Soleil”, “There ‖ are”, or separating verb from its object).",
+   "lesson": "When adding this binding, ensure it actually merges the finite/light verb with the immediately following core complement (don’t invert or truncate the rule) and validate specifically on very-short pieces (≤3 words) and multiword names so verbs and complements are not isolated or multiword entities split.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00607,
+   "lo": -0.01478,
+   "hi": 0.00271,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert fallback ordering to prefer cuts after a verb's immediately following core complement rather than between the finite (main or light) verb and that complement — addresses the primary finding that cuts separating verb from its core predicate are undervalued."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "As a last resort, when other principles are inconclusive, prefer a cut after the"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01446,
+   "lo": -0.02435,
+   "hi": -0.00487,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering to prefer cutting after the main finite verb (or its immediately following core complement) rather than immediately after a sentence-initial fronted adjunct — addresses the primary finding that fronted adjuncts must stay attached to their governing clause."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- As a last resort, prefer a cut after the main finite verb (or after its immedi"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00388,
+   "lo": -0.01193,
+   "hi": 0.00474,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow binding that keeps a finite (main or light) verb with its immediately following core complement (no intervening comma) so cuts do not split a verb from the predicate — addresses the primary finding about verb+complement splits."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a finite (conjugated) main or light verb together with the immediately foll"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00203,
+   "lo": -0.01002,
+   "hi": 0.00536,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow, surface binding that keeps a noun head with an immediately following essential post-nominal modifier (apposition, 'named/called' label, 'of' PP, or restrictive relative beginning with who/which/that) only when the modifier immediately follows with no intervening comma — preserves identification without moving cuts earlier."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a noun head together with an immediately following essential post‑nominal m"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 5,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01786,
+   "lo": -0.02708,
+   "hi": -0.00925,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a short binding that keeps sentence-initial fronted adjuncts attached to their governing clause to prevent scope/attachment errors (addresses the primary finding about fronted adjuncts)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a sentence-initial fronted adjunct (temporal, locative, conditional, or par"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 6,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00575,
+   "lo": -0.01477,
+   "hi": 0.00277,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C2: it redundantly restates general cohesion already covered by C3 and C8 and therefore divides the judge's attention; removing this weak, generic principle follows the 'prune' constraint and makes room for more specific, evidence‑driven bindings called for by the critique (verb+complement, noun+modifier, fronted adjuncts)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "was": "- Does translating the two sides separately still allow a faithful reconstructio",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00181,
+   "lo": -0.00735,
+   "hi": 0.00362,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00181,
+   "lo": -0.00735,
+   "hi": 0.00362,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering that, as a last resort, prefers cuts after an essential post-nominal modifier rather than between a noun head and that modifier — addresses the primary finding that head+modifier splits are undervalued."
+  ],
+  "findings": [
+   "The prompt underrates cuts that separate a finite (main or light) verb from the core complement or predicate that immediately follows it.",
+   "The prompt underestimates harm from cutting a noun head away from its immediately following essential post‑nominal modifier (name, apposition, 'named/called' phrase, 'of' PP, or restrictive relative clause).",
+   "The prompt treats fronted adjuncts (temporal, locative, conditional, parenthetical) as safe cut points instead of binding them to their governing clause, causing scope or attachment errors."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "As a last resort, prefer a cut after the end of an immediately following essenti"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0005,
+    "≤5": -0.0045,
+    "≤7": -0.0019,
+    "≤10": 0.0013,
+    "≤99": -0.003
+   },
+   "n_worse": 2082,
+   "n_better": 2082,
+   "why": "Inserting the fallback made the model avoid splitting noun heads from immediately following post‑nominal modifiers, so cuts that used to fall between head+modifier were instead moved elsewhere (often earlier), producing roughly equal numbers of improvements and degradations and a small net harm concentrated in short/medium pieces (≤5 words). The change therefore traded fixing head+modifier splits for introducing new early cuts that hurt small pieces and enumerations, so overall H_set did not improve.",
+   "lesson": "A later revision should respect that repairing head+modifier splits by preferring cuts after the modifier can push cuts into other short spans or break enumerations, so such a fallback must not force additional early cuts in ≤5-word pieces.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ }
+]
