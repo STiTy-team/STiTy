@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00116,
+  "lo": -0.01338,
+  "hi": 0.01125,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0014,
+  "≤5": -0.0022,
+  "≤7": -0.0029,
+  "≤10": 0.0048,
+  "≤99": 0.0003
+ },
+ "n_worse": 649,
+ "n_better": 709,
+ "worst": [
+  {
+   "id": "en_us_1405",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6961,
+   "before": "However, a nationwide road network ‖ is not economically viable ‖ for just a handful of cars, ‖ so new methods of production are developed ‖ to reduce ‖ the cost of car ownership.",
+   "after": "However, ‖ a nationwide road network ‖ is ‖ not economically viable for just a handful of cars, ‖ so new methods of production ‖ are developed to reduce the cost of car ownership."
+  },
+  {
+   "id": "en_us_1405",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6734,
+   "before": "However, a nationwide road network ‖ is not economically viable ‖ for just a handful of cars, ‖ so new methods of production are ‖ developed ‖ to reduce ‖ the cost of car ownership.",
+   "after": "However, ‖ a nationwide road network ‖ is ‖ not economically viable for just a handful of cars, ‖ so ‖ new methods of production ‖ are developed to reduce the cost of car ownership."
+  },
+  {
+   "id": "en_us_1405",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.6465,
+   "before": "However, a nationwide road network ‖ is not economically viable ‖ for just a handful of cars, ‖ so new methods of production ‖ are ‖ developed ‖ to reduce ‖ the cost of car ownership.",
+   "after": "However, ‖ a nationwide road network ‖ is ‖ not economically viable ‖ for just a handful of cars, ‖ so ‖ new methods of production ‖ are developed to reduce the cost of car ownership."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6312,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently ‖ general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1514",
+   "k": 13,
+   "bin": "≤3",
+   "delta": -0.5978,
+   "before": "When the fighting ceased ‖ after the wounded were transported ‖ to ‖ the ‖ hospital, ‖ about 40 ‖ of ‖ the ‖ other ‖ remaining ‖ inmates ‖ stayed ‖ in the yard ‖ and refused to return to their cells.",
+   "after": "When the fighting ‖ ceased ‖ after the wounded were transported ‖ to the ‖ hospital, ‖ about 40 ‖ of the other remaining ‖ inmates ‖ stayed ‖ in ‖ the yard ‖ and refused ‖ to return ‖ to their cells."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7782,
+   "before": "The best indication of internal poisoning may be the presence ‖ of an open container of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7325,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_388",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6766,
+   "before": "He originally named ‖ the Hangeul alphabet Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.644,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, ‖ and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, ‖ respectively."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6361,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, ‖ and sixth place, ‖ respectively.",
+   "after": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, ‖ respectively."
+  }
+ ],
+ "why": "Replacing C8 made the model more willing to isolate sentence‑initial function words/discourse markers (it started cutting immediately after openers). That behaviour produced small gains for slightly longer remainders (≤10 bin) where the remainder stayed cohesive, but increased harmful fragmentation in the shortest latency bins (≤3/≤5/≤7) by introducing extra early cuts and splitting predicates/NPs (illustrated by the 'However, ‖ a nationwide…' and fragmented predicate examples), leaving the overall change near zero.",
+ "lesson": "A later revision should respect that permitting isolation of sentence‑initial openers can help when the remainder is sufficiently long/cohesive (benefit in ≤10) but currently increases fragmentation in the very-short bins, so the change must not encourage immediate cuts after openers that produce very-short or predicate-splitting fragments.",
+ "blamed": [
+  "C8 «- Is the preceding stretch a self-contained propositional cl»"
+ ]
+}

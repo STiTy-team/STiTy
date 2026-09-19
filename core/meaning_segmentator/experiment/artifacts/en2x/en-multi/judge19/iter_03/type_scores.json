@@ -1,0 +1,59 @@
+[
+ {
+  "candidate": 0,
+  "type": 0,
+  "delta": {
+   "mean": -0.00121,
+   "lo": -0.02993,
+   "hi": 0.02061,
+   "n": 135,
+   "n_clusters": 14
+  },
+  "note": [
+   "Insert a new core principle that binds negation/polarity/quantifier tokens to the phrase that supplies their scope — addresses the primary finding that cuts after polarity/quantifiers produced high contradiction risk.",
+   "Delete many example units to meet the size budget; keep a small representative set of worked cases."
+  ]
+ },
+ {
+  "candidate": 1,
+  "type": 0,
+  "delta": {
+   "mean": 0.02099,
+   "lo": 0.00311,
+   "hi": 0.04266,
+   "n": 135,
+   "n_clusters": 14
+  },
+  "note": [
+   "Delete C7: remove a redundant negation/polarity rule that largely restates C1, pruning overlapping guidance to reduce rule crowding and help the judge focus on distinct, testable principles (addresses size/attention concerns noted in the critique)."
+  ]
+ },
+ {
+  "candidate": 2,
+  "type": 0,
+  "delta": {
+   "mean": 0.02807,
+   "lo": 0.00695,
+   "hi": 0.05633,
+   "n": 135,
+   "n_clusters": 14
+  },
+  "note": [
+   "Insert a narrow, surface-level binding that keeps negation/polarity/quantifier tokens with the immediately following scope phrase — addresses the primary finding that cuts after polarity/quantifiers supply high contradiction risk. The phrasing is a BINDING (keep X with Y) and recognisable from the source surface form alone."
+  ]
+ },
+ {
+  "candidate": 3,
+  "type": 0,
+  "delta": {
+   "mean": 0.03406,
+   "lo": 0.00958,
+   "hi": 0.06548,
+   "n": 135,
+   "n_clusters": 14
+  },
+  "note": [
+   "Insert a single, narrow core principle binding negation/polarity/quantifier tokens to the immediately following scope phrase so cuts after these tokens do not leave the prefix asserting the wrong scoped claim (addresses the primary finding)."
+  ]
+ }
+]

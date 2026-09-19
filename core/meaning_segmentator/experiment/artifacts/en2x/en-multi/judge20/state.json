@@ -1,0 +1,534 @@
+{
+ "done": 3,
+ "prompt": "[Role]\nYou are a scoring model for streaming speech translation. For a single English source sentence containing a <SEG:?> marker at every possible cut, replace each ? with a distinct integer 0–100 so that the relative ordering of those numbers reproduces the measured target ranking. Use ONLY the source words and the language profile facts to judge meaning at each potential cut. The source is written in words; a cut position sits between two words.\n\n[Core Principles]\n- Does the continuation overturn, negate, or reverse the claim established by the stretch before this cut (e.g., via negation after auxiliaries, concessive subordinators, or contrastive parentheticals)? If so, the cut is harmful to faithful incremental translation.\n- Does the continuation supply the predicate, object, or other argument that the heard fragment needs to form a coherent proposition in English SVO order? Cutting before such material causes missing or orphaned propositions.\n- Does the continuation determine how a clause-initial temporal or locative adverbial attaches? If the adverbial's attachment is unresolved until later, cutting can lead to wrong temporal/locative relations.\n- Does the continuation resolve the scope of unstable prefixes or scope-limiting particles (only, just) or approximate numerals? If scope is undecided, separate translation will misrepresent quantification or limitation.\n- Does the continuation complete a phrasal verb or verb+particle sequence? These sequences are cohesive in English and splitting them damages verbal semantics.\n- Does the continuation provide essential post-nominal modification (relative clause or complement) that identifies or restricts a previously heard noun? Separating head and modifier risks mistranslation of referents.\n- Does the continuation refine or constrain a numeral or quantifier inside a noun phrase? Numerals and quantifiers are internal to NPs in English; splitting them breaks quantity semantics.\n- Does the continuation supply appositive identification, titles, possessive relations, or disambiguating material that assigns roles or identity to a previously heard name or noun? Cutting before such material can cause wrong attributions.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n\n- Treat cohesion and contra as the latent measured quantities above; contra is a graded probability and contributes only via the product. Do NOT convert contra into a binary flag or separate tier.\n- Your numeric assignment is a RANK within the sentence: order the candidate cut positions by the target product and map that ordering onto distinct integers spanning the full 0–100 range.\n- Do NOT attempt to compute the product arithmetically (do not instruct yourself to multiply or round); instead, use the product as the conceptual measure that defines the ordering you must reproduce.\n- Do not add new scoring conditions; do not tier positions except by their product-derived ordering.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.\n\nInput: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.\n\nInput: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.\n\nInput: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.0131,
+    "lo": -0.02792,
+    "hi": 0.05305,
+    "n": 452,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "delete C8: remove the 'appositive identification, titles, possessive relations...' principle because it largely overlaps C6 (post-nominal modification) and C2 (predicate arguments); pruning this redundant unit reduces rule duplication and frees capacity for a narrowly targeted short-complement rule requested by the critique."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "- Does the continuation supply appositive identification, titles, possessive rel",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.00266,
+    "lo": -0.03587,
+    "hi": 0.03994,
+    "n": 452,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Insert a narrow, surface-check binding after C5 to keep short (1–4 word) complements that complete a preceding verb/adjective together with that verb/adjective. This directly addresses the primary finding about missed short complements (measures, dates/times, directions, infinitival/negating complements)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Does the continuation complete a phrasal verb or verb+particle sequence? These",
+     "now": "- Keep a short (1–4 word) complement that immediately follows a verb or adjectiv"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00236,
+    "lo": -0.01307,
+    "hi": 0.00815,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "delete C8: remove the 'appositive identification, titles, possessive relations...' principle because it largely overlaps C6 (post-nominal modification) and C2 (predicate arguments); pruning this redundant unit reduces rule duplication and frees capacity for a narrowly targeted short-complement rule requested by the critique."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "- Does the continuation supply appositive identification, titles, possessive rel",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00547,
+    "lo": -0.01536,
+    "hi": 0.00549,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "Insert a narrow, surface-check binding after C5 to keep short (1–4 word) complements that complete a preceding verb/adjective together with that verb/adjective. This directly addresses the primary finding about missed short complements (measures, dates/times, directions, infinitival/negating complements)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Does the continuation complete a phrasal verb or verb+particle sequence? These",
+     "now": "- Keep a short (1–4 word) complement that immediately follows a verb or adjectiv"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": 0.00534,
+    "lo": -0.00361,
+    "hi": 0.01447,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "gain": {
+    "mean": 0.00534,
+    "lo": -0.00361,
+    "hi": 0.01447,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "Insert a concise core principle requiring cuts to keep short (1–4 word) complements with their predicate — addresses the primary finding that such short continuations are essential.",
+    "Delete Example E7 (largest) to free prompt budget; kept remaining examples to preserve varied cases.",
+    "Delete Example E4 (second-largest) to meet size constraints while removing less-essential, lengthy examples.",
+    "Delete Example E8 (third-largest) to recover sufficient characters for the new principle."
+   ],
+   "findings": [
+    "The prompt under-detects short complements that actually complete the preceding predicate: it treats cuts before brief measures, temporal/locative phrases, directional words, or negating/infinitival complements as safe when they are essential to the clause's truth."
+   ],
+   "edits": [],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0047,
+     "≤5": 0.0002,
+     "≤7": 0.0102,
+     "≤10": 0.0105,
+     "≤99": 0.0165
+    },
+    "n_worse": 2186,
+    "n_better": 2344,
+    "why": "Inserting the new principle made the model prefer keeping very short (1–4 word) complements attached to their predicate, so cuts moved later and improved cohesion mainly for longer pieces and lists (largest gains in the ≤99/≤10/≤7 bins), but that same shift caused more harmful splits in short/medium contexts (some ≤3–≤7 pairs got worse). Removing Examples E7/E4/E8 removed counterexamples that would have constrained those bad short-context moves.",
+    "lesson": "A later revision should respect that preserving 1–4-word predicate complements improves long-span cohesion but must keep examples (or guidance) that prevent creating subject–verb or other harmful short-context splits.",
+    "blamed": [
+     "Insert concise core principle (keep short 1–4 word complements with predicate)",
+     "Delete Example E7",
+     "Delete Example E4",
+     "Delete Example E8"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.00088,
+    "lo": -0.03962,
+    "hi": 0.03777,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Delete C8 — remove the appositive/identification principle because it largely duplicates C7 (post-nominal modifiers) and splits the judge's attention; this pruning follows the 'prune' constraint and focuses the prompt on the primary finding about short predicate complements."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "- Does the continuation supply appositive identification, titles, possessive rel",
+     "now": ""
+    }
+   ],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 2,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": 0.0172,
+    "lo": -0.02352,
+    "hi": 0.05265,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Deleted six largest v0 Examples (E2, E11, E6, E1, E10, E4) to meet the size budget and remove weak, lengthy hand-written cases.",
+    "Paraphrased C8 to a much shorter wording while preserving the measurement checklist (reduces prompt length).",
+    "Inserted a new Core Principle (after C2): a positive binding that keeps a 1–4-word short prepositional/temporal/locative/measurement phrase together with an immediately preceding verb or copula — addresses the primary finding without phrasing a prohibitory rule."
+   ],
+   "edits": [],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 2,
+   "candidate": 3,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01036,
+    "lo": -0.01996,
+    "hi": -0.00053,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "Deleted six largest v0 Examples (E2, E11, E6, E1, E10, E4) to meet the size budget and remove weak, lengthy hand-written cases.",
+    "Paraphrased C8 to a much shorter wording while preserving the measurement checklist (reduces prompt length).",
+    "Inserted a new Core Principle (after C2): a positive binding that keeps a 1–4-word short prepositional/temporal/locative/measurement phrase together with an immediately preceding verb or copula — addresses the primary finding without phrasing a prohibitory rule."
+   ],
+   "edits": [],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 2,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": 0.0021,
+    "lo": -0.0071,
+    "hi": 0.01181,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "Delete C8 — remove the appositive/identification principle because it largely duplicates C7 (post-nominal modifiers) and splits the judge's attention; this pruning follows the 'prune' constraint and focuses the prompt on the primary finding about short predicate complements."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C8",
+     "kind": "delete",
+     "was": "- Does the continuation supply appositive identification, titles, possessive rel",
+     "now": ""
+    }
+   ],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": 0.00342,
+    "lo": -0.00537,
+    "hi": 0.01258,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "gain": {
+    "mean": 0.00342,
+    "lo": -0.00537,
+    "hi": 0.01258,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "Insert a narrow surface-binding principle after C3 to keep a verb/copula together with an immediately following 1–4-word prepositional/temporal/locative/measurement complement — addresses the primary finding that cutting there produces orphaned or contradicting fragments."
+   ],
+   "findings": [
+    "The prompt fails to treat short complements that complete a predicate as essential: it sometimes prefers a cut that separates a verb/copula from its immediately following short complement, producing orphaned or contradicting fragments."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C3",
+     "kind": "change",
+     "was": "- Do the next one to four words form a short complement that completes the immed",
+     "now": "Keep a verb or copula together with the immediately following short (1–4 word) c"
+    }
+   ],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])",
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0028,
+     "≤5": 0.0028,
+     "≤7": 0.0137,
+     "≤10": 0.0097,
+     "≤99": 0.0187
+    },
+    "n_worse": 2257,
+    "n_better": 2293,
+    "why": "The inserted C3 rule made the model avoid cuts immediately after verbs/copu las when a 1–4-word complement follows, so those cuts were pushed to other boundaries. By-bin changes show small losses for very short pieces (≤3) and growing gains for longer spans (≤7–≤99), while n_worse vs n_better are nearly balanced — meaning the rule fixed orphaned/complement splits in longer contexts but caused new bad splits (subjects separated from their verbs, and cuts moved inside enumerations or before quotes) in many cases, leaving the net measurement essentially unchanged.",
+    "lesson": "A future revision should preserve verb/copula + short-complement bindings only when doing so does not force cuts that split subjects from their verbs or break coordinated/enumerated items.",
+    "blamed": [
+     "C3 «- Do the next one to four words form a short complement that»"
+    ],
+    "vs_base": {
+     "delta": {
+      "mean": -0.00191,
+      "lo": -0.01056,
+      "hi": 0.00734,
+      "n": 5509,
+      "n_clusters": 600
+     },
+     "by_bin": {
+      "≤3": -0.0075,
+      "≤5": 0.0026,
+      "≤7": 0.0035,
+      "≤10": -0.0007,
+      "≤99": 0.0023
+     },
+     "n_worse": 2227,
+     "n_better": 2216
+    }
+   }
+  },
+  {
+   "iter": 3,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": -0.02507,
+    "lo": -0.05634,
+    "hi": 0.00421,
+    "n": 432,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "Insert a narrow surface binding after C2 to keep a short (≤3-word) subject phrase together with its immediately following finite verb or copula — addresses the primary finding by ensuring subjects are not orphaned while phrasing the rule as a binding rather than a prohibition."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C2",
+     "kind": "change",
+     "was": "- Does the continuation supply the predicate, object, or core complement that th",
+     "now": "Keep a short (≤3-word) subject phrase — a proper name, pronoun, or determiner+no"
+    }
+   ],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 3,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "delta": {
+    "mean": -0.02163,
+    "lo": -0.06046,
+    "hi": 0.01487,
+    "n": 432,
+    "n_clusters": 50
+   },
+   "changelog": [
+    "rewrite: [Core Principles]/[Examples] 를 새로 씀"
+   ],
+   "edits": [],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 3,
+   "candidate": 3,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01516,
+    "lo": -0.02593,
+    "hi": -0.00481,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "rewrite: [Core Principles]/[Examples] 를 새로 씀"
+   ],
+   "edits": [],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 3,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.0225,
+    "lo": -0.03202,
+    "hi": -0.01238,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "Insert a narrow surface binding after C2 to keep a short (≤3-word) subject phrase together with its immediately following finite verb or copula — addresses the primary finding by ensuring subjects are not orphaned while phrasing the rule as a binding rather than a prohibition."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C2",
+     "kind": "change",
+     "was": "- Does the continuation supply the predicate, object, or core complement that th",
+     "now": "Keep a short (≤3-word) subject phrase — a proper name, pronoun, or determiner+no"
+    }
+   ],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])"
+  },
+  {
+   "iter": 3,
+   "adopted": false,
+   "delta": {
+    "mean": 0.0047,
+    "lo": -0.00418,
+    "hi": 0.01399,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "gain": {
+    "mean": 0.0047,
+    "lo": -0.00418,
+    "hi": 0.01399,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "changelog": [
+    "delete C3 — Remove the short-complement binding that pushed cuts after subjects and away from verbs. History blamed C3 for harming very-short latency bins and producing subject–verb splits; deleting it reduces that harmful bias and avoids restating what C2/C6 already cover."
+   ],
+   "findings": [
+    "The prompt undervalues keeping a short subject attached to its verb: it lets cuts isolate the verb (or verb phrase) from a immediately preceding short subject, producing orphaned predicates or apparent contradictions."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "C3",
+     "kind": "delete",
+     "was": "- Do the next one to four words form a short complement that completes the immed",
+     "now": ""
+    }
+   ],
+   "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])",
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0011,
+     "≤5": 0.0054,
+     "≤7": 0.0095,
+     "≤10": 0.0066,
+     "≤99": 0.0136
+    },
+    "n_worse": 2215,
+    "n_better": 2333,
+    "why": "Removing C3 eliminated the short-complement binding that had discouraged cuts near verbs, so the model began placing more cuts earlier/around predicates; that produced modest gains for longer-latency pieces (by_bin shows the biggest positive change in the ≤99 and mid-length bins) but also increased harmful subject–verb splits and fragmented enumerations in short/medium bins, leaving the overall H_set change near zero.",
+    "lesson": "If you remove the short-complement binding, you must preserve a constraint that prevents cutting immediately between subjects and their verbs and that avoids splitting list items, because deletion alone trades away those short-bin harms for only modest long-bin gains.",
+    "blamed": [
+     "C3 «- Does the continuation decide how a clause-initial temporal»"
+    ],
+    "vs_base": {
+     "delta": {
+      "mean": -0.00064,
+      "lo": -0.00922,
+      "hi": 0.00795,
+      "n": 5509,
+      "n_clusters": 600
+     },
+     "by_bin": {
+      "≤3": -0.0036,
+      "≤5": 0.0052,
+      "≤7": -0.0007,
+      "≤10": -0.0039,
+      "≤99": -0.0029
+     },
+     "n_worse": 2209,
+     "n_better": 2178
+    }
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 7246,
+ "total_cost": 85.602762,
+ "provenance": {
+  "- Does the continuation overturn, negate, or reverse the claim established by the stretch before this cut (e.g., via negation after auxiliaries, concessive subordinators, or contrastive parentheticals)? If so, the cut is harmful to faithful incremental translation.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation supply the predicate, object, or other argument that the heard fragment needs to form a coherent proposition in English SVO order? Cutting before such material causes missing or orphaned propositions.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation determine how a clause-initial temporal or locative adverbial attaches? If the adverbial's attachment is unresolved until later, cutting can lead to wrong temporal/locative relations.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation resolve the scope of unstable prefixes or scope-limiting particles (only, just) or approximate numerals? If scope is undecided, separate translation will misrepresent quantification or limitation.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation complete a phrasal verb or verb+particle sequence? These sequences are cohesive in English and splitting them damages verbal semantics.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation provide essential post-nominal modification (relative clause or complement) that identifies or restricts a previously heard noun? Separating head and modifier risks mistranslation of referents.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation refine or constrain a numeral or quantifier inside a noun phrase? Numerals and quantifiers are internal to NPs in English; splitting them breaks quantity semantics.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the continuation supply appositive identification, titles, possessive relations, or disambiguating material that assigns roles or identity to a previously heard name or noun? Cutting before such material can cause wrong attributions.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

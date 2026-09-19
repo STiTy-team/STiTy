@@ -1,0 +1,105 @@
+[
+ {
+  "candidate": 0,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "Do not cut immediately after a finite auxiliary or copula (e.g. when the marker follows a clause head like a finite 'be' or auxiliary); such cuts split the verb from its complement and often produce contradiction or lost cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 231
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9431,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When two candidates lie inside the same noun phrase, prefer the later candidate that leaves the entire NP intact (choose the marker immediately after the NP over one inside it).",
+    "_was": "- When one cut yields a full independent clause after the marker and another cuts earlier inside a long noun phrase, prefer the later cut that delivers a full clause to the listener."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": -5
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9195,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "Do not cut immediately after a finite auxiliary or copula (e.g. when the marker follows a clause head like a finite 'be' or auxiliary); such cuts split the verb from its complement and often produce contradiction or lost cohesion.",
+    "_was": "- Does the marker split a predicate cluster (auxiliaries/tense, negation, main verb, and its core arguments) so that separating here will disrupt tense, polarity, or event structure?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 48
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9248,
+  "errors": null
+ }
+]

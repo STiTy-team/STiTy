@@ -1,0 +1,97 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_32",
+    "text": "Input: Piquet <SEG:?> Jr. <SEG:?> crashed <SEG:?> in <SEG:?> the <SEG:?> 2008 <SEG:?> Singapore <SEG:?> Grand <SEG:?> Prix <SEG:?> just <SEG:?> after <SEG:?> an <SEG:?> early <SEG:?> pit <SEG:?> stop <SEG:?> for <SEG:?> Fernando <SEG:?> Alonso, <SEG:?> bringing <SEG:?> out <SEG:?> the <SEG:?> safety <SEG:?> car.\nOutput: Piquet <SEG:62> Jr. <SEG:100> crashed <SEG:67> in <SEG:52> the <SEG:95> 2008 <SEG:33> Singapore <SEG:76> Grand <SEG:86> Prix <SEG:71> just <SEG:43> after <SEG:57> an <SEG:5> early <SEG:19> pit <SEG:14> stop <SEG:48> for <SEG:10> Fernando <SEG:90> Alonso, <SEG:81> bringing <SEG:29> out <SEG:24> the <SEG:0> safety <SEG:38> car."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 266
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7199,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not equate protecting noun phrases with forbidding cuts near verbs: prefer cuts that keep a verb with its core arguments. Cutting before/after light function words is acceptable; avoid splitting verb + core arguments unless the continuation clearly contradicts or corrects the assertion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 293
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7226,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.",
+    "labeled_example": "en_us_1415",
+    "text": "Input: Gothic <SEG:?> style <SEG:?> peaked <SEG:?> in <SEG:?> the <SEG:?> period <SEG:?> between <SEG:?> the <SEG:?> 10th <SEG:?> - <SEG:?> 11th <SEG:?> centuries <SEG:?> and <SEG:?> the <SEG:?> 14th <SEG:?> century.\nOutput: Gothic <SEG:86> style <SEG:100> peaked <SEG:21> in <SEG:43> the <SEG:14> period <SEG:79> between <SEG:64> the <SEG:57> 10th <SEG:50> - <SEG:71> 11th <SEG:29> centuries <SEG:93> and <SEG:7> the <SEG:0> 14th <SEG:36> century."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -222
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6711,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Predicate cuts: prefer cuts that keep a verb with its core arguments; do not treat NP protection as a ban on cutting near verbs. It is acceptable to cut after light function words (articles, auxiliaries, short prepositions) provided the verb-argument core stays intact unless the continuation clearly contradicts or corrects the assertion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 136
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7069,
+  "errors": null
+ }
+]

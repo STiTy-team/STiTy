@@ -1,0 +1,37 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt overgeneralizes a blanket 'do not cut inside small NPs / enumerations' judgment, avoiding many useful micro‑cuts in very short (≤3) latency items and instead producing harmful fragmentations around predicates and arguments.",
+    "evidence": "['en_us_1631','en_us_571','en_us_360','en_us_1488','en_us_1150']: all are short (≤3) items where the offline target joins small noun/nominal material or keeps minimal content together while the policy fragmented those spans.",
+    "edit": {
+     "where": "examples",
+     "action": "replace",
+     "target": "Input: They <SEG:?> did <SEG:?>",
+     "text": "Input: New <SEG:?> Kingdom <SEG:?> ancient <SEG:?> Egyptians <SEG:?> marvelled <SEG:?> at <SEG:?> their <SEG:?> predecessors.\nOutput: New <SEG:74> Kingdom <SEG:98> ancient <SEG:45> Egyptians <SEG:60> marvelled <SEG:30> at <SEG:10> their <SEG:0> predecessors."
+    }
+   },
+   {
+    "diagnosis": "The prompt's examples/instructions have biased the scorer away from cutting at safe subject–predicate boundaries in mid‑latency sentences (≤5), causing many predicates to be fragmented; it conflates 'avoid tiny NP cuts' with 'never cut around verbs/auxiliaries'.",
+    "evidence": "['en_us_32','en_us_651','en_us_464','en_us_1150']: mid‑latency examples where the policy moved cuts into predicate/argument zones and the offline target preserves verb+core arguments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not conflate NP‑protection with a ban on splitting before or after verbs: prefer cuts that isolate light function words but keep a verb with its core arguments unless the continuation clearly contradicts or corrects the assertion."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt's examples/instructions have biased the scorer away from cutting at safe subject–predicate boundaries in mid‑latency sentences (≤5), causing many predicates to be fragmented; it conflates 'avoid tiny NP cuts' with 'never cut around verbs/auxiliaries'.",
+   "evidence": "['en_us_32','en_us_651','en_us_464','en_us_1150']: mid‑latency examples where the policy moved cuts into predicate/argument zones and the offline target preserves verb+core arguments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not conflate NP‑protection with a ban on splitting before or after verbs: prefer cuts that isolate light function words but keep a verb with its core arguments unless the continuation clearly contradicts or corrects the assertion."
+   }
+  }
+ ]
+}

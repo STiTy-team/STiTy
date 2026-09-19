@@ -1,0 +1,62 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_164",
+  "en_us_482",
+  "en_us_411",
+  "en_us_1106",
+  "en_us_1543",
+  "en_us_845",
+  "en_us_454",
+  "en_us_784",
+  "en_us_1132",
+  "en_us_1555",
+  "en_us_1631",
+  "en_us_553",
+  "en_us_999",
+  "en_us_1139",
+  "en_us_651"
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1046,
+   "pairs": 15,
+   "chars": 7357,
+   "changelog": [
+    "Insert a new Core Principle prohibiting cuts inside numeric expressions to prevent splits of numbers, multipliers, units, percents or range endpoints (addresses the primary_finding: numeric splits like \"340 million to 500 million\" that harm cohesion, especially in short-latency bins)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.116,
+   "pairs": 15,
+   "chars": 7122,
+   "changelog": [
+    "Replace C7 to explicitly forbid cutting a verb (or auxiliary) from its core object/complement or from following prepositional/infinitival complements, because the primary finding shows verb+argument splits cause orphaned predicates and major cohesion loss."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.1233,
+   "pairs": 15,
+   "chars": 7046,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1116 to teach the scorer about harms from splitting numeric phrases and tiny trailing fragments (strong ≤3-bin loss).",
+    "Replace E2 with labeled example en_us_419 to show range/number+multiplier splits (e.g. \"340 million to 500 million\") that break cohesion in short-latency bins.",
+    "Replace E3 with labeled example en_us_1050 to surface breaks inside numeric measurements (meters, decimals) and unit splits that led to mistranslation.",
+    "Replace E4 with labeled example en_us_538 to highlight tiny trailing fragments and predicate/argument fragmentation that cause short-bin losses."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.0971,
+   "pairs": 15,
+   "chars": 7328,
+   "changelog": [
+    "Insert a Core Principle that prescribes good cut placement for numeric expressions: keep numeral + multipliers + unit together, or if unavoidable cut before the whole phrase or after its unit — addresses the primary finding by describing a GOOD cut instead of a blanket ban."
+   ]
+  }
+ ]
+}

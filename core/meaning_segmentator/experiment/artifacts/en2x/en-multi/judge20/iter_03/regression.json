@@ -1,0 +1,126 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.0047,
+  "lo": -0.00418,
+  "hi": 0.01399,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "by_bin": {
+  "≤3": 0.0011,
+  "≤5": 0.0054,
+  "≤7": 0.0095,
+  "≤10": 0.0066,
+  "≤99": 0.0136
+ },
+ "n_worse": 2215,
+ "n_better": 2333,
+ "worst": [
+  {
+   "id": "en_us_1630",
+   "k": 2,
+   "bin": "≤10",
+   "delta": -0.7747,
+   "before": "Arly Velasquez of Mexico finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall finished ninth in the men's standing Super-G.",
+   "after": "Arly Velasquez of Mexico finished fifteenth in the men's sitting Super-G. ‖ New Zealand's Adam Hall ‖ finished ninth in the men's standing Super-G."
+  },
+  {
+   "id": "en_us_1365",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7742,
+   "before": "For instance, they didn't have corn, nor tomatoes, nor potatoes, nor cocoa, ‖ and no ancient Roman ever tasted a turkey.",
+   "after": "For instance, they didn't have corn, nor tomatoes, nor potatoes, nor cocoa, and no ancient Roman ever tasted ‖ a turkey."
+  },
+  {
+   "id": "en_us_895",
+   "k": 5,
+   "bin": "≤3",
+   "delta": -0.7336,
+   "before": "The most common cause for accidents in winter ‖ is slippery roads, ‖ pavements ‖ (sidewalks) ‖ and ‖ especially steps.",
+   "after": "The most common cause for accidents in winter ‖ is ‖ slippery roads, ‖ pavements ‖ (sidewalks) ‖ and especially steps."
+  },
+  {
+   "id": "en_us_970",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.7179,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.713,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading ‖ on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1095",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7363,
+   "before": "They were compelled to pay taxes to the U.S. colonial regime to defray a major part of the expenditures and the interest on bonds floated in the name of the Philippine government through the ‖ Wall Street banking houses.",
+   "after": "They were compelled to pay taxes to the U.S. colonial regime ‖ to defray a major part of the expenditures and the interest on bonds floated in the name of the Philippine government through the Wall Street banking houses."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7325,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_86",
+   "k": 1,
+   "bin": "≤5",
+   "delta": 0.7245,
+   "before": "Pittman suggested that conditions wouldn't improve ‖ until sometime next week.",
+   "after": "Pittman suggested ‖ that conditions wouldn't improve until sometime next week."
+  },
+  {
+   "id": "en_us_1095",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.7073,
+   "before": "They were compelled to pay taxes to the U.S. colonial regime to defray a major part of the expenditures and the interest on bonds floated in the name of the ‖ Philippine government through the ‖ Wall Street banking house",
+   "after": "They were compelled to pay taxes ‖ to the U.S. colonial regime ‖ to defray a major part of the expenditures and the interest on bonds floated in the name of the Philippine government through the Wall Street banking house"
+  },
+  {
+   "id": "en_us_555",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6961,
+   "before": "Products can be purchased as needed, ‖ but most will have ‖ little or no real impact ‖ on performance.",
+   "after": "Products can be ‖ purchased ‖ as needed, ‖ but most will have little or no real impact on performance."
+  }
+ ],
+ "vs_base": {
+  "delta": {
+   "mean": -0.00064,
+   "lo": -0.00922,
+   "hi": 0.00795,
+   "n": 5509,
+   "n_clusters": 600
+  },
+  "by_bin": {
+   "≤3": -0.0036,
+   "≤5": 0.0052,
+   "≤7": -0.0007,
+   "≤10": -0.0039,
+   "≤99": -0.0029
+  },
+  "n_worse": 2209,
+  "n_better": 2178
+ },
+ "why": "Removing C3 eliminated the short-complement binding that had discouraged cuts near verbs, so the model began placing more cuts earlier/around predicates; that produced modest gains for longer-latency pieces (by_bin shows the biggest positive change in the ≤99 and mid-length bins) but also increased harmful subject–verb splits and fragmented enumerations in short/medium bins, leaving the overall H_set change near zero.",
+ "lesson": "If you remove the short-complement binding, you must preserve a constraint that prevents cutting immediately between subjects and their verbs and that avoids splitting list items, because deletion alone trades away those short-bin harms for only modest long-bin gains.",
+ "blamed": [
+  "C3 «- Does the continuation decide how a clause-initial temporal»"
+ ]
+}

@@ -1,0 +1,2375 @@
+[
+ {
+  "id": "en_us_1527",
+  "cuts": 9,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.583,
+  "policy_worst_contra": 0.9803,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    8,
+    9,
+    11,
+    13,
+    16,
+    21,
+    22
+   ],
+   "H_set": 0.0118,
+   "text": "Poland's men's visually impaired skier ‖ Maciej Krezel ‖ and ‖ guide ‖ Anna Ogarzynska ‖ finished thirteenth ‖ in the Super-G. ‖ South Korea's Jong Seork Park ‖ finished ‖ twenty-fourth in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波兰男子视力障碍滑雪运动员",
+     "馬切伊·克雷澤爾",
+     "以及",
+     "指南",
+     "安娜·奥加日恩斯卡",
+     "排名第十三",
+     "超级大满贯",
+     "韩国的钟西尔公园",
+     "已完成",
+     "第二十四名在男子坐超级大回合。"
+    ],
+    "Japanese": [
+     "ポーランドの視覚障害者スキー選手",
+     "マチェイ・クレゼル",
+     "それに",
+     "ガイド",
+     "アンナ・オガジンスカ",
+     "13位に入った",
+     "私はスーパーGで優勝しました",
+     "チョン・ソルク公園",
+     "終わりだ",
+     "男性の座り込みスーパーGで24位"
+    ],
+    "German": [
+     "Polens Sehbehinderter Skifahrer der Männer",
+     "Maciej Krezel",
+     "und",
+     "Führer",
+     "Anna Ogarzynska",
+     "Beendete als dreizehnter",
+     "Im Super-G.",
+     "Südkoreas Jong Seork Park",
+     "Fertig",
+     "Vierundzwanziger im Sitz-Super-G der Männer."
+    ],
+    "Spanish": [
+     "Esquiador con discapacidad visual de Polonia",
+     "Maciej Krezel",
+     "y",
+     "Guía",
+     "Anna Ogarzynska",
+     "Terminó decimotercero",
+     "en el Super-G.",
+     "El parque Jong Seork de Corea del Sur",
+     "terminado",
+     "El italiano Marco Pantani fue vigésimo cuarto en el Super-G sentado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    8,
+    13,
+    16,
+    23
+   ],
+   "H_set": 0.5948,
+   "text": "Poland's ‖ men's ‖ visually impaired ‖ skier ‖ Maciej ‖ Krezel and ‖ guide Anna Ogarzynska finished thirteenth ‖ in the Super-G. ‖ South Korea's Jong Seork Park finished twenty-fourth ‖ in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波兰",
+     "男子",
+     "视力障碍者",
+     "滑雪者",
+     "马齐耶",
+     "克雷泽尔和",
+     "导游 Anna Ogarzynska 排名第十三",
+     "超级大满贯",
+     "韩国的钟秀克公园完成了第二十四",
+     "是男子坐式超级大回转比赛。"
+    ],
+    "Japanese": [
+     "ポーランドの国章",
+     "男性の",
+     "視覚障害者の",
+     "スキーヤー",
+     "マチエフ",
+     "クレゼルと",
+     "ガイドのアンナ・オガジンスカは13位に入り",
+     "私はスーパーGで優勝しました",
+     "韓国の朴宗<0xE6><0x9A><0x81>が24位に入賞",
+     "男性の座り込みスーパーGで"
+    ],
+    "German": [
+     "Polen",
+     "Herren",
+     "Sehbehinderte",
+     "Skifahrer",
+     "Maciej",
+     "Krezel und",
+     "Guide Anna Ogarzynska wurde dreizehnte",
+     "Im Super-G.",
+     "Südkoreas Jong Seork Park wurde Vierundzwanzigster",
+     "Im Sitz-Super-G der Herren."
+    ],
+    "Spanish": [
+     "Poland's",
+     "de hombres",
+     "Discapacidad visual",
+     "esquiador",
+     "Maciej",
+     "Krezel and",
+     "La guía Anna Ogarzynska terminó decimotercera",
+     "en el Super-G.",
+     "El surcoreano Jong Seork Park terminó vigésimo cuarto",
+     "en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "impaired skier Maciej Krezel",
+     "right": "and guide Anna Ogarzynska",
+     "H": 0.6307,
+     "H_pct": 34.6,
+     "contra": 0.0037,
+     "cohesion": 0.633
+    },
+    {
+     "pos": 9,
+     "left": "Maciej Krezel and guide",
+     "right": "Anna Ogarzynska finished thirteenth",
+     "H": 0.7346,
+     "H_pct": 61.5,
+     "contra": 0.0143,
+     "cohesion": 0.7453
+    },
+    {
+     "pos": 11,
+     "left": "and guide Anna Ogarzynska",
+     "right": "finished thirteenth in the",
+     "H": 0.6481,
+     "H_pct": 38.5,
+     "contra": 0.089,
+     "cohesion": 0.7114
+    },
+    {
+     "pos": 21,
+     "left": "Korea's Jong Seork Park",
+     "right": "finished twenty-fourth in the",
+     "H": 0.013,
+     "H_pct": 0.0,
+     "contra": 0.9803,
+     "cohesion": 0.6607
+    },
+    {
+     "pos": 22,
+     "left": "Jong Seork Park finished",
+     "right": "twenty-fourth in the men's",
+     "H": 0.4127,
+     "H_pct": 15.4,
+     "contra": 0.4175,
+     "cohesion": 0.7085
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Poland's",
+     "right": "men's visually impaired skier",
+     "H": 0.7501,
+     "H_pct": 69.2,
+     "contra": 0.0068,
+     "cohesion": 0.7552
+    },
+    {
+     "pos": 2,
+     "left": "Poland's men's",
+     "right": "visually impaired skier Maciej",
+     "H": 0.7692,
+     "H_pct": 84.6,
+     "contra": 0.0036,
+     "cohesion": 0.772
+    },
+    {
+     "pos": 4,
+     "left": "Poland's men's visually impaired",
+     "right": "skier Maciej Krezel and",
+     "H": 0.7847,
+     "H_pct": 92.3,
+     "contra": 0.0036,
+     "cohesion": 0.7875
+    },
+    {
+     "pos": 6,
+     "left": "visually impaired skier Maciej",
+     "right": "Krezel and guide Anna",
+     "H": 0.7698,
+     "H_pct": 88.5,
+     "contra": 0.0018,
+     "cohesion": 0.7712
+    },
+    {
+     "pos": 23,
+     "left": "Seork Park finished twenty-fourth",
+     "right": "in the men's sitting",
+     "H": 0.76,
+     "H_pct": 76.9,
+     "contra": 0.0237,
+     "cohesion": 0.7784
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1497",
+  "cuts": 3,
+  "avg_chunk": 5.8,
+  "latency_bin": "≤7",
+  "gap": 0.4865,
+  "policy_worst_contra": 0.5885,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    10,
+    19
+   ],
+   "H_set": 0.2902,
+   "text": "British pounds ‖ will generally be accepted anywhere in the islands ‖ and within Stanley credit cards and United States dollars ‖ are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英镑",
+     "一般在群岛的任何地方都会被接受",
+     "斯坦利信用卡和美元",
+     "还经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンド",
+     "島のどこでも受け入れられます",
+     "スタンレークレジットカードと米ドルの中で",
+     "受け入れられることも多いのです"
+    ],
+    "German": [
+     "Britisches Pfund",
+     "Die Karte wird generell überall auf den Inseln akzeptiert",
+     "und innerhalb von Stanley Kreditkarten und US-Dollar",
+     "Auch werden sie oft akzeptiert."
+    ],
+    "Spanish": [
+     "Libras británicas",
+     "Generalmente se aceptará en cualquier lugar de las islas",
+     "y dentro de las tarjetas de crédito Stanley y dólares de los Estados Unidos",
+     "También se aceptan a menudo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    10,
+    13
+   ],
+   "H_set": 0.7767,
+   "text": "British pounds will generally be accepted anywhere ‖ in the islands ‖ and within Stanley ‖ credit cards and United States dollars are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英镑通常在任何地方都可以接受",
+     "岛上",
+     "斯坦利及其周边地区",
+     "信用卡和美元也经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンドは一般的にどこでも受け入れられる",
+     "島々に住む人々は",
+     "スタンレーの中では",
+     "クレジットカードや米ドルもよく受け入れられます"
+    ],
+    "German": [
+     "Britische Pfund werden in der Regel überall akzeptiert",
+     "Auf den Inseln",
+     "In und um Stanley",
+     "Kreditkarten und US-Dollar werden ebenfalls oft akzeptiert."
+    ],
+    "Spanish": [
+     "Las libras británicas generalmente se aceptarán en cualquier lugar",
+     "En las islas",
+     "En y alrededor de Stanley",
+     "También se aceptan tarjetas de crédito y dólares estadounidenses."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "British pounds",
+     "right": "will generally be accepted",
+     "H": 0.7627,
+     "H_pct": 61.9,
+     "contra": 0.0005,
+     "cohesion": 0.7631
+    },
+    {
+     "pos": 19,
+     "left": "and United States dollars",
+     "right": "are also often accepted.",
+     "H": 0.2533,
+     "H_pct": 9.5,
+     "contra": 0.5885,
+     "cohesion": 0.6155
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "generally be accepted anywhere",
+     "right": "in the islands and",
+     "H": 0.8126,
+     "H_pct": 95.2,
+     "contra": 0.0015,
+     "cohesion": 0.8138
+    },
+    {
+     "pos": 13,
+     "left": "islands and within Stanley",
+     "right": "credit cards and United",
+     "H": 0.8282,
+     "H_pct": 100.0,
+     "contra": 0.0033,
+     "cohesion": 0.8309
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_292",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.2116,
+  "policy_worst_contra": 0.0067,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.603,
+   "text": "The significant earthquake activity resulting in the phase change had took place ‖ on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "导致相变的重大地震活动已经发生",
+     "火山口东北侧的火山口,火山口东北侧的火山口。"
+    ],
+    "Japanese": [
+     "地震活動の相転移を生じた。",
+     "3月10日に 火山の頂上カルデラの北東側で"
+    ],
+    "German": [
+     "Die bedeutende Erdbebenaktivität, die zum Phasenwechsel führte, hatte stattgefunden",
+     "Der Vulkan ist auf der Nordostseite der Gipfelcaldera gelegen."
+    ],
+    "Spanish": [
+     "La actividad sísmica significativa que resultó en el cambio de fase había tenido lugar",
+     "El volcán se encuentra en la parte noreste de la caldera de la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8146,
+   "text": "The ‖ significant earthquake activity resulting in the phase change had took place on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "3月10日,火山顶部火山口东北侧发生了导致相变的重大地震活动。"
+    ],
+    "Japanese": [
+     "あの",
+     "3月10日に 火山頂カルデラの北東側で 相変化を引き起こした 地震活動が起きた"
+    ],
+    "German": [
+     "The",
+     "Am 10. März hatte auf der Nordostseite der Gipfelkaldera des Vulkans eine bedeutende Erdbebenaktivität stattgefunden, die zu einem Phasenwechsel geführt hatte."
+    ],
+    "Spanish": [
+     "The",
+     "El 10 de marzo se produjo una actividad sísmica significativa que resultó en el cambio de fase en el lado noreste de la caldera de la cumbre del volcán."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "change had took place",
+     "right": "on March 10 on",
+     "H": 0.603,
+     "H_pct": 31.8,
+     "contra": 0.0067,
+     "cohesion": 0.607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "significant earthquake activity resulting",
+     "H": 0.8146,
+     "H_pct": 100.0,
+     "contra": 0.0112,
+     "cohesion": 0.8238
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.5978,
+  "policy_worst_contra": 0.9337,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    10
+   ],
+   "H_set": 0.0571,
+   "text": "All the ships ‖ were sunk, ‖ except for one British cruiser. ‖ Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有船只",
+     "被击沉，",
+     "除了一艘英国巡洋舰。",
+     "近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "すべての船",
+     "沈没したのです",
+     "イギリスの巡洋艦を除いて",
+     "アメリカ人とドイツ人は200人近くが死亡した。"
+    ],
+    "German": [
+     "Alle Schiffe",
+     "wurden versunken,",
+     "Außer einem britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Menschen kamen ums Leben."
+    ],
+    "Spanish": [
+     "Todos los barcos",
+     "se hundieron,",
+     "Excepto por un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    8
+   ],
+   "H_set": 0.6549,
+   "text": "All the ships were sunk, ‖ except ‖ for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有的船都沉没了,",
+     "除非",
+     "一个",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "船は全て沈没した",
+     "ただし",
+     "まず",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt,",
+     "außer",
+     "Für einen Tag",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos se hundieron,",
+     "except",
+     "Para uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "All the ships",
+     "right": "were sunk, except for",
+     "H": 0.0524,
+     "H_pct": 25.0,
+     "contra": 0.9337,
+     "cohesion": 0.7911
+    },
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "ships were sunk, except",
+     "right": "for one British cruiser.",
+     "H": 0.6531,
+     "H_pct": 87.5,
+     "contra": 0.0354,
+     "cohesion": 0.677
+    },
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1600",
+  "cuts": 1,
+  "avg_chunk": 9.5,
+  "latency_bin": "≤10",
+  "gap": 0.1383,
+  "policy_worst_contra": 0.0534,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.7284,
+   "text": "Examples of on-site activities include hunting, fishing, photography, ‖ bird watching, and visiting parks and studying information about the ecosystem.",
+   "pieces": {
+    "Chinese": [
+     "酒店内的活动包括打猎、钓鱼、摄影、骑自行车和骑自行车。",
+     "观鸟,参观公园,研究生态系统的信息。"
+    ],
+    "Japanese": [
+     "狩猟、釣り、写真撮影、",
+     "鳥の観察や公園を訪れ 生態系の情報を学ぶのです"
+    ],
+    "German": [
+     "Zu den Aktivitäten in der Unterkunft gehören Jagen, Angeln, Fotografieren,",
+     "Vogelbeobachtung, Besuch von Parks und Studieren von Informationen über das Ökosystem."
+    ],
+    "Spanish": [
+     "Algunos ejemplos de actividades en el sitio incluyen caza, pesca, fotografía,",
+     "Observación de aves, visitas a parques y estudio de información sobre el ecosistema."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4
+   ],
+   "H_set": 0.8666,
+   "text": "Examples of on-site activities ‖ include hunting, fishing, photography, bird watching, and visiting parks and studying information about the ecosystem.",
+   "pieces": {
+    "Chinese": [
+     "现场活动实例",
+     "包括打猎,钓鱼,摄影,观鸟,参观公园和研究有关生态系统的信息。"
+    ],
+    "Japanese": [
+     "現場活動の例",
+     "狩猟 釣り 写真撮影 鳥の観察 公園を訪れ 生態系の情報を学ぶ"
+    ],
+    "German": [
+     "Beispiele für Aktivitäten vor Ort",
+     "Zu den Aktivitäten gehören Jagd, Angeln, Fotografieren, Vogelbeobachtung, Besuch von Parks und das Studium von Informationen über das Ökosystem."
+    ],
+    "Spanish": [
+     "Ejemplos de actividades in situ",
+     "Las actividades incluyen caza, pesca, fotografía, observación de aves, visitas a parques y estudio de información sobre el ecosistema."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "include hunting, fishing, photography,",
+     "right": "bird watching, and visiting",
+     "H": 0.7284,
+     "H_pct": 47.1,
+     "contra": 0.0534,
+     "cohesion": 0.7694
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Examples of on-site activities",
+     "right": "include hunting, fishing, photography,",
+     "H": 0.8666,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8675
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_432",
+  "cuts": 7,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.3531,
+  "policy_worst_contra": 0.7906,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    8,
+    11,
+    14,
+    17,
+    20,
+    24
+   ],
+   "H_set": 0.1674,
+   "text": "Turkey is encircled by seas ‖ on three sides: ‖ the Aegean Sea ‖ to the west, ‖ the Black Sea ‖ to the north ‖ and the Mediterranean Sea ‖ to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其被海洋包围",
+     "从三个方面:",
+     "爱琴海",
+     "向西,",
+     "黑海",
+     "向北",
+     "地中海",
+     "到南方。"
+    ],
+    "Japanese": [
+     "トルコは海に囲まれている",
+     "3つの側面から",
+     "エーゲ海",
+     "西に向かって",
+     "黒海",
+     "北に向かって",
+     "地中海にも",
+     "南に行く"
+    ],
+    "German": [
+     "Die Türkei ist von Meeren umgeben",
+     "Auf drei Seiten:",
+     "Ägäisches Meer",
+     "nach Westen,",
+     "Das Schwarze Meer",
+     "Nach Norden",
+     "Das Mittelmeer und die Türkei",
+     "Nach Süden."
+    ],
+    "Spanish": [
+     "Turquía está rodeada de mares",
+     "en tres lados:",
+     "El mar Egeo",
+     "hacia el oeste,",
+     "El Mar Negro",
+     "Al norte",
+     "y el Mar Mediterráneo",
+     "Al sur."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.5205,
+   "text": "Turkey ‖ is ‖ encircled ‖ by seas ‖ on ‖ three sides: ‖ the Aegean ‖ Sea to the west, the Black Sea to the north and the Mediterranean Sea to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其 1999年",
+     "是",
+     "圈",
+     "海运",
+     "上",
+     "三个方面：",
+     "爱琴海",
+     "海西,黑海北部和地中海南部。"
+    ],
+    "Japanese": [
+     "トルコ",
+     "はい",
+     "囲まれた",
+     "海を渡って",
+     "ああ",
+     "3つの側面があります",
+     "エーゲ海",
+     "西は海、北は黒海、南は地中海。"
+    ],
+    "German": [
+     "Türkei",
+     "ist",
+     "encircled",
+     "Von den Meeren",
+     "on",
+     "Drei Seiten:",
+     "Die Ägäis",
+     "Im Westen das Meer, im Norden das Schwarze Meer und im Süden das Mittelmeer."
+    ],
+    "Spanish": [
+     "Turquía 1996",
+     "es",
+     "rodeado",
+     "Por mar",
+     "on",
+     "Tres lados:",
+     "El Egeo",
+     "Mar al oeste, el Mar Negro al norte y el Mar Mediterráneo al sur."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "sides: the Aegean Sea",
+     "right": "to the west, the",
+     "H": 0.7893,
+     "H_pct": 68.0,
+     "contra": 0.0298,
+     "cohesion": 0.8135
+    },
+    {
+     "pos": 14,
+     "left": "Sea to the west,",
+     "right": "the Black Sea to",
+     "H": 0.7669,
+     "H_pct": 64.0,
+     "contra": 0.0207,
+     "cohesion": 0.7831
+    },
+    {
+     "pos": 17,
+     "left": "west, the Black Sea",
+     "right": "to the north and",
+     "H": 0.6594,
+     "H_pct": 60.0,
+     "contra": 0.1884,
+     "cohesion": 0.8124
+    },
+    {
+     "pos": 20,
+     "left": "Sea to the north",
+     "right": "and the Mediterranean Sea",
+     "H": 0.347,
+     "H_pct": 48.0,
+     "contra": 0.6041,
+     "cohesion": 0.8766
+    },
+    {
+     "pos": 24,
+     "left": "and the Mediterranean Sea",
+     "right": "to the south.",
+     "H": 0.1753,
+     "H_pct": 28.0,
+     "contra": 0.7906,
+     "cohesion": 0.8372
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Turkey",
+     "right": "is encircled by seas",
+     "H": 0.8036,
+     "H_pct": 80.0,
+     "contra": 0.0035,
+     "cohesion": 0.8064
+    },
+    {
+     "pos": 2,
+     "left": "Turkey is",
+     "right": "encircled by seas on",
+     "H": 0.7995,
+     "H_pct": 76.0,
+     "contra": 0.002,
+     "cohesion": 0.8011
+    },
+    {
+     "pos": 3,
+     "left": "Turkey is encircled",
+     "right": "by seas on three",
+     "H": 0.8229,
+     "H_pct": 88.0,
+     "contra": 0.0011,
+     "cohesion": 0.8238
+    },
+    {
+     "pos": 6,
+     "left": "encircled by seas on",
+     "right": "three sides: the Aegean",
+     "H": 0.835,
+     "H_pct": 96.0,
+     "contra": 0.0176,
+     "cohesion": 0.85
+    },
+    {
+     "pos": 10,
+     "left": "three sides: the Aegean",
+     "right": "Sea to the west,",
+     "H": 0.8067,
+     "H_pct": 84.0,
+     "contra": 0.05,
+     "cohesion": 0.8492
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_113",
+  "cuts": 11,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.4023,
+  "policy_worst_contra": 0.968,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    9,
+    10,
+    12,
+    13,
+    15,
+    16,
+    17,
+    20,
+    21,
+    24
+   ],
+   "H_set": 0.0146,
+   "text": "Mr. Rudd's decision ‖ to sign the Kyoto climate accord ‖ isolates ‖ the United ‖ States, ‖ which will ‖ now ‖ be ‖ the only developed ‖ nation ‖ not to ratify ‖ the agreement.",
+   "pieces": {
+    "Chinese": [
+     "陆克文先生的决定",
+     "签署京都气候协定",
+     "分离物",
+     "联合国",
+     "各国，",
+     "将",
+     "现在",
+     "是",
+     "唯一的发达国家",
+     "国家",
+     "不批准",
+     "协议的内容。"
+    ],
+    "Japanese": [
+     "ラッド氏の決断",
+     "京都議定書に署名するために",
+     "分離",
+     "ユナイテッド",
+     "州",
+     "それは",
+     "さあ さあ",
+     "ああ",
+     "開発されたのは",
+     "国",
+     "批准しないこと",
+     "合意書"
+    ],
+    "German": [
+     "Herrn Rudds Entscheidung",
+     "Um das Kyoto-Klimaabkommen zu unterzeichnen",
+     "Isolate",
+     "Die Vereinigten Staaten",
+     "Staaten,",
+     "Was wird passieren?",
+     "jetzt",
+     "be",
+     "Die einzige entwickelte",
+     "Nation",
+     "Nicht zu ratifizieren",
+     "Die Vereinbarung."
+    ],
+    "Spanish": [
+     "La decisión del Sr. Rudd",
+     "El Protocolo de Kyoto sobre el cambio climático",
+     "aislados",
+     "United Nations",
+     "Estados,",
+     "que se",
+     "ahora",
+     "be",
+     "El único desarrollado",
+     "nación",
+     "No ratificar",
+     "El acuerdo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    5,
+    7,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "H_set": 0.4168,
+   "text": "Mr. ‖ Rudd's decision ‖ to sign ‖ the Kyoto ‖ climate accord isolates ‖ the ‖ United ‖ States, ‖ which ‖ will ‖ now ‖ be the only developed nation not to ratify the agreement.",
+   "pieces": {
+    "Chinese": [
+     "先生",
+     "陆克文的决定",
+     "签署",
+     "京都议定书",
+     "气候协定",
+     "该",
+     "联合国",
+     "各国，",
+     "其中",
+     "威尔",
+     "现在",
+     "是唯一一个没有批准该协定的发达国家。"
+    ],
+    "Japanese": [
+     "あなたは",
+     "ラッドの決定",
+     "署名する",
+     "京都",
+     "気候協定は",
+     "あの",
+     "ユナイテッド",
+     "州",
+     "それは",
+     "ウィル",
+     "さあ さあ",
+     "唯一の先進国で 条約を批准しなかったのです"
+    ],
+    "German": [
+     "Herr",
+     "Rudds Entscheidung",
+     "Zum Unterschreiben",
+     "Die Kyoto-Regeln",
+     "Klima-Accord-Isolate",
+     "the",
+     "United",
+     "Staaten,",
+     "which",
+     "Will",
+     "jetzt",
+     "Die USA sind die einzige Industrienation, die das Abkommen nicht ratifiziert hat."
+    ],
+    "Spanish": [
+     "Sr.",
+     "La decisión de Rudd",
+     "para firmar",
+     "Protocolo de Kyoto",
+     "Acuerdo climático aislado",
+     "the",
+     "United",
+     "Estados,",
+     "which",
+     "Will",
+     "ahora",
+     "Será la única nación desarrollada que no ratifique el acuerdo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "the Kyoto climate accord",
+     "right": "isolates the United States,",
+     "H": 0.7551,
+     "H_pct": 50.0,
+     "contra": 0.0033,
+     "cohesion": 0.7576
+    },
+    {
+     "pos": 17,
+     "left": "which will now be",
+     "right": "the only developed nation",
+     "H": 0.7245,
+     "H_pct": 29.2,
+     "contra": 0.0535,
+     "cohesion": 0.7654
+    },
+    {
+     "pos": 20,
+     "left": "be the only developed",
+     "right": "nation not to ratify",
+     "H": 0.6657,
+     "H_pct": 12.5,
+     "contra": 0.0223,
+     "cohesion": 0.6808
+    },
+    {
+     "pos": 21,
+     "left": "the only developed nation",
+     "right": "not to ratify the",
+     "H": 0.0234,
+     "H_pct": 0.0,
+     "contra": 0.968,
+     "cohesion": 0.7299
+    },
+    {
+     "pos": 24,
+     "left": "nation not to ratify",
+     "right": "the agreement.",
+     "H": 0.7169,
+     "H_pct": 20.8,
+     "contra": 0.0239,
+     "cohesion": 0.7345
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Mr.",
+     "right": "Rudd's decision to sign",
+     "H": 0.806,
+     "H_pct": 87.5,
+     "contra": 0.0062,
+     "cohesion": 0.8111
+    },
+    {
+     "pos": 5,
+     "left": "Rudd's decision to sign",
+     "right": "the Kyoto climate accord",
+     "H": 0.8008,
+     "H_pct": 83.3,
+     "contra": 0.0029,
+     "cohesion": 0.8032
+    },
+    {
+     "pos": 7,
+     "left": "to sign the Kyoto",
+     "right": "climate accord isolates the",
+     "H": 0.7693,
+     "H_pct": 62.5,
+     "contra": 0.002,
+     "cohesion": 0.7709
+    },
+    {
+     "pos": 11,
+     "left": "climate accord isolates the",
+     "right": "United States, which will",
+     "H": 0.7647,
+     "H_pct": 58.3,
+     "contra": 0.0583,
+     "cohesion": 0.812
+    },
+    {
+     "pos": 14,
+     "left": "the United States, which",
+     "right": "will now be the",
+     "H": 0.8178,
+     "H_pct": 91.7,
+     "contra": 0.0026,
+     "cohesion": 0.8199
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1428",
+  "cuts": 4,
+  "avg_chunk": 5.4,
+  "latency_bin": "≤7",
+  "gap": 0.1718,
+  "policy_worst_contra": 0.1328,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    13,
+    16,
+    21
+   ],
+   "H_set": 0.6648,
+   "text": "Downhill skiing as a sport ‖ goes back to at least the 17th century, ‖ and in 1861 ‖ the first recreational ski club ‖ was opened by Norwegians in Australia.",
+   "pieces": {
+    "Chinese": [
+     "滑雪运动",
+     "至少可以追溯到17世纪,",
+     "1861年和",
+     "第一个休闲滑雪俱乐部",
+     "是由挪威人在澳大利亚开设的。"
+    ],
+    "Japanese": [
+     "ダウンヒルスキーのスポーツ",
+     "少なくとも17世紀に遡ります",
+     "1861年には",
+     "初のレクリエーションスキークラブを",
+     "オーストラリアでノルウェー人によって開かれました"
+    ],
+    "German": [
+     "Skifahren als Sport",
+     "geht zurück bis mindestens ins 17. Jahrhundert,",
+     "und im Jahre 1861",
+     "Der erste Freizeit-Skiclub",
+     "Die Firma wurde von Norwegern in Australien eröffnet."
+    ],
+    "Spanish": [
+     "El esquí alpino como deporte",
+     "se remonta al menos al siglo XVII,",
+     "y en 1861",
+     "El primer club de esquí recreativo",
+     "Fue abierto por noruegos en Australia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    13,
+    14
+   ],
+   "H_set": 0.8366,
+   "text": "Downhill ‖ skiing as a sport goes ‖ back to at least the 17th century, ‖ and ‖ in 1861 the first recreational ski club was opened by Norwegians in Australia.",
+   "pieces": {
+    "Chinese": [
+     "下坡",
+     "滑雪作为一种运动",
+     "至少可以追溯到17世纪,",
+     "以及",
+     "1861年,挪威人在澳大利亚开设了第一个休闲滑雪俱乐部。"
+    ],
+    "Japanese": [
+     "ダウンヒル",
+     "スキーはスポーツとして",
+     "少なくとも17世紀に遡ります",
+     "それに",
+     "1861年にオーストラリアで最初の レクリエーション用スキークラブが ノルウェー人によって開かれました"
+    ],
+    "German": [
+     "Downhill",
+     "Skifahren als Sport geht",
+     "zurück bis mindestens ins 17. Jahrhundert,",
+     "und",
+     "1861 wurde der erste Freizeit-Skiclub von Norwegern in Australien eröffnet."
+    ],
+    "Spanish": [
+     "Downhill",
+     "El esquí como deporte",
+     "se remonta al menos al siglo XVII,",
+     "y",
+     "En 1861, el primer club de esquí recreativo fue abierto por noruegos en Australia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "skiing as a sport",
+     "right": "goes back to at",
+     "H": 0.8394,
+     "H_pct": 84.0,
+     "contra": 0.0013,
+     "cohesion": 0.8405
+    },
+    {
+     "pos": 16,
+     "left": "century, and in 1861",
+     "right": "the first recreational ski",
+     "H": 0.7167,
+     "H_pct": 16.0,
+     "contra": 0.1328,
+     "cohesion": 0.8264
+    },
+    {
+     "pos": 21,
+     "left": "first recreational ski club",
+     "right": "was opened by Norwegians",
+     "H": 0.7853,
+     "H_pct": 48.0,
+     "contra": 0.0503,
+     "cohesion": 0.8269
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Downhill",
+     "right": "skiing as a sport",
+     "H": 0.8541,
+     "H_pct": 92.0,
+     "contra": 0.0038,
+     "cohesion": 0.8574
+    },
+    {
+     "pos": 6,
+     "left": "as a sport goes",
+     "right": "back to at least",
+     "H": 0.846,
+     "H_pct": 88.0,
+     "contra": 0.0076,
+     "cohesion": 0.8525
+    },
+    {
+     "pos": 14,
+     "left": "the 17th century, and",
+     "right": "in 1861 the first",
+     "H": 0.8675,
+     "H_pct": 96.0,
+     "contra": 0.0068,
+     "cohesion": 0.8735
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_288",
+  "cuts": 4,
+  "avg_chunk": 4.4,
+  "latency_bin": "≤5",
+  "gap": 0.2038,
+  "policy_worst_contra": 0.0033,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    8,
+    17
+   ],
+   "H_set": 0.599,
+   "text": "RSPCA New South Wales ‖ chief inspector ‖ David O'Shannessy ‖ told the ABC that surveillance and inspections of abattoirs ‖ should be commonplace in Australia.",
+   "pieces": {
+    "Chinese": [
+     "新南威尔士州",
+     "首席检查员",
+     "大衛·奧沙尼西",
+     "说,这是对你的一个挑战。",
+     "应该是澳大利亚的常态。"
+    ],
+    "Japanese": [
+     "ニューサウスウェールズ州",
+     "警部補",
+     "デヴィッド・オシャネシー",
+     "ABCに対して 屠殺場の監視と検査が",
+     "オーストラリアでは普通のことでしょう"
+    ],
+    "German": [
+     "RSPCA New South Wales",
+     "Chefinspektor",
+     "David O’Shannessy",
+     "Er sagte dem ABC, dass die Überwachung und Inspektion von Schlachthöfen",
+     "Das sollte in Australien selbstverständlich sein."
+    ],
+    "Spanish": [
+     "RSPCA Nueva Gales del Sur",
+     "Inspector jefe",
+     "David O'Shannessy",
+     "dijo a ABC que la vigilancia y las inspecciones de los mataderos",
+     "La violencia doméstica debería ser común en Australia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    7,
+    11
+   ],
+   "H_set": 0.8029,
+   "text": "RSPCA ‖ New South Wales chief inspector ‖ David ‖ O'Shannessy told the ABC ‖ that surveillance and inspections of abattoirs should be commonplace in Australia.",
+   "pieces": {
+    "Chinese": [
+     "保护野生动物协会",
+     "新南威尔士州首席检查员",
+     "大卫",
+     "奥沙尼斯告诉ABC",
+     "对屠宰场的监督和检查应该在澳大利亚成为常态。"
+    ],
+    "Japanese": [
+     "RSPCA",
+     "ニューサウスウェールズ州検事総長",
+     "ダビデ",
+     "オシャネシーはABCに",
+     "殺処分場の監視と検査が オーストラリアで普通に行われるべきだと考えています"
+    ],
+    "German": [
+     "RSPCA",
+     "Chefinspektor von New South Wales",
+     "David",
+     "O'Shannessy sagte dem ABC",
+     "Überwachung und Inspektion von Schlachthöfen sollten in Australien üblich sein."
+    ],
+    "Spanish": [
+     "RSPCA",
+     "Inspector jefe de Nueva Gales del Sur",
+     "David",
+     "O'Shannessy le dijo a ABC",
+     "que la vigilancia y las inspecciones de los mataderos deberían ser habituales en Australia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "RSPCA New South Wales",
+     "right": "chief inspector David O'Shannessy",
+     "H": 0.8212,
+     "H_pct": 60.0,
+     "contra": 0.0022,
+     "cohesion": 0.823
+    },
+    {
+     "pos": 8,
+     "left": "chief inspector David O'Shannessy",
+     "right": "told the ABC that",
+     "H": 0.7477,
+     "H_pct": 20.0,
+     "contra": 0.0022,
+     "cohesion": 0.7494
+    },
+    {
+     "pos": 17,
+     "left": "and inspections of abattoirs",
+     "right": "should be commonplace in",
+     "H": 0.7694,
+     "H_pct": 25.0,
+     "contra": 0.0033,
+     "cohesion": 0.772
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "RSPCA",
+     "right": "New South Wales chief",
+     "H": 0.8623,
+     "H_pct": 100.0,
+     "contra": 0.0046,
+     "cohesion": 0.8663
+    },
+    {
+     "pos": 7,
+     "left": "Wales chief inspector David",
+     "right": "O'Shannessy told the ABC",
+     "H": 0.8496,
+     "H_pct": 85.0,
+     "contra": 0.0026,
+     "cohesion": 0.8518
+    },
+    {
+     "pos": 11,
+     "left": "O'Shannessy told the ABC",
+     "right": "that surveillance and inspections",
+     "H": 0.853,
+     "H_pct": 90.0,
+     "contra": 0.001,
+     "cohesion": 0.8538
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_847",
+  "cuts": 2,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.2027,
+  "policy_worst_contra": 0.0013,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    10
+   ],
+   "H_set": 0.5982,
+   "text": "Boomerang throwing ‖ is a popular skill that many tourists want ‖ to acquire.",
+   "pieces": {
+    "Chinese": [
+     "飛去來子",
+     "是很多游客想要的一种流行技能",
+     "要获得。"
+    ],
+    "Japanese": [
+     "ブーメラン投げ",
+     "多くの観光客が 知りたいと思っている",
+     "取得するために"
+    ],
+    "German": [
+     "Bumerangwerfen",
+     "Es ist eine beliebte Fähigkeit, die viele Touristen wollen",
+     "Zu erwerben."
+    ],
+    "Spanish": [
+     "Boomerang que lanza",
+     "Es una habilidad popular que muchos turistas quieren",
+     "Para adquirir."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    7
+   ],
+   "H_set": 0.801,
+   "text": "Boomerang throwing is ‖ a popular skill that ‖ many tourists want to acquire.",
+   "pieces": {
+    "Chinese": [
+     "回旋镖投掷是",
+     "一个流行的技能",
+     "很多游客想要获得。"
+    ],
+    "Japanese": [
+     "ブーメラン投げは",
+     "普及しているスキルです",
+     "多くの観光客が 買い取ってみたいと思っています"
+    ],
+    "German": [
+     "Bumerangwerfen ist",
+     "Eine beliebte Fähigkeit,",
+     "Viele Touristen wollen erwerben."
+    ],
+    "Spanish": [
+     "El lanzamiento de boomerang es",
+     "Una habilidad popular que",
+     "Muchos turistas quieren adquirir."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Boomerang throwing",
+     "right": "is a popular skill",
+     "H": 0.7076,
+     "H_pct": 30.0,
+     "contra": 0.0009,
+     "cohesion": 0.7082
+    },
+    {
+     "pos": 10,
+     "left": "that many tourists want",
+     "right": "to acquire.",
+     "H": 0.7031,
+     "H_pct": 10.0,
+     "contra": 0.0013,
+     "cohesion": 0.704
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Boomerang throwing is",
+     "right": "a popular skill that",
+     "H": 0.8451,
+     "H_pct": 100.0,
+     "contra": 0.0037,
+     "cohesion": 0.8483
+    },
+    {
+     "pos": 7,
+     "left": "a popular skill that",
+     "right": "many tourists want to",
+     "H": 0.827,
+     "H_pct": 90.0,
+     "contra": 0.0016,
+     "cohesion": 0.8284
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1000",
+  "cuts": 2,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.1877,
+  "policy_worst_contra": 0.0035,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    8
+   ],
+   "H_set": 0.6321,
+   "text": "Police said ‖ they suspect an alleged Daesh (ISIL) ‖ militant of responsibility for the attack.",
+   "pieces": {
+    "Chinese": [
+     "警方说",
+     "他们怀疑被指控的达伊沙(伊斯兰国)",
+     "对此次袭击负责的武装分子。"
+    ],
+    "Japanese": [
+     "警察は",
+     "彼らはダッシュ（ISIL）の容疑者を",
+     "攻撃の責任者だ"
+    ],
+    "German": [
+     "Die Polizei sagte",
+     "Sie vermuten einen mutmaßlichen Daesh (ISIL)",
+     "Die Verantwortung für den Anschlag übernahm die IS."
+    ],
+    "Spanish": [
+     "La policía dijo",
+     "Se sospecha que un presunto Daesh (ISIL)",
+     "El grupo terrorista ha reafirmado la responsabilidad del ataque."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2
+   ],
+   "H_set": 0.8198,
+   "text": "Police ‖ said ‖ they suspect an alleged Daesh (ISIL) militant of responsibility for the attack.",
+   "pieces": {
+    "Chinese": [
+     "警察",
+     "说",
+     "他们怀疑一名被指控的达伊沙(伊斯兰国)战斗人员对袭击负责。"
+    ],
+    "Japanese": [
+     "警察",
+     "言った",
+     "彼らはダッシュ(ISIL)の 武装勢力が 攻撃の責任者だと疑ってる"
+    ],
+    "German": [
+     "Polizei",
+     "sagte",
+     "Sie vermuten einen mutmaßlichen Daesh (ISIL) Militant der Verantwortung für den Angriff."
+    ],
+    "Spanish": [
+     "Policía",
+     "said",
+     "Se sospecha que un presunto militante de Daesh (EIIL) es responsable del ataque."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "an alleged Daesh (ISIL)",
+     "right": "militant of responsibility for",
+     "H": 0.666,
+     "H_pct": 16.7,
+     "contra": 0.0035,
+     "cohesion": 0.6684
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Police",
+     "right": "said they suspect an",
+     "H": 0.818,
+     "H_pct": 91.7,
+     "contra": 0.0012,
+     "cohesion": 0.819
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_360",
+  "cuts": 7,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.187,
+  "policy_worst_contra": 0.2167,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    8,
+    11,
+    17,
+    23,
+    25,
+    27
+   ],
+   "H_set": 0.5086,
+   "text": "Scientists call this process ‖ \"stimulated emission of radiation\" ‖ because the atoms ‖ are stimulated by the bright light, ‖ causing the emission of a photon ‖ of light, ‖ and light ‖ is a type of radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家们称这个过程为",
+     "辐射的激发发射",
+     "因为原子",
+     "被明亮的光刺激,",
+     "导致光子的发射",
+     "光明的,",
+     "光和光",
+     "是一种放射性。"
+    ],
+    "Japanese": [
+     "科学者はこの過程を",
+     "放射線の誘導放出",
+     "なぜなら 原子は",
+     "明るい光で刺激され",
+     "光子を放出し",
+     "光の力を",
+     "光と",
+     "放射線の一種です"
+    ],
+    "German": [
+     "Wissenschaftler nennen diesen Prozess",
+     "\"stimulierte Emission von Strahlung\"",
+     "Weil die Atome",
+     "werden durch das helle Licht angeregt,",
+     "Verursachen der Emission eines Photons",
+     "von Licht,",
+     "Licht und Licht",
+     "ist eine Art von Strahlung."
+    ],
+    "Spanish": [
+     "Los científicos llaman a este proceso",
+     "\"emisión estimulada de radiación\"",
+     "Porque los átomos",
+     "son estimulados por la luz brillante,",
+     "Causando la emisión de un fotón",
+     "de luz, de amor,",
+     "Luz y luz",
+     "Es un tipo de radiación."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    8,
+    25,
+    26,
+    31
+   ],
+   "H_set": 0.6955,
+   "text": "Scientists ‖ call ‖ this ‖ process \"stimulated emission of radiation\" ‖ because the atoms are stimulated by the bright light, causing the emission of a photon of light, ‖ and ‖ light is a type of ‖ radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家",
+     "呼叫",
+     "这个",
+     "过程\"激发放射\"",
+     "因为原子被明亮的光刺激,导致发射光子,",
+     "以及",
+     "光是一种类型的",
+     "辐射。"
+    ],
+    "Japanese": [
+     "科学者",
+     "呼び出す",
+     "これは",
+     "放射線の刺激放出プロセス",
+     "原子が明るい光に刺激され 光子を放出するからです",
+     "それに",
+     "光は",
+     "放射線だ"
+    ],
+    "German": [
+     "Wissenschaftler",
+     "Call",
+     "this",
+     "Verfahren \"stimulierte Emission von Strahlung\"",
+     "weil die Atome durch das helle Licht angeregt werden, was die Emission eines Photons des Lichts verursacht,",
+     "und",
+     "Licht ist eine Art von",
+     "Strahlung."
+    ],
+    "Spanish": [
+     "Científicos",
+     "llamada",
+     "this",
+     "Proceso \"emisión estimulada de radiación\"",
+     "porque los átomos son estimulados por la luz brillante, causando la emisión de un fotón de luz,",
+     "y",
+     "La luz es un tipo de",
+     "radiación."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "Scientists call this process",
+     "right": "\"stimulated emission of radiation\"",
+     "H": 0.8094,
+     "H_pct": 76.7,
+     "contra": 0.0036,
+     "cohesion": 0.8123
+    },
+    {
+     "pos": 11,
+     "left": "radiation\" because the atoms",
+     "right": "are stimulated by the",
+     "H": 0.6043,
+     "H_pct": 23.3,
+     "contra": 0.2167,
+     "cohesion": 0.7715
+    },
+    {
+     "pos": 17,
+     "left": "by the bright light,",
+     "right": "causing the emission of",
+     "H": 0.7741,
+     "H_pct": 56.7,
+     "contra": 0.0117,
+     "cohesion": 0.7833
+    },
+    {
+     "pos": 23,
+     "left": "emission of a photon",
+     "right": "of light, and light",
+     "H": 0.8055,
+     "H_pct": 73.3,
+     "contra": 0.0202,
+     "cohesion": 0.8221
+    },
+    {
+     "pos": 27,
+     "left": "of light, and light",
+     "right": "is a type of",
+     "H": 0.78,
+     "H_pct": 60.0,
+     "contra": 0.046,
+     "cohesion": 0.8176
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Scientists",
+     "right": "call this process \"stimulated",
+     "H": 0.8407,
+     "H_pct": 96.7,
+     "contra": 0.0011,
+     "cohesion": 0.8417
+    },
+    {
+     "pos": 2,
+     "left": "Scientists call",
+     "right": "this process \"stimulated emission",
+     "H": 0.8133,
+     "H_pct": 80.0,
+     "contra": 0.0024,
+     "cohesion": 0.8153
+    },
+    {
+     "pos": 3,
+     "left": "Scientists call this",
+     "right": "process \"stimulated emission of",
+     "H": 0.8271,
+     "H_pct": 86.7,
+     "contra": 0.0026,
+     "cohesion": 0.8293
+    },
+    {
+     "pos": 26,
+     "left": "photon of light, and",
+     "right": "light is a type",
+     "H": 0.8299,
+     "H_pct": 93.3,
+     "contra": 0.0131,
+     "cohesion": 0.8409
+    },
+    {
+     "pos": 31,
+     "left": "is a type of",
+     "right": "radiation.",
+     "H": 0.8143,
+     "H_pct": 83.3,
+     "contra": 0.0249,
+     "cohesion": 0.8351
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_588",
+  "cuts": 9,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.1834,
+  "policy_worst_contra": 0.2127,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    3,
+    4,
+    8,
+    15,
+    20,
+    22,
+    27,
+    31
+   ],
+   "H_set": 0.4521,
+   "text": "Greed ‖ and selfishness ‖ will ‖ always be with us ‖ and it is the nature of cooperation ‖ that when the majority benefit ‖ there will ‖ always be more to gain ‖ in the short term ‖ by acting selfishly",
+   "pieces": {
+    "Chinese": [
+     "贪婪",
+     "与自私",
+     "威尔",
+     "永远与我们同在",
+     "合作的本质是",
+     "当大多数人受益时",
+     "将有",
+     "总是有更多的获得",
+     "短期内",
+     "通过自私的行为"
+    ],
+    "Japanese": [
+     "貪欲",
+     "利己主義と",
+     "ウィル",
+     "いつも一緒にいてくれ",
+     "協力の本質は",
+     "多数派が利益を得たとき",
+     "あそこに",
+     "常に もっと得るものがある",
+     "短期的には",
+     "利己的に行動することで"
+    ],
+    "German": [
+     "Gier",
+     "Ungerechtigkeit und Selbstsucht",
+     "Will",
+     "Sei immer bei uns",
+     "Und es ist die Natur der Zusammenarbeit",
+     "Wenn die Mehrheit profitiert,",
+     "Es wird",
+     "Es gibt immer mehr zu gewinnen",
+     "Kurzfristig",
+     "Indem wir selbstsüchtig handeln"
+    ],
+    "Spanish": [
+     "Codicia",
+     "El egoísmo y el egoísmo",
+     "Will",
+     "Siempre estarás con nosotros",
+     "Y es la naturaleza de la cooperación",
+     "que cuando la mayoría se beneficia",
+     "No habrá",
+     "Siempre habrá más que ganar",
+     "A corto plazo",
+     "Actuando egoístamente"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    8,
+    9,
+    10,
+    11,
+    15,
+    16,
+    20
+   ],
+   "H_set": 0.6354,
+   "text": "Greed ‖ and ‖ selfishness will always be with us ‖ and ‖ it ‖ is ‖ the nature of cooperation ‖ that ‖ when the majority benefit ‖ there will always be more to gain in the short term by acting selfishly",
+   "pieces": {
+    "Chinese": [
+     "贪婪",
+     "以及",
+     "我们永远都会有自私",
+     "以及",
+     "意大利",
+     "是",
+     "合作的性质",
+     "该",
+     "当多数人受益时",
+     "短期内,自私的行为总是会带来更多的收益。"
+    ],
+    "Japanese": [
+     "貪欲",
+     "それに",
+     "利己主義は常に我々と共にいる",
+     "それに",
+     "それは",
+     "はい",
+     "協力の性質は",
+     "あれは",
+     "多数派が利益を得る時",
+     "利己的に行動することで 短期的に得られるものは 常に多く"
+    ],
+    "German": [
+     "Gier",
+     "und",
+     "Selbstsucht wird immer bei uns sein",
+     "und",
+     "it",
+     "ist",
+     "Art der Zusammenarbeit",
+     "that",
+     "Wenn die Mehrheit profitiert",
+     "Es wird immer mehr zu gewinnen geben, wenn man kurzfristig egoistisch handelt"
+    ],
+    "Spanish": [
+     "Codicia",
+     "y",
+     "El egoísmo siempre estará con nosotros",
+     "y",
+     "it",
+     "es",
+     "La naturaleza de la cooperación",
+     "that",
+     "Cuando la mayoría se beneficia",
+     "Siempre habrá más que ganar a corto plazo actuando egoístamente"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Greed and selfishness",
+     "right": "will always be with",
+     "H": 0.7673,
+     "H_pct": 65.6,
+     "contra": 0.0008,
+     "cohesion": 0.768
+    },
+    {
+     "pos": 4,
+     "left": "Greed and selfishness will",
+     "right": "always be with us",
+     "H": 0.7131,
+     "H_pct": 18.8,
+     "contra": 0.0003,
+     "cohesion": 0.7133
+    },
+    {
+     "pos": 22,
+     "left": "majority benefit there will",
+     "right": "always be more to",
+     "H": 0.744,
+     "H_pct": 43.8,
+     "contra": 0.0089,
+     "cohesion": 0.7507
+    },
+    {
+     "pos": 27,
+     "left": "be more to gain",
+     "right": "in the short term",
+     "H": 0.7614,
+     "H_pct": 62.5,
+     "contra": 0.0124,
+     "cohesion": 0.7709
+    },
+    {
+     "pos": 31,
+     "left": "in the short term",
+     "right": "by acting selfishly",
+     "H": 0.625,
+     "H_pct": 6.2,
+     "contra": 0.2127,
+     "cohesion": 0.7938
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Greed and",
+     "right": "selfishness will always be",
+     "H": 0.8174,
+     "H_pct": 93.8,
+     "contra": 0.0022,
+     "cohesion": 0.8193
+    },
+    {
+     "pos": 9,
+     "left": "be with us and",
+     "right": "it is the nature",
+     "H": 0.8207,
+     "H_pct": 96.9,
+     "contra": 0.0007,
+     "cohesion": 0.8213
+    },
+    {
+     "pos": 10,
+     "left": "with us and it",
+     "right": "is the nature of",
+     "H": 0.7916,
+     "H_pct": 81.2,
+     "contra": 0.0005,
+     "cohesion": 0.7919
+    },
+    {
+     "pos": 11,
+     "left": "us and it is",
+     "right": "the nature of cooperation",
+     "H": 0.8073,
+     "H_pct": 90.6,
+     "contra": 0.0006,
+     "cohesion": 0.8078
+    },
+    {
+     "pos": 16,
+     "left": "nature of cooperation that",
+     "right": "when the majority benefit",
+     "H": 0.7888,
+     "H_pct": 75.0,
+     "contra": 0.002,
+     "cohesion": 0.7904
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1253",
+  "cuts": 5,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.1778,
+  "policy_worst_contra": 0.3486,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    8,
+    11,
+    15,
+    21
+   ],
+   "H_set": 0.4583,
+   "text": "They did two experiments ‖ marking either the DNA ‖ in the phage ‖ with a radioactive phosphorus ‖ or the protein of the phage ‖ with radioactive sulfur.",
+   "pieces": {
+    "Chinese": [
+     "他们做了两个实验",
+     "标记DNA",
+     "世界上最好的",
+     "放射性磷",
+     "或者是噬菌体的蛋白质",
+     "放射性硫。"
+    ],
+    "Japanese": [
+     "２つの実験を行いました",
+     "DNAを標識することで",
+     "ファージの中に",
+     "放射性リンを使って",
+     "ファージのタンパク質を",
+     "放射性硫黄で 処理してるんだ"
+    ],
+    "German": [
+     "Sie führten zwei Experimente durch",
+     "Markieren entweder der DNA",
+     "In der Phage",
+     "Mit einem radioaktiven Phosphor",
+     "oder das Protein der Phage",
+     "Mit radioaktivem Schwefel."
+    ],
+    "Spanish": [
+     "Hicieron dos experimentos",
+     "Marcar el ADN",
+     "En el fago",
+     "Con un fósforo radiactivo",
+     "o la proteína del fago",
+     "Con azufre radiactivo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    11
+   ],
+   "H_set": 0.6361,
+   "text": "They ‖ did ‖ two ‖ experiments ‖ marking either the DNA in the phage ‖ with a radioactive phosphorus or the protein of the phage with radioactive sulfur.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "已完成",
+     "二",
+     "实验",
+     "标记噬菌体中的DNA",
+     "与放射性磷或蛋白质的噬菌体与放射性硫。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "あった",
+     "二つ",
+     "実験",
+     "ファージのDNAを標識するか",
+     "放射性リンや 放射性硫黄を含むファージのタンパク質を 作り出すことができるのです"
+    ],
+    "German": [
+     "They",
+     "did",
+     "Zwei",
+     "Experimente",
+     "Markierung entweder der DNA im Phagen",
+     "Mit einem radioaktiven Phosphor oder dem Protein der Phage mit radioaktivem Schwefel."
+    ],
+    "Spanish": [
+     "They",
+     "did",
+     "Dos",
+     "experiments",
+     "Marcando el ADN en el fago",
+     "Con un fósforo radiactivo o la proteína del fago con azufre radiactivo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "marking either the DNA",
+     "right": "in the phage with",
+     "H": 0.7457,
+     "H_pct": 77.3,
+     "contra": 0.0107,
+     "cohesion": 0.7538
+    },
+    {
+     "pos": 15,
+     "left": "with a radioactive phosphorus",
+     "right": "or the protein of",
+     "H": 0.7219,
+     "H_pct": 72.7,
+     "contra": 0.117,
+     "cohesion": 0.8175
+    },
+    {
+     "pos": 21,
+     "left": "protein of the phage",
+     "right": "with radioactive sulfur.",
+     "H": 0.5044,
+     "H_pct": 45.5,
+     "contra": 0.3486,
+     "cohesion": 0.7743
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "They",
+     "right": "did two experiments marking",
+     "H": 0.7526,
+     "H_pct": 81.8,
+     "contra": 0.0024,
+     "cohesion": 0.7544
+    },
+    {
+     "pos": 2,
+     "left": "They did",
+     "right": "two experiments marking either",
+     "H": 0.7801,
+     "H_pct": 95.5,
+     "contra": 0.0004,
+     "cohesion": 0.7804
+    },
+    {
+     "pos": 3,
+     "left": "They did two",
+     "right": "experiments marking either the",
+     "H": 0.7563,
+     "H_pct": 86.4,
+     "contra": 0.0006,
+     "cohesion": 0.7567
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_468",
+  "cuts": 4,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.1704,
+  "policy_worst_contra": 0.0103,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    9,
+    13
+   ],
+   "H_set": 0.5585,
+   "text": "Typical for the period, ‖ Kirby Muxloe Castle ‖ is more ‖ of a fortified house ‖ than a true castle.",
+   "pieces": {
+    "Chinese": [
+     "该期间的典型情况是，",
+     "科比马克斯洛城堡",
+     "是更多",
+     "坚固的房子",
+     "比一个真正的城堡。"
+    ],
+    "Japanese": [
+     "時代の典型的なものは",
+     "カービー・マクスロー城",
+     "より多くの",
+     "防御された家のようなものでした",
+     "城よりも 大きい"
+    ],
+    "German": [
+     "Typisch für die Zeit,",
+     "Kirby Muxloe Castle",
+     "Was ist mehr",
+     "Ein befestigtes Haus",
+     "Ein echtes Schloss."
+    ],
+    "Spanish": [
+     "Típico para el período,",
+     "Hoteles cerca de Kirby Muxloe Castle",
+     "El amor es más",
+     "De una casa fortificada",
+     "Más que un verdadero castillo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    4,
+    5,
+    6
+   ],
+   "H_set": 0.7289,
+   "text": "Typical ‖ for the period, ‖ Kirby ‖ Muxloe ‖ Castle is more of a fortified house than a true castle.",
+   "pieces": {
+    "Chinese": [
+     "典型",
+     "2008年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "柯比",
+     "馬克斯洛",
+     "城堡是比一个真正的城堡更多的一个防御住宅。"
+    ],
+    "Japanese": [
+     "典型的",
+     "あの時期は",
+     "カービー",
+     "マクスロー",
+     "城は本来の城よりも要塞化された家のようなものである。"
+    ],
+    "German": [
+     "Typisch",
+     "für den Zeitraum,",
+     "Kirby",
+     "Muxloe",
+     "Castle ist mehr ein befestigtes Haus als eine echte Burg."
+    ],
+    "Spanish": [
+     "Típico",
+     "para el período,",
+     "Kirby",
+     "Muxloe",
+     "El castillo es más una casa fortificada que un castillo real."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "period, Kirby Muxloe Castle",
+     "right": "is more of a",
+     "H": 0.6902,
+     "H_pct": 40.0,
+     "contra": 0.002,
+     "cohesion": 0.6915
+    },
+    {
+     "pos": 9,
+     "left": "Muxloe Castle is more",
+     "right": "of a fortified house",
+     "H": 0.676,
+     "H_pct": 26.7,
+     "contra": 0.0061,
+     "cohesion": 0.6802
+    },
+    {
+     "pos": 13,
+     "left": "of a fortified house",
+     "right": "than a true castle.",
+     "H": 0.7041,
+     "H_pct": 53.3,
+     "contra": 0.0015,
+     "cohesion": 0.7052
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Typical",
+     "right": "for the period, Kirby",
+     "H": 0.7906,
+     "H_pct": 93.3,
+     "contra": 0.001,
+     "cohesion": 0.7914
+    },
+    {
+     "pos": 5,
+     "left": "for the period, Kirby",
+     "right": "Muxloe Castle is more",
+     "H": 0.7805,
+     "H_pct": 86.7,
+     "contra": 0.006,
+     "cohesion": 0.7852
+    },
+    {
+     "pos": 6,
+     "left": "the period, Kirby Muxloe",
+     "right": "Castle is more of",
+     "H": 0.7529,
+     "H_pct": 80.0,
+     "contra": 0.0062,
+     "cohesion": 0.7576
+    }
+   ]
+  }
+ }
+]

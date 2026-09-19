@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that separate a predicate (finite copula or main verb) from the complement that completes its meaning; leaving the verb or copula alone produces high-contradiction or orphaned fragments in short-latency pieces.",
+    "evidence": "['en_us_733','en_us_525','en_us_738','en_us_1294','en_us_89','en_us_1570','en_us_633','en_us_399','en_us_1297','en_us_655']: each case drops a cut that leaves a finite verb/copula or light verbal token separated from the noun/PP/clausal complement that completes its predicate, and those isolated fragments carry very high contra.",
+    "type_predicate": "Sentences where a finite copula or main verb (including auxiliaries) is immediately followed, without intervening punctuation, by an obligatory complement (a noun phrase, prepositional phrase, numeral+unit, or clause) that completes the predicate; these are the sentences this finding applies to.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a finite copula or main verb and its immediately following obligatory complement (object, predicative NP/PP, numeral/unit, or clause); keep the verb+complement together."
+    }
+   },
+   {
+    "diagnosis": "The prompt sometimes splits numerals/quantities from the units or nouns that disambiguate them, producing detached, misleading fragments.",
+    "evidence": "['en_us_140','en_us_724','en_us_46','en_us_1116']: in each sentence the policy separated a numeral or quantity from its unit or quantified noun (e.g. years, barrels, kilometers), and the target keeps the numeral with its unit to preserve meaning.",
+    "type_predicate": "Sentences where a numeral or explicit quantity is immediately followed by a unit or the noun it quantifies (years, barrels, kilometers, people, etc.); do not cut between the numeral/quantity and that unit/noun.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Never cut between a numeral/quantity and its immediately following unit or the noun it quantifies; keep the number and its unit/noun in the same piece."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that separate a predicate (finite copula or main verb) from the complement that completes its meaning; leaving the verb or copula alone produces high-contradiction or orphaned fragments in short-latency pieces.",
+   "evidence": "['en_us_733','en_us_525','en_us_738','en_us_1294','en_us_89','en_us_1570','en_us_633','en_us_399','en_us_1297','en_us_655']: each case drops a cut that leaves a finite verb/copula or light verbal token separated from the noun/PP/clausal complement that completes its predicate, and those isolated fragments carry very high contra.",
+   "type_predicate": "Sentences where a finite copula or main verb (including auxiliaries) is immediately followed, without intervening punctuation, by an obligatory complement (a noun phrase, prepositional phrase, numeral+unit, or clause) that completes the predicate; these are the sentences this finding applies to.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a finite copula or main verb and its immediately following obligatory complement (object, predicative NP/PP, numeral/unit, or clause); keep the verb+complement together."
+   }
+  },
+  {
+   "diagnosis": "The prompt sometimes splits numerals/quantities from the units or nouns that disambiguate them, producing detached, misleading fragments.",
+   "evidence": "['en_us_140','en_us_724','en_us_46','en_us_1116']: in each sentence the policy separated a numeral or quantity from its unit or quantified noun (e.g. years, barrels, kilometers), and the target keeps the numeral with its unit to preserve meaning.",
+   "type_predicate": "Sentences where a numeral or explicit quantity is immediately followed by a unit or the noun it quantifies (years, barrels, kilometers, people, etc.); do not cut between the numeral/quantity and that unit/noun.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Never cut between a numeral/quantity and its immediately following unit or the noun it quantifies; keep the number and its unit/noun in the same piece."
+   }
+  }
+ ]
+}

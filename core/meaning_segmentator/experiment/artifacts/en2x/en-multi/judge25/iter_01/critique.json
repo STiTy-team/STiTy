@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates the harm of cutting where a short following piece (a few words) completes the preceding predicate or provides its essential complement (object, prepositional phrase, date, place, or short clause), producing detached verbs/orphans that break meaning when pieces are translated separately.",
+    "evidence": "cases: [\"en_us_44\",\"en_us_270\",\"en_us_378\",\"en_us_574\",\"en_us_998\",\"en_us_1042\",\"en_us_1116\",\"en_us_375\"] — all show policy cuts that leave a verb/auxiliary or predicate fragment separated from a 1–4 word span that completes its argument or disambiguates (dates, directions, verb+PP complements, object NPs), and the targets rejoined those spans.",
+    "type_predicate": "A candidate cut would put a verb/auxiliary or other predicate head at the end of a segment while the next segment begins with a short (≈1–4 word) sequence that supplies the verb's required complement or completes its object/adjunct (dates, places, measurements, prepositional complements, or essential post-nominal modifiers).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut if the immediately following piece (≤4 words) completes the current predicate — e.g. supplies its object, a required prepositional complement, a date/place/measurement, or an essential post‑nominal modifier."
+    }
+   },
+   {
+    "diagnosis": "The prompt permits cuts inside numeral/measurement spans (numbers, units, parenthetical conversions or multipliers), which severs quantities from their units or clarifying parentheticals and produces contradictory or incoherent translations.",
+    "evidence": "cases: [\"en_us_44\",\"en_us_270\",\"en_us_101\",\"en_us_375\"] — each policy cut splits a numeral from its unit or from a parenthetical conversion/multiplier (e.g. '105 miles per hour (165 km/h)', '£27 million', '55,000 barrels (2.3 million gallons)', '200 pounds (90kg) ... 36 pounds (16kg)'), and the targets keep those spans intact.",
+    "type_predicate": "A candidate cut would fall between a numeral and its unit/multiplier or between a measurement and its parenthetical conversion (for example numeral + unit, numeral + multiplier word, or numeral followed/preceded by a parenthetical conversion).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting inside numeral+unit or measurement pairs (including parenthetical conversions or multipliers); keep the number and its unit/conversion in the same segment."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates the harm of cutting where a short following piece (a few words) completes the preceding predicate or provides its essential complement (object, prepositional phrase, date, place, or short clause), producing detached verbs/orphans that break meaning when pieces are translated separately.",
+   "evidence": "cases: [\"en_us_44\",\"en_us_270\",\"en_us_378\",\"en_us_574\",\"en_us_998\",\"en_us_1042\",\"en_us_1116\",\"en_us_375\"] — all show policy cuts that leave a verb/auxiliary or predicate fragment separated from a 1–4 word span that completes its argument or disambiguates (dates, directions, verb+PP complements, object NPs), and the targets rejoined those spans.",
+   "type_predicate": "A candidate cut would put a verb/auxiliary or other predicate head at the end of a segment while the next segment begins with a short (≈1–4 word) sequence that supplies the verb's required complement or completes its object/adjunct (dates, places, measurements, prepositional complements, or essential post-nominal modifiers).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut if the immediately following piece (≤4 words) completes the current predicate — e.g. supplies its object, a required prepositional complement, a date/place/measurement, or an essential post‑nominal modifier."
+   }
+  },
+  {
+   "diagnosis": "The prompt permits cuts inside numeral/measurement spans (numbers, units, parenthetical conversions or multipliers), which severs quantities from their units or clarifying parentheticals and produces contradictory or incoherent translations.",
+   "evidence": "cases: [\"en_us_44\",\"en_us_270\",\"en_us_101\",\"en_us_375\"] — each policy cut splits a numeral from its unit or from a parenthetical conversion/multiplier (e.g. '105 miles per hour (165 km/h)', '£27 million', '55,000 barrels (2.3 million gallons)', '200 pounds (90kg) ... 36 pounds (16kg)'), and the targets keep those spans intact.",
+   "type_predicate": "A candidate cut would fall between a numeral and its unit/multiplier or between a measurement and its parenthetical conversion (for example numeral + unit, numeral + multiplier word, or numeral followed/preceded by a parenthetical conversion).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting inside numeral+unit or measurement pairs (including parenthetical conversions or multipliers); keep the number and its unit/conversion in the same segment."
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that separate a predicate (verb or clause head) from the phrase that completes its meaning, causing detached predicates or mis-scoped modifiers when pieces are translated independently.",
+    "evidence": "['en_us_381','en_us_574','en_us_375','en_us_1116','en_us_309','en_us_400','en_us_507'] — these 7 cases all cut between a verb/clause head and its immediate complement or essential adjunct.",
+    "type_predicate": "a candidate cut falls immediately after a verb or clause head whose meaning is completed only by the following span (object, prepositional complement, clausal complement, or scope-fixing temporal/locative adjunct)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a verb or clause head and its immediately following essential complement or adjunct (objects, prepositional complements, clausal complements, or temporal/locative scope markers)."
+    }
+   },
+   {
+    "diagnosis": "The prompt mishandles numeric/measurement attachments: it allows cuts that detach numerals, units, dates or parenthetical measures from the noun or phrase they quantify, which produces incoherence or contradiction when pieces are translated separately.",
+    "evidence": "['en_us_270','en_us_419','en_us_101','en_us_375','en_us_1103','en_us_1527'] — these 6 cases all separate a head from an immediately following numeral/measurement, unit, date, or parenthetical measurement.",
+    "type_predicate": "a candidate cut separates a head (noun or verb phrase) from an immediately following numeral, quantifier, date, unit, or parenthetical measurement that completes or disambiguates that phrase",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut so as to separate a noun/verb head from an immediately following numeral, quantifier, date, unit, or parenthetical measurement that completes or disambiguates the phrase."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that separate a predicate (verb or clause head) from the phrase that completes its meaning, causing detached predicates or mis-scoped modifiers when pieces are translated independently.",
+   "evidence": "['en_us_381','en_us_574','en_us_375','en_us_1116','en_us_309','en_us_400','en_us_507'] — these 7 cases all cut between a verb/clause head and its immediate complement or essential adjunct.",
+   "type_predicate": "a candidate cut falls immediately after a verb or clause head whose meaning is completed only by the following span (object, prepositional complement, clausal complement, or scope-fixing temporal/locative adjunct)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a verb or clause head and its immediately following essential complement or adjunct (objects, prepositional complements, clausal complements, or temporal/locative scope markers)."
+   }
+  },
+  {
+   "diagnosis": "The prompt mishandles numeric/measurement attachments: it allows cuts that detach numerals, units, dates or parenthetical measures from the noun or phrase they quantify, which produces incoherence or contradiction when pieces are translated separately.",
+   "evidence": "['en_us_270','en_us_419','en_us_101','en_us_375','en_us_1103','en_us_1527'] — these 6 cases all separate a head from an immediately following numeral/measurement, unit, date, or parenthetical measurement.",
+   "type_predicate": "a candidate cut separates a head (noun or verb phrase) from an immediately following numeral, quantifier, date, unit, or parenthetical measurement that completes or disambiguates that phrase",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut so as to separate a noun/verb head from an immediately following numeral, quantifier, date, unit, or parenthetical measurement that completes or disambiguates the phrase."
+   }
+  }
+ ]
+}

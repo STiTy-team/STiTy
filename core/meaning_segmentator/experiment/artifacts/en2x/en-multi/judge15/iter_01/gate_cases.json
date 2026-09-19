@@ -1,0 +1,2303 @@
+[
+ {
+  "id": "en_us_44",
+  "cuts": 6,
+  "avg_chunk": 2.4,
+  "latency_bin": "≤3",
+  "gap": 0.7333,
+  "policy_worst_contra": 0.9919,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    11,
+    12,
+    14,
+    15,
+    16
+   ],
+   "H_set": 0.0047,
+   "text": "Fred currently has winds of 105 miles per hour ‖ (165 km/h) ‖ and ‖ is moving ‖ towards ‖ the ‖ northwest.",
+   "pieces": {
+    "Chinese": [
+     "Fred 目前风速为每小时105英里",
+     "(165公里/小时)",
+     "以及",
+     "是移动",
+     "向",
+     "该",
+     "西北"
+    ],
+    "Japanese": [
+     "フレッドは現在 時速160キロの風を吹いています",
+     "速度",
+     "それに",
+     "動いているのです",
+     "向かって",
+     "あの",
+     "北西"
+    ],
+    "German": [
+     "Fred hat derzeit Winde von 165 Meilen pro Stunde",
+     "(165 km/h)",
+     "und",
+     "Die Welt bewegt sich",
+     "towards",
+     "the",
+     "Nordwest."
+    ],
+    "Spanish": [
+     "Fred tiene vientos de 105 millas por hora",
+     "(165 km/h)",
+     "y",
+     "El mundo se mueve",
+     "hacia",
+     "the",
+     "Al noroeste."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    9,
+    11,
+    14
+   ],
+   "H_set": 0.738,
+   "text": "Fred ‖ currently ‖ has winds of ‖ 105 miles per hour ‖ (165 km/h) ‖ and is moving ‖ towards the northwest.",
+   "pieces": {
+    "Chinese": [
+     "弗雷德",
+     "目前",
+     "风向",
+     "105英里每小时",
+     "(165公里/小时)",
+     "并且正在移动",
+     "向西北方向。"
+    ],
+    "Japanese": [
+     "フレッド",
+     "あの あの...。",
+     "風が吹いている",
+     "時速105マイル",
+     "速度",
+     "動いているのです",
+     "北西に向かって"
+    ],
+    "German": [
+     "Fred",
+     "Aktuell",
+     "hat Winde von",
+     "105 Meilen pro Stunde",
+     "(165 km/h)",
+     "Und bewegt sich",
+     "Richtung Nordwesten."
+    ],
+    "Spanish": [
+     "Fred",
+     "actualmente",
+     "Tiene vientos de",
+     "105 millas por hora",
+     "(165 km/h)",
+     "Y se está moviendo",
+     "hacia el noroeste."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "hour (165 km/h) and",
+     "right": "is moving towards the",
+     "H": 0.7264,
+     "H_pct": 60.0,
+     "contra": 0.0466,
+     "cohesion": 0.7619
+    },
+    {
+     "pos": 15,
+     "left": "and is moving towards",
+     "right": "the northwest.",
+     "H": 0.3773,
+     "H_pct": 6.7,
+     "contra": 0.4875,
+     "cohesion": 0.7363
+    },
+    {
+     "pos": 16,
+     "left": "is moving towards the",
+     "right": "northwest.",
+     "H": 0.0054,
+     "H_pct": 0.0,
+     "contra": 0.9919,
+     "cohesion": 0.6619
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Fred",
+     "right": "currently has winds of",
+     "H": 0.8147,
+     "H_pct": 93.3,
+     "contra": 0.0016,
+     "cohesion": 0.816
+    },
+    {
+     "pos": 2,
+     "left": "Fred currently",
+     "right": "has winds of 105",
+     "H": 0.762,
+     "H_pct": 66.7,
+     "contra": 0.002,
+     "cohesion": 0.7635
+    },
+    {
+     "pos": 5,
+     "left": "currently has winds of",
+     "right": "105 miles per hour",
+     "H": 0.8208,
+     "H_pct": 100.0,
+     "contra": 0.0076,
+     "cohesion": 0.8271
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 2,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.7783,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9
+   ],
+   "H_set": 0.0038,
+   "text": "The Park Service (MINAE) ‖ does not issue park permits ‖ more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "公园服务(MINAE)",
+     "不发放公园许可证",
+     "预计抵达前一个月以上。"
+    ],
+    "Japanese": [
+     "公園局（外務省）",
+     "許可証を発行しません",
+     "予定より1ヶ月以上早く"
+    ],
+    "German": [
+     "Der Park Service (MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El Servicio de Parques (MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación a la fecha de llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4
+   ],
+   "H_set": 0.7822,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "旅游局不会在预计抵达日期前一个月以上发放公园许可证。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "予定到着の1ヶ月前より 前に公園許可を発行しない"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Die Parkverwaltung stellt Parkgenehmigungen nicht mehr als einen Monat vor der voraussichtlichen Ankunft aus."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "El parque no emite permisos de parque con más de un mes de anticipación a la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The Park Service",
+     "right": "(MINAE) does not issue",
+     "H": 0.8269,
+     "H_pct": 100.0,
+     "contra": 0.0027,
+     "cohesion": 0.8291
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_845",
+  "cuts": 1,
+  "avg_chunk": 11.0,
+  "latency_bin": "≤99",
+  "gap": 0.7589,
+  "policy_worst_contra": 0.8692,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    19
+   ],
+   "H_set": 0.1028,
+   "text": "While it's far from a modern phenomenon, most people probably associate it with youth vandalizing public and private property ‖ using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然它远非现代现象,但大多数人可能会将其与青年人破坏公共和私人财产联系起来",
+     "使用喷涂油漆。"
+    ],
+    "Japanese": [
+     "近代的な現象とは 遠いが 多くの人は 若者が公共財や 私有財産を破壊すると 関連付けている",
+     "塗料を噴射して"
+    ],
+    "German": [
+     "Obwohl es weit davon entfernt ist, ein modernes Phänomen zu sein, verbinden die meisten Menschen es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum vandalisieren",
+     "Mit Sprühfarbe."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno, la mayoría de la gente probablemente lo asocia con jóvenes que vandalizan propiedades públicas y privadas",
+     "Usando pintura en aerosol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7
+   ],
+   "H_set": 0.8617,
+   "text": "While it's far from a modern phenomenon, ‖ most people probably associate it with youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "大多数人可能会把它与青年人用喷漆破坏公共和私人财产联系起来。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "多くの人は ペンキを使って 公共財や私有財産を破壊する 若者と関連付けるでしょう"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Die meisten Menschen assoziieren es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum mit Sprühfarbe vandalisieren."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "La mayoría de la gente probablemente lo asocia con jóvenes que vandalizan propiedad pública y privada usando pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 19,
+     "left": "public and private property",
+     "right": "using spray paint.",
+     "H": 0.1028,
+     "H_pct": 15.0,
+     "contra": 0.8692,
+     "cohesion": 0.7857
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "from a modern phenomenon,",
+     "right": "most people probably associate",
+     "H": 0.8617,
+     "H_pct": 100.0,
+     "contra": 0.0039,
+     "cohesion": 0.865
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1617",
+  "cuts": 8,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.6263,
+  "policy_worst_contra": 0.842,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    12,
+    17,
+    19,
+    22,
+    26,
+    30
+   ],
+   "H_set": 0.1065,
+   "text": "The Kruger National Park ‖ (KNP) ‖ lies in the north-east of South Africa ‖ and runs along the border ‖ of Mozambique ‖ in the east, ‖ Zimbabwe in the north, ‖ and the southern border ‖ is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克鲁格国家公园",
+     "(克罗地亚国家警察)",
+     "位于南非东北部",
+     "沿着边界",
+     "莫桑比克共和国",
+     "东方,",
+     "北部的津巴布韦",
+     "南部边界",
+     "是鳄鱼河"
+    ],
+    "Japanese": [
+     "クルーガー国立公園",
+     "（クン・ニョンパ）",
+     "南アフリカ北東部に位置し",
+     "国境に沿って走り",
+     "モザンビークの国旗",
+     "東部では",
+     "北はジンバブエ",
+     "南部の国境は",
+     "ワニ川です"
+    ],
+    "German": [
+     "Der Krüger-Nationalpark",
+     "(KNP)",
+     "Die Provinz liegt im Nordosten von Südafrika",
+     "Und läuft entlang der Grenze",
+     "Geschichte Mosambiks",
+     "im Osten,",
+     "Simbabwe im Norden,",
+     "und die südliche Grenze",
+     "Der Fluss ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Parque Nacional Kruger",
+     "(KNP)",
+     "Se encuentra en el noreste de Sudáfrica",
+     "Y corre a lo largo de la frontera",
+     "de Mozambique",
+     "en el este,",
+     "Zimbabwe en el norte,",
+     "y la frontera sur",
+     "El río más grande es el Río Cocodrilo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    15,
+    18,
+    22,
+    27
+   ],
+   "H_set": 0.7328,
+   "text": "The Kruger ‖ National ‖ Park ‖ (KNP) ‖ lies in the north-east of South Africa and runs along ‖ the border of ‖ Mozambique in the east, ‖ Zimbabwe in the north, and ‖ the southern border is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克魯格河",
+     "国家",
+     "帕克",
+     "(克罗地亚国家警察)",
+     "位于南非东北部,沿着",
+     "边界",
+     "东部是莫桑比克,",
+     "北部的津巴布韦，",
+     "南部边界是鳄鱼河。"
+    ],
+    "Japanese": [
+     "クルーガー",
+     "ナショナル",
+     "パーク",
+     "（クン・ニョンパ）",
+     "南アフリカ北東部にあり",
+     "国境の",
+     "東はモザンビーク",
+     "北はジンバブエ",
+     "南の境界は クロコダイル川です"
+    ],
+    "German": [
+     "Der Krüger",
+     "National",
+     "Park",
+     "(KNP)",
+     "Die Provinz liegt im Nordosten Südafrikas und verläuft entlang",
+     "Die Grenze von",
+     "Mosambik im Osten,",
+     "Simbabwe im Norden und",
+     "Die südliche Grenze ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Kruger",
+     "Nacional",
+     "Parque",
+     "(KNP)",
+     "Se encuentra en el noreste de Sudáfrica y discurre a lo largo de",
+     "La frontera de",
+     "Mozambique en el este,",
+     "Zimbabwe en el norte, y",
+     "La frontera sur es el río Cocodrilo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "north-east of South Africa",
+     "right": "and runs along the",
+     "H": 0.8009,
+     "H_pct": 68.8,
+     "contra": 0.0008,
+     "cohesion": 0.8015
+    },
+    {
+     "pos": 17,
+     "left": "runs along the border",
+     "right": "of Mozambique in the",
+     "H": 0.8008,
+     "H_pct": 65.6,
+     "contra": 0.0045,
+     "cohesion": 0.8044
+    },
+    {
+     "pos": 19,
+     "left": "the border of Mozambique",
+     "right": "in the east, Zimbabwe",
+     "H": 0.8193,
+     "H_pct": 75.0,
+     "contra": 0.015,
+     "cohesion": 0.8318
+    },
+    {
+     "pos": 26,
+     "left": "Zimbabwe in the north,",
+     "right": "and the southern border",
+     "H": 0.8143,
+     "H_pct": 71.9,
+     "contra": 0.0455,
+     "cohesion": 0.8531
+    },
+    {
+     "pos": 30,
+     "left": "and the southern border",
+     "right": "is the Crocodile River.",
+     "H": 0.1194,
+     "H_pct": 9.4,
+     "contra": 0.842,
+     "cohesion": 0.7559
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The Kruger",
+     "right": "National Park (KNP) lies",
+     "H": 0.8308,
+     "H_pct": 87.5,
+     "contra": 0.0019,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 3,
+     "left": "The Kruger National",
+     "right": "Park (KNP) lies in",
+     "H": 0.8466,
+     "H_pct": 96.9,
+     "contra": 0.0014,
+     "cohesion": 0.8478
+    },
+    {
+     "pos": 15,
+     "left": "Africa and runs along",
+     "right": "the border of Mozambique",
+     "H": 0.8212,
+     "H_pct": 78.1,
+     "contra": 0.0039,
+     "cohesion": 0.8244
+    },
+    {
+     "pos": 18,
+     "left": "along the border of",
+     "right": "Mozambique in the east,",
+     "H": 0.8327,
+     "H_pct": 90.6,
+     "contra": 0.0125,
+     "cohesion": 0.8433
+    },
+    {
+     "pos": 27,
+     "left": "in the north, and",
+     "right": "the southern border is",
+     "H": 0.8441,
+     "H_pct": 93.8,
+     "contra": 0.0212,
+     "cohesion": 0.8624
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 1,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.5012,
+  "policy_worst_contra": 0.6495,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.3115,
+   "text": "All the ships were sunk, except for one British cruiser. ‖ Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一艘英国巡洋舰外,所有船只都被击沉。",
+     "近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻のイギリス巡洋艦を除いて全艦が沈没した。",
+     "アメリカ人とドイツ人は200人近くが死亡した。"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf einen britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Menschen kamen ums Leben."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.8127,
+   "text": "All the ships were sunk, except for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一个船只外,所有船只都沉没了。",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻を除いて全て沈没した",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf ein",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_113",
+  "cuts": 5,
+  "avg_chunk": 4.3,
+  "latency_bin": "≤5",
+  "gap": 0.5876,
+  "policy_worst_contra": 0.968,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    9,
+    10,
+    13,
+    21
+   ],
+   "H_set": 0.0178,
+   "text": "Mr. Rudd's decision ‖ to sign the Kyoto climate accord ‖ isolates ‖ the United States, ‖ which will now be the only developed nation ‖ not to ratify the agreement.",
+   "pieces": {
+    "Chinese": [
+     "陆克文先生的决定",
+     "签署京都气候协定",
+     "分离物",
+     "美国,",
+     "现在将成为唯一的发达国家",
+     "该协议的签署国"
+    ],
+    "Japanese": [
+     "ラッド氏の決断",
+     "京都議定書に署名するために",
+     "分離",
+     "アメリカ合衆国は",
+     "世界で唯一の先進国となるでしょう",
+     "合意を批准しないことです"
+    ],
+    "German": [
+     "Herrn Rudds Entscheidung",
+     "Um das Kyoto-Klimaabkommen zu unterzeichnen",
+     "Isolate",
+     "Die Vereinigten Staaten,",
+     "Das wird nun die einzige entwickelte Nation sein",
+     "Das Abkommen nicht zu ratifizieren."
+    ],
+    "Spanish": [
+     "La decisión del Sr. Rudd",
+     "El Protocolo de Kyoto sobre el cambio climático",
+     "aislados",
+     "Estados Unidos,",
+     "que ahora será la única nación desarrollada",
+     "No ratificar el acuerdo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    12,
+    13,
+    14
+   ],
+   "H_set": 0.6054,
+   "text": "Mr. ‖ Rudd's decision to sign ‖ the Kyoto climate accord isolates the United ‖ States, ‖ which ‖ will now be the only developed nation not to ratify the agreement.",
+   "pieces": {
+    "Chinese": [
+     "先生",
+     "陆克文的签署决定",
+     "京都气候协定孤立了联合国",
+     "各国，",
+     "其中",
+     "现在,美国将是唯一一个没有批准该协定的发达国家。"
+    ],
+    "Japanese": [
+     "あなたは",
+     "ラッドの署名決定",
+     "京都議定書は アメリカを孤立させ",
+     "州",
+     "それは",
+     "唯一の先進国で 条約を批准しないことになります"
+    ],
+    "German": [
+     "Herr",
+     "Rudds Entscheidung zu unterzeichnen",
+     "Das Kyoto-Klimaabkommen isoliert die Vereinigten Staaten",
+     "Staaten,",
+     "which",
+     "Die USA werden nun das einzige Industrieland sein, das das Abkommen nicht ratifiziert."
+    ],
+    "Spanish": [
+     "Sr.",
+     "La decisión de Rudd de firmar",
+     "El acuerdo climático de Kyoto aísla a los Estados Unidos",
+     "Estados,",
+     "which",
+     "Ahora será el único país desarrollado que no ratifique el acuerdo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Mr. Rudd's decision",
+     "right": "to sign the Kyoto",
+     "H": 0.7856,
+     "H_pct": 66.7,
+     "contra": 0.0008,
+     "cohesion": 0.7862
+    },
+    {
+     "pos": 9,
+     "left": "the Kyoto climate accord",
+     "right": "isolates the United States,",
+     "H": 0.7551,
+     "H_pct": 50.0,
+     "contra": 0.0033,
+     "cohesion": 0.7576
+    },
+    {
+     "pos": 10,
+     "left": "Kyoto climate accord isolates",
+     "right": "the United States, which",
+     "H": 0.8004,
+     "H_pct": 79.2,
+     "contra": 0.0026,
+     "cohesion": 0.8024
+    },
+    {
+     "pos": 21,
+     "left": "the only developed nation",
+     "right": "not to ratify the",
+     "H": 0.0234,
+     "H_pct": 0.0,
+     "contra": 0.968,
+     "cohesion": 0.7299
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Mr.",
+     "right": "Rudd's decision to sign",
+     "H": 0.806,
+     "H_pct": 87.5,
+     "contra": 0.0062,
+     "cohesion": 0.8111
+    },
+    {
+     "pos": 5,
+     "left": "Rudd's decision to sign",
+     "right": "the Kyoto climate accord",
+     "H": 0.8008,
+     "H_pct": 83.3,
+     "contra": 0.0029,
+     "cohesion": 0.8032
+    },
+    {
+     "pos": 12,
+     "left": "accord isolates the United",
+     "right": "States, which will now",
+     "H": 0.8218,
+     "H_pct": 95.8,
+     "contra": 0.0092,
+     "cohesion": 0.8295
+    },
+    {
+     "pos": 14,
+     "left": "the United States, which",
+     "right": "will now be the",
+     "H": 0.8178,
+     "H_pct": 91.7,
+     "contra": 0.0026,
+     "cohesion": 0.8199
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1497",
+  "cuts": 8,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.578,
+  "policy_worst_contra": 0.8912,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    6,
+    10,
+    11,
+    13,
+    15,
+    18,
+    19
+   ],
+   "H_set": 0.0661,
+   "text": "British pounds ‖ will generally be accepted ‖ anywhere in the islands ‖ and ‖ within Stanley ‖ credit cards ‖ and United States ‖ dollars ‖ are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英镑",
+     "将被普遍接受",
+     "岛上的任何地方",
+     "以及",
+     "斯坦利内的酒店",
+     "信用卡",
+     "美国",
+     "2000年美元",
+     "还经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンド",
+     "一般的に受け入れられることになるでしょう",
+     "島のどこでも",
+     "それに",
+     "スタンリーの中で",
+     "クレジットカード",
+     "アメリカと",
+     "100ドル",
+     "受け入れられることも多いのです"
+    ],
+    "German": [
+     "Britisches Pfund",
+     "Wird allgemein akzeptiert",
+     "Überall auf den Inseln",
+     "und",
+     "Unterkünfte in Stanley",
+     "Kreditkarten und Zahlungsmittel",
+     "und Vereinigte Staaten",
+     "Dollar",
+     "Auch werden sie oft akzeptiert."
+    ],
+    "Spanish": [
+     "Libras británicas",
+     "Se aceptará generalmente",
+     "En cualquier lugar de las islas",
+     "y",
+     "Turismo en Stanley",
+     "Tarjetas de crédito",
+     "y Estados Unidos",
+     "dólares",
+     "También se aceptan a menudo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    7,
+    10,
+    11,
+    12,
+    13,
+    15
+   ],
+   "H_set": 0.6441,
+   "text": "British ‖ pounds will generally be accepted ‖ anywhere ‖ in the islands ‖ and ‖ within ‖ Stanley ‖ credit cards ‖ and United States dollars are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英國",
+     "英镑通常被接受",
+     "任何地方",
+     "岛上",
+     "以及",
+     "内部",
+     "斯坦利",
+     "信用卡",
+     "欧元和美元也经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス",
+     "一般的にポンドは受け入れられます",
+     "どこでも",
+     "島々に住む人々は",
+     "それに",
+     "内部",
+     "スタンリー",
+     "クレジットカード",
+     "米ドルもよく受け入れられます"
+    ],
+    "German": [
+     "Britisch",
+     "Pfund werden grundsätzlich akzeptiert",
+     "überall",
+     "Auf den Inseln",
+     "und",
+     "within",
+     "Stanley",
+     "Kreditkarten und Zahlungsmittel",
+     "Auch US-Dollar werden oft akzeptiert."
+    ],
+    "Spanish": [
+     "Británico",
+     "En general se aceptarán libras",
+     "En cualquier lugar",
+     "En las islas",
+     "y",
+     "dentro",
+     "Stanley",
+     "Tarjetas de crédito",
+     "También se aceptan a menudo dólares de los Estados Unidos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "British pounds",
+     "right": "will generally be accepted",
+     "H": 0.7627,
+     "H_pct": 61.9,
+     "contra": 0.0005,
+     "cohesion": 0.7631
+    },
+    {
+     "pos": 18,
+     "left": "cards and United States",
+     "right": "dollars are also often",
+     "H": 0.0845,
+     "H_pct": 0.0,
+     "contra": 0.8912,
+     "cohesion": 0.777
+    },
+    {
+     "pos": 19,
+     "left": "and United States dollars",
+     "right": "are also often accepted.",
+     "H": 0.2533,
+     "H_pct": 9.5,
+     "contra": 0.5885,
+     "cohesion": 0.6155
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "British",
+     "right": "pounds will generally be",
+     "H": 0.7799,
+     "H_pct": 71.4,
+     "contra": 0.0148,
+     "cohesion": 0.7916
+    },
+    {
+     "pos": 7,
+     "left": "generally be accepted anywhere",
+     "right": "in the islands and",
+     "H": 0.8126,
+     "H_pct": 95.2,
+     "contra": 0.0015,
+     "cohesion": 0.8138
+    },
+    {
+     "pos": 12,
+     "left": "the islands and within",
+     "right": "Stanley credit cards and",
+     "H": 0.7728,
+     "H_pct": 66.7,
+     "contra": 0.0046,
+     "cohesion": 0.7763
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_432",
+  "cuts": 3,
+  "avg_chunk": 6.8,
+  "latency_bin": "≤7",
+  "gap": 0.4533,
+  "policy_worst_contra": 0.6041,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    14,
+    20
+   ],
+   "H_set": 0.3391,
+   "text": "Turkey is encircled by seas on three sides: ‖ the Aegean Sea to the west, ‖ the Black Sea to the north ‖ and the Mediterranean Sea to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其三面被海洋包围:",
+     "爱琴海 西部,",
+     "黑海 向北",
+     "地中海和南部。"
+    ],
+    "Japanese": [
+     "トルコは三方から海に囲まれている。",
+     "西はエーゲ海",
+     "北は黒海",
+     "南は地中海です"
+    ],
+    "German": [
+     "Die Türkei ist auf drei Seiten von Meeren umgeben:",
+     "Die Ägäis im Westen,",
+     "Das Schwarze Meer im Norden",
+     "Im Süden grenzt es an das Mittelmeer."
+    ],
+    "Spanish": [
+     "Turquía está rodeada por mares en tres lados:",
+     "El mar Egeo al oeste,",
+     "El Mar Negro al norte",
+     "y el mar Mediterráneo al sur."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    8
+   ],
+   "H_set": 0.7924,
+   "text": "Turkey is encircled by seas ‖ on ‖ three sides: ‖ the Aegean Sea to the west, the Black Sea to the north and the Mediterranean Sea to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其被海洋包围",
+     "上",
+     "三个方面：",
+     "爱琴海西部,黑海北部和地中海南部。"
+    ],
+    "Japanese": [
+     "トルコは海に囲まれている",
+     "ああ",
+     "3つの側面があります",
+     "西はエーゲ海 北は黒海 南は地中海"
+    ],
+    "German": [
+     "Die Türkei ist von Meeren umgeben",
+     "on",
+     "Drei Seiten:",
+     "Im Westen grenzt es an die Ägäis, im Norden an das Schwarze Meer und im Süden an das Mittelmeer."
+    ],
+    "Spanish": [
+     "Turquía está rodeada de mares",
+     "on",
+     "Tres lados:",
+     "Limita al oeste con el mar Egeo, al norte con el mar Negro y al sur con el mar Mediterráneo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "Sea to the west,",
+     "right": "the Black Sea to",
+     "H": 0.7669,
+     "H_pct": 64.0,
+     "contra": 0.0207,
+     "cohesion": 0.7831
+    },
+    {
+     "pos": 20,
+     "left": "Sea to the north",
+     "right": "and the Mediterranean Sea",
+     "H": 0.347,
+     "H_pct": 48.0,
+     "contra": 0.6041,
+     "cohesion": 0.8766
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "is encircled by seas",
+     "right": "on three sides: the",
+     "H": 0.8292,
+     "H_pct": 92.0,
+     "contra": 0.0005,
+     "cohesion": 0.8296
+    },
+    {
+     "pos": 6,
+     "left": "encircled by seas on",
+     "right": "three sides: the Aegean",
+     "H": 0.835,
+     "H_pct": 96.0,
+     "contra": 0.0176,
+     "cohesion": 0.85
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_767",
+  "cuts": 8,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.4304,
+  "policy_worst_contra": 0.6027,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    11,
+    14,
+    15,
+    16,
+    18,
+    25
+   ],
+   "H_set": 0.234,
+   "text": "The city of Beijing ‖ in China ‖ will be the host city ‖ of the Olympic ‖ Winter ‖ Games ‖ in 2022, ‖ which will make it the first city ‖ to have hosted both the summer and winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "北京市",
+     "中国的",
+     "将是主办城市",
+     "奥林匹克运动会",
+     "冬季",
+     "游戏",
+     "2022年，",
+     "这将使它成为第一个",
+     "举办过夏季和冬季奥运会。"
+    ],
+    "Japanese": [
+     "北京市",
+     "中国で",
+     "開催都市になるでしょう",
+     "世界のオリンピックの",
+     "冬",
+     "ゲーム",
+     "2022年には",
+     "これは世界で初めての",
+     "夏季オリンピックと冬季オリンピックを 両方開催したことに感謝しています"
+    ],
+    "German": [
+     "Die Stadt Peking",
+     "in China",
+     "Die Gastgeberstadt ist",
+     "Die Olympischen Spiele",
+     "Winter",
+     "Spiele",
+     "im Jahr 2022,",
+     "Das wird es zur ersten Stadt machen",
+     "Die Stadt war Gastgeber der Olympischen Sommer- und Winterspiele."
+    ],
+    "Spanish": [
+     "La ciudad de Pekín",
+     "en China",
+     "La ciudad anfitriona será",
+     "Juegos Olímpicos de Tokio",
+     "Invierno",
+     "Juegos",
+     "en 2022,",
+     "Que hará de ella la primera ciudad",
+     "Es la ciudad más antigua de Europa en haber acogido los Juegos Olímpicos de verano e invierno."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    18,
+    19
+   ],
+   "H_set": 0.6644,
+   "text": "The ‖ city ‖ of ‖ Beijing ‖ in ‖ China will be the host city ‖ of the Olympic Winter Games in 2022, ‖ which ‖ will make it the first city to have hosted both the summer and winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "城市",
+     "的",
+     "北京",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "中国将是主办城市",
+     "2022年冬季奥林匹克运动会,",
+     "其中",
+     "将使它成为第一个同时举办夏季和冬季奥运会的城市。"
+    ],
+    "Japanese": [
+     "あの",
+     "都市",
+     "の",
+     "北京",
+     "ここに",
+     "中国が開催地となる",
+     "2022年の冬季オリンピックの",
+     "それは",
+     "夏季と冬季の両方のオリンピックを開催した 初めての都市になるでしょう"
+    ],
+    "German": [
+     "The",
+     "Stadt",
+     "von",
+     "Beijing",
+     "in",
+     "China wird die Gastgeberstadt sein",
+     "Olympischen Winterspielen 2022,",
+     "which",
+     "Die Stadt wird damit die erste sein, die sowohl die Sommer- als auch die Winterspiele ausgerichtet hat."
+    ],
+    "Spanish": [
+     "The",
+     "Ciudad",
+     "de",
+     "Beijing",
+     "en",
+     "China será la ciudad anfitriona",
+     "de los Juegos Olímpicos de Invierno en 2022,",
+     "which",
+     "Será la primera ciudad en haber acogido los Juegos Olímpicos de verano e invierno."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "of Beijing in China",
+     "right": "will be the host",
+     "H": 0.7799,
+     "H_pct": 37.5,
+     "contra": 0.0004,
+     "cohesion": 0.7802
+    },
+    {
+     "pos": 14,
+     "left": "city of the Olympic",
+     "right": "Winter Games in 2022,",
+     "H": 0.7642,
+     "H_pct": 18.8,
+     "contra": 0.0007,
+     "cohesion": 0.7648
+    },
+    {
+     "pos": 15,
+     "left": "of the Olympic Winter",
+     "right": "Games in 2022, which",
+     "H": 0.8138,
+     "H_pct": 62.5,
+     "contra": 0.001,
+     "cohesion": 0.8146
+    },
+    {
+     "pos": 16,
+     "left": "the Olympic Winter Games",
+     "right": "in 2022, which will",
+     "H": 0.8007,
+     "H_pct": 59.4,
+     "contra": 0.0007,
+     "cohesion": 0.8012
+    },
+    {
+     "pos": 25,
+     "left": "it the first city",
+     "right": "to have hosted both",
+     "H": 0.3074,
+     "H_pct": 3.1,
+     "contra": 0.6027,
+     "cohesion": 0.7737
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "city of Beijing in",
+     "H": 0.8624,
+     "H_pct": 78.1,
+     "contra": 0.0233,
+     "cohesion": 0.883
+    },
+    {
+     "pos": 2,
+     "left": "The city",
+     "right": "of Beijing in China",
+     "H": 0.8752,
+     "H_pct": 93.8,
+     "contra": 0.0006,
+     "cohesion": 0.8757
+    },
+    {
+     "pos": 3,
+     "left": "The city of",
+     "right": "Beijing in China will",
+     "H": 0.8775,
+     "H_pct": 96.9,
+     "contra": 0.0005,
+     "cohesion": 0.8779
+    },
+    {
+     "pos": 5,
+     "left": "city of Beijing in",
+     "right": "China will be the",
+     "H": 0.8649,
+     "H_pct": 84.4,
+     "contra": 0.0009,
+     "cohesion": 0.8657
+    },
+    {
+     "pos": 19,
+     "left": "Games in 2022, which",
+     "right": "will make it the",
+     "H": 0.8689,
+     "H_pct": 87.5,
+     "contra": 0.0014,
+     "cohesion": 0.8701
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_741",
+  "cuts": 2,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.4214,
+  "policy_worst_contra": 0.4218,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    13
+   ],
+   "H_set": 0.4264,
+   "text": "It is an archipelago ‖ with 15 islands spread out over 2.2 million km2 ‖ of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个岛屿分布在220万平方公里",
+     "海洋的。"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15の島が220万平方キロメートルに広がっています",
+     "海の中にある"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "Mit 15 Inseln auf 2,2 Millionen km2",
+     "Die Welt des Ozeans."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "Con 15 islas repartidas en 2,2 millones de km2",
+     "El océano."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    7
+   ],
+   "H_set": 0.8478,
+   "text": "It is an archipelago ‖ with 15 islands ‖ spread out over 2.2 million km2 of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个岛屿",
+     "分布在220万平方公里的海洋中。"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15の島々がある",
+     "220万平方キロメートルの海に広がっています"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "mit 15 Inseln",
+     "Die Inseln verteilen sich auf 2,2 Millionen km2 Ozean."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "Con 15 islas",
+     "Se extienden por 2,2 millones de km2 de océano."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "over 2.2 million km2",
+     "right": "of ocean.",
+     "H": 0.4401,
+     "H_pct": 15.4,
+     "contra": 0.4218,
+     "cohesion": 0.7611
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "archipelago with 15 islands",
+     "right": "spread out over 2.2",
+     "H": 0.8675,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.868
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1113",
+  "cuts": 5,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.3822,
+  "policy_worst_contra": 0.7721,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    8,
+    9,
+    11,
+    15
+   ],
+   "H_set": 0.1629,
+   "text": "After officials verify the voter's identity, ‖ the voter ‖ drops ‖ the envelope ‖ into the ballot box ‖ and signs the voting roll.",
+   "pieces": {
+    "Chinese": [
+     "官员们验证了选民的身份后",
+     "选民",
+     "滴",
+     "信封",
+     "投入选票箱",
+     "并在表决名单上签字。"
+    ],
+    "Japanese": [
+     "当局が有権者の身元を確認した後",
+     "投票者は",
+     "滴る",
+     "封筒を見て",
+     "投票箱に入れ",
+     "投票用紙にサインします"
+    ],
+    "German": [
+     "Nachdem die Beamten die Identität des Wählers überprüft haben,",
+     "Der Wähler",
+     "Tropfen",
+     "Der Umschlag",
+     "in die Wahlurne",
+     "Er unterzeichnet die Stimmliste."
+    ],
+    "Spanish": [
+     "Después de que los funcionarios verifiquen la identidad del votante,",
+     "El votante",
+     "gotas",
+     "En el sobre",
+     "En la urna electoral",
+     "y firma la lista de votantes."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    11,
+    15,
+    17
+   ],
+   "H_set": 0.5451,
+   "text": "After officials verify the voter's ‖ identity, ‖ the voter drops the envelope ‖ into the ballot box ‖ and signs ‖ the voting roll.",
+   "pieces": {
+    "Chinese": [
+     "官员核实选民的",
+     "身份，",
+     "选民放下信封",
+     "投入选票箱",
+     "标志和标志",
+     "表决名单。"
+    ],
+    "Japanese": [
+     "官僚が有権者の証明書を確認した後",
+     "身分証明書",
+     "投票者は封筒を落とします",
+     "投票箱に入れ",
+     "標識も",
+     "投票用紙"
+    ],
+    "German": [
+     "Nachdem Beamte die Wähler überprüfen",
+     "Identität,",
+     "Der Wähler lässt den Umschlag fallen",
+     "in die Wahlurne",
+     "Zeichen und Zeichen",
+     "Das Abstimmungsregister."
+    ],
+    "Spanish": [
+     "Después de que los funcionarios verifiquen la identidad del votante",
+     "identidad,",
+     "El votante deja caer el sobre",
+     "En la urna electoral",
+     "Signos y signos",
+     "la lista de votación."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "voter's identity, the voter",
+     "right": "drops the envelope into",
+     "H": 0.7033,
+     "H_pct": 50.0,
+     "contra": 0.1681,
+     "cohesion": 0.8454
+    },
+    {
+     "pos": 9,
+     "left": "identity, the voter drops",
+     "right": "the envelope into the",
+     "H": 0.1535,
+     "H_pct": 11.1,
+     "contra": 0.7721,
+     "cohesion": 0.6736
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "officials verify the voter's",
+     "right": "identity, the voter drops",
+     "H": 0.8053,
+     "H_pct": 77.8,
+     "contra": 0.0034,
+     "cohesion": 0.808
+    },
+    {
+     "pos": 17,
+     "left": "ballot box and signs",
+     "right": "the voting roll.",
+     "H": 0.8208,
+     "H_pct": 83.3,
+     "contra": 0.0471,
+     "cohesion": 0.8614
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_455",
+  "cuts": 5,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.3146,
+  "policy_worst_contra": 0.3908,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    9,
+    10,
+    15,
+    22,
+    23
+   ],
+   "H_set": 0.3567,
+   "text": "The disadvantage of zoom lenses is that the focal ‖ complexity ‖ and number of lens elements ‖ required to achieve a range of focal ‖ lengths ‖ is much greater than for prime lenses.",
+   "pieces": {
+    "Chinese": [
+     "变焦镜头的缺点是焦距",
+     "复杂性",
+     "镜头元件数量",
+     "所需的资源",
+     "长度",
+     "比固定镜头要大得多。"
+    ],
+    "Japanese": [
+     "ズームレンズの欠点は焦点距離が短いことである。",
+     "複雑性",
+     "レンズ素子の数を",
+     "焦点距離を 1000mmから1000mmに",
+     "ああ ああ",
+     "固定レンズよりもずっと大きいのです"
+    ],
+    "German": [
+     "Der Nachteil von Zoomobjektiven ist, dass die Brennweite",
+     "Komplexität",
+     "Anzahl der Linsenelemente",
+     "Erforderlich, um einen Brennweitenbereich zu erreichen",
+     "Längen",
+     "Die Bildqualität ist viel besser als bei Festbrennweitenobjektiven."
+    ],
+    "Spanish": [
+     "La desventaja de los objetivos zoom es que la distancia focal",
+     "complejidad",
+     "Número de elementos de lente",
+     "requerido para lograr una gama focal",
+     "Longitudes",
+     "Es mucho mayor que para los objetivos de focal fija."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    6,
+    10,
+    11
+   ],
+   "H_set": 0.6713,
+   "text": "The disadvantage ‖ of zoom ‖ lenses is ‖ that the focal complexity ‖ and ‖ number of lens elements required to achieve a range of focal lengths is much greater than for prime lenses.",
+   "pieces": {
+    "Chinese": [
+     "缺点",
+     "缩放",
+     "透镜是",
+     "焦点复杂性",
+     "以及",
+     "相对于固定镜头,实现一定范围的焦距所需的镜头元件数量要大得多。"
+    ],
+    "Japanese": [
+     "欠点",
+     "ズーム",
+     "レンズは",
+     "焦点の複雑さは",
+     "それに",
+     "焦点距離の範囲を達成するために必要なレンズ素子の数は，単焦点レンズよりもずっと大きい。"
+    ],
+    "German": [
+     "Der Nachteil ist",
+     "Größe des Zooms",
+     "Die Linsen sind",
+     "Dass die fokale Komplexität",
+     "und",
+     "Die Anzahl der Objektivelemente, die für einen bestimmten Brennweitenbereich benötigt werden, ist viel größer als bei Festbrennweitenobjektiven."
+    ],
+    "Spanish": [
+     "La desventaja",
+     "Tipo de zoom",
+     "Las lentes es",
+     "Que la complejidad focal",
+     "y",
+     "El número de elementos de lente necesarios para lograr un rango de longitudes focales es mucho mayor que para los lentes de focal fija."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "is that the focal",
+     "right": "complexity and number of",
+     "H": 0.7216,
+     "H_pct": 42.9,
+     "contra": 0.0627,
+     "cohesion": 0.7699
+    },
+    {
+     "pos": 15,
+     "left": "number of lens elements",
+     "right": "required to achieve a",
+     "H": 0.7046,
+     "H_pct": 35.7,
+     "contra": 0.0275,
+     "cohesion": 0.7246
+    },
+    {
+     "pos": 22,
+     "left": "a range of focal",
+     "right": "lengths is much greater",
+     "H": 0.4153,
+     "H_pct": 7.1,
+     "contra": 0.3908,
+     "cohesion": 0.6817
+    },
+    {
+     "pos": 23,
+     "left": "range of focal lengths",
+     "right": "is much greater than",
+     "H": 0.7185,
+     "H_pct": 39.3,
+     "contra": 0.0259,
+     "cohesion": 0.7376
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The disadvantage",
+     "right": "of zoom lenses is",
+     "H": 0.8022,
+     "H_pct": 92.9,
+     "contra": 0.0021,
+     "cohesion": 0.8039
+    },
+    {
+     "pos": 4,
+     "left": "The disadvantage of zoom",
+     "right": "lenses is that the",
+     "H": 0.8,
+     "H_pct": 89.3,
+     "contra": 0.0013,
+     "cohesion": 0.801
+    },
+    {
+     "pos": 6,
+     "left": "of zoom lenses is",
+     "right": "that the focal complexity",
+     "H": 0.8092,
+     "H_pct": 100.0,
+     "contra": 0.0117,
+     "cohesion": 0.8188
+    },
+    {
+     "pos": 11,
+     "left": "the focal complexity and",
+     "right": "number of lens elements",
+     "H": 0.8024,
+     "H_pct": 96.4,
+     "contra": 0.0091,
+     "cohesion": 0.8097
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1024",
+  "cuts": 5,
+  "avg_chunk": 3.2,
+  "latency_bin": "≤5",
+  "gap": 0.2889,
+  "policy_worst_contra": 0.3815,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    5,
+    6,
+    12,
+    13
+   ],
+   "H_set": 0.3854,
+   "text": "Tokyo ‖ will be the only ‖ Asian ‖ city to have hosted two summer ‖ Olympics, ‖ having hosted the games in 1964.",
+   "pieces": {
+    "Chinese": [
+     "东京",
+     "将是唯一的",
+     "亚洲",
+     "城市已主办了两个夏季",
+     "奥林匹克运动会",
+     "1964年举办了奥运会。"
+    ],
+    "Japanese": [
+     "東京",
+     "唯一の人間である",
+     "アジア",
+     "2度の夏季オリンピックを開催した",
+     "オリンピック",
+     "1964年のオリンピックを開催したことがあります"
+    ],
+    "German": [
+     "Tokyo",
+     "Wir werden die einzigen sein",
+     "Asiatisch",
+     "Stadt, die zwei Sommerspiele ausgerichtet hat",
+     "Olympische Spiele,",
+     "Die Spiele wurden 1964 ausgetragen."
+    ],
+    "Spanish": [
+     "Tokio",
+     "Será el único",
+     "Asiática",
+     "La ciudad que ha acogido dos verano",
+     "Juegos Olímpicos,",
+     "Haciendo de anfitrión de los juegos en 1964."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    10,
+    11,
+    13,
+    17
+   ],
+   "H_set": 0.6742,
+   "text": "Tokyo ‖ will be the only Asian city to have hosted ‖ two ‖ summer Olympics, ‖ having hosted the games ‖ in 1964.",
+   "pieces": {
+    "Chinese": [
+     "东京",
+     "将是唯一一个主办过",
+     "二",
+     "夏季奥林匹克运动会,",
+     "主办了奥运会",
+     "1964年。"
+    ],
+    "Japanese": [
+     "東京",
+     "世界で唯一のアジアの都市で",
+     "二つ",
+     "夏季オリンピック",
+     "開催してきたことで",
+     "1964年に"
+    ],
+    "German": [
+     "Tokyo",
+     "Die Stadt wird die einzige asiatische Stadt sein, die",
+     "Zwei",
+     "Olympische Sommerspiele,",
+     "Die Spiele veranstaltet zu haben",
+     "1964."
+    ],
+    "Spanish": [
+     "Tokio",
+     "será la única ciudad asiática en haber acogido",
+     "Dos",
+     "Juegos Olímpicos de verano,",
+     "Tras haber organizado los juegos",
+     "en 1964."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "will be the only",
+     "right": "Asian city to have",
+     "H": 0.6848,
+     "H_pct": 41.2,
+     "contra": 0.1014,
+     "cohesion": 0.7621
+    },
+    {
+     "pos": 6,
+     "left": "be the only Asian",
+     "right": "city to have hosted",
+     "H": 0.4131,
+     "H_pct": 0.0,
+     "contra": 0.3815,
+     "cohesion": 0.6679
+    },
+    {
+     "pos": 12,
+     "left": "have hosted two summer",
+     "right": "Olympics, having hosted the",
+     "H": 0.7398,
+     "H_pct": 52.9,
+     "contra": 0.0132,
+     "cohesion": 0.7497
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "city to have hosted",
+     "right": "two summer Olympics, having",
+     "H": 0.7892,
+     "H_pct": 76.5,
+     "contra": 0.0089,
+     "cohesion": 0.7963
+    },
+    {
+     "pos": 11,
+     "left": "to have hosted two",
+     "right": "summer Olympics, having hosted",
+     "H": 0.8066,
+     "H_pct": 88.2,
+     "contra": 0.0058,
+     "cohesion": 0.8113
+    },
+    {
+     "pos": 17,
+     "left": "having hosted the games",
+     "right": "in 1964.",
+     "H": 0.7918,
+     "H_pct": 82.4,
+     "contra": 0.0053,
+     "cohesion": 0.796
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1179",
+  "cuts": 7,
+  "avg_chunk": 4.1,
+  "latency_bin": "≤5",
+  "gap": 0.2831,
+  "policy_worst_contra": 0.2998,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    9,
+    10,
+    18,
+    25,
+    27,
+    29,
+    31
+   ],
+   "H_set": 0.4016,
+   "text": "In 1895, after defeat in the First Sino-Japanese War ‖ (1894-1895), ‖ the Qing government signs the Treaty of Shimonoseki, ‖ by which it cedes sovereignty over Taiwan ‖ to Japan, ‖ which rules ‖ the island ‖ until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,在第一次中日战争中被击败后",
+     "1894年至1895年，",
+     "清政府签署了下关条约,",
+     "放弃对台湾主权的声明",
+     "向日本，",
+     "哪些规则",
+     "岛上",
+     "直到1945年。"
+    ],
+    "Japanese": [
+     "1895年、日清戦争敗戦後",
+     " 1894年（明治27年） - 1895年（明治27年）に開業。",
+     "清政府が下関条約に調印し",
+     "台湾の主権を譲渡するという",
+     "日本に行くと",
+     "どのようなルールで",
+     "島は",
+     "1945年までです"
+    ],
+    "German": [
+     "Im Ersten Chinesisch-Japanischen Krieg wurde die Stadt von den Japanern besetzt.",
+     "(1894–1895)",
+     "Die Qing-Regierung unterzeichnet den Vertrag von Shimonoseki,",
+     "durch die es die Souveränität über Taiwan abtritt",
+     "nach Japan,",
+     "Welche Regeln gelten",
+     "Die Insel",
+     "Bis 1945."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa",
+     "(1894-1895),",
+     "El gobierno Qing firma el Tratado de Shimonoseki,",
+     "por la que cede la soberanía sobre Taiwán",
+     "a Japón,",
+     "¿Cuáles son las reglas?",
+     "La isla de",
+     "Hasta 1945."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    7,
+    9,
+    17,
+    25,
+    27
+   ],
+   "H_set": 0.6847,
+   "text": "In ‖ 1895, ‖ after defeat in the First ‖ Sino-Japanese War ‖ (1894-1895), the Qing government signs the Treaty of ‖ Shimonoseki, by which it cedes sovereignty over Taiwan ‖ to Japan, ‖ which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "内",
+     "1895年，",
+     "战争中失败后",
+     "日中战争",
+     "1894年,清政府签署了《南京条约 》 。",
+     "下关条约,日本放弃对台湾的主权",
+     "向日本，",
+     "直到1945年。"
+    ],
+    "Japanese": [
+     "入力",
+     "1895年生まれ。",
+     "初戦で敗れた後",
+     "日清戦争",
+     "明治27年（1894年）から明治28年（1895年）にかけて，清政府は，清朝との間に，「清朝と日本の間の国境に関する条約」を締結した。",
+     "下関条約（台湾譲渡）",
+     "日本に行くと",
+     "1945年まで島を支配しました"
+    ],
+    "German": [
+     "In",
+     "1895, dt.",
+     "Nach der Niederlage im ersten",
+     "Chinesisch-Japanischer Krieg",
+     "(1894-1895), die Qing-Regierung unterzeichnet den Vertrag von",
+     "Shimonoseki, durch die es die Souveränität über Taiwan abtritt",
+     "nach Japan,",
+     "Die Insel wird bis 1945 von der japanischen Armee beherrscht."
+    ],
+    "Spanish": [
+     "En",
+     "1895,",
+     "Después de la derrota en la Primera",
+     "Guerra sino-japonesa",
+     "(1894-1895), el gobierno Qing firma el Tratado de",
+     "Shimonoseki, por el que cede la soberanía sobre Taiwán",
+     "a Japón,",
+     "que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "First Sino-Japanese War (1894-1895),",
+     "right": "the Qing government signs",
+     "H": 0.6083,
+     "H_pct": 12.9,
+     "contra": 0.2998,
+     "cohesion": 0.8688
+    },
+    {
+     "pos": 18,
+     "left": "the Treaty of Shimonoseki,",
+     "right": "by which it cedes",
+     "H": 0.8493,
+     "H_pct": 74.2,
+     "contra": 0.0225,
+     "cohesion": 0.8689
+    },
+    {
+     "pos": 29,
+     "left": "to Japan, which rules",
+     "right": "the island until 1945.",
+     "H": 0.842,
+     "H_pct": 71.0,
+     "contra": 0.0019,
+     "cohesion": 0.8436
+    },
+    {
+     "pos": 31,
+     "left": "which rules the island",
+     "right": "until 1945.",
+     "H": 0.8373,
+     "H_pct": 64.5,
+     "contra": 0.0129,
+     "cohesion": 0.8483
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "In",
+     "right": "1895, after defeat in",
+     "H": 0.8742,
+     "H_pct": 96.8,
+     "contra": 0.0076,
+     "cohesion": 0.8809
+    },
+    {
+     "pos": 2,
+     "left": "In 1895,",
+     "right": "after defeat in the",
+     "H": 0.8609,
+     "H_pct": 93.5,
+     "contra": 0.0016,
+     "cohesion": 0.8622
+    },
+    {
+     "pos": 7,
+     "left": "defeat in the First",
+     "right": "Sino-Japanese War (1894-1895), the",
+     "H": 0.8569,
+     "H_pct": 90.3,
+     "contra": 0.002,
+     "cohesion": 0.8587
+    },
+    {
+     "pos": 17,
+     "left": "signs the Treaty of",
+     "right": "Shimonoseki, by which it",
+     "H": 0.8746,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_888",
+  "cuts": 6,
+  "avg_chunk": 3.6,
+  "latency_bin": "≤5",
+  "gap": 0.2495,
+  "policy_worst_contra": 0.3599,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    11,
+    13,
+    14,
+    21
+   ],
+   "H_set": 0.4722,
+   "text": "Tourist visits are costly, ‖ demand physical fitness, ‖ can only take place ‖ in summer ‖ Nov-Feb, ‖ and are largely limited to the Peninsula, ‖ Islands and Ross Sea.",
+   "pieces": {
+    "Chinese": [
+     "游客的访问是昂贵的,",
+     "要求身体健康,",
+     "只能发生",
+     "夏天",
+     "11月至2月",
+     "并且大多数都局限在半岛,",
+     "群岛和罗斯海。"
+    ],
+    "Japanese": [
+     "観光客の訪問は高価で",
+     "体力を要求し",
+     "実現するには",
+     "夏には",
+     "11月〜2月",
+     "半島に限られています",
+     "島とロス海"
+    ],
+    "German": [
+     "Touristische Besuche sind teuer,",
+     "körperliche Fitness erfordern,",
+     "Kann nur stattfinden",
+     "Im Sommer im Sommer",
+     "Nov-Feb,",
+     "und sind weitgehend auf die Halbinsel beschränkt,",
+     "Inseln und Rosssee."
+    ],
+    "Spanish": [
+     "Las visitas turísticas son costosas,",
+     "exigen aptitud física,",
+     "Solo puede tener lugar",
+     "En verano",
+     "Nov-Feb,",
+     "y se limitan en gran medida a la Península,",
+     "Islas y Mar de Ross."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    7,
+    13
+   ],
+   "H_set": 0.7217,
+   "text": "Tourist ‖ visits ‖ are ‖ costly, ‖ demand physical fitness, ‖ can only take place in summer ‖ Nov-Feb, and are largely limited to the Peninsula, Islands and Ross Sea.",
+   "pieces": {
+    "Chinese": [
+     "旅游",
+     "访问",
+     "是",
+     "费用高昂，",
+     "要求身体健康,",
+     "只能在夏天举行",
+     "11月至2月,主要限于半岛、群岛和罗斯海。"
+    ],
+    "Japanese": [
+     "観光客",
+     "訪問",
+     "あなたは",
+     "費用がかかる",
+     "体力を要求し",
+     "夏にしか行われない",
+     "１１〜２月に発生し，半島，諸島，ロス海に限られた。"
+    ],
+    "German": [
+     "Tourist",
+     "Besuche",
+     "sind",
+     "kostspielig,",
+     "körperliche Fitness erfordern,",
+     "Kann nur im Sommer stattfinden",
+     "Nov-Feb, und sind weitgehend auf die Halbinsel, die Inseln und die Rosssee beschränkt."
+    ],
+    "Spanish": [
+     "Turista",
+     "Visitas",
+     "son",
+     "costosos,",
+     "exigen aptitud física,",
+     "Solo puede tener lugar en verano",
+     "Nov-Feb, y se limitan en gran medida a la Península, las Islas y el Mar de Ross."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "can only take place",
+     "right": "in summer Nov-Feb, and",
+     "H": 0.518,
+     "H_pct": 17.4,
+     "contra": 0.3599,
+     "cohesion": 0.8092
+    },
+    {
+     "pos": 14,
+     "left": "place in summer Nov-Feb,",
+     "right": "and are largely limited",
+     "H": 0.8086,
+     "H_pct": 69.6,
+     "contra": 0.0085,
+     "cohesion": 0.8155
+    },
+    {
+     "pos": 21,
+     "left": "limited to the Peninsula,",
+     "right": "Islands and Ross Sea.",
+     "H": 0.7999,
+     "H_pct": 65.2,
+     "contra": 0.0522,
+     "cohesion": 0.8439
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Tourist",
+     "right": "visits are costly, demand",
+     "H": 0.8154,
+     "H_pct": 82.6,
+     "contra": 0.0243,
+     "cohesion": 0.8357
+    },
+    {
+     "pos": 2,
+     "left": "Tourist visits",
+     "right": "are costly, demand physical",
+     "H": 0.834,
+     "H_pct": 87.0,
+     "contra": 0.003,
+     "cohesion": 0.8366
+    },
+    {
+     "pos": 3,
+     "left": "Tourist visits are",
+     "right": "costly, demand physical fitness,",
+     "H": 0.8138,
+     "H_pct": 78.3,
+     "contra": 0.0279,
+     "cohesion": 0.8372
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,174 @@
+{
+ "n_sentences": 50,
+ "ids": [
+  "en_us_105",
+  "en_us_588",
+  "en_us_1179",
+  "en_us_655",
+  "en_us_1294",
+  "en_us_329",
+  "en_us_783",
+  "en_us_411",
+  "en_us_154",
+  "en_us_1587",
+  "en_us_419",
+  "en_us_432",
+  "en_us_1615",
+  "en_us_767",
+  "en_us_656",
+  "en_us_680",
+  "en_us_847",
+  "en_us_1253",
+  "en_us_1305",
+  "en_us_1342",
+  "en_us_474",
+  "en_us_1570",
+  "en_us_1503",
+  "en_us_538",
+  "en_us_396",
+  "en_us_218",
+  "en_us_498",
+  "en_us_167",
+  "en_us_838",
+  "en_us_784",
+  "en_us_6",
+  "en_us_1410",
+  "en_us_1600",
+  "en_us_415",
+  "en_us_1184",
+  "en_us_1555",
+  "en_us_1488",
+  "en_us_288",
+  "en_us_1631",
+  "en_us_1528",
+  "en_us_1650",
+  "en_us_1127",
+  "en_us_768",
+  "en_us_1484",
+  "en_us_1402",
+  "en_us_1415",
+  "en_us_70",
+  "en_us_936",
+  "en_us_83",
+  "en_us_1652"
+ ],
+ "best": 7,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1134,
+   "pairs": 49,
+   "chars": 7666,
+   "changelog": [
+    "Insert a new core principle allowing safe splits immediately after sentence-introductory function words when the remainder is semantically self-contained — addresses the primary finding about excessive reluctance to split short left pieces.",
+    "Replace example E1 with a measured labeled example en_us_845 (short-latency case that rewards an early cut) so the model learns the ranking from data."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.1449,
+   "pairs": 49,
+   "chars": 7377,
+   "changelog": [
+    "Insert a core principle permitting safe cuts immediately after a main verb when the remainder is a short, self-contained predicate or closed complement — addresses the primary finding that a blanket verb–cut prohibition harms very short, low-latency segments."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.1247,
+   "pairs": 49,
+   "chars": 7236,
+   "changelog": [
+    "Insert a core principle forbidding cuts between numerals/quantifiers and their units or quantified nouns — directly addresses the primary finding that splitting numerals from their units causes severe cohesion loss."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.1132,
+   "pairs": 49,
+   "chars": 7360,
+   "changelog": [
+    "Insert a narrow, surface-check core principle that permits a cut immediately after a single sentence‑initial function word under concrete token conditions; addresses the primary finding that the prompt was too reluctant to split off short sentence-introductory function words and supplies a recognisable, checkable rule."
+   ]
+  },
+  {
+   "candidate": 4,
+   "oracle_dist": 0.124,
+   "pairs": 49,
+   "chars": 7376,
+   "changelog": [
+    "Insert a narrow surface rule permitting cuts after a verb when the remainder is a short, closed prepositional span — lets safe short verb+PP separations improve low-latency segmentation without retuning broad verb-cut scope."
+   ]
+  },
+  {
+   "candidate": 5,
+   "oracle_dist": 0.1086,
+   "pairs": 49,
+   "chars": 7280,
+   "changelog": [
+    "Insert a narrow surface rule forbidding cuts between a numeral/quantifier and its immediately following unit word or quantified noun — a concrete, source-form check to protect numeral+unit spans (obeys the 'narrow_rule' constraint)."
+   ]
+  },
+  {
+   "candidate": 6,
+   "oracle_dist": 0.1281,
+   "pairs": 49,
+   "chars": 6951,
+   "changelog": [
+    "Replace E1 with labeled example en_us_292 to teach the model that splitting immediately after an initial determiner ('The') can be optimal in short-latency cases.",
+    "Replace E2 with labeled example en_us_884 to show that sentence‑introductory prepositional/adverbial leads ('In') are often safe early cuts.",
+    "Replace E3 with labeled example en_us_46 to supply a measured case where an early temporal/location lead ('On') should be split for better low-latency performance.",
+    "Replace E4 with labeled example en_us_482 to provide a contrasted case where an early subject/head ('Mysticism') is best delivered early and an initial predicate cut is rewarded."
+   ]
+  },
+  {
+   "candidate": 7,
+   "oracle_dist": 0.0994,
+   "pairs": 49,
+   "chars": 7222,
+   "changelog": [
+    "Replace E1 with labeled example en_us_301 to teach that sentence‑initial participial/adverbial leads can often be emitted early when the remainder is self‑contained (addresses the critique that the prompt was too reluctant to split off short initial function words).",
+    "Replace E2 with labeled example en_us_340 to supply a measured case showing a safe short predicate/complement split after a verb (directly addresses the primary finding that a blanket ban on cuts after main verbs is too broad).",
+    "Replace E3 with labeled example en_us_924 to add a measured example where a closed complement/short prepositional span following a verb is safe to cut (reinforces allowing safe verb‑adjacent splits without retuning broad rules)."
+   ]
+  },
+  {
+   "candidate": 8,
+   "oracle_dist": 0.1306,
+   "pairs": 49,
+   "chars": 7139,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1116 to teach the model to keep numerals/quantifiers attached to their unit or quantified noun (addresses the primary finding about numeral+unit cohesion loss).",
+    "Replace E2 with labeled example en_us_860 to show a measured case where cutting between '10' and 'years' hurts fidelity, reinforcing protection of numeral+unit spans.",
+    "Replace E3 with labeled example en_us_1024 to provide another measured short-latency case ('two summer Olympics') that rewards keeping numerals with their units/nouns."
+   ]
+  },
+  {
+   "candidate": 9,
+   "oracle_dist": 0.1146,
+   "pairs": 49,
+   "chars": 7329,
+   "changelog": [
+    "Insert a concise core principle allowing cuts after initial sentence-introductory function words when the remainder is semantically self-contained — addresses the primary finding that the prompt was too reluctant to split very short left pieces that help low-latency performance."
+   ]
+  },
+  {
+   "candidate": 10,
+   "oracle_dist": 0.1332,
+   "pairs": 49,
+   "chars": 7306,
+   "changelog": [
+    "Insert a narrow surface rule allowing safe cuts after a main verb when the remainder is very short and contains no clause-openers, negation, or pronouns — addresses the primary finding that a blanket verb-cut prohibition harmed very short, low-latency segments."
+   ]
+  },
+  {
+   "candidate": 11,
+   "oracle_dist": 0.111,
+   "pairs": 49,
+   "chars": 7230,
+   "changelog": [
+    "Insert a concise core principle forbidding cuts between a numeral/quantifier and its immediately following unit or quantified noun — to protect numeral+unit spans as the primary finding requires."
+   ]
+  }
+ ]
+}

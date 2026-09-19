@@ -1,0 +1,182 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a numeral or quantifier token (digits or spelled-out number) together with the immediately following measurement unit token or with an immediately following parenthesized measurement phrase that opens with '('; bind the number to that surface-adjacent unit/parenthesis."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 277
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7361,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a finite verb or auxiliary (including copula and modals) together with the immediately following span when that next token begins a core complement: 'that' or 'to', a determiner (a/an/the), a pronoun, a numeral, a noun, or an opening parenthesis (keep the verb attached to its complement)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 297
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7381,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- As a last resort, prefer a cut at a punctuation or clause boundary (comma, semicolon, sentence break) over a cut that splits a numeral/quantifier from its immediately following unit or parenthesized measurement phrase, and over a cut that separates a finite verb/auxiliary from the immediately following phrase that supplies its core complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 348
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7432,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- As a last resort, order candidate cuts on the source surface as follows: prefer a punctuation or clause-boundary cut (comma, semicolon, sentence break) only when that punctuation cut does not split a numeral/quantifier from its immediately following unit or parenthesized measurement phrase, nor separate a finite verb/auxiliary (including copula and modals) from the immediately following phrase that supplies its core complement; if no such punctuation cut exists, prefer the cut that preserves numeral–unit attachment or finite-verb–core-complement attachment over other non-punctuation cuts."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 598
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7682,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -178
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6906,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -178
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6906,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Prefer a cut that leaves a numeral or quantifier token attached to its immediately following unit or parenthesized measurement phrase over a cut that separates them; and prefer a cut that keeps a finite verb/auxiliary (including copula and modals) attached to the immediately following phrase that supplies its core complement over a cut that separates them."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 361
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7445,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Prefer a cut that keeps a numeral or quantifier (digits or spelled-out number) attached to an immediately following parenthesized measurement phrase (an opening '(' within the next two tokens); rank such cuts above alternatives that would split the numeral from that parenthesized unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 289
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7373,
+  "errors": null
+ }
+]

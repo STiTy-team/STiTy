@@ -1,0 +1,50 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_233",
+  "en_us_164",
+  "en_us_380",
+  "en_us_474",
+  "en_us_1049",
+  "en_us_1426",
+  "en_us_396",
+  "en_us_838",
+  "en_us_1038",
+  "en_us_1600",
+  "en_us_288",
+  "en_us_326",
+  "en_us_553",
+  "en_us_70",
+  "en_us_83"
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.0672,
+   "pairs": 15,
+   "chars": 7704,
+   "changelog": [
+    "Replace C7 to address the primary finding: soften the absolute predicate–argument preservation rule so it avoids creating many micro‑fragments in very short‑latency contexts and instead describes what a good dense cut looks like (prefer cohesive remainders, avoid trailing single‑word fragments)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.0681,
+   "pairs": 15,
+   "chars": 7570,
+   "changelog": [
+    "Replace E1 with the measured labeled example en_us_790 so the examples section demonstrates that cuts inside coordinate lists harm cohesion and should be penalized."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.0697,
+   "pairs": 15,
+   "chars": 7589,
+   "changelog": [
+    "Insert after C7 a short rule that preserves predicate–argument integrity but forbids creating many micro-fragments: when keeping the predicate would force one- or two-word trailing pieces, prefer cuts that yield a cohesive remainder (addresses the primary finding about over‑strict predicate preservation)."
+   ]
+  }
+ ]
+}

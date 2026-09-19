@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats cuts immediately after a verb or auxiliary (or before the few words that complete its predicate) as acceptable; this detaches core predicate-argument material and often creates isolated stretches whose translation contradicts or loses the original proposition.",
+    "evidence": "en_us_44, en_us_1527, en_us_1650, en_us_1116, en_us_633, en_us_408, en_us_83, en_us_1567, en_us_375, en_us_419 — each policy cut separates a verb/auxiliary from the short phrase (object/complement, clausal complement, or polarity-fixing words) that completes the predicate.",
+    "type_predicate": "A finite verb or auxiliary is immediately followed, with no intervening punctuation, by a short (about ≤4 words) complement or direct object that completes the predicate.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a finite verb/auxiliary and the immediately following short complement or direct object (roughly ≤4 words) that completes its predicate or fixes polarity/scope."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that split numerals or measurements from their units or parenthetical equivalents, which severs essential numeric meaning and often causes mistranslation or contradiction.",
+    "evidence": "en_us_101, en_us_375, en_us_44, en_us_733 — in each case the policy cut separates a numeral/measurement from its unit or parenthetical equivalent (e.g. '200 pounds (90kg)', '55,000 barrels (2.3 million gallons)', '1.5 hour').",
+    "type_predicate": "A numeral or measurement (digits or spelled-out number) is immediately followed by its unit or an immediately adjacent parenthetical equivalent.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not place a cut between a numeral/measurement and its unit or immediately adjacent parenthetical equivalent; keep the number and its unit together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats cuts immediately after a verb or auxiliary (or before the few words that complete its predicate) as acceptable; this detaches core predicate-argument material and often creates isolated stretches whose translation contradicts or loses the original proposition.",
+   "evidence": "en_us_44, en_us_1527, en_us_1650, en_us_1116, en_us_633, en_us_408, en_us_83, en_us_1567, en_us_375, en_us_419 — each policy cut separates a verb/auxiliary from the short phrase (object/complement, clausal complement, or polarity-fixing words) that completes the predicate.",
+   "type_predicate": "A finite verb or auxiliary is immediately followed, with no intervening punctuation, by a short (about ≤4 words) complement or direct object that completes the predicate.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a finite verb/auxiliary and the immediately following short complement or direct object (roughly ≤4 words) that completes its predicate or fixes polarity/scope."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that split numerals or measurements from their units or parenthetical equivalents, which severs essential numeric meaning and often causes mistranslation or contradiction.",
+   "evidence": "en_us_101, en_us_375, en_us_44, en_us_733 — in each case the policy cut separates a numeral/measurement from its unit or parenthetical equivalent (e.g. '200 pounds (90kg)', '55,000 barrels (2.3 million gallons)', '1.5 hour').",
+   "type_predicate": "A numeral or measurement (digits or spelled-out number) is immediately followed by its unit or an immediately adjacent parenthetical equivalent.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not place a cut between a numeral/measurement and its unit or immediately adjacent parenthetical equivalent; keep the number and its unit together."
+   }
+  }
+ ]
+}

@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00485,
+  "lo": -0.00418,
+  "hi": 0.0142,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": 0.0192,
+  "≤5": 0.0263,
+  "≤7": 0.0142,
+  "≤10": 0.0081,
+  "≤99": -0.0036
+ },
+ "n_worse": 1719,
+ "n_better": 2012,
+ "worst": [
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7364,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.712,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, ‖ but the framework we have is enough to start trading on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.6893,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1649",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.6709,
+   "before": "In Japan, ‖ the first cherry blossom parties ‖ were hosted ‖ by the emperor ‖ only for himself and other members of the aristocracy around the Imperial Court.",
+   "after": "In Japan, the first cherry blossom parties ‖ were hosted ‖ by the emperor ‖ only for himself ‖ and other members of the aristocracy around the Imperial Court."
+  },
+  {
+   "id": "en_us_25",
+   "k": 4,
+   "bin": "≤3",
+   "delta": -0.6704,
+   "before": "He had 2 goals ‖ and ‖ 2 assists ‖ in Washington's 5-3 win ‖ over the Atlanta Thrashers.",
+   "after": "He had 2 goals ‖ and 2 assists ‖ in Washington's 5-3 win ‖ over the Atlanta ‖ Thrashers."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7425,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory ‖ they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_594",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7372,
+   "before": "Only animals have brains (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do ‖ not have brains).",
+   "after": "Only animals have brains ‖ (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do not have brains)."
+  },
+  {
+   "id": "en_us_333",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.7127,
+   "before": "The celebrations started ‖ with a special show ‖ by the world-renowned group Cirque ‖ du Soleil.",
+   "after": "The celebrations ‖ started with a special show ‖ by the world-renowned group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_1278",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.694,
+   "before": "To understand the Templars ‖ one must understand the context that prompted the creation of the ‖ order.",
+   "after": "To ‖ understand the Templars ‖ one must understand the context that prompted the creation of the order."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.598,
+   "2": 4.117,
+   "3": 2.857,
+   "4": 2.183,
+   "5": 1.778,
+   "6": 1.534,
+   "7": 1.377,
+   "8": 1.276,
+   "9": 1.192,
+   "10": 1.138,
+   "11": 1.103,
+   "12": 1.08,
+   "13": 1.065
+  },
+  "revision": {
+   "1": 8.004,
+   "2": 4.332,
+   "3": 2.881,
+   "4": 2.249,
+   "5": 1.84,
+   "6": 1.619,
+   "7": 1.439,
+   "8": 1.344,
+   "9": 1.25,
+   "10": 1.197,
+   "11": 1.174,
+   "12": 1.13,
+   "13": 1.1
+  },
+  "delta": {
+   "1": 0.406,
+   "2": 0.215,
+   "3": 0.024,
+   "4": 0.066,
+   "5": 0.062,
+   "6": 0.085,
+   "7": 0.062,
+   "8": 0.068,
+   "9": 0.058,
+   "10": 0.059,
+   "11": 0.071,
+   "12": 0.05,
+   "13": 0.035
+  }
+ },
+ "why": "The new fallback ordering that prefers keeping short function words attached to their following head made the model avoid single-word fragments, which raised H_set for short-latency pieces (positive means in ≤3/≤5/≤7/≤10 bins) but shifted cut choices in longer sentences (slight negative for ≤99 and several large degradations), e.g. moving cuts into or out of quoted complements and splitting enumerations.",
+ "lesson": "A later revision should preserve the fallback’s clear benefit for very short pieces while avoiding broad application that repositions top cuts in long sentences and thereby breaks enumerations or quoted complements.",
+ "blamed": [
+  "C_end"
+ ]
+}

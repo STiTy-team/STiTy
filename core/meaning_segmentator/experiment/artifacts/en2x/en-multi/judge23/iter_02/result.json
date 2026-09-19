@@ -1,0 +1,49 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01002,
+  "lo": -0.00358,
+  "hi": 0.02354,
+  "n": 2773,
+  "n_clusters": 300
+ },
+ "gain": {
+  "mean": 0.01002,
+  "lo": -0.00358,
+  "hi": 0.02354,
+  "n": 2773,
+  "n_clusters": 300
+ },
+ "changelog": [
+  "Insert a fallback ordering that prefers cuts after clause boundaries/punctuation over cuts that separate a noun or proper name from immediately following essential post‑nominal material, to keep identifying modifiers with their head and avoid detached fragments."
+ ],
+ "findings": [
+  "The prompt underrates the need to keep a noun or proper name tightly joined with immediately following post‑nominal material that completes identification, so it often cuts off essential modifiers (units, parentheticals, appositives, prepositional complements, relative clauses) and produces detached or misleading fragments."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "As a fallback, prefer a cut after a clear clause boundary or punctuation over a "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0146,
+   "≤5": 0.0093,
+   "≤7": 0.0083,
+   "≤10": 0.0038,
+   "≤99": -0.0049
+  },
+  "n_worse": 1104,
+  "n_better": 1206,
+  "why": "Inserting the fallback that favors cuts after clause boundaries/punctuation made the scorer prefer punctuation-adjacent cut positions (raising the top-ranked cut frequency — rank_depth Δ at k=1 is +0.737), so it improved many short-piece splits (bins ≤3..≤10) but produced more harmful early/small fragments in long-piece contexts (bin ≤99 went negative) by moving cuts to just after punctuation or clause openings and thereby isolating tiny function-word pieces or separating heads from their complements.",
+  "lesson": "When adding a punctuation/clause-boundary fallback, constrain it so it does not outrank avoidance of creating very short/leading fragments or splitting a head from its essential post‑nominal/complement material.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

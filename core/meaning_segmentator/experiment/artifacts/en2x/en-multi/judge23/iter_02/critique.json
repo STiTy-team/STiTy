@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates the need to keep a noun or proper name tightly joined with immediately following post‑nominal material that completes identification, so it often cuts off essential modifiers (units, parentheticals, appositives, prepositional complements, relative clauses) and produces detached or misleading fragments.",
+    "evidence": "['en_us_1527','en_us_101','en_us_375','en_us_1253','en_us_1248','en_us_1297','en_us_1369','en_us_292','en_us_1116']: each sentence has a noun or name immediately followed by essential post‑nominal material (measurement/unit parenthesis, a prepositional or appositive phrase, or a relative/clausal identifier) that the policy split, and the target keeps that material with the head.",
+    "type_predicate": "The sentence contains a noun or proper name immediately followed by essential post‑nominal material (a parenthetical measurement/unit, a prepositional/of complement, an appositive, or a relative/clausal identifier).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a noun/head and immediately following essential post‑nominal material (parenthetical measurements/units, prepositional/of complements, appositives, or relative/clausal identifiers)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates the need to keep a noun or proper name tightly joined with immediately following post‑nominal material that completes identification, so it often cuts off essential modifiers (units, parentheticals, appositives, prepositional complements, relative clauses) and produces detached or misleading fragments.",
+   "evidence": "['en_us_1527','en_us_101','en_us_375','en_us_1253','en_us_1248','en_us_1297','en_us_1369','en_us_292','en_us_1116']: each sentence has a noun or name immediately followed by essential post‑nominal material (measurement/unit parenthesis, a prepositional or appositive phrase, or a relative/clausal identifier) that the policy split, and the target keeps that material with the head.",
+   "type_predicate": "The sentence contains a noun or proper name immediately followed by essential post‑nominal material (a parenthetical measurement/unit, a prepositional/of complement, an appositive, or a relative/clausal identifier).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a noun/head and immediately following essential post‑nominal material (parenthetical measurements/units, prepositional/of complements, appositives, or relative/clausal identifiers)."
+   }
+  }
+ ]
+}

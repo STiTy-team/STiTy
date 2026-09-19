@@ -1,0 +1,50 @@
+{
+ "iter": 5,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00116,
+  "lo": -0.01338,
+  "hi": 0.01125,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00116,
+  "lo": -0.01338,
+  "hi": 0.01125,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C8 to keep the clause-closure/cohesion check but explicitly allow isolating sentence-initial function words or discourse markers when the remainder is a cohesive, self-contained clause and the isolated opener does not itself assert a contradicting proposition — addresses the primary finding about safe opener cuts in very-short latency bins."
+ ],
+ "findings": [
+  "The prompt demotes boundaries whose remainder would contradict the prefix, but it accomplishes this by promoting the immediately adjacent cut — producing one-word or head-fragment pieces (bare aux/copula, determiner-only, numeral-only, noun stripped of postmodifiers) that harm very-short latency bins.",
+  "The prompt reflexively avoids cutting near sentence-openers/function words, but for very short latency budgets isolating an initial function word or discourse marker can be beneficial when the remainder is cohesive and non-contradictory."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Is the preceding stretch a self-contained propositional claim, or does clause ",
+   "now": "- Is the preceding stretch a self-contained propositional claim? Cuts that leave"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0014,
+   "≤5": -0.0022,
+   "≤7": -0.0029,
+   "≤10": 0.0048,
+   "≤99": 0.0003
+  },
+  "n_worse": 649,
+  "n_better": 709,
+  "why": "Replacing C8 made the model more willing to isolate sentence‑initial function words/discourse markers (it started cutting immediately after openers). That behaviour produced small gains for slightly longer remainders (≤10 bin) where the remainder stayed cohesive, but increased harmful fragmentation in the shortest latency bins (≤3/≤5/≤7) by introducing extra early cuts and splitting predicates/NPs (illustrated by the 'However, ‖ a nationwide…' and fragmented predicate examples), leaving the overall change near zero.",
+  "lesson": "A later revision should respect that permitting isolation of sentence‑initial openers can help when the remainder is sufficiently long/cohesive (benefit in ≤10) but currently increases fragmentation in the very-short bins, so the change must not encourage immediate cuts after openers that produce very-short or predicate-splitting fragments.",
+  "blamed": [
+   "C8 «- Is the preceding stretch a self-contained propositional cl»"
+  ]
+ }
+}

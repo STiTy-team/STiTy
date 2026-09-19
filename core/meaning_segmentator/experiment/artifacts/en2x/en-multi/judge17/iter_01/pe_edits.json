@@ -1,0 +1,286 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Keep a numeral or numeric expression together with the unit word or an immediately adjacent parenthetical unit/equivalent that supplies the same measurement (bind the numeral with its unit; e.g. \"105 miles per hour (165 km/h)\")."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 231
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7117,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Keep an initial subordinating conjunction or fronted adverbial (Unless/While/Because/After/When/If/that, or similar temporal/conditional/relative markers) together with the main predicate (the verb or subject+verb) that resolves its scope; prefer cuts only after that predicate so the subordinate phrase is not left hanging."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_936",
+    "kind": "example",
+    "text": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> working <SEG:?> overseas <SEG:?> generally <SEG:?> means <SEG:?> that <SEG:?> you <SEG:?> will <SEG:?> have <SEG:?> to <SEG:?> file <SEG:?> income <SEG:?> tax <SEG:?> in <SEG:?> the <SEG:?> country <SEG:?> you <SEG:?> are <SEG:?> based <SEG:?> in.\nOutput: Unless <SEG:86> you <SEG:77> are <SEG:59> a <SEG:23> diplomat, <SEG:100> working <SEG:55> overseas <SEG:91> generally <SEG:68> means <SEG:5> that <SEG:14> you <SEG:18> will <SEG:32> have <SEG:41> to <SEG:45> file <SEG:73> income <SEG:82> tax <SEG:95> in <SEG:0> the <SEG:9> country <SEG:50> you <SEG:36> are <SEG:27> based <SEG:64> in."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 90
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 282
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7258,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep a numeral or numeric expression together with the immediately following unit word or with any immediately adjacent parenthetical unit/equivalent. Bind sequences like \"105 miles per hour\" or \"55,000 barrels (2.3 million gallons)\" so a cut never separates the numeral from its unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 286
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7172,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep an initial subordinating conjunction or fronted adverbial token (Unless/While/Because/After/When/If/'that') together with the following phrase up to and including the first finite (conjugated) verb that completes its predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 235
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7121,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_44",
+    "text": "Input: Fred <SEG:?> currently <SEG:?> has <SEG:?> winds <SEG:?> of <SEG:?> 105 <SEG:?> miles <SEG:?> per <SEG:?> hour <SEG:?> (165 <SEG:?> km/h) <SEG:?> and <SEG:?> is <SEG:?> moving <SEG:?> towards <SEG:?> the <SEG:?> northwest.\nOutput: Fred <SEG:93> currently <SEG:67> has <SEG:53> winds <SEG:47> of <SEG:100> 105 <SEG:33> miles <SEG:13> per <SEG:40> hour <SEG:80> (165 <SEG:20> km/h) <SEG:87> and <SEG:60> is <SEG:27> moving <SEG:73> towards <SEG:7> the <SEG:0> northwest."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_101",
+    "text": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).\nOutput: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons)."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_140",
+    "text": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .\nOutput: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> ."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_733",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 92
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 188
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 215
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -387
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6994,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_360",
+    "text": "Input: Scientists <SEG:?> call <SEG:?> this <SEG:?> process <SEG:?> \"stimulated <SEG:?> emission <SEG:?> of <SEG:?> radiation\" <SEG:?> because <SEG:?> the <SEG:?> atoms <SEG:?> are <SEG:?> stimulated <SEG:?> by <SEG:?> the <SEG:?> bright <SEG:?> light, <SEG:?> causing <SEG:?> the <SEG:?> emission <SEG:?> of <SEG:?> a <SEG:?> photon <SEG:?> of <SEG:?> light, <SEG:?> and <SEG:?> light <SEG:?> is <SEG:?> a <SEG:?> type <SEG:?> of <SEG:?> radiation.\nOutput: Scientists <SEG:97> call <SEG:80> this <SEG:87> process <SEG:77> \"stimulated <SEG:30> emission <SEG:70> of <SEG:67> radiation\" <SEG:100> because <SEG:27> the <SEG:10> atoms <SEG:23> are <SEG:13> stimulated <SEG:40> by <SEG:7> the <SEG:0> bright <SEG:3> light, <SEG:57> causing <SEG:20> the <SEG:37> emission <SEG:33> of <SEG:43> a <SEG:17> photon <SEG:73> of <SEG:53> light, <SEG:90> and <SEG:93> light <SEG:60> is <SEG:63> a <SEG:47> type <SEG:50> of <SEG:83> radiation."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_538",
+    "text": "Input: If <SEG:?> the <SEG:?> objective <SEG:?> of <SEG:?> one’s <SEG:?> visit <SEG:?> to <SEG:?> a <SEG:?> particular <SEG:?> place <SEG:?> is <SEG:?> to <SEG:?> get <SEG:?> to <SEG:?> know <SEG:?> its <SEG:?> history <SEG:?> and <SEG:?> culture <SEG:?> then <SEG:?> this <SEG:?> type <SEG:?> of <SEG:?> tourism <SEG:?> is <SEG:?> known <SEG:?> as <SEG:?> cultural <SEG:?> tourism.\nOutput: If <SEG:74> the <SEG:59> objective <SEG:33> of <SEG:56> one’s <SEG:30> visit <SEG:63> to <SEG:7> a <SEG:4> particular <SEG:15> place <SEG:70> is <SEG:93> to <SEG:81> get <SEG:52> to <SEG:44> know <SEG:78> its <SEG:22> history <SEG:48> and <SEG:19> culture <SEG:100> then <SEG:96> this <SEG:85> type <SEG:37> of <SEG:41> tourism <SEG:67> is <SEG:11> known <SEG:26> as <SEG:0> cultural <SEG:89> tourism."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_845",
+    "text": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.\nOutput: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 546
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 232
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -10
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -349
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7305,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a numeral or numeric expression together with the immediately following unit word or any adjacent parenthetical unit/equivalent (e.g. \"105 miles per hour (165 km/h)\"), so the numeral and its unit travel as one piece."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 224
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7110,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep an initial subordinating conjunction or fronted adverbial token (Unless/While/Because/After/When/If/that) together with the finite verb or main predicate token that completes its clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 194
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7080,
+  "errors": null
+ }
+]

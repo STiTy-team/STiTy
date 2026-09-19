@@ -1,0 +1,601 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02379,
+   "lo": -0.05001,
+   "hi": 0.00041,
+   "n": 437,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a new core principle warning that very short trailing fragments (≤3 words or bare name/location/measure/preposition) can, taken alone, assert/negate or remap scope and so should be treated as high contra-risk and ranked low — directly addresses the primary_finding about underestimated entailment risk for short fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Treat punctuation-bearing attachments as belonging to preceding text; isolatin",
+    "now": "- Short trailing fragments: if the right-hand piece after a cut is very short (≤"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00704,
+   "lo": -0.03962,
+   "hi": 0.02472,
+   "n": 437,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C2 to add a concise rule that explicitly flags very short trailing fragments and bare names/places/measures as high entailment (contra) risk, addressing the primary finding without duplicating the sibling insertion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- Contra check: does the material after the cut, taken alone, contradict, revers",
+    "now": "- Contra check: would the material after the cut, taken alone, contradict, negat"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00718,
+   "lo": -0.02105,
+   "hi": 0.0345,
+   "n": 437,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C3 to keep the subordinator/attachment warning but add a concise rule flagging very short trailing fragments (≤3 words or bare name/place/measure/preposition) as high entailment (contra) risk — directly addresses the primary finding with a single small change distinct from sibling edits."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Treat sentence-initial subordinators and adverbial clauses as unstable attachm",
+    "now": "- Treat sentence-initial subordinators and adverbial clauses as unstable attachm"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00346,
+   "lo": -0.01801,
+   "hi": 0.01095,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace C3 to keep the subordinator/attachment warning but add a concise rule flagging very short trailing fragments (≤3 words or bare name/place/measure/preposition) as high entailment (contra) risk — directly addresses the primary finding with a single small change distinct from sibling edits."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Treat sentence-initial subordinators and adverbial clauses as unstable attachm",
+    "now": "- Treat sentence-initial subordinators and adverbial clauses as unstable attachm"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00139,
+   "lo": -0.01551,
+   "hi": 0.01365,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -0.00139,
+   "lo": -0.01551,
+   "hi": 0.01365,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace E1 (hand-written example) with measured labeled example en_us_1567 so the scorer sees a real failure case where a very short trailing fragment (≤3 words) causes high entailment (contra) risk, addressing the primary finding."
+  ],
+  "findings": [
+   "The scorer underestimates entailment (contra) risk for cuts that leave a very short trailing fragment. It treats locally-cohesive left/right translations as safe even when the right-hand fragment, taken alone, would assert/negate or mis‑scope a claim and so overturn the earlier material."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> largest <SEG:?> tournament <SEG:?> of <SEG:?> the <SEG:?> yea",
+    "labeled_example": "en_us_1567"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0004,
+    "≤5": 0.0044,
+    "≤7": -0.0036,
+    "≤10": -0.01,
+    "≤99": -0.0226
+   },
+   "n_worse": 775,
+   "n_better": 735,
+   "why": "Replacing E1 with a real short trailing-fragment example made the scorer avoid keeping tiny trailing fragments (small positive changes in the ≤3 and ≤5 bins), but the model compensated by introducing more internal single-word splits and moving cuts closer to heads in longer pieces (negative changes in ≤7, ≤10, ≤99). The worst-moved pairs illustrate this side-effect (new one-word segments like “they”, “medication”, “upright”).",
+   "lesson": "When adding an example to discourage very-short trailing fragments, ensure the change is localized so it does not induce extra internal one-word splits or shift cuts toward heads in longer pieces.",
+   "blamed": [
+    "E1 «Input: The <SEG:?> largest <SEG:?> tournament <SEG:?> of <SE»"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01846,
+   "lo": -0.06033,
+   "hi": 0.02167,
+   "n": 462,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C5 to give constructive guidance for dense cuts in low-latency regimes rather than a blanket prohibition on cutting near heads; this addresses the finding that head-avoidance was over-applied and harms short-latency pairs.",
+   "Insert a new principle after C8 that forces low ranking for cuts whose standalone contradiction probability is high unless adjacent kept cuts will reliably restore context; this addresses the primary finding that entailment risk was underweighted when cohesion looked good."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- For predicates versus coordination, judge whether the continuation completes t",
+    "now": "- Predicate / coordination guidance: prefer cuts that do not separate an argumen"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Treat punctuation-bearing attachments as belonging to preceding text; isolatin",
+    "now": "- Contra-sensitive ranking: if a candidate cut by itself yields a high contradic"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00957,
+   "lo": -0.03867,
+   "hi": 0.02166,
+   "n": 462,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C5 to address over-broad head-avoidance: allow denser safe cuts in very-low-latency regimes and give constructive guidance (require high cohesion and absence of high-contra single cuts; prefer cuts after complete constituents)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- For predicates versus coordination, judge whether the continuation completes t",
+    "now": "- Predicate/coordination: don't forbid cuts near predicates or arguments outrigh"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01189,
+   "lo": -0.0431,
+   "hi": 0.01904,
+   "n": 462,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a concise low-latency guidance unit after C5: allow denser safe cuts in ≤3/≤5 regimes by preferring cuts that end on complete constituents and have high cohesion and low standalone contradiction; avoid treating 'avoid heads' as an absolute ban. This directly addresses the primary finding about over-broad head-avoidance."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- For predicates versus coordination, judge whether the continuation completes t",
+    "now": "- Low-latency density: in ≤3/≤5 regimes, allow denser cuts. Prefer cuts that end"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00767,
+   "lo": -0.00438,
+   "hi": 0.01997,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00241,
+   "lo": -0.00592,
+   "hi": 0.01073,
+   "n": 3662,
+   "n_clusters": 400,
+   "dev_a": {
+    "mean": 0.00767,
+    "lo": -0.00438,
+    "hi": 0.01997,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "dev_b": {
+    "mean": -0.00298,
+    "lo": -0.0143,
+    "hi": 0.00855,
+    "n": 1811,
+    "n_clusters": 200
+   },
+   "pooled": true
+  },
+  "changelog": [
+   "Replace E1 with labeled example en_us_48 to teach the scorer about high-contra single cuts that kill set quality (addresses the primary finding that entailment risk is underweighted).",
+   "Replace E2 with labeled example en_us_1081 to illustrate a ≤5-bin case where a single high-contra cut must be ranked low despite apparent cohesion (covers mid-low latency loss).",
+   "Replace E4 with labeled example en_us_455 to show another ≤3-bin instance where keeping a cohesive-looking but highly-contradictory cut harms overall set score."
+  ],
+  "findings": [
+   "The scorer underweights entailment (contra) risk when a cut looks cohesive: it ranks positions that produce a high standalone contradiction too highly, letting a single kept cut 'kill' the set even though avoiding that one cut would rescue quality.",
+   "The scorer applies 'avoid cutting near heads / between predicate and arguments' too broadly, thinning segmentations in very short-latency regimes where dense safe cuts are needed."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Jonny <SEG:?> Reid, <SEG:?> co-driver <SEG:?> for <SEG:?> the <SEG:?> A1G",
+    "labeled_example": "en_us_48"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Farther <SEG:?> south <SEG:?> is <SEG:?> Niagara <SEG:?> Falls <SEG:?> an",
+    "labeled_example": "en_us_1081"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: The <SEG:?> disadvantage <SEG:?> of <SEG:?> zoom <SEG:?> lenses <SEG:?> i",
+    "labeled_example": "en_us_455"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0073,
+    "≤5": 0.0064,
+    "≤7": 0.0154,
+    "≤10": 0.0024,
+    "≤99": 0.0075
+   },
+   "n_worse": 751,
+   "n_better": 694,
+   "why": "Replacing the examples to teach the scorer about single high-contradiction cuts caused it to downrank those specific high-contra boundaries (producing modest average gains, especially in the ≤7 bin) but in many short-latency cases it compensated by preferring alternative splits that fragment noun phrases and enumerations, producing numerous local losses.",
+   "lesson": "A later revision should avoid fixing single high-contra cuts by encouraging alternative fragmenting splits — preserve noun-phrase and enumeration integrity in short-latency (≤3–≤5) cases when de-emphasizing high-contradiction single cuts.",
+   "blamed": [
+    "E1 «Input: Jonny <SEG:?> Reid, <SEG:?> co-driver <SEG:?> for <SE»",
+    "E2 «Input: Farther <SEG:?> south <SEG:?> is <SEG:?> Niagara <SEG»",
+    "E4 «Input: The <SEG:?> disadvantage <SEG:?> of <SEG:?> zoom <SEG»"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01414,
+   "lo": -0.03903,
+   "hi": 0.01203,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C8 to shorten its wording and free space for one new principle.",
+   "Inserted a new core principle after C8 that addresses the primary finding: avoid trading a single high-contradiction cut for adjacent splits that fragment NPs/enumerations, and prefer cuts that preserve noun/list integrity and keep predicates with their core arguments."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "was": "- Treat punctuation-bearing attachments as belonging to preceding text; isolatin",
+    "now": "- Do not isolate trailing punctuation or sentence-final attachments; they belong"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Treat punctuation-bearing attachments as belonging to preceding text; isolatin",
+    "now": "- Short-latency / dense-cut guidance: do not avoid a single high-contradiction b"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02338,
+   "lo": -0.05024,
+   "hi": 0.00396,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Inserted a new Core Principle after C5 requiring that verbs/predicates stay with their core arguments/complements and that cuts be delayed until the verb phrase and obligatory complements are present — to address the primary finding about predicate completion."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- For predicates versus coordination, judge whether the continuation completes t",
+    "now": "- Predicate completion: avoid cutting between a verb/predicate and its core argu"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01667,
+   "lo": -0.0476,
+   "hi": 0.01484,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C6 with a concise 'Predicate completion' principle to address the primary finding: avoid cutting verbs/predicates from their core arguments or complements and delay cuts until the verb phrase and required objects are present."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Watch numerals, quantifiers, and measure phrases at NP start: their scope and ",
+    "now": "- Predicate completion: avoid cutting between a verb/predicate and its core argu"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_only": true,
+  "delta": {
+   "mean": -0.00588,
+   "lo": -0.03184,
+   "hi": 0.02159,
+   "n": 476,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with labeled example en_us_956 (≤3) to teach the scorer about short-latency NP/list fragmentation errors identified in the primary finding.",
+   "Replace E2 with labeled example en_us_1253 (≤3) to show how adjacent cuts can fragment coordinated NPs/enumerations and encourage preserving list integrity.",
+   "Replace E3 with labeled example en_us_1113 (≤5) to demonstrate predicate-completion failures where cuts separate verbs from their core arguments.",
+   "Replace E4 with labeled example en_us_1280 (≤3) to illustrate long NP fragmentation in very short-latency scenarios and discourage trading one high-contra cut for many smaller fragments."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?> travel <SEG:?> tim",
+    "labeled_example": "en_us_956"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> ",
+    "labeled_example": "en_us_1253"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <SEG:?> voter's <SEG:?",
+    "labeled_example": "en_us_1113"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?> be <SEG:?> delivere",
+    "labeled_example": "en_us_1280"
+   }
+  ],
+  "findings": [
+   "The prompt trades away single high-contradiction boundaries by downranking them, then prefers alternative cuts that fragment noun phrases or enumerations—this consistently harms short-latency (≤3 and ≤5) cases.",
+   "The prompt under-specifies predicate completion: it allows cuts that separate verbs/predicates from their core arguments or complements, producing contradicted or fragmentary pieces."
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0119,
+    "≤5": -0.0259,
+    "≤7": -0.0083,
+    "≤10": -0.0252,
+    "≤99": 0.0012
+   },
+   "n_worse": 210,
+   "n_better": 180,
+   "why": "Replacing several examples with short‑latency NP/enumeration cases taught the scorer to avoid cutting inside tiny lists/NPs (explaining the small gain in the ≤3 bin), but it overgeneralized: in mid‑latency ranges (≤5 and ≤10) the scorer shifted cuts toward predicate/argument boundaries and inserted extra micro‑cuts, producing more fragmentation and a net small drop in H_set.",
+   "lesson": "Keep examples that discourage fragmenting very short lists/NPs, but ensure those examples don't cause the scorer to relocate cuts into predicate/argument boundaries or create many tiny fragments in mid‑latency items.",
+   "blamed": [
+    "E2 «Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG»",
+    "E3 «Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <S»",
+    "E1 «Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?»",
+    "E4 «Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?>»"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01331,
+   "lo": -0.03482,
+   "hi": 0.00584,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with measured labeled example en_us_32 to teach safe subject–predicate cuts in mid-latency (≤5) and correct the prompt's bias that conflates NP-protection with a blanket ban on cutting near verbs."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Piquet <SEG:?> Jr. <SEG:?> crashed <SEG:?> in <SEG:?> the <SEG:?> 2008 <S",
+    "labeled_example": "en_us_32"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02667,
+   "lo": -0.05843,
+   "hi": -0.00087,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a short Core Principles rule after C5 clarifying that NP protection must not be taken as a blanket ban on cuts near verbs; prefer keeping a verb with its core arguments while allowing cuts at light function words to address the primary finding about fragmented predicates."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- For predicates versus coordination, judge whether the continuation completes t",
+    "now": "- Do not equate protecting noun phrases with forbidding cuts near verbs: prefer "
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02143,
+   "lo": -0.04876,
+   "hi": 0.00384,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E3 (hand-written Romney example) with measured labeled example en_us_1415 to teach a safe subject–predicate cut (the subject token 'style' is ranked higher than the verb 'peaked'), addressing the prompt's bias against cutting at subject–predicate boundaries."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: Gothic <SEG:?> style <SEG:?> peaked <SEG:?> in <SEG:?> the <SEG:?> period",
+    "labeled_example": "en_us_1415"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "screened_only": true,
+  "delta": {
+   "mean": -0.00264,
+   "lo": -0.02666,
+   "hi": 0.02105,
+   "n": 429,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C5 to address the primary finding: clarify that NP protection is not a blanket ban on cutting near verbs and prefer cuts that keep a verb with its core arguments while allowing cuts at light function words."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- For predicates versus coordination, judge whether the continuation completes t",
+    "now": "- Predicate cuts: prefer cuts that keep a verb with its core arguments; do not t"
+   }
+  ],
+  "findings": [
+   "The prompt's examples/instructions have biased the scorer away from cutting at safe subject–predicate boundaries in mid‑latency sentences (≤5), causing many predicates to be fragmented; it conflates 'avoid tiny NP cuts' with 'never cut around verbs/auxiliaries'."
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.002,
+    "≤5": -0.009,
+    "≤7": 0.0021,
+    "≤10": -0.0155,
+    "≤99": 0.0016
+   },
+   "n_worse": 177,
+   "n_better": 144,
+   "why": "The C5 rewrite intended to allow cuts at light function words while keeping verbs with core arguments, but the model instead shifted many cuts inward, fragmenting noun phrases, enumerations and verb+modifier sequences (e.g. splitting “did not walk upright” and breaking “Scottish justice” into separate pieces). That produced tiny gains on very short pieces but net harm in mid-length bins (≤5 and ≤10) — 177 (worse) vs 144 (better) — so overall H_set fell slightly.",
+   "lesson": "When revising predicate/NP guidance, avoid wording that implicitly encourages cutting apart heads or fragmenting short/mid-length units; preserve verb‑argument and NP integrity so cuts don't create many small fragments (especially in the ≤5–≤10 word range).",
+   "blamed": [
+    "C5 «- Predicate cuts: prefer cuts that keep a verb with its core»"
+   ]
+  }
+ }
+]

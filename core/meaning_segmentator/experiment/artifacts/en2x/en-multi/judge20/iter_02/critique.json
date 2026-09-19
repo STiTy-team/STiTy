@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt fails to treat short complements that complete a predicate as essential: it sometimes prefers a cut that separates a verb/copula from its immediately following short complement, producing orphaned or contradicting fragments.",
+    "evidence": "['en_us_360','en_us_888','en_us_1199','en_us_1118','en_us_101','en_us_1116'] — each dropped a cut that split a verb/copula from a 1–4 word prepositional, temporal, locative or measurement complement (e.g. \"stimulated by the bright...\", \"limited to the Peninsula...\", \"contact for their immediate...\", \"to her black Oldsmobile\", \"to a tank that can hold 55,000...\", \"file income tax in the country...\") and those splits produced high contradiction scores while the offline target kept the complement attached.",
+    "type_predicate": "the sentence contains a verb or copula immediately followed by a short (1–4 word) prepositional, temporal, locative, or measurement phrase that functions as the verb's essential complement",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a verb/copula and an immediately following short (1–4 word) prepositional, temporal, locative, or measurement complement."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt fails to treat short complements that complete a predicate as essential: it sometimes prefers a cut that separates a verb/copula from its immediately following short complement, producing orphaned or contradicting fragments.",
+   "evidence": "['en_us_360','en_us_888','en_us_1199','en_us_1118','en_us_101','en_us_1116'] — each dropped a cut that split a verb/copula from a 1–4 word prepositional, temporal, locative or measurement complement (e.g. \"stimulated by the bright...\", \"limited to the Peninsula...\", \"contact for their immediate...\", \"to her black Oldsmobile\", \"to a tank that can hold 55,000...\", \"file income tax in the country...\") and those splits produced high contradiction scores while the offline target kept the complement attached.",
+   "type_predicate": "the sentence contains a verb or copula immediately followed by a short (1–4 word) prepositional, temporal, locative, or measurement phrase that functions as the verb's essential complement",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a verb/copula and an immediately following short (1–4 word) prepositional, temporal, locative, or measurement complement."
+   }
+  }
+ ]
+}

@@ -1,0 +1,150 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "text": "- Do not cut immediately after sentence‑initial openers (brief discourse markers, determiners, demonstratives, or single‑word pronouns) if that would leave them as a very short standalone fragment. Prefer keeping the opener attached to the following clause unless the opener itself forms a self‑contained proposition or the remainder is clearly long and cohesive."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Prefer cuts that leave a complete predicate: include auxiliaries, the main verb, and its immediate objects/complements together. Avoid cuts that would strand a bare verb or isolate its object, since such splits commonly orphan complements or reverse agent/patient interpretation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "chars_change": 364
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 80
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7772,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Prefer cuts that keep a complete predicate together: include auxiliaries, the main verb, and its core objects/complements so agent–action–patient relations are preserved when pieces are translated separately."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 211
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7539,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_950",
+    "text": "Input: Basically <SEG:?> you'll <SEG:?> be <SEG:?> putting <SEG:?> up <SEG:?> notices <SEG:?> offering <SEG:?> your <SEG:?> help, <SEG:?> pacing <SEG:?> the <SEG:?> docks, <SEG:?> approaching <SEG:?> people <SEG:?> cleaning <SEG:?> their <SEG:?> yachts, <SEG:?> trying <SEG:?> to <SEG:?> make <SEG:?> contact <SEG:?> with <SEG:?> sailors <SEG:?> in <SEG:?> the <SEG:?> bar, <SEG:?> etc.\nOutput: Basically <SEG:100> you'll <SEG:68> be <SEG:88> putting <SEG:64> up <SEG:28> notices <SEG:96> offering <SEG:24> your <SEG:32> help, <SEG:80> pacing <SEG:52> the <SEG:0> docks, <SEG:92> approaching <SEG:40> people <SEG:76> cleaning <SEG:60> their <SEG:8> yachts, <SEG:84> trying <SEG:16> to <SEG:20> make <SEG:12> contact <SEG:48> with <SEG:56> sailors <SEG:36> in <SEG:44> the <SEG:4> bar, <SEG:72> etc."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_6",
+    "text": "Input: 28-year-old <SEG:?> Vidal <SEG:?> had <SEG:?> joined <SEG:?> Barça <SEG:?> three <SEG:?> seasons <SEG:?> ago, <SEG:?> from <SEG:?> Sevilla.\nOutput: 28-year-old <SEG:100> Vidal <SEG:88> had <SEG:75> joined <SEG:38> Barça <SEG:62> three <SEG:25> seasons <SEG:12> ago, <SEG:50> from <SEG:0> Sevilla."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_9",
+    "text": "Input: Just <SEG:?> after <SEG:?> 11:00, <SEG:?> protesters <SEG:?> blocked <SEG:?> traffic <SEG:?> on <SEG:?> the <SEG:?> northbound <SEG:?> carriage <SEG:?> in <SEG:?> Whitehall.\nOutput: Just <SEG:90> after <SEG:80> 11:00, <SEG:100> protesters <SEG:60> blocked <SEG:70> traffic <SEG:50> on <SEG:20> the <SEG:10> northbound <SEG:40> carriage <SEG:30> in <SEG:0> Whitehall."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_741",
+    "text": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG:?> islands <SEG:?> spread <SEG:?> out <SEG:?> over <SEG:?> 2.2 <SEG:?> million <SEG:?> km2 <SEG:?> of <SEG:?> ocean.\nOutput: It <SEG:69> is <SEG:77> an <SEG:31> archipelago <SEG:92> with <SEG:46> 15 <SEG:85> islands <SEG:100> spread <SEG:62> out <SEG:54> over <SEG:38> 2.2 <SEG:23> million <SEG:0> km2 <SEG:15> of <SEG:8> ocean."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 415
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -257
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -297
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -458
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6731,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Prefer cuts that preserve an intact predicate–argument unit: keep auxiliaries and the main verb with core complements and, when possible, keep the verb with its subject (agent) so agent–action–patient relations survive separate translation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 243
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7571,
+  "errors": null
+ }
+]

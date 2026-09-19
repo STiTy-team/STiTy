@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt under-protects predicate–complement attachments: it permits cuts that separate a verb/auxiliary/copula from the essential complement (object, PP, numeral/parenthetical, or named-location) that completes its meaning, producing contradictions or orphan fragments when pieces are translated independently.",
+    "evidence": "['en_us_44','en_us_1650','en_us_375','en_us_101','en_us_1617','en_us_1062','en_us_1567','en_us_1570','en_us_156','en_us_733'] — these sentences all place a finite verb or copula whose required complement (a prepositional phrase, object NP, numeral/parenthetical unit, or named-location phrase) appears later in the sentence; the prompt allows cuts between the predicate and that complement, creating high-contradiction/orphan fragments.",
+    "type_predicate": "Sentences where a finite verb (including auxiliaries or copulas) or clear verbal predicate is followed later in the same sentence by an essential complement that supplies location, time, measure, object, a parenthetical/numeric unit, or a named-entity argument.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a finite verb (including auxiliaries/copulas) and its required complement: objects, PPs giving location/time/measure, numeral/parenthetical units, or named-location/name arguments."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt under-protects predicate–complement attachments: it permits cuts that separate a verb/auxiliary/copula from the essential complement (object, PP, numeral/parenthetical, or named-location) that completes its meaning, producing contradictions or orphan fragments when pieces are translated independently.",
+   "evidence": "['en_us_44','en_us_1650','en_us_375','en_us_101','en_us_1617','en_us_1062','en_us_1567','en_us_1570','en_us_156','en_us_733'] — these sentences all place a finite verb or copula whose required complement (a prepositional phrase, object NP, numeral/parenthetical unit, or named-location phrase) appears later in the sentence; the prompt allows cuts between the predicate and that complement, creating high-contradiction/orphan fragments.",
+   "type_predicate": "Sentences where a finite verb (including auxiliaries or copulas) or clear verbal predicate is followed later in the same sentence by an essential complement that supplies location, time, measure, object, a parenthetical/numeric unit, or a named-entity argument.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a finite verb (including auxiliaries/copulas) and its required complement: objects, PPs giving location/time/measure, numeral/parenthetical units, or named-location/name arguments."
+   }
+  }
+ ]
+}

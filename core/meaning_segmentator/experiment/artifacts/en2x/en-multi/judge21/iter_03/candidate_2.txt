@@ -1,0 +1,55 @@
+[Role]
+You are a sentence-level segmentation judge for streaming speech translation. Each input is one English sentence with a <SEG:?> marker at every possible inter-word cut. Replace each ? with a distinct integer 0–100 that ranks how good a cut at that position is, following the principles and scoring rules below.
+
+[Core Principles]
+- Does the following span, taken alone, contradict or reverse facts, modality, or polarity asserted earlier, producing an entailment conflict if translated separately?
+- If the pieces are translated independently and concatenated, will the joined translation preserve the source's referents, relations and event structure, or will attachment loss, missing predicates, or dropped arguments break coherence?
+- Would a cut leave core predicate-argument structure detached (for example separating verb from its object or its clausal complement), creating orphaned dependents and unclear semantic roles?
+- Does the next span complete an embedded or relative clause whose head occurs earlier, so that separating them would misattach or lose the clause's scope or role in the matrix clause?
+- Is the following material a temporal, causal, concessive subordinator or other unstable opening that needs later context to fix scope and prevent meaning flips or mis-scoped modifiers?
+- Will a cut split a coordination or contrast relation so that emphasis, contrast, or entailment between clauses is lost, reversed, or made ambiguous in the joined translation?
+- Is the cut inside noun-internal material (possessives, appositives, dense nominal modifiers) that would detach modifiers or heads and thereby change who or what is being described?
+- Does the stretch after the cut supply disambiguating information (names, numbers, polarity markers, complements) essential to interpret an earlier ambiguous NP or verb phrase?
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a
+           reference-free quality estimator scored how faithfully that joined text renders the
+           WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the
+           stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+
+The measured target for each marker is the product above; treat that product as the latent continuous score used to rank positions. Contra is a graded probability and enters only through the product: do not turn it into a yes/no flag or a separate tier that outranks cohesion. The integer you output is an ordinal RANK within this sentence — order markers by the product and assign distinct integers spread across the full 0–100 range to reflect that order. Use the order the product induces; map it onto distinct integers rather than attempting exact arithmetic reconstruction.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resulting <SEG:?> in <SEG:?> the <SEG:?> phase <SEG:?> change <SEG:?> had <SEG:?> took <SEG:?> place <SEG:?> on <SEG:?> March <SEG:?> 10 <SEG:?> on <SEG:?> the <SEG:?> northeast <SEG:?> side <SEG:?> of <SEG:?> the <SEG:?> volcano's <SEG:?> summit <SEG:?> caldera.
+Output: The <SEG:100> significant <SEG:73> earthquake <SEG:95> activity <SEG:68> resulting <SEG:64> in <SEG:50> the <SEG:14> phase <SEG:23> change <SEG:41> had <SEG:59> took <SEG:27> place <SEG:32> on <SEG:36> March <SEG:82> 10 <SEG:91> on <SEG:18> the <SEG:5> northeast <SEG:86> side <SEG:77> of <SEG:55> the <SEG:0> volcano's <SEG:9> summit <SEG:45> caldera.
+
+Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).
+Output: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons).
+
+Input: The <SEG:?> effect <SEG:?> is <SEG:?> dependent <SEG:?> on <SEG:?> how <SEG:?> often <SEG:?> your <SEG:?> brain <SEG:?> attempts <SEG:?> to <SEG:?> lucidly <SEG:?> dream <SEG:?> per <SEG:?> night.
+Output: The <SEG:92> effect <SEG:69> is <SEG:100> dependent <SEG:85> on <SEG:77> how <SEG:0> often <SEG:62> your <SEG:23> brain <SEG:54> attempts <SEG:46> to <SEG:15> lucidly <SEG:31> dream <SEG:38> per <SEG:8> night.
+
+Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.
+Output: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost.
+

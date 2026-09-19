@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates single high-contradiction boundaries: it lets one cut with a high contradiction risk survive because cohesion looks OK, even though one such boundary can zero the whole set.",
+    "evidence": "['en_us_1494','en_us_399','en_us_845','en_us_655','en_us_1617','en_us_936','en_us_103','en_us_46','en_us_990','en_us_1570','en_us_1253'] — each contains a policy cut with very high contradiction probability (contra_kill true) that destroyed H_set, yet the prompt's guidance lets such boundaries score too high.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat any boundary that would be contradicted or reverse attribution/polarity when the preceding stretch is read alone as effectively unacceptable — rank it below other cuts even if cohesion is high."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to flag cuts that isolate unresolved function‑headed predicates: it allows cutting immediately after an auxiliary/copula/modal/negation/subordinator, leaving the remainder to complete or flip the predicate.",
+    "evidence": "['en_us_1494','en_us_399','en_us_936','en_us_1570','en_us_990'] — these cases show high-contra drops where a bare auxiliary/modal/negation or subordinating particle was separated from the phrase that completes its meaning.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a bare auxiliary, copula, modal, negation, or subordinating particle when the remainder completes or reverses its predicate or polarity; such splits carry high contradiction risk."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates single high-contradiction boundaries: it lets one cut with a high contradiction risk survive because cohesion looks OK, even though one such boundary can zero the whole set.",
+   "evidence": "['en_us_1494','en_us_399','en_us_845','en_us_655','en_us_1617','en_us_936','en_us_103','en_us_46','en_us_990','en_us_1570','en_us_1253'] — each contains a policy cut with very high contradiction probability (contra_kill true) that destroyed H_set, yet the prompt's guidance lets such boundaries score too high.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat any boundary that would be contradicted or reverse attribution/polarity when the preceding stretch is read alone as effectively unacceptable — rank it below other cuts even if cohesion is high."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to flag cuts that isolate unresolved function‑headed predicates: it allows cutting immediately after an auxiliary/copula/modal/negation/subordinator, leaving the remainder to complete or flip the predicate.",
+   "evidence": "['en_us_1494','en_us_399','en_us_936','en_us_1570','en_us_990'] — these cases show high-contra drops where a bare auxiliary/modal/negation or subordinating particle was separated from the phrase that completes its meaning.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a bare auxiliary, copula, modal, negation, or subordinating particle when the remainder completes or reverses its predicate or polarity; such splits carry high contradiction risk."
+   }
+  }
+ ]
+}

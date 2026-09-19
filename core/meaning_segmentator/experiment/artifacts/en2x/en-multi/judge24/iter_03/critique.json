@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats cuts that separate a finite verb (or auxiliary) from its immediate core complement as acceptable, but doing so often creates an entailment/confusion (missing predicate, orphaned argument) when pieces are translated independently.",
+    "evidence": "['en_us_633','en_us_1116','en_us_1248','en_us_738','en_us_1113'] — these 5 sentences all show the policy cutting between a finite verb/auxiliary and the phrase that supplies its core complement or object, which the target kept together.",
+    "type_predicate": "a finite verb or auxiliary token is immediately followed (within 1–4 tokens) by a direct object, essential prepositional object, or a clausal/complement phrase",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a finite verb (including auxiliaries) and its immediately following core complement (direct object, essential prepositional object, or clausal complement)."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues keeping numerals/quantifiers attached to their unit or measurement phrase; splitting them produces incoherent or contradicted short pieces.",
+    "evidence": "['en_us_101','en_us_1255','en_us_741','en_us_998'] — these 4 sentences all had policy cuts that separated a numeral/quantifier from its unit/measurement (barrels/gallons, ¥ amounts, km2, 'three' + structures), and the offline target kept the numeral+unit intact.",
+    "type_predicate": "a numeral or quantifier token is immediately followed within 1–4 tokens by a unit, measurement phrase, currency symbol, percentage, or parenthetical unit",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Never cut between a numeral/quantifier and its immediately following unit or measurement phrase (including parenthetical units); treat the pair as a single atomic unit."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats cuts that separate a finite verb (or auxiliary) from its immediate core complement as acceptable, but doing so often creates an entailment/confusion (missing predicate, orphaned argument) when pieces are translated independently.",
+   "evidence": "['en_us_633','en_us_1116','en_us_1248','en_us_738','en_us_1113'] — these 5 sentences all show the policy cutting between a finite verb/auxiliary and the phrase that supplies its core complement or object, which the target kept together.",
+   "type_predicate": "a finite verb or auxiliary token is immediately followed (within 1–4 tokens) by a direct object, essential prepositional object, or a clausal/complement phrase",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a finite verb (including auxiliaries) and its immediately following core complement (direct object, essential prepositional object, or clausal complement)."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues keeping numerals/quantifiers attached to their unit or measurement phrase; splitting them produces incoherent or contradicted short pieces.",
+   "evidence": "['en_us_101','en_us_1255','en_us_741','en_us_998'] — these 4 sentences all had policy cuts that separated a numeral/quantifier from its unit/measurement (barrels/gallons, ¥ amounts, km2, 'three' + structures), and the offline target kept the numeral+unit intact.",
+   "type_predicate": "a numeral or quantifier token is immediately followed within 1–4 tokens by a unit, measurement phrase, currency symbol, percentage, or parenthetical unit",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Never cut between a numeral/quantifier and its immediately following unit or measurement phrase (including parenthetical units); treat the pair as a single atomic unit."
+   }
+  }
+ ]
+}

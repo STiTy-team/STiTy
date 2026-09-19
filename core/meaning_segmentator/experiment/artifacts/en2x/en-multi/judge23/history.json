@@ -1,0 +1,928 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00873,
+   "lo": -0.02024,
+   "hi": 0.03732,
+   "n": 461,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a single small binding rule that keeps a finite verb/auxiliary joined with an immediately following short (≤4-word) complement or direct object, to prevent cuts that detach predicates and address the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- When a finite verb or auxiliary is immediately followed (no intervening punctu"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.01077,
+   "lo": -0.01944,
+   "hi": 0.04029,
+   "n": 461,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a short, specific binding that keeps a numeral/measurement together with its unit or immediately adjacent parenthetical equivalent, to prevent cuts that sever numeric meaning (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a numeral or measurement (digits or spelled-out number, including an immedi"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00591,
+   "lo": -0.02422,
+   "hi": 0.03494,
+   "n": 461,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Add a fallback ordering unit that prefers cuts at clause boundaries or punctuation over cuts immediately after a finite verb/auxiliary followed by a short (≤4-word) complement — to prevent detaching predicates (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Prefer a cut after a clear clause boundary or punctuation (for example sentenc"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.01069,
+   "lo": -0.0252,
+   "hi": 0.04313,
+   "n": 461,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Delete C2 — it is a broad, restating principle that overlaps C3–C8 (predicate-argument, attachment, referents) and likely divides the judge's attention; pruning it follows the 'prune' constraint and makes the remaining, more specific rules (including the one addressing predicate–argument cuts) carry the load."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "was": "- If the pieces are translated independently and concatenated, will the joined t",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00488,
+   "lo": -0.01,
+   "hi": 0.01954,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Add a fallback ordering that prefers a cut after a numeral+unit (or after its closing parenthesis) over a cut between the numeral and its unit; addresses the primary finding about numeric/measurement splits."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Fallback ordering: when a numeral or measurement (digits or spelled-out number"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00694,
+   "lo": -0.00824,
+   "hi": 0.02219,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a short, specific binding that keeps a numeral/measurement together with its unit or immediately adjacent parenthetical equivalent, to prevent cuts that sever numeric meaning (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a numeral or measurement (digits or spelled-out number, including an immedi"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00409,
+   "lo": -0.00989,
+   "hi": 0.01692,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Delete C2 — it is a broad, restating principle that overlaps C3–C8 (predicate-argument, attachment, referents) and likely divides the judge's attention; pruning it follows the 'prune' constraint and makes the remaining, more specific rules (including the one addressing predicate–argument cuts) carry the load."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "was": "- If the pieces are translated independently and concatenated, will the joined t",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00799,
+   "lo": -0.00853,
+   "hi": 0.02294,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a single small binding rule that keeps a finite verb/auxiliary joined with an immediately following short (≤4-word) complement or direct object, to prevent cuts that detach predicates and address the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- When a finite verb or auxiliary is immediately followed (no intervening punctu"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": 0.01515,
+   "lo": 0.0013,
+   "hi": 0.02821,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "gain": {
+   "mean": 0.01515,
+   "lo": 0.0013,
+   "hi": 0.02821,
+   "n": 2773,
+   "n_clusters": 300,
+   "dev_a": {
+    "mean": 0.01515,
+    "lo": 0.0013,
+    "hi": 0.02821,
+    "n": 2773,
+    "n_clusters": 300
+   },
+   "verified": false,
+   "tries": 1
+  },
+  "changelog": [
+   "Add a fallback ordering unit that prefers cuts at clause boundaries or punctuation over cuts immediately after a finite verb/auxiliary followed by a short (≤4-word) complement — to prevent detaching predicates (addresses the primary finding)."
+  ],
+  "findings": [
+   "The prompt treats cuts immediately after a verb or auxiliary (or before the few words that complete its predicate) as acceptable; this detaches core predicate-argument material and often creates isolated stretches whose translation contradicts or loses the original proposition.",
+   "The prompt allows cuts that split numerals or measurements from their units or parenthetical equivalents, which severs essential numeric meaning and often causes mistranslation or contradiction."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Prefer a cut after a clear clause boundary or punctuation (for example sentenc"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.027,
+    "≤5": 0.0125,
+    "≤7": 0.0056,
+    "≤10": 0.0007,
+    "≤99": -0.0117
+   },
+   "n_worse": 1049,
+   "n_better": 1283,
+   "why": "Adding the clause‑boundary/punctuation fallback made the model prefer cuts at clear clause breaks instead of immediately after auxiliaries/finite verbs with short complements, so it fixed many short-piece mistakes (positive mean gains in the ≤3, ≤5, ≤7, ≤10 bins) by keeping short complements and multiword names together. The same change shifted some cuts earlier in longer sentences, splitting noun phrases, quoted spans, and objects (the ≤99 bin is slightly negative and several large negative tail moves show cuts inserted inside names/objects), producing localized large degradations.",
+   "lesson": "A later revision should preserve the short‑segment gains from preferring clause/punctuation boundaries while avoiding moves that introduce earlier cuts which split multiword noun phrases, quoted spans, or long complements in longer sentences.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00154,
+   "lo": -0.03002,
+   "hi": 0.03023,
+   "n": 423,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a fallback ordering that prefers cuts after clause boundaries/punctuation over cuts that separate a noun or proper name from immediately following essential post‑nominal material, to keep identifying modifiers with their head and avoid detached fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "As a fallback, prefer a cut after a clear clause boundary or punctuation over a "
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00893,
+   "lo": -0.02008,
+   "hi": 0.04008,
+   "n": 423,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Delete C8 — remove a broad, redundant disambiguation rule that overlaps C7 (noun-internal modifiers) and C3 (predicate-argument attachment). The critique's primary finding calls for a focused binding for nouns + immediately following post‑nominal identifiers; pruning this diffuse unit frees the prompt to permit a narrower, surface-triggered rule without adding another overlapping principle."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00125,
+   "lo": -0.01434,
+   "hi": 0.01628,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a short binding rule that keeps a noun/proper name with immediately following identifying post-nominal material (parenthetical units, immediate 'of' complements, appositives, or an adjacent relative/clausal identifier) to address the primary finding about detached modifiers."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a noun or proper name together with immediately following post‑nominal mate"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00404,
+   "lo": -0.01029,
+   "hi": 0.01843,
+   "n": 2769,
+   "n_clusters": 299
+  },
+  "changelog": [
+   "Delete C8 — remove a broad, redundant disambiguation rule that overlaps C7 (noun-internal modifiers) and C3 (predicate-argument attachment). The critique's primary finding calls for a focused binding for nouns + immediately following post‑nominal identifiers; pruning this diffuse unit frees the prompt to permit a narrower, surface-triggered rule without adding another overlapping principle."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": 0.01002,
+   "lo": -0.00358,
+   "hi": 0.02354,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "gain": {
+   "mean": 0.01002,
+   "lo": -0.00358,
+   "hi": 0.02354,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a fallback ordering that prefers cuts after clause boundaries/punctuation over cuts that separate a noun or proper name from immediately following essential post‑nominal material, to keep identifying modifiers with their head and avoid detached fragments."
+  ],
+  "findings": [
+   "The prompt underrates the need to keep a noun or proper name tightly joined with immediately following post‑nominal material that completes identification, so it often cuts off essential modifiers (units, parentheticals, appositives, prepositional complements, relative clauses) and produces detached or misleading fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "As a fallback, prefer a cut after a clear clause boundary or punctuation over a "
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0146,
+    "≤5": 0.0093,
+    "≤7": 0.0083,
+    "≤10": 0.0038,
+    "≤99": -0.0049
+   },
+   "n_worse": 1104,
+   "n_better": 1206,
+   "why": "Inserting the fallback that favors cuts after clause boundaries/punctuation made the scorer prefer punctuation-adjacent cut positions (raising the top-ranked cut frequency — rank_depth Δ at k=1 is +0.737), so it improved many short-piece splits (bins ≤3..≤10) but produced more harmful early/small fragments in long-piece contexts (bin ≤99 went negative) by moving cuts to just after punctuation or clause openings and thereby isolating tiny function-word pieces or separating heads from their complements.",
+   "lesson": "When adding a punctuation/clause-boundary fallback, constrain it so it does not outrank avoidance of creating very short/leading fragments or splitting a head from its essential post‑nominal/complement material.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.0106,
+   "lo": -0.00931,
+   "hi": 0.03142,
+   "n": 466,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a concise binding that keeps sentence-initial single function words attached to the following token, addressing the primary finding that isolated initial determiners/pronouns/subordinators/auxiliaries create tiny, contradictory fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a sentence‑initial single function word (determiner, pronoun, subordinati"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.01947,
+   "lo": -0.01727,
+   "hi": 0.05511,
+   "n": 466,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Add a single fallback preference that orders cuts: prefer including the sentence-initial token with the next content word over any cut that would isolate a single sentence-initial function word. This addresses the primary finding that lone initial function-word fragments create high-contradiction, uninterpretable pieces."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Fallback: prefer a cut that includes the sentence-initial token together with "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.02604,
+   "lo": -0.01066,
+   "hi": 0.06,
+   "n": 466,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Add a single fallback ordering that prefers cuts keeping prepositions/particles with their complements and sentence‑initial function words with the following content over cuts that would isolate those one‑word fragments — addresses the primary finding about high‑contradiction tiny pieces."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Fallback: prefer a cut that keeps a preposition or particle with its immediate"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00774,
+   "lo": -0.04865,
+   "hi": 0.03078,
+   "n": 466,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Delete C5: remove the rule about subordinators because it largely duplicates clause-completion and disambiguation checks already covered by C4 and C8, so it earns its place least and frees the judge from a redundant, diffuse constraint (traceable to the critique's call to prune overlapping principles)."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "was": "- Is the following material a temporal, causal, concessive subordinator or other",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00673,
+   "lo": -0.00822,
+   "hi": 0.01994,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Add a single fallback ordering that prefers cuts keeping prepositions/particles with their complements and sentence‑initial function words with the following content over cuts that would isolate those one‑word fragments — addresses the primary finding about high‑contradiction tiny pieces."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Fallback: prefer a cut that keeps a preposition or particle with its immediate"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00834,
+   "lo": -0.00584,
+   "hi": 0.021,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Add a single fallback preference that orders cuts: prefer including the sentence-initial token with the next content word over any cut that would isolate a single sentence-initial function word. This addresses the primary finding that lone initial function-word fragments create high-contradiction, uninterpretable pieces."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Fallback: prefer a cut that includes the sentence-initial token together with "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.01018,
+   "lo": -0.0034,
+   "hi": 0.02229,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a concise binding that keeps sentence-initial single function words attached to the following token, addressing the primary finding that isolated initial determiners/pronouns/subordinators/auxiliaries create tiny, contradictory fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a sentence‑initial single function word (determiner, pronoun, subordinati"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.0112,
+   "lo": -0.00344,
+   "hi": 0.02475,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Delete C5: remove the rule about subordinators because it largely duplicates clause-completion and disambiguation checks already covered by C4 and C8, so it earns its place least and frees the judge from a redundant, diffuse constraint (traceable to the critique's call to prune overlapping principles)."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "was": "- Is the following material a temporal, causal, concessive subordinator or other",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": true,
+  "delta": {
+   "mean": 0.01693,
+   "lo": 0.00259,
+   "hi": 0.0312,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "gain": {
+   "mean": 0.01693,
+   "lo": 0.00259,
+   "hi": 0.0312,
+   "n": 2773,
+   "n_clusters": 300,
+   "dev_a": {
+    "mean": 0.01693,
+    "lo": 0.00259,
+    "hi": 0.0312,
+    "n": 2773,
+    "n_clusters": 300
+   },
+   "dev_b": {
+    "mean": 0.01272,
+    "lo": -0.00026,
+    "hi": 0.02629,
+    "n": 2736,
+    "n_clusters": 300,
+    "tries": 1,
+    "threshold": 0.0
+   },
+   "verified": true,
+   "tries": 1
+  },
+  "changelog": [
+   "Insert a single concise binding that keeps a lone preposition/particle attached to its object or complement, addressing the primary finding that isolated prepositions/particles create high-contradiction fragments."
+  ],
+  "findings": [
+   "The prompt permits cuts that leave a sentence‑initial single-word function fragment (a lone determiner / pronoun / subordinating word / auxiliary) as its own piece; those tiny leading fragments lack a noun or predicate and often become contradicted or uninterpretable when translated separately.",
+   "The prompt undervalues cohesion between prepositions/particles and their complements and allows cuts that leave a prepositional or particle precursor alone; separating a preposition/particle from its object or clause frequently breaks attachment and yields high contradiction risk."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a lone preposition or particle together with the immediately following ph"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0307,
+    "≤5": 0.011,
+    "≤7": 0.0065,
+    "≤10": 0.0061,
+    "≤99": -0.0112
+   },
+   "n_worse": 1031,
+   "n_better": 1281,
+   "why": "The inserted binding prevented solitary prepositions/particles from being cut off from their objects, which reduced tiny, high-contradiction fragments and produced gains concentrated in the small latency bins (≤3: +0.0307, ≤5: +0.011); however it also forced merges across conjunctions/enumerations and shifted cuts into clause heads/verbs in longer contexts, producing the small negative effect at the sentence scale (≤99: −0.0112) and a substantial tail of worsened (but many also improved) pairs.",
+   "lesson": "Keep lone prepositions/particles attached to their immediate complements to protect short fragments, but constrain that binding so it does not merge across longer enumerations or push cuts into clause heads, which harms whole-sentence cohesion.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01469,
+   "lo": -0.04337,
+   "hi": 0.01473,
+   "n": 493,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a short binding rule that keeps a finite copula or main verb with its immediately following obligatory complement to prevent isolated verbs/auxiliaries producing high-contradiction short fragments (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a finite copula or main verb (including auxiliaries) together with its imme"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02052,
+   "lo": -0.04687,
+   "hi": 0.00463,
+   "n": 493,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a short binding rule keeping a numeral/quantity with its immediately following unit or quantified noun to prevent detached numeric fragments (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a numeral or explicit quantity (digits or spelled-out) together with the "
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01089,
+   "lo": -0.04028,
+   "hi": 0.01989,
+   "n": 493,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a single fallback ordering that prefers keeping a numeral/quantity with its immediately following unit/noun over taking a cut between them, to address the primary finding about detached numeric fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Fallback ordering: prefer a cut that keeps a numeral or explicit quantity togeth"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01289,
+   "lo": -0.04089,
+   "hi": 0.01592,
+   "n": 493,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Delete C1: remove a v0 principle that largely restates the entailment/contra scoring already defined in [Scoring Rules], and thus earns its place least; this prunes redundancy so the judge focuses on the more specific, actionable binding rules the critique recommends."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C1",
+    "kind": "delete",
+    "was": "- Does the following span, taken alone, contradict or reverse facts, modality, o",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00055,
+   "lo": -0.01478,
+   "hi": 0.0134,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a single fallback ordering that prefers keeping a numeral/quantity with its immediately following unit/noun over taking a cut between them, to address the primary finding about detached numeric fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Fallback ordering: prefer a cut that keeps a numeral or explicit quantity togeth"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01076,
+   "lo": -0.02413,
+   "hi": 0.00239,
+   "n": 2763,
+   "n_clusters": 299
+  },
+  "changelog": [
+   "Delete C1: remove a v0 principle that largely restates the entailment/contra scoring already defined in [Scoring Rules], and thus earns its place least; this prunes redundancy so the judge focuses on the more specific, actionable binding rules the critique recommends."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C1",
+    "kind": "delete",
+    "was": "- Does the following span, taken alone, contradict or reverse facts, modality, o",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00403,
+   "lo": -0.01571,
+   "hi": 0.00829,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a short binding rule that keeps a finite copula or main verb with its immediately following obligatory complement to prevent isolated verbs/auxiliaries producing high-contradiction short fragments (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a finite copula or main verb (including auxiliaries) together with its imme"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00555,
+   "lo": -0.01808,
+   "hi": 0.00674,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a short binding rule keeping a numeral/quantity with its immediately following unit or quantified noun to prevent detached numeric fragments (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Keep a numeral or explicit quantity (digits or spelled-out) together with the "
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00211,
+   "lo": -0.01065,
+   "hi": 0.01485,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "gain": {
+   "mean": 0.00211,
+   "lo": -0.01065,
+   "hi": 0.01485,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "changelog": [
+   "Insert a single fallback ordering that prefers keeping a finite verb/auxiliary with its immediately following obligatory complement over taking a cut after punctuation or a clause boundary; second-tier tie-breaker prefers keeping a numeral with its unit. This addresses the primary finding by ordering which pushed-down positions to take."
+  ],
+  "findings": [
+   "The prompt underrates cuts that separate a predicate (finite copula or main verb) from the complement that completes its meaning; leaving the verb or copula alone produces high-contradiction or orphaned fragments in short-latency pieces.",
+   "The prompt sometimes splits numerals/quantities from the units or nouns that disambiguate them, producing detached, misleading fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Fallback ordering: prefer a cut that keeps a finite verb or auxiliary together w"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0005,
+    "≤5": 0.0035,
+    "≤7": 0.0003,
+    "≤10": 0.0031,
+    "≤99": 0.0086
+   },
+   "n_worse": 1113,
+   "n_better": 1154,
+   "why": "Inserting the fallback ordering that prefers keeping a finite verb/auxiliary with its immediately following obligatory complement caused the model to avoid cuts immediately after verbs/auxiliaries (e.g. the Pittman example where the cut moved away from after ‘suggested’), producing small overall gains concentrated on longer pieces (≤99 bin +0.0086) but also many local harms (n_better ≈ n_worse and sizeable negative moves in ≤3–≤7 bins). The tail shows this concretely: some cuts were pushed later to keep verb+complement together while other cuts were forced into awkward subject–predicate splits or broke enumerations (en_us_970, en_us_1298).",
+   "lesson": "A later revision should respect that the verb/auxiliary+complement preference yields only modest gains (mostly on longer pieces) and must not be allowed to shift cuts into subject–predicate positions or to fracture short enumerations, since those local harms offset the benefit.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ }
+]

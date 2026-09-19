@@ -1,0 +1,51 @@
+{
+ "iter": 7,
+ "adopted": false,
+ "delta": {
+  "mean": -0.0127,
+  "lo": -0.02496,
+  "hi": -0.00044,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.0127,
+  "lo": -0.02496,
+  "hi": -0.00044,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C7 to address the primary finding: soften the absolute predicate–argument preservation rule so it avoids creating many micro‑fragments in very short‑latency contexts and instead describes what a good dense cut looks like (prefer cohesive remainders, avoid trailing single‑word fragments)."
+ ],
+ "findings": [
+  "The prompt treats predicate–argument preservation as an absolute rule across all latency regimes, preferring to avoid any cut that separates verbs/auxiliaries from arguments; in very short-latency sentences this drives many tiny fragments elsewhere and lowers overall H_set in the ≤3/≤5 bins.",
+  "The prompt undervalues isolating sentence‑initial small function words or discourse markers as standalone pieces; separating an initial article/discourse token often yields a following chunk that is more coherent to translate and raises joinable quality.",
+  "The prompt does not sufficiently penalize cuts inside coordinate lists or enumerations; splitting mid‑enumeration often severs the list's internal cohesion and causes mistranslation when pieces are joined."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C7",
+   "kind": "change",
+   "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+   "now": "- Prefer preserving predicate–argument integrity when that prevents orphaned com"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0199,
+   "≤5": -0.009,
+   "≤7": -0.0073,
+   "≤10": -0.0091,
+   "≤99": 0.0012
+  },
+  "n_worse": 699,
+  "n_better": 654,
+  "why": "Softening C7 made the instruction ambiguous in short‑latency contexts: the model moved some cuts earlier (splitting prepositional phrases, pulling apart verb–object/adjunct sequences and producing one‑word fragments) which reduced H_set for small bins, while giving a tiny net gain on long pieces where the softer rule allowed useful additional cuts.",
+  "lesson": "When softening predicate–argument constraints, make it explicit that the model must not shift cuts earlier in very short‑latency pieces so as to create isolated single‑word fragments or split tight verb‑argument/PP units.",
+  "blamed": [
+   "C7 «- Prefer preserving predicate–argument integrity when that p»"
+  ]
+ }
+}

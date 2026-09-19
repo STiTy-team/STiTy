@@ -1,0 +1,136 @@
+{
+ "n_sentences": 50,
+ "ids": [
+  "en_us_588",
+  "en_us_841",
+  "en_us_44",
+  "en_us_655",
+  "en_us_46",
+  "en_us_1294",
+  "en_us_888",
+  "en_us_9",
+  "en_us_399",
+  "en_us_411",
+  "en_us_154",
+  "en_us_419",
+  "en_us_432",
+  "en_us_1615",
+  "en_us_380",
+  "en_us_1507",
+  "en_us_767",
+  "en_us_685",
+  "en_us_360",
+  "en_us_924",
+  "en_us_1342",
+  "en_us_474",
+  "en_us_1570",
+  "en_us_942",
+  "en_us_1497",
+  "en_us_845",
+  "en_us_1112",
+  "en_us_454",
+  "en_us_396",
+  "en_us_1280",
+  "en_us_167",
+  "en_us_784",
+  "en_us_87",
+  "en_us_1113",
+  "en_us_1271",
+  "en_us_1184",
+  "en_us_455",
+  "en_us_1555",
+  "en_us_288",
+  "en_us_553",
+  "en_us_1484",
+  "en_us_651",
+  "en_us_1352",
+  "en_us_1024",
+  "en_us_83",
+  "en_us_1428",
+  "en_us_1617",
+  "en_us_349",
+  "en_us_113",
+  "en_us_337"
+ ],
+ "best": 4,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1522,
+   "pairs": 49,
+   "chars": 7836,
+   "changelog": [
+    "Insert a narrow, targeted principle after C5 that forbids cutting when the continuation resolves scope or polarity and also tells the model what a good cut looks like; addresses the primary finding about scope‑resolving continuations while avoiding a blanket verb–complement ban."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.1522,
+   "pairs": 49,
+   "chars": 7808,
+   "changelog": [
+    "Insert a narrow, conditional verb–complement check after C5 to prevent cuts that split a verb/copula/auxiliary from an immediately required complement while avoiding a blanket ban that hurt very short fragments."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.1669,
+   "pairs": 49,
+   "chars": 7610,
+   "changelog": [
+    "Insert a narrow, surface-level check after C5 forbidding cuts when the immediately following token is a scope-resolver, comparative, quantifier, percent/per, or begins with digits; keep that token attached to the left piece to avoid scope/polarity loss."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.1791,
+   "pairs": 49,
+   "chars": 7886,
+   "changelog": [
+    "Insert a narrow surface-level rule after C5 that forbids cutting immediately before tokens that typically begin verb complements (determiners, demonstratives, possessives, object pronouns, quantifiers, or numerals), so a verb is not left separated from its immediately required object/measure."
+   ]
+  },
+  {
+   "candidate": 4,
+   "oracle_dist": 0.1313,
+   "pairs": 49,
+   "chars": 7053,
+   "changelog": [
+    "Replace E1 with measured example en_us_738 to teach the model about negation + quantifier scope that resolves polarity and should not be cut.",
+    "Replace E2 with measured example en_us_936 to teach the model about conditional/subordinating scope ('Unless') that resolves truth conditions.",
+    "Replace E3 with measured example en_us_1116 to teach the model about exception clauses ('except') that reverse or limit prior claims.",
+    "Replace E4 with measured example en_us_103 to teach the model about numeral+unit and measurement phrases that determine scope and must stay attached."
+   ]
+  },
+  {
+   "candidate": 5,
+   "oracle_dist": 0.1431,
+   "pairs": 49,
+   "chars": 7069,
+   "changelog": [
+    "Replace E1 with measured example en_us_30 to teach the model about cuts that separate auxiliaries/coping verbs from their complements (primary finding).",
+    "Replace E2 with measured example en_us_1543 to show cases where auxiliary + location/clause ('had been to X, where...') must not be split.",
+    "Replace E3 with measured example en_us_292 to illustrate verb+complement sequences ('resulting in', predicate completion) that should stay attached.",
+    "Replace E4 with measured example en_us_464 to demonstrate splits that break predicates and causative/contrast clauses harming cohesion."
+   ]
+  },
+  {
+   "candidate": 6,
+   "oracle_dist": 0.2059,
+   "pairs": 49,
+   "chars": 7648,
+   "changelog": [
+    "Insert a narrow principle after C5: when the continuation will resolve scope or polarity, prefer cuts that include the scope-resolving token with the left piece; otherwise cut only at punctuation/clause boundaries that preserve a complete predicate — addresses the primary finding without a blanket ban."
+   ]
+  },
+  {
+   "candidate": 7,
+   "oracle_dist": 0.154,
+   "pairs": 49,
+   "chars": 7609,
+   "changelog": [
+    "Insert a narrow, surface-level check after C5 to prevent cutting a verb/auxiliary/copula away from an immediately following token that visibly begins a noun or measurement phrase (determiner, demonstrative, possessive, object pronoun, numeral/digit, or capitalized proper name); this targets the verb‑split primary finding without a blanket ban."
+   ]
+  }
+ ]
+}

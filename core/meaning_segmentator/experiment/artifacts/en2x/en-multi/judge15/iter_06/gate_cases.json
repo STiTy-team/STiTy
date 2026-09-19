@@ -1,0 +1,2111 @@
+[
+ {
+  "id": "en_us_1116",
+  "cuts": 7,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.3119,
+  "policy_worst_contra": 0.9701,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    5,
+    9,
+    10,
+    11,
+    16
+   ],
+   "H_set": 0.0186,
+   "text": "All the ships ‖ were ‖ sunk, ‖ except for one British ‖ cruiser. ‖ Nearly ‖ 200 American and German lives ‖ were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有船只",
+     "是",
+     "沉没",
+     "除了一个英国人",
+     "巡洋舰",
+     "差不多",
+     "200名美国人和德国人丧生",
+     "失去了。"
+    ],
+    "Japanese": [
+     "すべての船",
+     "あれは",
+     "沈んでる",
+     "1人のイギリス人を除いて",
+     "クルーザー",
+     "もうすぐ",
+     "200人のアメリカ人とドイツ人の命",
+     "失われた"
+    ],
+    "German": [
+     "Alle Schiffe",
+     "waren",
+     "versunken,",
+     "Außer einem Briten",
+     "Cruiser.",
+     "Nearly",
+     "200 amerikanische und deutsche Leben",
+     "Sie waren verloren."
+    ],
+    "Spanish": [
+     "Todos los barcos",
+     "fueron",
+     "hundido,",
+     "Excepto por un británico",
+     "Crucero.",
+     "Casi",
+     "200 vidas estadounidenses y alemanas",
+     "Se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    17
+   ],
+   "H_set": 0.3304,
+   "text": "All the ships were sunk, ‖ except ‖ for ‖ one ‖ British cruiser. Nearly ‖ 200 ‖ American and German lives were ‖ lost.",
+   "pieces": {
+    "Chinese": [
+     "所有的船都沉没了,",
+     "除非",
+     "为",
+     "一个",
+     "英国巡洋舰",
+     "200个",
+     "美国和德国的生活是",
+     "失踪。"
+    ],
+    "Japanese": [
+     "船は全て沈没した",
+     "ただし",
+     "あなたは",
+     "1つ",
+     "イギリスの巡洋艦だ",
+     "200年",
+     "アメリカ人とドイツ人の命は",
+     "失われた"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt,",
+     "außer",
+     "für",
+     "one",
+     "Britischer Kreuzer. Fast",
+     "200",
+     "Amerikanische und deutsche Leben wurden",
+     "Verloren."
+    ],
+    "Spanish": [
+     "Todos los barcos se hundieron,",
+     "except",
+     "para",
+     "uno",
+     "Crucero británico. Casi",
+     "200",
+     "Las vidas americanas y alemanas fueron",
+     "Perdido."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "All the ships",
+     "right": "were sunk, except for",
+     "H": 0.0524,
+     "H_pct": 25.0,
+     "contra": 0.9337,
+     "cohesion": 0.7911
+    },
+    {
+     "pos": 4,
+     "left": "All the ships were",
+     "right": "sunk, except for one",
+     "H": 0.2267,
+     "H_pct": 37.5,
+     "contra": 0.6286,
+     "cohesion": 0.6104
+    },
+    {
+     "pos": 9,
+     "left": "except for one British",
+     "right": "cruiser. Nearly 200 American",
+     "H": 0.2814,
+     "H_pct": 43.8,
+     "contra": 0.6675,
+     "cohesion": 0.8462
+    },
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    },
+    {
+     "pos": 16,
+     "left": "American and German lives",
+     "right": "were lost.",
+     "H": 0.0219,
+     "H_pct": 12.5,
+     "contra": 0.9701,
+     "cohesion": 0.7322
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "ships were sunk, except",
+     "right": "for one British cruiser.",
+     "H": 0.6531,
+     "H_pct": 87.5,
+     "contra": 0.0354,
+     "cohesion": 0.677
+    },
+    {
+     "pos": 7,
+     "left": "were sunk, except for",
+     "right": "one British cruiser. Nearly",
+     "H": 0.5423,
+     "H_pct": 75.0,
+     "contra": 0.1462,
+     "cohesion": 0.6351
+    },
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    },
+    {
+     "pos": 12,
+     "left": "British cruiser. Nearly 200",
+     "right": "American and German lives",
+     "H": 0.4287,
+     "H_pct": 62.5,
+     "contra": 0.4643,
+     "cohesion": 0.8003
+    },
+    {
+     "pos": 17,
+     "left": "and German lives were",
+     "right": "lost.",
+     "H": 0.5017,
+     "H_pct": 68.8,
+     "contra": 0.3262,
+     "cohesion": 0.7446
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1285",
+  "cuts": 3,
+  "avg_chunk": 5.5,
+  "latency_bin": "≤7",
+  "gap": 0.1552,
+  "policy_worst_contra": 0.0025,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    10,
+    21
+   ],
+   "H_set": 0.6099,
+   "text": "However, people who know a little Spanish ‖ may hastily conclude ‖ that Portuguese is close enough that it need not be studied ‖ separately.",
+   "pieces": {
+    "Chinese": [
+     "然而,懂一点西班牙语的人",
+     "可能匆忙结束",
+     "葡萄牙语与人类相近,不需要学习",
+     "分开。"
+    ],
+    "Japanese": [
+     "しかし スペイン語を少し知っている人は",
+     "急いで結論付けるかもしれません",
+     "ポルトガル語は 学ぶ必要がないほど近いと",
+     "別々に"
+    ],
+    "German": [
+     "Aber Leute, die ein wenig Spanisch sprechen,",
+     "Kann hastig schließen",
+     "Das Portugiesisch ist nahe genug, dass es nicht studiert werden muss",
+     "separat bestellen."
+    ],
+    "Spanish": [
+     "Sin embargo, las personas que saben un poco de español",
+     "Puede concluir apresuradamente",
+     "Que el portugués está lo suficientemente cerca como para no necesitar ser estudiado",
+     "Se vende por separado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    10,
+    11
+   ],
+   "H_set": 0.7652,
+   "text": "However, ‖ people who know a little Spanish may hastily conclude ‖ that ‖ Portuguese is close enough that it need not be studied separately.",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "懂一点西班牙语的人可能会匆忙地得出结论",
+     "该",
+     "葡萄牙语与西班牙语相近,因此不需要单独学习。"
+    ],
+    "Japanese": [
+     "しかし",
+     "スペイン語を少し知っている人は 急いで結論付けるかもしれません",
+     "あれは",
+     "ポルトガル語は十分に近いので、別々に学ぶ必要はない。"
+    ],
+    "German": [
+     "Allerdings",
+     "Leute, die ein wenig Spanisch können, können schnell schließen,",
+     "that",
+     "Portugiesisch ist nahe genug, dass es nicht separat studiert werden muss."
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Las personas que saben un poco de español pueden concluir apresuradamente",
+     "that",
+     "El portugués está lo suficientemente cerca que no necesita ser estudiado por separado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "know a little Spanish",
+     "right": "may hastily conclude that",
+     "H": 0.7618,
+     "H_pct": 75.0,
+     "contra": 0.0025,
+     "cohesion": 0.7637
+    },
+    {
+     "pos": 21,
+     "left": "need not be studied",
+     "right": "separately.",
+     "H": 0.7101,
+     "H_pct": 35.0,
+     "contra": 0.0016,
+     "cohesion": 0.7113
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "However,",
+     "right": "people who know a",
+     "H": 0.8189,
+     "H_pct": 95.0,
+     "contra": 0.0046,
+     "cohesion": 0.8227
+    },
+    {
+     "pos": 11,
+     "left": "may hastily conclude that",
+     "right": "Portuguese is close enough",
+     "H": 0.8271,
+     "H_pct": 100.0,
+     "contra": 0.0031,
+     "cohesion": 0.8297
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_482",
+  "cuts": 1,
+  "avg_chunk": 10.5,
+  "latency_bin": "≤99",
+  "gap": 0.1417,
+  "policy_worst_contra": 0.0766,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    19
+   ],
+   "H_set": 0.6875,
+   "text": "Mysticism is the pursuit of communion with, identity with, or conscious awareness of an ultimate reality, divinity, spiritual truth, ‖ or God.",
+   "pieces": {
+    "Chinese": [
+     "神秘主义是追求与共融,与身份,或有意识地意识到一个终极的现实,神性,精神真理,",
+     "或者上帝。"
+    ],
+    "Japanese": [
+     "神秘主義とは、究極の現実、神性、精神的真理、",
+     "神も"
+    ],
+    "German": [
+     "Mystik ist das Streben nach Gemeinschaft mit, Identität mit oder bewusstes Bewusstsein einer ultimativen Realität, Göttlichkeit, spirituelle Wahrheit,",
+     "Oder Gott."
+    ],
+    "Spanish": [
+     "El misticismo es la búsqueda de la comunión con, la identidad con, o la conciencia consciente de una realidad última, divinidad, verdad espiritual,",
+     "O Dios."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2
+   ],
+   "H_set": 0.8293,
+   "text": "Mysticism is ‖ the pursuit of communion with, identity with, or conscious awareness of an ultimate reality, divinity, spiritual truth, or God.",
+   "pieces": {
+    "Chinese": [
+     "神秘主义是",
+     "追求与某种终极现实、神性、精神真理或上帝的交流、认同或有意识的认识。"
+    ],
+    "Japanese": [
+     "神秘主義は",
+     "究極の現実 神性 精神的真理 神との共有 認識 意識の追求です"
+    ],
+    "German": [
+     "Mystik ist",
+     "Das Streben nach Gemeinschaft mit, Identität mit oder bewusstes Bewusstsein einer ultimativen Realität, Göttlichkeit, spirituelle Wahrheit oder Gott."
+    ],
+    "Spanish": [
+     "El misticismo es",
+     "La búsqueda de la comunión con, la identidad con, o la conciencia consciente de una realidad última, divinidad, verdad espiritual, o Dios."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 19,
+     "left": "reality, divinity, spiritual truth,",
+     "right": "or God.",
+     "H": 0.6875,
+     "H_pct": 15.8,
+     "contra": 0.0766,
+     "cohesion": 0.7446
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Mysticism is",
+     "right": "the pursuit of communion",
+     "H": 0.8293,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8302
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_349",
+  "cuts": 6,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.138,
+  "policy_worst_contra": 0.0234,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    11,
+    19,
+    21,
+    22
+   ],
+   "H_set": 0.6084,
+   "text": "Stars give off light ‖ and heat ‖ because of the energy made ‖ when hydrogen atoms are merged (or fused) together ‖ to form ‖ heavier ‖ elements.",
+   "pieces": {
+    "Chinese": [
+     "星星发出光",
+     "电力和热能",
+     "因为它们所产生的能量",
+     "当氢原子融合(或融合)在一起时",
+     "成立",
+     "重",
+     "要素。"
+    ],
+    "Japanese": [
+     "星が光を放つ",
+     "熱を",
+     "それは 地球が",
+     "水素原子が融合すると",
+     "形成するために",
+     "重い",
+     "要素"
+    ],
+    "German": [
+     "Sterne geben Licht ab",
+     "Luft und Wärme",
+     "Wegen der Energie, die gemacht wird",
+     "Wenn Wasserstoffatome verschmolzen (oder verschmolzen) sind",
+     "Zu Form",
+     "Schwerer",
+     "Elemente."
+    ],
+    "Spanish": [
+     "Las estrellas emiten luz",
+     "Energía y calor",
+     "Debido a la energía producida",
+     "Cuando los átomos de hidrógeno se fusionan (o fusionan) entre sí",
+     "a formar",
+     "más pesado",
+     "Elementos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    5,
+    6,
+    16,
+    17
+   ],
+   "H_set": 0.7465,
+   "text": "Stars give off ‖ light ‖ and ‖ heat ‖ because of the energy made when hydrogen atoms are merged ‖ (or ‖ fused) together to form heavier elements.",
+   "pieces": {
+    "Chinese": [
+     "星星散发",
+     "光",
+     "以及",
+     "热",
+     "因为氢原子融合时产生的能量",
+     "(或",
+     "核聚变 ), 形成更重的元素。"
+    ],
+    "Japanese": [
+     "星が飛び散る",
+     "光",
+     "それに",
+     "熱",
+     "水素原子が融合するときに生じるエネルギーが",
+     "または",
+     "核融合を起こし より重い元素を作り出します"
+    ],
+    "German": [
+     "Sterne geben ab",
+     "Licht",
+     "und",
+     "Hitze",
+     "Wegen der Energie, die beim Verschmelzen von Wasserstoffatomen entsteht",
+     "(oder",
+     "Zusammengeschmolzen) zu schwereren Elementen."
+    ],
+    "Spanish": [
+     "Las estrellas dan",
+     "luz",
+     "y",
+     "calor",
+     "Debido a la energía producida cuando los átomos de hidrógeno se fusionan",
+     "(o",
+     "Fusionados) juntos para formar elementos más pesados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "of the energy made",
+     "right": "when hydrogen atoms are",
+     "H": 0.7815,
+     "H_pct": 57.1,
+     "contra": 0.0009,
+     "cohesion": 0.7822
+    },
+    {
+     "pos": 19,
+     "left": "merged (or fused) together",
+     "right": "to form heavier elements.",
+     "H": 0.7911,
+     "H_pct": 66.7,
+     "contra": 0.0048,
+     "cohesion": 0.7949
+    },
+    {
+     "pos": 21,
+     "left": "fused) together to form",
+     "right": "heavier elements.",
+     "H": 0.7047,
+     "H_pct": 0.0,
+     "contra": 0.0234,
+     "cohesion": 0.7216
+    },
+    {
+     "pos": 22,
+     "left": "together to form heavier",
+     "right": "elements.",
+     "H": 0.7963,
+     "H_pct": 71.4,
+     "contra": 0.0036,
+     "cohesion": 0.7992
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Stars give off",
+     "right": "light and heat because",
+     "H": 0.8078,
+     "H_pct": 90.5,
+     "contra": 0.0004,
+     "cohesion": 0.8081
+    },
+    {
+     "pos": 5,
+     "left": "give off light and",
+     "right": "heat because of the",
+     "H": 0.8078,
+     "H_pct": 95.2,
+     "contra": 0.0008,
+     "cohesion": 0.8084
+    },
+    {
+     "pos": 16,
+     "left": "hydrogen atoms are merged",
+     "right": "(or fused) together to",
+     "H": 0.8096,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8113
+    },
+    {
+     "pos": 17,
+     "left": "atoms are merged (or",
+     "right": "fused) together to form",
+     "H": 0.805,
+     "H_pct": 81.0,
+     "contra": 0.008,
+     "cohesion": 0.8115
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_154",
+  "cuts": 2,
+  "avg_chunk": 8.7,
+  "latency_bin": "≤10",
+  "gap": 0.1855,
+  "policy_worst_contra": 0.0033,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    8
+   ],
+   "H_set": 0.5766,
+   "text": "This is believed to be the fifth ‖ time ‖ in history that people have observed what turned out to be chemically confirmed martian material falling to Earth.",
+   "pieces": {
+    "Chinese": [
+     "是不是这样?",
+     "时间",
+     "历史上人们观察到 化学上确认的火星物质 落到地球上"
+    ],
+    "Japanese": [
+     "五代目とされる。",
+     "時間",
+     "火星から地球に落ちた物質が 化学的に確認されたのは 歴史上初めてです"
+    ],
+    "German": [
+     "Dies wird als die fünfte",
+     "Zeit",
+     "Es ist das erste Mal in der Geschichte, dass Menschen beobachtet haben, was sich als chemisch bestätigtes Marsmaterial herausstellte, das auf die Erde fällt."
+    ],
+    "Spanish": [
+     "Se cree que este es el quinto",
+     "hora",
+     "Es la primera vez en la historia que la gente ha observado lo que resultó ser material marciano químicamente confirmado cayendo a la Tierra."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    15
+   ],
+   "H_set": 0.7621,
+   "text": "This ‖ is believed to be the fifth time in history that people have observed what ‖ turned out to be chemically confirmed martian material falling to Earth.",
+   "pieces": {
+    "Chinese": [
+     "这个",
+     "是人类历史上第五次观测到这样的现象。",
+     "结果是化学上确认的火星物质落到地球上。"
+    ],
+    "Japanese": [
+     "これ",
+     "人類が観測したのは 歴史上5回目と考えられています",
+     "火星から地球に落ちた物質だと 化学的に確認されたのです"
+    ],
+    "German": [
+     "This",
+     "Es wird angenommen, dass es das fünfte Mal in der Geschichte ist, dass Menschen beobachtet haben, was",
+     "Es stellte sich heraus, dass es sich um chemisch bestätigtes Marsmaterial handelt, das auf die Erde fällt."
+    ],
+    "Spanish": [
+     "Este",
+     "Se cree que es la quinta vez en la historia que la gente ha observado lo que",
+     "Resultó ser material marciano químicamente confirmado cayendo a la Tierra."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "to be the fifth",
+     "right": "time in history that",
+     "H": 0.6528,
+     "H_pct": 4.2,
+     "contra": 0.0033,
+     "cohesion": 0.655
+    },
+    {
+     "pos": 8,
+     "left": "be the fifth time",
+     "right": "in history that people",
+     "H": 0.7119,
+     "H_pct": 20.8,
+     "contra": 0.0013,
+     "cohesion": 0.7128
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "This",
+     "right": "is believed to be",
+     "H": 0.8055,
+     "H_pct": 100.0,
+     "contra": 0.017,
+     "cohesion": 0.8195
+    },
+    {
+     "pos": 15,
+     "left": "people have observed what",
+     "right": "turned out to be",
+     "H": 0.8012,
+     "H_pct": 95.8,
+     "contra": 0.0028,
+     "cohesion": 0.8035
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_841",
+  "cuts": 6,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.1357,
+  "policy_worst_contra": 0.0458,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8,
+    10,
+    14,
+    15,
+    18,
+    22
+   ],
+   "H_set": 0.5602,
+   "text": "However, nearly all of the casinos listed above ‖ serve drinks, ‖ and several of them ‖ bring ‖ in name-brand entertainment ‖ (primarily the large ones ‖ immediately surrounding Albuquerque and Santa Fe).",
+   "pieces": {
+    "Chinese": [
+     "然而,几乎所有的赌场上面列出",
+     "提供饮料,",
+     "其中有几个",
+     "带来",
+     "在名牌娱乐",
+     "(主要是大型的)",
+     "阿尔伯克基和圣菲附近)"
+    ],
+    "Japanese": [
+     "しかし、上記のカジノのほとんどは",
+     "飲み物を出して",
+     "彼らの多くは",
+     "持って来い",
+     "私たちは あなたが どのように",
+     "主に大きなものが",
+     "アルバカーキとサンタフェを すぐに取り囲んでいます"
+    ],
+    "German": [
+     "Fast alle der oben aufgeführten Casinos",
+     "Servieren Sie Getränke,",
+     "Und mehrere von ihnen",
+     "bring",
+     "in der Namensmarken-Unterhaltung",
+     "(vor allem die großen",
+     "Unmittelbar um Albuquerque und Santa Fe)."
+    ],
+    "Spanish": [
+     "Sin embargo, casi todos los casinos mencionados anteriormente",
+     "servir bebidas,",
+     "Y varios de ellos",
+     "Bring",
+     "en el entretenimiento de marca de nombre",
+     "(principalmente los grandes",
+     "Inmediatamente alrededor de Albuquerque y Santa Fe)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6,
+    10,
+    11,
+    18
+   ],
+   "H_set": 0.6959,
+   "text": "However, ‖ nearly all of the ‖ casinos ‖ listed above serve drinks, ‖ and ‖ several of them bring in name-brand entertainment ‖ (primarily the large ones immediately surrounding Albuquerque and Santa Fe).",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "几乎所有的",
+     "赌场",
+     "上面列出的服务饮料,",
+     "以及",
+     "其中有几个带来了名牌娱乐",
+     "(主要是阿尔伯克基和圣达菲周围的大型城市 ) 。"
+    ],
+    "Japanese": [
+     "しかし",
+     "ほとんど全ての",
+     "カジノ",
+     "上記の飲み物を提供し",
+     "それに",
+     "いくつかは名門エンターテインメント会社を",
+     "アルバカーキとサンタフェを直接囲む大きな地域を中心にした。"
+    ],
+    "German": [
+     "Allerdings",
+     "Fast alle der",
+     "Casinos",
+     "Die oben aufgeführten Getränke servieren,",
+     "und",
+     "Einige von ihnen bringen Name-Marke Unterhaltung",
+     "(vor allem die großen unmittelbar um Albuquerque und Santa Fe)."
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Casi todos los",
+     "casinos",
+     "Los listados arriba sirven bebidas,",
+     "y",
+     "Varios de ellos traen entretenimiento de marca",
+     "(principalmente los grandes que rodean inmediatamente Albuquerque y Santa Fe)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "the casinos listed above",
+     "right": "serve drinks, and several",
+     "H": 0.745,
+     "H_pct": 61.5,
+     "contra": 0.0034,
+     "cohesion": 0.7476
+    },
+    {
+     "pos": 14,
+     "left": "and several of them",
+     "right": "bring in name-brand entertainment",
+     "H": 0.6229,
+     "H_pct": 7.7,
+     "contra": 0.0458,
+     "cohesion": 0.6527
+    },
+    {
+     "pos": 15,
+     "left": "several of them bring",
+     "right": "in name-brand entertainment (primarily",
+     "H": 0.6565,
+     "H_pct": 15.4,
+     "contra": 0.0034,
+     "cohesion": 0.6587
+    },
+    {
+     "pos": 22,
+     "left": "(primarily the large ones",
+     "right": "immediately surrounding Albuquerque and",
+     "H": 0.7294,
+     "H_pct": 53.8,
+     "contra": 0.0365,
+     "cohesion": 0.7571
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "However,",
+     "right": "nearly all of the",
+     "H": 0.8308,
+     "H_pct": 100.0,
+     "contra": 0.0097,
+     "cohesion": 0.8389
+    },
+    {
+     "pos": 5,
+     "left": "nearly all of the",
+     "right": "casinos listed above serve",
+     "H": 0.7723,
+     "H_pct": 80.8,
+     "contra": 0.004,
+     "cohesion": 0.7754
+    },
+    {
+     "pos": 6,
+     "left": "all of the casinos",
+     "right": "listed above serve drinks,",
+     "H": 0.7911,
+     "H_pct": 88.5,
+     "contra": 0.003,
+     "cohesion": 0.7935
+    },
+    {
+     "pos": 11,
+     "left": "above serve drinks, and",
+     "right": "several of them bring",
+     "H": 0.7775,
+     "H_pct": 84.6,
+     "contra": 0.0064,
+     "cohesion": 0.7825
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_784",
+  "cuts": 7,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.1726,
+  "policy_worst_contra": 0.156,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    7,
+    8,
+    10,
+    15,
+    19
+   ],
+   "H_set": 0.5343,
+   "text": "Wildlife photography ‖ often ‖ requires a long telephoto ‖ lens, ‖ though things ‖ like a flock of birds ‖ or a tiny creature ‖ need other lenses.",
+   "pieces": {
+    "Chinese": [
+     "野生動物攝影",
+     "经常",
+     "需要一个长焦距镜头",
+     "透镜",
+     "虽然事情",
+     "像一群鸟",
+     "或是一种小小的生物",
+     "需要其他镜头。"
+    ],
+    "Japanese": [
+     "野生動物写真",
+     "よく",
+     "遠近両用カメラが必要です",
+     "レンズ",
+     "ただ 物事は",
+     "鳥の群れのように",
+     "あるいは小さな生物が",
+     "別のレンズが必要だ"
+    ],
+    "German": [
+     "Naturfotografie",
+     "häufig",
+     "Erfordert ein langes Teleobjektiv",
+     "Linse,",
+     "Obwohl Dinge",
+     "Wie ein Schwarm Vögel",
+     "Oder ein winziges Geschöpf",
+     "Ich brauche andere Objektive."
+    ],
+    "Spanish": [
+     "Fotografía de fauna silvestre",
+     "a menudo",
+     "Requiere un teleobjetivo largo",
+     "lente,",
+     "Aunque las cosas",
+     "Como una bandada de pájaros",
+     "O una pequeña criatura",
+     "Necesito otras lentes."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    4,
+    8,
+    9,
+    11,
+    14,
+    16
+   ],
+   "H_set": 0.7069,
+   "text": "Wildlife ‖ photography often requires ‖ a long telephoto lens, ‖ though ‖ things like ‖ a flock of ‖ birds or ‖ a tiny creature need other lenses.",
+   "pieces": {
+    "Chinese": [
+     "野生动物",
+     "摄影往往需要",
+     "一个长焦距镜头,",
+     "虽然",
+     "像这样的事情",
+     "一个群体",
+     "鸟类或",
+     "一个小小的生物需要其他镜头。"
+    ],
+    "Japanese": [
+     "野生生物",
+     "写真を撮るには",
+     "長距離レンズを",
+     "でも あの",
+     "例えば",
+     "群れの",
+     "鳥か",
+     "小さな生き物には 別のレンズが必要だ"
+    ],
+    "German": [
+     "Wildtiere",
+     "Fotografie erfordert oft",
+     "ein langes Teleobjektiv,",
+     "obwohl",
+     "Dinge wie",
+     "Eine Herde von",
+     "Vögel oder",
+     "Ein winziges Wesen braucht andere Objektive."
+    ],
+    "Spanish": [
+     "Vida silvestre",
+     "La fotografía a menudo requiere",
+     "un teleobjetivo largo,",
+     "aunque",
+     "Cosas como",
+     "Un rebaño de",
+     "aves o",
+     "Una pequeña criatura necesita otros lentes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Wildlife photography",
+     "right": "often requires a long",
+     "H": 0.7751,
+     "H_pct": 60.0,
+     "contra": 0.0012,
+     "cohesion": 0.776
+    },
+    {
+     "pos": 3,
+     "left": "Wildlife photography often",
+     "right": "requires a long telephoto",
+     "H": 0.6967,
+     "H_pct": 20.0,
+     "contra": 0.0009,
+     "cohesion": 0.6974
+    },
+    {
+     "pos": 7,
+     "left": "requires a long telephoto",
+     "right": "lens, though things like",
+     "H": 0.7662,
+     "H_pct": 45.0,
+     "contra": 0.0008,
+     "cohesion": 0.7669
+    },
+    {
+     "pos": 10,
+     "left": "telephoto lens, though things",
+     "right": "like a flock of",
+     "H": 0.7652,
+     "H_pct": 40.0,
+     "contra": 0.0307,
+     "cohesion": 0.7894
+    },
+    {
+     "pos": 15,
+     "left": "a flock of birds",
+     "right": "or a tiny creature",
+     "H": 0.7706,
+     "H_pct": 55.0,
+     "contra": 0.0213,
+     "cohesion": 0.7873
+    },
+    {
+     "pos": 19,
+     "left": "or a tiny creature",
+     "right": "need other lenses.",
+     "H": 0.6509,
+     "H_pct": 5.0,
+     "contra": 0.156,
+     "cohesion": 0.7712
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Wildlife",
+     "right": "photography often requires a",
+     "H": 0.8225,
+     "H_pct": 85.0,
+     "contra": 0.004,
+     "cohesion": 0.8258
+    },
+    {
+     "pos": 4,
+     "left": "Wildlife photography often requires",
+     "right": "a long telephoto lens,",
+     "H": 0.7888,
+     "H_pct": 75.0,
+     "contra": 0.0036,
+     "cohesion": 0.7917
+    },
+    {
+     "pos": 9,
+     "left": "long telephoto lens, though",
+     "right": "things like a flock",
+     "H": 0.826,
+     "H_pct": 100.0,
+     "contra": 0.0145,
+     "cohesion": 0.8382
+    },
+    {
+     "pos": 11,
+     "left": "lens, though things like",
+     "right": "a flock of birds",
+     "H": 0.8229,
+     "H_pct": 90.0,
+     "contra": 0.0133,
+     "cohesion": 0.834
+    },
+    {
+     "pos": 14,
+     "left": "like a flock of",
+     "right": "birds or a tiny",
+     "H": 0.7938,
+     "H_pct": 80.0,
+     "contra": 0.0405,
+     "cohesion": 0.8274
+    },
+    {
+     "pos": 16,
+     "left": "flock of birds or",
+     "right": "a tiny creature need",
+     "H": 0.7842,
+     "H_pct": 70.0,
+     "contra": 0.0223,
+     "cohesion": 0.8021
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_956",
+  "cuts": 2,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.1337,
+  "policy_worst_contra": 0.0212,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    16,
+    17
+   ],
+   "H_set": 0.6126,
+   "text": "If you have additional travel time, check to see how your total fare quote to Africa ‖ compares ‖ with a round-the-world fare.",
+   "pieces": {
+    "Chinese": [
+     "如果您有额外的旅行时间,请检查您的总票价是否适合非洲",
+     "比较",
+     "环球票价"
+    ],
+    "Japanese": [
+     "もしあなたが旅行時間を追加する場合は、アフリカへの総料金をチェックしてください",
+     "比較",
+     "世界一周の飛行機に乗りました"
+    ],
+    "German": [
+     "Wenn Sie zusätzliche Reisezeit haben, prüfen Sie, wie Ihr Gesamtpreis nach Afrika ausfällt.",
+     "Vergleiche",
+     "Mit einem Rund-um-die-Welt-Tarif."
+    ],
+    "Spanish": [
+     "Si tienes tiempo adicional de viaje, comprueba cómo se ve tu tarifa total.",
+     "comparaciones",
+     "Con una tarifa de vuelta al mundo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6
+   ],
+   "H_set": 0.7463,
+   "text": "If ‖ you have additional travel time, ‖ check to see how your total fare quote to Africa compares with a round-the-world fare.",
+   "pieces": {
+    "Chinese": [
+     "假如",
+     "你有额外的旅行时间,",
+     "检查以查看您的非洲总票价报价与环球票价的比较。"
+    ],
+    "Japanese": [
+     "もし",
+     "旅行時間が増えて",
+     "世界一周の料金と アフリカの料金を比較してみて"
+    ],
+    "German": [
+     "If",
+     "Sie haben zusätzliche Reisezeit,",
+     "Überprüfen Sie, wie Ihr Gesamtpreisangebot nach Afrika mit einem Rundreisepreis verglichen wird."
+    ],
+    "Spanish": [
+     "Si",
+     "tienes tiempo de viaje adicional,",
+     "Compruebe para ver cómo se compara su cotización de tarifa total a África con una tarifa de vuelta al mundo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "fare quote to Africa",
+     "right": "compares with a round-the-world",
+     "H": 0.679,
+     "H_pct": 47.4,
+     "contra": 0.0212,
+     "cohesion": 0.6937
+    },
+    {
+     "pos": 17,
+     "left": "quote to Africa compares",
+     "right": "with a round-the-world fare.",
+     "H": 0.7272,
+     "H_pct": 78.9,
+     "contra": 0.0199,
+     "cohesion": 0.7419
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "If",
+     "right": "you have additional travel",
+     "H": 0.7673,
+     "H_pct": 94.7,
+     "contra": 0.0027,
+     "cohesion": 0.7694
+    },
+    {
+     "pos": 6,
+     "left": "have additional travel time,",
+     "right": "check to see how",
+     "H": 0.7801,
+     "H_pct": 100.0,
+     "contra": 0.0243,
+     "cohesion": 0.7995
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_924",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.127,
+  "policy_worst_contra": 0.0091,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    10,
+    11,
+    18
+   ],
+   "H_set": 0.632,
+   "text": "Access to these services ‖ is often through a toll-free telephone ‖ number ‖ that can be called from most phones ‖ without charge.",
+   "pieces": {
+    "Chinese": [
+     "获取这些服务",
+     "通常是通过免费电话",
+     "数目",
+     "从大多数手机上都可以拨打",
+     "免费。"
+    ],
+    "Japanese": [
+     "サービスへのアクセス",
+     "多くの場合 無料電話で",
+     "番号",
+     "ほとんどの携帯電話から",
+     "無料で"
+    ],
+    "German": [
+     "Zugang zu diesen Diensten",
+     "Oftmals über ein gebührenfreies Telefon",
+     "Zahl",
+     "Die von den meisten Telefonen aus angerufen werden kann",
+     "Kostenlos."
+    ],
+    "Spanish": [
+     "Acceso a estos servicios",
+     "A menudo es a través de un teléfono gratuito",
+     "Número de",
+     "Se puede llamar desde la mayoría de los teléfonos",
+     "Sin cargo adicional."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    6,
+    11
+   ],
+   "H_set": 0.759,
+   "text": "Access to these services ‖ is ‖ often ‖ through a toll-free telephone number ‖ that can be called from most phones without charge.",
+   "pieces": {
+    "Chinese": [
+     "获取这些服务",
+     "是",
+     "经常",
+     "通过免费电话号码",
+     "从大多数手机上免费拨打。"
+    ],
+    "Japanese": [
+     "サービスへのアクセス",
+     "はい",
+     "よく",
+     "無料電話番号を通じて",
+     "ほとんどの携帯電話から無料で通話できます"
+    ],
+    "German": [
+     "Zugang zu diesen Diensten",
+     "ist",
+     "häufig",
+     "Über eine gebührenfreie Telefonnummer",
+     "Dieser Anruf kann von den meisten Telefonen kostenlos getätigt werden."
+    ],
+    "Spanish": [
+     "Acceso a estos servicios",
+     "es",
+     "a menudo",
+     "A través de un número de teléfono gratuito",
+     "Se puede llamar desde la mayoría de los teléfonos sin cargo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "through a toll-free telephone",
+     "right": "number that can be",
+     "H": 0.7757,
+     "H_pct": 33.3,
+     "contra": 0.0091,
+     "cohesion": 0.7828
+    },
+    {
+     "pos": 18,
+     "left": "called from most phones",
+     "right": "without charge.",
+     "H": 0.7767,
+     "H_pct": 38.9,
+     "contra": 0.0018,
+     "cohesion": 0.7781
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "to these services is",
+     "right": "often through a toll-free",
+     "H": 0.8207,
+     "H_pct": 83.3,
+     "contra": 0.0044,
+     "cohesion": 0.8243
+    },
+    {
+     "pos": 6,
+     "left": "these services is often",
+     "right": "through a toll-free telephone",
+     "H": 0.8352,
+     "H_pct": 94.4,
+     "contra": 0.0015,
+     "cohesion": 0.8365
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1137",
+  "cuts": 4,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.1267,
+  "policy_worst_contra": 0.0026,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    10,
+    11
+   ],
+   "H_set": 0.6375,
+   "text": "The village of Haldarsvík ‖ offer views ‖ of the nearby island ‖ Eysturoy ‖ and has an unusual octagonal church.",
+   "pieces": {
+    "Chinese": [
+     "哈尔达斯维克村",
+     "提供的意见",
+     "附近岛屿的风景",
+     "埃斯圖羅伊島",
+     "并且有一个不寻常的八角形教堂。"
+    ],
+    "Japanese": [
+     "ハルダルスヴィクの村",
+     "見た目を提供する",
+     "近くの島の",
+     "エイストロイ島",
+     "変わった八角形の教会があります"
+    ],
+    "German": [
+     "Das Dorf Haldarsvík",
+     "Angebotsansichten ansehen",
+     "Die nahe gelegene Insel",
+     "Eysturoy",
+     "Die Kirche ist eine ungewöhnliche achteckige Kirche."
+    ],
+    "Spanish": [
+     "El pueblo de Haldarsvík",
+     "Ofrecer vistas",
+     "Vista de la isla cercana",
+     "Eysturoy",
+     "Tiene una inusual iglesia octogonal."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    10,
+    11
+   ],
+   "H_set": 0.7642,
+   "text": "The village of ‖ Haldarsvík ‖ offer views of the nearby island ‖ Eysturoy ‖ and has an unusual octagonal church.",
+   "pieces": {
+    "Chinese": [
+     "村庄的",
+     "哈爾達斯維克",
+     "享有附近岛屿的景致",
+     "埃斯圖羅伊島",
+     "并且有一个不寻常的八角形教堂。"
+    ],
+    "Japanese": [
+     "村の",
+     "ハルダルスヴィク",
+     "近くの島の眺めを提供します",
+     "エイストロイ島",
+     "変わった八角形の教会があります"
+    ],
+    "German": [
+     "Das Dorf von",
+     "Haldarsvík",
+     "Blick auf die nahegelegene Insel",
+     "Eysturoy",
+     "Die Kirche ist eine ungewöhnliche achteckige Kirche."
+    ],
+    "Spanish": [
+     "El pueblo de",
+     "Haldarsvík",
+     "Ofrecen vistas a la isla cercana",
+     "Eysturoy",
+     "Tiene una inusual iglesia octogonal."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "of Haldarsvík offer views",
+     "right": "of the nearby island",
+     "H": 0.6952,
+     "H_pct": 46.7,
+     "contra": 0.0004,
+     "cohesion": 0.6955
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The village of",
+     "right": "Haldarsvík offer views of",
+     "H": 0.7887,
+     "H_pct": 80.0,
+     "contra": 0.0014,
+     "cohesion": 0.7898
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1000",
+  "cuts": 2,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.1251,
+  "policy_worst_contra": 0.0029,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    9
+   ],
+   "H_set": 0.6947,
+   "text": "Police said ‖ they suspect an alleged Daesh (ISIL) militant ‖ of responsibility for the attack.",
+   "pieces": {
+    "Chinese": [
+     "警方说",
+     "他们怀疑是被指控的达伊沙(伊斯兰国)战斗人员",
+     "对于这次袭击负责。"
+    ],
+    "Japanese": [
+     "警察は",
+     "彼らはISILの武装勢力と疑われ",
+     "犯人を特定しました"
+    ],
+    "German": [
+     "Die Polizei sagte",
+     "Sie vermuten einen mutmaßlichen Daesh (ISIL)-Militant",
+     "Die Verantwortung für den Angriff wurde nicht übernommen."
+    ],
+    "Spanish": [
+     "La policía dijo",
+     "Se sospecha que es un presunto militante de Daesh (EIIL)",
+     "El grupo no ha asumido la responsabilidad del ataque."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2
+   ],
+   "H_set": 0.8198,
+   "text": "Police ‖ said ‖ they suspect an alleged Daesh (ISIL) militant of responsibility for the attack.",
+   "pieces": {
+    "Chinese": [
+     "警察",
+     "说",
+     "他们怀疑一名被指控的达伊沙(伊斯兰国)战斗人员对袭击负责。"
+    ],
+    "Japanese": [
+     "警察",
+     "言った",
+     "彼らはダッシュ(ISIL)の 武装勢力が 攻撃の責任者だと疑ってる"
+    ],
+    "German": [
+     "Polizei",
+     "sagte",
+     "Sie vermuten einen mutmaßlichen Daesh (ISIL) Militant der Verantwortung für den Angriff."
+    ],
+    "Spanish": [
+     "Policía",
+     "said",
+     "Se sospecha que un presunto militante de Daesh (EIIL) es responsable del ataque."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "alleged Daesh (ISIL) militant",
+     "right": "of responsibility for the",
+     "H": 0.7504,
+     "H_pct": 66.7,
+     "contra": 0.0029,
+     "cohesion": 0.7526
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Police",
+     "right": "said they suspect an",
+     "H": 0.818,
+     "H_pct": 91.7,
+     "contra": 0.0012,
+     "cohesion": 0.819
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1319",
+  "cuts": 2,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.1227,
+  "policy_worst_contra": 0.0041,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    10
+   ],
+   "H_set": 0.6355,
+   "text": "The Sphinx is set as the backdrop ‖ and the narrator ‖ of a long story.",
+   "pieces": {
+    "Chinese": [
+     "狮身人面像设置为背景",
+     "与叙述者",
+     "一个长长的故事。"
+    ],
+    "Japanese": [
+     "スフィンクスが背景に設定されています",
+     "ナレーターは",
+     "話が長いんです"
+    ],
+    "German": [
+     "Die Sphinx ist die Kulisse",
+     "Der Erzähler und der Leser",
+     "Eine lange Geschichte."
+    ],
+    "Spanish": [
+     "La Esfinge se establece como el telón de fondo",
+     "El narrador y el narrador",
+     "de una larga historia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    9
+   ],
+   "H_set": 0.7582,
+   "text": "The Sphinx is set as the backdrop ‖ and the ‖ narrator of a long story.",
+   "pieces": {
+    "Chinese": [
+     "狮身人面像设置为背景",
+     "以及",
+     "一个长长的故事的叙述者。"
+    ],
+    "Japanese": [
+     "スフィンクスが背景に設定されています",
+     "それに",
+     "長い物語の語り手"
+    ],
+    "German": [
+     "Die Sphinx ist die Kulisse",
+     "und die",
+     "Erzähler einer langen Geschichte."
+    ],
+    "Spanish": [
+     "La Esfinge se establece como el telón de fondo",
+     "y el",
+     "El narrador de una larga historia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "backdrop and the narrator",
+     "right": "of a long story.",
+     "H": 0.7132,
+     "H_pct": 41.7,
+     "contra": 0.0041,
+     "cohesion": 0.7161
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "the backdrop and the",
+     "right": "narrator of a long",
+     "H": 0.7627,
+     "H_pct": 91.7,
+     "contra": 0.0157,
+     "cohesion": 0.7749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1484",
+  "cuts": 6,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.1204,
+  "policy_worst_contra": 0.008,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    8,
+    11,
+    13,
+    15,
+    17
+   ],
+   "H_set": 0.6142,
+   "text": "Eventually, ‖ after thousands or even millions of years, ‖ the two populations ‖ will look ‖ so different ‖ that they ‖ can't be called the same species.",
+   "pieces": {
+    "Chinese": [
+     "最终，",
+     "经过数千年甚至数百万年,",
+     "两个人口",
+     "会看",
+     "如此不同",
+     "他们",
+     "不能被称为同一种。"
+    ],
+    "Japanese": [
+     "結局",
+     "数千年 数百万年も経つと",
+     "2つの集団は",
+     "見てみる",
+     "違うんだ",
+     "彼らが",
+     "違う種族だとは言えない"
+    ],
+    "German": [
+     "Schließlich,",
+     "nach Tausenden oder sogar Millionen von Jahren,",
+     "Die beiden Bevölkerungen",
+     "Wir werden schauen",
+     "So anders als sonst",
+     "Dass sie",
+     "Die beiden können nicht die gleiche Spezies genannt werden."
+    ],
+    "Spanish": [
+     "Eventualmente,",
+     "después de miles o incluso millones de años,",
+     "Las dos poblaciones",
+     "Me miraré",
+     "Tan diferente",
+     "que ellos",
+     "No se puede llamar la misma especie."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    8,
+    15,
+    16
+   ],
+   "H_set": 0.7345,
+   "text": "Eventually, ‖ after thousands ‖ or ‖ even millions of years, ‖ the two populations will look so different ‖ that ‖ they can't be called the same species.",
+   "pieces": {
+    "Chinese": [
+     "最终，",
+     "数千人之后",
+     "或",
+     "甚至数百万年,",
+     "这两个群体看起来会很不一样",
+     "该",
+     "他们不能被称为同一个物种。"
+    ],
+    "Japanese": [
+     "結局",
+     "何千年も経って",
+     "それとも",
+     "何百万年も",
+     "2つの集団は とても違うように見えます",
+     "あれは",
+     "彼らは同じ種とは言えない"
+    ],
+    "German": [
+     "Schließlich,",
+     "Nach Tausenden von Jahren",
+     "oder",
+     "sogar Millionen von Jahren,",
+     "Die beiden Populationen werden so unterschiedlich aussehen",
+     "that",
+     "Sie können nicht die gleiche Spezies genannt werden."
+    ],
+    "Spanish": [
+     "Eventualmente,",
+     "Después de miles",
+     "o",
+     "incluso millones de años,",
+     "Las dos poblaciones se verán tan diferentes",
+     "that",
+     "No pueden ser llamados la misma especie."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "years, the two populations",
+     "right": "will look so different",
+     "H": 0.8057,
+     "H_pct": 57.1,
+     "contra": 0.0006,
+     "cohesion": 0.8062
+    },
+    {
+     "pos": 13,
+     "left": "two populations will look",
+     "right": "so different that they",
+     "H": 0.8054,
+     "H_pct": 52.4,
+     "contra": 0.0005,
+     "cohesion": 0.8058
+    },
+    {
+     "pos": 17,
+     "left": "so different that they",
+     "right": "can't be called the",
+     "H": 0.8123,
+     "H_pct": 61.9,
+     "contra": 0.008,
+     "cohesion": 0.8188
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Eventually, after thousands",
+     "right": "or even millions of",
+     "H": 0.8238,
+     "H_pct": 76.2,
+     "contra": 0.0011,
+     "cohesion": 0.8247
+    },
+    {
+     "pos": 4,
+     "left": "Eventually, after thousands or",
+     "right": "even millions of years,",
+     "H": 0.826,
+     "H_pct": 81.0,
+     "contra": 0.0026,
+     "cohesion": 0.8281
+    },
+    {
+     "pos": 16,
+     "left": "look so different that",
+     "right": "they can't be called",
+     "H": 0.8318,
+     "H_pct": 85.7,
+     "contra": 0.002,
+     "cohesion": 0.8335
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_535",
+  "cuts": 4,
+  "avg_chunk": 3.2,
+  "latency_bin": "≤5",
+  "gap": 0.119,
+  "policy_worst_contra": 0.0274,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    11,
+    12,
+    14
+   ],
+   "H_set": 0.6074,
+   "text": "Perhaps the most common type of tourism ‖ is what most people ‖ associate ‖ with traveling: ‖ Recreation tourism.",
+   "pieces": {
+    "Chinese": [
+     "也许是最常见的旅游类型",
+     "是大多数人",
+     "助理",
+     "旅行:",
+     "娱乐旅游。"
+    ],
+    "Japanese": [
+     "恐らく最も一般的な観光は",
+     "多くの人が",
+     "副官",
+     "旅行に関しては",
+     "観光業。"
+    ],
+    "German": [
+     "Vielleicht die häufigste Art des Tourismus",
+     "Das ist, was die meisten Leute",
+     "Associate",
+     "Mit dem Reisen:",
+     "Erholung und Tourismus."
+    ],
+    "Spanish": [
+     "Quizás el tipo más común de turismo",
+     "Es lo que la mayoría de la gente",
+     "asociado",
+     "Con el viaje:",
+     "Turismo de ocio."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    7,
+    8,
+    14
+   ],
+   "H_set": 0.7264,
+   "text": "Perhaps ‖ the most common type of tourism ‖ is ‖ what most people associate with traveling: ‖ Recreation tourism.",
+   "pieces": {
+    "Chinese": [
+     "也许",
+     "最常见的旅游类型",
+     "是",
+     "大多数人都会把旅行联系起来:",
+     "娱乐旅游。"
+    ],
+    "Japanese": [
+     "たぶん",
+     "観光は最も一般的な形態で",
+     "はい",
+     "旅行と関連付けられるものは",
+     "観光業。"
+    ],
+    "German": [
+     "Perhaps",
+     "Die häufigste Art des Tourismus",
+     "ist",
+     "Was die meisten Menschen mit Reisen assoziieren:",
+     "Erholung und Tourismus."
+    ],
+    "Spanish": [
+     "Quizá",
+     "El tipo más común de turismo",
+     "es",
+     "Lo que la mayoría de la gente asocia con viajar:",
+     "Turismo de ocio."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "is what most people",
+     "right": "associate with traveling: Recreation",
+     "H": 0.7596,
+     "H_pct": 50.0,
+     "contra": 0.0059,
+     "cohesion": 0.7641
+    },
+    {
+     "pos": 12,
+     "left": "what most people associate",
+     "right": "with traveling: Recreation tourism.",
+     "H": 0.7308,
+     "H_pct": 14.3,
+     "contra": 0.0156,
+     "cohesion": 0.7424
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Perhaps",
+     "right": "the most common type",
+     "H": 0.8118,
+     "H_pct": 85.7,
+     "contra": 0.0006,
+     "cohesion": 0.8123
+    },
+    {
+     "pos": 8,
+     "left": "type of tourism is",
+     "right": "what most people associate",
+     "H": 0.8235,
+     "H_pct": 100.0,
+     "contra": 0.0063,
+     "cohesion": 0.8287
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_942",
+  "cuts": 4,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.1179,
+  "policy_worst_contra": 0.0091,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6,
+    8,
+    11,
+    13
+   ],
+   "H_set": 0.6908,
+   "text": "After you become comfortable with formatting ‖ and editing ‖ on the web, ‖ then later, ‖ you might create your own website.",
+   "pieces": {
+    "Chinese": [
+     "当您对格式化感到舒适后",
+     "编辑",
+     "网上,",
+     "然后,",
+     "您可以创建自己的网站。"
+    ],
+    "Japanese": [
+     "フォーマットに慣れたら",
+     "編集を行いました",
+     "ウェブ上で",
+     "それから後で",
+     "ウェブサイトを作ってみてください"
+    ],
+    "German": [
+     "Nachdem Sie sich mit der Formatierung vertraut gemacht haben",
+     "Bearbeitung und Bearbeitung",
+     "Im Web,",
+     "Dann später,",
+     "Sie können Ihre eigene Website erstellen."
+    ],
+    "Spanish": [
+     "Después de que se sienta cómodo con el formato",
+     "Producción y edición",
+     "en la web,",
+     "Entonces más tarde,",
+     "Puedes crear tu propio sitio web."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.8086,
+   "text": "After ‖ you become comfortable with formatting and editing on the web, ‖ then ‖ later, ‖ you might create your own website.",
+   "pieces": {
+    "Chinese": [
+     "之后",
+     "你对网络上的格式和编辑变得很熟悉,",
+     "然后",
+     "后来，",
+     "您可以创建自己的网站。"
+    ],
+    "Japanese": [
+     "後",
+     "ウェブ上でのフォーマットや編集に慣れ",
+     "じゃあ あの",
+     "後で",
+     "ウェブサイトを作ってみてください"
+    ],
+    "German": [
+     "After",
+     "Sie sich mit der Formatierung und Bearbeitung im Web vertraut machen,",
+     "dann",
+     "später,",
+     "Sie können Ihre eigene Website erstellen."
+    ],
+    "Spanish": [
+     "Después",
+     "te sientas cómodo con el formato y la edición en la web,",
+     "entonces",
+     "más tarde,",
+     "Puedes crear tu propio sitio web."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "become comfortable with formatting",
+     "right": "and editing on the",
+     "H": 0.7081,
+     "H_pct": 23.5,
+     "contra": 0.002,
+     "cohesion": 0.7095
+    },
+    {
+     "pos": 8,
+     "left": "with formatting and editing",
+     "right": "on the web, then",
+     "H": 0.7466,
+     "H_pct": 29.4,
+     "contra": 0.0046,
+     "cohesion": 0.7501
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "After",
+     "right": "you become comfortable with",
+     "H": 0.811,
+     "H_pct": 82.4,
+     "contra": 0.0016,
+     "cohesion": 0.8122
+    },
+    {
+     "pos": 12,
+     "left": "on the web, then",
+     "right": "later, you might create",
+     "H": 0.8458,
+     "H_pct": 94.1,
+     "contra": 0.0091,
+     "cohesion": 0.8536
+    }
+   ]
+  }
+ }
+]

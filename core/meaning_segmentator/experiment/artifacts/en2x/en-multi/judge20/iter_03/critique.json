@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt undervalues keeping a short subject attached to its verb: it lets cuts isolate the verb (or verb phrase) from a immediately preceding short subject, producing orphaned predicates or apparent contradictions.",
+    "evidence": "['en_us_767','en_us_432','en_us_1116','en_us_167','en_us_464']: each contains a short subject phrase immediately followed by a verb/copula; the policy splits subject from verb whereas the offline target joins them.",
+    "type_predicate": "A short (1–3-word) subject phrase (a proper name/pronoun or determiner + noun) is immediately followed by a verb or copula.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a short (≤3-word) subject phrase (proper name, pronoun, or determiner+noun) and its immediately following verb or copula."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt undervalues keeping a short subject attached to its verb: it lets cuts isolate the verb (or verb phrase) from a immediately preceding short subject, producing orphaned predicates or apparent contradictions.",
+   "evidence": "['en_us_767','en_us_432','en_us_1116','en_us_167','en_us_464']: each contains a short subject phrase immediately followed by a verb/copula; the policy splits subject from verb whereas the offline target joins them.",
+   "type_predicate": "A short (1–3-word) subject phrase (a proper name/pronoun or determiner + noun) is immediately followed by a verb or copula.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a short (≤3-word) subject phrase (proper name, pronoun, or determiner+noun) and its immediately following verb or copula."
+   }
+  }
+ ]
+}

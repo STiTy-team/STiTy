@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt overvalues cutting immediately after short function words and underestimates the damage of detaching those words from the content that completes the phrase, producing single-word fragments or orphaned dependents that harm cohesion or create contradictions.",
+    "evidence": "['en_us_381','en_us_574','en_us_101','en_us_309','en_us_503','en_us_655','en_us_1355','en_us_1116','en_us_507','en_us_558','en_us_1022','en_us_1113','en_us_402','en_us_1255'] — these 14 cases share policy cuts that separate a determiner/pronoun/auxiliary/preposition from the immediately following content word, leaving the head or essential complement isolated.",
+    "type_predicate": "The sentence has a function word (determiner, pronoun, auxiliary, or preposition) immediately followed by the content word that serves as the syntactic head or essential complement of the ensuing noun or verb phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a determiner/pronoun/auxiliary/preposition when the next token is the head or required complement of the following noun/verb phrase (i.e. avoid separating 'the/a/this/in/with/is' from the word that completes its argument)."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts inside multiword names, organizational titles and tight enumerations, failing to protect named entities and listed items that must be translated as contiguous units for clarity.",
+    "evidence": "['en_us_309','en_us_817','en_us_1116','en_us_6','en_us_288','en_us_1201','en_us_28'] — these 7 cases share policy cuts that split multi-word names/titles or comma-separated name lists, breaking entity cohesion or role assignment.",
+    "type_predicate": "The sentence contains a multi-word proper name or title (two or more adjacent content words forming a named entity) or a short comma-separated enumeration of named items.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside multi-word names/titles or within a short comma-separated list of named items; keep named entities and tight enumerations as single segments."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt overvalues cutting immediately after short function words and underestimates the damage of detaching those words from the content that completes the phrase, producing single-word fragments or orphaned dependents that harm cohesion or create contradictions.",
+   "evidence": "['en_us_381','en_us_574','en_us_101','en_us_309','en_us_503','en_us_655','en_us_1355','en_us_1116','en_us_507','en_us_558','en_us_1022','en_us_1113','en_us_402','en_us_1255'] — these 14 cases share policy cuts that separate a determiner/pronoun/auxiliary/preposition from the immediately following content word, leaving the head or essential complement isolated.",
+   "type_predicate": "The sentence has a function word (determiner, pronoun, auxiliary, or preposition) immediately followed by the content word that serves as the syntactic head or essential complement of the ensuing noun or verb phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a determiner/pronoun/auxiliary/preposition when the next token is the head or required complement of the following noun/verb phrase (i.e. avoid separating 'the/a/this/in/with/is' from the word that completes its argument)."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts inside multiword names, organizational titles and tight enumerations, failing to protect named entities and listed items that must be translated as contiguous units for clarity.",
+   "evidence": "['en_us_309','en_us_817','en_us_1116','en_us_6','en_us_288','en_us_1201','en_us_28'] — these 7 cases share policy cuts that split multi-word names/titles or comma-separated name lists, breaking entity cohesion or role assignment.",
+   "type_predicate": "The sentence contains a multi-word proper name or title (two or more adjacent content words forming a named entity) or a short comma-separated enumeration of named items.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside multi-word names/titles or within a short comma-separated list of named items; keep named entities and tight enumerations as single segments."
+   }
+  }
+ ]
+}

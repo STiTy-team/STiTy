@@ -1,0 +1,50 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": -9e-05,
+  "lo": -0.01276,
+  "hi": 0.01347,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -9e-05,
+  "lo": -0.01276,
+  "hi": 0.01347,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a narrow surface check after C5 that forbids cutting when the remainder begins a clause or token that supplies an argument, complement, negation/exception, or scope (addresses the primary_finding with a concrete, surface-recognizable condition)."
+ ],
+ "findings": [
+  "The prompt misses cases where the left fragment is an underspecified proposition whose truth, scope or referent is completed or reversed by the immediately following words, so it permits cuts that later contradict or change the delivered claim.",
+  "The prompt fails to protect numerals, measures, date ranges and essential post‑nominal modifiers from being split off, harming cohesion when unit/modifier is separated from its head."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+   "now": "- Narrow check: do not cut when the next token begins a subordinate or clausal c"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0027,
+   "≤5": -0.0067,
+   "≤7": 0.0028,
+   "≤10": 0.0039,
+   "≤99": -0.0003
+  },
+  "n_worse": 777,
+  "n_better": 709,
+  "why": "The inserted narrow check after C5 blocked cuts when the next token looked like the start of a clause/argument/scope, so the top-K selector moved cuts to nearby positions; that produced small improvements on some longer chunks but a net small harm concentrated in the short (≤5-word) bin where the alternatives often split enumerations or broke coordinated predicates.  The measurement is essentially neutral overall (mean ≈0) because almost as many pairs improved as worsened.",
+  "lesson": "A later revision should preserve the intent of forbidding cuts before clause/argument starters but avoid forcing substitute cuts that split enumerations or separate predicates in short pieces (the short-bin harm must be controlled).",
+  "blamed": [
+   "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+  ]
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00139,
+  "lo": -0.01551,
+  "hi": 0.01365,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00139,
+  "lo": -0.01551,
+  "hi": 0.01365,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace E1 (hand-written example) with measured labeled example en_us_1567 so the scorer sees a real failure case where a very short trailing fragment (≤3 words) causes high entailment (contra) risk, addressing the primary finding."
+ ],
+ "findings": [
+  "The scorer underestimates entailment (contra) risk for cuts that leave a very short trailing fragment. It treats locally-cohesive left/right translations as safe even when the right-hand fragment, taken alone, would assert/negate or mis‑scope a claim and so overturn the earlier material."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+   "now": "Input: The <SEG:?> largest <SEG:?> tournament <SEG:?> of <SEG:?> the <SEG:?> yea",
+   "labeled_example": "en_us_1567"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0004,
+   "≤5": 0.0044,
+   "≤7": -0.0036,
+   "≤10": -0.01,
+   "≤99": -0.0226
+  },
+  "n_worse": 775,
+  "n_better": 735,
+  "why": "Replacing E1 with a real short trailing-fragment example made the scorer avoid keeping tiny trailing fragments (small positive changes in the ≤3 and ≤5 bins), but the model compensated by introducing more internal single-word splits and moving cuts closer to heads in longer pieces (negative changes in ≤7, ≤10, ≤99). The worst-moved pairs illustrate this side-effect (new one-word segments like “they”, “medication”, “upright”).",
+  "lesson": "When adding an example to discourage very-short trailing fragments, ensure the change is localized so it does not induce extra internal one-word splits or shift cuts toward heads in longer pieces.",
+  "blamed": [
+   "E1 «Input: The <SEG:?> largest <SEG:?> tournament <SEG:?> of <SE»"
+  ]
+ }
+}

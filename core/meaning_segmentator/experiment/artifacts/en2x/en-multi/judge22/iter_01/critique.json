@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt routinely ranks cuts too high when they separate a finite verb/coproduct/auxiliary from the words that complete its core argument, producing orphaned predicates or scope flips.",
+    "evidence": "en_us_44,en_us_1650,en_us_375,en_us_419,en_us_1060,en_us_292,en_us_1617,en_us_1062,en_us_1081,en_us_101 — each kept a cut that leaves a verb, copula, or auxiliary standing without its immediately following essential complement (prepositional/location/time phrase, measurement, or clausal/object), which the target fixes by keeping the verb+complement together.",
+    "type_predicate": "Sentences where a finite verb, copula, or auxiliary is immediately followed (within the next few tokens) by a prepositional phrase, temporal expression, measurement/unit, named location, or clausal/direct-object phrase that supplies the verb's core complement.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a finite verb/copula/auxiliary when the following words form its essential complement (object, prepositional phrase of place/time/measurement, or clausal complement)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt routinely ranks cuts too high when they separate a finite verb/coproduct/auxiliary from the words that complete its core argument, producing orphaned predicates or scope flips.",
+   "evidence": "en_us_44,en_us_1650,en_us_375,en_us_419,en_us_1060,en_us_292,en_us_1617,en_us_1062,en_us_1081,en_us_101 — each kept a cut that leaves a verb, copula, or auxiliary standing without its immediately following essential complement (prepositional/location/time phrase, measurement, or clausal/object), which the target fixes by keeping the verb+complement together.",
+   "type_predicate": "Sentences where a finite verb, copula, or auxiliary is immediately followed (within the next few tokens) by a prepositional phrase, temporal expression, measurement/unit, named location, or clausal/direct-object phrase that supplies the verb's core complement.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a finite verb/copula/auxiliary when the following words form its essential complement (object, prepositional phrase of place/time/measurement, or clausal complement)."
+   }
+  }
+ ]
+}

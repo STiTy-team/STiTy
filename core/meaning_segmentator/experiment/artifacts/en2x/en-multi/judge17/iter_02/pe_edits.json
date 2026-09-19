@@ -1,0 +1,394 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Avoid cuts that leave the prefix without its predicate or core argument (for example, splitting a subject noun phrase or auxiliary away from its main verb), since such fragments cannot stand as faithful pieces of the whole."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Keep a subject noun phrase or a standalone auxiliary together with the immediately following main verb or predicate that completes its proposition; treat subject+predicate as an indivisible unit for segmentation."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a numeral or numeric range together with the immediately adjacent unit word, multiplier (e.g. 'million', 'm'), or range connector (e.g. 'to') that determines its meaning; treat such number+unit spans as single lexical units."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": 40
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 215
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 232
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7373,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Keep lexicalized multiword units intact: if a contiguous sequence is enclosed in double quotes, treat the entire quoted span (including the quotes) as an indivisible unit; likewise keep hyphenated technical compounds and sequences of two or more Titlecase words (names or formal titles) together so cuts do not split a single lexical item."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_360",
+    "text": "Input: Scientists <SEG:?> call <SEG:?> this <SEG:?> process <SEG:?> \"stimulated <SEG:?> emission <SEG:?> of <SEG:?> radiation\" <SEG:?> because <SEG:?> the <SEG:?> atoms <SEG:?> are <SEG:?> stimulated <SEG:?> by <SEG:?> the <SEG:?> bright <SEG:?> light, <SEG:?> causing <SEG:?> the <SEG:?> emission <SEG:?> of <SEG:?> a <SEG:?> photon <SEG:?> of <SEG:?> light, <SEG:?> and <SEG:?> light <SEG:?> is <SEG:?> a <SEG:?> type <SEG:?> of <SEG:?> radiation.\nOutput: Scientists <SEG:97> call <SEG:80> this <SEG:87> process <SEG:77> \"stimulated <SEG:30> emission <SEG:70> of <SEG:67> radiation\" <SEG:100> because <SEG:27> the <SEG:10> atoms <SEG:23> are <SEG:13> stimulated <SEG:40> by <SEG:7> the <SEG:0> bright <SEG:3> light, <SEG:57> causing <SEG:20> the <SEG:37> emission <SEG:33> of <SEG:43> a <SEG:17> photon <SEG:73> of <SEG:53> light, <SEG:90> and <SEG:93> light <SEG:60> is <SEG:63> a <SEG:47> type <SEG:50> of <SEG:83> radiation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 159
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 546
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7591,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Keep numerals and numeric ranges together with the adjacent words that determine their meaning: a numeral or a numeral-range plus the immediately neighboring unit or measurement words (e.g. \"100 feet\", \"83 meters\", \"340 million to 500 million\", \"3.50 m\") form a single lexical measurement unit — only allow a cut after the complete measurement phrase."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1612",
+    "text": "Input: Water <SEG:?> is <SEG:?> spilling <SEG:?> over <SEG:?> the <SEG:?> levee <SEG:?> in <SEG:?> a <SEG:?> section <SEG:?> 100 <SEG:?> feet <SEG:?> wide.\nOutput: Water <SEG:90> is <SEG:20> spilling <SEG:60> over <SEG:50> the <SEG:30> levee <SEG:80> in <SEG:70> a <SEG:10> section <SEG:100> 100 <SEG:0> feet <SEG:40> wide."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 354
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -60
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7180,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep a subject noun phrase (a contiguous span ending in a noun or pronoun) or a standalone auxiliary together with the immediately following verb/predicate that completes it."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 175
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7061,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep an opening quote mark and all contiguous tokens up to the matching closing quote together; do not cut inside quoted spans (treat the entire quoted phrase as an indivisible unit)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 184
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7070,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep a numeral or numeric range together with the immediately adjacent unit or range word that completes its meaning. If a digit sequence (with commas or decimal) or a 'N to M' / 'N - M' range is adjacent to unit words (m, km, %, percent, million, billion, ft, kg, etc.), do not cut between them."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 297
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7183,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_464",
+    "text": "Input: Unfortunately, <SEG:?> when <SEG:?> you <SEG:?> make <SEG:?> a <SEG:?> DVD, <SEG:?> it's <SEG:?> borders <SEG:?> will <SEG:?> most <SEG:?> likely <SEG:?> be <SEG:?> cut <SEG:?> too, <SEG:?> and <SEG:?> if <SEG:?> the <SEG:?> video <SEG:?> had <SEG:?> subtitles <SEG:?> too <SEG:?> close <SEG:?> to <SEG:?> the <SEG:?> bottom, <SEG:?> they <SEG:?> won't <SEG:?> be <SEG:?> fully <SEG:?> shown.\nOutput: Unfortunately, <SEG:96> when <SEG:82> you <SEG:61> make <SEG:18> a <SEG:21> DVD, <SEG:46> it's <SEG:11> borders <SEG:36> will <SEG:32> most <SEG:29> likely <SEG:39> be <SEG:25> cut <SEG:89> too, <SEG:100> and <SEG:93> if <SEG:86> the <SEG:57> video <SEG:71> had <SEG:68> subtitles <SEG:75> too <SEG:50> close <SEG:54> to <SEG:43> the <SEG:4> bottom, <SEG:79> they <SEG:0> won't <SEG:7> be <SEG:14> fully <SEG:64> shown."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -40
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6975,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1022",
+    "text": "Input: Chambers <SEG:?> had <SEG:?> sued <SEG:?> God <SEG:?> for <SEG:?> \"widespread <SEG:?> death, <SEG:?> destruction <SEG:?> and <SEG:?> terrorization <SEG:?> of <SEG:?> millions <SEG:?> upon <SEG:?> millions <SEG:?> of <SEG:?> the <SEG:?> Earth's <SEG:?> inhabitants.\"\nOutput: Chambers <SEG:6> had <SEG:75> sued <SEG:94> God <SEG:100> for <SEG:31> \"widespread <SEG:62> death, <SEG:81> destruction <SEG:38> and <SEG:25> terrorization <SEG:88> of <SEG:56> millions <SEG:44> upon <SEG:19> millions <SEG:50> of <SEG:69> the <SEG:12> Earth's <SEG:0> inhabitants.\""
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1253",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 179
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -176
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6889,
+  "errors": null
+ },
+ {
+  "candidate": 8,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.",
+    "labeled_example": "en_us_1050",
+    "text": "Input: The <SEG:?> two <SEG:?> towers <SEG:?> rise <SEG:?> to <SEG:?> a <SEG:?> height <SEG:?> of <SEG:?> 83 <SEG:?> meters, <SEG:?> it's <SEG:?> 378 <SEG:?> meters <SEG:?> long <SEG:?> and <SEG:?> it <SEG:?> has <SEG:?> two <SEG:?> lanes <SEG:?> of <SEG:?> 3.50 <SEG:?> m <SEG:?> wide.\nOutput: The <SEG:67> two <SEG:38> towers <SEG:48> rise <SEG:24> to <SEG:52> a <SEG:14> height <SEG:33> of <SEG:81> 83 <SEG:90> meters, <SEG:100> it's <SEG:5> 378 <SEG:0> meters <SEG:29> long <SEG:76> and <SEG:71> it <SEG:43> has <SEG:86> two <SEG:62> lanes <SEG:57> of <SEG:95> 3.50 <SEG:19> m <SEG:10> wide."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.",
+    "labeled_example": "en_us_419",
+    "text": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> to <SEG:?> 500 <SEG:?> million <SEG:?> speakers, <SEG:?> and <SEG:?> as <SEG:?> many <SEG:?> as <SEG:?> 800 <SEG:?> million <SEG:?> people <SEG:?> can <SEG:?> understand <SEG:?> the <SEG:?> language.\nOutput: Estimates <SEG:100> range <SEG:83> from <SEG:89> 340 <SEG:39> million <SEG:61> to <SEG:6> 500 <SEG:50> million <SEG:0> speakers, <SEG:94> and <SEG:72> as <SEG:28> many <SEG:78> as <SEG:67> 800 <SEG:56> million <SEG:17> people <SEG:11> can <SEG:33> understand <SEG:44> the <SEG:22> language."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.",
+    "labeled_example": "en_us_103",
+    "text": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below <SEG:?> the <SEG:?> tanks <SEG:?> capable <SEG:?> of <SEG:?> holding <SEG:?> 104,500 <SEG:?> barrels <SEG:?> was <SEG:?> not <SEG:?> yet <SEG:?> filled <SEG:?> to <SEG:?> capacity.\nOutput: Another <SEG:94> secondary <SEG:75> containment <SEG:62> area <SEG:69> below <SEG:88> the <SEG:6> tanks <SEG:100> capable <SEG:56> of <SEG:38> holding <SEG:81> 104,500 <SEG:19> barrels <SEG:44> was <SEG:0> not <SEG:12> yet <SEG:25> filled <SEG:50> to <SEG:31> capacity."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 212
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 18
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -329
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6787,
+  "errors": null
+ },
+ {
+  "candidate": 9,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "text": "- Keep a subject noun phrase (contiguous tokens ending in a noun or pronoun) or a standalone auxiliary together with the immediately following main verb/predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "chars_change": 164
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7050,
+  "errors": null
+ },
+ {
+  "candidate": 10,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "text": "Keep contiguous sequences of two or more Titlecase words (each word beginning with an uppercase letter) together as a single unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C0",
+    "kind": "change",
+    "chars_change": 131
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7017,
+  "errors": null
+ },
+ {
+  "candidate": 11,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a numeral or numeric range together with the immediately adjacent unit or measurement word that completes its meaning."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 126
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7012,
+  "errors": null
+ }
+]

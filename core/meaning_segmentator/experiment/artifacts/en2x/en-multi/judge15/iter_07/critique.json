@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats predicate–argument preservation as an absolute rule across all latency regimes, preferring to avoid any cut that separates verbs/auxiliaries from arguments; in very short-latency sentences this drives many tiny fragments elsewhere and lowers overall H_set in the ≤3/≤5 bins.",
+    "evidence": "[\"en_us_790\",\"en_us_538\",\"en_us_841\",\"en_us_853\",\"en_us_783\",\"en_us_573\",\"en_us_680\",\"en_us_454\",\"en_us_126?\",\"en_us_626\"]: these policy outputs show many micro‑splits around verbs/auxiliaries in ≤3/≤5 sentences and the offline targets regroup predicate+arguments to raise H_set (list length = 10).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Prefer predicate–argument preservation only when it prevents orphaned complements; in very short‑latency contexts allow cuts inside long predicate phrases if that avoids producing many micro‑fragments."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues isolating sentence‑initial small function words or discourse markers as standalone pieces; separating an initial article/discourse token often yields a following chunk that is more coherent to translate and raises joinable quality.",
+    "evidence": "[\"en_us_1543\",\"en_us_464\",\"en_us_538\",\"en_us_101\",\"en_us_1017\",\"en_us_1319\"]: in these cases the offline target scores improved when an initial small token (e.g. 'The', 'Unfortunately,', 'If') was isolated and the remainder was left as a cohesive clause (list length = 6).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Allow and prefer a cut that isolates an initial discourse marker or determiner when the remainder forms a cohesive clause by itself (isolating short function words can improve joinable translation)."
+    }
+   },
+   {
+    "diagnosis": "The prompt does not sufficiently penalize cuts inside coordinate lists or enumerations; splitting mid‑enumeration often severs the list's internal cohesion and causes mistranslation when pieces are joined.",
+    "evidence": "[\"en_us_790\",\"en_us_626\",\"en_us_783\",\"en_us_680\"]: targets improve H_set by keeping enumerated items or coordination together (merging list spans) rather than cutting between list members or splitting coordinated noun groups (list length = 4).",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: Mancunian, <SEG:?> Bostonian, <SEG:?> Jamaican and Sydneysider <SEG:?>\nOutput: Mancunian, Bostonian, Jamaican and Sydneysider <SEG:100>"
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats predicate–argument preservation as an absolute rule across all latency regimes, preferring to avoid any cut that separates verbs/auxiliaries from arguments; in very short-latency sentences this drives many tiny fragments elsewhere and lowers overall H_set in the ≤3/≤5 bins.",
+   "evidence": "[\"en_us_790\",\"en_us_538\",\"en_us_841\",\"en_us_853\",\"en_us_783\",\"en_us_573\",\"en_us_680\",\"en_us_454\",\"en_us_126?\",\"en_us_626\"]: these policy outputs show many micro‑splits around verbs/auxiliaries in ≤3/≤5 sentences and the offline targets regroup predicate+arguments to raise H_set (list length = 10).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Prefer predicate–argument preservation only when it prevents orphaned complements; in very short‑latency contexts allow cuts inside long predicate phrases if that avoids producing many micro‑fragments."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues isolating sentence‑initial small function words or discourse markers as standalone pieces; separating an initial article/discourse token often yields a following chunk that is more coherent to translate and raises joinable quality.",
+   "evidence": "[\"en_us_1543\",\"en_us_464\",\"en_us_538\",\"en_us_101\",\"en_us_1017\",\"en_us_1319\"]: in these cases the offline target scores improved when an initial small token (e.g. 'The', 'Unfortunately,', 'If') was isolated and the remainder was left as a cohesive clause (list length = 6).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Allow and prefer a cut that isolates an initial discourse marker or determiner when the remainder forms a cohesive clause by itself (isolating short function words can improve joinable translation)."
+   }
+  },
+  {
+   "diagnosis": "The prompt does not sufficiently penalize cuts inside coordinate lists or enumerations; splitting mid‑enumeration often severs the list's internal cohesion and causes mistranslation when pieces are joined.",
+   "evidence": "[\"en_us_790\",\"en_us_626\",\"en_us_783\",\"en_us_680\"]: targets improve H_set by keeping enumerated items or coordination together (merging list spans) rather than cutting between list members or splitting coordinated noun groups (list length = 4).",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: Mancunian, <SEG:?> Bostonian, <SEG:?> Jamaican and Sydneysider <SEG:?>\nOutput: Mancunian, Bostonian, Jamaican and Sydneysider <SEG:100>"
+   }
+  }
+ ]
+}

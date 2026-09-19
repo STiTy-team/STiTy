@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00279,
+  "lo": -0.01401,
+  "hi": 0.00866,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0023,
+  "≤5": -0.0096,
+  "≤7": -0.0005,
+  "≤10": 0.0051,
+  "≤99": 0.0088
+ },
+ "n_worse": 732,
+ "n_better": 774,
+ "worst": [
+  {
+   "id": "en_us_776",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6611,
+   "before": "Although in theory they can take place annually (so long as they are in different countries), ‖ in ‖ practice ‖ they are not.",
+   "after": "Although in theory they can take place annually (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.6534,
+   "before": "Like some ‖ other ‖ experts, ‖ he ‖ is ‖ skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings have no relevance to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he is skeptical about whether diabetes can be cured, ‖ noting that these ‖ findings ‖ have ‖ no relevance ‖ to people ‖ who already have Type 1 diabetes."
+  },
+  {
+   "id": "en_us_1514",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6291,
+   "before": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in the yard ‖ and refused ‖ to return ‖ to their cells.",
+   "after": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 ‖ of the other remaining inmates ‖ stayed in the ‖ yard ‖ and refused to return to their ‖ cells."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.6289,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, ‖ fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 5,
+   "bin": "≤3",
+   "delta": -0.5874,
+   "before": "Eventually, ‖ wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, ‖ wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.807,
+   "before": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7364,
+   "before": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1322",
+   "k": 11,
+   "bin": "≤3",
+   "delta": 0.6864,
+   "before": "Danius ‖ said, ‖ \"Right now we ‖ are doing ‖ nothing. ‖ I have called ‖ and sent ‖ emails ‖ to his closest collaborator ‖ and received ‖ very friendly replies. ‖ For now, that is certainly enough.\"",
+   "after": "Danius ‖ said, ‖ \"Right now ‖ we are doing nothing. ‖ I have called ‖ and sent ‖ emails ‖ to his closest collaborator ‖ and received very friendly replies. ‖ For now, ‖ that is ‖ certainly enough.\""
+  },
+  {
+   "id": "en_us_1596",
+   "k": 4,
+   "bin": "≤3",
+   "delta": 0.6815,
+   "before": "Naturalists and philosophers focused on classical ‖ texts ‖ and, in particular, on the Bible ‖ in ‖ Latin.",
+   "after": "Naturalists ‖ and philosophers ‖ focused on classical texts ‖ and, in particular, on the Bible ‖ in Latin."
+  }
+ ],
+ "why": "The new surface rule forbidding cuts immediately after main verbs made the model avoid splitting verb+complement sequences, which improved cohesion for longer/complex spans (bins >7) but displaced cuts into adjacent very short pieces and enumerations, worsening many ≤5-token cases; net effect is near-zero but slightly negative. ",
+ "lesson": "A verb–complement prohibition helps longer/more complex pieces but harms very short pieces (≤5 tokens); a later revision should avoid applying it indiscriminately across small latency bins.",
+ "blamed": [
+  "insert_after C2 (verb–complement prohibition)"
+ ]
+}

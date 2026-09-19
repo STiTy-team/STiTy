@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that separate a predicate (main verb) from its essential complements/arguments, so it allows splits that leave an earlier stretch whose truth or reference depends on a following object, clausal complement, or prepositional complement.",
+    "evidence": "['en_us_1116','en_us_936','en_us_113','en_us_292','en_us_1615','en_us_164','en_us_1000','en_us_411']: these cases share policy cuts that detach verbs/predicates from core complements (direct objects, 'that' clauses, PP complements or result clauses), producing high contradiction or loss of cohesion.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a predicate (main verb) and its essential complements or arguments (direct objects, clausal complements introduced by that/if/wh- words, and PP complements that complete the predicate)."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to recognise post‑nominal modifiers and complements (relative clauses, 'from/in which' PPs, appositives, titles) as part of the noun they complete, permitting cuts before them that break noun identity or scope.",
+    "evidence": "['en_us_105','en_us_1294','en_us_140','en_us_292','en_us_1617']: these cases share policy cuts that separate head nouns or names from post‑nominal modifiers or complements (e.g. 'from which', 'in the language of...', full office/name phrases), causing large cohesion or contra penalties.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting so as to separate a head noun or name from its post‑nominal modifiers or complements (relative clauses, 'from/in which' PPs, appositives, measure/unit phrases) that determine the referent or truth conditions."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that separate a predicate (main verb) from its essential complements/arguments, so it allows splits that leave an earlier stretch whose truth or reference depends on a following object, clausal complement, or prepositional complement.",
+   "evidence": "['en_us_1116','en_us_936','en_us_113','en_us_292','en_us_1615','en_us_164','en_us_1000','en_us_411']: these cases share policy cuts that detach verbs/predicates from core complements (direct objects, 'that' clauses, PP complements or result clauses), producing high contradiction or loss of cohesion.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a predicate (main verb) and its essential complements or arguments (direct objects, clausal complements introduced by that/if/wh- words, and PP complements that complete the predicate)."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to recognise post‑nominal modifiers and complements (relative clauses, 'from/in which' PPs, appositives, titles) as part of the noun they complete, permitting cuts before them that break noun identity or scope.",
+   "evidence": "['en_us_105','en_us_1294','en_us_140','en_us_292','en_us_1617']: these cases share policy cuts that separate head nouns or names from post‑nominal modifiers or complements (e.g. 'from which', 'in the language of...', full office/name phrases), causing large cohesion or contra penalties.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting so as to separate a head noun or name from its post‑nominal modifiers or complements (relative clauses, 'from/in which' PPs, appositives, measure/unit phrases) that determine the referent or truth conditions."
+   }
+  }
+ ]
+}

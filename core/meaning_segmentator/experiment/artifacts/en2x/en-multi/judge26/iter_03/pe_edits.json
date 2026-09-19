@@ -1,0 +1,194 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when comparing two candidate cuts on the source surface, if one cut falls immediately after a determiner, pronoun, auxiliary or preposition and the next token is the syntactic head or a required complement of the ensuing noun/verb phrase, prefer the other cut (i.e. prefer keeping that function word with its following head/complement)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 358
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7072,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when comparing two candidate cuts on the source surface, prefer a cut that falls outside a multi-word proper name or title or a short comma-separated list over a cut that lies between the words of that name/list; if a cut must be placed near such a name/list, prefer the cut immediately after the full name/list rather than inside it."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 356
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7070,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a function word (determiner, pronoun, auxiliary or preposition) together with the immediately following content word when that word is the head or required complement completing the noun or verb phrase."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 210
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6924,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep contiguous runs of two or more capitalized content words (multiword names/titles) together; for short comma-separated lists of such names (≤3 items), prefer a cut after the entire list rather than between items."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 219
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6933,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when comparing two candidate cuts on the source surface, prefer the cut that keeps a short function word (determiner/pronoun/auxiliary/preposition) adjacent to the immediately following head or required complement (noun, verb, numeral, or multiword name)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 277
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6991,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when comparing two candidate cuts where one produces a one-token segment that is a function word (determiner, pronoun, auxiliary, or preposition) immediately before a content head or required complement, prefer the cut that keeps that function word adjacent to the following head/complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 313
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7027,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C7",
+    "_was": "- Is the cut inside noun-internal material (possessives, appositives, dense nominal modifiers) that would detach modifiers or heads and thereby change who or what is being described?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C7",
+    "kind": "delete",
+    "chars_change": -183
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6531,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 7,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ }
+]

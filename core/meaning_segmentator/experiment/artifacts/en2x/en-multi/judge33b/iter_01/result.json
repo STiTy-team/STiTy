@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00116,
+  "lo": -0.00467,
+  "hi": 0.00679,
+  "n": 4524,
+  "n_clusters": 498
+ },
+ "gain": {
+  "mean": 0.00116,
+  "lo": -0.00467,
+  "hi": 0.00679,
+  "n": 4524,
+  "n_clusters": 498
+ },
+ "changelog": [
+  "Insert a short Core Principle that flags markers immediately after finite auxiliaries/copulas so the bander will treat them as likely harmful cuts (addresses the primary finding about splitting finite auxiliary/copula from its predicate)."
+ ],
+ "findings": [
+  "When multiple candidate cuts fall inside the same noun phrase, the prompt prefers earlier internal splits instead of the later cut that preserves the whole NP, hurting cohesion.",
+  "The prompt allows cuts that split a finite auxiliary/copula from its predicate, which frequently produces contradiction or loses essential predicate material."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C6",
+   "kind": "change",
+   "was": "- Does the marker split a predicate cluster (auxiliaries/tense, negation, main v",
+   "now": "Do not cut immediately after a finite auxiliary or copula (e.g. when the marker "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0025,
+   "≤5": 0.0006,
+   "≤7": -0.0009,
+   "≤10": 0.0006,
+   "≤99": -0.0005
+  },
+  "n_worse": 2126,
+  "n_better": 2126,
+  "why": "Inserting the core principle to avoid cuts immediately after finite auxiliaries/coproducts caused the bander to re-rank many early cut positions: it suppressed some late/secondary cuts but also shifted several top-ranked cuts earlier (splitting subjects vs auxiliaries and fragmenting enumerations). That produced balanced numbers of better/worse pairs and a small net mean change, while degrading rank coincidence at depths 1–4 (so long-latency behaviour worsened even as a few short-bin scores improved).",
+  "lesson": "A revision that penalizes cuts after auxiliaries/copoläs must not change the top-1..4 ranked choices or induce earlier subject/auxiliary or enumeration splits — constrain the change so shallow (long-latency) ranks remain stable and check per-bin effects before adopting.",
+  "blamed": [
+   "C6 «- Does the marker split a predicate cluster (auxiliaries/ten»"
+  ]
+ }
+}

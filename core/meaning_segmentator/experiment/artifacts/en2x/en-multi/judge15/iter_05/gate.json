@@ -1,0 +1,63 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_105",
+  "en_us_588",
+  "en_us_655",
+  "en_us_292",
+  "en_us_888",
+  "en_us_860",
+  "en_us_1615",
+  "en_us_1494",
+  "en_us_468",
+  "en_us_167",
+  "en_us_1555",
+  "en_us_427",
+  "en_us_651",
+  "en_us_1352",
+  "en_us_1428"
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1809,
+   "pairs": 15,
+   "chars": 7844,
+   "changelog": [
+    "Replace C1 to keep the contradiction check but forbid fixing it by promoting an adjacent cut that yields a head-fragment; prefer cuts that preserve a minimal meaningful phrase — addresses the primary finding that demoting contradicting remainders caused harmful one-word/head-fragment pieces.",
+    "Insert a new principle after C1 allowing isolation of an initial function word or discourse marker when the remainder is a cohesive, self-contained clause — responds to the critique that early opener cuts can be safe and helpful in very-short latency bins."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.1823,
+   "pairs": 15,
+   "chars": 7376,
+   "changelog": [
+    "Replace C5 to allow isolating sentence-initial function words or discourse markers when the following piece is cohesive and non-contradictory — addresses the primary finding that early opener cuts can be safe and useful in very-short latency bins."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.1295,
+   "pairs": 15,
+   "chars": 7436,
+   "changelog": [
+    "Replace E1 with labeled example en_us_845 to expose a measured case where demoting contradicting remainders produced harmful head-fragment cuts in short latency bins.",
+    "Replace E2 with labeled example en_us_738 to teach the scorer about subject–auxiliary and tiny-remainder harms evidenced in ≤3 bin failures.",
+    "Replace E3 with labeled example en_us_936 to show a case where isolating/opening function words was beneficial and to contrast safe opener cuts with harmful head-fragments.",
+    "Replace E4 with labeled example en_us_113 to illustrate contradictions-from-short-remainders that the policy should avoid promoting into one-word/head-fragment pieces."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.1287,
+   "pairs": 15,
+   "chars": 7425,
+   "changelog": [
+    "Replace C8 to keep the clause-closure/cohesion check but explicitly allow isolating sentence-initial function words or discourse markers when the remainder is a cohesive, self-contained clause and the isolated opener does not itself assert a contradicting proposition — addresses the primary finding about safe opener cuts in very-short latency bins."
+   ]
+  }
+ ]
+}

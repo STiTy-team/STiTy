@@ -1,0 +1,345 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Prefer cuts that deliver a semantically complete predicate: keep the main verb together with its essential complements/arguments (direct objects, clausal complements introduced by that/if/wh- words, and PP complements that complete the predicate). Only mark a cut after the verb when the remaining material is an optional adjunct, parenthetical, or otherwise cannot change the truth conditions of the delivered proposition."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Treat post‑nominal material as part of the noun when it determines identity or truth: avoid cutting before relative clauses, 'from/in which' prepositional complements, appositives, measure/unit phrases, titles, or other postnominal modifiers that complete a head noun or name."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Predict translation consequences: if a split forces guessing antecedents, attaching modifiers arbitrarily, or inventing scope, lower cohesion; prefer cuts that avoid forcing such guesses."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 232
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 66
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -45
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7306,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- If a cut forces translators to guess antecedents, attach modifiers arbitrarily, or invent scope, lower cohesion and avoid that split."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut so that a head noun or proper name is left without its post‑nominal modifiers or complements (relative clauses, 'from/in which' PPs, appositives, titles, measure/unit phrases). When that material determines the referent or truth conditions, keep it with the noun."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -99
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 277
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7231,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Do not cut immediately after a main verb when the next token begins its essential complement: 'that'/'if' or a wh‑word (clausal), a determiner/pronoun/noun (direct object), or a preposition completing the verb (e.g. to, for, with, in, on, at). Keep that token with the verb."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 277
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7330,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut when a head noun or proper name is immediately followed in the source by surface-marked post‑nominal material that completes or identifies it: relative clauses, post‑nominal prepositional complements, appositives or parenthetical titles, or a numeral-plus-unit that quantifies the noun."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 300
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7353,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_936",
+    "text": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> working <SEG:?> overseas <SEG:?> generally <SEG:?> means <SEG:?> that <SEG:?> you <SEG:?> will <SEG:?> have <SEG:?> to <SEG:?> file <SEG:?> income <SEG:?> tax <SEG:?> in <SEG:?> the <SEG:?> country <SEG:?> you <SEG:?> are <SEG:?> based <SEG:?> in.\nOutput: Unless <SEG:86> you <SEG:77> are <SEG:59> a <SEG:23> diplomat, <SEG:100> working <SEG:55> overseas <SEG:91> generally <SEG:68> means <SEG:5> that <SEG:14> you <SEG:18> will <SEG:32> have <SEG:41> to <SEG:45> file <SEG:73> income <SEG:82> tax <SEG:95> in <SEG:0> the <SEG:9> country <SEG:50> you <SEG:36> are <SEG:27> based <SEG:64> in."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_113",
+    "text": "Input: Mr. <SEG:?> Rudd's <SEG:?> decision <SEG:?> to <SEG:?> sign <SEG:?> the <SEG:?> Kyoto <SEG:?> climate <SEG:?> accord <SEG:?> isolates <SEG:?> the <SEG:?> United <SEG:?> States, <SEG:?> which <SEG:?> will <SEG:?> now <SEG:?> be <SEG:?> the <SEG:?> only <SEG:?> developed <SEG:?> nation <SEG:?> not <SEG:?> to <SEG:?> ratify <SEG:?> the <SEG:?> agreement.\nOutput: Mr. <SEG:88> Rudd's <SEG:54> decision <SEG:67> to <SEG:25> sign <SEG:83> the <SEG:46> Kyoto <SEG:62> climate <SEG:42> accord <SEG:50> isolates <SEG:79> the <SEG:58> United <SEG:96> States, <SEG:100> which <SEG:92> will <SEG:71> now <SEG:75> be <SEG:29> the <SEG:4> only <SEG:33> developed <SEG:12> nation <SEG:0> not <SEG:17> to <SEG:8> ratify <SEG:21> the <SEG:38> agreement."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_164",
+    "text": "Input: An <SEG:?> Avenger <SEG:?> class <SEG:?> mine <SEG:?> countermeasures <SEG:?> ship, <SEG:?> the <SEG:?> ship <SEG:?> was <SEG:?> on <SEG:?> its <SEG:?> way <SEG:?> to <SEG:?> Puerto <SEG:?> Princesa <SEG:?> in <SEG:?> Palawan.\nOutput: An <SEG:20> Avenger <SEG:13> class <SEG:80> mine <SEG:53> countermeasures <SEG:67> ship, <SEG:100> the <SEG:93> ship <SEG:87> was <SEG:27> on <SEG:33> its <SEG:60> way <SEG:73> to <SEG:47> Puerto <SEG:7> Princesa <SEG:40> in <SEG:0> Palawan."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 105
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 75
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -384
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6978,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_105",
+    "text": "Input: They <SEG:?> include <SEG:?> financial <SEG:?> restrictions <SEG:?> and <SEG:?> a <SEG:?> ban <SEG:?> by <SEG:?> the <SEG:?> European <SEG:?> Union <SEG:?> on <SEG:?> the <SEG:?> export <SEG:?> of <SEG:?> crude <SEG:?> oil, <SEG:?> from <SEG:?> which <SEG:?> the <SEG:?> Iranian <SEG:?> economy <SEG:?> receives <SEG:?> 80% <SEG:?> of <SEG:?> its <SEG:?> foreign <SEG:?> income.\nOutput: They <SEG:81> include <SEG:100> financial <SEG:73> restrictions <SEG:96> and <SEG:85> a <SEG:35> ban <SEG:19> by <SEG:8> the <SEG:0> European <SEG:46> Union <SEG:92> on <SEG:27> the <SEG:4> export <SEG:62> of <SEG:58> crude <SEG:77> oil, <SEG:88> from <SEG:54> which <SEG:42> the <SEG:69> Iranian <SEG:50> economy <SEG:65> receives <SEG:38> 80% <SEG:12> of <SEG:15> its <SEG:23> foreign <SEG:31> income."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_140",
+    "text": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .\nOutput: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> ."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1617",
+    "text": "Input: The <SEG:?> Kruger <SEG:?> National <SEG:?> Park <SEG:?> (KNP) <SEG:?> lies <SEG:?> in <SEG:?> the <SEG:?> north-east <SEG:?> of <SEG:?> South <SEG:?> Africa <SEG:?> and <SEG:?> runs <SEG:?> along <SEG:?> the <SEG:?> border <SEG:?> of <SEG:?> Mozambique <SEG:?> in <SEG:?> the <SEG:?> east, <SEG:?> Zimbabwe <SEG:?> in <SEG:?> the <SEG:?> north, <SEG:?> and <SEG:?> the <SEG:?> southern <SEG:?> border <SEG:?> is <SEG:?> the <SEG:?> Crocodile <SEG:?> River.\nOutput: The <SEG:62> Kruger <SEG:88> National <SEG:97> Park <SEG:100> (KNP) <SEG:81> lies <SEG:59> in <SEG:53> the <SEG:34> north-east <SEG:44> of <SEG:47> South <SEG:3> Africa <SEG:69> and <SEG:56> runs <SEG:50> along <SEG:78> the <SEG:16> border <SEG:66> of <SEG:91> Mozambique <SEG:75> in <SEG:25> the <SEG:12> east, <SEG:84> Zimbabwe <SEG:38> in <SEG:31> the <SEG:6> north, <SEG:72> and <SEG:94> the <SEG:41> southern <SEG:22> border <SEG:9> is <SEG:19> the <SEG:0> Crocodile <SEG:28> River."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_292",
+    "text": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resulting <SEG:?> in <SEG:?> the <SEG:?> phase <SEG:?> change <SEG:?> had <SEG:?> took <SEG:?> place <SEG:?> on <SEG:?> March <SEG:?> 10 <SEG:?> on <SEG:?> the <SEG:?> northeast <SEG:?> side <SEG:?> of <SEG:?> the <SEG:?> volcano's <SEG:?> summit <SEG:?> caldera.\nOutput: The <SEG:100> significant <SEG:73> earthquake <SEG:95> activity <SEG:68> resulting <SEG:64> in <SEG:50> the <SEG:14> phase <SEG:23> change <SEG:41> had <SEG:59> took <SEG:27> place <SEG:32> on <SEG:36> March <SEG:82> 10 <SEG:91> on <SEG:18> the <SEG:5> northeast <SEG:86> side <SEG:77> of <SEG:55> the <SEG:0> volcano's <SEG:9> summit <SEG:45> caldera."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 414
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 325
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 290
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -168
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7914,
+  "errors": [
+   "길이 초과: 7914 > 7758"
+  ]
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   }
+  ],
+  "skipped": [],
+  "result_chars": 5512,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "text": "Prefer cuts that yield a semantically complete predicate: keep the main verb together with its essential complements (direct objects, core clausal complements introduced by that/if/wh- words, and required PPs). Allow a cut only when the continuation is optional, parenthetical, or merely elaborates."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 300
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7353,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut between a head noun or proper name and immediately following post‑nominal material that begins with a relative pronoun (that/which/who/whom/whose), or with a preposition plus which (e.g. \"from which\", \"in which\"), or an appositive introduced by a comma."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 267
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7320,
+  "errors": null
+ }
+]

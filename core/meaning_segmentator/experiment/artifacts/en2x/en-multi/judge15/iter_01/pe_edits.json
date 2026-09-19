@@ -1,0 +1,136 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Prefer cuts that leave the preceding fragment a self-contained, verifiable proposition. Cutting immediately after a predicate or copula is risky when the remainder can change polarity, scope, or complete the clause; by contrast, a cut after a predicate is acceptable when the following stretch is only optional adjuncts or parenthetical material that cannot invert or complete the claim. When unsure, cut before the predicate so the first piece remains coherent."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Does the cut separate a noun (or its specifier) from a following relative or postnominal complement that completes its reference? Such splits often leave the noun ungrounded or misattached when the pieces are translated separately."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 465
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": 37
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7551,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Avoid cutting between a noun (or its specifier) and a required postnominal modifier or complement (e.g. of‑phrases, prepositional complements, relative clauses, 'from which'). The noun alone often becomes ungrounded, misreferenced, or misattached when translated separately."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 80
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7129,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_103",
+    "kind": "example",
+    "text": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below <SEG:?> the <SEG:?> tanks <SEG:?> capable <SEG:?> of <SEG:?> holding <SEG:?> 104,500 <SEG:?> barrels <SEG:?> was <SEG:?> not <SEG:?> yet <SEG:?> filled <SEG:?> to <SEG:?> capacity.\nOutput: Another <SEG:94> secondary <SEG:75> containment <SEG:62> area <SEG:69> below <SEG:88> the <SEG:6> tanks <SEG:100> capable <SEG:56> of <SEG:38> holding <SEG:81> 104,500 <SEG:19> barrels <SEG:44> was <SEG:0> not <SEG:12> yet <SEG:25> filled <SEG:50> to <SEG:31> capacity."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "en_us_360",
+    "kind": "example",
+    "text": "Input: Scientists <SEG:?> call <SEG:?> this <SEG:?> process <SEG:?> \"stimulated <SEG:?> emission <SEG:?> of <SEG:?> radiation\" <SEG:?> because <SEG:?> the <SEG:?> atoms <SEG:?> are <SEG:?> stimulated <SEG:?> by <SEG:?> the <SEG:?> bright <SEG:?> light, <SEG:?> causing <SEG:?> the <SEG:?> emission <SEG:?> of <SEG:?> a <SEG:?> photon <SEG:?> of <SEG:?> light, <SEG:?> and <SEG:?> light <SEG:?> is <SEG:?> a <SEG:?> type <SEG:?> of <SEG:?> radiation.\nOutput: Scientists <SEG:97> call <SEG:80> this <SEG:87> process <SEG:77> \"stimulated <SEG:30> emission <SEG:70> of <SEG:67> radiation\" <SEG:100> because <SEG:27> the <SEG:10> atoms <SEG:23> are <SEG:13> stimulated <SEG:40> by <SEG:7> the <SEG:0> bright <SEG:3> light, <SEG:57> causing <SEG:20> the <SEG:37> emission <SEG:33> of <SEG:43> a <SEG:17> photon <SEG:73> of <SEG:53> light, <SEG:90> and <SEG:93> light <SEG:60> is <SEG:63> a <SEG:47> type <SEG:50> of <SEG:83> radiation."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "labeled_example": "en_us_1570",
+    "kind": "example",
+    "text": "Input: It <SEG:?> also <SEG:?> had <SEG:?> no <SEG:?> authority <SEG:?> to <SEG:?> override <SEG:?> tax <SEG:?> laws <SEG:?> and <SEG:?> tariffs <SEG:?> between <SEG:?> states.\nOutput: It <SEG:73> also <SEG:27> had <SEG:0> no <SEG:9> authority <SEG:100> to <SEG:64> override <SEG:55> tax <SEG:45> laws <SEG:91> and <SEG:36> tariffs <SEG:82> between <SEG:18> states."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 155
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 369
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -305
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7268,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Avoid cutting between a noun (or its specifier) and any required postnominal modifier or complement (prepositional \"of\" phrases, relative clauses, \"from which\", etc.); the noun alone will often be ungrounded or misattached when translated separately."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 56
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7105,
+  "errors": null
+ }
+]

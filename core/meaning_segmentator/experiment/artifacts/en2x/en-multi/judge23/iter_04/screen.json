@@ -1,0 +1,128 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  14,
+  19,
+  25,
+  26,
+  27,
+  35,
+  36,
+  43,
+  48,
+  53,
+  59,
+  63,
+  69,
+  70,
+  72,
+  101,
+  107,
+  109,
+  115,
+  125,
+  129,
+  134,
+  144,
+  149,
+  150,
+  151,
+  161,
+  163,
+  178,
+  180,
+  182,
+  200,
+  211,
+  224,
+  226,
+  230,
+  231,
+  234,
+  235,
+  237,
+  239,
+  242,
+  260,
+  262,
+  269,
+  274,
+  279,
+  282,
+  291
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01469,
+    "lo": -0.04337,
+    "hi": 0.01473,
+    "n": 493,
+    "n_clusters": 50
+   },
+   "chars": 7334,
+   "changelog": [
+    "Insert a short binding rule that keeps a finite copula or main verb with its immediately following obligatory complement to prevent isolated verbs/auxiliaries producing high-contradiction short fragments (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02052,
+    "lo": -0.04687,
+    "hi": 0.00463,
+    "n": 493,
+    "n_clusters": 50
+   },
+   "chars": 7200,
+   "changelog": [
+    "Insert a short binding rule keeping a numeral/quantity with its immediately following unit or quantified noun to prevent detached numeric fragments (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00486,
+    "lo": -0.03087,
+    "hi": 0.02172,
+    "n": 493,
+    "n_clusters": 50
+   },
+   "chars": 7448,
+   "changelog": [
+    "Insert a single fallback ordering that prefers keeping a finite verb/auxiliary with its immediately following obligatory complement over taking a cut after punctuation or a clause boundary; second-tier tie-breaker prefers keeping a numeral with its unit. This addresses the primary finding by ordering which pushed-down positions to take."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.01089,
+    "lo": -0.04028,
+    "hi": 0.01989,
+    "n": 493,
+    "n_clusters": 50
+   },
+   "chars": 7295,
+   "changelog": [
+    "Insert a single fallback ordering that prefers keeping a numeral/quantity with its immediately following unit/noun over taking a cut between them, to address the primary finding about detached numeric fragments."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": -0.01289,
+    "lo": -0.04089,
+    "hi": 0.01592,
+    "n": 493,
+    "n_clusters": 50
+   },
+   "chars": 6855,
+   "changelog": [
+    "Delete C1: remove a v0 principle that largely restates the entailment/contra scoring already defined in [Scoring Rules], and thus earns its place least; this prunes redundancy so the judge focuses on the more specific, actionable binding rules the critique recommends."
+   ]
+  }
+ ]
+}

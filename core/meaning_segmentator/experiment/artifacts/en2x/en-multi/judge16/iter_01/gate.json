@@ -1,0 +1,137 @@
+{
+ "n_sentences": 50,
+ "ids": [
+  "en_us_850",
+  "en_us_588",
+  "en_us_990",
+  "en_us_276",
+  "en_us_1612",
+  "en_us_1567",
+  "en_us_390",
+  "en_us_1179",
+  "en_us_44",
+  "en_us_655",
+  "en_us_1036",
+  "en_us_738",
+  "en_us_399",
+  "en_us_1087",
+  "en_us_464",
+  "en_us_1566",
+  "en_us_956",
+  "en_us_1384",
+  "en_us_767",
+  "en_us_1106",
+  "en_us_1319",
+  "en_us_1253",
+  "en_us_1527",
+  "en_us_1050",
+  "en_us_687",
+  "en_us_1570",
+  "en_us_1497",
+  "en_us_1112",
+  "en_us_1157",
+  "en_us_538",
+  "en_us_396",
+  "en_us_26",
+  "en_us_1137",
+  "en_us_167",
+  "en_us_1233",
+  "en_us_784",
+  "en_us_87",
+  "en_us_1113",
+  "en_us_262",
+  "en_us_1271",
+  "en_us_32",
+  "en_us_1132",
+  "en_us_455",
+  "en_us_30",
+  "en_us_1081",
+  "en_us_935",
+  "en_us_70",
+  "en_us_1024",
+  "en_us_337",
+  "en_us_101"
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.2032,
+   "pairs": 49,
+   "chars": 7306,
+   "changelog": [
+    "Replace C3 to address the primary finding by describing what a GOOD cut around predicates looks like (include predicate + essential complements; allow cut only when continuation is optional or parenthetical).",
+    "Replace C5 to explicitly treat post‑nominal modifiers and complements as part of the noun when they determine reference, matching the second finding.",
+    "Paraphrase C8 shorter to free space while keeping its guidance about translation guessing and cohesion."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.1636,
+   "pairs": 49,
+   "chars": 7231,
+   "changelog": [
+    "Paraphrased C8 to shorten guidance about translation guessing and cohesion, freeing space for a focused rule.",
+    "Inserted a new Core Principle after C5 that forbids cutting a head noun or name away from post‑nominal modifiers/complements that determine reference or truth conditions (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.1617,
+   "pairs": 49,
+   "chars": 7330,
+   "changelog": [
+    "Insert a narrow, surface-form rule after C2 to forbid cuts that split a main verb from its essential complement (addresses the primary finding about predicate–argument separation)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.1841,
+   "pairs": 49,
+   "chars": 7353,
+   "changelog": [
+    "Insert a narrow surface-form rule after C5 forbidding cuts that separate a head noun or proper name from immediately following post‑nominal material that visibly completes or identifies that noun (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 4,
+   "oracle_dist": 0.2382,
+   "pairs": 49,
+   "chars": 6978,
+   "changelog": [
+    "Replace E1..E4 (handwritten examples) with four measured, labeled examples that illustrate predicate–complement splits and related post‑nominal/complement hazards (addresses the primary finding that the prompt underrates cuts separating verbs from essential complements).",
+    "Selected examples en_us_1116, en_us_936, en_us_113, en_us_164 because each is a measured case where splitting a predicate from its core argument or separating noun from essential post‑nominal material produced large cohesion/contra loss."
+   ]
+  },
+  {
+   "candidate": 5,
+   "oracle_dist": 0.183,
+   "pairs": 49,
+   "chars": 5512,
+   "changelog": [
+    "Replace E1 with measured example en_us_1617: gives a real case with a post‑nominal 'which' clause to teach not cutting before modifiers that determine a noun.",
+    "Replace E2 with measured example en_us_105: gives a real case with a 'from which' PP that completes a noun and so should not be separated by a cut.",
+    "Delete E3 (handwritten example) to free space and reduce prompt length.",
+    "Delete E4 (handwritten example) to free space and reduce prompt length."
+   ]
+  },
+  {
+   "candidate": 6,
+   "oracle_dist": 0.1665,
+   "pairs": 49,
+   "chars": 7353,
+   "changelog": [
+    "Insert after C2 a concise rule describing what a GOOD cut around predicates looks like: keep the main verb with its essential complements and allow cuts only when the continuation is optional or parenthetical — addresses the primary finding without a blanket ban."
+   ]
+  },
+  {
+   "candidate": 7,
+   "oracle_dist": 0.2276,
+   "pairs": 49,
+   "chars": 7320,
+   "changelog": [
+    "Insert a narrow surface-form rule after C5 forbidding cuts that separate a head noun or proper name from immediately following post‑nominal material (relative pronoun, preposition+'which', or appositive comma). This targets the primary finding about post‑nominal modifiers."
+   ]
+  }
+ ]
+}

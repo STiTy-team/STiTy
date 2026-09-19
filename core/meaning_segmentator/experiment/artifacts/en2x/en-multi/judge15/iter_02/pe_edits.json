@@ -1,0 +1,133 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Do not blanket-forbid cuts after a noun or its specifier. Instead ask: would forbidding this noun+modifier cut push cuts into very-short pieces (≈≤3–5 words) that split subject–verb, verb–object, or internal compounds? If so, prefer allowing the noun+modifier cut — provided the detached modifier still yields an interpretable fragment when translated and joined. Otherwise avoid separating a noun from a required postnominal modifier."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Beware cutting after fronted adjuncts (temporal or prepositional); they typically need the following clause for correct scope or attachment."
+   },
+   {
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Treat cuts that leave only postverbal or postnominal adjuncts (prepositional phrases, participial phrases, \"using...\" phrases, \"in advance\", \"and beyond\") as high contradiction risk unless the fragment forms an independent proposition. Prefer keeping such modifiers attached to their head clause or noun."
+   },
+   {
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "example",
+    "text": "Input: The <SEG:?> tiger <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> same <SEG:?> group.\nOutput: The <SEG:30> tiger <SEG:95> is <SEG:45> in <SEG:20> the <SEG:10> same <SEG:5> group."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 241
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -55
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 307
+   },
+   {
+    "edit": 3,
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": 180
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7723,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut if the remainder would be only a postverbal or postnominal adjunct (prepositional, participial, \"using\" phrases, \"in advance\", \"and beyond\"). Such trailing fragments usually cannot stand alone and cause high contradiction; keep modifiers attached unless the fragment is an independent proposition."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 113
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7162,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "example",
+    "text": "Input: The <SEG:?> tiger <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> same <SEG:?> group.\nOutput: The <SEG:30> tiger <SEG:95> is <SEG:45> in <SEG:20> the <SEG:10> same <SEG:5> group."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": 180
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7230,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "text": "Allow a noun+modifier cut when forbidding it would force other cuts into very-short pieces (≈≤3–5 words) that split subject–verb, verb–object, or internal compounds. Prefer preserving subjects and predicates even if a modifier is separated; otherwise avoid the noun+modifier split."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 282
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7331,
+  "errors": null
+ }
+]

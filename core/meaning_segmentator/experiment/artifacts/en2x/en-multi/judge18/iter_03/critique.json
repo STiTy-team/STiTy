@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts immediately after sentence‑initial single‑word grammatical prefaces (discourse markers, determiners, short subordinators/auxiliaries), causing longer initial fragments that harm short‑latency bins.",
+    "evidence": "['en_us_956','en_us_1543','en_us_535','en_us_553','en_us_651','en_us_784','en_us_1615'] — these 7 cases all show the offline target adding an early cut that isolates a one‑word or very short grammatical preface (The / In / If / So / Perhaps / introductory adverbial) from the following resolved NP or clause.",
+    "type_predicate": "Sentence begins with a single short grammatical preface (one word or a 1–2 word discourse/subordinating/auxiliary token) immediately followed by the main noun phrase or clause.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If a sentence starts with a lone short grammatical preface (single determiner, discourse marker, subordinating word or auxiliary), prefer a cut immediately after it so the following piece contains the resolved NP or predicate."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to prefer cuts immediately after closed parentheticals or parenthetical dates/identifiers, leaving the following clause unresolved and reducing cohesion.",
+    "evidence": "['en_us_1179','en_us_685'] — these 2 cases both show the offline target inserting a cut right after a parenthetical (date/identifier) so the next segment begins with the main clause/verb rather than a continuation of the parenthetical.",
+    "type_predicate": "A parenthetical expression (text in parentheses or an immediate parenthetical identifier) ends before a continuing clause or main verb.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Prefer a cut immediately after a closed parenthetical or parenthetical date/identifier so the following segment begins with the main clause or verb."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts immediately after sentence‑initial single‑word grammatical prefaces (discourse markers, determiners, short subordinators/auxiliaries), causing longer initial fragments that harm short‑latency bins.",
+   "evidence": "['en_us_956','en_us_1543','en_us_535','en_us_553','en_us_651','en_us_784','en_us_1615'] — these 7 cases all show the offline target adding an early cut that isolates a one‑word or very short grammatical preface (The / In / If / So / Perhaps / introductory adverbial) from the following resolved NP or clause.",
+   "type_predicate": "Sentence begins with a single short grammatical preface (one word or a 1–2 word discourse/subordinating/auxiliary token) immediately followed by the main noun phrase or clause.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If a sentence starts with a lone short grammatical preface (single determiner, discourse marker, subordinating word or auxiliary), prefer a cut immediately after it so the following piece contains the resolved NP or predicate."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to prefer cuts immediately after closed parentheticals or parenthetical dates/identifiers, leaving the following clause unresolved and reducing cohesion.",
+   "evidence": "['en_us_1179','en_us_685'] — these 2 cases both show the offline target inserting a cut right after a parenthetical (date/identifier) so the next segment begins with the main clause/verb rather than a continuation of the parenthetical.",
+   "type_predicate": "A parenthetical expression (text in parentheses or an immediate parenthetical identifier) ends before a continuing clause or main verb.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Prefer a cut immediately after a closed parenthetical or parenthetical date/identifier so the following segment begins with the main clause or verb."
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt permits cuts that leave a sentence‑initial single-word function fragment (a lone determiner / pronoun / subordinating word / auxiliary) as its own piece; those tiny leading fragments lack a noun or predicate and often become contradicted or uninterpretable when translated separately.",
+    "evidence": "ids: [en_us_1116, en_us_101, en_us_633, en_us_70, en_us_525, en_us_1029, en_us_827, en_us_455] — each policy kept an initial tiny function-word piece (a single determiner/pronoun/subordinator/auxiliary) that the target attaches to the following material.",
+    "type_predicate": "A sentence with a candidate cut that would isolate a single sentence‑initial function word (a one‑word determiner/pronoun/subordinator/auxiliary) as its own piece, with no lexical noun or main verb within that piece.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not place a cut that leaves a single sentence‑initial function word by itself; attach such a function word to the following words so the piece contains a noun or main predicate."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues cohesion between prepositions/particles and their complements and allows cuts that leave a prepositional or particle precursor alone; separating a preposition/particle from its object or clause frequently breaks attachment and yields high contradiction risk.",
+    "evidence": "ids: [en_us_292, en_us_1062, en_us_850, en_us_1052, en_us_1050, en_us_360, en_us_1082] — in each case the policy left a preposition/particle or similar one‑word precursor isolated, while the target keeps it with its complement.",
+    "type_predicate": "A sentence with a candidate cut immediately after a single prepositional/particle precursor such that the preposition/particle would be a standalone piece and its noun phrase or clause complement would start the next piece.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut so that a lone preposition or particle becomes a standalone piece; keep the preposition/particle attached to its object clause or noun phrase."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt permits cuts that leave a sentence‑initial single-word function fragment (a lone determiner / pronoun / subordinating word / auxiliary) as its own piece; those tiny leading fragments lack a noun or predicate and often become contradicted or uninterpretable when translated separately.",
+   "evidence": "ids: [en_us_1116, en_us_101, en_us_633, en_us_70, en_us_525, en_us_1029, en_us_827, en_us_455] — each policy kept an initial tiny function-word piece (a single determiner/pronoun/subordinator/auxiliary) that the target attaches to the following material.",
+   "type_predicate": "A sentence with a candidate cut that would isolate a single sentence‑initial function word (a one‑word determiner/pronoun/subordinator/auxiliary) as its own piece, with no lexical noun or main verb within that piece.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not place a cut that leaves a single sentence‑initial function word by itself; attach such a function word to the following words so the piece contains a noun or main predicate."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues cohesion between prepositions/particles and their complements and allows cuts that leave a prepositional or particle precursor alone; separating a preposition/particle from its object or clause frequently breaks attachment and yields high contradiction risk.",
+   "evidence": "ids: [en_us_292, en_us_1062, en_us_850, en_us_1052, en_us_1050, en_us_360, en_us_1082] — in each case the policy left a preposition/particle or similar one‑word precursor isolated, while the target keeps it with its complement.",
+   "type_predicate": "A sentence with a candidate cut immediately after a single prepositional/particle precursor such that the preposition/particle would be a standalone piece and its noun phrase or clause complement would start the next piece.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut so that a lone preposition or particle becomes a standalone piece; keep the preposition/particle attached to its object clause or noun phrase."
+   }
+  }
+ ]
+}

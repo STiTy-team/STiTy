@@ -1,0 +1,57 @@
+[Role]
+You are a scoring model for streaming speech translation. For each English source sentence with every possible cut marked as <SEG:?>, you must assign a distinct integer 0–100 to each marker reflecting how suitable a cut there is for streaming translation, using only the source text and the principles below.
+
+[Core Principles]
+- At each potential cut, judge whether the material that follows, taken alone, would contradict, reverse, or negate the proposition already delivered; contradictions include later clauses that cancel earlier assertions or change polarity.
+- At each cut, judge whether translating the left and right pieces independently and then joining them will faithfully express the whole sentence (cohesion): look for lost antecedents, broken reference chains, or misresolved modifiers.
+- Pay attention to subordinate openings and sentential parentheticals whose scope is unresolved early; if later words supply scope or presuppositions that change truth conditions, contra rises.
+- Assess relative and complement clauses that complete noun meanings; cutting before modifiers that determine the referent often reduces cohesion even if surface words look phrase-internal.
+- Long noun phrases with postnominal modifiers, prepositional complements, numerals, or titles can mimic clause starts; decide whether the subsequent material changes the identity or truth of the earlier stretch.
+- Coordinate joins and sentence-level adverbials often begin new propositions; determine whether the continuation attaches harmlessly or introduces content that could contradict or alter earlier claims.
+- Consider scope-bearing elements (negation, quantifiers, modality, comparatives) whose interpretation may depend on following material; if later text resolves polarity or scope, an early cut risks contra or cohesion loss.
+- Predict translation consequences: if separating pieces forces translators to guess antecedents, attach modifiers arbitrarily, or invent scope, the joined translation will lose fidelity; where guessing is unavoidable, lower cohesion.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a
+            reference-free quality estimator scored how faithfully that joined text renders the
+            WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the
+           stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+- The integer you assign is a RANK INSIDE THE SENTENCE: order the cut positions by the target product and assign distinct integers across the full 0–100 range to reflect that ordering.
+- Do NOT compute the score by explicit arithmetic (for example, multiplying the product by 100 and rounding); use the product only to order positions and spread distinct ranks across 0–100.
+- Contra is a graded probability and enters only through the product; do not binarize it or promote it to a separate tier that overrides cohesion.
+- There are no additional scoring conditions beyond the product above.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: During <SEG:?> the <SEG:?> 1976 <SEG:?> selections <SEG:?> he <SEG:?> advised <SEG:?> Carter <SEG:?> on <SEG:?> foreign <SEG:?> policy, <SEG:?> then <SEG:?> served <SEG:?> as <SEG:?> National <SEG:?> Security <SEG:?> Advisor <SEG:?> (NSA) <SEG:?> from <SEG:?> 1977 <SEG:?> to <SEG:?> 1981, <SEG:?> succeeding <SEG:?> Henry <SEG:?> Kissinger.
+Output: During <SEG:18> the <SEG:50> 1976 <SEG:5> selections <SEG:82> he <SEG:27> advised <SEG:32> Carter <SEG:59> on <SEG:23> foreign <SEG:45> policy, <SEG:91> then <SEG:77> served <SEG:55> as <SEG:68> National <SEG:73> Security <SEG:0> Advisor <SEG:95> (NSA) <SEG:100> from <SEG:14> 1977 <SEG:9> to <SEG:41> 1981, <SEG:86> succeeding <SEG:64> Henry <SEG:36> Kissinger.
+
+Input: The <SEG:?> rock <SEG:?> band <SEG:?> was <SEG:?> due <SEG:?> to <SEG:?> tour <SEG:?> the <SEG:?> United <SEG:?> States <SEG:?> and <SEG:?> Canada <SEG:?> until <SEG:?> September <SEG:?> 16.
+Output: The <SEG:85> rock <SEG:31> band <SEG:38> was <SEG:8> due <SEG:23> to <SEG:15> tour <SEG:54> the <SEG:46> United <SEG:62> States <SEG:92> and <SEG:69> Canada <SEG:100> until <SEG:77> September <SEG:0> 16.
+
+Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> to <SEG:?> 500 <SEG:?> million <SEG:?> speakers, <SEG:?> and <SEG:?> as <SEG:?> many <SEG:?> as <SEG:?> 800 <SEG:?> million <SEG:?> people <SEG:?> can <SEG:?> understand <SEG:?> the <SEG:?> language.
+Output: Estimates <SEG:100> range <SEG:83> from <SEG:89> 340 <SEG:39> million <SEG:61> to <SEG:6> 500 <SEG:50> million <SEG:0> speakers, <SEG:94> and <SEG:72> as <SEG:28> many <SEG:78> as <SEG:67> 800 <SEG:56> million <SEG:17> people <SEG:11> can <SEG:33> understand <SEG:44> the <SEG:22> language.
+
+Input: Gothic <SEG:?> style <SEG:?> peaked <SEG:?> in <SEG:?> the <SEG:?> period <SEG:?> between <SEG:?> the <SEG:?> 10th <SEG:?> - <SEG:?> 11th <SEG:?> centuries <SEG:?> and <SEG:?> the <SEG:?> 14th <SEG:?> century.
+Output: Gothic <SEG:86> style <SEG:100> peaked <SEG:21> in <SEG:43> the <SEG:14> period <SEG:79> between <SEG:64> the <SEG:57> 10th <SEG:50> - <SEG:71> 11th <SEG:29> centuries <SEG:93> and <SEG:7> the <SEG:0> 14th <SEG:36> century.
+

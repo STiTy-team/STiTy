@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates the risk of cutting immediately after a negation or polarity/quantifier token when the continuation supplies its scope, so it keeps cuts that make the prefix assert (or contradict) the wrong proposition on its own.",
+    "evidence": "['en_us_738','en_us_648','en_us_1253','en_us_105','en_us_1116','en_us_419']: each sentence places a negation/polarity or comparative/quantifier token (e.g. \"does not\", \"will never\", \"either ... or\", \"ban ... from which\", \"except for\", \"from ... to ...\") directly before a following phrase (measure, time, unit, percentage, or range) that determines the claim's scope; the policy kept the cut after the polarity/quantifier and those positions carried high contradiction and were dropped offline.",
+    "type_predicate": "A negation or polarity word (not, no, never, except) or a comparative/quantifier phrase (more than, as many as, either/or, from X to Y, except for) is immediately followed by a numeral, a measurement/unit, a time expression, or a prepositional phrase that supplies the scope or limit of that polarity/quantifier.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after negation or polarity/quantifier words (not, no, never, except, either/or, more than, as many as, from X to Y) when the next phrase supplies scope (numeral, measurement/unit, time phrase, 'in advance', 'from which')."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates the risk of cutting immediately after a negation or polarity/quantifier token when the continuation supplies its scope, so it keeps cuts that make the prefix assert (or contradict) the wrong proposition on its own.",
+   "evidence": "['en_us_738','en_us_648','en_us_1253','en_us_105','en_us_1116','en_us_419']: each sentence places a negation/polarity or comparative/quantifier token (e.g. \"does not\", \"will never\", \"either ... or\", \"ban ... from which\", \"except for\", \"from ... to ...\") directly before a following phrase (measure, time, unit, percentage, or range) that determines the claim's scope; the policy kept the cut after the polarity/quantifier and those positions carried high contradiction and were dropped offline.",
+   "type_predicate": "A negation or polarity word (not, no, never, except) or a comparative/quantifier phrase (more than, as many as, either/or, from X to Y, except for) is immediately followed by a numeral, a measurement/unit, a time expression, or a prepositional phrase that supplies the scope or limit of that polarity/quantifier.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after negation or polarity/quantifier words (not, no, never, except, either/or, more than, as many as, from X to Y) when the next phrase supplies scope (numeral, measurement/unit, time phrase, 'in advance', 'from which')."
+   }
+  }
+ ]
+}

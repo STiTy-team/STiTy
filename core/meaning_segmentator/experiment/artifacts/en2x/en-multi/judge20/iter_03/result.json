@@ -1,0 +1,68 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 0.0047,
+  "lo": -0.00418,
+  "hi": 0.01399,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.0047,
+  "lo": -0.00418,
+  "hi": 0.01399,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "delete C3 — Remove the short-complement binding that pushed cuts after subjects and away from verbs. History blamed C3 for harming very-short latency bins and producing subject–verb splits; deleting it reduces that harmful bias and avoids restating what C2/C6 already cover."
+ ],
+ "findings": [
+  "The prompt undervalues keeping a short subject attached to its verb: it lets cuts isolate the verb (or verb phrase) from a immediately preceding short subject, producing orphaned predicates or apparent contradictions."
+ ],
+ "edits": [
+  {
+   "op": "delete",
+   "id": "C3",
+   "kind": "delete",
+   "was": "- Do the next one to four words form a short complement that completes the immed",
+   "now": ""
+  }
+ ],
+ "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])",
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0011,
+   "≤5": 0.0054,
+   "≤7": 0.0095,
+   "≤10": 0.0066,
+   "≤99": 0.0136
+  },
+  "n_worse": 2215,
+  "n_better": 2333,
+  "why": "Removing C3 eliminated the short-complement binding that had discouraged cuts near verbs, so the model began placing more cuts earlier/around predicates; that produced modest gains for longer-latency pieces (by_bin shows the biggest positive change in the ≤99 and mid-length bins) but also increased harmful subject–verb splits and fragmented enumerations in short/medium bins, leaving the overall H_set change near zero.",
+  "lesson": "If you remove the short-complement binding, you must preserve a constraint that prevents cutting immediately between subjects and their verbs and that avoids splitting list items, because deletion alone trades away those short-bin harms for only modest long-bin gains.",
+  "blamed": [
+   "C3 «- Does the continuation decide how a clause-initial temporal»"
+  ],
+  "vs_base": {
+   "delta": {
+    "mean": -0.00064,
+    "lo": -0.00922,
+    "hi": 0.00795,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "by_bin": {
+    "≤3": -0.0036,
+    "≤5": 0.0052,
+    "≤7": -0.0007,
+    "≤10": -0.0039,
+    "≤99": -0.0029
+   },
+   "n_worse": 2209,
+   "n_better": 2178
+  }
+ }
+}

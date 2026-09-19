@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats as safe cuts that split a copula/auxiliary (possibly negated) from the short complement that completes its predicate, so the prefix translates as a standalone claim that the continuation then contradicts.",
+    "evidence": "['en_us_44','en_us_655','en_us_1081','en_us_733','en_us_738','en_us_1116'] — these cases all show a cut placed between a copula/auxiliary (is/was/will/does/had) and a short PP/locative/temporal/measurement or complement that completes the predicate.",
+    "type_predicate": "Sentences where a copula or auxiliary verb (is/are/was/were/has/have/will/does/etc.), possibly with a negator, is immediately (within about four tokens) followed by a short prepositional, locative, temporal, measurement, or complement phrase that completes the predicate.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a copula/auxiliary (with optional negation) and its immediately following complement — a short PP/locative/temporal/measurement phrase or clause that completes the predicate."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that separate numerals from their units or measurement phrases, producing fragments that cannot be reliably translated or that invert meaning when rejoined.",
+    "evidence": "['en_us_44','en_us_101','en_us_140'] — each shows a numeral (e.g. 105, 55,000, 240) separated from its unit/measurement phrase or parenthetical conversion.",
+    "type_predicate": "Sentences containing a numeral (digit or spelled-out) immediately followed by its unit or measurement phrase (including parenthetical unit conversions) without intervening punctuation.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral and its unit/measurement phrase (including parenthetical unit conversions)."
+    }
+   },
+   {
+    "diagnosis": "The prompt permits cuts inside noun phrases that separate a head noun from a restrictive post‑nominal modifier (of‑phrase, noun‑noun compound, or other essential modifier), producing ambiguous or unanchored fragments.",
+    "evidence": "['en_us_360','en_us_1253','en_us_399'] — each example cuts the head noun away from an immediately following restrictive modifier (quoted technical name, 'of' phrase, or compound) that identifies the noun.",
+    "type_predicate": "Sentences where a noun is immediately followed by a restrictive post‑nominal modifier (an 'of' phrase, essential noun‑noun compound, quoted technical name, or restrictive clause) that identifies or scopes the head noun.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a noun and an immediately following restrictive post‑nominal modifier (of‑phrase, noun‑noun compound, quoted name, or essential relative)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats as safe cuts that split a copula/auxiliary (possibly negated) from the short complement that completes its predicate, so the prefix translates as a standalone claim that the continuation then contradicts.",
+   "evidence": "['en_us_44','en_us_655','en_us_1081','en_us_733','en_us_738','en_us_1116'] — these cases all show a cut placed between a copula/auxiliary (is/was/will/does/had) and a short PP/locative/temporal/measurement or complement that completes the predicate.",
+   "type_predicate": "Sentences where a copula or auxiliary verb (is/are/was/were/has/have/will/does/etc.), possibly with a negator, is immediately (within about four tokens) followed by a short prepositional, locative, temporal, measurement, or complement phrase that completes the predicate.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a copula/auxiliary (with optional negation) and its immediately following complement — a short PP/locative/temporal/measurement phrase or clause that completes the predicate."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that separate numerals from their units or measurement phrases, producing fragments that cannot be reliably translated or that invert meaning when rejoined.",
+   "evidence": "['en_us_44','en_us_101','en_us_140'] — each shows a numeral (e.g. 105, 55,000, 240) separated from its unit/measurement phrase or parenthetical conversion.",
+   "type_predicate": "Sentences containing a numeral (digit or spelled-out) immediately followed by its unit or measurement phrase (including parenthetical unit conversions) without intervening punctuation.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral and its unit/measurement phrase (including parenthetical unit conversions)."
+   }
+  },
+  {
+   "diagnosis": "The prompt permits cuts inside noun phrases that separate a head noun from a restrictive post‑nominal modifier (of‑phrase, noun‑noun compound, or other essential modifier), producing ambiguous or unanchored fragments.",
+   "evidence": "['en_us_360','en_us_1253','en_us_399'] — each example cuts the head noun away from an immediately following restrictive modifier (quoted technical name, 'of' phrase, or compound) that identifies the noun.",
+   "type_predicate": "Sentences where a noun is immediately followed by a restrictive post‑nominal modifier (an 'of' phrase, essential noun‑noun compound, quoted technical name, or restrictive clause) that identifies or scopes the head noun.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a noun and an immediately following restrictive post‑nominal modifier (of‑phrase, noun‑noun compound, quoted name, or essential relative)."
+   }
+  }
+ ]
+}

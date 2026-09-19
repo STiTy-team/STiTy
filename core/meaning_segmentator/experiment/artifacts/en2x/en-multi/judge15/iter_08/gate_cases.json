@@ -1,0 +1,2151 @@
+[
+ {
+  "id": "en_us_912",
+  "cuts": 11,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.0672,
+  "policy_worst_contra": 0.0744,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    7,
+    8,
+    9,
+    11,
+    13,
+    14,
+    15,
+    16,
+    20
+   ],
+   "H_set": 0.4749,
+   "text": "Because calls are ‖ routed ‖ over the Internet, ‖ you ‖ do ‖ not need ‖ to use ‖ a ‖ phone ‖ company ‖ located where you live ‖ or where you travel.",
+   "pieces": {
+    "Chinese": [
+     "因为呼叫是",
+     "路由",
+     "通过互联网,",
+     "你",
+     "至",
+     "不需要",
+     "使用",
+     "2004年12月31日终了年度的收入和支出及准备金和基金结余变动表",
+     "电话",
+     "公司",
+     "位于您居住的地方",
+     "或者你旅行的地方。"
+    ],
+    "Japanese": [
+     "電話は",
+     "ルート",
+     "インターネットを通じて",
+     "あなたは",
+     "どうして",
+     "必要ない",
+     "使うのに",
+     "これは",
+     "電話",
+     "会社",
+     "あなたの住む場所にある",
+     "どこに行くかも"
+    ],
+    "German": [
+     "Weil Anrufe",
+     "Routing",
+     "über das Internet,",
+     "Sie",
+     "do",
+     "Sie brauchen nicht",
+     "So verwenden Sie",
+     "Ein",
+     "Telefon",
+     "Firma",
+     "Wo Sie wohnen",
+     "oder wohin Sie reisen."
+    ],
+    "Spanish": [
+     "Porque las llamadas son",
+     "enrutado",
+     "a través de Internet,",
+     "usted",
+     "de",
+     "No necesitas",
+     "Cómo usar",
+     "a",
+     "Teléfono",
+     "Company",
+     "Ubicado donde vives",
+     "o donde viajes."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    7,
+    8,
+    9,
+    12,
+    17,
+    18,
+    19,
+    20
+   ],
+   "H_set": 0.5421,
+   "text": "Because ‖ calls are ‖ routed ‖ over the Internet, ‖ you ‖ do ‖ not need to ‖ use a phone company located ‖ where ‖ you ‖ live ‖ or where you travel.",
+   "pieces": {
+    "Chinese": [
+     "因为",
+     "呼叫是",
+     "路由",
+     "通过互联网,",
+     "你",
+     "至",
+     "没有必要",
+     "使用电话公司位于",
+     "其中",
+     "你",
+     "现场",
+     "或者你旅行的地方。"
+    ],
+    "Japanese": [
+     "なぜなら",
+     "電話は",
+     "ルート",
+     "インターネットを通じて",
+     "あなたは",
+     "どうして",
+     "必要ない",
+     "電話会社を使って",
+     "どこに",
+     "あなたは",
+     "ライブ",
+     "どこに行くかも"
+    ],
+    "German": [
+     "Weil",
+     "Anrufe sind möglich",
+     "Routing",
+     "über das Internet,",
+     "Sie",
+     "do",
+     "Sie brauchen nicht",
+     "Verwenden Sie eine Telefongesellschaft in",
+     "wo",
+     "Sie",
+     "Live",
+     "oder wohin Sie reisen."
+    ],
+    "Spanish": [
+     "Porque",
+     "Las llamadas son",
+     "enrutado",
+     "a través de Internet,",
+     "usted",
+     "de",
+     "No necesitas",
+     "Utilice una compañía telefónica ubicada",
+     "donde",
+     "usted",
+     "vivo",
+     "o donde viajes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "you do not need",
+     "right": "to use a phone",
+     "H": 0.7133,
+     "H_pct": 31.8,
+     "contra": 0.001,
+     "cohesion": 0.714
+    },
+    {
+     "pos": 13,
+     "left": "not need to use",
+     "right": "a phone company located",
+     "H": 0.7427,
+     "H_pct": 50.0,
+     "contra": 0.0008,
+     "cohesion": 0.7433
+    },
+    {
+     "pos": 14,
+     "left": "need to use a",
+     "right": "phone company located where",
+     "H": 0.7173,
+     "H_pct": 36.4,
+     "contra": 0.0014,
+     "cohesion": 0.7184
+    },
+    {
+     "pos": 15,
+     "left": "to use a phone",
+     "right": "company located where you",
+     "H": 0.6665,
+     "H_pct": 4.5,
+     "contra": 0.0744,
+     "cohesion": 0.72
+    },
+    {
+     "pos": 16,
+     "left": "use a phone company",
+     "right": "located where you live",
+     "H": 0.7063,
+     "H_pct": 22.7,
+     "contra": 0.0211,
+     "cohesion": 0.7215
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Because",
+     "right": "calls are routed over",
+     "H": 0.7495,
+     "H_pct": 59.1,
+     "contra": 0.004,
+     "cohesion": 0.7525
+    },
+    {
+     "pos": 12,
+     "left": "do not need to",
+     "right": "use a phone company",
+     "H": 0.7581,
+     "H_pct": 63.6,
+     "contra": 0.0009,
+     "cohesion": 0.7588
+    },
+    {
+     "pos": 17,
+     "left": "a phone company located",
+     "right": "where you live or",
+     "H": 0.7607,
+     "H_pct": 68.2,
+     "contra": 0.0034,
+     "cohesion": 0.7633
+    },
+    {
+     "pos": 18,
+     "left": "phone company located where",
+     "right": "you live or where",
+     "H": 0.7717,
+     "H_pct": 77.3,
+     "contra": 0.0245,
+     "cohesion": 0.7911
+    },
+    {
+     "pos": 19,
+     "left": "company located where you",
+     "right": "live or where you",
+     "H": 0.7736,
+     "H_pct": 86.4,
+     "contra": 0.0184,
+     "cohesion": 0.7881
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1567",
+  "cuts": 2,
+  "avg_chunk": 5.7,
+  "latency_bin": "≤7",
+  "gap": 0.1096,
+  "policy_worst_contra": 0.0016,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10,
+    14
+   ],
+   "H_set": 0.7288,
+   "text": "The largest tournament of the year takes place in December ‖ at the polo fields ‖ in Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "12月份举办一年中最大的锦标赛",
+     "在马球场",
+     "拉斯卡尼塔斯"
+    ],
+    "Japanese": [
+     "12月に年間最大の大会が開催される。",
+     "ポロ競技場で",
+     "ラスカニタスで"
+    ],
+    "German": [
+     "Das größte Turnier des Jahres findet im Dezember statt",
+     "Auf den Polofeldern",
+     "Ferienwohnungen in Las Cañitas."
+    ],
+    "Spanish": [
+     "El torneo más grande del año se celebra en diciembre",
+     "En los campos de polo",
+     "Casa en Las Cañitas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    8
+   ],
+   "H_set": 0.8384,
+   "text": "The largest tournament of the year ‖ takes place ‖ in December at the polo fields in Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "年度最大的赛事",
+     "发生",
+     "12月在拉斯卡尼塔斯的马球场。"
+    ],
+    "Japanese": [
+     "年間最大の大会",
+     "起こる",
+     "12月にラスカニタスのポロ競技場で行われました"
+    ],
+    "German": [
+     "Das größte Turnier des Jahres",
+     "Die Veranstaltung findet statt",
+     "Im Dezember auf den Polofeldern in Las Cañitas."
+    ],
+    "Spanish": [
+     "El torneo más grande del año",
+     "Se lleva a cabo",
+     "En diciembre en los campos de polo de Las Cañitas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "takes place in December",
+     "right": "at the polo fields",
+     "H": 0.8315,
+     "H_pct": 86.7,
+     "contra": 0.0004,
+     "cohesion": 0.8319
+    },
+    {
+     "pos": 14,
+     "left": "at the polo fields",
+     "right": "in Las Cañitas.",
+     "H": 0.7324,
+     "H_pct": 33.3,
+     "contra": 0.0016,
+     "cohesion": 0.7336
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "tournament of the year",
+     "right": "takes place in December",
+     "H": 0.8488,
+     "H_pct": 100.0,
+     "contra": 0.0005,
+     "cohesion": 0.8492
+    },
+    {
+     "pos": 8,
+     "left": "the year takes place",
+     "right": "in December at the",
+     "H": 0.8472,
+     "H_pct": 93.3,
+     "contra": 0.0019,
+     "cohesion": 0.8488
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_957",
+  "cuts": 1,
+  "avg_chunk": 11.5,
+  "latency_bin": "≤99",
+  "gap": 0.1041,
+  "policy_worst_contra": 0.1007,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    16
+   ],
+   "H_set": 0.6862,
+   "text": "Don't forget to add in the extra costs of additional visas, departure taxes, ground transportation, etc. ‖ for all those places outside of Africa.",
+   "pieces": {
+    "Chinese": [
+     "不要忘记加入额外的签证费用,出境税,地面交通等。",
+     "对于非洲以外的所有地方来说。"
+    ],
+    "Japanese": [
+     "追加ビザ、出発税、地上交通費などの追加費用を加算することを忘れないでください。",
+     "世界中の人々にとって 重要なものです"
+    ],
+    "German": [
+     "Vergessen Sie nicht, die zusätzlichen Kosten für zusätzliche Visa, Abreisesteuern, Bodentransporte usw. hinzuzufügen.",
+     "für all die Orte außerhalb Afrikas."
+    ],
+    "Spanish": [
+     "No olvides añadir los costos adicionales de visas adicionales, impuestos de salida, transporte terrestre, etc.",
+     "para todos esos lugares fuera de África."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2
+   ],
+   "H_set": 0.7903,
+   "text": "Don't forget ‖ to add in the extra costs of additional visas, departure taxes, ground transportation, etc. for all those places outside of Africa.",
+   "pieces": {
+    "Chinese": [
+     "别忘了",
+     "为非洲以外的所有这些地方增加额外签证、离境税、地面交通等额外费用。"
+    ],
+    "Japanese": [
+     "忘れないで",
+     "これにビザの追加費用 出発税 地上交通費などを加えて アフリカ以外の地域の費用を計算します"
+    ],
+    "German": [
+     "Vergessen Sie nicht",
+     "Hinzu kommen die zusätzlichen Kosten für zusätzliche Visa, Abreisesteuern, Bodentransporte usw. für alle Orte außerhalb Afrikas."
+    ],
+    "Spanish": [
+     "No te olvides",
+     "Añadir en los costos adicionales de visados adicionales, impuestos de salida, transporte terrestre, etc. para todos esos lugares fuera de África."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "taxes, ground transportation, etc.",
+     "right": "for all those places",
+     "H": 0.6862,
+     "H_pct": 47.6,
+     "contra": 0.1007,
+     "cohesion": 0.763
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Don't forget",
+     "right": "to add in the",
+     "H": 0.7903,
+     "H_pct": 100.0,
+     "contra": 0.0036,
+     "cohesion": 0.7932
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_685",
+  "cuts": 9,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.0851,
+  "policy_worst_contra": 0.1073,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    5,
+    13,
+    16,
+    20,
+    21,
+    23,
+    29
+   ],
+   "H_set": 0.507,
+   "text": "Tomb of Tutankhamun ‖ (KV62). ‖ KV62 ‖ may be the most famous of the tombs ‖ in the Valley, ‖ the scene of Howard ‖ Carter's ‖ 1922 discovery ‖ of the almost intact royal burial ‖ of the young king.",
+   "pieces": {
+    "Chinese": [
+     "图坦卡蒙墓",
+     " 李<0xE7><0x8F><0xA9>（?",
+     "KV62墓",
+     "可能是最著名的墓穴",
+     "山谷里,",
+     "霍华德的现场",
+     "卡特",
+     "1922年发现的天体",
+     "几乎完好无损的皇家墓地",
+     "年轻的国王。"
+    ],
+    "Japanese": [
+     "ツタンカーメンの墓",
+     " クハ62形。",
+     "KV62 ",
+     "もっとも有名な墓は",
+     "谷の中で",
+     "ハワードの場面は",
+     "カーターズ",
+     "1922年発見の天体",
+     "ほとんど無傷の王室墓地の",
+     "若き王の"
+    ],
+    "German": [
+     "Grab von Tutanchamun",
+     "(KV 62).",
+     "KV62",
+     "Das berühmteste Grab der Welt",
+     "Im Tal,",
+     "Die Szene von Howard",
+     "Carter’s",
+     "Entdeckung 1922",
+     "Die fast intakte königliche Grabstätte",
+     "Die Geburt des jungen Königs."
+    ],
+    "Spanish": [
+     "Tumba de Tutankamón",
+     "(KV62).",
+     "KV62",
+     "La más famosa de las tumbas",
+     "en el Valle,",
+     "La escena de Howard",
+     "Carter's",
+     "Descubrimiento en 1922",
+     "El entierro real casi intacto",
+     "El joven rey."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    4,
+    5,
+    7,
+    10,
+    11,
+    13,
+    16,
+    21
+   ],
+   "H_set": 0.5922,
+   "text": "Tomb ‖ of Tutankhamun (KV62). ‖ KV62 ‖ may be ‖ the most famous ‖ of ‖ the tombs ‖ in the Valley, ‖ the scene of Howard Carter's ‖ 1922 discovery of the almost intact royal burial of the young king.",
+   "pieces": {
+    "Chinese": [
+     "墓",
+     "图坦卡蒙(KV62)的。",
+     "KV62墓",
+     "可能是",
+     "最有名的",
+     "的",
+     "墓地",
+     "山谷里,",
+     "霍华德·卡特的现场",
+     "1922年发现了年轻国王几乎完好无损的皇家墓葬。"
+    ],
+    "Japanese": [
+     "墓",
+     "ツタンカーメンの墓（KV62）です",
+     "KV62 ",
+     "あれは",
+     "もっとも有名なのは",
+     "の",
+     "墓地",
+     "谷の中で",
+     "ハワード・カーターの現場は",
+     "1922年　若王のほぼ完全な王墓の発見。"
+    ],
+    "German": [
+     "Grab",
+     "Die Grabstätte von Tutanchamun (KV62).",
+     "KV62",
+     "kann sein",
+     "Die berühmtesten",
+     "von",
+     "Die Gräber der Götter",
+     "Im Tal,",
+     "Die Szene von Howard Carters",
+     "1922 Entdeckung der fast intakten königlichen Grabstätte des jungen Königs."
+    ],
+    "Spanish": [
+     "Tumba",
+     "La tumba de Tutankamón (KV62).",
+     "KV62",
+     "Puede ser",
+     "Los más famosos",
+     "de",
+     "En las tumbas",
+     "en el Valle,",
+     "La escena de Howard Carter",
+     "1922 descubrimiento de la tumba real casi intacta del joven rey."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Tomb of Tutankhamun",
+     "right": "(KV62). KV62 may be",
+     "H": 0.7376,
+     "H_pct": 38.7,
+     "contra": 0.0015,
+     "cohesion": 0.7387
+    },
+    {
+     "pos": 20,
+     "left": "the scene of Howard",
+     "right": "Carter's 1922 discovery of",
+     "H": 0.7501,
+     "H_pct": 48.4,
+     "contra": 0.055,
+     "cohesion": 0.7937
+    },
+    {
+     "pos": 23,
+     "left": "Howard Carter's 1922 discovery",
+     "right": "of the almost intact",
+     "H": 0.6942,
+     "H_pct": 19.4,
+     "contra": 0.1073,
+     "cohesion": 0.7776
+    },
+    {
+     "pos": 29,
+     "left": "almost intact royal burial",
+     "right": "of the young king.",
+     "H": 0.711,
+     "H_pct": 29.0,
+     "contra": 0.0055,
+     "cohesion": 0.7149
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Tomb",
+     "right": "of Tutankhamun (KV62). KV62",
+     "H": 0.8046,
+     "H_pct": 90.3,
+     "contra": 0.0013,
+     "cohesion": 0.8056
+    },
+    {
+     "pos": 7,
+     "left": "(KV62). KV62 may be",
+     "right": "the most famous of",
+     "H": 0.786,
+     "H_pct": 83.9,
+     "contra": 0.0005,
+     "cohesion": 0.7864
+    },
+    {
+     "pos": 10,
+     "left": "be the most famous",
+     "right": "of the tombs in",
+     "H": 0.7828,
+     "H_pct": 80.6,
+     "contra": 0.0005,
+     "cohesion": 0.7832
+    },
+    {
+     "pos": 11,
+     "left": "the most famous of",
+     "right": "the tombs in the",
+     "H": 0.7686,
+     "H_pct": 74.2,
+     "contra": 0.0005,
+     "cohesion": 0.769
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_101",
+  "cuts": 2,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.0884,
+  "policy_worst_contra": 0.0031,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    16
+   ],
+   "H_set": 0.7,
+   "text": "The valves opening allowed a pressure release ‖ for the system and oil flowed on a pad ‖ to a tank that can hold 55,000 barrels (2.3 million gallons).",
+   "pieces": {
+    "Chinese": [
+     "阀门开启允许压力释放",
+     "系统和油流在一个垫子",
+     "一个能容纳55,000桶(230万加仑)的油箱。"
+    ],
+    "Japanese": [
+     "弁の開口部は圧力を解放する",
+     "油がパッドに流れ込み",
+     "55,000バレルのタンクに 入れ替えました"
+    ],
+    "German": [
+     "Die Öffnung der Ventile ermöglichte eine Druckentlastung",
+     "Für das System und Öl floss auf einem Pad",
+     "Ein Tank, der 55.000 Fässer (2,3 Millionen Gallonen) aufnehmen kann."
+    ],
+    "Spanish": [
+     "La apertura de las válvulas permitió una liberación de presión",
+     "Para el sistema y el aceite fluía en una almohadilla",
+     "a un tanque que puede contener 55.000 barriles (2,3 millones de galones)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    19
+   ],
+   "H_set": 0.7884,
+   "text": "The valves opening allowed a pressure release for the system ‖ and oil flowed on a pad to a tank ‖ that can hold 55,000 barrels (2.3 million gallons).",
+   "pieces": {
+    "Chinese": [
+     "阀门开启后,系统的压力释放",
+     "油在一个垫子上流到一个罐子里",
+     "能容纳55,000桶(230万加仑)的油库。"
+    ],
+    "Japanese": [
+     "弁開閉により，システムの圧力が解放された。",
+     "石油はパッドを通ってタンクに流れ込み",
+     "55,000バレルの油を貯蔵できます"
+    ],
+    "German": [
+     "Die Öffnung der Ventile ermöglichte eine Druckentlastung des Systems",
+     "Und Öl floss auf einem Pad zu einem Tank",
+     "Das Reservoir fasst 55.000 Barrel (2,3 Millionen Gallonen)."
+    ],
+    "Spanish": [
+     "La apertura de las válvulas permitió una liberación de presión para el sistema",
+     "Y el aceite fluyó en una almohadilla a un tanque",
+     "que puede contener 55.000 barriles (2,3 millones de galones)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "allowed a pressure release",
+     "right": "for the system and",
+     "H": 0.7205,
+     "H_pct": 44.0,
+     "contra": 0.0006,
+     "cohesion": 0.7209
+    },
+    {
+     "pos": 16,
+     "left": "flowed on a pad",
+     "right": "to a tank that",
+     "H": 0.7506,
+     "H_pct": 68.0,
+     "contra": 0.0031,
+     "cohesion": 0.753
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "release for the system",
+     "right": "and oil flowed on",
+     "H": 0.7995,
+     "H_pct": 96.0,
+     "contra": 0.0038,
+     "cohesion": 0.8025
+    },
+    {
+     "pos": 19,
+     "left": "pad to a tank",
+     "right": "that can hold 55,000",
+     "H": 0.8088,
+     "H_pct": 100.0,
+     "contra": 0.0164,
+     "cohesion": 0.8223
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1072",
+  "cuts": 1,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.084,
+  "policy_worst_contra": 0.0005,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4
+   ],
+   "H_set": 0.6886,
+   "text": "They also define routes ‖ for popular hiking and cycling trails.",
+   "pieces": {
+    "Chinese": [
+     "他们还定义了路线",
+     "热门的徒步旅行和自行车道。"
+    ],
+    "Japanese": [
+     "また、経路を定義する",
+     "人々が利用するハイキングや自転車道に 使われています"
+    ],
+    "German": [
+     "Sie definieren auch Routen",
+     "Die Umgebung ist ideal für beliebte Wander- und Radwege."
+    ],
+    "Spanish": [
+     "También definen rutas",
+     "Cerca de rutas de senderismo y ciclismo populares."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.7726,
+   "text": "They also define ‖ routes for popular hiking and cycling trails.",
+   "pieces": {
+    "Chinese": [
+     "他们还界定",
+     "热门的徒步旅行和自行车小径路线。"
+    ],
+    "Japanese": [
+     "また、これらの定義は",
+     "登山や自転車のルートを作りました"
+    ],
+    "German": [
+     "Sie definieren auch",
+     "Routen für beliebte Wander- und Radwege."
+    ],
+    "Spanish": [
+     "También definen",
+     "Rutas para senderismo y ciclismo populares."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "They also define routes",
+     "right": "for popular hiking and",
+     "H": 0.6886,
+     "H_pct": 12.5,
+     "contra": 0.0005,
+     "cohesion": 0.6889
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "They also define",
+     "right": "routes for popular hiking",
+     "H": 0.7726,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.7731
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_301",
+  "cuts": 8,
+  "avg_chunk": 2.4,
+  "latency_bin": "≤3",
+  "gap": 0.0646,
+  "policy_worst_contra": 0.0556,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    5,
+    7,
+    8,
+    13,
+    16,
+    18
+   ],
+   "H_set": 0.5072,
+   "text": "Following the process, ‖ HJR-3 ‖ will ‖ be reviewed ‖ again ‖ by the next elected legislature ‖ in either 2015 ‖ or 2016 ‖ to remain in process.",
+   "pieces": {
+    "Chinese": [
+     "继过程之后,",
+     "日立HJR-3",
+     "威尔",
+     "待审查",
+     "再次",
+     "下一届当选立法机构",
+     "2015年或",
+     "2015年或2016年",
+     "继续进行。"
+    ],
+    "Japanese": [
+     "プロセスの後",
+     "日立製作所三菱重工機",
+     "ウィル",
+     "再検討されるべきです",
+     "もう一度",
+     "次の選挙で選ばれる議会に",
+     "2015年か2016年に",
+     "2016年か",
+     "プロセスに留まるためです"
+    ],
+    "German": [
+     "Nach dem Prozess,",
+     "HJR-3",
+     "Will",
+     "Diese Seite wird überprüft",
+     "Noch einmal",
+     "durch die nächste gewählte Legislaturperiode",
+     "in entweder 2015",
+     "oder 2016",
+     "Im Prozess zu bleiben."
+    ],
+    "Spanish": [
+     "Siguiendo el proceso,",
+     "HJR-3",
+     "Will",
+     "Se revisará",
+     "de nuevo",
+     "por la próxima legislatura elegida",
+     "en cualquiera de 2015",
+     "o 2016",
+     "Para permanecer en proceso."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    7,
+    8,
+    13,
+    17,
+    18,
+    20
+   ],
+   "H_set": 0.5718,
+   "text": "Following ‖ the process, ‖ HJR-3 will be reviewed ‖ again ‖ by the next elected legislature ‖ in either 2015 or ‖ 2016 ‖ to remain ‖ in process.",
+   "pieces": {
+    "Chinese": [
+     "下列",
+     "过程，",
+     "将审查HJR-3",
+     "再次",
+     "下一届当选立法机构",
+     "2015年或",
+     "2016年度",
+     "将继续",
+     "正在进行。"
+    ],
+    "Japanese": [
+     "フォロー",
+     "プロセスは",
+     "ＨＪＲ３号機は改修される",
+     "もう一度",
+     "次の選挙で選ばれる議会に",
+     "2015年か 2016年か",
+     "2016年のスポーツ",
+     "残るために",
+     "進行中です"
+    ],
+    "German": [
+     "Following",
+     "den Prozess,",
+     "HJR-3 wird überprüft",
+     "Noch einmal",
+     "durch die nächste gewählte Legislaturperiode",
+     "entweder 2015 oder",
+     "2016",
+     "Um zu bleiben",
+     "In Bearbeitung."
+    ],
+    "Spanish": [
+     "Siguiendo",
+     "el proceso,",
+     "HJR-3 será revisado",
+     "de nuevo",
+     "por la próxima legislatura elegida",
+     "en 2015 o",
+     "2016",
+     "para permanecer",
+     "En proceso."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "Following the process, HJR-3",
+     "right": "will be reviewed again",
+     "H": 0.6196,
+     "H_pct": 25.0,
+     "contra": 0.0218,
+     "cohesion": 0.6334
+    },
+    {
+     "pos": 5,
+     "left": "the process, HJR-3 will",
+     "right": "be reviewed again by",
+     "H": 0.6741,
+     "H_pct": 60.0,
+     "contra": 0.0073,
+     "cohesion": 0.6791
+    },
+    {
+     "pos": 16,
+     "left": "legislature in either 2015",
+     "right": "or 2016 to remain",
+     "H": 0.6145,
+     "H_pct": 20.0,
+     "contra": 0.0556,
+     "cohesion": 0.6506
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Following",
+     "right": "the process, HJR-3 will",
+     "H": 0.6927,
+     "H_pct": 80.0,
+     "contra": 0.0032,
+     "cohesion": 0.6949
+    },
+    {
+     "pos": 17,
+     "left": "in either 2015 or",
+     "right": "2016 to remain in",
+     "H": 0.675,
+     "H_pct": 65.0,
+     "contra": 0.0096,
+     "cohesion": 0.6815
+    },
+    {
+     "pos": 20,
+     "left": "or 2016 to remain",
+     "right": "in process.",
+     "H": 0.7206,
+     "H_pct": 95.0,
+     "contra": 0.0078,
+     "cohesion": 0.7262
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1305",
+  "cuts": 1,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.0995,
+  "policy_worst_contra": 0.0006,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.7732,
+   "text": "Yet, Spanish is also widely used ‖ in public transport and other facilities.",
+   "pieces": {
+    "Chinese": [
+     "然而,西班牙语也被广泛使用",
+     "在公共交通和其他设施。"
+    ],
+    "Japanese": [
+     "しかしスペイン語も広く使われている。",
+     "利用できるようになっています"
+    ],
+    "German": [
+     "Spanisch wird aber auch weit verbreitet",
+     "In öffentlichen Verkehrsmitteln und anderen Einrichtungen."
+    ],
+    "Spanish": [
+     "Sin embargo, el español también es ampliamente utilizado",
+     "En el transporte público y otras instalaciones."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8727,
+   "text": "Yet, ‖ Spanish is also widely used in public transport and other facilities.",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "西班牙语也广泛用于公共交通和其他设施。"
+    ],
+    "Japanese": [
+     "しかし",
+     "スペイン語は公共交通機関やその他の施設でも広く使われている。"
+    ],
+    "German": [
+     "Und doch,",
+     "Spanisch wird auch in öffentlichen Verkehrsmitteln und anderen Einrichtungen verwendet."
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "El español también se usa ampliamente en el transporte público y otras instalaciones."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "is also widely used",
+     "right": "in public transport and",
+     "H": 0.7733,
+     "H_pct": 70.0,
+     "contra": 0.0006,
+     "cohesion": 0.7737
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Yet,",
+     "right": "Spanish is also widely",
+     "H": 0.8727,
+     "H_pct": 100.0,
+     "contra": 0.0025,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_87",
+  "cuts": 4,
+  "avg_chunk": 4.8,
+  "latency_bin": "≤5",
+  "gap": 0.0827,
+  "policy_worst_contra": 0.0072,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8,
+    11,
+    14,
+    19
+   ],
+   "H_set": 0.5746,
+   "text": "The amount and thickness of the pack ice, ‖ according to Pittman, ‖ is the worst ‖ it has been for sealers ‖ in the past 15 years.",
+   "pieces": {
+    "Chinese": [
+     "冰块的数量和厚度,",
+     "根据皮特曼的说法,",
+     "是最糟糕的",
+     "一直是为了封印者",
+     "过去15年来。"
+    ],
+    "Japanese": [
+     "氷の量と厚さ",
+     "ピットマンによると",
+     "私たちが最悪の状態にあるのは",
+     "海賊にとっては",
+     "15年間で 1000万人以上の人が死んだのです"
+    ],
+    "German": [
+     "Die Menge und Dicke des Packeises,",
+     "Laut Pittman,",
+     "Ist das Schlimmste",
+     "Es war für Versiegelungen",
+     "in den letzten 15 Jahren."
+    ],
+    "Spanish": [
+     "La cantidad y el grosor del hielo de la bolsa,",
+     "De acuerdo con Pittman,",
+     "Es el peor",
+     "Ha sido para los selladores",
+     "en los últimos 15 años."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8,
+    11,
+    12,
+    19
+   ],
+   "H_set": 0.6572,
+   "text": "The amount and thickness of the pack ice, ‖ according to Pittman, ‖ is ‖ the worst it has been for sealers ‖ in the past 15 years.",
+   "pieces": {
+    "Chinese": [
+     "冰块的数量和厚度,",
+     "根据皮特曼的说法,",
+     "是",
+     "对于海豹捕猎者来说,这是最糟糕的",
+     "过去15年来。"
+    ],
+    "Japanese": [
+     "氷の量と厚さ",
+     "ピットマンによると",
+     "はい",
+     "漁師にとって最悪の状況は",
+     "15年間で 1000万人以上の人が死んだのです"
+    ],
+    "German": [
+     "Die Menge und Dicke des Packeises,",
+     "Laut Pittman,",
+     "ist",
+     "Das schlimmste, was es für Seeler gab",
+     "in den letzten 15 Jahren."
+    ],
+    "Spanish": [
+     "La cantidad y el grosor del hielo de la bolsa,",
+     "De acuerdo con Pittman,",
+     "es",
+     "Lo peor que ha sido para los selladores",
+     "en los últimos 15 años."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "Pittman, is the worst",
+     "right": "it has been for",
+     "H": 0.5947,
+     "H_pct": 45.5,
+     "contra": 0.0007,
+     "cohesion": 0.5951
+    }
+   ],
+   "added": [
+    {
+     "pos": 12,
+     "left": "according to Pittman, is",
+     "right": "the worst it has",
+     "H": 0.6839,
+     "H_pct": 100.0,
+     "contra": 0.0071,
+     "cohesion": 0.6887
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_656",
+  "cuts": 2,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.0789,
+  "policy_worst_contra": 0.0006,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    7
+   ],
+   "H_set": 0.7578,
+   "text": "Cold weather ‖ is perhaps the only real ‖ danger the unprepared will face.",
+   "pieces": {
+    "Chinese": [
+     "寒冷天氣",
+     "是唯一的真正",
+     "没有准备的人会面临危险。"
+    ],
+    "Japanese": [
+     "寒天",
+     "恐らく唯一の本当の",
+     "準備ができない者が直面する危険"
+    ],
+    "German": [
+     "Kaltes Wetter",
+     "Ist vielleicht die einzige echte",
+     "Gefahr, der sich die Unvorbereiteten stellen werden."
+    ],
+    "Spanish": [
+     "Tiempo frío",
+     "Es quizás la única verdadera",
+     "El peligro que enfrentarán los impreparados."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4
+   ],
+   "H_set": 0.8367,
+   "text": "Cold weather is ‖ perhaps ‖ the only real danger the unprepared will face.",
+   "pieces": {
+    "Chinese": [
+     "寒冷的天气是",
+     "也许",
+     "唯一真正的危险,没有准备的人会面对。"
+    ],
+    "Japanese": [
+     "寒い天気だ",
+     "たぶん",
+     "準備ができない者が直面する 唯一の危険なものだ"
+    ],
+    "German": [
+     "Kaltes Wetter ist",
+     "vielleicht",
+     "Die einzige wirkliche Gefahr, der sich die Unvorbereiteten stellen werden."
+    ],
+    "Spanish": [
+     "El clima frío es",
+     "quizás",
+     "El único peligro real que enfrentarán los impreparados."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Cold weather",
+     "right": "is perhaps the only",
+     "H": 0.8011,
+     "H_pct": 60.0,
+     "contra": 0.0006,
+     "cohesion": 0.8016
+    },
+    {
+     "pos": 7,
+     "left": "perhaps the only real",
+     "right": "danger the unprepared will",
+     "H": 0.8091,
+     "H_pct": 70.0,
+     "contra": 0.0004,
+     "cohesion": 0.8094
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Cold weather is",
+     "right": "perhaps the only real",
+     "H": 0.8325,
+     "H_pct": 90.0,
+     "contra": 0.0007,
+     "cohesion": 0.8331
+    },
+    {
+     "pos": 4,
+     "left": "Cold weather is perhaps",
+     "right": "the only real danger",
+     "H": 0.8473,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.8478
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_190",
+  "cuts": 2,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.0788,
+  "policy_worst_contra": 0.0006,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    7,
+    9
+   ],
+   "H_set": 0.6568,
+   "text": "The typhoon is estimated to be moving ‖ toward China ‖ at eleven kph.",
+   "pieces": {
+    "Chinese": [
+     "台风预计将在10月1日",
+     "对中国的",
+     "十一公里每小时"
+    ],
+    "Japanese": [
+     "台風は移動中と推定されます",
+     "中国に向けて",
+     "11キロで"
+    ],
+    "German": [
+     "Der Taifun wird geschätzt, sich zu bewegen",
+     "Reisen nach China",
+     "Bei elf km/h."
+    ],
+    "Spanish": [
+     "Se estima que el tifón se está moviendo",
+     "hacia China",
+     "a once kilómetros por hora."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    9
+   ],
+   "H_set": 0.7355,
+   "text": "The typhoon ‖ is estimated to be moving toward China ‖ at eleven kph.",
+   "pieces": {
+    "Chinese": [
+     "台风",
+     "估计正在向中国移动",
+     "十一公里每小时"
+    ],
+    "Japanese": [
+     "台風",
+     "2050年には中国に向かって",
+     "11キロで"
+    ],
+    "German": [
+     "Der Taifun",
+     "Schätzungen zufolge bewegt sich der Wind in Richtung China",
+     "Bei elf km/h."
+    ],
+    "Spanish": [
+     "El tifón",
+     "Se estima que se está moviendo hacia China",
+     "a once kilómetros por hora."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "estimated to be moving",
+     "right": "toward China at eleven",
+     "H": 0.799,
+     "H_pct": 50.0,
+     "contra": 0.0004,
+     "cohesion": 0.7994
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The typhoon",
+     "right": "is estimated to be",
+     "H": 0.8478,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8486
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_464",
+  "cuts": 5,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.0759,
+  "policy_worst_contra": 0.0552,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6,
+    11,
+    13,
+    14,
+    25
+   ],
+   "H_set": 0.5974,
+   "text": "Unfortunately, when you make a DVD, ‖ it's borders will most likely ‖ be cut ‖ too, ‖ and if the video had subtitles too close to the bottom, ‖ they won't be fully shown.",
+   "pieces": {
+    "Chinese": [
+     "不幸的是,当你制作DVD时,",
+     "它的边界很可能",
+     "被切断",
+     "太多了",
+     "如果视频的字幕太靠近底部,",
+     "他们不会被完全显示出来。"
+    ],
+    "Japanese": [
+     "残念ながらDVDを作る時",
+     "国境はおそらく",
+     "切り取られた",
+     "あなたも",
+     "字幕が下に近いと",
+     "完全に見えないでしょう"
+    ],
+    "German": [
+     "Leider, wenn man eine DVD macht,",
+     "Seine Grenzen werden höchstwahrscheinlich",
+     "geschnitten werden",
+     "auch,",
+     "Und wenn das Video Untertitel zu nah am Ende hatte,",
+     "Sie werden nicht vollständig angezeigt."
+    ],
+    "Spanish": [
+     "Desafortunadamente, cuando haces un DVD,",
+     "Sus fronteras probablemente",
+     "Se cortará",
+     "También,",
+     "y si el video tenía subtítulos demasiado cerca de la parte inferior,",
+     "No se mostrarán completamente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    13,
+    14,
+    15,
+    16
+   ],
+   "H_set": 0.6733,
+   "text": "Unfortunately, ‖ when you make a DVD, it's borders will most likely be cut ‖ too, ‖ and ‖ if ‖ the video had subtitles too close to the bottom, they won't be fully shown.",
+   "pieces": {
+    "Chinese": [
+     "不幸的是，",
+     "当你制作DVD时,它的边缘很可能会被剪掉",
+     "太多了",
+     "以及",
+     "假如",
+     "视频的字幕太靠近底部,它们将不会完全显示。"
+    ],
+    "Japanese": [
+     "残念ながら",
+     "DVDを作るとき 境界線は切り取られます",
+     "あなたも",
+     "それに",
+     "もし",
+     "字幕が下に近すぎて 見えないんだ"
+    ],
+    "German": [
+     "Leider ist es so,",
+     "Wenn Sie eine DVD erstellen, werden die Ränder höchstwahrscheinlich geschnitten",
+     "auch,",
+     "und",
+     "if",
+     "Wenn die Untertitel zu weit unten im Video stehen, werden sie nicht vollständig angezeigt."
+    ],
+    "Spanish": [
+     "Desafortunadamente,",
+     "Cuando haces un DVD, es muy probable que los bordes sean cortados",
+     "También,",
+     "y",
+     "si",
+     "Si el vídeo tiene subtítulos demasiado cerca de la parte inferior, no se mostrarán completamente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "you make a DVD,",
+     "right": "it's borders will most",
+     "H": 0.6676,
+     "H_pct": 46.4,
+     "contra": 0.0552,
+     "cohesion": 0.7066
+    },
+    {
+     "pos": 11,
+     "left": "borders will most likely",
+     "right": "be cut too, and",
+     "H": 0.6495,
+     "H_pct": 39.3,
+     "contra": 0.0028,
+     "cohesion": 0.6513
+    },
+    {
+     "pos": 25,
+     "left": "close to the bottom,",
+     "right": "they won't be fully",
+     "H": 0.7393,
+     "H_pct": 78.6,
+     "contra": 0.0368,
+     "cohesion": 0.7675
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Unfortunately,",
+     "right": "when you make a",
+     "H": 0.788,
+     "H_pct": 96.4,
+     "contra": 0.0029,
+     "cohesion": 0.7903
+    },
+    {
+     "pos": 15,
+     "left": "be cut too, and",
+     "right": "if the video had",
+     "H": 0.7792,
+     "H_pct": 92.9,
+     "contra": 0.0109,
+     "cohesion": 0.7878
+    },
+    {
+     "pos": 16,
+     "left": "cut too, and if",
+     "right": "the video had subtitles",
+     "H": 0.7675,
+     "H_pct": 85.7,
+     "contra": 0.0127,
+     "cohesion": 0.7774
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_6",
+  "cuts": 1,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.073,
+  "policy_worst_contra": 0.0295,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.7817,
+   "text": "28-year-old Vidal had joined Barça three seasons ago, ‖ from Sevilla.",
+   "pieces": {
+    "Chinese": [
+     "28岁的维达尔三个赛季前加盟巴萨,",
+     "来自塞维利亚。"
+    ],
+    "Japanese": [
+     "28歳のビダルは 3シーズン前にバルサに加入した",
+     "セビリアから"
+    ],
+    "German": [
+     "Der 28-jährige Vidal kam vor drei Jahren zu Barça,",
+     "10 Minuten von Sevilla."
+    ],
+    "Spanish": [
+     "Vidal, de 28 años, se unió al Barça hace tres temporadas,",
+     "Desde Sevilla."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8547,
+   "text": "28-year-old ‖ Vidal had joined Barça three seasons ago, from Sevilla.",
+   "pieces": {
+    "Chinese": [
+     "28岁",
+     "维达尔三个赛季前从塞维利亚加盟巴萨。"
+    ],
+    "Japanese": [
+     "28歳",
+     "ビダルは3シーズン前にセビージャからバルサに加入した。"
+    ],
+    "German": [
+     "28-jährige",
+     "Vidal kam vor drei Jahren von Sevilla zum FC Barcelona."
+    ],
+    "Spanish": [
+     "28 años",
+     "Vidal se había incorporado al Barça hace tres temporadas, procedente del Sevilla."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Barça three seasons ago,",
+     "right": "from Sevilla.",
+     "H": 0.7817,
+     "H_pct": 50.0,
+     "contra": 0.0295,
+     "cohesion": 0.8054
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "28-year-old",
+     "right": "Vidal had joined Barça",
+     "H": 0.8547,
+     "H_pct": 100.0,
+     "contra": 0.0024,
+     "cohesion": 0.8568
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_953",
+  "cuts": 11,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.073,
+  "policy_worst_contra": 0.0107,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    14,
+    18,
+    20,
+    21,
+    24,
+    28,
+    29,
+    30,
+    31,
+    32,
+    36
+   ],
+   "H_set": 0.5509,
+   "text": "Although you may think it is intuitive to join the airline you fly most, ‖ you should be aware ‖ that privileges ‖ offered ‖ are often different ‖ and frequent flyer points ‖ may ‖ be ‖ more ‖ generous ‖ under a different airline ‖ in the same alliance.",
+   "pieces": {
+    "Chinese": [
+     "虽然你可能认为加入你最喜欢的航空公司是直观的,",
+     "你应该知道",
+     "特权",
+     "提供",
+     "往往是不同的",
+     "常旅客积分",
+     "5月(半天会议)",
+     "是",
+     "更多",
+     "慷慨",
+     "由另一家航空公司运营",
+     "相同的联盟。"
+    ],
+    "Japanese": [
+     "あなたが最も飛ぶ航空会社に 加入するのは直感的だと思うかもしれませんが",
+     "あなたは 気づくべきです",
+     "特権を与えて",
+     "提供した",
+     "しばしば異なるもので",
+     "常連客ポイントを",
+     "5月",
+     "ああ",
+     "もっと",
+     "寛大な",
+     "別の航空会社で",
+     "同じ同盟にいる"
+    ],
+    "German": [
+     "Obwohl Sie vielleicht denken, dass es intuitiv ist, der Fluggesellschaft beizutreten, die Sie am meisten fliegen,",
+     "Sie sollten sich bewusst sein",
+     "Das Privilegien verleiht",
+     "Angeboten",
+     "sind oft unterschiedlich",
+     "Vielfliegerpunkte",
+     "Mai",
+     "be",
+     "mehr",
+     "großzügig",
+     "Unter einer anderen Fluggesellschaft",
+     "In derselben Allianz."
+    ],
+    "Spanish": [
+     "Aunque puedas pensar que es intuitivo unirse a la aerolínea que más vuelas,",
+     "Deberías estar al tanto",
+     "Que privilegia",
+     "ofrecido",
+     "Son a menudo diferentes",
+     "Puntos de viajero frecuente",
+     "May",
+     "be",
+     "Más",
+     "generoso",
+     "Bajo una aerolínea diferente",
+     "En la misma alianza."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    7,
+    14,
+    16,
+    18,
+    19,
+    24,
+    25
+   ],
+   "H_set": 0.6239,
+   "text": "Although ‖ you ‖ may think ‖ it ‖ is intuitive ‖ to join the airline you fly most, ‖ you should ‖ be aware ‖ that ‖ privileges offered are often different ‖ and ‖ frequent flyer points may be more generous under a different airline in the same alliance.",
+   "pieces": {
+    "Chinese": [
+     "虽然",
+     "你",
+     "可能会想",
+     "意大利",
+     "是直观的",
+     "加入你最常搭乘的航空公司,",
+     "你应该",
+     "要注意",
+     "该",
+     "所提供的特权往往不同",
+     "以及",
+     "常旅客积分可能会在同一联盟的不同航空公司下更为慷慨。"
+    ],
+    "Japanese": [
+     "ただし",
+     "あなたは",
+     "思うかもしれない",
+     "それは",
+     "直感的なことです",
+     "あなたが最も使う航空会社に就職するのです",
+     "あなたは",
+     "気をつけて",
+     "あれは",
+     "特権は しばしば 異なるもので",
+     "それに",
+     "フレンドリーポイントは 同じ同盟の他の航空会社よりも 優遇されるかもしれない"
+    ],
+    "German": [
+     "Obwohl",
+     "Sie",
+     "Sie können denken",
+     "it",
+     "Das ist intuitiv",
+     "um der Fluggesellschaft beizutreten, mit der du am meisten fliegst,",
+     "Sie sollten",
+     "Sei dir bewusst",
+     "that",
+     "Die angebotenen Privilegien sind oft unterschiedlich",
+     "und",
+     "Vielfliegerpunkte können unter einer anderen Fluggesellschaft derselben Allianz großzügiger sein."
+    ],
+    "Spanish": [
+     "Aunque",
+     "usted",
+     "Puede pensar",
+     "it",
+     "Es intuitivo",
+     "para unirse a la aerolínea que vuela más,",
+     "Usted debe",
+     "Sea consciente",
+     "that",
+     "Los privilegios ofrecidos son a menudo diferentes",
+     "y",
+     "Los puntos de viajero frecuente pueden ser más generosos con una aerolínea diferente de la misma alianza."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 20,
+     "left": "be aware that privileges",
+     "right": "offered are often different",
+     "H": 0.7581,
+     "H_pct": 71.1,
+     "contra": 0.0021,
+     "cohesion": 0.7597
+    },
+    {
+     "pos": 21,
+     "left": "aware that privileges offered",
+     "right": "are often different and",
+     "H": 0.7369,
+     "H_pct": 52.6,
+     "contra": 0.002,
+     "cohesion": 0.7384
+    },
+    {
+     "pos": 28,
+     "left": "and frequent flyer points",
+     "right": "may be more generous",
+     "H": 0.7318,
+     "H_pct": 50.0,
+     "contra": 0.0041,
+     "cohesion": 0.7348
+    },
+    {
+     "pos": 29,
+     "left": "frequent flyer points may",
+     "right": "be more generous under",
+     "H": 0.6942,
+     "H_pct": 28.9,
+     "contra": 0.0036,
+     "cohesion": 0.6967
+    },
+    {
+     "pos": 30,
+     "left": "flyer points may be",
+     "right": "more generous under a",
+     "H": 0.6491,
+     "H_pct": 10.5,
+     "contra": 0.0038,
+     "cohesion": 0.6515
+    },
+    {
+     "pos": 31,
+     "left": "points may be more",
+     "right": "generous under a different",
+     "H": 0.6405,
+     "H_pct": 5.3,
+     "contra": 0.0026,
+     "cohesion": 0.6421
+    },
+    {
+     "pos": 32,
+     "left": "may be more generous",
+     "right": "under a different airline",
+     "H": 0.72,
+     "H_pct": 44.7,
+     "contra": 0.0025,
+     "cohesion": 0.7218
+    },
+    {
+     "pos": 36,
+     "left": "under a different airline",
+     "right": "in the same alliance.",
+     "H": 0.7313,
+     "H_pct": 47.4,
+     "contra": 0.0066,
+     "cohesion": 0.7362
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Although",
+     "right": "you may think it",
+     "H": 0.8116,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8128
+    },
+    {
+     "pos": 2,
+     "left": "Although you",
+     "right": "may think it is",
+     "H": 0.7811,
+     "H_pct": 86.8,
+     "contra": 0.0027,
+     "cohesion": 0.7833
+    },
+    {
+     "pos": 4,
+     "left": "Although you may think",
+     "right": "it is intuitive to",
+     "H": 0.7668,
+     "H_pct": 81.6,
+     "contra": 0.0015,
+     "cohesion": 0.768
+    },
+    {
+     "pos": 5,
+     "left": "you may think it",
+     "right": "is intuitive to join",
+     "H": 0.7628,
+     "H_pct": 76.3,
+     "contra": 0.0007,
+     "cohesion": 0.7633
+    },
+    {
+     "pos": 7,
+     "left": "think it is intuitive",
+     "right": "to join the airline",
+     "H": 0.783,
+     "H_pct": 92.1,
+     "contra": 0.0007,
+     "cohesion": 0.7835
+    },
+    {
+     "pos": 16,
+     "left": "fly most, you should",
+     "right": "be aware that privileges",
+     "H": 0.78,
+     "H_pct": 84.2,
+     "contra": 0.0006,
+     "cohesion": 0.7804
+    },
+    {
+     "pos": 19,
+     "left": "should be aware that",
+     "right": "privileges offered are often",
+     "H": 0.7816,
+     "H_pct": 89.5,
+     "contra": 0.0021,
+     "cohesion": 0.7833
+    },
+    {
+     "pos": 25,
+     "left": "are often different and",
+     "right": "frequent flyer points may",
+     "H": 0.764,
+     "H_pct": 78.9,
+     "contra": 0.0099,
+     "cohesion": 0.7717
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_262",
+  "cuts": 4,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.071,
+  "policy_worst_contra": 0.0042,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    9,
+    12
+   ],
+   "H_set": 0.5446,
+   "text": "Nigeria previously announced ‖ it planned ‖ to join the AfCFTA ‖ in the week ‖ leading up to the summit.",
+   "pieces": {
+    "Chinese": [
+     "尼日利亚先前宣布的",
+     "计划",
+     "加入非洲自由贸易区",
+     "周内",
+     "到达了山顶。"
+    ],
+    "Japanese": [
+     "ナイジェリアが以前に発表した",
+     "計画したのは",
+     "非洲自由貿易地域に加盟するために",
+     "1週間で",
+     "山頂に向かう道です"
+    ],
+    "German": [
+     "Nigeria zuvor angekündigt",
+     "Es war geplant",
+     "Beitritt zur AfCFTA",
+     "in der Woche",
+     "Der Weg zum Gipfel."
+    ],
+    "Spanish": [
+     "Nigeria anunció previamente",
+     "lo que se había previsto",
+     "para unirse al AfCFTA",
+     "En la semana",
+     "El camino que lleva a la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    4,
+    6,
+    9
+   ],
+   "H_set": 0.6156,
+   "text": "Nigeria ‖ previously announced it ‖ planned to ‖ join the AfCFTA ‖ in the week leading up to the summit.",
+   "pieces": {
+    "Chinese": [
+     "尼日利亚 1998年",
+     "先前宣布它",
+     "计划",
+     "加入非洲自由贸易区",
+     "会议前一周。"
+    ],
+    "Japanese": [
+     "ナイジェリア",
+     "先日発表したところによると",
+     "計画していた",
+     "AfCFTAに加盟すると",
+     "1週間前に 行われたのです"
+    ],
+    "German": [
+     "Nigeria",
+     "Wie wir es bereits angekündigt haben",
+     "geplant zu",
+     "Beitritt zur AfCFTA",
+     "In der Woche vor dem Gipfel."
+    ],
+    "Spanish": [
+     "10. Nigeria",
+     "Previamente lo anunció",
+     "previstos",
+     "Adherirse al AfCFTA",
+     "en la semana previa a la cumbre."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Nigeria previously announced",
+     "right": "it planned to join",
+     "H": 0.6575,
+     "H_pct": 60.0,
+     "contra": 0.0006,
+     "cohesion": 0.6579
+    },
+    {
+     "pos": 5,
+     "left": "previously announced it planned",
+     "right": "to join the AfCFTA",
+     "H": 0.606,
+     "H_pct": 40.0,
+     "contra": 0.0016,
+     "cohesion": 0.6069
+    },
+    {
+     "pos": 12,
+     "left": "AfCFTA in the week",
+     "right": "leading up to the",
+     "H": 0.6076,
+     "H_pct": 46.7,
+     "contra": 0.0042,
+     "cohesion": 0.6101
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Nigeria",
+     "right": "previously announced it planned",
+     "H": 0.7315,
+     "H_pct": 86.7,
+     "contra": 0.0007,
+     "cohesion": 0.732
+    },
+    {
+     "pos": 4,
+     "left": "Nigeria previously announced it",
+     "right": "planned to join the",
+     "H": 0.7792,
+     "H_pct": 93.3,
+     "contra": 0.0007,
+     "cohesion": 0.7797
+    },
+    {
+     "pos": 6,
+     "left": "announced it planned to",
+     "right": "join the AfCFTA in",
+     "H": 0.7103,
+     "H_pct": 80.0,
+     "contra": 0.0074,
+     "cohesion": 0.7156
+    }
+   ]
+  }
+ }
+]

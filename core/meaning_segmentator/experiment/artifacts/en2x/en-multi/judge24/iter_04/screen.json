@@ -1,0 +1,156 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  3,
+  14,
+  37,
+  58,
+  65,
+  73,
+  74,
+  77,
+  105,
+  119,
+  123,
+  124,
+  129,
+  139,
+  149,
+  164,
+  171,
+  186,
+  191,
+  229,
+  232,
+  258,
+  288,
+  296,
+  304,
+  313,
+  317,
+  319,
+  327,
+  329,
+  331,
+  332,
+  339,
+  346,
+  356,
+  375,
+  379,
+  380,
+  395,
+  399,
+  404,
+  410,
+  427,
+  436,
+  453,
+  457,
+  461,
+  475,
+  476,
+  491
+ ],
+ "best": 4,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01196,
+    "lo": -0.04593,
+    "hi": 0.02283,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 7329,
+   "changelog": [
+    "Insert a short, binding core principle that keeps numerals/quantifiers attached to their immediately following unit/measurement (including %, currency, and parenthesised units) to prevent cuts that split numeric expressions and produce contradictory or broken numeric claims."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.03251,
+    "lo": -0.06551,
+    "hi": -0.00208,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 7236,
+   "changelog": [
+    "Insert a short, binding core principle that keeps a clause-initial determiner or pronoun paired with the immediately following lexical head (noun or finite verb) to prevent cuts that detach heads/predicates, addressing the primary finding."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.01868,
+    "lo": -0.05409,
+    "hi": 0.01591,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 7499,
+   "changelog": [
+    "Insert a fallback ordering that protects numeric expressions first: prefer cuts that keep a numeral/quantifier next to its immediately following unit/measurement (including %, currency, or parenthetic unit) over cuts that keep a finite verb with its immediate core complement, and prefer either of those over a punctuation/clause-boundary cut — this addresses the primary finding that numerals were being split while still providing a last-resort tie-breaker."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00185,
+    "lo": -0.03558,
+    "hi": 0.03179,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 7599,
+   "changelog": [
+    "Insert a fallback ordering that first protects clause‑initial single‑word determiners/pronouns with their immediate lexical head, then numeral/quantifier+unit, then finite-verb/auxiliary+immediate core complement, and only after those prefer punctuation/clause-boundary cuts — to address the primary finding without undoing the short-piece gains from a punctuation fallback."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": 0.00295,
+    "lo": -0.02259,
+    "hi": 0.03,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 6899,
+   "changelog": [
+    "delete C4 — removes a narrow, partially redundant principle about embedded/relative-clause completion that restates predicate-argument and disambiguation checks already covered by C3 and C8; chosen because it earns its place least and pruning a redundant rule reduces rule competition (addresses the critique to simplify overlapping protections while preserving numeral/verb attachments)."
+   ]
+  },
+  {
+   "candidate": 6,
+   "delta": {
+    "mean": -0.02131,
+    "lo": -0.05645,
+    "hi": 0.01103,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 7339,
+   "changelog": [
+    "Insert a binding core principle that keeps numerals/quantifiers attached to their immediately following unit/measurement/percent/currency or parenthetic unit so numeric expressions are not split; this directly reproduces the measured target choices that keep numeric phrases intact."
+   ]
+  },
+  {
+   "candidate": 7,
+   "delta": {
+    "mean": -0.02081,
+    "lo": -0.05641,
+    "hi": 0.01164,
+    "n": 458,
+    "n_clusters": 50
+   },
+   "chars": 7323,
+   "changelog": [
+    "Insert a short, binding core principle that reproduces measured targets by keeping numerals/quantifiers together with their immediately following unit/measurement or parenthetic unit when adjacent or separated only by punctuation (addresses the primary finding)."
+   ]
+  }
+ ]
+}

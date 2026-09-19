@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats cuts before scope-resolving complements as acceptable: it allows a cut where the following phrase (exception, negation-resolver, quantifier/comparative, measurement phrase) determines or reverses the truth or scope of the already-delivered stretch.",
+    "evidence": "['en_us_738','en_us_1116','en_us_733','en_us_1081','en_us_990','en_us_103','en_us_26','en_us_105','en_us_140','en_us_1566','en_us_1527','en_us_936']: each case leaves a left stretch whose polarity or quantification is resolved only by the immediate continuation (so the left piece, taken alone, is contradicted or mis-scoped).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut when the continuation resolves the scope or polarity of the preceding claim (negation, except/only clauses, comparatives, quantifiers, or measurement phrases). Ask: 'Can the following phrase reverse, limit, or quantify this claim?' If yes, keep them together."
+    }
+   },
+   {
+    "diagnosis": "The prompt often permits cuts that split a verb/copying auxiliary or copula from its essential complement (object, predicate adjective, prepositional/cause/contrast clause), breaking the proposition and harming cohesion.",
+    "evidence": "['en_us_292','en_us_1543','en_us_30','en_us_390','en_us_329','en_us_464','en_us_573','en_us_1157']: in each, the policy cut separates a copula/auxiliary or verb from the phrase that completes its meaning (predicate, object, or causal/contrastive modifier), producing a mismatch when pieces are translated separately.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting between a copula/auxiliary/verb and an immediately following essential complement (predicate adjective, object, prepositional complement, or causal/contrast clause like 'because'/'but'); the complement completes the proposition and must travel with the verb."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats cuts before scope-resolving complements as acceptable: it allows a cut where the following phrase (exception, negation-resolver, quantifier/comparative, measurement phrase) determines or reverses the truth or scope of the already-delivered stretch.",
+   "evidence": "['en_us_738','en_us_1116','en_us_733','en_us_1081','en_us_990','en_us_103','en_us_26','en_us_105','en_us_140','en_us_1566','en_us_1527','en_us_936']: each case leaves a left stretch whose polarity or quantification is resolved only by the immediate continuation (so the left piece, taken alone, is contradicted or mis-scoped).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut when the continuation resolves the scope or polarity of the preceding claim (negation, except/only clauses, comparatives, quantifiers, or measurement phrases). Ask: 'Can the following phrase reverse, limit, or quantify this claim?' If yes, keep them together."
+   }
+  },
+  {
+   "diagnosis": "The prompt often permits cuts that split a verb/copying auxiliary or copula from its essential complement (object, predicate adjective, prepositional/cause/contrast clause), breaking the proposition and harming cohesion.",
+   "evidence": "['en_us_292','en_us_1543','en_us_30','en_us_390','en_us_329','en_us_464','en_us_573','en_us_1157']: in each, the policy cut separates a copula/auxiliary or verb from the phrase that completes its meaning (predicate, object, or causal/contrastive modifier), producing a mismatch when pieces are translated separately.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting between a copula/auxiliary/verb and an immediately following essential complement (predicate adjective, object, prepositional complement, or causal/contrast clause like 'because'/'but'); the complement completes the proposition and must travel with the verb."
+   }
+  }
+ ]
+}

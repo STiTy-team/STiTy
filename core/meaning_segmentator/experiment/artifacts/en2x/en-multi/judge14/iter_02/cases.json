@@ -1,0 +1,1988 @@
+[
+ {
+  "id": "en_us_48",
+  "cuts": 8,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.5272,
+  "policy_worst_contra": 0.8759,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    9,
+    14,
+    16,
+    19,
+    20,
+    21,
+    22
+   ],
+   "H_set": 0.068,
+   "text": "Jonny Reid, ‖ co-driver for the A1GP New Zealand team, ‖ today made history by driving ‖ the fastest ‖ over the 48-year-old ‖ Auckland ‖ Harbour ‖ Bridge, ‖ New Zealand, legally.",
+   "pieces": {
+    "Chinese": [
+     "乔尼·里德",
+     "A1GP新西兰车队副驾驶,",
+     "今天通过驾驶创造了历史",
+     "最快的",
+     "48岁以上",
+     "奥克兰",
+     "港口",
+     "桥梁",
+     "新西兰,合法的。"
+    ],
+    "Japanese": [
+     "ジョニー・リード",
+     "A1GPニュージーランドチームの 副ドライバーで",
+     "今日は歴史に名を残しました",
+     "速い",
+     "48歳の男性が",
+     "オークランド",
+     "港",
+     "ブリッジ",
+     "ニュージーランドに合法的に"
+    ],
+    "German": [
+     "Jonny Reid",
+     "Beifahrer für das A1GP Neuseeland Team,",
+     "Heute hat Geschichte geschrieben, indem er",
+     "Die schnellsten",
+     "Über den 48-Jährigen",
+     "Auckland",
+     "Hafen",
+     "Bridge,",
+     "Neuseeland, legal."
+    ],
+    "Spanish": [
+     "Jonny Reid,",
+     "Co-piloto del equipo A1GP de Nueva Zelanda,",
+     "Hoy hice historia conduciendo",
+     "El más rápido",
+     "sobre el hombre de 48 años",
+     "Auckland",
+     "Harbour",
+     "Puente,",
+     "Nueva Zelanda, legalmente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    9,
+    10,
+    11,
+    12,
+    22,
+    24
+   ],
+   "H_set": 0.5952,
+   "text": "Jonny ‖ Reid, co-driver for the A1GP ‖ New Zealand team, ‖ today ‖ made ‖ history ‖ by driving the fastest over the 48-year-old Auckland Harbour Bridge, ‖ New Zealand, ‖ legally.",
+   "pieces": {
+    "Chinese": [
+     "強尼",
+     "雷德,A1GP车队副驾驶",
+     "新西兰队,",
+     "今天",
+     "已完成",
+     "历史",
+     "通过在48年前建成的奥克兰海港大桥上驾驶最快的速度,",
+     "新西兰",
+     "合法。"
+    ],
+    "Japanese": [
+     "ジョニー",
+     "リード、A1GPのコードライター",
+     "ニュージーランドチーム",
+     "今日は",
+     "作った",
+     "歴史",
+     "48年の歴史を持つオークランド・ハーバーブリッジを 最速で走り抜けることで",
+     "ニュージーランド",
+     "合法的に"
+    ],
+    "German": [
+     "Jonny",
+     "Reid, Beifahrer für die A1GP",
+     "Neuseeland-Team,",
+     "heute",
+     "gemacht",
+     "Geschichte",
+     "indem er am schnellsten über die 48 Jahre alte Auckland Harbour Bridge fuhr,",
+     "Neuseeland,",
+     "Rechtmäßig."
+    ],
+    "Spanish": [
+     "Jonny",
+     "Reid, copiloto de la A1GP",
+     "Equipo de Nueva Zelanda,",
+     "Hoy",
+     "made",
+     "Historia",
+     "conduciendo el más rápido sobre el puente del puerto de Auckland, de 48 años,",
+     "Nueva Zelandia,",
+     "legalmente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Jonny Reid,",
+     "right": "co-driver for the A1GP",
+     "H": 0.6775,
+     "H_pct": 65.2,
+     "contra": 0.0008,
+     "cohesion": 0.678
+    },
+    {
+     "pos": 14,
+     "left": "made history by driving",
+     "right": "the fastest over the",
+     "H": 0.6408,
+     "H_pct": 47.8,
+     "contra": 0.0004,
+     "cohesion": 0.6411
+    },
+    {
+     "pos": 16,
+     "left": "by driving the fastest",
+     "right": "over the 48-year-old Auckland",
+     "H": 0.6311,
+     "H_pct": 43.5,
+     "contra": 0.0019,
+     "cohesion": 0.6323
+    },
+    {
+     "pos": 19,
+     "left": "fastest over the 48-year-old",
+     "right": "Auckland Harbour Bridge, New",
+     "H": 0.5337,
+     "H_pct": 8.7,
+     "contra": 0.1276,
+     "cohesion": 0.6118
+    },
+    {
+     "pos": 20,
+     "left": "over the 48-year-old Auckland",
+     "right": "Harbour Bridge, New Zealand,",
+     "H": 0.076,
+     "H_pct": 0.0,
+     "contra": 0.8759,
+     "cohesion": 0.6123
+    },
+    {
+     "pos": 21,
+     "left": "the 48-year-old Auckland Harbour",
+     "right": "Bridge, New Zealand, legally.",
+     "H": 0.1062,
+     "H_pct": 4.3,
+     "contra": 0.842,
+     "cohesion": 0.6721
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Jonny",
+     "right": "Reid, co-driver for the",
+     "H": 0.7313,
+     "H_pct": 100.0,
+     "contra": 0.0004,
+     "cohesion": 0.7316
+    },
+    {
+     "pos": 6,
+     "left": "co-driver for the A1GP",
+     "right": "New Zealand team, today",
+     "H": 0.6903,
+     "H_pct": 73.9,
+     "contra": 0.0005,
+     "cohesion": 0.6907
+    },
+    {
+     "pos": 10,
+     "left": "New Zealand team, today",
+     "right": "made history by driving",
+     "H": 0.7198,
+     "H_pct": 91.3,
+     "contra": 0.0012,
+     "cohesion": 0.7206
+    },
+    {
+     "pos": 11,
+     "left": "Zealand team, today made",
+     "right": "history by driving the",
+     "H": 0.683,
+     "H_pct": 69.6,
+     "contra": 0.0005,
+     "cohesion": 0.6833
+    },
+    {
+     "pos": 12,
+     "left": "team, today made history",
+     "right": "by driving the fastest",
+     "H": 0.7063,
+     "H_pct": 78.3,
+     "contra": 0.001,
+     "cohesion": 0.707
+    },
+    {
+     "pos": 24,
+     "left": "Harbour Bridge, New Zealand,",
+     "right": "legally.",
+     "H": 0.7271,
+     "H_pct": 95.7,
+     "contra": 0.0064,
+     "cohesion": 0.7318
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 3,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.5879,
+  "policy_worst_contra": 0.9291,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    8,
+    10
+   ],
+   "H_set": 0.0447,
+   "text": "Farther south is Niagara Falls ‖ and the north ‖ is home ‖ to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "与北方",
+     "是家",
+     "马斯科卡及其周边地区未开发的自然美景。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は",
+     "家だ",
+     "未開拓の自然の美しさを見せてくれます"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "und der Norden",
+     "Das ist zu Hause",
+     "Entdecken Sie die unberührte Naturschönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "Y el norte",
+     "Mi casa es casa",
+     "Descubra la belleza natural de Muskoka y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6
+   ],
+   "H_set": 0.6327,
+   "text": "Farther ‖ south is Niagara Falls ‖ and ‖ the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "远远",
+     "尼亚加拉大瀑布",
+     "以及",
+     "北部是马斯科卡及其以外未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "ファーザー",
+     "南はナイアガラの滝",
+     "それに",
+     "北部は未開発の自然の美しさがある マスコカ川のほかにもあります"
+    ],
+    "German": [
+     "Farther",
+     "Südlich sind die Niagarafälle",
+     "und",
+     "Der Norden ist die Heimat der unerschlossenen natürlichen Schönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Farther",
+     "Al sur están las Cataratas del Niágara",
+     "y",
+     "El norte es el hogar de la belleza natural sin explotar de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Falls and the north",
+     "right": "is home to the",
+     "H": 0.0496,
+     "H_pct": 38.9,
+     "contra": 0.9291,
+     "cohesion": 0.6997
+    },
+    {
+     "pos": 10,
+     "left": "the north is home",
+     "right": "to the untapped natural",
+     "H": 0.5412,
+     "H_pct": 66.7,
+     "contra": 0.1849,
+     "cohesion": 0.664
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Farther",
+     "right": "south is Niagara Falls",
+     "H": 0.6863,
+     "H_pct": 88.9,
+     "contra": 0.0118,
+     "cohesion": 0.6945
+    },
+    {
+     "pos": 6,
+     "left": "is Niagara Falls and",
+     "right": "the north is home",
+     "H": 0.6956,
+     "H_pct": 94.4,
+     "contra": 0.0736,
+     "cohesion": 0.7509
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1497",
+  "cuts": 3,
+  "avg_chunk": 5.8,
+  "latency_bin": "≤7",
+  "gap": 0.4889,
+  "policy_worst_contra": 0.5885,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    10,
+    19
+   ],
+   "H_set": 0.2878,
+   "text": "British pounds will generally be accepted ‖ anywhere in the islands ‖ and within Stanley credit cards and United States dollars ‖ are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "一般接受英镑",
+     "岛上的任何地方",
+     "斯坦利信用卡和美元",
+     "还经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンドは一般的に受け入れられる",
+     "島のどこでも",
+     "スタンレークレジットカードと米ドルの中で",
+     "受け入れられることも多いのです"
+    ],
+    "German": [
+     "Britische Pfund werden in der Regel akzeptiert",
+     "Überall auf den Inseln",
+     "und innerhalb von Stanley Kreditkarten und US-Dollar",
+     "Auch werden sie oft akzeptiert."
+    ],
+    "Spanish": [
+     "En general se aceptarán libras británicas",
+     "En cualquier lugar de las islas",
+     "y dentro de las tarjetas de crédito Stanley y dólares de los Estados Unidos",
+     "También se aceptan a menudo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    10,
+    13
+   ],
+   "H_set": 0.7767,
+   "text": "British pounds will generally be accepted anywhere ‖ in the islands ‖ and within Stanley ‖ credit cards and United States dollars are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英镑通常在任何地方都可以接受",
+     "岛上",
+     "斯坦利及其周边地区",
+     "信用卡和美元也经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンドは一般的にどこでも受け入れられる",
+     "島々に住む人々は",
+     "スタンレーの中では",
+     "クレジットカードや米ドルもよく受け入れられます"
+    ],
+    "German": [
+     "Britische Pfund werden in der Regel überall akzeptiert",
+     "Auf den Inseln",
+     "In und um Stanley",
+     "Kreditkarten und US-Dollar werden ebenfalls oft akzeptiert."
+    ],
+    "Spanish": [
+     "Las libras británicas generalmente se aceptarán en cualquier lugar",
+     "En las islas",
+     "En y alrededor de Stanley",
+     "También se aceptan tarjetas de crédito y dólares estadounidenses."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "will generally be accepted",
+     "right": "anywhere in the islands",
+     "H": 0.7897,
+     "H_pct": 81.0,
+     "contra": 0.0004,
+     "cohesion": 0.79
+    },
+    {
+     "pos": 19,
+     "left": "and United States dollars",
+     "right": "are also often accepted.",
+     "H": 0.2533,
+     "H_pct": 9.5,
+     "contra": 0.5885,
+     "cohesion": 0.6155
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "generally be accepted anywhere",
+     "right": "in the islands and",
+     "H": 0.8126,
+     "H_pct": 95.2,
+     "contra": 0.0015,
+     "cohesion": 0.8138
+    },
+    {
+     "pos": 13,
+     "left": "islands and within Stanley",
+     "right": "credit cards and United",
+     "H": 0.8282,
+     "H_pct": 100.0,
+     "contra": 0.0033,
+     "cohesion": 0.8309
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 1,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.5012,
+  "policy_worst_contra": 0.6495,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.3115,
+   "text": "All the ships were sunk, except for one British cruiser. ‖ Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一艘英国巡洋舰外,所有船只都被击沉。",
+     "近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻のイギリス巡洋艦を除いて全艦が沈没した。",
+     "アメリカ人とドイツ人は200人近くが死亡した。"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf einen britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Menschen kamen ums Leben."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.8127,
+   "text": "All the ships were sunk, except for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "除了一个船只外,所有船只都沉没了。",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "1隻を除いて全て沈没した",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt, bis auf ein",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos fueron hundidos, excepto uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1050",
+  "cuts": 1,
+  "avg_chunk": 11.5,
+  "latency_bin": "≤99",
+  "gap": 0.2078,
+  "policy_worst_contra": 0.2395,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    11
+   ],
+   "H_set": 0.635,
+   "text": "The two towers rise to a height of 83 meters, it's ‖ 378 meters long and it has two lanes of 3.50 m wide.",
+   "pieces": {
+    "Chinese": [
+     "两座塔楼的高度达到83米,它是",
+     "378米长,有两条3.50米宽的车道。"
+    ],
+    "Japanese": [
+     "2つの塔は高さ83メートルになり",
+     "全長378m、幅3.50mの2車線である。"
+    ],
+    "German": [
+     "Die beiden Türme erheben sich auf eine Höhe von 83 Metern, es ist",
+     "378 Meter lang und verfügt über zwei Fahrspuren von 3,50 m Breite."
+    ],
+    "Spanish": [
+     "Las dos torres se elevan a una altura de 83 metros, es",
+     "Tiene 378 metros de longitud y dos carriles de 3,50 m de ancho."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.8427,
+   "text": "The two towers rise to a height of 83 meters, ‖ it's 378 meters long and it has two lanes of 3.50 m wide.",
+   "pieces": {
+    "Chinese": [
+     "两座塔楼的高度为83米,",
+     "它长378米,有两条3.5米宽的车道。"
+    ],
+    "Japanese": [
+     "2つの塔は高さ83メートルに達し、",
+     "長さ378メートル 幅3.5メートルの2車線です"
+    ],
+    "German": [
+     "Die beiden Türme erheben sich auf eine Höhe von 83 Metern,",
+     "Es ist 378 Meter lang und hat zwei Fahrspuren von 3,50 m Breite."
+    ],
+    "Spanish": [
+     "Las dos torres se elevan a una altura de 83 metros,",
+     "Tiene 378 metros de largo y dos carriles de 3,50 m de ancho."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "of 83 meters, it's",
+     "right": "378 meters long and",
+     "H": 0.635,
+     "H_pct": 4.8,
+     "contra": 0.2395,
+     "cohesion": 0.8349
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "height of 83 meters,",
+     "right": "it's 378 meters long",
+     "H": 0.8427,
+     "H_pct": 100.0,
+     "contra": 0.0076,
+     "cohesion": 0.8492
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_455",
+  "cuts": 11,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.5095,
+  "policy_worst_contra": 0.9506,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    6,
+    8,
+    9,
+    10,
+    20,
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "H_set": 0.0278,
+   "text": "The disadvantage of zoom lenses ‖ is ‖ that the ‖ focal ‖ complexity ‖ and number of lens elements required to achieve a range ‖ of focal ‖ lengths ‖ is ‖ much ‖ greater ‖ than for prime lenses.",
+   "pieces": {
+    "Chinese": [
+     "变焦镜头的缺点",
+     "是",
+     "该",
+     "焦点",
+     "复杂性",
+     "镜头数量 镜头数量",
+     "焦点",
+     "长度",
+     "是",
+     "很",
+     "较大",
+     "比固定镜头要高。"
+    ],
+    "Japanese": [
+     "ズームレンズの欠点",
+     "はい",
+     "あの あの",
+     "焦点",
+     "複雑性",
+     "100メートルの距離を撮影するのに必要なレンズの数は",
+     "焦点の位置を",
+     "ああ ああ",
+     "はい",
+     "多く",
+     "もっと",
+     "10倍の光学的な効果を発揮します"
+    ],
+    "German": [
+     "Der Nachteil von Zoomobjektiven",
+     "ist",
+     "Dass die",
+     "Fokus",
+     "Komplexität",
+     "Anzahl der Linsenelemente, die benötigt werden, um eine bestimmte Reichweite zu erreichen",
+     "Fokusbereich",
+     "Längen",
+     "ist",
+     "viel",
+     "größer",
+     "als für Festbrennweitenobjektive."
+    ],
+    "Spanish": [
+     "La desventaja de los objetivos zoom",
+     "es",
+     "que el",
+     "focal",
+     "complejidad",
+     "Número de elementos de lente necesarios para lograr una gama",
+     "de focal",
+     "Longitudes",
+     "es",
+     "Muy",
+     "mayor",
+     "que para lentes de focal fija."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    10,
+    11,
+    12,
+    26,
+    29
+   ],
+   "H_set": 0.5373,
+   "text": "The ‖ disadvantage ‖ of zoom ‖ lenses ‖ is ‖ that ‖ the focal complexity ‖ and ‖ number ‖ of lens elements required to achieve a range of focal lengths is much greater ‖ than for prime ‖ lenses.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "弱点",
+     "缩放",
+     "透镜",
+     "是",
+     "该",
+     "焦点复杂性",
+     "以及",
+     "数目",
+     "实现焦距范围所需的镜头元件数量要大得多",
+     "比素数",
+     "镜头"
+    ],
+    "Japanese": [
+     "あの",
+     "弱点は",
+     "ズーム",
+     "レンズ",
+     "はい",
+     "あれは",
+     "焦点の複雑さは",
+     "それに",
+     "番号",
+     "焦点距離の範囲を得るために必要なレンズ素子の数は ずっと多くなります",
+     "プライムよりも",
+     "レンズ"
+    ],
+    "German": [
+     "The",
+     "Nachteil",
+     "Größe des Zooms",
+     "Linsen",
+     "ist",
+     "that",
+     "Die fokale Komplexität",
+     "und",
+     "Zahl",
+     "Die Anzahl der Objektivelemente, die für einen bestimmten Brennweitenbereich erforderlich sind, ist viel größer",
+     "als für Prime",
+     "Linsen."
+    ],
+    "Spanish": [
+     "The",
+     "Desventaja",
+     "Tipo de zoom",
+     "Lentes",
+     "es",
+     "that",
+     "La complejidad focal",
+     "y",
+     "Número de",
+     "El número de elementos de lente necesarios para lograr una gama de longitudes focales es mucho mayor",
+     "que para el primer",
+     "Lentes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "lenses is that the",
+     "right": "focal complexity and number",
+     "H": 0.0391,
+     "H_pct": 0.0,
+     "contra": 0.9506,
+     "cohesion": 0.7909
+    },
+    {
+     "pos": 9,
+     "left": "is that the focal",
+     "right": "complexity and number of",
+     "H": 0.7216,
+     "H_pct": 42.9,
+     "contra": 0.0627,
+     "cohesion": 0.7699
+    },
+    {
+     "pos": 20,
+     "left": "to achieve a range",
+     "right": "of focal lengths is",
+     "H": 0.6495,
+     "H_pct": 14.3,
+     "contra": 0.1095,
+     "cohesion": 0.7294
+    },
+    {
+     "pos": 22,
+     "left": "a range of focal",
+     "right": "lengths is much greater",
+     "H": 0.4153,
+     "H_pct": 7.1,
+     "contra": 0.3908,
+     "cohesion": 0.6817
+    },
+    {
+     "pos": 23,
+     "left": "range of focal lengths",
+     "right": "is much greater than",
+     "H": 0.7185,
+     "H_pct": 39.3,
+     "contra": 0.0259,
+     "cohesion": 0.7376
+    },
+    {
+     "pos": 24,
+     "left": "of focal lengths is",
+     "right": "much greater than for",
+     "H": 0.724,
+     "H_pct": 50.0,
+     "contra": 0.02,
+     "cohesion": 0.7388
+    },
+    {
+     "pos": 25,
+     "left": "focal lengths is much",
+     "right": "greater than for prime",
+     "H": 0.7245,
+     "H_pct": 53.6,
+     "contra": 0.0181,
+     "cohesion": 0.7379
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "disadvantage of zoom lenses",
+     "H": 0.7799,
+     "H_pct": 75.0,
+     "contra": 0.0276,
+     "cohesion": 0.802
+    },
+    {
+     "pos": 2,
+     "left": "The disadvantage",
+     "right": "of zoom lenses is",
+     "H": 0.8022,
+     "H_pct": 92.9,
+     "contra": 0.0021,
+     "cohesion": 0.8039
+    },
+    {
+     "pos": 4,
+     "left": "The disadvantage of zoom",
+     "right": "lenses is that the",
+     "H": 0.8,
+     "H_pct": 89.3,
+     "contra": 0.0013,
+     "cohesion": 0.801
+    },
+    {
+     "pos": 7,
+     "left": "zoom lenses is that",
+     "right": "the focal complexity and",
+     "H": 0.7868,
+     "H_pct": 82.1,
+     "contra": 0.0326,
+     "cohesion": 0.8133
+    },
+    {
+     "pos": 11,
+     "left": "the focal complexity and",
+     "right": "number of lens elements",
+     "H": 0.8024,
+     "H_pct": 96.4,
+     "contra": 0.0091,
+     "cohesion": 0.8097
+    },
+    {
+     "pos": 12,
+     "left": "focal complexity and number",
+     "right": "of lens elements required",
+     "H": 0.7694,
+     "H_pct": 71.4,
+     "contra": 0.0185,
+     "cohesion": 0.7839
+    },
+    {
+     "pos": 29,
+     "left": "greater than for prime",
+     "right": "lenses.",
+     "H": 0.7654,
+     "H_pct": 67.9,
+     "contra": 0.0126,
+     "cohesion": 0.7752
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_113",
+  "cuts": 6,
+  "avg_chunk": 3.7,
+  "latency_bin": "≤5",
+  "gap": 0.5215,
+  "policy_worst_contra": 0.968,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    13,
+    21,
+    23,
+    24,
+    25
+   ],
+   "H_set": 0.0203,
+   "text": "Mr. Rudd's decision to sign the Kyoto climate accord ‖ isolates the United States, ‖ which will now be the only developed nation ‖ not to ‖ ratify ‖ the ‖ agreement.",
+   "pieces": {
+    "Chinese": [
+     "陆克文先生签署京都气候协定的决定",
+     "孤立美国,",
+     "现在将成为唯一的发达国家",
+     "不要",
+     "批准",
+     "该",
+     "协议。"
+    ],
+    "Japanese": [
+     "ラッド氏の京都議定書に署名する決定",
+     "アメリカを孤立させ",
+     "世界で唯一の先進国となるでしょう",
+     "やめて",
+     "批准",
+     "あの",
+     "合意した"
+    ],
+    "German": [
+     "Herr Rudd's Entscheidung, das Kyoto-Klimaabkommen zu unterzeichnen",
+     "isoliert die Vereinigten Staaten,",
+     "Das wird nun die einzige entwickelte Nation sein",
+     "Nicht zu",
+     "Ratifizieren",
+     "the",
+     "Einvernehmen."
+    ],
+    "Spanish": [
+     "La decisión del Sr. Rudd de firmar el acuerdo climático de Kyoto",
+     "aísla a los Estados Unidos,",
+     "que ahora será la única nación desarrollada",
+     "No",
+     "ratify",
+     "the",
+     "Acuerdo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    10,
+    12,
+    13,
+    14
+   ],
+   "H_set": 0.5418,
+   "text": "Mr. ‖ Rudd's decision to sign ‖ the Kyoto climate accord isolates ‖ the United ‖ States, ‖ which ‖ will now be the only developed nation not to ratify the agreement.",
+   "pieces": {
+    "Chinese": [
+     "先生",
+     "陆克文的签署决定",
+     "京都气候协定的孤立",
+     "联合国",
+     "各国，",
+     "其中",
+     "现在,美国将是唯一一个没有批准该协定的发达国家。"
+    ],
+    "Japanese": [
+     "あなたは",
+     "ラッドの署名決定",
+     "京都議定書は",
+     "ユナイテッド",
+     "州",
+     "それは",
+     "唯一の先進国で 条約を批准しないことになります"
+    ],
+    "German": [
+     "Herr",
+     "Rudds Entscheidung zu unterzeichnen",
+     "Das Kyoto-Klimaabkommen isoliert",
+     "Die Vereinigten Staaten",
+     "Staaten,",
+     "which",
+     "Die USA werden nun das einzige Industrieland sein, das das Abkommen nicht ratifiziert."
+    ],
+    "Spanish": [
+     "Sr.",
+     "La decisión de Rudd de firmar",
+     "El acuerdo climático de Kyoto aísla",
+     "United Nations",
+     "Estados,",
+     "which",
+     "Ahora será el único país desarrollado que no ratifique el acuerdo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "the Kyoto climate accord",
+     "right": "isolates the United States,",
+     "H": 0.7551,
+     "H_pct": 50.0,
+     "contra": 0.0033,
+     "cohesion": 0.7576
+    },
+    {
+     "pos": 21,
+     "left": "the only developed nation",
+     "right": "not to ratify the",
+     "H": 0.0234,
+     "H_pct": 0.0,
+     "contra": 0.968,
+     "cohesion": 0.7299
+    },
+    {
+     "pos": 23,
+     "left": "developed nation not to",
+     "right": "ratify the agreement.",
+     "H": 0.5729,
+     "H_pct": 8.3,
+     "contra": 0.2036,
+     "cohesion": 0.7193
+    },
+    {
+     "pos": 24,
+     "left": "nation not to ratify",
+     "right": "the agreement.",
+     "H": 0.7169,
+     "H_pct": 20.8,
+     "contra": 0.0239,
+     "cohesion": 0.7345
+    },
+    {
+     "pos": 25,
+     "left": "not to ratify the",
+     "right": "agreement.",
+     "H": 0.7379,
+     "H_pct": 37.5,
+     "contra": 0.0065,
+     "cohesion": 0.7428
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Mr.",
+     "right": "Rudd's decision to sign",
+     "H": 0.806,
+     "H_pct": 87.5,
+     "contra": 0.0062,
+     "cohesion": 0.8111
+    },
+    {
+     "pos": 5,
+     "left": "Rudd's decision to sign",
+     "right": "the Kyoto climate accord",
+     "H": 0.8008,
+     "H_pct": 83.3,
+     "contra": 0.0029,
+     "cohesion": 0.8032
+    },
+    {
+     "pos": 10,
+     "left": "Kyoto climate accord isolates",
+     "right": "the United States, which",
+     "H": 0.8004,
+     "H_pct": 79.2,
+     "contra": 0.0026,
+     "cohesion": 0.8024
+    },
+    {
+     "pos": 12,
+     "left": "accord isolates the United",
+     "right": "States, which will now",
+     "H": 0.8218,
+     "H_pct": 95.8,
+     "contra": 0.0092,
+     "cohesion": 0.8295
+    },
+    {
+     "pos": 14,
+     "left": "the United States, which",
+     "right": "will now be the",
+     "H": 0.8178,
+     "H_pct": 91.7,
+     "contra": 0.0026,
+     "cohesion": 0.8199
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1233",
+  "cuts": 5,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.4754,
+  "policy_worst_contra": 0.7341,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "H_set": 0.1584,
+   "text": "The concept ‖ came ‖ from ‖ China ‖ where ‖ plum blossoms were the flower of choice.",
+   "pieces": {
+    "Chinese": [
+     "概念",
+     "来了",
+     "从",
+     "10. 中国",
+     "其中",
+     "李子花是选择的花。"
+    ],
+    "Japanese": [
+     "概念",
+     "来た",
+     "ここから",
+     "チャイナタウン",
+     "どこに",
+     "梅の花が選ばれた"
+    ],
+    "German": [
+     "Das Konzept der Veranstaltung",
+     "kam",
+     "von",
+     "China",
+     "wo",
+     "Pflaumenblüten waren die Blume der Wahl."
+    ],
+    "Spanish": [
+     "El concepto de",
+     "came",
+     "de",
+     "China 1996",
+     "donde",
+     "Las flores de ciruelo eran la flor de elección."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.6339,
+   "text": "The concept came ‖ from China ‖ where ‖ plum blossoms ‖ were the ‖ flower of choice.",
+   "pieces": {
+    "Chinese": [
+     "这个概念来自",
+     "来自中国",
+     "其中",
+     "李子花",
+     "是",
+     "选择的花朵。"
+    ],
+    "Japanese": [
+     "コンセプトは",
+     "中国から",
+     "どこに",
+     "梅の花",
+     "あの人たちは",
+     "花の選択"
+    ],
+    "German": [
+     "Das Konzept kam",
+     "WEI aus China",
+     "wo",
+     "Pflaumenblüten",
+     "Waren die",
+     "Blume der Wahl."
+    ],
+    "Spanish": [
+     "El concepto vino",
+     "100% de China",
+     "donde",
+     "Flores de ciruela",
+     "fueron los",
+     "Flor de elección."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "The concept",
+     "right": "came from China where",
+     "H": 0.6778,
+     "H_pct": 45.5,
+     "contra": 0.0027,
+     "cohesion": 0.6796
+    },
+    {
+     "pos": 4,
+     "left": "The concept came from",
+     "right": "China where plum blossoms",
+     "H": 0.2088,
+     "H_pct": 0.0,
+     "contra": 0.7341,
+     "cohesion": 0.7854
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "China where plum blossoms",
+     "right": "were the flower of",
+     "H": 0.7043,
+     "H_pct": 63.6,
+     "contra": 0.0006,
+     "cohesion": 0.7047
+    },
+    {
+     "pos": 10,
+     "left": "plum blossoms were the",
+     "right": "flower of choice.",
+     "H": 0.7327,
+     "H_pct": 72.7,
+     "contra": 0.0018,
+     "cohesion": 0.734
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_276",
+  "cuts": 6,
+  "avg_chunk": 3.9,
+  "latency_bin": "≤5",
+  "gap": 0.4512,
+  "policy_worst_contra": 0.767,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    5,
+    10,
+    19,
+    23,
+    24
+   ],
+   "H_set": 0.1143,
+   "text": "Komen's policy ‖ disqualified Planned Parenthood ‖ due to a pending investigation ‖ on how Planned Parenthood spends and reports its money ‖ that is being conducted ‖ by ‖ Representative Cliff Stearns.",
+   "pieces": {
+    "Chinese": [
+     "科门政策",
+     "计划生育",
+     "由于调查有待进行",
+     "计划生育如何花费和报告其资金",
+     "进行的调查",
+     "由",
+     "克利夫·斯特恩斯众议员"
+    ],
+    "Japanese": [
+     "孝文政策",
+     "プランニング・ファミリーは 資格を失いました",
+     "調査中のため",
+     "プランニング・ファミリーの支出や報告を",
+     "実施されている研究で",
+     "あなたは",
+     "クリフ・スターンズ議員"
+    ],
+    "German": [
+     "Komens Politik",
+     "Planned Parenthood in der Öffentlichkeit",
+     "Aufgrund einer anhängigen Untersuchung",
+     "Wie Planned Parenthood sein Geld ausgibt und berichtet",
+     "Das wird durchgeführt",
+     "von",
+     "Abgeordneter Cliff Stearns."
+    ],
+    "Spanish": [
+     "La política de Komen",
+     "Planned Parenthood",
+     "debido a una investigación pendiente",
+     "sobre cómo Planned Parenthood gasta y reporta su dinero",
+     "que se está llevando a cabo",
+     "por",
+     "Representante Cliff Stearns."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    9,
+    10,
+    15,
+    19,
+    23
+   ],
+   "H_set": 0.5655,
+   "text": "Komen's policy disqualified Planned Parenthood ‖ due to a pending ‖ investigation ‖ on how Planned Parenthood spends ‖ and reports its money ‖ that is being conducted ‖ by Representative Cliff Stearns.",
+   "pieces": {
+    "Chinese": [
+     "计划生育的政策取消资格",
+     "由于未决",
+     "调查",
+     "计划生育的花费",
+     "并报告其资金",
+     "进行的调查",
+     "克利夫·斯特恩斯代表"
+    ],
+    "Japanese": [
+     "子供の親権を否定する小門の方針",
+     "待ち受け中の",
+     "調査",
+     "プランニング・ファミリーの支出を",
+     "報告書を作成し",
+     "実施されている研究で",
+     "クリフ・スターンズ議員によって"
+    ],
+    "German": [
+     "Komens Politik disqualifiziert Planned Parenthood",
+     "Aufgrund einer ausstehenden",
+     "Untersuchung",
+     "Wie Planned Parenthood ausgibt",
+     "Und meldet sein Geld",
+     "Das wird durchgeführt",
+     "Von Abgeordneter Cliff Stearns."
+    ],
+    "Spanish": [
+     "La política de Komen descalifica a Planned Parenthood",
+     "debido a un pendiente",
+     "Investigación",
+     "sobre cómo gasta Planned Parenthood",
+     "y reporta su dinero",
+     "que se está llevando a cabo",
+     "por el representante Cliff Stearns."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Komen's policy",
+     "right": "disqualified Planned Parenthood due",
+     "H": 0.6221,
+     "H_pct": 72.0,
+     "contra": 0.0008,
+     "cohesion": 0.6225
+    },
+    {
+     "pos": 24,
+     "left": "is being conducted by",
+     "right": "Representative Cliff Stearns.",
+     "H": 0.1459,
+     "H_pct": 0.0,
+     "contra": 0.767,
+     "cohesion": 0.6263
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "due to a pending",
+     "right": "investigation on how Planned",
+     "H": 0.628,
+     "H_pct": 80.0,
+     "contra": 0.0041,
+     "cohesion": 0.6306
+    },
+    {
+     "pos": 15,
+     "left": "how Planned Parenthood spends",
+     "right": "and reports its money",
+     "H": 0.66,
+     "H_pct": 100.0,
+     "contra": 0.0099,
+     "cohesion": 0.6665
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_26",
+  "cuts": 5,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.4708,
+  "policy_worst_contra": 0.9843,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    7,
+    8,
+    11,
+    12
+   ],
+   "H_set": 0.0098,
+   "text": "Ovechkin's first assist of the night ‖ was ‖ on ‖ the game-winning goal ‖ by ‖ rookie Nicklas Backstrom;",
+   "pieces": {
+    "Chinese": [
+     "奥维奇金的第一次助攻",
+     "是",
+     "上",
+     "比赛的胜利目标",
+     "由",
+     "新秀尼克拉斯·巴克斯特罗姆;"
+    ],
+    "Japanese": [
+     "オベチェキンの初アシスト",
+     "あれは",
+     "ああ",
+     "勝利のゴールは",
+     "あなたは",
+     "ニクラス・バックストロム"
+    ],
+    "German": [
+     "Ovechkins erster Assist der Nacht",
+     "war",
+     "on",
+     "Das Spielgewinntor",
+     "von",
+     "Rookie Nicklas Backstrom;"
+    ],
+    "Spanish": [
+     "La primera asistencia de Ovechkin de la noche",
+     "fue",
+     "on",
+     "El gol ganador del partido",
+     "por",
+     "El novato Nicklas Backstrom;"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    10,
+    11,
+    13,
+    14
+   ],
+   "H_set": 0.4806,
+   "text": "Ovechkin's first assist of the night ‖ was on the game-winning ‖ goal ‖ by rookie ‖ Nicklas ‖ Backstrom;",
+   "pieces": {
+    "Chinese": [
+     "奥维奇金的第一次助攻",
+     "上面的图片",
+     "目标",
+     "按新手分类",
+     "尼克拉斯",
+     "回流；"
+    ],
+    "Japanese": [
+     "オベチェキンの初アシスト",
+     "勝利のための",
+     "ゴール",
+     "ルーキーによって",
+     "ニクラス",
+     "バックストローム"
+    ],
+    "German": [
+     "Ovechkins erster Assist der Nacht",
+     "Auf dem Spielgewinn",
+     "Ziel",
+     "Geschrieben von rookie",
+     "Nicklas",
+     "Rückstrom;"
+    ],
+    "Spanish": [
+     "La primera asistencia de Ovechkin de la noche",
+     "Estaba en el juego ganador",
+     "Objetivo",
+     "Publicado por rookie",
+     "Nicklas",
+     "Backstrom;"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "of the night was",
+     "right": "on the game-winning goal",
+     "H": 0.6704,
+     "H_pct": 38.5,
+     "contra": 0.0569,
+     "cohesion": 0.7109
+    },
+    {
+     "pos": 8,
+     "left": "the night was on",
+     "right": "the game-winning goal by",
+     "H": 0.6733,
+     "H_pct": 53.8,
+     "contra": 0.0109,
+     "cohesion": 0.6807
+    },
+    {
+     "pos": 12,
+     "left": "the game-winning goal by",
+     "right": "rookie Nicklas Backstrom;",
+     "H": 0.0113,
+     "H_pct": 0.0,
+     "contra": 0.9843,
+     "cohesion": 0.7207
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "was on the game-winning",
+     "right": "goal by rookie Nicklas",
+     "H": 0.7307,
+     "H_pct": 76.9,
+     "contra": 0.0216,
+     "cohesion": 0.7468
+    },
+    {
+     "pos": 13,
+     "left": "game-winning goal by rookie",
+     "right": "Nicklas Backstrom;",
+     "H": 0.7396,
+     "H_pct": 92.3,
+     "contra": 0.0379,
+     "cohesion": 0.7688
+    },
+    {
+     "pos": 14,
+     "left": "goal by rookie Nicklas",
+     "right": "Backstrom;",
+     "H": 0.7113,
+     "H_pct": 69.2,
+     "contra": 0.0233,
+     "cohesion": 0.7283
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1507",
+  "cuts": 6,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.4571,
+  "policy_worst_contra": 0.9984,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7
+   ],
+   "H_set": 0.0008,
+   "text": "Travellers ‖ may ‖ encounter ‖ animal ‖ pests ‖ that they ‖ are not familiar with in their home regions.",
+   "pieces": {
+    "Chinese": [
+     "游民",
+     "5月(半天会议)",
+     "遭遇",
+     "动物",
+     "害虫",
+     "他们",
+     "他们在家乡地区不熟悉的。"
+    ],
+    "Japanese": [
+     "旅人",
+     "5月",
+     "遭遇",
+     "動物",
+     "害虫",
+     "彼らが",
+     "知らないことを 教えてくれます"
+    ],
+    "German": [
+     "Travellers",
+     "Mai",
+     "Begegnung",
+     "Tier",
+     "Schädlinge",
+     "Dass sie",
+     "Sie kennen diese in ihren Heimatregionen nicht."
+    ],
+    "Spanish": [
+     "Viajeros",
+     "May",
+     "Encuentro",
+     "animal",
+     "Plagas",
+     "que ellos",
+     "No están familiarizados con sus regiones de origen."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    5,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.4578,
+   "text": "Travellers ‖ may ‖ encounter animal pests ‖ that they are not familiar with ‖ in ‖ their ‖ home regions.",
+   "pieces": {
+    "Chinese": [
+     "游民",
+     "5月(半天会议)",
+     "遇到动物害虫",
+     "他们不熟悉的",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "他们",
+     "家乡地区。"
+    ],
+    "Japanese": [
+     "旅人",
+     "5月",
+     "動物の害虫に遭遇すると",
+     "彼らが知らないことを",
+     "ここに",
+     "彼らの",
+     "家族の地域です"
+    ],
+    "German": [
+     "Travellers",
+     "Mai",
+     "Begegnung mit Tierschädlingen",
+     "Dass sie nicht vertraut sind",
+     "in",
+     "their",
+     "Heimatregionen."
+    ],
+    "Spanish": [
+     "Viajeros",
+     "May",
+     "Encuentro de plagas animales",
+     "Que no están familiarizados con",
+     "en",
+     "their",
+     "Regiones de origen."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Travellers may encounter",
+     "right": "animal pests that they",
+     "H": 0.6728,
+     "H_pct": 46.2,
+     "contra": 0.0005,
+     "cohesion": 0.6732
+    },
+    {
+     "pos": 4,
+     "left": "Travellers may encounter animal",
+     "right": "pests that they are",
+     "H": 0.576,
+     "H_pct": 23.1,
+     "contra": 0.082,
+     "cohesion": 0.6275
+    },
+    {
+     "pos": 7,
+     "left": "animal pests that they",
+     "right": "are not familiar with",
+     "H": 0.001,
+     "H_pct": 7.7,
+     "contra": 0.9984,
+     "cohesion": 0.6155
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "are not familiar with",
+     "right": "in their home regions.",
+     "H": 0.7994,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8006
+    },
+    {
+     "pos": 12,
+     "left": "not familiar with in",
+     "right": "their home regions.",
+     "H": 0.7261,
+     "H_pct": 69.2,
+     "contra": 0.0215,
+     "cohesion": 0.7421
+    },
+    {
+     "pos": 13,
+     "left": "familiar with in their",
+     "right": "home regions.",
+     "H": 0.7182,
+     "H_pct": 61.5,
+     "contra": 0.0034,
+     "cohesion": 0.7206
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_105",
+  "cuts": 11,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.4437,
+  "policy_worst_contra": 0.8111,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8,
+    11,
+    12,
+    14,
+    17
+   ],
+   "H_set": 0.1046,
+   "text": "They ‖ include ‖ financial ‖ restrictions ‖ and ‖ a ban ‖ by ‖ the European Union ‖ on ‖ the export ‖ of crude oil, ‖ from which the Iranian economy receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "包括",
+     "财务",
+     "限制",
+     "以及",
+     "禁止",
+     "由",
+     "欧洲联盟",
+     "上",
+     "出口",
+     "原油,",
+     "从中伊朗经济获得80%的外国收入。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "含む",
+     "金融的に",
+     "制限",
+     "それに",
+     "禁止",
+     "あなたは",
+     "欧州連合は",
+     "ああ",
+     "輸出は",
+     "原油の輸出量は",
+     "イラン経済の外国からの収入の80%を占めています"
+    ],
+    "German": [
+     "They",
+     "include",
+     "Finanziell",
+     "Einschränkungen",
+     "und",
+     "Ein Verbot",
+     "von",
+     "Europäische Union",
+     "on",
+     "Über den Export",
+     "von Rohöl,",
+     "Aus dem Iran stammen 80% der Einnahmen der iranischen Wirtschaft aus dem Ausland."
+    ],
+    "Spanish": [
+     "They",
+     "incluye",
+     "financiero",
+     "restrictions",
+     "y",
+     "a ban",
+     "por",
+     "de la Unión Europea",
+     "on",
+     "La exportación",
+     "de petróleo crudo,",
+     "de la que la economía iraní recibe el 80% de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    14,
+    16,
+    17,
+    20,
+    22
+   ],
+   "H_set": 0.5483,
+   "text": "They ‖ include ‖ financial ‖ restrictions ‖ and ‖ a ban by the European Union ‖ on the export ‖ of crude ‖ oil, ‖ from which the ‖ Iranian economy ‖ receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "包括",
+     "财务",
+     "限制",
+     "以及",
+     "欧洲联盟的禁令",
+     "关于出口",
+     "原油",
+     "油",
+     "其中",
+     "伊朗經濟",
+     "80%的外国收入来自于这些国家。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "含む",
+     "金融的に",
+     "制限",
+     "それに",
+     "欧州連合の禁止令が",
+     "輸出に関しては",
+     "石油の",
+     "石油",
+     "それから",
+     "イランの経済",
+     "80%の収入を海外から得ています"
+    ],
+    "German": [
+     "They",
+     "include",
+     "Finanziell",
+     "Einschränkungen",
+     "und",
+     "Ein Verbot durch die Europäische Union",
+     "Auf den Export",
+     "von Rohöl",
+     "Öl,",
+     "Von dem die",
+     "Wirtschaft ",
+     "80% seiner Einnahmen aus dem Ausland."
+    ],
+    "Spanish": [
+     "They",
+     "incluye",
+     "financiero",
+     "restrictions",
+     "y",
+     "Una prohibición por parte de la Unión Europea",
+     "sobre la exportación",
+     "de crudo",
+     "aceite,",
+     "de los cuales",
+     "Economía de Irán",
+     "Recibe el 80% de sus ingresos del exterior."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "restrictions and a ban",
+     "right": "by the European Union",
+     "H": 0.5571,
+     "H_pct": 19.2,
+     "contra": 0.3181,
+     "cohesion": 0.817
+    },
+    {
+     "pos": 8,
+     "left": "and a ban by",
+     "right": "the European Union on",
+     "H": 0.1581,
+     "H_pct": 7.7,
+     "contra": 0.8111,
+     "cohesion": 0.8371
+    },
+    {
+     "pos": 12,
+     "left": "the European Union on",
+     "right": "the export of crude",
+     "H": 0.5992,
+     "H_pct": 26.9,
+     "contra": 0.2613,
+     "cohesion": 0.8111
+    }
+   ],
+   "added": [
+    {
+     "pos": 16,
+     "left": "the export of crude",
+     "right": "oil, from which the",
+     "H": 0.8107,
+     "H_pct": 76.9,
+     "contra": 0.0297,
+     "cohesion": 0.8355
+    },
+    {
+     "pos": 20,
+     "left": "oil, from which the",
+     "right": "Iranian economy receives 80%",
+     "H": 0.7977,
+     "H_pct": 69.2,
+     "contra": 0.0484,
+     "cohesion": 0.8382
+    },
+    {
+     "pos": 22,
+     "left": "which the Iranian economy",
+     "right": "receives 80% of its",
+     "H": 0.794,
+     "H_pct": 65.4,
+     "contra": 0.0138,
+     "cohesion": 0.8052
+    }
+   ]
+  }
+ }
+]

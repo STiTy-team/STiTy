@@ -1,0 +1,100 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  8,
+  23,
+  32,
+  38,
+  41,
+  42,
+  43,
+  46,
+  47,
+  48,
+  53,
+  61,
+  75,
+  76,
+  79,
+  81,
+  82,
+  84,
+  86,
+  88,
+  101,
+  104,
+  105,
+  108,
+  118,
+  131,
+  134,
+  138,
+  142,
+  151,
+  152,
+  159,
+  172,
+  178,
+  194,
+  200,
+  201,
+  207,
+  209,
+  210,
+  222,
+  225,
+  233,
+  243,
+  255,
+  262,
+  282,
+  283,
+  292,
+  299
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.01854,
+    "lo": -0.01386,
+    "hi": 0.05452,
+    "n": 423,
+    "n_clusters": 50
+   },
+   "chars": 7091,
+   "changelog": [
+    "Insert a short binding rule that keeps a noun/proper name with immediately following identifying post-nominal material (parenthetical units, immediate 'of' complements, appositives, or an adjacent relative/clausal identifier) to address the primary finding about detached modifiers."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00154,
+    "lo": -0.03002,
+    "hi": 0.03023,
+    "n": 423,
+    "n_clusters": 50
+   },
+   "chars": 7013,
+   "changelog": [
+    "Insert a fallback ordering that prefers cuts after clause boundaries/punctuation over cuts that separate a noun or proper name from immediately following essential post‑nominal material, to keep identifying modifiers with their head and avoid detached fragments."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00893,
+    "lo": -0.02008,
+    "hi": 0.04008,
+    "n": 423,
+    "n_clusters": 50
+   },
+   "chars": 6536,
+   "changelog": [
+    "Delete C8 — remove a broad, redundant disambiguation rule that overlaps C7 (noun-internal modifiers) and C3 (predicate-argument attachment). The critique's primary finding calls for a focused binding for nouns + immediately following post‑nominal identifiers; pruning this diffuse unit frees the prompt to permit a narrower, surface-triggered rule without adding another overlapping principle."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00588,
+  "lo": -0.03184,
+  "hi": 0.02159,
+  "n": 476,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": 0.0119,
+  "≤5": -0.0259,
+  "≤7": -0.0083,
+  "≤10": -0.0252,
+  "≤99": 0.0012
+ },
+ "n_worse": 210,
+ "n_better": 180,
+ "worst": [
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7782,
+   "before": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning may be the presence ‖ of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_776",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7723,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory they can take place annually (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7404,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7232,
+   "before": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory they can take place ‖ annually (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6692,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_939",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6461,
+   "before": "While immigration check is usually ‖ absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs control can be a hassle.",
+   "after": "While immigration check is usually absent or a formality ‖ when you arrive in your homeland, ‖ customs ‖ control ‖ can be a hassle."
+  },
+  {
+   "id": "en_us_939",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6222,
+   "before": "While immigration check is usually ‖ absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs control ‖ can be a hassle.",
+   "after": "While immigration check is usually absent ‖ or a formality ‖ when you arrive in your homeland, ‖ customs ‖ control ‖ can be a hassle."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.5997,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting ‖ that these ‖ findings ‖ have ‖ no relevance to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have no relevance ‖ to people ‖ who already have ‖ Type 1 diabetes."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 8,
+   "bin": "≤5",
+   "delta": 0.5595,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting ‖ that these ‖ findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he ‖ is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have no relevance ‖ to people ‖ who already have ‖ Type 1 diabetes."
+  },
+  {
+   "id": "en_us_1465",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.5575,
+   "before": "This means ‖ you can visit ‖ the historic city ‖ for ‖ a couple ‖ of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night.",
+   "after": "This means ‖ you ‖ can visit ‖ the historic city ‖ for ‖ a couple of full days ‖ while returning ‖ and sleeping ‖ on the ship ‖ at night."
+  }
+ ],
+ "why": "Replacing several examples with short‑latency NP/enumeration cases taught the scorer to avoid cutting inside tiny lists/NPs (explaining the small gain in the ≤3 bin), but it overgeneralized: in mid‑latency ranges (≤5 and ≤10) the scorer shifted cuts toward predicate/argument boundaries and inserted extra micro‑cuts, producing more fragmentation and a net small drop in H_set.",
+ "lesson": "Keep examples that discourage fragmenting very short lists/NPs, but ensure those examples don't cause the scorer to relocate cuts into predicate/argument boundaries or create many tiny fragments in mid‑latency items.",
+ "blamed": [
+  "E2 «Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG»",
+  "E3 «Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <S»",
+  "E1 «Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?»",
+  "E4 «Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?>»"
+ ]
+}

@@ -1,0 +1,133 @@
+{
+ "n_sentences": 50,
+ "ids": [
+  "en_us_105",
+  "en_us_850",
+  "en_us_390",
+  "en_us_44",
+  "en_us_655",
+  "en_us_164",
+  "en_us_1294",
+  "en_us_783",
+  "en_us_399",
+  "en_us_1087",
+  "en_us_464",
+  "en_us_419",
+  "en_us_1566",
+  "en_us_432",
+  "en_us_956",
+  "en_us_1384",
+  "en_us_767",
+  "en_us_1106",
+  "en_us_680",
+  "en_us_912",
+  "en_us_1342",
+  "en_us_687",
+  "en_us_1112",
+  "en_us_1503",
+  "en_us_538",
+  "en_us_396",
+  "en_us_26",
+  "en_us_1137",
+  "en_us_87",
+  "en_us_1113",
+  "en_us_1271",
+  "en_us_1410",
+  "en_us_32",
+  "en_us_1600",
+  "en_us_1132",
+  "en_us_415",
+  "en_us_455",
+  "en_us_1555",
+  "en_us_1488",
+  "en_us_288",
+  "en_us_30",
+  "en_us_1528",
+  "en_us_1650",
+  "en_us_553",
+  "en_us_1402",
+  "en_us_936",
+  "en_us_1024",
+  "en_us_83",
+  "en_us_1652",
+  "en_us_1116"
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1222,
+   "pairs": 49,
+   "chars": 7534,
+   "changelog": [
+    "Insert narrow surface check after C5 to block cuts that detach auxiliaries/negation/verbs from the token classes that typically supply their object/complement or resolve scope (addresses the primary finding while remaining a surface check).",
+    "Replace example E1 with the measured labeled example en_us_738 (high-gap case illustrating predicate/auxiliary detachment) to teach the ranking directly where the deficit occurs."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.1476,
+   "pairs": 49,
+   "chars": 7418,
+   "changelog": [
+    "Replace example E1 with the measured labeled example en_us_101 showing numeral+unit separation failures; a measured case teaches the ranking directly for the primary finding about numerals and units."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.1463,
+   "pairs": 49,
+   "chars": 7393,
+   "changelog": [
+    "Insert a narrow surface check after C5 that blocks cuts which would leave an auxiliary/modal/negation or bare verb separated from an immediately following argument or measurement phrase — addresses the primary finding while avoiding a blanket verb–complement prohibition."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.1908,
+   "pairs": 49,
+   "chars": 7256,
+   "changelog": [
+    "Insert a narrow surface check after C5 that forbids cutting a numeral/quantifier apart from its immediately following measurement or unit phrase, to protect number+unit cohesion and address the primary finding."
+   ]
+  },
+  {
+   "candidate": 4,
+   "oracle_dist": 0.1774,
+   "pairs": 49,
+   "chars": 7065,
+   "changelog": [
+    "Replace example E1 with measured labeled example en_us_990 to teach the model about cuts that detach scope-bearing predicates/auxiliaries (addresses the primary finding with a real high-gap case).",
+    "Replace example E2 with measured labeled example en_us_1612 to teach numeral+unit cohesion (addresses the secondary finding about separating numbers from units)."
+   ]
+  },
+  {
+   "candidate": 5,
+   "oracle_dist": 0.1781,
+   "pairs": 49,
+   "chars": 7123,
+   "changelog": [
+    "Replace Example E1 with measured labeled example en_us_1050 to teach numeral+unit cohesion (protect numbers and units from being split).",
+    "Replace Example E2 with measured labeled example en_us_1157 to reinforce keeping measurement tokens (e.g. +30°C) together with their numeric context."
+   ]
+  },
+  {
+   "candidate": 6,
+   "oracle_dist": 0.155,
+   "pairs": 49,
+   "chars": 7349,
+   "changelog": [
+    "Insert a narrow surface check after C5: block cuts that leave an auxiliary/modal/negation or main verb separated from a following pronoun, determiner, or numeral — addresses the primary finding by preventing verb/scope detachment only when surface cues show the continuation likely supplies the verb's object/complement or resolves scope."
+   ]
+  },
+  {
+   "candidate": 7,
+   "oracle_dist": 0.204,
+   "pairs": 49,
+   "chars": 7300,
+   "changelog": [
+    "Insert a narrow surface check after C5 to forbid cuts that separate a numeral/quantifier from its immediately following measurement or unit phrase, addressing the primary finding about number+unit cohesion."
+   ]
+  }
+ ]
+}

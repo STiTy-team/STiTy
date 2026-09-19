@@ -1,0 +1,49 @@
+{
+ "iter": 2,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01377,
+  "lo": 0.00324,
+  "hi": 0.02402,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.01377,
+  "lo": 0.00324,
+  "hi": 0.02402,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a single narrow binding rule after C7 to keep a noun with an immediately following identifying element (proper name, essential appositive, or numeral+unit) when no intervening clause boundary/punctuation separates them — addresses the primary finding that identifiers must stay attached."
+ ],
+ "findings": [
+  "The prompt underrates that an immediately following identifier (name, essential appositive, numeral+unit, or other required post‑nominal modifier) is part of the noun's meaning and must stay attached to the noun; cutting there severs the entity's identity or disambiguating information."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C7",
+   "kind": "change",
+   "was": "- Is the cut inside noun-internal material (possessives, appositives, dense nomi",
+   "now": "Keep a noun or role noun together with the immediately following identifying ele"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0191,
+   "≤5": 0.0144,
+   "≤7": 0.0094,
+   "≤10": 0.0021,
+   "≤99": -0.0002
+  },
+  "n_worse": 1709,
+  "n_better": 2080,
+  "why": "The inserted binding rule after C7 made the model avoid cutting between a noun/role noun and an immediately following identifying element, so many cut positions shifted away from noun+identifier boundaries toward nearby clause or verb boundaries; that change improved measured cohesion for very short pieces (≤3–7 word bins) but also caused new fragmenting cuts around verbs and in enumerations, producing the mix of many small wins and many short-span losses.",
+  "lesson": "Keep the noun→identifier binding (it helps short-piece cohesion) but avoid forcing cut shifts that fragment verb phrases or split enumerations — preserve clause-level continuity when relocating cuts.",
+  "blamed": [
+   "insert_after C7"
+  ]
+ }
+}

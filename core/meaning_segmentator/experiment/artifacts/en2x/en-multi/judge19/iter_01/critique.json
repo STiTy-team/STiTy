@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates the damage of cutting before a phrase's obligatory complement (objects of prepositions, measurement units, or a closing parenthesis), so it often places cuts that leave an incomplete prepositional/measurement expression and yield high contradiction when the remainder arrives.",
+    "evidence": "['en_us_44','en_us_360','en_us_733','en_us_738','en_us_1384','en_us_140','en_us_101','en_us_1253'] share the same failure: each source was split so that a preposition, an opening parenthesis, or a numeral was left without its object/unit/closing parenthesis immediately following, and those splits produced the high-contradiction, low-H_set outcomes seen in the targets.",
+    "type_predicate": "The sentence contains a preposition or an opening parenthesis, or a numeral/quantity, whose syntactic complement (object noun, measurement unit, or the closing parenthesis) does not appear immediately next in the linear string.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a preposition, an opening parenthesis, or a numeral and the word or phrase that completes its object or unit; wait until that complement or the closing parenthesis appears."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates the damage of cutting before a phrase's obligatory complement (objects of prepositions, measurement units, or a closing parenthesis), so it often places cuts that leave an incomplete prepositional/measurement expression and yield high contradiction when the remainder arrives.",
+   "evidence": "['en_us_44','en_us_360','en_us_733','en_us_738','en_us_1384','en_us_140','en_us_101','en_us_1253'] share the same failure: each source was split so that a preposition, an opening parenthesis, or a numeral was left without its object/unit/closing parenthesis immediately following, and those splits produced the high-contradiction, low-H_set outcomes seen in the targets.",
+   "type_predicate": "The sentence contains a preposition or an opening parenthesis, or a numeral/quantity, whose syntactic complement (object noun, measurement unit, or the closing parenthesis) does not appear immediately next in the linear string.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a preposition, an opening parenthesis, or a numeral and the word or phrase that completes its object or unit; wait until that complement or the closing parenthesis appears."
+   }
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that split a finite auxiliary/copula from its predicate, which frequently produces contradiction or loses essential predicate material.",
+    "evidence": "en_us_633, en_us_408, en_us_1116, en_us_936, en_us_378 — each case shows a harmful cut placed immediately after a finite auxiliary or copula (e.g. variants of 'is/was/will') so the following span contains the clause's predicate and the cut causes high contradiction or cohesion loss.",
+    "type_predicate": "Positions that occur immediately after a finite auxiliary or copula (a clause head that introduces the main predication) in the source sentence.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a finite auxiliary or copula (e.g. when the marker follows a clause head like a finite 'be' or auxiliary); such cuts split the verb from its complement and often produce contradiction or lost cohesion."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When multiple candidate cuts fall inside the same noun phrase, the prompt prefers earlier internal splits instead of the later cut that preserves the whole NP, hurting cohesion.",
+    "evidence": "en_us_337, en_us_998, en_us_721 — in each sentence the measurement prefers the later cut that leaves the full noun phrase intact (keeping the NP together yields much higher H_set than cutting inside it).",
+    "type_predicate": "Sentences where two candidate markers occur inside the same noun phrase: one marker strictly inside the NP and another marker immediately after the NP boundary.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two candidates lie inside the same noun phrase, prefer the later candidate that leaves the entire NP intact (choose the marker immediately after the NP over one inside it)."
+    }
+   }
+  ],
+  "checks_skipped": "",
+  "orders_skipped": ""
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When multiple candidate cuts fall inside the same noun phrase, the prompt prefers earlier internal splits instead of the later cut that preserves the whole NP, hurting cohesion.",
+   "evidence": "en_us_337, en_us_998, en_us_721 — in each sentence the measurement prefers the later cut that leaves the full noun phrase intact (keeping the NP together yields much higher H_set than cutting inside it).",
+   "type_predicate": "Sentences where two candidate markers occur inside the same noun phrase: one marker strictly inside the NP and another marker immediately after the NP boundary.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two candidates lie inside the same noun phrase, prefer the later candidate that leaves the entire NP intact (choose the marker immediately after the NP over one inside it).",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that split a finite auxiliary/copula from its predicate, which frequently produces contradiction or loses essential predicate material.",
+   "evidence": "en_us_633, en_us_408, en_us_1116, en_us_936, en_us_378 — each case shows a harmful cut placed immediately after a finite auxiliary or copula (e.g. variants of 'is/was/will') so the following span contains the clause's predicate and the cut causes high contradiction or cohesion loss.",
+   "type_predicate": "Positions that occur immediately after a finite auxiliary or copula (a clause head that introduces the main predication) in the source sentence.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a finite auxiliary or copula (e.g. when the marker follows a clause head like a finite 'be' or auxiliary); such cuts split the verb from its complement and often produce contradiction or lost cohesion.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

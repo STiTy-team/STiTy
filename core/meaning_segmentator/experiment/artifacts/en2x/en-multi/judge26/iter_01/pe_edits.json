@@ -1,0 +1,194 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when one marker falls immediately before or inside a numeral/quantity, unit/measurement, date/time, or location/directional phrase that completes the preceding noun or verb phrase, prefer any other marker in the sentence over that marker; if no other marker is available, prefer a cut after the completing phrase rather than before it."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 357
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7071,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when comparing two candidate cuts where one lies between a clause's subject or auxiliary and its main verb, or between a predicate and an immediately following essential complement, negation (e.g. \"not\") or exception marker (e.g. \"except\", \"but\"), prefer the cut that falls after the verb plus its immediately following complement/negation/exception token over the cut that falls before it."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 412
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7126,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep the preceding noun or verb head together with any immediately following numeral/quantity, measurement unit, date/time, or location/directional phrase that completes or specifies it (i.e. when a cut falls immediately before or inside such a completing expression)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 271
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6985,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a clause's subject (an NP or pronoun immediately before a verb) together with the immediately following auxiliary or main verb that completes its truth‑conditional core. Keep a verb or predicate together with any immediately following essential complements or scope markers (e.g. 'not', 'except', 'but')."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 312
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7026,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a preceding head (a noun phrase head or a verb token) together with any immediately following numeral/quantity, unit/measurement, date/time, or locative/directional phrase that completes or specifies that head."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 218
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6932,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Prefer a cut that falls after an immediately following numeral, quantity/unit/measurement, date/time, parenthesized measurement, or locative/directional phrase which completes the preceding noun or verb phrase, over a cut that falls immediately before or inside that completing phrase."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 288
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7002,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "_was": "- Does the stretch after the cut supply disambiguating information (names, numbers, polarity markers, complements) essential to interpret an earlier ambiguous NP or verb phrase?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -178
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6536,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 7,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ }
+]

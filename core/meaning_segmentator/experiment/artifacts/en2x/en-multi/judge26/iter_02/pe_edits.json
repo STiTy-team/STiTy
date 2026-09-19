@@ -1,0 +1,200 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when choosing between two candidate cuts where one falls between a verb or clause head and its immediately following essential complement (object, prepositional or clausal complement, or an essential temporal/locative adjunct) and the other falls after that completing span, prefer the cut that falls after the completing span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 349
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7063,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when comparing two candidate cuts where one falls immediately between a noun or verb head and an immediately following numeral, date, unit, quantifier, or parenthetical measure, and the other falls immediately after that numeral/measure, prefer the cut that falls after the numeral/measure."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 312
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7026,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a verb or clause head together with the immediately following essential complement or adjunct that completes its meaning (direct objects, clausal or prepositional complements, temporal/locative scope markers). Prefer cuts that leave this head+complement intact rather than cuts that fall between them."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 309
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7023,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a noun or verb head together with an immediately following numeral, quantity or unit, date, percentage, or parenthetical measurement that completes or disambiguates that phrase."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 185
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6899,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Prefer a cut after an immediately following essential complement (object, prepositional or clausal complement, or scope‑fixing temporal/locative adjunct) over a cut that falls immediately after the verb or clause head: when one candidate would split the head from that following span, take the candidate that keeps them together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 332
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7046,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- When comparing two candidate cuts on the source surface, prefer the cut that keeps a verb or clause head adjacent to its immediately following essential complement (object, prepositional complement, clausal complement, or temporal/locative adjunct) or to an immediately following numeral/quantifier/date/unit/parenthetical measurement; prefer that cut over one that falls between the head and that immediate span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 416
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7130,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "_was": "- If the pieces are translated independently and concatenated, will the joined translation preserve the source's referents, relations and event structure, or will attachment loss, missing predicates, or dropped arguments break coherence?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "chars_change": -238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6476,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5",
+    "_was": "- Is the following material a temporal, causal, concessive subordinator or other unstable opening that needs later context to fix scope and prevent meaning flips or mis-scoped modifiers?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "chars_change": -187
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6527,
+  "errors": null
+ }
+]

@@ -1,0 +1,62 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_588",
+  "en_us_292",
+  "en_us_432",
+  "en_us_847",
+  "en_us_360",
+  "en_us_1253",
+  "en_us_1000",
+  "en_us_1527",
+  "en_us_1497",
+  "en_us_468",
+  "en_us_1600",
+  "en_us_288",
+  "en_us_1428",
+  "en_us_1116",
+  "en_us_113"
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.2447,
+   "pairs": 15,
+   "chars": 7723,
+   "changelog": [
+    "Replace C4 to remove a blanket ban on noun+modifier cuts and add a decision rule that allows such cuts when they prevent very-short, harmful splits (addresses primary_finding).",
+    "Paraphrase C5 shorter to save space while keeping the warning about fronted adjuncts' attachment needs.",
+    "Insert a new principle after C4 that flags cuts leaving only postverbal/postnominal adjuncts as high contradiction risk and prefers keeping modifiers attached.",
+    "Add a short worked example showing when to allow a noun+modifier split to preserve a subject/predicate (teaches the tradeoff concretely)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.2451,
+   "pairs": 15,
+   "chars": 7162,
+   "changelog": [
+    "Replace C5 to explicitly flag postverbal/postnominal trailing adjuncts as high-contradiction risk and instruct scorers to keep such modifiers attached unless they form an independent proposition (addresses the primary finding about trailing fragments causing high contra)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.2363,
+   "pairs": 15,
+   "chars": 7230,
+   "changelog": [
+    "Insert a short worked example after E4 that demonstrates allowing a noun+modifier cut to preserve a subject/predicate and avoid very-short harmful splits (addresses the primary_finding and obeys the examples_only constraint)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.2267,
+   "pairs": 15,
+   "chars": 7331,
+   "changelog": [
+    "Insert a concise decision rule after C4 that allows noun+modifier cuts when forbidding them would force very-short (≈≤3–5 word) harmful splits, so scorers prefer preserving subjects/predicates; addresses the primary finding about an over-generalized ban on noun+modifier cuts."
+   ]
+  }
+ ]
+}

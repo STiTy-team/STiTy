@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01846,
+    "lo": -0.06033,
+    "hi": 0.02167,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7555,
+   "changelog": [
+    "Replace C5 to give constructive guidance for dense cuts in low-latency regimes rather than a blanket prohibition on cutting near heads; this addresses the finding that head-avoidance was over-applied and harms short-latency pairs.",
+    "Insert a new principle after C8 that forces low ranking for cuts whose standalone contradiction probability is high unless adjacent kept cuts will reliably restore context; this addresses the primary finding that entailment risk was underweighted when cohesion looked good."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00957,
+    "lo": -0.03867,
+    "hi": 0.02166,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7030,
+   "changelog": [
+    "Replace C5 to address over-broad head-avoidance: allow denser safe cuts in very-low-latency regimes and give constructive guidance (require high cohesion and absence of high-contra single cuts; prefer cuts after complete constituents)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00359,
+    "lo": -0.01906,
+    "hi": 0.02839,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7278,
+   "changelog": [
+    "Replace E1 with labeled example en_us_48 to teach the scorer about high-contra single cuts that kill set quality (addresses the primary finding that entailment risk is underweighted).",
+    "Replace E2 with labeled example en_us_1081 to illustrate a ≤5-bin case where a single high-contra cut must be ranked low despite apparent cohesion (covers mid-low latency loss).",
+    "Replace E4 with labeled example en_us_455 to show another ≤3-bin instance where keeping a cohesive-looking but highly-contradictory cut harms overall set score."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.01189,
+    "lo": -0.0431,
+    "hi": 0.01904,
+    "n": 462,
+    "n_clusters": 50
+   },
+   "chars": 7208,
+   "changelog": [
+    "Insert a concise low-latency guidance unit after C5: allow denser safe cuts in ≤3/≤5 regimes by preferring cuts that end on complete constituents and have high cohesion and low standalone contradiction; avoid treating 'avoid heads' as an absolute ban. This directly addresses the primary finding about over-broad head-avoidance."
+   ]
+  }
+ ]
+}

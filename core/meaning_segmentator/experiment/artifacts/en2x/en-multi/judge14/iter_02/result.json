@@ -1,0 +1,86 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00767,
+  "lo": -0.00438,
+  "hi": 0.01997,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00241,
+  "lo": -0.00592,
+  "hi": 0.01073,
+  "n": 3662,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00767,
+   "lo": -0.00438,
+   "hi": 0.01997,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": -0.00298,
+   "lo": -0.0143,
+   "hi": 0.00855,
+   "n": 1811,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Replace E1 with labeled example en_us_48 to teach the scorer about high-contra single cuts that kill set quality (addresses the primary finding that entailment risk is underweighted).",
+  "Replace E2 with labeled example en_us_1081 to illustrate a ≤5-bin case where a single high-contra cut must be ranked low despite apparent cohesion (covers mid-low latency loss).",
+  "Replace E4 with labeled example en_us_455 to show another ≤3-bin instance where keeping a cohesive-looking but highly-contradictory cut harms overall set score."
+ ],
+ "findings": [
+  "The scorer underweights entailment (contra) risk when a cut looks cohesive: it ranks positions that produce a high standalone contradiction too highly, letting a single kept cut 'kill' the set even though avoiding that one cut would rescue quality.",
+  "The scorer applies 'avoid cutting near heads / between predicate and arguments' too broadly, thinning segmentations in very short-latency regimes where dense safe cuts are needed."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+   "now": "Input: Jonny <SEG:?> Reid, <SEG:?> co-driver <SEG:?> for <SEG:?> the <SEG:?> A1G",
+   "labeled_example": "en_us_48"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+   "now": "Input: Farther <SEG:?> south <SEG:?> is <SEG:?> Niagara <SEG:?> Falls <SEG:?> an",
+   "labeled_example": "en_us_1081"
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "example",
+   "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+   "now": "Input: The <SEG:?> disadvantage <SEG:?> of <SEG:?> zoom <SEG:?> lenses <SEG:?> i",
+   "labeled_example": "en_us_455"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0073,
+   "≤5": 0.0064,
+   "≤7": 0.0154,
+   "≤10": 0.0024,
+   "≤99": 0.0075
+  },
+  "n_worse": 751,
+  "n_better": 694,
+  "why": "Replacing the examples to teach the scorer about single high-contradiction cuts caused it to downrank those specific high-contra boundaries (producing modest average gains, especially in the ≤7 bin) but in many short-latency cases it compensated by preferring alternative splits that fragment noun phrases and enumerations, producing numerous local losses.",
+  "lesson": "A later revision should avoid fixing single high-contra cuts by encouraging alternative fragmenting splits — preserve noun-phrase and enumeration integrity in short-latency (≤3–≤5) cases when de-emphasizing high-contradiction single cuts.",
+  "blamed": [
+   "E1 «Input: Jonny <SEG:?> Reid, <SEG:?> co-driver <SEG:?> for <SE»",
+   "E2 «Input: Farther <SEG:?> south <SEG:?> is <SEG:?> Niagara <SEG»",
+   "E4 «Input: The <SEG:?> disadvantage <SEG:?> of <SEG:?> zoom <SEG»"
+  ]
+ }
+}

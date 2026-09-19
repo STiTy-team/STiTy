@@ -1,0 +1,129 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -241
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7005,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -241
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7005,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Keep a short (1–4 word) complement that immediately follows a verb or adjective together with that verb/adjective when the complement matches a surface pattern: a numeral (digits) optionally with unit tokens or parenthesized measure; 'in' or 'on' + a short date/time token; 'to' + verb (infinitive) or 'not to' + verb; or a direction marker (toward(s), toward, towards, north, south, east, west) possibly plus up to two words."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 429
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7675,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 2703
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9949,
+  "errors": [
+   "길이 초과: 9949 > 8332"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E7"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "delete",
+    "id": "E8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E7",
+    "kind": "delete",
+    "chars_change": -921
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E8",
+    "kind": "delete",
+    "chars_change": -746
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7411,
+  "errors": null
+ }
+]

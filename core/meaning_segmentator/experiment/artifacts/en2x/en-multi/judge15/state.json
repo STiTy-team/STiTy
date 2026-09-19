@@ -1,0 +1,1006 @@
+{
+ "done": 7,
+ "prompt": "[Role]\nYou are a scorer for streaming speech translation segmentation in English. For each source sentence with every possible cut marked as <SEG:?>, you must assign a distinct integer 0–100 to each marker that ranks how suitable that cut is for producing faithful, joinable translations under the measured target. Use the source text and the language profile to judge meaning risks at each position.\n\n[Core Principles]\n- Does what follows, taken alone, assert or imply something that contradicts the claim already heard? A cut is harmful when the continuation, by itself, would reverse polarity, causality, or attribution established earlier.\n- If the two sides are translated separately and then concatenated, will the joined translations still render the whole sentence faithfully? Damage looks like missing complements, lost scopes, wrong agent/patient assignment, or dropped dependencies.\n- Is a subordinating relation unresolved at the cut (complementizers, subordinators, clause‑introducing non‑finite forms)? Cuts that strand a clause head or leave its relation open can let the remainder change interpretation.\n- Does the cut separate a nominal from a following relative or postnominal modifier that completes its reference? Such cuts often leave the noun unmodified or misattached in separate translations.\n- Do fronted adjuncts (temporal or prepositional) rely on attachment to the following clause? Cutting after them can flip scope or leave temporal/relational links unresolved when pieces are joined.\n- Do determiners, numerals, or other specifiers need the following noun to fix reference? Cuts before the head nominal commonly produce referential failure or mistranslation of quantity or scope.\n- Will cutting inside complex verb phrases or between verb and its object orphan complements or reorder events? English SVO and verb-centered predicates make these splits likely to change who did what.\n- Is the preceding stretch a self-contained propositional claim, or does clause closure and sentence-finality remain unresolved? Cuts that leave an incomplete claim will reduce the cohesion score when translated separately.\n- When a numeric expression spans a cut, prefer cuts that keep the numeral with its multipliers and unit together (e.g. \"340 million\", \"83 meters\"); if unavoidable, cut before the whole numeric phrase or after its unit/endpoint — do not split number from its multiplier or unit.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n\n- The number you write at each marker is an integer rank inside this sentence: order the positions by the target (the product above) and assign distinct integers across the full 0–100 range so higher integers mean better cuts for the measure. Do not create tiers that separate cohesion and contra; contra is a graded probability and contributes only through the product. Do not instruct arithmetic operations such as \"multiply by 100 and round\"; instead map the ordering to distinct integers spanning 0–100. No additional scoring conditions belong here.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.\n\nInput: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.\n\nInput: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.\n\nInput: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2364,
+   "changelog": [
+    "Insert a new principle that addresses the primary finding: give a positive guideline for when cutting after a predicate/copula is acceptable and when to avoid it, so we don't add a blanket prohibition.",
+    "Paraphrase C4 to be shorter while preserving and clarifying the judgement about nouns separated from required postnominal complements (explicitly mentioning specifiers)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C3",
+     "kind": "change",
+     "was": "- Is a subordinating relation unresolved at the cut (complementizers, subordinat",
+     "now": "- Prefer cuts that leave the preceding fragment a self-contained, verifiable pro"
+    },
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "paraphrase",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "- Does the cut separate a noun (or its specifier) from a following relative or p"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2499,
+   "changelog": [
+    "Replace C4 to explicitly forbid cuts that split a noun (or its specifier) from a required postnominal modifier/complement, because measured cases show such splits leave the noun ungrounded or misattached and greatly increase mistranslation risk (addresses the primary finding)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "- Avoid cutting between a noun (or its specifier) and a required postnominal mod"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2733,
+   "changelog": [
+    "Replace E1 with measured example en_us_103 to show a cut after 'was' before 'not' (predicate + negation) that makes the preceding fragment misleading.",
+    "Replace E2 with measured example en_us_360 to show a cut after a predicate ('are stimulated') where the remainder completes the clause and changes interpretation.",
+    "Replace E3 with measured example en_us_1570 to show a cut after 'had' before 'no' (predicate + negation) that leaves the fragment contradicted."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below ",
+     "labeled_example": "en_us_103"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Scientists <SEG:?> call <SEG:?> this <SEG:?> process <SEG:?> \"stimulated ",
+     "labeled_example": "en_us_360"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: It <SEG:?> also <SEG:?> had <SEG:?> no <SEG:?> authority <SEG:?> to <SEG:",
+     "labeled_example": "en_us_1570"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00713,
+    "lo": -0.02091,
+    "hi": 0.00615,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00713,
+    "lo": -0.02091,
+    "hi": 0.00615,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Replace C4 to explicitly forbid cutting a noun (or its specifier) away from a required postnominal modifier/complement, addressing the primary finding that such splits leave the noun ungrounded or misattached."
+   ],
+   "findings": [
+    "The prompt underrates the harm of cuts that leave a predicate/copula hanging when the following words form a polarity- or scope-bearing complement (negation, existential 'there', quantifiers, clause completion): the preceding fragment taken alone becomes misleading or contradictable.",
+    "The prompt underestimates the risk of cutting between a noun (or its specifier) and an obligatory postnominal modifier/complement (prepositional 'of' phrases, relative clauses, 'from which', etc.), which leaves the noun ungrounded or misattached when pieces are translated separately."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "- Avoid cutting between a noun (or its specifier) and any required postnominal m"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0147,
+     "≤5": -0.0056,
+     "≤7": 0.0054,
+     "≤10": 0.002,
+     "≤99": -0.0024
+    },
+    "n_worse": 713,
+    "n_better": 696,
+    "why": "The C4 replacement made the model avoid cutting between a noun (or its specifier) and a required postnominal modifier, so cuts that used to occur there were moved elsewhere; that shift helps some mid-length pieces but increases harmful splits in very-short bins (e.g. subject–verb breaks or internal compound-noun splits), producing a small net negative. The by_bin pattern (hurt at ≤3 and ≤5, help at ≤7/≤10) and the tails (many examples where a safe noun-modifier cut was replaced by a subject‑verb or compound split) support this.",
+    "lesson": "Do not blanket-forbid cuts after nouns — preventing noun+modifier splits can simply move cuts into very short phrases and create worse subject–verb or compound-noun splits, so later revisions should avoid that wholesale prohibition.",
+    "blamed": [
+     "C4 «- Avoid cutting between a noun (or its specifier) and any re»"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2447,
+   "changelog": [
+    "Replace C4 to remove a blanket ban on noun+modifier cuts and add a decision rule that allows such cuts when they prevent very-short, harmful splits (addresses primary_finding).",
+    "Paraphrase C5 shorter to save space while keeping the warning about fronted adjuncts' attachment needs.",
+    "Insert a new principle after C4 that flags cuts leaving only postverbal/postnominal adjuncts as high contradiction risk and prefers keeping modifiers attached.",
+    "Add a short worked example showing when to allow a noun+modifier split to preserve a subject/predicate (teaches the tradeoff concretely)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "- Do not blanket-forbid cuts after a noun or its specifier. Instead ask: would f"
+    },
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "paraphrase",
+     "was": "- Do fronted adjuncts (temporal or prepositional) rely on attachment to the foll",
+     "now": "- Beware cutting after fronted adjuncts (temporal or prepositional); they typica"
+    },
+    {
+     "op": "insert_after",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "- Treat cuts that leave only postverbal or postnominal adjuncts (prepositional p"
+    },
+    {
+     "op": "insert_after",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: The <SEG:?> tiger <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> same <SEG:?> "
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2451,
+   "changelog": [
+    "Replace C5 to explicitly flag postverbal/postnominal trailing adjuncts as high-contradiction risk and instruct scorers to keep such modifiers attached unless they form an independent proposition (addresses the primary finding about trailing fragments causing high contra)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Do fronted adjuncts (temporal or prepositional) rely on attachment to the foll",
+     "now": "- Do not cut if the remainder would be only a postverbal or postnominal adjunct "
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2363,
+   "changelog": [
+    "Insert a short worked example after E4 that demonstrates allowing a noun+modifier cut to preserve a subject/predicate and avoid very-short harmful splits (addresses the primary_finding and obeys the examples_only constraint)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: The <SEG:?> tiger <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> same <SEG:?> "
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": -0.01001,
+    "lo": -0.02331,
+    "hi": 0.00261,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.01001,
+    "lo": -0.02331,
+    "hi": 0.00261,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a concise decision rule after C4 that allows noun+modifier cuts when forbidding them would force very-short (≈≤3–5 word) harmful splits, so scorers prefer preserving subjects/predicates; addresses the primary finding about an over-generalized ban on noun+modifier cuts."
+   ],
+   "findings": [
+    "The prompt is over-generalizing a ban on cuts after nouns/specifiers: it treats most noun+postnominal splits as categorically harmful and so moves cuts elsewhere. That shift repeatedly forces very-short pieces (≤3–5 words) that split subjects, verbs, or internal compounds, which increases contradiction and cohesion loss in the short-latency bins.",
+    "The prompt underestimates the contradiction risk of leaving trailing adjuncts/ modifiers as standalone pieces (participial, prepositional, 'using...' phrases, 'in advance', 'and beyond'). Such trailing fragments often cannot be interpreted correctly on their own and create high contra when separated.",
+    "The prompt lacks short, concrete examples showing when to allow a noun+modifier cut to prevent worse subject‑verb fragmentation; scorers need a model example that trades a noun+modifier split for preserving a subject or predicate in very-short bins."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "Allow a noun+modifier cut when forbidding it would force other cuts into very-sh"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0118,
+     "≤5": -0.009,
+     "≤7": -0.0033,
+     "≤10": -0.0162,
+     "≤99": -0.0079
+    },
+    "n_worse": 765,
+    "n_better": 674,
+    "why": "Relaxing C4 to allow noun+modifier cuts when forbidding them would force very-short pieces caused the scorer to merge some noun+modifier spans but often pushed cut points onto small trailing complements or split predicates/prepositional attachments; that produced a small net drop in H_set, concentrated in the short-to-medium latency bins (≤3–≤10).",
+    "lesson": "A later revision should respect that easing the noun+modifier ban to avoid tiny (≈≤3–5 word) pieces can reduce extreme fragmentation in some examples but must not systematically shift boundaries onto very-short trailing fragments or break predicates, since that harms short/medium bins overall.",
+    "blamed": [
+     "C4 «- Does the cut separate a nominal from a following relative »"
+    ]
+   }
+  },
+  {
+   "iter": 3,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1046,
+   "changelog": [
+    "Insert a new Core Principle prohibiting cuts inside numeric expressions to prevent splits of numbers, multipliers, units, percents or range endpoints (addresses the primary_finding: numeric splits like \"340 million to 500 million\" that harm cohesion, especially in short-latency bins)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C8",
+     "kind": "change",
+     "was": "- Is the preceding stretch a self-contained propositional claim, or does clause ",
+     "now": "- Do not cut inside numeric expressions or ranges: keep numbers with their multi"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.116,
+   "changelog": [
+    "Replace C7 to explicitly forbid cutting a verb (or auxiliary) from its core object/complement or from following prepositional/infinitival complements, because the primary finding shows verb+argument splits cause orphaned predicates and major cohesion loss."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- Avoid cutting between a verb (or auxiliary) and its core object or complement,"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1233,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1116 to teach the scorer about harms from splitting numeric phrases and tiny trailing fragments (strong ≤3-bin loss).",
+    "Replace E2 with labeled example en_us_419 to show range/number+multiplier splits (e.g. \"340 million to 500 million\") that break cohesion in short-latency bins.",
+    "Replace E3 with labeled example en_us_1050 to surface breaks inside numeric measurements (meters, decimals) and unit splits that led to mistranslation.",
+    "Replace E4 with labeled example en_us_538 to highlight tiny trailing fragments and predicate/argument fragmentation that cause short-bin losses."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+     "labeled_example": "en_us_1116"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> ",
+     "labeled_example": "en_us_419"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: The <SEG:?> two <SEG:?> towers <SEG:?> rise <SEG:?> to <SEG:?> a <SEG:?> ",
+     "labeled_example": "en_us_1050"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: If <SEG:?> the <SEG:?> objective <SEG:?> of <SEG:?> one’s <SEG:?> visit <",
+     "labeled_example": "en_us_538"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "adopted": true,
+   "delta": {
+    "mean": 0.01097,
+    "lo": 0.00101,
+    "hi": 0.02143,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": 0.01097,
+    "lo": 0.00101,
+    "hi": 0.02143,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a Core Principle that prescribes good cut placement for numeric expressions: keep numeral + multipliers + unit together, or if unavoidable cut before the whole phrase or after its unit — addresses the primary finding by describing a GOOD cut instead of a blanket ban."
+   ],
+   "findings": [
+    "The prompt underestimates the harm of cutting inside numeric expressions (numbers, ranges, units, percentages); splitting a numeral from its unit or the endpoints of a range produces incoherent or mistranslated numeric phrases when pieces are translated separately.",
+    "The prompt undervalues keeping verbs with their core complements: it often allows cuts that strand verbs, prepositional objects, or infinitival complements, which produces orphaned predicates or reversed attachments in the joined translation.",
+    "The prompt does not sufficiently penalize cuts that create very short trailing fragments (one- or two-word pieces); such tiny fragments are frequent sources of contradiction or loss when translated separately in short-latency bins."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C8",
+     "kind": "change",
+     "was": "- Is the preceding stretch a self-contained propositional claim, or does clause ",
+     "now": "- When a numeric expression spans a cut, prefer cuts that keep the numeral with "
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0121,
+     "≤5": 0.0147,
+     "≤7": 0.0088,
+     "≤10": 0.0068,
+     "≤99": -0.0025
+    },
+    "n_worse": 647,
+    "n_better": 719,
+    "why": "Adding the numeric-preservation principle made the model prefer cuts that keep a numeral with its multipliers/units, which raised H_set on short pieces (≤10-word bins) but caused more harmful cuts in long contexts (≤99) by displacing cuts into enumerations and noun phrases; the bin breakdown (positive up to ≤10, negative at ≤99) and the tail examples show the tradeoff. ",
+    "lesson": "A later revision should preserve numeral+unit spans only when it does not conflict with protections against splitting heads, named entities, or enumeration boundaries in longer contexts.",
+    "blamed": [
+     "C8 «- Is the preceding stretch a self-contained propositional cl»"
+    ]
+   }
+  },
+  {
+   "iter": 4,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.3458,
+   "changelog": [
+    "Replace C3 to add a concise rule addressing the primary finding: warn against cutting immediately after auxiliaries/copulas/modals/negation/subordinators when the remainder completes or can reverse the predicate, and instruct scorers to rank such cuts lower than alternatives."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C3",
+     "kind": "change",
+     "was": "- Is a subordinating relation unresolved at the cut (complementizers, subordinat",
+     "now": "- Is a subordinating relation unresolved at the cut (complementizers, subordinat"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.3645,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1494 to show a case where a single cut (after 'should') carries very high contradiction risk and must be ranked low.",
+    "Replace E2 with labeled example en_us_399 to surface a short-piece contradiction where a cut inside 'to have a troop launching pad' yields high contra and destroys cohesion.",
+    "Replace E3 with labeled example en_us_990 to illustrate splits that invert polarity/meaning when translated separately ('are not stable' vs 'stable').",
+    "Replace E4 with labeled example en_us_1570 to demonstrate cuts that isolate auxiliaries/heads (e.g. 'had') and produce contradiction risk."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: Pre-operative <SEG:?> transgender <SEG:?> people <SEG:?> should <SEG:?> n",
+     "labeled_example": "en_us_1494"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Italy's <SEG:?> main <SEG:?> goals <SEG:?> were <SEG:?> African <SEG:?> c",
+     "labeled_example": "en_us_399"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: The <SEG:?> glaciers <SEG:?> are <SEG:?> not <SEG:?> stable, <SEG:?> but ",
+     "labeled_example": "en_us_990"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: It <SEG:?> also <SEG:?> had <SEG:?> no <SEG:?> authority <SEG:?> to <SEG:",
+     "labeled_example": "en_us_1570"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.3755,
+   "changelog": [
+    "Replace C7 to rank cuts that split auxiliaries/copulas/modals/negation/subordinators lower than alternatives, addressing the primary finding that such splits isolate unresolved function-headed predicates and create high contradiction risk."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- Rank low any cut immediately after a bare auxiliary, copula, modal, negator, o"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00305,
+    "lo": -0.01342,
+    "hi": 0.00777,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00305,
+    "lo": -0.01342,
+    "hi": 0.00777,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Replace C1 to prioritize single high-contradiction boundaries: explicitly tell scorers to rank cuts that would be contradicted by the remainder below other cuts, addressing the primary_finding.",
+    "Insert a new principle after C3 that warns against cutting right after auxiliaries/copulas/modals/negators/subordinators when the remainder completes or reverses the predicate, phrased as a ranking preference to avoid blanket bans.",
+    "Paraphrase C4 shorter to save space while keeping its guidance about noun+modifier splits and avoiding forcing tiny fragments."
+   ],
+   "findings": [
+    "The prompt underrates single high-contradiction boundaries: it lets one cut with a high contradiction risk survive because cohesion looks OK, even though one such boundary can zero the whole set.",
+    "The prompt fails to flag cuts that isolate unresolved function‑headed predicates: it allows cutting immediately after an auxiliary/copula/modal/negation/subordinator, leaving the remainder to complete or flip the predicate."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C1",
+     "kind": "change",
+     "was": "- Does what follows, taken alone, assert or imply something that contradicts the",
+     "now": "- Treat any boundary where the remainder, read alone, would contradict or revers"
+    },
+    {
+     "op": "insert_after",
+     "id": "C3",
+     "kind": "change",
+     "was": "- Is a subordinating relation unresolved at the cut (complementizers, subordinat",
+     "now": "- Rank low any cut that splits a bare auxiliary, copula, modal, negator, or subo"
+    },
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "paraphrase",
+     "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+     "now": "- Would the cut leave a noun (or its specifier) without a required postnominal m"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0075,
+     "≤5": -0.001,
+     "≤7": -0.0003,
+     "≤10": 0.0003,
+     "≤99": 0.0064
+    },
+    "n_worse": 678,
+    "n_better": 697,
+    "why": "The C1 change (prioritizing boundaries whose remainder would contradict the prefix) made the scorer avoid cuts that leave a contradicting remainder, which raised scores on long pieces; the new C3 warning about cutting after auxiliaries/copulas/modals shifted many cuts away from those markers into adjacent short spans, increasing harmful short-latency splits (bins ≤3 and ≤5) and producing the small net drop.",
+    "lesson": "Keep the preference to demote single high-contradiction boundaries (C1) but avoid re-ranking that pushes cuts into head-adjacent tiny spans (subject/auxiliary splits or noun+modifier fragments) that damage very short latency bins.",
+    "blamed": [
+     "C1 «- Treat any boundary where the remainder, read alone, would »",
+     "C3 «- Is a subordinating relation unresolved at the cut (complem»"
+    ]
+   }
+  },
+  {
+   "iter": 5,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1809,
+   "changelog": [
+    "Replace C1 to keep the contradiction check but forbid fixing it by promoting an adjacent cut that yields a head-fragment; prefer cuts that preserve a minimal meaningful phrase — addresses the primary finding that demoting contradicting remainders caused harmful one-word/head-fragment pieces.",
+    "Insert a new principle after C1 allowing isolation of an initial function word or discourse marker when the remainder is a cohesive, self-contained clause — responds to the critique that early opener cuts can be safe and helpful in very-short latency bins."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C1",
+     "kind": "change",
+     "was": "- Does what follows, taken alone, assert or imply something that contradicts the",
+     "now": "- Judge whether the remainder, read alone, would contradict or reverse a claim m"
+    },
+    {
+     "op": "insert_after",
+     "id": "C1",
+     "kind": "change",
+     "was": "- Does what follows, taken alone, assert or imply something that contradicts the",
+     "now": "- Allow isolating a sentence-initial function word or discourse marker when the "
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1823,
+   "changelog": [
+    "Replace C5 to allow isolating sentence-initial function words or discourse markers when the following piece is cohesive and non-contradictory — addresses the primary finding that early opener cuts can be safe and useful in very-short latency bins."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Do fronted adjuncts (temporal or prepositional) rely on attachment to the foll",
+     "now": "- Allow a cut that isolates a sentence-initial function word or discourse marker"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1295,
+   "changelog": [
+    "Replace E1 with labeled example en_us_845 to expose a measured case where demoting contradicting remainders produced harmful head-fragment cuts in short latency bins.",
+    "Replace E2 with labeled example en_us_738 to teach the scorer about subject–auxiliary and tiny-remainder harms evidenced in ≤3 bin failures.",
+    "Replace E3 with labeled example en_us_936 to show a case where isolating/opening function words was beneficial and to contrast safe opener cuts with harmful head-fragments.",
+    "Replace E4 with labeled example en_us_113 to illustrate contradictions-from-short-remainders that the policy should avoid promoting into one-word/head-fragment pieces."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG",
+     "labeled_example": "en_us_845"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+     "labeled_example": "en_us_738"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+     "labeled_example": "en_us_936"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: Mr. <SEG:?> Rudd's <SEG:?> decision <SEG:?> to <SEG:?> sign <SEG:?> the <",
+     "labeled_example": "en_us_113"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00116,
+    "lo": -0.01338,
+    "hi": 0.01125,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00116,
+    "lo": -0.01338,
+    "hi": 0.01125,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Replace C8 to keep the clause-closure/cohesion check but explicitly allow isolating sentence-initial function words or discourse markers when the remainder is a cohesive, self-contained clause and the isolated opener does not itself assert a contradicting proposition — addresses the primary finding about safe opener cuts in very-short latency bins."
+   ],
+   "findings": [
+    "The prompt demotes boundaries whose remainder would contradict the prefix, but it accomplishes this by promoting the immediately adjacent cut — producing one-word or head-fragment pieces (bare aux/copula, determiner-only, numeral-only, noun stripped of postmodifiers) that harm very-short latency bins.",
+    "The prompt reflexively avoids cutting near sentence-openers/function words, but for very short latency budgets isolating an initial function word or discourse marker can be beneficial when the remainder is cohesive and non-contradictory."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C8",
+     "kind": "change",
+     "was": "- Is the preceding stretch a self-contained propositional claim, or does clause ",
+     "now": "- Is the preceding stretch a self-contained propositional claim? Cuts that leave"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0014,
+     "≤5": -0.0022,
+     "≤7": -0.0029,
+     "≤10": 0.0048,
+     "≤99": 0.0003
+    },
+    "n_worse": 649,
+    "n_better": 709,
+    "why": "Replacing C8 made the model more willing to isolate sentence‑initial function words/discourse markers (it started cutting immediately after openers). That behaviour produced small gains for slightly longer remainders (≤10 bin) where the remainder stayed cohesive, but increased harmful fragmentation in the shortest latency bins (≤3/≤5/≤7) by introducing extra early cuts and splitting predicates/NPs (illustrated by the 'However, ‖ a nationwide…' and fragmented predicate examples), leaving the overall change near zero.",
+    "lesson": "A later revision should respect that permitting isolation of sentence‑initial openers can help when the remainder is sufficiently long/cohesive (benefit in ≤10) but currently increases fragmentation in the very-short bins, so the change must not encourage immediate cuts after openers that produce very-short or predicate-splitting fragments.",
+    "blamed": [
+     "C8 «- Is the preceding stretch a self-contained propositional cl»"
+    ]
+   }
+  },
+  {
+   "iter": 6,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1111,
+   "changelog": [
+    "Insert a new core principle forbidding cuts that leave sentence‑initial openers as very short standalone fragments, because the primary finding shows the prompt underrates harm from isolating openers and this fixes excessive very-short fragments in the shortest latency bins.",
+    "Replace C7 to emphasize keeping a complete predicate (auxiliaries, main verb, and immediate objects/complements) together, because the findings show the prompt underweights continuity of predicate and arguments and this wording gives a clear, positive description of a good cut."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C0",
+     "kind": "change",
+     "was": "",
+     "now": "- Do not cut immediately after sentence‑initial openers (brief discourse markers"
+    },
+    {
+     "op": "replace",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- Prefer cuts that leave a complete predicate: include auxiliaries, the main ver"
+    }
+   ]
+  },
+  {
+   "iter": 6,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.099,
+   "changelog": [
+    "Insert a new Core Principle after C7 that defines a GOOD cut for predicates: prefer keeping auxiliaries, the main verb, and core objects/complements together so agent–action–patient relations survive separate translation. This directly addresses the primary finding about underweighting predicate/argument continuity."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- Prefer cuts that keep a complete predicate together: include auxiliaries, the "
+    }
+   ]
+  },
+  {
+   "iter": 6,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.108,
+   "changelog": [
+    "Replace E1 with measured example en_us_950 to teach the scorer about harms from isolating sentence-initial openers (primary finding).",
+    "Replace E2 with measured example en_us_6 to show problems when brief initial descriptors/openers are cut off from their following noun/clause.",
+    "Replace E3 with measured example en_us_9 to illustrate that cutting immediately after short openers (e.g. 'Just') produces very-short fragments that hurt cohesion in short latency bins.",
+    "Replace E4 with measured example en_us_741 to expose cases where isolating a sentence-initial opener ('It') leads to harmful very-short fragments and lost predicate continuity."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: Basically <SEG:?> you'll <SEG:?> be <SEG:?> putting <SEG:?> up <SEG:?> no",
+     "labeled_example": "en_us_950"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: 28-year-old <SEG:?> Vidal <SEG:?> had <SEG:?> joined <SEG:?> Barça <SEG:?",
+     "labeled_example": "en_us_6"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: Just <SEG:?> after <SEG:?> 11:00, <SEG:?> protesters <SEG:?> blocked <SEG",
+     "labeled_example": "en_us_9"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG",
+     "labeled_example": "en_us_741"
+    }
+   ]
+  },
+  {
+   "iter": 6,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00519,
+    "lo": -0.0173,
+    "hi": 0.00709,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00519,
+    "lo": -0.0173,
+    "hi": 0.00709,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a short positive guideline after C7 that defines a GOOD predicate-aware cut: prefer preserving an intact predicate–argument unit and, when possible, keep the verb with its subject so agent–action–patient relations survive separate translation (addresses the primary finding)."
+   ],
+   "findings": [
+    "The prompt underrates the harm of isolating sentence‑initial openers: it often judges cuts that leave a lone opener (brief discourse marker, determiner, demonstrative, or single‑word pronoun) as acceptable, producing very short fragments that break cohesion in the shortest latency bins.",
+    "The prompt underweights continuity of predicate and arguments: it sometimes ranks cuts that split main verbs/auxiliaries from their direct objects or complements as acceptable, which creates orphaned complements or reverses relations when pieces are translated separately."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- Prefer cuts that preserve an intact predicate–argument unit: keep auxiliaries "
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0054,
+     "≤5": -0.0091,
+     "≤7": -0.009,
+     "≤10": 0.0016,
+     "≤99": 0.0122
+    },
+    "n_worse": 649,
+    "n_better": 738,
+    "why": "Inserting the predicate–argument guideline caused the scorer to prefer keeping verbs/auxiliaries attached to some arguments, which improved cut quality on long pieces (positive gains in the ≤10 and ≤99 bins) but led to more micro‑splits and earlier cuts in short spans (negative mean in ≤3–≤7), so the net change was near zero and slightly negative on short pieces. The single insertion therefore shifted behaviour toward preserving predicate chunks in long sentences but inadvertently encouraged fragmenting or separating subjects/auxiliaries in short pieces.",
+    "lesson": "When adding a predicate‑preservation guideline, ensure it doesn't encourage creating very short fragments or splitting subjects from their verbs in short spans — preserve predicate wholes for long contexts without introducing micro‑splits in short pieces.",
+    "blamed": [
+     "C7 «- Will cutting inside complex verb phrases or between verb a»"
+    ]
+   }
+  },
+  {
+   "iter": 7,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.0681,
+   "changelog": [
+    "Replace E1 with the measured labeled example en_us_790 so the examples section demonstrates that cuts inside coordinate lists harm cohesion and should be penalized."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: Imagine, <SEG:?> if <SEG:?> you <SEG:?> will, <SEG:?> a <SEG:?> Mancunian",
+     "labeled_example": "en_us_790"
+    }
+   ]
+  },
+  {
+   "iter": 7,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.0697,
+   "changelog": [
+    "Insert after C7 a short rule that preserves predicate–argument integrity but forbids creating many micro-fragments: when keeping the predicate would force one- or two-word trailing pieces, prefer cuts that yield a cohesive remainder (addresses the primary finding about over‑strict predicate preservation)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- When preserving predicate–argument integrity would force many micro‑fragments,"
+    }
+   ]
+  },
+  {
+   "iter": 7,
+   "adopted": false,
+   "delta": {
+    "mean": -0.0127,
+    "lo": -0.02496,
+    "hi": -0.00044,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.0127,
+    "lo": -0.02496,
+    "hi": -0.00044,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Replace C7 to address the primary finding: soften the absolute predicate–argument preservation rule so it avoids creating many micro‑fragments in very short‑latency contexts and instead describes what a good dense cut looks like (prefer cohesive remainders, avoid trailing single‑word fragments)."
+   ],
+   "findings": [
+    "The prompt treats predicate–argument preservation as an absolute rule across all latency regimes, preferring to avoid any cut that separates verbs/auxiliaries from arguments; in very short-latency sentences this drives many tiny fragments elsewhere and lowers overall H_set in the ≤3/≤5 bins.",
+    "The prompt undervalues isolating sentence‑initial small function words or discourse markers as standalone pieces; separating an initial article/discourse token often yields a following chunk that is more coherent to translate and raises joinable quality.",
+    "The prompt does not sufficiently penalize cuts inside coordinate lists or enumerations; splitting mid‑enumeration often severs the list's internal cohesion and causes mistranslation when pieces are joined."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C7",
+     "kind": "change",
+     "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+     "now": "- Prefer preserving predicate–argument integrity when that prevents orphaned com"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0199,
+     "≤5": -0.009,
+     "≤7": -0.0073,
+     "≤10": -0.0091,
+     "≤99": 0.0012
+    },
+    "n_worse": 699,
+    "n_better": 654,
+    "why": "Softening C7 made the instruction ambiguous in short‑latency contexts: the model moved some cuts earlier (splitting prepositional phrases, pulling apart verb–object/adjunct sequences and producing one‑word fragments) which reduced H_set for small bins, while giving a tiny net gain on long pieces where the softer rule allowed useful additional cuts.",
+    "lesson": "When softening predicate–argument constraints, make it explicit that the model must not shift cuts earlier in very short‑latency pieces so as to create isolated single‑word fragments or split tight verb‑argument/PP units.",
+    "blamed": [
+     "C7 «- Prefer preserving predicate–argument integrity when that p»"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 7049,
+ "total_cost": 36.512742,
+ "provenance": {
+  "- Does what follows, taken alone, assert or imply something that contradicts the claim already heard? A cut is harmful when the continuation, by itself, would reverse polarity, causality, or attribution established earlier.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- If the two sides are translated separately and then concatenated, will the joined translations still render the whole sentence faithfully? Damage looks like missing complements, lost scopes, wrong agent/patient assignment, or dropped dependencies.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is a subordinating relation unresolved at the cut (complementizers, subordinators, clause‑introducing non‑finite forms)? Cuts that strand a clause head or leave its relation open can let the remainder change interpretation.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the cut separate a nominal from a following relative or postnominal modifier that completes its reference? Such cuts often leave the noun unmodified or misattached in separate translations.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Do fronted adjuncts (temporal or prepositional) rely on attachment to the following clause? Cutting after them can flip scope or leave temporal/relational links unresolved when pieces are joined.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Do determiners, numerals, or other specifiers need the following noun to fix reference? Cuts before the head nominal commonly produce referential failure or mistranslation of quantity or scope.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Will cutting inside complex verb phrases or between verb and its object orphan complements or reorder events? English SVO and verb-centered predicates make these splits likely to change who did what.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is the preceding stretch a self-contained propositional claim, or does clause closure and sentence-finality remain unresolved? Cuts that leave an incomplete claim will reduce the cohesion score when translated separately.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When a numeric expression spans a cut, prefer cuts that keep the numeral with its multipliers and unit together (e.g. \"340 million\", \"83 meters\"); if unavoidable, cut before the whole numeric phrase or after its unit/endpoint — do not split number from its multiplier or unit.": {
+   "origin": "iter 3",
+   "adopted_delta": 0.011,
+   "adopted_ci_lo": 0.001
+  },
+  "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

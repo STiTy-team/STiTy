@@ -1,0 +1,396 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Allow splits immediately after sentence‑introductory function words (initial determiners or short prepositional/adverbial leads) when the right‑hand piece is semantically self‑contained: it must not require resolving antecedents, scope, or polarity to be judged true. Favor these very-short left cuts in low-latency cases where safe."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_845",
+    "text": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.\nOutput: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 336
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 277
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7666,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Allow cuts immediately after a main verb when the following piece is a short, self-contained predicate or a closed complement (for example a brief prepositional phrase or short clause) that does not depend on unresolved scope, antecedents, or polarity; such cuts are acceptable to improve dense, low-latency segmentation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 324
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7377,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut between a numeral or quantifier and its unit or the noun it quantifies; treat numeral+unit (and quantifier+noun) as an atomic span for segmentation to preserve cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 183
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7236,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Allow a cut immediately after a single sentence‑initial function word (initial determiner or prepositional/subordinating token) when the following token is a content word (noun/proper noun/number/adjective/verb) and the next three tokens contain no pronoun (it/this/that) or polarity word (not/no/never)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 307
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7360,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Allow a cut immediately after a verb token when the following token is a preposition (e.g. in, on, at, to, for, by, with, from) and the preposition plus the next up to three tokens contain no clause markers (that, which, who, because, if, whether) or negation (not, n't). Treat that short PP as a closed right-hand span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 323
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7376,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Do not cut between a numeral or quantifier token and the immediately following token when that token is a unit word (percent, %, years, kg, $) or a noun it quantifies; treat numeral+unit or quantifier+noun as an atomic span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 227
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7280,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_292",
+    "text": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resulting <SEG:?> in <SEG:?> the <SEG:?> phase <SEG:?> change <SEG:?> had <SEG:?> took <SEG:?> place <SEG:?> on <SEG:?> March <SEG:?> 10 <SEG:?> on <SEG:?> the <SEG:?> northeast <SEG:?> side <SEG:?> of <SEG:?> the <SEG:?> volcano's <SEG:?> summit <SEG:?> caldera.\nOutput: The <SEG:100> significant <SEG:73> earthquake <SEG:95> activity <SEG:68> resulting <SEG:64> in <SEG:50> the <SEG:14> phase <SEG:23> change <SEG:41> had <SEG:59> took <SEG:27> place <SEG:32> on <SEG:36> March <SEG:82> 10 <SEG:91> on <SEG:18> the <SEG:5> northeast <SEG:86> side <SEG:77> of <SEG:55> the <SEG:0> volcano's <SEG:9> summit <SEG:45> caldera."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_884",
+    "text": "Input: In <SEG:?> the <SEG:?> past <SEG:?> 20 <SEG:?> years, <SEG:?> the <SEG:?> amount <SEG:?> of <SEG:?> child-friendly <SEG:?> options <SEG:?> in <SEG:?> Uptown <SEG:?> Charlotte <SEG:?> has <SEG:?> grown <SEG:?> exponentially.\nOutput: In <SEG:100> the <SEG:36> past <SEG:86> 20 <SEG:64> years, <SEG:93> the <SEG:14> amount <SEG:43> of <SEG:7> child-friendly <SEG:29> options <SEG:21> in <SEG:50> Uptown <SEG:71> Charlotte <SEG:0> has <SEG:57> grown <SEG:79> exponentially."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_46",
+    "text": "Input: On <SEG:?> September <SEG:?> 24, <SEG:?> 1759, <SEG:?> Arthur <SEG:?> Guinness <SEG:?> signed <SEG:?> a <SEG:?> 9,000 <SEG:?> year <SEG:?> lease <SEG:?> for <SEG:?> the <SEG:?> St <SEG:?> James' <SEG:?> Gate <SEG:?> Brewery <SEG:?> in <SEG:?> Dublin, <SEG:?> Ireland.\nOutput: On <SEG:72> September <SEG:56> 24, <SEG:89> 1759, <SEG:100> Arthur <SEG:83> Guinness <SEG:33> signed <SEG:78> a <SEG:94> 9,000 <SEG:28> year <SEG:39> lease <SEG:44> for <SEG:11> the <SEG:6> St <SEG:0> James' <SEG:22> Gate <SEG:50> Brewery <SEG:67> in <SEG:17> Dublin, <SEG:61> Ireland."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_482",
+    "text": "Input: Mysticism <SEG:?> is <SEG:?> the <SEG:?> pursuit <SEG:?> of <SEG:?> communion <SEG:?> with, <SEG:?> identity <SEG:?> with, <SEG:?> or <SEG:?> conscious <SEG:?> awareness <SEG:?> of <SEG:?> an <SEG:?> ultimate <SEG:?> reality, <SEG:?> divinity, <SEG:?> spiritual <SEG:?> truth, <SEG:?> or <SEG:?> God.\nOutput: Mysticism <SEG:95> is <SEG:100> the <SEG:84> pursuit <SEG:5> of <SEG:89> communion <SEG:0> with, <SEG:68> identity <SEG:21> with, <SEG:32> or <SEG:74> conscious <SEG:47> awareness <SEG:42> of <SEG:58> an <SEG:63> ultimate <SEG:79> reality, <SEG:53> divinity, <SEG:26> spiritual <SEG:37> truth, <SEG:16> or <SEG:11> God."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 316
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -84
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -102
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -232
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6951,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.",
+    "labeled_example": "en_us_301",
+    "text": "Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 <SEG:?> will <SEG:?> be <SEG:?> reviewed <SEG:?> again <SEG:?> by <SEG:?> the <SEG:?> next <SEG:?> elected <SEG:?> legislature <SEG:?> in <SEG:?> either <SEG:?> 2015 <SEG:?> or <SEG:?> 2016 <SEG:?> to <SEG:?> remain <SEG:?> in <SEG:?> process.\nOutput: Following <SEG:80> the <SEG:55> process, <SEG:100> HJR-3 <SEG:25> will <SEG:60> be <SEG:45> reviewed <SEG:70> again <SEG:90> by <SEG:40> the <SEG:5> next <SEG:35> elected <SEG:10> legislature <SEG:75> in <SEG:0> either <SEG:30> 2015 <SEG:20> or <SEG:65> 2016 <SEG:85> to <SEG:15> remain <SEG:95> in <SEG:50> process."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.",
+    "labeled_example": "en_us_340",
+    "text": "Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <SEG:?> to <SEG:?> by <SEG:?> the <SEG:?> on-track <SEG:?> medical <SEG:?> staff <SEG:?> and <SEG:?> transported <SEG:?> to <SEG:?> a <SEG:?> local <SEG:?> hospital <SEG:?> where <SEG:?> he <SEG:?> later <SEG:?> died.\nOutput: He <SEG:39> was <SEG:11> immediately <SEG:17> attended <SEG:56> to <SEG:44> by <SEG:22> the <SEG:0> on-track <SEG:78> medical <SEG:28> staff <SEG:83> and <SEG:50> transported <SEG:33> to <SEG:61> a <SEG:6> local <SEG:94> hospital <SEG:100> where <SEG:89> he <SEG:67> later <SEG:72> died."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.",
+    "labeled_example": "en_us_924",
+    "text": "Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG:?> is <SEG:?> often <SEG:?> through <SEG:?> a <SEG:?> toll-free <SEG:?> telephone <SEG:?> number <SEG:?> that <SEG:?> can <SEG:?> be <SEG:?> called <SEG:?> from <SEG:?> most <SEG:?> phones <SEG:?> without <SEG:?> charge.\nOutput: Access <SEG:61> to <SEG:56> these <SEG:44> services <SEG:89> is <SEG:83> often <SEG:94> through <SEG:78> a <SEG:0> toll-free <SEG:22> telephone <SEG:33> number <SEG:100> that <SEG:67> can <SEG:50> be <SEG:72> called <SEG:28> from <SEG:17> most <SEG:11> phones <SEG:39> without <SEG:6> charge."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 245
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 12
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -88
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7222,
+  "errors": null
+ },
+ {
+  "candidate": 8,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_860",
+    "text": "Input: Some <SEG:?> countries <SEG:?> have <SEG:?> exceedingly <SEG:?> draconian <SEG:?> punishments <SEG:?> even <SEG:?> for <SEG:?> first <SEG:?> time <SEG:?> offenses; <SEG:?> these <SEG:?> can <SEG:?> include <SEG:?> prison <SEG:?> sentences <SEG:?> of <SEG:?> over <SEG:?> 10 <SEG:?> years <SEG:?> or <SEG:?> death.\nOutput: Some <SEG:80> countries <SEG:45> have <SEG:65> exceedingly <SEG:50> draconian <SEG:55> punishments <SEG:85> even <SEG:60> for <SEG:35> first <SEG:5> time <SEG:70> offenses; <SEG:100> these <SEG:75> can <SEG:0> include <SEG:90> prison <SEG:40> sentences <SEG:95> of <SEG:15> over <SEG:30> 10 <SEG:25> years <SEG:20> or <SEG:10> death."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1024",
+    "text": "Input: Tokyo <SEG:?> will <SEG:?> be <SEG:?> the <SEG:?> only <SEG:?> Asian <SEG:?> city <SEG:?> to <SEG:?> have <SEG:?> hosted <SEG:?> two <SEG:?> summer <SEG:?> Olympics, <SEG:?> having <SEG:?> hosted <SEG:?> the <SEG:?> games <SEG:?> in <SEG:?> 1964.\nOutput: Tokyo <SEG:94> will <SEG:29> be <SEG:47> the <SEG:35> only <SEG:41> Asian <SEG:0> city <SEG:6> to <SEG:18> have <SEG:12> hosted <SEG:76> two <SEG:88> summer <SEG:53> Olympics, <SEG:100> having <SEG:71> hosted <SEG:65> the <SEG:59> games <SEG:82> in <SEG:24> 1964."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 102
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -145
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7139,
+  "errors": null
+ },
+ {
+  "candidate": 9,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Allow a cut immediately after an initial sentence function word (for example a determiner, prepositional or adverbial lead) when the remainder is semantically self-contained and does not require unresolved antecedents, scope resolution, or polarity from preceding material."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 276
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7329,
+  "errors": null
+ },
+ {
+  "candidate": 10,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Allow a cut immediately after a main verb when the following piece is short (≤5 tokens) and contains no subordinating conjunctions or clause‑openers (that, which, because, if), no negation words (not, never), and no pronouns that require antecedents."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 253
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7306,
+  "errors": null
+ },
+ {
+  "candidate": 11,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut between a numeral or quantifier token and the immediately following unit word or the noun it quantifies; treat numeral+unit (or quantifier+noun) as an atomic span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 177
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7230,
+  "errors": null
+ }
+]

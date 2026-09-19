@@ -1,0 +1,135 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- As a last resort, prefer a cut immediately after an essential post‑nominal modifier (measurement/unit, restrictive PP or relative clause, participial clause, or parenthetical) rather than between the noun or numeral head and that modifier."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 242
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6956,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a noun or numeral together with the immediately following post‑nominal span when that span begins with a relative pronoun (that/which/who/whom/whose), a preposition, an opening parenthesis '(', or a participial verb form (ending in -ing or -ed)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 253
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6967,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_375",
+    "kind": "example",
+    "text": "Input: A <SEG:?> person <SEG:?> who <SEG:?> weighs <SEG:?> 200 <SEG:?> pounds <SEG:?> (90kg) <SEG:?> on <SEG:?> Earth <SEG:?> would <SEG:?> weigh <SEG:?> about <SEG:?> 36 <SEG:?> pounds <SEG:?> (16kg) <SEG:?> on <SEG:?> Io. <SEG:?> So <SEG:?> the <SEG:?> gravity, <SEG:?> of <SEG:?> course, <SEG:?> pulls <SEG:?> less <SEG:?> on <SEG:?> you.\nOutput: A <SEG:25> person <SEG:83> who <SEG:42> weighs <SEG:92> 200 <SEG:71> pounds <SEG:96> (90kg) <SEG:79> on <SEG:75> Earth <SEG:46> would <SEG:17> weigh <SEG:8> about <SEG:33> 36 <SEG:50> pounds <SEG:67> (16kg) <SEG:38> on <SEG:4> Io. <SEG:100> So <SEG:88> the <SEG:29> gravity, <SEG:62> of <SEG:54> course, <SEG:58> pulls <SEG:0> less <SEG:21> on <SEG:12> you."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "en_us_101",
+    "kind": "example",
+    "text": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).\nOutput: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons)."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "labeled_example": "en_us_1253",
+    "kind": "example",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "labeled_example": "en_us_1157",
+    "kind": "example",
+    "text": "Input: Montevideo <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> subtropics; <SEG:?> in <SEG:?> the <SEG:?> summer <SEG:?> months, <SEG:?> temperatures <SEG:?> above <SEG:?> +30°C <SEG:?> are <SEG:?> common.\nOutput: Montevideo <SEG:83> is <SEG:25> in <SEG:33> the <SEG:17> subtropics; <SEG:100> in <SEG:75> the <SEG:42> summer <SEG:50> months, <SEG:92> temperatures <SEG:58> above <SEG:8> +30°C <SEG:0> are <SEG:67> common."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 330
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 194
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 111
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -449
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6900,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C3",
+    "kind": "delete",
+    "chars_change": -193
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6521,
+  "errors": null
+ }
+]

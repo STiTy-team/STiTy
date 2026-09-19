@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00713,
+  "lo": -0.02091,
+  "hi": 0.00615,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0147,
+  "≤5": -0.0056,
+  "≤7": 0.0054,
+  "≤10": 0.002,
+  "≤99": -0.0024
+ },
+ "n_worse": 713,
+ "n_better": 696,
+ "worst": [
+  {
+   "id": "en_us_608",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7541,
+   "before": "We experience time ‖ as a series of events passing from the future through the present to the past.",
+   "after": "We experience time as a series of events passing from the future through the present ‖ to the past."
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7232,
+   "before": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice they ‖ are not."
+  },
+  {
+   "id": "en_us_371",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6871,
+   "before": "These plants ‖ look like a small palm tree ‖ with a crown ‖ of sharp, spiky leaves.",
+   "after": "These plants ‖ look like a small palm ‖ tree ‖ with a crown of sharp, spiky leaves."
+  },
+  {
+   "id": "en_us_776",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6724,
+   "before": "Although in theory ‖ they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_1167",
+   "k": 3,
+   "bin": "≤3",
+   "delta": -0.6691,
+   "before": "Their predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually.",
+   "after": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright as habitually."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.697,
+   "before": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.6724,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6139,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, ‖ fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor ‖ Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, ‖ respectively."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.6111,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning ‖ may not be immediately ‖ apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general ‖ that an immediate diagnosis cannot be made."
+  }
+ ],
+ "why": "The C4 replacement made the model avoid cutting between a noun (or its specifier) and a required postnominal modifier, so cuts that used to occur there were moved elsewhere; that shift helps some mid-length pieces but increases harmful splits in very-short bins (e.g. subject–verb breaks or internal compound-noun splits), producing a small net negative. The by_bin pattern (hurt at ≤3 and ≤5, help at ≤7/≤10) and the tails (many examples where a safe noun-modifier cut was replaced by a subject‑verb or compound split) support this.",
+ "lesson": "Do not blanket-forbid cuts after nouns — preventing noun+modifier splits can simply move cuts into very short phrases and create worse subject–verb or compound-noun splits, so later revisions should avoid that wholesale prohibition.",
+ "blamed": [
+  "C4 «- Avoid cutting between a noun (or its specifier) and any re»"
+ ]
+}

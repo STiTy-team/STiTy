@@ -1,0 +1,47 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt demotes boundaries whose remainder would contradict the prefix, but it accomplishes this by promoting the immediately adjacent cut — producing one-word or head-fragment pieces (bare aux/copula, determiner-only, numeral-only, noun stripped of postmodifiers) that harm very-short latency bins.",
+    "evidence": "['en_us_845','en_us_1116','en_us_738','en_us_936','en_us_1081','en_us_276','en_us_432','en_us_767','en_us_33','en_us_113'] — each policy kept or created a boundary that produced a high-contradiction short remainder or forced adjacent head-fragment cuts; the offline target instead moved cuts to preserve minimal meaningful phrases.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "- Is a subordinating relation unresolved at the cut",
+     "text": "If demoting a boundary because its remainder would contradict, do not promote the immediately adjacent boundary when that would create a head-fragment (bare auxiliary/copula/modal, determiner without noun, numeral without unit, or a noun stripped of required postmodifiers); prefer cuts that keep a minimal meaningful phrase intact."
+    }
+   },
+   {
+    "diagnosis": "The prompt reflexively avoids cutting near sentence-openers/function words, but for very short latency budgets isolating an initial function word or discourse marker can be beneficial when the remainder is cohesive and non-contradictory.",
+    "evidence": "['en_us_936','en_us_738','en_us_360','en_us_113','en_us_845','en_us_1081'] — in each case the offline target added an early short cut (isolating the opener) and achieved higher H_set, showing such cuts are often safe and helpful in ≤3/≤5 bins when the remainder forms a self-contained clause.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Allow a cut that isolates a sentence-initial function word or discourse marker when the following piece is a cohesive, self-contained clause and the isolated opener does not by itself assert a proposition that would contradict the remainder."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt demotes boundaries whose remainder would contradict the prefix, but it accomplishes this by promoting the immediately adjacent cut — producing one-word or head-fragment pieces (bare aux/copula, determiner-only, numeral-only, noun stripped of postmodifiers) that harm very-short latency bins.",
+   "evidence": "['en_us_845','en_us_1116','en_us_738','en_us_936','en_us_1081','en_us_276','en_us_432','en_us_767','en_us_33','en_us_113'] — each policy kept or created a boundary that produced a high-contradiction short remainder or forced adjacent head-fragment cuts; the offline target instead moved cuts to preserve minimal meaningful phrases.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "- Is a subordinating relation unresolved at the cut",
+    "text": "If demoting a boundary because its remainder would contradict, do not promote the immediately adjacent boundary when that would create a head-fragment (bare auxiliary/copula/modal, determiner without noun, numeral without unit, or a noun stripped of required postmodifiers); prefer cuts that keep a minimal meaningful phrase intact."
+   }
+  },
+  {
+   "diagnosis": "The prompt reflexively avoids cutting near sentence-openers/function words, but for very short latency budgets isolating an initial function word or discourse marker can be beneficial when the remainder is cohesive and non-contradictory.",
+   "evidence": "['en_us_936','en_us_738','en_us_360','en_us_113','en_us_845','en_us_1081'] — in each case the offline target added an early short cut (isolating the opener) and achieved higher H_set, showing such cuts are often safe and helpful in ≤3/≤5 bins when the remainder forms a self-contained clause.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Allow a cut that isolates a sentence-initial function word or discourse marker when the following piece is a cohesive, self-contained clause and the isolated opener does not by itself assert a proposition that would contradict the remainder."
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "iter": 4,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00211,
+  "lo": -0.01065,
+  "hi": 0.01485,
+  "n": 2773,
+  "n_clusters": 300
+ },
+ "gain": {
+  "mean": 0.00211,
+  "lo": -0.01065,
+  "hi": 0.01485,
+  "n": 2773,
+  "n_clusters": 300
+ },
+ "changelog": [
+  "Insert a single fallback ordering that prefers keeping a finite verb/auxiliary with its immediately following obligatory complement over taking a cut after punctuation or a clause boundary; second-tier tie-breaker prefers keeping a numeral with its unit. This addresses the primary finding by ordering which pushed-down positions to take."
+ ],
+ "findings": [
+  "The prompt underrates cuts that separate a predicate (finite copula or main verb) from the complement that completes its meaning; leaving the verb or copula alone produces high-contradiction or orphaned fragments in short-latency pieces.",
+  "The prompt sometimes splits numerals/quantities from the units or nouns that disambiguate them, producing detached, misleading fragments."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "Fallback ordering: prefer a cut that keeps a finite verb or auxiliary together w"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0005,
+   "≤5": 0.0035,
+   "≤7": 0.0003,
+   "≤10": 0.0031,
+   "≤99": 0.0086
+  },
+  "n_worse": 1113,
+  "n_better": 1154,
+  "why": "Inserting the fallback ordering that prefers keeping a finite verb/auxiliary with its immediately following obligatory complement caused the model to avoid cuts immediately after verbs/auxiliaries (e.g. the Pittman example where the cut moved away from after ‘suggested’), producing small overall gains concentrated on longer pieces (≤99 bin +0.0086) but also many local harms (n_better ≈ n_worse and sizeable negative moves in ≤3–≤7 bins). The tail shows this concretely: some cuts were pushed later to keep verb+complement together while other cuts were forced into awkward subject–predicate splits or broke enumerations (en_us_970, en_us_1298).",
+  "lesson": "A later revision should respect that the verb/auxiliary+complement preference yields only modest gains (mostly on longer pieces) and must not be allowed to shift cuts into subject–predicate positions or to fracture short enumerations, since those local harms offset the benefit.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

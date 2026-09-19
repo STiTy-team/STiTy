@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates the harm of cutting inside numeric expressions (numbers, ranges, units, percentages); splitting a numeral from its unit or the endpoints of a range produces incoherent or mistranslated numeric phrases when pieces are translated separately.",
+    "evidence": "en_us_419,en_us_1050,en_us_1116,en_us_950 — these cases all show cuts that split numbers/ranges or number+unit (\"340 million to 500 million\", \"83 meters\", \"Nearly 200 ...\" , \"200 ... lives\") and the target keeps the numeric phrase intact.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside numeric expressions or ranges (numbers, multipliers like \"million\", units, percents, or the endpoints of a range); keep the whole numeric phrase together."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues keeping verbs with their core complements: it often allows cuts that strand verbs, prepositional objects, or infinitival complements, which produces orphaned predicates or reversed attachments in the joined translation.",
+    "evidence": "en_us_950,en_us_1600,en_us_167,en_us_390 — all show harmful splits that separate a verb or auxiliary from its object/complement or strand a prepositional/infinitival phrase (e.g. \"trying to make\" vs \"contact with sailors\", verb + object splits), and the target preserves predicate+arguments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting between a verb (or auxiliary) and its core object/complement or between a verb and its following prepositional/infinitival complement; keep predicate + core arguments together."
+    }
+   },
+   {
+    "diagnosis": "The prompt does not sufficiently penalize cuts that create very short trailing fragments (one- or two-word pieces); such tiny fragments are frequent sources of contradiction or loss when translated separately in short-latency bins.",
+    "evidence": "en_us_1116,en_us_419,en_us_538,en_us_1050 — these examples show the policy leaving single-word or very-short trailing pieces (e.g. lone \"said\", isolated numerals, lone determiners/auxiliaries) while the target moves boundaries to avoid those tiny fragments.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Prefer not to create trailing pieces of only one or two words (single-word predicates, lone determiners/nouns); avoid such tiny fragments unless preventing them would force a worse break of predicate or noun structure nearby."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates the harm of cutting inside numeric expressions (numbers, ranges, units, percentages); splitting a numeral from its unit or the endpoints of a range produces incoherent or mistranslated numeric phrases when pieces are translated separately.",
+   "evidence": "en_us_419,en_us_1050,en_us_1116,en_us_950 — these cases all show cuts that split numbers/ranges or number+unit (\"340 million to 500 million\", \"83 meters\", \"Nearly 200 ...\" , \"200 ... lives\") and the target keeps the numeric phrase intact.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside numeric expressions or ranges (numbers, multipliers like \"million\", units, percents, or the endpoints of a range); keep the whole numeric phrase together."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues keeping verbs with their core complements: it often allows cuts that strand verbs, prepositional objects, or infinitival complements, which produces orphaned predicates or reversed attachments in the joined translation.",
+   "evidence": "en_us_950,en_us_1600,en_us_167,en_us_390 — all show harmful splits that separate a verb or auxiliary from its object/complement or strand a prepositional/infinitival phrase (e.g. \"trying to make\" vs \"contact with sailors\", verb + object splits), and the target preserves predicate+arguments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting between a verb (or auxiliary) and its core object/complement or between a verb and its following prepositional/infinitival complement; keep predicate + core arguments together."
+   }
+  },
+  {
+   "diagnosis": "The prompt does not sufficiently penalize cuts that create very short trailing fragments (one- or two-word pieces); such tiny fragments are frequent sources of contradiction or loss when translated separately in short-latency bins.",
+   "evidence": "en_us_1116,en_us_419,en_us_538,en_us_1050 — these examples show the policy leaving single-word or very-short trailing pieces (e.g. lone \"said\", isolated numerals, lone determiners/auxiliaries) while the target moves boundaries to avoid those tiny fragments.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Prefer not to create trailing pieces of only one or two words (single-word predicates, lone determiners/nouns); avoid such tiny fragments unless preventing them would force a worse break of predicate or noun structure nearby."
+   }
+  }
+ ]
+}

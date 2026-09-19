@@ -1,0 +1,202 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Prefer a cut placed after a contiguous short span (≤4 words) that completes the immediately preceding predicate — for example when those ≤4 words supply the object, a required prepositional complement, a date/place/measurement, or an essential post‑nominal modifier — over a cut that would leave the verb/auxiliary or predicate head at segment end with that short span starting the next segment; if the only choices are to cut before that short span or later, take the later cut (after the span)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 499
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7213,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- As a last resort, prefer a cut placed after a complete measurement span (a numeral together with its unit, multiplier word, or any immediately following parenthetical conversion) over any cut that splits the numeral from its unit or conversion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 247
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6961,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep a verb or auxiliary together with the immediately following contiguous span (≤4 words) that completes its predicate — the words that supply a required object, prepositional complement, date, place, measurement, or essential post‑nominal modifier."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 252
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6966,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep a numeral together with the immediately following unit, multiplier word, or parenthetical conversion that completes the measurement; treat the contiguous measurement span (number plus its unit/conversion) as a single segment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 231
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6945,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Keep a verb or auxiliary together with the immediately following contiguous span of up to four words when that span supplies an essential complement (object, required prepositional complement, date/place/measurement, or essential post‑nominal modifier)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 256
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6970,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Prefer a cut after a contiguous short span (≤4 words) that immediately follows a verb or auxiliary when that span completes the predicate (for example: supplies the verb's required object, a required prepositional complement, a date/place/measurement, or an essential post‑nominal modifier), rather than a cut placed before that span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 337
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7051,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "_was": "- If the pieces are translated independently and concatenated, will the joined translation preserve the source's referents, relations and event structure, or will attachment loss, missing predicates, or dropped arguments break coherence?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "chars_change": -238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6476,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbers, polarity markers, complements) essential to interpret an earlier ambiguous NP or verb phrase?",
+    "_was": "- Does the stretch after the cut supply disambiguating information (names, numbers, polarity markers, complements) essential to interpret an earlier ambiguous NP or verb phrase?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -178
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6536,
+  "errors": null
+ }
+]

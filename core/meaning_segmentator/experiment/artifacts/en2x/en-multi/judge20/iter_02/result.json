@@ -1,0 +1,68 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00342,
+  "lo": -0.00537,
+  "hi": 0.01258,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.00342,
+  "lo": -0.00537,
+  "hi": 0.01258,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "Insert a narrow surface-binding principle after C3 to keep a verb/copula together with an immediately following 1–4-word prepositional/temporal/locative/measurement complement — addresses the primary finding that cutting there produces orphaned or contradicting fragments."
+ ],
+ "findings": [
+  "The prompt fails to treat short complements that complete a predicate as essential: it sometimes prefers a cut that separates a verb/copula from its immediately following short complement, producing orphaned or contradicting fragments."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C3",
+   "kind": "change",
+   "was": "- Do the next one to four words form a short complement that completes the immed",
+   "now": "Keep a verb or copula together with the immediately following short (1–4 word) c"
+  }
+ ],
+ "built_on": "iter 1 near miss (+0.0053 [-0.0036, +0.0145])",
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0028,
+   "≤5": 0.0028,
+   "≤7": 0.0137,
+   "≤10": 0.0097,
+   "≤99": 0.0187
+  },
+  "n_worse": 2257,
+  "n_better": 2293,
+  "why": "The inserted C3 rule made the model avoid cuts immediately after verbs/copu las when a 1–4-word complement follows, so those cuts were pushed to other boundaries. By-bin changes show small losses for very short pieces (≤3) and growing gains for longer spans (≤7–≤99), while n_worse vs n_better are nearly balanced — meaning the rule fixed orphaned/complement splits in longer contexts but caused new bad splits (subjects separated from their verbs, and cuts moved inside enumerations or before quotes) in many cases, leaving the net measurement essentially unchanged.",
+  "lesson": "A future revision should preserve verb/copula + short-complement bindings only when doing so does not force cuts that split subjects from their verbs or break coordinated/enumerated items.",
+  "blamed": [
+   "C3 «- Do the next one to four words form a short complement that»"
+  ],
+  "vs_base": {
+   "delta": {
+    "mean": -0.00191,
+    "lo": -0.01056,
+    "hi": 0.00734,
+    "n": 5509,
+    "n_clusters": 600
+   },
+   "by_bin": {
+    "≤3": -0.0075,
+    "≤5": 0.0026,
+    "≤7": 0.0035,
+    "≤10": -0.0007,
+    "≤99": 0.0023
+   },
+   "n_worse": 2227,
+   "n_better": 2216
+  }
+ }
+}

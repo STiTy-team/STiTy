@@ -1,0 +1,59 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01515,
+  "lo": 0.0013,
+  "hi": 0.02821,
+  "n": 2773,
+  "n_clusters": 300
+ },
+ "gain": {
+  "mean": 0.01515,
+  "lo": 0.0013,
+  "hi": 0.02821,
+  "n": 2773,
+  "n_clusters": 300,
+  "dev_a": {
+   "mean": 0.01515,
+   "lo": 0.0013,
+   "hi": 0.02821,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "verified": false,
+  "tries": 1
+ },
+ "changelog": [
+  "Add a fallback ordering unit that prefers cuts at clause boundaries or punctuation over cuts immediately after a finite verb/auxiliary followed by a short (≤4-word) complement — to prevent detaching predicates (addresses the primary finding)."
+ ],
+ "findings": [
+  "The prompt treats cuts immediately after a verb or auxiliary (or before the few words that complete its predicate) as acceptable; this detaches core predicate-argument material and often creates isolated stretches whose translation contradicts or loses the original proposition.",
+  "The prompt allows cuts that split numerals or measurements from their units or parenthetical equivalents, which severs essential numeric meaning and often causes mistranslation or contradiction."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Prefer a cut after a clear clause boundary or punctuation (for example sentenc"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.027,
+   "≤5": 0.0125,
+   "≤7": 0.0056,
+   "≤10": 0.0007,
+   "≤99": -0.0117
+  },
+  "n_worse": 1049,
+  "n_better": 1283,
+  "why": "Adding the clause‑boundary/punctuation fallback made the model prefer cuts at clear clause breaks instead of immediately after auxiliaries/finite verbs with short complements, so it fixed many short-piece mistakes (positive mean gains in the ≤3, ≤5, ≤7, ≤10 bins) by keeping short complements and multiword names together. The same change shifted some cuts earlier in longer sentences, splitting noun phrases, quoted spans, and objects (the ≤99 bin is slightly negative and several large negative tail moves show cuts inserted inside names/objects), producing localized large degradations.",
+  "lesson": "A later revision should preserve the short‑segment gains from preferring clause/punctuation boundaries while avoiding moves that introduce earlier cuts which split multiword noun phrases, quoted spans, or long complements in longer sentences.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

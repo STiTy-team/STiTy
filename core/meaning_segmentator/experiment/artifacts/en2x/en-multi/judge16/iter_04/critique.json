@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that leave a scope-bearing predicate, auxiliary, negation, or quantifier detached from the phrase that supplies its object/complement or resolves its scope; such early cuts create high contradiction risk when the continuation completes or reverses the left piece.",
+    "evidence": "ids: [\"en_us_1570\",\"en_us_990\",\"en_us_738\",\"en_us_1081\",\"en_us_1233\",\"en_us_1527\",\"en_us_1497\"]; what they share — the policy cut left a predicate/negation/quantifier-like fragment whose truth or polarity is completed only by the following segment, producing a high contra that zeroed the set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut when the following material supplies the object, complement, or scope that completes a predicate/auxiliary/negation/quantifier; if the continuation is needed to determine truth conditions, block the cut."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to protect numerals and measurement phrases: it allows cuts that separate a cardinal/measurement from its unit, breaking referent identity and lowering cohesion.",
+    "evidence": "ids: [\"en_us_101\",\"en_us_1050\",\"en_us_1612\"]; what they share — policy cuts detached numbers or measurement tokens from their unit phrases (e.g. '55,000' / 'barrels', '3.50 m' / 'wide', '100 feet' / 'wide'), harming fidelity.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/measurement and its unit or immediately adjacent unit phrase; keep number+unit in the same piece."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that leave a scope-bearing predicate, auxiliary, negation, or quantifier detached from the phrase that supplies its object/complement or resolves its scope; such early cuts create high contradiction risk when the continuation completes or reverses the left piece.",
+   "evidence": "ids: [\"en_us_1570\",\"en_us_990\",\"en_us_738\",\"en_us_1081\",\"en_us_1233\",\"en_us_1527\",\"en_us_1497\"]; what they share — the policy cut left a predicate/negation/quantifier-like fragment whose truth or polarity is completed only by the following segment, producing a high contra that zeroed the set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut when the following material supplies the object, complement, or scope that completes a predicate/auxiliary/negation/quantifier; if the continuation is needed to determine truth conditions, block the cut."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to protect numerals and measurement phrases: it allows cuts that separate a cardinal/measurement from its unit, breaking referent identity and lowering cohesion.",
+   "evidence": "ids: [\"en_us_101\",\"en_us_1050\",\"en_us_1612\"]; what they share — policy cuts detached numbers or measurement tokens from their unit phrases (e.g. '55,000' / 'barrels', '3.50 m' / 'wide', '100 feet' / 'wide'), harming fidelity.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/measurement and its unit or immediately adjacent unit phrase; keep number+unit in the same piece."
+   }
+  }
+ ]
+}

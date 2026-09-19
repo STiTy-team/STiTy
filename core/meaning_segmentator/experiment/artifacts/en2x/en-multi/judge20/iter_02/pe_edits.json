@@ -1,0 +1,175 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -240
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7171,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "chars_change": -240
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7171,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "Keep a verb or copula together with the immediately following short (1–4 word) complement that completes it: specifically, a prepositional phrase that begins with a preposition (e.g. in, on, at, to, from, by, with, of) plus its next 1–3 words, a numeral+unit measurement phrase, or a brief temporal or locative expression."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 323
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7734,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [],
+  "rewrite": true,
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "rewrite",
+    "id": null,
+    "kind": "rewrite",
+    "chars_change": 4512
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11923,
+  "errors": [
+   "길이 초과: 11923 > 8332"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- For each candidate cut, ask two measurement questions: will translating left and right separately and then joining still convey the whole sentence (cohesion)? And does the whole sentence, when read, contradict the left fragment (contra)?"
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E11"
+   },
+   {
+    "op": "delete",
+    "id": "E6"
+   },
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "delete",
+    "id": "E10"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -27
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -930
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E11",
+    "kind": "delete",
+    "chars_change": -868
+   },
+   {
+    "edit": 3,
+    "op": "delete",
+    "id": "E6",
+    "kind": "delete",
+    "chars_change": -749
+   },
+   {
+    "edit": 4,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -731
+   },
+   {
+    "edit": 5,
+    "op": "delete",
+    "id": "E10",
+    "kind": "delete",
+    "chars_change": -671
+   },
+   {
+    "edit": 6,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -666
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7275,
+  "errors": null
+ }
+]

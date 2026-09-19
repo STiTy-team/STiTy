@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats cuts that separate numerals/quantifiers from their measurement/unit phrase as acceptable, which yields pieces that lack the unit and so produce high contradiction or cohesion loss when translated alone.",
+    "evidence": "['en_us_101','en_us_399','en_us_242','en_us_140'] — each sentence shows a kept policy cut that splits a numeric quantity from its unit or parenthesized unit/measurement phrase (examples include “55,000 barrels (2.3 million ‖ gallons)”, “1.5 kilometres ‖ per second (3000 miles per hour)”, “240 kilometres an hour (149 miles per hour)”).",
+    "type_predicate": "The source contains a numeral or quantifier token (digits or spelled-out number) immediately followed, possibly after commas, by a measurement or unit word or a parenthesized measurement phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/quantifier and its immediately following unit or parenthesized measurement phrase (keep numbers attached to their units)."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues preserving predicate-argument attachments and allows cuts that separate a finite verb/auxiliary or copula from the phrase that supplies its core complement (object, clausal complement, essential PP or following relative clause), producing orphaned fragments that contradict or misrepresent the sentence when isolated.",
+    "evidence": "['en_us_378','en_us_738','en_us_633','en_us_174','en_us_549','en_us_964'] — in each case the policy kept a cut that breaks the verb (or copula/auxiliar) away from the clause or phrase that completes its meaning (e.g. splits before complements like “is called the photosphere”, “does not issue park permits more than one month…”, “you would probably assume he was…”), causing high contra or low cohesion.",
+    "type_predicate": "A finite verb or auxiliary (including copulas and modals) occurs and is not sentence-final, and the following span provides its required complement (a direct object, clausal complement, essential prepositional complement, or an immediately following relative/clausal continuation).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not place a cut that separates a finite verb/auxiliary (incl. copula) from the immediately following phrase that supplies its core complement (object, clausal complement, essential PP, or immediately attached relative clause)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats cuts that separate numerals/quantifiers from their measurement/unit phrase as acceptable, which yields pieces that lack the unit and so produce high contradiction or cohesion loss when translated alone.",
+   "evidence": "['en_us_101','en_us_399','en_us_242','en_us_140'] — each sentence shows a kept policy cut that splits a numeric quantity from its unit or parenthesized unit/measurement phrase (examples include “55,000 barrels (2.3 million ‖ gallons)”, “1.5 kilometres ‖ per second (3000 miles per hour)”, “240 kilometres an hour (149 miles per hour)”).",
+   "type_predicate": "The source contains a numeral or quantifier token (digits or spelled-out number) immediately followed, possibly after commas, by a measurement or unit word or a parenthesized measurement phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/quantifier and its immediately following unit or parenthesized measurement phrase (keep numbers attached to their units)."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues preserving predicate-argument attachments and allows cuts that separate a finite verb/auxiliary or copula from the phrase that supplies its core complement (object, clausal complement, essential PP or following relative clause), producing orphaned fragments that contradict or misrepresent the sentence when isolated.",
+   "evidence": "['en_us_378','en_us_738','en_us_633','en_us_174','en_us_549','en_us_964'] — in each case the policy kept a cut that breaks the verb (or copula/auxiliar) away from the clause or phrase that completes its meaning (e.g. splits before complements like “is called the photosphere”, “does not issue park permits more than one month…”, “you would probably assume he was…”), causing high contra or low cohesion.",
+   "type_predicate": "A finite verb or auxiliary (including copulas and modals) occurs and is not sentence-final, and the following span provides its required complement (a direct object, clausal complement, essential prepositional complement, or an immediately following relative/clausal continuation).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not place a cut that separates a finite verb/auxiliary (incl. copula) from the immediately following phrase that supplies its core complement (object, clausal complement, essential PP, or immediately attached relative clause)."
+   }
+  }
+ ]
+}

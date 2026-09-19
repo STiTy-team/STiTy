@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00713,
+  "lo": -0.02091,
+  "hi": 0.00615,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00713,
+  "lo": -0.02091,
+  "hi": 0.00615,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C4 to explicitly forbid cutting a noun (or its specifier) away from a required postnominal modifier/complement, addressing the primary finding that such splits leave the noun ungrounded or misattached."
+ ],
+ "findings": [
+  "The prompt underrates the harm of cuts that leave a predicate/copula hanging when the following words form a polarity- or scope-bearing complement (negation, existential 'there', quantifiers, clause completion): the preceding fragment taken alone becomes misleading or contradictable.",
+  "The prompt underestimates the risk of cutting between a noun (or its specifier) and an obligatory postnominal modifier/complement (prepositional 'of' phrases, relative clauses, 'from which', etc.), which leaves the noun ungrounded or misattached when pieces are translated separately."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C4",
+   "kind": "change",
+   "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+   "now": "- Avoid cutting between a noun (or its specifier) and any required postnominal m"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0147,
+   "≤5": -0.0056,
+   "≤7": 0.0054,
+   "≤10": 0.002,
+   "≤99": -0.0024
+  },
+  "n_worse": 713,
+  "n_better": 696,
+  "why": "The C4 replacement made the model avoid cutting between a noun (or its specifier) and a required postnominal modifier, so cuts that used to occur there were moved elsewhere; that shift helps some mid-length pieces but increases harmful splits in very-short bins (e.g. subject–verb breaks or internal compound-noun splits), producing a small net negative. The by_bin pattern (hurt at ≤3 and ≤5, help at ≤7/≤10) and the tails (many examples where a safe noun-modifier cut was replaced by a subject‑verb or compound split) support this.",
+  "lesson": "Do not blanket-forbid cuts after nouns — preventing noun+modifier splits can simply move cuts into very short phrases and create worse subject–verb or compound-noun splits, so later revisions should avoid that wholesale prohibition.",
+  "blamed": [
+   "C4 «- Avoid cutting between a noun (or its specifier) and any re»"
+  ]
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt routinely treats a following clausal or complement continuation as safe to cut off — it allows cuts immediately before spans that actually complete or disambiguate the preceding predicate or noun, producing contradiction, lost scope, or orphaned dependents when pieces are translated separately.",
+    "evidence": "en_us_733, en_us_378, en_us_1507, en_us_1294, en_us_721, en_us_1617, en_us_1116, en_us_360, en_us_174, en_us_1294. These sentences all show the policy keeping a cut immediately before a short continuation (relative/complement clause, prepositional complement, or quoted multiword complement) whose content is required to finish the prior predicate/NP; the offline targets keep that continuation attached and recover cohesion / avoid contradiction.",
+    "type_predicate": "Sentences where the span immediately after a candidate cut is a clausal or complement continuation that syntactically completes or disambiguates the immediately preceding predicate or noun (relative/complement clause, essential prepositional complement, or quoted multiword complement).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before a following span that syntactically completes or disambiguates the preceding predicate or noun (relative/complement clauses, essential prepositional complements, or quoted multiword complements)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt routinely treats a following clausal or complement continuation as safe to cut off — it allows cuts immediately before spans that actually complete or disambiguate the preceding predicate or noun, producing contradiction, lost scope, or orphaned dependents when pieces are translated separately.",
+   "evidence": "en_us_733, en_us_378, en_us_1507, en_us_1294, en_us_721, en_us_1617, en_us_1116, en_us_360, en_us_174, en_us_1294. These sentences all show the policy keeping a cut immediately before a short continuation (relative/complement clause, prepositional complement, or quoted multiword complement) whose content is required to finish the prior predicate/NP; the offline targets keep that continuation attached and recover cohesion / avoid contradiction.",
+   "type_predicate": "Sentences where the span immediately after a candidate cut is a clausal or complement continuation that syntactically completes or disambiguates the immediately preceding predicate or noun (relative/complement clause, essential prepositional complement, or quoted multiword complement).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before a following span that syntactically completes or disambiguates the preceding predicate or noun (relative/complement clauses, essential prepositional complements, or quoted multiword complements)."
+   }
+  }
+ ]
+}

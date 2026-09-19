@@ -1,0 +1,4477 @@
+[
+ {
+  "id": "en_us_845",
+  "cuts": 4,
+  "avg_chunk": 4.4,
+  "latency_bin": "≤5",
+  "gap": 0.5978,
+  "policy_worst_contra": 0.8692,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    9,
+    16,
+    19
+   ],
+   "H_set": 0.0902,
+   "text": "While it's far from a modern phenomenon, ‖ most people ‖ probably associate it with youth vandalizing public ‖ and private property ‖ using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "大多数人",
+     "可能会把它与青年破坏公共",
+     "私有财产",
+     "使用喷涂油漆。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "ほとんどの人は",
+     "恐らく 若者が公共の場所を破壊すると",
+     "私有財産を",
+     "塗料を噴射して"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Die meisten Menschen",
+     "Ich assoziiere es wahrscheinlich mit Jugendlichen, die öffentlich vandalisiert werden",
+     "und Privatbesitz",
+     "Mit Sprühfarbe."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "La mayoría de las personas",
+     "Probablemente lo asocien con jóvenes que vandalizan lugares públicos",
+     "y propiedad privada",
+     "Usando pintura en aerosol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.688,
+   "text": "While it's ‖ far from a modern phenomenon, ‖ most ‖ people ‖ probably associate it with youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然它是",
+     "远远不是一种现代现象,",
+     "桥梁",
+     "人数",
+     "可能与青年人破坏公共和私人财产使用喷漆相关联。"
+    ],
+    "Japanese": [
+     "それは",
+     "近代的な現象とは 遠く離れています",
+     "橋",
+     "人々",
+     "恐らく 若者が 塗料を使って 公共財や私有財産を破壊したことと 関連付けられます"
+    ],
+    "German": [
+     "Während es ist",
+     "weit entfernt von einem modernen Phänomen,",
+     "Most",
+     "Person",
+     "Ich würde es wahrscheinlich mit Jugendlichen in Verbindung bringen, die öffentliches und privates Eigentum mit Sprühfarbe vandalisiert haben."
+    ],
+    "Spanish": [
+     "Mientras que es",
+     "lejos de ser un fenómeno moderno,",
+     "más",
+     "personas",
+     "Probablemente lo asocien con jóvenes que vandalizan propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "with youth vandalizing public",
+     "right": "and private property using",
+     "H": 0.701,
+     "H_pct": 55.0,
+     "contra": 0.0201,
+     "cohesion": 0.7154
+    },
+    {
+     "pos": 19,
+     "left": "public and private property",
+     "right": "using spray paint.",
+     "H": 0.1028,
+     "H_pct": 15.0,
+     "contra": 0.8692,
+     "cohesion": 0.7857
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "While it's",
+     "right": "far from a modern",
+     "H": 0.8196,
+     "H_pct": 90.0,
+     "contra": 0.0248,
+     "cohesion": 0.8404
+    },
+    {
+     "pos": 8,
+     "left": "a modern phenomenon, most",
+     "right": "people probably associate it",
+     "H": 0.8458,
+     "H_pct": 95.0,
+     "contra": 0.0102,
+     "cohesion": 0.8546
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1415",
+  "cuts": 1,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.1871,
+  "policy_worst_contra": 0.0004,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.6592,
+   "text": "Gothic style peaked ‖ in the period between the 10th - 11th centuries and the 14th century.",
+   "pieces": {
+    "Chinese": [
+     "哥特式",
+     "10世纪至11世纪和14世纪之间的时期。"
+    ],
+    "Japanese": [
+     "頂点ゴシック",
+     "10世紀から11世紀 14世紀にかけての 時代に生まれました"
+    ],
+    "German": [
+     "Gotischer Stil gepickt",
+     "Die Burg wurde in der Zeit zwischen dem 10. - 11. Jahrhundert und dem 14. Jahrhundert erbaut."
+    ],
+    "Spanish": [
+     "Estilo gótico culminado",
+     "El período comprendido entre los siglos X - XI y el siglo XIV."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2
+   ],
+   "H_set": 0.8464,
+   "text": "Gothic style ‖ peaked in the period between the 10th - 11th centuries and the 14th century.",
+   "pieces": {
+    "Chinese": [
+     "哥特式",
+     "10世纪至11世纪和14世纪之间达到顶峰。"
+    ],
+    "Japanese": [
+     "ゴシック様式",
+     "10世紀から11世紀にかけて 14世紀にピークを迎えました"
+    ],
+    "German": [
+     "Gotik",
+     "Die Zeit zwischen dem 10. - 11. Jahrhundert und dem 14. Jahrhundert war die Zeit der größten Blüte."
+    ],
+    "Spanish": [
+     "Estilo gótico",
+     "El período de mayor esplendor de la ciudad fue entre los siglos X-XI y el siglo XIV."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Gothic style peaked",
+     "right": "in the period between",
+     "H": 0.6592,
+     "H_pct": 21.4,
+     "contra": 0.0004,
+     "cohesion": 0.6595
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Gothic style",
+     "right": "peaked in the period",
+     "H": 0.8463,
+     "H_pct": 100.0,
+     "contra": 0.0009,
+     "cohesion": 0.8471
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 5,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5403,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    9,
+    13,
+    15
+   ],
+   "H_set": 0.0031,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits ‖ more than one month ‖ in advance ‖ of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "不发放公园许可证",
+     "一个月以上",
+     "预付款",
+     "预计抵达时间。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "許可証を発行しません",
+     "1ヶ月以上も",
+     "先に ごめんなさい",
+     "予想される到着時刻です"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als ein Monat",
+     "Im Voraus buchen",
+     "Ankunftszeit."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque",
+     "Más de un mes",
+     "Gracias por adelantado",
+     "de su llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    11,
+    13
+   ],
+   "H_set": 0.5433,
+   "text": "The ‖ Park Service ‖ (MINAE) ‖ does not issue park permits more than ‖ one month ‖ in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "公园管理局",
+     "(环境和能源部)",
+     "没有发放公园许可证超过",
+     "一个月",
+     "提前通知预计抵达时间。"
+    ],
+    "Japanese": [
+     "あの",
+     "パークス・サービス",
+     "（みなえ）",
+     "1000万ドル以上の 許可証を発行しない",
+     "1ヶ月",
+     "予定よりも早く到着する"
+    ],
+    "German": [
+     "The",
+     "Park Service",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht mehr ausgestellt als",
+     "Ein Monat",
+     "Bitte informieren Sie die Unterkunft im Voraus über Ihre voraussichtliche Ankunftszeit."
+    ],
+    "Spanish": [
+     "The",
+     "Servicio de parque",
+     "(MINAE)",
+     "No emite permisos de parque más de",
+     "Un mes",
+     "Con antelación de la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    },
+    {
+     "pos": 15,
+     "left": "one month in advance",
+     "right": "of anticipated arrival.",
+     "H": 0.6569,
+     "H_pct": 50.0,
+     "contra": 0.072,
+     "cohesion": 0.7078
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "Park Service (MINAE) does",
+     "H": 0.687,
+     "H_pct": 75.0,
+     "contra": 0.1085,
+     "cohesion": 0.7706
+    },
+    {
+     "pos": 11,
+     "left": "park permits more than",
+     "right": "one month in advance",
+     "H": 0.735,
+     "H_pct": 87.5,
+     "contra": 0.0232,
+     "cohesion": 0.7524
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_105",
+  "cuts": 4,
+  "avg_chunk": 5.6,
+  "latency_bin": "≤7",
+  "gap": 0.2558,
+  "policy_worst_contra": 0.3181,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    11,
+    17
+   ],
+   "H_set": 0.5257,
+   "text": "They include financial restrictions ‖ and a ban ‖ by the European Union ‖ on the export of crude oil, ‖ from which the Iranian economy receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "包括财政限制",
+     "禁止",
+     "欧洲联盟的声明",
+     "关于原油出口的协定，",
+     "从中伊朗经济获得80%的外国收入。"
+    ],
+    "Japanese": [
+     "財政的制約も含まれます",
+     "禁止令が出た",
+     "欧州連合によって",
+     "原油輸出に関して",
+     "イラン経済の外国からの収入の80%を占めています"
+    ],
+    "German": [
+     "Sie beinhalten finanzielle Einschränkungen",
+     "Und ein Verbot",
+     "von der Europäischen Union",
+     "auf den Export von Rohöl,",
+     "Aus dem Iran stammen 80% der Einnahmen der iranischen Wirtschaft aus dem Ausland."
+    ],
+    "Spanish": [
+     "Incluyen restricciones financieras",
+     "y una prohibición",
+     "por la Unión Europea",
+     "sobre la exportación de petróleo crudo,",
+     "de la que la economía iraní recibe el 80% de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    11,
+    17
+   ],
+   "H_set": 0.7815,
+   "text": "They include ‖ financial restrictions ‖ and a ban by the European Union ‖ on the export of crude oil, ‖ from which the Iranian economy receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "这些措施包括：",
+     "财政限制",
+     "欧洲联盟的禁令",
+     "关于原油出口的协定，",
+     "从中伊朗经济获得80%的外国收入。"
+    ],
+    "Japanese": [
+     "これらは",
+     "財政的な制約が",
+     "欧州連合の禁止令が出たことで",
+     "原油輸出に関して",
+     "イラン経済の外国からの収入の80%を占めています"
+    ],
+    "German": [
+     "Dazu gehören:",
+     "Finanzielle Einschränkungen",
+     "und ein Verbot durch die Europäische Union",
+     "auf den Export von Rohöl,",
+     "Aus dem Iran stammen 80% der Einnahmen der iranischen Wirtschaft aus dem Ausland."
+    ],
+    "Spanish": [
+     "Entre ellos se incluyen:",
+     "Restricciones financieras",
+     "y una prohibición por parte de la Unión Europea",
+     "sobre la exportación de petróleo crudo,",
+     "de la que la economía iraní recibe el 80% de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "restrictions and a ban",
+     "right": "by the European Union",
+     "H": 0.5571,
+     "H_pct": 19.2,
+     "contra": 0.3181,
+     "cohesion": 0.817
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "They include",
+     "right": "financial restrictions and a",
+     "H": 0.8647,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8687
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 6,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.4847,
+  "policy_worst_contra": 0.9881,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    6,
+    8,
+    10,
+    15,
+    18
+   ],
+   "H_set": 0.0067,
+   "text": "Farther south is Niagara Falls ‖ and ‖ the north ‖ is home ‖ to the untapped natural beauty ‖ of the Muskoka ‖ and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "以及",
+     "北部",
+     "是家",
+     "未开发的自然美景",
+     "马斯科卡省",
+     "以及以后。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "それに",
+     "北の方は",
+     "家だ",
+     "未開拓の自然の美しさに",
+     "マスコカ川の",
+     "それ以上に"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "und",
+     "Der Norden",
+     "Das ist zu Hause",
+     "Zu den unerschlossenen Naturschönheiten",
+     "Die Muskoka-Region",
+     "und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "y",
+     "El norte",
+     "Mi casa es casa",
+     "A la belleza natural sin explotar",
+     "El Museo de la Mujer",
+     "y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    9
+   ],
+   "H_set": 0.4914,
+   "text": "Farther ‖ south ‖ is ‖ Niagara Falls ‖ and ‖ the north is ‖ home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "远远",
+     "南部",
+     "是",
+     "尼亚加拉瀑布",
+     "以及",
+     "北方是",
+     "马斯科卡的自然美景尚未被开发,而且远远超出了这些美景。"
+    ],
+    "Japanese": [
+     "ファーザー",
+     "南",
+     "はい",
+     "ナイアガラ・フォールズ",
+     "それに",
+     "北は",
+     "マスコカ川の未開発の美しい自然の故郷です"
+    ],
+    "German": [
+     "Farther",
+     "Süden",
+     "ist",
+     "Niagara Falls",
+     "und",
+     "Der Norden ist",
+     "Die Heimat der unerschlossenen natürlichen Schönheit der Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Farther",
+     "Sur",
+     "es",
+     "Cataratas del Niágara",
+     "y",
+     "El norte es",
+     "El hogar de la belleza natural sin explotar de la Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Falls and the north",
+     "right": "is home to the",
+     "H": 0.0496,
+     "H_pct": 38.9,
+     "contra": 0.9291,
+     "cohesion": 0.6997
+    },
+    {
+     "pos": 10,
+     "left": "the north is home",
+     "right": "to the untapped natural",
+     "H": 0.5412,
+     "H_pct": 66.7,
+     "contra": 0.1849,
+     "cohesion": 0.664
+    },
+    {
+     "pos": 15,
+     "left": "the untapped natural beauty",
+     "right": "of the Muskoka and",
+     "H": 0.0086,
+     "H_pct": 11.1,
+     "contra": 0.9881,
+     "cohesion": 0.7258
+    },
+    {
+     "pos": 18,
+     "left": "beauty of the Muskoka",
+     "right": "and beyond.",
+     "H": 0.0529,
+     "H_pct": 44.4,
+     "contra": 0.9292,
+     "cohesion": 0.7474
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Farther",
+     "right": "south is Niagara Falls",
+     "H": 0.6863,
+     "H_pct": 88.9,
+     "contra": 0.0118,
+     "cohesion": 0.6945
+    },
+    {
+     "pos": 2,
+     "left": "Farther south",
+     "right": "is Niagara Falls and",
+     "H": 0.6661,
+     "H_pct": 83.3,
+     "contra": 0.0282,
+     "cohesion": 0.6855
+    },
+    {
+     "pos": 3,
+     "left": "Farther south is",
+     "right": "Niagara Falls and the",
+     "H": 0.5685,
+     "H_pct": 72.2,
+     "contra": 0.2139,
+     "cohesion": 0.7231
+    },
+    {
+     "pos": 9,
+     "left": "and the north is",
+     "right": "home to the untapped",
+     "H": 0.6052,
+     "H_pct": 77.8,
+     "contra": 0.1339,
+     "cohesion": 0.6987
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_733",
+  "cuts": 2,
+  "avg_chunk": 5.3,
+  "latency_bin": "≤7",
+  "gap": 0.254,
+  "policy_worst_contra": 0.2237,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6,
+    10
+   ],
+   "H_set": 0.6096,
+   "text": "Whistler (1.5 hour drive from Vancouver) ‖ is expensive but well-known ‖ because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒(距离温哥华1.5小时车程)",
+     "是昂贵的,但众所周知",
+     "因为2010年冬奥会。"
+    ],
+    "Japanese": [
+     "ウィスラー（バンクーバーから車で1.5時間）",
+     "費用は高いが よく知られています",
+     "2010年の冬季オリンピックのためです"
+    ],
+    "German": [
+     "Whistler (1,5 Stunden Fahrt von Vancouver)",
+     "Ist teuer, aber bekannt",
+     "Die Olympischen Winterspiele 2010 in Sotschi."
+    ],
+    "Spanish": [
+     "Whistler (1,5 horas en coche desde Vancouver)",
+     "Es caro pero bien conocido",
+     "Los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    9
+   ],
+   "H_set": 0.8636,
+   "text": "Whistler (1.5 hour drive from Vancouver) ‖ is expensive but ‖ well-known because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒(距离温哥华1.5小时车程)",
+     "是昂贵的,但",
+     "因为2010年冬季奥运会而闻名。"
+    ],
+    "Japanese": [
+     "ウィスラー（バンクーバーから車で1.5時間）",
+     "費用はかかりますが",
+     "2010年の冬季オリンピックで有名です"
+    ],
+    "German": [
+     "Whistler (1,5 Stunden Fahrt von Vancouver)",
+     "Ist teuer, aber",
+     "Bekannt wurde die Stadt durch die Olympischen Winterspiele 2010."
+    ],
+    "Spanish": [
+     "Whistler (1,5 horas en coche desde Vancouver)",
+     "Es caro pero",
+     "Es conocida por los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "Vancouver) is expensive but",
+     "right": "well-known because of the",
+     "H": 0.8724,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_419",
+  "cuts": 4,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.2059,
+  "policy_worst_contra": 0.2515,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    9,
+    16
+   ],
+   "H_set": 0.5053,
+   "text": "Estimates ‖ range ‖ from 340 million to 500 million speakers, ‖ and as many as 800 million people ‖ can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数",
+     "范围",
+     "从3.4亿到5亿人,",
+     "多达8亿人",
+     "能够理解语言。"
+    ],
+    "Japanese": [
+     "推定",
+     "範囲",
+     "3億4000万人から5億人に増えました",
+     "8億人もの人々が",
+     "言語を理解できるのです"
+    ],
+    "German": [
+     "Schätzungen",
+     "Range",
+     "von 340 Millionen auf 500 Millionen Sprecher,",
+     "Und so viele wie 800 Millionen Menschen",
+     "Ich kann die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Estimaciones",
+     "Rango",
+     "de 340 millones a 500 millones de hablantes,",
+     "y hasta 800 millones de personas",
+     "No entiendo el idioma."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    9
+   ],
+   "H_set": 0.7112,
+   "text": "Estimates ‖ range ‖ from ‖ 340 million to 500 million speakers, ‖ and as many as 800 million people can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数",
+     "范围",
+     "从",
+     "3.4亿到5亿人,",
+     "多达8亿人能够理解这种语言。"
+    ],
+    "Japanese": [
+     "推定",
+     "範囲",
+     "ここから",
+     "3億4千万から5億人の話者がいます",
+     "8億人がこの言語を理解できます"
+    ],
+    "German": [
+     "Schätzungen",
+     "Range",
+     "von",
+     "340 Millionen bis 500 Millionen Sprecher,",
+     "Und bis zu 800 Millionen Menschen können die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Estimaciones",
+     "Rango",
+     "de",
+     "340 millones a 500 millones de hablantes,",
+     "Y hasta 800 millones de personas pueden entender el idioma."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "as 800 million people",
+     "right": "can understand the language.",
+     "H": 0.5254,
+     "H_pct": 11.1,
+     "contra": 0.2515,
+     "cohesion": 0.7019
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Estimates range from",
+     "right": "340 million to 500",
+     "H": 0.8191,
+     "H_pct": 88.9,
+     "contra": 0.0279,
+     "cohesion": 0.8427
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_741",
+  "cuts": 5,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.3544,
+  "policy_worst_contra": 0.4218,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    4,
+    7,
+    8,
+    9,
+    13
+   ],
+   "H_set": 0.3275,
+   "text": "It is an archipelago ‖ with 15 islands ‖ spread ‖ out ‖ over 2.2 million km2 ‖ of ocean.",
+   "pieces": {
+    "Chinese": [
+     "是个群岛",
+     "15个岛屿",
+     "差额",
+     "10月1日至15日",
+     "220万平方公里以上",
+     "海洋的。"
+    ],
+    "Japanese": [
+     "群島である。",
+     "15の島々がある",
+     "広がる",
+     "出て",
+     "220万平方キロメートル以上の",
+     "海の中にある"
+    ],
+    "German": [
+     "Es ist ein Archipel",
+     "mit 15 Inseln",
+     "Spread",
+     "out",
+     "über 2,2 Millionen km2",
+     "Die Welt des Ozeans."
+    ],
+    "Spanish": [
+     "Es un archipiélago",
+     "Con 15 islas",
+     "spread",
+     "Out",
+     "más de 2,2 millones de km2",
+     "El océano."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    6,
+    7
+   ],
+   "H_set": 0.6819,
+   "text": "It ‖ is ‖ an archipelago ‖ with 15 ‖ islands ‖ spread out over 2.2 million km2 of ocean.",
+   "pieces": {
+    "Chinese": [
+     "意大利",
+     "是",
+     "群岛",
+     "15个成员",
+     "岛屿",
+     "分布在220万平方公里的海洋中。"
+    ],
+    "Japanese": [
+     "それ",
+     "はい",
+     "群島のようなものです",
+     "15人で",
+     "島々",
+     "220万平方キロメートルの海に広がっています"
+    ],
+    "German": [
+     "It",
+     "ist",
+     "Ein Archipel",
+     "mit 15",
+     "Inseln",
+     "Die Inseln verteilen sich auf 2,2 Millionen km2 Ozean."
+    ],
+    "Spanish": [
+     "It",
+     "es",
+     "Un archipiélago",
+     "con 15",
+     "Islas",
+     "Se extienden por 2,2 millones de km2 de océano."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "with 15 islands spread",
+     "right": "out over 2.2 million",
+     "H": 0.8049,
+     "H_pct": 61.5,
+     "contra": 0.0062,
+     "cohesion": 0.8099
+    },
+    {
+     "pos": 9,
+     "left": "15 islands spread out",
+     "right": "over 2.2 million km2",
+     "H": 0.7996,
+     "H_pct": 53.8,
+     "contra": 0.0045,
+     "cohesion": 0.8032
+    },
+    {
+     "pos": 13,
+     "left": "over 2.2 million km2",
+     "right": "of ocean.",
+     "H": 0.4401,
+     "H_pct": 15.4,
+     "contra": 0.4218,
+     "cohesion": 0.7611
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "It",
+     "right": "is an archipelago with",
+     "H": 0.8173,
+     "H_pct": 69.2,
+     "contra": 0.013,
+     "cohesion": 0.828
+    },
+    {
+     "pos": 2,
+     "left": "It is",
+     "right": "an archipelago with 15",
+     "H": 0.8204,
+     "H_pct": 76.9,
+     "contra": 0.0026,
+     "cohesion": 0.8225
+    },
+    {
+     "pos": 6,
+     "left": "an archipelago with 15",
+     "right": "islands spread out over",
+     "H": 0.8507,
+     "H_pct": 84.6,
+     "contra": 0.0018,
+     "cohesion": 0.8522
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_655",
+  "cuts": 7,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.3381,
+  "policy_worst_contra": 0.9952,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    5,
+    7,
+    10,
+    12,
+    13,
+    16
+   ],
+   "H_set": 0.003,
+   "text": "Crime, ‖ and ill-will toward foreigners ‖ in general, ‖ is virtually unknown ‖ in Greenland. ‖ Even ‖ in the towns, ‖ there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪",
+     "对外国人有恶意",
+     "一般而言，",
+     "几乎不为人知",
+     "格陵兰。",
+     "埃文",
+     "在各城市里,",
+     "没有\"粗糙的区域 \" 。"
+    ],
+    "Japanese": [
+     "犯罪",
+     "外国人に対する嫌悪感や",
+     "一般的に",
+     "実際には知られていません",
+     "グリーンランドにある",
+     "イヴァン",
+     "都市で",
+     "荒地はありません"
+    ],
+    "German": [
+     "Kriminalität,",
+     "Und Böswilligkeit gegenüber Fremden",
+     "Im Allgemeinen gilt:",
+     "Ist praktisch unbekannt",
+     "In Grönland.",
+     "Even",
+     "in den Städten,",
+     "Es gibt keine \"rauen Bereiche\"."
+    ],
+    "Spanish": [
+     "Crimen,",
+     "y la mala voluntad hacia los extranjeros",
+     "en general,",
+     "Es prácticamente desconocido",
+     "en Groenlandia.",
+     "Even",
+     "en las ciudades,",
+     "No hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    20
+   ],
+   "H_set": 0.3411,
+   "text": "Crime, and ill-will toward foreigners in general, is virtually ‖ unknown ‖ in Greenland. ‖ Even ‖ in ‖ the ‖ towns, there are no \"rough ‖ areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪,和对外国人的恶意,一般是几乎不存在的。",
+     "未知",
+     "格陵兰。",
+     "埃文",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "该",
+     "没有人能够阻止我。",
+     "我们的工作是为了这些地区 。 \""
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意は ほぼ消え去った",
+     "未知",
+     "グリーンランドにある",
+     "イヴァン",
+     "ここに",
+     "あの",
+     "都市には「粗野な」",
+     "地域」です"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen ist praktisch",
+     "unbekannt",
+     "In Grönland.",
+     "Even",
+     "in",
+     "the",
+     "In den Städten gibt es keine \"rauen",
+     "\"Die Bereiche.\""
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general, es prácticamente",
+     "desconocido",
+     "en Groenlandia.",
+     "Even",
+     "en",
+     "the",
+     "En las ciudades, no hay \"rudos\"",
+     "areas.\""
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "Crime,",
+     "right": "and ill-will toward foreigners",
+     "H": 0.0031,
+     "H_pct": 10.5,
+     "contra": 0.9952,
+     "cohesion": 0.6491
+    },
+    {
+     "pos": 5,
+     "left": "and ill-will toward foreigners",
+     "right": "in general, is virtually",
+     "H": 0.202,
+     "H_pct": 52.6,
+     "contra": 0.6537,
+     "cohesion": 0.5834
+    },
+    {
+     "pos": 7,
+     "left": "toward foreigners in general,",
+     "right": "is virtually unknown in",
+     "H": 0.1049,
+     "H_pct": 36.8,
+     "contra": 0.8327,
+     "cohesion": 0.6271
+    },
+    {
+     "pos": 16,
+     "left": "Even in the towns,",
+     "right": "there are no \"rough",
+     "H": 0.4627,
+     "H_pct": 63.2,
+     "contra": 0.3819,
+     "cohesion": 0.7486
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "in general, is virtually",
+     "right": "unknown in Greenland. Even",
+     "H": 0.4699,
+     "H_pct": 68.4,
+     "contra": 0.296,
+     "cohesion": 0.6675
+    },
+    {
+     "pos": 14,
+     "left": "in Greenland. Even in",
+     "right": "the towns, there are",
+     "H": 0.7085,
+     "H_pct": 84.2,
+     "contra": 0.0524,
+     "cohesion": 0.7477
+    },
+    {
+     "pos": 15,
+     "left": "Greenland. Even in the",
+     "right": "towns, there are no",
+     "H": 0.5928,
+     "H_pct": 73.7,
+     "contra": 0.1948,
+     "cohesion": 0.7362
+    },
+    {
+     "pos": 20,
+     "left": "there are no \"rough",
+     "right": "areas.\"",
+     "H": 0.6295,
+     "H_pct": 78.9,
+     "contra": 0.0161,
+     "cohesion": 0.6398
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1087",
+  "cuts": 10,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.286,
+  "policy_worst_contra": 0.6224,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    7,
+    9,
+    11,
+    12,
+    14,
+    16,
+    17,
+    18
+   ],
+   "H_set": 0.2631,
+   "text": "The ‖ tiger ‖ is in the same group ‖ (Genus Panthera) ‖ as lions, ‖ leopards, ‖ and jaguars. ‖ These four ‖ cats ‖ are ‖ the only ones who can roar.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "虎",
+     "是同一组",
+     "豹属",
+     "他们好像一群惊慌的狮子，",
+     "豹子",
+     "和美洲豹。",
+     "这四个",
+     "貓",
+     "是",
+     "唯一能够咆哮的。"
+    ],
+    "Japanese": [
+     "あの",
+     "虎",
+     "私たちと同じグループに入っています",
+     "パンサー",
+     "ライオンのように",
+     "ヒョウ",
+     "ジャガーも",
+     "これらの4つは",
+     "猫",
+     "あなたは",
+     "鳴くのは 彼らだけだ"
+    ],
+    "German": [
+     "The",
+     "Tiger",
+     "ist in der gleichen Gruppe",
+     "(Gattung Panthera)",
+     "wie Löwen,",
+     "Leoparden,",
+     "und Jaguare.",
+     "Diese vier",
+     "Katzen",
+     "sind",
+     "Die einzigen, die brüllen können."
+    ],
+    "Spanish": [
+     "The",
+     "Tigre",
+     "Está en el mismo grupo",
+     "(Género Panthera)",
+     "como leones,",
+     "Leopardos,",
+     "Y jaguares.",
+     "Estos cuatro",
+     "gatos",
+     "son",
+     "Los únicos que pueden rugir."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    5,
+    7,
+    8,
+    9,
+    11,
+    14,
+    15,
+    17,
+    18
+   ],
+   "H_set": 0.549,
+   "text": "The tiger ‖ is in the ‖ same group ‖ (Genus ‖ Panthera) ‖ as lions, ‖ leopards, and jaguars. ‖ These ‖ four cats ‖ are ‖ the only ones who can roar.",
+   "pieces": {
+    "Chinese": [
+     "老虎",
+     "是否在",
+     "同一组",
+     "性别",
+     "豹",
+     "他们好像一群惊慌的狮子，",
+     "老虎和美洲豹",
+     "论文",
+     "四只猫",
+     "是",
+     "唯一能够咆哮的。"
+    ],
+    "Japanese": [
+     "虎",
+     "ここにいるのは",
+     "同じグループ",
+     "ヒメハナガエル属",
+     " パンドラ",
+     "ライオンのように",
+     "ヒョウやジャガーもいます",
+     "これら",
+     "4匹の猫",
+     "あなたは",
+     "鳴くのは 彼らだけだ"
+    ],
+    "German": [
+     "Der Tiger",
+     "Ist in der",
+     "In der gleichen Gruppe",
+     "(Genus",
+     "Panthera)",
+     "wie Löwen,",
+     "Leoparden und Jaguare.",
+     "These",
+     "Vier Katzen und ich",
+     "sind",
+     "Die einzigen, die brüllen können."
+    ],
+    "Spanish": [
+     "El tigre de Bengala",
+     "Está en el",
+     "En el mismo grupo",
+     "(Género",
+     "Panthera)",
+     "como leones,",
+     "Leopardos y jaguares.",
+     "These",
+     "Cuatro gatos en casa",
+     "son",
+     "Los únicos que pueden rugir."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "tiger is in the",
+     "H": 0.6082,
+     "H_pct": 27.3,
+     "contra": 0.2623,
+     "cohesion": 0.8244
+    },
+    {
+     "pos": 12,
+     "left": "Panthera) as lions, leopards,",
+     "right": "and jaguars. These four",
+     "H": 0.6198,
+     "H_pct": 31.8,
+     "contra": 0.058,
+     "cohesion": 0.658
+    },
+    {
+     "pos": 16,
+     "left": "and jaguars. These four",
+     "right": "cats are the only",
+     "H": 0.3092,
+     "H_pct": 0.0,
+     "contra": 0.6224,
+     "cohesion": 0.8189
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "tiger is in the",
+     "right": "same group (Genus Panthera)",
+     "H": 0.7007,
+     "H_pct": 59.1,
+     "contra": 0.0056,
+     "cohesion": 0.7046
+    },
+    {
+     "pos": 8,
+     "left": "the same group (Genus",
+     "right": "Panthera) as lions, leopards,",
+     "H": 0.7508,
+     "H_pct": 81.8,
+     "contra": 0.0077,
+     "cohesion": 0.7566
+    },
+    {
+     "pos": 15,
+     "left": "leopards, and jaguars. These",
+     "right": "four cats are the",
+     "H": 0.8116,
+     "H_pct": 95.5,
+     "contra": 0.0569,
+     "cohesion": 0.8606
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_396",
+  "cuts": 8,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.2835,
+  "policy_worst_contra": 0.4943,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    5,
+    6,
+    8,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.3028,
+   "text": "However, very ‖ few ‖ Royal Navy ‖ ships ‖ were based ‖ near the likely ‖ invasion ‖ routes ‖ as the admirals were afraid they would be sunk by German air attack.",
+   "pieces": {
+    "Chinese": [
+     "然而，非常",
+     "少数",
+     "英国皇家海军",
+     "船舶",
+     "基础",
+     "近似的可能",
+     "入侵",
+     "路线",
+     "因为海军上将们担心他们会被德国空袭击沉。"
+    ],
+    "Japanese": [
+     "しかし、とても",
+     "少ない",
+     "イギリス海軍",
+     "船",
+     "私たちの知識を",
+     "近くにいる",
+     "侵略",
+     "ルート",
+     "提督たちはドイツの空襲により沈没するのを恐れていた"
+    ],
+    "German": [
+     "Allerdings sehr",
+     "wenige",
+     "Royal Navy",
+     "Schiffe",
+     "Sie waren basierend",
+     "In der Nähe der wahrscheinlichen",
+     "Invasion",
+     "Routen",
+     "Die Admirale fürchteten, dass sie durch einen deutschen Luftangriff versenkt werden könnten."
+    ],
+    "Spanish": [
+     "Sin embargo, muy",
+     "Pocos",
+     "Armada Real de España",
+     "Buques",
+     "se basaron",
+     "Cerca de la probabilidad",
+     "invasion",
+     "Rutas",
+     "Los almirantes tenían miedo de que fueran hundidos por un ataque aéreo alemán."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    12,
+    13,
+    14,
+    15,
+    18,
+    22,
+    24
+   ],
+   "H_set": 0.5863,
+   "text": "However, ‖ very few Royal Navy ships were based near the likely invasion ‖ routes ‖ as ‖ the ‖ admirals were afraid ‖ they would be sunk ‖ by German ‖ air attack.",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "英国皇家海军的舰只很少驻扎在可能的入侵附近",
+     "路线",
+     "作为",
+     "该",
+     "海军上将们害怕",
+     "他们会被淹死",
+     "德国",
+     "空袭。"
+    ],
+    "Japanese": [
+     "しかし",
+     "イギリス海軍の艦船は 侵攻の可能性のある場所に ほとんど配備されていませんでした",
+     "ルート",
+     "ああ",
+     "あの",
+     "提督たちは恐れていた",
+     "沈没するでしょう",
+     "ゲルマンによって",
+     "空襲だ"
+    ],
+    "German": [
+     "Allerdings",
+     "Nur sehr wenige Schiffe der Royal Navy waren in der Nähe der wahrscheinlichen Invasion stationiert",
+     "Routen",
+     "as",
+     "the",
+     "Admiralen hatten Angst",
+     "Sie würden versunken sein",
+     "Von Deutsch",
+     "Luftangriff."
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "Muy pocos barcos de la Marina Real estaban basados cerca de la probable invasión",
+     "Rutas",
+     "as",
+     "the",
+     "Los almirantes tenían miedo",
+     "Serían hundidos",
+     "Por German",
+     "Ataque aéreo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "However, very",
+     "right": "few Royal Navy ships",
+     "H": 0.4153,
+     "H_pct": 4.2,
+     "contra": 0.4943,
+     "cohesion": 0.8212
+    },
+    {
+     "pos": 3,
+     "left": "However, very few",
+     "right": "Royal Navy ships were",
+     "H": 0.7673,
+     "H_pct": 66.7,
+     "contra": 0.0006,
+     "cohesion": 0.7678
+    },
+    {
+     "pos": 5,
+     "left": "very few Royal Navy",
+     "right": "ships were based near",
+     "H": 0.7273,
+     "H_pct": 45.8,
+     "contra": 0.0015,
+     "cohesion": 0.7284
+    },
+    {
+     "pos": 6,
+     "left": "few Royal Navy ships",
+     "right": "were based near the",
+     "H": 0.6839,
+     "H_pct": 16.7,
+     "contra": 0.0014,
+     "cohesion": 0.6848
+    },
+    {
+     "pos": 8,
+     "left": "Navy ships were based",
+     "right": "near the likely invasion",
+     "H": 0.6806,
+     "H_pct": 12.5,
+     "contra": 0.0025,
+     "cohesion": 0.6824
+    },
+    {
+     "pos": 11,
+     "left": "based near the likely",
+     "right": "invasion routes as the",
+     "H": 0.7052,
+     "H_pct": 41.7,
+     "contra": 0.0012,
+     "cohesion": 0.706
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "However,",
+     "right": "very few Royal Navy",
+     "H": 0.8557,
+     "H_pct": 91.7,
+     "contra": 0.0046,
+     "cohesion": 0.8596
+    },
+    {
+     "pos": 14,
+     "left": "likely invasion routes as",
+     "right": "the admirals were afraid",
+     "H": 0.8575,
+     "H_pct": 95.8,
+     "contra": 0.0128,
+     "cohesion": 0.8686
+    },
+    {
+     "pos": 15,
+     "left": "invasion routes as the",
+     "right": "admirals were afraid they",
+     "H": 0.8228,
+     "H_pct": 83.3,
+     "contra": 0.0449,
+     "cohesion": 0.8615
+    },
+    {
+     "pos": 18,
+     "left": "the admirals were afraid",
+     "right": "they would be sunk",
+     "H": 0.7983,
+     "H_pct": 75.0,
+     "contra": 0.0078,
+     "cohesion": 0.8046
+    },
+    {
+     "pos": 22,
+     "left": "they would be sunk",
+     "right": "by German air attack.",
+     "H": 0.8054,
+     "H_pct": 79.2,
+     "contra": 0.0085,
+     "cohesion": 0.8124
+    },
+    {
+     "pos": 24,
+     "left": "be sunk by German",
+     "right": "air attack.",
+     "H": 0.7847,
+     "H_pct": 70.8,
+     "contra": 0.0069,
+     "cohesion": 0.7902
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_850",
+  "cuts": 5,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.2637,
+  "policy_worst_contra": 0.3634,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    5,
+    9,
+    10
+   ],
+   "H_set": 0.2793,
+   "text": "A Hangi Meal ‖ is ‖ cooked ‖ in a hot pit ‖ in ‖ the ground.",
+   "pieces": {
+    "Chinese": [
+     "汉吉餐",
+     "是",
+     "煮熟",
+     "在一个热坑",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "地面上。"
+    ],
+    "Japanese": [
+     "ハンギ・ミール",
+     "はい",
+     "調理された",
+     "熱い穴に入り",
+     "ここに",
+     "地面に"
+    ],
+    "German": [
+     "Das Geräusch der Meal",
+     "ist",
+     "gekocht",
+     "In einer heißen Grube",
+     "in",
+     "Auf dem Boden."
+    ],
+    "Spanish": [
+     "El sonido de la comida",
+     "es",
+     "cocidos",
+     "En un pozo caliente",
+     "en",
+     "El suelo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    5,
+    8,
+    9
+   ],
+   "H_set": 0.543,
+   "text": "A Hangi ‖ Meal is ‖ cooked ‖ in a hot ‖ pit ‖ in the ground.",
+   "pieces": {
+    "Chinese": [
+     "阿漢吉",
+     "食物是",
+     "煮熟",
+     "在一个热的",
+     "坑",
+     "地上。"
+    ],
+    "Japanese": [
+     "ハンギ",
+     "食事は",
+     "調理された",
+     "熱い",
+     "ピット",
+     "地面に埋める"
+    ],
+    "German": [
+     "A Hangi",
+     "Mahlzeit ist",
+     "gekocht",
+     "In einer heißen",
+     "Grube",
+     "Im Boden."
+    ],
+    "Spanish": [
+     "El sonido",
+     "La comida es",
+     "cocidos",
+     "En un ambiente caliente",
+     "Pit",
+     "En el suelo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "A Hangi Meal",
+     "right": "is cooked in a",
+     "H": 0.5927,
+     "H_pct": 50.0,
+     "contra": 0.0042,
+     "cohesion": 0.5952
+    },
+    {
+     "pos": 10,
+     "left": "a hot pit in",
+     "right": "the ground.",
+     "H": 0.3481,
+     "H_pct": 10.0,
+     "contra": 0.3634,
+     "cohesion": 0.5468
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "A Hangi",
+     "right": "Meal is cooked in",
+     "H": 0.674,
+     "H_pct": 100.0,
+     "contra": 0.0539,
+     "cohesion": 0.7124
+    },
+    {
+     "pos": 8,
+     "left": "cooked in a hot",
+     "right": "pit in the ground.",
+     "H": 0.5962,
+     "H_pct": 60.0,
+     "contra": 0.0012,
+     "cohesion": 0.5969
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_455",
+  "cuts": 11,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.2088,
+  "policy_worst_contra": 0.3908,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    9,
+    10,
+    14,
+    15,
+    16,
+    18,
+    20,
+    22,
+    23,
+    26
+   ],
+   "H_set": 0.3285,
+   "text": "The disadvantage of zoom lenses ‖ is that the focal ‖ complexity ‖ and number of lens ‖ elements ‖ required ‖ to achieve ‖ a range ‖ of focal ‖ lengths ‖ is much greater ‖ than for prime lenses.",
+   "pieces": {
+    "Chinese": [
+     "变焦镜头的缺点",
+     "是什么原因?",
+     "复杂性",
+     "镜头数量",
+     "要素",
+     "所需资源",
+     "实现的目标",
+     "范围",
+     "焦点",
+     "长度",
+     "是更大的",
+     "比固定镜头要高。"
+    ],
+    "Japanese": [
+     "ズームレンズの欠点",
+     "これが",
+     "複雑性",
+     "レンズの数を",
+     "要素",
+     "必要なのは",
+     "私たちは",
+     "範囲",
+     "焦点の位置を",
+     "ああ ああ",
+     "より大きな影響を与えます",
+     "10倍の光学的な効果を発揮します"
+    ],
+    "German": [
+     "Der Nachteil von Zoomobjektiven",
+     "Ist, dass die Fokus",
+     "Komplexität",
+     "Objektivtyp und Anzahl",
+     "Elemente",
+     "erforderlich",
+     "Um zu erreichen",
+     "Ein Bereich",
+     "Fokusbereich",
+     "Längen",
+     "ist viel größer",
+     "als für Festbrennweitenobjektive."
+    ],
+    "Spanish": [
+     "La desventaja de los objetivos zoom",
+     "Es que el foco",
+     "complejidad",
+     "Número de lentes",
+     "Elementos",
+     "requerido",
+     "para lograr",
+     "a rango",
+     "de focal",
+     "Longitudes",
+     "Es mucho mayor",
+     "que para lentes de focal fija."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    10,
+    11,
+    12,
+    26,
+    29
+   ],
+   "H_set": 0.5373,
+   "text": "The ‖ disadvantage ‖ of zoom ‖ lenses ‖ is ‖ that ‖ the focal complexity ‖ and ‖ number ‖ of lens elements required to achieve a range of focal lengths is much greater ‖ than for prime ‖ lenses.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "弱点",
+     "缩放",
+     "透镜",
+     "是",
+     "该",
+     "焦点复杂性",
+     "以及",
+     "数目",
+     "实现焦距范围所需的镜头元件数量要大得多",
+     "比素数",
+     "镜头"
+    ],
+    "Japanese": [
+     "あの",
+     "弱点は",
+     "ズーム",
+     "レンズ",
+     "はい",
+     "あれは",
+     "焦点の複雑さは",
+     "それに",
+     "番号",
+     "焦点距離の範囲を得るために必要なレンズ素子の数は ずっと多くなります",
+     "プライムよりも",
+     "レンズ"
+    ],
+    "German": [
+     "The",
+     "Nachteil",
+     "Größe des Zooms",
+     "Linsen",
+     "ist",
+     "that",
+     "Die fokale Komplexität",
+     "und",
+     "Zahl",
+     "Die Anzahl der Objektivelemente, die für einen bestimmten Brennweitenbereich erforderlich sind, ist viel größer",
+     "als für Prime",
+     "Linsen."
+    ],
+    "Spanish": [
+     "The",
+     "Desventaja",
+     "Tipo de zoom",
+     "Lentes",
+     "es",
+     "that",
+     "La complejidad focal",
+     "y",
+     "Número de",
+     "El número de elementos de lente necesarios para lograr una gama de longitudes focales es mucho mayor",
+     "que para el primer",
+     "Lentes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "is that the focal",
+     "right": "complexity and number of",
+     "H": 0.7216,
+     "H_pct": 42.9,
+     "contra": 0.0627,
+     "cohesion": 0.7699
+    },
+    {
+     "pos": 14,
+     "left": "and number of lens",
+     "right": "elements required to achieve",
+     "H": 0.7502,
+     "H_pct": 57.1,
+     "contra": 0.0258,
+     "cohesion": 0.7701
+    },
+    {
+     "pos": 15,
+     "left": "number of lens elements",
+     "right": "required to achieve a",
+     "H": 0.7046,
+     "H_pct": 35.7,
+     "contra": 0.0275,
+     "cohesion": 0.7246
+    },
+    {
+     "pos": 16,
+     "left": "of lens elements required",
+     "right": "to achieve a range",
+     "H": 0.6949,
+     "H_pct": 32.1,
+     "contra": 0.0655,
+     "cohesion": 0.7436
+    },
+    {
+     "pos": 18,
+     "left": "elements required to achieve",
+     "right": "a range of focal",
+     "H": 0.6562,
+     "H_pct": 17.9,
+     "contra": 0.1363,
+     "cohesion": 0.7598
+    },
+    {
+     "pos": 20,
+     "left": "to achieve a range",
+     "right": "of focal lengths is",
+     "H": 0.6495,
+     "H_pct": 14.3,
+     "contra": 0.1095,
+     "cohesion": 0.7294
+    },
+    {
+     "pos": 22,
+     "left": "a range of focal",
+     "right": "lengths is much greater",
+     "H": 0.4153,
+     "H_pct": 7.1,
+     "contra": 0.3908,
+     "cohesion": 0.6817
+    },
+    {
+     "pos": 23,
+     "left": "range of focal lengths",
+     "right": "is much greater than",
+     "H": 0.7185,
+     "H_pct": 39.3,
+     "contra": 0.0259,
+     "cohesion": 0.7376
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "disadvantage of zoom lenses",
+     "H": 0.7799,
+     "H_pct": 75.0,
+     "contra": 0.0276,
+     "cohesion": 0.802
+    },
+    {
+     "pos": 2,
+     "left": "The disadvantage",
+     "right": "of zoom lenses is",
+     "H": 0.8022,
+     "H_pct": 92.9,
+     "contra": 0.0021,
+     "cohesion": 0.8039
+    },
+    {
+     "pos": 4,
+     "left": "The disadvantage of zoom",
+     "right": "lenses is that the",
+     "H": 0.8,
+     "H_pct": 89.3,
+     "contra": 0.0013,
+     "cohesion": 0.801
+    },
+    {
+     "pos": 6,
+     "left": "of zoom lenses is",
+     "right": "that the focal complexity",
+     "H": 0.8092,
+     "H_pct": 100.0,
+     "contra": 0.0117,
+     "cohesion": 0.8188
+    },
+    {
+     "pos": 7,
+     "left": "zoom lenses is that",
+     "right": "the focal complexity and",
+     "H": 0.7868,
+     "H_pct": 82.1,
+     "contra": 0.0326,
+     "cohesion": 0.8133
+    },
+    {
+     "pos": 11,
+     "left": "the focal complexity and",
+     "right": "number of lens elements",
+     "H": 0.8024,
+     "H_pct": 96.4,
+     "contra": 0.0091,
+     "cohesion": 0.8097
+    },
+    {
+     "pos": 12,
+     "left": "focal complexity and number",
+     "right": "of lens elements required",
+     "H": 0.7694,
+     "H_pct": 71.4,
+     "contra": 0.0185,
+     "cohesion": 0.7839
+    },
+    {
+     "pos": 29,
+     "left": "greater than for prime",
+     "right": "lenses.",
+     "H": 0.7654,
+     "H_pct": 67.9,
+     "contra": 0.0126,
+     "cohesion": 0.7752
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_957",
+  "cuts": 9,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.2055,
+  "policy_worst_contra": 0.4712,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    7,
+    8,
+    11,
+    12,
+    13,
+    15,
+    16,
+    20
+   ],
+   "H_set": 0.2955,
+   "text": "Don't forget ‖ to add in the extra ‖ costs ‖ of additional visas, ‖ departure ‖ taxes, ‖ ground transportation, ‖ etc. ‖ for all those places ‖ outside of Africa.",
+   "pieces": {
+    "Chinese": [
+     "别忘了",
+     "加入收藏",
+     "费用",
+     "额外签证,",
+     "离开",
+     "税收",
+     "地面运输，",
+     "等等。",
+     "为了所有这些地方",
+     "非洲以外。"
+    ],
+    "Japanese": [
+     "忘れないで",
+     "それに加えて",
+     "費用は",
+     "追加ビザを発行するのです",
+     "出発",
+     "税金",
+     "地上交通機関",
+     "など",
+     "あらゆる場所で",
+     "見つけることができました"
+    ],
+    "German": [
+     "Vergessen Sie nicht",
+     "Um das Extra hinzuzufügen",
+     "Kosten",
+     "Zusatzvisa,",
+     "Abreise",
+     "Steuern,",
+     "Bodentransport,",
+     "etc.",
+     "Für all diese Orte",
+     "außerhalb Afrikas."
+    ],
+    "Spanish": [
+     "No te olvides",
+     "Para añadir en el extra",
+     "Costos",
+     "de visados adicionales,",
+     "Salida",
+     "impuestos,",
+     "Transporte terrestre,",
+     "etc.",
+     "Por todos esos lugares",
+     "fuera de África."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    11,
+    13
+   ],
+   "H_set": 0.501,
+   "text": "Don't forget ‖ to ‖ add ‖ in ‖ the extra ‖ costs ‖ of ‖ additional visas, ‖ departure taxes, ‖ ground transportation, etc. for all those places outside of Africa.",
+   "pieces": {
+    "Chinese": [
+     "别忘了",
+     "至",
+     "增加",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "额外的",
+     "费用",
+     "的",
+     "额外签证,",
+     "离境税，",
+     "地面运输等，以便在非洲以外的所有地方进行。"
+    ],
+    "Japanese": [
+     "忘れないで",
+     "それは",
+     "追加",
+     "ここに",
+     "あの あの あの",
+     "費用は",
+     "の",
+     "追加ビザを",
+     "出発税",
+     "地上輸送などを アフリカ以外の地域に提供しています"
+    ],
+    "German": [
+     "Vergessen Sie nicht",
+     "to",
+     "add",
+     "in",
+     "Das Extra",
+     "Kosten",
+     "von",
+     "zusätzliche Visa,",
+     "Abreisesteuern,",
+     "Bodentransport, etc. für all diese Orte außerhalb von Afrika."
+    ],
+    "Spanish": [
+     "No te olvides",
+     "a",
+     "add",
+     "en",
+     "El extra",
+     "Costos",
+     "de",
+     "visados adicionales,",
+     "Impuestos de salida,",
+     "Transporte terrestre, etc. para todos esos lugares fuera de África."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "of additional visas, departure",
+     "right": "taxes, ground transportation, etc.",
+     "H": 0.6201,
+     "H_pct": 28.6,
+     "contra": 0.0745,
+     "cohesion": 0.67
+    },
+    {
+     "pos": 15,
+     "left": "departure taxes, ground transportation,",
+     "right": "etc. for all those",
+     "H": 0.6933,
+     "H_pct": 57.1,
+     "contra": 0.0576,
+     "cohesion": 0.7357
+    },
+    {
+     "pos": 16,
+     "left": "taxes, ground transportation, etc.",
+     "right": "for all those places",
+     "H": 0.6862,
+     "H_pct": 47.6,
+     "contra": 0.1007,
+     "cohesion": 0.763
+    },
+    {
+     "pos": 20,
+     "left": "for all those places",
+     "right": "outside of Africa.",
+     "H": 0.385,
+     "H_pct": 14.3,
+     "contra": 0.4712,
+     "cohesion": 0.728
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Don't forget to",
+     "right": "add in the extra",
+     "H": 0.7302,
+     "H_pct": 85.7,
+     "contra": 0.0144,
+     "cohesion": 0.7408
+    },
+    {
+     "pos": 4,
+     "left": "Don't forget to add",
+     "right": "in the extra costs",
+     "H": 0.757,
+     "H_pct": 95.2,
+     "contra": 0.002,
+     "cohesion": 0.7585
+    },
+    {
+     "pos": 5,
+     "left": "forget to add in",
+     "right": "the extra costs of",
+     "H": 0.7484,
+     "H_pct": 90.5,
+     "contra": 0.0074,
+     "cohesion": 0.754
+    },
+    {
+     "pos": 9,
+     "left": "the extra costs of",
+     "right": "additional visas, departure taxes,",
+     "H": 0.725,
+     "H_pct": 81.0,
+     "contra": 0.0137,
+     "cohesion": 0.7351
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_784",
+  "cuts": 7,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.1983,
+  "policy_worst_contra": 0.156,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    8,
+    10,
+    13,
+    15,
+    19,
+    20
+   ],
+   "H_set": 0.5086,
+   "text": "Wildlife photography ‖ often requires a long telephoto lens, ‖ though things ‖ like a flock ‖ of birds ‖ or a tiny creature ‖ need ‖ other lenses.",
+   "pieces": {
+    "Chinese": [
+     "野生動物攝影",
+     "通常需要一个长焦距镜头,",
+     "虽然事情",
+     "像一群羊",
+     "鸟类",
+     "或是一种小小的生物",
+     "需要",
+     "其他镜头。"
+    ],
+    "Japanese": [
+     "野生動物写真",
+     "遠近両用レンズが必要になります",
+     "ただ 物事は",
+     "群れのように",
+     "鳥の群れが",
+     "あるいは小さな生物が",
+     "必要",
+     "他のレンズも"
+    ],
+    "German": [
+     "Naturfotografie",
+     "benötigt oft ein langes Teleobjektiv,",
+     "Obwohl Dinge",
+     "Wie eine Herde",
+     "Anzahl der Vögel",
+     "Oder ein winziges Geschöpf",
+     "Notwendigkeit",
+     "Andere Objektive sind nicht verfügbar."
+    ],
+    "Spanish": [
+     "Fotografía de fauna silvestre",
+     "a menudo requiere un teleobjetivo largo,",
+     "Aunque las cosas",
+     "Como un rebaño",
+     "Número de aves",
+     "O una pequeña criatura",
+     "need",
+     "Otros lentes de contacto."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    4,
+    8,
+    9,
+    11,
+    14,
+    16
+   ],
+   "H_set": 0.7069,
+   "text": "Wildlife ‖ photography often requires ‖ a long telephoto lens, ‖ though ‖ things like ‖ a flock of ‖ birds or ‖ a tiny creature need other lenses.",
+   "pieces": {
+    "Chinese": [
+     "野生动物",
+     "摄影往往需要",
+     "一个长焦距镜头,",
+     "虽然",
+     "像这样的事情",
+     "一个群体",
+     "鸟类或",
+     "一个小小的生物需要其他镜头。"
+    ],
+    "Japanese": [
+     "野生生物",
+     "写真を撮るには",
+     "長距離レンズを",
+     "でも あの",
+     "例えば",
+     "群れの",
+     "鳥か",
+     "小さな生き物には 別のレンズが必要だ"
+    ],
+    "German": [
+     "Wildtiere",
+     "Fotografie erfordert oft",
+     "ein langes Teleobjektiv,",
+     "obwohl",
+     "Dinge wie",
+     "Eine Herde von",
+     "Vögel oder",
+     "Ein winziges Wesen braucht andere Objektive."
+    ],
+    "Spanish": [
+     "Vida silvestre",
+     "La fotografía a menudo requiere",
+     "un teleobjetivo largo,",
+     "aunque",
+     "Cosas como",
+     "Un rebaño de",
+     "aves o",
+     "Una pequeña criatura necesita otros lentes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Wildlife photography",
+     "right": "often requires a long",
+     "H": 0.7751,
+     "H_pct": 60.0,
+     "contra": 0.0012,
+     "cohesion": 0.776
+    },
+    {
+     "pos": 10,
+     "left": "telephoto lens, though things",
+     "right": "like a flock of",
+     "H": 0.7652,
+     "H_pct": 40.0,
+     "contra": 0.0307,
+     "cohesion": 0.7894
+    },
+    {
+     "pos": 13,
+     "left": "things like a flock",
+     "right": "of birds or a",
+     "H": 0.7538,
+     "H_pct": 35.0,
+     "contra": 0.0382,
+     "cohesion": 0.7837
+    },
+    {
+     "pos": 15,
+     "left": "a flock of birds",
+     "right": "or a tiny creature",
+     "H": 0.7706,
+     "H_pct": 55.0,
+     "contra": 0.0213,
+     "cohesion": 0.7873
+    },
+    {
+     "pos": 19,
+     "left": "or a tiny creature",
+     "right": "need other lenses.",
+     "H": 0.6509,
+     "H_pct": 5.0,
+     "contra": 0.156,
+     "cohesion": 0.7712
+    },
+    {
+     "pos": 20,
+     "left": "a tiny creature need",
+     "right": "other lenses.",
+     "H": 0.7306,
+     "H_pct": 25.0,
+     "contra": 0.0479,
+     "cohesion": 0.7674
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Wildlife",
+     "right": "photography often requires a",
+     "H": 0.8225,
+     "H_pct": 85.0,
+     "contra": 0.004,
+     "cohesion": 0.8258
+    },
+    {
+     "pos": 4,
+     "left": "Wildlife photography often requires",
+     "right": "a long telephoto lens,",
+     "H": 0.7888,
+     "H_pct": 75.0,
+     "contra": 0.0036,
+     "cohesion": 0.7917
+    },
+    {
+     "pos": 9,
+     "left": "long telephoto lens, though",
+     "right": "things like a flock",
+     "H": 0.826,
+     "H_pct": 100.0,
+     "contra": 0.0145,
+     "cohesion": 0.8382
+    },
+    {
+     "pos": 11,
+     "left": "lens, though things like",
+     "right": "a flock of birds",
+     "H": 0.8229,
+     "H_pct": 90.0,
+     "contra": 0.0133,
+     "cohesion": 0.834
+    },
+    {
+     "pos": 14,
+     "left": "like a flock of",
+     "right": "birds or a tiny",
+     "H": 0.7938,
+     "H_pct": 80.0,
+     "contra": 0.0405,
+     "cohesion": 0.8274
+    },
+    {
+     "pos": 16,
+     "left": "flock of birds or",
+     "right": "a tiny creature need",
+     "H": 0.7842,
+     "H_pct": 70.0,
+     "contra": 0.0223,
+     "cohesion": 0.8021
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1137",
+  "cuts": 4,
+  "avg_chunk": 3.4,
+  "latency_bin": "≤5",
+  "gap": 0.1673,
+  "policy_worst_contra": 0.0026,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    4,
+    6,
+    11
+   ],
+   "H_set": 0.5968,
+   "text": "The village ‖ of Haldarsvík ‖ offer views ‖ of the nearby island Eysturoy ‖ and has an unusual octagonal church.",
+   "pieces": {
+    "Chinese": [
+     "村庄",
+     "哈爾達斯維克",
+     "提供的意见",
+     "附近岛屿的Eysturoy",
+     "并且有一个不寻常的八角形教堂。"
+    ],
+    "Japanese": [
+     "村",
+     "ハルダルスヴィーク",
+     "見た目を提供する",
+     "近くのアイスロイ島の",
+     "変わった八角形の教会があります"
+    ],
+    "German": [
+     "Das Dorf von",
+     "Haldarsvík",
+     "Angebotsansichten ansehen",
+     "Die nahe gelegene Insel Eysturoy",
+     "Die Kirche ist eine ungewöhnliche achteckige Kirche."
+    ],
+    "Spanish": [
+     "El pueblo de",
+     "Mapa de Haldarsvík",
+     "Ofrecer vistas",
+     "Vista de la cercana isla de Eysturoy",
+     "Tiene una inusual iglesia octogonal."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    10,
+    11
+   ],
+   "H_set": 0.7642,
+   "text": "The village of ‖ Haldarsvík ‖ offer views of the nearby island ‖ Eysturoy ‖ and has an unusual octagonal church.",
+   "pieces": {
+    "Chinese": [
+     "村庄的",
+     "哈爾達斯維克",
+     "享有附近岛屿的景致",
+     "埃斯圖羅伊島",
+     "并且有一个不寻常的八角形教堂。"
+    ],
+    "Japanese": [
+     "村の",
+     "ハルダルスヴィク",
+     "近くの島の眺めを提供します",
+     "エイストロイ島",
+     "変わった八角形の教会があります"
+    ],
+    "German": [
+     "Das Dorf von",
+     "Haldarsvík",
+     "Blick auf die nahegelegene Insel",
+     "Eysturoy",
+     "Die Kirche ist eine ungewöhnliche achteckige Kirche."
+    ],
+    "Spanish": [
+     "El pueblo de",
+     "Haldarsvík",
+     "Ofrecen vistas a la isla cercana",
+     "Eysturoy",
+     "Tiene una inusual iglesia octogonal."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "The village",
+     "right": "of Haldarsvík offer views",
+     "H": 0.7285,
+     "H_pct": 53.3,
+     "contra": 0.0014,
+     "cohesion": 0.7296
+    },
+    {
+     "pos": 6,
+     "left": "of Haldarsvík offer views",
+     "right": "of the nearby island",
+     "H": 0.6952,
+     "H_pct": 46.7,
+     "contra": 0.0004,
+     "cohesion": 0.6955
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The village of",
+     "right": "Haldarsvík offer views of",
+     "H": 0.7887,
+     "H_pct": 80.0,
+     "contra": 0.0014,
+     "cohesion": 0.7898
+    },
+    {
+     "pos": 10,
+     "left": "of the nearby island",
+     "right": "Eysturoy and has an",
+     "H": 0.797,
+     "H_pct": 86.7,
+     "contra": 0.0018,
+     "cohesion": 0.7984
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_32",
+  "cuts": 10,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.1931,
+  "policy_worst_contra": 0.4058,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    6,
+    7,
+    8,
+    9,
+    13,
+    15,
+    17,
+    18
+   ],
+   "H_set": 0.2858,
+   "text": "Piquet Jr. ‖ crashed ‖ in the 2008 ‖ Singapore ‖ Grand ‖ Prix ‖ just after an early ‖ pit stop ‖ for Fernando ‖ Alonso, ‖ bringing out the safety car.",
+   "pieces": {
+    "Chinese": [
+     "小皮奎特",
+     "坠毁",
+     "2008年的",
+     "10. 新加坡",
+     "大",
+     "奖项",
+     "刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚刚",
+     "維修站",
+     "费尔南多",
+     "阿隆索",
+     "把安全车带出来"
+    ],
+    "Japanese": [
+     "ピケ・ジュニア",
+     "墜落した",
+     "2008年の",
+     "シンガポール",
+     "グランド",
+     "賞",
+     "早期の",
+     "ピットストップ",
+     "フェルナンドのために",
+     "アロンソ",
+     "セーフティカーを出す"
+    ],
+    "German": [
+     "Piquet Jr.",
+     "Abstürz",
+     "Im Jahr 2008",
+     "Singapur",
+     "Grand",
+     "Preis",
+     "Kurz nach einem frühen",
+     "Boxenstopp",
+     "Suche nach Fernando",
+     "Alonso,",
+     "Das Safety Car wird herausgeholt."
+    ],
+    "Spanish": [
+     "Piquet Jr.",
+     "se estrelló",
+     "en el 2008",
+     "Singapur 1999",
+     "Grande",
+     "Precio",
+     "Justo después de un temprano",
+     "Parada en boxes",
+     "Búsqueda para Fernando",
+     "Alonso,",
+     "Sacando el coche de seguridad."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    5,
+    7,
+    8,
+    9,
+    11,
+    17,
+    18
+   ],
+   "H_set": 0.4788,
+   "text": "Piquet ‖ Jr. ‖ crashed ‖ in the ‖ 2008 Singapore ‖ Grand ‖ Prix ‖ just after ‖ an early pit stop for Fernando ‖ Alonso, ‖ bringing out the safety car.",
+   "pieces": {
+    "Chinese": [
+     "皮凯",
+     "1999年1月1日至2000年12月31日",
+     "坠毁",
+     "2008年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "2008年新加坡",
+     "大",
+     "奖项",
+     "刚刚",
+     "费尔南多的早期维修站",
+     "阿隆索",
+     "把安全车带出来"
+    ],
+    "Japanese": [
+     "ピケ",
+     "ジュニア",
+     "墜落した",
+     "あの あの あの",
+     "2008年シンガポール大会",
+     "グランド",
+     "賞",
+     "あの後",
+     "フェルナンドの早期ピットストップ",
+     "アロンソ",
+     "セーフティカーを出す"
+    ],
+    "German": [
+     "Piquet",
+     "Jr.",
+     "Abstürz",
+     "in der Stadt",
+     "Singapur 2008",
+     "Grand",
+     "Preis",
+     "Kurz nach dem",
+     "Früher Boxenstopp für Fernando",
+     "Alonso,",
+     "Das Safety Car wird herausgeholt."
+    ],
+    "Spanish": [
+     "Piquet",
+     "Jr.",
+     "se estrelló",
+     "en el",
+     "2008 Singapur",
+     "Grande",
+     "Precio",
+     "Justo después de",
+     "Una parada temprana en boxes para Fernando",
+     "Alonso,",
+     "Sacando el coche de seguridad."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "crashed in the 2008",
+     "right": "Singapore Grand Prix just",
+     "H": 0.4881,
+     "H_pct": 33.3,
+     "contra": 0.0006,
+     "cohesion": 0.4884
+    },
+    {
+     "pos": 13,
+     "left": "just after an early",
+     "right": "pit stop for Fernando",
+     "H": 0.319,
+     "H_pct": 19.0,
+     "contra": 0.4058,
+     "cohesion": 0.5368
+    },
+    {
+     "pos": 15,
+     "left": "an early pit stop",
+     "right": "for Fernando Alonso, bringing",
+     "H": 0.5518,
+     "H_pct": 47.6,
+     "contra": 0.0336,
+     "cohesion": 0.571
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Piquet",
+     "right": "Jr. crashed in the",
+     "H": 0.5715,
+     "H_pct": 61.9,
+     "contra": 0.012,
+     "cohesion": 0.5785
+    },
+    {
+     "pos": 5,
+     "left": "Jr. crashed in the",
+     "right": "2008 Singapore Grand Prix",
+     "H": 0.6195,
+     "H_pct": 95.2,
+     "contra": 0.0017,
+     "cohesion": 0.6205
+    },
+    {
+     "pos": 11,
+     "left": "Grand Prix just after",
+     "right": "an early pit stop",
+     "H": 0.5692,
+     "H_pct": 57.1,
+     "contra": 0.0284,
+     "cohesion": 0.5858
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1650",
+  "cuts": 8,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.1885,
+  "policy_worst_contra": 0.3628,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    6,
+    9,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "H_set": 0.4246,
+   "text": "Saltwater Crocodiles ‖ do not actively live ‖ in the ocean, ‖ their primary habitat ‖ is ‖ in ‖ river ‖ estuaries ‖ north from Rockhampton.",
+   "pieces": {
+    "Chinese": [
+     "海水鱷科",
+     "不积极生活",
+     "海洋里,",
+     "主要栖息地",
+     "是",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "河流",
+     "河口",
+     "从罗克汉普顿北部。"
+    ],
+    "Japanese": [
+     "塩水ワニ",
+     "積極的に生活を送らない",
+     "海にいる",
+     "主な生息地は",
+     "はい",
+     "ここに",
+     "川",
+     "河口",
+     "ロックハンプトンの北に"
+    ],
+    "German": [
+     "Salzwasserkrokodile",
+     "Ich lebe nicht aktiv",
+     "im Ozean,",
+     "Ihr primäres Habitat",
+     "ist",
+     "in",
+     "Fluss",
+     "Flussmündungen",
+     "10 Minuten nördlich von Rockhampton."
+    ],
+    "Spanish": [
+     "Cocodrilos de agua salada",
+     "No viven activamente",
+     "en el océano,",
+     "Su hábitat primario",
+     "es",
+     "en",
+     "río",
+     "estuarios",
+     "Al norte de Rockhampton."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    9,
+    10,
+    11,
+    13,
+    15,
+    16
+   ],
+   "H_set": 0.6131,
+   "text": "Saltwater ‖ Crocodiles do not actively live ‖ in the ocean, ‖ their ‖ primary ‖ habitat is ‖ in river ‖ estuaries ‖ north from Rockhampton.",
+   "pieces": {
+    "Chinese": [
+     "盐水",
+     "鳄鱼不活跃生活",
+     "海洋里,",
+     "他们",
+     "小学",
+     "生境是",
+     "在河里",
+     "河口",
+     "从罗克汉普顿北部。"
+    ],
+    "Japanese": [
+     "塩水",
+     "ワニは活発に生きていません",
+     "海にいる",
+     "彼らの",
+     "初等",
+     "生息地は",
+     "川に",
+     "河口",
+     "ロックハンプトンの北に"
+    ],
+    "German": [
+     "Salzwasser",
+     "Krokodile leben nicht aktiv",
+     "im Ozean,",
+     "their",
+     "Primär",
+     "Der Lebensraum ist",
+     "Sex im Fluss",
+     "Flussmündungen",
+     "10 Minuten nördlich von Rockhampton."
+    ],
+    "Spanish": [
+     "Agua salada",
+     "Los cocodrilos no viven activamente",
+     "en el océano,",
+     "their",
+     "primaria",
+     "El hábitat es",
+     "En el río",
+     "estuarios",
+     "Al norte de Rockhampton."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Saltwater Crocodiles",
+     "right": "do not actively live",
+     "H": 0.8198,
+     "H_pct": 47.1,
+     "contra": 0.0008,
+     "cohesion": 0.8205
+    },
+    {
+     "pos": 12,
+     "left": "ocean, their primary habitat",
+     "right": "is in river estuaries",
+     "H": 0.7649,
+     "H_pct": 29.4,
+     "contra": 0.0035,
+     "cohesion": 0.7675
+    },
+    {
+     "pos": 14,
+     "left": "primary habitat is in",
+     "right": "river estuaries north from",
+     "H": 0.5518,
+     "H_pct": 5.9,
+     "contra": 0.3628,
+     "cohesion": 0.866
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Saltwater",
+     "right": "Crocodiles do not actively",
+     "H": 0.8288,
+     "H_pct": 58.8,
+     "contra": 0.0476,
+     "cohesion": 0.8702
+    },
+    {
+     "pos": 10,
+     "left": "in the ocean, their",
+     "right": "primary habitat is in",
+     "H": 0.8552,
+     "H_pct": 88.2,
+     "contra": 0.0049,
+     "cohesion": 0.8594
+    },
+    {
+     "pos": 11,
+     "left": "the ocean, their primary",
+     "right": "habitat is in river",
+     "H": 0.844,
+     "H_pct": 76.5,
+     "contra": 0.003,
+     "cohesion": 0.8466
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1564",
+  "cuts": 9,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.1872,
+  "policy_worst_contra": 0.0059,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    5,
+    7,
+    10,
+    12,
+    13,
+    17,
+    18,
+    19
+   ],
+   "H_set": 0.5345,
+   "text": "Some patients ‖ might have contracted ‖ the bug ‖ in the hospital, ‖ Dr. Moll ‖ thinks, ‖ and at least two ‖ were ‖ hospital ‖ health workers.",
+   "pieces": {
+    "Chinese": [
+     "一些病人",
+     "可能已订立",
+     "错误",
+     "医院里,",
+     "莫尔博士",
+     "想想看",
+     "至少两个",
+     "是",
+     "医院",
+     "保健工作者。"
+    ],
+    "Japanese": [
+     "一部の患者は",
+     "感染していたかもしれません",
+     "虫だ",
+     "病院で",
+     "ドクター・モール",
+     "考えてるんだ",
+     "少なくとも2つは",
+     "あれは",
+     "病院",
+     "医療従事者です"
+    ],
+    "German": [
+     "Einige Patienten",
+     "Möglicherweise haben sich die",
+     "Der Fehler",
+     "im Krankenhaus,",
+     "Dr. Moll",
+     "Denkt,",
+     "Und mindestens zwei",
+     "waren",
+     "Krankenhaus",
+     "Gesundheitsarbeiter."
+    ],
+    "Spanish": [
+     "Algunos pacientes",
+     "Podría haber contraído",
+     "El bug",
+     "en el hospital,",
+     "Dr. Moll",
+     "piensa,",
+     "y al menos dos",
+     "fueron",
+     "hospital",
+     "trabajadores de la salud."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    10,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18
+   ],
+   "H_set": 0.7217,
+   "text": "Some ‖ patients might have contracted the bug in the hospital, ‖ Dr. ‖ Moll ‖ thinks, ‖ and ‖ at least ‖ two ‖ were ‖ hospital health workers.",
+   "pieces": {
+    "Chinese": [
+     "一些",
+     "病人可能在医院感染了病毒,",
+     "博士",
+     "莫尔",
+     "想想看",
+     "以及",
+     "至少",
+     "二",
+     "是",
+     "医院保健工作者。"
+    ],
+    "Japanese": [
+     "いくつか",
+     "患者は病院で感染したかもしれません",
+     "博士",
+     "モール",
+     "考えてるんだ",
+     "それに",
+     "少なくとも",
+     "二つ",
+     "あれは",
+     "病院の医療従事者です"
+    ],
+    "German": [
+     "Some",
+     "Patienten könnten sich im Krankenhaus mit dem Virus infiziert haben,",
+     "Dr.",
+     "Moll",
+     "Denkt,",
+     "und",
+     "Zumindest",
+     "Zwei",
+     "waren",
+     "Krankenhaus-Gesundheitsarbeiter."
+    ],
+    "Spanish": [
+     "Algunos",
+     "Los pacientes podrían haber contraído el virus en el hospital,",
+     "Dr.",
+     "Moll",
+     "piensa,",
+     "y",
+     "al menos",
+     "Dos",
+     "fueron",
+     "Trabajadores de salud hospitalarios."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Some patients",
+     "right": "might have contracted the",
+     "H": 0.7446,
+     "H_pct": 31.6,
+     "contra": 0.0003,
+     "cohesion": 0.7448
+    },
+    {
+     "pos": 5,
+     "left": "patients might have contracted",
+     "right": "the bug in the",
+     "H": 0.7131,
+     "H_pct": 21.1,
+     "contra": 0.0003,
+     "cohesion": 0.7133
+    },
+    {
+     "pos": 7,
+     "left": "have contracted the bug",
+     "right": "in the hospital, Dr.",
+     "H": 0.803,
+     "H_pct": 52.6,
+     "contra": 0.0004,
+     "cohesion": 0.8034
+    },
+    {
+     "pos": 19,
+     "left": "least two were hospital",
+     "right": "health workers.",
+     "H": 0.7994,
+     "H_pct": 47.4,
+     "contra": 0.0059,
+     "cohesion": 0.8042
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Some",
+     "right": "patients might have contracted",
+     "H": 0.8181,
+     "H_pct": 68.4,
+     "contra": 0.0008,
+     "cohesion": 0.8188
+    },
+    {
+     "pos": 11,
+     "left": "in the hospital, Dr.",
+     "right": "Moll thinks, and at",
+     "H": 0.8399,
+     "H_pct": 78.9,
+     "contra": 0.0009,
+     "cohesion": 0.8407
+    },
+    {
+     "pos": 14,
+     "left": "Dr. Moll thinks, and",
+     "right": "at least two were",
+     "H": 0.8702,
+     "H_pct": 94.7,
+     "contra": 0.0037,
+     "cohesion": 0.8734
+    },
+    {
+     "pos": 16,
+     "left": "thinks, and at least",
+     "right": "two were hospital health",
+     "H": 0.8684,
+     "H_pct": 89.5,
+     "contra": 0.0052,
+     "cohesion": 0.8729
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_9",
+  "cuts": 3,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.1851,
+  "policy_worst_contra": 0.007,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    10
+   ],
+   "H_set": 0.5808,
+   "text": "Just after 11:00, ‖ protesters blocked traffic ‖ on the northbound carriage ‖ in Whitehall.",
+   "pieces": {
+    "Chinese": [
+     "11点过后",
+     "示威者封锁交通",
+     "上一篇: 关于我们",
+     "白厅"
+    ],
+    "Japanese": [
+     "11時過ぎ",
+     "抗議者は交通を塞ぎ",
+     "北行きの車両で",
+     "ホワイトホールに"
+    ],
+    "German": [
+     "Kurz nach 11:00 Uhr,",
+     "Demonstranten blockierten den Verkehr",
+     "Auf dem nordwärts fahrenden Wagen",
+     "Sehenswürdigkeiten in Whitehall"
+    ],
+    "Spanish": [
+     "Justo después de las 11:00,",
+     "Los manifestantes bloquearon el tráfico",
+     "En el vagón hacia el norte",
+     "Hoteles en Whitehall"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3
+   ],
+   "H_set": 0.7659,
+   "text": "Just ‖ after ‖ 11:00, ‖ protesters blocked traffic on the northbound carriage in Whitehall.",
+   "pieces": {
+    "Chinese": [
+     "刚",
+     "之后",
+     "上午11时，",
+     "抗议者在白厅阻挡了北行列车的交通。"
+    ],
+    "Japanese": [
+     "ただ",
+     "後に",
+     "11時",
+     "抗議者がホワイトホールの北行きの列車を 遮断した"
+    ],
+    "German": [
+     "Just",
+     "nach",
+     "11:00,",
+     "Demonstranten blockierten den Verkehr auf dem nördlichen Wagen in Whitehall."
+    ],
+    "Spanish": [
+     "Justo",
+     "después",
+     "11.00 horas,",
+     "Los manifestantes bloquearon el tráfico en el vagón que va hacia el norte en Whitehall."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "11:00, protesters blocked traffic",
+     "right": "on the northbound carriage",
+     "H": 0.7026,
+     "H_pct": 50.0,
+     "contra": 0.0038,
+     "cohesion": 0.7053
+    },
+    {
+     "pos": 10,
+     "left": "on the northbound carriage",
+     "right": "in Whitehall.",
+     "H": 0.663,
+     "H_pct": 30.0,
+     "contra": 0.007,
+     "cohesion": 0.6676
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Just",
+     "right": "after 11:00, protesters blocked",
+     "H": 0.7607,
+     "H_pct": 90.0,
+     "contra": 0.0037,
+     "cohesion": 0.7635
+    },
+    {
+     "pos": 2,
+     "left": "Just after",
+     "right": "11:00, protesters blocked traffic",
+     "H": 0.7596,
+     "H_pct": 80.0,
+     "contra": 0.0009,
+     "cohesion": 0.7603
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_498",
+  "cuts": 9,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.1825,
+  "policy_worst_contra": 0.2787,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    5,
+    7,
+    8,
+    9,
+    10,
+    14,
+    16,
+    17
+   ],
+   "H_set": 0.3696,
+   "text": "They became proficient ‖ at amputation ‖ to save ‖ patients ‖ from ‖ gangrene ‖ as well as tourniquets ‖ and arterial ‖ clamps ‖ to stem blood flow.",
+   "pieces": {
+    "Chinese": [
+     "他们变得熟练",
+     "截肢时",
+     "要保存",
+     "患者",
+     "从",
+     "坏疽",
+     "以及旋转针",
+     "心血管疾病",
+     "夹具",
+     "阻止血液流动。"
+    ],
+    "Japanese": [
+     "彼らは熟練した",
+     "切断したとき",
+     "救うために",
+     "患者さん",
+     "ここから",
+     "壊死",
+     "ターニケットや",
+     "動脈血圧を測定し",
+     "クランプ",
+     "血流を止めるためです"
+    ],
+    "German": [
+     "Sie wurden erfahren",
+     "bei Amputation",
+     "Klicken um zu speichern",
+     "Patienten",
+     "von",
+     "Gangrän",
+     "Sowohl als auch Tourniquets",
+     "Herz- und arterielle",
+     "Klemmen",
+     "Blutfluss zu stoppen."
+    ],
+    "Spanish": [
+     "Se volvieron competentes",
+     "en la amputación",
+     "Haga clic para guardar",
+     "pacientes",
+     "de",
+     "gangrena",
+     "así como torniquetes",
+     "Hipertensión arterial",
+     "Abrazaderas",
+     "Para detener el flujo sanguíneo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    5,
+    8,
+    10,
+    12,
+    14,
+    17
+   ],
+   "H_set": 0.5521,
+   "text": "They ‖ became ‖ proficient ‖ at amputation ‖ to save patients ‖ from gangrene ‖ as well ‖ as tourniquets ‖ and arterial clamps ‖ to stem blood flow.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "成为",
+     "熟练",
+     "截肢时",
+     "为了拯救病人",
+     "坏疽",
+     "以及",
+     "带有旋转式门",
+     "动脉夹",
+     "阻止血液流动。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "なった",
+     "熟練",
+     "切断したとき",
+     "患者を救うために",
+     "壊疽から",
+     "それに",
+     "ターニケットをつけて",
+     "動脈クランプを使って",
+     "血流を止めるためです"
+    ],
+    "German": [
+     "They",
+     "wurde",
+     "Proficient",
+     "bei Amputation",
+     "Patienten zu retten",
+     "von Gangrän",
+     "so gut wie",
+     "als Drehkreuze",
+     "Arterielle Klemmen",
+     "Blutfluss zu stoppen."
+    ],
+    "Spanish": [
+     "They",
+     "se convirtió",
+     "competente",
+     "en la amputación",
+     "Para salvar a los pacientes",
+     "De la gangrena",
+     "así como",
+     "Torniquetes",
+     "Clips vasculares y arteriales",
+     "Para detener el flujo sanguíneo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "at amputation to save",
+     "right": "patients from gangrene as",
+     "H": 0.6339,
+     "H_pct": 21.1,
+     "contra": 0.0078,
+     "cohesion": 0.6389
+    },
+    {
+     "pos": 9,
+     "left": "to save patients from",
+     "right": "gangrene as well as",
+     "H": 0.5285,
+     "H_pct": 10.5,
+     "contra": 0.2787,
+     "cohesion": 0.7327
+    },
+    {
+     "pos": 16,
+     "left": "as tourniquets and arterial",
+     "right": "clamps to stem blood",
+     "H": 0.6575,
+     "H_pct": 36.8,
+     "contra": 0.0613,
+     "cohesion": 0.7005
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "They",
+     "right": "became proficient at amputation",
+     "H": 0.7159,
+     "H_pct": 68.4,
+     "contra": 0.0012,
+     "cohesion": 0.7168
+    },
+    {
+     "pos": 2,
+     "left": "They became",
+     "right": "proficient at amputation to",
+     "H": 0.7392,
+     "H_pct": 89.5,
+     "contra": 0.0009,
+     "cohesion": 0.7399
+    },
+    {
+     "pos": 12,
+     "left": "from gangrene as well",
+     "right": "as tourniquets and arterial",
+     "H": 0.7014,
+     "H_pct": 57.9,
+     "contra": 0.0091,
+     "cohesion": 0.7079
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_841",
+  "cuts": 12,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.182,
+  "policy_worst_contra": 0.1027,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    7,
+    8,
+    10,
+    15,
+    17,
+    18,
+    21,
+    22,
+    24,
+    25
+   ],
+   "H_set": 0.4267,
+   "text": "However, nearly all ‖ of the casinos ‖ listed ‖ above ‖ serve drinks, ‖ and several of them bring ‖ in name-brand ‖ entertainment ‖ (primarily the large ‖ ones ‖ immediately surrounding ‖ Albuquerque ‖ and Santa Fe).",
+   "pieces": {
+    "Chinese": [
+     "然而，几乎所有的",
+     "赌场的",
+     "列入",
+     "以上",
+     "提供饮料,",
+     "其中有几个带来了",
+     "品牌",
+     "娱乐",
+     "主要是大型",
+     "1个",
+     "即使在你们周围的人们，",
+     "阿尔布克尔克",
+     "圣菲)。"
+    ],
+    "Japanese": [
+     "しかし，ほとんどの場合，",
+     "カジノの",
+     "あなたは 私の あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの あの ",
+     "上に",
+     "飲み物を出して",
+     "いくつかの例は",
+     "あなたが どうやって",
+     "娯楽",
+     "主に大型の",
+     "1つ",
+     "すぐに周囲を囲む",
+     "アルバカーキ",
+     "とサンタフェ)"
+    ],
+    "German": [
+     "Fast alle",
+     "Die Casinos",
+     "Liste",
+     "oben",
+     "Servieren Sie Getränke,",
+     "Und einige von ihnen bringen",
+     "in Name-Marke",
+     "Unterhaltung",
+     "(vor allem die großen",
+     "ones",
+     "Die unmittelbare Umgebung",
+     "Albuquerque",
+     "und Santa Fe)."
+    ],
+    "Spanish": [
+     "Sin embargo, casi todos",
+     "La historia de los casinos",
+     "Listado",
+     "arriba",
+     "servir bebidas,",
+     "Y varios de ellos traen",
+     "En nombre de marca",
+     "entretenimiento",
+     "(principalmente los grandes",
+     "ones",
+     "inmediatamente circundante",
+     "Albuquerque",
+     "y Santa Fe)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10,
+    11,
+    18,
+    19,
+    24
+   ],
+   "H_set": 0.6087,
+   "text": "However, ‖ nearly ‖ all ‖ of ‖ the ‖ casinos ‖ listed above ‖ serve drinks, ‖ and ‖ several of them bring in name-brand entertainment ‖ (primarily ‖ the large ones immediately surrounding ‖ Albuquerque and Santa Fe).",
+   "pieces": {
+    "Chinese": [
+     "然而，",
+     "近",
+     "所有",
+     "的",
+     "该",
+     "赌场",
+     "以上所列",
+     "提供饮料,",
+     "以及",
+     "其中有几个带来了名牌娱乐",
+     "(主要是",
+     "那些大型的,紧邻",
+     "阿尔布克尔克和圣菲)。"
+    ],
+    "Japanese": [
+     "しかし",
+     "もう少しで",
+     "すべて",
+     "の",
+     "あの",
+     "カジノ",
+     "上記のような",
+     "飲み物を出して",
+     "それに",
+     "いくつかは名門エンターテインメント会社を",
+     "主に",
+     "周りにある大きなものは",
+     "アルバカーキとサンタフェ）である。"
+    ],
+    "German": [
+     "Allerdings",
+     "fast",
+     "all",
+     "von",
+     "the",
+     "Casinos",
+     "Die oben aufgeführten",
+     "Servieren Sie Getränke,",
+     "und",
+     "Einige von ihnen bringen Name-Marke Unterhaltung",
+     "(hauptsächlich",
+     "Die großen unmittelbar umgebenden",
+     "Albuquerque und Santa Fe)."
+    ],
+    "Spanish": [
+     "Sin embargo,",
+     "casi",
+     "todos",
+     "de",
+     "the",
+     "casinos",
+     "Listado arriba",
+     "servir bebidas,",
+     "y",
+     "Varios de ellos traen entretenimiento de marca",
+     "(principalmente",
+     "Los grandes que rodean inmediatamente",
+     "Albuquerque y Santa Fe)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "of the casinos listed",
+     "right": "above serve drinks, and",
+     "H": 0.723,
+     "H_pct": 46.2,
+     "contra": 0.0023,
+     "cohesion": 0.7247
+    },
+    {
+     "pos": 15,
+     "left": "several of them bring",
+     "right": "in name-brand entertainment (primarily",
+     "H": 0.6565,
+     "H_pct": 15.4,
+     "contra": 0.0034,
+     "cohesion": 0.6587
+    },
+    {
+     "pos": 17,
+     "left": "them bring in name-brand",
+     "right": "entertainment (primarily the large",
+     "H": 0.7051,
+     "H_pct": 30.8,
+     "contra": 0.0078,
+     "cohesion": 0.7107
+    },
+    {
+     "pos": 21,
+     "left": "entertainment (primarily the large",
+     "right": "ones immediately surrounding Albuquerque",
+     "H": 0.7043,
+     "H_pct": 26.9,
+     "contra": 0.0061,
+     "cohesion": 0.7086
+    },
+    {
+     "pos": 22,
+     "left": "(primarily the large ones",
+     "right": "immediately surrounding Albuquerque and",
+     "H": 0.7294,
+     "H_pct": 53.8,
+     "contra": 0.0365,
+     "cohesion": 0.7571
+    },
+    {
+     "pos": 25,
+     "left": "ones immediately surrounding Albuquerque",
+     "right": "and Santa Fe).",
+     "H": 0.711,
+     "H_pct": 38.5,
+     "contra": 0.1027,
+     "cohesion": 0.7923
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "However,",
+     "right": "nearly all of the",
+     "H": 0.8308,
+     "H_pct": 100.0,
+     "contra": 0.0097,
+     "cohesion": 0.8389
+    },
+    {
+     "pos": 2,
+     "left": "However, nearly",
+     "right": "all of the casinos",
+     "H": 0.7464,
+     "H_pct": 65.4,
+     "contra": 0.0012,
+     "cohesion": 0.7472
+    },
+    {
+     "pos": 4,
+     "left": "However, nearly all of",
+     "right": "the casinos listed above",
+     "H": 0.761,
+     "H_pct": 73.1,
+     "contra": 0.0055,
+     "cohesion": 0.7652
+    },
+    {
+     "pos": 5,
+     "left": "nearly all of the",
+     "right": "casinos listed above serve",
+     "H": 0.7723,
+     "H_pct": 80.8,
+     "contra": 0.004,
+     "cohesion": 0.7754
+    },
+    {
+     "pos": 11,
+     "left": "above serve drinks, and",
+     "right": "several of them bring",
+     "H": 0.7775,
+     "H_pct": 84.6,
+     "contra": 0.0064,
+     "cohesion": 0.7825
+    },
+    {
+     "pos": 19,
+     "left": "in name-brand entertainment (primarily",
+     "right": "the large ones immediately",
+     "H": 0.7331,
+     "H_pct": 57.7,
+     "contra": 0.0169,
+     "cohesion": 0.7458
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1112",
+  "cuts": 9,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.1799,
+  "policy_worst_contra": 0.3665,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    6,
+    8,
+    11,
+    16,
+    17,
+    18,
+    19,
+    22
+   ],
+   "H_set": 0.3241,
+   "text": "Fears of lack of transportation ‖ raised ‖ the possibility ‖ that the game ‖ would be forced to play ‖ behind ‖ closed ‖ doors ‖ without the team's ‖ supporters.",
+   "pieces": {
+    "Chinese": [
+     "担心缺乏交通工具",
+     "提出",
+     "可能性",
+     "游戏介绍",
+     "被迫去玩",
+     "后面",
+     "已结束",
+     "门",
+     "没有队伍的",
+     "支持者。"
+    ],
+    "Japanese": [
+     "交通不足の恐れ",
+     "生まれた",
+     "可能性は",
+     "ゲームは",
+     "ゲームをやらされるかもしれません",
+     "後ろに",
+     "閉じた",
+     "ドア",
+     "チームの協力なしには",
+     "支持者だ"
+    ],
+    "German": [
+     "Ängste vor dem Mangel an Transportmitteln",
+     "erhöht",
+     "Die Möglichkeit,",
+     "Das Spiel",
+     "Ich würde gezwungen sein zu spielen",
+     "hinter",
+     "geschlossen",
+     "Türen",
+     "Ohne die Team-",
+     "Unterstützer."
+    ],
+    "Spanish": [
+     "Miedo a la falta de transporte",
+     "levantadas",
+     "La posibilidad de",
+     "Que el juego",
+     "Sería forzado a jugar",
+     "detrás",
+     "cerrado",
+     "Puertas",
+     "Sin el equipo",
+     "Los partidarios."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    11,
+    13,
+    16,
+    19
+   ],
+   "H_set": 0.504,
+   "text": "Fears ‖ of lack of transportation ‖ raised ‖ the ‖ possibility ‖ that the game ‖ would be ‖ forced to play ‖ behind closed doors ‖ without the team's supporters.",
+   "pieces": {
+    "Chinese": [
+     "恐惧",
+     "缺乏交通工具",
+     "提出",
+     "该",
+     "可能性",
+     "游戏介绍",
+     "将是",
+     "被迫玩",
+     "闭门造车",
+     "没有球队的支持者。"
+    ],
+    "Japanese": [
+     "恐怖",
+     "交通手段の不足や",
+     "生まれた",
+     "あの",
+     "可能性",
+     "ゲームは",
+     "それは",
+     "強制的に遊ばせられ",
+     "閉じた扉の中で",
+     "チームのサポーターなしでは"
+    ],
+    "German": [
+     "Fears",
+     "Mangel an Transportmöglichkeiten",
+     "erhöht",
+     "the",
+     "Möglichkeit",
+     "Das Spiel",
+     "Das wäre",
+     "Gezwungen zu spielen",
+     "Hinter verschlossenen Türen",
+     "Ohne die Unterstützer des Teams."
+    ],
+    "Spanish": [
+     "Miedos",
+     "La falta de transporte",
+     "levantadas",
+     "the",
+     "posibilidad",
+     "Que el juego",
+     "sería",
+     "Obligado a jugar",
+     "Detrás de puertas cerradas",
+     "Sin los seguidores del equipo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 17,
+     "left": "forced to play behind",
+     "right": "closed doors without the",
+     "H": 0.6319,
+     "H_pct": 33.3,
+     "contra": 0.0136,
+     "cohesion": 0.6406
+    },
+    {
+     "pos": 18,
+     "left": "to play behind closed",
+     "right": "doors without the team's",
+     "H": 0.4709,
+     "H_pct": 19.0,
+     "contra": 0.2517,
+     "cohesion": 0.6293
+    },
+    {
+     "pos": 22,
+     "left": "doors without the team's",
+     "right": "supporters.",
+     "H": 0.3954,
+     "H_pct": 9.5,
+     "contra": 0.3665,
+     "cohesion": 0.6242
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Fears",
+     "right": "of lack of transportation",
+     "H": 0.702,
+     "H_pct": 81.0,
+     "contra": 0.0007,
+     "cohesion": 0.7025
+    },
+    {
+     "pos": 7,
+     "left": "of transportation raised the",
+     "right": "possibility that the game",
+     "H": 0.7286,
+     "H_pct": 90.5,
+     "contra": 0.0047,
+     "cohesion": 0.732
+    },
+    {
+     "pos": 13,
+     "left": "the game would be",
+     "right": "forced to play behind",
+     "H": 0.6836,
+     "H_pct": 61.9,
+     "contra": 0.0185,
+     "cohesion": 0.6965
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1184",
+  "cuts": 6,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.1758,
+  "policy_worst_contra": 0.254,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    6,
+    7,
+    10
+   ],
+   "H_set": 0.5031,
+   "text": "Two ‖ popular ‖ content ‖ theories are Maslow's ‖ Hierarchy ‖ of Needs Theory ‖ and Hertzberg's Two Factor Theory.",
+   "pieces": {
+    "Chinese": [
+     "二",
+     "流行",
+     "内容",
+     "理论是马斯洛的",
+     "等级",
+     "需求理论",
+     "和赫兹伯格的两因素理论。"
+    ],
+    "Japanese": [
+     "ツー",
+     "普通",
+     "内容",
+     "理論はマズローの",
+     "階層",
+     "ニーズ理論",
+     "ヘルツバーグの二因子説です"
+    ],
+    "German": [
+     "Two",
+     "Beliebt",
+     "Inhalt",
+     "Die Theorien sind Maslows",
+     "Hierarchie",
+     "Theorie der Bedürfnisse",
+     "Hertzbergs Zwei-Faktor-Theorie."
+    ],
+    "Spanish": [
+     "Dos",
+     "popular",
+     "contenido",
+     "Las teorías son de Maslow",
+     "Jerarquía",
+     "Teoría de las Necesidades",
+     "y la Teoría de Dos Factores de Hertzberg."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    6,
+    7,
+    9,
+    10
+   ],
+   "H_set": 0.6789,
+   "text": "Two popular content theories ‖ are ‖ Maslow's ‖ Hierarchy ‖ of Needs ‖ Theory ‖ and Hertzberg's Two Factor Theory.",
+   "pieces": {
+    "Chinese": [
+     "两种流行的内容理论",
+     "是",
+     "马斯洛的需求",
+     "等级",
+     "需求",
+     "理论",
+     "和赫兹伯格的两因素理论。"
+    ],
+    "Japanese": [
+     "内容論",
+     "あなたは",
+     "マズローの欲求",
+     "階層",
+     "ニーズの世界",
+     "理論",
+     "ヘルツバーグの二因子説です"
+    ],
+    "German": [
+     "Zwei populäre Inhaltstheorien",
+     "sind",
+     "Maslows",
+     "Hierarchie",
+     "Liste der Bedürfnisse",
+     "Theorie",
+     "Hertzbergs Zwei-Faktor-Theorie."
+    ],
+    "Spanish": [
+     "Dos teorías populares de contenido",
+     "son",
+     "Maslow",
+     "Jerarquía",
+     "Lista de Necesidades",
+     "Teoría",
+     "y la Teoría de Dos Factores de Hertzberg."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "Two",
+     "right": "popular content theories are",
+     "H": 0.622,
+     "H_pct": 15.4,
+     "contra": 0.254,
+     "cohesion": 0.8338
+    },
+    {
+     "pos": 2,
+     "left": "Two popular",
+     "right": "content theories are Maslow's",
+     "H": 0.7784,
+     "H_pct": 46.2,
+     "contra": 0.0028,
+     "cohesion": 0.7806
+    },
+    {
+     "pos": 3,
+     "left": "Two popular content",
+     "right": "theories are Maslow's Hierarchy",
+     "H": 0.7498,
+     "H_pct": 30.8,
+     "contra": 0.0042,
+     "cohesion": 0.753
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Two popular content theories",
+     "right": "are Maslow's Hierarchy of",
+     "H": 0.8292,
+     "H_pct": 84.6,
+     "contra": 0.0006,
+     "cohesion": 0.8297
+    },
+    {
+     "pos": 5,
+     "left": "popular content theories are",
+     "right": "Maslow's Hierarchy of Needs",
+     "H": 0.8551,
+     "H_pct": 100.0,
+     "contra": 0.0084,
+     "cohesion": 0.8623
+    },
+    {
+     "pos": 9,
+     "left": "Maslow's Hierarchy of Needs",
+     "right": "Theory and Hertzberg's Two",
+     "H": 0.8229,
+     "H_pct": 76.9,
+     "contra": 0.0079,
+     "cohesion": 0.8295
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_271",
+  "cuts": 8,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.1713,
+  "policy_worst_contra": 0.167,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    2,
+    8,
+    9,
+    12,
+    14,
+    15,
+    18,
+    19
+   ],
+   "H_set": 0.48,
+   "text": "Since then, ‖ the Brazilian has featured in 53 ‖ matches ‖ for the club ‖ in all ‖ competitions ‖ and has scored ‖ 24 ‖ goals.",
+   "pieces": {
+    "Chinese": [
+     "从那时起，",
+     "巴西人已经出现在53",
+     "匹配",
+     "为俱乐部",
+     "所有",
+     "竞赛",
+     "并且已经取得了",
+     "24个国家",
+     "目标。"
+    ],
+    "Japanese": [
+     "それ以来",
+     "ブラジル人選手は53試合に出場し",
+     "マッチ",
+     "クラブのために",
+     "すべての",
+     "競技会",
+     "1000万ドル以上の",
+     "24番目の過剰数である。",
+     "ゴールだ"
+    ],
+    "German": [
+     "Seitdem ist es so.",
+     "Der Brasilianer spielte in 53",
+     "Spiele",
+     "Für den Verein",
+     "in allen Kategorien",
+     "Wettbewerbe",
+     "Und hat geschossen",
+     "24",
+     "Ziele."
+    ],
+    "Spanish": [
+     "Desde entonces,",
+     "El brasileño ha participado en 53",
+     "Partidos",
+     "Para el club",
+     "en todos",
+     "Competiciones",
+     "y ha anotado",
+     "24 de diciembre de 1999",
+     "Goals."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    5,
+    12,
+    14,
+    15,
+    17,
+    18
+   ],
+   "H_set": 0.6513,
+   "text": "Since then, ‖ the ‖ Brazilian has ‖ featured in 53 matches for the club ‖ in all ‖ competitions ‖ and has ‖ scored ‖ 24 goals.",
+   "pieces": {
+    "Chinese": [
+     "从那时起，",
+     "该",
+     "巴西",
+     "为俱乐部出场53次",
+     "所有",
+     "竞赛",
+     "并且",
+     "得分",
+     "24个进球。"
+    ],
+    "Japanese": [
+     "それ以来",
+     "あの",
+     "ブラジルハス",
+     "クラブで53試合に出場し",
+     "すべての",
+     "競技会",
+     "それは",
+     "得点",
+     "24ゴール"
+    ],
+    "German": [
+     "Seitdem ist es so.",
+     "the",
+     "Brasilianische hat",
+     "In 53 Spielen für den Verein eingesetzt",
+     "in allen Kategorien",
+     "Wettbewerbe",
+     "und hat",
+     "scored",
+     "24 Tore."
+    ],
+    "Spanish": [
+     "Desde entonces,",
+     "the",
+     "El brasileño tiene",
+     "Participó en 53 partidos con el club",
+     "en todos",
+     "Competiciones",
+     "y ha",
+     "puntuados",
+     "24 goles."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "has featured in 53",
+     "right": "matches for the club",
+     "H": 0.5996,
+     "H_pct": 0.0,
+     "contra": 0.167,
+     "cohesion": 0.7198
+    },
+    {
+     "pos": 9,
+     "left": "featured in 53 matches",
+     "right": "for the club in",
+     "H": 0.7964,
+     "H_pct": 55.6,
+     "contra": 0.0049,
+     "cohesion": 0.8003
+    },
+    {
+     "pos": 19,
+     "left": "and has scored 24",
+     "right": "goals.",
+     "H": 0.7356,
+     "H_pct": 16.7,
+     "contra": 0.0062,
+     "cohesion": 0.7402
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Since then, the",
+     "right": "Brazilian has featured in",
+     "H": 0.8415,
+     "H_pct": 94.4,
+     "contra": 0.0073,
+     "cohesion": 0.8477
+    },
+    {
+     "pos": 5,
+     "left": "then, the Brazilian has",
+     "right": "featured in 53 matches",
+     "H": 0.8322,
+     "H_pct": 88.9,
+     "contra": 0.0018,
+     "cohesion": 0.8337
+    },
+    {
+     "pos": 17,
+     "left": "all competitions and has",
+     "right": "scored 24 goals.",
+     "H": 0.8153,
+     "H_pct": 72.2,
+     "contra": 0.0092,
+     "cohesion": 0.8229
+    }
+   ]
+  }
+ }
+]

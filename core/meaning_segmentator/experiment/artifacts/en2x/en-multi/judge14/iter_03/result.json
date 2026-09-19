@@ -1,0 +1,76 @@
+{
+ "iter": 3,
+ "candidate": 2,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00588,
+  "lo": -0.03184,
+  "hi": 0.02159,
+  "n": 476,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Replace E1 with labeled example en_us_956 (≤3) to teach the scorer about short-latency NP/list fragmentation errors identified in the primary finding.",
+  "Replace E2 with labeled example en_us_1253 (≤3) to show how adjacent cuts can fragment coordinated NPs/enumerations and encourage preserving list integrity.",
+  "Replace E3 with labeled example en_us_1113 (≤5) to demonstrate predicate-completion failures where cuts separate verbs from their core arguments.",
+  "Replace E4 with labeled example en_us_1280 (≤3) to illustrate long NP fragmentation in very short-latency scenarios and discourage trading one high-contra cut for many smaller fragments."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+   "now": "Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?> travel <SEG:?> tim",
+   "labeled_example": "en_us_956"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+   "now": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> ",
+   "labeled_example": "en_us_1253"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+   "now": "Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <SEG:?> voter's <SEG:?",
+   "labeled_example": "en_us_1113"
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "example",
+   "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+   "now": "Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?> be <SEG:?> delivere",
+   "labeled_example": "en_us_1280"
+  }
+ ],
+ "findings": [
+  "The prompt trades away single high-contradiction boundaries by downranking them, then prefers alternative cuts that fragment noun phrases or enumerations—this consistently harms short-latency (≤3 and ≤5) cases.",
+  "The prompt under-specifies predicate completion: it allows cuts that separate verbs/predicates from their core arguments or complements, producing contradicted or fragmentary pieces."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0119,
+   "≤5": -0.0259,
+   "≤7": -0.0083,
+   "≤10": -0.0252,
+   "≤99": 0.0012
+  },
+  "n_worse": 210,
+  "n_better": 180,
+  "why": "Replacing several examples with short‑latency NP/enumeration cases taught the scorer to avoid cutting inside tiny lists/NPs (explaining the small gain in the ≤3 bin), but it overgeneralized: in mid‑latency ranges (≤5 and ≤10) the scorer shifted cuts toward predicate/argument boundaries and inserted extra micro‑cuts, producing more fragmentation and a net small drop in H_set.",
+  "lesson": "Keep examples that discourage fragmenting very short lists/NPs, but ensure those examples don't cause the scorer to relocate cuts into predicate/argument boundaries or create many tiny fragments in mid‑latency items.",
+  "blamed": [
+   "E2 «Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG»",
+   "E3 «Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <S»",
+   "E1 «Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?»",
+   "E4 «Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?>»"
+  ]
+ }
+}

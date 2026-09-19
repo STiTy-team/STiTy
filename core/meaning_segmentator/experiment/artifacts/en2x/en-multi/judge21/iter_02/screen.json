@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  32,
+  54,
+  61,
+  64,
+  77,
+  82,
+  85,
+  88,
+  95,
+  98,
+  109,
+  117,
+  129,
+  131,
+  149,
+  155,
+  172,
+  177,
+  178,
+  216,
+  222,
+  234,
+  237,
+  238,
+  253,
+  264,
+  280,
+  291,
+  302,
+  315,
+  343,
+  369,
+  376,
+  379,
+  421,
+  427,
+  431,
+  434,
+  439,
+  440,
+  449,
+  459,
+  460,
+  491,
+  494,
+  502,
+  511,
+  524,
+  539,
+  564
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.02801,
+    "lo": -0.01087,
+    "hi": 0.06609,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 6956,
+   "changelog": [
+    "Insert a single 'fallback' preference that, as a last resort, orders cuts to favor positions after essential post‑nominal modifiers rather than between a noun/numeral head and its modifier — addresses the primary finding that heads were being split from immediately following essential modifiers."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00961,
+    "lo": -0.04649,
+    "hi": 0.05936,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 6967,
+   "changelog": [
+    "Insert a single narrow surface check that binds a noun or numeral to an immediately following essential post‑nominal modifier, addressing the primary finding that heads were being split from their modifiers."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00244,
+    "lo": -0.05146,
+    "hi": 0.0462,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 6900,
+   "changelog": [
+    "Replace E1 with labeled example en_us_375 to teach the model about keeping a numeral with its measurement/unit parenthetical (primary finding: protect noun/numeral + immediate essential modifier).",
+    "Replace E2 with labeled example en_us_101 to show a noun/numeral followed immediately by a restrictive clause and a measurement parenthetical (reinforces the need not to split head from essential post‑nominal modifier).",
+    "Replace E3 with labeled example en_us_1253 to illustrate a noun followed by an essential prepositional complement (protect NP + immediate PP).",
+    "Replace E4 with labeled example en_us_1157 to provide a measurement post‑nominal modifier case (+30°C) so the judge learns to keep measurements attached."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00621,
+    "lo": -0.02431,
+    "hi": 0.03836,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 6521,
+   "changelog": [
+    "delete C3 — remove a redundant predicate–argument protection that restates C2 so the prompt is leaner and avoids dividing the judge's attention; chosen under the 'prune' constraint because C3 overlaps C2 (which must be kept per measured lessons) and carries no measured gain."
+   ]
+  }
+ ]
+}

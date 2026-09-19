@@ -1,0 +1,49 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00776,
+  "lo": -0.00132,
+  "hi": 0.01715,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.00776,
+  "lo": -0.00132,
+  "hi": 0.01715,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "Insert a single 'fallback' preference that, as a last resort, orders cuts to favor positions after essential post‑nominal modifiers rather than between a noun/numeral head and its modifier — addresses the primary finding that heads were being split from immediately following essential modifiers."
+ ],
+ "findings": [
+  "The prompt fails to protect noun/numeral heads from losing essential post‑nominal material: it often ranks cuts that separate a noun or numeral from an immediately following modifier or complement (measurement/unit, restrictive PP, participial clause, relative clause, or parenthetical) that identifies or disambiguates that head."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- As a last resort, prefer a cut immediately after an essential post‑nominal mod"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0117,
+   "≤5": 0.0094,
+   "≤7": 0.0004,
+   "≤10": -0.0003,
+   "≤99": -0.0003
+  },
+  "n_worse": 2256,
+  "n_better": 2391,
+  "why": "Inserting the fallback that prefers cuts immediately after essential post‑nominal modifiers (C_end) made the model avoid cutting between a head and its following modifier, which improved cohesion for very short pieces (bins ≤3 and ≤5) but caused many cuts to shift into nearby positions (earlier or later) that split other noun+modifier pairs or enumerations, producing several large negative tail moves and a near‑zero net gain.",
+  "lesson": "Keep the fallback's benefit for very short pieces (≤5) while ensuring it does not simply relocate cuts to adjacent noun/modifier or list boundaries where it creates new splits.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

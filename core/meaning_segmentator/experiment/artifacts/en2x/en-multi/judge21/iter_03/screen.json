@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  5,
+  6,
+  11,
+  19,
+  33,
+  70,
+  74,
+  88,
+  89,
+  97,
+  121,
+  128,
+  151,
+  165,
+  169,
+  183,
+  190,
+  212,
+  230,
+  246,
+  257,
+  261,
+  271,
+  275,
+  279,
+  285,
+  286,
+  295,
+  308,
+  324,
+  330,
+  331,
+  334,
+  338,
+  348,
+  350,
+  357,
+  374,
+  376,
+  383,
+  407,
+  427,
+  437,
+  474,
+  477,
+  490,
+  516,
+  535,
+  540,
+  570
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00504,
+    "lo": -0.03958,
+    "hi": 0.05088,
+    "n": 432,
+    "n_clusters": 50
+   },
+   "chars": 6963,
+   "changelog": [
+    "Added a fallback ordering that prefers cutting after the head a complement attaches to rather than immediately before a function-word-led complement, to prevent losing time/place/argument/exception information when pieces are translated separately."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.03819,
+    "lo": 0.00299,
+    "hi": 0.0767,
+    "n": 432,
+    "n_clusters": 50
+   },
+   "chars": 6935,
+   "changelog": [
+    "Insert a narrow, surface-recognisable binding that keeps function-word-led complements attached to the head they complete, addressing the primary finding about cuts before prepositions/subordinators flipping or losing essential information."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.02854,
+    "lo": -0.01568,
+    "hi": 0.0736,
+    "n": 432,
+    "n_clusters": 50
+   },
+   "chars": 6716,
+   "changelog": [
+    "Replace E1 with labeled example en_us_292 to teach avoiding cuts immediately before prepositions/subordinators that supply main temporal/locative complements (addresses primary finding).",
+    "Replace E2 with labeled example en_us_101 to show harm of cutting before a complement-introducing 'that' and similar openers (addresses primary finding).",
+    "Replace E3 with labeled example en_us_525 to show short-bin failures where cutting before 'how/often' like markers loses essential scope information (addresses primary finding).",
+    "Replace E4 with labeled example en_us_1116 to illustrate cuts before 'except for' that flip exception scope and cause contradiction (addresses primary finding)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.01993,
+    "lo": -0.01828,
+    "hi": 0.06033,
+    "n": 432,
+    "n_clusters": 50
+   },
+   "chars": 6476,
+   "changelog": [
+    "Deleted C2: remove a broad, restating predicate–complement/coherence check that duplicates other, more specific principles and divides the judge's attention."
+   ]
+  }
+ ]
+}

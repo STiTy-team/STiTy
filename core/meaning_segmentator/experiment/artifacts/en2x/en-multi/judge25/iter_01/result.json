@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00599,
+  "lo": -0.00475,
+  "hi": 0.01737,
+  "n": 4541,
+  "n_clusters": 499
+ },
+ "gain": {
+  "mean": 0.00599,
+  "lo": -0.00475,
+  "hi": 0.01737,
+  "n": 4541,
+  "n_clusters": 499
+ },
+ "changelog": [
+  "Delete C8: remove the broad 'disambiguating stretch' principle because it largely restates concerns already covered by C3 (predicate-argument) and C7 (noun-internal modifiers); pruning this redundant unit reduces overlap so later, targeted edits (e.g. a numeral/unit binding) can act more cleanly on the measured failure modes."
+ ],
+ "findings": [
+  "The prompt underrates the harm of cutting where a short following piece (a few words) completes the preceding predicate or provides its essential complement (object, prepositional phrase, date, place, or short clause), producing detached verbs/orphans that break meaning when pieces are translated separately.",
+  "The prompt permits cuts inside numeral/measurement spans (numbers, units, parenthetical conversions or multipliers), which severs quantities from their units or clarifying parentheticals and produces contradictory or incoherent translations."
+ ],
+ "edits": [
+  {
+   "op": "delete",
+   "id": "C8",
+   "kind": "delete",
+   "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+   "now": ""
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0108,
+   "≤5": 0.0062,
+   "≤7": 0.003,
+   "≤10": -0.0042,
+   "≤99": -0.0068
+  },
+  "n_worse": 1816,
+  "n_better": 1978,
+  "why": "Removing C8 eliminated a broad penalty against cutting before a ‘disambiguating stretch’, so the remaining constraints (e.g. predicate-argument and noun-internal rules) drive the model to place earlier/top-level cuts (rank_depth up at k=1,2). That helped very short pieces (bins ≤3–7) but caused more fragmentation of longer post‑modifier/disambiguating spans (bins >10 and overall decline).",
+  "lesson": "When pruning a broad overlap-removing unit, keep an explicit, targeted safeguard for short disambiguating post-modifier stretches — otherwise the model will cut earlier and fragment longer modifier/PP stretches even as it helps short pieces.",
+  "blamed": [
+   "C8"
+  ]
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "iter": 6,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00519,
+  "lo": -0.0173,
+  "hi": 0.00709,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00519,
+  "lo": -0.0173,
+  "hi": 0.00709,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a short positive guideline after C7 that defines a GOOD predicate-aware cut: prefer preserving an intact predicate–argument unit and, when possible, keep the verb with its subject so agent–action–patient relations survive separate translation (addresses the primary finding)."
+ ],
+ "findings": [
+  "The prompt underrates the harm of isolating sentence‑initial openers: it often judges cuts that leave a lone opener (brief discourse marker, determiner, demonstrative, or single‑word pronoun) as acceptable, producing very short fragments that break cohesion in the shortest latency bins.",
+  "The prompt underweights continuity of predicate and arguments: it sometimes ranks cuts that split main verbs/auxiliaries from their direct objects or complements as acceptable, which creates orphaned complements or reverses relations when pieces are translated separately."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C7",
+   "kind": "change",
+   "was": "- Will cutting inside complex verb phrases or between verb and its object orphan",
+   "now": "- Prefer cuts that preserve an intact predicate–argument unit: keep auxiliaries "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0054,
+   "≤5": -0.0091,
+   "≤7": -0.009,
+   "≤10": 0.0016,
+   "≤99": 0.0122
+  },
+  "n_worse": 649,
+  "n_better": 738,
+  "why": "Inserting the predicate–argument guideline caused the scorer to prefer keeping verbs/auxiliaries attached to some arguments, which improved cut quality on long pieces (positive gains in the ≤10 and ≤99 bins) but led to more micro‑splits and earlier cuts in short spans (negative mean in ≤3–≤7), so the net change was near zero and slightly negative on short pieces. The single insertion therefore shifted behaviour toward preserving predicate chunks in long sentences but inadvertently encouraged fragmenting or separating subjects/auxiliaries in short pieces.",
+  "lesson": "When adding a predicate‑preservation guideline, ensure it doesn't encourage creating very short fragments or splitting subjects from their verbs in short spans — preserve predicate wholes for long contexts without introducing micro‑splits in short pieces.",
+  "blamed": [
+   "C7 «- Will cutting inside complex verb phrases or between verb a»"
+  ]
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats sentence‑initial words (determiners, topical nouns, or single-word discourse leads) as poor cutpoints and thus avoids isolating them even when that one‑word fragment is a self-contained topic and raises cohesion when separated.",
+    "evidence": "en_us_422, en_us_1134, en_us_278, en_us_956, en_us_571, en_us_1132, en_us_1410, en_us_140, en_us_1024 — each offline target adds a cut immediately after the initial token (\"The\", \"Downhill\", \"Some\", \"If\", etc.) and gains H_set by isolating a safe initial topic word.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Allow a cut immediately after an initial discourse/topic word or determiner when that token alone forms a coherent utterance and does not leave an unresolved complement, subordination, or referent to be fixed by the following words."
+    }
+   },
+   {
+    "diagnosis": "The prompt underestimates the harm of splitting particles, prepositions, infinitival 'to', numeric multipliers or units from the phrase they govern, which often produces orphaned markers or broken numeric expressions that damage joined translations.",
+    "evidence": "en_us_838, en_us_956, en_us_1612, en_us_140, en_us_553 — each offline target avoids cuts that would leave 'to', prepositions, or numeric components separated from their complements (e.g. \"to look at\", \"to Africa\", \"100 feet wide\", \"240 kilometers an hour\", \"...practices can help\"), improving H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Never cut so that a trailing particle/preposition/infinitival 'to' or a numeral is left without its complement; keep that marker with its complement or cut before the entire prepositional/numeric phrase."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats sentence‑initial words (determiners, topical nouns, or single-word discourse leads) as poor cutpoints and thus avoids isolating them even when that one‑word fragment is a self-contained topic and raises cohesion when separated.",
+   "evidence": "en_us_422, en_us_1134, en_us_278, en_us_956, en_us_571, en_us_1132, en_us_1410, en_us_140, en_us_1024 — each offline target adds a cut immediately after the initial token (\"The\", \"Downhill\", \"Some\", \"If\", etc.) and gains H_set by isolating a safe initial topic word.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Allow a cut immediately after an initial discourse/topic word or determiner when that token alone forms a coherent utterance and does not leave an unresolved complement, subordination, or referent to be fixed by the following words."
+   }
+  },
+  {
+   "diagnosis": "The prompt underestimates the harm of splitting particles, prepositions, infinitival 'to', numeric multipliers or units from the phrase they govern, which often produces orphaned markers or broken numeric expressions that damage joined translations.",
+   "evidence": "en_us_838, en_us_956, en_us_1612, en_us_140, en_us_553 — each offline target avoids cuts that would leave 'to', prepositions, or numeric components separated from their complements (e.g. \"to look at\", \"to Africa\", \"100 feet wide\", \"240 kilometers an hour\", \"...practices can help\"), improving H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Never cut so that a trailing particle/preposition/infinitival 'to' or a numeral is left without its complement; keep that marker with its complement or cut before the entire prepositional/numeric phrase."
+   }
+  }
+ ]
+}

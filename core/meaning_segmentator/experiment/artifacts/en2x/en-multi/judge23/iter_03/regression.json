@@ -1,0 +1,173 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.01693,
+  "lo": 0.00259,
+  "hi": 0.0312,
+  "n": 2773,
+  "n_clusters": 300,
+  "dev_a": {
+   "mean": 0.01693,
+   "lo": 0.00259,
+   "hi": 0.0312,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "dev_b": {
+   "mean": 0.01272,
+   "lo": -0.00026,
+   "hi": 0.02629,
+   "n": 2736,
+   "n_clusters": 300,
+   "tries": 1,
+   "threshold": 0.0
+  },
+  "verified": true,
+  "tries": 1
+ },
+ "by_bin": {
+  "≤3": 0.0307,
+  "≤5": 0.011,
+  "≤7": 0.0065,
+  "≤10": 0.0061,
+  "≤99": -0.0112
+ },
+ "n_worse": 1031,
+ "n_better": 1281,
+ "worst": [
+  {
+   "id": "en_us_1365",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7656,
+   "before": "For instance, ‖ they didn't have corn, ‖ nor tomatoes, ‖ nor potatoes, nor cocoa, ‖ and no ancient Roman ever tasted a turkey.",
+   "after": "For instance, ‖ they didn't have corn, nor tomatoes, nor potatoes, nor cocoa, ‖ and no ancient Roman ‖ ever tasted ‖ a turkey."
+  },
+  {
+   "id": "en_us_1365",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.7565,
+   "before": "For instance, ‖ they didn't have corn, ‖ nor tomatoes, nor potatoes, nor cocoa, ‖ and no ancient Roman ever tasted a turkey.",
+   "after": "For instance, ‖ they didn't have corn, nor tomatoes, nor potatoes, nor cocoa, ‖ and no ancient Roman ever tasted ‖ a turkey."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7364,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.712,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, ‖ but the framework we have is enough to start trading on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7106,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, fifth, and sixth place, ‖ respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.8077,
+   "before": "On icy and snowy roadways, ‖ friction is low and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_333",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.7481,
+   "before": "The celebrations started ‖ with a special show ‖ by the world-renowned group Cirque ‖ du Soleil.",
+   "after": "The celebrations started ‖ with a special show ‖ by the world-renowned group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7239,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6919,
+   "before": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, ‖ wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.563,
+   "2": 4.072,
+   "3": 2.946,
+   "4": 2.232,
+   "5": 1.801,
+   "6": 1.55,
+   "7": 1.364,
+   "8": 1.252,
+   "9": 1.165,
+   "10": 1.106,
+   "11": 1.075,
+   "12": 1.059,
+   "13": 1.05
+  },
+  "revision": {
+   "1": 7.94,
+   "2": 4.277,
+   "3": 2.906,
+   "4": 2.277,
+   "5": 1.86,
+   "6": 1.601,
+   "7": 1.433,
+   "8": 1.324,
+   "9": 1.238,
+   "10": 1.191,
+   "11": 1.149,
+   "12": 1.109,
+   "13": 1.095
+  },
+  "delta": {
+   "1": 0.377,
+   "2": 0.205,
+   "3": -0.04,
+   "4": 0.045,
+   "5": 0.059,
+   "6": 0.051,
+   "7": 0.069,
+   "8": 0.072,
+   "9": 0.073,
+   "10": 0.085,
+   "11": 0.074,
+   "12": 0.05,
+   "13": 0.045
+  }
+ },
+ "why": "The inserted binding prevented solitary prepositions/particles from being cut off from their objects, which reduced tiny, high-contradiction fragments and produced gains concentrated in the small latency bins (≤3: +0.0307, ≤5: +0.011); however it also forced merges across conjunctions/enumerations and shifted cuts into clause heads/verbs in longer contexts, producing the small negative effect at the sentence scale (≤99: −0.0112) and a substantial tail of worsened (but many also improved) pairs.",
+ "lesson": "Keep lone prepositions/particles attached to their immediate complements to protect short fragments, but constrain that binding so it does not merge across longer enumerations or push cuts into clause heads, which harms whole-sentence cohesion.",
+ "blamed": [
+  "C_end"
+ ]
+}

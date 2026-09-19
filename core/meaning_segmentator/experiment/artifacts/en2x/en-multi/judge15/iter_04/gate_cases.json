@@ -1,0 +1,2107 @@
+[
+ {
+  "id": "en_us_733",
+  "cuts": 6,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.6667,
+  "policy_worst_contra": 0.974,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    6,
+    7,
+    8,
+    10,
+    11
+   ],
+   "H_set": 0.0195,
+   "text": "Whistler ‖ (1.5 hour drive from Vancouver) ‖ is ‖ expensive ‖ but well-known ‖ because ‖ of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(距离温哥华1.5小时车程)",
+     "是",
+     "昂贵",
+     "但众所周知",
+     "因为",
+     "2010年冬季奥林匹克运动会"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "（バンクーバーから車で1.5時間）",
+     "はい",
+     "高い",
+     "しかし よく知られた事実は",
+     "なぜなら",
+     "2010年の冬季オリンピックの 開催地になりました"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5 Stunden Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "Aber wohlbekannt",
+     "weil",
+     "Olympische Winterspiele 2010 in Vancouver"
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1.5 horas en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "Pero bien conocido",
+     "porque",
+     "Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.6862,
+   "text": "Whistler ‖ (1.5 ‖ hour drive from Vancouver) ‖ is ‖ expensive ‖ but ‖ well-known because of the 2010 Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(1.5个百分点)",
+     "距离温哥华1小时车程)",
+     "是",
+     "昂贵",
+     "但",
+     "因为2010年冬季奥运会而闻名。"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "１．５",
+     "1時間の車で行ける場所です",
+     "はい",
+     "高い",
+     "でも あなたは",
+     "2010年の冬季オリンピックで有名です"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5",
+     "(1 Stunde Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "aber",
+     "Bekannt wurde die Stadt durch die Olympischen Winterspiele 2010."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1,5",
+     "(1 hora en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "pero",
+     "Es conocida por los Juegos Olímpicos de Invierno de 2010."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    },
+    {
+     "pos": 11,
+     "left": "expensive but well-known because",
+     "right": "of the 2010 Winter",
+     "H": 0.0206,
+     "H_pct": 14.3,
+     "contra": 0.974,
+     "cohesion": 0.792
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Whistler (1.5",
+     "right": "hour drive from Vancouver)",
+     "H": 0.7407,
+     "H_pct": 64.3,
+     "contra": 0.0102,
+     "cohesion": 0.7483
+    },
+    {
+     "pos": 9,
+     "left": "Vancouver) is expensive but",
+     "right": "well-known because of the",
+     "H": 0.8724,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 2,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.7783,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9
+   ],
+   "H_set": 0.0038,
+   "text": "The Park Service (MINAE) ‖ does not issue park permits ‖ more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "公园服务(MINAE)",
+     "不发放公园许可证",
+     "预计抵达前一个月以上。"
+    ],
+    "Japanese": [
+     "公園局（外務省）",
+     "許可証を発行しません",
+     "予定より1ヶ月以上早く"
+    ],
+    "German": [
+     "Der Park Service (MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El Servicio de Parques (MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación a la fecha de llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4
+   ],
+   "H_set": 0.7822,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "旅游局不会在预计抵达日期前一个月以上发放公园许可证。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "予定到着の1ヶ月前より 前に公園許可を発行しない"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Die Parkverwaltung stellt Parkgenehmigungen nicht mehr als einen Monat vor der voraussichtlichen Ankunft aus."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "El parque no emite permisos de parque con más de un mes de anticipación a la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "The Park Service",
+     "right": "(MINAE) does not issue",
+     "H": 0.8269,
+     "H_pct": 100.0,
+     "contra": 0.0027,
+     "cohesion": 0.8291
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1179",
+  "cuts": 1,
+  "avg_chunk": 16.5,
+  "latency_bin": "≤99",
+  "gap": 0.2663,
+  "policy_worst_contra": 0.2998,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.6083,
+   "text": "In 1895, after defeat in the First Sino-Japanese War (1894-1895), ‖ the Qing government signs the Treaty of Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,在第一次中日战争 (1894-1895)中被击败后,",
+     "清政府签署《下关条约 》, 将台湾主权割让给日本,日本统治台湾直至1945年。"
+    ],
+    "Japanese": [
+     "1895年（明治28年）、日清戦争（1894年-1895年）で敗北した後、",
+     "清政府は下関条約に調印し 台湾の主権を日本に譲渡し 1945年まで台湾を支配した。"
+    ],
+    "German": [
+     "Im Jahre 1895, nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895),",
+     "1937 unterzeichnet die Qing-Regierung den Vertrag von Shimonoseki, mit dem sie die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895),",
+     "El gobierno Qing firma el Tratado de Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    17
+   ],
+   "H_set": 0.8746,
+   "text": "In 1895, after defeat in the First Sino-Japanese War (1894-1895), the Qing government signs the Treaty of ‖ Shimonoseki, by which it cedes sovereignty over Taiwan to Japan, which rules the island until 1945.",
+   "pieces": {
+    "Chinese": [
+     "1895年,清政府在第一次中日战争(1894-1895年)中战败后,签署了《南京条约 》 。",
+     "下关条约,将台湾主权让给日本,日本统治台湾直到1945年。"
+    ],
+    "Japanese": [
+     "1895年（明治28年）、日清戦争（1894年-1895年）で敗北した清政府は、日清条約を締結する。",
+     "下関条約により台湾の主権を日本に譲渡し、1945年まで統治。"
+    ],
+    "German": [
+     "Nach der Niederlage im Ersten Chinesisch-Japanischen Krieg (1894-1895) unterzeichnet die Qing-Regierung 1895 den Vertrag von",
+     "Shimonoseki, durch den es die Souveränität über Taiwan an Japan abtritt, das die Insel bis 1945 regiert."
+    ],
+    "Spanish": [
+     "En 1895, tras la derrota en la Primera Guerra Sino-Japonesa (1894-1895), el gobierno Qing firma el Tratado de",
+     "Shimonoseki, por el que cede la soberanía sobre Taiwán a Japón, que gobierna la isla hasta 1945."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "First Sino-Japanese War (1894-1895),",
+     "right": "the Qing government signs",
+     "H": 0.6083,
+     "H_pct": 12.9,
+     "contra": 0.2998,
+     "cohesion": 0.8688
+    }
+   ],
+   "added": [
+    {
+     "pos": 17,
+     "left": "signs the Treaty of",
+     "right": "Shimonoseki, by which it",
+     "H": 0.8746,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1116",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6332,
+  "policy_worst_contra": 0.9701,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    10,
+    16
+   ],
+   "H_set": 0.0217,
+   "text": "All the ships ‖ were sunk, except for one British cruiser. ‖ Nearly 200 American and German lives ‖ were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有船只",
+     "除了一个英国巡洋舰外,所有舰只都被击沉。",
+     "近200名美国和德国人丧生",
+     "失去了。"
+    ],
+    "Japanese": [
+     "すべての船",
+     "1隻のイギリス巡洋艦を除いて 沈没しました",
+     "アメリカ人とドイツ人の200人近くが死亡",
+     "失われた"
+    ],
+    "German": [
+     "Alle Schiffe",
+     "Alle Schiffe wurden versenkt, bis auf einen britischen Kreuzer.",
+     "Fast 200 amerikanische und deutsche Leben",
+     "Sie waren verloren."
+    ],
+    "Spanish": [
+     "Todos los barcos",
+     "Todos los barcos fueron hundidos, excepto un crucero británico.",
+     "Casi 200 vidas estadounidenses y alemanas",
+     "Se perdieron."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    8
+   ],
+   "H_set": 0.6549,
+   "text": "All the ships were sunk, ‖ except ‖ for one ‖ British cruiser. Nearly 200 American and German lives were lost.",
+   "pieces": {
+    "Chinese": [
+     "所有的船都沉没了,",
+     "除非",
+     "一个",
+     "英国巡洋舰,近200名美军和德军丧生。"
+    ],
+    "Japanese": [
+     "船は全て沈没した",
+     "ただし",
+     "まず",
+     "イギリスの巡洋艦 アメリカ人とドイツ人200人が死亡"
+    ],
+    "German": [
+     "Alle Schiffe wurden versenkt,",
+     "außer",
+     "Für einen Tag",
+     "Britischer Kreuzer. Fast 200 amerikanische und deutsche Todesopfer."
+    ],
+    "Spanish": [
+     "Todos los barcos se hundieron,",
+     "except",
+     "Para uno",
+     "Crucero británico. Casi 200 vidas estadounidenses y alemanas se perdieron."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "All the ships",
+     "right": "were sunk, except for",
+     "H": 0.0524,
+     "H_pct": 25.0,
+     "contra": 0.9337,
+     "cohesion": 0.7911
+    },
+    {
+     "pos": 10,
+     "left": "for one British cruiser.",
+     "right": "Nearly 200 American and",
+     "H": 0.3115,
+     "H_pct": 50.0,
+     "contra": 0.6495,
+     "cohesion": 0.8888
+    },
+    {
+     "pos": 16,
+     "left": "American and German lives",
+     "right": "were lost.",
+     "H": 0.0219,
+     "H_pct": 12.5,
+     "contra": 0.9701,
+     "cohesion": 0.7322
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "the ships were sunk,",
+     "right": "except for one British",
+     "H": 0.7326,
+     "H_pct": 93.8,
+     "contra": 0.0827,
+     "cohesion": 0.7987
+    },
+    {
+     "pos": 6,
+     "left": "ships were sunk, except",
+     "right": "for one British cruiser.",
+     "H": 0.6531,
+     "H_pct": 87.5,
+     "contra": 0.0354,
+     "cohesion": 0.677
+    },
+    {
+     "pos": 8,
+     "left": "sunk, except for one",
+     "right": "British cruiser. Nearly 200",
+     "H": 0.8127,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8163
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1615",
+  "cuts": 1,
+  "avg_chunk": 8.5,
+  "latency_bin": "≤10",
+  "gap": 0.313,
+  "policy_worst_contra": 0.3002,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    9
+   ],
+   "H_set": 0.5498,
+   "text": "Thousands of years ago, a man called Aristarchus said ‖ that the Solar System moved around the Sun.",
+   "pieces": {
+    "Chinese": [
+     "几千年前,一个名叫亚里士多德的人说,",
+     "太阳系围绕太阳运行。"
+    ],
+    "Japanese": [
+     "数千年前 アリスタルコスという男が言った",
+     "太陽系が太陽の周りを回っていると 考えられていました"
+    ],
+    "German": [
+     "Vor Tausenden von Jahren sagte ein Mann namens Aristarchus",
+     "Das Sonnensystem ist ein System von Planeten."
+    ],
+    "Spanish": [
+     "Hace miles de años, un hombre llamado Aristarco dijo",
+     "El Sistema Solar se mueve alrededor del Sol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4
+   ],
+   "H_set": 0.8628,
+   "text": "Thousands of years ago, ‖ a man called Aristarchus said that the Solar System moved around the Sun.",
+   "pieces": {
+    "Chinese": [
+     "几千年前,",
+     "一个叫做阿里斯塔克斯的人说太阳系围绕着太阳运动。"
+    ],
+    "Japanese": [
+     "数千年前",
+     "アリスタルコスは 太陽系は太陽の周りを回っていると言った"
+    ],
+    "German": [
+     "Vor Tausenden von Jahren,",
+     "Ein Mann namens Aristarchus sagte, dass das Sonnensystem sich um die Sonne bewegt."
+    ],
+    "Spanish": [
+     "Hace miles de años,",
+     "Un hombre llamado Aristarco dijo que el Sistema Solar se movía alrededor del Sol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "man called Aristarchus said",
+     "right": "that the Solar System",
+     "H": 0.5498,
+     "H_pct": 13.3,
+     "contra": 0.3002,
+     "cohesion": 0.7856
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Thousands of years ago,",
+     "right": "a man called Aristarchus",
+     "H": 0.8627,
+     "H_pct": 100.0,
+     "contra": 0.0101,
+     "cohesion": 0.8716
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1081",
+  "cuts": 3,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.5861,
+  "policy_worst_contra": 0.9292,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    8,
+    18
+   ],
+   "H_set": 0.0465,
+   "text": "Farther south is Niagara Falls ‖ and the north ‖ is home to the untapped natural beauty of the Muskoka ‖ and beyond.",
+   "pieces": {
+    "Chinese": [
+     "尼亚加拉大瀑布 尼亚加拉大瀑布",
+     "与北方",
+     "是马斯科卡未开发的自然美景的家园",
+     "以及以后。"
+    ],
+    "Japanese": [
+     "南に行くと ナイアガラの滝があります",
+     "北部は",
+     "マスコカの未開拓の自然の美しさを",
+     "それ以上に"
+    ],
+    "German": [
+     "Weiter südlich sind die Niagarafälle",
+     "und der Norden",
+     "Die Region Muskoka ist die Heimat der unberührten Naturschönheit",
+     "und darüber hinaus."
+    ],
+    "Spanish": [
+     "Más al sur se encuentran las Cataratas del Niágara",
+     "Y el norte",
+     "El parque nacional de Muskoka es el hogar de la belleza natural sin explotar de la región.",
+     "y más allá."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    6
+   ],
+   "H_set": 0.6327,
+   "text": "Farther ‖ south is Niagara Falls ‖ and ‖ the north is home to the untapped natural beauty of the Muskoka and beyond.",
+   "pieces": {
+    "Chinese": [
+     "远远",
+     "尼亚加拉大瀑布",
+     "以及",
+     "北部是马斯科卡及其以外未开发的自然美景的家园。"
+    ],
+    "Japanese": [
+     "ファーザー",
+     "南はナイアガラの滝",
+     "それに",
+     "北部は未開発の自然の美しさがある マスコカ川のほかにもあります"
+    ],
+    "German": [
+     "Farther",
+     "Südlich sind die Niagarafälle",
+     "und",
+     "Der Norden ist die Heimat der unerschlossenen natürlichen Schönheit von Muskoka und darüber hinaus."
+    ],
+    "Spanish": [
+     "Farther",
+     "Al sur están las Cataratas del Niágara",
+     "y",
+     "El norte es el hogar de la belleza natural sin explotar de Muskoka y más allá."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Falls and the north",
+     "right": "is home to the",
+     "H": 0.0496,
+     "H_pct": 38.9,
+     "contra": 0.9291,
+     "cohesion": 0.6997
+    },
+    {
+     "pos": 18,
+     "left": "beauty of the Muskoka",
+     "right": "and beyond.",
+     "H": 0.0529,
+     "H_pct": 44.4,
+     "contra": 0.9292,
+     "cohesion": 0.7474
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Farther",
+     "right": "south is Niagara Falls",
+     "H": 0.6863,
+     "H_pct": 88.9,
+     "contra": 0.0118,
+     "cohesion": 0.6945
+    },
+    {
+     "pos": 6,
+     "left": "is Niagara Falls and",
+     "right": "the north is home",
+     "H": 0.6956,
+     "H_pct": 94.4,
+     "contra": 0.0736,
+     "cohesion": 0.7509
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1527",
+  "cuts": 9,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.5832,
+  "policy_worst_contra": 0.9803,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    5,
+    6,
+    7,
+    11,
+    13,
+    16,
+    21,
+    23
+   ],
+   "H_set": 0.0116,
+   "text": "Poland's men's ‖ visually impaired skier ‖ Maciej ‖ Krezel ‖ and guide Anna Ogarzynska ‖ finished thirteenth ‖ in the Super-G. ‖ South Korea's Jong Seork Park ‖ finished twenty-fourth ‖ in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波蘭男子",
+     "视力障碍者滑雪者",
+     "马齐耶",
+     "克雷泽尔",
+     "导游 Anna Ogarzynska",
+     "排名第十三",
+     "超级大满贯",
+     "韩国的钟西尔公园",
+     "第二十四届会议",
+     "是男子坐式超级大回转比赛。"
+    ],
+    "Japanese": [
+     "ポーランドの男子",
+     "視覚障害者のスキーヤーが",
+     "マチエフ",
+     "クレゼル",
+     "ガイドのアンナ・オガジンスカが",
+     "13位に入った",
+     "私はスーパーGで優勝しました",
+     "チョン・ソルク公園",
+     "24位に終わった",
+     "男性の座り込みスーパーGで"
+    ],
+    "German": [
+     "Navigationsleiste Männer-Fußball in Polen",
+     "Sehbehinderter Skifahrer",
+     "Maciej",
+     "Krezel",
+     "Reiseleiter und Reiseführer Anna Ogarzynska",
+     "Beendete als dreizehnter",
+     "Im Super-G.",
+     "Südkoreas Jong Seork Park",
+     "Beendete als vierundzwanzigste",
+     "Im Sitz-Super-G der Herren."
+    ],
+    "Spanish": [
+     "Selección de Polonia de fútbol",
+     "Esquiador con discapacidad visual",
+     "Maciej",
+     "Krezel",
+     "Guía y guía Anna Ogarzynska",
+     "Terminó decimotercero",
+     "en el Super-G.",
+     "El parque Jong Seork de Corea del Sur",
+     "terminó en el 24º lugar",
+     "en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    8,
+    13,
+    16,
+    23
+   ],
+   "H_set": 0.5948,
+   "text": "Poland's ‖ men's ‖ visually impaired ‖ skier ‖ Maciej ‖ Krezel and ‖ guide Anna Ogarzynska finished thirteenth ‖ in the Super-G. ‖ South Korea's Jong Seork Park finished twenty-fourth ‖ in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波兰",
+     "男子",
+     "视力障碍者",
+     "滑雪者",
+     "马齐耶",
+     "克雷泽尔和",
+     "导游 Anna Ogarzynska 排名第十三",
+     "超级大满贯",
+     "韩国的钟秀克公园完成了第二十四",
+     "是男子坐式超级大回转比赛。"
+    ],
+    "Japanese": [
+     "ポーランドの国章",
+     "男性の",
+     "視覚障害者の",
+     "スキーヤー",
+     "マチエフ",
+     "クレゼルと",
+     "ガイドのアンナ・オガジンスカは13位に入り",
+     "私はスーパーGで優勝しました",
+     "韓国の朴宗<0xE6><0x9A><0x81>が24位に入賞",
+     "男性の座り込みスーパーGで"
+    ],
+    "German": [
+     "Polen",
+     "Herren",
+     "Sehbehinderte",
+     "Skifahrer",
+     "Maciej",
+     "Krezel und",
+     "Guide Anna Ogarzynska wurde dreizehnte",
+     "Im Super-G.",
+     "Südkoreas Jong Seork Park wurde Vierundzwanzigster",
+     "Im Sitz-Super-G der Herren."
+    ],
+    "Spanish": [
+     "Poland's",
+     "de hombres",
+     "Discapacidad visual",
+     "esquiador",
+     "Maciej",
+     "Krezel and",
+     "La guía Anna Ogarzynska terminó decimotercera",
+     "en el Super-G.",
+     "El surcoreano Jong Seork Park terminó vigésimo cuarto",
+     "en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "impaired skier Maciej Krezel",
+     "right": "and guide Anna Ogarzynska",
+     "H": 0.6307,
+     "H_pct": 34.6,
+     "contra": 0.0037,
+     "cohesion": 0.633
+    },
+    {
+     "pos": 11,
+     "left": "and guide Anna Ogarzynska",
+     "right": "finished thirteenth in the",
+     "H": 0.6481,
+     "H_pct": 38.5,
+     "contra": 0.089,
+     "cohesion": 0.7114
+    },
+    {
+     "pos": 21,
+     "left": "Korea's Jong Seork Park",
+     "right": "finished twenty-fourth in the",
+     "H": 0.013,
+     "H_pct": 0.0,
+     "contra": 0.9803,
+     "cohesion": 0.6607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Poland's",
+     "right": "men's visually impaired skier",
+     "H": 0.7501,
+     "H_pct": 69.2,
+     "contra": 0.0068,
+     "cohesion": 0.7552
+    },
+    {
+     "pos": 4,
+     "left": "Poland's men's visually impaired",
+     "right": "skier Maciej Krezel and",
+     "H": 0.7847,
+     "H_pct": 92.3,
+     "contra": 0.0036,
+     "cohesion": 0.7875
+    },
+    {
+     "pos": 8,
+     "left": "skier Maciej Krezel and",
+     "right": "guide Anna Ogarzynska finished",
+     "H": 0.7533,
+     "H_pct": 73.1,
+     "contra": 0.0089,
+     "cohesion": 0.7601
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_687",
+  "cuts": 5,
+  "avg_chunk": 5.2,
+  "latency_bin": "≤7",
+  "gap": 0.261,
+  "policy_worst_contra": 0.3903,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    20,
+    23,
+    27,
+    29
+   ],
+   "H_set": 0.3935,
+   "text": "Anyone interested in seeing evidence ‖ of the damage to the mummy done during attempts to remove it from the coffin ‖ will be disappointed ‖ as only the head ‖ and shoulders ‖ are visible.",
+   "pieces": {
+    "Chinese": [
+     "任何有兴趣看到证据的人",
+     "从棺材中取出木乃伊时所造成的损坏",
+     "会失望",
+     "只要头",
+     "肩膀",
+     "是可见的。"
+    ],
+    "Japanese": [
+     "証拠を見たい人は",
+     "棺から取り出そうとした際に 被ったダメージの",
+     "がっかりするでしょう",
+     "頭だけが",
+     "肩も",
+     "見えるようになっています"
+    ],
+    "German": [
+     "Jeder, der Interesse an Beweisen hat",
+     "Die Mumie wurde bei der Entnahme aus dem Sarg durch einen Unfall beschädigt.",
+     "Wir werden enttäuscht sein",
+     "Als nur der Kopf",
+     "Rücken und Schultern",
+     "Die sind sichtbar."
+    ],
+    "Spanish": [
+     "Cualquier persona interesada en ver evidencia",
+     "El daño a la momia durante los intentos de sacarla del ataúd",
+     "Serás decepcionado",
+     "Como solo la cabeza",
+     "Cuello y hombros",
+     "Son visibles."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    20,
+    23,
+    24
+   ],
+   "H_set": 0.6545,
+   "text": "Anyone interested ‖ in ‖ seeing evidence of the damage to the mummy done during attempts to remove it from the coffin ‖ will be disappointed ‖ as ‖ only the head and shoulders are visible.",
+   "pieces": {
+    "Chinese": [
+     "任何感兴趣的人",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "看到在试图从棺材中取出木乃伊时对木乃伊造成损坏的证据",
+     "会失望",
+     "作为",
+     "只有头部和肩膀是可见的。"
+    ],
+    "Japanese": [
+     "興味のある方は",
+     "ここに",
+     "棺からミイラを取り出そうとした時に 被った傷の証拠を見て",
+     "がっかりするでしょう",
+     "ああ",
+     "頭と肩だけが見える"
+    ],
+    "German": [
+     "Für alle Interessierten",
+     "in",
+     "Beweise für die Beschädigung der Mumie bei Versuchen, sie aus dem Sarg zu entfernen",
+     "Wir werden enttäuscht sein",
+     "as",
+     "Nur Kopf und Schultern sind sichtbar."
+    ],
+    "Spanish": [
+     "Cualquier persona interesada",
+     "en",
+     "Ver evidencia del daño a la momia durante los intentos de sacarla del ataúd",
+     "Serás decepcionado",
+     "as",
+     "Solo la cabeza y los hombros son visibles."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "interested in seeing evidence",
+     "right": "of the damage to",
+     "H": 0.7573,
+     "H_pct": 79.3,
+     "contra": 0.0024,
+     "cohesion": 0.7591
+    },
+    {
+     "pos": 27,
+     "left": "as only the head",
+     "right": "and shoulders are visible.",
+     "H": 0.4629,
+     "H_pct": 6.9,
+     "contra": 0.3903,
+     "cohesion": 0.7592
+    },
+    {
+     "pos": 29,
+     "left": "the head and shoulders",
+     "right": "are visible.",
+     "H": 0.7577,
+     "H_pct": 82.8,
+     "contra": 0.0021,
+     "cohesion": 0.7593
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Anyone interested",
+     "right": "in seeing evidence of",
+     "H": 0.7787,
+     "H_pct": 93.1,
+     "contra": 0.0015,
+     "cohesion": 0.7798
+    },
+    {
+     "pos": 3,
+     "left": "Anyone interested in",
+     "right": "seeing evidence of the",
+     "H": 0.7639,
+     "H_pct": 86.2,
+     "contra": 0.0097,
+     "cohesion": 0.7713
+    },
+    {
+     "pos": 24,
+     "left": "will be disappointed as",
+     "right": "only the head and",
+     "H": 0.7877,
+     "H_pct": 96.6,
+     "contra": 0.0027,
+     "cohesion": 0.7898
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_432",
+  "cuts": 5,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.4909,
+  "policy_worst_contra": 0.7906,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    11,
+    14,
+    17,
+    24
+   ],
+   "H_set": 0.1721,
+   "text": "Turkey is encircled by seas on three sides: ‖ the Aegean Sea ‖ to the west, ‖ the Black Sea ‖ to the north and the Mediterranean Sea ‖ to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其三面被海洋包围:",
+     "爱琴海",
+     "向西,",
+     "黑海",
+     "地中海的北部",
+     "到南方。"
+    ],
+    "Japanese": [
+     "トルコは三方から海に囲まれている。",
+     "エーゲ海",
+     "西に向かって",
+     "黒海",
+     "北に地中海に向かって",
+     "南に行く"
+    ],
+    "German": [
+     "Die Türkei ist auf drei Seiten von Meeren umgeben:",
+     "Ägäisches Meer",
+     "nach Westen,",
+     "Das Schwarze Meer",
+     "Im Norden und am Mittelmeer",
+     "Nach Süden."
+    ],
+    "Spanish": [
+     "Turquía está rodeada por mares en tres lados:",
+     "El mar Egeo",
+     "hacia el oeste,",
+     "El Mar Negro",
+     "Al norte y al mar Mediterráneo",
+     "Al sur."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.663,
+   "text": "Turkey is encircled ‖ by seas ‖ on ‖ three sides: ‖ the Aegean ‖ Sea to the west, the Black Sea to the north and the Mediterranean Sea to the south.",
+   "pieces": {
+    "Chinese": [
+     "土耳其被包围",
+     "海运",
+     "上",
+     "三个方面：",
+     "爱琴海",
+     "海西,黑海北部和地中海南部。"
+    ],
+    "Japanese": [
+     "トルコは包囲されている",
+     "海を渡って",
+     "ああ",
+     "3つの側面があります",
+     "エーゲ海",
+     "西は海、北は黒海、南は地中海。"
+    ],
+    "German": [
+     "Die Türkei ist umzingelt",
+     "Von den Meeren",
+     "on",
+     "Drei Seiten:",
+     "Die Ägäis",
+     "Im Westen das Meer, im Norden das Schwarze Meer und im Süden das Mittelmeer."
+    ],
+    "Spanish": [
+     "Turquía está rodeada",
+     "Por mar",
+     "on",
+     "Tres lados:",
+     "El Egeo",
+     "Mar al oeste, el Mar Negro al norte y el Mar Mediterráneo al sur."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "sides: the Aegean Sea",
+     "right": "to the west, the",
+     "H": 0.7893,
+     "H_pct": 68.0,
+     "contra": 0.0298,
+     "cohesion": 0.8135
+    },
+    {
+     "pos": 14,
+     "left": "Sea to the west,",
+     "right": "the Black Sea to",
+     "H": 0.7669,
+     "H_pct": 64.0,
+     "contra": 0.0207,
+     "cohesion": 0.7831
+    },
+    {
+     "pos": 17,
+     "left": "west, the Black Sea",
+     "right": "to the north and",
+     "H": 0.6594,
+     "H_pct": 60.0,
+     "contra": 0.1884,
+     "cohesion": 0.8124
+    },
+    {
+     "pos": 24,
+     "left": "and the Mediterranean Sea",
+     "right": "to the south.",
+     "H": 0.1753,
+     "H_pct": 28.0,
+     "contra": 0.7906,
+     "cohesion": 0.8372
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Turkey is encircled",
+     "right": "by seas on three",
+     "H": 0.8229,
+     "H_pct": 88.0,
+     "contra": 0.0011,
+     "cohesion": 0.8238
+    },
+    {
+     "pos": 5,
+     "left": "is encircled by seas",
+     "right": "on three sides: the",
+     "H": 0.8292,
+     "H_pct": 92.0,
+     "contra": 0.0005,
+     "cohesion": 0.8296
+    },
+    {
+     "pos": 6,
+     "left": "encircled by seas on",
+     "right": "three sides: the Aegean",
+     "H": 0.835,
+     "H_pct": 96.0,
+     "contra": 0.0176,
+     "cohesion": 0.85
+    },
+    {
+     "pos": 10,
+     "left": "three sides: the Aegean",
+     "right": "Sea to the west,",
+     "H": 0.8067,
+     "H_pct": 84.0,
+     "contra": 0.05,
+     "cohesion": 0.8492
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_276",
+  "cuts": 5,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.4626,
+  "policy_worst_contra": 0.767,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    10,
+    19,
+    23,
+    24
+   ],
+   "H_set": 0.1427,
+   "text": "Komen's policy disqualified Planned Parenthood ‖ due to a pending investigation ‖ on how Planned Parenthood spends and reports its money ‖ that is being conducted ‖ by ‖ Representative Cliff Stearns.",
+   "pieces": {
+    "Chinese": [
+     "计划生育的政策取消资格",
+     "由于调查有待进行",
+     "计划生育如何花费和报告其资金",
+     "进行的调查",
+     "由",
+     "克利夫·斯特恩斯众议员"
+    ],
+    "Japanese": [
+     "子供の親権を否定する小門の方針",
+     "調査中のため",
+     "プランニング・ファミリーの支出や報告を",
+     "実施されている研究で",
+     "あなたは",
+     "クリフ・スターンズ議員"
+    ],
+    "German": [
+     "Komens Politik disqualifiziert Planned Parenthood",
+     "Aufgrund einer anhängigen Untersuchung",
+     "Wie Planned Parenthood sein Geld ausgibt und berichtet",
+     "Das wird durchgeführt",
+     "von",
+     "Abgeordneter Cliff Stearns."
+    ],
+    "Spanish": [
+     "La política de Komen descalifica a Planned Parenthood",
+     "debido a una investigación pendiente",
+     "sobre cómo Planned Parenthood gasta y reporta su dinero",
+     "que se está llevando a cabo",
+     "por",
+     "Representante Cliff Stearns."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    10,
+    15,
+    19,
+    23
+   ],
+   "H_set": 0.6053,
+   "text": "Komen's policy disqualified Planned Parenthood ‖ due to a pending investigation ‖ on how Planned Parenthood spends ‖ and reports its money ‖ that is being conducted ‖ by Representative Cliff Stearns.",
+   "pieces": {
+    "Chinese": [
+     "计划生育的政策取消资格",
+     "由于调查有待进行",
+     "计划生育的花费",
+     "并报告其资金",
+     "进行的调查",
+     "克利夫·斯特恩斯代表"
+    ],
+    "Japanese": [
+     "子供の親権を否定する小門の方針",
+     "調査中のため",
+     "プランニング・ファミリーの支出を",
+     "報告書を作成し",
+     "実施されている研究で",
+     "クリフ・スターンズ議員によって"
+    ],
+    "German": [
+     "Komens Politik disqualifiziert Planned Parenthood",
+     "Aufgrund einer anhängigen Untersuchung",
+     "Wie Planned Parenthood ausgibt",
+     "Und meldet sein Geld",
+     "Das wird durchgeführt",
+     "Von Abgeordneter Cliff Stearns."
+    ],
+    "Spanish": [
+     "La política de Komen descalifica a Planned Parenthood",
+     "debido a una investigación pendiente",
+     "sobre cómo gasta Planned Parenthood",
+     "y reporta su dinero",
+     "que se está llevando a cabo",
+     "por el representante Cliff Stearns."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 24,
+     "left": "is being conducted by",
+     "right": "Representative Cliff Stearns.",
+     "H": 0.1459,
+     "H_pct": 0.0,
+     "contra": 0.767,
+     "cohesion": 0.6263
+    }
+   ],
+   "added": [
+    {
+     "pos": 15,
+     "left": "how Planned Parenthood spends",
+     "right": "and reports its money",
+     "H": 0.66,
+     "H_pct": 100.0,
+     "contra": 0.0099,
+     "cohesion": 0.6665
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1157",
+  "cuts": 3,
+  "avg_chunk": 3.5,
+  "latency_bin": "≤5",
+  "gap": 0.4467,
+  "policy_worst_contra": 0.5068,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    9,
+    12
+   ],
+   "H_set": 0.4102,
+   "text": "Montevideo is in the subtropics; ‖ in the summer months, ‖ temperatures above +30°C ‖ are common.",
+   "pieces": {
+    "Chinese": [
+     "蒙得维的亚位于亚热带地区；",
+     "夏季的月份,",
+     "温度超过+30°C",
+     "是常见的。"
+    ],
+    "Japanese": [
+     "モンテビデオは亜熱帯にある",
+     "夏の間は",
+     "30度以上の温度で",
+     "普通にあるんです"
+    ],
+    "German": [
+     "Montevideo liegt in den Subtropen;",
+     "in den Sommermonaten,",
+     "Temperaturen über +30°C",
+     "sind häufig."
+    ],
+    "Spanish": [
+     "Montevideo está en el subtropical;",
+     "en los meses de verano,",
+     "Temperaturas superiores a +30°C",
+     "Son comunes."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    5,
+    9
+   ],
+   "H_set": 0.8569,
+   "text": "Montevideo ‖ is in the subtropics; ‖ in the summer months, ‖ temperatures above +30°C are common.",
+   "pieces": {
+    "Chinese": [
+     "蒙得维的亚",
+     "是亚热带地区;",
+     "夏季的月份,",
+     "温度超过+30°C是常见的。"
+    ],
+    "Japanese": [
+     "モンテビデオ",
+     "亜熱帯にあります",
+     "夏の間は",
+     "30度以上の温度は普通です"
+    ],
+    "German": [
+     "Montevideo",
+     "liegt in den Subtropen;",
+     "in den Sommermonaten,",
+     "Temperaturen über +30°C sind üblich."
+    ],
+    "Spanish": [
+     "Montevideo",
+     "se encuentra en los subtropicales;",
+     "en los meses de verano,",
+     "Las temperaturas por encima de +30°C son comunes."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "months, temperatures above +30°C",
+     "right": "are common.",
+     "H": 0.4017,
+     "H_pct": 0.0,
+     "contra": 0.5068,
+     "cohesion": 0.8146
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Montevideo",
+     "right": "is in the subtropics;",
+     "H": 0.8483,
+     "H_pct": 83.3,
+     "contra": 0.0011,
+     "cohesion": 0.8492
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_419",
+  "cuts": 5,
+  "avg_chunk": 3.3,
+  "latency_bin": "≤5",
+  "gap": 0.4162,
+  "policy_worst_contra": 0.6933,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    8,
+    9,
+    15,
+    16
+   ],
+   "H_set": 0.1927,
+   "text": "Estimates range from 340 million ‖ to 500 million ‖ speakers, ‖ and as many as 800 million ‖ people ‖ can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数从3.4亿美元到",
+     "5亿美元",
+     "发言者，",
+     "多达8亿",
+     "人数",
+     "能够理解语言。"
+    ],
+    "Japanese": [
+     "推定値は3億4000万から",
+     "5億人に増えました",
+     "話者は",
+     "8億人もの人々が",
+     "人々",
+     "言語を理解できるのです"
+    ],
+    "German": [
+     "Schätzungen reichen von 340 Millionen",
+     "bis 500 Millionen",
+     "Lautsprecher,",
+     "Und so viele wie 800 Millionen",
+     "Person",
+     "Ich kann die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Las estimaciones van desde 340 millones",
+     "a 500 millones",
+     "Altavoces,",
+     "y hasta 800 millones",
+     "personas",
+     "No entiendo el idioma."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    9,
+    12
+   ],
+   "H_set": 0.6088,
+   "text": "Estimates ‖ range ‖ from ‖ 340 million to 500 million speakers, ‖ and as many ‖ as 800 million people can understand the language.",
+   "pieces": {
+    "Chinese": [
+     "估计数",
+     "范围",
+     "从",
+     "3.4亿到5亿人,",
+     "并且有许多",
+     "因为有8亿人能够理解这种语言。"
+    ],
+    "Japanese": [
+     "推定",
+     "範囲",
+     "ここから",
+     "3億4千万から5億人の話者がいます",
+     "多くの人が",
+     "8億人が理解できる言語です"
+    ],
+    "German": [
+     "Schätzungen",
+     "Range",
+     "von",
+     "340 Millionen bis 500 Millionen Sprecher,",
+     "Und so viele",
+     "800 Millionen Menschen können die Sprache verstehen."
+    ],
+    "Spanish": [
+     "Estimaciones",
+     "Rango",
+     "de",
+     "340 millones a 500 millones de hablantes,",
+     "y como muchos",
+     "800 millones de personas pueden entender el idioma."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "range from 340 million",
+     "right": "to 500 million speakers,",
+     "H": 0.7512,
+     "H_pct": 61.1,
+     "contra": 0.0165,
+     "cohesion": 0.7639
+    },
+    {
+     "pos": 8,
+     "left": "million to 500 million",
+     "right": "speakers, and as many",
+     "H": 0.2189,
+     "H_pct": 0.0,
+     "contra": 0.6933,
+     "cohesion": 0.7138
+    },
+    {
+     "pos": 15,
+     "left": "many as 800 million",
+     "right": "people can understand the",
+     "H": 0.5364,
+     "H_pct": 16.7,
+     "contra": 0.2524,
+     "cohesion": 0.7175
+    },
+    {
+     "pos": 16,
+     "left": "as 800 million people",
+     "right": "can understand the language.",
+     "H": 0.5254,
+     "H_pct": 11.1,
+     "contra": 0.2515,
+     "cohesion": 0.7019
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Estimates",
+     "right": "range from 340 million",
+     "H": 0.8521,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8533
+    },
+    {
+     "pos": 2,
+     "left": "Estimates range",
+     "right": "from 340 million to",
+     "H": 0.815,
+     "H_pct": 83.3,
+     "contra": 0.0006,
+     "cohesion": 0.8155
+    },
+    {
+     "pos": 3,
+     "left": "Estimates range from",
+     "right": "340 million to 500",
+     "H": 0.8191,
+     "H_pct": 88.9,
+     "contra": 0.0279,
+     "cohesion": 0.8427
+    },
+    {
+     "pos": 12,
+     "left": "speakers, and as many",
+     "right": "as 800 million people",
+     "H": 0.7741,
+     "H_pct": 77.8,
+     "contra": 0.0638,
+     "cohesion": 0.8269
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1497",
+  "cuts": 5,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.4003,
+  "policy_worst_contra": 0.5885,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    7,
+    10,
+    13,
+    19
+   ],
+   "H_set": 0.2855,
+   "text": "British pounds ‖ will generally be accepted anywhere ‖ in the islands ‖ and within Stanley ‖ credit cards and United States dollars ‖ are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "英镑",
+     "一般会被接受的任何地方",
+     "岛上",
+     "斯坦利及其周边地区",
+     "信用卡和美元",
+     "还经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンド",
+     "どこでも受け入れられるようになるでしょう",
+     "島々に住む人々は",
+     "スタンレーの中では",
+     "クレジットカードと米ドル",
+     "受け入れられることも多いのです"
+    ],
+    "German": [
+     "Britisches Pfund",
+     "Wird generell überall akzeptiert",
+     "Auf den Inseln",
+     "In und um Stanley",
+     "Kreditkarten und US-Dollar",
+     "Auch werden sie oft akzeptiert."
+    ],
+    "Spanish": [
+     "Libras británicas",
+     "Generalmente se aceptará en cualquier lugar",
+     "En las islas",
+     "En y alrededor de Stanley",
+     "Tarjetas de crédito y dólares de los Estados Unidos",
+     "También se aceptan a menudo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    7,
+    10,
+    11,
+    13
+   ],
+   "H_set": 0.6858,
+   "text": "British pounds will generally be accepted ‖ anywhere ‖ in the islands ‖ and ‖ within Stanley ‖ credit cards and United States dollars are also often accepted.",
+   "pieces": {
+    "Chinese": [
+     "一般接受英镑",
+     "任何地方",
+     "岛上",
+     "以及",
+     "斯坦利内的酒店",
+     "信用卡和美元也经常被接受。"
+    ],
+    "Japanese": [
+     "イギリス・ポンドは一般的に受け入れられる",
+     "どこでも",
+     "島々に住む人々は",
+     "それに",
+     "スタンリーの中で",
+     "クレジットカードや米ドルもよく受け入れられます"
+    ],
+    "German": [
+     "Britische Pfund werden in der Regel akzeptiert",
+     "überall",
+     "Auf den Inseln",
+     "und",
+     "Unterkünfte in Stanley",
+     "Kreditkarten und US-Dollar werden ebenfalls oft akzeptiert."
+    ],
+    "Spanish": [
+     "En general se aceptarán libras británicas",
+     "En cualquier lugar",
+     "En las islas",
+     "y",
+     "Turismo en Stanley",
+     "También se aceptan tarjetas de crédito y dólares estadounidenses."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "British pounds",
+     "right": "will generally be accepted",
+     "H": 0.7627,
+     "H_pct": 61.9,
+     "contra": 0.0005,
+     "cohesion": 0.7631
+    },
+    {
+     "pos": 19,
+     "left": "and United States dollars",
+     "right": "are also often accepted.",
+     "H": 0.2533,
+     "H_pct": 9.5,
+     "contra": 0.5885,
+     "cohesion": 0.6155
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "will generally be accepted",
+     "right": "anywhere in the islands",
+     "H": 0.7897,
+     "H_pct": 81.0,
+     "contra": 0.0004,
+     "cohesion": 0.79
+    },
+    {
+     "pos": 11,
+     "left": "in the islands and",
+     "right": "within Stanley credit cards",
+     "H": 0.7925,
+     "H_pct": 85.7,
+     "contra": 0.0128,
+     "cohesion": 0.8027
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_105",
+  "cuts": 5,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.2946,
+  "policy_worst_contra": 0.3181,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    1,
+    4,
+    7,
+    11,
+    17
+   ],
+   "H_set": 0.4568,
+   "text": "They ‖ include financial restrictions ‖ and a ban ‖ by the European Union ‖ on the export of crude oil, ‖ from which the Iranian economy receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "他们",
+     "包括财政限制",
+     "禁止",
+     "欧洲联盟的声明",
+     "关于原油出口的协定，",
+     "从中伊朗经济获得80%的外国收入。"
+    ],
+    "Japanese": [
+     "彼ら",
+     "財政的な制約を含む",
+     "禁止令が出た",
+     "欧州連合によって",
+     "原油輸出に関して",
+     "イラン経済の外国からの収入の80%を占めています"
+    ],
+    "German": [
+     "They",
+     "Finanzielle Einschränkungen beinhalten",
+     "Und ein Verbot",
+     "von der Europäischen Union",
+     "auf den Export von Rohöl,",
+     "Aus dem Iran stammen 80% der Einnahmen der iranischen Wirtschaft aus dem Ausland."
+    ],
+    "Spanish": [
+     "They",
+     "Incluir restricciones financieras",
+     "y una prohibición",
+     "por la Unión Europea",
+     "sobre la exportación de petróleo crudo,",
+     "de la que la economía iraní recibe el 80% de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    5,
+    11,
+    17
+   ],
+   "H_set": 0.7514,
+   "text": "They include ‖ financial restrictions ‖ and ‖ a ban by the European Union ‖ on the export of crude oil, ‖ from which the Iranian economy receives 80% of its foreign income.",
+   "pieces": {
+    "Chinese": [
+     "这些措施包括：",
+     "财政限制",
+     "以及",
+     "欧洲联盟的禁令",
+     "关于原油出口的协定，",
+     "从中伊朗经济获得80%的外国收入。"
+    ],
+    "Japanese": [
+     "これらは",
+     "財政的な制約が",
+     "それに",
+     "欧州連合の禁止令が",
+     "原油輸出に関して",
+     "イラン経済の外国からの収入の80%を占めています"
+    ],
+    "German": [
+     "Dazu gehören:",
+     "Finanzielle Einschränkungen",
+     "und",
+     "Ein Verbot durch die Europäische Union",
+     "auf den Export von Rohöl,",
+     "Aus dem Iran stammen 80% der Einnahmen der iranischen Wirtschaft aus dem Ausland."
+    ],
+    "Spanish": [
+     "Entre ellos se incluyen:",
+     "Restricciones financieras",
+     "y",
+     "Una prohibición por parte de la Unión Europea",
+     "sobre la exportación de petróleo crudo,",
+     "de la que la economía iraní recibe el 80% de sus ingresos extranjeros."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "They",
+     "right": "include financial restrictions and",
+     "H": 0.8228,
+     "H_pct": 80.8,
+     "contra": 0.0212,
+     "cohesion": 0.8406
+    },
+    {
+     "pos": 7,
+     "left": "restrictions and a ban",
+     "right": "by the European Union",
+     "H": 0.5571,
+     "H_pct": 19.2,
+     "contra": 0.3181,
+     "cohesion": 0.817
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "They include",
+     "right": "financial restrictions and a",
+     "H": 0.8647,
+     "H_pct": 100.0,
+     "contra": 0.0045,
+     "cohesion": 0.8687
+    },
+    {
+     "pos": 5,
+     "left": "include financial restrictions and",
+     "right": "a ban by the",
+     "H": 0.8266,
+     "H_pct": 84.6,
+     "contra": 0.0491,
+     "cohesion": 0.8693
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_360",
+  "cuts": 7,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.2497,
+  "policy_worst_contra": 0.2167,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    6,
+    8,
+    11,
+    17,
+    20,
+    23,
+    25
+   ],
+   "H_set": 0.4459,
+   "text": "Scientists call this process \"stimulated emission ‖ of radiation\" ‖ because the atoms ‖ are stimulated by the bright light, ‖ causing the emission ‖ of a photon ‖ of light, ‖ and light is a type of radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家们称这一过程为\"刺激发射",
+     "辐射的危害",
+     "因为原子",
+     "被明亮的光刺激,",
+     "造成排放的原因",
+     "光子的质量",
+     "光明的,",
+     "光是一种辐射。"
+    ],
+    "Japanese": [
+     "科学者はこの過程を「刺激放出」と呼んでいる",
+     "放射線の危険性を",
+     "なぜなら 原子は",
+     "明るい光で刺激され",
+     "放出される",
+     "光子の質量を",
+     "光の力を",
+     "光は放射の一種です"
+    ],
+    "German": [
+     "Wissenschaftler nennen diesen Prozess \"stimulierte Emission\"",
+     "\"Die Strahlung der Strahlung\"",
+     "Weil die Atome",
+     "werden durch das helle Licht angeregt,",
+     "Verursachen der Emission",
+     "Die Energie eines Photons",
+     "von Licht,",
+     "Licht ist eine Form der Strahlung."
+    ],
+    "Spanish": [
+     "Los científicos llaman a este proceso \"emisión estimulada\"",
+     "\"Las causas de la radiación\"",
+     "Porque los átomos",
+     "son estimulados por la luz brillante,",
+     "Causando la emisión",
+     "De un fotón",
+     "de luz, de amor,",
+     "La luz es un tipo de radiación."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    8,
+    25,
+    26,
+    31
+   ],
+   "H_set": 0.6955,
+   "text": "Scientists ‖ call ‖ this ‖ process \"stimulated emission of radiation\" ‖ because the atoms are stimulated by the bright light, causing the emission of a photon of light, ‖ and ‖ light is a type of ‖ radiation.",
+   "pieces": {
+    "Chinese": [
+     "科学家",
+     "呼叫",
+     "这个",
+     "过程\"激发放射\"",
+     "因为原子被明亮的光刺激,导致发射光子,",
+     "以及",
+     "光是一种类型的",
+     "辐射。"
+    ],
+    "Japanese": [
+     "科学者",
+     "呼び出す",
+     "これは",
+     "放射線の刺激放出プロセス",
+     "原子が明るい光に刺激され 光子を放出するからです",
+     "それに",
+     "光は",
+     "放射線だ"
+    ],
+    "German": [
+     "Wissenschaftler",
+     "Call",
+     "this",
+     "Verfahren \"stimulierte Emission von Strahlung\"",
+     "weil die Atome durch das helle Licht angeregt werden, was die Emission eines Photons des Lichts verursacht,",
+     "und",
+     "Licht ist eine Art von",
+     "Strahlung."
+    ],
+    "Spanish": [
+     "Científicos",
+     "llamada",
+     "this",
+     "Proceso \"emisión estimulada de radiación\"",
+     "porque los átomos son estimulados por la luz brillante, causando la emisión de un fotón de luz,",
+     "y",
+     "La luz es un tipo de",
+     "radiación."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "this process \"stimulated emission",
+     "right": "of radiation\" because the",
+     "H": 0.8043,
+     "H_pct": 70.0,
+     "contra": 0.0063,
+     "cohesion": 0.8094
+    },
+    {
+     "pos": 11,
+     "left": "radiation\" because the atoms",
+     "right": "are stimulated by the",
+     "H": 0.6043,
+     "H_pct": 23.3,
+     "contra": 0.2167,
+     "cohesion": 0.7715
+    },
+    {
+     "pos": 17,
+     "left": "by the bright light,",
+     "right": "causing the emission of",
+     "H": 0.7741,
+     "H_pct": 56.7,
+     "contra": 0.0117,
+     "cohesion": 0.7833
+    },
+    {
+     "pos": 20,
+     "left": "light, causing the emission",
+     "right": "of a photon of",
+     "H": 0.6538,
+     "H_pct": 33.3,
+     "contra": 0.0335,
+     "cohesion": 0.6764
+    },
+    {
+     "pos": 23,
+     "left": "emission of a photon",
+     "right": "of light, and light",
+     "H": 0.8055,
+     "H_pct": 73.3,
+     "contra": 0.0202,
+     "cohesion": 0.8221
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Scientists",
+     "right": "call this process \"stimulated",
+     "H": 0.8407,
+     "H_pct": 96.7,
+     "contra": 0.0011,
+     "cohesion": 0.8417
+    },
+    {
+     "pos": 2,
+     "left": "Scientists call",
+     "right": "this process \"stimulated emission",
+     "H": 0.8133,
+     "H_pct": 80.0,
+     "contra": 0.0024,
+     "cohesion": 0.8153
+    },
+    {
+     "pos": 3,
+     "left": "Scientists call this",
+     "right": "process \"stimulated emission of",
+     "H": 0.8271,
+     "H_pct": 86.7,
+     "contra": 0.0026,
+     "cohesion": 0.8293
+    },
+    {
+     "pos": 26,
+     "left": "photon of light, and",
+     "right": "light is a type",
+     "H": 0.8299,
+     "H_pct": 93.3,
+     "contra": 0.0131,
+     "cohesion": 0.8409
+    },
+    {
+     "pos": 31,
+     "left": "is a type of",
+     "right": "radiation.",
+     "H": 0.8143,
+     "H_pct": 83.3,
+     "contra": 0.0249,
+     "cohesion": 0.8351
+    }
+   ]
+  }
+ }
+]

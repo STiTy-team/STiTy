@@ -1,0 +1,72 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00887,
+  "lo": -0.02312,
+  "hi": 0.00632,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00887,
+  "lo": -0.02312,
+  "hi": 0.00632,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace E1 with labeled example en_us_301 to teach that sentence‑initial participial/adverbial leads can often be emitted early when the remainder is self‑contained (addresses the critique that the prompt was too reluctant to split off short initial function words).",
+  "Replace E2 with labeled example en_us_340 to supply a measured case showing a safe short predicate/complement split after a verb (directly addresses the primary finding that a blanket ban on cuts after main verbs is too broad).",
+  "Replace E3 with labeled example en_us_924 to add a measured example where a closed complement/short prepositional span following a verb is safe to cut (reinforces allowing safe verb‑adjacent splits without retuning broad rules)."
+ ],
+ "findings": [
+  "The prompt is too reluctant to split off sentence-introductory function words (initial determiners, prepositional/adverbial leads); these safe, very short left pieces often improve streaming fidelity in low-latency bins.",
+  "A blanket prohibition on cutting immediately after main verbs is applied too widely; many short, self-contained predicates or closed prepositional complements are safe to emit separately and help dense, low-latency segmentation.",
+  "The prompt fails to protect tight numeral+unit and quantifier+noun spans; splitting numerals from their units or quantified noun leads to severe cohesion loss."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+   "now": "Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 <SEG:?> will <SEG:?>",
+   "labeled_example": "en_us_301"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+   "now": "Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <SEG:?> to <SEG:?> by",
+   "labeled_example": "en_us_340"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+   "now": "Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG:?> is <SEG:?> often",
+   "labeled_example": "en_us_924"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0048,
+   "≤5": -0.0188,
+   "≤7": 0.0013,
+   "≤10": -0.0116,
+   "≤99": -0.0085
+  },
+  "n_worse": 738,
+  "n_better": 678,
+  "why": "The new examples made the model more willing to split off short sentence‑initial adverbial/participial leads and to cut adjacent to verbs/short complements; that produced some large gains where an initial adjunct or verb‑adjacent cut is helpful but caused more aggressive early cuts in short/mid pieces that broke up compound nouns and names, so overall H_set fell slightly (worse in the ≤5 bin).",
+  "lesson": "Keep examples that permit verb‑adjacent and sentence‑initial adjunct cuts only when the remainder is clearly long or syntactically self‑contained, because otherwise the model will over‑apply those patterns and split short noun compounds and proper names.",
+  "blamed": [
+   "E1 «Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 »",
+   "E2 «Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <»",
+   "E3 «Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG»"
+  ]
+ }
+}

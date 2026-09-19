@@ -1,0 +1,47 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00534,
+  "lo": -0.00361,
+  "hi": 0.01447,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.00534,
+  "lo": -0.00361,
+  "hi": 0.01447,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "Insert a concise core principle requiring cuts to keep short (1–4 word) complements with their predicate — addresses the primary finding that such short continuations are essential.",
+  "Delete Example E7 (largest) to free prompt budget; kept remaining examples to preserve varied cases.",
+  "Delete Example E4 (second-largest) to meet size constraints while removing less-essential, lengthy examples.",
+  "Delete Example E8 (third-largest) to recover sufficient characters for the new principle."
+ ],
+ "findings": [
+  "The prompt under-detects short complements that actually complete the preceding predicate: it treats cuts before brief measures, temporal/locative phrases, directional words, or negating/infinitival complements as safe when they are essential to the clause's truth."
+ ],
+ "edits": [],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0047,
+   "≤5": 0.0002,
+   "≤7": 0.0102,
+   "≤10": 0.0105,
+   "≤99": 0.0165
+  },
+  "n_worse": 2186,
+  "n_better": 2344,
+  "why": "Inserting the new principle made the model prefer keeping very short (1–4 word) complements attached to their predicate, so cuts moved later and improved cohesion mainly for longer pieces and lists (largest gains in the ≤99/≤10/≤7 bins), but that same shift caused more harmful splits in short/medium contexts (some ≤3–≤7 pairs got worse). Removing Examples E7/E4/E8 removed counterexamples that would have constrained those bad short-context moves.",
+  "lesson": "A later revision should respect that preserving 1–4-word predicate complements improves long-span cohesion but must keep examples (or guidance) that prevent creating subject–verb or other harmful short-context splits.",
+  "blamed": [
+   "Insert concise core principle (keep short 1–4 word complements with predicate)",
+   "Delete Example E7",
+   "Delete Example E4",
+   "Delete Example E8"
+  ]
+ }
+}

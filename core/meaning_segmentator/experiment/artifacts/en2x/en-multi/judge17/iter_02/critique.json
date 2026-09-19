@@ -1,0 +1,92 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates the harm of cutting between a common noun head and its immediate post‑nominal identifier (proper name or reduced appositive), producing fragments that lose who/what is being referred to.",
+    "evidence": "en_us_1615, en_us_1527, en_us_6, en_us_337, en_us_1137 — each sentence contains a common noun immediately followed by a proper name or a reduced appositive (a short identifier such as a name or 'called X') that the policy splits apart.",
+    "type_predicate": "A common noun (head) is immediately followed by a proper name or a reduced appositive/identifier (e.g., 'skier Maciej Krezel', 'a man called Aristarchus', '28‑year‑old Vidal').",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a common-noun head and an immediately following identifier (a proper name or reduced appositive such as 'called X'); treat that pair as one unit."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that leave the heard fragment without its main predicate (subject separated from verb or auxiliary separated from its complement), producing standalone fragments that misrepresent the full sentence.",
+    "evidence": "en_us_1116, en_us_1612, en_us_464, en_us_942 — in each case the policy cuts so that the prefix contains the subject/auxiliary while the main verb or core predicate appears only after the cut, yielding an incoherent or contradicted fragment.",
+    "type_predicate": "The prefix ends with a subject noun phrase or an auxiliary and the main lexical verb or core predicate begins immediately after that point.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut where the prefix is a subject NP or auxiliary and the main verb/predicate begins immediately after; keep subject+predicate together."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to recognise multiword quoted names, fixed titles, and technical collocations as single units and permits cuts inside them, harming cohesion and creating contradictions.",
+    "evidence": "en_us_360, en_us_1253, en_us_538 — these sentences contain quoted technical phrases or fixed multiword terms (e.g. '\"stimulated emission of radiation\"', 'marking the DNA in the phage') that the policy splits across cuts.",
+    "type_predicate": "A contiguous multiword unit that is a quoted name/title or a technical collocation (a fixed term or title presented as a single phrase, often in quotes or clearly lexicalized).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside quoted names, fixed titles, or canonical multiword technical terms; treat contiguous lexicalized phrases as indivisible units."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues keeping numerals and numeric ranges attached to their units/measure phrases, allowing splits that leave quantities ambiguous or misleading.",
+    "evidence": "en_us_1612, en_us_1050, en_us_419 — each sentence contains numerals or ranges (e.g. '100 feet wide', '83 meters', '340 million to 500 million') where the policy separates the number from its unit or range context.",
+    "type_predicate": "A numeral or numeric range is immediately followed (or immediately precedes) a unit or measurement phrase (units, 'million', range connectors like 'to') that determines its meaning.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between numerals/ranges and their unit or measurement phrase; keep numbers and their units/range context together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates the harm of cutting between a common noun head and its immediate post‑nominal identifier (proper name or reduced appositive), producing fragments that lose who/what is being referred to.",
+   "evidence": "en_us_1615, en_us_1527, en_us_6, en_us_337, en_us_1137 — each sentence contains a common noun immediately followed by a proper name or a reduced appositive (a short identifier such as a name or 'called X') that the policy splits apart.",
+   "type_predicate": "A common noun (head) is immediately followed by a proper name or a reduced appositive/identifier (e.g., 'skier Maciej Krezel', 'a man called Aristarchus', '28‑year‑old Vidal').",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a common-noun head and an immediately following identifier (a proper name or reduced appositive such as 'called X'); treat that pair as one unit."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that leave the heard fragment without its main predicate (subject separated from verb or auxiliary separated from its complement), producing standalone fragments that misrepresent the full sentence.",
+   "evidence": "en_us_1116, en_us_1612, en_us_464, en_us_942 — in each case the policy cuts so that the prefix contains the subject/auxiliary while the main verb or core predicate appears only after the cut, yielding an incoherent or contradicted fragment.",
+   "type_predicate": "The prefix ends with a subject noun phrase or an auxiliary and the main lexical verb or core predicate begins immediately after that point.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut where the prefix is a subject NP or auxiliary and the main verb/predicate begins immediately after; keep subject+predicate together."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to recognise multiword quoted names, fixed titles, and technical collocations as single units and permits cuts inside them, harming cohesion and creating contradictions.",
+   "evidence": "en_us_360, en_us_1253, en_us_538 — these sentences contain quoted technical phrases or fixed multiword terms (e.g. '\"stimulated emission of radiation\"', 'marking the DNA in the phage') that the policy splits across cuts.",
+   "type_predicate": "A contiguous multiword unit that is a quoted name/title or a technical collocation (a fixed term or title presented as a single phrase, often in quotes or clearly lexicalized).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside quoted names, fixed titles, or canonical multiword technical terms; treat contiguous lexicalized phrases as indivisible units."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues keeping numerals and numeric ranges attached to their units/measure phrases, allowing splits that leave quantities ambiguous or misleading.",
+   "evidence": "en_us_1612, en_us_1050, en_us_419 — each sentence contains numerals or ranges (e.g. '100 feet wide', '83 meters', '340 million to 500 million') where the policy separates the number from its unit or range context.",
+   "type_predicate": "A numeral or numeric range is immediately followed (or immediately precedes) a unit or measurement phrase (units, 'million', range connectors like 'to') that determines its meaning.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between numerals/ranges and their unit or measurement phrase; keep numbers and their units/range context together."
+   }
+  }
+ ]
+}

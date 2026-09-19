@@ -1,0 +1,81 @@
+{
+ "iter": 5,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00213,
+  "lo": -0.01704,
+  "hi": 0.01281,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00213,
+  "lo": -0.01704,
+  "hi": 0.01281,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace E1 with measured example en_us_738 to teach the model about negation + quantifier scope that resolves polarity and should not be cut.",
+  "Replace E2 with measured example en_us_936 to teach the model about conditional/subordinating scope ('Unless') that resolves truth conditions.",
+  "Replace E3 with measured example en_us_1116 to teach the model about exception clauses ('except') that reverse or limit prior claims.",
+  "Replace E4 with measured example en_us_103 to teach the model about numeral+unit and measurement phrases that determine scope and must stay attached."
+ ],
+ "findings": [
+  "The prompt treats cuts before scope-resolving complements as acceptable: it allows a cut where the following phrase (exception, negation-resolver, quantifier/comparative, measurement phrase) determines or reverses the truth or scope of the already-delivered stretch.",
+  "The prompt often permits cuts that split a verb/copying auxiliary or copula from its essential complement (object, predicate adjective, prepositional/cause/contrast clause), breaking the proposition and harming cohesion."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+   "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+   "labeled_example": "en_us_738"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+   "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+   "labeled_example": "en_us_936"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+   "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+   "labeled_example": "en_us_1116"
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "example",
+   "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+   "now": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below ",
+   "labeled_example": "en_us_103"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0023,
+   "≤5": -0.004,
+   "≤7": -0.0012,
+   "≤10": -0.0039,
+   "≤99": 0.008
+  },
+  "n_worse": 741,
+  "n_better": 690,
+  "why": "Replacing the examples with negation/Unless/except/measurement cases taught the model to avoid cutting around scope-bearing tokens (negators, subordinators, exception markers and measurement phrases). That made it keep longer multiword constituents intact (small net gain on very long pieces, ≤99:+0.008) but pushed cuts into nearby short spans, producing small harms in the short-latency bins (≤3..≤10 negative) and slightly more (741) worsened than 690 improved pairs.",
+  "lesson": "Respect scope-bearing attachments (negation, subordinators, exceptions, measurement phrases) but do so without shifting cuts so they split adjacent short constituents or verb phrases.",
+  "blamed": [
+   "E1 «Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG»",
+   "E2 «Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> dipl»",
+   "E3 «Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> su»",
+   "E4 «Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?>»"
+  ]
+ }
+}

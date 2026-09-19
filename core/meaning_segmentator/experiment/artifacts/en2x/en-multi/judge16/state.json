@@ -1,0 +1,10580 @@
+{
+ "done": 5,
+ "prompt": "[Role]\nYou are a scoring model for streaming speech translation. For each English source sentence with every possible cut marked as <SEG:?>, you must assign a distinct integer 0–100 to each marker reflecting how suitable a cut there is for streaming translation, using only the source text and the principles below.\n\n[Core Principles]\n- At each potential cut, judge whether the material that follows, taken alone, would contradict, reverse, or negate the proposition already delivered; contradictions include later clauses that cancel earlier assertions or change polarity.\n- At each cut, judge whether translating the left and right pieces independently and then joining them will faithfully express the whole sentence (cohesion): look for lost antecedents, broken reference chains, or misresolved modifiers.\n- Pay attention to subordinate openings and sentential parentheticals whose scope is unresolved early; if later words supply scope or presuppositions that change truth conditions, contra rises.\n- Assess relative and complement clauses that complete noun meanings; cutting before modifiers that determine the referent often reduces cohesion even if surface words look phrase-internal.\n- Long noun phrases with postnominal modifiers, prepositional complements, numerals, or titles can mimic clause starts; decide whether the subsequent material changes the identity or truth of the earlier stretch.\n- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifier and an immediately following measurement or unit phrase that completes it (units, percents, counts, or 'per' constructions); keep the number and its unit together.\n- Coordinate joins and sentence-level adverbials often begin new propositions; determine whether the continuation attaches harmlessly or introduces content that could contradict or alter earlier claims.\n- Consider scope-bearing elements (negation, quantifiers, modality, comparatives) whose interpretation may depend on following material; if later text resolves polarity or scope, an early cut risks contra or cohesion loss.\n- Predict translation consequences: if separating pieces forces translators to guess antecedents, attach modifiers arbitrarily, or invent scope, the joined translation will lose fidelity; where guessing is unavoidable, lower cohesion.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a\n            reference-free quality estimator scored how faithfully that joined text renders the\n            WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the\n           stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n- The integer you assign is a RANK INSIDE THE SENTENCE: order the cut positions by the target product and assign distinct integers across the full 0–100 range to reflect that ordering.\n- Do NOT compute the score by explicit arithmetic (for example, multiplying the product by 100 and rounding); use the product only to order positions and spread distinct ranks across 0–100.\n- Contra is a graded probability and enters only through the product; do not binarize it or promote it to a separate tier that overrides cohesion.\n- There are no additional scoring conditions beyond the product above.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.\n\nInput: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.\n\nInput: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.\n\nInput: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2032,
+   "changelog": [
+    "Replace C3 to address the primary finding by describing what a GOOD cut around predicates looks like (include predicate + essential complements; allow cut only when continuation is optional or parenthetical).",
+    "Replace C5 to explicitly treat post‑nominal modifiers and complements as part of the noun when they determine reference, matching the second finding.",
+    "Paraphrase C8 shorter to free space while keeping its guidance about translation guessing and cohesion."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C3",
+     "kind": "change",
+     "was": "- Pay attention to subordinate openings and sentential parentheticals whose scop",
+     "now": "- Prefer cuts that deliver a semantically complete predicate: keep the main verb"
+    },
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Treat post‑nominal material as part of the noun when it determines identity or"
+    },
+    {
+     "op": "replace",
+     "id": "C8",
+     "kind": "paraphrase",
+     "was": "- Predict translation consequences: if separating pieces forces translators to g",
+     "now": "- Predict translation consequences: if a split forces guessing antecedents, atta"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1636,
+   "changelog": [
+    "Paraphrased C8 to shorten guidance about translation guessing and cohesion, freeing space for a focused rule.",
+    "Inserted a new Core Principle after C5 that forbids cutting a head noun or name away from post‑nominal modifiers/complements that determine reference or truth conditions (addresses the primary finding)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C8",
+     "kind": "paraphrase",
+     "was": "- Predict translation consequences: if separating pieces forces translators to g",
+     "now": "- If a cut forces translators to guess antecedents, attach modifiers arbitrarily"
+    },
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Do not cut so that a head noun or proper name is left without its post‑nominal"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1841,
+   "changelog": [
+    "Insert a narrow surface-form rule after C5 forbidding cuts that separate a head noun or proper name from immediately following post‑nominal material that visibly completes or identifies that noun (addresses the primary finding)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Do not cut when a head noun or proper name is immediately followed in the sour"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 4,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2382,
+   "changelog": [
+    "Replace E1..E4 (handwritten examples) with four measured, labeled examples that illustrate predicate–complement splits and related post‑nominal/complement hazards (addresses the primary finding that the prompt underrates cuts separating verbs from essential complements).",
+    "Selected examples en_us_1116, en_us_936, en_us_113, en_us_164 because each is a measured case where splitting a predicate from its core argument or separating noun from essential post‑nominal material produced large cohesion/contra loss."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+     "labeled_example": "en_us_1116"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+     "labeled_example": "en_us_936"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: Mr. <SEG:?> Rudd's <SEG:?> decision <SEG:?> to <SEG:?> sign <SEG:?> the <",
+     "labeled_example": "en_us_113"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: An <SEG:?> Avenger <SEG:?> class <SEG:?> mine <SEG:?> countermeasures <SE",
+     "labeled_example": "en_us_164"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 5,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.183,
+   "changelog": [
+    "Replace E1 with measured example en_us_1617: gives a real case with a post‑nominal 'which' clause to teach not cutting before modifiers that determine a noun.",
+    "Replace E2 with measured example en_us_105: gives a real case with a 'from which' PP that completes a noun and so should not be separated by a cut.",
+    "Delete E3 (handwritten example) to free space and reduce prompt length.",
+    "Delete E4 (handwritten example) to free space and reduce prompt length."
+   ],
+   "edits": [
+    {
+     "op": "delete",
+     "id": "E3",
+     "kind": "delete",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": ""
+    },
+    {
+     "op": "delete",
+     "id": "E4",
+     "kind": "delete",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": ""
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 6,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1665,
+   "changelog": [
+    "Insert after C2 a concise rule describing what a GOOD cut around predicates looks like: keep the main verb with its essential complements and allow cuts only when the continuation is optional or parenthetical — addresses the primary finding without a blanket ban."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C2",
+     "kind": "change",
+     "was": "- At each cut, judge whether translating the left and right pieces independently",
+     "now": "Prefer cuts that yield a semantically complete predicate: keep the main verb tog"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 7,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2276,
+   "changelog": [
+    "Insert a narrow surface-form rule after C5 forbidding cuts that separate a head noun or proper name from immediately following post‑nominal material (relative pronoun, preposition+'which', or appositive comma). This targets the primary finding about post‑nominal modifiers."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Do not cut between a head noun or proper name and immediately following post‑n"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00279,
+    "lo": -0.01401,
+    "hi": 0.00866,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00279,
+    "lo": -0.01401,
+    "hi": 0.00866,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a narrow, surface-form rule after C2 to forbid cuts that split a main verb from its essential complement (addresses the primary finding about predicate–argument separation)."
+   ],
+   "findings": [
+    "The prompt underrates cuts that separate a predicate (main verb) from its essential complements/arguments, so it allows splits that leave an earlier stretch whose truth or reference depends on a following object, clausal complement, or prepositional complement.",
+    "The prompt fails to recognise post‑nominal modifiers and complements (relative clauses, 'from/in which' PPs, appositives, titles) as part of the noun they complete, permitting cuts before them that break noun identity or scope."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C2",
+     "kind": "change",
+     "was": "- At each cut, judge whether translating the left and right pieces independently",
+     "now": "- Do not cut immediately after a main verb when the next token begins its essent"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0023,
+     "≤5": -0.0096,
+     "≤7": -0.0005,
+     "≤10": 0.0051,
+     "≤99": 0.0088
+    },
+    "n_worse": 732,
+    "n_better": 774,
+    "why": "The new surface rule forbidding cuts immediately after main verbs made the model avoid splitting verb+complement sequences, which improved cohesion for longer/complex spans (bins >7) but displaced cuts into adjacent very short pieces and enumerations, worsening many ≤5-token cases; net effect is near-zero but slightly negative. ",
+    "lesson": "A verb–complement prohibition helps longer/more complex pieces but harms very short pieces (≤5 tokens); a later revision should avoid applying it indiscriminately across small latency bins.",
+    "blamed": [
+     "insert_after C2 (verb–complement prohibition)"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1134,
+   "changelog": [
+    "Insert a new core principle allowing safe splits immediately after sentence-introductory function words when the remainder is semantically self-contained — addresses the primary finding about excessive reluctance to split short left pieces.",
+    "Replace example E1 with a measured labeled example en_us_845 (short-latency case that rewards an early cut) so the model learns the ranking from data."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Allow splits immediately after sentence‑introductory function words (initial d"
+    },
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG",
+     "labeled_example": "en_us_845"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1449,
+   "changelog": [
+    "Insert a core principle permitting safe cuts immediately after a main verb when the remainder is a short, self-contained predicate or closed complement — addresses the primary finding that a blanket verb–cut prohibition harms very short, low-latency segments."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C2",
+     "kind": "change",
+     "was": "- At each cut, judge whether translating the left and right pieces independently",
+     "now": "- Allow cuts immediately after a main verb when the following piece is a short, "
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1247,
+   "changelog": [
+    "Insert a core principle forbidding cuts between numerals/quantifiers and their units or quantified nouns — directly addresses the primary finding that splitting numerals from their units causes severe cohesion loss."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Do not cut between a numeral or quantifier and its unit or the noun it quantif"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1132,
+   "changelog": [
+    "Insert a narrow, surface-check core principle that permits a cut immediately after a single sentence‑initial function word under concrete token conditions; addresses the primary finding that the prompt was too reluctant to split off short sentence-introductory function words and supplies a recognisable, checkable rule."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Allow a cut immediately after a single sentence‑initial function word (initial"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 4,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.124,
+   "changelog": [
+    "Insert a narrow surface rule permitting cuts after a verb when the remainder is a short, closed prepositional span — lets safe short verb+PP separations improve low-latency segmentation without retuning broad verb-cut scope."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Allow a cut immediately after a verb token when the following token is a prepo"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 5,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1086,
+   "changelog": [
+    "Insert a narrow surface rule forbidding cuts between a numeral/quantifier and its immediately following unit word or quantified noun — a concrete, source-form check to protect numeral+unit spans (obeys the 'narrow_rule' constraint)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Do not cut between a numeral or quantifier token and the immediately following"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 6,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1281,
+   "changelog": [
+    "Replace E1 with labeled example en_us_292 to teach the model that splitting immediately after an initial determiner ('The') can be optimal in short-latency cases.",
+    "Replace E2 with labeled example en_us_884 to show that sentence‑introductory prepositional/adverbial leads ('In') are often safe early cuts.",
+    "Replace E3 with labeled example en_us_46 to supply a measured case where an early temporal/location lead ('On') should be split for better low-latency performance.",
+    "Replace E4 with labeled example en_us_482 to provide a contrasted case where an early subject/head ('Mysticism') is best delivered early and an initial predicate cut is rewarded."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resul",
+     "labeled_example": "en_us_292"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: In <SEG:?> the <SEG:?> past <SEG:?> 20 <SEG:?> years, <SEG:?> the <SEG:?>",
+     "labeled_example": "en_us_884"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: On <SEG:?> September <SEG:?> 24, <SEG:?> 1759, <SEG:?> Arthur <SEG:?> Gui",
+     "labeled_example": "en_us_46"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: Mysticism <SEG:?> is <SEG:?> the <SEG:?> pursuit <SEG:?> of <SEG:?> commu",
+     "labeled_example": "en_us_482"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 8,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1306,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1116 to teach the model to keep numerals/quantifiers attached to their unit or quantified noun (addresses the primary finding about numeral+unit cohesion loss).",
+    "Replace E2 with labeled example en_us_860 to show a measured case where cutting between '10' and 'years' hurts fidelity, reinforcing protection of numeral+unit spans.",
+    "Replace E3 with labeled example en_us_1024 to provide another measured short-latency case ('two summer Olympics') that rewards keeping numerals with their units/nouns."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+     "labeled_example": "en_us_1116"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Some <SEG:?> countries <SEG:?> have <SEG:?> exceedingly <SEG:?> draconian",
+     "labeled_example": "en_us_860"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: Tokyo <SEG:?> will <SEG:?> be <SEG:?> the <SEG:?> only <SEG:?> Asian <SEG",
+     "labeled_example": "en_us_1024"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 9,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1146,
+   "changelog": [
+    "Insert a concise core principle allowing cuts after initial sentence-introductory function words when the remainder is semantically self-contained — addresses the primary finding that the prompt was too reluctant to split very short left pieces that help low-latency performance."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Allow a cut immediately after an initial sentence function word (for example a"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 10,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1332,
+   "changelog": [
+    "Insert a narrow surface rule allowing safe cuts after a main verb when the remainder is very short and contains no clause-openers, negation, or pronouns — addresses the primary finding that a blanket verb-cut prohibition harmed very short, low-latency segments."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Allow a cut immediately after a main verb when the following piece is short (≤"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 11,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.111,
+   "changelog": [
+    "Insert a concise core principle forbidding cuts between a numeral/quantifier and its immediately following unit or quantified noun — to protect numeral+unit spans as the primary finding requires."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Do not cut between a numeral or quantifier token and the immediately following"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00887,
+    "lo": -0.02312,
+    "hi": 0.00632,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00887,
+    "lo": -0.02312,
+    "hi": 0.00632,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Replace E1 with labeled example en_us_301 to teach that sentence‑initial participial/adverbial leads can often be emitted early when the remainder is self‑contained (addresses the critique that the prompt was too reluctant to split off short initial function words).",
+    "Replace E2 with labeled example en_us_340 to supply a measured case showing a safe short predicate/complement split after a verb (directly addresses the primary finding that a blanket ban on cuts after main verbs is too broad).",
+    "Replace E3 with labeled example en_us_924 to add a measured example where a closed complement/short prepositional span following a verb is safe to cut (reinforces allowing safe verb‑adjacent splits without retuning broad rules)."
+   ],
+   "findings": [
+    "The prompt is too reluctant to split off sentence-introductory function words (initial determiners, prepositional/adverbial leads); these safe, very short left pieces often improve streaming fidelity in low-latency bins.",
+    "A blanket prohibition on cutting immediately after main verbs is applied too widely; many short, self-contained predicates or closed prepositional complements are safe to emit separately and help dense, low-latency segmentation.",
+    "The prompt fails to protect tight numeral+unit and quantifier+noun spans; splitting numerals from their units or quantified noun leads to severe cohesion loss."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 <SEG:?> will <SEG:?>",
+     "labeled_example": "en_us_301"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <SEG:?> to <SEG:?> by",
+     "labeled_example": "en_us_340"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG:?> is <SEG:?> often",
+     "labeled_example": "en_us_924"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0048,
+     "≤5": -0.0188,
+     "≤7": 0.0013,
+     "≤10": -0.0116,
+     "≤99": -0.0085
+    },
+    "n_worse": 738,
+    "n_better": 678,
+    "why": "The new examples made the model more willing to split off short sentence‑initial adverbial/participial leads and to cut adjacent to verbs/short complements; that produced some large gains where an initial adjunct or verb‑adjacent cut is helpful but caused more aggressive early cuts in short/mid pieces that broke up compound nouns and names, so overall H_set fell slightly (worse in the ≤5 bin).",
+    "lesson": "Keep examples that permit verb‑adjacent and sentence‑initial adjunct cuts only when the remainder is clearly long or syntactically self‑contained, because otherwise the model will over‑apply those patterns and split short noun compounds and proper names.",
+    "blamed": [
+     "E1 «Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 »",
+     "E2 «Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <»",
+     "E3 «Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG»"
+    ]
+   }
+  },
+  {
+   "iter": 3,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1779,
+   "changelog": [
+    "Paraphrased C1 to be shorter and clearer about contradiction/cancellation risk (addresses the primary finding).",
+    "Paraphrased C5 to compress guidance about postnominal material while keeping its judgment (frees headroom).",
+    "Inserted new principle asking whether the remainder supplies an argument, complement, negation/exception, or scope-resolving token that completes or reverses the left fragment (directly addresses primary_finding).",
+    "Inserted new principle preferring cuts that keep numerals/measures and essential post‑nominal modifiers attached to their head (addresses the numeral/measure finding)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C1",
+     "kind": "paraphrase",
+     "was": "- At each potential cut, judge whether the material that follows, taken alone, w",
+     "now": "- At each cut, ask whether the following material, taken alone, would contradict"
+    },
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "paraphrase",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Treat postnominal material (modifiers, prepositional complements, numerals, ti"
+    },
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- At every cut, ask whether the remainder supplies an argument, complement, nega"
+    },
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Prefer cuts that keep numerals, measures, and essential post‑nominal modifiers"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.205,
+   "changelog": [
+    "Insert a narrow surface check after C5 that forbids cutting when the remainder begins a clause or token that supplies an argument, complement, negation/exception, or scope (addresses the primary_finding with a concrete, surface-recognizable condition)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut when the next token begins a subordinate or clausal c"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2,
+   "changelog": [
+    "Inserted a narrow, surface-recognizable check after C5 that forbids cutting a numeral/quantifier away from its unit or the noun it quantifies, and forbids cutting a head noun/proper name away from an immediately following restrictive post‑nominal modifier — directly addressing the primary finding about numerals/measures and essential modifiers."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut between a numeral or quantifier token and the immedia"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 4,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1962,
+   "changelog": [
+    "Replace E1 with measured example en_us_1116 to teach the model to avoid cuts that leave an underspecified fragment whose truth or referent is completed/reversed by the remainder (addresses primary_finding).",
+    "Replace E2 with measured example en_us_936 to exemplify subordinate/clausal openings (e.g. 'Unless ...') that must not be split from their consequents.",
+    "Replace E3 with measured example en_us_741 to show numeral+unit (2.2 million km2) cohesion issues so the model keeps measures attached to their heads.",
+    "Replace E4 with measured example en_us_140 to reinforce protecting numeric speeds and unit expressions (240 kilometers an hour / 149 miles per hour)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+     "labeled_example": "en_us_1116"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+     "labeled_example": "en_us_936"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG",
+     "labeled_example": "en_us_741"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gon",
+     "labeled_example": "en_us_140"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 5,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1828,
+   "changelog": [
+    "Replace E1 with measured example en_us_1150 to teach keeping date ranges and year spans attached to their heads (addresses primary_finding).",
+    "Replace E2 with measured example en_us_1017 to teach protecting 'until <date>' and similar date/unit expressions from being split (addresses primary_finding).",
+    "Replace E3 with measured example en_us_419 to teach keeping numerals and their unit context (e.g. '340 million to 500 million') attached (addresses primary_finding).",
+    "Replace E4 with measured example en_us_1415 to show century/range expressions (e.g. '10th - 11th centuries') should not be split from their heads (addresses primary_finding)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: During <SEG:?> the <SEG:?> 1976 <SEG:?> selections <SEG:?> he <SEG:?> adv",
+     "labeled_example": "en_us_1150"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: The <SEG:?> rock <SEG:?> band <SEG:?> was <SEG:?> due <SEG:?> to <SEG:?> ",
+     "labeled_example": "en_us_1017"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> ",
+     "labeled_example": "en_us_419"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: Gothic <SEG:?> style <SEG:?> peaked <SEG:?> in <SEG:?> the <SEG:?> period",
+     "labeled_example": "en_us_1415"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 6,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1728,
+   "changelog": [
+    "Replace C4 to require explicitly checking whether the remainder supplies a required complement, argument, negation/exception, or scope that completes or reverses the left fragment; lower such cuts but apply conservatively to very short left fragments (addresses the primary_finding)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Assess relative and complement clauses that complete noun meanings; cutting be",
+     "now": "- At each cut, check whether the remainder supplies a required complement, argum"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 7,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1524,
+   "changelog": [
+    "Insert a concise, surface-check principle after C5 forbidding cuts between numerals/units and between a head noun/proper name and essential post‑nominal modifiers (restrictive relative, prepositional complement, date/measure/range) to protect cohesion (addresses the primary_finding)."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Do not cut between a numeral/quantifier and its unit, or between a head noun/p"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00371,
+    "lo": -0.01568,
+    "hi": 0.00844,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Paraphrased C1 to be shorter and clearer about contradiction/cancellation risk so there is room for a targeted, surface-check rule addressing the primary finding.",
+    "Inserted a new Core Principles unit after C5 that forbids splitting numerals/measures and essential post‑nominal modifiers from their heads except when the remainder is clearly an independent clause, addressing the primary_finding directly with a surface-recognizable condition."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C1",
+     "kind": "paraphrase",
+     "was": "- At each potential cut, judge whether the material that follows, taken alone, w",
+     "now": "- At each cut, ask whether the following material, taken alone, would contradict"
+    },
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Prefer cuts that keep numerals/quantifiers with the unit or noun they modify, "
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "adopted": false,
+   "delta": {
+    "mean": -9e-05,
+    "lo": -0.01276,
+    "hi": 0.01347,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -9e-05,
+    "lo": -0.01276,
+    "hi": 0.01347,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a narrow surface check after C5 that forbids cutting when the remainder begins a clause or token that supplies an argument, complement, negation/exception, or scope (addresses the primary_finding with a concrete, surface-recognizable condition)."
+   ],
+   "findings": [
+    "The prompt misses cases where the left fragment is an underspecified proposition whose truth, scope or referent is completed or reversed by the immediately following words, so it permits cuts that later contradict or change the delivered claim.",
+    "The prompt fails to protect numerals, measures, date ranges and essential post‑nominal modifiers from being split off, harming cohesion when unit/modifier is separated from its head."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut when the next token begins a subordinate or clausal c"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0027,
+     "≤5": -0.0067,
+     "≤7": 0.0028,
+     "≤10": 0.0039,
+     "≤99": -0.0003
+    },
+    "n_worse": 777,
+    "n_better": 709,
+    "why": "The inserted narrow check after C5 blocked cuts when the next token looked like the start of a clause/argument/scope, so the top-K selector moved cuts to nearby positions; that produced small improvements on some longer chunks but a net small harm concentrated in the short (≤5-word) bin where the alternatives often split enumerations or broke coordinated predicates.  The measurement is essentially neutral overall (mean ≈0) because almost as many pairs improved as worsened.",
+    "lesson": "A later revision should preserve the intent of forbidding cuts before clause/argument starters but avoid forcing substitute cuts that split enumerations or separate predicates in short pieces (the short-bin harm must be controlled).",
+    "blamed": [
+     "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+    ]
+   }
+  },
+  {
+   "iter": 4,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1476,
+   "changelog": [
+    "Replace example E1 with the measured labeled example en_us_101 showing numeral+unit separation failures; a measured case teaches the ranking directly for the primary finding about numerals and units."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pres",
+     "labeled_example": "en_us_101"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1463,
+   "changelog": [
+    "Insert a narrow surface check after C5 that blocks cuts which would leave an auxiliary/modal/negation or bare verb separated from an immediately following argument or measurement phrase — addresses the primary finding while avoiding a blanket verb–complement prohibition."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: block a cut when the left piece ends in an auxiliary/modal/negat"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1908,
+   "changelog": [
+    "Insert a narrow surface check after C5 that forbids cutting a numeral/quantifier apart from its immediately following measurement or unit phrase, to protect number+unit cohesion and address the primary finding."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 4,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1774,
+   "changelog": [
+    "Replace example E1 with measured labeled example en_us_990 to teach the model about cuts that detach scope-bearing predicates/auxiliaries (addresses the primary finding with a real high-gap case).",
+    "Replace example E2 with measured labeled example en_us_1612 to teach numeral+unit cohesion (addresses the secondary finding about separating numbers from units)."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: The <SEG:?> glaciers <SEG:?> are <SEG:?> not <SEG:?> stable, <SEG:?> but ",
+     "labeled_example": "en_us_990"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Water <SEG:?> is <SEG:?> spilling <SEG:?> over <SEG:?> the <SEG:?> levee ",
+     "labeled_example": "en_us_1612"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 5,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1781,
+   "changelog": [
+    "Replace Example E1 with measured labeled example en_us_1050 to teach numeral+unit cohesion (protect numbers and units from being split).",
+    "Replace Example E2 with measured labeled example en_us_1157 to reinforce keeping measurement tokens (e.g. +30°C) together with their numeric context."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: The <SEG:?> two <SEG:?> towers <SEG:?> rise <SEG:?> to <SEG:?> a <SEG:?> ",
+     "labeled_example": "en_us_1050"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Montevideo <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> subtropics; <SEG:?> ",
+     "labeled_example": "en_us_1157"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 6,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.155,
+   "changelog": [
+    "Insert a narrow surface check after C5: block cuts that leave an auxiliary/modal/negation or main verb separated from a following pronoun, determiner, or numeral — addresses the primary finding by preventing verb/scope detachment only when surface cues show the continuation likely supplies the verb's object/complement or resolves scope."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: block a cut if the left piece ends with an auxiliary, modal, neg"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 7,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.204,
+   "changelog": [
+    "Insert a narrow surface check after C5 to forbid cuts that separate a numeral/quantifier from its immediately following measurement or unit phrase, addressing the primary finding about number+unit cohesion."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00639,
+    "lo": -0.01881,
+    "hi": 0.00671,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert narrow surface check after C5 to block cuts that detach auxiliaries/negation/verbs from the token classes that typically supply their object/complement or resolve scope (addresses the primary finding while remaining a surface check).",
+    "Replace example E1 with the measured labeled example en_us_738 (high-gap case illustrating predicate/auxiliary detachment) to teach the ranking directly where the deficit occurs."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut immediately after an auxiliary, modal, negation token"
+    },
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+     "labeled_example": "en_us_738"
+    }
+   ]
+  },
+  {
+   "iter": 4,
+   "adopted": true,
+   "delta": {
+    "mean": 0.00252,
+    "lo": -0.01021,
+    "hi": 0.01569,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": 0.00252,
+    "lo": -0.01021,
+    "hi": 0.01569,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a narrow surface check after C5 to forbid cuts that separate a numeral/quantifier from its immediately following measurement or unit phrase, addressing the primary finding about number+unit cohesion."
+   ],
+   "findings": [
+    "The prompt underrates cuts that leave a scope-bearing predicate, auxiliary, negation, or quantifier detached from the phrase that supplies its object/complement or resolves its scope; such early cuts create high contradiction risk when the continuation completes or reverses the left piece.",
+    "The prompt fails to protect numerals and measurement phrases: it allows cuts that separate a cardinal/measurement from its unit, breaking referent identity and lowering cohesion."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0111,
+     "≤5": -0.007,
+     "≤7": 0.0028,
+     "≤10": -0.0042,
+     "≤99": -0.0023
+    },
+    "n_worse": 699,
+    "n_better": 733,
+    "why": "Inserting the narrow check after C5 that forbids cuts between numerals/quantifiers and their immediately following unit/measurement phrases caused the model to stop splitting number+unit sequences (improving the smallest pieces, ≤3), but it also changed cut priorities elsewhere so many mid-length examples (bins ≤5 and ≤10) now get cuts shifted into noun phrases, enumerations, or auxiliary/subject boundaries; the result is a near-zero net change because roughly as many pairs improved as degraded.",
+    "lesson": "A later revision should keep numeral+unit adjacency (so short pieces benefit) while avoiding wholesale re-prioritization of cut placement that splits enumerations or breaks cohesive noun phrases in the ≤5–≤10 bins.",
+    "blamed": [
+     "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+    ]
+   }
+  },
+  {
+   "iter": 5,
+   "candidate": 0,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1522,
+   "changelog": [
+    "Insert a narrow, targeted principle after C5 that forbids cutting when the continuation resolves scope or polarity and also tells the model what a good cut looks like; addresses the primary finding about scope‑resolving continuations while avoiding a blanket verb–complement ban."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut when the immediately following material resolves the "
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 1,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1522,
+   "changelog": [
+    "Insert a narrow, conditional verb–complement check after C5 to prevent cuts that split a verb/copula/auxiliary from an immediately required complement while avoiding a blanket ban that hurt very short fragments."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: avoid splitting a verb, auxiliary, or copula from an immediately"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 2,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1669,
+   "changelog": [
+    "Insert a narrow, surface-level check after C5 forbidding cuts when the immediately following token is a scope-resolver, comparative, quantifier, percent/per, or begins with digits; keep that token attached to the left piece to avoid scope/polarity loss."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut when the immediately following token is a surface sco"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 3,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1791,
+   "changelog": [
+    "Insert a narrow surface-level rule after C5 that forbids cutting immediately before tokens that typically begin verb complements (determiners, demonstratives, possessives, object pronouns, quantifiers, or numerals), so a verb is not left separated from its immediately required object/measure."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: do not cut immediately before a token that visibly begins a verb"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 5,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.1431,
+   "changelog": [
+    "Replace E1 with measured example en_us_30 to teach the model about cuts that separate auxiliaries/coping verbs from their complements (primary finding).",
+    "Replace E2 with measured example en_us_1543 to show cases where auxiliary + location/clause ('had been to X, where...') must not be split.",
+    "Replace E3 with measured example en_us_292 to illustrate verb+complement sequences ('resulting in', predicate completion) that should stay attached.",
+    "Replace E4 with measured example en_us_464 to demonstrate splits that break predicates and causative/contrast clauses harming cohesion."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: Iraq's <SEG:?> Abu <SEG:?> Ghraib <SEG:?> prison <SEG:?> has <SEG:?> been",
+     "labeled_example": "en_us_30"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: The <SEG:?> patient <SEG:?> had <SEG:?> been <SEG:?> to <SEG:?> Nigeria, ",
+     "labeled_example": "en_us_1543"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resul",
+     "labeled_example": "en_us_292"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: Unfortunately, <SEG:?> when <SEG:?> you <SEG:?> make <SEG:?> a <SEG:?> DV",
+     "labeled_example": "en_us_464"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 6,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.2059,
+   "changelog": [
+    "Insert a narrow principle after C5: when the continuation will resolve scope or polarity, prefer cuts that include the scope-resolving token with the left piece; otherwise cut only at punctuation/clause boundaries that preserve a complete predicate — addresses the primary finding without a blanket ban."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: when the immediately following words will resolve scope or polar"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 7,
+   "adopted": false,
+   "screened_out": true,
+   "oracle_dist": 0.154,
+   "changelog": [
+    "Insert a narrow, surface-level check after C5 to prevent cutting a verb/auxiliary/copula away from an immediately following token that visibly begins a noun or measurement phrase (determiner, demonstrative, possessive, object pronoun, numeral/digit, or capitalized proper name); this targets the verb‑split primary finding without a blanket ban."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: if the left piece ends in a verb, auxiliary, or copula, do not c"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "candidate": 6,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00823,
+    "lo": -0.02009,
+    "hi": 0.00438,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Insert a narrow principle after C5: when the continuation will resolve scope or polarity, prefer cuts that include the scope-resolving token with the left piece; otherwise cut only at punctuation/clause boundaries that preserve a complete predicate — addresses the primary finding without a blanket ban."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C5",
+     "kind": "change",
+     "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+     "now": "- Narrow check: when the immediately following words will resolve scope or polar"
+    }
+   ]
+  },
+  {
+   "iter": 5,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00213,
+    "lo": -0.01704,
+    "hi": 0.01281,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "gain": {
+    "mean": -0.00213,
+    "lo": -0.01704,
+    "hi": 0.01281,
+    "n": 1851,
+    "n_clusters": 200
+   },
+   "changelog": [
+    "Replace E1 with measured example en_us_738 to teach the model about negation + quantifier scope that resolves polarity and should not be cut.",
+    "Replace E2 with measured example en_us_936 to teach the model about conditional/subordinating scope ('Unless') that resolves truth conditions.",
+    "Replace E3 with measured example en_us_1116 to teach the model about exception clauses ('except') that reverse or limit prior claims.",
+    "Replace E4 with measured example en_us_103 to teach the model about numeral+unit and measurement phrases that determine scope and must stay attached."
+   ],
+   "findings": [
+    "The prompt treats cuts before scope-resolving complements as acceptable: it allows a cut where the following phrase (exception, negation-resolver, quantifier/comparative, measurement phrase) determines or reverses the truth or scope of the already-delivered stretch.",
+    "The prompt often permits cuts that split a verb/copying auxiliary or copula from its essential complement (object, predicate adjective, prepositional/cause/contrast clause), breaking the proposition and harming cohesion."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "E1",
+     "kind": "example",
+     "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+     "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+     "labeled_example": "en_us_738"
+    },
+    {
+     "op": "replace",
+     "id": "E2",
+     "kind": "example",
+     "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+     "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+     "labeled_example": "en_us_936"
+    },
+    {
+     "op": "replace",
+     "id": "E3",
+     "kind": "example",
+     "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+     "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+     "labeled_example": "en_us_1116"
+    },
+    {
+     "op": "replace",
+     "id": "E4",
+     "kind": "example",
+     "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+     "now": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below ",
+     "labeled_example": "en_us_103"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0023,
+     "≤5": -0.004,
+     "≤7": -0.0012,
+     "≤10": -0.0039,
+     "≤99": 0.008
+    },
+    "n_worse": 741,
+    "n_better": 690,
+    "why": "Replacing the examples with negation/Unless/except/measurement cases taught the model to avoid cutting around scope-bearing tokens (negators, subordinators, exception markers and measurement phrases). That made it keep longer multiword constituents intact (small net gain on very long pieces, ≤99:+0.008) but pushed cuts into nearby short spans, producing small harms in the short-latency bins (≤3..≤10 negative) and slightly more (741) worsened than 690 improved pairs.",
+    "lesson": "Respect scope-bearing attachments (negation, subordinators, exceptions, measurement phrases) but do so without shifting cuts so they split adjacent short constituents or verb phrases.",
+    "blamed": [
+     "E1 «Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG»",
+     "E2 «Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> dipl»",
+     "E3 «Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> su»",
+     "E4 «Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?>»"
+    ]
+   }
+  }
+ ],
+ "checkpoint": {
+  "iter": 3,
+  "value": 0.57243,
+  "prompt": "[Role]\nYou are a scoring model for streaming speech translation. For each English source sentence with every possible cut marked as <SEG:?>, you must assign a distinct integer 0–100 to each marker reflecting how suitable a cut there is for streaming translation, using only the source text and the principles below.\n\n[Core Principles]\n- At each potential cut, judge whether the material that follows, taken alone, would contradict, reverse, or negate the proposition already delivered; contradictions include later clauses that cancel earlier assertions or change polarity.\n- At each cut, judge whether translating the left and right pieces independently and then joining them will faithfully express the whole sentence (cohesion): look for lost antecedents, broken reference chains, or misresolved modifiers.\n- Pay attention to subordinate openings and sentential parentheticals whose scope is unresolved early; if later words supply scope or presuppositions that change truth conditions, contra rises.\n- Assess relative and complement clauses that complete noun meanings; cutting before modifiers that determine the referent often reduces cohesion even if surface words look phrase-internal.\n- Long noun phrases with postnominal modifiers, prepositional complements, numerals, or titles can mimic clause starts; decide whether the subsequent material changes the identity or truth of the earlier stretch.\n- Coordinate joins and sentence-level adverbials often begin new propositions; determine whether the continuation attaches harmlessly or introduces content that could contradict or alter earlier claims.\n- Consider scope-bearing elements (negation, quantifiers, modality, comparatives) whose interpretation may depend on following material; if later text resolves polarity or scope, an early cut risks contra or cohesion loss.\n- Predict translation consequences: if separating pieces forces translators to guess antecedents, attach modifiers arbitrarily, or invent scope, the joined translation will lose fidelity; where guessing is unavoidable, lower cohesion.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a\n            reference-free quality estimator scored how faithfully that joined text renders the\n            WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the\n           stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n- The integer you assign is a RANK INSIDE THE SENTENCE: order the cut positions by the target product and assign distinct integers across the full 0–100 range to reflect that ordering.\n- Do NOT compute the score by explicit arithmetic (for example, multiplying the product by 100 and rounding); use the product only to order positions and spread distinct ranks across 0–100.\n- Contra is a graded probability and enters only through the product; do not binarize it or promote it to a separate tier that overrides cohesion.\n- There are no additional scoring conditions beyond the product above.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.\n\nInput: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.\n\nInput: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.\n\nInput: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.\n\n",
+  "provenance": {
+   "- At each potential cut, judge whether the material that follows, taken alone, would contradict, reverse, or negate the proposition already delivered; contradictions include later clauses that cancel earlier assertions or change polarity.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- At each cut, judge whether translating the left and right pieces independently and then joining them will faithfully express the whole sentence (cohesion): look for lost antecedents, broken reference chains, or misresolved modifiers.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- Pay attention to subordinate openings and sentential parentheticals whose scope is unresolved early; if later words supply scope or presuppositions that change truth conditions, contra rises.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- Assess relative and complement clauses that complete noun meanings; cutting before modifiers that determine the referent often reduces cohesion even if surface words look phrase-internal.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- Long noun phrases with postnominal modifiers, prepositional complements, numerals, or titles can mimic clause starts; decide whether the subsequent material changes the identity or truth of the earlier stretch.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- Coordinate joins and sentence-level adverbials often begin new propositions; determine whether the continuation attaches harmlessly or introduces content that could contradict or alter earlier claims.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- Consider scope-bearing elements (negation, quantifiers, modality, comparatives) whose interpretation may depend on following material; if later text resolves polarity or scope, an early cut risks contra or cohesion loss.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "- Predict translation consequences: if separating pieces forces translators to guess antecedents, attach modifiers arbitrarily, or invent scope, the joined translation will lose fidelity; where guessing is unavoidable, lower cohesion.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   },
+   "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.": {
+    "origin": "v0",
+    "adopted_delta": null,
+    "adopted_ci_lo": null
+   }
+  },
+  "h": [
+   [
+    0,
+    1,
+    0.6860201236538589
+   ],
+   [
+    0,
+    2,
+    0.6287158287853002
+   ],
+   [
+    0,
+    3,
+    0.6856808775186539
+   ],
+   [
+    0,
+    4,
+    0.6763975085869431
+   ],
+   [
+    0,
+    5,
+    0.6590648647606373
+   ],
+   [
+    0,
+    6,
+    0.41613053454905746
+   ],
+   [
+    0,
+    7,
+    0.4179831638798117
+   ],
+   [
+    0,
+    8,
+    0.4044065060958266
+   ],
+   [
+    0,
+    9,
+    0.39612828838080166
+   ],
+   [
+    0,
+    10,
+    0.37726411201134324
+   ],
+   [
+    0,
+    11,
+    0.3542376659832895
+   ],
+   [
+    1,
+    1,
+    0.8620262020200491
+   ],
+   [
+    1,
+    2,
+    0.8085027504310012
+   ],
+   [
+    1,
+    3,
+    0.777712160000205
+   ],
+   [
+    1,
+    4,
+    0.7485472684577107
+   ],
+   [
+    2,
+    1,
+    0.8185889932632446
+   ],
+   [
+    2,
+    2,
+    0.6684938743591309
+   ],
+   [
+    2,
+    3,
+    0.6249781796783209
+   ],
+   [
+    2,
+    4,
+    0.49843704129159455
+   ],
+   [
+    2,
+    5,
+    0.485646493434906
+   ],
+   [
+    2,
+    6,
+    0.016593351045250875
+   ],
+   [
+    2,
+    7,
+    0.01640201942175625
+   ],
+   [
+    2,
+    8,
+    0.016415975333750228
+   ],
+   [
+    2,
+    9,
+    0.015023936384916288
+   ],
+   [
+    3,
+    1,
+    0.8432300265356899
+   ],
+   [
+    3,
+    2,
+    0.766262861162424
+   ],
+   [
+    3,
+    3,
+    0.6771533450692891
+   ],
+   [
+    3,
+    4,
+    0.677309711484611
+   ],
+   [
+    3,
+    5,
+    0.6394679595679045
+   ],
+   [
+    3,
+    6,
+    0.5986372358977794
+   ],
+   [
+    3,
+    7,
+    0.557060872324556
+   ],
+   [
+    3,
+    8,
+    0.5849830136790871
+   ],
+   [
+    3,
+    9,
+    0.5828169038161635
+   ],
+   [
+    3,
+    10,
+    0.5531645222440361
+   ],
+   [
+    3,
+    11,
+    0.5225784806773066
+   ],
+   [
+    3,
+    12,
+    0.22713785638958217
+   ],
+   [
+    3,
+    13,
+    0.23071886071115733
+   ],
+   [
+    4,
+    1,
+    0.671258466026187
+   ],
+   [
+    4,
+    2,
+    0.670065221209824
+   ],
+   [
+    4,
+    3,
+    0.6241084493815898
+   ],
+   [
+    4,
+    4,
+    0.6034567135289312
+   ],
+   [
+    4,
+    5,
+    0.5810809941358864
+   ],
+   [
+    4,
+    6,
+    0.5004515044167638
+   ],
+   [
+    5,
+    1,
+    0.8508086040094495
+   ],
+   [
+    5,
+    2,
+    0.8512517991065979
+   ],
+   [
+    5,
+    3,
+    0.7655784805893898
+   ],
+   [
+    5,
+    4,
+    0.759865843001008
+   ],
+   [
+    5,
+    5,
+    0.7658504797622562
+   ],
+   [
+    5,
+    6,
+    0.6551939269155264
+   ],
+   [
+    5,
+    7,
+    0.13314375340640547
+   ],
+   [
+    5,
+    8,
+    0.1222774441406131
+   ],
+   [
+    5,
+    9,
+    0.11456548858657481
+   ],
+   [
+    5,
+    10,
+    0.11747774368897083
+   ],
+   [
+    6,
+    1,
+    0.7948178061246872
+   ],
+   [
+    6,
+    2,
+    0.7599716159924865
+   ],
+   [
+    6,
+    3,
+    0.6927100561708213
+   ],
+   [
+    6,
+    4,
+    0.15939200002849105
+   ],
+   [
+    6,
+    5,
+    0.14789652434885503
+   ],
+   [
+    6,
+    6,
+    0.14157351058572532
+   ],
+   [
+    6,
+    7,
+    0.13923989337086679
+   ],
+   [
+    6,
+    8,
+    0.14410390544384719
+   ],
+   [
+    6,
+    9,
+    0.14113598044738174
+   ],
+   [
+    6,
+    10,
+    0.13722716291472317
+   ],
+   [
+    6,
+    11,
+    0.13670123652741314
+   ],
+   [
+    6,
+    12,
+    0.13211069491356614
+   ],
+   [
+    6,
+    13,
+    0.12465203566849233
+   ],
+   [
+    7,
+    1,
+    0.7716489950805903
+   ],
+   [
+    7,
+    2,
+    0.6810839742869139
+   ],
+   [
+    7,
+    3,
+    0.6191260736480355
+   ],
+   [
+    7,
+    4,
+    0.6120485939696432
+   ],
+   [
+    7,
+    5,
+    0.5367159196972847
+   ],
+   [
+    7,
+    6,
+    0.493605939142406
+   ],
+   [
+    7,
+    7,
+    0.46062047613412144
+   ],
+   [
+    7,
+    8,
+    0.5022642475403846
+   ],
+   [
+    7,
+    9,
+    0.48204145678505306
+   ],
+   [
+    8,
+    1,
+    0.8302099950507283
+   ],
+   [
+    8,
+    2,
+    0.8174527520477772
+   ],
+   [
+    8,
+    3,
+    0.7942426101639867
+   ],
+   [
+    8,
+    4,
+    0.7396471670866013
+   ],
+   [
+    8,
+    5,
+    0.6811457017064094
+   ],
+   [
+    8,
+    6,
+    0.7013048131465912
+   ],
+   [
+    8,
+    7,
+    0.6796264069080352
+   ],
+   [
+    8,
+    8,
+    0.6215976274967193
+   ],
+   [
+    8,
+    9,
+    0.6188322860240936
+   ],
+   [
+    9,
+    1,
+    0.8799790347442031
+   ],
+   [
+    9,
+    2,
+    0.8114140655830503
+   ],
+   [
+    9,
+    3,
+    0.7865619072005152
+   ],
+   [
+    9,
+    4,
+    0.7814324251860381
+   ],
+   [
+    9,
+    5,
+    0.7588895438656211
+   ],
+   [
+    9,
+    6,
+    0.7536882111176848
+   ],
+   [
+    9,
+    7,
+    0.7110334007710218
+   ],
+   [
+    9,
+    8,
+    0.7083380240947008
+   ],
+   [
+    9,
+    9,
+    0.6868063180312515
+   ],
+   [
+    9,
+    10,
+    0.6836900099828839
+   ],
+   [
+    9,
+    11,
+    0.6521917698472738
+   ],
+   [
+    9,
+    12,
+    0.6433368327498435
+   ],
+   [
+    9,
+    13,
+    0.630811158272624
+   ],
+   [
+    10,
+    1,
+    0.7564629091858863
+   ],
+   [
+    10,
+    2,
+    0.7330131422400474
+   ],
+   [
+    10,
+    3,
+    0.7117207046747208
+   ],
+   [
+    10,
+    4,
+    0.6555596695244312
+   ],
+   [
+    10,
+    5,
+    0.6908256203532219
+   ],
+   [
+    10,
+    6,
+    0.6807311892509461
+   ],
+   [
+    11,
+    1,
+    0.7616512659072876
+   ],
+   [
+    11,
+    2,
+    0.6123950202941895
+   ],
+   [
+    11,
+    3,
+    0.5730485540390015
+   ],
+   [
+    11,
+    4,
+    0.5064429929293692
+   ],
+   [
+    11,
+    5,
+    0.47310990134254094
+   ],
+   [
+    11,
+    6,
+    0.47443892065435644
+   ],
+   [
+    11,
+    7,
+    0.4856060748547315
+   ],
+   [
+    11,
+    8,
+    0.482767630405724
+   ],
+   [
+    11,
+    9,
+    0.33235679808780555
+   ],
+   [
+    11,
+    10,
+    0.33324138194546105
+   ],
+   [
+    12,
+    1,
+    0.7545649048805236
+   ],
+   [
+    12,
+    2,
+    0.6214076409101486
+   ],
+   [
+    12,
+    3,
+    0.6439719597816467
+   ],
+   [
+    12,
+    4,
+    0.6573273807562887
+   ],
+   [
+    12,
+    5,
+    0.6029563679106533
+   ],
+   [
+    12,
+    6,
+    0.5407901324391365
+   ],
+   [
+    12,
+    7,
+    0.5193345434725285
+   ],
+   [
+    12,
+    8,
+    0.5111405588597059
+   ],
+   [
+    13,
+    1,
+    0.7020115914583206
+   ],
+   [
+    13,
+    2,
+    0.7636177484750748
+   ],
+   [
+    13,
+    3,
+    0.7243368204116821
+   ],
+   [
+    13,
+    4,
+    0.662342897605896
+   ],
+   [
+    13,
+    5,
+    0.6517103348970413
+   ],
+   [
+    13,
+    6,
+    0.5241296835303306
+   ],
+   [
+    13,
+    7,
+    0.47433156694173817
+   ],
+   [
+    14,
+    1,
+    0.7677968610003592
+   ],
+   [
+    14,
+    2,
+    0.676141162866354
+   ],
+   [
+    14,
+    3,
+    0.6277758007407188
+   ],
+   [
+    14,
+    4,
+    0.5924886526912451
+   ],
+   [
+    14,
+    5,
+    0.5730169133931398
+   ],
+   [
+    14,
+    6,
+    0.5727327454134822
+   ],
+   [
+    14,
+    7,
+    0.5965595549002289
+   ],
+   [
+    14,
+    8,
+    0.5727808451324701
+   ],
+   [
+    15,
+    1,
+    0.845341619759798
+   ],
+   [
+    15,
+    2,
+    0.8095409647524356
+   ],
+   [
+    15,
+    3,
+    0.7630714927911758
+   ],
+   [
+    15,
+    4,
+    0.738086825363338
+   ],
+   [
+    15,
+    5,
+    0.6720076538443566
+   ],
+   [
+    15,
+    6,
+    0.606229957550764
+   ],
+   [
+    15,
+    7,
+    0.6014014883548021
+   ],
+   [
+    15,
+    8,
+    0.5815093158304692
+   ],
+   [
+    15,
+    9,
+    0.5816253354161978
+   ],
+   [
+    15,
+    10,
+    0.5863700244694948
+   ],
+   [
+    15,
+    11,
+    0.5955192451775074
+   ],
+   [
+    16,
+    1,
+    0.8743917576700448
+   ],
+   [
+    16,
+    2,
+    0.8127795021682978
+   ],
+   [
+    16,
+    3,
+    0.7096545923739671
+   ],
+   [
+    16,
+    4,
+    0.6580337727606296
+   ],
+   [
+    16,
+    5,
+    0.6710115532636642
+   ],
+   [
+    16,
+    6,
+    0.687267644584179
+   ],
+   [
+    17,
+    1,
+    0.8674126304984093
+   ],
+   [
+    17,
+    2,
+    0.8660004765689373
+   ],
+   [
+    17,
+    3,
+    0.7976117948427797
+   ],
+   [
+    17,
+    4,
+    0.7888564727455377
+   ],
+   [
+    17,
+    5,
+    0.7839910220071673
+   ],
+   [
+    17,
+    6,
+    0.726588561962545
+   ],
+   [
+    17,
+    7,
+    0.6789902660131455
+   ],
+   [
+    17,
+    8,
+    0.7049837120383978
+   ],
+   [
+    17,
+    9,
+    0.71780025421381
+   ],
+   [
+    18,
+    1,
+    0.7380941283166408
+   ],
+   [
+    18,
+    2,
+    0.7092952841997147
+   ],
+   [
+    18,
+    3,
+    0.6398379111021757
+   ],
+   [
+    18,
+    4,
+    0.6359254661962389
+   ],
+   [
+    18,
+    5,
+    0.587423851007223
+   ],
+   [
+    18,
+    6,
+    0.5539784047782421
+   ],
+   [
+    18,
+    7,
+    0.5701519744068384
+   ],
+   [
+    18,
+    8,
+    0.5392142286285758
+   ],
+   [
+    18,
+    9,
+    0.18437093800306317
+   ],
+   [
+    18,
+    10,
+    0.12129406794309618
+   ],
+   [
+    18,
+    11,
+    0.12199775290489198
+   ],
+   [
+    19,
+    1,
+    0.8370345573782921
+   ],
+   [
+    19,
+    2,
+    0.7731512991338968
+   ],
+   [
+    19,
+    3,
+    0.6564627383127809
+   ],
+   [
+    19,
+    4,
+    0.5951837449595332
+   ],
+   [
+    19,
+    5,
+    0.5647891606315971
+   ],
+   [
+    19,
+    6,
+    0.5542392817139625
+   ],
+   [
+    19,
+    7,
+    0.5596580429188908
+   ],
+   [
+    20,
+    1,
+    0.8084653715848922
+   ],
+   [
+    20,
+    2,
+    0.7714576420277357
+   ],
+   [
+    20,
+    3,
+    0.6757812177568674
+   ],
+   [
+    20,
+    4,
+    0.6175001913562417
+   ],
+   [
+    20,
+    5,
+    0.5810519970193505
+   ],
+   [
+    20,
+    6,
+    0.5832041555732489
+   ],
+   [
+    20,
+    7,
+    0.5242776932619512
+   ],
+   [
+    20,
+    8,
+    0.4765910398565233
+   ],
+   [
+    20,
+    9,
+    0.45525566602796314
+   ],
+   [
+    21,
+    1,
+    0.8864666511833668
+   ],
+   [
+    21,
+    2,
+    0.8575430969953537
+   ],
+   [
+    21,
+    3,
+    0.8343512440860271
+   ],
+   [
+    21,
+    4,
+    0.7332005239069461
+   ],
+   [
+    21,
+    5,
+    0.695796490252018
+   ],
+   [
+    21,
+    6,
+    0.6027603098154068
+   ],
+   [
+    21,
+    7,
+    0.5800047432184219
+   ],
+   [
+    21,
+    8,
+    0.535578566044569
+   ],
+   [
+    21,
+    9,
+    0.574548626601696
+   ],
+   [
+    21,
+    10,
+    0.5606753465533256
+   ],
+   [
+    21,
+    11,
+    0.08021043333783744
+   ],
+   [
+    22,
+    1,
+    0.6154951933987439
+   ],
+   [
+    22,
+    2,
+    0.6919692030437291
+   ],
+   [
+    22,
+    3,
+    0.5535471943706274
+   ],
+   [
+    22,
+    4,
+    0.5399763454094529
+   ],
+   [
+    22,
+    5,
+    0.49474707517772915
+   ],
+   [
+    22,
+    6,
+    0.5033084253825247
+   ],
+   [
+    23,
+    1,
+    0.8697106336697936
+   ],
+   [
+    23,
+    2,
+    0.819174114587903
+   ],
+   [
+    23,
+    3,
+    0.7272994380384684
+   ],
+   [
+    23,
+    4,
+    0.6979808259665966
+   ],
+   [
+    23,
+    5,
+    0.6879393794745207
+   ],
+   [
+    23,
+    6,
+    0.6232346021443605
+   ],
+   [
+    23,
+    7,
+    0.44956167214140297
+   ],
+   [
+    23,
+    8,
+    0.44893629867061974
+   ],
+   [
+    23,
+    9,
+    0.42977389737665656
+   ],
+   [
+    23,
+    10,
+    0.3958595825202763
+   ],
+   [
+    24,
+    1,
+    0.8464214927494526
+   ],
+   [
+    24,
+    2,
+    0.8291384339600801
+   ],
+   [
+    24,
+    3,
+    0.7462569959640503
+   ],
+   [
+    24,
+    4,
+    0.7033124000370503
+   ],
+   [
+    24,
+    5,
+    0.7255699880242348
+   ],
+   [
+    24,
+    6,
+    0.7028690971016884
+   ],
+   [
+    24,
+    7,
+    0.674208492410183
+   ],
+   [
+    24,
+    8,
+    0.13782771779447792
+   ],
+   [
+    24,
+    9,
+    0.14173920325040815
+   ],
+   [
+    24,
+    10,
+    0.0769892664626241
+   ],
+   [
+    24,
+    11,
+    0.07463642864674333
+   ],
+   [
+    24,
+    12,
+    0.07156367039680483
+   ],
+   [
+    25,
+    1,
+    0.8281015422821044
+   ],
+   [
+    25,
+    2,
+    0.847469372177124
+   ],
+   [
+    25,
+    3,
+    0.7065055288493634
+   ],
+   [
+    25,
+    4,
+    0.6615907685041428
+   ],
+   [
+    25,
+    5,
+    0.6605915538191796
+   ],
+   [
+    26,
+    1,
+    0.8415210070610046
+   ],
+   [
+    26,
+    2,
+    0.8483256170749665
+   ],
+   [
+    26,
+    3,
+    0.8353648428320885
+   ],
+   [
+    26,
+    4,
+    0.7827169340252876
+   ],
+   [
+    26,
+    5,
+    0.6798189113616943
+   ],
+   [
+    26,
+    6,
+    0.5056285157978534
+   ],
+   [
+    26,
+    7,
+    0.5073134753465652
+   ],
+   [
+    26,
+    8,
+    0.4108418733000755
+   ],
+   [
+    26,
+    9,
+    0.4539449685454368
+   ],
+   [
+    27,
+    1,
+    0.8568185451030731
+   ],
+   [
+    27,
+    2,
+    0.8390541960686445
+   ],
+   [
+    27,
+    3,
+    0.7978028495371341
+   ],
+   [
+    27,
+    4,
+    0.7831681220233441
+   ],
+   [
+    27,
+    5,
+    0.7403623180299997
+   ],
+   [
+    27,
+    6,
+    0.6694929087281227
+   ],
+   [
+    27,
+    7,
+    0.6378897585958243
+   ],
+   [
+    27,
+    8,
+    0.6253058630436659
+   ],
+   [
+    27,
+    9,
+    0.5818419890657067
+   ],
+   [
+    27,
+    10,
+    0.530042193120718
+   ],
+   [
+    27,
+    11,
+    0.5154905742585659
+   ],
+   [
+    28,
+    1,
+    0.783035053871572
+   ],
+   [
+    28,
+    2,
+    0.6194819575667381
+   ],
+   [
+    28,
+    3,
+    0.6174820156037807
+   ],
+   [
+    28,
+    4,
+    0.594971169501543
+   ],
+   [
+    28,
+    5,
+    0.592563939705491
+   ],
+   [
+    29,
+    1,
+    0.789501110613346
+   ],
+   [
+    29,
+    2,
+    0.691749287724495
+   ],
+   [
+    29,
+    3,
+    0.6773421601653099
+   ],
+   [
+    29,
+    4,
+    0.6816605488955975
+   ],
+   [
+    29,
+    5,
+    0.673329993456602
+   ],
+   [
+    29,
+    6,
+    0.6048302782177924
+   ],
+   [
+    29,
+    7,
+    0.0266250943347812
+   ],
+   [
+    29,
+    8,
+    0.024738009379804162
+   ],
+   [
+    29,
+    9,
+    0.02451226422861221
+   ],
+   [
+    29,
+    10,
+    0.025450111570209294
+   ],
+   [
+    29,
+    11,
+    0.024153029203414944
+   ],
+   [
+    30,
+    1,
+    0.7642323331952094
+   ],
+   [
+    30,
+    2,
+    0.7053201964393258
+   ],
+   [
+    30,
+    3,
+    0.6866714366719127
+   ],
+   [
+    30,
+    4,
+    0.6227424477100372
+   ],
+   [
+    30,
+    5,
+    0.6004715218842029
+   ],
+   [
+    30,
+    6,
+    0.5784857477784157
+   ],
+   [
+    30,
+    7,
+    0.5235618144631385
+   ],
+   [
+    30,
+    8,
+    0.5376950402885675
+   ],
+   [
+    30,
+    9,
+    0.48511905298531055
+   ],
+   [
+    30,
+    10,
+    0.4874748730093241
+   ],
+   [
+    30,
+    11,
+    0.48875870957374573
+   ],
+   [
+    30,
+    12,
+    0.4496675864815712
+   ],
+   [
+    31,
+    1,
+    0.7662931226223707
+   ],
+   [
+    31,
+    2,
+    0.8337133727818727
+   ],
+   [
+    31,
+    3,
+    0.7632843376368285
+   ],
+   [
+    31,
+    4,
+    0.6699760559558868
+   ],
+   [
+    31,
+    5,
+    0.5987128556251526
+   ],
+   [
+    31,
+    6,
+    0.5448921983599663
+   ],
+   [
+    31,
+    7,
+    0.5250773183897137
+   ],
+   [
+    32,
+    1,
+    0.7939335392564536
+   ],
+   [
+    32,
+    2,
+    0.7742223334163428
+   ],
+   [
+    32,
+    3,
+    0.712403278374672
+   ],
+   [
+    32,
+    4,
+    0.7045800560951233
+   ],
+   [
+    32,
+    5,
+    0.018806871449947356
+   ],
+   [
+    32,
+    6,
+    0.01769402722120285
+   ],
+   [
+    32,
+    7,
+    0.017642345881462098
+   ],
+   [
+    32,
+    8,
+    0.017806879019737244
+   ],
+   [
+    32,
+    9,
+    0.01753905004262924
+   ],
+   [
+    33,
+    1,
+    0.6355321855142713
+   ],
+   [
+    33,
+    2,
+    0.6133556981742382
+   ],
+   [
+    33,
+    3,
+    0.6147957100600004
+   ],
+   [
+    33,
+    4,
+    0.5824921551883221
+   ],
+   [
+    33,
+    5,
+    0.5760013862058521
+   ],
+   [
+    33,
+    6,
+    0.5455466576188803
+   ],
+   [
+    33,
+    7,
+    0.5297597792521119
+   ],
+   [
+    33,
+    8,
+    0.4925194343805313
+   ],
+   [
+    33,
+    9,
+    0.4846515596687794
+   ],
+   [
+    33,
+    10,
+    0.4351327124029398
+   ],
+   [
+    33,
+    11,
+    0.4105938257351518
+   ],
+   [
+    33,
+    12,
+    0.410268479244411
+   ],
+   [
+    33,
+    13,
+    0.40349296507537363
+   ],
+   [
+    34,
+    1,
+    0.8818668972551823
+   ],
+   [
+    34,
+    2,
+    0.7849840917348861
+   ],
+   [
+    34,
+    3,
+    0.7776024443864823
+   ],
+   [
+    34,
+    4,
+    0.7561521658182144
+   ],
+   [
+    34,
+    5,
+    0.657380274105072
+   ],
+   [
+    34,
+    6,
+    0.6647963832974434
+   ],
+   [
+    34,
+    7,
+    0.6389782540202141
+   ],
+   [
+    34,
+    8,
+    0.6137727994084359
+   ],
+   [
+    35,
+    1,
+    0.866739137904346
+   ],
+   [
+    35,
+    2,
+    0.8229011059418321
+   ],
+   [
+    35,
+    3,
+    0.7855616378605366
+   ],
+   [
+    35,
+    4,
+    0.708992735105753
+   ],
+   [
+    35,
+    5,
+    0.7103844597637654
+   ],
+   [
+    35,
+    6,
+    0.645186739692092
+   ],
+   [
+    35,
+    7,
+    0.5643322171390057
+   ],
+   [
+    35,
+    8,
+    0.5111364181354642
+   ],
+   [
+    35,
+    9,
+    0.49590495341420177
+   ],
+   [
+    35,
+    10,
+    0.48573563346639276
+   ],
+   [
+    35,
+    11,
+    0.48195486902073026
+   ],
+   [
+    36,
+    1,
+    0.7511158095806837
+   ],
+   [
+    36,
+    2,
+    0.651929536831379
+   ],
+   [
+    36,
+    3,
+    0.6247193160384894
+   ],
+   [
+    36,
+    4,
+    0.6078638773262501
+   ],
+   [
+    36,
+    5,
+    0.603792567679286
+   ],
+   [
+    36,
+    6,
+    0.5980691089063883
+   ],
+   [
+    36,
+    7,
+    0.5813928865604102
+   ],
+   [
+    36,
+    8,
+    0.5158533164933324
+   ],
+   [
+    36,
+    9,
+    0.49258842399045827
+   ],
+   [
+    36,
+    10,
+    0.5149827486813069
+   ],
+   [
+    36,
+    11,
+    0.4985729619018734
+   ],
+   [
+    36,
+    12,
+    0.48735617298036815
+   ],
+   [
+    36,
+    13,
+    0.4449769371055067
+   ],
+   [
+    37,
+    1,
+    0.7656967713475228
+   ],
+   [
+    37,
+    2,
+    0.6738618275955319
+   ],
+   [
+    37,
+    3,
+    0.5956014909952879
+   ],
+   [
+    37,
+    4,
+    0.0327596572250128
+   ],
+   [
+    38,
+    1,
+    0.7689934785664082
+   ],
+   [
+    38,
+    2,
+    0.7300238301247358
+   ],
+   [
+    38,
+    3,
+    0.5888672253206373
+   ],
+   [
+    38,
+    4,
+    0.5694980698734522
+   ],
+   [
+    38,
+    5,
+    0.5643384328871965
+   ],
+   [
+    38,
+    6,
+    0.5479881312221289
+   ],
+   [
+    38,
+    7,
+    0.4553576167792082
+   ],
+   [
+    38,
+    8,
+    0.422434395095706
+   ],
+   [
+    38,
+    9,
+    0.42135769287049774
+   ],
+   [
+    38,
+    10,
+    0.43272669868171215
+   ],
+   [
+    38,
+    11,
+    0.42031214797198774
+   ],
+   [
+    38,
+    12,
+    0.37154859355688097
+   ],
+   [
+    39,
+    1,
+    0.8256235322088002
+   ],
+   [
+    39,
+    2,
+    0.8053810881659388
+   ],
+   [
+    39,
+    3,
+    0.8078564852803946
+   ],
+   [
+    39,
+    4,
+    0.80244049846977
+   ],
+   [
+    39,
+    5,
+    0.7827098046854138
+   ],
+   [
+    39,
+    6,
+    0.7717080349892378
+   ],
+   [
+    39,
+    7,
+    0.7314118961647152
+   ],
+   [
+    39,
+    8,
+    0.6696661860018969
+   ],
+   [
+    39,
+    9,
+    0.617635719756782
+   ],
+   [
+    39,
+    10,
+    0.5634771115005016
+   ],
+   [
+    39,
+    11,
+    0.5405697312295437
+   ],
+   [
+    39,
+    12,
+    0.5298296815097332
+   ],
+   [
+    39,
+    13,
+    0.4966801853120327
+   ],
+   [
+    39,
+    14,
+    0.4347357284784317
+   ],
+   [
+    39,
+    15,
+    0.4476402022778988
+   ],
+   [
+    40,
+    1,
+    0.8517363906875253
+   ],
+   [
+    40,
+    2,
+    0.7905047780573369
+   ],
+   [
+    40,
+    3,
+    0.7187679073452949
+   ],
+   [
+    40,
+    4,
+    0.6644267995595933
+   ],
+   [
+    40,
+    5,
+    0.5798691576838494
+   ],
+   [
+    40,
+    6,
+    0.559956700193882
+   ],
+   [
+    40,
+    7,
+    0.5489953097462654
+   ],
+   [
+    41,
+    1,
+    0.8423104065746069
+   ],
+   [
+    41,
+    2,
+    0.8035213343292474
+   ],
+   [
+    41,
+    3,
+    0.7720812899768352
+   ],
+   [
+    41,
+    4,
+    0.5455074390888214
+   ],
+   [
+    41,
+    5,
+    0.49217255800217385
+   ],
+   [
+    41,
+    6,
+    0.46243933192938563
+   ],
+   [
+    41,
+    7,
+    0.42877026890367265
+   ],
+   [
+    42,
+    1,
+    0.6910715650200844
+   ],
+   [
+    42,
+    2,
+    0.6845433924213051
+   ],
+   [
+    42,
+    3,
+    0.678121284250915
+   ],
+   [
+    42,
+    4,
+    0.6818999816730618
+   ],
+   [
+    42,
+    5,
+    0.6559212596535682
+   ],
+   [
+    42,
+    6,
+    0.6487529549881815
+   ],
+   [
+    42,
+    7,
+    0.6460245616048574
+   ],
+   [
+    42,
+    8,
+    0.6470695818185805
+   ],
+   [
+    42,
+    9,
+    0.6257449599608779
+   ],
+   [
+    42,
+    10,
+    0.5799688823193311
+   ],
+   [
+    42,
+    11,
+    0.5388467443183064
+   ],
+   [
+    42,
+    12,
+    0.531392765301466
+   ],
+   [
+    43,
+    1,
+    0.8448192419335245
+   ],
+   [
+    43,
+    2,
+    0.7686736952453851
+   ],
+   [
+    43,
+    3,
+    0.721688076262176
+   ],
+   [
+    43,
+    4,
+    0.7135408441275358
+   ],
+   [
+    43,
+    5,
+    0.6009229920610786
+   ],
+   [
+    43,
+    6,
+    0.5312838512465358
+   ],
+   [
+    44,
+    1,
+    0.8515328457653523
+   ],
+   [
+    44,
+    2,
+    0.812198548682034
+   ],
+   [
+    44,
+    3,
+    0.7898331778675318
+   ],
+   [
+    44,
+    4,
+    0.7245803738221527
+   ],
+   [
+    44,
+    5,
+    0.4498561458885669
+   ],
+   [
+    44,
+    6,
+    0.453247897490859
+   ],
+   [
+    44,
+    7,
+    0.41635878067463633
+   ],
+   [
+    44,
+    8,
+    0.39105367400497193
+   ],
+   [
+    44,
+    9,
+    0.3885774105861783
+   ],
+   [
+    44,
+    10,
+    0.34442632547020907
+   ],
+   [
+    44,
+    11,
+    0.3142478307634592
+   ],
+   [
+    45,
+    1,
+    0.8094911548867822
+   ],
+   [
+    45,
+    2,
+    0.7984292878955603
+   ],
+   [
+    45,
+    3,
+    0.7401050395742059
+   ],
+   [
+    45,
+    4,
+    0.7073435053586961
+   ],
+   [
+    45,
+    5,
+    0.7087344915032386
+   ],
+   [
+    45,
+    6,
+    0.6524663419604302
+   ],
+   [
+    45,
+    7,
+    0.6393494577348232
+   ],
+   [
+    45,
+    8,
+    0.6344170804560184
+   ],
+   [
+    45,
+    9,
+    0.5483276480019093
+   ],
+   [
+    45,
+    10,
+    0.15156344641223551
+   ],
+   [
+    45,
+    11,
+    0.14904724936708807
+   ],
+   [
+    45,
+    12,
+    0.15594604216217994
+   ],
+   [
+    45,
+    13,
+    0.1516618941925466
+   ],
+   [
+    45,
+    14,
+    0.1491064591102302
+   ],
+   [
+    46,
+    1,
+    0.8340926089659334
+   ],
+   [
+    46,
+    2,
+    0.7301150900065899
+   ],
+   [
+    46,
+    3,
+    0.688788996076584
+   ],
+   [
+    46,
+    4,
+    0.6946553753972053
+   ],
+   [
+    46,
+    5,
+    0.5475571947954595
+   ],
+   [
+    46,
+    6,
+    0.4925927826561034
+   ],
+   [
+    47,
+    1,
+    0.7967728317916394
+   ],
+   [
+    47,
+    2,
+    0.55538655712381
+   ],
+   [
+    47,
+    3,
+    0.5359785531230271
+   ],
+   [
+    47,
+    4,
+    0.5110281252458692
+   ],
+   [
+    47,
+    5,
+    0.47052174397706986
+   ],
+   [
+    47,
+    6,
+    0.44938514610528946
+   ],
+   [
+    47,
+    7,
+    0.49454918295145034
+   ],
+   [
+    47,
+    8,
+    0.4276268532514572
+   ],
+   [
+    47,
+    9,
+    0.47619710075855254
+   ],
+   [
+    47,
+    10,
+    0.4878031054168939
+   ],
+   [
+    47,
+    11,
+    0.4929539053559303
+   ],
+   [
+    48,
+    1,
+    0.866624303996563
+   ],
+   [
+    48,
+    2,
+    0.8501391302078962
+   ],
+   [
+    48,
+    3,
+    0.824697798871994
+   ],
+   [
+    48,
+    4,
+    0.7581285745248199
+   ],
+   [
+    48,
+    5,
+    0.7524756257861852
+   ],
+   [
+    48,
+    6,
+    0.7072060686260462
+   ],
+   [
+    48,
+    7,
+    0.6700142343819141
+   ],
+   [
+    48,
+    8,
+    0.6339566379517316
+   ],
+   [
+    48,
+    9,
+    0.6298165606528521
+   ],
+   [
+    48,
+    10,
+    0.6422088715583085
+   ],
+   [
+    49,
+    1,
+    0.7658410416841507
+   ],
+   [
+    49,
+    2,
+    0.664879591396451
+   ],
+   [
+    49,
+    3,
+    0.6578096634760499
+   ],
+   [
+    49,
+    4,
+    0.6397656382977962
+   ],
+   [
+    49,
+    5,
+    0.5496413197793066
+   ],
+   [
+    50,
+    1,
+    0.7450928628578782
+   ],
+   [
+    50,
+    2,
+    0.7496280179172754
+   ],
+   [
+    50,
+    3,
+    0.7023899716049432
+   ],
+   [
+    50,
+    4,
+    0.6715156952753663
+   ],
+   [
+    50,
+    5,
+    0.6515083652481436
+   ],
+   [
+    50,
+    6,
+    0.6179700570434331
+   ],
+   [
+    50,
+    7,
+    0.555599118642509
+   ],
+   [
+    50,
+    8,
+    0.561023513635993
+   ],
+   [
+    51,
+    1,
+    0.8399618437930941
+   ],
+   [
+    51,
+    2,
+    0.8064169445067644
+   ],
+   [
+    51,
+    3,
+    0.7377861191377043
+   ],
+   [
+    51,
+    4,
+    0.6875078520923853
+   ],
+   [
+    51,
+    5,
+    0.6741203704923391
+   ],
+   [
+    51,
+    6,
+    0.6746386024013162
+   ],
+   [
+    51,
+    7,
+    0.675116349864006
+   ],
+   [
+    51,
+    8,
+    0.5948684685364366
+   ],
+   [
+    51,
+    9,
+    0.607389763456583
+   ],
+   [
+    51,
+    10,
+    0.5797849322803319
+   ],
+   [
+    51,
+    11,
+    0.6070758788391948
+   ],
+   [
+    52,
+    1,
+    0.8237167866826057
+   ],
+   [
+    52,
+    2,
+    0.6689100096821785
+   ],
+   [
+    52,
+    3,
+    0.618131360501051
+   ],
+   [
+    52,
+    4,
+    0.5755018323361873
+   ],
+   [
+    52,
+    5,
+    0.5630985565781593
+   ],
+   [
+    52,
+    6,
+    0.15635746346116067
+   ],
+   [
+    52,
+    7,
+    0.1531476205840707
+   ],
+   [
+    53,
+    1,
+    0.778286758133769
+   ],
+   [
+    53,
+    2,
+    0.750957808881998
+   ],
+   [
+    53,
+    3,
+    0.7060404217645526
+   ],
+   [
+    53,
+    4,
+    0.6233301735073328
+   ],
+   [
+    53,
+    5,
+    0.570999121530354
+   ],
+   [
+    53,
+    6,
+    0.5199192262709141
+   ],
+   [
+    53,
+    7,
+    0.5456557280182839
+   ],
+   [
+    53,
+    8,
+    0.5185976966947318
+   ],
+   [
+    53,
+    9,
+    0.507854944100976
+   ],
+   [
+    54,
+    1,
+    0.8075980431199073
+   ],
+   [
+    54,
+    2,
+    0.8032363311633468
+   ],
+   [
+    54,
+    3,
+    0.7497642655313015
+   ],
+   [
+    54,
+    4,
+    0.75022148232311
+   ],
+   [
+    54,
+    5,
+    0.7422162843123078
+   ],
+   [
+    54,
+    6,
+    0.707420835211873
+   ],
+   [
+    54,
+    7,
+    0.6009298076480627
+   ],
+   [
+    54,
+    8,
+    0.6007886396795511
+   ],
+   [
+    54,
+    9,
+    0.5595520218461751
+   ],
+   [
+    54,
+    10,
+    0.5424813705906272
+   ],
+   [
+    54,
+    11,
+    0.4902410041987896
+   ],
+   [
+    54,
+    12,
+    0.4355001902282238
+   ],
+   [
+    54,
+    13,
+    0.4240304272212088
+   ],
+   [
+    54,
+    14,
+    0.40801465466246006
+   ],
+   [
+    54,
+    15,
+    0.4065388204716146
+   ],
+   [
+    54,
+    16,
+    0.4189665348641574
+   ],
+   [
+    55,
+    1,
+    0.8175722998321057
+   ],
+   [
+    55,
+    2,
+    0.7051170312106609
+   ],
+   [
+    55,
+    3,
+    0.6934123545125127
+   ],
+   [
+    55,
+    4,
+    0.633003073489666
+   ],
+   [
+    55,
+    5,
+    0.596516794103384
+   ],
+   [
+    56,
+    1,
+    0.7759499514818192
+   ],
+   [
+    56,
+    2,
+    0.6723353809311986
+   ],
+   [
+    56,
+    3,
+    0.6274965387865901
+   ],
+   [
+    56,
+    4,
+    0.5898113648116589
+   ],
+   [
+    56,
+    5,
+    0.5133479241192341
+   ],
+   [
+    56,
+    6,
+    0.49307293764352794
+   ],
+   [
+    56,
+    7,
+    0.44514999501407143
+   ],
+   [
+    56,
+    8,
+    0.04371400542557238
+   ],
+   [
+    57,
+    1,
+    0.8129658250883222
+   ],
+   [
+    57,
+    2,
+    0.8060418966859579
+   ],
+   [
+    57,
+    3,
+    0.7886538423374295
+   ],
+   [
+    57,
+    4,
+    0.7284676416665316
+   ],
+   [
+    57,
+    5,
+    0.6765873067304492
+   ],
+   [
+    57,
+    6,
+    0.6836772505939007
+   ],
+   [
+    57,
+    7,
+    0.6998811383023859
+   ],
+   [
+    57,
+    8,
+    0.6809986462473869
+   ],
+   [
+    57,
+    9,
+    0.6487839568421244
+   ],
+   [
+    57,
+    10,
+    0.6389686072319746
+   ],
+   [
+    57,
+    11,
+    0.6223205976426601
+   ],
+   [
+    57,
+    12,
+    0.6148129511788487
+   ],
+   [
+    57,
+    13,
+    0.6205434240177273
+   ],
+   [
+    57,
+    14,
+    0.6132613460108638
+   ],
+   [
+    57,
+    15,
+    0.5653201751984656
+   ],
+   [
+    57,
+    16,
+    0.5769400321945548
+   ],
+   [
+    57,
+    17,
+    0.5654602863535285
+   ],
+   [
+    58,
+    1,
+    0.8537680352851749
+   ],
+   [
+    58,
+    2,
+    0.7803096779286862
+   ],
+   [
+    58,
+    3,
+    0.6845007937908173
+   ],
+   [
+    58,
+    4,
+    0.5733027284033596
+   ],
+   [
+    58,
+    5,
+    0.5066774814024568
+   ],
+   [
+    58,
+    6,
+    0.5258271838724613
+   ],
+   [
+    59,
+    1,
+    0.7599768156856298
+   ],
+   [
+    59,
+    2,
+    0.7256992572784424
+   ],
+   [
+    59,
+    3,
+    0.6630073647767305
+   ],
+   [
+    59,
+    4,
+    0.6140288301028312
+   ],
+   [
+    59,
+    5,
+    0.5886687688082457
+   ],
+   [
+    59,
+    6,
+    0.5898513932019472
+   ],
+   [
+    59,
+    7,
+    0.5889168482333421
+   ],
+   [
+    59,
+    8,
+    0.4773094685822725
+   ],
+   [
+    59,
+    9,
+    0.46366974472403527
+   ],
+   [
+    59,
+    10,
+    0.4444871809661388
+   ],
+   [
+    60,
+    1,
+    0.8445639909803867
+   ],
+   [
+    60,
+    2,
+    0.8016256318494678
+   ],
+   [
+    60,
+    3,
+    0.8071490460783243
+   ],
+   [
+    60,
+    4,
+    0.78643651252985
+   ],
+   [
+    60,
+    5,
+    0.7911125149413943
+   ],
+   [
+    60,
+    6,
+    0.7590205178439617
+   ],
+   [
+    60,
+    7,
+    0.7313111033320427
+   ],
+   [
+    60,
+    8,
+    0.6780503022104502
+   ],
+   [
+    60,
+    9,
+    0.6322425062477589
+   ],
+   [
+    61,
+    1,
+    0.7601263858795165
+   ],
+   [
+    61,
+    2,
+    0.7273913440704345
+   ],
+   [
+    61,
+    3,
+    0.635218578645587
+   ],
+   [
+    61,
+    4,
+    0.6341443492516875
+   ],
+   [
+    62,
+    1,
+    0.7941265184044838
+   ],
+   [
+    62,
+    2,
+    0.7685952234387398
+   ],
+   [
+    62,
+    3,
+    0.07369543040692804
+   ],
+   [
+    62,
+    4,
+    0.07010609875917433
+   ],
+   [
+    62,
+    5,
+    0.07141265770196913
+   ],
+   [
+    62,
+    6,
+    0.06691472498327491
+   ],
+   [
+    62,
+    7,
+    0.06496472197473047
+   ],
+   [
+    62,
+    8,
+    0.03653296981975435
+   ],
+   [
+    63,
+    1,
+    0.7149065392762423
+   ],
+   [
+    63,
+    2,
+    0.6584887523174286
+   ],
+   [
+    63,
+    3,
+    0.6292981918439269
+   ],
+   [
+    63,
+    4,
+    0.5387436440661549
+   ],
+   [
+    63,
+    5,
+    0.5214570081621408
+   ],
+   [
+    63,
+    6,
+    0.4428493508152664
+   ],
+   [
+    63,
+    7,
+    0.41291314444839955
+   ],
+   [
+    63,
+    8,
+    0.4035905272744596
+   ],
+   [
+    63,
+    9,
+    0.31198226533457635
+   ],
+   [
+    63,
+    10,
+    0.31049395832791926
+   ],
+   [
+    63,
+    11,
+    0.2990271647758782
+   ],
+   [
+    63,
+    12,
+    0.29802836472913624
+   ],
+   [
+    63,
+    13,
+    0.29865940265357493
+   ],
+   [
+    63,
+    14,
+    0.2873577277176082
+   ],
+   [
+    63,
+    15,
+    0.285645787935704
+   ],
+   [
+    63,
+    16,
+    0.275862397454679
+   ],
+   [
+    64,
+    1,
+    0.7416285384774208
+   ],
+   [
+    64,
+    2,
+    0.6233089303672313
+   ],
+   [
+    64,
+    3,
+    0.6033063836038113
+   ],
+   [
+    64,
+    4,
+    0.6186592853009701
+   ],
+   [
+    64,
+    5,
+    0.5760402852982283
+   ],
+   [
+    65,
+    1,
+    0.7952169308781624
+   ],
+   [
+    65,
+    2,
+    0.7585675798773766
+   ],
+   [
+    65,
+    3,
+    0.6430865811467171
+   ],
+   [
+    65,
+    4,
+    0.6141621533632279
+   ],
+   [
+    65,
+    5,
+    0.2535530671790242
+   ],
+   [
+    65,
+    6,
+    0.23020029118135568
+   ],
+   [
+    65,
+    7,
+    0.22016897214800119
+   ],
+   [
+    65,
+    8,
+    0.21810718605592844
+   ],
+   [
+    65,
+    9,
+    0.21642888161614535
+   ],
+   [
+    66,
+    1,
+    0.8366173485785723
+   ],
+   [
+    66,
+    2,
+    0.8502908435940743
+   ],
+   [
+    66,
+    3,
+    0.8486976924270392
+   ],
+   [
+    66,
+    4,
+    0.8438372955381871
+   ],
+   [
+    66,
+    5,
+    0.818922748681903
+   ],
+   [
+    66,
+    6,
+    0.7995153470724822
+   ],
+   [
+    66,
+    7,
+    0.7694332568317652
+   ],
+   [
+    66,
+    8,
+    0.7521607813477517
+   ],
+   [
+    66,
+    9,
+    0.7319258226513863
+   ],
+   [
+    66,
+    10,
+    0.6757652988553048
+   ],
+   [
+    66,
+    11,
+    0.677124563768506
+   ],
+   [
+    66,
+    12,
+    0.643564465546608
+   ],
+   [
+    66,
+    13,
+    0.5618969583973289
+   ],
+   [
+    66,
+    14,
+    0.5550874947384
+   ],
+   [
+    66,
+    15,
+    0.5384642499625683
+   ],
+   [
+    66,
+    16,
+    0.5294958993583918
+   ],
+   [
+    66,
+    17,
+    0.48499489657431843
+   ],
+   [
+    67,
+    1,
+    0.5854388397194445
+   ],
+   [
+    67,
+    2,
+    0.6530003088921308
+   ],
+   [
+    67,
+    3,
+    0.5619703165456653
+   ],
+   [
+    67,
+    4,
+    0.5387281889140606
+   ],
+   [
+    67,
+    5,
+    0.508387965041399
+   ],
+   [
+    67,
+    6,
+    0.46307376835495234
+   ],
+   [
+    68,
+    1,
+    0.7407348644539714
+   ],
+   [
+    68,
+    2,
+    0.7479531419098377
+   ],
+   [
+    68,
+    3,
+    0.7279827581584454
+   ],
+   [
+    68,
+    4,
+    0.6899078591227531
+   ],
+   [
+    68,
+    5,
+    0.27693283453732725
+   ],
+   [
+    68,
+    6,
+    0.2707304434657097
+   ],
+   [
+    68,
+    7,
+    0.2581430322989821
+   ],
+   [
+    68,
+    8,
+    0.24649467682689424
+   ],
+   [
+    69,
+    1,
+    0.8078738914087416
+   ],
+   [
+    69,
+    2,
+    0.8029164696291089
+   ],
+   [
+    69,
+    3,
+    0.7946822496354581
+   ],
+   [
+    69,
+    4,
+    0.7769799607753753
+   ],
+   [
+    69,
+    5,
+    0.6881678733855486
+   ],
+   [
+    69,
+    6,
+    0.6609501666039228
+   ],
+   [
+    69,
+    7,
+    0.659267060136795
+   ],
+   [
+    69,
+    8,
+    0.5960461060330272
+   ],
+   [
+    69,
+    9,
+    0.5571421333514154
+   ],
+   [
+    69,
+    10,
+    0.5441846297428012
+   ],
+   [
+    69,
+    11,
+    0.5350398152969777
+   ],
+   [
+    69,
+    12,
+    0.5346700586631894
+   ],
+   [
+    69,
+    13,
+    0.5171990045264363
+   ],
+   [
+    70,
+    1,
+    0.758950169825554
+   ],
+   [
+    70,
+    2,
+    0.7323260185718536
+   ],
+   [
+    70,
+    3,
+    0.7014996047392488
+   ],
+   [
+    70,
+    4,
+    0.6131628735899924
+   ],
+   [
+    71,
+    1,
+    0.6272559520483018
+   ],
+   [
+    71,
+    2,
+    0.6261638649702073
+   ],
+   [
+    71,
+    3,
+    0.6040268482714891
+   ],
+   [
+    71,
+    4,
+    0.5536987876579166
+   ],
+   [
+    71,
+    5,
+    0.5185327966600657
+   ],
+   [
+    71,
+    6,
+    0.4769087034545839
+   ],
+   [
+    71,
+    7,
+    0.46687857821881773
+   ],
+   [
+    71,
+    8,
+    0.44024926898628475
+   ],
+   [
+    72,
+    1,
+    0.13423250371813772
+   ],
+   [
+    72,
+    2,
+    0.13170492427647112
+   ],
+   [
+    72,
+    3,
+    0.12892541473209856
+   ],
+   [
+    72,
+    4,
+    0.12529043813645838
+   ],
+   [
+    72,
+    5,
+    0.11998533828556536
+   ],
+   [
+    72,
+    6,
+    0.11459833654761313
+   ],
+   [
+    72,
+    7,
+    0.10521475474834441
+   ],
+   [
+    72,
+    8,
+    0.10075799903869628
+   ],
+   [
+    72,
+    9,
+    0.09618888845443725
+   ],
+   [
+    72,
+    10,
+    0.09318046627342699
+   ],
+   [
+    72,
+    11,
+    0.0914739064157009
+   ],
+   [
+    72,
+    12,
+    0.0949348927348852
+   ],
+   [
+    72,
+    13,
+    0.08888216520845889
+   ],
+   [
+    73,
+    1,
+    0.8535942633241416
+   ],
+   [
+    73,
+    2,
+    0.5740233564451337
+   ],
+   [
+    73,
+    3,
+    0.4807362944856286
+   ],
+   [
+    73,
+    4,
+    0.44134961173757914
+   ],
+   [
+    73,
+    5,
+    0.43205631449893117
+   ],
+   [
+    73,
+    6,
+    0.40356807836517694
+   ],
+   [
+    74,
+    1,
+    0.8200921325087547
+   ],
+   [
+    74,
+    2,
+    0.7442995272159576
+   ],
+   [
+    74,
+    3,
+    0.566795982581377
+   ],
+   [
+    74,
+    4,
+    0.15166840073466303
+   ],
+   [
+    74,
+    5,
+    0.137116359859705
+   ],
+   [
+    74,
+    6,
+    0.1296263090670109
+   ],
+   [
+    74,
+    7,
+    0.12818648886680606
+   ],
+   [
+    74,
+    8,
+    0.1247594164311886
+   ],
+   [
+    74,
+    9,
+    0.1267862379252911
+   ],
+   [
+    74,
+    10,
+    0.12502563217282298
+   ],
+   [
+    75,
+    1,
+    0.7516786784648896
+   ],
+   [
+    75,
+    2,
+    0.7742623574450612
+   ],
+   [
+    75,
+    3,
+    0.7385612757995724
+   ],
+   [
+    75,
+    4,
+    0.7316521850690246
+   ],
+   [
+    75,
+    5,
+    0.6988532720893622
+   ],
+   [
+    75,
+    6,
+    0.6684058604434132
+   ],
+   [
+    75,
+    7,
+    0.6146053924486041
+   ],
+   [
+    75,
+    8,
+    0.5912475758001208
+   ],
+   [
+    75,
+    9,
+    0.4387876674428582
+   ],
+   [
+    75,
+    10,
+    0.44467120627909895
+   ],
+   [
+    75,
+    11,
+    0.4446320399329066
+   ],
+   [
+    75,
+    12,
+    0.4354838662445545
+   ],
+   [
+    75,
+    13,
+    0.4308862396270037
+   ],
+   [
+    75,
+    14,
+    0.4193553076170385
+   ],
+   [
+    75,
+    15,
+    0.4183709534265101
+   ],
+   [
+    76,
+    1,
+    0.8286205559819937
+   ],
+   [
+    76,
+    2,
+    0.8316851480960846
+   ],
+   [
+    76,
+    3,
+    0.8208165536046028
+   ],
+   [
+    76,
+    4,
+    0.5931157400205731
+   ],
+   [
+    76,
+    5,
+    0.5445396465495229
+   ],
+   [
+    76,
+    6,
+    0.5345541164964438
+   ],
+   [
+    77,
+    1,
+    0.7737942687079311
+   ],
+   [
+    77,
+    2,
+    0.779610925796628
+   ],
+   [
+    77,
+    3,
+    0.6996386899217963
+   ],
+   [
+    77,
+    4,
+    0.6422191371113062
+   ],
+   [
+    77,
+    5,
+    0.5554985375493765
+   ],
+   [
+    77,
+    6,
+    0.5512774941429496
+   ],
+   [
+    77,
+    7,
+    0.5542195318222045
+   ],
+   [
+    77,
+    8,
+    0.5160940221682191
+   ],
+   [
+    77,
+    9,
+    0.4656472226411104
+   ],
+   [
+    77,
+    10,
+    0.4253488432496786
+   ],
+   [
+    78,
+    1,
+    0.7940539097234607
+   ],
+   [
+    78,
+    2,
+    0.6355439199820161
+   ],
+   [
+    78,
+    3,
+    0.005430279888957765
+   ],
+   [
+    78,
+    4,
+    0.0054940158247947955
+   ],
+   [
+    78,
+    5,
+    0.006071497920155554
+   ],
+   [
+    78,
+    6,
+    0.005556145325303104
+   ],
+   [
+    78,
+    7,
+    0.004898228287696861
+   ],
+   [
+    78,
+    8,
+    0.004965963037312054
+   ],
+   [
+    78,
+    9,
+    0.004896555930376076
+   ],
+   [
+    78,
+    10,
+    0.004230599910020848
+   ],
+   [
+    79,
+    1,
+    0.8083075159192086
+   ],
+   [
+    79,
+    2,
+    0.7074103120833636
+   ],
+   [
+    79,
+    3,
+    0.59655766903013
+   ],
+   [
+    79,
+    4,
+    0.5262431708335876
+   ],
+   [
+    79,
+    5,
+    0.5453136299282313
+   ],
+   [
+    79,
+    6,
+    0.5175994537621736
+   ],
+   [
+    79,
+    7,
+    0.4652179217897356
+   ],
+   [
+    79,
+    8,
+    0.4513354128599167
+   ],
+   [
+    80,
+    1,
+    0.6916493685655296
+   ],
+   [
+    80,
+    2,
+    0.79349269079566
+   ],
+   [
+    80,
+    3,
+    0.7649823911964894
+   ],
+   [
+    80,
+    4,
+    0.39900417783111336
+   ],
+   [
+    80,
+    5,
+    0.34182733618319033
+   ],
+   [
+    80,
+    6,
+    0.3068755924791098
+   ],
+   [
+    80,
+    7,
+    0.2938961428709328
+   ],
+   [
+    80,
+    8,
+    0.012847882613539701
+   ],
+   [
+    81,
+    1,
+    0.7525524033159018
+   ],
+   [
+    81,
+    2,
+    0.7151077557235956
+   ],
+   [
+    81,
+    3,
+    0.7021234446659684
+   ],
+   [
+    81,
+    4,
+    0.2393780459761619
+   ],
+   [
+    81,
+    5,
+    0.2129868966758251
+   ],
+   [
+    81,
+    6,
+    0.05750027528107167
+   ],
+   [
+    81,
+    7,
+    0.05622104893624783
+   ],
+   [
+    81,
+    8,
+    0.05428111934289337
+   ],
+   [
+    81,
+    9,
+    0.0512555534593761
+   ],
+   [
+    81,
+    10,
+    0.04937207637950779
+   ],
+   [
+    81,
+    11,
+    0.026861189129948598
+   ],
+   [
+    81,
+    12,
+    0.025100062327086902
+   ],
+   [
+    82,
+    1,
+    0.8246647311598062
+   ],
+   [
+    82,
+    2,
+    0.5164720776081085
+   ],
+   [
+    82,
+    3,
+    0.4521913369178772
+   ],
+   [
+    82,
+    4,
+    0.3854456114292145
+   ],
+   [
+    82,
+    5,
+    0.32341996378898624
+   ],
+   [
+    82,
+    6,
+    0.3224291344165802
+   ],
+   [
+    83,
+    1,
+    0.6877683791488409
+   ],
+   [
+    83,
+    2,
+    0.6440449881188571
+   ],
+   [
+    83,
+    3,
+    0.6027375286102294
+   ],
+   [
+    83,
+    4,
+    0.5792169330596924
+   ],
+   [
+    83,
+    5,
+    0.5104549301147461
+   ],
+   [
+    83,
+    6,
+    0.49506508106365804
+   ],
+   [
+    83,
+    7,
+    0.48152639558911325
+   ],
+   [
+    83,
+    8,
+    0.4855115764498711
+   ],
+   [
+    83,
+    9,
+    0.4594062613926828
+   ],
+   [
+    84,
+    1,
+    0.8563987807840109
+   ],
+   [
+    84,
+    2,
+    0.7120666968256235
+   ],
+   [
+    84,
+    3,
+    0.7263251583486796
+   ],
+   [
+    84,
+    4,
+    0.6671458892762662
+   ],
+   [
+    84,
+    5,
+    0.6106331779748202
+   ],
+   [
+    84,
+    6,
+    0.581396473544836
+   ],
+   [
+    84,
+    7,
+    0.5575249814800919
+   ],
+   [
+    84,
+    8,
+    0.5604891682140529
+   ],
+   [
+    84,
+    9,
+    0.532840549825132
+   ],
+   [
+    84,
+    10,
+    0.4864589745387435
+   ],
+   [
+    85,
+    1,
+    0.8029892995759845
+   ],
+   [
+    85,
+    2,
+    0.7393762609526515
+   ],
+   [
+    85,
+    3,
+    0.6753201195448637
+   ],
+   [
+    85,
+    4,
+    0.651355999955535
+   ],
+   [
+    85,
+    5,
+    0.646115190924704
+   ],
+   [
+    85,
+    6,
+    0.6564842104554176
+   ],
+   [
+    86,
+    1,
+    0.6809784140959382
+   ],
+   [
+    86,
+    2,
+    0.6890639665767551
+   ],
+   [
+    86,
+    3,
+    0.47607905880510804
+   ],
+   [
+    86,
+    4,
+    0.44965904758870595
+   ],
+   [
+    86,
+    5,
+    0.43625165800452226
+   ],
+   [
+    86,
+    6,
+    0.452906597033143
+   ],
+   [
+    86,
+    7,
+    0.4239816781371831
+   ],
+   [
+    86,
+    8,
+    0.1436614084661007
+   ],
+   [
+    86,
+    9,
+    0.1473864772707224
+   ],
+   [
+    87,
+    1,
+    0.8239214330151677
+   ],
+   [
+    87,
+    2,
+    0.7943561919361353
+   ],
+   [
+    87,
+    3,
+    0.7228293654605746
+   ],
+   [
+    87,
+    4,
+    0.6873485074147582
+   ],
+   [
+    87,
+    5,
+    0.6637345373287796
+   ],
+   [
+    87,
+    6,
+    0.6536620821028948
+   ],
+   [
+    87,
+    7,
+    0.6155817874804139
+   ],
+   [
+    87,
+    8,
+    0.5928932796403765
+   ],
+   [
+    87,
+    9,
+    0.558979706671089
+   ],
+   [
+    87,
+    10,
+    0.5489929667115212
+   ],
+   [
+    87,
+    11,
+    0.5253790133073926
+   ],
+   [
+    87,
+    12,
+    0.5365396701358259
+   ],
+   [
+    87,
+    13,
+    0.5295665369369089
+   ],
+   [
+    88,
+    1,
+    0.7386335388287902
+   ],
+   [
+    88,
+    2,
+    0.7182632931411267
+   ],
+   [
+    88,
+    3,
+    0.6801022034838796
+   ],
+   [
+    88,
+    4,
+    0.5480156731523573
+   ],
+   [
+    89,
+    1,
+    0.8552379611715675
+   ],
+   [
+    89,
+    2,
+    0.8442494137436152
+   ],
+   [
+    89,
+    3,
+    0.820161710742116
+   ],
+   [
+    89,
+    4,
+    0.7675025128260256
+   ],
+   [
+    89,
+    5,
+    0.7683149394884706
+   ],
+   [
+    89,
+    6,
+    0.6821810707524419
+   ],
+   [
+    89,
+    7,
+    0.6952306532531977
+   ],
+   [
+    89,
+    8,
+    0.6795847483366728
+   ],
+   [
+    89,
+    9,
+    0.6560049199819565
+   ],
+   [
+    90,
+    1,
+    0.8279289576724171
+   ],
+   [
+    90,
+    2,
+    0.7927948078930378
+   ],
+   [
+    90,
+    3,
+    0.787984958845377
+   ],
+   [
+    90,
+    4,
+    0.7581923531502486
+   ],
+   [
+    90,
+    5,
+    0.7402537326931954
+   ],
+   [
+    90,
+    6,
+    0.720705123141408
+   ],
+   [
+    90,
+    7,
+    0.6812528631597757
+   ],
+   [
+    90,
+    8,
+    0.6031375483483077
+   ],
+   [
+    90,
+    9,
+    0.2344976188763976
+   ],
+   [
+    90,
+    10,
+    0.23239740930348635
+   ],
+   [
+    90,
+    11,
+    0.22588534660488369
+   ],
+   [
+    90,
+    12,
+    0.2173240588322282
+   ],
+   [
+    90,
+    13,
+    0.20912434901744129
+   ],
+   [
+    90,
+    14,
+    0.20674370699375869
+   ],
+   [
+    90,
+    15,
+    0.19986253493875267
+   ],
+   [
+    90,
+    16,
+    0.19706398292928934
+   ],
+   [
+    91,
+    1,
+    0.8543107025250793
+   ],
+   [
+    91,
+    2,
+    0.7293872780263424
+   ],
+   [
+    91,
+    3,
+    0.705891587689519
+   ],
+   [
+    91,
+    4,
+    0.6116176539123058
+   ],
+   [
+    91,
+    5,
+    0.6116065700411797
+   ],
+   [
+    91,
+    6,
+    0.5935878510653972
+   ],
+   [
+    91,
+    7,
+    0.5320104206375778
+   ],
+   [
+    91,
+    8,
+    0.5093566125400364
+   ],
+   [
+    92,
+    1,
+    0.7730296514034272
+   ],
+   [
+    92,
+    2,
+    0.6973008743166923
+   ],
+   [
+    92,
+    3,
+    0.6447832876473665
+   ],
+   [
+    92,
+    4,
+    0.5802365300774575
+   ],
+   [
+    92,
+    5,
+    0.6156936582967639
+   ],
+   [
+    92,
+    6,
+    0.3035557117164135
+   ],
+   [
+    92,
+    7,
+    0.29990078914165497
+   ],
+   [
+    93,
+    1,
+    0.6795127455055714
+   ],
+   [
+    93,
+    2,
+    0.7481085420757533
+   ],
+   [
+    93,
+    3,
+    0.6124555419564247
+   ],
+   [
+    93,
+    4,
+    0.5133115529805422
+   ],
+   [
+    93,
+    5,
+    0.48105320823043585
+   ],
+   [
+    93,
+    6,
+    0.4727967770151794
+   ],
+   [
+    93,
+    7,
+    0.4602474544785917
+   ],
+   [
+    93,
+    8,
+    0.43703486140668396
+   ],
+   [
+    93,
+    9,
+    0.4314466577380896
+   ],
+   [
+    93,
+    10,
+    0.4155981728501618
+   ],
+   [
+    93,
+    11,
+    0.43927082144171004
+   ],
+   [
+    93,
+    12,
+    0.4001913822412491
+   ],
+   [
+    94,
+    1,
+    0.8196356382548808
+   ],
+   [
+    94,
+    2,
+    0.16953291890621183
+   ],
+   [
+    94,
+    3,
+    0.15660899051427837
+   ],
+   [
+    94,
+    4,
+    0.15218234090656038
+   ],
+   [
+    95,
+    1,
+    0.8718771171212196
+   ],
+   [
+    95,
+    2,
+    0.8391656598702073
+   ],
+   [
+    95,
+    3,
+    0.7478091754421592
+   ],
+   [
+    95,
+    4,
+    0.6630346888929606
+   ],
+   [
+    95,
+    5,
+    0.6254616912096739
+   ],
+   [
+    95,
+    6,
+    0.6179534152552486
+   ],
+   [
+    95,
+    7,
+    0.5858653160661459
+   ],
+   [
+    95,
+    8,
+    0.5517707529589534
+   ],
+   [
+    96,
+    1,
+    0.7612779755711555
+   ],
+   [
+    96,
+    2,
+    0.7062278389692307
+   ],
+   [
+    96,
+    3,
+    0.6901394623637199
+   ],
+   [
+    96,
+    4,
+    0.6834834157928824
+   ],
+   [
+    96,
+    5,
+    0.6812981616586447
+   ],
+   [
+    96,
+    6,
+    0.6168952757686377
+   ],
+   [
+    96,
+    7,
+    0.594832739508152
+   ],
+   [
+    96,
+    8,
+    0.555317270346731
+   ],
+   [
+    96,
+    9,
+    0.5257004816137254
+   ],
+   [
+    96,
+    10,
+    0.4770474322706461
+   ],
+   [
+    96,
+    11,
+    0.47552002797946336
+   ],
+   [
+    97,
+    1,
+    0.6030220692411065
+   ],
+   [
+    97,
+    2,
+    0.5848674518868328
+   ],
+   [
+    97,
+    3,
+    0.5588140329420567
+   ],
+   [
+    97,
+    4,
+    0.48118829542100433
+   ],
+   [
+    97,
+    5,
+    0.4519679301172495
+   ],
+   [
+    98,
+    1,
+    0.6292612612947821
+   ],
+   [
+    98,
+    2,
+    0.6147371230378746
+   ],
+   [
+    98,
+    3,
+    0.5638838337257505
+   ],
+   [
+    98,
+    4,
+    0.5154655392214655
+   ],
+   [
+    98,
+    5,
+    0.5001884909555315
+   ],
+   [
+    98,
+    6,
+    0.4832166168361902
+   ],
+   [
+    98,
+    7,
+    0.4978600429400801
+   ],
+   [
+    98,
+    8,
+    0.4767040050163865
+   ],
+   [
+    98,
+    9,
+    0.41785040057078005
+   ],
+   [
+    99,
+    1,
+    0.7900074021220207
+   ],
+   [
+    99,
+    2,
+    0.7260107906371356
+   ],
+   [
+    99,
+    3,
+    0.7042474875599146
+   ],
+   [
+    99,
+    4,
+    0.7061593183875085
+   ],
+   [
+    99,
+    5,
+    0.6437441969066858
+   ],
+   [
+    99,
+    6,
+    0.6524358169823885
+   ],
+   [
+    99,
+    7,
+    0.49600860247612
+   ],
+   [
+    99,
+    8,
+    0.5028703291803598
+   ],
+   [
+    99,
+    9,
+    0.4794127427145839
+   ],
+   [
+    99,
+    10,
+    0.39680758795738225
+   ],
+   [
+    99,
+    11,
+    0.3967956761956215
+   ],
+   [
+    99,
+    12,
+    0.38518493102788925
+   ],
+   [
+    100,
+    1,
+    0.7336189631313085
+   ],
+   [
+    100,
+    2,
+    0.7254015794210136
+   ],
+   [
+    100,
+    3,
+    0.5896997422903776
+   ],
+   [
+    100,
+    4,
+    0.5809496425598859
+   ],
+   [
+    100,
+    5,
+    0.5197625127062201
+   ],
+   [
+    101,
+    1,
+    0.7576994993120432
+   ],
+   [
+    101,
+    2,
+    0.6666691913455725
+   ],
+   [
+    101,
+    3,
+    0.6155867159664631
+   ],
+   [
+    101,
+    4,
+    0.5678537213496864
+   ],
+   [
+    101,
+    5,
+    0.5183957808084786
+   ],
+   [
+    101,
+    6,
+    0.4914757305212319
+   ],
+   [
+    101,
+    7,
+    0.47846449568644167
+   ],
+   [
+    102,
+    1,
+    0.8258212317109108
+   ],
+   [
+    102,
+    2,
+    0.8120575831308962
+   ],
+   [
+    102,
+    3,
+    0.7617524909973145
+   ],
+   [
+    102,
+    4,
+    0.7338087791070341
+   ],
+   [
+    102,
+    5,
+    0.7230676044166088
+   ],
+   [
+    102,
+    6,
+    0.7113104759454727
+   ],
+   [
+    102,
+    7,
+    0.6962830462574958
+   ],
+   [
+    102,
+    8,
+    0.6777980039745569
+   ],
+   [
+    102,
+    9,
+    0.6424897609680891
+   ],
+   [
+    102,
+    10,
+    0.6156639545112849
+   ],
+   [
+    102,
+    11,
+    0.6145641345262527
+   ],
+   [
+    102,
+    12,
+    0.5634785571813583
+   ],
+   [
+    102,
+    13,
+    0.5461480836510658
+   ],
+   [
+    102,
+    14,
+    0.5179724800497293
+   ],
+   [
+    102,
+    15,
+    0.5161453694701195
+   ],
+   [
+    102,
+    16,
+    0.4688971755020321
+   ],
+   [
+    103,
+    1,
+    0.8603644449412823
+   ],
+   [
+    103,
+    2,
+    0.7850746271073819
+   ],
+   [
+    103,
+    3,
+    0.6627261930763721
+   ],
+   [
+    103,
+    4,
+    0.47915637541189793
+   ],
+   [
+    103,
+    5,
+    0.46115493731945756
+   ],
+   [
+    103,
+    6,
+    0.4718934045024216
+   ],
+   [
+    103,
+    7,
+    0.42433827284723524
+   ],
+   [
+    103,
+    8,
+    0.3916012461408973
+   ],
+   [
+    104,
+    1,
+    0.7960526376098395
+   ],
+   [
+    104,
+    2,
+    0.7624726823851466
+   ],
+   [
+    104,
+    3,
+    0.796827751879394
+   ],
+   [
+    104,
+    4,
+    0.7156448498725891
+   ],
+   [
+    104,
+    5,
+    0.7489915487766265
+   ],
+   [
+    104,
+    6,
+    0.6870743630409241
+   ],
+   [
+    104,
+    7,
+    0.6686564584374428
+   ],
+   [
+    104,
+    8,
+    0.6181901720404624
+   ],
+   [
+    105,
+    1,
+    0.7347600640356541
+   ],
+   [
+    105,
+    2,
+    0.7684168280348181
+   ],
+   [
+    105,
+    3,
+    0.7349621516838669
+   ],
+   [
+    105,
+    4,
+    0.6942527710542082
+   ],
+   [
+    105,
+    5,
+    0.6307750616848469
+   ],
+   [
+    105,
+    6,
+    0.5962653642773629
+   ],
+   [
+    105,
+    7,
+    0.5934602752864361
+   ],
+   [
+    105,
+    8,
+    0.5714617201268674
+   ],
+   [
+    105,
+    9,
+    0.5463715103983879
+   ],
+   [
+    105,
+    10,
+    0.5002548653751612
+   ],
+   [
+    106,
+    1,
+    0.8158239964842797
+   ],
+   [
+    106,
+    2,
+    0.7755258799374104
+   ],
+   [
+    106,
+    3,
+    0.7307509604215622
+   ],
+   [
+    106,
+    4,
+    0.6235264895617961
+   ],
+   [
+    106,
+    5,
+    0.6024453455150127
+   ],
+   [
+    107,
+    1,
+    0.7431349650382996
+   ],
+   [
+    107,
+    2,
+    0.6476389551401138
+   ],
+   [
+    107,
+    3,
+    0.6529520776629448
+   ],
+   [
+    107,
+    4,
+    0.6255615321680903
+   ],
+   [
+    107,
+    5,
+    0.6121315200775862
+   ],
+   [
+    107,
+    6,
+    0.6018134498894215
+   ],
+   [
+    107,
+    7,
+    0.5820232351757586
+   ],
+   [
+    107,
+    8,
+    0.5643936744734646
+   ],
+   [
+    107,
+    9,
+    0.530216421724856
+   ],
+   [
+    108,
+    1,
+    0.7279157368779182
+   ],
+   [
+    108,
+    2,
+    0.7172987297311425
+   ],
+   [
+    108,
+    3,
+    0.6255443871617318
+   ],
+   [
+    108,
+    4,
+    0.6465987704992294
+   ],
+   [
+    108,
+    5,
+    0.5655438488006591
+   ],
+   [
+    108,
+    6,
+    0.5744468009829521
+   ],
+   [
+    108,
+    7,
+    0.5634046792030334
+   ],
+   [
+    108,
+    8,
+    0.572377223277092
+   ],
+   [
+    108,
+    9,
+    0.5635847113490104
+   ],
+   [
+    108,
+    10,
+    0.5374394052624702
+   ],
+   [
+    108,
+    11,
+    0.4929876752197742
+   ],
+   [
+    108,
+    12,
+    0.46656019438505175
+   ],
+   [
+    108,
+    13,
+    0.4488811673596501
+   ],
+   [
+    108,
+    14,
+    0.4047522093296051
+   ],
+   [
+    109,
+    1,
+    0.8067164709866046
+   ],
+   [
+    109,
+    2,
+    0.7509723300635814
+   ],
+   [
+    109,
+    3,
+    0.6632090838015079
+   ],
+   [
+    109,
+    4,
+    0.6760531549334525
+   ],
+   [
+    109,
+    5,
+    0.6421980923950672
+   ],
+   [
+    109,
+    6,
+    0.6317445581614971
+   ],
+   [
+    110,
+    1,
+    0.7244682442814111
+   ],
+   [
+    110,
+    2,
+    0.7051577188342809
+   ],
+   [
+    110,
+    3,
+    0.6692959813982248
+   ],
+   [
+    110,
+    4,
+    0.5968243630349637
+   ],
+   [
+    110,
+    5,
+    0.5752488513350487
+   ],
+   [
+    110,
+    6,
+    0.5479794977366924
+   ],
+   [
+    110,
+    7,
+    0.5076191900521517
+   ],
+   [
+    110,
+    8,
+    0.48318994701951745
+   ],
+   [
+    110,
+    9,
+    0.47464811233431103
+   ],
+   [
+    111,
+    1,
+    0.8687554023116827
+   ],
+   [
+    111,
+    2,
+    0.8367086669743061
+   ],
+   [
+    111,
+    3,
+    0.8261573728337884
+   ],
+   [
+    111,
+    4,
+    0.7578551387742162
+   ],
+   [
+    111,
+    5,
+    0.694769124045968
+   ],
+   [
+    111,
+    6,
+    0.5380967437036335
+   ],
+   [
+    111,
+    7,
+    0.48699001574069256
+   ],
+   [
+    111,
+    8,
+    0.4561723226420581
+   ],
+   [
+    111,
+    9,
+    0.4571660841234028
+   ],
+   [
+    111,
+    10,
+    0.4306606820687651
+   ],
+   [
+    111,
+    11,
+    0.425237016120553
+   ],
+   [
+    111,
+    12,
+    0.41715113971233364
+   ],
+   [
+    111,
+    13,
+    0.4046201640091836
+   ],
+   [
+    112,
+    1,
+    0.8444455547705293
+   ],
+   [
+    112,
+    2,
+    0.8079246892482043
+   ],
+   [
+    112,
+    3,
+    0.7450780802100897
+   ],
+   [
+    112,
+    4,
+    0.7392392559364438
+   ],
+   [
+    112,
+    5,
+    0.675202615392208
+   ],
+   [
+    112,
+    6,
+    0.6275607794225215
+   ],
+   [
+    113,
+    1,
+    0.7515180230200291
+   ],
+   [
+    113,
+    2,
+    0.7935028341174126
+   ],
+   [
+    113,
+    3,
+    0.6906621111690998
+   ],
+   [
+    113,
+    4,
+    0.6231949087858201
+   ],
+   [
+    113,
+    5,
+    0.5778198412239551
+   ],
+   [
+    113,
+    6,
+    0.5649988108813763
+   ],
+   [
+    113,
+    7,
+    0.5646065004229546
+   ],
+   [
+    113,
+    8,
+    0.5534015063881874
+   ],
+   [
+    114,
+    1,
+    0.8282357810899615
+   ],
+   [
+    114,
+    2,
+    0.7059535662285984
+   ],
+   [
+    114,
+    3,
+    0.6269668528050184
+   ],
+   [
+    114,
+    4,
+    0.6360042734853923
+   ],
+   [
+    114,
+    5,
+    0.5993341299332678
+   ],
+   [
+    114,
+    6,
+    0.5981273135215044
+   ],
+   [
+    114,
+    7,
+    0.5960369476318359
+   ],
+   [
+    114,
+    8,
+    0.5673312171697616
+   ],
+   [
+    114,
+    9,
+    0.5498838712573051
+   ],
+   [
+    114,
+    10,
+    0.532818944747001
+   ],
+   [
+    114,
+    11,
+    0.5153747993305325
+   ],
+   [
+    114,
+    12,
+    0.506759932629764
+   ],
+   [
+    114,
+    13,
+    0.48969009778648614
+   ],
+   [
+    114,
+    14,
+    0.4736479110047221
+   ],
+   [
+    115,
+    1,
+    0.7633140496194363
+   ],
+   [
+    115,
+    2,
+    0.6925136750757694
+   ],
+   [
+    115,
+    3,
+    0.6649649781182408
+   ],
+   [
+    115,
+    4,
+    0.6392388345390558
+   ],
+   [
+    115,
+    5,
+    0.5734551800876856
+   ],
+   [
+    115,
+    6,
+    0.5608156250409781
+   ],
+   [
+    115,
+    7,
+    0.5381288970030844
+   ],
+   [
+    116,
+    1,
+    0.7946074236035348
+   ],
+   [
+    116,
+    2,
+    0.7869369566708803
+   ],
+   [
+    116,
+    3,
+    0.7288602161154151
+   ],
+   [
+    116,
+    4,
+    0.6574225153505802
+   ],
+   [
+    116,
+    5,
+    0.5965303909540176
+   ],
+   [
+    116,
+    6,
+    0.6015367345899343
+   ],
+   [
+    116,
+    7,
+    0.5215367575734854
+   ],
+   [
+    116,
+    8,
+    0.4807628641292453
+   ],
+   [
+    116,
+    9,
+    0.47485046004652975
+   ],
+   [
+    116,
+    10,
+    0.4418847497016191
+   ],
+   [
+    117,
+    1,
+    0.8003158523753285
+   ],
+   [
+    117,
+    2,
+    0.767774925249815
+   ],
+   [
+    117,
+    3,
+    0.7141083308756352
+   ],
+   [
+    117,
+    4,
+    0.6781540781199933
+   ],
+   [
+    117,
+    5,
+    0.6728197309017182
+   ],
+   [
+    117,
+    6,
+    0.6936729645609856
+   ],
+   [
+    117,
+    7,
+    0.6437156744718552
+   ],
+   [
+    117,
+    8,
+    0.6238394937872886
+   ],
+   [
+    117,
+    9,
+    0.5760381141722203
+   ],
+   [
+    117,
+    10,
+    0.5424182821132243
+   ],
+   [
+    117,
+    11,
+    0.5396692189782858
+   ],
+   [
+    118,
+    1,
+    0.8728126273155212
+   ],
+   [
+    118,
+    2,
+    0.8108781638145447
+   ],
+   [
+    118,
+    3,
+    0.6980002001300455
+   ],
+   [
+    119,
+    1,
+    0.8134038516998291
+   ],
+   [
+    119,
+    2,
+    0.7571659596115351
+   ],
+   [
+    119,
+    3,
+    0.717871163494885
+   ],
+   [
+    119,
+    4,
+    0.6818285604268313
+   ],
+   [
+    119,
+    5,
+    0.6619603636264801
+   ],
+   [
+    119,
+    6,
+    0.6012180618077516
+   ],
+   [
+    119,
+    7,
+    0.5755596008822322
+   ],
+   [
+    119,
+    8,
+    0.5739439798817039
+   ],
+   [
+    119,
+    9,
+    0.546937122541666
+   ],
+   [
+    119,
+    10,
+    0.563836838132143
+   ],
+   [
+    120,
+    1,
+    0.8302064154714346
+   ],
+   [
+    120,
+    2,
+    0.8028611280262471
+   ],
+   [
+    120,
+    3,
+    0.8093480759963393
+   ],
+   [
+    120,
+    4,
+    0.7863502698317171
+   ],
+   [
+    120,
+    5,
+    0.795384865500033
+   ],
+   [
+    120,
+    6,
+    0.6661034936651588
+   ],
+   [
+    120,
+    7,
+    0.6772742573216558
+   ],
+   [
+    120,
+    8,
+    0.6623511395260692
+   ],
+   [
+    120,
+    9,
+    0.6521677378311753
+   ],
+   [
+    120,
+    10,
+    0.6278644743070007
+   ],
+   [
+    120,
+    11,
+    0.5438112086951732
+   ],
+   [
+    120,
+    12,
+    0.5456475313603878
+   ],
+   [
+    120,
+    13,
+    0.5527562968730926
+   ],
+   [
+    120,
+    14,
+    0.5111607297360897
+   ],
+   [
+    120,
+    15,
+    0.49739301092922683
+   ],
+   [
+    121,
+    1,
+    0.8084855428814889
+   ],
+   [
+    121,
+    2,
+    0.7562783838540316
+   ],
+   [
+    121,
+    3,
+    0.6948836838677526
+   ],
+   [
+    122,
+    1,
+    0.7764188924700022
+   ],
+   [
+    122,
+    2,
+    0.7640725042253732
+   ],
+   [
+    122,
+    3,
+    0.5726011450111865
+   ],
+   [
+    122,
+    4,
+    0.6213118882834912
+   ],
+   [
+    122,
+    5,
+    0.6504048043370246
+   ],
+   [
+    122,
+    6,
+    0.6134434565782547
+   ],
+   [
+    122,
+    7,
+    0.4649320042937994
+   ],
+   [
+    123,
+    1,
+    0.7950751219376921
+   ],
+   [
+    123,
+    2,
+    0.707922863906622
+   ],
+   [
+    123,
+    3,
+    0.6966777413830161
+   ],
+   [
+    123,
+    4,
+    0.6787645492181182
+   ],
+   [
+    123,
+    5,
+    0.6446684184238315
+   ],
+   [
+    123,
+    6,
+    0.6673993006423116
+   ],
+   [
+    123,
+    7,
+    0.6674763414531946
+   ],
+   [
+    123,
+    8,
+    0.6508319904580712
+   ],
+   [
+    123,
+    9,
+    0.5799433389142156
+   ],
+   [
+    123,
+    10,
+    0.5452192301973701
+   ],
+   [
+    123,
+    11,
+    0.5309586722657085
+   ],
+   [
+    123,
+    12,
+    0.4370656773507595
+   ],
+   [
+    124,
+    1,
+    0.5904108754768967
+   ],
+   [
+    124,
+    2,
+    0.6215703290924429
+   ],
+   [
+    124,
+    3,
+    0.48804927839040757
+   ],
+   [
+    124,
+    4,
+    0.4744698848351836
+   ],
+   [
+    124,
+    5,
+    0.4345420323863625
+   ],
+   [
+    125,
+    1,
+    0.8459433263987303
+   ],
+   [
+    125,
+    2,
+    0.8358072522282601
+   ],
+   [
+    125,
+    3,
+    0.7783757770508528
+   ],
+   [
+    125,
+    4,
+    0.7808720881864429
+   ],
+   [
+    125,
+    5,
+    0.7035754776299
+   ],
+   [
+    125,
+    6,
+    0.6186961465477944
+   ],
+   [
+    125,
+    7,
+    0.5832860526144504
+   ],
+   [
+    125,
+    8,
+    0.5682178921401501
+   ],
+   [
+    125,
+    9,
+    0.5386368760466576
+   ],
+   [
+    125,
+    10,
+    0.49752475813031194
+   ],
+   [
+    125,
+    11,
+    0.45022277103736996
+   ],
+   [
+    126,
+    1,
+    0.85293100399822
+   ],
+   [
+    126,
+    2,
+    0.8294077578395606
+   ],
+   [
+    126,
+    3,
+    0.7979780225649477
+   ],
+   [
+    126,
+    4,
+    0.7816041648209096
+   ],
+   [
+    126,
+    5,
+    0.7671354783475399
+   ],
+   [
+    126,
+    6,
+    0.7405920731052756
+   ],
+   [
+    126,
+    7,
+    0.7307895644009114
+   ],
+   [
+    126,
+    8,
+    0.7047573705986142
+   ],
+   [
+    126,
+    9,
+    0.6584791432544589
+   ],
+   [
+    126,
+    10,
+    0.6424525565207004
+   ],
+   [
+    126,
+    11,
+    0.6222219072505832
+   ],
+   [
+    127,
+    1,
+    0.6736229564666748
+   ],
+   [
+    127,
+    2,
+    0.5051414810270071
+   ],
+   [
+    127,
+    3,
+    0.5088134229242801
+   ],
+   [
+    127,
+    4,
+    0.4848196464717388
+   ],
+   [
+    127,
+    5,
+    0.452088314512372
+   ],
+   [
+    127,
+    6,
+    0.38625824037492273
+   ],
+   [
+    128,
+    1,
+    0.8133142265841364
+   ],
+   [
+    128,
+    2,
+    0.8058395862177014
+   ],
+   [
+    128,
+    3,
+    0.7103419520884752
+   ],
+   [
+    128,
+    4,
+    0.6834135403767228
+   ],
+   [
+    128,
+    5,
+    0.6545920552209019
+   ],
+   [
+    128,
+    6,
+    0.587530653271079
+   ],
+   [
+    128,
+    7,
+    0.5596768475845456
+   ],
+   [
+    129,
+    1,
+    0.8646765628933907
+   ],
+   [
+    129,
+    2,
+    0.7569762171149254
+   ],
+   [
+    129,
+    3,
+    0.7382613501280546
+   ],
+   [
+    129,
+    4,
+    0.7518752440586686
+   ],
+   [
+    129,
+    5,
+    0.7205667635291815
+   ],
+   [
+    129,
+    6,
+    0.668254004496336
+   ],
+   [
+    129,
+    7,
+    0.6154383912473917
+   ],
+   [
+    129,
+    8,
+    0.5963457798153162
+   ],
+   [
+    129,
+    9,
+    0.5722193720072508
+   ],
+   [
+    129,
+    10,
+    0.554900273475051
+   ],
+   [
+    130,
+    1,
+    0.8623595978289842
+   ],
+   [
+    130,
+    2,
+    0.7301365952059626
+   ],
+   [
+    130,
+    3,
+    0.7361717733442783
+   ],
+   [
+    130,
+    4,
+    0.6802727860808372
+   ],
+   [
+    130,
+    5,
+    0.659068786740303
+   ],
+   [
+    130,
+    6,
+    0.6307891779094934
+   ],
+   [
+    131,
+    1,
+    0.8271095375061035
+   ],
+   [
+    131,
+    2,
+    0.7348491062164306
+   ],
+   [
+    131,
+    3,
+    0.6521693060934544
+   ],
+   [
+    131,
+    4,
+    0.6432022547885775
+   ],
+   [
+    131,
+    5,
+    0.6105957404106855
+   ],
+   [
+    131,
+    6,
+    0.1975773223489523
+   ],
+   [
+    131,
+    7,
+    0.19958345798403027
+   ],
+   [
+    131,
+    8,
+    0.19462227507680654
+   ],
+   [
+    132,
+    1,
+    0.8741611129760741
+   ],
+   [
+    132,
+    2,
+    0.8304076606750488
+   ],
+   [
+    132,
+    3,
+    0.7922129224538803
+   ],
+   [
+    132,
+    4,
+    0.753084517917037
+   ],
+   [
+    132,
+    5,
+    0.7116578870147466
+   ],
+   [
+    132,
+    6,
+    0.6768918909430504
+   ],
+   [
+    132,
+    7,
+    0.6866342809855938
+   ],
+   [
+    132,
+    8,
+    0.6742949174284935
+   ],
+   [
+    132,
+    9,
+    0.6405725972384214
+   ],
+   [
+    133,
+    1,
+    0.7964112792640925
+   ],
+   [
+    133,
+    2,
+    0.6847996747002005
+   ],
+   [
+    133,
+    3,
+    0.6144315395399929
+   ],
+   [
+    133,
+    4,
+    0.3763264382481575
+   ],
+   [
+    133,
+    5,
+    0.34736385571956635
+   ],
+   [
+    134,
+    1,
+    0.8450189591914415
+   ],
+   [
+    134,
+    2,
+    0.4599138989031315
+   ],
+   [
+    134,
+    3,
+    0.3967735593080521
+   ],
+   [
+    134,
+    4,
+    0.3963001368418336
+   ],
+   [
+    134,
+    5,
+    0.36049117315113544
+   ],
+   [
+    134,
+    6,
+    0.33956386485546824
+   ],
+   [
+    134,
+    7,
+    0.33113728126734493
+   ],
+   [
+    134,
+    8,
+    0.3011164489388466
+   ],
+   [
+    134,
+    9,
+    0.2862037327364087
+   ],
+   [
+    134,
+    10,
+    0.2814661798194051
+   ],
+   [
+    135,
+    1,
+    0.820101509475708
+   ],
+   [
+    135,
+    2,
+    0.8164058764398098
+   ],
+   [
+    135,
+    3,
+    0.7576907330691814
+   ],
+   [
+    135,
+    4,
+    0.6933741076618433
+   ],
+   [
+    135,
+    5,
+    0.6798902666687965
+   ],
+   [
+    135,
+    6,
+    0.6387565363660455
+   ],
+   [
+    135,
+    7,
+    0.6146728641882538
+   ],
+   [
+    135,
+    8,
+    0.5922420649006963
+   ],
+   [
+    135,
+    9,
+    0.557511270133406
+   ],
+   [
+    135,
+    10,
+    0.5826538703739643
+   ],
+   [
+    135,
+    11,
+    0.5186659505598247
+   ],
+   [
+    136,
+    1,
+    0.8479409776777028
+   ],
+   [
+    136,
+    2,
+    0.7681138309538365
+   ],
+   [
+    136,
+    3,
+    0.6658185010671616
+   ],
+   [
+    136,
+    4,
+    0.48130677183568477
+   ],
+   [
+    136,
+    5,
+    0.42537279372364284
+   ],
+   [
+    136,
+    6,
+    0.3958280480697751
+   ],
+   [
+    136,
+    7,
+    0.2809250185020268
+   ],
+   [
+    136,
+    8,
+    0.2793567472219467
+   ],
+   [
+    137,
+    1,
+    0.6961339649118483
+   ],
+   [
+    137,
+    2,
+    0.7377941043943167
+   ],
+   [
+    137,
+    3,
+    0.7715091949194669
+   ],
+   [
+    137,
+    4,
+    0.2498727983802557
+   ],
+   [
+    137,
+    5,
+    0.2538788281902671
+   ],
+   [
+    137,
+    6,
+    0.23575278887748718
+   ],
+   [
+    137,
+    7,
+    0.15816610821560026
+   ],
+   [
+    137,
+    8,
+    0.15220641271993518
+   ],
+   [
+    137,
+    9,
+    0.15337018611654638
+   ],
+   [
+    138,
+    1,
+    0.7091894037894905
+   ],
+   [
+    138,
+    2,
+    0.7468946408942342
+   ],
+   [
+    138,
+    3,
+    0.6787046334668994
+   ],
+   [
+    138,
+    4,
+    0.570776402451098
+   ],
+   [
+    138,
+    5,
+    0.2848339157648384
+   ],
+   [
+    138,
+    6,
+    0.28843771193549034
+   ],
+   [
+    138,
+    7,
+    0.2787074324525892
+   ],
+   [
+    138,
+    8,
+    0.2635968921639025
+   ],
+   [
+    138,
+    9,
+    0.2618983277969062
+   ],
+   [
+    138,
+    10,
+    0.2012351314611733
+   ],
+   [
+    138,
+    11,
+    0.1940519105449319
+   ],
+   [
+    138,
+    12,
+    0.1913295768968761
+   ],
+   [
+    138,
+    13,
+    0.18368173339962962
+   ],
+   [
+    138,
+    14,
+    0.179468656270206
+   ],
+   [
+    138,
+    15,
+    0.18461942006871107
+   ],
+   [
+    139,
+    1,
+    0.7153182142227889
+   ],
+   [
+    139,
+    2,
+    0.6165307894796133
+   ],
+   [
+    139,
+    3,
+    0.4903439899161458
+   ],
+   [
+    139,
+    4,
+    0.4507345994487405
+   ],
+   [
+    139,
+    5,
+    0.4359480029270053
+   ],
+   [
+    139,
+    6,
+    0.4157387438043952
+   ],
+   [
+    140,
+    1,
+    0.729312057620287
+   ],
+   [
+    140,
+    2,
+    0.6665505327567458
+   ],
+   [
+    140,
+    3,
+    0.5916213592529297
+   ],
+   [
+    140,
+    4,
+    0.62458674659729
+   ],
+   [
+    140,
+    5,
+    0.5987274810791016
+   ],
+   [
+    140,
+    6,
+    0.5613714769363403
+   ],
+   [
+    140,
+    7,
+    0.529083289951086
+   ],
+   [
+    140,
+    8,
+    0.4663885978505016
+   ],
+   [
+    141,
+    1,
+    0.8868497835397721
+   ],
+   [
+    141,
+    2,
+    0.8467398318916559
+   ],
+   [
+    141,
+    3,
+    0.840479213693738
+   ],
+   [
+    141,
+    4,
+    0.7571327660143375
+   ],
+   [
+    141,
+    5,
+    0.711565628182888
+   ],
+   [
+    141,
+    6,
+    0.7289535260736942
+   ],
+   [
+    141,
+    7,
+    0.6909165638387204
+   ],
+   [
+    141,
+    8,
+    0.5942116215154529
+   ],
+   [
+    141,
+    9,
+    0.5999536779686808
+   ],
+   [
+    141,
+    10,
+    0.5809958980977535
+   ],
+   [
+    141,
+    11,
+    0.5597631840512156
+   ],
+   [
+    141,
+    12,
+    0.5306957992091775
+   ],
+   [
+    142,
+    1,
+    0.7841373963654041
+   ],
+   [
+    142,
+    2,
+    0.7493623711109162
+   ],
+   [
+    142,
+    3,
+    0.3335740375086665
+   ],
+   [
+    142,
+    4,
+    0.31813142234981057
+   ],
+   [
+    142,
+    5,
+    0.289353276617825
+   ],
+   [
+    142,
+    6,
+    0.2727677846163511
+   ],
+   [
+    143,
+    1,
+    0.8554882807284594
+   ],
+   [
+    143,
+    2,
+    0.7464524200111627
+   ],
+   [
+    143,
+    3,
+    0.7511323727667332
+   ],
+   [
+    143,
+    4,
+    0.7229780851826072
+   ],
+   [
+    143,
+    5,
+    0.6997524293065072
+   ],
+   [
+    143,
+    6,
+    0.6845508528649807
+   ],
+   [
+    143,
+    7,
+    0.644659375615418
+   ],
+   [
+    143,
+    8,
+    0.5665388200357556
+   ],
+   [
+    143,
+    9,
+    0.4586312746733427
+   ],
+   [
+    144,
+    1,
+    0.8631594124495984
+   ],
+   [
+    144,
+    2,
+    0.7544333697706461
+   ],
+   [
+    144,
+    3,
+    0.7328838821470737
+   ],
+   [
+    144,
+    4,
+    0.679282716846466
+   ],
+   [
+    144,
+    5,
+    0.6671808573901653
+   ],
+   [
+    144,
+    6,
+    0.6382561246946454
+   ],
+   [
+    144,
+    7,
+    0.6100233101963997
+   ],
+   [
+    144,
+    8,
+    0.5803307555645705
+   ],
+   [
+    144,
+    9,
+    0.5502763974949717
+   ],
+   [
+    145,
+    1,
+    0.8008852497786284
+   ],
+   [
+    145,
+    2,
+    0.7515957172632217
+   ],
+   [
+    145,
+    3,
+    0.6564164553672076
+   ],
+   [
+    146,
+    1,
+    0.8389499059677125
+   ],
+   [
+    146,
+    2,
+    0.8029808235585689
+   ],
+   [
+    146,
+    3,
+    0.6945145287454129
+   ],
+   [
+    146,
+    4,
+    0.6713375289380551
+   ],
+   [
+    146,
+    5,
+    0.6691467526093126
+   ],
+   [
+    146,
+    6,
+    0.5037069125920535
+   ],
+   [
+    146,
+    7,
+    0.4742203345298767
+   ],
+   [
+    146,
+    8,
+    0.45348210395500066
+   ],
+   [
+    146,
+    9,
+    0.4029061676859856
+   ],
+   [
+    146,
+    10,
+    0.3985057549700141
+   ],
+   [
+    147,
+    1,
+    0.7588773402184248
+   ],
+   [
+    147,
+    2,
+    0.7012357600778342
+   ],
+   [
+    147,
+    3,
+    0.7081484471619129
+   ],
+   [
+    147,
+    4,
+    0.698767469227314
+   ],
+   [
+    147,
+    5,
+    0.6449722359657287
+   ],
+   [
+    147,
+    6,
+    0.5507112097024918
+   ],
+   [
+    147,
+    7,
+    0.5457701077580451
+   ],
+   [
+    147,
+    8,
+    0.5797179949760437
+   ],
+   [
+    147,
+    9,
+    0.5711609829604626
+   ],
+   [
+    147,
+    10,
+    0.5350801839232444
+   ],
+   [
+    147,
+    11,
+    0.5026152355849742
+   ],
+   [
+    147,
+    12,
+    0.45570301984548567
+   ],
+   [
+    147,
+    13,
+    0.4452020147964358
+   ],
+   [
+    147,
+    14,
+    0.43405194054469465
+   ],
+   [
+    147,
+    15,
+    0.4318138081267476
+   ],
+   [
+    148,
+    1,
+    0.7110628863811492
+   ],
+   [
+    148,
+    2,
+    0.5968244976103306
+   ],
+   [
+    148,
+    3,
+    0.5697731463462115
+   ],
+   [
+    148,
+    4,
+    0.492755815795809
+   ],
+   [
+    148,
+    5,
+    0.48315391822159287
+   ],
+   [
+    149,
+    1,
+    0.8792805699825287
+   ],
+   [
+    149,
+    2,
+    0.8639409510046243
+   ],
+   [
+    149,
+    3,
+    0.7097182627767324
+   ],
+   [
+    149,
+    4,
+    0.6949305877670645
+   ],
+   [
+    149,
+    5,
+    0.6741638555794954
+   ],
+   [
+    149,
+    6,
+    0.5087287735253573
+   ],
+   [
+    149,
+    7,
+    0.4867469794481993
+   ],
+   [
+    149,
+    8,
+    0.47109861006140713
+   ],
+   [
+    150,
+    1,
+    0.8221657929390669
+   ],
+   [
+    150,
+    2,
+    0.7874469203650951
+   ],
+   [
+    150,
+    3,
+    0.7728210316210985
+   ],
+   [
+    150,
+    4,
+    0.7034894510298967
+   ],
+   [
+    150,
+    5,
+    0.6923859524905681
+   ],
+   [
+    150,
+    6,
+    0.6875584056526423
+   ],
+   [
+    150,
+    7,
+    0.6460795453399419
+   ],
+   [
+    150,
+    8,
+    0.6318806416749955
+   ],
+   [
+    150,
+    9,
+    0.5089149731397629
+   ],
+   [
+    150,
+    10,
+    0.24805402493476864
+   ],
+   [
+    150,
+    11,
+    0.21393356391638516
+   ],
+   [
+    151,
+    1,
+    0.762689749789238
+   ],
+   [
+    151,
+    2,
+    0.7004451603293419
+   ],
+   [
+    151,
+    3,
+    0.6915737524032592
+   ],
+   [
+    151,
+    4,
+    0.6563400527715684
+   ],
+   [
+    151,
+    5,
+    0.6274377867996692
+   ],
+   [
+    151,
+    6,
+    0.5675275320485235
+   ],
+   [
+    151,
+    7,
+    0.5342999418586493
+   ],
+   [
+    151,
+    8,
+    0.493014942419529
+   ],
+   [
+    152,
+    1,
+    0.8185524930924177
+   ],
+   [
+    152,
+    2,
+    0.7202893912315369
+   ],
+   [
+    152,
+    3,
+    0.702740902876854
+   ],
+   [
+    152,
+    4,
+    0.6421474029421806
+   ],
+   [
+    152,
+    5,
+    0.6803377056121827
+   ],
+   [
+    152,
+    6,
+    0.6615140872001648
+   ],
+   [
+    152,
+    7,
+    0.5745045422315598
+   ],
+   [
+    152,
+    8,
+    0.5616156892061234
+   ],
+   [
+    153,
+    1,
+    0.8751621002554894
+   ],
+   [
+    153,
+    2,
+    0.8054215761646629
+   ],
+   [
+    153,
+    3,
+    0.8429818437963724
+   ],
+   [
+    153,
+    4,
+    0.8210846815779805
+   ],
+   [
+    153,
+    5,
+    0.7822081883445382
+   ],
+   [
+    153,
+    6,
+    0.7267620712488889
+   ],
+   [
+    153,
+    7,
+    0.6399434184193611
+   ],
+   [
+    153,
+    8,
+    0.6256855163007974
+   ],
+   [
+    153,
+    9,
+    0.590395964884758
+   ],
+   [
+    154,
+    1,
+    0.7873966572970151
+   ],
+   [
+    154,
+    2,
+    0.7651349619179963
+   ],
+   [
+    154,
+    3,
+    0.707061437574029
+   ],
+   [
+    154,
+    4,
+    0.59432432564646
+   ],
+   [
+    154,
+    5,
+    0.5517958285421133
+   ],
+   [
+    155,
+    1,
+    0.8508331548422575
+   ],
+   [
+    155,
+    2,
+    0.8625707339018583
+   ],
+   [
+    155,
+    3,
+    0.8516898433417082
+   ],
+   [
+    155,
+    4,
+    0.8331763292849064
+   ],
+   [
+    155,
+    5,
+    0.7897067297905683
+   ],
+   [
+    155,
+    6,
+    0.7573613974124193
+   ],
+   [
+    155,
+    7,
+    0.6704979028567671
+   ],
+   [
+    155,
+    8,
+    0.4980021210759878
+   ],
+   [
+    155,
+    9,
+    0.26146485916972156
+   ],
+   [
+    155,
+    10,
+    0.2363450459808111
+   ],
+   [
+    155,
+    11,
+    0.22225285384654997
+   ],
+   [
+    156,
+    1,
+    0.8115130474954844
+   ],
+   [
+    156,
+    2,
+    0.7760316205054522
+   ],
+   [
+    156,
+    3,
+    0.7400057332068681
+   ],
+   [
+    156,
+    4,
+    0.6978553962796926
+   ],
+   [
+    156,
+    5,
+    0.6670487658292055
+   ],
+   [
+    156,
+    6,
+    0.6241039446249604
+   ],
+   [
+    156,
+    7,
+    0.5881848278045655
+   ],
+   [
+    156,
+    8,
+    0.5918387487500906
+   ],
+   [
+    156,
+    9,
+    0.4515083414554596
+   ],
+   [
+    156,
+    10,
+    0.4705506453037262
+   ],
+   [
+    156,
+    11,
+    0.4044420774519444
+   ],
+   [
+    156,
+    12,
+    0.3935499854028225
+   ],
+   [
+    157,
+    1,
+    0.805533091378212
+   ],
+   [
+    157,
+    2,
+    0.7363594605445862
+   ],
+   [
+    157,
+    3,
+    0.13131244518756865
+   ],
+   [
+    157,
+    4,
+    0.13121654366254806
+   ],
+   [
+    157,
+    5,
+    0.13950387225151062
+   ],
+   [
+    158,
+    1,
+    0.8108711544454097
+   ],
+   [
+    158,
+    2,
+    0.7195781474351882
+   ],
+   [
+    158,
+    3,
+    0.6151149659246206
+   ],
+   [
+    158,
+    4,
+    0.6272130975544453
+   ],
+   [
+    158,
+    5,
+    0.0027188000455498386
+   ],
+   [
+    158,
+    6,
+    0.0026608272828161413
+   ],
+   [
+    158,
+    7,
+    0.0024324265569448194
+   ],
+   [
+    158,
+    8,
+    0.00218032050132749
+   ],
+   [
+    158,
+    9,
+    0.0021926319412886846
+   ],
+   [
+    158,
+    10,
+    0.0021008539907634016
+   ],
+   [
+    159,
+    1,
+    0.7545761611074209
+   ],
+   [
+    159,
+    2,
+    0.7343485955864191
+   ],
+   [
+    159,
+    3,
+    0.6906610181763768
+   ],
+   [
+    159,
+    4,
+    0.6090951795458793
+   ],
+   [
+    159,
+    5,
+    0.5488418455839157
+   ],
+   [
+    159,
+    6,
+    0.5851788093566894
+   ],
+   [
+    159,
+    7,
+    0.5555301940441132
+   ],
+   [
+    159,
+    8,
+    0.5462997575283051
+   ],
+   [
+    159,
+    9,
+    0.5235540813446045
+   ],
+   [
+    159,
+    10,
+    0.5194949424147606
+   ],
+   [
+    159,
+    11,
+    0.0523440790146589
+   ],
+   [
+    159,
+    12,
+    0.05142552697658536
+   ],
+   [
+    159,
+    13,
+    0.048995655892789335
+   ],
+   [
+    159,
+    14,
+    0.04777250965833661
+   ],
+   [
+    159,
+    15,
+    0.047190849153697464
+   ],
+   [
+    159,
+    16,
+    0.048723508787155125
+   ],
+   [
+    159,
+    17,
+    0.04728910337388513
+   ],
+   [
+    159,
+    18,
+    0.045160648685693715
+   ],
+   [
+    160,
+    1,
+    0.84325941054672
+   ],
+   [
+    160,
+    2,
+    0.7671917893454432
+   ],
+   [
+    160,
+    3,
+    0.6593127177581191
+   ],
+   [
+    160,
+    4,
+    0.5209904498234391
+   ],
+   [
+    161,
+    1,
+    0.839635275620222
+   ],
+   [
+    161,
+    2,
+    0.8248200330108404
+   ],
+   [
+    161,
+    3,
+    0.8035820621475577
+   ],
+   [
+    161,
+    4,
+    0.7690873159617186
+   ],
+   [
+    161,
+    5,
+    0.7063438978761435
+   ],
+   [
+    161,
+    6,
+    0.6405804013878107
+   ],
+   [
+    161,
+    7,
+    0.6139939868330956
+   ],
+   [
+    161,
+    8,
+    0.59056814648211
+   ],
+   [
+    161,
+    9,
+    0.5737820596247911
+   ],
+   [
+    161,
+    10,
+    0.32999985707625745
+   ],
+   [
+    162,
+    1,
+    0.8347484084188939
+   ],
+   [
+    162,
+    2,
+    0.7868115487203002
+   ],
+   [
+    162,
+    3,
+    0.7161995706081391
+   ],
+   [
+    162,
+    4,
+    0.7405551613211632
+   ],
+   [
+    162,
+    5,
+    0.592668836608529
+   ],
+   [
+    162,
+    6,
+    0.562734587663412
+   ],
+   [
+    162,
+    7,
+    0.550896749703586
+   ],
+   [
+    162,
+    8,
+    0.5417945634886622
+   ],
+   [
+    162,
+    9,
+    0.5233602444499731
+   ],
+   [
+    162,
+    10,
+    0.5182846843063831
+   ],
+   [
+    162,
+    11,
+    0.4842140851184725
+   ],
+   [
+    162,
+    12,
+    0.46615885277241464
+   ],
+   [
+    162,
+    13,
+    0.47076682171374556
+   ],
+   [
+    162,
+    14,
+    0.44651224619746205
+   ],
+   [
+    162,
+    15,
+    0.40391781372278923
+   ],
+   [
+    163,
+    1,
+    0.7447395759940147
+   ],
+   [
+    163,
+    2,
+    0.7230887581557035
+   ],
+   [
+    163,
+    3,
+    0.7255887245655059
+   ],
+   [
+    163,
+    4,
+    0.5487189543247223
+   ],
+   [
+    163,
+    5,
+    0.5072454942941665
+   ],
+   [
+    163,
+    6,
+    0.5362080711722373
+   ],
+   [
+    164,
+    1,
+    0.818633759573102
+   ],
+   [
+    164,
+    2,
+    0.6917080251723529
+   ],
+   [
+    164,
+    3,
+    0.6387916137501598
+   ],
+   [
+    164,
+    4,
+    0.6563888263255359
+   ],
+   [
+    164,
+    5,
+    0.6363450613543391
+   ],
+   [
+    164,
+    6,
+    0.5744222591847181
+   ],
+   [
+    165,
+    1,
+    0.8497261276245117
+   ],
+   [
+    165,
+    2,
+    0.8014813018798828
+   ],
+   [
+    165,
+    3,
+    0.7868911594390868
+   ],
+   [
+    165,
+    4,
+    0.7366794330596923
+   ],
+   [
+    165,
+    5,
+    0.6891268341064453
+   ],
+   [
+    165,
+    6,
+    0.6352174124479294
+   ],
+   [
+    165,
+    7,
+    0.6880155020475388
+   ],
+   [
+    165,
+    8,
+    0.6016653311848641
+   ],
+   [
+    165,
+    9,
+    0.5948635789513588
+   ],
+   [
+    165,
+    10,
+    0.5966357425570489
+   ],
+   [
+    165,
+    11,
+    0.5765189489126206
+   ],
+   [
+    165,
+    12,
+    0.5683026053667068
+   ],
+   [
+    165,
+    13,
+    0.5260267650485039
+   ],
+   [
+    166,
+    1,
+    0.7598435310095549
+   ],
+   [
+    166,
+    2,
+    0.6680344732299447
+   ],
+   [
+    166,
+    3,
+    0.5584349472939968
+   ],
+   [
+    166,
+    4,
+    0.5346661566764116
+   ],
+   [
+    166,
+    5,
+    0.5239257896095514
+   ],
+   [
+    166,
+    6,
+    0.5186087962508201
+   ],
+   [
+    166,
+    7,
+    0.4905583172738552
+   ],
+   [
+    166,
+    8,
+    0.4784590783506632
+   ],
+   [
+    166,
+    9,
+    0.4705922620356083
+   ],
+   [
+    166,
+    10,
+    0.45284234853088856
+   ],
+   [
+    166,
+    11,
+    0.443991250911355
+   ],
+   [
+    166,
+    12,
+    0.4165334155857563
+   ],
+   [
+    166,
+    13,
+    0.4111713656365871
+   ],
+   [
+    166,
+    14,
+    0.4117743093520403
+   ],
+   [
+    166,
+    15,
+    0.19383945820331572
+   ],
+   [
+    166,
+    16,
+    0.19525147259235381
+   ],
+   [
+    166,
+    17,
+    0.19443210463523863
+   ],
+   [
+    167,
+    1,
+    0.7727554602861404
+   ],
+   [
+    167,
+    2,
+    0.06682991589903835
+   ],
+   [
+    167,
+    3,
+    0.06499924832582477
+   ],
+   [
+    167,
+    4,
+    0.06446823051273826
+   ],
+   [
+    167,
+    5,
+    0.061953474649786976
+   ],
+   [
+    167,
+    6,
+    0.05866374947726729
+   ],
+   [
+    167,
+    7,
+    0.05649684061110022
+   ],
+   [
+    167,
+    8,
+    0.05133308000564577
+   ],
+   [
+    167,
+    9,
+    0.05006881882846358
+   ],
+   [
+    168,
+    1,
+    0.8074798092842103
+   ],
+   [
+    168,
+    2,
+    0.6885042043626308
+   ],
+   [
+    168,
+    3,
+    0.6266295259147883
+   ],
+   [
+    169,
+    1,
+    0.8221273069426417
+   ],
+   [
+    169,
+    2,
+    0.7300441179424524
+   ],
+   [
+    169,
+    3,
+    0.6796517863497138
+   ],
+   [
+    169,
+    4,
+    0.6913755739331245
+   ],
+   [
+    169,
+    5,
+    0.6689808345213533
+   ],
+   [
+    169,
+    6,
+    0.6994223509430886
+   ],
+   [
+    169,
+    7,
+    0.6758264161124826
+   ],
+   [
+    169,
+    8,
+    0.6577532075420023
+   ],
+   [
+    169,
+    9,
+    0.5705035538300872
+   ],
+   [
+    169,
+    10,
+    0.5531862563043833
+   ],
+   [
+    169,
+    11,
+    0.527192178606987
+   ],
+   [
+    170,
+    1,
+    0.8160794640719891
+   ],
+   [
+    170,
+    2,
+    0.6745320648998022
+   ],
+   [
+    170,
+    3,
+    0.6418079344779253
+   ],
+   [
+    170,
+    4,
+    0.6334564697742462
+   ],
+   [
+    170,
+    5,
+    0.6216990235209465
+   ],
+   [
+    170,
+    6,
+    0.6219083899140359
+   ],
+   [
+    170,
+    7,
+    0.6111297131106257
+   ],
+   [
+    171,
+    1,
+    0.8267639060169459
+   ],
+   [
+    171,
+    2,
+    0.8402991183489561
+   ],
+   [
+    171,
+    3,
+    0.7399108484119177
+   ],
+   [
+    171,
+    4,
+    0.6605888851180672
+   ],
+   [
+    171,
+    5,
+    0.6650039950981737
+   ],
+   [
+    171,
+    6,
+    0.6216251107871532
+   ],
+   [
+    171,
+    7,
+    0.5727294842153787
+   ],
+   [
+    172,
+    1,
+    0.5884510704867542
+   ],
+   [
+    172,
+    2,
+    0.5372522784501315
+   ],
+   [
+    172,
+    3,
+    0.5477082259878516
+   ],
+   [
+    172,
+    4,
+    0.4942170086205006
+   ],
+   [
+    172,
+    5,
+    0.5371813879869879
+   ],
+   [
+    173,
+    1,
+    0.8366465487062932
+   ],
+   [
+    173,
+    2,
+    0.7920112625062466
+   ],
+   [
+    173,
+    3,
+    0.046498273238539715
+   ],
+   [
+    173,
+    4,
+    0.04124143004715444
+   ],
+   [
+    173,
+    5,
+    0.04103116126209499
+   ],
+   [
+    173,
+    6,
+    0.03692962440848352
+   ],
+   [
+    173,
+    7,
+    0.03212332241982223
+   ],
+   [
+    174,
+    1,
+    0.776545277684927
+   ],
+   [
+    174,
+    2,
+    0.6495756419569254
+   ],
+   [
+    174,
+    3,
+    0.6112208234578371
+   ],
+   [
+    174,
+    4,
+    0.6715331930980086
+   ],
+   [
+    174,
+    5,
+    0.6477944259479642
+   ],
+   [
+    174,
+    6,
+    0.636982184112072
+   ],
+   [
+    174,
+    7,
+    0.5792882189750671
+   ],
+   [
+    174,
+    8,
+    0.5671811343729496
+   ],
+   [
+    174,
+    9,
+    0.542284651786089
+   ],
+   [
+    174,
+    10,
+    0.5366846949309111
+   ],
+   [
+    174,
+    11,
+    0.524971662864089
+   ],
+   [
+    174,
+    12,
+    0.5309506779313087
+   ],
+   [
+    174,
+    13,
+    0.5255223888754844
+   ],
+   [
+    175,
+    1,
+    0.7577903682753444
+   ],
+   [
+    175,
+    2,
+    0.681916363978386
+   ],
+   [
+    175,
+    3,
+    0.6057795611158013
+   ],
+   [
+    175,
+    4,
+    0.6062676250398159
+   ],
+   [
+    175,
+    5,
+    0.579754897248745
+   ],
+   [
+    175,
+    6,
+    0.5055519137442112
+   ],
+   [
+    175,
+    7,
+    0.4873052966415882
+   ],
+   [
+    175,
+    8,
+    0.44189423762261865
+   ],
+   [
+    175,
+    9,
+    0.43092339671850205
+   ],
+   [
+    176,
+    1,
+    0.8337218118518591
+   ],
+   [
+    176,
+    2,
+    0.8009517861977219
+   ],
+   [
+    176,
+    3,
+    0.5902199207186699
+   ],
+   [
+    176,
+    4,
+    0.6186391155481339
+   ],
+   [
+    176,
+    5,
+    0.5766517309188843
+   ],
+   [
+    176,
+    6,
+    0.5477137209177018
+   ],
+   [
+    176,
+    7,
+    0.1083149552382529
+   ],
+   [
+    176,
+    8,
+    0.10365101326256991
+   ],
+   [
+    176,
+    9,
+    0.09658037315309048
+   ],
+   [
+    177,
+    1,
+    0.6106675649821758
+   ],
+   [
+    177,
+    2,
+    0.15584607948064805
+   ],
+   [
+    177,
+    3,
+    0.15268853480815886
+   ],
+   [
+    177,
+    4,
+    0.09053772464990614
+   ],
+   [
+    177,
+    5,
+    0.08495892795324324
+   ],
+   [
+    177,
+    6,
+    0.030465490329265616
+   ],
+   [
+    177,
+    7,
+    0.027431490547209995
+   ],
+   [
+    177,
+    8,
+    0.02630077838525178
+   ],
+   [
+    177,
+    9,
+    0.027265539606660623
+   ],
+   [
+    178,
+    1,
+    0.8325239437147975
+   ],
+   [
+    178,
+    2,
+    0.8091996430307627
+   ],
+   [
+    178,
+    3,
+    0.7174243447333575
+   ],
+   [
+    178,
+    4,
+    0.6803020496442914
+   ],
+   [
+    178,
+    5,
+    0.6162602122649551
+   ],
+   [
+    178,
+    6,
+    0.6054387930706143
+   ],
+   [
+    178,
+    7,
+    0.5755562529757619
+   ],
+   [
+    178,
+    8,
+    0.5534704188935459
+   ],
+   [
+    178,
+    9,
+    0.543099206019938
+   ],
+   [
+    178,
+    10,
+    0.5324822775565088
+   ],
+   [
+    178,
+    11,
+    0.4928092107988894
+   ],
+   [
+    178,
+    12,
+    0.48796081097871064
+   ],
+   [
+    178,
+    13,
+    0.4808582521699369
+   ],
+   [
+    178,
+    14,
+    0.48604196800813076
+   ],
+   [
+    178,
+    15,
+    0.4605661341525614
+   ],
+   [
+    178,
+    16,
+    0.4623112444281578
+   ],
+   [
+    178,
+    17,
+    0.4481313903540373
+   ],
+   [
+    179,
+    1,
+    0.7582692685604095
+   ],
+   [
+    179,
+    2,
+    0.790000676932931
+   ],
+   [
+    179,
+    3,
+    0.7138740218058229
+   ],
+   [
+    179,
+    4,
+    0.6805614764615894
+   ],
+   [
+    179,
+    5,
+    0.6767503555119038
+   ],
+   [
+    179,
+    6,
+    0.6533945031836629
+   ],
+   [
+    179,
+    7,
+    0.6151086576282978
+   ],
+   [
+    179,
+    8,
+    0.6293282749503851
+   ],
+   [
+    179,
+    9,
+    0.6113391556218267
+   ],
+   [
+    179,
+    10,
+    0.5541681518614292
+   ],
+   [
+    179,
+    11,
+    0.03637464587390422
+   ],
+   [
+    179,
+    12,
+    0.03374836679846047
+   ],
+   [
+    179,
+    13,
+    0.0337312962681055
+   ],
+   [
+    180,
+    1,
+    0.8455757967948914
+   ],
+   [
+    180,
+    2,
+    0.7648551673665643
+   ],
+   [
+    180,
+    3,
+    0.7385363072857261
+   ],
+   [
+    180,
+    4,
+    0.6668229277253152
+   ],
+   [
+    180,
+    5,
+    0.6701339718818665
+   ],
+   [
+    180,
+    6,
+    0.6922606075555087
+   ],
+   [
+    180,
+    7,
+    0.6067441828429699
+   ],
+   [
+    180,
+    8,
+    0.6028334681734443
+   ],
+   [
+    180,
+    9,
+    0.604738475856185
+   ],
+   [
+    180,
+    10,
+    0.5533297306731343
+   ],
+   [
+    180,
+    11,
+    0.01732668294012548
+   ],
+   [
+    181,
+    1,
+    0.7799386103078723
+   ],
+   [
+    181,
+    2,
+    0.7236169625073672
+   ],
+   [
+    181,
+    3,
+    0.6972953340888024
+   ],
+   [
+    181,
+    4,
+    0.6732175406992436
+   ],
+   [
+    181,
+    5,
+    0.6022380298107862
+   ],
+   [
+    181,
+    6,
+    0.5825058498680592
+   ],
+   [
+    181,
+    7,
+    0.5623378642082214
+   ],
+   [
+    181,
+    8,
+    0.5857591252326966
+   ],
+   [
+    181,
+    9,
+    0.571808384513855
+   ],
+   [
+    182,
+    1,
+    0.807748527212441
+   ],
+   [
+    182,
+    2,
+    0.8012600132077933
+   ],
+   [
+    182,
+    3,
+    0.7774182037577033
+   ],
+   [
+    182,
+    4,
+    0.7476852921783924
+   ],
+   [
+    182,
+    5,
+    0.6636640468597412
+   ],
+   [
+    182,
+    6,
+    0.6003092790603638
+   ],
+   [
+    182,
+    7,
+    0.5086557558402419
+   ],
+   [
+    182,
+    8,
+    0.4845117099285126
+   ],
+   [
+    182,
+    9,
+    0.34472544022202495
+   ],
+   [
+    182,
+    10,
+    0.3419158253759146
+   ],
+   [
+    182,
+    11,
+    0.03875437899082901
+   ],
+   [
+    183,
+    1,
+    0.7760459548205138
+   ],
+   [
+    183,
+    2,
+    0.6787139324873686
+   ],
+   [
+    183,
+    3,
+    0.6420583937957883
+   ],
+   [
+    183,
+    4,
+    0.6093287179738284
+   ],
+   [
+    183,
+    5,
+    0.6070612407177687
+   ],
+   [
+    183,
+    6,
+    0.557036256685853
+   ],
+   [
+    183,
+    7,
+    0.57919138969481
+   ],
+   [
+    183,
+    8,
+    0.5629149421155453
+   ],
+   [
+    183,
+    9,
+    0.47144234442710875
+   ],
+   [
+    183,
+    10,
+    0.4619596038490534
+   ],
+   [
+    184,
+    1,
+    0.7268889282226563
+   ],
+   [
+    184,
+    2,
+    0.7037527404785157
+   ],
+   [
+    184,
+    3,
+    0.6174450607299805
+   ],
+   [
+    184,
+    4,
+    0.5866820250332355
+   ],
+   [
+    184,
+    5,
+    0.571613913321495
+   ],
+   [
+    184,
+    6,
+    0.5008315630108118
+   ],
+   [
+    184,
+    7,
+    0.4864572965830565
+   ],
+   [
+    184,
+    8,
+    0.4858541391849518
+   ],
+   [
+    184,
+    9,
+    0.462290341758728
+   ],
+   [
+    185,
+    1,
+    0.6158133997052908
+   ],
+   [
+    185,
+    2,
+    0.4519986186504364
+   ],
+   [
+    185,
+    3,
+    0.37850148746967316
+   ],
+   [
+    185,
+    4,
+    0.1960481916517019
+   ],
+   [
+    185,
+    5,
+    0.19487720472738143
+   ],
+   [
+    185,
+    6,
+    0.18388337022811171
+   ],
+   [
+    185,
+    7,
+    0.03163785874620079
+   ],
+   [
+    185,
+    8,
+    0.03224138767719268
+   ],
+   [
+    186,
+    1,
+    0.8356564789190889
+   ],
+   [
+    186,
+    2,
+    0.7635524960309268
+   ],
+   [
+    186,
+    3,
+    0.7275004140734672
+   ],
+   [
+    186,
+    4,
+    0.6781378743499518
+   ],
+   [
+    186,
+    5,
+    0.6521493076086045
+   ],
+   [
+    186,
+    6,
+    0.5996116915494204
+   ],
+   [
+    187,
+    1,
+    0.887703216445446
+   ],
+   [
+    187,
+    2,
+    0.8680300770297646
+   ],
+   [
+    187,
+    3,
+    0.8101570161879063
+   ],
+   [
+    187,
+    4,
+    0.7606319033578038
+   ],
+   [
+    187,
+    5,
+    0.6838571333751082
+   ],
+   [
+    187,
+    6,
+    0.5989469611346722
+   ],
+   [
+    187,
+    7,
+    0.5528514365702867
+   ],
+   [
+    187,
+    8,
+    0.5030937012955546
+   ],
+   [
+    187,
+    9,
+    0.4704434566386044
+   ],
+   [
+    188,
+    1,
+    0.693859685741365
+   ],
+   [
+    188,
+    2,
+    0.5478739098571241
+   ],
+   [
+    189,
+    1,
+    0.8542200626134872
+   ],
+   [
+    189,
+    2,
+    0.8026504443407059
+   ],
+   [
+    189,
+    3,
+    0.7663532816052436
+   ],
+   [
+    189,
+    4,
+    0.7031247742414474
+   ],
+   [
+    189,
+    5,
+    0.6618687447428703
+   ],
+   [
+    189,
+    6,
+    0.5160473751813173
+   ],
+   [
+    189,
+    7,
+    0.5037263651698828
+   ],
+   [
+    189,
+    8,
+    0.4840945104062557
+   ],
+   [
+    190,
+    1,
+    0.6742220668792724
+   ],
+   [
+    190,
+    2,
+    0.7417959786310793
+   ],
+   [
+    190,
+    3,
+    0.7621007373332978
+   ],
+   [
+    190,
+    4,
+    0.7751697333574296
+   ],
+   [
+    190,
+    5,
+    0.5099885783672333
+   ],
+   [
+    191,
+    1,
+    0.7896746905580163
+   ],
+   [
+    191,
+    2,
+    0.732248680588603
+   ],
+   [
+    191,
+    3,
+    0.6768471366718412
+   ],
+   [
+    191,
+    4,
+    0.5700909317538142
+   ],
+   [
+    191,
+    5,
+    0.5180139831542968
+   ],
+   [
+    191,
+    6,
+    0.3294651525557041
+   ],
+   [
+    191,
+    7,
+    0.3082960778385401
+   ],
+   [
+    191,
+    8,
+    0.2923745121069252
+   ],
+   [
+    191,
+    9,
+    0.29880906711816785
+   ],
+   [
+    191,
+    10,
+    0.2968825387626886
+   ],
+   [
+    192,
+    1,
+    0.7035719905555249
+   ],
+   [
+    192,
+    2,
+    0.6292681729614735
+   ],
+   [
+    192,
+    3,
+    0.6078078737616539
+   ],
+   [
+    192,
+    4,
+    0.11776058256030081
+   ],
+   [
+    192,
+    5,
+    0.11763098108172415
+   ],
+   [
+    192,
+    6,
+    0.10997614601850508
+   ],
+   [
+    192,
+    7,
+    0.10902079161405562
+   ],
+   [
+    192,
+    8,
+    0.10791667943000792
+   ],
+   [
+    192,
+    9,
+    0.08702660484984516
+   ],
+   [
+    193,
+    1,
+    0.7448887848526239
+   ],
+   [
+    193,
+    2,
+    0.7205695505306124
+   ],
+   [
+    193,
+    3,
+    0.731251225399971
+   ],
+   [
+    193,
+    4,
+    0.696978047735989
+   ],
+   [
+    193,
+    5,
+    0.6710632329463959
+   ],
+   [
+    193,
+    6,
+    0.6109163879364728
+   ],
+   [
+    193,
+    7,
+    0.5675061310268938
+   ],
+   [
+    193,
+    8,
+    0.527668464500457
+   ],
+   [
+    193,
+    9,
+    0.48508387612104414
+   ],
+   [
+    193,
+    10,
+    0.4766392859898507
+   ],
+   [
+    193,
+    11,
+    0.4446384620457887
+   ],
+   [
+    194,
+    1,
+    0.8404364286527037
+   ],
+   [
+    194,
+    2,
+    0.7905198321163655
+   ],
+   [
+    194,
+    3,
+    0.7350092373713851
+   ],
+   [
+    194,
+    4,
+    0.7078670992597937
+   ],
+   [
+    194,
+    5,
+    0.6695550107970833
+   ],
+   [
+    194,
+    6,
+    0.6471308828026057
+   ],
+   [
+    194,
+    7,
+    0.5952285432070494
+   ],
+   [
+    194,
+    8,
+    0.5762706032760442
+   ],
+   [
+    195,
+    1,
+    0.8013775685191155
+   ],
+   [
+    195,
+    2,
+    0.7837365463793278
+   ],
+   [
+    195,
+    3,
+    0.6801766827464104
+   ],
+   [
+    195,
+    4,
+    0.6507235886752606
+   ],
+   [
+    195,
+    5,
+    0.6528204369902612
+   ],
+   [
+    195,
+    6,
+    0.5807515878230334
+   ],
+   [
+    195,
+    7,
+    0.5795865082740784
+   ],
+   [
+    196,
+    1,
+    0.7055926866084338
+   ],
+   [
+    196,
+    2,
+    0.6765122481435537
+   ],
+   [
+    196,
+    3,
+    0.6450561495125293
+   ],
+   [
+    196,
+    4,
+    0.6341779807209968
+   ],
+   [
+    196,
+    5,
+    0.5829421482115984
+   ],
+   [
+    196,
+    6,
+    0.5648322147488594
+   ],
+   [
+    196,
+    7,
+    0.5668029348194599
+   ],
+   [
+    196,
+    8,
+    0.49286255371570586
+   ],
+   [
+    197,
+    1,
+    0.8022548374816775
+   ],
+   [
+    197,
+    2,
+    0.7388111899137497
+   ],
+   [
+    197,
+    3,
+    0.041831611990928684
+   ],
+   [
+    197,
+    4,
+    0.03619658768177036
+   ],
+   [
+    197,
+    5,
+    0.03342521533370021
+   ],
+   [
+    197,
+    6,
+    0.03229818642139438
+   ],
+   [
+    197,
+    7,
+    0.031330416351556804
+   ],
+   [
+    198,
+    1,
+    0.774642283411324
+   ],
+   [
+    198,
+    2,
+    0.7571595800340175
+   ],
+   [
+    198,
+    3,
+    0.7436379895493388
+   ],
+   [
+    198,
+    4,
+    0.6889699989154935
+   ],
+   [
+    198,
+    5,
+    0.6081415401995182
+   ],
+   [
+    198,
+    6,
+    0.5652301939114928
+   ],
+   [
+    198,
+    7,
+    0.5373289166465401
+   ],
+   [
+    198,
+    8,
+    0.5065445921331644
+   ],
+   [
+    198,
+    9,
+    0.49197670480906963
+   ],
+   [
+    199,
+    1,
+    0.7659270979151129
+   ],
+   [
+    199,
+    2,
+    0.7029063372254372
+   ],
+   [
+    199,
+    3,
+    0.6390389740645885
+   ],
+   [
+    199,
+    4,
+    0.6242072546549141
+   ],
+   [
+    199,
+    5,
+    0.6175261121198535
+   ],
+   [
+    199,
+    6,
+    0.5793650170139969
+   ],
+   [
+    199,
+    7,
+    0.5698536500439048
+   ]
+  ]
+ },
+ "v0_len": 7053,
+ "total_cost": 47.273908,
+ "provenance": {
+  "- At each potential cut, judge whether the material that follows, taken alone, would contradict, reverse, or negate the proposition already delivered; contradictions include later clauses that cancel earlier assertions or change polarity.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- At each cut, judge whether translating the left and right pieces independently and then joining them will faithfully express the whole sentence (cohesion): look for lost antecedents, broken reference chains, or misresolved modifiers.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Pay attention to subordinate openings and sentential parentheticals whose scope is unresolved early; if later words supply scope or presuppositions that change truth conditions, contra rises.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Assess relative and complement clauses that complete noun meanings; cutting before modifiers that determine the referent often reduces cohesion even if surface words look phrase-internal.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Long noun phrases with postnominal modifiers, prepositional complements, numerals, or titles can mimic clause starts; decide whether the subsequent material changes the identity or truth of the earlier stretch.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifier and an immediately following measurement or unit phrase that completes it (units, percents, counts, or 'per' constructions); keep the number and its unit together.": {
+   "origin": "iter 4",
+   "adopted_delta": 0.0025,
+   "adopted_ci_lo": -0.0102
+  },
+  "- Coordinate joins and sentence-level adverbials often begin new propositions; determine whether the continuation attaches harmlessly or introduces content that could contradict or alter earlier claims.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Consider scope-bearing elements (negation, quantifiers, modality, comparatives) whose interpretation may depend on following material; if later text resolves polarity or scope, an early cut risks contra or cohesion loss.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Predict translation consequences: if separating pieces forces translators to guess antecedents, attach modifiers arbitrarily, or invent scope, the joined translation will lose fidelity; where guessing is unavoidable, lower cohesion.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

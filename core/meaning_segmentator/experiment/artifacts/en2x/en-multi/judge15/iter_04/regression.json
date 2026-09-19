@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00305,
+  "lo": -0.01342,
+  "hi": 0.00777,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0075,
+  "≤5": -0.001,
+  "≤7": -0.0003,
+  "≤10": 0.0003,
+  "≤99": 0.0064
+ },
+ "n_worse": 678,
+ "n_better": 697,
+ "worst": [
+  {
+   "id": "en_us_970",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6321,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6312,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently ‖ general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_802",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.5655,
+   "before": "Drink alcoholic drinks ‖ with moderation. ‖ Alcohol ‖ affects everyone differently, ‖ and knowing your limit is very important.",
+   "after": "Drink alcoholic drinks ‖ with moderation. ‖ Alcohol affects everyone ‖ differently, ‖ and knowing your limit is very important."
+  },
+  {
+   "id": "en_us_970",
+   "k": 8,
+   "bin": "≤3",
+   "delta": -0.5649,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the ‖ villages, ‖ and cars cannot reach ‖ them from the outside.",
+   "after": "Part of its charm ‖ is the lack of visible ‖ corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_970",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.5597,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the villages, ‖ and cars cannot reach ‖ them from the outside.",
+   "after": "Part of its charm is the lack of visible ‖ corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7782,
+   "before": "The best indication of internal poisoning may be the presence ‖ of an open container of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7364,
+   "before": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7325,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7279,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, ‖ and sixth place, respectively.",
+   "after": "Former House Speaker ‖ Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_388",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6766,
+   "before": "He originally named ‖ the Hangeul alphabet Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\"."
+  }
+ ],
+ "why": "The C1 change (prioritizing boundaries whose remainder would contradict the prefix) made the scorer avoid cuts that leave a contradicting remainder, which raised scores on long pieces; the new C3 warning about cutting after auxiliaries/copulas/modals shifted many cuts away from those markers into adjacent short spans, increasing harmful short-latency splits (bins ≤3 and ≤5) and producing the small net drop.",
+ "lesson": "Keep the preference to demote single high-contradiction boundaries (C1) but avoid re-ranking that pushes cuts into head-adjacent tiny spans (subject/auxiliary splits or noun+modifier fragments) that damage very short latency bins.",
+ "blamed": [
+  "C1 «- Treat any boundary where the remainder, read alone, would »",
+  "C3 «- Is a subordinating relation unresolved at the cut (complem»"
+ ]
+}

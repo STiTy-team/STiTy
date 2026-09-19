@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01426,
+  "lo": 0.00294,
+  "hi": 0.02552,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00187,
+  "lo": -0.01252,
+  "hi": 0.00883,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a single narrow binding rule: keep a noun/verb head with an immediately following numeral/quantity/unit/date/parenthetical measure to avoid detaching measurements that cause incoherence (addresses the primary_finding)."
+ ],
+ "findings": [
+  "The prompt underrates cuts that separate a predicate (verb or clause head) from the phrase that completes its meaning, causing detached predicates or mis-scoped modifiers when pieces are translated independently.",
+  "The prompt mishandles numeric/measurement attachments: it allows cuts that detach numerals, units, dates or parenthetical measures from the noun or phrase they quantify, which produces incoherence or contradiction when pieces are translated separately."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Keep a noun or verb head together with an immediately following numeral, quant"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0239,
+   "≤5": 0.0129,
+   "≤7": 0.0005,
+   "≤10": 0.0055,
+   "≤99": -0.0045
+  },
+  "n_worse": 1707,
+  "n_better": 2055,
+  "why": "Inserting the narrow head+measurement binding made the model avoid cuts that separate a noun/verb head from an immediately following numeral/quantity, so many very-short pieces (≤3 and ≤5-word pieces) improved because measurements stayed attached to their heads. However that binding pushed cuts elsewhere (isolating determiners/pronouns or breaking enumerations) and produced small net harm over full sentences (≤99), so the overall H_set change is slightly negative and not significant.",
+  "lesson": "When adding a binding to keep heads with immediately following numerals, ensure it doesn't force cuts that create single-word fragments or split coordinate/enumeration structure, since the rule helps very short pieces but can worsen longer-piece coherence.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

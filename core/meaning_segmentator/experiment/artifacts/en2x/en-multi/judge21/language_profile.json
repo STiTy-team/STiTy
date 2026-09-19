@@ -1,0 +1,28 @@
+{
+  "source_language": "English",
+  "word_order": "SVO | Sentences show a canonical Subject–Verb–Object order (e.g. 'Apple CEO Steve Jobs unveiled the device' — S V O).",
+  "register": "edited, written expository prose (news/encyclopedic/technical style; formally edited factual sentences).",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "coordinating conjunctions (and, but)",
+    "subordinating conjunctions (although, because)",
+    "temporal subordinators/adverbials (once, after)",
+    "stance/hedge items (of course, only)"
+  ],
+  "clause_boundary_signals": [
+    "complementizer clauses (that — introduces embedded clauses and complements)",
+    "relative pronouns/clauses (who, which — introduce relative clauses attached to noun phrases)",
+    "coordinating conjunctions linking clauses (and, but)",
+    "subordinating conjunctions introducing dependent clauses (although, because)"
+  ],
+  "non_boundary_traps": [
+    "initial adverbial/prepositional phrases (for over a thousand years, around 60 cases — often sentence-initial but attach to a matrix clause)",
+    "appositives and parentheticals set off inside clauses (live on television; Sir Richard Branson's Virgin Group — interrupt the main clause without ending it)",
+    "noun-internal genitives/possessives (Auckland's National Women's Hospital — possessive morphology inside a single NP, not a clause break)"
+  ],
+  "unstable_prefix_signals": [
+    "introductory subordinators and prepositional phrases (Because, While — after these tokens the eventual clause type/attachment is not fixed until more words appear)",
+    "numerical/quantifier openings (Eighteen percent, Around 60 — begin a nominal expression that may attach in different ways until the verb or complementizer appears)"
+  ],
+  "notes_for_prompt_writer": "This is standard written English with SVO order and frequent clause embedding via complementizer 'that' and relative pronouns (who/which). Many sentences use sentence-initial adverbial or prepositional phrases and parenthetical appositives, which are part of the surrounding clause rather than true clause boundaries. Coordinating and subordinating conjunctions regularly link full clauses; 'that' often marks embedded clause starts and is a reliable cue to clausehood."
+}

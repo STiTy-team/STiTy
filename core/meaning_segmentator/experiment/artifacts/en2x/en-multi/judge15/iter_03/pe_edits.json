@@ -1,0 +1,137 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Do not cut inside numeric expressions or ranges: keep numbers with their multipliers (million, percent, etc.), units, and both endpoints of ranges together. Splitting numerals from units or the ends of a range often yields incoherent or mistranslated numeric phrases when pieces are translated separately."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 308
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7357,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Avoid cutting between a verb (or auxiliary) and its core object or complement, or between a verb and a following prepositional or infinitival complement. Keep the predicate and its core arguments together; prefer moving the break so the whole predicate stays in one piece."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 73
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7122,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_419",
+    "text": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> to <SEG:?> 500 <SEG:?> million <SEG:?> speakers, <SEG:?> and <SEG:?> as <SEG:?> many <SEG:?> as <SEG:?> 800 <SEG:?> million <SEG:?> people <SEG:?> can <SEG:?> understand <SEG:?> the <SEG:?> language.\nOutput: Estimates <SEG:100> range <SEG:83> from <SEG:89> 340 <SEG:39> million <SEG:61> to <SEG:6> 500 <SEG:50> million <SEG:0> speakers, <SEG:94> and <SEG:72> as <SEG:28> many <SEG:78> as <SEG:67> 800 <SEG:56> million <SEG:17> people <SEG:11> can <SEG:33> understand <SEG:44> the <SEG:22> language."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1050",
+    "text": "Input: The <SEG:?> two <SEG:?> towers <SEG:?> rise <SEG:?> to <SEG:?> a <SEG:?> height <SEG:?> of <SEG:?> 83 <SEG:?> meters, <SEG:?> it's <SEG:?> 378 <SEG:?> meters <SEG:?> long <SEG:?> and <SEG:?> it <SEG:?> has <SEG:?> two <SEG:?> lanes <SEG:?> of <SEG:?> 3.50 <SEG:?> m <SEG:?> wide.\nOutput: The <SEG:67> two <SEG:38> towers <SEG:48> rise <SEG:24> to <SEG:52> a <SEG:14> height <SEG:33> of <SEG:81> 83 <SEG:90> meters, <SEG:100> it's <SEG:5> 378 <SEG:0> meters <SEG:29> long <SEG:76> and <SEG:71> it <SEG:43> has <SEG:86> two <SEG:62> lanes <SEG:57> of <SEG:95> 3.50 <SEG:19> m <SEG:10> wide."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_538",
+    "text": "Input: If <SEG:?> the <SEG:?> objective <SEG:?> of <SEG:?> one’s <SEG:?> visit <SEG:?> to <SEG:?> a <SEG:?> particular <SEG:?> place <SEG:?> is <SEG:?> to <SEG:?> get <SEG:?> to <SEG:?> know <SEG:?> its <SEG:?> history <SEG:?> and <SEG:?> culture <SEG:?> then <SEG:?> this <SEG:?> type <SEG:?> of <SEG:?> tourism <SEG:?> is <SEG:?> known <SEG:?> as <SEG:?> cultural <SEG:?> tourism.\nOutput: If <SEG:74> the <SEG:59> objective <SEG:33> of <SEG:56> one’s <SEG:30> visit <SEG:63> to <SEG:7> a <SEG:4> particular <SEG:15> place <SEG:70> is <SEG:93> to <SEG:81> get <SEG:52> to <SEG:44> know <SEG:78> its <SEG:22> history <SEG:48> and <SEG:19> culture <SEG:100> then <SEG:96> this <SEG:85> type <SEG:37> of <SEG:41> tourism <SEG:67> is <SEG:11> known <SEG:26> as <SEG:0> cultural <SEG:89> tourism."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 18
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -75
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -75
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7046,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- When a numeric expression spans a cut, prefer cuts that keep the numeral with its multipliers and unit together (e.g. \"340 million\", \"83 meters\"); if unavoidable, cut before the whole numeric phrase or after its unit/endpoint — do not split number from its multiplier or unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 279
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7328,
+  "errors": null
+ }
+]

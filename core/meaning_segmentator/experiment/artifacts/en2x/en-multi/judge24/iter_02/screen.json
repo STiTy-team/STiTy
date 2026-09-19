@@ -1,0 +1,156 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  17,
+  38,
+  47,
+  53,
+  54,
+  79,
+  85,
+  86,
+  88,
+  89,
+  100,
+  117,
+  143,
+  144,
+  153,
+  155,
+  165,
+  167,
+  170,
+  171,
+  177,
+  204,
+  208,
+  209,
+  240,
+  242,
+  243,
+  288,
+  300,
+  302,
+  313,
+  314,
+  338,
+  348,
+  367,
+  369,
+  375,
+  379,
+  392,
+  393,
+  404,
+  442,
+  448,
+  450,
+  458,
+  471,
+  473,
+  474,
+  495,
+  498
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00539,
+    "lo": -0.02551,
+    "hi": 0.01599,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 7361,
+   "changelog": [
+    "Add a single narrow binding rule that keeps numerals/quantifiers attached to their immediately following measurement unit or parenthesized measurement phrase to fix splits that lose units (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.02339,
+    "lo": -0.00425,
+    "hi": 0.05465,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 7381,
+   "changelog": [
+    "Insert a single, narrow binding that keeps a finite verb/auxiliary with its immediately following span when that span begins with surface tokens that indicate a core complement (prevents cuts that orphan verb complements)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00485,
+    "lo": -0.0285,
+    "hi": 0.02035,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 7432,
+   "changelog": [
+    "Insert a single fallback ordering that prefers punctuation/clause-boundary cuts over cuts that split numerals from their units or separate finite verbs from their immediately following core complements — prevents the punctuation fallback from overriding the primary protections."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.0134,
+    "lo": -0.01219,
+    "hi": 0.04093,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 7682,
+   "changelog": [
+    "Insert a fallback ordering that prefers punctuation/clause-boundary cuts only when those punctuation cuts do not split a numeral from its immediately following unit or separate a finite verb/auxiliary from its immediately following core complement; otherwise prefer the cut that preserves numeral–unit or finite-verb–core-complement attachment. This prevents the punctuation-last-resort rule from overriding the primary attachment protections (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": -0.02529,
+    "lo": -0.0533,
+    "hi": 0.00107,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 6906,
+   "changelog": [
+    "delete C8: remove the disambiguating-span check because it restates other attachment/entailment principles, was blamed in the last iteration for leaking the punctuation-last-resort fallback into splits that break numeral–unit and verb–complement attachments, and is the weakest v0 unit by evidence."
+   ]
+  },
+  {
+   "candidate": 6,
+   "delta": {
+    "mean": 0.00685,
+    "lo": -0.01527,
+    "hi": 0.03279,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 7445,
+   "changelog": [
+    "Insert one induced ordering rule that prefers cuts which preserve numeral–unit and finite-verb–core-complement attachments, to reproduce the measured target choices that keep numbers with their units and verbs with their complements."
+   ]
+  },
+  {
+   "candidate": 7,
+   "delta": {
+    "mean": 0.0214,
+    "lo": -0.00772,
+    "hi": 0.05066,
+    "n": 465,
+    "n_clusters": 50
+   },
+   "chars": 7373,
+   "changelog": [
+    "Insert one narrow induced ordering that prefers keeping numerals attached to an immediately following parenthesized measurement phrase; addresses the primary finding (splits that lose units) with a focused surface trigger so it fires only on those cases."
+   ]
+  }
+ ]
+}

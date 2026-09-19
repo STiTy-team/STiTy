@@ -1,0 +1,80 @@
+{
+ "iter": 3,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01419,
+  "lo": 0.00455,
+  "hi": 0.02431,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.01419,
+  "lo": 0.00455,
+  "hi": 0.02431,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "Replace E1 with labeled example en_us_292 to teach avoiding cuts immediately before prepositions/subordinators that supply main temporal/locative complements (addresses primary finding).",
+  "Replace E2 with labeled example en_us_101 to show harm of cutting before a complement-introducing 'that' and similar openers (addresses primary finding).",
+  "Replace E3 with labeled example en_us_525 to show short-bin failures where cutting before 'how/often' like markers loses essential scope information (addresses primary finding).",
+  "Replace E4 with labeled example en_us_1116 to illustrate cuts before 'except for' that flip exception scope and cause contradiction (addresses primary finding)."
+ ],
+ "findings": [
+  "The prompt treats function-word-led complements (prepositional phrases, subordinators, relative/participial openings, exception markers) as acceptable cut points rather than as parts that must stay attached to the predicate or nominal they complete, so separate-piece translations lose or flip essential time/place/argument/exception information."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Beijing <SEG:?> will <SEG:?> host <SEG:?> the <SEG:?> opening <SEG:?> and",
+   "now": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resul",
+   "labeled_example": "en_us_292"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Edgar <SEG:?> Veguilla <SEG:?> received <SEG:?> arm <SEG:?> and <SEG:?> j",
+   "now": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pres",
+   "labeled_example": "en_us_101"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: As <SEG:?> the <SEG:?> cars <SEG:?> ahead <SEG:?> of <SEG:?> Alonso <SEG:",
+   "now": "Input: The <SEG:?> effect <SEG:?> is <SEG:?> dependent <SEG:?> on <SEG:?> how <S",
+   "labeled_example": "en_us_525"
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "example",
+   "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+   "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+   "labeled_example": "en_us_1116"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0217,
+   "≤5": 0.0153,
+   "≤7": 0.0087,
+   "≤10": -0.0035,
+   "≤99": -0.0051
+  },
+  "n_worse": 2102,
+  "n_better": 2543,
+  "why": "Replacing the examples taught the model to avoid cutting immediately before complement-introducing words (prepositions/subordinators, 'that', 'how', 'except'), which reduced harmful short-piece cuts (positive gains in the ≤3–≤7 bins) but led it to shift or insert earlier cuts in longer sequences (negative at ≤10/≤99), splitting heads and speaker tags and lowering cohesion there.",
+  "lesson": "Keep the learned avoidance of cuts before complement openers for short pieces, but avoid overgeneralizing that pattern so cuts are not moved earlier inside subjects, between speaker tags and quotes, or into heads in longer inputs.",
+  "blamed": [
+   "E1 «Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> ac»",
+   "E2 «Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <S»",
+   "E3 «Input: The <SEG:?> effect <SEG:?> is <SEG:?> dependent <SEG:»",
+   "E4 «Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> su»"
+  ]
+ }
+}

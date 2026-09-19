@@ -1,0 +1,62 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_1179",
+  "en_us_44",
+  "en_us_888",
+  "en_us_738",
+  "en_us_432",
+  "en_us_741",
+  "en_us_767",
+  "en_us_1497",
+  "en_us_845",
+  "en_us_1113",
+  "en_us_455",
+  "en_us_1024",
+  "en_us_1116",
+  "en_us_1617",
+  "en_us_113"
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.2364,
+   "pairs": 15,
+   "chars": 7551,
+   "changelog": [
+    "Insert a new principle that addresses the primary finding: give a positive guideline for when cutting after a predicate/copula is acceptable and when to avoid it, so we don't add a blanket prohibition.",
+    "Paraphrase C4 to be shorter while preserving and clarifying the judgement about nouns separated from required postnominal complements (explicitly mentioning specifiers)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.2499,
+   "pairs": 15,
+   "chars": 7129,
+   "changelog": [
+    "Replace C4 to explicitly forbid cuts that split a noun (or its specifier) from a required postnominal modifier/complement, because measured cases show such splits leave the noun ungrounded or misattached and greatly increase mistranslation risk (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.2733,
+   "pairs": 15,
+   "chars": 7268,
+   "changelog": [
+    "Replace E1 with measured example en_us_103 to show a cut after 'was' before 'not' (predicate + negation) that makes the preceding fragment misleading.",
+    "Replace E2 with measured example en_us_360 to show a cut after a predicate ('are stimulated') where the remainder completes the clause and changes interpretation.",
+    "Replace E3 with measured example en_us_1570 to show a cut after 'had' before 'no' (predicate + negation) that leaves the fragment contradicted."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.2069,
+   "pairs": 15,
+   "chars": 7105,
+   "changelog": [
+    "Replace C4 to explicitly forbid cutting a noun (or its specifier) away from a required postnominal modifier/complement, addressing the primary finding that such splits leave the noun ungrounded or misattached."
+   ]
+  }
+ ]
+}

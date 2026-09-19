@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00791,
+  "lo": -0.0031,
+  "hi": 0.01878,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": 0.0123,
+  "≤5": 0.0052,
+  "≤7": 0.0095,
+  "≤10": 0.001,
+  "≤99": -0.0027
+ },
+ "n_worse": 1753,
+ "n_better": 2019,
+ "worst": [
+  {
+   "id": "en_us_1405",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.811,
+   "before": "However, ‖ a nationwide road network is not economically viable for just a handful of cars, ‖ so new methods of production are developed ‖ to reduce the cost of car ownership.",
+   "after": "However, ‖ a nationwide road network is ‖ not economically viable for just a handful of cars, ‖ so new methods of production are developed to reduce the cost of car ownership."
+  },
+  {
+   "id": "en_us_1405",
+   "k": 4,
+   "bin": "≤7",
+   "delta": -0.7664,
+   "before": "However, ‖ a nationwide road network is not economically viable for just a handful of cars, ‖ so ‖ new methods of production are developed ‖ to reduce the cost of car ownership.",
+   "after": "However, ‖ a nationwide road network is ‖ not economically viable for just a handful of cars, ‖ so new ‖ methods of production are developed to reduce the cost of car ownership."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7364,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1405",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.7303,
+   "before": "However, ‖ a nationwide road network is not economically viable for just a handful of cars, ‖ so ‖ new ‖ methods of production are developed ‖ to reduce the cost of car ownership.",
+   "after": "However, ‖ a nationwide road network is ‖ not economically viable for just a handful of cars, ‖ so new ‖ methods ‖ of production are developed to reduce the cost of car ownership."
+  },
+  {
+   "id": "en_us_25",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.722,
+   "before": "He had 2 goals and 2 assists ‖ in Washington's 5-3 win ‖ over the Atlanta Thrashers.",
+   "after": "He had 2 goals and 2 assists ‖ in Washington's 5-3 win over the Atlanta ‖ Thrashers."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.8077,
+   "before": "On icy and snowy roadways, ‖ friction is low and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1630",
+   "k": 2,
+   "bin": "≤10",
+   "delta": 0.7747,
+   "before": "Arly Velasquez of Mexico finished fifteenth in the men's sitting Super-G. ‖ New Zealand's Adam Hall ‖ finished ninth in the men's standing Super-G.",
+   "after": "Arly Velasquez of Mexico finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall finished ninth in the men's standing Super-G."
+  },
+  {
+   "id": "en_us_391",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7686,
+   "before": "The earliest known book in the world was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit ‖ just faded due to hierarchy.",
+   "after": "The earliest known book in the world ‖ was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit just faded due to hierarchy."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_594",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7372,
+   "before": "Only animals have brains (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do ‖ not have brains).",
+   "after": "Only animals have brains ‖ (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do not have brains)."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.598,
+   "2": 4.117,
+   "3": 2.857,
+   "4": 2.183,
+   "5": 1.778,
+   "6": 1.534,
+   "7": 1.377,
+   "8": 1.276,
+   "9": 1.192,
+   "10": 1.138,
+   "11": 1.103,
+   "12": 1.08,
+   "13": 1.065
+  },
+  "revision": {
+   "1": 7.684,
+   "2": 4.245,
+   "3": 2.862,
+   "4": 2.192,
+   "5": 1.782,
+   "6": 1.575,
+   "7": 1.427,
+   "8": 1.323,
+   "9": 1.23,
+   "10": 1.168,
+   "11": 1.121,
+   "12": 1.084,
+   "13": 1.061
+  },
+  "delta": {
+   "1": 0.086,
+   "2": 0.128,
+   "3": 0.005,
+   "4": 0.009,
+   "5": 0.004,
+   "6": 0.041,
+   "7": 0.05,
+   "8": 0.047,
+   "9": 0.038,
+   "10": 0.03,
+   "11": 0.018,
+   "12": 0.004,
+   "13": -0.004
+  }
+ },
+ "why": "Adding the small binding to keep a preceding noun/verb head with an immediately following numeral/measurement made the model avoid cuts next to numeric tokens, which produced modest gains for short pieces (bins ≤3/5/7) but a slight decline on long spans (≤99); overall more (2019) pairs improved than worsened (1753) but the mean gain is small and not robust. The tail shows that the edit pulled cuts away from numeric/measurement attachments (e.g. keeping “5-3 win” or the “four times … and eleven times” grouping) and in some sentences forced cuts into nearby clause or enumeration boundaries, causing the worst drops.",
+ "lesson": "A later revision should keep the immediate head+numeral/measurement binding only insofar as it benefits short segments, and avoid letting that binding shift cuts across clause boundaries or split enumerations in longer sentences.",
+ "blamed": [
+  "C_end"
+ ]
+}

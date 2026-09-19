@@ -1,0 +1,68 @@
+{
+ "iter": 3,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01693,
+  "lo": 0.00259,
+  "hi": 0.0312,
+  "n": 2773,
+  "n_clusters": 300
+ },
+ "gain": {
+  "mean": 0.01693,
+  "lo": 0.00259,
+  "hi": 0.0312,
+  "n": 2773,
+  "n_clusters": 300,
+  "dev_a": {
+   "mean": 0.01693,
+   "lo": 0.00259,
+   "hi": 0.0312,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "dev_b": {
+   "mean": 0.01272,
+   "lo": -0.00026,
+   "hi": 0.02629,
+   "n": 2736,
+   "n_clusters": 300,
+   "tries": 1,
+   "threshold": 0.0
+  },
+  "verified": true,
+  "tries": 1
+ },
+ "changelog": [
+  "Insert a single concise binding that keeps a lone preposition/particle attached to its object or complement, addressing the primary finding that isolated prepositions/particles create high-contradiction fragments."
+ ],
+ "findings": [
+  "The prompt permits cuts that leave a sentence‑initial single-word function fragment (a lone determiner / pronoun / subordinating word / auxiliary) as its own piece; those tiny leading fragments lack a noun or predicate and often become contradicted or uninterpretable when translated separately.",
+  "The prompt undervalues cohesion between prepositions/particles and their complements and allows cuts that leave a prepositional or particle precursor alone; separating a preposition/particle from its object or clause frequently breaks attachment and yields high contradiction risk."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Keep a lone preposition or particle together with the immediately following ph"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0307,
+   "≤5": 0.011,
+   "≤7": 0.0065,
+   "≤10": 0.0061,
+   "≤99": -0.0112
+  },
+  "n_worse": 1031,
+  "n_better": 1281,
+  "why": "The inserted binding prevented solitary prepositions/particles from being cut off from their objects, which reduced tiny, high-contradiction fragments and produced gains concentrated in the small latency bins (≤3: +0.0307, ≤5: +0.011); however it also forced merges across conjunctions/enumerations and shifted cuts into clause heads/verbs in longer contexts, producing the small negative effect at the sentence scale (≤99: −0.0112) and a substantial tail of worsened (but many also improved) pairs.",
+  "lesson": "Keep lone prepositions/particles attached to their immediate complements to protect short fragments, but constrain that binding so it does not merge across longer enumerations or push cuts into clause heads, which harms whole-sentence cohesion.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

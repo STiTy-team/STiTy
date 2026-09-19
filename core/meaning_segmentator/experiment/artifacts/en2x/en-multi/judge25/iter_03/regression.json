@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00606,
+  "lo": -0.01588,
+  "hi": 0.00384,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": -0.0047,
+  "≤5": -0.0056,
+  "≤7": -0.0088,
+  "≤10": -0.0071,
+  "≤99": -0.0106
+ },
+ "n_worse": 1947,
+ "n_better": 1790,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7776,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting are sufficiently general that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7439,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting are sufficiently general that an immediate ‖ diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7422,
+   "before": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals."
+  },
+  {
+   "id": "en_us_972",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7391,
+   "before": "In particular, ‖ the numbering system in French-speaking Belgium and Switzerland has some slight peculiarities that are different from the French spoken in France, and the pronunciation of some words is slightly differen",
+   "after": "In particular, the numbering system in French-speaking Belgium and Switzerland has some slight peculiarities that are different from the French spoken in ‖ France, and the pronunciation of some words is slightly differen"
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.712,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, ‖ but the framework we have is enough to start trading on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1169",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.7296,
+   "before": "The ‖ Amazon River ‖ is the ‖ second longest and the biggest river ‖ on Earth. ‖ It ‖ carries ‖ more than 8 times as much water as the second biggest river.",
+   "after": "The ‖ Amazon ‖ River ‖ is ‖ the second longest and the biggest river ‖ on Earth. ‖ It ‖ carries more than 8 times as much water as the second biggest river."
+  },
+  {
+   "id": "en_us_1548",
+   "k": 5,
+   "bin": "≤3",
+   "delta": 0.6802,
+   "before": "When you call someone who is thousands of miles away, ‖ you ‖ are ‖ using ‖ a ‖ satellite.",
+   "after": "When you call someone who is ‖ thousands ‖ of ‖ miles ‖ away, ‖ you are using a satellite."
+  },
+  {
+   "id": "en_us_1548",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6793,
+   "before": "When you call someone who is thousands of miles away, ‖ you ‖ are using a ‖ satellite.",
+   "after": "When you call someone who is thousands of ‖ miles ‖ away, ‖ you are using a satellite."
+  },
+  {
+   "id": "en_us_1548",
+   "k": 2,
+   "bin": "≤5",
+   "delta": 0.677,
+   "before": "When you call someone who is thousands of miles away, ‖ you are using a ‖ satellite.",
+   "after": "When you call someone who is thousands of miles ‖ away, ‖ you are using a satellite."
+  },
+  {
+   "id": "en_us_939",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.6748,
+   "before": "While immigration check ‖ is usually absent or a formality ‖ when you arrive in your homeland, ‖ customs control can be a hassle.",
+   "after": "While immigration check is usually absent or a formality when you arrive in your homeland, ‖ customs ‖ control ‖ can be a hassle."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.598,
+   "2": 4.117,
+   "3": 2.857,
+   "4": 2.183,
+   "5": 1.778,
+   "6": 1.534,
+   "7": 1.377,
+   "8": 1.276,
+   "9": 1.192,
+   "10": 1.138,
+   "11": 1.103,
+   "12": 1.08,
+   "13": 1.065
+  },
+  "revision": {
+   "1": 7.736,
+   "2": 4.262,
+   "3": 2.821,
+   "4": 2.162,
+   "5": 1.747,
+   "6": 1.542,
+   "7": 1.368,
+   "8": 1.275,
+   "9": 1.214,
+   "10": 1.167,
+   "11": 1.127,
+   "12": 1.096,
+   "13": 1.076
+  },
+  "delta": {
+   "1": 0.138,
+   "2": 0.145,
+   "3": -0.036,
+   "4": -0.021,
+   "5": -0.031,
+   "6": 0.008,
+   "7": -0.009,
+   "8": -0.001,
+   "9": 0.022,
+   "10": 0.029,
+   "11": 0.024,
+   "12": 0.016,
+   "13": 0.011
+  }
+ },
+ "why": "Inserting the ordering after C5 caused the model to prefer cutting after short (≤6-word) clausal/complement continuations instead of immediately before them, so many cuts shifted later. That change produced small net losses across all latency bins (by_bin all negative, larger harm for medium/long: ≤7 −0.0088, ≤99 −0.0106) with 1,947 worsened vs 1,790 improved — improvements are concentrated on very short/enumerative pieces while harm occurs when the later cut lands inside or after the following clause (e.g. moves cutting away from 'such as vomiting ‖ are sufficiently general' to a later split inside the predicate).",
+ "lesson": "Respect that preferring to attach short clausal/complement continuations systematically shifts cuts later and, although it helps some very short/enumerative cases, it degrades medium/long segmentation so it should not be applied unconditionally.",
+ "blamed": [
+  "C5 «- Is the following material a temporal, causal, concessive s»"
+ ]
+}

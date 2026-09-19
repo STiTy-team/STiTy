@@ -1,0 +1,67 @@
+{
+ "iter": 4,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00305,
+  "lo": -0.01342,
+  "hi": 0.00777,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00305,
+  "lo": -0.01342,
+  "hi": 0.00777,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C1 to prioritize single high-contradiction boundaries: explicitly tell scorers to rank cuts that would be contradicted by the remainder below other cuts, addressing the primary_finding.",
+  "Insert a new principle after C3 that warns against cutting right after auxiliaries/copulas/modals/negators/subordinators when the remainder completes or reverses the predicate, phrased as a ranking preference to avoid blanket bans.",
+  "Paraphrase C4 shorter to save space while keeping its guidance about noun+modifier splits and avoiding forcing tiny fragments."
+ ],
+ "findings": [
+  "The prompt underrates single high-contradiction boundaries: it lets one cut with a high contradiction risk survive because cohesion looks OK, even though one such boundary can zero the whole set.",
+  "The prompt fails to flag cuts that isolate unresolved function‑headed predicates: it allows cutting immediately after an auxiliary/copula/modal/negation/subordinator, leaving the remainder to complete or flip the predicate."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C1",
+   "kind": "change",
+   "was": "- Does what follows, taken alone, assert or imply something that contradicts the",
+   "now": "- Treat any boundary where the remainder, read alone, would contradict or revers"
+  },
+  {
+   "op": "insert_after",
+   "id": "C3",
+   "kind": "change",
+   "was": "- Is a subordinating relation unresolved at the cut (complementizers, subordinat",
+   "now": "- Rank low any cut that splits a bare auxiliary, copula, modal, negator, or subo"
+  },
+  {
+   "op": "replace",
+   "id": "C4",
+   "kind": "paraphrase",
+   "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+   "now": "- Would the cut leave a noun (or its specifier) without a required postnominal m"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0075,
+   "≤5": -0.001,
+   "≤7": -0.0003,
+   "≤10": 0.0003,
+   "≤99": 0.0064
+  },
+  "n_worse": 678,
+  "n_better": 697,
+  "why": "The C1 change (prioritizing boundaries whose remainder would contradict the prefix) made the scorer avoid cuts that leave a contradicting remainder, which raised scores on long pieces; the new C3 warning about cutting after auxiliaries/copulas/modals shifted many cuts away from those markers into adjacent short spans, increasing harmful short-latency splits (bins ≤3 and ≤5) and producing the small net drop.",
+  "lesson": "Keep the preference to demote single high-contradiction boundaries (C1) but avoid re-ranking that pushes cuts into head-adjacent tiny spans (subject/auxiliary splits or noun+modifier fragments) that damage very short latency bins.",
+  "blamed": [
+   "C1 «- Treat any boundary where the remainder, read alone, would »",
+   "C3 «- Is a subordinating relation unresolved at the cut (complem»"
+  ]
+ }
+}

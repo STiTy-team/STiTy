@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt fails to protect quoted strings and conventional multiword technical terms: it allows cuts that split a named concept or quoted expression, producing fragments that the continuation contradicts or that lose identity when translated separately.",
+    "evidence": "cases: [\"en_us_360\",\"en_us_1253\",\"en_us_349\"] — each sentence contains a quoted or conventional multiword technical noun phrase (e.g. a quoted technical name or an established multiword scientific term) that the policy cut inside.",
+    "type_predicate": "a sequence enclosed in quotation marks OR a contiguous noun phrase of two or more content words that names a technical concept or fixed term",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside a quoted phrase or a conventional multiword technical term; keep the entire quoted/technical unit intact for translation."
+    }
+   },
+   {
+    "diagnosis": "The prompt underestimates the harm of separating a subordinating or contrastive cue from the clause that completes it: cuts after cues like 'unless', 'except', 'while', 'but', 'although' often leave a standalone fragment that contradicts or is unresolved.",
+    "evidence": "cases: [\"en_us_936\",\"en_us_1116\",\"en_us_1527\"] — each contains a subordinating/contrastive cue ('Unless' / 'except' / 'while') whose complement appears later and must stay with the cue to preserve meaning.",
+    "type_predicate": "a subordinating or contrastive cue word (e.g. unless, except, while, but, although) that introduces a dependent clause whose main subject/verb appears later",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a subordinating or contrastive cue that introduces a dependent clause; keep the cue with its clause complement."
+    }
+   },
+   {
+    "diagnosis": "The prompt does not reliably bind numerals/ranges to their units or scope phrases, allowing cuts that detach numbers from their units or range endpoints and degrade numeric meaning.",
+    "evidence": "cases: [\"en_us_1612\",\"en_us_1050\",\"en_us_419\"] — each contains a numeral or numeric range immediately followed by its unit or scope (feet, meters, million speakers) that the policy separated.",
+    "type_predicate": "a numeral or numeric range immediately followed by its unit or a scope phrase (e.g. '100 feet wide', '83 meters', '340 million to 500 million')",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/range and its unit or scope phrase; keep the number and its unit/range together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt fails to protect quoted strings and conventional multiword technical terms: it allows cuts that split a named concept or quoted expression, producing fragments that the continuation contradicts or that lose identity when translated separately.",
+   "evidence": "cases: [\"en_us_360\",\"en_us_1253\",\"en_us_349\"] — each sentence contains a quoted or conventional multiword technical noun phrase (e.g. a quoted technical name or an established multiword scientific term) that the policy cut inside.",
+   "type_predicate": "a sequence enclosed in quotation marks OR a contiguous noun phrase of two or more content words that names a technical concept or fixed term",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside a quoted phrase or a conventional multiword technical term; keep the entire quoted/technical unit intact for translation."
+   }
+  },
+  {
+   "diagnosis": "The prompt underestimates the harm of separating a subordinating or contrastive cue from the clause that completes it: cuts after cues like 'unless', 'except', 'while', 'but', 'although' often leave a standalone fragment that contradicts or is unresolved.",
+   "evidence": "cases: [\"en_us_936\",\"en_us_1116\",\"en_us_1527\"] — each contains a subordinating/contrastive cue ('Unless' / 'except' / 'while') whose complement appears later and must stay with the cue to preserve meaning.",
+   "type_predicate": "a subordinating or contrastive cue word (e.g. unless, except, while, but, although) that introduces a dependent clause whose main subject/verb appears later",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a subordinating or contrastive cue that introduces a dependent clause; keep the cue with its clause complement."
+   }
+  },
+  {
+   "diagnosis": "The prompt does not reliably bind numerals/ranges to their units or scope phrases, allowing cuts that detach numbers from their units or range endpoints and degrade numeric meaning.",
+   "evidence": "cases: [\"en_us_1612\",\"en_us_1050\",\"en_us_419\"] — each contains a numeral or numeric range immediately followed by its unit or scope (feet, meters, million speakers) that the policy separated.",
+   "type_predicate": "a numeral or numeric range immediately followed by its unit or a scope phrase (e.g. '100 feet wide', '83 meters', '340 million to 500 million')",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/range and its unit or scope phrase; keep the number and its unit/range together."
+   }
+  }
+ ]
+}

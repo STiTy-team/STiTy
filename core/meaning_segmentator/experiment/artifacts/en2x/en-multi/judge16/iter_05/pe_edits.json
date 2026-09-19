@@ -1,0 +1,272 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut when the immediately following material resolves the scope or polarity of the already‑delivered claim (for example: continuations that supply an exception, negate or reverse the earlier claim, quantify or limit it, make a comparative, or complete a measurement). Ask: 'Can the following phrase reverse, limit, or quantify this claim?' If yes, keep them together. Otherwise prefer cuts that leave a self‑contained clause or a semantically complete predicate so translators need not guess scope or antecedents."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 536
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7836,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: avoid splitting a verb, auxiliary, or copula from an immediately required complement. If the left piece ends in a verb form and the right piece supplies an object, predicate adjective, prepositional complement, or clausal complement that completes the proposition, keep that complement with the verb. Do not apply this as an unconditional ban: allow the cut when the following piece is clearly long or syntactically self‑contained so the split will not create a short, unresolvable fragment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 508
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7808,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut when the immediately following token is a surface scope-resolver such as not/no/except/unless/only/but/however, a comparative marker (than/as), a quantifier (all/every/each/some/most/many/few), 'percent'/'%'/ 'per', or begins with digits; keep that token attached to the left piece."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 310
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7610,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut immediately before a token that visibly begins a verb‑complement or measurement phrase. Concretely, if the next token is a determiner (a, an, the), demonstrative (this, that, these, those), possessive (my, your, his, her, its, our, their), object pronoun (me, him, her, us, them), a common quantifier/word that usually starts a noun phrase (one, two, few, many, several), or a numeral/digit, keep that token (and the following unit/noun it starts) attached to the preceding stretch so the verb/copula/auxiliary is not separated from its immediate complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 586
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7886,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_936",
+    "text": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> working <SEG:?> overseas <SEG:?> generally <SEG:?> means <SEG:?> that <SEG:?> you <SEG:?> will <SEG:?> have <SEG:?> to <SEG:?> file <SEG:?> income <SEG:?> tax <SEG:?> in <SEG:?> the <SEG:?> country <SEG:?> you <SEG:?> are <SEG:?> based <SEG:?> in.\nOutput: Unless <SEG:86> you <SEG:77> are <SEG:59> a <SEG:23> diplomat, <SEG:100> working <SEG:55> overseas <SEG:91> generally <SEG:68> means <SEG:5> that <SEG:14> you <SEG:18> will <SEG:32> have <SEG:41> to <SEG:45> file <SEG:73> income <SEG:82> tax <SEG:95> in <SEG:0> the <SEG:9> country <SEG:50> you <SEG:36> are <SEG:27> based <SEG:64> in."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_103",
+    "text": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below <SEG:?> the <SEG:?> tanks <SEG:?> capable <SEG:?> of <SEG:?> holding <SEG:?> 104,500 <SEG:?> barrels <SEG:?> was <SEG:?> not <SEG:?> yet <SEG:?> filled <SEG:?> to <SEG:?> capacity.\nOutput: Another <SEG:94> secondary <SEG:75> containment <SEG:62> area <SEG:69> below <SEG:88> the <SEG:6> tanks <SEG:100> capable <SEG:56> of <SEG:38> holding <SEG:81> 104,500 <SEG:19> barrels <SEG:44> was <SEG:0> not <SEG:12> yet <SEG:25> filled <SEG:50> to <SEG:31> capacity."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 135
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 105
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -158
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -329
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7053,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "text": "Input: Iraq's <SEG:?> Abu <SEG:?> Ghraib <SEG:?> prison <SEG:?> has <SEG:?> been <SEG:?> set <SEG:?> alight <SEG:?> during <SEG:?> a <SEG:?> riot.\nOutput: Iraq's <SEG:89> Abu <SEG:33> Ghraib <SEG:100> prison <SEG:56> has <SEG:44> been <SEG:78> set <SEG:0> alight <SEG:67> during <SEG:11> a <SEG:22> riot.",
+    "labeled_example": "en_us_30"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "text": "Input: The <SEG:?> patient <SEG:?> had <SEG:?> been <SEG:?> to <SEG:?> Nigeria, <SEG:?> where <SEG:?> some <SEG:?> cases <SEG:?> of <SEG:?> the <SEG:?> Ebola <SEG:?> virus <SEG:?> have <SEG:?> occurred.\nOutput: The <SEG:100> patient <SEG:62> had <SEG:38> been <SEG:0> to <SEG:69> Nigeria, <SEG:8> where <SEG:92> some <SEG:54> cases <SEG:31> of <SEG:85> the <SEG:77> Ebola <SEG:46> virus <SEG:23> have <SEG:15> occurred.",
+    "labeled_example": "en_us_1543"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "text": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resulting <SEG:?> in <SEG:?> the <SEG:?> phase <SEG:?> change <SEG:?> had <SEG:?> took <SEG:?> place <SEG:?> on <SEG:?> March <SEG:?> 10 <SEG:?> on <SEG:?> the <SEG:?> northeast <SEG:?> side <SEG:?> of <SEG:?> the <SEG:?> volcano's <SEG:?> summit <SEG:?> caldera.\nOutput: The <SEG:100> significant <SEG:73> earthquake <SEG:95> activity <SEG:68> resulting <SEG:64> in <SEG:50> the <SEG:14> phase <SEG:23> change <SEG:41> had <SEG:59> took <SEG:27> place <SEG:32> on <SEG:36> March <SEG:82> 10 <SEG:91> on <SEG:18> the <SEG:5> northeast <SEG:86> side <SEG:77> of <SEG:55> the <SEG:0> volcano's <SEG:9> summit <SEG:45> caldera.",
+    "labeled_example": "en_us_292"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "text": "Input: Unfortunately, <SEG:?> when <SEG:?> you <SEG:?> make <SEG:?> a <SEG:?> DVD, <SEG:?> it's <SEG:?> borders <SEG:?> will <SEG:?> most <SEG:?> likely <SEG:?> be <SEG:?> cut <SEG:?> too, <SEG:?> and <SEG:?> if <SEG:?> the <SEG:?> video <SEG:?> had <SEG:?> subtitles <SEG:?> too <SEG:?> close <SEG:?> to <SEG:?> the <SEG:?> bottom, <SEG:?> they <SEG:?> won't <SEG:?> be <SEG:?> fully <SEG:?> shown.\nOutput: Unfortunately, <SEG:96> when <SEG:82> you <SEG:61> make <SEG:18> a <SEG:21> DVD, <SEG:46> it's <SEG:11> borders <SEG:36> will <SEG:32> most <SEG:29> likely <SEG:39> be <SEG:25> cut <SEG:89> too, <SEG:100> and <SEG:93> if <SEG:86> the <SEG:57> video <SEG:71> had <SEG:68> subtitles <SEG:75> too <SEG:50> close <SEG:54> to <SEG:43> the <SEG:4> bottom, <SEG:79> they <SEG:0> won't <SEG:7> be <SEG:14> fully <SEG:64> shown.",
+    "labeled_example": "en_us_464"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -79
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -141
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 29
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -40
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7069,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: when the immediately following words will resolve scope or polarity (e.g. 'not', 'except', 'unless', comparatives, quantifiers, measurements), prefer cuts that include that scope-resolving token with the left piece; if cutting earlier is unavoidable, cut only at punctuation or clause boundaries that preserve a complete predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 348
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7648,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: if the left piece ends in a verb, auxiliary, or copula, do not cut when the next token visibly begins a noun/measure phrase — e.g. a determiner (the/a), demonstrative (this/that), possessive, object pronoun, numeral/digit, or a capitalized proper name; keep verb and following token together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 309
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7609,
+  "errors": null
+ }
+]

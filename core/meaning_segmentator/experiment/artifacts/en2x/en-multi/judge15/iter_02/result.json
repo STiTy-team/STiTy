@@ -1,0 +1,51 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.01001,
+  "lo": -0.02331,
+  "hi": 0.00261,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.01001,
+  "lo": -0.02331,
+  "hi": 0.00261,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a concise decision rule after C4 that allows noun+modifier cuts when forbidding them would force very-short (≈≤3–5 word) harmful splits, so scorers prefer preserving subjects/predicates; addresses the primary finding about an over-generalized ban on noun+modifier cuts."
+ ],
+ "findings": [
+  "The prompt is over-generalizing a ban on cuts after nouns/specifiers: it treats most noun+postnominal splits as categorically harmful and so moves cuts elsewhere. That shift repeatedly forces very-short pieces (≤3–5 words) that split subjects, verbs, or internal compounds, which increases contradiction and cohesion loss in the short-latency bins.",
+  "The prompt underestimates the contradiction risk of leaving trailing adjuncts/ modifiers as standalone pieces (participial, prepositional, 'using...' phrases, 'in advance', 'and beyond'). Such trailing fragments often cannot be interpreted correctly on their own and create high contra when separated.",
+  "The prompt lacks short, concrete examples showing when to allow a noun+modifier cut to prevent worse subject‑verb fragmentation; scorers need a model example that trades a noun+modifier split for preserving a subject or predicate in very-short bins."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C4",
+   "kind": "change",
+   "was": "- Does the cut separate a nominal from a following relative or postnominal modif",
+   "now": "Allow a noun+modifier cut when forbidding it would force other cuts into very-sh"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0118,
+   "≤5": -0.009,
+   "≤7": -0.0033,
+   "≤10": -0.0162,
+   "≤99": -0.0079
+  },
+  "n_worse": 765,
+  "n_better": 674,
+  "why": "Relaxing C4 to allow noun+modifier cuts when forbidding them would force very-short pieces caused the scorer to merge some noun+modifier spans but often pushed cut points onto small trailing complements or split predicates/prepositional attachments; that produced a small net drop in H_set, concentrated in the short-to-medium latency bins (≤3–≤10).",
+  "lesson": "A later revision should respect that easing the noun+modifier ban to avoid tiny (≈≤3–5 word) pieces can reduce extreme fragmentation in some examples but must not systematically shift boundaries onto very-short trailing fragments or break predicates, since that harms short/medium bins overall.",
+  "blamed": [
+   "C4 «- Does the cut separate a nominal from a following relative »"
+  ]
+ }
+}

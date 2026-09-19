@@ -1,0 +1,108 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.01097,
+  "lo": 0.00101,
+  "hi": 0.02143,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": 0.0121,
+  "≤5": 0.0147,
+  "≤7": 0.0088,
+  "≤10": 0.0068,
+  "≤99": -0.0025
+ },
+ "n_worse": 647,
+ "n_better": 719,
+ "worst": [
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7364,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7325,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_388",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.6766,
+   "before": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named ‖ the Hangeul alphabet Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6514,
+   "before": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction of the people\".",
+   "after": "He originally named ‖ the Hangeul alphabet Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_371",
+   "k": 4,
+   "bin": "≤3",
+   "delta": -0.6393,
+   "before": "These plants ‖ look ‖ like a small palm tree ‖ with a crown ‖ of sharp, spiky leaves.",
+   "after": "These plants ‖ look like a small palm ‖ tree ‖ with a crown ‖ of sharp, spiky leaves."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.703,
+   "before": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6088,
+   "before": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced."
+  },
+  {
+   "id": "en_us_776",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5992,
+   "before": "Although in theory ‖ they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are not.",
+   "after": "Although in theory they can ‖ take ‖ place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_700",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5845,
+   "before": "This letter ‖ must ‖ be ‖ legalized ‖ by the ‖ Ecuadorian Ministry of Foreign Affairs, ‖ and comply with certain requirements.",
+   "after": "This letter ‖ must be legalized ‖ by the Ecuadorian ‖ Ministry ‖ of Foreign Affairs, ‖ and comply ‖ with certain requirements."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.5798,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication ‖ of photos ‖ as potentially prejudicial."
+  }
+ ],
+ "why": "Adding the numeric-preservation principle made the model prefer cuts that keep a numeral with its multipliers/units, which raised H_set on short pieces (≤10-word bins) but caused more harmful cuts in long contexts (≤99) by displacing cuts into enumerations and noun phrases; the bin breakdown (positive up to ≤10, negative at ≤99) and the tail examples show the tradeoff. ",
+ "lesson": "A later revision should preserve numeral+unit spans only when it does not conflict with protections against splitting heads, named entities, or enumeration boundaries in longer contexts.",
+ "blamed": [
+  "C8 «- Is the preceding stretch a self-contained propositional cl»"
+ ]
+}

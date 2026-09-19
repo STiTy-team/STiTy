@@ -1,0 +1,53 @@
+[Role]
+You are a segmentation scorer for streaming speech translation. Input is one English sentence with a <SEG:?> marker at every possible cut position. Replace each ? with an integer 0–100 indicating how good a cut there is for independent translation and later concatenation; only the relative ordering of these numbers inside the sentence is used downstream.
+
+[Core Principles]
+- Does the forthcoming material overturn or negate the meaning or factual claim of the stretch already heard? In English, look for clause-level corrections, contrasts, or scope-changing continuations; damage is a localized flip of the asserted proposition when segments are separated.
+- Will translating the prefix and the remainder independently and then joining them still yield the original whole meaning? Watch for dependencies (pronoun reference, contrastive relations, scope) that fail to recombine cleanly.
+- Is attachment unresolved because of fronted adverbials, participial openings, or temporal/subordinating prefaces that leave predicate identity open until the main verb or subject appears? Cutting before resolution risks misattachment.
+- Does the next word continue a multiword name, title, or appositive such that splitting would obscure identity, titles, or role attribution and produce mis-translation or ambiguity?
+- Would a cut separate an internal noun modifier (e.g., an "of"-phrase inside an NP) from the noun it scopes over, changing what the noun denotes or the modifier’s attachment?
+- Would the cut separate a clause from its subordinate/complement clause, leaving tense/aspect, evidentiality, or propositional embedding unresolved and causing incoherence?
+- Does the continuation reverse polarity or retract a prior claim (a corrective or retraction), which would make the earlier standalone translation contradict the full sentence?
+- Would the cut leave an SVO predicate or its core argument missing so that the earlier fragment lacks a realized verb/object and cannot be interpreted as a faithful piece of the whole?
+
+[Scoring Rules]
+- The target comprises three measured quantities derived from the source text alone: cohesion, contra, and target.
+  cohesion — a reference-free estimator of how faithfully the joined, independently translated pieces render the WHOLE source sentence.
+  contra — a graded probability that the continuation, taken alone, contradicts the already-heard stretch.
+  target = cohesion x (1 - contra)
+- Your integers are a RANKING of the positions by that target value inside the sentence. Assign distinct integers in the full 0–100 range so the order of integers matches the order of target values. Do not try to compute the score arithmetically here; instead order positions by their judged target and spread distinct integers across 0–100.
+- Treat contra as a graded probability that modulates the product; it enters only through the product and is not a binary veto or separate tier.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).
+Output: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons).
+
+Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .
+Output: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> .
+
+Input: She <SEG:?> directed <SEG:?> officers <SEG:?> to <SEG:?> her <SEG:?> black <SEG:?> Oldsmobile <SEG:?> Intrigue <SEG:?> which <SEG:?> was <SEG:?> 500 <SEG:?> feet <SEG:?> away.
+Output: She <SEG:82> directed <SEG:91> officers <SEG:45> to <SEG:18> her <SEG:0> black <SEG:64> Oldsmobile <SEG:73> Intrigue <SEG:100> which <SEG:36> was <SEG:9> 500 <SEG:27> feet <SEG:55> away.
+
+Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG:?> islands <SEG:?> spread <SEG:?> out <SEG:?> over <SEG:?> 2.2 <SEG:?> million <SEG:?> km2 <SEG:?> of <SEG:?> ocean.
+Output: It <SEG:69> is <SEG:77> an <SEG:31> archipelago <SEG:92> with <SEG:46> 15 <SEG:85> islands <SEG:100> spread <SEG:62> out <SEG:54> over <SEG:38> 2.2 <SEG:23> million <SEG:0> km2 <SEG:15> of <SEG:8> ocean.
+

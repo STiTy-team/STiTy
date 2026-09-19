@@ -1,0 +1,136 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Predicate / coordination guidance: prefer cuts that do not separate an argument from the verb when that separation would change semantic roles. Do not treat “avoid cutting near heads” as an absolute ban. In very low-latency regimes (≤3–5), allow denser cuts when each candidate shows strong local cohesion and no single kept cut would create an unrepairable contradiction. A good dense cut leaves both sides locally self-contained (a complete NP or a verb phrase with its essential dependents) so meaning and scope stay clear."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Contra-sensitive ranking: if a candidate cut by itself yields a high contradiction probability, rank it very low unless immediately adjacent kept cuts will reliably restore the missing context. Do not let apparent surface cohesion alone justify a high rank for cuts with near-certain contra risk."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 323
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 299
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7555,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Predicate/coordination: don't forbid cuts near predicates or arguments outright. In very-low-latency (≤3–5) allow denser cuts when each candidate shows high cohesion and none alone causes high contradiction. Prefer cuts that end after a complete constituent or closed argument span, not mid-argument."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 97
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7030,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_48",
+    "kind": "example",
+    "text": "Input: Jonny <SEG:?> Reid, <SEG:?> co-driver <SEG:?> for <SEG:?> the <SEG:?> A1GP <SEG:?> New <SEG:?> Zealand <SEG:?> team, <SEG:?> today <SEG:?> made <SEG:?> history <SEG:?> by <SEG:?> driving <SEG:?> the <SEG:?> fastest <SEG:?> over <SEG:?> the <SEG:?> 48-year-old <SEG:?> Auckland <SEG:?> Harbour <SEG:?> Bridge, <SEG:?> New <SEG:?> Zealand, <SEG:?> legally.\nOutput: Jonny <SEG:100> Reid, <SEG:65> co-driver <SEG:52> for <SEG:35> the <SEG:61> A1GP <SEG:74> New <SEG:13> Zealand <SEG:22> team, <SEG:83> today <SEG:91> made <SEG:70> history <SEG:78> by <SEG:30> driving <SEG:48> the <SEG:39> fastest <SEG:43> over <SEG:26> the <SEG:17> 48-year-old <SEG:9> Auckland <SEG:0> Harbour <SEG:4> Bridge, <SEG:87> New <SEG:57> Zealand, <SEG:96> legally."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "en_us_1081",
+    "kind": "example",
+    "text": "Input: Farther <SEG:?> south <SEG:?> is <SEG:?> Niagara <SEG:?> Falls <SEG:?> and <SEG:?> the <SEG:?> north <SEG:?> is <SEG:?> home <SEG:?> to <SEG:?> the <SEG:?> untapped <SEG:?> natural <SEG:?> beauty <SEG:?> of <SEG:?> the <SEG:?> Muskoka <SEG:?> and <SEG:?> beyond.\nOutput: Farther <SEG:89> south <SEG:83> is <SEG:72> Niagara <SEG:50> Falls <SEG:100> and <SEG:94> the <SEG:56> north <SEG:39> is <SEG:78> home <SEG:67> to <SEG:28> the <SEG:33> untapped <SEG:22> natural <SEG:17> beauty <SEG:11> of <SEG:6> the <SEG:0> Muskoka <SEG:44> and <SEG:61> beyond."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "labeled_example": "en_us_455",
+    "kind": "example",
+    "text": "Input: The <SEG:?> disadvantage <SEG:?> of <SEG:?> zoom <SEG:?> lenses <SEG:?> is <SEG:?> that <SEG:?> the <SEG:?> focal <SEG:?> complexity <SEG:?> and <SEG:?> number <SEG:?> of <SEG:?> lens <SEG:?> elements <SEG:?> required <SEG:?> to <SEG:?> achieve <SEG:?> a <SEG:?> range <SEG:?> of <SEG:?> focal <SEG:?> lengths <SEG:?> is <SEG:?> much <SEG:?> greater <SEG:?> than <SEG:?> for <SEG:?> prime <SEG:?> lenses.\nOutput: The <SEG:75> disadvantage <SEG:93> of <SEG:25> zoom <SEG:89> lenses <SEG:79> is <SEG:100> that <SEG:82> the <SEG:0> focal <SEG:43> complexity <SEG:86> and <SEG:96> number <SEG:71> of <SEG:61> lens <SEG:57> elements <SEG:36> required <SEG:32> to <SEG:29> achieve <SEG:18> a <SEG:21> range <SEG:14> of <SEG:4> focal <SEG:7> lengths <SEG:39> is <SEG:50> much <SEG:54> greater <SEG:64> than <SEG:11> for <SEG:46> prime <SEG:68> lenses."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 363
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -2
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -16
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7278,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Low-latency density: in ≤3/≤5 regimes, allow denser cuts. Prefer cuts that end on complete constituents (NP/PP or a finished VP/clause) and only when cohesion is high and the right-hand piece alone has low contradiction risk. Do not treat 'avoid heads' as an absolute ban."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 275
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7208,
+  "errors": null
+ }
+]

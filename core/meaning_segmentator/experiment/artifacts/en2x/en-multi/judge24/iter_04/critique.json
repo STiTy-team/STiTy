@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt treats numerals/quantities as safe cut points and therefore allows cuts that separate a numeral or quantifier from its unit/measurement (including parenthetic equivalents), producing broken or contradictory numeric claims when pieces are translated separately.",
+    "evidence": "['en_us_101','en_us_44','en_us_1050','en_us_419','en_us_278'] — each source contains a numeral/quantifier immediately followed by a unit, percent, measurement phrase or parenthetic unit that the policy cut apart, and the target re-joins those tokens to restore numeric coherence.",
+    "type_predicate": "Sentences where a numeral or quantifier is immediately followed (adjacent or separated only by punctuation) by a unit/measurement phrase, percentage/currency marker, or a parenthesised equivalent.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral or quantifier and its immediately following unit/measurement phrase, percent/currency marker, or parenthetic equivalent; keep the numeric expression intact."
+    }
+   },
+   {
+    "diagnosis": "The prompt underrates clause‑initial function words: it often cuts between a single-word clause starter (determiner/pronoun) and the content word that immediately follows, detaching the head or predicate and breaking predicate-argument or noun‑head coherence.",
+    "evidence": "['en_us_454','en_us_1659','en_us_968','en_us_573','en_us_1017'] — in each, the policy splits a clause‑initial determiner/pronoun from the following lexical head (noun or verb); the target keeps that pairing together to preserve who/what or the predicate structure.",
+    "type_predicate": "Sentences where a clause or clause‑fragment begins with a single-word determiner or pronoun immediately followed by a lexical head (a noun or finite verb) — the determiner/pronoun and its head should not be separated.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a clause‑initial determiner or pronoun and the immediate lexical head (noun or finite verb) it introduces; keep that pair together to preserve core argument or nominal structure."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt treats numerals/quantities as safe cut points and therefore allows cuts that separate a numeral or quantifier from its unit/measurement (including parenthetic equivalents), producing broken or contradictory numeric claims when pieces are translated separately.",
+   "evidence": "['en_us_101','en_us_44','en_us_1050','en_us_419','en_us_278'] — each source contains a numeral/quantifier immediately followed by a unit, percent, measurement phrase or parenthetic unit that the policy cut apart, and the target re-joins those tokens to restore numeric coherence.",
+   "type_predicate": "Sentences where a numeral or quantifier is immediately followed (adjacent or separated only by punctuation) by a unit/measurement phrase, percentage/currency marker, or a parenthesised equivalent.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral or quantifier and its immediately following unit/measurement phrase, percent/currency marker, or parenthetic equivalent; keep the numeric expression intact."
+   }
+  },
+  {
+   "diagnosis": "The prompt underrates clause‑initial function words: it often cuts between a single-word clause starter (determiner/pronoun) and the content word that immediately follows, detaching the head or predicate and breaking predicate-argument or noun‑head coherence.",
+   "evidence": "['en_us_454','en_us_1659','en_us_968','en_us_573','en_us_1017'] — in each, the policy splits a clause‑initial determiner/pronoun from the following lexical head (noun or verb); the target keeps that pairing together to preserve who/what or the predicate structure.",
+   "type_predicate": "Sentences where a clause or clause‑fragment begins with a single-word determiner or pronoun immediately followed by a lexical head (a noun or finite verb) — the determiner/pronoun and its head should not be separated.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a clause‑initial determiner or pronoun and the immediate lexical head (noun or finite verb) it introduces; keep that pair together to preserve core argument or nominal structure."
+   }
+  }
+ ]
+}

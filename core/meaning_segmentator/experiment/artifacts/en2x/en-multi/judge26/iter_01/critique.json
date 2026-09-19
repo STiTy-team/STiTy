@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that detach numeric/measurement/date/location phrases from the words they complete, producing standalone pieces that lack the quantity/place/time needed to interpret the previous span.",
+    "evidence": "['en_us_44','en_us_270','en_us_101','en_us_998','en_us_1650','en_us_1062'] — each sentence has a numeral, unit/measurement, date, or locative/directional phrase that the policy cut off from its head, and the offline target keeps that completing phrase with its head.",
+    "type_predicate": "A candidate cut falls immediately before (or inside) an expression that supplies a numeral/quantity, unit or measurement, a date/time phrase, or a location/directional phrase that completes the preceding noun or verb phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut where the following words complete a numeral/quantity, unit/measurement, date/time, or location/directional phrase required to interpret the preceding phrase."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that split main clause predicate structure (subjects, auxiliaries/copulas, negation, or exception markers) from their complements, which turns clauses into misleading fragments and yields contradictions when translated separately.",
+    "evidence": "['en_us_1116','en_us_89','en_us_378','en_us_633','en_us_1113','en_us_408'] — in each case the policy separates a subject or main verb/auxiliary (or an exception/negation) from material that determines the clause's truth or scope; the target keeps those clause pieces together.",
+    "type_predicate": "A candidate cut separates a clause's subject from its main verb/auxiliary or separates the predicate from essential complements, negation, or exception markers (e.g. 'except', 'but'), thereby splitting the clause's truth-conditional core.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a clause's subject and its main verb/auxiliary, or between a predicate and essential complements, negation, or exception markers (for example 'except' or 'but')."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that detach numeric/measurement/date/location phrases from the words they complete, producing standalone pieces that lack the quantity/place/time needed to interpret the previous span.",
+   "evidence": "['en_us_44','en_us_270','en_us_101','en_us_998','en_us_1650','en_us_1062'] — each sentence has a numeral, unit/measurement, date, or locative/directional phrase that the policy cut off from its head, and the offline target keeps that completing phrase with its head.",
+   "type_predicate": "A candidate cut falls immediately before (or inside) an expression that supplies a numeral/quantity, unit or measurement, a date/time phrase, or a location/directional phrase that completes the preceding noun or verb phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut where the following words complete a numeral/quantity, unit/measurement, date/time, or location/directional phrase required to interpret the preceding phrase."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that split main clause predicate structure (subjects, auxiliaries/copulas, negation, or exception markers) from their complements, which turns clauses into misleading fragments and yields contradictions when translated separately.",
+   "evidence": "['en_us_1116','en_us_89','en_us_378','en_us_633','en_us_1113','en_us_408'] — in each case the policy separates a subject or main verb/auxiliary (or an exception/negation) from material that determines the clause's truth or scope; the target keeps those clause pieces together.",
+   "type_predicate": "A candidate cut separates a clause's subject from its main verb/auxiliary or separates the predicate from essential complements, negation, or exception markers (e.g. 'except', 'but'), thereby splitting the clause's truth-conditional core.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a clause's subject and its main verb/auxiliary, or between a predicate and essential complements, negation, or exception markers (for example 'except' or 'but')."
+   }
+  }
+ ]
+}

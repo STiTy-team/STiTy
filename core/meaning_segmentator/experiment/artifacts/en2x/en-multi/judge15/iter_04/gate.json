@@ -1,0 +1,64 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_105",
+  "en_us_276",
+  "en_us_1179",
+  "en_us_738",
+  "en_us_419",
+  "en_us_432",
+  "en_us_1615",
+  "en_us_360",
+  "en_us_1527",
+  "en_us_687",
+  "en_us_1497",
+  "en_us_1157",
+  "en_us_1081",
+  "en_us_733",
+  "en_us_1116"
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.3323,
+   "pairs": 15,
+   "chars": 7788,
+   "changelog": [
+    "Replace C1 to prioritize single high-contradiction boundaries: explicitly tell scorers to rank cuts that would be contradicted by the remainder below other cuts, addressing the primary_finding.",
+    "Insert a new principle after C3 that warns against cutting right after auxiliaries/copulas/modals/negators/subordinators when the remainder completes or reverses the predicate, phrased as a ranking preference to avoid blanket bans.",
+    "Paraphrase C4 shorter to save space while keeping its guidance about noun+modifier splits and avoiding forcing tiny fragments."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.3458,
+   "pairs": 15,
+   "chars": 7430,
+   "changelog": [
+    "Replace C3 to add a concise rule addressing the primary finding: warn against cutting immediately after auxiliaries/copulas/modals/negation/subordinators when the remainder completes or can reverse the predicate, and instruct scorers to rank such cuts lower than alternatives."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.3645,
+   "pairs": 15,
+   "chars": 7270,
+   "changelog": [
+    "Replace E1 with labeled example en_us_1494 to show a case where a single cut (after 'should') carries very high contradiction risk and must be ranked low.",
+    "Replace E2 with labeled example en_us_399 to surface a short-piece contradiction where a cut inside 'to have a troop launching pad' yields high contra and destroys cohesion.",
+    "Replace E3 with labeled example en_us_990 to illustrate splits that invert polarity/meaning when translated separately ('are not stable' vs 'stable').",
+    "Replace E4 with labeled example en_us_1570 to demonstrate cuts that isolate auxiliaries/heads (e.g. 'had') and produce contradiction risk."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.3755,
+   "pairs": 15,
+   "chars": 7376,
+   "changelog": [
+    "Replace C7 to rank cuts that split auxiliaries/copulas/modals/negation/subordinators lower than alternatives, addressing the primary finding that such splits isolate unresolved function-headed predicates and create high contradiction risk."
+   ]
+  }
+ ]
+}

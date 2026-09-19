@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00422,
+  "lo": -0.00654,
+  "hi": 0.01498,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "by_bin": {
+  "≤3": 0.011,
+  "≤5": -0.0026,
+  "≤7": 0.0046,
+  "≤10": -0.0021,
+  "≤99": -0.0024
+ },
+ "n_worse": 1890,
+ "n_better": 1872,
+ "worst": [
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7782,
+   "before": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals.",
+   "after": "The best indication of internal poisoning may be the presence ‖ of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_391",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7533,
+   "before": "The earliest known book in the world was written in Sanskrit. ‖ After ‖ the compilation of Upanishads, ‖ Sanskrit just faded due to hierarchy.",
+   "after": "The earliest known book in the world was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit ‖ just faded due to hierarchy."
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.712,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, ‖ but the framework we have is enough to start trading on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_970",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6756,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1632",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6666,
+   "before": "Women ‖ should realize that cultural differences may result in what they would consider harassment ‖ and ‖ it is not uncommon to be followed, ‖ grabbed by the arm, ‖ etc.",
+   "after": "Women should realize that cultural differences ‖ may result in what they ‖ would consider harassment ‖ and it is not uncommon to be followed, ‖ grabbed by the arm, ‖ etc."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.8077,
+   "before": "On icy and snowy roadways, ‖ friction is low and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_890",
+   "k": 2,
+   "bin": "≤5",
+   "delta": 0.7715,
+   "before": "Inland Antarctica ‖ is a desolate plateau covered by 2-3 km of ‖ ice.",
+   "after": "Inland Antarctica ‖ is ‖ a desolate plateau covered by 2-3 km of ice."
+  },
+  {
+   "id": "en_us_16",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7478,
+   "before": "\"Panama Papers\" ‖ is an umbrella term for roughly ten million documents ‖ from Panamanian law firm Mossack ‖ Fonseca, ‖ leaked to the press in spring 2016.",
+   "after": "\"Panama Papers\" ‖ is an umbrella term for roughly ten million documents ‖ from Panamanian law firm Mossack Fonseca, ‖ leaked to the press ‖ in spring 2016."
+  },
+  {
+   "id": "en_us_895",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.7465,
+   "before": "The most common cause for accidents in winter ‖ is ‖ slippery roads, ‖ pavements (sidewalks) and especially steps.",
+   "after": "The most common cause for accidents in winter ‖ is slippery roads, ‖ pavements (sidewalks) ‖ and especially steps."
+  },
+  {
+   "id": "en_us_890",
+   "k": 3,
+   "bin": "≤3",
+   "delta": 0.7399,
+   "before": "Inland Antarctica ‖ is a desolate plateau covered by 2-3 km ‖ of ‖ ice.",
+   "after": "Inland Antarctica ‖ is ‖ a desolate plateau ‖ covered by 2-3 km of ice."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.976,
+   "2": 4.222,
+   "3": 2.861,
+   "4": 2.216,
+   "5": 1.784,
+   "6": 1.572,
+   "7": 1.421,
+   "8": 1.313,
+   "9": 1.23,
+   "10": 1.174,
+   "11": 1.141,
+   "12": 1.108,
+   "13": 1.082
+  },
+  "revision": {
+   "1": 7.802,
+   "2": 4.343,
+   "3": 2.975,
+   "4": 2.296,
+   "5": 1.872,
+   "6": 1.644,
+   "7": 1.458,
+   "8": 1.343,
+   "9": 1.251,
+   "10": 1.193,
+   "11": 1.151,
+   "12": 1.119,
+   "13": 1.098
+  },
+  "delta": {
+   "1": -0.174,
+   "2": 0.121,
+   "3": 0.114,
+   "4": 0.08,
+   "5": 0.088,
+   "6": 0.072,
+   "7": 0.037,
+   "8": 0.03,
+   "9": 0.021,
+   "10": 0.019,
+   "11": 0.01,
+   "12": 0.011,
+   "13": 0.016
+  }
+ },
+ "why": "Inserting the fallback changed tie-breaking so the model now prefers to keep numeral/quantifier+unit and finite-verb+immediate-complement adjacencies, which fixed a handful of short/numeric cases but—by demoting punctuation/clause boundaries—moved many cuts into prepositional/quote boundaries and other internal spots; bins show small gains for very short pieces (≤3, ≤7) but slight losses across mid and long bins (≤5, ≤10, ≤99), producing a near-zero net effect.",
+ "lesson": "Don’t demote punctuation and clause boundaries so far in the tie-breaking order that modest numeral/unit/verb–complement protections cause many small regressions across medium and long spans.",
+ "blamed": [
+  "C8 «- Does the stretch after the cut supply disambiguating infor»"
+ ]
+}

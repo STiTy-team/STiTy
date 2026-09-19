@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00245,
+  "lo": -0.00809,
+  "hi": 0.01239,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "gain": {
+  "mean": 0.00245,
+  "lo": -0.00809,
+  "hi": 0.01239,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "changelog": [
+  "Insert a fallback ordering that prefers punctuation/clause-boundary cuts only when those punctuation cuts do not split a numeral from its immediately following unit or separate a finite verb/auxiliary from its immediately following core complement; otherwise prefer the cut that preserves numeral–unit or finite-verb–core-complement attachment. This prevents the punctuation-last-resort rule from overriding the primary attachment protections (addresses the primary finding)."
+ ],
+ "findings": [
+  "The prompt treats cuts that separate numerals/quantifiers from their measurement/unit phrase as acceptable, which yields pieces that lack the unit and so produce high contradiction or cohesion loss when translated alone.",
+  "The prompt undervalues preserving predicate-argument attachments and allows cuts that separate a finite verb/auxiliary or copula from the phrase that supplies its core complement (object, clausal complement, essential PP or following relative clause), producing orphaned fragments that contradict or misrepresent the sentence when isolated."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- As a last resort, order candidate cuts on the source surface as follows: prefe"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.005,
+   "≤5": 0.0043,
+   "≤7": 0.0027,
+   "≤10": -0.0068,
+   "≤99": -0.0107
+  },
+  "n_worse": 1880,
+  "n_better": 1841,
+  "why": "Inserting the fallback ordering (C_end) made the model more likely to pick punctuation/clause-boundary cuts when those cuts do not split numeral–unit or finite-verb–core attachments; that preserved numeral–unit and similar tight attachments and improved very short bins (≤3/5/7) but at the same time introduced clause-internal cuts that separated verbs from their immediately following complements or moved cuts earlier in longer sentences, producing the negative effects seen in the ≤10/≤99 bins and the small net set of worsened pairs.",
+  "lesson": "A later revision should keep the numeral–unit/verb–core protections that helped short pieces but ensure the punctuation fallback does not create new finite-verb–complement splits or premature clause-internal cuts that harm longer-span decisions.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

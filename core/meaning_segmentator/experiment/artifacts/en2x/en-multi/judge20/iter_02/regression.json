@@ -1,0 +1,126 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00342,
+  "lo": -0.00537,
+  "hi": 0.01258,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "by_bin": {
+  "≤3": -0.0028,
+  "≤5": 0.0028,
+  "≤7": 0.0137,
+  "≤10": 0.0097,
+  "≤99": 0.0187
+ },
+ "n_worse": 2257,
+ "n_better": 2293,
+ "worst": [
+  {
+   "id": "en_us_1630",
+   "k": 2,
+   "bin": "≤10",
+   "delta": -0.7747,
+   "before": "Arly Velasquez of Mexico finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall finished ninth in the men's standing Super-G.",
+   "after": "Arly Velasquez of Mexico finished fifteenth in the men's sitting Super-G. ‖ New Zealand's Adam Hall ‖ finished ninth in the men's standing Super-G."
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.713,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading ‖ on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_1630",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6975,
+   "before": "Arly Velasquez of Mexico ‖ finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall finished ninth in the men's standing Super-G.",
+   "after": "Arly Velasquez of Mexico finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall ‖ finished ninth in the men's standing Super-G."
+  },
+  {
+   "id": "en_us_970",
+   "k": 8,
+   "bin": "≤3",
+   "delta": -0.6927,
+   "before": "Part of its charm ‖ is ‖ the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect the villages, ‖ and ‖ cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_970",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.6915,
+   "before": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect the villages, ‖ and cars ‖ cannot reach them from the outside."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1095",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7363,
+   "before": "They were compelled to pay taxes to the U.S. colonial regime to defray a major part of the expenditures and the interest on bonds floated in the name of the Philippine government through the ‖ Wall Street banking houses.",
+   "after": "They were compelled to pay taxes to the U.S. colonial regime ‖ to defray a major part of the expenditures and the interest on bonds floated in the name of the Philippine government through the Wall Street banking houses."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7325,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_86",
+   "k": 1,
+   "bin": "≤5",
+   "delta": 0.7144,
+   "before": "Pittman suggested that conditions wouldn't improve ‖ until sometime next week.",
+   "after": "Pittman ‖ suggested that conditions wouldn't improve until sometime next week."
+  },
+  {
+   "id": "en_us_697",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.7077,
+   "before": "Due to the religious significance of the city, ‖ and in particular the many sites ‖ of the ‖ Old City area, ‖ Jerusalem is one of the main tourist destinations ‖ in Israel.",
+   "after": "Due to the religious significance of the city, ‖ and in particular the many sites of the Old City area, ‖ Jerusalem is one of the main ‖ tourist ‖ destinations ‖ in Israel."
+  },
+  {
+   "id": "en_us_1095",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.7074,
+   "before": "They were compelled to pay taxes to the U.S. colonial regime to defray a major part of the expenditures and the interest on bonds floated in the name of the ‖ Philippine government through the ‖ Wall Street banking house",
+   "after": "They were compelled to pay taxes to the U.S. colonial regime ‖ to defray a major part of the expenditures ‖ and the interest on bonds floated in the name of the Philippine government through the Wall Street banking house"
+  }
+ ],
+ "vs_base": {
+  "delta": {
+   "mean": -0.00191,
+   "lo": -0.01056,
+   "hi": 0.00734,
+   "n": 5509,
+   "n_clusters": 600
+  },
+  "by_bin": {
+   "≤3": -0.0075,
+   "≤5": 0.0026,
+   "≤7": 0.0035,
+   "≤10": -0.0007,
+   "≤99": 0.0023
+  },
+  "n_worse": 2227,
+  "n_better": 2216
+ },
+ "why": "The inserted C3 rule made the model avoid cuts immediately after verbs/copu las when a 1–4-word complement follows, so those cuts were pushed to other boundaries. By-bin changes show small losses for very short pieces (≤3) and growing gains for longer spans (≤7–≤99), while n_worse vs n_better are nearly balanced — meaning the rule fixed orphaned/complement splits in longer contexts but caused new bad splits (subjects separated from their verbs, and cuts moved inside enumerations or before quotes) in many cases, leaving the net measurement essentially unchanged.",
+ "lesson": "A future revision should preserve verb/copula + short-complement bindings only when doing so does not force cuts that split subjects from their verbs or break coordinated/enumerated items.",
+ "blamed": [
+  "C3 «- Do the next one to four words form a short complement that»"
+ ]
+}

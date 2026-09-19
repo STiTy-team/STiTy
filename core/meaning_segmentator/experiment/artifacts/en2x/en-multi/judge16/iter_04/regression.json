@@ -1,0 +1,108 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.00252,
+  "lo": -0.01021,
+  "hi": 0.01569,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": 0.0111,
+  "≤5": -0.007,
+  "≤7": 0.0028,
+  "≤10": -0.0042,
+  "≤99": -0.0023
+ },
+ "n_worse": 699,
+ "n_better": 733,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7436,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_970",
+   "k": 4,
+   "bin": "≤7",
+   "delta": -0.7189,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, trains and boats connect ‖ the villages, ‖ and cars ‖ cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6745,
+   "before": "Like some other experts, ‖ he ‖ is ‖ skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings have no relevance to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have ‖ no relevance to people who already have Type 1 diabetes."
+  },
+  {
+   "id": "en_us_970",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6735,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect ‖ the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, trains and boats connect ‖ the villages, ‖ and cars ‖ cannot ‖ reach them from the outside."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6636,
+   "before": "Like some other ‖ experts, ‖ he ‖ is ‖ skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings have no relevance to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he ‖ is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have ‖ no relevance to people who already have Type 1 diabetes."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7209,
+   "before": "Although in theory they can take place annually (so long as they are in different countries), ‖ in ‖ practice ‖ they ‖ are not.",
+   "after": "Although in theory ‖ they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice they are not."
+  },
+  {
+   "id": "en_us_776",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6559,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in ‖ practice ‖ they ‖ are not.",
+   "after": "Although in theory ‖ they can take ‖ place ‖ annually ‖ (so long as they are in different countries), ‖ in practice they are not."
+  },
+  {
+   "id": "en_us_1596",
+   "k": 4,
+   "bin": "≤3",
+   "delta": 0.6229,
+   "before": "Naturalists and philosophers focused on classical ‖ texts ‖ and, in particular, on the Bible ‖ in ‖ Latin.",
+   "after": "Naturalists and philosophers ‖ focused on classical ‖ texts ‖ and, in particular, on the Bible ‖ in Latin."
+  },
+  {
+   "id": "en_us_1514",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.6203,
+   "before": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in ‖ the yard ‖ and refused ‖ to return ‖ to their cells.",
+   "after": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining inmates ‖ stayed ‖ in the yard ‖ and ‖ refused ‖ to return ‖ to their cells."
+  },
+  {
+   "id": "en_us_1167",
+   "k": 4,
+   "bin": "≤3",
+   "delta": 0.6173,
+   "before": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright ‖ as habitually.",
+   "after": "Their ‖ predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually."
+  }
+ ],
+ "why": "Inserting the narrow check after C5 that forbids cuts between numerals/quantifiers and their immediately following unit/measurement phrases caused the model to stop splitting number+unit sequences (improving the smallest pieces, ≤3), but it also changed cut priorities elsewhere so many mid-length examples (bins ≤5 and ≤10) now get cuts shifted into noun phrases, enumerations, or auxiliary/subject boundaries; the result is a near-zero net change because roughly as many pairs improved as degraded.",
+ "lesson": "A later revision should keep numeral+unit adjacency (so short pieces benefit) while avoiding wholesale re-prioritization of cut placement that splits enumerations or breaks cohesive noun phrases in the ≤5–≤10 bins.",
+ "blamed": [
+  "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+ ]
+}

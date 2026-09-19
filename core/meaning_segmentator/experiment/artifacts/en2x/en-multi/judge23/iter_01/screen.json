@@ -1,0 +1,128 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  9,
+  31,
+  32,
+  35,
+  37,
+  40,
+  49,
+  63,
+  69,
+  75,
+  78,
+  80,
+  103,
+  106,
+  109,
+  110,
+  113,
+  125,
+  134,
+  143,
+  145,
+  146,
+  154,
+  156,
+  158,
+  163,
+  164,
+  168,
+  174,
+  175,
+  194,
+  198,
+  209,
+  211,
+  214,
+  218,
+  222,
+  231,
+  238,
+  241,
+  247,
+  253,
+  259,
+  262,
+  265,
+  274,
+  281,
+  282,
+  290
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00873,
+    "lo": -0.02024,
+    "hi": 0.03732,
+    "n": 461,
+    "n_clusters": 50
+   },
+   "chars": 6955,
+   "changelog": [
+    "Insert a single small binding rule that keeps a finite verb/auxiliary joined with an immediately following short (≤4-word) complement or direct object, to prevent cuts that detach predicates and address the primary finding."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.01077,
+    "lo": -0.01944,
+    "hi": 0.04029,
+    "n": 461,
+    "n_clusters": 50
+   },
+   "chars": 6965,
+   "changelog": [
+    "Insert a short, specific binding that keeps a numeral/measurement together with its unit or immediately adjacent parenthetical equivalent, to prevent cuts that sever numeric meaning (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00591,
+    "lo": -0.02422,
+    "hi": 0.03494,
+    "n": 461,
+    "n_clusters": 50
+   },
+   "chars": 7110,
+   "changelog": [
+    "Add a fallback ordering unit that prefers cuts at clause boundaries or punctuation over cuts immediately after a finite verb/auxiliary followed by a short (≤4-word) complement — to prevent detaching predicates (addresses the primary finding)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.0189,
+    "lo": -0.01116,
+    "hi": 0.05057,
+    "n": 461,
+    "n_clusters": 50
+   },
+   "chars": 7068,
+   "changelog": [
+    "Add a fallback ordering that prefers a cut after a numeral+unit (or after its closing parenthesis) over a cut between the numeral and its unit; addresses the primary finding about numeric/measurement splits."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": 0.01069,
+    "lo": -0.0252,
+    "hi": 0.04313,
+    "n": 461,
+    "n_clusters": 50
+   },
+   "chars": 6476,
+   "changelog": [
+    "Delete C2 — it is a broad, restating principle that overlaps C3–C8 (predicate-argument, attachment, referents) and likely divides the judge's attention; pruning it follows the 'prune' constraint and makes the remaining, more specific rules (including the one addressing predicate–argument cuts) carry the load."
+   ]
+  }
+ ]
+}

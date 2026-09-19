@@ -1,0 +1,50 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00422,
+  "lo": -0.00654,
+  "hi": 0.01498,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "gain": {
+  "mean": 0.00422,
+  "lo": -0.00654,
+  "hi": 0.01498,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "changelog": [
+  "Insert a single fallback ordering after C8 that, as a last resort, prefers cuts that keep numeral/quantifier+unit together first, then keeps finite verb/auxiliary adjacent to its immediately following core complement, and only then prefers punctuation/clause boundaries — to protect numeral–unit integrity (primary finding) while retaining punctuation as a tiebreak."
+ ],
+ "findings": [
+  "The prompt treats cuts that separate a finite verb (or auxiliary) from its immediate core complement as acceptable, but doing so often creates an entailment/confusion (missing predicate, orphaned argument) when pieces are translated independently.",
+  "The prompt undervalues keeping numerals/quantifiers attached to their unit or measurement phrase; splitting them produces incoherent or contradicted short pieces."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+   "now": "- As a last resort, order candidate cuts on the source surface as follows: prefe"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.011,
+   "≤5": -0.0026,
+   "≤7": 0.0046,
+   "≤10": -0.0021,
+   "≤99": -0.0024
+  },
+  "n_worse": 1890,
+  "n_better": 1872,
+  "why": "Inserting the fallback changed tie-breaking so the model now prefers to keep numeral/quantifier+unit and finite-verb+immediate-complement adjacencies, which fixed a handful of short/numeric cases but—by demoting punctuation/clause boundaries—moved many cuts into prepositional/quote boundaries and other internal spots; bins show small gains for very short pieces (≤3, ≤7) but slight losses across mid and long bins (≤5, ≤10, ≤99), producing a near-zero net effect.",
+  "lesson": "Don’t demote punctuation and clause boundaries so far in the tie-breaking order that modest numeral/unit/verb–complement protections cause many small regressions across medium and long spans.",
+  "blamed": [
+   "C8 «- Does the stretch after the cut supply disambiguating infor»"
+  ]
+ }
+}

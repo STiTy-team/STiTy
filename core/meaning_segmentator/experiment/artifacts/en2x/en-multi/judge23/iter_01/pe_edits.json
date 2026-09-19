@@ -1,0 +1,136 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- When a finite verb or auxiliary is immediately followed (no intervening punctuation) by a short complement or direct object of ≤4 words that completes the predicate or fixes polarity, keep the verb/auxiliary joined to that following span."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 241
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6955,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep a numeral or measurement (digits or spelled-out number, including an immediately adjacent parenthetical equivalent) together with its immediately following unit or parenthetical equivalent; treat the number and its unit as one segmentation unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 251
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6965,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Prefer a cut after a clear clause boundary or punctuation (for example sentence-final punctuation, a clause-ending comma, or the position immediately before a coordinating conjunction that begins a new clause) over a cut immediately after a finite verb or auxiliary when that verb/auxiliary is followed with no intervening punctuation by a short complement or direct object (roughly ≤4 words)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 396
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7110,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback ordering: when a numeral or measurement (digits or spelled-out number) is immediately adjacent to its unit or an immediately adjacent parenthetical equivalent (for example \"55,000 barrels (2.3 million gallons)\" or \"1.5 hour\"), prefer a cut after the unit or after the closing parenthesis over any cut located between the numeral and its unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 354
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7068,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "chars_change": -238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6476,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "chars_change": -238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6476,
+  "errors": null
+ }
+]

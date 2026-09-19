@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates cuts that separate a finite verb (copula/auxiliary or main verb) from an immediately following short complement that completes the predicate, causing orphaned predicates or contradicted fragments.",
+    "evidence": "['en_us_44','en_us_270','en_us_1527','en_us_1042','en_us_1116','en_us_998','en_us_89','en_us_1570','en_us_574','en_us_381'] — each sentence has a finite verb/auxiliary or main verb immediately followed by a very short (≈1–3 word) complement (a prepositional phrase, measurement/parenthetical, numeral+unit, exception/contrast fragment, or short object/clausal complement) and the policy placed a cut between the verb and that complement, producing contradiction or cohesion loss.",
+    "type_predicate": "Sentences where a finite copula/auxiliary or main verb is immediately followed (no intervening comma) by a short (one-to-three-word) complement that completes the main predicate — specifically a prepositional phrase, a parenthetical measurement, a numeral+unit or other short object/exception phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Add: Do not cut between a finite verb (copula/auxiliary or main verb) and an immediately following short (≤3‑word) complement that completes the predicate (e.g. a PP, measurement/parenthesis, numeral+unit, exception/contrast phrase, or short object/clausal complement)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates cuts that separate a finite verb (copula/auxiliary or main verb) from an immediately following short complement that completes the predicate, causing orphaned predicates or contradicted fragments.",
+   "evidence": "['en_us_44','en_us_270','en_us_1527','en_us_1042','en_us_1116','en_us_998','en_us_89','en_us_1570','en_us_574','en_us_381'] — each sentence has a finite verb/auxiliary or main verb immediately followed by a very short (≈1–3 word) complement (a prepositional phrase, measurement/parenthetical, numeral+unit, exception/contrast fragment, or short object/clausal complement) and the policy placed a cut between the verb and that complement, producing contradiction or cohesion loss.",
+   "type_predicate": "Sentences where a finite copula/auxiliary or main verb is immediately followed (no intervening comma) by a short (one-to-three-word) complement that completes the main predicate — specifically a prepositional phrase, a parenthetical measurement, a numeral+unit or other short object/exception phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Add: Do not cut between a finite verb (copula/auxiliary or main verb) and an immediately following short (≤3‑word) complement that completes the predicate (e.g. a PP, measurement/parenthesis, numeral+unit, exception/contrast phrase, or short object/clausal complement)."
+   }
+  }
+ ]
+}

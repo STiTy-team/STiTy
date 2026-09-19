@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00494,
+  "lo": -0.00509,
+  "hi": 0.01528,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "by_bin": {
+  "≤3": 0.0117,
+  "≤5": 0.0008,
+  "≤7": 0.0022,
+  "≤10": -0.005,
+  "≤99": -0.0016
+ },
+ "n_worse": 2160,
+ "n_better": 2432,
+ "worst": [
+  {
+   "id": "en_us_1548",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.8045,
+   "before": "When you call someone who is thousands of miles away, ‖ you are using a satellite.",
+   "after": "When you call someone who is thousands of miles away, you are using a ‖ satellite."
+  },
+  {
+   "id": "en_us_649",
+   "k": 2,
+   "bin": "≤10",
+   "delta": -0.7671,
+   "before": "We will never overhaul a car, ‖ build a fountain in our backyard, ‖ travel to Peru to examine ancient ruins, or remodel our neighbour's house.",
+   "after": "We ‖ will ‖ never overhaul a car, build a fountain in our backyard, travel to Peru to examine ancient ruins, or remodel our neighbour's house."
+  },
+  {
+   "id": "en_us_805",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7668,
+   "before": "Eyeglasses can be cheaper in a foreign country, ‖ especially in low-income countries where labour costs are lower.",
+   "after": "Eyeglasses can be cheaper in a foreign country, especially in low-income countries where labour costs are ‖ lower."
+  },
+  {
+   "id": "en_us_1548",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.7447,
+   "before": "When you call someone who is thousands of miles away, ‖ you ‖ are using a satellite.",
+   "after": "When you call someone who is thousands of miles away, ‖ you are using a ‖ satellite."
+  },
+  {
+   "id": "en_us_1523",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.738,
+   "before": "The final score was a one-point victory, ‖ 21 to 20, ending the All Blacks' 15 game winning streak.",
+   "after": "The final score was a one-point victory, 21 to 20, ending the All Blacks' 15 game winning ‖ streak."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.8077,
+   "before": "On icy and snowy roadways, ‖ friction is low and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_594",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7372,
+   "before": "Only animals have brains (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do ‖ not have brains).",
+   "after": "Only animals have brains ‖ (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do not have brains)."
+  },
+  {
+   "id": "en_us_1640",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.7253,
+   "before": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and ‖ you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_391",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7142,
+   "before": "The earliest known book in the world was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit ‖ just faded due to hierarchy.",
+   "after": "The earliest known book in the world was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit just faded ‖ due to hierarchy."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.622,
+   "2": 4.094,
+   "3": 2.826,
+   "4": 2.192,
+   "5": 1.788,
+   "6": 1.536,
+   "7": 1.375,
+   "8": 1.273,
+   "9": 1.187,
+   "10": 1.137,
+   "11": 1.107,
+   "12": 1.082,
+   "13": 1.065
+  },
+  "revision": {
+   "1": 7.577,
+   "2": 4.119,
+   "3": 2.849,
+   "4": 2.217,
+   "5": 1.804,
+   "6": 1.59,
+   "7": 1.411,
+   "8": 1.293,
+   "9": 1.219,
+   "10": 1.162,
+   "11": 1.118,
+   "12": 1.089,
+   "13": 1.072
+  },
+  "delta": {
+   "1": -0.045,
+   "2": 0.025,
+   "3": 0.023,
+   "4": 0.025,
+   "5": 0.016,
+   "6": 0.054,
+   "7": 0.036,
+   "8": 0.02,
+   "9": 0.032,
+   "10": 0.025,
+   "11": 0.011,
+   "12": 0.007,
+   "13": 0.007
+  }
+ },
+ "why": "Removing C2 weakened the prompt's broad, restating protection for predicate–complement and head-dependent spans, so the model began allowing more aggressive, fine-grained cuts (helping very-short pieces: ≤3 bin +0.0117 and producing a slight net of more improvements overall) while increasing harmful mid-clause/head splits in medium-length chunks (≤10 bin −0.005), which produced the large negative tail moves that break noun/verb or enumerated-unit integrity.",
+ "lesson": "Keep an explicit, high-level constraint that protects predicate–complement and head-dependent integrity so the prompt does not encourage splitting inside phrases in medium-length pieces.",
+ "blamed": [
+  "C2 «- Would a cut leave core predicate-argument structure detach»"
+ ]
+}

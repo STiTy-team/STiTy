@@ -1,0 +1,157 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00956,
+   "lo": -0.0065,
+   "hi": 0.02507,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Deleted C2: removed a broad, redundant recombination rule that largely restates other, more specific principles (pronouns, scope, attachment). This follows the 'prune' constraint and reduces overlap so the remaining specific rules can guide cuts more clearly."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "was": "- Will translating the prefix and the remainder independently and then joining t",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": true,
+  "delta": {
+   "mean": 0.01429,
+   "lo": 0.00288,
+   "hi": 0.02735,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.01429,
+   "lo": 0.00288,
+   "hi": 0.02735,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a concise binding principle to keep prepositions, opening parentheses, and numerals attached to their obligatory complements (object noun, measurement unit, or closing parenthesis) to address the primary finding that splitting these produces high contradiction; phrased as a 'keep together' binding for surface recognition."
+  ],
+  "findings": [
+   "The prompt underrates the damage of cutting before a phrase's obligatory complement (objects of prepositions, measurement units, or a closing parenthesis), so it often places cuts that leave an incomplete prepositional/measurement expression and yield high contradiction when the remainder arrives."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "Keep a preposition, an opening parenthesis, or a numeral together with the word "
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0172,
+    "≤5": 0.0142,
+    "≤7": 0.0137,
+    "≤10": 0.0027,
+    "≤99": 0.0127
+   },
+   "n_worse": 676,
+   "n_better": 800,
+   "why": "Adding a ‘keep together’ binding caused the model to stop cutting between prepositions/opening parens/numerals and their complements, which reduced contradiction and raised H_set mainly for short pieces (bins ≤3 and ≤5) but also shifted many boundaries (merging phrases like “elsewhere in the UK”) and so lowered cohesion or created worse splits for a substantial minority.",
+   "lesson": "A later revision should preserve the preposition/parenthesis/numeral binding because it improves short-bin H_set, but avoid a blanket enforcement that shifts many boundaries and thereby hurts cohesion elsewhere.",
+   "blamed": [
+    "C_end"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "reason": [
+   "유형 없음"
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00225,
+   "lo": -0.01297,
+   "hi": 0.01745,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a single, narrow core principle binding negation/polarity/quantifier tokens to the immediately following scope phrase so cuts after these tokens do not leave the prefix asserting the wrong scoped claim (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C9",
+    "kind": "change",
+    "was": "Keep a preposition, an opening parenthesis, or a numeral together with the word ",
+    "now": "- Keep a negation or polarity/quantifier token (not, no, never, except, either, "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00671,
+   "lo": -0.00648,
+   "hi": 0.01986,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00671,
+   "lo": -0.00648,
+   "hi": 0.01986,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a narrow, surface-level binding that keeps negation/polarity/quantifier tokens with the immediately following scope phrase — addresses the primary finding that cuts after polarity/quantifiers supply high contradiction risk. The phrasing is a BINDING (keep X with Y) and recognisable from the source surface form alone."
+  ],
+  "findings": [
+   "The prompt underestimates the risk of cutting immediately after a negation or polarity/quantifier token when the continuation supplies its scope, so it keeps cuts that make the prefix assert (or contradict) the wrong proposition on its own."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C9",
+    "kind": "change",
+    "was": "Keep a preposition, an opening parenthesis, or a numeral together with the word ",
+    "now": "Keep a negation or polarity/quantifier token together with the immediately follo"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0092,
+    "≤5": 0.0121,
+    "≤7": -0.0046,
+    "≤10": 0.003,
+    "≤99": -0.0047
+   },
+   "n_worse": 715,
+   "n_better": 776,
+   "why": "The new C9 binding kept negation/polarity/quantifier tokens glued to their immediately following scope, so the model stopped cutting right after those tokens (giving small gains for very short pieces, ≤3 and ≤5). That avoidance pushed cuts elsewhere — often earlier or inside enumerations — which increased fragmentation and contradiction risk for mid/long spans (the ≤7 and ≤99 bins).",
+   "lesson": "A later revision should respect that the narrow polarity/quantifier binding helps very short pieces but can redistribute cuts into medium/long spans (producing isolated function words or broken enumerations), and so must avoid inducing that fragmentation.",
+   "blamed": [
+    "C9 «Keep a preposition, an opening parenthesis, or a numeral tog»"
+   ]
+  }
+ }
+]

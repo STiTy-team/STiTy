@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -9e-05,
+  "lo": -0.01276,
+  "hi": 0.01347,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": 0.0027,
+  "≤5": -0.0067,
+  "≤7": 0.0028,
+  "≤10": 0.0039,
+  "≤99": -0.0003
+ },
+ "n_worse": 777,
+ "n_better": 709,
+ "worst": [
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6353,
+   "before": "He originally named the Hangeul ‖ alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\".",
+   "after": "He originally named ‖ the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds for the instruction of the people\"."
+  },
+  {
+   "id": "en_us_1591",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.6289,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished ‖ in fourth, fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, ‖ fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1108",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.6007,
+   "before": "Coalition and Afghan troops moved into the area to secure the site ‖ and other coalition aircraft have been sent to assist.",
+   "after": "Coalition and Afghan troops moved into the area to secure the site and other coalition aircraft ‖ have been sent to assist."
+  },
+  {
+   "id": "en_us_1108",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.5925,
+   "before": "Coalition and Afghan troops moved into the area ‖ to secure the site ‖ and other coalition aircraft have been sent to assist.",
+   "after": "Coalition and Afghan troops moved ‖ into the area to secure the site and other coalition aircraft ‖ have been sent to assist."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 5,
+   "bin": "≤3",
+   "delta": -0.5873,
+   "before": "Eventually, ‖ wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.807,
+   "before": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7364,
+   "before": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7233,
+   "before": "Although in theory they can take place annually (so long as they are in different countries), ‖ in ‖ practice ‖ they ‖ are not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_1322",
+   "k": 10,
+   "bin": "≤3",
+   "delta": 0.6497,
+   "before": "Danius said, ‖ \"Right now we ‖ are doing ‖ nothing. ‖ I have called ‖ and sent ‖ emails ‖ to his closest collaborator ‖ and received ‖ very friendly replies. ‖ For now, that is certainly enough.\"",
+   "after": "Danius ‖ said, ‖ \"Right now ‖ we are doing nothing. ‖ I have called ‖ and sent emails ‖ to his closest collaborator ‖ and received ‖ very friendly replies. ‖ For now, ‖ that is certainly enough.\""
+  },
+  {
+   "id": "en_us_734",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6439,
+   "before": "In the winter, ‖ enjoy some of the best ‖ skiing ‖ in North America, ‖ and in the summer ‖ try some authentic mountain biking.",
+   "after": "In the winter, ‖ enjoy some of the best skiing ‖ in North America, ‖ and ‖ in the summer ‖ try some authentic mountain biking."
+  }
+ ],
+ "why": "The inserted narrow check after C5 blocked cuts when the next token looked like the start of a clause/argument/scope, so the top-K selector moved cuts to nearby positions; that produced small improvements on some longer chunks but a net small harm concentrated in the short (≤5-word) bin where the alternatives often split enumerations or broke coordinated predicates.  The measurement is essentially neutral overall (mean ≈0) because almost as many pairs improved as worsened.",
+ "lesson": "A later revision should preserve the intent of forbidding cuts before clause/argument starters but avoid forcing substitute cuts that split enumerations or separate predicates in short pieces (the short-bin harm must be controlled).",
+ "blamed": [
+  "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+ ]
+}

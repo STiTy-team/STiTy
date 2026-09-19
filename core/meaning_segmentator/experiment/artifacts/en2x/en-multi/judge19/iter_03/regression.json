@@ -1,0 +1,108 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.00671,
+  "lo": -0.00648,
+  "hi": 0.01986,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": 0.0092,
+  "≤5": 0.0121,
+  "≤7": -0.0046,
+  "≤10": 0.003,
+  "≤99": -0.0047
+ },
+ "n_worse": 715,
+ "n_better": 776,
+ "worst": [
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7106,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, fifth, and sixth place, ‖ respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7032,
+   "before": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.6687,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and ‖ eleven times for first class!"
+  },
+  {
+   "id": "en_us_776",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.5924,
+   "before": "Although in theory ‖ they can ‖ take ‖ place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory ‖ they ‖ can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_1135",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.5638,
+   "before": "The first public reading of the document ‖ was ‖ by ‖ John Nixon ‖ in the yard ‖ of Independence Hall on July 8.",
+   "after": "The first public reading of the document ‖ was ‖ by John Nixon ‖ in the yard of Independence Hall ‖ on ‖ July 8."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1427",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7774,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7214,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are ‖ sufficiently general that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.6859,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he is ‖ skeptical ‖ about whether ‖ diabetes ‖ can be cured, ‖ noting that these findings have no relevance to people who already have Type 1 diabetes."
+  },
+  {
+   "id": "en_us_970",
+   "k": 8,
+   "bin": "≤3",
+   "delta": 0.6421,
+   "before": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect ‖ the villages, ‖ and cars cannot reach them ‖ from the outside."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.6348,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting that these ‖ findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he is ‖ skeptical ‖ about whether ‖ diabetes ‖ can ‖ be cured, ‖ noting that these findings have no relevance to people who already have Type 1 diabetes."
+  }
+ ],
+ "why": "The new C9 binding kept negation/polarity/quantifier tokens glued to their immediately following scope, so the model stopped cutting right after those tokens (giving small gains for very short pieces, ≤3 and ≤5). That avoidance pushed cuts elsewhere — often earlier or inside enumerations — which increased fragmentation and contradiction risk for mid/long spans (the ≤7 and ≤99 bins).",
+ "lesson": "A later revision should respect that the narrow polarity/quantifier binding helps very short pieces but can redistribute cuts into medium/long spans (producing isolated function words or broken enumerations), and so must avoid inducing that fragmentation.",
+ "blamed": [
+  "C9 «Keep a preposition, an opening parenthesis, or a numeral tog»"
+ ]
+}

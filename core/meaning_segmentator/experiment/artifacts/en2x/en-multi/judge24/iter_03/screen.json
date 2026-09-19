@@ -1,0 +1,156 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  0,
+  2,
+  26,
+  42,
+  44,
+  72,
+  76,
+  103,
+  108,
+  115,
+  151,
+  155,
+  167,
+  173,
+  188,
+  191,
+  195,
+  198,
+  200,
+  201,
+  208,
+  209,
+  247,
+  251,
+  252,
+  255,
+  269,
+  295,
+  312,
+  315,
+  328,
+  346,
+  354,
+  366,
+  380,
+  397,
+  413,
+  414,
+  419,
+  434,
+  439,
+  441,
+  446,
+  448,
+  458,
+  460,
+  469,
+  474,
+  476,
+  481
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.0143,
+    "lo": -0.03808,
+    "hi": 0.01299,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 7313,
+   "changelog": [
+    "Insert a single narrow, binding rule after C8 to keep a finite verb/auxiliary with its immediately following core complement (1–4 tokens). This directly addresses the primary finding that verb–complement splits produce orphaned arguments and entailment/confusion."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02512,
+    "lo": -0.06118,
+    "hi": 0.01069,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 7307,
+   "changelog": [
+    "Insert one narrow binding after C8 to keep numerals/quantifiers attached to their immediately following unit/measurement (within four tokens); addresses the primary finding that splitting numeral+unit produces incoherent or contradicted short pieces."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.01397,
+    "lo": -0.01493,
+    "hi": 0.04317,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 7619,
+   "changelog": [
+    "Insert a single fallback ordering after C8 that, as a last resort, prefers punctuation/clause-boundary cuts over cuts that separate a finite verb/auxiliary from its immediately following core complement, and prefers those over cuts that split a numeral/quantifier from its immediately following unit/measurement — to protect verb–complement integrity (primary finding) while preserving the short-bin benefit of punctuation."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00983,
+    "lo": -0.02526,
+    "hi": 0.04799,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 7631,
+   "changelog": [
+    "Insert a single fallback ordering after C8 that, as a last resort, prefers cuts that keep numeral/quantifier+unit together first, then keeps finite verb/auxiliary adjacent to its immediately following core complement, and only then prefers punctuation/clause boundaries — to protect numeral–unit integrity (primary finding) while retaining punctuation as a tiebreak."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": 0.00489,
+    "lo": -0.02278,
+    "hi": 0.03199,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 6897,
+   "changelog": [
+    "Delete C5 — remove the temporal/subordinator protection because it largely duplicates scope/attachment protections already expressed (C3, C4, C8), has no measured gain, and pruning a redundant v0 principle should reduce rule competition and attention dilution."
+   ]
+  },
+  {
+   "candidate": 6,
+   "delta": {
+    "mean": -0.01779,
+    "lo": -0.05289,
+    "hi": 0.01563,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 7307,
+   "changelog": [
+    "Insert one narrow, binding principle after C8 to keep a finite verb/auxiliary adjacent to its immediately following core complement (within four tokens). This reproduces the measured target choices that keep verb+complement together and prevents orphaned arguments and entailment/confusion."
+   ]
+  },
+  {
+   "candidate": 7,
+   "delta": {
+    "mean": -0.00597,
+    "lo": -0.04078,
+    "hi": 0.02889,
+    "n": 449,
+    "n_clusters": 50
+   },
+   "chars": 7364,
+   "changelog": [
+    "Insert one induced ordering after C8: prefer a cut immediately before a finite verb/auxiliary over a cut that falls between that verb and its immediately following core complement (direct object, essential prepositional object, or clausal complement) when that complement begins within the next 1–4 tokens — this reproduces the measured target choices without banning cuts and addresses the primary finding about verb–complement splits."
+   ]
+  }
+ ]
+}

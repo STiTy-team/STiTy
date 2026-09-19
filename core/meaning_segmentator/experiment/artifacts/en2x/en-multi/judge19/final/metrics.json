@@ -1,0 +1,99 @@
+{
+ "usage": {
+  "calls": 600,
+  "prompt_tokens": 1782174,
+  "completion_tokens": 7862091,
+  "cached_tokens": 1205248,
+  "truncated": 0,
+  "cost": 15.898545,
+  "by_purpose": {
+   "segment": {
+    "calls": 569,
+    "prompt_tokens": 1497619,
+    "completion_tokens": 7754869,
+    "reasoning_tokens": 7342272,
+    "cached_tokens": 1166080,
+    "cost": 15.621775
+   },
+   "segment_retry": {
+    "calls": 10,
+    "prompt_tokens": 23006,
+    "completion_tokens": 48051,
+    "reasoning_tokens": 46592,
+    "cached_tokens": 17920,
+    "cost": 0.097822
+   },
+   "classify": {
+    "calls": 12,
+    "prompt_tokens": 14772,
+    "completion_tokens": 28104,
+    "reasoning_tokens": 27328,
+    "cached_tokens": 0,
+    "cost": 0.059901
+   },
+   "critic": {
+    "calls": 2,
+    "prompt_tokens": 139347,
+    "completion_tokens": 7132,
+    "reasoning_tokens": 6400,
+    "cached_tokens": 0,
+    "cost": 0.049101
+   },
+   "rewrite": {
+    "calls": 1,
+    "prompt_tokens": 20269,
+    "completion_tokens": 15043,
+    "reasoning_tokens": 2048,
+    "cached_tokens": 0,
+    "cost": 0.035153
+   },
+   "engineer": {
+    "calls": 3,
+    "prompt_tokens": 66538,
+    "completion_tokens": 3084,
+    "reasoning_tokens": 2624,
+    "cached_tokens": 21248,
+    "cost": 0.018022
+   },
+   "engineer:shorten": {
+    "calls": 1,
+    "prompt_tokens": 18370,
+    "completion_tokens": 3669,
+    "reasoning_tokens": 2880,
+    "cached_tokens": 0,
+    "cost": 0.011931
+   },
+   "postmortem": {
+    "calls": 1,
+    "prompt_tokens": 1981,
+    "completion_tokens": 1503,
+    "reasoning_tokens": 1344,
+    "cached_tokens": 0,
+    "cost": 0.003501
+   },
+   "narrow": {
+    "calls": 1,
+    "prompt_tokens": 272,
+    "completion_tokens": 636,
+    "reasoning_tokens": 448,
+    "cached_tokens": 0,
+    "cost": 0.00134
+   }
+  },
+  "by_key": {
+   "0": {
+    "calls": 300,
+    "prompt_tokens": 950119,
+    "completion_tokens": 3975310,
+    "cost": 8.055583
+   },
+   "1": {
+    "calls": 300,
+    "prompt_tokens": 832055,
+    "completion_tokens": 3886781,
+    "cost": 7.842961
+   }
+  }
+ },
+ "run_total_cost": 22.568266
+}

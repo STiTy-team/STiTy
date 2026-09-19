@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates that an immediately following identifier (name, essential appositive, numeral+unit, or other required post‑nominal modifier) is part of the noun's meaning and must stay attached to the noun; cutting there severs the entity's identity or disambiguating information.",
+    "evidence": "['en_us_1527','en_us_1369','en_us_270','en_us_1116','en_us_375','en_us_101','en_us_292','en_us_1201','en_us_1369'] — each sentence contains a noun or role word immediately followed by a name, numeric measure/unit, or essential post‑nominal identifier; the offline target keeps that identifier attached to the head while the policy cuts it apart.",
+    "type_predicate": "Sentences where a common noun or role noun is immediately followed (with no intervening clause boundary) by a proper name, an appositive/essential identifier, or a numeral plus its unit (e.g. 'skier Maciej Krezel', '£27 million', '200 pounds (90kg)', 'Curtis Cooper, a mathematician').",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a noun (or role noun) and an immediately following identifying element — a proper name, essential appositive, or numeral+unit — because that element disambiguates or completes the referent and must be translated with its head."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates that an immediately following identifier (name, essential appositive, numeral+unit, or other required post‑nominal modifier) is part of the noun's meaning and must stay attached to the noun; cutting there severs the entity's identity or disambiguating information.",
+   "evidence": "['en_us_1527','en_us_1369','en_us_270','en_us_1116','en_us_375','en_us_101','en_us_292','en_us_1201','en_us_1369'] — each sentence contains a noun or role word immediately followed by a name, numeric measure/unit, or essential post‑nominal identifier; the offline target keeps that identifier attached to the head while the policy cuts it apart.",
+   "type_predicate": "Sentences where a common noun or role noun is immediately followed (with no intervening clause boundary) by a proper name, an appositive/essential identifier, or a numeral plus its unit (e.g. 'skier Maciej Krezel', '£27 million', '200 pounds (90kg)', 'Curtis Cooper, a mathematician').",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a noun (or role noun) and an immediately following identifying element — a proper name, essential appositive, or numeral+unit — because that element disambiguates or completes the referent and must be translated with its head."
+   }
+  }
+ ]
+}

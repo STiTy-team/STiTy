@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt trades away single high-contradiction boundaries by downranking them, then prefers alternative cuts that fragment noun phrases or enumerations—this consistently harms short-latency (≤3 and ≤5) cases.",
+    "evidence": "['en_us_956', 'en_us_1280', 'en_us_1253', 'en_us_103', 'en_us_498', 'en_us_190'] — all are short-latency sentences where the policy avoided a high-contra boundary but introduced adjacent cuts that break NPs, reduced relatives, or lists, producing low H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not avoid one high-contra boundary by choosing adjacent cuts that fragment noun phrases, reduced relatives, or enumerations; for short-latency cases, prefer earlier safe cuts that preserve NP/list integrity."
+    }
+   },
+   {
+    "diagnosis": "The prompt under-specifies predicate completion: it allows cuts that separate verbs/predicates from their core arguments or complements, producing contradicted or fragmentary pieces.",
+    "evidence": "['en_us_1113', 'en_us_432', 'en_us_154', 'en_us_1157'] — in these cases the policy ranked cuts that split a predicate from its object/complement, whereas the target keeps predicate+arguments together and achieves much higher H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cuts that separate a predicate/verb from its core arguments or complements; when uncertain, delay the cut until the verb phrase and its required objects/complements are included."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt trades away single high-contradiction boundaries by downranking them, then prefers alternative cuts that fragment noun phrases or enumerations—this consistently harms short-latency (≤3 and ≤5) cases.",
+   "evidence": "['en_us_956', 'en_us_1280', 'en_us_1253', 'en_us_103', 'en_us_498', 'en_us_190'] — all are short-latency sentences where the policy avoided a high-contra boundary but introduced adjacent cuts that break NPs, reduced relatives, or lists, producing low H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not avoid one high-contra boundary by choosing adjacent cuts that fragment noun phrases, reduced relatives, or enumerations; for short-latency cases, prefer earlier safe cuts that preserve NP/list integrity."
+   }
+  },
+  {
+   "diagnosis": "The prompt under-specifies predicate completion: it allows cuts that separate verbs/predicates from their core arguments or complements, producing contradicted or fragmentary pieces.",
+   "evidence": "['en_us_1113', 'en_us_432', 'en_us_154', 'en_us_1157'] — in these cases the policy ranked cuts that split a predicate from its object/complement, whereas the target keeps predicate+arguments together and achieves much higher H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cuts that separate a predicate/verb from its core arguments or complements; when uncertain, delay the cut until the verb phrase and its required objects/complements are included."
+   }
+  }
+ ]
+}

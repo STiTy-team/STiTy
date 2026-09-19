@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates the harm of cuts that leave a predicate/copula hanging when the following words form a polarity- or scope-bearing complement (negation, existential 'there', quantifiers, clause completion): the preceding fragment taken alone becomes misleading or contradictable.",
+    "evidence": "['en_us_1294','en_us_360','en_us_1527','en_us_103','en_us_1081','en_us_655','en_us_936','en_us_399','en_us_46','en_us_1507','en_us_1570'] — these cases all show a cut placed immediately after a verb/copula or light predicate while the next segment carries negation/existential/quantifier or completes the clause; the isolated prefix is contradicted or changes meaning.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a predicate or copula when the following words complete the clause or carry polarity/scope (negation, existential 'there', quantifiers, clause-completing complements): such cuts often invert or contradict the preceding fragment."
+    }
+   },
+   {
+    "diagnosis": "The prompt underestimates the risk of cutting between a noun (or its specifier) and an obligatory postnominal modifier/complement (prepositional 'of' phrases, relative clauses, 'from which', etc.), which leaves the noun ungrounded or misattached when pieces are translated separately.",
+    "evidence": "['en_us_103','en_us_1253','en_us_105','en_us_1415','en_us_154','en_us_399','en_us_1157'] — these cases cut a noun or determiner away from its postnominal modifier/complement, causing referential failure or scope loss in the standalone first piece.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cuts that separate a noun or its specifier from a required postnominal modifier or complement (of‑phrases, relative clauses, 'from which', prepositional complements); the noun alone will often be mistranslated or misattached."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates the harm of cuts that leave a predicate/copula hanging when the following words form a polarity- or scope-bearing complement (negation, existential 'there', quantifiers, clause completion): the preceding fragment taken alone becomes misleading or contradictable.",
+   "evidence": "['en_us_1294','en_us_360','en_us_1527','en_us_103','en_us_1081','en_us_655','en_us_936','en_us_399','en_us_46','en_us_1507','en_us_1570'] — these cases all show a cut placed immediately after a verb/copula or light predicate while the next segment carries negation/existential/quantifier or completes the clause; the isolated prefix is contradicted or changes meaning.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a predicate or copula when the following words complete the clause or carry polarity/scope (negation, existential 'there', quantifiers, clause-completing complements): such cuts often invert or contradict the preceding fragment."
+   }
+  },
+  {
+   "diagnosis": "The prompt underestimates the risk of cutting between a noun (or its specifier) and an obligatory postnominal modifier/complement (prepositional 'of' phrases, relative clauses, 'from which', etc.), which leaves the noun ungrounded or misattached when pieces are translated separately.",
+   "evidence": "['en_us_103','en_us_1253','en_us_105','en_us_1415','en_us_154','en_us_399','en_us_1157'] — these cases cut a noun or determiner away from its postnominal modifier/complement, causing referential failure or scope loss in the standalone first piece.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cuts that separate a noun or its specifier from a required postnominal modifier or complement (of‑phrases, relative clauses, 'from which', prepositional complements); the noun alone will often be mistranslated or misattached."
+   }
+  }
+ ]
+}

@@ -1,0 +1,158 @@
+[
+ {
+  "candidate": 0,
+  "type": 0,
+  "delta": {
+   "mean": -0.01778,
+   "lo": -0.05517,
+   "hi": 0.0132,
+   "n": 105,
+   "n_clusters": 15
+  },
+  "note": [
+   "Insert a narrow binding protecting copula/auxiliary + immediate short complements: prevents cuts that leave a copula or auxiliary (optionally negated) separated from a short PP/locative/temporal/measurement or numeral complement that completes the predicate — addresses the primary finding."
+  ]
+ },
+ {
+  "candidate": 1,
+  "type": 1,
+  "delta": {
+   "mean": -0.03126,
+   "lo": -0.05891,
+   "hi": -0.00722,
+   "n": 171,
+   "n_clusters": 23
+  },
+  "note": [
+   "Insert a narrow binding that keeps a numeral together with its immediately following unit/measurement phrase (including parenthetical conversions) to prevent cuts that separate numbers from their units, addressing the primary_finding."
+  ]
+ },
+ {
+  "candidate": 2,
+  "type": 2,
+  "delta": {
+   "mean": -0.01485,
+   "lo": -0.03163,
+   "hi": 0.00323,
+   "n": 230,
+   "n_clusters": 25
+  },
+  "note": [
+   "Insert a narrow binding that keeps a noun together with an immediately following restrictive post‑nominal modifier (of‑phrase, quoted name, parenthetical, or adjacent noun compound) to prevent cuts that separate head nouns from essential modifiers, addressing the primary finding."
+  ]
+ },
+ {
+  "candidate": 3,
+  "type": 0,
+  "delta": {
+   "mean": -0.02936,
+   "lo": -0.07169,
+   "hi": 0.00609,
+   "n": 105,
+   "n_clusters": 15
+  },
+  "note": [
+   "Replace E1 with measured example en_us_44 to teach the model not to treat cuts that separate auxiliaries/coprola and their short complements as safe (addresses primary finding).",
+   "Replace E2 with measured example en_us_655 to show cases where 'is/are' + short complement (e.g. 'is virtually unknown in Greenland') must stay together.",
+   "Replace E3 with measured example en_us_733 to demonstrate harm from cutting after parenthetical material before a copula and short predicate.",
+   "Replace E4 with measured example en_us_738 to expose cases where auxiliary+negator pairs (does not) plus their object/complement should not be split."
+  ]
+ },
+ {
+  "candidate": 4,
+  "type": 1,
+  "delta": {
+   "mean": -0.02979,
+   "lo": -0.06515,
+   "hi": -0.00207,
+   "n": 171,
+   "n_clusters": 23
+  },
+  "note": [
+   "Replace E1 with measured example en_us_101 to teach the model about risks of cutting numerals from their units (55,000 barrels / 2.3 million gallons case).",
+   "Replace E2 with measured example en_us_140 to show a speed measurement (240 kilometers an hour / 149 miles per hour) where numeral+unit must travel together.",
+   "Replace E3 with measured example en_us_1118 to expose a distance numeral+unit (500 feet away) that should not be split.",
+   "Replace E4 with measured example en_us_741 to show area/large-number + unit (2.2 million km2) and prevent numeral-unit separation."
+  ]
+ },
+ {
+  "candidate": 5,
+  "type": 2,
+  "delta": {
+   "mean": -0.02333,
+   "lo": -0.05289,
+   "hi": -0.00011,
+   "n": 230,
+   "n_clusters": 25
+  },
+  "note": [
+   "Replace E1 with measured example en_us_360 to teach keeping a noun together with its immediately following restrictive post‑nominal modifier (quoted technical name).",
+   "Replace E2 with measured example en_us_1253 to show cuts that separate a noun from an essential post‑nominal modifier (an 'of'/'in' phrase) are harmful.",
+   "Replace E3 with measured example en_us_399 to expose harm from splitting a head noun from a following restrictive modifier that identifies it.",
+   "Replace E4 with measured example en_us_1137 to reinforce the of‑phrase / post‑nominal modifier binding in short‑latency bins."
+  ]
+ },
+ {
+  "candidate": 6,
+  "type": 0,
+  "delta": {
+   "mean": -0.0137,
+   "lo": -0.03541,
+   "hi": 0.00667,
+   "n": 105,
+   "n_clusters": 15
+  },
+  "note": [
+   "Insert a concise binding to keep a copula/auxiliary (with optional 'not') together with an immediately following short complement (PP/locative/temporal/measurement, numeral+unit, or short NP ≤4 tokens); this directly addresses the primary finding that splitting auxiliaries from short complements produced contradictory standalone prefixes."
+  ],
+  "control_delta": {
+   "mean": -0.00305,
+   "lo": -0.02198,
+   "hi": 0.01439,
+   "n": 135,
+   "n_clusters": 15
+  }
+ },
+ {
+  "candidate": 7,
+  "type": 1,
+  "delta": {
+   "mean": -0.00685,
+   "lo": -0.02705,
+   "hi": 0.01405,
+   "n": 171,
+   "n_clusters": 23
+  },
+  "note": [
+   "Replace C5 to add a concise binding that keeps numerals with their immediately following unit/measurement phrase and to paraphrase the noun-modifier rule more tightly — addresses the primary finding about numeral-unit splits while keeping the existing noun-modifier judgement."
+  ],
+  "control_delta": {
+   "mean": -0.02936,
+   "lo": -0.06459,
+   "hi": -0.00391,
+   "n": 179,
+   "n_clusters": 23
+  }
+ },
+ {
+  "candidate": 8,
+  "type": 2,
+  "delta": {
+   "mean": -0.00251,
+   "lo": -0.02888,
+   "hi": 0.02242,
+   "n": 230,
+   "n_clusters": 25
+  },
+  "note": [
+   "Replace C5 to state a concise binding: keep a head noun with any immediately following restrictive post‑nominal modifier (of-phrase, quoted/parenthetical name, or adjacent noun) so cuts do not split the noun from its essential modifier — addresses the primary finding about noun+modifier splits."
+  ],
+  "control_delta": {
+   "mean": -0.01938,
+   "lo": -0.04612,
+   "hi": 0.00744,
+   "n": 222,
+   "n_clusters": 25
+  }
+ }
+]

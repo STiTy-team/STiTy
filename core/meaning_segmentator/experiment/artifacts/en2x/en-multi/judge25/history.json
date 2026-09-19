@@ -1,0 +1,475 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00066,
+   "lo": -0.01116,
+   "hi": 0.00944,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Inserted a fallback ordering rule into [Core Principles] to address the primary finding: prefer cutting after a short (≤4-word) span that completes a predicate rather than leaving a verb/predicate head stranded before that short span; this orders candidate cuts where other principles only push bad positions down."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "- Prefer a cut placed after a contiguous short span (≤4 words) that completes th"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00488,
+   "lo": -0.00597,
+   "hi": 0.01573,
+   "n": 4535,
+   "n_clusters": 499
+  },
+  "changelog": [
+   "Insert a fallback ordering rule into [Core Principles] that prefers cutting after a complete measurement (numeral+unit or numeral plus parenthetical conversion) rather than between the number and its unit; this directly addresses the primary finding about severed quantities."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "- As a last resort, prefer a cut placed after a complete measurement span (a num"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00527,
+   "lo": -0.0061,
+   "hi": 0.01735,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a single, short binding into [Core Principles] to keep a verb/auxiliary joined with an immediately following short (≤4-word) span that completes its predicate (object, required PP, date/place/measurement, or essential post‑nominal modifier), addressing the primary finding about orphaned predicates."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "Keep a verb or auxiliary together with the immediately following contiguous span"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00344,
+   "lo": -0.00841,
+   "hi": 0.01489,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a short binding rule into [Core Principles] to keep numerals tied to their units/conversions, addressing the primary finding that cuts inside measurements sever numbers from units and produce incoherent translations."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "Keep a numeral together with the immediately following unit, multiplier word, or"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00571,
+   "lo": -0.00532,
+   "hi": 0.017,
+   "n": 4535,
+   "n_clusters": 499
+  },
+  "changelog": [
+   "Insert a single, short binding rule into [Core Principles] to keep a verb/auxiliary with an immediately following short (≤4-word) span that completes its predicate, addressing the primary finding about orphaned predicates."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "- Keep a verb or auxiliary together with the immediately following contiguous sp"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 5,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.0043,
+   "lo": -0.00632,
+   "hi": 0.01508,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert an induced, surface-level ordering rule after C8: prefer cutting after a short (≤4-word) span that completes a verb/predicate (object, required PP, date/place/measurement, or essential post‑nominal modifier) instead of cutting before it — to reproduce measured target choices."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "- Prefer a cut after a contiguous short span (≤4 words) that immediately follows"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 6,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00498,
+   "lo": -0.00645,
+   "hi": 0.01589,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C2: remove a broad, redundant coherence principle that restates concerns already covered by more specific rules (notably C3, C7, and C8); pruning reduces overlap so attention focuses on targeted constraints the critique identified."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "was": "- If the pieces are translated independently and concatenated, will the joined t",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00599,
+   "lo": -0.00475,
+   "hi": 0.01737,
+   "n": 4541,
+   "n_clusters": 499
+  },
+  "gain": {
+   "mean": 0.00599,
+   "lo": -0.00475,
+   "hi": 0.01737,
+   "n": 4541,
+   "n_clusters": 499
+  },
+  "changelog": [
+   "Delete C8: remove the broad 'disambiguating stretch' principle because it largely restates concerns already covered by C3 (predicate-argument) and C7 (noun-internal modifiers); pruning this redundant unit reduces overlap so later, targeted edits (e.g. a numeral/unit binding) can act more cleanly on the measured failure modes."
+  ],
+  "findings": [
+   "The prompt underrates the harm of cutting where a short following piece (a few words) completes the preceding predicate or provides its essential complement (object, prepositional phrase, date, place, or short clause), producing detached verbs/orphans that break meaning when pieces are translated separately.",
+   "The prompt permits cuts inside numeral/measurement spans (numbers, units, parenthetical conversions or multipliers), which severs quantities from their units or clarifying parentheticals and produces contradictory or incoherent translations."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C8",
+    "kind": "delete",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": ""
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0108,
+    "≤5": 0.0062,
+    "≤7": 0.003,
+    "≤10": -0.0042,
+    "≤99": -0.0068
+   },
+   "n_worse": 1816,
+   "n_better": 1978,
+   "why": "Removing C8 eliminated a broad penalty against cutting before a ‘disambiguating stretch’, so the remaining constraints (e.g. predicate-argument and noun-internal rules) drive the model to place earlier/top-level cuts (rank_depth up at k=1,2). That helped very short pieces (bins ≤3–7) but caused more fragmentation of longer post‑modifier/disambiguating spans (bins >10 and overall decline).",
+   "lesson": "When pruning a broad overlap-removing unit, keep an explicit, targeted safeguard for short disambiguating post-modifier stretches — otherwise the model will cut earlier and fragment longer modifier/PP stretches even as it helps short pieces.",
+   "blamed": [
+    "C8"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.01234,
+   "lo": 0.00186,
+   "hi": 0.02256,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert one fallback ordering rule to prefer cutting after an identifying element (name, essential appositive, numeral+unit) rather than between that element and its noun — addresses the primary finding that identifiers must stay attached."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+    "now": "- Prefer a cut after an immediately following identifying element (a proper name"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00865,
+   "lo": -0.00146,
+   "hi": 0.01876,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert an ordering rule after C7 to prefer cutting after an immediately following identifying element (proper name, essential appositive, or numeral+unit) rather than between that noun and its identifier; add a short fallback for very long identifiers to avoid harming short-span bins."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Is the cut inside noun-internal material (possessives, appositives, dense nomi",
+    "now": "- Prefer a cut after an identifying element when that element immediately follow"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.01284,
+   "lo": 0.00229,
+   "hi": 0.02272,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "delete C6 — coordination/contrast rule overlaps with predicate-argument and clause-scope principles (C3,C4) and thus divides the judge's attention; removing this redundant, broad rule makes room to add a narrow, binding safeguard for noun+identifier attachments (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C6",
+    "kind": "delete",
+    "was": "- Will a cut split a coordination or contrast relation so that emphasis, contras",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": true,
+  "delta": {
+   "mean": 0.01377,
+   "lo": 0.00324,
+   "hi": 0.02402,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": 0.01377,
+   "lo": 0.00324,
+   "hi": 0.02402,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a single narrow binding rule after C7 to keep a noun with an immediately following identifying element (proper name, essential appositive, or numeral+unit) when no intervening clause boundary/punctuation separates them — addresses the primary finding that identifiers must stay attached."
+  ],
+  "findings": [
+   "The prompt underrates that an immediately following identifier (name, essential appositive, numeral+unit, or other required post‑nominal modifier) is part of the noun's meaning and must stay attached to the noun; cutting there severs the entity's identity or disambiguating information."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Is the cut inside noun-internal material (possessives, appositives, dense nomi",
+    "now": "Keep a noun or role noun together with the immediately following identifying ele"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0191,
+    "≤5": 0.0144,
+    "≤7": 0.0094,
+    "≤10": 0.0021,
+    "≤99": -0.0002
+   },
+   "n_worse": 1709,
+   "n_better": 2080,
+   "why": "The inserted binding rule after C7 made the model avoid cutting between a noun/role noun and an immediately following identifying element, so many cut positions shifted away from noun+identifier boundaries toward nearby clause or verb boundaries; that change improved measured cohesion for very short pieces (≤3–7 word bins) but also caused new fragmenting cuts around verbs and in enumerations, producing the mix of many small wins and many short-span losses.",
+   "lesson": "Keep the noun→identifier binding (it helps short-piece cohesion) but avoid forcing cut shifts that fragment verb phrases or split enumerations — preserve clause-level continuity when relocating cuts.",
+   "blamed": [
+    "insert_after C7"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.0107,
+   "lo": -0.02102,
+   "hi": -0.00032,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering that prefers cutting at the token that closes the preceding predicate or identifies a noun over cutting immediately before a following clausal or complement continuation — to keep essential continuations attached and address the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "Keep a noun or role noun together with the immediately following identifying ele",
+    "now": "As a last resort, prefer a cut at the token that closes the preceding predicate "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00691,
+   "lo": -0.0171,
+   "hi": 0.00295,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a concise ordering rule after C4 that prefers cutting after a predicate/NP's closing token rather than before an immediately following clause or essential complement — to keep short clausal/complement continuations attached and address the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Does the next span complete an embedded or relative clause whose head occurs e",
+    "now": "Prefer a cut after the closing token of the preceding predicate or noun phrase o"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00462,
+   "lo": -0.01499,
+   "hi": 0.0061,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete C5: remove a broad, overlapping rule about 'unstable openings' because it restates protections in C4/C9 and other cohesion rules and likely diverts the judge into fragmented cuts; this pruning responds to the critique that vague, penalty-style constraints fragment essential clausal/complement continuations."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "was": "- Is the following material a temporal, causal, concessive subordinator or other",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00606,
+   "lo": -0.01588,
+   "hi": 0.00384,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00606,
+   "lo": -0.01588,
+   "hi": 0.00384,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrowly scoped ordering rule after C5: prefer cutting after a short clausal/complement continuation (≤6 words) rather than immediately before it — to keep essential continuations that complete or disambiguate a preceding predicate/NP attached, addressing the primary finding."
+  ],
+  "findings": [
+   "The prompt routinely treats a following clausal or complement continuation as safe to cut off — it allows cuts immediately before spans that actually complete or disambiguate the preceding predicate or noun, producing contradiction, lost scope, or orphaned dependents when pieces are translated separately."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Is the following material a temporal, causal, concessive subordinator or other",
+    "now": "Prefer a cut after a short (≤6-word) clausal or complement continuation over a c"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0047,
+    "≤5": -0.0056,
+    "≤7": -0.0088,
+    "≤10": -0.0071,
+    "≤99": -0.0106
+   },
+   "n_worse": 1947,
+   "n_better": 1790,
+   "why": "Inserting the ordering after C5 caused the model to prefer cutting after short (≤6-word) clausal/complement continuations instead of immediately before them, so many cuts shifted later. That change produced small net losses across all latency bins (by_bin all negative, larger harm for medium/long: ≤7 −0.0088, ≤99 −0.0106) with 1,947 worsened vs 1,790 improved — improvements are concentrated on very short/enumerative pieces while harm occurs when the later cut lands inside or after the following clause (e.g. moves cutting away from 'such as vomiting ‖ are sufficiently general' to a later split inside the predicate).",
+   "lesson": "Respect that preferring to attach short clausal/complement continuations systematically shifts cuts later and, although it helps some very short/enumerative cases, it degrades medium/long segmentation so it should not be applied unconditionally.",
+   "blamed": [
+    "C5 «- Is the following material a temporal, causal, concessive s»"
+   ]
+  }
+ }
+]

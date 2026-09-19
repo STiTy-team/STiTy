@@ -1,0 +1,54 @@
+[Role]
+You are a scorer for streaming speech translation. Each input sentence already marks every possible cut with <SEG:?>. Replace each ? with a unique integer 0–100 that ranks how good that cut is for streaming translation, using the principles below.
+
+[Core Principles]
+- Cohesion check: will translating the left and right segments separately and then concatenating them still produce a faithful rendering of the whole source sentence? Damage looks like dropped arguments, swapped scope, or missing modifiers that change truth conditions.
+- Contra check: does the material after the cut, taken alone, contradict, reverse, or negate the claim made before it? Damage looks like polarity flips, corrections, or contradictions that would mislead a listener.
+- Treat sentence-initial subordinators and adverbial clauses as unstable attachment: cutting before their main-clause head often leaves relations (cause/time/contrast) unresolved and can invert meaning.
+- Detect modifiers that belong inside noun phrases (participial/reduced relatives, prepositional noun modifiers, appositives): cutting them off detaches essential information and corrupts reference or scope.
+- For predicates versus coordination, judge whether the continuation completes the same predicate or begins a new independent clause; splitting an argument from its verb or predicate shifts semantic roles.
+- Watch numerals, quantifiers, and measure phrases at NP start: their scope and attachment can change once the rest of the phrase appears, producing large cohesion errors.
+- Recognize contrastive or corrective continuations whose purpose is to overturn or qualify earlier material; cutting before them yields assertions that are later cancelled.
+- Treat punctuation-bearing attachments as belonging to preceding text; isolating trailing punctuation or sentence-final elements typically yields fragments and harms both cohesion and entailment.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+
+- The integer you write at each marker is a RANK inside this sentence: order all cut positions by the target above (higher product = better cut). Spread distinct integers across the full 0–100 range so that order is clear.
+- contra is a graded probability and influences rankings only through the product; do not treat it as a binary flag or a separate tier that overrides cohesion.
+- Do NOT direct yourself to compute scores by explicit arithmetic (for example, multiplying cohesion by (1 - contra) and then rounding): instead, use the product as the abstract ranking criterion and lay out distinct integers covering 0–100 to reflect the resulting order.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?> travel <SEG:?> time, <SEG:?> check <SEG:?> to <SEG:?> see <SEG:?> how <SEG:?> your <SEG:?> total <SEG:?> fare <SEG:?> quote <SEG:?> to <SEG:?> Africa <SEG:?> compares <SEG:?> with <SEG:?> a <SEG:?> round-the-world <SEG:?> fare.
+Output: If <SEG:95> you <SEG:89> have <SEG:58> additional <SEG:21> travel <SEG:37> time, <SEG:100> check <SEG:74> to <SEG:0> see <SEG:84> how <SEG:68> your <SEG:5> total <SEG:63> fare <SEG:42> quote <SEG:53> to <SEG:11> Africa <SEG:47> compares <SEG:79> with <SEG:26> a <SEG:16> round-the-world <SEG:32> fare.
+
+Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.
+Output: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur.
+
+Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <SEG:?> voter's <SEG:?> identity, <SEG:?> the <SEG:?> voter <SEG:?> drops <SEG:?> the <SEG:?> envelope <SEG:?> into <SEG:?> the <SEG:?> ballot <SEG:?> box <SEG:?> and <SEG:?> signs <SEG:?> the <SEG:?> voting <SEG:?> roll.
+Output: After <SEG:67> officials <SEG:44> verify <SEG:39> the <SEG:61> voter's <SEG:78> identity, <SEG:94> the <SEG:28> voter <SEG:50> drops <SEG:11> the <SEG:6> envelope <SEG:89> into <SEG:56> the <SEG:22> ballot <SEG:72> box <SEG:100> and <SEG:17> signs <SEG:83> the <SEG:0> voting <SEG:33> roll.
+
+Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?> be <SEG:?> delivered <SEG:?> to <SEG:?> the <SEG:?> historically <SEG:?> most <SEG:?> affected <SEG:?> areas <SEG:?> this <SEG:?> year <SEG:?> were <SEG:?> delayed <SEG:?> due <SEG:?> to <SEG:?> lack <SEG:?> of <SEG:?> funds <SEG:?> and <SEG:?> low <SEG:?> prioritisation <SEG:?> relative <SEG:?> to <SEG:?> other <SEG:?> diseases.
+Output: Plans <SEG:42> for <SEG:77> vaccines <SEG:92> to <SEG:65> be <SEG:35> delivered <SEG:81> to <SEG:50> the <SEG:54> historically <SEG:27> most <SEG:85> affected <SEG:73> areas <SEG:96> this <SEG:31> year <SEG:69> were <SEG:46> delayed <SEG:88> due <SEG:15> to <SEG:0> lack <SEG:23> of <SEG:8> funds <SEG:100> and <SEG:4> low <SEG:12> prioritisation <SEG:58> relative <SEG:38> to <SEG:19> other <SEG:62> diseases.
+

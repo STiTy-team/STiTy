@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer underweights entailment (contra) risk when a cut looks cohesive: it ranks positions that produce a high standalone contradiction too highly, letting a single kept cut 'kill' the set even though avoiding that one cut would rescue quality.",
+    "evidence": "['en_us_48','en_us_1081','en_us_1497','en_us_1116','en_us_455','en_us_113','en_us_1233','en_us_276','en_us_26','en_us_1507','en_us_105']: each policy kept a position whose contra was near-1 and that single kept cut zeroed H_set; targets avoided those cuts.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If a candidate cut alone yields a high contradiction probability, rank it very low unless immediately adjacent kept cuts will reliably restore the missing context; do not let apparent cohesion alone justify a high rank for high-contra cuts."
+    }
+   },
+   {
+    "diagnosis": "The scorer applies 'avoid cutting near heads / between predicate and arguments' too broadly, thinning segmentations in very short-latency regimes where dense safe cuts are needed.",
+    "evidence": "['en_us_48','en_us_455','en_us_1233','en_us_1507','en_us_26','en_us_105']: all are ≤3 (short-bin) examples where the offline target added dense, locally-safe cuts that the policy omitted, indicating an overgeneralized head-avoidance.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not treat 'avoid cutting between predicate and arguments / near heads' as a blanket prohibition. In ≤3/≤5 latency regimes, allow denser cuts when each candidate's cohesion ranking is high and no single kept cut creates an unrepairable contradiction."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer underweights entailment (contra) risk when a cut looks cohesive: it ranks positions that produce a high standalone contradiction too highly, letting a single kept cut 'kill' the set even though avoiding that one cut would rescue quality.",
+   "evidence": "['en_us_48','en_us_1081','en_us_1497','en_us_1116','en_us_455','en_us_113','en_us_1233','en_us_276','en_us_26','en_us_1507','en_us_105']: each policy kept a position whose contra was near-1 and that single kept cut zeroed H_set; targets avoided those cuts.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If a candidate cut alone yields a high contradiction probability, rank it very low unless immediately adjacent kept cuts will reliably restore the missing context; do not let apparent cohesion alone justify a high rank for high-contra cuts."
+   }
+  },
+  {
+   "diagnosis": "The scorer applies 'avoid cutting near heads / between predicate and arguments' too broadly, thinning segmentations in very short-latency regimes where dense safe cuts are needed.",
+   "evidence": "['en_us_48','en_us_455','en_us_1233','en_us_1507','en_us_26','en_us_105']: all are ≤3 (short-bin) examples where the offline target added dense, locally-safe cuts that the policy omitted, indicating an overgeneralized head-avoidance.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not treat 'avoid cutting between predicate and arguments / near heads' as a blanket prohibition. In ≤3/≤5 latency regimes, allow denser cuts when each candidate's cohesion ranking is high and no single kept cut creates an unrepairable contradiction."
+   }
+  }
+ ]
+}

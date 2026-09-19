@@ -1,0 +1,102 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  32,
+  54,
+  61,
+  64,
+  77,
+  82,
+  85,
+  88,
+  95,
+  98,
+  109,
+  117,
+  129,
+  131,
+  149,
+  155,
+  172,
+  177,
+  178,
+  216,
+  222,
+  234,
+  237,
+  238,
+  253,
+  264,
+  280,
+  291,
+  302,
+  315,
+  343,
+  369,
+  376,
+  379,
+  421,
+  427,
+  431,
+  434,
+  439,
+  440,
+  449,
+  459,
+  460,
+  491,
+  494,
+  502,
+  511,
+  524,
+  539,
+  564
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00088,
+    "lo": -0.03962,
+    "hi": 0.03777,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 7171,
+   "changelog": [
+    "Delete C8 — remove the appositive/identification principle because it largely duplicates C7 (post-nominal modifiers) and splits the judge's attention; this pruning follows the 'prune' constraint and focuses the prompt on the primary finding about short predicate complements."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.02025,
+    "lo": -0.01075,
+    "hi": 0.0508,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 7734,
+   "changelog": [
+    "Insert a narrow surface-binding principle after C3 to keep a verb/copula together with an immediately following 1–4-word prepositional/temporal/locative/measurement complement — addresses the primary finding that cutting there produces orphaned or contradicting fragments."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.0172,
+    "lo": -0.02352,
+    "hi": 0.05265,
+    "n": 446,
+    "n_clusters": 50
+   },
+   "chars": 7275,
+   "changelog": [
+    "Deleted six largest v0 Examples (E2, E11, E6, E1, E10, E4) to meet the size budget and remove weak, lengthy hand-written cases.",
+    "Paraphrased C8 to a much shorter wording while preserving the measurement checklist (reduces prompt length).",
+    "Inserted a new Core Principle (after C2): a positive binding that keeps a 1–4-word short prepositional/temporal/locative/measurement phrase together with an immediately preceding verb or copula — addresses the primary finding without phrasing a prohibitory rule."
+   ]
+  }
+ ]
+}

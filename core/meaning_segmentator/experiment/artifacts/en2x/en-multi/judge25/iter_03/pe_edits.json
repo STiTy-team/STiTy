@@ -1,0 +1,93 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "As a last resort, prefer a cut at the token that closes the preceding predicate or that identifies a noun (the verb or object token, or the noun's identifying token) over a cut at the immediately following token that begins a relative/complement clause, an essential prepositional complement, or a quoted multiword complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 327
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7281,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "text": "Prefer a cut after the closing token of the preceding predicate or noun phrase over cutting before an immediately following relative/complement clause, an essential prepositional complement, or a quoted multiword complement that completes or disambiguates it."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 260
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7214,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "Prefer a cut after a short (≤6-word) clausal or complement continuation over a cut immediately before it when the following span begins with a complementizer/relative pronoun, essential preposition, or opening parenthesis and syntactically completes or disambiguates the preceding predicate or noun."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 300
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7254,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5",
+    "_was": "- Is the following material a temporal, causal, concessive subordinator or other unstable opening that needs later context to fix scope and prevent meaning flips or mis-scoped modifiers?"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "chars_change": -187
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6767,
+  "errors": null
+ }
+]

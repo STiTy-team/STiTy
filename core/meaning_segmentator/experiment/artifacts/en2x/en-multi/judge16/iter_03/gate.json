@@ -1,0 +1,140 @@
+{
+ "n_sentences": 50,
+ "ids": [
+  "en_us_850",
+  "en_us_588",
+  "en_us_990",
+  "en_us_276",
+  "en_us_1612",
+  "en_us_1567",
+  "en_us_390",
+  "en_us_1179",
+  "en_us_44",
+  "en_us_655",
+  "en_us_1036",
+  "en_us_738",
+  "en_us_399",
+  "en_us_1087",
+  "en_us_464",
+  "en_us_1566",
+  "en_us_956",
+  "en_us_1384",
+  "en_us_767",
+  "en_us_1106",
+  "en_us_1319",
+  "en_us_1253",
+  "en_us_1527",
+  "en_us_1050",
+  "en_us_687",
+  "en_us_1570",
+  "en_us_1497",
+  "en_us_1112",
+  "en_us_1157",
+  "en_us_538",
+  "en_us_396",
+  "en_us_26",
+  "en_us_1137",
+  "en_us_167",
+  "en_us_1233",
+  "en_us_784",
+  "en_us_87",
+  "en_us_1113",
+  "en_us_262",
+  "en_us_1271",
+  "en_us_32",
+  "en_us_1132",
+  "en_us_455",
+  "en_us_30",
+  "en_us_1081",
+  "en_us_935",
+  "en_us_70",
+  "en_us_1024",
+  "en_us_337",
+  "en_us_101"
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1779,
+   "pairs": 49,
+   "chars": 7438,
+   "changelog": [
+    "Paraphrased C1 to be shorter and clearer about contradiction/cancellation risk (addresses the primary finding).",
+    "Paraphrased C5 to compress guidance about postnominal material while keeping its judgment (frees headroom).",
+    "Inserted new principle asking whether the remainder supplies an argument, complement, negation/exception, or scope-resolving token that completes or reverses the left fragment (directly addresses primary_finding).",
+    "Inserted new principle preferring cuts that keep numerals/measures and essential post‑nominal modifiers attached to their head (addresses the numeral/measure finding)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.1368,
+   "pairs": 49,
+   "chars": 7375,
+   "changelog": [
+    "Paraphrased C1 to be shorter and clearer about contradiction/cancellation risk so there is room for a targeted, surface-check rule addressing the primary finding.",
+    "Inserted a new Core Principles unit after C5 that forbids splitting numerals/measures and essential post‑nominal modifiers from their heads except when the remainder is clearly an independent clause, addressing the primary_finding directly with a surface-recognizable condition."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.205,
+   "pairs": 49,
+   "chars": 7405,
+   "changelog": [
+    "Insert a narrow surface check after C5 that forbids cutting when the remainder begins a clause or token that supplies an argument, complement, negation/exception, or scope (addresses the primary_finding with a concrete, surface-recognizable condition)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.2,
+   "pairs": 49,
+   "chars": 7351,
+   "changelog": [
+    "Inserted a narrow, surface-recognizable check after C5 that forbids cutting a numeral/quantifier away from its unit or the noun it quantifies, and forbids cutting a head noun/proper name away from an immediately following restrictive post‑nominal modifier — directly addressing the primary finding about numerals/measures and essential modifiers."
+   ]
+  },
+  {
+   "candidate": 4,
+   "oracle_dist": 0.1962,
+   "pairs": 49,
+   "chars": 7044,
+   "changelog": [
+    "Replace E1 with measured example en_us_1116 to teach the model to avoid cuts that leave an underspecified fragment whose truth or referent is completed/reversed by the remainder (addresses primary_finding).",
+    "Replace E2 with measured example en_us_936 to exemplify subordinate/clausal openings (e.g. 'Unless ...') that must not be split from their consequents.",
+    "Replace E3 with measured example en_us_741 to show numeral+unit (2.2 million km2) cohesion issues so the model keeps measures attached to their heads.",
+    "Replace E4 with measured example en_us_140 to reinforce protecting numeric speeds and unit expressions (240 kilometers an hour / 149 miles per hour)."
+   ]
+  },
+  {
+   "candidate": 5,
+   "oracle_dist": 0.1828,
+   "pairs": 49,
+   "chars": 6727,
+   "changelog": [
+    "Replace E1 with measured example en_us_1150 to teach keeping date ranges and year spans attached to their heads (addresses primary_finding).",
+    "Replace E2 with measured example en_us_1017 to teach protecting 'until <date>' and similar date/unit expressions from being split (addresses primary_finding).",
+    "Replace E3 with measured example en_us_419 to teach keeping numerals and their unit context (e.g. '340 million to 500 million') attached (addresses primary_finding).",
+    "Replace E4 with measured example en_us_1415 to show century/range expressions (e.g. '10th - 11th centuries') should not be split from their heads (addresses primary_finding)."
+   ]
+  },
+  {
+   "candidate": 6,
+   "oracle_dist": 0.1728,
+   "pairs": 49,
+   "chars": 7152,
+   "changelog": [
+    "Replace C4 to require explicitly checking whether the remainder supplies a required complement, argument, negation/exception, or scope that completes or reverses the left fragment; lower such cuts but apply conservatively to very short left fragments (addresses the primary_finding)."
+   ]
+  },
+  {
+   "candidate": 7,
+   "oracle_dist": 0.1524,
+   "pairs": 49,
+   "chars": 7343,
+   "changelog": [
+    "Insert a concise, surface-check principle after C5 forbidding cuts between numerals/units and between a head noun/proper name and essential post‑nominal modifiers (restrictive relative, prepositional complement, date/measure/range) to protect cohesion (addresses the primary_finding)."
+   ]
+  }
+ ]
+}

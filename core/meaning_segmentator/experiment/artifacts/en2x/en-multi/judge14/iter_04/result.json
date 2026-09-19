@@ -1,0 +1,44 @@
+{
+ "iter": 4,
+ "candidate": 3,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00264,
+  "lo": -0.02666,
+  "hi": 0.02105,
+  "n": 429,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Replace C5 to address the primary finding: clarify that NP protection is not a blanket ban on cutting near verbs and prefer cuts that keep a verb with its core arguments while allowing cuts at light function words."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C5",
+   "kind": "change",
+   "was": "- For predicates versus coordination, judge whether the continuation completes t",
+   "now": "- Predicate cuts: prefer cuts that keep a verb with its core arguments; do not t"
+  }
+ ],
+ "findings": [
+  "The prompt's examples/instructions have biased the scorer away from cutting at safe subject–predicate boundaries in mid‑latency sentences (≤5), causing many predicates to be fragmented; it conflates 'avoid tiny NP cuts' with 'never cut around verbs/auxiliaries'."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.002,
+   "≤5": -0.009,
+   "≤7": 0.0021,
+   "≤10": -0.0155,
+   "≤99": 0.0016
+  },
+  "n_worse": 177,
+  "n_better": 144,
+  "why": "The C5 rewrite intended to allow cuts at light function words while keeping verbs with core arguments, but the model instead shifted many cuts inward, fragmenting noun phrases, enumerations and verb+modifier sequences (e.g. splitting “did not walk upright” and breaking “Scottish justice” into separate pieces). That produced tiny gains on very short pieces but net harm in mid-length bins (≤5 and ≤10) — 177 (worse) vs 144 (better) — so overall H_set fell slightly.",
+  "lesson": "When revising predicate/NP guidance, avoid wording that implicitly encourages cutting apart heads or fragmenting short/mid-length units; preserve verb‑argument and NP integrity so cuts don't create many small fragments (especially in the ≤5–≤10 word range).",
+  "blamed": [
+   "C5 «- Predicate cuts: prefer cuts that keep a verb with its core»"
+  ]
+ }
+}

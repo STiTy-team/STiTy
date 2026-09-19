@@ -1,0 +1,66 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt is over-generalizing a ban on cuts after nouns/specifiers: it treats most noun+postnominal splits as categorically harmful and so moves cuts elsewhere. That shift repeatedly forces very-short pieces (≤3–5 words) that split subjects, verbs, or internal compounds, which increases contradiction and cohesion loss in the short-latency bins.",
+    "evidence": "['en_us_738','en_us_1081','en_us_655','en_us_1087','en_us_396','en_us_957','en_us_850','en_us_741']: these cases all show the policy avoiding a noun+modifier cut but producing very-short subject–verb or compound-noun splits instead; the losses concentrate in the ≤3 and ≤5 latency bins.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "- Does the cut separate a nominal",
+     "text": "Do not blanket-forbid cuts after nouns or their specifiers. Ask instead: would forbidding this noun+modifier cut force other cuts into very-short pieces (about ≤3–5 words) that split subject–verb, verb–object, or internal compounds? If so, allow the noun+modifier cut; otherwise avoid it."
+    }
+   },
+   {
+    "diagnosis": "The prompt underestimates the contradiction risk of leaving trailing adjuncts/ modifiers as standalone pieces (participial, prepositional, 'using...' phrases, 'in advance', 'and beyond'). Such trailing fragments often cannot be interpreted correctly on their own and create high contra when separated.",
+    "evidence": "['en_us_845','en_us_1081','en_us_738','en_us_396']: in each case the policy left a trailing adjunct or participial/prepositional fragment alone (e.g. 'using spray paint', 'and beyond', 'more than one month', 'invasion routes as the'), producing high contra or a contra_kill; the target re-attached those modifiers and regained cohesion.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat cuts that leave only postverbal or postnominal adjuncts (prepositional, participial, 'using...' phrases, 'in advance', 'and beyond') as high-contradiction risk unless the fragment can stand as an independent proposition; prefer keeping such modifiers attached to their heads."
+    }
+   },
+   {
+    "diagnosis": "The prompt lacks short, concrete examples showing when to allow a noun+modifier cut to prevent worse subject‑verb fragmentation; scorers need a model example that trades a noun+modifier split for preserving a subject or predicate in very-short bins.",
+    "evidence": "['en_us_1087','en_us_396','en_us_957']: these sentences show improvements in the target by keeping subject+predicate intact even when that means allowing a noun to be separated from a modifier; scorers need an explicit example to internalize that tradeoff.",
+    "edit": {
+     "where": "examples",
+     "action": "add",
+     "text": "Input: The <SEG:?> tiger <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> same <SEG:?> group.\nOutput: The <SEG:30> tiger <SEG:95> is <SEG:45> in <SEG:20> the <SEG:10> same <SEG:5> group."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt is over-generalizing a ban on cuts after nouns/specifiers: it treats most noun+postnominal splits as categorically harmful and so moves cuts elsewhere. That shift repeatedly forces very-short pieces (≤3–5 words) that split subjects, verbs, or internal compounds, which increases contradiction and cohesion loss in the short-latency bins.",
+   "evidence": "['en_us_738','en_us_1081','en_us_655','en_us_1087','en_us_396','en_us_957','en_us_850','en_us_741']: these cases all show the policy avoiding a noun+modifier cut but producing very-short subject–verb or compound-noun splits instead; the losses concentrate in the ≤3 and ≤5 latency bins.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "- Does the cut separate a nominal",
+    "text": "Do not blanket-forbid cuts after nouns or their specifiers. Ask instead: would forbidding this noun+modifier cut force other cuts into very-short pieces (about ≤3–5 words) that split subject–verb, verb–object, or internal compounds? If so, allow the noun+modifier cut; otherwise avoid it."
+   }
+  },
+  {
+   "diagnosis": "The prompt underestimates the contradiction risk of leaving trailing adjuncts/ modifiers as standalone pieces (participial, prepositional, 'using...' phrases, 'in advance', 'and beyond'). Such trailing fragments often cannot be interpreted correctly on their own and create high contra when separated.",
+   "evidence": "['en_us_845','en_us_1081','en_us_738','en_us_396']: in each case the policy left a trailing adjunct or participial/prepositional fragment alone (e.g. 'using spray paint', 'and beyond', 'more than one month', 'invasion routes as the'), producing high contra or a contra_kill; the target re-attached those modifiers and regained cohesion.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat cuts that leave only postverbal or postnominal adjuncts (prepositional, participial, 'using...' phrases, 'in advance', 'and beyond') as high-contradiction risk unless the fragment can stand as an independent proposition; prefer keeping such modifiers attached to their heads."
+   }
+  },
+  {
+   "diagnosis": "The prompt lacks short, concrete examples showing when to allow a noun+modifier cut to prevent worse subject‑verb fragmentation; scorers need a model example that trades a noun+modifier split for preserving a subject or predicate in very-short bins.",
+   "evidence": "['en_us_1087','en_us_396','en_us_957']: these sentences show improvements in the target by keeping subject+predicate intact even when that means allowing a noun to be separated from a modifier; scorers need an explicit example to internalize that tradeoff.",
+   "edit": {
+    "where": "examples",
+    "action": "add",
+    "target": null,
+    "text": "Input: The <SEG:?> tiger <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> same <SEG:?> group.\nOutput: The <SEG:30> tiger <SEG:95> is <SEG:45> in <SEG:20> the <SEG:10> same <SEG:5> group."
+   }
+  }
+ ]
+}

@@ -1,0 +1,114 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  13,
+  18,
+  22,
+  27,
+  31,
+  37,
+  44,
+  45,
+  55,
+  60,
+  62,
+  64,
+  67,
+  73,
+  74,
+  75,
+  80,
+  87,
+  90,
+  94,
+  100,
+  103,
+  104,
+  105,
+  115,
+  116,
+  117,
+  119,
+  133,
+  141,
+  142,
+  144,
+  146,
+  147,
+  151,
+  152,
+  153,
+  156,
+  164,
+  169,
+  173,
+  177,
+  181,
+  182,
+  187,
+  188,
+  190,
+  196,
+  197
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01331,
+    "lo": -0.03482,
+    "hi": 0.00584,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7199,
+   "changelog": [
+    "Replace E1 with measured labeled example en_us_32 to teach safe subject–predicate cuts in mid-latency (≤5) and correct the prompt's bias that conflates NP-protection with a blanket ban on cutting near verbs."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02667,
+    "lo": -0.05843,
+    "hi": -0.00087,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7226,
+   "changelog": [
+    "Insert a short Core Principles rule after C5 clarifying that NP protection must not be taken as a blanket ban on cuts near verbs; prefer keeping a verb with its core arguments while allowing cuts at light function words to address the primary finding about fragmented predicates."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.02143,
+    "lo": -0.04876,
+    "hi": 0.00384,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 6711,
+   "changelog": [
+    "Replace E3 (hand-written Romney example) with measured labeled example en_us_1415 to teach a safe subject–predicate cut (the subject token 'style' is ranked higher than the verb 'peaked'), addressing the prompt's bias against cutting at subject–predicate boundaries."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00264,
+    "lo": -0.02666,
+    "hi": 0.02105,
+    "n": 429,
+    "n_clusters": 50
+   },
+   "chars": 7069,
+   "changelog": [
+    "Replace C5 to address the primary finding: clarify that NP protection is not a blanket ban on cutting near verbs and prefer cuts that keep a verb with its core arguments while allowing cuts at light function words."
+   ]
+  }
+ ]
+}

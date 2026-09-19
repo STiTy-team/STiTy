@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt misses cases where the left fragment is an underspecified proposition whose truth, scope or referent is completed or reversed by the immediately following words, so it permits cuts that later contradict or change the delivered claim.",
+    "evidence": "['en_us_1116','en_us_845','en_us_733','en_us_113','en_us_936','en_us_1617','en_us_33','en_us_48','en_us_140','en_us_741'] — these 10 cases share: the policy kept a cut that left a fragment whose argument/complement, negation, exception or scope is supplied only by the remainder, producing very high contra on that boundary.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Ask at each cut: does the remainder supply an argument, complement, negation/exception, or scope token that completes or reverses the left piece? If so, treat the cut as risky and score it lower."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to protect numerals, measures, date ranges and essential post‑nominal modifiers from being split off, harming cohesion when unit/modifier is separated from its head.",
+    "evidence": "['en_us_741','en_us_140','en_us_1150','en_us_1017'] — these 4 cases share: the policy separated numerals/units or date/measure complements from their heads (e.g. '2.2 million' / 'km2', '240 kilometers an hour', 'from 1977 to 1981', 'until September 16'), which the target kept together.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/measure and its unit, or between a head and an essential post‑nominal modifier (prepositional complement, restrictive relative, date range) that determines identity; keep them together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt misses cases where the left fragment is an underspecified proposition whose truth, scope or referent is completed or reversed by the immediately following words, so it permits cuts that later contradict or change the delivered claim.",
+   "evidence": "['en_us_1116','en_us_845','en_us_733','en_us_113','en_us_936','en_us_1617','en_us_33','en_us_48','en_us_140','en_us_741'] — these 10 cases share: the policy kept a cut that left a fragment whose argument/complement, negation, exception or scope is supplied only by the remainder, producing very high contra on that boundary.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Ask at each cut: does the remainder supply an argument, complement, negation/exception, or scope token that completes or reverses the left piece? If so, treat the cut as risky and score it lower."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to protect numerals, measures, date ranges and essential post‑nominal modifiers from being split off, harming cohesion when unit/modifier is separated from its head.",
+   "evidence": "['en_us_741','en_us_140','en_us_1150','en_us_1017'] — these 4 cases share: the policy separated numerals/units or date/measure complements from their heads (e.g. '2.2 million' / 'km2', '240 kilometers an hour', 'from 1977 to 1981', 'until September 16'), which the target kept together.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/measure and its unit, or between a head and an essential post‑nominal modifier (prepositional complement, restrictive relative, date range) that determines identity; keep them together."
+   }
+  }
+ ]
+}

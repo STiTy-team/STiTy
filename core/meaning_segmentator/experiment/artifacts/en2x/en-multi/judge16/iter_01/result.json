@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00279,
+  "lo": -0.01401,
+  "hi": 0.00866,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00279,
+  "lo": -0.01401,
+  "hi": 0.00866,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a narrow, surface-form rule after C2 to forbid cuts that split a main verb from its essential complement (addresses the primary finding about predicate–argument separation)."
+ ],
+ "findings": [
+  "The prompt underrates cuts that separate a predicate (main verb) from its essential complements/arguments, so it allows splits that leave an earlier stretch whose truth or reference depends on a following object, clausal complement, or prepositional complement.",
+  "The prompt fails to recognise post‑nominal modifiers and complements (relative clauses, 'from/in which' PPs, appositives, titles) as part of the noun they complete, permitting cuts before them that break noun identity or scope."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C2",
+   "kind": "change",
+   "was": "- At each cut, judge whether translating the left and right pieces independently",
+   "now": "- Do not cut immediately after a main verb when the next token begins its essent"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0023,
+   "≤5": -0.0096,
+   "≤7": -0.0005,
+   "≤10": 0.0051,
+   "≤99": 0.0088
+  },
+  "n_worse": 732,
+  "n_better": 774,
+  "why": "The new surface rule forbidding cuts immediately after main verbs made the model avoid splitting verb+complement sequences, which improved cohesion for longer/complex spans (bins >7) but displaced cuts into adjacent very short pieces and enumerations, worsening many ≤5-token cases; net effect is near-zero but slightly negative. ",
+  "lesson": "A verb–complement prohibition helps longer/more complex pieces but harms very short pieces (≤5 tokens); a later revision should avoid applying it indiscriminately across small latency bins.",
+  "blamed": [
+   "insert_after C2 (verb–complement prohibition)"
+  ]
+ }
+}

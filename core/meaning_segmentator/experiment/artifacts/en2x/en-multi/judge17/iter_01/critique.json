@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt routinely misses that splitting numerals from their units or parenthetical equivalents makes the pieces unjoinable or misleading; it permits cuts inside measurement expressions.",
+    "evidence": "['en_us_44','en_us_101','en_us_140','en_us_1081','en_us_1253'] — these 5 all show policy cuts that separate a numeric expression from its unit or its parenthetical equivalent, which the target preserves.",
+    "type_predicate": "a cardinal number or numeric expression immediately followed by a unit word or by an immediately adjacent parenthetical unit/equivalent (e.g. '105 miles per hour (165 km/h)', '55,000 barrels (2.3 million gallons)')",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/measurement and its unit or an immediately adjacent parenthetical unit."
+    }
+   },
+   {
+    "diagnosis": "The prompt undervalues the harm of cutting a noun head away from an essential post‑nominal identifier (name, title, or appositive), which breaks identity and role attribution when pieces are translated separately.",
+    "evidence": "['en_us_288','en_us_399','en_us_1527','en_us_1617'] — these 4 all have policy cuts that split a head noun or role from the immediately following proper name/title/appositive that the target keeps together.",
+    "type_predicate": "a noun phrase where a head noun or role (chief/inspector/skier/park) is immediately followed by a proper name or an essential post‑nominal identifier (name, title, or restrictive appositive)",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a noun head and an immediately following essential identifier (personal name, title, or restrictive appositive)."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that sever subordinating/introductory prefaces or fronted adverbials from their main predicate, leaving scope unresolved and producing contradictory or incoherent fragments.",
+    "evidence": "['en_us_936','en_us_738','en_us_1090','en_us_1507'] — these 4 all show cuts inside clauses introduced by subordinators or fronted phrases (Unless/does not/triggered by/that) where the predicate or resolution appears later.",
+    "type_predicate": "a clause beginning with a subordinating conjunction or fronted adverbial or containing a relative marker (Unless/While/Because/After/When/If/that) whose main predicate or scope is realized later in the sentence",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting before the main predicate when the clause starts with a subordinating conjunction or fronted adverbial (Unless/While/Because/After/When/If/that)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt routinely misses that splitting numerals from their units or parenthetical equivalents makes the pieces unjoinable or misleading; it permits cuts inside measurement expressions.",
+   "evidence": "['en_us_44','en_us_101','en_us_140','en_us_1081','en_us_1253'] — these 5 all show policy cuts that separate a numeric expression from its unit or its parenthetical equivalent, which the target preserves.",
+   "type_predicate": "a cardinal number or numeric expression immediately followed by a unit word or by an immediately adjacent parenthetical unit/equivalent (e.g. '105 miles per hour (165 km/h)', '55,000 barrels (2.3 million gallons)')",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/measurement and its unit or an immediately adjacent parenthetical unit."
+   }
+  },
+  {
+   "diagnosis": "The prompt undervalues the harm of cutting a noun head away from an essential post‑nominal identifier (name, title, or appositive), which breaks identity and role attribution when pieces are translated separately.",
+   "evidence": "['en_us_288','en_us_399','en_us_1527','en_us_1617'] — these 4 all have policy cuts that split a head noun or role from the immediately following proper name/title/appositive that the target keeps together.",
+   "type_predicate": "a noun phrase where a head noun or role (chief/inspector/skier/park) is immediately followed by a proper name or an essential post‑nominal identifier (name, title, or restrictive appositive)",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a noun head and an immediately following essential identifier (personal name, title, or restrictive appositive)."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that sever subordinating/introductory prefaces or fronted adverbials from their main predicate, leaving scope unresolved and producing contradictory or incoherent fragments.",
+   "evidence": "['en_us_936','en_us_738','en_us_1090','en_us_1507'] — these 4 all show cuts inside clauses introduced by subordinators or fronted phrases (Unless/does not/triggered by/that) where the predicate or resolution appears later.",
+   "type_predicate": "a clause beginning with a subordinating conjunction or fronted adverbial or containing a relative marker (Unless/While/Because/After/When/If/that) whose main predicate or scope is realized later in the sentence",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting before the main predicate when the clause starts with a subordinating conjunction or fronted adverbial (Unless/While/Because/After/When/If/that)."
+   }
+  }
+ ]
+}

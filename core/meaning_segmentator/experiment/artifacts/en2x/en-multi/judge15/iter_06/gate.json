@@ -1,0 +1,63 @@
+{
+ "n_sentences": 15,
+ "ids": [
+  "en_us_841",
+  "en_us_482",
+  "en_us_154",
+  "en_us_956",
+  "en_us_535",
+  "en_us_1319",
+  "en_us_1000",
+  "en_us_924",
+  "en_us_942",
+  "en_us_1137",
+  "en_us_1285",
+  "en_us_784",
+  "en_us_1484",
+  "en_us_1116",
+  "en_us_349"
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "oracle_dist": 0.1111,
+   "pairs": 15,
+   "chars": 7772,
+   "changelog": [
+    "Insert a new core principle forbidding cuts that leave sentence‑initial openers as very short standalone fragments, because the primary finding shows the prompt underrates harm from isolating openers and this fixes excessive very-short fragments in the shortest latency bins.",
+    "Replace C7 to emphasize keeping a complete predicate (auxiliaries, main verb, and immediate objects/complements) together, because the findings show the prompt underweights continuity of predicate and arguments and this wording gives a clear, positive description of a good cut."
+   ]
+  },
+  {
+   "candidate": 1,
+   "oracle_dist": 0.099,
+   "pairs": 15,
+   "chars": 7539,
+   "changelog": [
+    "Insert a new Core Principle after C7 that defines a GOOD cut for predicates: prefer keeping auxiliaries, the main verb, and core objects/complements together so agent–action–patient relations survive separate translation. This directly addresses the primary finding about underweighting predicate/argument continuity."
+   ]
+  },
+  {
+   "candidate": 2,
+   "oracle_dist": 0.108,
+   "pairs": 15,
+   "chars": 6731,
+   "changelog": [
+    "Replace E1 with measured example en_us_950 to teach the scorer about harms from isolating sentence-initial openers (primary finding).",
+    "Replace E2 with measured example en_us_6 to show problems when brief initial descriptors/openers are cut off from their following noun/clause.",
+    "Replace E3 with measured example en_us_9 to illustrate that cutting immediately after short openers (e.g. 'Just') produces very-short fragments that hurt cohesion in short latency bins.",
+    "Replace E4 with measured example en_us_741 to expose cases where isolating a sentence-initial opener ('It') leads to harmful very-short fragments and lost predicate continuity."
+   ]
+  },
+  {
+   "candidate": 3,
+   "oracle_dist": 0.0763,
+   "pairs": 15,
+   "chars": 7571,
+   "changelog": [
+    "Insert a short positive guideline after C7 that defines a GOOD predicate-aware cut: prefer preserving an intact predicate–argument unit and, when possible, keep the verb with its subject so agent–action–patient relations survive separate translation (addresses the primary finding)."
+   ]
+  }
+ ]
+}

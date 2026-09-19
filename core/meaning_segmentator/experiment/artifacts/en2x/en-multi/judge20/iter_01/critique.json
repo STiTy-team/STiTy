@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt under-detects short complements that actually complete the preceding predicate: it treats cuts before brief measures, temporal/locative phrases, directional words, or negating/infinitival complements as safe when they are essential to the clause's truth.",
+    "evidence": "en_us_44, en_us_767, en_us_292, en_us_360, en_us_733, en_us_113, en_us_1116, en_us_936 — each has a short (1–4 word) constituent immediately after the policy-kept cut that supplies a measure, time/place attachment, direction, or a negating/infinitival complement; cutting before it makes the fragment unfaithful or contradictory.",
+    "type_predicate": "Sentences where a 1–4 word constituent immediately following a potential cut is the syntactic complement of the immediately preceding verb or adjective and supplies a measure, temporal or locative attachment, direction, or a negating/infinitival that determines the clause's main truth-conditional content.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before a short (1–4 word) complement that completes the preceding predicate (numeric measures, time/place phrases, directions, or negating/infinitival complements); treat such short continuations as essential to the clause."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt under-detects short complements that actually complete the preceding predicate: it treats cuts before brief measures, temporal/locative phrases, directional words, or negating/infinitival complements as safe when they are essential to the clause's truth.",
+   "evidence": "en_us_44, en_us_767, en_us_292, en_us_360, en_us_733, en_us_113, en_us_1116, en_us_936 — each has a short (1–4 word) constituent immediately after the policy-kept cut that supplies a measure, time/place attachment, direction, or a negating/infinitival complement; cutting before it makes the fragment unfaithful or contradictory.",
+   "type_predicate": "Sentences where a 1–4 word constituent immediately following a potential cut is the syntactic complement of the immediately preceding verb or adjective and supplies a measure, temporal or locative attachment, direction, or a negating/infinitival that determines the clause's main truth-conditional content.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before a short (1–4 word) complement that completes the preceding predicate (numeric measures, time/place phrases, directions, or negating/infinitival complements); treat such short continuations as essential to the clause."
+   }
+  }
+ ]
+}

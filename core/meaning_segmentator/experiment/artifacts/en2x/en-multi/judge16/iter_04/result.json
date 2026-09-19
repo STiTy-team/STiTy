@@ -1,0 +1,50 @@
+{
+ "iter": 4,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00252,
+  "lo": -0.01021,
+  "hi": 0.01569,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00252,
+  "lo": -0.01021,
+  "hi": 0.01569,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a narrow surface check after C5 to forbid cuts that separate a numeral/quantifier from its immediately following measurement or unit phrase, addressing the primary finding about number+unit cohesion."
+ ],
+ "findings": [
+  "The prompt underrates cuts that leave a scope-bearing predicate, auxiliary, negation, or quantifier detached from the phrase that supplies its object/complement or resolves its scope; such early cuts create high contradiction risk when the continuation completes or reverses the left piece.",
+  "The prompt fails to protect numerals and measurement phrases: it allows cuts that separate a cardinal/measurement from its unit, breaking referent identity and lowering cohesion."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+   "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0111,
+   "≤5": -0.007,
+   "≤7": 0.0028,
+   "≤10": -0.0042,
+   "≤99": -0.0023
+  },
+  "n_worse": 699,
+  "n_better": 733,
+  "why": "Inserting the narrow check after C5 that forbids cuts between numerals/quantifiers and their immediately following unit/measurement phrases caused the model to stop splitting number+unit sequences (improving the smallest pieces, ≤3), but it also changed cut priorities elsewhere so many mid-length examples (bins ≤5 and ≤10) now get cuts shifted into noun phrases, enumerations, or auxiliary/subject boundaries; the result is a near-zero net change because roughly as many pairs improved as degraded.",
+  "lesson": "A later revision should keep numeral+unit adjacency (so short pieces benefit) while avoiding wholesale re-prioritization of cut placement that splits enumerations or breaks cohesive noun phrases in the ≤5–≤10 bins.",
+  "blamed": [
+   "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+  ]
+ }
+}

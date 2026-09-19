@@ -1,0 +1,49 @@
+{
+ "iter": 1,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01429,
+  "lo": 0.00288,
+  "hi": 0.02735,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.01429,
+  "lo": 0.00288,
+  "hi": 0.02735,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a concise binding principle to keep prepositions, opening parentheses, and numerals attached to their obligatory complements (object noun, measurement unit, or closing parenthesis) to address the primary finding that splitting these produces high contradiction; phrased as a 'keep together' binding for surface recognition."
+ ],
+ "findings": [
+  "The prompt underrates the damage of cutting before a phrase's obligatory complement (objects of prepositions, measurement units, or a closing parenthesis), so it often places cuts that leave an incomplete prepositional/measurement expression and yield high contradiction when the remainder arrives."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "Keep a preposition, an opening parenthesis, or a numeral together with the word "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0172,
+   "≤5": 0.0142,
+   "≤7": 0.0137,
+   "≤10": 0.0027,
+   "≤99": 0.0127
+  },
+  "n_worse": 676,
+  "n_better": 800,
+  "why": "Adding a ‘keep together’ binding caused the model to stop cutting between prepositions/opening parens/numerals and their complements, which reduced contradiction and raised H_set mainly for short pieces (bins ≤3 and ≤5) but also shifted many boundaries (merging phrases like “elsewhere in the UK”) and so lowered cohesion or created worse splits for a substantial minority.",
+  "lesson": "A later revision should preserve the preposition/parenthesis/numeral binding because it improves short-bin H_set, but avoid a blanket enforcement that shifts many boundaries and thereby hurts cohesion elsewhere.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

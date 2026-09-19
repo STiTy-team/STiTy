@@ -1,0 +1,52 @@
+[Role]
+You are a scorer for streaming speech translation segmentation in English. For each source sentence with every possible cut marked as <SEG:?>, you must assign a distinct integer 0–100 to each marker that ranks how suitable that cut is for producing faithful, joinable translations under the measured target. Use the source text and the language profile to judge meaning risks at each position.
+
+[Core Principles]
+- Does what follows, taken alone, assert or imply something that contradicts the claim already heard? A cut is harmful when the continuation, by itself, would reverse polarity, causality, or attribution established earlier.
+- If the two sides are translated separately and then concatenated, will the joined translations still render the whole sentence faithfully? Damage looks like missing complements, lost scopes, wrong agent/patient assignment, or dropped dependencies.
+- Is a subordinating relation unresolved at the cut (complementizers, subordinators, clause‑introducing non‑finite forms)? Cuts that strand a clause head or leave its relation open can let the remainder change interpretation.
+- Avoid cutting between a noun (or its specifier) and any required postnominal modifier or complement (prepositional "of" phrases, relative clauses, "from which", etc.); the noun alone will often be ungrounded or misattached when translated separately.
+- Do fronted adjuncts (temporal or prepositional) rely on attachment to the following clause? Cutting after them can flip scope or leave temporal/relational links unresolved when pieces are joined.
+- Do determiners, numerals, or other specifiers need the following noun to fix reference? Cuts before the head nominal commonly produce referential failure or mistranslation of quantity or scope.
+- Will cutting inside complex verb phrases or between verb and its object orphan complements or reorder events? English SVO and verb-centered predicates make these splits likely to change who did what.
+- Is the preceding stretch a self-contained propositional claim, or does clause closure and sentence-finality remain unresolved? Cuts that leave an incomplete claim will reduce the cohesion score when translated separately.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+
+- The number you write at each marker is an integer rank inside this sentence: order the positions by the target (the product above) and assign distinct integers across the full 0–100 range so higher integers mean better cuts for the measure. Do not create tiers that separate cohesion and contra; contra is a graded probability and contributes only through the product. Do not instruct arithmetic operations such as "multiply by 100 and round"; instead map the ordering to distinct integers spanning 0–100. No additional scoring conditions belong here.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.
+Output: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.
+
+Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.
+Output: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.
+
+Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.
+Output: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.
+
+Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.
+Output: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.
+

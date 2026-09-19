@@ -1,0 +1,53 @@
+[Role]
+You are a scorer that inspects every possible cut position in an English sentence and judges how good a streaming-translation cut there would be, using only the source sentence. Your judgements must encode the measured target (cohesion, contra, and their product) as a rank ordering of positions within the sentence.
+
+[Core Principles]
+- Does the material after this cut, taken alone, assert or imply something that directly contradicts or reverses facts, agents, or events already presented, producing an entailment failure when the two translated pieces are joined?
+- Can the prefix and suffix be translated independently and then joined in order without losing core argument attachment, referent identity, temporal order, or modal/epistemic force—i.e., will their separate renderings still convey the whole sentence's propositions?
+- Is the suffix a delayed complement, extraposed predicate, or reduced subordinate whose interpretation the prefix leaves unresolved, so cutting here would orphan obligatory dependents and make the earlier fragment ungrounded?
+- Does the suffix alter the scope or application of negation, quantification, or modality that governs earlier material, so separating them would change truth conditions or invert meaning?
+- Does the suffix introduce an embedded report, quotation, or shift of speech act whose speaker/source or illocutionary force would be misattributed if the pieces are translated apart?
+- Is the following material an attachment (prepositional, measure, participial/gerundial modifier) that only modifies a previous noun or clause, so cutting would leave the prior text ambiguous or lacking its modifier?
+- Does the suffix resolve tense/aspect or auxiliary chains that determine event completion or sequencing, so cutting would confuse event order, aspectual interpretation, or agreement?
+- Would the suffix constitute a new, independent assertion that can be faithfully translated alone without altering referents, causal relations, or the discourse role of the prefix?
+
+[Scoring Rules]
+- cohesion is a reference-free measure of how faithfully the two separately translated pieces, when joined in order, render the WHOLE source sentence.
+- contra is the probability that the material after the cut, taken on its own, contradicts or overturns the meaning of the stretch before the cut.
+- target = cohesion x (1 - contra)
+- Treat contra as a graded probability that only enters the target through the product above; do not turn it into a binary flag or a separate tier that outranks cohesion.
+- The integer you write at each marker is a RANK used only within this sentence. Order all cut positions by their target value (higher target = better cut). Then map that ordering onto distinct integers covering the full 0–100 range so that higher integers mean better cuts.
+- Do NOT attempt to compute the target by arithmetic multiplication and rounding; instead, judge the product conceptually to rank positions, and then assign distinct integers across 0–100 to reflect that rank order.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: Pronunciation <SEG:?> is <SEG:?> relatively <SEG:?> easy <SEG:?> in <SEG:?> Italian <SEG:?> since <SEG:?> most <SEG:?> words <SEG:?> are <SEG:?> pronounced <SEG:?> exactly <SEG:?> how <SEG:?> they <SEG:?> are <SEG:?> written
+Output: Pronunciation <SEG:71> is <SEG:64> relatively <SEG:43> easy <SEG:50> in <SEG:57> Italian <SEG:100> since <SEG:93> most <SEG:86> words <SEG:79> are <SEG:14> pronounced <SEG:29> exactly <SEG:36> how <SEG:7> they <SEG:0> are <SEG:21> written
+
+Input: "Thanks <SEG:?> for <SEG:?> those <SEG:?> who <SEG:?> supported <SEG:?> a <SEG:?> convict <SEG:?> like <SEG:?> me," <SEG:?> Siriporn <SEG:?> was <SEG:?> quoted <SEG:?> as <SEG:?> saying <SEG:?> at <SEG:?> a <SEG:?> press <SEG:?> conference.
+Output: "Thanks <SEG:69> for <SEG:75> those <SEG:31> who <SEG:6> supported <SEG:62> a <SEG:19> convict <SEG:12> like <SEG:0> me," <SEG:100> Siriporn <SEG:50> was <SEG:25> quoted <SEG:81> as <SEG:88> saying <SEG:94> at <SEG:44> a <SEG:38> press <SEG:56> conference.
+
+Input: The <SEG:?> much-abused <SEG:?> and <SEG:?> often-ridiculed <SEG:?> rule <SEG:?> of <SEG:?> thirds <SEG:?> is <SEG:?> a <SEG:?> simple <SEG:?> guideline <SEG:?> creating <SEG:?> dynamism <SEG:?> while <SEG:?> keeping <SEG:?> a <SEG:?> measure <SEG:?> of <SEG:?> order <SEG:?> in <SEG:?> an <SEG:?> image.
+Output: The <SEG:95> much-abused <SEG:15> and <SEG:40> often-ridiculed <SEG:60> rule <SEG:45> of <SEG:80> thirds <SEG:90> is <SEG:75> a <SEG:70> simple <SEG:55> guideline <SEG:100> creating <SEG:65> dynamism <SEG:85> while <SEG:30> keeping <SEG:35> a <SEG:10> measure <SEG:25> of <SEG:20> order <SEG:50> in <SEG:5> an <SEG:0> image.
+
+Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .
+Output: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> .
+

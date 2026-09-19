@@ -1,0 +1,111 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00534,
+  "lo": -0.00361,
+  "hi": 0.01447,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "by_bin": {
+  "≤3": 0.0047,
+  "≤5": 0.0002,
+  "≤7": 0.0102,
+  "≤10": 0.0105,
+  "≤99": 0.0165
+ },
+ "n_worse": 2186,
+ "n_better": 2344,
+ "worst": [
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7232,
+   "before": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not.",
+   "after": "Although in theory they can take place ‖ annually (so long as they are in different countries), ‖ in practice ‖ they ‖ are not."
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.713,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading ‖ on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_1278",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.7043,
+   "before": "To understand the Templars ‖ one must ‖ understand the context ‖ that prompted the creation of the order.",
+   "after": "To understand the Templars ‖ one must understand the context that prompted the creation ‖ of the ‖ order."
+  },
+  {
+   "id": "en_us_1630",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6978,
+   "before": "Arly Velasquez of Mexico ‖ finished fifteenth ‖ in the men's sitting Super-G. ‖ New Zealand's Adam Hall finished ninth in the men's standing Super-G.",
+   "after": "Arly Velasquez of Mexico ‖ finished fifteenth in the men's sitting Super-G. ‖ New Zealand's Adam Hall ‖ finished ninth in the men's standing Super-G."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.697,
+   "before": "Eventually, wooden wheels were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1591",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7325,
+   "before": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann finished in fourth, ‖ fifth, and sixth place, respectively.",
+   "after": "Former House Speaker Newt Gingrich, ‖ Texas governor Rick Perry, ‖ and Congresswoman Michele Bachmann ‖ finished in fourth, fifth, and sixth place, respectively."
+  },
+  {
+   "id": "en_us_1095",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7267,
+   "before": "They were compelled to pay taxes to the U.S. colonial regime to defray a major part of the expenditures and the interest on bonds floated in the name of the Philippine government through the ‖ Wall Street banking houses.",
+   "after": "They were compelled to pay taxes to the U.S. colonial regime to defray a major part of the expenditures ‖ and the interest on bonds floated in the name of the Philippine government through the Wall Street banking houses."
+  },
+  {
+   "id": "en_us_333",
+   "k": 4,
+   "bin": "≤3",
+   "delta": 0.716,
+   "before": "The celebrations started with a special show ‖ by the ‖ world-renowned ‖ group ‖ Cirque du Soleil.",
+   "after": "The celebrations started ‖ with a special ‖ show ‖ by the world-renowned group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_8",
+   "k": 2,
+   "bin": "≤10",
+   "delta": 0.6901,
+   "before": "The protest started around 11:00 local time (UTC+1) on Whitehall opposite the police-guarded entrance to Downing ‖ Street, ‖ the Prime Minister's official residence.",
+   "after": "The protest started around 11:00 local time (UTC+1) ‖ on Whitehall opposite the police-guarded entrance to Downing Street, ‖ the Prime Minister's official residence."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.6886,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  }
+ ],
+ "why": "Inserting the new principle made the model prefer keeping very short (1–4 word) complements attached to their predicate, so cuts moved later and improved cohesion mainly for longer pieces and lists (largest gains in the ≤99/≤10/≤7 bins), but that same shift caused more harmful splits in short/medium contexts (some ≤3–≤7 pairs got worse). Removing Examples E7/E4/E8 removed counterexamples that would have constrained those bad short-context moves.",
+ "lesson": "A later revision should respect that preserving 1–4-word predicate complements improves long-span cohesion but must keep examples (or guidance) that prevent creating subject–verb or other harmful short-context splits.",
+ "blamed": [
+  "Insert concise core principle (keep short 1–4 word complements with predicate)",
+  "Delete Example E7",
+  "Delete Example E4",
+  "Delete Example E8"
+ ]
+}

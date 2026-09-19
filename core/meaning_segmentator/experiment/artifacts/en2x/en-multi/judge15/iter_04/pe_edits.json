@@ -1,0 +1,163 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Treat any boundary where the remainder, read alone, would contradict or reverse the preceding fragment's polarity, causality, or attribution as effectively unacceptable: rank such cuts below other options even if cohesion looks high. Ask whether what follows, taken on its own, would assert or imply something that would reverse or negate the earlier claim."
+   },
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Rank low any cut that splits a bare auxiliary, copula, modal, negator, or subordinating particle from the phrase that completes or could reverse its predicate or polarity. These splits carry high contradiction risk and should be chosen only as a last resort."
+   },
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Would the cut leave a noun (or its specifier) without a required postnominal modifier or relative clause that fixes its reference? Prefer cuts that keep a noun and its necessary modifiers together unless forbidding them forces very short, harmful fragments."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 136
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 261
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": 63
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7788,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Is a subordinating relation unresolved at the cut (complementizers, subordinators, clause‑introducing non‑finite forms)? Also avoid cutting immediately after a bare auxiliary, copula, modal, negation, or subordinating particle when the remainder completes or can reverse the predicate; rank such cuts lower than alternatives."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 102
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7430,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1494",
+    "text": "Input: Pre-operative <SEG:?> transgender <SEG:?> people <SEG:?> should <SEG:?> not <SEG:?> expect <SEG:?> to <SEG:?> pass <SEG:?> through <SEG:?> the <SEG:?> scanners <SEG:?> with <SEG:?> their <SEG:?> privacy <SEG:?> and <SEG:?> dignity <SEG:?> intact.\nOutput: Pre-operative <SEG:100> transgender <SEG:87> people <SEG:93> should <SEG:0> not <SEG:73> expect <SEG:60> to <SEG:13> pass <SEG:40> through <SEG:33> the <SEG:53> scanners <SEG:80> with <SEG:7> their <SEG:20> privacy <SEG:67> and <SEG:27> dignity <SEG:47> intact."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_399",
+    "text": "Input: Italy's <SEG:?> main <SEG:?> goals <SEG:?> were <SEG:?> African <SEG:?> countries. <SEG:?> To <SEG:?> capture <SEG:?> those <SEG:?> countries, <SEG:?> they <SEG:?> would <SEG:?> need <SEG:?> to <SEG:?> have <SEG:?> a <SEG:?> troop <SEG:?> launching <SEG:?> pad, <SEG:?> so <SEG:?> as <SEG:?> troops <SEG:?> could <SEG:?> sail <SEG:?> across <SEG:?> the <SEG:?> Mediterranean <SEG:?> Sea <SEG:?> and <SEG:?> invade <SEG:?> Africa.\nOutput: Italy's <SEG:59> main <SEG:24> goals <SEG:79> were <SEG:72> African <SEG:90> countries. <SEG:100> To <SEG:93> capture <SEG:83> those <SEG:76> countries, <SEG:97> they <SEG:62> would <SEG:52> need <SEG:21> to <SEG:7> have <SEG:3> a <SEG:0> troop <SEG:28> launching <SEG:14> pad, <SEG:55> so <SEG:45> as <SEG:69> troops <SEG:31> could <SEG:41> sail <SEG:48> across <SEG:34> the <SEG:17> Mediterranean <SEG:66> Sea <SEG:86> and <SEG:10> invade <SEG:38> Africa."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_990",
+    "text": "Input: The <SEG:?> glaciers <SEG:?> are <SEG:?> not <SEG:?> stable, <SEG:?> but <SEG:?> flow <SEG:?> down <SEG:?> the <SEG:?> mountain. <SEG:?> This <SEG:?> will <SEG:?> cause <SEG:?> cracks, <SEG:?> crevasses, <SEG:?> which <SEG:?> may <SEG:?> be <SEG:?> obscured <SEG:?> by <SEG:?> snow <SEG:?> bridges.\nOutput: The <SEG:80> glaciers <SEG:20> are <SEG:15> not <SEG:10> stable, <SEG:75> but <SEG:35> flow <SEG:45> down <SEG:95> the <SEG:0> mountain. <SEG:100> This <SEG:85> will <SEG:55> cause <SEG:40> cracks, <SEG:90> crevasses, <SEG:65> which <SEG:30> may <SEG:50> be <SEG:60> obscured <SEG:70> by <SEG:25> snow <SEG:5> bridges."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1570",
+    "text": "Input: It <SEG:?> also <SEG:?> had <SEG:?> no <SEG:?> authority <SEG:?> to <SEG:?> override <SEG:?> tax <SEG:?> laws <SEG:?> and <SEG:?> tariffs <SEG:?> between <SEG:?> states.\nOutput: It <SEG:73> also <SEG:27> had <SEG:0> no <SEG:9> authority <SEG:100> to <SEG:64> override <SEG:55> tax <SEG:45> laws <SEG:91> and <SEG:36> tariffs <SEG:82> between <SEG:18> states."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 140
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 342
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -38
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -502
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7270,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Rank low any cut immediately after a bare auxiliary, copula, modal, negator, or subordinating particle when the remainder completes or can reverse the predicate; prefer cuts that leave the preceding fragment a self-contained, verifiable predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 48
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7376,
+  "errors": null
+ }
+]

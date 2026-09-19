@@ -1,0 +1,54 @@
+[
+ {
+  "candidate": 0,
+  "type": 0,
+  "delta": {
+   "mean": -0.01174,
+   "lo": -0.0564,
+   "hi": 0.03477,
+   "n": 157,
+   "n_clusters": 17
+  },
+  "note": [
+   "Insert a narrow surface binding: keep multiword sentence-initial grammatical prefaces together with the content word that completes them. This protects multiword prefaces from being split while leaving single-word prefaces eligible for an early cut, addressing the short-latency loss."
+  ]
+ },
+ {
+  "candidate": 1,
+  "type": 0,
+  "delta": {
+   "mean": -0.02219,
+   "lo": -0.0795,
+   "hi": 0.02173,
+   "n": 157,
+   "n_clusters": 17
+  },
+  "note": [
+   "Replace E1 with measured example en_us_956 to teach preferring an early cut after sentence-initial 'If' (addresses primary finding).",
+   "Replace E2 with measured example en_us_535 to teach preferring an early cut after sentence-initial 'Perhaps'.",
+   "Replace E3 with measured example en_us_651 to teach preferring an early cut after sentence-initial 'So'.",
+   "Replace E4 with measured example en_us_884 to teach preferring an early cut after sentence-initial 'In' (short grammatical preface)."
+  ]
+ },
+ {
+  "candidate": 2,
+  "type": 0,
+  "delta": {
+   "mean": -0.00824,
+   "lo": -0.05373,
+   "hi": 0.04282,
+   "n": 157,
+   "n_clusters": 17
+  },
+  "note": [
+   "Insert a narrow binding that keeps a sentence-initial short grammatical preface together with an immediately following possessive or numeral+unit; this preserves cases like 'The 46 percent' while allowing single-word prefaces to be cut early (addresses primary finding)."
+  ],
+  "control_delta": {
+   "mean": -0.00354,
+   "lo": -0.05834,
+   "hi": 0.04882,
+   "n": 139,
+   "n_clusters": 17
+  }
+ }
+]

@@ -1,0 +1,139 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Keep a finite copula or main verb (including auxiliaries) together with its immediately following obligatory complement — a noun phrase, prepositional phrase, numeral+unit, or clause — when there is no intervening punctuation; prefer placing a cut after that complement rather than between verb and complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 311
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7334,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a numeral or explicit quantity (digits or spelled-out) together with the immediately following unit or the noun it quantifies (years, kilometers, barrels, people, etc.)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 177
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7200,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Fallback ordering: prefer a cut that keeps a finite verb or auxiliary together with its immediately following obligatory complement (noun phrase, prepositional phrase, numeral+unit, or clause) over a cut that falls immediately after punctuation or a clear clause boundary; if neither applies, prefer a cut that keeps a numeral or explicit quantity together with its immediately following unit/noun over one that splits them."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 425
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7448,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "Fallback ordering: prefer a cut that keeps a numeral or explicit quantity together with its immediately following unit or the noun it quantifies; prefer a cut immediately before the numeral or immediately after the unit over a cut placed between the numeral and its unit."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 272
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7295,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C1"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C1",
+    "kind": "delete",
+    "chars_change": -168
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6855,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C1",
+    "kind": "delete",
+    "was": "- Does the following span, taken alone, contradict or reverse facts, modality, or polarity asserted earlier, producing an entailment conflict if translated separately?",
+    "now": ""
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C1",
+    "kind": "delete",
+    "chars_change": -168
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6855,
+  "errors": null
+ }
+]

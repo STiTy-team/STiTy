@@ -1,0 +1,88 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Prefer preserving predicate–argument integrity when that prevents orphaned complements or role ambiguity. Do not treat this as absolute: if enforcing predicate‑preservation would create many single‑word or very‑short fragments (micro‑splits) in short‑latency contexts, allow cutting inside long predicate phrases provided the remainder still presents a cohesive event or core object that can be translated joinably. In choices like this, favour cuts that avoid leaving trailing one‑word fragments and that keep named heads, numeric endpoints, or other essential heads intact."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 376
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7704,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_790",
+    "text": "Input: Imagine, <SEG:?> if <SEG:?> you <SEG:?> will, <SEG:?> a <SEG:?> Mancunian, <SEG:?> Bostonian, <SEG:?> Jamaican <SEG:?> and <SEG:?> Sydneysider <SEG:?> sitting <SEG:?> around <SEG:?> a <SEG:?> table <SEG:?> having <SEG:?> dinner <SEG:?> at <SEG:?> a <SEG:?> restaurant <SEG:?> in <SEG:?> Toronto.\nOutput: Imagine, <SEG:95> if <SEG:63> you <SEG:37> will, <SEG:100> a <SEG:84> Mancunian, <SEG:89> Bostonian, <SEG:21> Jamaican <SEG:5> and <SEG:11> Sydneysider <SEG:26> sitting <SEG:42> around <SEG:74> a <SEG:47> table <SEG:58> having <SEG:79> dinner <SEG:68> at <SEG:32> a <SEG:16> restaurant <SEG:53> in <SEG:0> Toronto."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 242
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7570,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "- When preserving predicate–argument integrity would force many micro‑fragments, prefer cuts that yield a cohesive remainder (avoid single‑word trailing fragments). In short‑latency contexts allow splitting long predicate phrases if that reduces fragmentation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 261
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7589,
+  "errors": null
+ }
+]

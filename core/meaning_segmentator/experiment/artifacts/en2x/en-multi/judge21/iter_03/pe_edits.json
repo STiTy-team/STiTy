@@ -1,0 +1,135 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- As a last resort, prefer a cut after the head it completes (e.g., after the verb or the noun/object) over a cut immediately before a preposition or a subordinating/relative/participial/exception opener (e.g., 'that','while','if','when','except')."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 249
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6963,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Keep any preposition or subordinating/relative/participial/exception opener (e.g. 'that', 'while', 'if', 'when', 'except', or a preposition) together with the immediately preceding head (the verb or noun it completes)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 221
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6935,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_292",
+    "text": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resulting <SEG:?> in <SEG:?> the <SEG:?> phase <SEG:?> change <SEG:?> had <SEG:?> took <SEG:?> place <SEG:?> on <SEG:?> March <SEG:?> 10 <SEG:?> on <SEG:?> the <SEG:?> northeast <SEG:?> side <SEG:?> of <SEG:?> the <SEG:?> volcano's <SEG:?> summit <SEG:?> caldera.\nOutput: The <SEG:100> significant <SEG:73> earthquake <SEG:95> activity <SEG:68> resulting <SEG:64> in <SEG:50> the <SEG:14> phase <SEG:23> change <SEG:41> had <SEG:59> took <SEG:27> place <SEG:32> on <SEG:36> March <SEG:82> 10 <SEG:91> on <SEG:18> the <SEG:5> northeast <SEG:86> side <SEG:77> of <SEG:55> the <SEG:0> volcano's <SEG:9> summit <SEG:45> caldera."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_101",
+    "text": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).\nOutput: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons)."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_525",
+    "text": "Input: The <SEG:?> effect <SEG:?> is <SEG:?> dependent <SEG:?> on <SEG:?> how <SEG:?> often <SEG:?> your <SEG:?> brain <SEG:?> attempts <SEG:?> to <SEG:?> lucidly <SEG:?> dream <SEG:?> per <SEG:?> night.\nOutput: The <SEG:92> effect <SEG:69> is <SEG:100> dependent <SEG:85> on <SEG:77> how <SEG:0> often <SEG:62> your <SEG:23> brain <SEG:54> attempts <SEG:46> to <SEG:15> lucidly <SEG:31> dream <SEG:38> per <SEG:8> night."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 322
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 194
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -159
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -355
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6716,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "chars_change": -238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6476,
+  "errors": null
+ }
+]

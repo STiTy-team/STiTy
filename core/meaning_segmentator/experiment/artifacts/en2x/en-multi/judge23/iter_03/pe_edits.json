@@ -1,0 +1,136 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a sentence‑initial single function word (determiner, pronoun, subordinating word, or auxiliary) attached to the following token so the resulting piece contains a lexical noun or main predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 201
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6915,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a lone preposition or particle together with the immediately following phrase that supplies its object or complement; if a cut would leave the preposition/particle as a one-word piece, attach it to the next word so the piece contains the preposition/particle plus its noun-phrase or clause complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 309
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7023,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback: prefer a cut that includes the sentence-initial token together with the next content word (a lexical noun or main verb) over any cut that would leave a single sentence-initial function word alone."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 209
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6923,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Fallback: prefer a cut that keeps a preposition or particle with its immediately following noun phrase or clause (i.e. place the cut after that complement) over a cut placed immediately after the preposition/particle; likewise prefer a cut that includes a sentence‑initial determiner/pronoun/subordinator/auxiliary with the following content word over a cut that would leave that single function word isolated."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 413
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7127,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "chars_change": -187
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6527,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C5"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C5",
+    "kind": "delete",
+    "chars_change": -187
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6527,
+  "errors": null
+ }
+]

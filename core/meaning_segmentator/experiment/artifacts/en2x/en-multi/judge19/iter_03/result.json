@@ -1,0 +1,49 @@
+{
+ "iter": 3,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00671,
+  "lo": -0.00648,
+  "hi": 0.01986,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00671,
+  "lo": -0.00648,
+  "hi": 0.01986,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a narrow, surface-level binding that keeps negation/polarity/quantifier tokens with the immediately following scope phrase — addresses the primary finding that cuts after polarity/quantifiers supply high contradiction risk. The phrasing is a BINDING (keep X with Y) and recognisable from the source surface form alone."
+ ],
+ "findings": [
+  "The prompt underestimates the risk of cutting immediately after a negation or polarity/quantifier token when the continuation supplies its scope, so it keeps cuts that make the prefix assert (or contradict) the wrong proposition on its own."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C9",
+   "kind": "change",
+   "was": "Keep a preposition, an opening parenthesis, or a numeral together with the word ",
+   "now": "Keep a negation or polarity/quantifier token together with the immediately follo"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0092,
+   "≤5": 0.0121,
+   "≤7": -0.0046,
+   "≤10": 0.003,
+   "≤99": -0.0047
+  },
+  "n_worse": 715,
+  "n_better": 776,
+  "why": "The new C9 binding kept negation/polarity/quantifier tokens glued to their immediately following scope, so the model stopped cutting right after those tokens (giving small gains for very short pieces, ≤3 and ≤5). That avoidance pushed cuts elsewhere — often earlier or inside enumerations — which increased fragmentation and contradiction risk for mid/long spans (the ≤7 and ≤99 bins).",
+  "lesson": "A later revision should respect that the narrow polarity/quantifier binding helps very short pieces but can redistribute cuts into medium/long spans (producing isolated function words or broken enumerations), and so must avoid inducing that fragmentation.",
+  "blamed": [
+   "C9 «Keep a preposition, an opening parenthesis, or a numeral tog»"
+  ]
+ }
+}

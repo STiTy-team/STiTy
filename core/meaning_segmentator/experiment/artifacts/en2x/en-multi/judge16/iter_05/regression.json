@@ -1,0 +1,111 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00213,
+  "lo": -0.01704,
+  "hi": 0.01281,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0023,
+  "≤5": -0.004,
+  "≤7": -0.0012,
+  "≤10": -0.0039,
+  "≤99": 0.008
+ },
+ "n_worse": 741,
+ "n_better": 690,
+ "worst": [
+  {
+   "id": "en_us_1143",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7404,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1278",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.6962,
+   "before": "To understand the Templars ‖ one must understand ‖ the context that prompted the creation of the order.",
+   "after": "To understand the Templars ‖ one must understand the context that prompted the creation of the ‖ order."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6841,
+   "before": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1278",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6831,
+   "before": "To understand the Templars ‖ one must ‖ understand ‖ the context that prompted the creation of the order.",
+   "after": "To understand the Templars ‖ one must understand the context ‖ that prompted the creation of the ‖ order."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6728,
+   "before": "Eventually, wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails ‖ were introduced."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.807,
+   "before": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7436,
+   "before": "Internal poisoning may not be immediately apparent. ‖ Symptoms, such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis ‖ cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general ‖ that an immediate diagnosis cannot be made."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7364,
+   "before": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_970",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.719,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, trains and boats connect ‖ the villages, ‖ and cars ‖ cannot ‖ reach them ‖ from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect the villages, ‖ and cars cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_970",
+   "k": 4,
+   "bin": "≤7",
+   "delta": 0.7189,
+   "before": "Part of its charm is the lack of visible corporate development. ‖ Paths, trains and boats connect ‖ the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside."
+  }
+ ],
+ "why": "Replacing the examples with negation/Unless/except/measurement cases taught the model to avoid cutting around scope-bearing tokens (negators, subordinators, exception markers and measurement phrases). That made it keep longer multiword constituents intact (small net gain on very long pieces, ≤99:+0.008) but pushed cuts into nearby short spans, producing small harms in the short-latency bins (≤3..≤10 negative) and slightly more (741) worsened than 690 improved pairs.",
+ "lesson": "Respect scope-bearing attachments (negation, subordinators, exceptions, measurement phrases) but do so without shifting cuts so they split adjacent short constituents or verb phrases.",
+ "blamed": [
+  "E1 «Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG»",
+  "E2 «Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> dipl»",
+  "E3 «Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> su»",
+  "E4 «Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?>»"
+ ]
+}

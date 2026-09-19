@@ -1,0 +1,40 @@
+{
+ "prompt": "core/meaning_segmentator/experiment/artifacts/en2x/en-multi/judge27/prompt_v0_order.txt",
+ "caches": [
+  "segment.json"
+ ],
+ "split": "dev",
+ "n_sentences": 500,
+ "overlap_by_bin": {
+  "≤3": 0.4818,
+  "≤5": 0.4132,
+  "≤7": 0.3886,
+  "≤10": 0.368,
+  "≤99": 0.3627
+ },
+ "mean_k_by_bin": {
+  "≤3": 8.42,
+  "≤5": 4.95,
+  "≤7": 2.86,
+  "≤10": 1.77,
+  "≤99": 1.17
+ },
+ "spearman_all": 0.1954,
+ "spearman_top_half": 0.1931,
+ "spearman_bottom_half": 0.0838,
+ "depth_hit": {
+  "1": 0.364,
+  "2": 0.397,
+  "3": 0.4113,
+  "4": 0.426,
+  "5": 0.4448,
+  "6": 0.4753,
+  "7": 0.502,
+  "8": 0.5291,
+  "9": 0.5662,
+  "10": 0.5962,
+  "11": 0.6269,
+  "12": 0.6582,
+  "13": 0.6856
+ }
+}

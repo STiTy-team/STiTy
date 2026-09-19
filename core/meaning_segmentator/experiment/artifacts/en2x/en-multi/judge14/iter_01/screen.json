@@ -1,0 +1,114 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.02379,
+    "lo": -0.05001,
+    "hi": 0.00041,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7252,
+   "changelog": [
+    "Insert a new core principle warning that very short trailing fragments (≤3 words or bare name/location/measure/preposition) can, taken alone, assert/negate or remap scope and so should be treated as high contra-risk and ranked low — directly addresses the primary_finding about underestimated entailment risk for short fragments."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00704,
+    "lo": -0.03962,
+    "hi": 0.02472,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7004,
+   "changelog": [
+    "Replace C2 to add a concise rule that explicitly flags very short trailing fragments and bare names/places/measures as high entailment (contra) risk, addressing the primary finding without duplicating the sibling insertion."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00876,
+    "lo": -0.0233,
+    "hi": 0.03994,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7023,
+   "changelog": [
+    "Replace E1 (hand-written example) with measured labeled example en_us_1567 so the scorer sees a real failure case where a very short trailing fragment (≤3 words) causes high entailment (contra) risk, addressing the primary finding."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00718,
+    "lo": -0.02105,
+    "hi": 0.0345,
+    "n": 437,
+    "n_clusters": 50
+   },
+   "chars": 7144,
+   "changelog": [
+    "Replace C3 to keep the subordinator/attachment warning but add a concise rule flagging very short trailing fragments (≤3 words or bare name/place/measure/preposition) as high entailment (contra) risk — directly addresses the primary finding with a single small change distinct from sibling edits."
+   ]
+  }
+ ]
+}

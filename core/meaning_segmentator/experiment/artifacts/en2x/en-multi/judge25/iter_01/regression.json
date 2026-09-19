@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00599,
+  "lo": -0.00475,
+  "hi": 0.01737,
+  "n": 4541,
+  "n_clusters": 499
+ },
+ "by_bin": {
+  "≤3": 0.0108,
+  "≤5": 0.0062,
+  "≤7": 0.003,
+  "≤10": -0.0042,
+  "≤99": -0.0068
+ },
+ "n_worse": 1816,
+ "n_better": 1978,
+ "worst": [
+  {
+   "id": "en_us_1596",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7729,
+   "before": "Naturalists and philosophers focused on classical texts and, in particular, on the Bible ‖ in Latin.",
+   "after": "Naturalists and philosophers focused on classical texts and, in particular, on the Bible in ‖ Latin."
+  },
+  {
+   "id": "en_us_1596",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.7473,
+   "before": "Naturalists and philosophers focused on classical texts ‖ and, in particular, on the Bible ‖ in Latin.",
+   "after": "Naturalists and philosophers focused on classical texts and, in particular, on the Bible ‖ in ‖ Latin."
+  },
+  {
+   "id": "en_us_1536",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.7473,
+   "before": "Local authorities are warning residents in the vicinity of the plant ‖ to stay indoors, ‖ turn off air-conditioners ‖ and not to drink tap water.",
+   "after": "Local authorities are warning residents in the vicinity of the plant to stay indoors, ‖ turn off air-conditioners ‖ and not to drink tap ‖ water."
+  },
+  {
+   "id": "en_us_1548",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.7447,
+   "before": "When you call someone who is thousands of miles away, ‖ you ‖ are using a satellite.",
+   "after": "When you call someone who is thousands of miles away, ‖ you are using a ‖ satellite."
+  },
+  {
+   "id": "en_us_447",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.7225,
+   "before": "Early in the nation's independence, ‖ Singapore ‖ Botanic Gardens' expertise helped to transform the island into a tropical Garden City.",
+   "after": "Early in the nation's independence, ‖ Singapore Botanic Gardens' expertise helped to transform the island into a tropical Garden ‖ City."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.8077,
+   "before": "On icy and snowy roadways, ‖ friction is low and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_391",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7715,
+   "before": "The earliest known book in the world was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit ‖ just faded due to hierarchy.",
+   "after": "The earliest known book in the world was written ‖ in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit just faded due to hierarchy."
+  },
+  {
+   "id": "en_us_391",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7573,
+   "before": "The earliest known book in the world was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit ‖ just faded ‖ due to hierarchy.",
+   "after": "The earliest known book in the world was ‖ written ‖ in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit just faded due to hierarchy."
+  },
+  {
+   "id": "en_us_1102",
+   "k": 1,
+   "bin": "≤10",
+   "delta": 0.7422,
+   "before": "The best indication of internal poisoning may be the presence of an open container of medication ‖ or toxic household chemicals.",
+   "after": "The best indication of internal poisoning ‖ may be the presence of an open container of medication or toxic household chemicals."
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7239,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.598,
+   "2": 4.117,
+   "3": 2.857,
+   "4": 2.183,
+   "5": 1.778,
+   "6": 1.534,
+   "7": 1.377,
+   "8": 1.276,
+   "9": 1.192,
+   "10": 1.138,
+   "11": 1.103,
+   "12": 1.08,
+   "13": 1.065
+  },
+  "revision": {
+   "1": 7.956,
+   "2": 4.268,
+   "3": 2.859,
+   "4": 2.147,
+   "5": 1.784,
+   "6": 1.561,
+   "7": 1.401,
+   "8": 1.293,
+   "9": 1.214,
+   "10": 1.154,
+   "11": 1.121,
+   "12": 1.085,
+   "13": 1.064
+  },
+  "delta": {
+   "1": 0.358,
+   "2": 0.151,
+   "3": 0.002,
+   "4": -0.036,
+   "5": 0.006,
+   "6": 0.027,
+   "7": 0.024,
+   "8": 0.017,
+   "9": 0.022,
+   "10": 0.016,
+   "11": 0.018,
+   "12": 0.005,
+   "13": -0.001
+  }
+ },
+ "why": "Removing C8 eliminated a broad penalty against cutting before a ‘disambiguating stretch’, so the remaining constraints (e.g. predicate-argument and noun-internal rules) drive the model to place earlier/top-level cuts (rank_depth up at k=1,2). That helped very short pieces (bins ≤3–7) but caused more fragmentation of longer post‑modifier/disambiguating spans (bins >10 and overall decline).",
+ "lesson": "When pruning a broad overlap-removing unit, keep an explicit, targeted safeguard for short disambiguating post-modifier stretches — otherwise the model will cut earlier and fragment longer modifier/PP stretches even as it helps short pieces.",
+ "blamed": [
+  "C8"
+ ]
+}

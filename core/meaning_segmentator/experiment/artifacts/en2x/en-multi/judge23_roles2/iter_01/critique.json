@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates the harm of cutting immediately around single-word function tokens (determiners/quantifiers, auxiliaries/modals/negation, prepositions, coordinating conjunctions), which leaves those tokens detached from the content that completes their scope and produces contradiction or loss of predicate/argument structure.",
+    "evidence": "['en_us_1116','en_us_89','en_us_44','en_us_1650','en_us_334','en_us_1570']: these sentences all have policy cuts that isolate a single-word function token from the NP/PP/VP that completes its scope, and that isolated fragment is later judged contradictory or incoherent.",
+    "type_predicate": "a candidate cut sits directly between a single-word function token (determiner/quantifier, auxiliary/modal/negation, preposition, or coordinating conjunction) and the immediately following content (the noun phrase, prepositional object, or verb phrase that fills its scope).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a single-word function token (determiner/quantifier, auxiliary/modal/negation, preposition, coordinating conjunction) and the immediately following content that completes its semantic scope (the NP, PP object, or VP)."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to protect numerals and their units/conversions from being split, causing cohesion loss or contradiction when quantities are translated separately.",
+    "evidence": "['en_us_44','en_us_101','en_us_375']: in each, the policy split a numeral from its unit or its parenthetical conversion (e.g. '105 miles per hour (165 km/h)' or '55,000 barrels (2.3 million gallons)'), and the separated pieces produced poor cohesion or high contradiction.",
+    "type_predicate": "a candidate cut occurs between a numeral/quantity (digits or spelled number) and its immediately adjacent unit or parenthetical conversion (e.g. numeric value followed by unit or conversion in parentheses).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/quantity and its unit or its immediate parenthetical conversion (keep the number together with its unit/conversion)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates the harm of cutting immediately around single-word function tokens (determiners/quantifiers, auxiliaries/modals/negation, prepositions, coordinating conjunctions), which leaves those tokens detached from the content that completes their scope and produces contradiction or loss of predicate/argument structure.",
+   "evidence": "['en_us_1116','en_us_89','en_us_44','en_us_1650','en_us_334','en_us_1570']: these sentences all have policy cuts that isolate a single-word function token from the NP/PP/VP that completes its scope, and that isolated fragment is later judged contradictory or incoherent.",
+   "type_predicate": "a candidate cut sits directly between a single-word function token (determiner/quantifier, auxiliary/modal/negation, preposition, or coordinating conjunction) and the immediately following content (the noun phrase, prepositional object, or verb phrase that fills its scope).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a single-word function token (determiner/quantifier, auxiliary/modal/negation, preposition, coordinating conjunction) and the immediately following content that completes its semantic scope (the NP, PP object, or VP)."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to protect numerals and their units/conversions from being split, causing cohesion loss or contradiction when quantities are translated separately.",
+   "evidence": "['en_us_44','en_us_101','en_us_375']: in each, the policy split a numeral from its unit or its parenthetical conversion (e.g. '105 miles per hour (165 km/h)' or '55,000 barrels (2.3 million gallons)'), and the separated pieces produced poor cohesion or high contradiction.",
+   "type_predicate": "a candidate cut occurs between a numeral/quantity (digits or spelled number) and its immediately adjacent unit or parenthetical conversion (e.g. numeric value followed by unit or conversion in parentheses).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/quantity and its unit or its immediate parenthetical conversion (keep the number together with its unit/conversion)."
+   }
+  }
+ ]
+}

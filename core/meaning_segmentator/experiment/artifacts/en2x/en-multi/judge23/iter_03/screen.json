@@ -1,0 +1,128 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  5,
+  6,
+  21,
+  22,
+  24,
+  26,
+  27,
+  38,
+  39,
+  41,
+  49,
+  59,
+  61,
+  70,
+  110,
+  121,
+  122,
+  124,
+  127,
+  137,
+  138,
+  141,
+  143,
+  147,
+  165,
+  171,
+  173,
+  174,
+  175,
+  179,
+  187,
+  188,
+  191,
+  196,
+  206,
+  211,
+  212,
+  216,
+  224,
+  235,
+  247,
+  256,
+  258,
+  272,
+  278,
+  285,
+  289,
+  294,
+  296,
+  299
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.0106,
+    "lo": -0.00931,
+    "hi": 0.03142,
+    "n": 466,
+    "n_clusters": 50
+   },
+   "chars": 6915,
+   "changelog": [
+    "Insert a concise binding that keeps sentence-initial single function words attached to the following token, addressing the primary finding that isolated initial determiners/pronouns/subordinators/auxiliaries create tiny, contradictory fragments."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.0321,
+    "lo": -0.00529,
+    "hi": 0.06893,
+    "n": 466,
+    "n_clusters": 50
+   },
+   "chars": 7023,
+   "changelog": [
+    "Insert a single concise binding that keeps a lone preposition/particle attached to its object or complement, addressing the primary finding that isolated prepositions/particles create high-contradiction fragments."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.01947,
+    "lo": -0.01727,
+    "hi": 0.05511,
+    "n": 466,
+    "n_clusters": 50
+   },
+   "chars": 6923,
+   "changelog": [
+    "Add a single fallback preference that orders cuts: prefer including the sentence-initial token with the next content word over any cut that would isolate a single sentence-initial function word. This addresses the primary finding that lone initial function-word fragments create high-contradiction, uninterpretable pieces."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.02604,
+    "lo": -0.01066,
+    "hi": 0.06,
+    "n": 466,
+    "n_clusters": 50
+   },
+   "chars": 7127,
+   "changelog": [
+    "Add a single fallback ordering that prefers cuts keeping prepositions/particles with their complements and sentence‑initial function words with the following content over cuts that would isolate those one‑word fragments — addresses the primary finding about high‑contradiction tiny pieces."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": -0.00774,
+    "lo": -0.04865,
+    "hi": 0.03078,
+    "n": 466,
+    "n_clusters": 50
+   },
+   "chars": 6527,
+   "changelog": [
+    "Delete C5: remove the rule about subordinators because it largely duplicates clause-completion and disambiguation checks already covered by C4 and C8, so it earns its place least and frees the judge from a redundant, diffuse constraint (traceable to the critique's call to prune overlapping principles)."
+   ]
+  }
+ ]
+}

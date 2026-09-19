@@ -1,0 +1,27 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer underestimates entailment (contra) risk for cuts that leave a very short trailing fragment. It treats locally-cohesive left/right translations as safe even when the right-hand fragment, taken alone, would assert/negate or mis‑scope a claim and so overturn the earlier material.",
+    "evidence": "ids: [\"en_us_1567\",\"en_us_738\",\"en_us_655\",\"en_us_936\",\"en_us_1527\",\"en_us_1617\",\"en_us_46\",\"en_us_845\",\"en_us_538\",\"en_us_733\",\"en_us_1428\"] — each policy kept a cut that isolates a short (1–3 word) trailing span (names, locations, prepositional heads, or bare nouns/numerals) whose standalone meaning contradicts or inverts the preceding text, causing the set to fail.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the right-hand fragment is very short (≤3 words) or is a bare name/location/measure/preposition, ask: 'Could this fragment alone assert or invert the left-hand claim?' If yes, mark the cut as high contra-risk and rank it low."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer underestimates entailment (contra) risk for cuts that leave a very short trailing fragment. It treats locally-cohesive left/right translations as safe even when the right-hand fragment, taken alone, would assert/negate or mis‑scope a claim and so overturn the earlier material.",
+   "evidence": "ids: [\"en_us_1567\",\"en_us_738\",\"en_us_655\",\"en_us_936\",\"en_us_1527\",\"en_us_1617\",\"en_us_46\",\"en_us_845\",\"en_us_538\",\"en_us_733\",\"en_us_1428\"] — each policy kept a cut that isolates a short (1–3 word) trailing span (names, locations, prepositional heads, or bare nouns/numerals) whose standalone meaning contradicts or inverts the preceding text, causing the set to fail.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the right-hand fragment is very short (≤3 words) or is a bare name/location/measure/preposition, ask: 'Could this fragment alone assert or invert the left-hand claim?' If yes, mark the cut as high contra-risk and rank it low."
+   }
+  }
+ ]
+}

@@ -1,0 +1,150 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Judge whether the remainder, read alone, would contradict or reverse a claim made earlier. Demoting a high-contradiction boundary is appropriate, but do not fix it by promoting the immediately adjacent cut if that would create a non-self-contained head-fragment. Prefer a nearby cut that preserves a minimal meaningful phrase so each piece is self-contained and verifiable rather than leaving lone grammatical heads or fragments."
+   },
+   {
+    "op": "insert_after",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Allow isolating a sentence-initial function word or discourse marker when the following piece is a cohesive, self-contained clause whose translation does not depend on the opener for core reference or predicate. The isolated opener must not itself assert a proposition that would contradict the remainder."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 208
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 308
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7844,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Allow a cut that isolates a sentence-initial function word or discourse marker when the following piece is a cohesive, self-contained clause and the isolated opener does not, by itself, assert a proposition that would contradict the remainder."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 48
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7376,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_845",
+    "text": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.\nOutput: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_936",
+    "text": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> working <SEG:?> overseas <SEG:?> generally <SEG:?> means <SEG:?> that <SEG:?> you <SEG:?> will <SEG:?> have <SEG:?> to <SEG:?> file <SEG:?> income <SEG:?> tax <SEG:?> in <SEG:?> the <SEG:?> country <SEG:?> you <SEG:?> are <SEG:?> based <SEG:?> in.\nOutput: Unless <SEG:86> you <SEG:77> are <SEG:59> a <SEG:23> diplomat, <SEG:100> working <SEG:55> overseas <SEG:91> generally <SEG:68> means <SEG:5> that <SEG:14> you <SEG:18> will <SEG:32> have <SEG:41> to <SEG:45> file <SEG:73> income <SEG:82> tax <SEG:95> in <SEG:0> the <SEG:9> country <SEG:50> you <SEG:36> are <SEG:27> based <SEG:64> in."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_113",
+    "text": "Input: Mr. <SEG:?> Rudd's <SEG:?> decision <SEG:?> to <SEG:?> sign <SEG:?> the <SEG:?> Kyoto <SEG:?> climate <SEG:?> accord <SEG:?> isolates <SEG:?> the <SEG:?> United <SEG:?> States, <SEG:?> which <SEG:?> will <SEG:?> now <SEG:?> be <SEG:?> the <SEG:?> only <SEG:?> developed <SEG:?> nation <SEG:?> not <SEG:?> to <SEG:?> ratify <SEG:?> the <SEG:?> agreement.\nOutput: Mr. <SEG:88> Rudd's <SEG:54> decision <SEG:67> to <SEG:25> sign <SEG:83> the <SEG:46> Kyoto <SEG:62> climate <SEG:42> accord <SEG:50> isolates <SEG:79> the <SEG:58> United <SEG:96> States, <SEG:100> which <SEG:92> will <SEG:71> now <SEG:75> be <SEG:29> the <SEG:4> only <SEG:33> developed <SEG:12> nation <SEG:0> not <SEG:17> to <SEG:8> ratify <SEG:21> the <SEG:38> agreement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 277
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -42
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -5
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -122
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7436,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Is the preceding stretch a self-contained propositional claim? Cuts that leave an incomplete claim hurt cohesion. However, allow isolating a sentence-initial function word or discourse marker when the following piece is a cohesive, self-contained clause and the opener alone doesn't assert a contradicting proposition."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 97
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7425,
+  "errors": null
+ }
+]

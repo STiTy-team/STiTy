@@ -1,0 +1,150 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Do not isolate trailing punctuation or sentence-final attachments; they belong to the preceding text, and separating them creates fragments that harm cohesion and entailment."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Short-latency / dense-cut guidance: do not avoid a single high-contradiction boundary by picking adjacent splits that fragment noun phrases, reduced relatives, or enumerations. In ≤3–≤5 regimes prefer earlier cuts that land at natural NP or list boundaries (or just before coordinating conjunctions) so reference and enumerations stay intact. Also ensure predicate completion: keep verbs with their required objects/complements and delay a cut if the verb phrase is incomplete."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -20
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 480
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7393,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Predicate completion: avoid cutting between a verb/predicate and its core arguments or complements. If the verb or a required object may appear after a candidate cut, delay the cut until the verb phrase and its obligatory complements are present."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 249
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7182,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_956",
+    "text": "Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?> travel <SEG:?> time, <SEG:?> check <SEG:?> to <SEG:?> see <SEG:?> how <SEG:?> your <SEG:?> total <SEG:?> fare <SEG:?> quote <SEG:?> to <SEG:?> Africa <SEG:?> compares <SEG:?> with <SEG:?> a <SEG:?> round-the-world <SEG:?> fare.\nOutput: If <SEG:95> you <SEG:89> have <SEG:58> additional <SEG:21> travel <SEG:37> time, <SEG:100> check <SEG:74> to <SEG:0> see <SEG:84> how <SEG:68> your <SEG:5> total <SEG:63> fare <SEG:42> quote <SEG:53> to <SEG:11> Africa <SEG:47> compares <SEG:79> with <SEG:26> a <SEG:16> round-the-world <SEG:32> fare."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1253",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_1113",
+    "text": "Input: After <SEG:?> officials <SEG:?> verify <SEG:?> the <SEG:?> voter's <SEG:?> identity, <SEG:?> the <SEG:?> voter <SEG:?> drops <SEG:?> the <SEG:?> envelope <SEG:?> into <SEG:?> the <SEG:?> ballot <SEG:?> box <SEG:?> and <SEG:?> signs <SEG:?> the <SEG:?> voting <SEG:?> roll.\nOutput: After <SEG:67> officials <SEG:44> verify <SEG:39> the <SEG:61> voter's <SEG:78> identity, <SEG:94> the <SEG:28> voter <SEG:50> drops <SEG:11> the <SEG:6> envelope <SEG:89> into <SEG:56> the <SEG:22> ballot <SEG:72> box <SEG:100> and <SEG:17> signs <SEG:83> the <SEG:0> voting <SEG:33> roll."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1280",
+    "text": "Input: Plans <SEG:?> for <SEG:?> vaccines <SEG:?> to <SEG:?> be <SEG:?> delivered <SEG:?> to <SEG:?> the <SEG:?> historically <SEG:?> most <SEG:?> affected <SEG:?> areas <SEG:?> this <SEG:?> year <SEG:?> were <SEG:?> delayed <SEG:?> due <SEG:?> to <SEG:?> lack <SEG:?> of <SEG:?> funds <SEG:?> and <SEG:?> low <SEG:?> prioritisation <SEG:?> relative <SEG:?> to <SEG:?> other <SEG:?> diseases.\nOutput: Plans <SEG:42> for <SEG:77> vaccines <SEG:92> to <SEG:65> be <SEG:35> delivered <SEG:81> to <SEG:50> the <SEG:54> historically <SEG:27> most <SEG:85> affected <SEG:73> areas <SEG:96> this <SEG:31> year <SEG:69> were <SEG:46> delayed <SEG:88> due <SEG:15> to <SEG:0> lack <SEG:23> of <SEG:8> funds <SEG:100> and <SEG:4> low <SEG:12> prioritisation <SEG:58> relative <SEG:38> to <SEG:19> other <SEG:62> diseases."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 216
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 131
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -92
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -56
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7132,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Predicate completion: avoid cutting between a verb/predicate and its core arguments or complements; when unsure, delay the cut until the verb phrase and its required objects/complements are present so meaning and roles remain intact."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 64
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6997,
+  "errors": null
+ }
+]

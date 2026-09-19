@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt under-penalises cuts that split a predicate from the phrase that completes it: it treats positions before the object/clausal complement as acceptable, producing standalone prefixes that the continuation contradicts or that cannot be interpreted on their own.",
+    "evidence": "['en_us_1294','en_us_1113','en_us_1118','en_us_738','en_us_399','en_us_990','en_us_1570','en_us_292']: these cases all show the policy keeping a cut that separates a verb or verbal phrase from its required object or clausal complement (e.g. 'said' + 'that ...', 'drops' + 'the envelope', 'directed ... to ...', 'would need' + 'to have ...', 'will cause' + 'cracks ...').",
+    "type_predicate": "A candidate cut sits immediately after a main verb or auxiliary (including modals and light verbs) whose clause is continued by a direct object NP, a complementizer-introduced clause (that/which/who), an infinitival 'to' complement, or a verb-argument prepositional phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a predicate (main verb or auxiliary+verb) and its required object or clausal complement (direct-object NP, 'that/which/who' clause, 'to' infinitive, or verb-argument prepositional phrase)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt under-penalises cuts that split a predicate from the phrase that completes it: it treats positions before the object/clausal complement as acceptable, producing standalone prefixes that the continuation contradicts or that cannot be interpreted on their own.",
+   "evidence": "['en_us_1294','en_us_1113','en_us_1118','en_us_738','en_us_399','en_us_990','en_us_1570','en_us_292']: these cases all show the policy keeping a cut that separates a verb or verbal phrase from its required object or clausal complement (e.g. 'said' + 'that ...', 'drops' + 'the envelope', 'directed ... to ...', 'would need' + 'to have ...', 'will cause' + 'cracks ...').",
+   "type_predicate": "A candidate cut sits immediately after a main verb or auxiliary (including modals and light verbs) whose clause is continued by a direct object NP, a complementizer-introduced clause (that/which/who), an infinitival 'to' complement, or a verb-argument prepositional phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a predicate (main verb or auxiliary+verb) and its required object or clausal complement (direct-object NP, 'that/which/who' clause, 'to' infinitive, or verb-argument prepositional phrase)."
+   }
+  }
+ ]
+}

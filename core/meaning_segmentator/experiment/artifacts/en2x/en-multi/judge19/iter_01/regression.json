@@ -1,0 +1,108 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.01429,
+  "lo": 0.00288,
+  "hi": 0.02735,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": 0.0172,
+  "≤5": 0.0142,
+  "≤7": 0.0137,
+  "≤10": 0.0027,
+  "≤99": 0.0127
+ },
+ "n_worse": 676,
+ "n_better": 800,
+ "worst": [
+  {
+   "id": "en_us_1143",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.685,
+   "before": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6629,
+   "before": "Eventually, wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.6359,
+   "before": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed ‖ publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts ‖ have viewed publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_862",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.6292,
+   "before": "At home, ‖ due to this constant exposure to the local germs, ‖ odds ‖ are ‖ very ‖ high ‖ that you're already immune to them.",
+   "after": "At home, ‖ due to this constant ‖ exposure to the local germs, ‖ odds ‖ are ‖ very high ‖ that you're already immune to them."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6245,
+   "before": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos ‖ as potentially prejudicial."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_776",
+   "k": 3,
+   "bin": "≤7",
+   "delta": 0.7877,
+   "before": "Although in theory they can take place annually (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice they are not."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7364,
+   "before": "However, this does not come cheap: as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7239,
+   "before": "Although in theory they can take place annually (so long as they are in different countries), ‖ in practice ‖ they ‖ are ‖ not.",
+   "after": "Although in theory they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_608",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6939,
+   "before": "We experience time as a series of events ‖ passing from the future through the present ‖ to the past.",
+   "after": "We experience time ‖ as a series of events passing from the future ‖ through the present to the past."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.6886,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, ‖ you can expect to pay up to four times the normal economy fare for business, and eleven times for first class!"
+  }
+ ],
+ "why": "Adding a ‘keep together’ binding caused the model to stop cutting between prepositions/opening parens/numerals and their complements, which reduced contradiction and raised H_set mainly for short pieces (bins ≤3 and ≤5) but also shifted many boundaries (merging phrases like “elsewhere in the UK”) and so lowered cohesion or created worse splits for a substantial minority.",
+ "lesson": "A later revision should preserve the preposition/parenthesis/numeral binding because it improves short-bin H_set, but avoid a blanket enforcement that shifts many boundaries and thereby hurts cohesion elsewhere.",
+ "blamed": [
+  "C_end"
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00494,
+  "lo": -0.00509,
+  "hi": 0.01528,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.00494,
+  "lo": -0.00509,
+  "hi": 0.01528,
+  "n": 5509,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "delete C2 — remove a broad, restating principle that overlaps specific attachment-protecting rules so the prompt can concentrate on concrete, testable bindings (responding to the critique that predicate–complement protection needs focused rules and to the 'prune' constraint)."
+ ],
+ "findings": [
+  "The prompt under-protects predicate–complement attachments: it permits cuts that separate a verb/auxiliary/copula from the essential complement (object, PP, numeral/parenthetical, or named-location) that completes its meaning, producing contradictions or orphan fragments when pieces are translated independently."
+ ],
+ "edits": [
+  {
+   "op": "delete",
+   "id": "C2",
+   "kind": "delete",
+   "was": "- If the pieces are translated independently and concatenated, will the joined t",
+   "now": ""
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0117,
+   "≤5": 0.0008,
+   "≤7": 0.0022,
+   "≤10": -0.005,
+   "≤99": -0.0016
+  },
+  "n_worse": 2160,
+  "n_better": 2432,
+  "why": "Removing C2 weakened the prompt's broad, restating protection for predicate–complement and head-dependent spans, so the model began allowing more aggressive, fine-grained cuts (helping very-short pieces: ≤3 bin +0.0117 and producing a slight net of more improvements overall) while increasing harmful mid-clause/head splits in medium-length chunks (≤10 bin −0.005), which produced the large negative tail moves that break noun/verb or enumerated-unit integrity.",
+  "lesson": "Keep an explicit, high-level constraint that protects predicate–complement and head-dependent integrity so the prompt does not encourage splitting inside phrases in medium-length pieces.",
+  "blamed": [
+   "C2 «- Would a cut leave core predicate-argument structure detach»"
+  ]
+ }
+}

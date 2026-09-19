@@ -1,0 +1,324 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "- At each cut, ask whether the following material, taken alone, would contradict, cancel, or reverse the proposition already delivered; if so, treat the cut as risky and lower its score."
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "text": "- Treat postnominal material (modifiers, prepositional complements, numerals, titles) as part of the noun when it determines the referent or truth; avoid splitting these from their head."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- At every cut, ask whether the remainder supplies an argument, complement, negation/exception, or a scope-resolving token that completes or reverses the left fragment; if it does, score that cut lower."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Prefer cuts that keep numerals, measures, and essential post‑nominal modifiers (restrictive relatives, prepositional complements, date/range qualifiers) attached to their head noun, since splitting them typically breaks referent identity and harms cohesion."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": -52
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "chars_change": -26
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 203
+   },
+   {
+    "edit": 3,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 260
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7438,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "text": "- At each cut, ask whether the following material, taken alone, would contradict, cancel, or negate what was already delivered."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Prefer cuts that keep numerals/quantifiers with the unit or noun they modify, and keep a head noun or proper name attached to any immediately following essential post‑nominal modifier (for example a restrictive relative introduced by who/that/which, a restrictive prepositional complement, or a date/range expression). Allow a split only when the remainder is a clearly independent clausal continuation that begins a new sentence."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "chars_change": -111
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 433
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7375,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut when the next token begins a subordinate or clausal continuation that supplies an argument, complement, negation/exception or scope. Surface signals include complementizers or subordinating conjunctions, clause‑introducing wh‑words, the infinitival marker to, or explicit negation/exception words; keep that clause attached."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 352
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7405,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut between a numeral or quantifier token and the immediately following unit/measure or the noun it quantifies; do not cut between a head noun or proper name and an immediately following restrictive post‑nominal modifier (a prepositional complement or restrictive relative)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 298
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7351,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1116",
+    "text": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <SEG:?> for <SEG:?> one <SEG:?> British <SEG:?> cruiser. <SEG:?> Nearly <SEG:?> 200 <SEG:?> American <SEG:?> and <SEG:?> German <SEG:?> lives <SEG:?> were <SEG:?> lost.\nOutput: All <SEG:0> the <SEG:6> ships <SEG:25> were <SEG:38> sunk, <SEG:94> except <SEG:88> for <SEG:75> one <SEG:100> British <SEG:44> cruiser. <SEG:50> Nearly <SEG:81> 200 <SEG:62> American <SEG:31> and <SEG:56> German <SEG:19> lives <SEG:12> were <SEG:69> lost."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_936",
+    "text": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> working <SEG:?> overseas <SEG:?> generally <SEG:?> means <SEG:?> that <SEG:?> you <SEG:?> will <SEG:?> have <SEG:?> to <SEG:?> file <SEG:?> income <SEG:?> tax <SEG:?> in <SEG:?> the <SEG:?> country <SEG:?> you <SEG:?> are <SEG:?> based <SEG:?> in.\nOutput: Unless <SEG:86> you <SEG:77> are <SEG:59> a <SEG:23> diplomat, <SEG:100> working <SEG:55> overseas <SEG:91> generally <SEG:68> means <SEG:5> that <SEG:14> you <SEG:18> will <SEG:32> have <SEG:41> to <SEG:45> file <SEG:73> income <SEG:82> tax <SEG:95> in <SEG:0> the <SEG:9> country <SEG:50> you <SEG:36> are <SEG:27> based <SEG:64> in."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_741",
+    "text": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG:?> islands <SEG:?> spread <SEG:?> out <SEG:?> over <SEG:?> 2.2 <SEG:?> million <SEG:?> km2 <SEG:?> of <SEG:?> ocean.\nOutput: It <SEG:69> is <SEG:77> an <SEG:31> archipelago <SEG:92> with <SEG:46> 15 <SEG:85> islands <SEG:100> spread <SEG:62> out <SEG:54> over <SEG:38> 2.2 <SEG:23> million <SEG:0> km2 <SEG:15> of <SEG:8> ocean."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_140",
+    "text": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .\nOutput: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> ."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 129
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 105
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -261
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": 18
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7044,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1150",
+    "text": "Input: During <SEG:?> the <SEG:?> 1976 <SEG:?> selections <SEG:?> he <SEG:?> advised <SEG:?> Carter <SEG:?> on <SEG:?> foreign <SEG:?> policy, <SEG:?> then <SEG:?> served <SEG:?> as <SEG:?> National <SEG:?> Security <SEG:?> Advisor <SEG:?> (NSA) <SEG:?> from <SEG:?> 1977 <SEG:?> to <SEG:?> 1981, <SEG:?> succeeding <SEG:?> Henry <SEG:?> Kissinger.\nOutput: During <SEG:18> the <SEG:50> 1976 <SEG:5> selections <SEG:82> he <SEG:27> advised <SEG:32> Carter <SEG:59> on <SEG:23> foreign <SEG:45> policy, <SEG:91> then <SEG:77> served <SEG:55> as <SEG:68> National <SEG:73> Security <SEG:0> Advisor <SEG:95> (NSA) <SEG:100> from <SEG:14> 1977 <SEG:9> to <SEG:41> 1981, <SEG:86> succeeding <SEG:64> Henry <SEG:36> Kissinger."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1017",
+    "text": "Input: The <SEG:?> rock <SEG:?> band <SEG:?> was <SEG:?> due <SEG:?> to <SEG:?> tour <SEG:?> the <SEG:?> United <SEG:?> States <SEG:?> and <SEG:?> Canada <SEG:?> until <SEG:?> September <SEG:?> 16.\nOutput: The <SEG:85> rock <SEG:31> band <SEG:38> was <SEG:8> due <SEG:23> to <SEG:15> tour <SEG:54> the <SEG:46> United <SEG:62> States <SEG:92> and <SEG:69> Canada <SEG:100> until <SEG:77> September <SEG:0> 16."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_419",
+    "text": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> to <SEG:?> 500 <SEG:?> million <SEG:?> speakers, <SEG:?> and <SEG:?> as <SEG:?> many <SEG:?> as <SEG:?> 800 <SEG:?> million <SEG:?> people <SEG:?> can <SEG:?> understand <SEG:?> the <SEG:?> language.\nOutput: Estimates <SEG:100> range <SEG:83> from <SEG:89> 340 <SEG:39> million <SEG:61> to <SEG:6> 500 <SEG:50> million <SEG:0> speakers, <SEG:94> and <SEG:72> as <SEG:28> many <SEG:78> as <SEG:67> 800 <SEG:56> million <SEG:17> people <SEG:11> can <SEG:33> understand <SEG:44> the <SEG:22> language."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1415",
+    "text": "Input: Gothic <SEG:?> style <SEG:?> peaked <SEG:?> in <SEG:?> the <SEG:?> period <SEG:?> between <SEG:?> the <SEG:?> 10th <SEG:?> - <SEG:?> 11th <SEG:?> centuries <SEG:?> and <SEG:?> the <SEG:?> 14th <SEG:?> century.\nOutput: Gothic <SEG:86> style <SEG:100> peaked <SEG:21> in <SEG:43> the <SEG:14> period <SEG:79> between <SEG:64> the <SEG:57> 10th <SEG:50> - <SEG:71> 11th <SEG:29> centuries <SEG:93> and <SEG:7> the <SEG:0> 14th <SEG:36> century."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 336
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -151
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -92
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -419
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6727,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- At each cut, check whether the remainder supplies a required complement, argument, negation/exception, or scope that completes or reverses the left fragment; if so, treat the cut as risky and lower its rank. Apply this conservatively on very short left fragments to avoid over-blocking."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 99
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7152,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Do not cut between a numeral/quantifier and its unit, or between a head noun/proper name and an essential post‑nominal modifier (restrictive relative, prepositional complement, date/measure/range); keep such unit+modifier spans together unless the remainder is a full independent clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 290
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7343,
+  "errors": null
+ }
+]

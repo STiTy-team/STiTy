@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt is too reluctant to split off sentence-introductory function words (initial determiners, prepositional/adverbial leads); these safe, very short left pieces often improve streaming fidelity in low-latency bins.",
+    "evidence": "en_us_292, en_us_845, en_us_884, en_us_482, en_us_46 — each target inserted an early cut (at or immediately after the sentence intro/determiner/adverbial) and gained H_set in short-latency bins; they share that the right-hand material did not require unresolved antecedents or scope.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Allow splits immediately after sentence-introductory function words (initial determiners, prepositional or adverbial leads) when the remaining right-hand piece is semantically self-contained and does not rely on unresolved antecedents or scope to be true."
+    }
+   },
+   {
+    "diagnosis": "A blanket prohibition on cutting immediately after main verbs is applied too widely; many short, self-contained predicates or closed prepositional complements are safe to emit separately and help dense, low-latency segmentation.",
+    "evidence": "en_us_164, en_us_340, en_us_924 — in each case the target allowed a cut that isolates a short predicate or closed complement (e.g. short clause or prepositional phrase) and improved cohesion without creating contradiction.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not ban cuts after a main verb universally; permit a cut when the right-hand piece forms a short, independent predicate or closed complement (no unresolved scope, antecedent, or polarity dependence)."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to protect tight numeral+unit and quantifier+noun spans; splitting numerals from their units or quantified noun leads to severe cohesion loss.",
+    "evidence": "en_us_278, en_us_860, en_us_1024 — each target kept numerals/quantifiers attached to their units or quantified noun ('46 percent', 'over 10 years', 'two summer Olympics') and gained H_set versus policies that separated them.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/quantifier and its unit or quantified noun; treat numeral+unit (or quantifier+noun) as an atomic span for segmentation."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt is too reluctant to split off sentence-introductory function words (initial determiners, prepositional/adverbial leads); these safe, very short left pieces often improve streaming fidelity in low-latency bins.",
+   "evidence": "en_us_292, en_us_845, en_us_884, en_us_482, en_us_46 — each target inserted an early cut (at or immediately after the sentence intro/determiner/adverbial) and gained H_set in short-latency bins; they share that the right-hand material did not require unresolved antecedents or scope.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Allow splits immediately after sentence-introductory function words (initial determiners, prepositional or adverbial leads) when the remaining right-hand piece is semantically self-contained and does not rely on unresolved antecedents or scope to be true."
+   }
+  },
+  {
+   "diagnosis": "A blanket prohibition on cutting immediately after main verbs is applied too widely; many short, self-contained predicates or closed prepositional complements are safe to emit separately and help dense, low-latency segmentation.",
+   "evidence": "en_us_164, en_us_340, en_us_924 — in each case the target allowed a cut that isolates a short predicate or closed complement (e.g. short clause or prepositional phrase) and improved cohesion without creating contradiction.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not ban cuts after a main verb universally; permit a cut when the right-hand piece forms a short, independent predicate or closed complement (no unresolved scope, antecedent, or polarity dependence)."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to protect tight numeral+unit and quantifier+noun spans; splitting numerals from their units or quantified noun leads to severe cohesion loss.",
+   "evidence": "en_us_278, en_us_860, en_us_1024 — each target kept numerals/quantifiers attached to their units or quantified noun ('46 percent', 'over 10 years', 'two summer Olympics') and gained H_set versus policies that separated them.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/quantifier and its unit or quantified noun; treat numeral+unit (or quantifier+noun) as an atomic span for segmentation."
+   }
+  }
+ ]
+}

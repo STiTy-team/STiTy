@@ -1,0 +1,118 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  3,
+  6,
+  10,
+  13,
+  18,
+  20,
+  23,
+  27,
+  30,
+  32,
+  37,
+  38,
+  50,
+  52,
+  54,
+  56,
+  65,
+  68,
+  73,
+  75,
+  82,
+  85,
+  87,
+  93,
+  101,
+  104,
+  105,
+  111,
+  112,
+  113,
+  118,
+  120,
+  122,
+  125,
+  128,
+  131,
+  134,
+  135,
+  138,
+  143,
+  146,
+  149,
+  159,
+  173,
+  178,
+  179,
+  188,
+  197,
+  199
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.01414,
+    "lo": -0.03903,
+    "hi": 0.01203,
+    "n": 476,
+    "n_clusters": 50
+   },
+   "chars": 7393,
+   "changelog": [
+    "Paraphrased C8 to shorten its wording and free space for one new principle.",
+    "Inserted a new core principle after C8 that addresses the primary finding: avoid trading a single high-contradiction cut for adjacent splits that fragment NPs/enumerations, and prefer cuts that preserve noun/list integrity and keep predicates with their core arguments."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02338,
+    "lo": -0.05024,
+    "hi": 0.00396,
+    "n": 476,
+    "n_clusters": 50
+   },
+   "chars": 7182,
+   "changelog": [
+    "Inserted a new Core Principle after C5 requiring that verbs/predicates stay with their core arguments/complements and that cuts be delayed until the verb phrase and obligatory complements are present — to address the primary finding about predicate completion."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00588,
+    "lo": -0.03184,
+    "hi": 0.02159,
+    "n": 476,
+    "n_clusters": 50
+   },
+   "chars": 7132,
+   "changelog": [
+    "Replace E1 with labeled example en_us_956 (≤3) to teach the scorer about short-latency NP/list fragmentation errors identified in the primary finding.",
+    "Replace E2 with labeled example en_us_1253 (≤3) to show how adjacent cuts can fragment coordinated NPs/enumerations and encourage preserving list integrity.",
+    "Replace E3 with labeled example en_us_1113 (≤5) to demonstrate predicate-completion failures where cuts separate verbs from their core arguments.",
+    "Replace E4 with labeled example en_us_1280 (≤3) to illustrate long NP fragmentation in very short-latency scenarios and discourage trading one high-contra cut for many smaller fragments."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.01667,
+    "lo": -0.0476,
+    "hi": 0.01484,
+    "n": 476,
+    "n_clusters": 50
+   },
+   "chars": 6997,
+   "changelog": [
+    "Replace C6 with a concise 'Predicate completion' principle to address the primary finding: avoid cutting verbs/predicates from their core arguments or complements and delay cuts until the verb phrase and required objects are present."
+   ]
+  }
+ ]
+}

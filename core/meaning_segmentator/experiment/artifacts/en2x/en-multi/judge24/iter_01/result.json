@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01172,
+  "lo": 0.00147,
+  "hi": 0.02256,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "gain": {
+  "mean": 0.01172,
+  "lo": 0.00147,
+  "hi": 0.02256,
+  "n": 4535,
+  "n_clusters": 499
+ },
+ "changelog": [
+  "Insert a single fallback ordering after C8: as a last resort prefer punctuation/clause-boundary cuts over cuts that split a numeral from its unit/measurement or that separate a finite verb/auxiliary from its immediately following core complement—implements the required fallback order (addresses the primary finding about numerals) without adding a prohibition."
+ ],
+ "findings": [
+  "The prompt undervalues cuts that separate a finite verb or auxiliary from the phrase that completes its core predicate (object, prepositional complement, clausal complement or essential continuation), causing contradictory or incoherent fragments when pieces are translated separately.",
+  "The prompt fails to protect numeral/measurement units: it allows cuts that split a numeral or quantifier from its unit or adjacent parenthetical measurement, which breaks numeric meaning or produces misleading fragments."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Does the stretch after the cut supply disambiguating information (names, numbe",
+   "now": "- As a last resort, prefer a cut at a punctuation or clause boundary (comma, sem"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0129,
+   "≤5": 0.0152,
+   "≤7": 0.0057,
+   "≤10": 0.008,
+   "≤99": 0.0049
+  },
+  "n_worse": 1662,
+  "n_better": 2098,
+  "why": "Inserting the fallback that prefers punctuation/clause-boundary cuts as a last resort made the model favor clause/punctuation boundaries more often, producing a small net improvement concentrated on short pieces (largest gains in the ≤3 and ≤5 bins) but also shifting many kept cuts so they now split numerals/units or separate finite verbs from their immediately following complements, which explains the sizable set of worse (but more localized) degradations.",
+  "lesson": "A later revision should keep the punctuation/clause-boundary preference that helped short pieces while ensuring it does not override protections that keep numerals attached to their units or finite verbs attached to their core complements.",
+  "blamed": [
+   "C8 «- Does the stretch after the cut supply disambiguating infor»"
+  ]
+ }
+}

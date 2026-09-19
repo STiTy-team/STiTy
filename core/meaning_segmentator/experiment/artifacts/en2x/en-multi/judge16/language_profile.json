@@ -1,0 +1,30 @@
+{
+  "source_language": "English",
+  "word_order": "SVO — subjects precede verbs and objects follow them, e.g. 'Steve Jobs unveiled the device' and 'Mutations can have a variety of different effects'.",
+  "register": "Edited written informational prose (news/encyclopedia/technical descriptions): generally formal, factual sentences with occasional instructional or descriptive passages.",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "subordinating conjunctions (although, because)",
+    "coordinating conjunctions (and, but)",
+    "temporal connectors/phrase openers (once, prior to)",
+    "sentential parentheticals/softeners (Of course)"
+  ],
+  "clause_boundary_signals": [
+    "coordinating conjunctions joining independent clauses (and, but)",
+    "subordinating conjunctions introducing dependent clauses (although, while)",
+    "relative/complementizer pronouns introducing clauses modifying NPs (who, that)",
+    "sentence-initial adverbials/parentheticals that open new sentential propositions (Of course, In reality)"
+  ],
+  "non_boundary_traps": [
+    "prepositional phrases inside noun phrases that resemble clause starts (of Venezuelans, of the piece)",
+    "possessive noun constructions and titles that look like genitive clauses (Branson's, bank’s)",
+    "numeric/quantifier phrases and measure expressions that are phrase-internal (Eighteen percent, Around 60)",
+    "noun compounds and names that contain multiple words but do not mark clause breaks (Virgin Group, Northern Rock bank)"
+  ],
+  "unstable_prefix_signals": [
+    "initial subordinators or adverbials after which scope/attachment is unresolved (although, while)",
+    "prepositional/temporal introducers whose role (clausal vs. phrase) is undecided until later context (prior to, because of)",
+    "focus/quantifier particles and short determiners that leave interpretation open until the following phrase (Only, Around 60)"
+  ],
+  "notes_for_prompt_writer": "Sentence structure is canonical English SVO with frequent embedded relative clauses and multiword temporal/causal connectors. Many long noun phrases contain prepositional modifiers, possessives, numerals, or titles that can be mistaken for clause starts. Watch for sentential parentheticals (e.g. 'Of course') and relative/complementizer words ('who', 'that') which reliably introduce subordinate material. No phonetic hesitation tokens appear in the sample."
+}

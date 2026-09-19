@@ -1,0 +1,1972 @@
+[
+ {
+  "id": "en_us_1567",
+  "cuts": 7,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.5974,
+  "policy_worst_contra": 0.9926,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    8,
+    10,
+    13,
+    14,
+    15
+   ],
+   "H_set": 0.0033,
+   "text": "The largest tournament ‖ of the year ‖ takes place ‖ in December ‖ at the polo ‖ fields ‖ in ‖ Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "最大的比赛",
+     "年度",
+     "发生",
+     "12月份",
+     "在马球",
+     "外地",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     " <0xE9><0xB0><0x93>蓋骨。"
+    ],
+    "Japanese": [
+     "最大のトーナメント",
+     "年間最優秀",
+     "起こる",
+     "12月に",
+     "ここでポロをすると",
+     "フィールド",
+     "ここに",
+     " 犬のこと。"
+    ],
+    "German": [
+     "Das größte Turnier",
+     "Die Jahreszeiten",
+     "Die Veranstaltung findet statt",
+     "im Dezember",
+     "Am Polo",
+     "Felder",
+     "in",
+     "Die Kaninchen."
+    ],
+    "Spanish": [
+     "El torneo más grande",
+     "El año pasado",
+     "Se lleva a cabo",
+     "en diciembre",
+     "En el polo",
+     "campos",
+     "en",
+     "Las Cañitas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10
+   ],
+   "H_set": 0.6007,
+   "text": "The ‖ largest tournament ‖ of ‖ the ‖ year ‖ takes place ‖ in December ‖ at the polo fields in Las Cañitas.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "最大的比赛",
+     "的",
+     "该",
+     "年份",
+     "发生",
+     "12月份",
+     "拉斯卡尼塔斯的马球场"
+    ],
+    "Japanese": [
+     "あの",
+     "世界最大のトーナメント",
+     "の",
+     "あの",
+     "年",
+     "起こる",
+     "12月に",
+     "ラスカニタスのポロフィールドで"
+    ],
+    "German": [
+     "The",
+     "Das größte Turnier",
+     "von",
+     "the",
+     "Jahr",
+     "Die Veranstaltung findet statt",
+     "im Dezember",
+     "Auf den Polofeldern in Las Cañitas."
+    ],
+    "Spanish": [
+     "The",
+     "El torneo más grande",
+     "de",
+     "the",
+     "año",
+     "Se lleva a cabo",
+     "en diciembre",
+     "En los campos de polo de Las Cañitas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "December at the polo",
+     "right": "fields in Las Cañitas.",
+     "H": 0.661,
+     "H_pct": 26.7,
+     "contra": 0.0006,
+     "cohesion": 0.6614
+    },
+    {
+     "pos": 14,
+     "left": "at the polo fields",
+     "right": "in Las Cañitas.",
+     "H": 0.7324,
+     "H_pct": 33.3,
+     "contra": 0.0016,
+     "cohesion": 0.7336
+    },
+    {
+     "pos": 15,
+     "left": "the polo fields in",
+     "right": "Las Cañitas.",
+     "H": 0.0046,
+     "H_pct": 0.0,
+     "contra": 0.9926,
+     "cohesion": 0.6225
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "largest tournament of the",
+     "H": 0.8277,
+     "H_pct": 80.0,
+     "contra": 0.0131,
+     "cohesion": 0.8387
+    },
+    {
+     "pos": 4,
+     "left": "The largest tournament of",
+     "right": "the year takes place",
+     "H": 0.8057,
+     "H_pct": 60.0,
+     "contra": 0.0004,
+     "cohesion": 0.8061
+    },
+    {
+     "pos": 5,
+     "left": "largest tournament of the",
+     "right": "year takes place in",
+     "H": 0.8122,
+     "H_pct": 66.7,
+     "contra": 0.0009,
+     "cohesion": 0.8129
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_738",
+  "cuts": 3,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.6793,
+  "policy_worst_contra": 0.9947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    9
+   ],
+   "H_set": 0.0038,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits ‖ more than one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "不发放公园许可证",
+     "预计抵达前一个月以上。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "許可証を発行しません",
+     "予定より1ヶ月以上早く"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht ausgestellt",
+     "Mehr als einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque",
+     "Con más de un mes de antelación a la fecha de llegada prevista."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    11
+   ],
+   "H_set": 0.6832,
+   "text": "The Park Service ‖ (MINAE) ‖ does not issue park permits more than ‖ one month in advance of anticipated arrival.",
+   "pieces": {
+    "Chinese": [
+     "国家公园管理局",
+     "(环境和能源部)",
+     "没有发放公园许可证超过",
+     "预计抵达前一个月。"
+    ],
+    "Japanese": [
+     "パークス・サービス",
+     "（みなえ）",
+     "1000万ドル以上の 許可証を発行しない",
+     "予定より1ヶ月前に"
+    ],
+    "German": [
+     "Der Parkservice",
+     "(MINAE)",
+     "Parkgenehmigungen werden nicht mehr ausgestellt als",
+     "Einen Monat vor der voraussichtlichen Ankunft."
+    ],
+    "Spanish": [
+     "El servicio del parque",
+     "(MINAE)",
+     "No emite permisos de parque más de",
+     "Un mes antes de la llegada prevista."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "not issue park permits",
+     "right": "more than one month",
+     "H": 0.004,
+     "H_pct": 0.0,
+     "contra": 0.9947,
+     "cohesion": 0.7622
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "park permits more than",
+     "right": "one month in advance",
+     "H": 0.735,
+     "H_pct": 87.5,
+     "contra": 0.0232,
+     "cohesion": 0.7524
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_655",
+  "cuts": 2,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.7932,
+  "policy_worst_contra": 0.9962,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    8,
+    12
+   ],
+   "H_set": 0.0028,
+   "text": "Crime, and ill-will toward foreigners in general, is ‖ virtually unknown in Greenland. ‖ Even in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪和对外国人的恶意行为是普遍的。",
+     "几乎不在格陵兰。",
+     "即使在城镇,也没有\"粗糙的地区 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意は",
+     "グリーンランドではほとんど知られていません",
+     "町でも「荒地」はない。"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen ist",
+     "In Grönland ist sie praktisch unbekannt.",
+     "Auch in den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general, es",
+     "Es prácticamente desconocido en Groenlandia.",
+     "Incluso en las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    12
+   ],
+   "H_set": 0.796,
+   "text": "Crime, and ill-will toward foreigners in general, is virtually unknown ‖ in Greenland. ‖ Even in the towns, there are no \"rough areas.\"",
+   "pieces": {
+    "Chinese": [
+     "犯罪,和对外国人的恶意,一般来说,几乎是未知的",
+     "格陵兰。",
+     "即使在城镇,也没有\"粗糙的地区 \" 。"
+    ],
+    "Japanese": [
+     "犯罪や外国人に対する悪意はほとんど無い。",
+     "グリーンランドにある",
+     "町でも「荒地」はない。"
+    ],
+    "German": [
+     "Kriminalität und Böswilligkeit gegenüber Ausländern im Allgemeinen ist praktisch unbekannt",
+     "In Grönland.",
+     "Auch in den Städten gibt es keine \"rauen Gebiete\"."
+    ],
+    "Spanish": [
+     "El crimen, y la mala voluntad hacia los extranjeros en general, es prácticamente desconocido",
+     "en Groenlandia.",
+     "Incluso en las ciudades, no hay \"áreas ásperas\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "foreigners in general, is",
+     "right": "virtually unknown in Greenland.",
+     "H": 0.0022,
+     "H_pct": 5.3,
+     "contra": 0.9962,
+     "cohesion": 0.5791
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "general, is virtually unknown",
+     "right": "in Greenland. Even in",
+     "H": 0.7602,
+     "H_pct": 94.7,
+     "contra": 0.0037,
+     "cohesion": 0.763
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_936",
+  "cuts": 2,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.6635,
+  "policy_worst_contra": 0.8492,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    9
+   ],
+   "H_set": 0.1265,
+   "text": "Unless you are a diplomat, ‖ working overseas generally means ‖ that you will have to file income tax in the country you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非你是外交官",
+     "海外工作一般意味着",
+     "您将需要在您所在的国家申报所得税。"
+    ],
+    "Japanese": [
+     "外交官じゃないと",
+     "海外で働くことは 一般的に",
+     "所得税を納めなければならないことを 知っておく必要があります"
+    ],
+    "German": [
+     "Wenn Sie kein Diplomat sind,",
+     "Arbeiten im Ausland bedeutet im Allgemeinen",
+     "Sie müssen in dem Land, in dem Sie Ihren Wohnsitz haben, Einkommensteuer angeben."
+    ],
+    "Spanish": [
+     "A menos que seas un diplomático,",
+     "Trabajar en el extranjero generalmente significa",
+     "Tendrás que declarar el impuesto sobre la renta en el país en el que residas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    17
+   ],
+   "H_set": 0.7901,
+   "text": "Unless you are a diplomat, ‖ working overseas generally means that you will have to file income tax ‖ in the country you are based in.",
+   "pieces": {
+    "Chinese": [
+     "除非你是外交官",
+     "海外工作通常意味着你将不得不申报所得税",
+     "您所在国家的法律。"
+    ],
+    "Japanese": [
+     "外交官じゃないと",
+     "海外で働くと 一般的に 所得税を申告しなければなりません",
+     "あなたが居る国で"
+    ],
+    "German": [
+     "Wenn Sie kein Diplomat sind,",
+     "Arbeiten im Ausland bedeutet in der Regel, dass Sie Einkommensteuer angeben müssen",
+     "In dem Land, in dem Sie ansässig sind."
+    ],
+    "Spanish": [
+     "A menos que seas un diplomático,",
+     "Trabajar en el extranjero generalmente significa que tendrá que declarar impuestos sobre la renta",
+     "En el país en el que estás basado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "working overseas generally means",
+     "right": "that you will have",
+     "H": 0.1271,
+     "H_pct": 4.5,
+     "contra": 0.8492,
+     "cohesion": 0.8426
+    }
+   ],
+   "added": [
+    {
+     "pos": 17,
+     "left": "to file income tax",
+     "right": "in the country you",
+     "H": 0.7867,
+     "H_pct": 95.5,
+     "contra": 0.0094,
+     "cohesion": 0.7942
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_292",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.2116,
+  "policy_worst_contra": 0.0067,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    12
+   ],
+   "H_set": 0.603,
+   "text": "The significant earthquake activity resulting in the phase change had took place ‖ on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "导致相变的重大地震活动已经发生",
+     "火山口东北侧的火山口,火山口东北侧的火山口。"
+    ],
+    "Japanese": [
+     "地震活動の相転移を生じた。",
+     "3月10日に 火山の頂上カルデラの北東側で"
+    ],
+    "German": [
+     "Die bedeutende Erdbebenaktivität, die zum Phasenwechsel führte, hatte stattgefunden",
+     "Der Vulkan ist auf der Nordostseite der Gipfelcaldera gelegen."
+    ],
+    "Spanish": [
+     "La actividad sísmica significativa que resultó en el cambio de fase había tenido lugar",
+     "El volcán se encuentra en la parte noreste de la caldera de la cumbre."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.8146,
+   "text": "The ‖ significant earthquake activity resulting in the phase change had took place on March 10 on the northeast side of the volcano's summit caldera.",
+   "pieces": {
+    "Chinese": [
+     "该",
+     "3月10日,火山顶部火山口东北侧发生了导致相变的重大地震活动。"
+    ],
+    "Japanese": [
+     "あの",
+     "3月10日に 火山頂カルデラの北東側で 相変化を引き起こした 地震活動が起きた"
+    ],
+    "German": [
+     "The",
+     "Am 10. März hatte auf der Nordostseite der Gipfelkaldera des Vulkans eine bedeutende Erdbebenaktivität stattgefunden, die zu einem Phasenwechsel geführt hatte."
+    ],
+    "Spanish": [
+     "The",
+     "El 10 de marzo se produjo una actividad sísmica significativa que resultó en el cambio de fase en el lado noreste de la caldera de la cumbre del volcán."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "change had took place",
+     "right": "on March 10 on",
+     "H": 0.603,
+     "H_pct": 31.8,
+     "contra": 0.0067,
+     "cohesion": 0.607
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "The",
+     "right": "significant earthquake activity resulting",
+     "H": 0.8146,
+     "H_pct": 100.0,
+     "contra": 0.0112,
+     "cohesion": 0.8238
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1527",
+  "cuts": 9,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.5836,
+  "policy_worst_contra": 0.9803,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    5,
+    6,
+    10,
+    11,
+    16,
+    21,
+    23
+   ],
+   "H_set": 0.0112,
+   "text": "Poland's ‖ men's ‖ visually impaired skier ‖ Maciej ‖ Krezel and guide Anna ‖ Ogarzynska ‖ finished thirteenth in the Super-G. ‖ South Korea's Jong Seork Park ‖ finished twenty-fourth ‖ in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波兰",
+     "男子",
+     "视力障碍者滑雪者",
+     "马齐耶",
+     "Krezel和指南安娜",
+     "奧加日尼斯卡",
+     "超级大回转赛的第十三名",
+     "韩国的钟西尔公园",
+     "第二十四届会议",
+     "是男子坐式超级大回转比赛。"
+    ],
+    "Japanese": [
+     "ポーランドの国章",
+     "男性の",
+     "視覚障害者のスキーヤーが",
+     "マチエフ",
+     "クレゼルとガイドアンナ",
+     "オガジンスカ",
+     "スーパーGで13位に入った",
+     "チョン・ソルク公園",
+     "24位に終わった",
+     "男性の座り込みスーパーGで"
+    ],
+    "German": [
+     "Polen",
+     "Herren",
+     "Sehbehinderter Skifahrer",
+     "Maciej",
+     "Krezel und Führer Anna",
+     "Ogarzynska",
+     "Im Super-G wurde er 13.",
+     "Südkoreas Jong Seork Park",
+     "Beendete als vierundzwanzigste",
+     "Im Sitz-Super-G der Herren."
+    ],
+    "Spanish": [
+     "Poland's",
+     "de hombres",
+     "Esquiador con discapacidad visual",
+     "Maciej",
+     "Krezel y guía Anna",
+     "Ogarzynska",
+     "Terminó decimotercera en el Super-G.",
+     "El parque Jong Seork de Corea del Sur",
+     "terminó en el 24º lugar",
+     "en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    8,
+    13,
+    16,
+    23
+   ],
+   "H_set": 0.5948,
+   "text": "Poland's ‖ men's ‖ visually impaired ‖ skier ‖ Maciej ‖ Krezel and ‖ guide Anna Ogarzynska finished thirteenth ‖ in the Super-G. ‖ South Korea's Jong Seork Park finished twenty-fourth ‖ in the men's sitting Super-G.",
+   "pieces": {
+    "Chinese": [
+     "波兰",
+     "男子",
+     "视力障碍者",
+     "滑雪者",
+     "马齐耶",
+     "克雷泽尔和",
+     "导游 Anna Ogarzynska 排名第十三",
+     "超级大满贯",
+     "韩国的钟秀克公园完成了第二十四",
+     "是男子坐式超级大回转比赛。"
+    ],
+    "Japanese": [
+     "ポーランドの国章",
+     "男性の",
+     "視覚障害者の",
+     "スキーヤー",
+     "マチエフ",
+     "クレゼルと",
+     "ガイドのアンナ・オガジンスカは13位に入り",
+     "私はスーパーGで優勝しました",
+     "韓国の朴宗<0xE6><0x9A><0x81>が24位に入賞",
+     "男性の座り込みスーパーGで"
+    ],
+    "German": [
+     "Polen",
+     "Herren",
+     "Sehbehinderte",
+     "Skifahrer",
+     "Maciej",
+     "Krezel und",
+     "Guide Anna Ogarzynska wurde dreizehnte",
+     "Im Super-G.",
+     "Südkoreas Jong Seork Park wurde Vierundzwanzigster",
+     "Im Sitz-Super-G der Herren."
+    ],
+    "Spanish": [
+     "Poland's",
+     "de hombres",
+     "Discapacidad visual",
+     "esquiador",
+     "Maciej",
+     "Krezel and",
+     "La guía Anna Ogarzynska terminó decimotercera",
+     "en el Super-G.",
+     "El surcoreano Jong Seork Park terminó vigésimo cuarto",
+     "en el Super-G sentado de los hombres."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "Krezel and guide Anna",
+     "right": "Ogarzynska finished thirteenth in",
+     "H": 0.7064,
+     "H_pct": 57.7,
+     "contra": 0.0163,
+     "cohesion": 0.7181
+    },
+    {
+     "pos": 11,
+     "left": "and guide Anna Ogarzynska",
+     "right": "finished thirteenth in the",
+     "H": 0.6481,
+     "H_pct": 38.5,
+     "contra": 0.089,
+     "cohesion": 0.7114
+    },
+    {
+     "pos": 21,
+     "left": "Korea's Jong Seork Park",
+     "right": "finished twenty-fourth in the",
+     "H": 0.013,
+     "H_pct": 0.0,
+     "contra": 0.9803,
+     "cohesion": 0.6607
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Poland's men's visually impaired",
+     "right": "skier Maciej Krezel and",
+     "H": 0.7847,
+     "H_pct": 92.3,
+     "contra": 0.0036,
+     "cohesion": 0.7875
+    },
+    {
+     "pos": 8,
+     "left": "skier Maciej Krezel and",
+     "right": "guide Anna Ogarzynska finished",
+     "H": 0.7533,
+     "H_pct": 73.1,
+     "contra": 0.0089,
+     "cohesion": 0.7601
+    },
+    {
+     "pos": 13,
+     "left": "Anna Ogarzynska finished thirteenth",
+     "right": "in the Super-G. South",
+     "H": 0.7687,
+     "H_pct": 80.8,
+     "contra": 0.0027,
+     "cohesion": 0.7708
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1617",
+  "cuts": 6,
+  "avg_chunk": 4.9,
+  "latency_bin": "≤5",
+  "gap": 0.6477,
+  "policy_worst_contra": 0.842,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    12,
+    19,
+    22,
+    26,
+    30
+   ],
+   "H_set": 0.1174,
+   "text": "The Kruger National Park (KNP) ‖ lies in the north-east of South Africa ‖ and runs along the border of Mozambique ‖ in the east, ‖ Zimbabwe in the north, ‖ and the southern border ‖ is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克鲁格国家公园(KNP)",
+     "位于南非东北部",
+     "沿着莫桑比克边境",
+     "东方,",
+     "北部的津巴布韦",
+     "南部边界",
+     "是鳄鱼河"
+    ],
+    "Japanese": [
+     "クルーガー国立公園",
+     "南アフリカ北東部に位置し",
+     "モザンビークとの国境に沿って",
+     "東部では",
+     "北はジンバブエ",
+     "南部の国境は",
+     "ワニ川です"
+    ],
+    "German": [
+     "Der Krüger Nationalpark (KNP)",
+     "Die Provinz liegt im Nordosten von Südafrika",
+     "und verläuft entlang der Grenze zu Mosambik",
+     "im Osten,",
+     "Simbabwe im Norden,",
+     "und die südliche Grenze",
+     "Der Fluss ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Parque Nacional Kruger (KNP)",
+     "Se encuentra en el noreste de Sudáfrica",
+     "y corre a lo largo de la frontera de Mozambique",
+     "en el este,",
+     "Zimbabwe en el norte,",
+     "y la frontera sur",
+     "El río más grande es el Río Cocodrilo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    18,
+    22,
+    27
+   ],
+   "H_set": 0.7651,
+   "text": "The Kruger ‖ National ‖ Park ‖ (KNP) lies in the north-east of South Africa and runs along the border of ‖ Mozambique in the east, ‖ Zimbabwe in the north, and ‖ the southern border is the Crocodile River.",
+   "pieces": {
+    "Chinese": [
+     "克魯格河",
+     "国家",
+     "帕克",
+     "南非的东北部地区,是南非的主要出口市场。",
+     "东部是莫桑比克,",
+     "北部的津巴布韦，",
+     "南部边界是鳄鱼河。"
+    ],
+    "Japanese": [
+     "クルーガー",
+     "ナショナル",
+     "パーク",
+     "南アフリカ共和国の北東部に位置し，南アフリカ共和国と南アフリカ共和国の国境に沿って走る。",
+     "東はモザンビーク",
+     "北はジンバブエ",
+     "南の境界は クロコダイル川です"
+    ],
+    "German": [
+     "Der Krüger",
+     "National",
+     "Park",
+     "(KNP) liegt im Nordosten Südafrikas und verläuft entlang der Grenze zu",
+     "Mosambik im Osten,",
+     "Simbabwe im Norden und",
+     "Die südliche Grenze ist der Krokodilfluss."
+    ],
+    "Spanish": [
+     "El Kruger",
+     "Nacional",
+     "Parque",
+     "(KNP) se encuentra en el noreste de Sudáfrica y corre a lo largo de la frontera de",
+     "Mozambique en el este,",
+     "Zimbabwe en el norte, y",
+     "La frontera sur es el río Cocodrilo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "Kruger National Park (KNP)",
+     "right": "lies in the north-east",
+     "H": 0.8231,
+     "H_pct": 81.2,
+     "contra": 0.0009,
+     "cohesion": 0.8238
+    },
+    {
+     "pos": 12,
+     "left": "north-east of South Africa",
+     "right": "and runs along the",
+     "H": 0.8009,
+     "H_pct": 68.8,
+     "contra": 0.0008,
+     "cohesion": 0.8015
+    },
+    {
+     "pos": 19,
+     "left": "the border of Mozambique",
+     "right": "in the east, Zimbabwe",
+     "H": 0.8193,
+     "H_pct": 75.0,
+     "contra": 0.015,
+     "cohesion": 0.8318
+    },
+    {
+     "pos": 26,
+     "left": "Zimbabwe in the north,",
+     "right": "and the southern border",
+     "H": 0.8143,
+     "H_pct": 71.9,
+     "contra": 0.0455,
+     "cohesion": 0.8531
+    },
+    {
+     "pos": 30,
+     "left": "and the southern border",
+     "right": "is the Crocodile River.",
+     "H": 0.1194,
+     "H_pct": 9.4,
+     "contra": 0.842,
+     "cohesion": 0.7559
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "The Kruger",
+     "right": "National Park (KNP) lies",
+     "H": 0.8308,
+     "H_pct": 87.5,
+     "contra": 0.0019,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 3,
+     "left": "The Kruger National",
+     "right": "Park (KNP) lies in",
+     "H": 0.8466,
+     "H_pct": 96.9,
+     "contra": 0.0014,
+     "cohesion": 0.8478
+    },
+    {
+     "pos": 4,
+     "left": "The Kruger National Park",
+     "right": "(KNP) lies in the",
+     "H": 0.8674,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8683
+    },
+    {
+     "pos": 18,
+     "left": "along the border of",
+     "right": "Mozambique in the east,",
+     "H": 0.8327,
+     "H_pct": 90.6,
+     "contra": 0.0125,
+     "cohesion": 0.8433
+    },
+    {
+     "pos": 27,
+     "left": "in the north, and",
+     "right": "the southern border is",
+     "H": 0.8441,
+     "H_pct": 93.8,
+     "contra": 0.0212,
+     "cohesion": 0.8624
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_46",
+  "cuts": 7,
+  "avg_chunk": 2.5,
+  "latency_bin": "≤3",
+  "gap": 0.5708,
+  "policy_worst_contra": 0.9655,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    4,
+    6,
+    11,
+    13,
+    17,
+    19
+   ],
+   "H_set": 0.0194,
+   "text": "On September 24, ‖ 1759, ‖ Arthur Guinness ‖ signed a 9,000 year lease ‖ for the ‖ St James' Gate Brewery ‖ in Dublin, ‖ Ireland.",
+   "pieces": {
+    "Chinese": [
+     "9月24日,",
+     "1759年，",
+     "亞瑟·吉尼斯",
+     "签订了9000年的租约",
+     "2006年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "圣詹姆斯门啤酒厂",
+     "都柏林",
+     "爱尔兰。"
+    ],
+    "Japanese": [
+     "9月24日",
+     "1759年",
+     "アーサー・ギネス",
+     "9000年の賃貸契約を結び",
+     "あの あの あの",
+     "セント・ジェームズ・ゲート・ビール醸造所",
+     "ダブリンで",
+     "アイルランド"
+    ],
+    "German": [
+     "Am 24. September 2017",
+     "1759.",
+     "Arthur Guinness",
+     "Unterzeichnung eines 9.000-jährigen Mietvertrags",
+     "Für die Familie",
+     "St James' Gate Brewery",
+     "in Dublin, Irland",
+     "Irland."
+    ],
+    "Spanish": [
+     "El 24 de septiembre,",
+     "1759,",
+     "Arthur Guinness",
+     "Firmamos un contrato de arrendamiento de 9.000 años",
+     "para el",
+     "Hoteles cerca de St James' Gate Brewery",
+     "en Dublín,",
+     "109. Irlanda."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    4,
+    5,
+    7,
+    8,
+    17
+   ],
+   "H_set": 0.5902,
+   "text": "On ‖ September 24, ‖ 1759, ‖ Arthur ‖ Guinness signed ‖ a ‖ 9,000 year lease for the St James' Gate Brewery ‖ in Dublin, Ireland.",
+   "pieces": {
+    "Chinese": [
+     "上",
+     "9月24日",
+     "1759年，",
+     "阿瑟",
+     "吉尼斯世界纪录签名",
+     "2004年12月31日终了年度的收入和支出及准备金和基金结余变动表",
+     "圣詹姆斯门啤酒厂9000年租约",
+     "爱尔兰都柏林"
+    ],
+    "Japanese": [
+     "オン",
+     "9月24日",
+     "1759年",
+     "アーサー",
+     "ギネス・サイン",
+     "これは",
+     "セント・ジェームズ・ゲート・ビール醸造所の9000年の租借契約",
+     "アイルランドのダブリンにあります"
+    ],
+    "German": [
+     "On",
+     "September 24,",
+     "1759.",
+     "Arthur",
+     "Guinness signiert",
+     "Ein",
+     "9.000 Jahre Pacht für die St James' Gate Brauerei",
+     "Dublin, Irland."
+    ],
+    "Spanish": [
+     "On",
+     "24 de septiembre",
+     "1759,",
+     "Arthur",
+     "Guinness firmado por",
+     "a",
+     "Arrendamiento de 9.000 años para la Cervecería St James' Gate",
+     "En Dublín, Irlanda."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "24, 1759, Arthur Guinness",
+     "right": "signed a 9,000 year",
+     "H": 0.6919,
+     "H_pct": 33.3,
+     "contra": 0.0149,
+     "cohesion": 0.7024
+    },
+    {
+     "pos": 11,
+     "left": "a 9,000 year lease",
+     "right": "for the St James'",
+     "H": 0.7298,
+     "H_pct": 44.4,
+     "contra": 0.0077,
+     "cohesion": 0.7355
+    },
+    {
+     "pos": 13,
+     "left": "year lease for the",
+     "right": "St James' Gate Brewery",
+     "H": 0.029,
+     "H_pct": 5.6,
+     "contra": 0.9655,
+     "cohesion": 0.8419
+    },
+    {
+     "pos": 19,
+     "left": "Gate Brewery in Dublin,",
+     "right": "Ireland.",
+     "H": 0.8108,
+     "H_pct": 61.1,
+     "contra": 0.0296,
+     "cohesion": 0.8355
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "On",
+     "right": "September 24, 1759, Arthur",
+     "H": 0.8278,
+     "H_pct": 72.2,
+     "contra": 0.0054,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 5,
+     "left": "September 24, 1759, Arthur",
+     "right": "Guinness signed a 9,000",
+     "H": 0.8361,
+     "H_pct": 83.3,
+     "contra": 0.0133,
+     "cohesion": 0.8473
+    },
+    {
+     "pos": 7,
+     "left": "1759, Arthur Guinness signed",
+     "right": "a 9,000 year lease",
+     "H": 0.8357,
+     "H_pct": 77.8,
+     "contra": 0.0069,
+     "cohesion": 0.8415
+    },
+    {
+     "pos": 8,
+     "left": "Arthur Guinness signed a",
+     "right": "9,000 year lease for",
+     "H": 0.8471,
+     "H_pct": 94.4,
+     "contra": 0.0034,
+     "cohesion": 0.8499
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_845",
+  "cuts": 4,
+  "avg_chunk": 4.4,
+  "latency_bin": "≤5",
+  "gap": 0.5959,
+  "policy_worst_contra": 0.8692,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    9,
+    14,
+    19
+   ],
+   "H_set": 0.0922,
+   "text": "While it's far from a modern phenomenon, ‖ most people ‖ probably associate it with youth ‖ vandalizing public and private property ‖ using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然这还远远不是现代现象,",
+     "大多数人",
+     "可能会把它和年轻联系起来",
+     "破坏公共和私人财产",
+     "使用喷涂油漆。"
+    ],
+    "Japanese": [
+     "現代の現象とは 遠いが",
+     "ほとんどの人は",
+     "若さと関連付けて",
+     "公共財や私有財産を破壊し",
+     "塗料を噴射して"
+    ],
+    "German": [
+     "Obwohl es weit entfernt von einem modernen Phänomen ist,",
+     "Die meisten Menschen",
+     "Ich assoziiere es wahrscheinlich mit Jugend",
+     "Vandalismus an öffentlichem und privatem Eigentum",
+     "Mit Sprühfarbe."
+    ],
+    "Spanish": [
+     "Aunque está lejos de ser un fenómeno moderno,",
+     "La mayoría de las personas",
+     "Probablemente lo asocien con la juventud",
+     "Vandalismo de bienes públicos y privados",
+     "Usando pintura en aerosol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.688,
+   "text": "While it's ‖ far from a modern phenomenon, ‖ most ‖ people ‖ probably associate it with youth vandalizing public and private property using spray paint.",
+   "pieces": {
+    "Chinese": [
+     "虽然它是",
+     "远远不是一种现代现象,",
+     "桥梁",
+     "人数",
+     "可能与青年人破坏公共和私人财产使用喷漆相关联。"
+    ],
+    "Japanese": [
+     "それは",
+     "近代的な現象とは 遠く離れています",
+     "橋",
+     "人々",
+     "恐らく 若者が 塗料を使って 公共財や私有財産を破壊したことと 関連付けられます"
+    ],
+    "German": [
+     "Während es ist",
+     "weit entfernt von einem modernen Phänomen,",
+     "Most",
+     "Person",
+     "Ich würde es wahrscheinlich mit Jugendlichen in Verbindung bringen, die öffentliches und privates Eigentum mit Sprühfarbe vandalisiert haben."
+    ],
+    "Spanish": [
+     "Mientras que es",
+     "lejos de ser un fenómeno moderno,",
+     "más",
+     "personas",
+     "Probablemente lo asocien con jóvenes que vandalizan propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "associate it with youth",
+     "right": "vandalizing public and private",
+     "H": 0.7101,
+     "H_pct": 60.0,
+     "contra": 0.078,
+     "cohesion": 0.7702
+    },
+    {
+     "pos": 19,
+     "left": "public and private property",
+     "right": "using spray paint.",
+     "H": 0.1028,
+     "H_pct": 15.0,
+     "contra": 0.8692,
+     "cohesion": 0.7857
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "While it's",
+     "right": "far from a modern",
+     "H": 0.8196,
+     "H_pct": 90.0,
+     "contra": 0.0248,
+     "cohesion": 0.8404
+    },
+    {
+     "pos": 8,
+     "left": "a modern phenomenon, most",
+     "right": "people probably associate it",
+     "H": 0.8458,
+     "H_pct": 95.0,
+     "contra": 0.0102,
+     "cohesion": 0.8546
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_538",
+  "cuts": 9,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.5484,
+  "policy_worst_contra": 0.8977,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    19,
+    20,
+    21,
+    22,
+    24,
+    25,
+    26,
+    27,
+    28
+   ],
+   "H_set": 0.0709,
+   "text": "If the objective of one’s visit to a particular place is to get to know its history and culture ‖ then ‖ this ‖ type ‖ of tourism ‖ is ‖ known ‖ as ‖ cultural ‖ tourism.",
+   "pieces": {
+    "Chinese": [
+     "如果一个人访问某个特定的地方的目的是了解其历史和文化",
+     "然后",
+     "这个",
+     "类型",
+     "旅游业",
+     "是",
+     "已知",
+     "作为",
+     "文化",
+     "旅游业。"
+    ],
+    "Japanese": [
+     "特定の場所を訪問する目的がその歴史や文化を知ることであれば",
+     "じゃあ あの",
+     "これは",
+     "タイプ",
+     "観光業の",
+     "はい",
+     "知ってる",
+     "ああ",
+     "文化的な",
+     "観光だ"
+    ],
+    "German": [
+     "Wenn das Ziel des Besuchs eines bestimmten Ortes darin besteht, seine Geschichte und Kultur kennenzulernen",
+     "dann",
+     "this",
+     "Typ",
+     "Die Welt des Tourismus",
+     "ist",
+     "bekannt",
+     "as",
+     "Kultur",
+     "Tourismus."
+    ],
+    "Spanish": [
+     "Si el objetivo de la visita a un lugar en particular es conocer su historia y cultura",
+     "entonces",
+     "this",
+     "Tipo",
+     "de turismo",
+     "es",
+     "conocido",
+     "as",
+     "cultural",
+     "turismo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    10,
+    11,
+    12,
+    15,
+    19,
+    20,
+    21,
+    28
+   ],
+   "H_set": 0.6193,
+   "text": "If ‖ the objective of one’s visit to a particular place ‖ is ‖ to ‖ get to know ‖ its history and culture ‖ then ‖ this ‖ type of tourism is known as cultural ‖ tourism.",
+   "pieces": {
+    "Chinese": [
+     "假如",
+     "一个人访问某一特定地点的目的",
+     "是",
+     "至",
+     "了解更多",
+     "历史和文化",
+     "然后",
+     "这个",
+     "旅游业的类型被称为文化",
+     "旅游业。"
+    ],
+    "Japanese": [
+     "もし",
+     "特定の場所を訪れる目的は",
+     "はい",
+     "それは",
+     "知り合いになる",
+     "歴史と文化を",
+     "じゃあ あの",
+     "これは",
+     "文化観光と呼ばれるものは",
+     "観光だ"
+    ],
+    "German": [
+     "If",
+     "Das Ziel des Besuchs eines bestimmten Ortes",
+     "ist",
+     "to",
+     "Lernen Sie uns kennen",
+     "Geschichte und Kultur",
+     "dann",
+     "this",
+     "Diese Art des Tourismus ist als Kulturtourismus bekannt.",
+     "Tourismus."
+    ],
+    "Spanish": [
+     "Si",
+     "El objetivo de la visita a un lugar en particular",
+     "es",
+     "a",
+     "Conoce a los",
+     "Su historia y cultura",
+     "entonces",
+     "this",
+     "Este tipo de turismo se conoce como turismo cultural",
+     "turismo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 22,
+     "left": "culture then this type",
+     "right": "of tourism is known",
+     "H": 0.7718,
+     "H_pct": 37.0,
+     "contra": 0.0283,
+     "cohesion": 0.7943
+    },
+    {
+     "pos": 24,
+     "left": "this type of tourism",
+     "right": "is known as cultural",
+     "H": 0.7983,
+     "H_pct": 66.7,
+     "contra": 0.0494,
+     "cohesion": 0.8398
+    },
+    {
+     "pos": 25,
+     "left": "type of tourism is",
+     "right": "known as cultural tourism.",
+     "H": 0.656,
+     "H_pct": 11.1,
+     "contra": 0.2065,
+     "cohesion": 0.8268
+    },
+    {
+     "pos": 26,
+     "left": "of tourism is known",
+     "right": "as cultural tourism.",
+     "H": 0.7583,
+     "H_pct": 25.9,
+     "contra": 0.069,
+     "cohesion": 0.8145
+    },
+    {
+     "pos": 27,
+     "left": "tourism is known as",
+     "right": "cultural tourism.",
+     "H": 0.0856,
+     "H_pct": 0.0,
+     "contra": 0.8977,
+     "cohesion": 0.8364
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "If",
+     "right": "the objective of one’s",
+     "H": 0.8122,
+     "H_pct": 74.1,
+     "contra": 0.0013,
+     "cohesion": 0.8133
+    },
+    {
+     "pos": 10,
+     "left": "to a particular place",
+     "right": "is to get to",
+     "H": 0.8055,
+     "H_pct": 70.4,
+     "contra": 0.0068,
+     "cohesion": 0.811
+    },
+    {
+     "pos": 11,
+     "left": "a particular place is",
+     "right": "to get to know",
+     "H": 0.8389,
+     "H_pct": 92.6,
+     "contra": 0.0068,
+     "cohesion": 0.8446
+    },
+    {
+     "pos": 12,
+     "left": "particular place is to",
+     "right": "get to know its",
+     "H": 0.8245,
+     "H_pct": 81.5,
+     "contra": 0.0286,
+     "cohesion": 0.8488
+    },
+    {
+     "pos": 15,
+     "left": "to get to know",
+     "right": "its history and culture",
+     "H": 0.8234,
+     "H_pct": 77.8,
+     "contra": 0.0085,
+     "cohesion": 0.8305
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_733",
+  "cuts": 7,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.5464,
+  "policy_worst_contra": 0.9549,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    6,
+    7,
+    8,
+    10,
+    14,
+    15
+   ],
+   "H_set": 0.0337,
+   "text": "Whistler ‖ (1.5 hour drive from Vancouver) ‖ is ‖ expensive ‖ but well-known ‖ because of the 2010 ‖ Winter ‖ Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(距离温哥华1.5小时车程)",
+     "是",
+     "昂贵",
+     "但众所周知",
+     "因为2010年",
+     "冬季",
+     "奥林匹克运动会。"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "（バンクーバーから車で1.5時間）",
+     "はい",
+     "高い",
+     "しかし よく知られた事実は",
+     "2010年の",
+     "冬",
+     "オリンピック"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5 Stunden Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "Aber wohlbekannt",
+     "Wegen der 2010",
+     "Winter",
+     "Olympia."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1.5 horas en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "Pero bien conocido",
+     "Debido al 2010",
+     "Invierno",
+     "Juegos Olímpicos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    8,
+    9,
+    14
+   ],
+   "H_set": 0.5801,
+   "text": "Whistler ‖ (1.5 ‖ hour drive from Vancouver) ‖ is ‖ expensive ‖ but ‖ well-known because of the 2010 ‖ Winter Olympics.",
+   "pieces": {
+    "Chinese": [
+     "惠斯勒",
+     "(1.5个百分点)",
+     "距离温哥华1小时车程)",
+     "是",
+     "昂贵",
+     "但",
+     "因为2010年的",
+     "冬季奥林匹克运动会"
+    ],
+    "Japanese": [
+     "ウィスラー",
+     "１．５",
+     "1時間の車で行ける場所です",
+     "はい",
+     "高い",
+     "でも あなたは",
+     "2010年の 世界的な",
+     "冬季オリンピック。"
+    ],
+    "German": [
+     "Whistler",
+     "(1,5",
+     "(1 Stunde Fahrt von Vancouver)",
+     "ist",
+     "teuer",
+     "aber",
+     "Bekannt geworden durch die 2010",
+     "Olympische Winterspiele."
+    ],
+    "Spanish": [
+     "Whistler",
+     "(1,5",
+     "(1 hora en coche desde Vancouver)",
+     "es",
+     "costoso",
+     "pero",
+     "Bien conocido por el 2010",
+     "Juegos Olímpicos de Invierno."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "is expensive but well-known",
+     "right": "because of the 2010",
+     "H": 0.61,
+     "H_pct": 35.7,
+     "contra": 0.2237,
+     "cohesion": 0.7858
+    },
+    {
+     "pos": 15,
+     "left": "of the 2010 Winter",
+     "right": "Olympics.",
+     "H": 0.0357,
+     "H_pct": 21.4,
+     "contra": 0.9549,
+     "cohesion": 0.7906
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Whistler (1.5",
+     "right": "hour drive from Vancouver)",
+     "H": 0.7407,
+     "H_pct": 64.3,
+     "contra": 0.0102,
+     "cohesion": 0.7483
+    },
+    {
+     "pos": 9,
+     "left": "Vancouver) is expensive but",
+     "right": "well-known because of the",
+     "H": 0.8724,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.8749
+    }
+   ]
+  }
+ },
+ {
+  "id": "en_us_1428",
+  "cuts": 11,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.5296,
+  "policy_worst_contra": 0.9728,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    6,
+    7,
+    8,
+    11,
+    13,
+    21,
+    23,
+    24,
+    25,
+    26
+   ],
+   "H_set": 0.0156,
+   "text": "Downhill skiing as a sport ‖ goes ‖ back ‖ to ‖ at least the ‖ 17th century, ‖ and in 1861 the first recreational ski club ‖ was opened ‖ by ‖ Norwegians ‖ in ‖ Australia.",
+   "pieces": {
+    "Chinese": [
+     "滑雪运动",
+     "去",
+     "回头",
+     "至",
+     "至少",
+     "17世纪,",
+     "1861年,第一个休闲滑雪俱乐部",
+     "开放",
+     "由",
+     "挪威人",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "澳大利亚。"
+    ],
+    "Japanese": [
+     "ダウンヒルスキーのスポーツ",
+     "行くぞ",
+     "戻って",
+     "それは",
+     "少なくとも あの",
+     "17世紀",
+     "1861年に最初のレクリエーション用スキークラブが",
+     "開かれたのは",
+     "あなたは",
+     "ノルウェーの人物",
+     "ここに",
+     "オーストラリア"
+    ],
+    "German": [
+     "Skifahren als Sport",
+     "geht",
+     "zurück",
+     "to",
+     "Zumindest die",
+     "17. Jahrhundert, 18. Jahrhundert",
+     "und 1861 der erste Freizeit-Skiclub",
+     "wurde eröffnet",
+     "von",
+     "Norweger",
+     "in",
+     "Australien."
+    ],
+    "Spanish": [
+     "El esquí alpino como deporte",
+     "va",
+     "back",
+     "a",
+     "por lo menos el",
+     "Siglo XVII,",
+     "y en 1861 el primer club de esquí recreativo",
+     "Se abrió",
+     "por",
+     "Noruegos",
+     "en",
+     "Australia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "H_set": 0.5452,
+   "text": "Downhill ‖ skiing ‖ as ‖ a ‖ sport ‖ goes ‖ back to at least the ‖ 17th ‖ century, ‖ and ‖ in ‖ 1861 the first recreational ski club was opened by Norwegians in Australia.",
+   "pieces": {
+    "Chinese": [
+     "下坡",
+     "滑雪",
+     "作为",
+     "2004年12月31日终了年度的收入和支出及准备金和基金结余变动表",
+     "体育",
+     "去",
+     "至少是这样。",
+     "第17次",
+     "20世纪，",
+     "以及",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "1861年,挪威人在澳大利亚开设了第一个休闲滑雪俱乐部。"
+    ],
+    "Japanese": [
+     "ダウンヒル",
+     "スキー",
+     "ああ",
+     "これは",
+     "スポーツ",
+     "行くぞ",
+     "少なくとも 1990年代に戻って",
+     "17番目",
+     "19世紀に",
+     "それに",
+     "ここに",
+     "１８６１年にオーストラリアで最初のレクリエーションスキークラブがノルウェー人によって開かれた。"
+    ],
+    "German": [
+     "Downhill",
+     "Skifahren",
+     "as",
+     "Ein",
+     "Sport",
+     "geht",
+     "Zurück zumindest zu den",
+     "17.",
+     "Jahrhundert,",
+     "und",
+     "in",
+     "1861 wurde der erste Freizeit-Skiclub von Norwegern in Australien eröffnet."
+    ],
+    "Spanish": [
+     "Downhill",
+     "Esquí",
+     "as",
+     "a",
+     "deportes",
+     "va",
+     "Volver al menos a la",
+     "17ª",
+     "siglo,",
+     "y",
+     "en",
+     "1861 el primer club de esquí recreativo fue abierto por los noruegos en Australia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "a sport goes back",
+     "right": "to at least the",
+     "H": 0.7549,
+     "H_pct": 36.0,
+     "contra": 0.0004,
+     "cohesion": 0.7552
+    },
+    {
+     "pos": 8,
+     "left": "sport goes back to",
+     "right": "at least the 17th",
+     "H": 0.7995,
+     "H_pct": 56.0,
+     "contra": 0.0197,
+     "cohesion": 0.8155
+    },
+    {
+     "pos": 21,
+     "left": "first recreational ski club",
+     "right": "was opened by Norwegians",
+     "H": 0.7853,
+     "H_pct": 48.0,
+     "contra": 0.0503,
+     "cohesion": 0.8269
+    },
+    {
+     "pos": 23,
+     "left": "ski club was opened",
+     "right": "by Norwegians in Australia.",
+     "H": 0.7472,
+     "H_pct": 28.0,
+     "contra": 0.052,
+     "cohesion": 0.7882
+    },
+    {
+     "pos": 24,
+     "left": "club was opened by",
+     "right": "Norwegians in Australia.",
+     "H": 0.2603,
+     "H_pct": 8.0,
+     "contra": 0.6514,
+     "cohesion": 0.7467
+    },
+    {
+     "pos": 25,
+     "left": "was opened by Norwegians",
+     "right": "in Australia.",
+     "H": 0.7064,
+     "H_pct": 12.0,
+     "contra": 0.1415,
+     "cohesion": 0.8228
+    },
+    {
+     "pos": 26,
+     "left": "opened by Norwegians in",
+     "right": "Australia.",
+     "H": 0.0186,
+     "H_pct": 0.0,
+     "contra": 0.9728,
+     "cohesion": 0.6839
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Downhill",
+     "right": "skiing as a sport",
+     "H": 0.8541,
+     "H_pct": 92.0,
+     "contra": 0.0038,
+     "cohesion": 0.8574
+    },
+    {
+     "pos": 2,
+     "left": "Downhill skiing",
+     "right": "as a sport goes",
+     "H": 0.8182,
+     "H_pct": 72.0,
+     "contra": 0.002,
+     "cohesion": 0.8198
+    },
+    {
+     "pos": 3,
+     "left": "Downhill skiing as",
+     "right": "a sport goes back",
+     "H": 0.817,
+     "H_pct": 64.0,
+     "contra": 0.0072,
+     "cohesion": 0.8229
+    },
+    {
+     "pos": 4,
+     "left": "Downhill skiing as a",
+     "right": "sport goes back to",
+     "H": 0.8149,
+     "H_pct": 60.0,
+     "contra": 0.004,
+     "cohesion": 0.8181
+    },
+    {
+     "pos": 12,
+     "left": "at least the 17th",
+     "right": "century, and in 1861",
+     "H": 0.8231,
+     "H_pct": 80.0,
+     "contra": 0.001,
+     "cohesion": 0.8239
+    },
+    {
+     "pos": 14,
+     "left": "the 17th century, and",
+     "right": "in 1861 the first",
+     "H": 0.8675,
+     "H_pct": 96.0,
+     "contra": 0.0068,
+     "cohesion": 0.8735
+    },
+    {
+     "pos": 15,
+     "left": "17th century, and in",
+     "right": "1861 the first recreational",
+     "H": 0.8218,
+     "H_pct": 76.0,
+     "contra": 0.0623,
+     "cohesion": 0.8764
+    }
+   ]
+  }
+ }
+]

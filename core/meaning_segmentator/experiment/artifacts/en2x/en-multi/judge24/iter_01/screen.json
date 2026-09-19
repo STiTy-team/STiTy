@@ -1,0 +1,156 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  8,
+  17,
+  18,
+  28,
+  36,
+  39,
+  89,
+  98,
+  104,
+  134,
+  146,
+  157,
+  175,
+  178,
+  182,
+  192,
+  212,
+  216,
+  217,
+  240,
+  259,
+  267,
+  268,
+  270,
+  282,
+  283,
+  301,
+  306,
+  315,
+  320,
+  325,
+  337,
+  345,
+  362,
+  366,
+  385,
+  387,
+  398,
+  403,
+  419,
+  425,
+  429,
+  447,
+  448,
+  449,
+  450,
+  485,
+  487,
+  492,
+  493
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00751,
+    "lo": -0.04827,
+    "hi": 0.03176,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 6954,
+   "changelog": [
+    "Insert a single narrow binding into [Core Principles] that keeps a finite verb/auxiliary with the immediately following core complement, addressing the primary_finding that cuts detach verbs from their essential continuations."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00395,
+    "lo": -0.03447,
+    "hi": 0.02329,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 6864,
+   "changelog": [
+    "Insert a single narrow binding into [Core Principles] that keeps a numeral/quantifier with its immediately following unit or adjacent parenthetical measurement, to prevent splits that break numeric meaning (addresses the primary_finding)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.00897,
+    "lo": -0.02031,
+    "hi": 0.03732,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 7217,
+   "changelog": [
+    "Insert a single fallback ordering into [Core Principles] that, as a last resort, prefers cuts at punctuation or clause boundaries over cuts that split a finite verb/auxiliary from its immediately following complement or that split a numeral from its unit — addresses the primary_finding without adding a prohibition."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.02674,
+    "lo": 0.00315,
+    "hi": 0.05036,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 7084,
+   "changelog": [
+    "Insert a single fallback ordering after C8: as a last resort prefer punctuation/clause-boundary cuts over cuts that split a numeral from its unit/measurement or that separate a finite verb/auxiliary from its immediately following core complement—implements the required fallback order (addresses the primary finding about numerals) without adding a prohibition."
+   ]
+  },
+  {
+   "candidate": 4,
+   "delta": {
+    "mean": 0.01747,
+    "lo": -0.01131,
+    "hi": 0.04465,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 6476,
+   "changelog": [
+    "Delete C2: remove a broad, redundant coherence rule that restates predicate-argument, attachment and referent-preservation checks (covered by C3, C4, C7, C8); pruning this unit reduces overlap that can dilute the judge and directly responds to the critique's call to sharpen focus on verb-complement binding."
+   ]
+  },
+  {
+   "candidate": 6,
+   "delta": {
+    "mean": 0.01931,
+    "lo": -0.00982,
+    "hi": 0.04899,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 7044,
+   "changelog": [
+    "Insert one induced binding after C8: keep a finite verb/auxiliary with the immediately following core complement or clausal continuation (including measurements) and keep a numeral/quantifier with its immediately adjacent unit or parenthetical measurement — addresses measured cases where verbs or numbers were split from their required continuation."
+   ]
+  },
+  {
+   "candidate": 7,
+   "delta": {
+    "mean": 0.02224,
+    "lo": -0.00271,
+    "hi": 0.04816,
+    "n": 460,
+    "n_clusters": 50
+   },
+   "chars": 7083,
+   "changelog": [
+    "Insert one induced binding into [Core Principles] to keep finite verbs/auxiliaries with their immediately following core complements (including measurements) and to keep numerals/quantifiers with their immediately adjacent unit or parenthetical measurement — reproduces measured target cuts that rejoin verbs and numbers to their continuations."
+   ]
+  }
+ ]
+}

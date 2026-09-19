@@ -1,0 +1,95 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Short trailing fragments: if the right-hand piece after a cut is very short (≤3 words) or is a bare name, location, measure/numeral, or lone preposition, ask whether that fragment by itself could assert, negate, or remap the scope of the preceding claim. If it can, treat the cut as high contra-risk and rank it low."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 319
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7252,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Contra check: would the material after the cut, taken alone, contradict, negate, or overturn the claim made before it? Treat very short trailing fragments (≤3 words) and bare names/locations/measures as high contra-risk unless they clearly cannot assert or invert the previous claim."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 71
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7004,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_1567",
+    "kind": "example",
+    "text": "Input: The <SEG:?> largest <SEG:?> tournament <SEG:?> of <SEG:?> the <SEG:?> year <SEG:?> takes <SEG:?> place <SEG:?> in <SEG:?> December <SEG:?> at <SEG:?> the <SEG:?> polo <SEG:?> fields <SEG:?> in <SEG:?> Las <SEG:?> Cañitas.\nOutput: The <SEG:80> largest <SEG:47> tournament <SEG:73> of <SEG:60> the <SEG:67> year <SEG:100> takes <SEG:53> place <SEG:93> in <SEG:40> December <SEG:87> at <SEG:20> the <SEG:13> polo <SEG:27> fields <SEG:33> in <SEG:0> Las <SEG:7> Cañitas."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 90
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7023,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Treat sentence-initial subordinators and adverbial clauses as unstable attachment: cutting before their main-clause head often leaves relations (cause/time/contrast) unresolved and can invert meaning. Also: if the right-hand fragment is very short (≤3 words) or a bare name/place/measure/preposition, ask whether that fragment alone could assert, negate, or remap scope; if so, mark the cut as high contra-risk."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 211
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7144,
+  "errors": null
+ }
+]

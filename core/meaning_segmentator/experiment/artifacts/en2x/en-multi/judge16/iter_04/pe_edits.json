@@ -1,0 +1,231 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut immediately after an auxiliary, modal, negation token (for example: is, are, was, will, can, not) or after a main verb when the very next token is a noun, pronoun, numeral, the subordinating words that/which, or an opening preposition; these next tokens commonly supply the verb's object, complement, or resolve scope."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_738",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 346
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 135
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7534,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_101",
+    "text": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).\nOutput: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 365
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7418,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: block a cut when the left piece ends in an auxiliary/modal/negation or bare verb and the very next source token begins an argument or unit phrase (a numeral or measurement unit, a determiner or pronoun, an infinitival \"to\" sequence, or a noun); these continuations supply the predicate's object/complement or resolve scope."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 340
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7393,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifier and the immediately following measurement or unit word/phrase; keep the number and its unit together in the same piece."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 203
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7256,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_990",
+    "text": "Input: The <SEG:?> glaciers <SEG:?> are <SEG:?> not <SEG:?> stable, <SEG:?> but <SEG:?> flow <SEG:?> down <SEG:?> the <SEG:?> mountain. <SEG:?> This <SEG:?> will <SEG:?> cause <SEG:?> cracks, <SEG:?> crevasses, <SEG:?> which <SEG:?> may <SEG:?> be <SEG:?> obscured <SEG:?> by <SEG:?> snow <SEG:?> bridges.\nOutput: The <SEG:80> glaciers <SEG:20> are <SEG:15> not <SEG:10> stable, <SEG:75> but <SEG:35> flow <SEG:45> down <SEG:95> the <SEG:0> mountain. <SEG:100> This <SEG:85> will <SEG:55> cause <SEG:40> cracks, <SEG:90> crevasses, <SEG:65> which <SEG:30> may <SEG:50> be <SEG:60> obscured <SEG:70> by <SEG:25> snow <SEG:5> bridges."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1612",
+    "text": "Input: Water <SEG:?> is <SEG:?> spilling <SEG:?> over <SEG:?> the <SEG:?> levee <SEG:?> in <SEG:?> a <SEG:?> section <SEG:?> 100 <SEG:?> feet <SEG:?> wide.\nOutput: Water <SEG:90> is <SEG:20> spilling <SEG:60> over <SEG:50> the <SEG:30> levee <SEG:80> in <SEG:70> a <SEG:10> section <SEG:100> 100 <SEG:0> feet <SEG:40> wide."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 249
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -237
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7065,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_1050",
+    "text": "Input: The <SEG:?> two <SEG:?> towers <SEG:?> rise <SEG:?> to <SEG:?> a <SEG:?> height <SEG:?> of <SEG:?> 83 <SEG:?> meters, <SEG:?> it's <SEG:?> 378 <SEG:?> meters <SEG:?> long <SEG:?> and <SEG:?> it <SEG:?> has <SEG:?> two <SEG:?> lanes <SEG:?> of <SEG:?> 3.50 <SEG:?> m <SEG:?> wide.\nOutput: The <SEG:67> two <SEG:38> towers <SEG:48> rise <SEG:24> to <SEG:52> a <SEG:14> height <SEG:33> of <SEG:81> 83 <SEG:90> meters, <SEG:100> it's <SEG:5> 378 <SEG:0> meters <SEG:29> long <SEG:76> and <SEG:71> it <SEG:43> has <SEG:86> two <SEG:62> lanes <SEG:57> of <SEG:95> 3.50 <SEG:19> m <SEG:10> wide."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1157",
+    "text": "Input: Montevideo <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> subtropics; <SEG:?> in <SEG:?> the <SEG:?> summer <SEG:?> months, <SEG:?> temperatures <SEG:?> above <SEG:?> +30°C <SEG:?> are <SEG:?> common.\nOutput: Montevideo <SEG:83> is <SEG:25> in <SEG:33> the <SEG:17> subtropics; <SEG:100> in <SEG:75> the <SEG:42> summer <SEG:50> months, <SEG:92> temperatures <SEG:58> above <SEG:8> +30°C <SEG:0> are <SEG:67> common."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 212
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -142
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7123,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: block a cut if the left piece ends with an auxiliary, modal, negation, or main-verb token and the next token is a pronoun, determiner (a/an/the/this/that/these/those), or a numeral/digit — such pairs usually mean the continuation supplies the verb's object, complement, or scope."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 296
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7349,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifier and an immediately following measurement or unit phrase that completes it (units, percents, counts, or 'per' constructions); keep the number and its unit together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 247
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7300,
+  "errors": null
+ }
+]

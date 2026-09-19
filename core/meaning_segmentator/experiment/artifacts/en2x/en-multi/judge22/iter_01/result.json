@@ -1,0 +1,49 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.0117,
+  "lo": -0.00234,
+  "hi": 0.02677,
+  "n": 2350,
+  "n_clusters": 600
+ },
+ "gain": {
+  "mean": 0.0117,
+  "lo": -0.00234,
+  "hi": 0.02677,
+  "n": 2350,
+  "n_clusters": 600
+ },
+ "changelog": [
+  "Delete C2: remove a redundant principle that restates predicate-argument and attachment concerns already covered by C3, to prune attention and satisfy the 'prune' constraint."
+ ],
+ "findings": [
+  "The prompt routinely ranks cuts too high when they separate a finite verb/coproduct/auxiliary from the words that complete its core argument, producing orphaned predicates or scope flips."
+ ],
+ "edits": [
+  {
+   "op": "delete",
+   "id": "C2",
+   "kind": "delete",
+   "was": "- If the pieces are translated independently and concatenated, will the joined t",
+   "now": ""
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0117,
+   "≤5": 0.0008,
+   "≤7": 0.0022,
+   "≤10": -0.005,
+   "≤99": -0.0016
+  },
+  "n_worse": 2160,
+  "n_better": 2432,
+  "why": "Deleting C2 removed a constraint that discouraged cuts which would split concatenation-sensitive or predicate/argument chunks; as a result the model more often moves cuts earlier or into noun/verb phrases (e.g. splitting 'you are using a satellite' into 'a ‖ satellite' or breaking 'We will' into 'We ‖ will'), which slightly helped the very-short bin (≤3) but produced net harm in medium-length pieces (≤10 and up) and only a marginal overall gain with CI crossing zero. The small drop in rank-1 frequency and increases at deeper ranks show the revision dispersed top cut mass, producing more internal splits.",
+  "lesson": "A later revision should respect that the deleted C2 constraint matters — do not remove the guidance that prevents cutting inside concatenation-sensitive or predicate/argument units, because its removal increases harmful internal splits in medium-length pieces.",
+  "blamed": [
+   "C2 «- Would a cut leave core predicate-argument structure detach»"
+  ]
+ }
+}

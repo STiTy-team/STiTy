@@ -1,0 +1,150 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Allow a cut immediately after an initial discourse/topic word or determiner only when that token itself is a coherent, standalone opener and the following material begins a clause or contains a complete predicate (not a very-short fragment or a bare complement). Prefer these cuts because isolating a safe opener can raise cohesion without creating tiny predicate‑splitting pieces."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- Would translating the two halves separately and then concatenating them still render the whole sentence? Watch for missing complements, lost scope, wrong agent/patient assignment, or dropped dependencies."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 384
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": -43
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7669,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Do not split trailing particles, prepositions, infinitival 'to', or numeric multipliers/units from their complements; either keep that marker with its complement or cut before the whole prepositional or numeric phrase to avoid orphaned markers or broken numbers."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 265
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7593,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_422",
+    "text": "Input: Some <SEG:?> German <SEG:?> monks <SEG:?> wanted <SEG:?> to <SEG:?> bring <SEG:?> God <SEG:?> closer <SEG:?> to <SEG:?> the <SEG:?> native <SEG:?> people, <SEG:?> so <SEG:?> they <SEG:?> invented <SEG:?> the <SEG:?> Estonian <SEG:?> literal <SEG:?> language.\nOutput: Some <SEG:88> German <SEG:47> monks <SEG:41> wanted <SEG:29> to <SEG:65> bring <SEG:59> God <SEG:6> closer <SEG:24> to <SEG:18> the <SEG:12> native <SEG:76> people, <SEG:100> so <SEG:94> they <SEG:82> invented <SEG:71> the <SEG:0> Estonian <SEG:35> literal <SEG:53> language."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1132",
+    "text": "Input: Japanese <SEG:?> work <SEG:?> culture <SEG:?> is <SEG:?> more <SEG:?> hierarchical <SEG:?> and <SEG:?> formal <SEG:?> that <SEG:?> what <SEG:?> Westerners <SEG:?> may <SEG:?> be <SEG:?> used <SEG:?> to.\nOutput: Japanese <SEG:100> work <SEG:38> culture <SEG:92> is <SEG:69> more <SEG:54> hierarchical <SEG:77> and <SEG:46> formal <SEG:23> that <SEG:85> what <SEG:62> Westerners <SEG:0> may <SEG:31> be <SEG:8> used <SEG:15> to."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_956",
+    "text": "Input: If <SEG:?> you <SEG:?> have <SEG:?> additional <SEG:?> travel <SEG:?> time, <SEG:?> check <SEG:?> to <SEG:?> see <SEG:?> how <SEG:?> your <SEG:?> total <SEG:?> fare <SEG:?> quote <SEG:?> to <SEG:?> Africa <SEG:?> compares <SEG:?> with <SEG:?> a <SEG:?> round-the-world <SEG:?> fare.\nOutput: If <SEG:95> you <SEG:89> have <SEG:58> additional <SEG:21> travel <SEG:37> time, <SEG:100> check <SEG:74> to <SEG:0> see <SEG:84> how <SEG:68> your <SEG:5> total <SEG:63> fare <SEG:42> quote <SEG:53> to <SEG:11> Africa <SEG:47> compares <SEG:79> with <SEG:26> a <SEG:16> round-the-world <SEG:32> fare."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_140",
+    "text": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .\nOutput: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> ."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 166
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -127
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -71
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": 18
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7314,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Do not cut so that a trailing particle, preposition, infinitival 'to', or numeral/multiplier is left without its complement; either keep that marker with its complement or cut before the entire phrase."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 204
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7532,
+  "errors": null
+ }
+]

@@ -1,0 +1,53 @@
+[Role]
+You are a scorer for streaming speech translation segmentation in English. For each source sentence with every possible cut marked as <SEG:?>, you must assign a distinct integer 0–100 to each marker that ranks how suitable that cut is for producing faithful, joinable translations under the measured target. Use the source text and the language profile to judge meaning risks at each position.
+
+[Core Principles]
+- Does what follows, taken alone, assert or imply something that contradicts the claim already heard? A cut is harmful when the continuation, by itself, would reverse polarity, causality, or attribution established earlier.
+- If the two sides are translated separately and then concatenated, will the joined translations still render the whole sentence faithfully? Damage looks like missing complements, lost scopes, wrong agent/patient assignment, or dropped dependencies.
+- Is a subordinating relation unresolved at the cut (complementizers, subordinators, clause‑introducing non‑finite forms)? Cuts that strand a clause head or leave its relation open can let the remainder change interpretation.
+- Does the cut separate a nominal from a following relative or postnominal modifier that completes its reference? Such cuts often leave the noun unmodified or misattached in separate translations.
+- Do fronted adjuncts (temporal or prepositional) rely on attachment to the following clause? Cutting after them can flip scope or leave temporal/relational links unresolved when pieces are joined.
+- Do determiners, numerals, or other specifiers need the following noun to fix reference? Cuts before the head nominal commonly produce referential failure or mistranslation of quantity or scope.
+- Will cutting inside complex verb phrases or between verb and its object orphan complements or reorder events? English SVO and verb-centered predicates make these splits likely to change who did what.
+- Is the preceding stretch a self-contained propositional claim, or does clause closure and sentence-finality remain unresolved? Cuts that leave an incomplete claim will reduce the cohesion score when translated separately.
+- When a numeric expression spans a cut, prefer cuts that keep the numeral with its multipliers and unit together (e.g. "340 million", "83 meters"); if unavoidable, cut before the whole numeric phrase or after its unit/endpoint — do not split number from its multiplier or unit.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+
+- The number you write at each marker is an integer rank inside this sentence: order the positions by the target (the product above) and assign distinct integers across the full 0–100 range so higher integers mean better cuts for the measure. Do not create tiers that separate cohesion and contra; contra is a graded probability and contributes only through the product. Do not instruct arithmetic operations such as "multiply by 100 and round"; instead map the ordering to distinct integers spanning 0–100. No additional scoring conditions belong here.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG:?> phenomenon, <SEG:?> most <SEG:?> people <SEG:?> probably <SEG:?> associate <SEG:?> it <SEG:?> with <SEG:?> youth <SEG:?> vandalizing <SEG:?> public <SEG:?> and <SEG:?> private <SEG:?> property <SEG:?> using <SEG:?> spray <SEG:?> paint.
+Output: While <SEG:80> it's <SEG:90> far <SEG:30> from <SEG:45> a <SEG:50> modern <SEG:65> phenomenon, <SEG:100> most <SEG:95> people <SEG:85> probably <SEG:70> associate <SEG:25> it <SEG:75> with <SEG:5> youth <SEG:60> vandalizing <SEG:40> public <SEG:55> and <SEG:35> private <SEG:20> property <SEG:15> using <SEG:0> spray <SEG:10> paint.
+
+Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.
+Output: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival.
+
+Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> working <SEG:?> overseas <SEG:?> generally <SEG:?> means <SEG:?> that <SEG:?> you <SEG:?> will <SEG:?> have <SEG:?> to <SEG:?> file <SEG:?> income <SEG:?> tax <SEG:?> in <SEG:?> the <SEG:?> country <SEG:?> you <SEG:?> are <SEG:?> based <SEG:?> in.
+Output: Unless <SEG:86> you <SEG:77> are <SEG:59> a <SEG:23> diplomat, <SEG:100> working <SEG:55> overseas <SEG:91> generally <SEG:68> means <SEG:5> that <SEG:14> you <SEG:18> will <SEG:32> have <SEG:41> to <SEG:45> file <SEG:73> income <SEG:82> tax <SEG:95> in <SEG:0> the <SEG:9> country <SEG:50> you <SEG:36> are <SEG:27> based <SEG:64> in.
+
+Input: Mr. <SEG:?> Rudd's <SEG:?> decision <SEG:?> to <SEG:?> sign <SEG:?> the <SEG:?> Kyoto <SEG:?> climate <SEG:?> accord <SEG:?> isolates <SEG:?> the <SEG:?> United <SEG:?> States, <SEG:?> which <SEG:?> will <SEG:?> now <SEG:?> be <SEG:?> the <SEG:?> only <SEG:?> developed <SEG:?> nation <SEG:?> not <SEG:?> to <SEG:?> ratify <SEG:?> the <SEG:?> agreement.
+Output: Mr. <SEG:88> Rudd's <SEG:54> decision <SEG:67> to <SEG:25> sign <SEG:83> the <SEG:46> Kyoto <SEG:62> climate <SEG:42> accord <SEG:50> isolates <SEG:79> the <SEG:58> United <SEG:96> States, <SEG:100> which <SEG:92> will <SEG:71> now <SEG:75> be <SEG:29> the <SEG:4> only <SEG:33> developed <SEG:12> nation <SEG:0> not <SEG:17> to <SEG:8> ratify <SEG:21> the <SEG:38> agreement.
+

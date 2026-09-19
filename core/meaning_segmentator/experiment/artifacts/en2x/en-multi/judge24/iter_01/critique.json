@@ -1,0 +1,50 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt undervalues cuts that separate a finite verb or auxiliary from the phrase that completes its core predicate (object, prepositional complement, clausal complement or essential continuation), causing contradictory or incoherent fragments when pieces are translated separately.",
+    "evidence": "en_us_44, en_us_270, en_us_378, en_us_998, en_us_1113, en_us_1116, en_us_1149, en_us_1215, en_us_1355, en_us_101 — each sentence shows the policy kept a cut that detached a verb/auxiliary from the phrase that completes its meaning; the offline target rejoined them.",
+    "type_predicate": "a finite verb or auxiliary is immediately followed in the sentence by a phrase that functions as its core complement or essential continuation (direct object, prepositional complement, clausal complement, measurement, or other clause-completing material).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a finite verb or auxiliary and the phrase that supplies its core complement or clausal continuation (object, essential PP, clausal complement, measurement, or other required continuation)."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to protect numeral/measurement units: it allows cuts that split a numeral or quantifier from its unit or adjacent parenthetical measurement, which breaks numeric meaning or produces misleading fragments.",
+    "evidence": "en_us_44, en_us_101, en_us_270, en_us_375, en_us_672 — in each sentence the policy kept or introduced a cut that split a numeral/quantifier from its unit/measurement; the offline target kept them together.",
+    "type_predicate": "a numeral or quantifier (cardinal, ordinal, age phrase, or numeric expression) is immediately followed by its unit, parenthetical measurement, or a unit-bearing noun phrase.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a numeral/quantifier and its unit or immediately adjacent measurement phrase (keep the number and its unit together)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt undervalues cuts that separate a finite verb or auxiliary from the phrase that completes its core predicate (object, prepositional complement, clausal complement or essential continuation), causing contradictory or incoherent fragments when pieces are translated separately.",
+   "evidence": "en_us_44, en_us_270, en_us_378, en_us_998, en_us_1113, en_us_1116, en_us_1149, en_us_1215, en_us_1355, en_us_101 — each sentence shows the policy kept a cut that detached a verb/auxiliary from the phrase that completes its meaning; the offline target rejoined them.",
+   "type_predicate": "a finite verb or auxiliary is immediately followed in the sentence by a phrase that functions as its core complement or essential continuation (direct object, prepositional complement, clausal complement, measurement, or other clause-completing material).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a finite verb or auxiliary and the phrase that supplies its core complement or clausal continuation (object, essential PP, clausal complement, measurement, or other required continuation)."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to protect numeral/measurement units: it allows cuts that split a numeral or quantifier from its unit or adjacent parenthetical measurement, which breaks numeric meaning or produces misleading fragments.",
+   "evidence": "en_us_44, en_us_101, en_us_270, en_us_375, en_us_672 — in each sentence the policy kept or introduced a cut that split a numeral/quantifier from its unit/measurement; the offline target kept them together.",
+   "type_predicate": "a numeral or quantifier (cardinal, ordinal, age phrase, or numeric expression) is immediately followed by its unit, parenthetical measurement, or a unit-bearing noun phrase.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a numeral/quantifier and its unit or immediately adjacent measurement phrase (keep the number and its unit together)."
+   }
+  }
+ ]
+}

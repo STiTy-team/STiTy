@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00264,
+  "lo": -0.02666,
+  "hi": 0.02105,
+  "n": 429,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": 0.002,
+  "≤5": -0.009,
+  "≤7": 0.0021,
+  "≤10": -0.0155,
+  "≤99": 0.0016
+ },
+ "n_worse": 177,
+ "n_better": 144,
+ "worst": [
+  {
+   "id": "en_us_1167",
+   "k": 4,
+   "bin": "≤3",
+   "delta": -0.6173,
+   "before": "Their ‖ predecessors, ‖ the Australopithecus ‖ did not walk upright ‖ as habitually.",
+   "after": "Their predecessors, ‖ the Australopithecus ‖ did not walk ‖ upright ‖ as habitually."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.571,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice ‖ works differently ‖ and courts ‖ have viewed publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice elsewhere in the UK ‖ but Scottish ‖ justice ‖ works ‖ differently ‖ and courts ‖ have viewed publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 8,
+   "bin": "≤3",
+   "delta": -0.5483,
+   "before": "This is common practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice ‖ works differently ‖ and courts ‖ have viewed ‖ publication of photos ‖ as potentially prejudicial.",
+   "after": "This is common practice elsewhere in the UK ‖ but Scottish ‖ justice ‖ works ‖ differently ‖ and courts ‖ have viewed ‖ publication of photos ‖ as potentially prejudicial."
+  },
+  {
+   "id": "en_us_734",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.5384,
+   "before": "In the winter, enjoy some of the best skiing ‖ in North America, ‖ and in the summer ‖ try ‖ some authentic mountain biking.",
+   "after": "In the winter, enjoy some ‖ of the best skiing ‖ in North America, ‖ and in the summer ‖ try some authentic mountain biking."
+  },
+  {
+   "id": "en_us_734",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.5374,
+   "before": "In the winter, ‖ enjoy some of the best skiing ‖ in North America, ‖ and in the summer ‖ try ‖ some ‖ authentic ‖ mountain biking.",
+   "after": "In the winter, ‖ enjoy some ‖ of ‖ the ‖ best skiing ‖ in North America, ‖ and in the summer ‖ try some authentic mountain biking."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_608",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6949,
+   "before": "We experience time ‖ as a series of events passing from the future through the present ‖ to the past.",
+   "after": "We experience time ‖ as a series of events passing from the future ‖ through the present to the past."
+  },
+  {
+   "id": "en_us_970",
+   "k": 11,
+   "bin": "≤3",
+   "delta": 0.6286,
+   "before": "Part ‖ of its charm ‖ is ‖ the lack ‖ of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm ‖ is ‖ the lack ‖ of visible corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect ‖ the ‖ villages, ‖ and cars cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_970",
+   "k": 12,
+   "bin": "≤3",
+   "delta": 0.5572,
+   "before": "Part ‖ of its charm ‖ is ‖ the lack ‖ of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect ‖ the ‖ villages, ‖ and cars ‖ cannot reach them from the outside.",
+   "after": "Part of its charm ‖ is ‖ the lack ‖ of visible ‖ corporate development. ‖ Paths, ‖ trains ‖ and ‖ boats ‖ connect ‖ the ‖ villages, ‖ and cars cannot reach them from the outside."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 8,
+   "bin": "≤5",
+   "delta": 0.5552,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting ‖ that these ‖ findings ‖ have ‖ no relevance ‖ to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he ‖ is ‖ skeptical ‖ about ‖ whether diabetes can be cured, ‖ noting that these ‖ findings have no relevance to people ‖ who already have Type 1 diabetes."
+  },
+  {
+   "id": "en_us_1041",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.5549,
+   "before": "Like some other experts, ‖ he is skeptical ‖ about whether diabetes can be cured, ‖ noting ‖ that these ‖ findings ‖ have ‖ no relevance to people who already have Type 1 diabetes.",
+   "after": "Like some other experts, ‖ he ‖ is ‖ skeptical ‖ about ‖ whether diabetes can be cured, ‖ noting that these findings have no relevance to people ‖ who already have Type 1 diabetes."
+  }
+ ],
+ "why": "The C5 rewrite intended to allow cuts at light function words while keeping verbs with core arguments, but the model instead shifted many cuts inward, fragmenting noun phrases, enumerations and verb+modifier sequences (e.g. splitting “did not walk upright” and breaking “Scottish justice” into separate pieces). That produced tiny gains on very short pieces but net harm in mid-length bins (≤5 and ≤10) — 177 (worse) vs 144 (better) — so overall H_set fell slightly.",
+ "lesson": "When revising predicate/NP guidance, avoid wording that implicitly encourages cutting apart heads or fragmenting short/mid-length units; preserve verb‑argument and NP integrity so cuts don't create many small fragments (especially in the ≤5–≤10 word range).",
+ "blamed": [
+  "C5 «- Predicate cuts: prefer cuts that keep a verb with its core»"
+ ]
+}

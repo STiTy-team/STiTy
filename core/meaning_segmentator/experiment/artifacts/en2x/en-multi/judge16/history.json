@@ -1,0 +1,1383 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.2032,
+  "changelog": [
+   "Replace C3 to address the primary finding by describing what a GOOD cut around predicates looks like (include predicate + essential complements; allow cut only when continuation is optional or parenthetical).",
+   "Replace C5 to explicitly treat post‑nominal modifiers and complements as part of the noun when they determine reference, matching the second finding.",
+   "Paraphrase C8 shorter to free space while keeping its guidance about translation guessing and cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Pay attention to subordinate openings and sentential parentheticals whose scop",
+    "now": "- Prefer cuts that deliver a semantically complete predicate: keep the main verb"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Treat post‑nominal material as part of the noun when it determines identity or"
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "was": "- Predict translation consequences: if separating pieces forces translators to g",
+    "now": "- Predict translation consequences: if a split forces guessing antecedents, atta"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1636,
+  "changelog": [
+   "Paraphrased C8 to shorten guidance about translation guessing and cohesion, freeing space for a focused rule.",
+   "Inserted a new Core Principle after C5 that forbids cutting a head noun or name away from post‑nominal modifiers/complements that determine reference or truth conditions (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "was": "- Predict translation consequences: if separating pieces forces translators to g",
+    "now": "- If a cut forces translators to guess antecedents, attach modifiers arbitrarily"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Do not cut so that a head noun or proper name is left without its post‑nominal"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1841,
+  "changelog": [
+   "Insert a narrow surface-form rule after C5 forbidding cuts that separate a head noun or proper name from immediately following post‑nominal material that visibly completes or identifies that noun (addresses the primary finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Do not cut when a head noun or proper name is immediately followed in the sour"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.2382,
+  "changelog": [
+   "Replace E1..E4 (handwritten examples) with four measured, labeled examples that illustrate predicate–complement splits and related post‑nominal/complement hazards (addresses the primary finding that the prompt underrates cuts separating verbs from essential complements).",
+   "Selected examples en_us_1116, en_us_936, en_us_113, en_us_164 because each is a measured case where splitting a predicate from its core argument or separating noun from essential post‑nominal material produced large cohesion/contra loss."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+    "labeled_example": "en_us_1116"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+    "labeled_example": "en_us_936"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: Mr. <SEG:?> Rudd's <SEG:?> decision <SEG:?> to <SEG:?> sign <SEG:?> the <",
+    "labeled_example": "en_us_113"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: An <SEG:?> Avenger <SEG:?> class <SEG:?> mine <SEG:?> countermeasures <SE",
+    "labeled_example": "en_us_164"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 5,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.183,
+  "changelog": [
+   "Replace E1 with measured example en_us_1617: gives a real case with a post‑nominal 'which' clause to teach not cutting before modifiers that determine a noun.",
+   "Replace E2 with measured example en_us_105: gives a real case with a 'from which' PP that completes a noun and so should not be separated by a cut.",
+   "Delete E3 (handwritten example) to free space and reduce prompt length.",
+   "Delete E4 (handwritten example) to free space and reduce prompt length."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 6,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1665,
+  "changelog": [
+   "Insert after C2 a concise rule describing what a GOOD cut around predicates looks like: keep the main verb with its essential complements and allow cuts only when the continuation is optional or parenthetical — addresses the primary finding without a blanket ban."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "was": "- At each cut, judge whether translating the left and right pieces independently",
+    "now": "Prefer cuts that yield a semantically complete predicate: keep the main verb tog"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 7,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.2276,
+  "changelog": [
+   "Insert a narrow surface-form rule after C5 forbidding cuts that separate a head noun or proper name from immediately following post‑nominal material (relative pronoun, preposition+'which', or appositive comma). This targets the primary finding about post‑nominal modifiers."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Do not cut between a head noun or proper name and immediately following post‑n"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00279,
+   "lo": -0.01401,
+   "hi": 0.00866,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -0.00279,
+   "lo": -0.01401,
+   "hi": 0.00866,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a narrow, surface-form rule after C2 to forbid cuts that split a main verb from its essential complement (addresses the primary finding about predicate–argument separation)."
+  ],
+  "findings": [
+   "The prompt underrates cuts that separate a predicate (main verb) from its essential complements/arguments, so it allows splits that leave an earlier stretch whose truth or reference depends on a following object, clausal complement, or prepositional complement.",
+   "The prompt fails to recognise post‑nominal modifiers and complements (relative clauses, 'from/in which' PPs, appositives, titles) as part of the noun they complete, permitting cuts before them that break noun identity or scope."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "was": "- At each cut, judge whether translating the left and right pieces independently",
+    "now": "- Do not cut immediately after a main verb when the next token begins its essent"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0023,
+    "≤5": -0.0096,
+    "≤7": -0.0005,
+    "≤10": 0.0051,
+    "≤99": 0.0088
+   },
+   "n_worse": 732,
+   "n_better": 774,
+   "why": "The new surface rule forbidding cuts immediately after main verbs made the model avoid splitting verb+complement sequences, which improved cohesion for longer/complex spans (bins >7) but displaced cuts into adjacent very short pieces and enumerations, worsening many ≤5-token cases; net effect is near-zero but slightly negative. ",
+   "lesson": "A verb–complement prohibition helps longer/more complex pieces but harms very short pieces (≤5 tokens); a later revision should avoid applying it indiscriminately across small latency bins.",
+   "blamed": [
+    "insert_after C2 (verb–complement prohibition)"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1134,
+  "changelog": [
+   "Insert a new core principle allowing safe splits immediately after sentence-introductory function words when the remainder is semantically self-contained — addresses the primary finding about excessive reluctance to split short left pieces.",
+   "Replace example E1 with a measured labeled example en_us_845 (short-latency case that rewards an early cut) so the model learns the ranking from data."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Allow splits immediately after sentence‑introductory function words (initial d"
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: While <SEG:?> it's <SEG:?> far <SEG:?> from <SEG:?> a <SEG:?> modern <SEG",
+    "labeled_example": "en_us_845"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1449,
+  "changelog": [
+   "Insert a core principle permitting safe cuts immediately after a main verb when the remainder is a short, self-contained predicate or closed complement — addresses the primary finding that a blanket verb–cut prohibition harms very short, low-latency segments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C2",
+    "kind": "change",
+    "was": "- At each cut, judge whether translating the left and right pieces independently",
+    "now": "- Allow cuts immediately after a main verb when the following piece is a short, "
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1247,
+  "changelog": [
+   "Insert a core principle forbidding cuts between numerals/quantifiers and their units or quantified nouns — directly addresses the primary finding that splitting numerals from their units causes severe cohesion loss."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Do not cut between a numeral or quantifier and its unit or the noun it quantif"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1132,
+  "changelog": [
+   "Insert a narrow, surface-check core principle that permits a cut immediately after a single sentence‑initial function word under concrete token conditions; addresses the primary finding that the prompt was too reluctant to split off short sentence-introductory function words and supplies a recognisable, checkable rule."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Allow a cut immediately after a single sentence‑initial function word (initial"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.124,
+  "changelog": [
+   "Insert a narrow surface rule permitting cuts after a verb when the remainder is a short, closed prepositional span — lets safe short verb+PP separations improve low-latency segmentation without retuning broad verb-cut scope."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Allow a cut immediately after a verb token when the following token is a prepo"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 5,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1086,
+  "changelog": [
+   "Insert a narrow surface rule forbidding cuts between a numeral/quantifier and its immediately following unit word or quantified noun — a concrete, source-form check to protect numeral+unit spans (obeys the 'narrow_rule' constraint)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Do not cut between a numeral or quantifier token and the immediately following"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 6,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1281,
+  "changelog": [
+   "Replace E1 with labeled example en_us_292 to teach the model that splitting immediately after an initial determiner ('The') can be optimal in short-latency cases.",
+   "Replace E2 with labeled example en_us_884 to show that sentence‑introductory prepositional/adverbial leads ('In') are often safe early cuts.",
+   "Replace E3 with labeled example en_us_46 to supply a measured case where an early temporal/location lead ('On') should be split for better low-latency performance.",
+   "Replace E4 with labeled example en_us_482 to provide a contrasted case where an early subject/head ('Mysticism') is best delivered early and an initial predicate cut is rewarded."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resul",
+    "labeled_example": "en_us_292"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: In <SEG:?> the <SEG:?> past <SEG:?> 20 <SEG:?> years, <SEG:?> the <SEG:?>",
+    "labeled_example": "en_us_884"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: On <SEG:?> September <SEG:?> 24, <SEG:?> 1759, <SEG:?> Arthur <SEG:?> Gui",
+    "labeled_example": "en_us_46"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Mysticism <SEG:?> is <SEG:?> the <SEG:?> pursuit <SEG:?> of <SEG:?> commu",
+    "labeled_example": "en_us_482"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 8,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1306,
+  "changelog": [
+   "Replace E1 with labeled example en_us_1116 to teach the model to keep numerals/quantifiers attached to their unit or quantified noun (addresses the primary finding about numeral+unit cohesion loss).",
+   "Replace E2 with labeled example en_us_860 to show a measured case where cutting between '10' and 'years' hurts fidelity, reinforcing protection of numeral+unit spans.",
+   "Replace E3 with labeled example en_us_1024 to provide another measured short-latency case ('two summer Olympics') that rewards keeping numerals with their units/nouns."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+    "labeled_example": "en_us_1116"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Some <SEG:?> countries <SEG:?> have <SEG:?> exceedingly <SEG:?> draconian",
+    "labeled_example": "en_us_860"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: Tokyo <SEG:?> will <SEG:?> be <SEG:?> the <SEG:?> only <SEG:?> Asian <SEG",
+    "labeled_example": "en_us_1024"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 9,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1146,
+  "changelog": [
+   "Insert a concise core principle allowing cuts after initial sentence-introductory function words when the remainder is semantically self-contained — addresses the primary finding that the prompt was too reluctant to split very short left pieces that help low-latency performance."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Allow a cut immediately after an initial sentence function word (for example a"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 10,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1332,
+  "changelog": [
+   "Insert a narrow surface rule allowing safe cuts after a main verb when the remainder is very short and contains no clause-openers, negation, or pronouns — addresses the primary finding that a blanket verb-cut prohibition harmed very short, low-latency segments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Allow a cut immediately after a main verb when the following piece is short (≤"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 11,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.111,
+  "changelog": [
+   "Insert a concise core principle forbidding cuts between a numeral/quantifier and its immediately following unit or quantified noun — to protect numeral+unit spans as the primary finding requires."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Do not cut between a numeral or quantifier token and the immediately following"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00887,
+   "lo": -0.02312,
+   "hi": 0.00632,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -0.00887,
+   "lo": -0.02312,
+   "hi": 0.00632,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace E1 with labeled example en_us_301 to teach that sentence‑initial participial/adverbial leads can often be emitted early when the remainder is self‑contained (addresses the critique that the prompt was too reluctant to split off short initial function words).",
+   "Replace E2 with labeled example en_us_340 to supply a measured case showing a safe short predicate/complement split after a verb (directly addresses the primary finding that a blanket ban on cuts after main verbs is too broad).",
+   "Replace E3 with labeled example en_us_924 to add a measured example where a closed complement/short prepositional span following a verb is safe to cut (reinforces allowing safe verb‑adjacent splits without retuning broad rules)."
+  ],
+  "findings": [
+   "The prompt is too reluctant to split off sentence-introductory function words (initial determiners, prepositional/adverbial leads); these safe, very short left pieces often improve streaming fidelity in low-latency bins.",
+   "A blanket prohibition on cutting immediately after main verbs is applied too widely; many short, self-contained predicates or closed prepositional complements are safe to emit separately and help dense, low-latency segmentation.",
+   "The prompt fails to protect tight numeral+unit and quantifier+noun spans; splitting numerals from their units or quantified noun leads to severe cohesion loss."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 <SEG:?> will <SEG:?>",
+    "labeled_example": "en_us_301"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <SEG:?> to <SEG:?> by",
+    "labeled_example": "en_us_340"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG:?> is <SEG:?> often",
+    "labeled_example": "en_us_924"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0048,
+    "≤5": -0.0188,
+    "≤7": 0.0013,
+    "≤10": -0.0116,
+    "≤99": -0.0085
+   },
+   "n_worse": 738,
+   "n_better": 678,
+   "why": "The new examples made the model more willing to split off short sentence‑initial adverbial/participial leads and to cut adjacent to verbs/short complements; that produced some large gains where an initial adjunct or verb‑adjacent cut is helpful but caused more aggressive early cuts in short/mid pieces that broke up compound nouns and names, so overall H_set fell slightly (worse in the ≤5 bin).",
+   "lesson": "Keep examples that permit verb‑adjacent and sentence‑initial adjunct cuts only when the remainder is clearly long or syntactically self‑contained, because otherwise the model will over‑apply those patterns and split short noun compounds and proper names.",
+   "blamed": [
+    "E1 «Input: Following <SEG:?> the <SEG:?> process, <SEG:?> HJR-3 »",
+    "E2 «Input: He <SEG:?> was <SEG:?> immediately <SEG:?> attended <»",
+    "E3 «Input: Access <SEG:?> to <SEG:?> these <SEG:?> services <SEG»"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1779,
+  "changelog": [
+   "Paraphrased C1 to be shorter and clearer about contradiction/cancellation risk (addresses the primary finding).",
+   "Paraphrased C5 to compress guidance about postnominal material while keeping its judgment (frees headroom).",
+   "Inserted new principle asking whether the remainder supplies an argument, complement, negation/exception, or scope-resolving token that completes or reverses the left fragment (directly addresses primary_finding).",
+   "Inserted new principle preferring cuts that keep numerals/measures and essential post‑nominal modifiers attached to their head (addresses the numeral/measure finding)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "was": "- At each potential cut, judge whether the material that follows, taken alone, w",
+    "now": "- At each cut, ask whether the following material, taken alone, would contradict"
+   },
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "paraphrase",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Treat postnominal material (modifiers, prepositional complements, numerals, ti"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- At every cut, ask whether the remainder supplies an argument, complement, nega"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Prefer cuts that keep numerals, measures, and essential post‑nominal modifiers"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.205,
+  "changelog": [
+   "Insert a narrow surface check after C5 that forbids cutting when the remainder begins a clause or token that supplies an argument, complement, negation/exception, or scope (addresses the primary_finding with a concrete, surface-recognizable condition)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut when the next token begins a subordinate or clausal c"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.2,
+  "changelog": [
+   "Inserted a narrow, surface-recognizable check after C5 that forbids cutting a numeral/quantifier away from its unit or the noun it quantifies, and forbids cutting a head noun/proper name away from an immediately following restrictive post‑nominal modifier — directly addressing the primary finding about numerals/measures and essential modifiers."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut between a numeral or quantifier token and the immedia"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1962,
+  "changelog": [
+   "Replace E1 with measured example en_us_1116 to teach the model to avoid cuts that leave an underspecified fragment whose truth or referent is completed/reversed by the remainder (addresses primary_finding).",
+   "Replace E2 with measured example en_us_936 to exemplify subordinate/clausal openings (e.g. 'Unless ...') that must not be split from their consequents.",
+   "Replace E3 with measured example en_us_741 to show numeral+unit (2.2 million km2) cohesion issues so the model keeps measures attached to their heads.",
+   "Replace E4 with measured example en_us_140 to reinforce protecting numeric speeds and unit expressions (240 kilometers an hour / 149 miles per hour)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+    "labeled_example": "en_us_1116"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+    "labeled_example": "en_us_936"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG",
+    "labeled_example": "en_us_741"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gon",
+    "labeled_example": "en_us_140"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 5,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1828,
+  "changelog": [
+   "Replace E1 with measured example en_us_1150 to teach keeping date ranges and year spans attached to their heads (addresses primary_finding).",
+   "Replace E2 with measured example en_us_1017 to teach protecting 'until <date>' and similar date/unit expressions from being split (addresses primary_finding).",
+   "Replace E3 with measured example en_us_419 to teach keeping numerals and their unit context (e.g. '340 million to 500 million') attached (addresses primary_finding).",
+   "Replace E4 with measured example en_us_1415 to show century/range expressions (e.g. '10th - 11th centuries') should not be split from their heads (addresses primary_finding)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: During <SEG:?> the <SEG:?> 1976 <SEG:?> selections <SEG:?> he <SEG:?> adv",
+    "labeled_example": "en_us_1150"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: The <SEG:?> rock <SEG:?> band <SEG:?> was <SEG:?> due <SEG:?> to <SEG:?> ",
+    "labeled_example": "en_us_1017"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: Estimates <SEG:?> range <SEG:?> from <SEG:?> 340 <SEG:?> million <SEG:?> ",
+    "labeled_example": "en_us_419"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Gothic <SEG:?> style <SEG:?> peaked <SEG:?> in <SEG:?> the <SEG:?> period",
+    "labeled_example": "en_us_1415"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 6,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1728,
+  "changelog": [
+   "Replace C4 to require explicitly checking whether the remainder supplies a required complement, argument, negation/exception, or scope that completes or reverses the left fragment; lower such cuts but apply conservatively to very short left fragments (addresses the primary_finding)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Assess relative and complement clauses that complete noun meanings; cutting be",
+    "now": "- At each cut, check whether the remainder supplies a required complement, argum"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 7,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1524,
+  "changelog": [
+   "Insert a concise, surface-check principle after C5 forbidding cuts between numerals/units and between a head noun/proper name and essential post‑nominal modifiers (restrictive relative, prepositional complement, date/measure/range) to protect cohesion (addresses the primary_finding)."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Do not cut between a numeral/quantifier and its unit, or between a head noun/p"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00371,
+   "lo": -0.01568,
+   "hi": 0.00844,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Paraphrased C1 to be shorter and clearer about contradiction/cancellation risk so there is room for a targeted, surface-check rule addressing the primary finding.",
+   "Inserted a new Core Principles unit after C5 that forbids splitting numerals/measures and essential post‑nominal modifiers from their heads except when the remainder is clearly an independent clause, addressing the primary_finding directly with a surface-recognizable condition."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "was": "- At each potential cut, judge whether the material that follows, taken alone, w",
+    "now": "- At each cut, ask whether the following material, taken alone, would contradict"
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Prefer cuts that keep numerals/quantifiers with the unit or noun they modify, "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": -9e-05,
+   "lo": -0.01276,
+   "hi": 0.01347,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -9e-05,
+   "lo": -0.01276,
+   "hi": 0.01347,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a narrow surface check after C5 that forbids cutting when the remainder begins a clause or token that supplies an argument, complement, negation/exception, or scope (addresses the primary_finding with a concrete, surface-recognizable condition)."
+  ],
+  "findings": [
+   "The prompt misses cases where the left fragment is an underspecified proposition whose truth, scope or referent is completed or reversed by the immediately following words, so it permits cuts that later contradict or change the delivered claim.",
+   "The prompt fails to protect numerals, measures, date ranges and essential post‑nominal modifiers from being split off, harming cohesion when unit/modifier is separated from its head."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut when the next token begins a subordinate or clausal c"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0027,
+    "≤5": -0.0067,
+    "≤7": 0.0028,
+    "≤10": 0.0039,
+    "≤99": -0.0003
+   },
+   "n_worse": 777,
+   "n_better": 709,
+   "why": "The inserted narrow check after C5 blocked cuts when the next token looked like the start of a clause/argument/scope, so the top-K selector moved cuts to nearby positions; that produced small improvements on some longer chunks but a net small harm concentrated in the short (≤5-word) bin where the alternatives often split enumerations or broke coordinated predicates.  The measurement is essentially neutral overall (mean ≈0) because almost as many pairs improved as worsened.",
+   "lesson": "A later revision should preserve the intent of forbidding cuts before clause/argument starters but avoid forcing substitute cuts that split enumerations or separate predicates in short pieces (the short-bin harm must be controlled).",
+   "blamed": [
+    "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1476,
+  "changelog": [
+   "Replace example E1 with the measured labeled example en_us_101 showing numeral+unit separation failures; a measured case teaches the ranking directly for the primary finding about numerals and units."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pres",
+    "labeled_example": "en_us_101"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1463,
+  "changelog": [
+   "Insert a narrow surface check after C5 that blocks cuts which would leave an auxiliary/modal/negation or bare verb separated from an immediately following argument or measurement phrase — addresses the primary finding while avoiding a blanket verb–complement prohibition."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: block a cut when the left piece ends in an auxiliary/modal/negat"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1908,
+  "changelog": [
+   "Insert a narrow surface check after C5 that forbids cutting a numeral/quantifier apart from its immediately following measurement or unit phrase, to protect number+unit cohesion and address the primary finding."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 4,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1774,
+  "changelog": [
+   "Replace example E1 with measured labeled example en_us_990 to teach the model about cuts that detach scope-bearing predicates/auxiliaries (addresses the primary finding with a real high-gap case).",
+   "Replace example E2 with measured labeled example en_us_1612 to teach numeral+unit cohesion (addresses the secondary finding about separating numbers from units)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> glaciers <SEG:?> are <SEG:?> not <SEG:?> stable, <SEG:?> but ",
+    "labeled_example": "en_us_990"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Water <SEG:?> is <SEG:?> spilling <SEG:?> over <SEG:?> the <SEG:?> levee ",
+    "labeled_example": "en_us_1612"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 5,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1781,
+  "changelog": [
+   "Replace Example E1 with measured labeled example en_us_1050 to teach numeral+unit cohesion (protect numbers and units from being split).",
+   "Replace Example E2 with measured labeled example en_us_1157 to reinforce keeping measurement tokens (e.g. +30°C) together with their numeric context."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> two <SEG:?> towers <SEG:?> rise <SEG:?> to <SEG:?> a <SEG:?> ",
+    "labeled_example": "en_us_1050"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Montevideo <SEG:?> is <SEG:?> in <SEG:?> the <SEG:?> subtropics; <SEG:?> ",
+    "labeled_example": "en_us_1157"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 6,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.155,
+  "changelog": [
+   "Insert a narrow surface check after C5: block cuts that leave an auxiliary/modal/negation or main verb separated from a following pronoun, determiner, or numeral — addresses the primary finding by preventing verb/scope detachment only when surface cues show the continuation likely supplies the verb's object/complement or resolves scope."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: block a cut if the left piece ends with an auxiliary, modal, neg"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 7,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.204,
+  "changelog": [
+   "Insert a narrow surface check after C5 to forbid cuts that separate a numeral/quantifier from its immediately following measurement or unit phrase, addressing the primary finding about number+unit cohesion."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00639,
+   "lo": -0.01881,
+   "hi": 0.00671,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert narrow surface check after C5 to block cuts that detach auxiliaries/negation/verbs from the token classes that typically supply their object/complement or resolve scope (addresses the primary finding while remaining a surface check).",
+   "Replace example E1 with the measured labeled example en_us_738 (high-gap case illustrating predicate/auxiliary detachment) to teach the ranking directly where the deficit occurs."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut immediately after an auxiliary, modal, negation token"
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+    "labeled_example": "en_us_738"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00252,
+   "lo": -0.01021,
+   "hi": 0.01569,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00252,
+   "lo": -0.01021,
+   "hi": 0.01569,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a narrow surface check after C5 to forbid cuts that separate a numeral/quantifier from its immediately following measurement or unit phrase, addressing the primary finding about number+unit cohesion."
+  ],
+  "findings": [
+   "The prompt underrates cuts that leave a scope-bearing predicate, auxiliary, negation, or quantifier detached from the phrase that supplies its object/complement or resolves its scope; such early cuts create high contradiction risk when the continuation completes or reverses the left piece.",
+   "The prompt fails to protect numerals and measurement phrases: it allows cuts that separate a cardinal/measurement from its unit, breaking referent identity and lowering cohesion."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut between a numeral (digits or spelled-out) or quantifi"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0111,
+    "≤5": -0.007,
+    "≤7": 0.0028,
+    "≤10": -0.0042,
+    "≤99": -0.0023
+   },
+   "n_worse": 699,
+   "n_better": 733,
+   "why": "Inserting the narrow check after C5 that forbids cuts between numerals/quantifiers and their immediately following unit/measurement phrases caused the model to stop splitting number+unit sequences (improving the smallest pieces, ≤3), but it also changed cut priorities elsewhere so many mid-length examples (bins ≤5 and ≤10) now get cuts shifted into noun phrases, enumerations, or auxiliary/subject boundaries; the result is a near-zero net change because roughly as many pairs improved as degraded.",
+   "lesson": "A later revision should keep numeral+unit adjacency (so short pieces benefit) while avoiding wholesale re-prioritization of cut placement that splits enumerations or breaks cohesive noun phrases in the ≤5–≤10 bins.",
+   "blamed": [
+    "C5 «- Long noun phrases with postnominal modifiers, prepositiona»"
+   ]
+  }
+ },
+ {
+  "iter": 5,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1522,
+  "changelog": [
+   "Insert a narrow, targeted principle after C5 that forbids cutting when the continuation resolves scope or polarity and also tells the model what a good cut looks like; addresses the primary finding about scope‑resolving continuations while avoiding a blanket verb–complement ban."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut when the immediately following material resolves the "
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1522,
+  "changelog": [
+   "Insert a narrow, conditional verb–complement check after C5 to prevent cuts that split a verb/copula/auxiliary from an immediately required complement while avoiding a blanket ban that hurt very short fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: avoid splitting a verb, auxiliary, or copula from an immediately"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1669,
+  "changelog": [
+   "Insert a narrow, surface-level check after C5 forbidding cuts when the immediately following token is a scope-resolver, comparative, quantifier, percent/per, or begins with digits; keep that token attached to the left piece to avoid scope/polarity loss."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut when the immediately following token is a surface sco"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1791,
+  "changelog": [
+   "Insert a narrow surface-level rule after C5 that forbids cutting immediately before tokens that typically begin verb complements (determiners, demonstratives, possessives, object pronouns, quantifiers, or numerals), so a verb is not left separated from its immediately required object/measure."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: do not cut immediately before a token that visibly begins a verb"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 5,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.1431,
+  "changelog": [
+   "Replace E1 with measured example en_us_30 to teach the model about cuts that separate auxiliaries/coping verbs from their complements (primary finding).",
+   "Replace E2 with measured example en_us_1543 to show cases where auxiliary + location/clause ('had been to X, where...') must not be split.",
+   "Replace E3 with measured example en_us_292 to illustrate verb+complement sequences ('resulting in', predicate completion) that should stay attached.",
+   "Replace E4 with measured example en_us_464 to demonstrate splits that break predicates and causative/contrast clauses harming cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: Iraq's <SEG:?> Abu <SEG:?> Ghraib <SEG:?> prison <SEG:?> has <SEG:?> been",
+    "labeled_example": "en_us_30"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: The <SEG:?> patient <SEG:?> had <SEG:?> been <SEG:?> to <SEG:?> Nigeria, ",
+    "labeled_example": "en_us_1543"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: The <SEG:?> significant <SEG:?> earthquake <SEG:?> activity <SEG:?> resul",
+    "labeled_example": "en_us_292"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Unfortunately, <SEG:?> when <SEG:?> you <SEG:?> make <SEG:?> a <SEG:?> DV",
+    "labeled_example": "en_us_464"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 6,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.2059,
+  "changelog": [
+   "Insert a narrow principle after C5: when the continuation will resolve scope or polarity, prefer cuts that include the scope-resolving token with the left piece; otherwise cut only at punctuation/clause boundaries that preserve a complete predicate — addresses the primary finding without a blanket ban."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: when the immediately following words will resolve scope or polar"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 7,
+  "adopted": false,
+  "screened_out": true,
+  "oracle_dist": 0.154,
+  "changelog": [
+   "Insert a narrow, surface-level check after C5 to prevent cutting a verb/auxiliary/copula away from an immediately following token that visibly begins a noun or measurement phrase (determiner, demonstrative, possessive, object pronoun, numeral/digit, or capitalized proper name); this targets the verb‑split primary finding without a blanket ban."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: if the left piece ends in a verb, auxiliary, or copula, do not c"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 6,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00823,
+   "lo": -0.02009,
+   "hi": 0.00438,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a narrow principle after C5: when the continuation will resolve scope or polarity, prefer cuts that include the scope-resolving token with the left piece; otherwise cut only at punctuation/clause boundaries that preserve a complete predicate — addresses the primary finding without a blanket ban."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Long noun phrases with postnominal modifiers, prepositional complements, numer",
+    "now": "- Narrow check: when the immediately following words will resolve scope or polar"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00213,
+   "lo": -0.01704,
+   "hi": 0.01281,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -0.00213,
+   "lo": -0.01704,
+   "hi": 0.01281,
+   "n": 1851,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace E1 with measured example en_us_738 to teach the model about negation + quantifier scope that resolves polarity and should not be cut.",
+   "Replace E2 with measured example en_us_936 to teach the model about conditional/subordinating scope ('Unless') that resolves truth conditions.",
+   "Replace E3 with measured example en_us_1116 to teach the model about exception clauses ('except') that reverse or limit prior claims.",
+   "Replace E4 with measured example en_us_103 to teach the model about numeral+unit and measurement phrases that determine scope and must stay attached."
+  ],
+  "findings": [
+   "The prompt treats cuts before scope-resolving complements as acceptable: it allows a cut where the following phrase (exception, negation-resolver, quantifier/comparative, measurement phrase) determines or reverses the truth or scope of the already-delivered stretch.",
+   "The prompt often permits cuts that split a verb/copying auxiliary or copula from its essential complement (object, predicate adjective, prepositional/cause/contrast clause), breaking the proposition and harming cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> ",
+    "now": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not",
+    "labeled_example": "en_us_738"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> h",
+    "now": "Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> diplomat, <SEG:?> workin",
+    "labeled_example": "en_us_936"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney",
+    "now": "Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> sunk, <SEG:?> except <",
+    "labeled_example": "en_us_1116"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <S",
+    "now": "Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?> area <SEG:?> below ",
+    "labeled_example": "en_us_103"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0023,
+    "≤5": -0.004,
+    "≤7": -0.0012,
+    "≤10": -0.0039,
+    "≤99": 0.008
+   },
+   "n_worse": 741,
+   "n_better": 690,
+   "why": "Replacing the examples with negation/Unless/except/measurement cases taught the model to avoid cutting around scope-bearing tokens (negators, subordinators, exception markers and measurement phrases). That made it keep longer multiword constituents intact (small net gain on very long pieces, ≤99:+0.008) but pushed cuts into nearby short spans, producing small harms in the short-latency bins (≤3..≤10 negative) and slightly more (741) worsened than 690 improved pairs.",
+   "lesson": "Respect scope-bearing attachments (negation, subordinators, exceptions, measurement phrases) but do so without shifting cuts so they split adjacent short constituents or verb phrases.",
+   "blamed": [
+    "E1 «Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG»",
+    "E2 «Input: Unless <SEG:?> you <SEG:?> are <SEG:?> a <SEG:?> dipl»",
+    "E3 «Input: All <SEG:?> the <SEG:?> ships <SEG:?> were <SEG:?> su»",
+    "E4 «Input: Another <SEG:?> secondary <SEG:?> containment <SEG:?>»"
+   ]
+  }
+ }
+]

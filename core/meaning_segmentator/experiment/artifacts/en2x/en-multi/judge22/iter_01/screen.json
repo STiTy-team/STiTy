@@ -1,0 +1,100 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  9,
+  36,
+  39,
+  60,
+  74,
+  79,
+  81,
+  93,
+  131,
+  160,
+  175,
+  199,
+  210,
+  224,
+  229,
+  240,
+  245,
+  253,
+  273,
+  277,
+  279,
+  299,
+  312,
+  324,
+  345,
+  367,
+  368,
+  371,
+  376,
+  406,
+  409,
+  423,
+  431,
+  433,
+  473,
+  521,
+  522,
+  526,
+  533,
+  538,
+  551,
+  552,
+  568,
+  571,
+  572,
+  573,
+  578,
+  581,
+  589,
+  597
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00703,
+    "lo": -0.0217,
+    "hi": 0.03685,
+    "n": 452,
+    "n_clusters": 50
+   },
+   "chars": 6948,
+   "changelog": [
+    "Insert a fallback ordering that prefers cutting after a verb's immediate essential complement rather than immediately after the finite verb/copula/auxiliary, to keep verb+complement together and address the primary finding."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.01863,
+    "lo": -0.05657,
+    "hi": 0.01849,
+    "n": 452,
+    "n_clusters": 50
+   },
+   "chars": 6476,
+   "changelog": [
+    "Delete C2: remove a redundant principle that restates predicate-argument and attachment concerns already covered by C3, to prune attention and satisfy the 'prune' constraint."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00633,
+    "lo": -0.04304,
+    "hi": 0.03115,
+    "n": 452,
+    "n_clusters": 50
+   },
+   "chars": 6943,
+   "changelog": [
+    "Insert a short binding rule that keeps a finite verb/copula/auxiliary with its immediately following essential complement (clausal/object; prepositional phrase of place/time/measurement; numeral+unit; or named location) to prevent orphaned predicates and scope flips (addresses the primary finding)."
+   ]
+  }
+ ]
+}

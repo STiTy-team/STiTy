@@ -1,0 +1,49 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00606,
+  "lo": -0.01588,
+  "hi": 0.00384,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00606,
+  "lo": -0.01588,
+  "hi": 0.00384,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a narrowly scoped ordering rule after C5: prefer cutting after a short clausal/complement continuation (≤6 words) rather than immediately before it — to keep essential continuations that complete or disambiguate a preceding predicate/NP attached, addressing the primary finding."
+ ],
+ "findings": [
+  "The prompt routinely treats a following clausal or complement continuation as safe to cut off — it allows cuts immediately before spans that actually complete or disambiguate the preceding predicate or noun, producing contradiction, lost scope, or orphaned dependents when pieces are translated separately."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Is the following material a temporal, causal, concessive subordinator or other",
+   "now": "Prefer a cut after a short (≤6-word) clausal or complement continuation over a c"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0047,
+   "≤5": -0.0056,
+   "≤7": -0.0088,
+   "≤10": -0.0071,
+   "≤99": -0.0106
+  },
+  "n_worse": 1947,
+  "n_better": 1790,
+  "why": "Inserting the ordering after C5 caused the model to prefer cutting after short (≤6-word) clausal/complement continuations instead of immediately before them, so many cuts shifted later. That change produced small net losses across all latency bins (by_bin all negative, larger harm for medium/long: ≤7 −0.0088, ≤99 −0.0106) with 1,947 worsened vs 1,790 improved — improvements are concentrated on very short/enumerative pieces while harm occurs when the later cut lands inside or after the following clause (e.g. moves cutting away from 'such as vomiting ‖ are sufficiently general' to a later split inside the predicate).",
+  "lesson": "Respect that preferring to attach short clausal/complement continuations systematically shifts cuts later and, although it helps some very short/enumerative cases, it degrades medium/long segmentation so it should not be applied unconditionally.",
+  "blamed": [
+   "C5 «- Is the following material a temporal, causal, concessive s»"
+  ]
+ }
+}

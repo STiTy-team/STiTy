@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00791,
+  "lo": -0.0031,
+  "hi": 0.01878,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.00791,
+  "lo": -0.0031,
+  "hi": 0.01878,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert one small binding into [Core Principles] that keeps a preceding head with immediately following numerals/measurements/dates/locations, addressing the primary finding about detached completing phrases."
+ ],
+ "findings": [
+  "The prompt underrates cuts that detach numeric/measurement/date/location phrases from the words they complete, producing standalone pieces that lack the quantity/place/time needed to interpret the previous span.",
+  "The prompt allows cuts that split main clause predicate structure (subjects, auxiliaries/copulas, negation, or exception markers) from their complements, which turns clauses into misleading fragments and yields contradictions when translated separately."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Keep the preceding noun or verb head together with any immediately following n"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0123,
+   "≤5": 0.0052,
+   "≤7": 0.0095,
+   "≤10": 0.001,
+   "≤99": -0.0027
+  },
+  "n_worse": 1753,
+  "n_better": 2019,
+  "why": "Adding the small binding to keep a preceding noun/verb head with an immediately following numeral/measurement made the model avoid cuts next to numeric tokens, which produced modest gains for short pieces (bins ≤3/5/7) but a slight decline on long spans (≤99); overall more (2019) pairs improved than worsened (1753) but the mean gain is small and not robust. The tail shows that the edit pulled cuts away from numeric/measurement attachments (e.g. keeping “5-3 win” or the “four times … and eleven times” grouping) and in some sentences forced cuts into nearby clause or enumeration boundaries, causing the worst drops.",
+  "lesson": "A later revision should keep the immediate head+numeral/measurement binding only insofar as it benefits short segments, and avoid letting that binding shift cuts across clause boundaries or split enumerations in longer sentences.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

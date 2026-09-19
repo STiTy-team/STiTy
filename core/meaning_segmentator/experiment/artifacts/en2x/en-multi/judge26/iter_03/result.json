@@ -1,0 +1,50 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 0.0182,
+  "lo": 0.00874,
+  "hi": 0.02759,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.00485,
+  "lo": -0.00418,
+  "hi": 0.0142,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Insert a fallback ordering that, when comparing two candidate cuts, prefers the cut that keeps a short function word (determiner/pronoun/auxiliary/preposition) together with the immediately following head or required complement — to reduce single-word fragments and orphaned dependents identified in the primary finding."
+ ],
+ "findings": [
+  "The prompt overvalues cutting immediately after short function words and underestimates the damage of detaching those words from the content that completes the phrase, producing single-word fragments or orphaned dependents that harm cohesion or create contradictions.",
+  "The prompt allows cuts inside multiword names, organizational titles and tight enumerations, failing to protect named entities and listed items that must be translated as contiguous units for clarity."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Fallback ordering: when comparing two candidate cuts on the source surface, if"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0192,
+   "≤5": 0.0263,
+   "≤7": 0.0142,
+   "≤10": 0.0081,
+   "≤99": -0.0036
+  },
+  "n_worse": 1719,
+  "n_better": 2012,
+  "why": "The new fallback ordering that prefers keeping short function words attached to their following head made the model avoid single-word fragments, which raised H_set for short-latency pieces (positive means in ≤3/≤5/≤7/≤10 bins) but shifted cut choices in longer sentences (slight negative for ≤99 and several large degradations), e.g. moving cuts into or out of quoted complements and splitting enumerations.",
+  "lesson": "A later revision should preserve the fallback’s clear benefit for very short pieces while avoiding broad application that repositions top cuts in long sentences and thereby breaks enumerations or quoted complements.",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

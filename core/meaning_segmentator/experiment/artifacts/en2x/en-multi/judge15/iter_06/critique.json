@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underrates the harm of isolating sentence‑initial openers: it often judges cuts that leave a lone opener (brief discourse marker, determiner, demonstrative, or single‑word pronoun) as acceptable, producing very short fragments that break cohesion in the shortest latency bins.",
+    "evidence": "['en_us_950','en_us_6','en_us_9','en_us_44','en_us_741','en_us_1528','en_us_390','en_us_288'] — these cases share the policy cutting immediately after sentence openers while the target keeps the opener attached to the following content.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after sentence‑initial openers (brief discourse markers, determiners, demonstratives, or single‑word pronouns) if that would leave them as a very short standalone fragment; prefer keeping the opener attached to the following clause unless the opener itself forms a self‑contained proposition."
+    }
+   },
+   {
+    "diagnosis": "The prompt underweights continuity of predicate and arguments: it sometimes ranks cuts that split main verbs/auxiliaries from their direct objects or complements as acceptable, which creates orphaned complements or reverses relations when pieces are translated separately.",
+    "evidence": "['en_us_498','en_us_1112','en_us_1036','en_us_380','en_us_1271'] — these cases share policy cuts that separate verbs/auxiliaries from their objects or strand clause heads; targets keep predicate+arguments together.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside core predicate structure: keep auxiliaries, the main verb, and its immediate objects/complements together so a translated piece preserves agent, action, and patient; avoid isolating verbs from their arguments."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underrates the harm of isolating sentence‑initial openers: it often judges cuts that leave a lone opener (brief discourse marker, determiner, demonstrative, or single‑word pronoun) as acceptable, producing very short fragments that break cohesion in the shortest latency bins.",
+   "evidence": "['en_us_950','en_us_6','en_us_9','en_us_44','en_us_741','en_us_1528','en_us_390','en_us_288'] — these cases share the policy cutting immediately after sentence openers while the target keeps the opener attached to the following content.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after sentence‑initial openers (brief discourse markers, determiners, demonstratives, or single‑word pronouns) if that would leave them as a very short standalone fragment; prefer keeping the opener attached to the following clause unless the opener itself forms a self‑contained proposition."
+   }
+  },
+  {
+   "diagnosis": "The prompt underweights continuity of predicate and arguments: it sometimes ranks cuts that split main verbs/auxiliaries from their direct objects or complements as acceptable, which creates orphaned complements or reverses relations when pieces are translated separately.",
+   "evidence": "['en_us_498','en_us_1112','en_us_1036','en_us_380','en_us_1271'] — these cases share policy cuts that separate verbs/auxiliaries from their objects or strand clause heads; targets keep predicate+arguments together.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside core predicate structure: keep auxiliaries, the main verb, and its immediate objects/complements together so a translated piece preserves agent, action, and patient; avoid isolating verbs from their arguments."
+   }
+  }
+ ]
+}

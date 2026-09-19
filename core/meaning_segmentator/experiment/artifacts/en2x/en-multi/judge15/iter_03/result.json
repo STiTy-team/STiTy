@@ -1,0 +1,51 @@
+{
+ "iter": 3,
+ "adopted": true,
+ "delta": {
+  "mean": 0.01097,
+  "lo": 0.00101,
+  "hi": 0.02143,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.01097,
+  "lo": 0.00101,
+  "hi": 0.02143,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Insert a Core Principle that prescribes good cut placement for numeric expressions: keep numeral + multipliers + unit together, or if unavoidable cut before the whole phrase or after its unit — addresses the primary finding by describing a GOOD cut instead of a blanket ban."
+ ],
+ "findings": [
+  "The prompt underestimates the harm of cutting inside numeric expressions (numbers, ranges, units, percentages); splitting a numeral from its unit or the endpoints of a range produces incoherent or mistranslated numeric phrases when pieces are translated separately.",
+  "The prompt undervalues keeping verbs with their core complements: it often allows cuts that strand verbs, prepositional objects, or infinitival complements, which produces orphaned predicates or reversed attachments in the joined translation.",
+  "The prompt does not sufficiently penalize cuts that create very short trailing fragments (one- or two-word pieces); such tiny fragments are frequent sources of contradiction or loss when translated separately in short-latency bins."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Is the preceding stretch a self-contained propositional claim, or does clause ",
+   "now": "- When a numeric expression spans a cut, prefer cuts that keep the numeral with "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0121,
+   "≤5": 0.0147,
+   "≤7": 0.0088,
+   "≤10": 0.0068,
+   "≤99": -0.0025
+  },
+  "n_worse": 647,
+  "n_better": 719,
+  "why": "Adding the numeric-preservation principle made the model prefer cuts that keep a numeral with its multipliers/units, which raised H_set on short pieces (≤10-word bins) but caused more harmful cuts in long contexts (≤99) by displacing cuts into enumerations and noun phrases; the bin breakdown (positive up to ≤10, negative at ≤99) and the tail examples show the tradeoff. ",
+  "lesson": "A later revision should preserve numeral+unit spans only when it does not conflict with protections against splitting heads, named entities, or enumeration boundaries in longer contexts.",
+  "blamed": [
+   "C8 «- Is the preceding stretch a self-contained propositional cl»"
+  ]
+ }
+}

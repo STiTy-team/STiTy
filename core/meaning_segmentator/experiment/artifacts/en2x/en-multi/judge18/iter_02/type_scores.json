@@ -1,0 +1,158 @@
+[
+ {
+  "candidate": 0,
+  "type": 0,
+  "delta": {
+   "mean": -0.03864,
+   "lo": -0.10818,
+   "hi": 0.02066,
+   "n": 230,
+   "n_clusters": 25
+  },
+  "note": [
+   "Add a narrow, surface-form binding to keep quoted phrases and clearly-marked multiword technical names intact, addressing the primary finding that quoted strings and multiword technical terms are being cut."
+  ]
+ },
+ {
+  "candidate": 1,
+  "type": 1,
+  "delta": {
+   "mean": -0.0453,
+   "lo": -0.09042,
+   "hi": 0.0006,
+   "n": 203,
+   "n_clusters": 19
+  },
+  "note": [
+   "Insert a narrow binding to keep subordinating or contrastive cue words (e.g. unless, except, but, although, while) together with the clause complement that completes them — fixes the primary finding about cuts after cue words leaving fragments unresolved."
+  ]
+ },
+ {
+  "candidate": 2,
+  "type": 2,
+  "delta": {
+   "mean": -0.00231,
+   "lo": -0.04084,
+   "hi": 0.03902,
+   "n": 215,
+   "n_clusters": 25
+  },
+  "note": [
+   "Insert a narrow, surface-form BINDING to keep numerals and numeric ranges together with their immediately following unit or scope phrase — addresses the primary finding that numbers were being detached from their units/range endpoints."
+  ],
+  "control_delta": {
+   "mean": -0.01237,
+   "lo": -0.04014,
+   "hi": 0.01279,
+   "n": 209,
+   "n_clusters": 25
+  }
+ },
+ {
+  "candidate": 3,
+  "type": 0,
+  "delta": {
+   "mean": -0.01678,
+   "lo": -0.06986,
+   "hi": 0.03345,
+   "n": 230,
+   "n_clusters": 25
+  },
+  "note": [
+   "Replace E1 with measured example en_us_360 to teach the model about keeping quoted technical phrases intact (addresses primary finding).",
+   "Replace E2 with measured example en_us_1022 to show a long quoted string that must be preserved as a unit.",
+   "Replace E3 with measured example en_us_1253 to illustrate conventional multiword technical terms (DNA / phage / radioactive markers) that must not be cut.",
+   "Replace E4 with measured example en_us_337 to show quoted titles/names (\"Troy\") and protect small quoted units."
+  ],
+  "control_delta": {
+   "mean": -0.00027,
+   "lo": -0.01473,
+   "hi": 0.01589,
+   "n": 186,
+   "n_clusters": 25
+  }
+ },
+ {
+  "candidate": 4,
+  "type": 1,
+  "delta": {
+   "mean": -0.03782,
+   "lo": -0.07935,
+   "hi": 0.00033,
+   "n": 203,
+   "n_clusters": 19
+  },
+  "note": [
+   "Replace E1 with labeled example en_us_936 to teach the scorer about 'Unless' and keeping subordinating cues with their clause complements (addresses the primary finding).",
+   "Replace E2 with labeled example en_us_1116 to show 'except for' constructions that must stay attached to their complement.",
+   "Replace E3 with labeled example en_us_538 to illustrate dependent-complement attachments where a cut after the cue leaves a contradictory/unresolved fragment.",
+   "Replace E4 with labeled example en_us_1488 to provide another measured case of 'while' introducing a clause whose complement must not be detached."
+  ]
+ },
+ {
+  "candidate": 5,
+  "type": 2,
+  "delta": {
+   "mean": -0.02884,
+   "lo": -0.07792,
+   "hi": 0.02186,
+   "n": 215,
+   "n_clusters": 25
+  },
+  "note": [
+   "Replace E1 with labeled example en_us_1612 to teach keeping numerals/ranges bound to their units (e.g. '100 feet').",
+   "Replace E2 with labeled example en_us_419 to teach handling numeric ranges and keeping endpoints with their units ('340 million to 500 million').",
+   "Replace E3 with labeled example en_us_1050 to teach binding single numerals to their immediately following unit/scope ('83 meters', '3.50 m').",
+   "Replace E4 with labeled example en_us_103 to teach keeping large numeric quantities with their unit ('104,500 barrels')."
+  ]
+ },
+ {
+  "candidate": 6,
+  "type": 0,
+  "delta": {
+   "mean": -0.01819,
+   "lo": -0.0544,
+   "hi": 0.01675,
+   "n": 230,
+   "n_clusters": 25
+  },
+  "note": [
+   "Insert a narrow surface-form binding that requires quoted phrases and conventional multiword technical names to stay intact — fixes the primary finding that quoted strings and multiword technical terms were being cut."
+  ]
+ },
+ {
+  "candidate": 7,
+  "type": 1,
+  "delta": {
+   "mean": -0.02748,
+   "lo": -0.07091,
+   "hi": 0.01387,
+   "n": 203,
+   "n_clusters": 19
+  },
+  "note": [
+   "Insert a narrow surface-form BINDING to keep subordinating/contrastive cue words together with their clause complement, addressing the primary finding that cuts after cues (unless, except, while, but, although, if) leave unresolved or contradictory fragments."
+  ],
+  "control_delta": {
+   "mean": 0.01129,
+   "lo": -0.03114,
+   "hi": 0.05364,
+   "n": 150,
+   "n_clusters": 19
+  }
+ },
+ {
+  "candidate": 8,
+  "type": 2,
+  "delta": {
+   "mean": -0.0524,
+   "lo": -0.10043,
+   "hi": -0.01012,
+   "n": 215,
+   "n_clusters": 25
+  },
+  "note": [
+   "Insert a narrow surface-form BINDING that keeps numerals and numeric ranges attached to their unit or full range+unit, to prevent cuts that detach numbers from their scope (addresses the primary finding)."
+  ]
+ }
+]

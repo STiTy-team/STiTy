@@ -1,0 +1,108 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.01001,
+  "lo": -0.02331,
+  "hi": 0.00261,
+  "n": 1851,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0118,
+  "≤5": -0.009,
+  "≤7": -0.0033,
+  "≤10": -0.0162,
+  "≤99": -0.0079
+ },
+ "n_worse": 765,
+ "n_better": 674,
+ "worst": [
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.807,
+   "before": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_608",
+   "k": 1,
+   "bin": "≤10",
+   "delta": -0.7541,
+   "before": "We experience time ‖ as a series of events passing from the future through the present to the past.",
+   "after": "We experience time as a series of events passing from the future through the present ‖ to the past."
+  },
+  {
+   "id": "en_us_1514",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.6784,
+   "before": "When the fighting ceased after the wounded were transported to the hospital, ‖ about 40 of the other remaining ‖ inmates ‖ stayed ‖ in the yard ‖ and ‖ refused ‖ to return to their cells.",
+   "after": "When the fighting ceased after the wounded were transported ‖ to the hospital, ‖ about 40 ‖ of the other remaining inmates ‖ stayed ‖ in ‖ the yard ‖ and refused to return to their cells."
+  },
+  {
+   "id": "en_us_1088",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.6663,
+   "before": "It was to last for the next 40 years ‖ and would be fought for real, by proxy armies, on battlefields from Africa to Asia, in Afghanistan, Cuba and many other places.",
+   "after": "It was to last for the next 40 years and would be fought for real, by proxy armies, on battlefields from Africa to Asia, in Afghanistan, ‖ Cuba and many other places."
+  },
+  {
+   "id": "en_us_970",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.6589,
+   "before": "Part of its charm ‖ is the lack of visible corporate development. ‖ Paths, ‖ trains ‖ and boats ‖ connect the villages, ‖ and cars cannot reach them from the outside.",
+   "after": "Part of its charm is the lack of visible corporate development. ‖ Paths, ‖ trains and boats ‖ connect ‖ the villages, ‖ and cars ‖ cannot reach them from the outside."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.8128,
+   "before": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels were replaced ‖ by iron wheels. ‖ In 1767, the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_776",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5676,
+   "before": "Although in theory ‖ they can take place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they ‖ are not.",
+   "after": "Although in theory they ‖ can take ‖ place ‖ annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_700",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.5673,
+   "before": "This letter ‖ must ‖ be ‖ legalized ‖ by the ‖ Ecuadorian Ministry of Foreign Affairs, ‖ and comply with certain requirements.",
+   "after": "This ‖ letter ‖ must be legalized ‖ by the Ecuadorian Ministry of Foreign Affairs, ‖ and comply ‖ with certain ‖ requirements."
+  },
+  {
+   "id": "en_us_1655",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.524,
+   "before": "For example, “learning” and “socialization” are suggested ‖ as important ‖ motivations ‖ for ‖ Internet ‖ use ‖ (James et al., 1995).",
+   "after": "For example, ‖ “learning” ‖ and “socialization” ‖ are suggested ‖ as important motivations ‖ for Internet use ‖ (James et al., 1995)."
+  },
+  {
+   "id": "en_us_700",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.522,
+   "before": "This letter ‖ must ‖ be ‖ legalized ‖ by the ‖ Ecuadorian ‖ Ministry of Foreign Affairs, ‖ and comply with certain requirements.",
+   "after": "This ‖ letter ‖ must ‖ be legalized ‖ by the Ecuadorian Ministry of Foreign Affairs, ‖ and comply ‖ with certain ‖ requirements."
+  }
+ ],
+ "why": "Relaxing C4 to allow noun+modifier cuts when forbidding them would force very-short pieces caused the scorer to merge some noun+modifier spans but often pushed cut points onto small trailing complements or split predicates/prepositional attachments; that produced a small net drop in H_set, concentrated in the short-to-medium latency bins (≤3–≤10).",
+ "lesson": "A later revision should respect that easing the noun+modifier ban to avoid tiny (≈≤3–5 word) pieces can reduce extreme fragmentation in some examples but must not systematically shift boundaries onto very-short trailing fragments or break predicates, since that harms short/medium bins overall.",
+ "blamed": [
+  "C4 «- Does the cut separate a nominal from a following relative »"
+ ]
+}

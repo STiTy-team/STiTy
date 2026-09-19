@@ -1,0 +1,40 @@
+[
+ {
+  "finding": 0,
+  "predicate": "A negation or polarity word (not, no, never, except) or a comparative/quantifier phrase (more than, as many as, either/or, from X to Y, except for) is immediately followed by a numeral, a measurement/unit, a time expression, or a prepositional phrase that supplies the scope or limit of that polarity/quantifier.",
+  "ids": [
+   11,
+   40,
+   45,
+   48,
+   66,
+   89,
+   90,
+   91,
+   103,
+   106,
+   147,
+   152,
+   159,
+   183
+  ],
+  "diagnosis": "The prompt underestimates the risk of cutting immediately after a negation or polarity/quantifier token when the continuation supplies its scope, so it keeps cuts that make the prefix assert (or contradict) the wrong proposition on its own.",
+  "level": 0.62865,
+  "control": [
+   19,
+   53,
+   61,
+   74,
+   80,
+   111,
+   115,
+   121,
+   136,
+   137,
+   145,
+   176,
+   193,
+   197
+  ]
+ }
+]

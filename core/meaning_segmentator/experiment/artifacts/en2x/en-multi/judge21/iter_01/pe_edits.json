@@ -1,0 +1,135 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- As a last resort, prefer a cut after a verb's required complement — e.g., the object, an essential PP (location/time/measure), a numeral/parenthetical unit, or a named-location/name argument — over a cut between the verb (including auxiliaries or copulas) and that complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 279
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6993,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "Keep a finite verb (including auxiliaries or copulas) together with its immediately following complement when that complement starts with a numeral (digits), an opening parenthesis '(', a preposition (in, on, at, to, for, from, by, of, with, toward, towards), or a capitalized token: bind the verb plus the contiguous complement tokens as one segment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 352
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7066,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_44",
+    "kind": "example",
+    "text": "Input: Fred <SEG:?> currently <SEG:?> has <SEG:?> winds <SEG:?> of <SEG:?> 105 <SEG:?> miles <SEG:?> per <SEG:?> hour <SEG:?> (165 <SEG:?> km/h) <SEG:?> and <SEG:?> is <SEG:?> moving <SEG:?> towards <SEG:?> the <SEG:?> northwest.\nOutput: Fred <SEG:93> currently <SEG:67> has <SEG:53> winds <SEG:47> of <SEG:100> 105 <SEG:33> miles <SEG:13> per <SEG:40> hour <SEG:80> (165 <SEG:20> km/h) <SEG:87> and <SEG:60> is <SEG:27> moving <SEG:73> towards <SEG:7> the <SEG:0> northwest."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "en_us_1650",
+    "kind": "example",
+    "text": "Input: Saltwater <SEG:?> Crocodiles <SEG:?> do <SEG:?> not <SEG:?> actively <SEG:?> live <SEG:?> in <SEG:?> the <SEG:?> ocean, <SEG:?> their <SEG:?> primary <SEG:?> habitat <SEG:?> is <SEG:?> in <SEG:?> river <SEG:?> estuaries <SEG:?> north <SEG:?> from <SEG:?> Rockhampton.\nOutput: Saltwater <SEG:59> Crocodiles <SEG:47> do <SEG:0> not <SEG:18> actively <SEG:12> live <SEG:71> in <SEG:24> the <SEG:41> ocean, <SEG:100> their <SEG:88> primary <SEG:76> habitat <SEG:29> is <SEG:82> in <SEG:6> river <SEG:65> estuaries <SEG:94> north <SEG:53> from <SEG:35> Rockhampton."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "labeled_example": "en_us_733",
+    "kind": "example",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "labeled_example": "en_us_375",
+    "kind": "example",
+    "text": "Input: A <SEG:?> person <SEG:?> who <SEG:?> weighs <SEG:?> 200 <SEG:?> pounds <SEG:?> (90kg) <SEG:?> on <SEG:?> Earth <SEG:?> would <SEG:?> weigh <SEG:?> about <SEG:?> 36 <SEG:?> pounds <SEG:?> (16kg) <SEG:?> on <SEG:?> Io. <SEG:?> So <SEG:?> the <SEG:?> gravity, <SEG:?> of <SEG:?> course, <SEG:?> pulls <SEG:?> less <SEG:?> on <SEG:?> you.\nOutput: A <SEG:25> person <SEG:83> who <SEG:42> weighs <SEG:92> 200 <SEG:71> pounds <SEG:96> (90kg) <SEG:79> on <SEG:75> Earth <SEG:46> would <SEG:17> weigh <SEG:8> about <SEG:33> 36 <SEG:50> pounds <SEG:67> (16kg) <SEG:38> on <SEG:4> Io. <SEG:100> So <SEG:88> the <SEG:29> gravity, <SEG:62> of <SEG:54> course, <SEG:58> pulls <SEG:0> less <SEG:21> on <SEG:12> you."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 98
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 13
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -100
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -160
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6565,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "C2"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "C2",
+    "kind": "delete",
+    "chars_change": -238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6476,
+  "errors": null
+ }
+]

@@ -1,0 +1,342 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a copula or auxiliary verb (is/are/was/were/has/have/had/will/would/shall/should/can/could/does/did), optionally immediately followed by negation (not/n't), together with the immediately following short complement when that complement begins with a preposition (in/on/at/for/of/per), a numeral, or an explicit time/location phrase — these short complements complete the predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 388
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7274,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep any numeral (digits or spelled-out) together with its immediately following unit or measurement phrase, including parenthetical unit conversions (e.g. \"240 kilometers an hour\", \"55,000 barrels (2.3 million gallons)\")."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 225
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7111,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep a noun together with the immediately following restrictive post‑nominal modifier that identifies it: an of‑phrase beginning with 'of', a quoted name starting with '\"', an immediately following parenthesis '(', or an adjacent noun forming a noun‑noun compound."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 267
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7153,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "en_us_44",
+    "kind": "example",
+    "text": "Input: Fred <SEG:?> currently <SEG:?> has <SEG:?> winds <SEG:?> of <SEG:?> 105 <SEG:?> miles <SEG:?> per <SEG:?> hour <SEG:?> (165 <SEG:?> km/h) <SEG:?> and <SEG:?> is <SEG:?> moving <SEG:?> towards <SEG:?> the <SEG:?> northwest.\nOutput: Fred <SEG:93> currently <SEG:67> has <SEG:53> winds <SEG:47> of <SEG:100> 105 <SEG:33> miles <SEG:13> per <SEG:40> hour <SEG:80> (165 <SEG:20> km/h) <SEG:87> and <SEG:60> is <SEG:27> moving <SEG:73> towards <SEG:7> the <SEG:0> northwest."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "en_us_655",
+    "kind": "example",
+    "text": "Input: Crime, <SEG:?> and <SEG:?> ill-will <SEG:?> toward <SEG:?> foreigners <SEG:?> in <SEG:?> general, <SEG:?> is <SEG:?> virtually <SEG:?> unknown <SEG:?> in <SEG:?> Greenland. <SEG:?> Even <SEG:?> in <SEG:?> the <SEG:?> towns, <SEG:?> there <SEG:?> are <SEG:?> no <SEG:?> \"rough <SEG:?> areas.\"\nOutput: Crime, <SEG:11> and <SEG:16> ill-will <SEG:32> toward <SEG:21> foreigners <SEG:53> in <SEG:47> general, <SEG:37> is <SEG:5> virtually <SEG:68> unknown <SEG:95> in <SEG:42> Greenland. <SEG:100> Even <SEG:89> in <SEG:84> the <SEG:74> towns, <SEG:63> there <SEG:26> are <SEG:0> no <SEG:58> \"rough <SEG:79> areas.\""
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "labeled_example": "en_us_733",
+    "kind": "example",
+    "text": "Input: Whistler <SEG:?> (1.5 <SEG:?> hour <SEG:?> drive <SEG:?> from <SEG:?> Vancouver) <SEG:?> is <SEG:?> expensive <SEG:?> but <SEG:?> well-known <SEG:?> because <SEG:?> of <SEG:?> the <SEG:?> 2010 <SEG:?> Winter <SEG:?> Olympics.\nOutput: Whistler <SEG:86> (1.5 <SEG:64> hour <SEG:50> drive <SEG:43> from <SEG:29> Vancouver) <SEG:93> is <SEG:71> expensive <SEG:79> but <SEG:100> well-known <SEG:36> because <SEG:14> of <SEG:0> the <SEG:7> 2010 <SEG:57> Winter <SEG:21> Olympics."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "labeled_example": "en_us_738",
+    "kind": "example",
+    "text": "Input: The <SEG:?> Park <SEG:?> Service <SEG:?> (MINAE) <SEG:?> does <SEG:?> not <SEG:?> issue <SEG:?> park <SEG:?> permits <SEG:?> more <SEG:?> than <SEG:?> one <SEG:?> month <SEG:?> in <SEG:?> advance <SEG:?> of <SEG:?> anticipated <SEG:?> arrival.\nOutput: The <SEG:75> Park <SEG:69> Service <SEG:100> (MINAE) <SEG:94> does <SEG:12> not <SEG:38> issue <SEG:44> park <SEG:6> permits <SEG:0> more <SEG:31> than <SEG:88> one <SEG:62> month <SEG:81> in <SEG:56> advance <SEG:50> of <SEG:25> anticipated <SEG:19> arrival."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 92
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 57
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -190
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -349
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6496,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Also <SEG:?> the <SEG:?> Pacific <SEG:?> Tsunami <SEG:?> Warning <SEG:?> Center <SEG:?> said <SEG:?> that <SEG:?> there <SEG:?> was <SEG:?> no <SEG:?> Tsunami <SEG:?> indication.\nOutput: Also <SEG:91> the <SEG:82> Pacific <SEG:55> Tsunami <SEG:18> Warning <SEG:64> Center <SEG:36> said <SEG:100> that <SEG:73> there <SEG:9> was <SEG:0> no <SEG:45> Tsunami <SEG:27> indication.",
+    "labeled_example": "en_us_101",
+    "text": "Input: The <SEG:?> valves <SEG:?> opening <SEG:?> allowed <SEG:?> a <SEG:?> pressure <SEG:?> release <SEG:?> for <SEG:?> the <SEG:?> system <SEG:?> and <SEG:?> oil <SEG:?> flowed <SEG:?> on <SEG:?> a <SEG:?> pad <SEG:?> to <SEG:?> a <SEG:?> tank <SEG:?> that <SEG:?> can <SEG:?> hold <SEG:?> 55,000 <SEG:?> barrels <SEG:?> (2.3 <SEG:?> million <SEG:?> gallons).\nOutput: The <SEG:92> valves <SEG:88> opening <SEG:24> allowed <SEG:12> a <SEG:56> pressure <SEG:28> release <SEG:44> for <SEG:64> the <SEG:48> system <SEG:96> and <SEG:80> oil <SEG:52> flowed <SEG:60> on <SEG:32> a <SEG:16> pad <SEG:68> to <SEG:40> a <SEG:8> tank <SEG:100> that <SEG:84> can <SEG:36> hold <SEG:76> 55,000 <SEG:4> barrels <SEG:72> (2.3 <SEG:20> million <SEG:0> gallons)."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Red <SEG:?> tide <SEG:?> is <SEG:?> caused <SEG:?> by <SEG:?> a <SEG:?> higher <SEG:?> than <SEG:?> normal <SEG:?> concentration <SEG:?> of <SEG:?> Karenia <SEG:?> brevis, <SEG:?> a <SEG:?> naturally-occurring <SEG:?> single-celled <SEG:?> marine <SEG:?> organism.\nOutput: Red <SEG:100> tide <SEG:81> is <SEG:44> caused <SEG:75> by <SEG:0> a <SEG:19> higher <SEG:12> than <SEG:6> normal <SEG:38> concentration <SEG:88> of <SEG:25> Karenia <SEG:50> brevis, <SEG:94> a <SEG:56> naturally-occurring <SEG:62> single-celled <SEG:31> marine <SEG:69> organism.",
+    "labeled_example": "en_us_140",
+    "text": "Input: At <SEG:?> its <SEG:?> peak, <SEG:?> Tropical <SEG:?> Cyclone <SEG:?> Gonu, <SEG:?> named <SEG:?> for <SEG:?> a <SEG:?> bag <SEG:?> of <SEG:?> palm <SEG:?> leaves <SEG:?> in <SEG:?> the <SEG:?> language <SEG:?> of <SEG:?> the <SEG:?> Maldives, <SEG:?> reached <SEG:?> sustained <SEG:?> winds <SEG:?> of <SEG:?> 240 <SEG:?> kilometers <SEG:?> an <SEG:?> hour <SEG:?> (149 <SEG:?> miles <SEG:?> per <SEG:?> hour) <SEG:?> .\nOutput: At <SEG:93> its <SEG:40> peak, <SEG:97> Tropical <SEG:53> Cyclone <SEG:90> Gonu, <SEG:60> named <SEG:20> for <SEG:10> a <SEG:3> bag <SEG:23> of <SEG:13> palm <SEG:37> leaves <SEG:63> in <SEG:27> the <SEG:7> language <SEG:30> of <SEG:17> the <SEG:0> Maldives, <SEG:67> reached <SEG:87> sustained <SEG:73> winds <SEG:83> of <SEG:77> 240 <SEG:70> kilometers <SEG:47> an <SEG:57> hour <SEG:100> (149 <SEG:50> miles <SEG:33> per <SEG:43> hour) <SEG:80> ."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Former <SEG:?> Massachusetts <SEG:?> governor <SEG:?> Mitt <SEG:?> Romney <SEG:?> won <SEG:?> the <SEG:?> Florida <SEG:?> Republican <SEG:?> Party <SEG:?> presidential <SEG:?> primary <SEG:?> election <SEG:?> on <SEG:?> Tuesday <SEG:?> with <SEG:?> over <SEG:?> 46 <SEG:?> percent <SEG:?> of <SEG:?> the <SEG:?> vote.\nOutput: Former <SEG:85> Massachusetts <SEG:60> governor <SEG:100> Mitt <SEG:90> Romney <SEG:0> won <SEG:50> the <SEG:30> Florida <SEG:55> Republican <SEG:65> Party <SEG:40> presidential <SEG:75> primary <SEG:20> election <SEG:70> on <SEG:45> Tuesday <SEG:95> with <SEG:80> over <SEG:10> 46 <SEG:5> percent <SEG:25> of <SEG:15> the <SEG:35> vote.",
+    "labeled_example": "en_us_1118",
+    "text": "Input: She <SEG:?> directed <SEG:?> officers <SEG:?> to <SEG:?> her <SEG:?> black <SEG:?> Oldsmobile <SEG:?> Intrigue <SEG:?> which <SEG:?> was <SEG:?> 500 <SEG:?> feet <SEG:?> away.\nOutput: She <SEG:82> directed <SEG:91> officers <SEG:45> to <SEG:18> her <SEG:0> black <SEG:64> Oldsmobile <SEG:73> Intrigue <SEG:100> which <SEG:36> was <SEG:9> 500 <SEG:27> feet <SEG:55> away."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: Poland's <SEG:?> men's <SEG:?> visually <SEG:?> impaired <SEG:?> skier <SEG:?> Maciej <SEG:?> Krezel <SEG:?> and <SEG:?> guide <SEG:?> Anna <SEG:?> Ogarzynska <SEG:?> finished <SEG:?> thirteenth <SEG:?> in <SEG:?> the <SEG:?> Super-G. <SEG:?> South <SEG:?> Korea's <SEG:?> Jong <SEG:?> Seork <SEG:?> Park <SEG:?> finished <SEG:?> twenty-fourth <SEG:?> in <SEG:?> the <SEG:?> men's <SEG:?> sitting <SEG:?> Super-G.\nOutput: Poland's <SEG:69> men's <SEG:85> visually <SEG:19> impaired <SEG:92> skier <SEG:100> Maciej <SEG:88> Krezel <SEG:35> and <SEG:73> guide <SEG:62> Anna <SEG:58> Ogarzynska <SEG:38> finished <SEG:8> thirteenth <SEG:81> in <SEG:54> the <SEG:46> Super-G. <SEG:96> South <SEG:65> Korea's <SEG:12> Jong <SEG:50> Seork <SEG:4> Park <SEG:0> finished <SEG:15> twenty-fourth <SEG:77> in <SEG:42> the <SEG:31> men's <SEG:23> sitting <SEG:27> Super-G.",
+    "labeled_example": "en_us_741",
+    "text": "Input: It <SEG:?> is <SEG:?> an <SEG:?> archipelago <SEG:?> with <SEG:?> 15 <SEG:?> islands <SEG:?> spread <SEG:?> out <SEG:?> over <SEG:?> 2.2 <SEG:?> million <SEG:?> km2 <SEG:?> of <SEG:?> ocean.\nOutput: It <SEG:69> is <SEG:77> an <SEG:31> archipelago <SEG:92> with <SEG:46> 15 <SEG:85> islands <SEG:100> spread <SEG:62> out <SEG:54> over <SEG:38> 2.2 <SEG:23> million <SEG:0> km2 <SEG:15> of <SEG:8> ocean."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 365
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 325
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -293
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -458
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6825,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "en_us_360",
+    "text": "Input: Scientists <SEG:?> call <SEG:?> this <SEG:?> process <SEG:?> \"stimulated <SEG:?> emission <SEG:?> of <SEG:?> radiation\" <SEG:?> because <SEG:?> the <SEG:?> atoms <SEG:?> are <SEG:?> stimulated <SEG:?> by <SEG:?> the <SEG:?> bright <SEG:?> light, <SEG:?> causing <SEG:?> the <SEG:?> emission <SEG:?> of <SEG:?> a <SEG:?> photon <SEG:?> of <SEG:?> light, <SEG:?> and <SEG:?> light <SEG:?> is <SEG:?> a <SEG:?> type <SEG:?> of <SEG:?> radiation.\nOutput: Scientists <SEG:97> call <SEG:80> this <SEG:87> process <SEG:77> \"stimulated <SEG:30> emission <SEG:70> of <SEG:67> radiation\" <SEG:100> because <SEG:27> the <SEG:10> atoms <SEG:23> are <SEG:13> stimulated <SEG:40> by <SEG:7> the <SEG:0> bright <SEG:3> light, <SEG:57> causing <SEG:20> the <SEG:37> emission <SEG:33> of <SEG:43> a <SEG:17> photon <SEG:73> of <SEG:53> light, <SEG:90> and <SEG:93> light <SEG:60> is <SEG:63> a <SEG:47> type <SEG:50> of <SEG:83> radiation."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "en_us_1253",
+    "text": "Input: They <SEG:?> did <SEG:?> two <SEG:?> experiments <SEG:?> marking <SEG:?> either <SEG:?> the <SEG:?> DNA <SEG:?> in <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> a <SEG:?> radioactive <SEG:?> phosphorus <SEG:?> or <SEG:?> the <SEG:?> protein <SEG:?> of <SEG:?> the <SEG:?> phage <SEG:?> with <SEG:?> radioactive <SEG:?> sulfur.\nOutput: They <SEG:82> did <SEG:95> two <SEG:86> experiments <SEG:100> marking <SEG:68> either <SEG:64> the <SEG:36> DNA <SEG:77> in <SEG:32> the <SEG:18> phage <SEG:91> with <SEG:14> a <SEG:9> radioactive <SEG:23> phosphorus <SEG:73> or <SEG:50> the <SEG:27> protein <SEG:55> of <SEG:59> the <SEG:41> phage <SEG:45> with <SEG:0> radioactive <SEG:5> sulfur."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "en_us_399",
+    "text": "Input: Italy's <SEG:?> main <SEG:?> goals <SEG:?> were <SEG:?> African <SEG:?> countries. <SEG:?> To <SEG:?> capture <SEG:?> those <SEG:?> countries, <SEG:?> they <SEG:?> would <SEG:?> need <SEG:?> to <SEG:?> have <SEG:?> a <SEG:?> troop <SEG:?> launching <SEG:?> pad, <SEG:?> so <SEG:?> as <SEG:?> troops <SEG:?> could <SEG:?> sail <SEG:?> across <SEG:?> the <SEG:?> Mediterranean <SEG:?> Sea <SEG:?> and <SEG:?> invade <SEG:?> Africa.\nOutput: Italy's <SEG:59> main <SEG:24> goals <SEG:79> were <SEG:72> African <SEG:90> countries. <SEG:100> To <SEG:93> capture <SEG:83> those <SEG:76> countries, <SEG:97> they <SEG:62> would <SEG:52> need <SEG:21> to <SEG:7> have <SEG:3> a <SEG:0> troop <SEG:28> launching <SEG:14> pad, <SEG:55> so <SEG:45> as <SEG:69> troops <SEG:31> could <SEG:41> sail <SEG:48> across <SEG:34> the <SEG:17> Mediterranean <SEG:66> Sea <SEG:86> and <SEG:10> invade <SEG:38> Africa."
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "en_us_1137",
+    "text": "Input: The <SEG:?> village <SEG:?> of <SEG:?> Haldarsvík <SEG:?> offer <SEG:?> views <SEG:?> of <SEG:?> the <SEG:?> nearby <SEG:?> island <SEG:?> Eysturoy <SEG:?> and <SEG:?> has <SEG:?> an <SEG:?> unusual <SEG:?> octagonal <SEG:?> church.\nOutput: The <SEG:73> village <SEG:53> of <SEG:80> Haldarsvík <SEG:93> offer <SEG:40> views <SEG:47> of <SEG:60> the <SEG:0> nearby <SEG:20> island <SEG:87> Eysturoy <SEG:100> and <SEG:27> has <SEG:67> an <SEG:33> unusual <SEG:13> octagonal <SEG:7> church."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 546
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 131
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 232
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -372
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7423,
+  "errors": null
+ },
+ {
+  "candidate": 6,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Keep any copula or auxiliary (is/are/was/were/has/have/had/will/would/does/did), including the immediate negator 'not', together with the immediately following short complement when that complement is a prepositional, locative, temporal, measurement phrase, numeral+unit, or a short noun phrase of four tokens or fewer; prefer cuts after that complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 357
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7243,
+  "errors": null
+ },
+ {
+  "candidate": 7,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Keep internal noun modifiers (e.g., an 'of'‑phrase or essential post‑nominal modifier) with the head noun; keep any numeral (digits or spelled-out) together with its immediately following unit or measurement phrase (including parenthetical conversions)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 80
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6966,
+  "errors": null
+ },
+ {
+  "candidate": 8,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Keep a head noun together with any immediately following restrictive post‑nominal modifier that identifies it (an 'of' phrase, quoted/parenthetical name, or adjacent noun). Allow cuts only after that modifier is complete, not between the noun and its essential modifier."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 97
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6983,
+  "errors": null
+ }
+]

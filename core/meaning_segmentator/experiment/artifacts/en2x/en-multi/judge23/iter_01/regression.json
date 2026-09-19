@@ -1,0 +1,164 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.01515,
+  "lo": 0.0013,
+  "hi": 0.02821,
+  "n": 2773,
+  "n_clusters": 300,
+  "dev_a": {
+   "mean": 0.01515,
+   "lo": 0.0013,
+   "hi": 0.02821,
+   "n": 2773,
+   "n_clusters": 300
+  },
+  "verified": false,
+  "tries": 1
+ },
+ "by_bin": {
+  "≤3": 0.027,
+  "≤5": 0.0125,
+  "≤7": 0.0056,
+  "≤10": 0.0007,
+  "≤99": -0.0117
+ },
+ "n_worse": 1049,
+ "n_better": 1283,
+ "worst": [
+  {
+   "id": "en_us_1427",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7507,
+   "before": "Internal poisoning ‖ may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis cannot be made.",
+   "after": "Internal poisoning may not be immediately apparent. ‖ Symptoms, ‖ such as vomiting ‖ are sufficiently general that an immediate diagnosis ‖ cannot be made."
+  },
+  {
+   "id": "en_us_1026",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.7301,
+   "before": "The luminosity ‖ and ‖ rotation ‖ are ‖ used ‖ together ‖ to determine a star's Rossby number, ‖ which is related to plasma flow.",
+   "after": "The luminosity and rotation ‖ are ‖ used ‖ together ‖ to ‖ determine ‖ a star's Rossby number, ‖ which is related to plasma flow."
+  },
+  {
+   "id": "en_us_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.712,
+   "before": "The commissioner said, \"We haven't yet agreed on rules of origin and tariff con[c]essions, ‖ but the framework we have is enough to start trading on July 1, 2020\".",
+   "after": "The commissioner said, ‖ \"We haven't yet agreed on rules of origin and tariff con[c]essions, but the framework we have is enough to start trading on July 1, 2020\"."
+  },
+  {
+   "id": "en_us_86",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.6755,
+   "before": "Pittman suggested ‖ that conditions wouldn't improve until sometime ‖ next week.",
+   "after": "Pittman ‖ suggested that conditions wouldn't improve ‖ until sometime next week."
+  },
+  {
+   "id": "en_us_1111",
+   "k": 2,
+   "bin": "≤5",
+   "delta": -0.6729,
+   "before": "Adekoya has since been in Edinburgh Sheriff Court ‖ charged with murdering ‖ her son.",
+   "after": "Adekoya has since been in Edinburgh Sheriff Court ‖ charged with murdering her ‖ son."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_333",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.7481,
+   "before": "The celebrations started ‖ with a special show ‖ by the world-renowned group Cirque ‖ du Soleil.",
+   "after": "The celebrations started ‖ with a special show ‖ by the world-renowned group ‖ Cirque du Soleil."
+  },
+  {
+   "id": "en_us_776",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7425,
+   "before": "Although in theory they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are ‖ not.",
+   "after": "Although in theory ‖ they can take place annually ‖ (so long as they are in different countries), ‖ in practice ‖ they are not."
+  },
+  {
+   "id": "en_us_594",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.7372,
+   "before": "Only animals have brains (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do ‖ not have brains).",
+   "after": "Only animals have brains ‖ (though not even all animals do; ‖ jellyfish, ‖ for example, ‖ do not have brains)."
+  },
+  {
+   "id": "en_us_1640",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.7323,
+   "before": "On icy and snowy roadways, ‖ friction is low and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low and ‖ you cannot drive as if you were on bare asphalt."
+  },
+  {
+   "id": "en_us_1640",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.7253,
+   "before": "On icy and snowy roadways, ‖ friction is low ‖ and you cannot drive ‖ as if you were on bare asphalt.",
+   "after": "On icy and snowy roadways, ‖ friction is low ‖ and ‖ you cannot drive as if you were on bare asphalt."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.563,
+   "2": 4.072,
+   "3": 2.946,
+   "4": 2.232,
+   "5": 1.801,
+   "6": 1.55,
+   "7": 1.364,
+   "8": 1.252,
+   "9": 1.165,
+   "10": 1.106,
+   "11": 1.075,
+   "12": 1.059,
+   "13": 1.05
+  },
+  "revision": {
+   "1": 8.017,
+   "2": 4.232,
+   "3": 2.934,
+   "4": 2.262,
+   "5": 1.839,
+   "6": 1.625,
+   "7": 1.409,
+   "8": 1.291,
+   "9": 1.205,
+   "10": 1.152,
+   "11": 1.115,
+   "12": 1.081,
+   "13": 1.067
+  },
+  "delta": {
+   "1": 0.454,
+   "2": 0.16,
+   "3": -0.012,
+   "4": 0.03,
+   "5": 0.038,
+   "6": 0.075,
+   "7": 0.045,
+   "8": 0.039,
+   "9": 0.04,
+   "10": 0.046,
+   "11": 0.04,
+   "12": 0.022,
+   "13": 0.017
+  }
+ },
+ "why": "Adding the clause‑boundary/punctuation fallback made the model prefer cuts at clear clause breaks instead of immediately after auxiliaries/finite verbs with short complements, so it fixed many short-piece mistakes (positive mean gains in the ≤3, ≤5, ≤7, ≤10 bins) by keeping short complements and multiword names together. The same change shifted some cuts earlier in longer sentences, splitting noun phrases, quoted spans, and objects (the ≤99 bin is slightly negative and several large negative tail moves show cuts inserted inside names/objects), producing localized large degradations.",
+ "lesson": "A later revision should preserve the short‑segment gains from preferring clause/punctuation boundaries while avoiding moves that introduce earlier cuts which split multiword noun phrases, quoted spans, or long complements in longer sentences.",
+ "blamed": [
+  "C_end"
+ ]
+}

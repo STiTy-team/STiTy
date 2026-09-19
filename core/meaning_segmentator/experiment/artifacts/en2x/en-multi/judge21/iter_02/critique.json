@@ -1,0 +1,29 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt fails to protect noun/numeral heads from losing essential post‑nominal material: it often ranks cuts that separate a noun or numeral from an immediately following modifier or complement (measurement/unit, restrictive PP, participial clause, relative clause, or parenthetical) that identifies or disambiguates that head.",
+    "evidence": "['en_us_1527','en_us_101','en_us_375','en_us_1253','en_us_292','en_us_1248','en_us_1369','en_us_1157','en_us_1116','en_us_1297'] — each case shows the policy splitting a noun or numeral from an immediately following essential modifier (e.g. measurement/unit, 'in the phage' PP, 'that can hold 55,000 barrels', '200 pounds (90kg) on Earth', 'professor at the University...') while the offline target keeps them together.",
+    "type_predicate": "Sentences where a noun or a numeral is immediately followed by an essential post‑nominal modifier (a restrictive relative clause, a prepositional complement, a participial clause, or a measurement/unit parenthetical) that is required to identify or interpret that noun/numeral.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a noun (or numeral) and an immediately following essential post‑nominal modifier (restrictive relative clause, prepositional complement, participial clause, or measurement/unit parenthetical)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt fails to protect noun/numeral heads from losing essential post‑nominal material: it often ranks cuts that separate a noun or numeral from an immediately following modifier or complement (measurement/unit, restrictive PP, participial clause, relative clause, or parenthetical) that identifies or disambiguates that head.",
+   "evidence": "['en_us_1527','en_us_101','en_us_375','en_us_1253','en_us_292','en_us_1248','en_us_1369','en_us_1157','en_us_1116','en_us_1297'] — each case shows the policy splitting a noun or numeral from an immediately following essential modifier (e.g. measurement/unit, 'in the phage' PP, 'that can hold 55,000 barrels', '200 pounds (90kg) on Earth', 'professor at the University...') while the offline target keeps them together.",
+   "type_predicate": "Sentences where a noun or a numeral is immediately followed by an essential post‑nominal modifier (a restrictive relative clause, a prepositional complement, a participial clause, or a measurement/unit parenthetical) that is required to identify or interpret that noun/numeral.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a noun (or numeral) and an immediately following essential post‑nominal modifier (restrictive relative clause, prepositional complement, participial clause, or measurement/unit parenthetical)."
+   }
+  }
+ ]
+}
