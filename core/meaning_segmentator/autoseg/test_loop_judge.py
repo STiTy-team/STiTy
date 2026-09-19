@@ -1020,6 +1020,45 @@ class ProcedureRole(unittest.TestCase):
                                  2, True, 4, 8, ["check", "order"])
         self.assertEqual([r for r, _ in plan].count("procedure"), 1)
 
+    def test_survives_the_whole_edit_path(self):
+        """`enforce_role` 을 통과한 편집이 **뒤에서 다시 죽지 않는지.**
+
+        이 버그가 두 번 물었다. 한 번은 `enforce_kind` 가 `fallback` 의 칸을 지시문과 다르게
+        요구해서, 한 번은 `frozen_intact` 가 역할과 무관하게 `[Scoring Rules]` 를 지켜서
+        ("동결 섹션이 바뀌었다: [Scoring Rules]"). 둘 다 후보가 조용히 사라지고 로그만 보면
+        PE 탓처럼 보인다. **역할 검사 하나만 통과시키는 테스트로는 못 잡는다** — 편집이 실제로
+        프롬프트가 되는 데까지 가 봐야 한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
+                "[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
+                "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        s7 = {u["id"]: u["text"] for u in aj.edit_units(base)}["S7"]
+        edit = [{"op": "replace", "id": "S7", "text": s7 + " Tie: take the later.", "_was": s7}]
+
+        keep, bad = aj.enforce_role([dict(e) for e in edit], "procedure")
+        self.assertEqual((len(keep), bad), (1, []))
+        cand, note, _d, deltas, _sk = aj.parse_edits(
+            {"edits": [dict(e) for e in edit]}, base, 20_000, aj.unfreezes("procedure"))
+        self.assertIsNotNone(cand, note)                     # 여기서 죽으면 후보가 사라진다
+        self.assertIn("Tie: take the later.", cand)
+        self.assertEqual(len(aj.edit_units(cand)), len(aj.edit_units(base)))
+        self.assertEqual(aj.check_skeleton(cand, base=base), [])
+
+    def test_other_roles_still_cannot_reach_it(self):
+        """열어 준 것은 `procedure` 한 역할뿐이다 — 기본값으로는 여전히 막힌다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
+                "[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
+                "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        s7 = {u["id"]: u["text"] for u in aj.edit_units(base)}["S7"]
+        cand, note, *_ = aj.parse_edits(
+            {"edits": [{"op": "replace", "id": "S7", "text": s7 + " x", "_was": s7}]},
+            base, 20_000)
+        self.assertIsNone(cand)
+        self.assertTrue(any("[Scoring Rules]" in n for n in note), note)
+        self.assertEqual(aj.unfreezes("replace"), ())
+        self.assertEqual(aj.unfreezes("procedure"), ("[Scoring Rules]",))
+
     def test_instruction_points_at_the_measured_lever(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         spec = aj.ENGINEER_SYSTEM[aj.ENGINEER_SYSTEM.index('"procedure"'):]

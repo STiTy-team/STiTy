@@ -695,10 +695,18 @@ def clean_findings(blob: dict, prompt: str | None = None, cap: int = 3) -> list[
     return woven
 
 
-def frozen_intact(before: str, after: str) -> list[str]:
-    """PE 가 건드리면 안 되는 섹션이 그대로인지. 다르면 그 섹션 이름을 돌려준다."""
+def frozen_intact(before: str, after: str, allow: tuple[str, ...] = ()) -> list[str]:
+    """PE 가 건드리면 안 되는 섹션이 그대로인지. 다르면 그 섹션 이름을 돌려준다.
+
+    `allow` 는 **이 역할에만** 열어 주는 섹션이다. `procedure` 역할이 `[Scoring Rules]` 의 절차
+    줄을 다시 쓰는데, 그 검사를 역할과 무관하게 걸면 편집이 `enforce_role` 을 통과한 뒤 여기서
+    다시 죽는다 — judge34 iter 1 에서 실제로 그랬다("동결 섹션이 바뀌었다: [Scoring Rules]").
+    **어느 역할에 무엇이 열려 있는지는 한 군데서만 정해야 한다**(`enforce_role`). 여기서는 그
+    결정을 받아 적용만 한다."""
     bad = []
     for header in FROZEN:
+        if header in allow:
+            continue
         if section_of(before, header) != section_of(after, header):
             bad.append(header)
     return bad
@@ -713,14 +721,15 @@ def section_of(prompt: str, header: str) -> str:
     return prompt[i:min(nxt)].strip() if nxt else prompt[i:].strip()
 
 
-def parse_prompt(blob: dict, current: str, budget: int) -> tuple[str | None, list[str]]:
+def parse_prompt(blob: dict, current: str, budget: int,
+                 allow_frozen: tuple[str, ...] = ()) -> tuple[str | None, list[str]]:
     """PE 출력 검증 — 통과하면 (프롬프트, 변경목록), 아니면 (None, 사유)."""
     errs: list[str] = []
     pr = (blob or {}).get("prompt") or ""
     if not pr.strip():
         return None, ["prompt 가 비었다"]
     errs += check_skeleton(pr, base=current)
-    errs += [f"동결 섹션이 바뀌었다: {h}" for h in frozen_intact(current, pr)]
+    errs += [f"동결 섹션이 바뀌었다: {h}" for h in frozen_intact(current, pr, allow_frozen)]
     if len(pr) > budget:
         errs.append(f"길이 초과: {len(pr)} > {budget}")
     if errs:
@@ -936,6 +945,13 @@ ROLES = ("free", "examples_only", "single_small", "narrow_rule", "prune", "rewri
 # `procedure` 가 한 줄을 다시 쓸 때 허용하는 순증감 폭. 절차문 한 줄이 1,200자쯤이라 `REPLACE_SLACK`
 # (80자) 으로는 어순만 바꿔도 걸린다. 절차를 **바꾸라는** 역할이므로 문장을 덧붙일 여지를 준다.
 PROCEDURE_SLACK = 300
+# 역할별로 열어 주는 동결 섹션. `frozen_intact` 가 이걸 받아 적용만 한다 — 어느 역할에 무엇이
+# 열려 있는지를 두 군데서 정하면 한쪽을 고쳐도 다른 쪽이 죽인다(judge34 iter 1 이 그랬다).
+ROLE_UNFREEZES = {"procedure": ("[Scoring Rules]",)}
+
+
+def unfreezes(role: str) -> tuple[str, ...]:
+    return ROLE_UNFREEZES.get(role, ())
 # `replace` 역할이 허용하는 **순증가** 상한. 0 으로 두면 PE 가 지운 것보다 한 글자라도 길게 쓰면
 # 거부돼 재시도만 태운다. 원칙 하나가 200~300자이고 Critic 의 문면이 60단어 이하(350자 안팎)라
 # 한 줄을 지우고 비슷한 한 줄을 넣는 폭을 준다.
@@ -1329,7 +1345,8 @@ def resolve_labeled_examples(edits, examples: dict[str, str]) -> tuple[list, lis
     return out, skipped
 
 
-def parse_edits(blob: dict, current: str, budget: int) -> tuple[
+def parse_edits(blob: dict, current: str, budget: int,
+                allow_frozen: tuple[str, ...] = ()) -> tuple[
         str | None, list[str], str | None, list[dict], list[dict]]:
     """PE 편집 출력을 적용하고 검증한다 — (프롬프트 또는 None, 변경목록 또는 사유, 적용 결과,
     편집별 증감, 건너뛴 편집). 적용 결과는 검증에 떨어져도 돌려준다 — 길이 피드백을 만들 때 쓴다."""
@@ -1342,7 +1359,8 @@ def parse_edits(blob: dict, current: str, budget: int) -> tuple[
                if u["section"] == "[Examples]" and u["text"].lstrip().startswith("Input:"))
     if n_ex > MAX_EXAMPLES:
         return None, [f"예시 {n_ex}개 > {MAX_EXAMPLES}"], draft, deltas, skipped
-    pr, note = parse_prompt({"prompt": draft, "changelog": blob.get("changelog")}, current, budget)
+    pr, note = parse_prompt({"prompt": draft, "changelog": blob.get("changelog")}, current, budget,
+                            allow_frozen)
     return pr, note, draft, deltas, skipped
 
 

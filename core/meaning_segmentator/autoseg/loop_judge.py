@@ -718,8 +718,13 @@ def merge_winners(prompt: str, winners: list[dict], budget: int) -> tuple:
         notes += [str(x) for x in ((w["pe"] or {}).get("changelog") or [])]
     if not edits:
         return None, ["합칠 편집이 없다"], [], dropped
+    # 합치는 편집이 어느 역할에서 왔는지 여기서는 모른다. S 단위를 고치는 편집이 섞여 있으면
+    # 그 칸을 열어 준다 — `enforce_role` 이 이미 `procedure` 만 S 를 만질 수 있게 걸렀으므로,
+    # 여기 S 편집이 있다는 것 자체가 그 역할을 통과했다는 뜻이다.
+    allow = ("[Scoring Rules]",) if any(str(e.get("id") or "").startswith("S")
+                                       for e in edits) else ()
     cand, note, _draft, deltas, _skipped = aj.parse_edits(
-        {"changelog": notes, "edits": edits}, prompt, budget)
+        {"changelog": notes, "edits": edits}, prompt, budget, allow)
     return cand, (notes if cand else note), deltas, dropped
 
 
@@ -1818,7 +1823,8 @@ def main() -> int:
             timing["engineer"] = round(timing.get("engineer", 0) + time.perf_counter() - t0, 1)
             save_usage(idir)
             pe, bad = resolve(pe, role, finding)
-            cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
+            cand, note, draft, deltas, skipped = aj.parse_edits(
+                pe, prompt, budget, aj.unfreezes(role))
             tries = [record(j, pe, deltas, skipped, draft, cand, note)]
             # 역할 제약을 어겨 **편집이 하나도 안 남으면** 그 후보는 원본 그대로가 되어 슬롯을
             # 통째로 버린다. 사유를 돌려주고 한 번 더 시킨다 — 길이 초과에 이미 있는 경로와 같다.
@@ -1834,7 +1840,8 @@ def main() -> int:
                                   max_tokens=AGENT_MAX_TOKENS, purpose="engineer:role_retry")
                 save_usage(idir)
                 pe, _bad2 = resolve(pe, role, finding)
-                cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
+                cand, note, draft, deltas, skipped = aj.parse_edits(
+                    pe, prompt, budget, aj.unfreezes(role))
                 tries.append(record(j, pe, deltas, skipped, draft, cand, note))
             if cand is None and aj.only_too_long(note):
                 fb = aj.edit_feedback(draft, prompt, target, deltas)
@@ -1847,7 +1854,8 @@ def main() -> int:
                                   max_tokens=AGENT_MAX_TOKENS, purpose="engineer:shorten")
                 save_usage(idir)
                 pe, _bad3 = resolve(pe, role, finding, pin=False)
-                cand, note, draft, deltas, skipped = aj.parse_edits(pe, prompt, budget)
+                cand, note, draft, deltas, skipped = aj.parse_edits(
+                    pe, prompt, budget, aj.unfreezes(role))
                 tries.append(record(j, pe, deltas, skipped, draft, cand, note))
             return pe, cand, note, deltas, tries
 
