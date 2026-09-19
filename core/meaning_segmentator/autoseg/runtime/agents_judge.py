@@ -72,11 +72,26 @@ You receive cases. Each case is one sentence at one budget T and contains:
   short pieces or dense cuts are bad. Do not turn it into a general caution about cutting.
 - "loss_by_bin": per latency bin, how many (sentence, k) pairs the measured set has, the mean gap
   between the offline target and this prompt, and each bin's share of the total loss. This is
-  where the prompt is losing. Measured on the current run: 61% of the loss sat in the "≤3" bin
-  and 26% in "≤5", and 9 of 10 rejected revisions LOWERED those two bins — every one of them
-  told the model where NOT to cut, which thins the cuts the short bins need. A finding is worth
-  reporting in proportion to the loss it addresses; one that trades the short bins for the long
-  ones loses on the total.
+  where the prompt is losing, and a finding is worth reporting in proportion to the loss it
+  addresses. One structural asymmetry to hold on to: a good cut set in a short bin is NECESSARILY
+  dense, because the number of cuts is the sentence length divided by the budget. So a finding
+  that tells the model where NOT to cut removes candidates the short bins have to use, and one
+  that trades the short bins for the long ones loses on the total.
+- "rejected_by_bin" (when revisions earlier in this run were rejected): for each of them, its
+  "edits" and the mean H_set change per latency bin it produced. Read this before proposing: when
+  the bins show that a direction has already been tried and lost, a reworded version of the same
+  direction loses again.
+- "rank_depth": for each depth d, how often this prompt's top-d positions coincide with the
+  measurement's top-d, as a multiple of what coincidence alone would give — 1.0 means the ordering
+  at that depth carries no information. It says which depths are worth a finding at all.
+- "misorder_cost": for each depth d, the measured value of the d-th best position minus the mean
+  value of the positions still unranked at that point — what one wrong pick at that depth costs.
+  If this does not fall as d grows, there is no depth at which the order may be left unresolved.
+- "rank_inversions": pairs taken from the depths where the ordering carries least information. In
+  each pair this prompt scored A above B while the measurement says B is the better cut; both are
+  shown with the words around them. Every position in such a pair is one the prompt already
+  declined to rank at the top, so no prohibition separates them — a finding drawn from these pairs
+  has to say which of two imperfect positions is the better cut.
 - "last_revision" (only after the first measured revision): what the previous revision did and
   how it landed — its "edits", the measured "delta", "by_bin" (mean H_set change per latency bin),
   "n_worse"/"n_better", and a post-mortem ("why", "blamed" units, "lesson"). If it has
@@ -86,31 +101,40 @@ You receive cases. Each case is one sentence at one budget T and contains:
   carries "near_miss": true, its mean was positive on the full set and only the confidence
   bound touched zero — that change helped, "by_bin" says where. Then report what STILL loses in
   those same bins so the next revision can keep the change and go further, not undo it. When
-  "base" is present, the prompt you were given IS that revision, so its text can be a target.
-  Measured on that base (judge13 iter 2): adding "do not cut between a predicate and its
-  arguments / inside enumerations" lowered the base's gain ("vs_base" "≤3" −0.008). A finding
-  that asks for another cut prohibition on this base needs evidence that beats that. Its "edits"
-  text is NOT in the current prompt — a "replace" target must quote the prompt you were given.
+  "base" is present, the prompt you were given IS that revision, so its text can be a target. A
+  finding that asks for yet another cut prohibition on top of it has to answer "vs_base": if the
+  base already gained in a bin, adding a prohibition that thins that bin gives the gain back. Its
+  "edits" text is NOT in the current prompt — a "replace" target must quote the prompt you were given.
 
-Prefer a finding that ADDS a missing check over one that retunes an existing principle. Measured
-across judge13-judge15: the two revisions that were adopted each added one narrow condition that a
-reader can recognise in the source alone (keep an essential post-nominal modifier with its head;
-keep a numeral with its unit). The five that changed how strongly an existing principle applies —
-relaxing a prohibition, reordering priorities, widening a scope — were all rejected, and each one
-lowered the short-latency bins first. If your finding is "this principle is too strong/too weak",
-say instead which specific construction the prompt is failing to check for.
+Two shapes of finding are possible and they are not interchangeable.
+
+A "check" is UNARY — a condition on one position ("cutting here is bad when ..."). The model
+applies it to each marker on its own, so it separates positions that differ on that condition.
+
+An "order" is BINARY — a comparison between two positions ("when neither is clean, prefer ... over
+..."). This is the only shape that constrains the order INSIDE a group of positions that a check
+has already judged alike. Once several positions all satisfy "do not cut here", no unary check
+says which of them to cut first, and the short bins have to cut some of them anyway.
+
+Prefer adding a missing judgement over retuning how strongly an existing one applies: retuning
+("relax this prohibition", "reorder these priorities", "widen this scope") gives the model no new
+way to tell two positions apart. And before proposing a check, look for it among the units you
+were given — if the prompt already makes that judgement, restating it adds length and no
+information; turn the finding into an "order" over the positions that judgement has pushed down.
+If your finding is "this principle is too strong/too weak", say instead either which construction
+the prompt fails to check for, or which of two positions it should prefer.
 
 Your job: name the JUDGEMENT the prompt is getting wrong, not the tokens it fires on. A finding
 is worth reporting only if it recurs across cases — one sentence is an anecdote. Write it so a
 reader scoring an unseen sentence could apply it: a question to ask, or a condition on meaning.
-Keep "edit.text" under 60 words — one judgement, not a paragraph (judge10 iter 2 proposed 600
-characters). Never write token lists ("if the previous word is 'the'"), never quote more than 40 characters of
+Keep "edit.text" under 60 words — one judgement, not a paragraph. Never write token lists ("if the previous word is 'the'"), never quote more than 40 characters of
 source text, never name this sentence.
 
 Return ONLY JSON:
 {
   "findings": [
-    {"diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
+    {"kind": "check" | "order",
+     "diagnosis": "one sentence: what the prompt mis-judges, in terms of meaning",
      "evidence": "the ids of the cases that show it, then what they share — the count is the
                   length of that list; never state a number of cases you did not list",
      "type_predicate": "ONE sentence naming the sentences this finding applies to, as a condition
@@ -120,7 +144,9 @@ Return ONLY JSON:
                   ('a numeral or quantifier is immediately followed by its unit or measurement
                   phrase') and NOT a restatement of the damage ('cuts that harm cohesion').
                   Narrow enough that a minority of sentences match: a condition that holds of
-                  almost every sentence selects nothing and the finding is dropped.",
+                  almost every sentence selects nothing and the finding is dropped. For
+                  "kind": "order" it must name a configuration in which BOTH positions of the
+                  comparison occur in the same sentence — the comparison is untestable otherwise.",
      "edit": {"where": "core_principles" | "examples",
               "action": "add" | "replace",
               "target": "first few words of the line to replace (omit when adding)",
@@ -422,7 +448,13 @@ def clean_findings(blob: dict, prompt: str | None = None, cap: int = 3) -> list[
         if (edit.get("action") == "replace" and prompt is not None
                 and " ".join(str(edit["target"]).split()) not in " ".join(prompt.split())):
             continue
-        out.append({"diagnosis": (f.get("diagnosis") or "").strip(),
+        # `kind` 는 발견의 형태다 — "check" 는 한 자리에 대한 단항 조건, "order" 는 두 자리를
+        # 가르는 비교. 역할 배분이 이것으로 갈린다(단항 조건을 선호문 역할에 넣으면 내용이
+        # 납작해지고, 비교를 결속문 역할에 넣으면 비교가 사라진다). 값이 없으면 종전과 같은
+        # 단항으로 본다.
+        kind = str(f.get("kind") or "check").strip().lower()
+        out.append({"kind": kind if kind in ("check", "order") else "check",
+                    "diagnosis": (f.get("diagnosis") or "").strip(),
                     "evidence": (f.get("evidence") or "").strip(),
                     "type_predicate": (f.get("type_predicate") or "").strip(),
                     "edit": {k: edit.get(k) for k in ("where", "action", "target", "text")}})

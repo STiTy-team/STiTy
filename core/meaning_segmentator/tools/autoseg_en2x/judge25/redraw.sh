@@ -37,4 +37,5 @@ LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/judge25r3.log
     --min-gap 1 --min-chunk 2 --max-k 99 --k-samples 1 \
     --workers 720 --score-workers 2 \
     --provider openai --model gpt-5-mini --budget "${BUDGET:-12}" >> "$LOG" 2>&1
-echo "== $(date '+%F %T') judge25r3 exit=$?" >> "$LOG"
+rc=$?
+echo "== $(date '+%F %T') judge25r3 exit=$rc" >> "$LOG"

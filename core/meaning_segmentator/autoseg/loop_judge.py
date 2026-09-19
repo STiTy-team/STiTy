@@ -213,6 +213,46 @@ def rank_depth(rows: list[dict], max_d: int = 13) -> dict[str, float]:
     return {str(d): round(st.mean(v), 3) for d, v in sorted(acc.items())}
 
 
+def misorder_cost(rows: list[dict], max_d: int = 13) -> dict[str, float]:
+    """깊이 d 에서 **한 번 잘못 고를 때 잃는 양** — d번째로 좋은 자리의 라벨에서 그 시점에 아직
+    순위가 안 정해진 자리들의 평균 라벨을 뺀 것. 라벨만 쓰므로 비용 0.
+
+    `rank_depth` 는 "깊이 d 의 순위가 정보를 갖는가" 를 말하고 이 값은 "거기서 틀리면 얼마나
+    비싼가" 를 말한다. 둘이 같이 있어야 판단이 된다 — 깊은 곳이 무작위여도 손해가 0 이면 고칠
+    값이 없고, 손해가 얕은 곳과 같으면 반드시 고쳐야 한다. Critic 지시문은 이 값을 **읽는 법**만
+    말하고 수치는 여기서 매 런 다시 계산된다(다른 코퍼스로 옮기면 값이 따라 바뀐다).
+    """
+    acc: dict[int, list[float]] = {}
+    for r in rows:
+        lb = r.get("labels")
+        if not lb or len(lb) < 3:
+            continue
+        v = sorted(lb, reverse=True)
+        for d in range(1, min(max_d, len(v) - 1) + 1):
+            tail = v[d - 1:]
+            if len(tail) < 2:
+                continue
+            acc.setdefault(d, []).append(v[d - 1] - st.mean(tail))
+    return {str(d): round(st.mean(x), 4) for d, x in sorted(acc.items())}
+
+
+def rejected_by_bin(history: list[dict], n_max: int = 6) -> list[dict]:
+    """**이 런에서** 기각된 개정들의 구간별 Δ. 같은 방향을 말만 바꿔 되풀이하는 것을 막는다.
+
+    부검이 붙은 항목(이터 대표 후보)만 담으므로 기각 이터당 한 줄이다. 런을 가로질러 가져오지
+    않는다 — 다른 런의 기각은 데이터도 프롬프트도 달라 이 런의 근거가 못 된다.
+    """
+    out = []
+    for h in history:
+        if h.get("adopted"):
+            continue
+        by = (h.get("diagnosis") or {}).get("by_bin")
+        if not by:
+            continue
+        out.append({"iter": h["iter"], "edits": h.get("edits"), "by_bin": by})
+    return out[-n_max:]
+
+
 def rank_inversions(rows: list[dict], sents: list, spaced: bool, n_max: int = 15,
                     band: tuple[int, int] = (4, 10), min_gap_label: float = 0.15) -> list[dict]:
     """깊은 구간의 **역전 쌍** — 프롬프트는 A 를 B 보다 높게 봤는데 라벨은 B 가 훨씬 낫다.
@@ -940,6 +980,12 @@ def main() -> int:
                         "것 중 하한 최고를 채택한다. 1 이면 종전 경로(최고 하나만 --adopt-strong 구간에서 "
                         "새 추출 확인). 벌을 3 으로 하고 기준선도 3 벌이면 Δ 의 sd 가 0.0058 → 0.0033 "
                         "으로 줄어 하한 > 0 문턱이 +0.011 에서 +0.0065 로 내려간다")
+    p.add_argument("--draw-tag", default=None,
+                   help="벌별 캐시 파일 이름에 쓰는 꼬리표. 기본은 런 이름이다. **다른 런에서 뽑아 둔 "
+                        "벌을 재사용하려면 그 런과 같은 값을 준다** — 기준선 3벌을 다시 뽑지 않아도 된다")
+    p.add_argument("--score-prompts", default=None,
+                   help="--score-only 에서 기준선과 맞붙일 프롬프트 파일 여러 개를 쉼표로. 한 프로세스에서 "
+                        "전부 병렬로 재므로 기준선을 한 번만 뽑고 GPU 경합도 없다. --prompt 는 무시된다")
     p.add_argument("--final-draws", type=int, default=1,
                    help="최종 test 를 몇 벌로 재서 평균할지. 판정을 다벌로 해 놓고 최종 숫자만 한 벌로 "
                         "재면 결론이 다시 ±0.011 잡음에 묻힌다 — 채택본과 v0 를 같은 벌 수로 잰다")
@@ -1218,8 +1264,14 @@ def main() -> int:
     def draw_cache(tag: str) -> JsonCache:
         """벌마다 다른 캐시 파일. **런 이름이 들어가야 한다** — `cache/` 는 `--from-run` 쪽으로의
         심볼릭 링크라 여러 런이 한 디렉토리를 쓰고, 이름이 겹치면 다음 런이 그 벌을 그대로 읽어
-        "새로 뽑은 것" 이 아니게 된다."""
-        return JsonCache(run_dir / "cache" / f"segment_{tag}_{run_dir.name}.json")
+        "새로 뽑은 것" 이 아니게 된다.
+
+        **`shared` 여야 한다.** 한 벌을 여러 프롬프트가 동시에 쓰므로(변형 넷을 병렬로 재면 네
+        스레드가 같은 파일을 만진다) 인스턴스를 따로 만들면 각자 같은 `.tmp` 에 쓰고 rename 해서,
+        먼저 rename 한 쪽이 남의 tmp 를 없애 `FileNotFoundError` 로 런이 죽는다(2026-09-19
+        judge29 첫 시도). 죽지 않는 경우에도 서로의 항목을 덮어 캐시가 조용히 사라진다."""
+        return JsonCache.shared(run_dir / "cache"
+                                / f"segment_{tag}_{a.draw_tag or run_dir.name}.json")
 
     def score_prompt(pr, sents, lab, tag, rows_m=None, cache=None):
         """분절(API) → 절단 집합 → H_set. `rows_m` 을 주면 이미 끝난 분절을 쓴다 — 후보 여럿을
@@ -1410,7 +1462,8 @@ def main() -> int:
     def propose(it: int, idir: Path, cases: list, budget: int, target: int, timing: dict,
                 examples: dict | None = None, loss_bins: dict | None = None,
                 base: tuple[str, dict] | None = None, gate_cases: list | None = None,
-                inversions: list | None = None):
+                inversions: list | None = None, depth: dict | None = None,
+                misorder: dict | None = None):
         nonlocal checkpoint
         """Critic → PE → dev-A 채점·판정 한 번. `budget` 은 코드가 검사하는 상한, `target` 은
         모델에게 알리는 목표(상한의 95%, `agents_judge.soft_target`). 채택이면 (개정본, 절단집합, H, 지표, 채택 근거 Δ),
@@ -1454,6 +1507,13 @@ def main() -> int:
             crit_user["base"] = base_tag["built_on"] + " — this prompt is that revision; it is measured against the current best"
         if loss_bins:
             crit_user["loss_by_bin"] = loss_bins
+        if depth:
+            crit_user["rank_depth"] = depth
+        if misorder:
+            crit_user["misorder_cost"] = misorder
+        rej = rejected_by_bin(history)
+        if rej:
+            crit_user["rejected_by_bin"] = rej
         if inversions:
             # 깊은 구간의 역전 쌍 — 집계값("8위부터 무작위")은 어디를 보라는 말일 뿐이고,
             # 무엇을 쓸지는 두 자리를 가르는 표면 특징에서 나온다.
@@ -2284,7 +2344,8 @@ def main() -> int:
             # 링크라 여러 런이 한 디렉토리를 쓴다. 이터 번호만 넣으면 다음 런의 같은 이터가
             # 이 파일을 그대로 읽어 "새 추출" 이 아니게 된다(v0 가 고정이라 기준선에서 반드시
             # 부딪힌다).
-            tmp = JsonCache(run_dir / "cache" / f"segment_confirm_{run_dir.name}_{it}.json")
+            tmp = JsonCache.shared(run_dir / "cache"
+                                    / f"segment_confirm_{run_dir.name}_{it}.json")
             with ThreadPoolExecutor(max_workers=2) as ex:
                 f_c = ex.submit(segment_rows, cand, devA, labA, tmp)
                 f_b = ex.submit(segment_rows, best, devA, labA, tmp)
@@ -2578,7 +2639,8 @@ def main() -> int:
                 log(f"[iter {it}] 현재 프롬프트나 기각된 개정에 이미 있는 실측 예시 {len(dropped)}개 "
                     f"제외: {dropped}")
         adopted = propose(it, idir, cases, budget, target, timing, examples, loss_bins,
-                          base=base, gate_cases=gate_cases, inversions=inversions)
+                          base=base, gate_cases=gate_cases, inversions=inversions,
+                          depth=depth, misorder=misorder_cost(case_rows))
         if adopted:
             cand, c_sets, c_h, c_m, gain = adopted
             provenance = aj.adopt_provenance(provenance, cand, it, gain)
@@ -2626,6 +2688,55 @@ def main() -> int:
     # ── 최종 test — 런 밖에서 손으로 돌리던 것을 루프 안에 둔다. 채택본과 v0 를 같은 자로 재야
     #    "이 런이 실제로 올린 폭" 이 남는다. dev 는 개정을 고르는 데 이미 소진됐다.
     base_path = Path(a.score_baseline) if a.score_baseline else v0_path
+    if a.score_only and a.score_prompts:
+        # **여러 변형을 한 프로세스에서 병렬로 잰다.** 따로 띄우면 기준선을 변형마다 다시 뽑고
+        # (벌 캐시 이름이 런마다 달라진다) GPU 를 프로세스끼리 다투게 된다. 여기서는 기준선 3벌을
+        # 한 번만 뽑고, 변형들은 같은 기준선에 대고 짝 비교한다 — 후보를 고르는 단계가 없으므로
+        # 고르기 편향도 없다.
+        v0_prompt = base_path.read_text(encoding="utf-8")
+        cands = [(Path(x.strip()).stem, Path(x.strip()).read_text(encoding="utf-8"))
+                 for x in a.score_prompts.split(",") if x.strip()]
+        f_excl = example_sentences(v0_prompt, test_sents)
+        for _n, pr in cands:
+            f_excl |= example_sentences(pr, test_sents)
+        if f_excl:
+            log(f"[최종] 프롬프트에 예시로 들어간 문장 {len(f_excl)}개를 채점에서 뺀다")
+        t0 = time.perf_counter()
+        jobs = [("v0", v0_prompt)] + cands
+        with ThreadPoolExecutor(max_workers=len(jobs)) as ex:
+            got = list(ex.map(lambda j: score_avg(j[1], test_sents, lab_test,
+                                                 f"최종 {final_split} {j[0]}",
+                                                 a.final_draws, "fin"), jobs))
+        hs = {n: {k: v for k, v in g[2].items() if k[0] not in f_excl}
+              for (n, _p), g in zip(jobs, got)}
+        ora_t = oracle_sets(lab_test, test_sents, spaced, min_gap, a.min_chunk, a.max_k)
+        ora_h_t = {k: v for k, v in hset_of(test_sents, lab_test, ora_t).items()
+                   if k[0] not in f_excl}
+        rows_out = []
+        for n, _pr in jobs[1:]:
+            kk = sorted(set(hs[n]) & set(hs["v0"]))
+            b = hset.paired_bootstrap([hs[n][k] for k in kk], [hs["v0"][k] for k in kk],
+                                      clusters=[i for i, _k in kk])
+            bins = bin_deltas(test_sents, hs["v0"], hs[n], kk, spaced)
+            rows_out.append({"name": n, "mean": round(st.mean(hs[n].values()), 4),
+                             "delta": b, "by_bin": {x: y["mean"] for x, y in bins.items()},
+                             "by_latency": by_latency(test_sents, hs[n], spaced)})
+            log(f"[최종] {n}: H_set {st.mean(hs[n].values()):.4f} / Δ {b['mean']:+.4f} "
+                f"[{b['lo']:+.4f}, {b['hi']:+.4f}] 짝 {b['n']} / 구간 "
+                + str({x: y['mean'] for x, y in bins.items()}))
+        log(f"[최종] 기준선 {st.mean(hs['v0'].values()):.4f} / 오라클 "
+            f"{st.mean(ora_h_t.values()):.4f} / {a.final_draws}벌 × {len(jobs)}프롬프트 = "
+            f"{a.final_draws * len(jobs)}회 채점 {time.perf_counter() - t0:.0f}초")
+        (run_dir / "variants.json").write_text(json.dumps({
+            "split": final_split, "draws": a.final_draws, "baseline": str(base_path),
+            "baseline_mean": round(st.mean(hs["v0"].values()), 4),
+            "oracle_mean": round(st.mean(ora_h_t.values()), 4),
+            "baseline_by_latency": by_latency(test_sents, hs["v0"], spaced),
+            "variants": rows_out}, ensure_ascii=False, indent=1), encoding="utf-8")
+        save_usage(run_dir / "final")
+        log(f"[끝] 비용 ${spent_before + gw.usage.snapshot()['cost']:.2f} "
+            f"({gw.usage.snapshot()['calls']} 호출)")
+        return 0
     if not a.skip_final and prompt == base_path.read_text(encoding="utf-8"):
         log("[최종] 채택된 개정이 없다 — v0 그대로라 최종 test 를 생략한다")
     elif not a.skip_final:

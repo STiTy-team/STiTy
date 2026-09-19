@@ -781,3 +781,77 @@ class InducePicksTest(unittest.TestCase):
     def test_empty_pool(self):
         self.assertEqual(lj.induce_picks([], set(), 8), [])
         self.assertEqual(lj.induce_picks(self.cases(), set(), 0), [])
+
+
+class MisorderCost(unittest.TestCase):
+    """깊이별 "한 번 잘못 고르는 손해". Critic 은 이 값이 깊이에 따라 줄어드는지로
+    "어느 깊이까지 순서를 신경 써야 하나" 를 판단한다 — 그러니 모양이 살아야 한다."""
+
+    def test_stays_positive_while_labels_keep_falling(self):
+        """고원이 없는 분포 — 어느 깊이에서도 "남은 것보다 나은 자리" 가 있으므로 손해가 0 이
+        되지 않는다. 값이 완만히 줄어드는 것은 꼬리가 짧아지는 산술 효과다(선형 분포에서 0.475
+        → 0.175). 실측 라벨은 꼬리가 길어 그 감소가 훨씬 작았다(0.1405 → 0.1185)."""
+        rows = [{"labels": [1.0 - 0.05 * i for i in range(20)]} for _ in range(30)]
+        got = lj.misorder_cost(rows)
+        self.assertEqual(len(got), 13)
+        self.assertGreater(got["13"], 0, f"고원이 없는데 손해가 0 이 됐다: {got}")
+        vals = [got[str(d)] for d in range(1, 14)]
+        self.assertEqual(vals, sorted(vals, reverse=True), f"단조 감소가 아니다: {got}")
+
+    def test_falls_when_only_the_top_few_matter(self):
+        """상위 셋만 좋고 나머지가 동일한 분포 — 그때는 손해가 깊이에서 0 으로 간다."""
+        rows = [{"labels": [0.9, 0.8, 0.7] + [0.3] * 17} for _ in range(30)]
+        got = lj.misorder_cost(rows)
+        self.assertGreater(got["1"], 0.1)
+        self.assertAlmostEqual(got["8"], 0.0, places=6,
+                               msg=f"남은 것이 다 같으면 손해가 0 이어야 한다: {got}")
+
+    def test_skips_rows_without_labels(self):
+        self.assertEqual(lj.misorder_cost([{"labels": []}, {"scores": [1, 2]}]), {})
+        self.assertEqual(lj.misorder_cost([]), {})
+
+
+class RejectedByBin(unittest.TestCase):
+    """기각 이력은 **이 런 안에서만** 나온다 — 다른 런의 기각은 데이터도 프롬프트도 달라
+    근거가 못 된다. 그래서 입력이 그 런의 history 하나뿐이다."""
+
+    def hist(self):
+        return [{"iter": 1, "adopted": False, "edits": [{"op": "insert_after"}],
+                 "diagnosis": {"by_bin": {"≤3": {"mean": -0.004}}}},
+                {"iter": 2, "adopted": True, "edits": [],
+                 "diagnosis": {"by_bin": {"≤3": {"mean": 0.01}}}},
+                {"iter": 3, "adopted": False, "edits": [{"op": "delete"}],
+                 "diagnosis": {"by_bin": {"≤3": {"mean": -0.009}}}},
+                {"iter": 4, "adopted": False, "edits": []}]
+
+    def test_keeps_only_rejected_with_a_postmortem(self):
+        got = lj.rejected_by_bin(self.hist())
+        self.assertEqual([g["iter"] for g in got], [1, 3],
+                         "채택본이나 부검 없는 항목이 섞였다")
+        self.assertIn("by_bin", got[0])
+
+    def test_keeps_the_most_recent(self):
+        h = [{"iter": i, "adopted": False, "edits": [],
+              "diagnosis": {"by_bin": {"≤3": {"mean": -0.001 * i}}}} for i in range(1, 11)]
+        got = lj.rejected_by_bin(h, n_max=3)
+        self.assertEqual([g["iter"] for g in got], [8, 9, 10])
+
+    def test_empty(self):
+        self.assertEqual(lj.rejected_by_bin([]), [])
+
+
+class FindingKind(unittest.TestCase):
+    """`kind` 가 역할 배분을 가르므로 파싱에서 살아남아야 하고, 없으면 종전과 같은
+    단항(`check`)으로 떨어져야 한다."""
+
+    def blob(self, *kinds):
+        return {"findings": [
+            {**({"kind": k} if k is not None else {}), "diagnosis": f"d{i}",
+             "evidence": "e", "type_predicate": "t",
+             "edit": {"where": "core_principles", "action": "add", "text": "- x"}}
+            for i, k in enumerate(kinds)]}
+
+    def test_normalises(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        got = aj.clean_findings(self.blob("order", None, "ORDER ", "nonsense"), cap=9)
+        self.assertEqual([f["kind"] for f in got], ["order", "check", "order", "check"])

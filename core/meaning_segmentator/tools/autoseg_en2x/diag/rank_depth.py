@@ -14,6 +14,7 @@ judge20 여섯 후보의 개선이 매번 긴 지연(≤99)에 몰리고 짧은 
 
     PYTHONPATH=. .venv-autoseg/bin/python -m core.meaning_segmentator.tools.autoseg_en2x.diag.rank_depth
 """
+import argparse
 import hashlib
 import json
 import shutil
@@ -35,10 +36,10 @@ def key(*p):
     return hashlib.sha256('\x1f'.join(p).encode('utf-8')).hexdigest()[:32]
 
 
-def load_cache(name):
-    """judge20 이 아직 돌고 있으면 JsonCache 가 파일을 통째로 다시 쓴다 — 쓰는 중에 읽으면
+def load_cache(cache_dir, name):
+    """런이 아직 돌고 있으면 JsonCache 가 파일을 통째로 다시 쓴다 — 쓰는 중에 읽으면
     잘린 JSON 을 만난다. 복사본을 만들어 읽는다."""
-    src = J20 / 'cache' / name
+    src = Path(cache_dir) / name
     with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as tmp:
         shutil.copy(src, tmp.name)
         return json.loads(Path(tmp.name).read_text(encoding='utf-8'))
@@ -63,12 +64,26 @@ def spearman(a, b):
 
 
 def main() -> int:
-    cfg = json.loads((R28 / 'config.json').read_text(encoding='utf-8'))
-    sents = json.loads((R28 / 'data/dev.json').read_text(encoding='utf-8'))
-    lab = json.loads((R28 / 'oracle_labels_dev.json').read_text(encoding='utf-8'))
-    prompt = (J20 / 'prompt_v0.txt').read_text(encoding='utf-8')
+    ap = argparse.ArgumentParser(description='순위를 깊이별로 가른다 (API·GPU 0)')
+    ap.add_argument('--run', default=str(R28), help='config·data·라벨을 읽을 런 디렉토리')
+    ap.add_argument('--cache-dir', default=str(J20 / 'cache'), help='분절 캐시가 있는 디렉토리')
+    ap.add_argument('--prompt', default=str(J20 / 'prompt_v0.txt'), help='깊이를 잴 프롬프트 파일')
+    ap.add_argument('--caches', default='segment.json,segment_s1.json,segment_s2.json',
+                    help='벌별 캐시 파일 이름을 쉼표로. 여러 벌을 주면 순위 평균(k벌 병합)으로 본다')
+    ap.add_argument('--split', default='dev')
+    ap.add_argument('--tag', default='rank_depth', help='산출물 이름 (diag/<tag>.json)')
+    args = ap.parse_args()
+
+    run = Path(args.run)
+    cfg = json.loads((run / 'config.json').read_text(encoding='utf-8'))
+    sents = json.loads((run / f'data/{args.split}.json').read_text(encoding='utf-8'))
+    lab = json.loads((run / f'oracle_labels_{args.split}.json').read_text(encoding='utf-8'))
+    prompt = Path(args.prompt).read_text(encoding='utf-8')
     ph = key(prompt)
-    caches = [load_cache(f) for f in ('segment.json', 'segment_s1.json', 'segment_s2.json')]
+    names = [x.strip() for x in args.caches.split(',') if x.strip()]
+    caches = [load_cache(args.cache_dir, f) for f in names]
+    print(f'[설정] 런 {run.name} / {args.split} {len(sents)}문장 / 프롬프트 '
+          f'{Path(args.prompt).name} / 벌 {len(names)}개 {names}')
 
     hit = 0
     per_bin_overlap = {b: [] for b in BINS}
@@ -152,7 +167,8 @@ def main() -> int:
         print(f'{d:3d} {st.mean(depth_acc[d]):7.3f} {exp:10.3f}')
     out = A / 'diag'
     out.mkdir(exist_ok=True)
-    (out / 'rank_depth.json').write_text(json.dumps({
+    (out / f'{args.tag}.json').write_text(json.dumps({
+        'prompt': str(args.prompt), 'caches': names, 'split': args.split,
         'n_sentences': hit,
         'overlap_by_bin': {b: round(st.mean(v), 4) for b, v in per_bin_overlap.items() if v},
         'mean_k_by_bin': {b: round(st.mean(v), 2) for b, v in per_bin_k.items() if v},
@@ -161,7 +177,7 @@ def main() -> int:
         'spearman_bottom_half': round(st.mean(rho_bottom), 4) if rho_bottom else None,
         'depth_hit': {d: round(st.mean(v), 4) for d, v in sorted(depth_acc.items())},
     }, ensure_ascii=False, indent=1), encoding='utf-8')
-    print(f'\n-> {out / "rank_depth.json"}')
+    print(f'\n-> {out / (args.tag + ".json")}')
     return 0
 
 
