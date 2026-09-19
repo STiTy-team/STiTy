@@ -1139,6 +1139,15 @@ def main() -> int:
     add_provider_args(p)
     a = p.parse_args()
 
+    # **역할 이름은 자유 문자열이라 오타가 조용히 통과한다.** `enforce_role` 은 모르는 역할에
+    # 제약을 걸지 않으므로 `procedre` 라고 쓰면 아무 제약 없는 후보가 되고, 그 후보의 Δ 는 어느
+    # 역할의 값도 아니다. 여기서 죽인다 — 뒤로 미루면 v0 생성이 끝난 다음이라 이미 돈을 썼다.
+    unknown = [r.strip() for r in (a.candidate_roles or "").split(",")
+               if r.strip() and r.strip() not in aj.ROLES]
+    if unknown:
+        print(f"[stop] 모르는 후보 역할: {unknown} — 쓸 수 있는 것은 {list(aj.ROLES)}")
+        return 2
+
     src = RUNS_DIR / a.from_run
     run_dir = RUNS_DIR / a.run_id
     (run_dir / "cache").parent.mkdir(parents=True, exist_ok=True)
@@ -1476,14 +1485,6 @@ def main() -> int:
             prompt = pick[2]
     else:
         log("[stop] --prompt 또는 --generate-v0 가 필요하다")
-        return 2
-    # **역할 이름은 자유 문자열이라 오타가 조용히 통과한다.** `enforce_role` 은 모르는 역할에
-    # 제약을 걸지 않으므로 `procedre` 라고 쓰면 아무 제약 없는 후보가 되고, 그 후보의 Δ 는
-    # 어느 역할의 값도 아니다. 런을 태우기 전에 여기서 죽인다.
-    unknown = [r for r in (a.candidate_roles or "").split(",")
-               if r.strip() and r.strip() not in aj.ROLES]
-    if unknown:
-        log(f"[stop] 모르는 후보 역할: {unknown} — 쓸 수 있는 것은 {list(aj.ROLES)}")
         return 2
     if not a.score_only:
         v0_path.write_text(prompt, encoding="utf-8")

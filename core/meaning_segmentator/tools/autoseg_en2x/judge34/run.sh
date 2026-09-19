@@ -53,10 +53,15 @@
 #   (d) `procedure` 가 절차의 어느 줄을 고르는가 — S7(등급과 반복 선택)이 가장 길고 가장 최근에
 #       바뀐 줄이다.
 #
-# 예산 $110 의 근거
-#   v0 2후보 $8 + 기준선 2벌 $5 + 후보 15개와 에이전트 $37 + 2차(이터당 1개 통과 가정) $15 = $65.
-#   채택이 나면 기준선 재측정과 최종 test 3벌 두 프롬프트에 $20 이 붙어 $85. 예산 가드는
-#   `BudgetExceeded` 로 런을 **죽이므로** 최악을 덮는 값으로 잡는다.
+# 예산 $140 의 근거 — judge33b 실측 단가로 다시 잡은 값이다
+#   dev 500 한 벌이 $3.9 (judge33b iter 0 이 3벌에 $11.80), 후보 하나 본채점이 $3, 2차 한 벌이 $3,
+#   test 560 한 벌이 약 $4.4 다. v0 2후보 $8 + 기준선 2벌 $8 + 후보 15개 $45 + 2차(이터당 1개
+#   통과 가정) $18 = **$79**. 채택이 나면 기준선 재측정 $8 과 최종 test 3벌 두 프롬프트 $26 이
+#   붙어 $113 이다. 예산 가드는 `BudgetExceeded` 로 런을 **죽이므로** 최악을 덮는 값으로 잡는다 —
+#   상한을 올리는 것이 지출을 올리지는 않는다.
+#
+#   지출의 98.4% 가 분절 채점이다(judge33b: $38.43 / $39.13). 에이전트 호출은 전부 합쳐 $0.07 이다.
+#   비용 레버는 후보 수와 벌 수뿐이고, 모델·사고량을 빼면 그 둘밖에 없다.
 #
 #   tmux new-session -d -s judge34 -c <저장소> "bash core/meaning_segmentator/tools/autoseg_en2x/judge34/run.sh"
 set -u
@@ -81,6 +86,6 @@ LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/judge34.log
     --case-exclude bin --case-alloc loss \
     --min-gap 1 --min-chunk 2 --max-k 99 --k-samples 1 --iterations "${ITER:-3}" \
     --workers 720 --score-workers 8 \
-    --provider openai --model gpt-5-mini --budget "${BUDGET:-110}" >> "$LOG" 2>&1
+    --provider openai --model gpt-5-mini --budget "${BUDGET:-140}" >> "$LOG" 2>&1
 rc=$?
 echo "== $(date '+%F %T') judge34 exit=$rc" >> "$LOG"
