@@ -1,0 +1,119 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  13,
+  18,
+  22,
+  27,
+  31,
+  37,
+  44,
+  45,
+  55,
+  60,
+  62,
+  64,
+  67,
+  73,
+  74,
+  75,
+  80,
+  87,
+  90,
+  94,
+  100,
+  103,
+  104,
+  105,
+  115,
+  116,
+  117,
+  119,
+  133,
+  141,
+  142,
+  144,
+  146,
+  147,
+  151,
+  152,
+  153,
+  156,
+  164,
+  169,
+  173,
+  177,
+  181,
+  182,
+  187,
+  188,
+  190,
+  196,
+  197
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00275,
+    "lo": -0.02398,
+    "hi": 0.01987,
+    "n": 479,
+    "n_clusters": 50
+   },
+   "chars": 9056,
+   "changelog": [
+    "Paraphrased C4 to a much shorter summary of common German cohesion failures so we free space while preserving the judgement.",
+    "Paraphrased C7 to a concise statement of what drives contra in German, reducing length without changing meaning.",
+    "Changed C9 to add the primary finding: prefer very-early cuts after initial clause-introducers unless the remainder contains explicit qualification/negation/scope-bearing material; kept the reminder to judge by meaning, not token lists.",
+    "Changed C17 to keep the high-contradiction definition but make predicate-ending penalties explicitly conditional (only apply when remainder can change the prefix's asserted meaning); allow harmless dense cuts otherwise."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00298,
+    "lo": -0.02462,
+    "hi": 0.01845,
+    "n": 479,
+    "n_clusters": 50
+   },
+   "chars": 9879,
+   "changelog": [
+    "Insert a new Core Principle that (a) prefers very-early cuts after initial clause-introducing words unless the remainder contains explicit qualification/negation/scope carriers, and (b) makes penalties for predicate-ending prefixes explicitly conditional on the remainder containing clause-level qualifiers/negation/scope — directly addressing the primary finding about overbroad predicate-ending penalties and the underweighting of early clause-introducers."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00277,
+    "lo": -0.0184,
+    "hi": 0.01354,
+    "n": 479,
+    "n_clusters": 50
+   },
+   "chars": 7608,
+   "changelog": [
+    "Delete E1 to remove a hand-written example that encouraged premature cuts and contributed to the size overrun; this addresses the history/blame that E1 shifted the model toward harmful early/inside-NP cuts.",
+    "Delete E2 to remove a large hand-written example (Northern-Rock) that increased prompt length and pushed the prompt over the size budget.",
+    "Delete E3 to remove another large hand-written example (Bobek...) that both contributed to the size overrun and was blamed in prior iterations for encouraging unwanted segmentation behavior."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.00059,
+    "lo": -0.01276,
+    "hi": 0.01549,
+    "n": 479,
+    "n_clusters": 50
+   },
+   "chars": 9816,
+   "changelog": [
+    "Insert a new Core Principle directing the scorer to prefer very-early cuts after initial clause-introducers when safe and to make predicate-ending penalties explicitly conditional on the remainder containing clause-level qualifiers/negation/scope carriers — this addresses the primary finding that a blanket predicate-ending penalty and underweighting of clause-introducers harmed mid-length bins."
+   ]
+  }
+ ]
+}

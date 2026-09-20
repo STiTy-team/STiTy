@@ -1,0 +1,110 @@
+{
+ "verdict": "reject",
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00132,
+  "lo": -0.02088,
+  "hi": 0.01866,
+  "n": 976,
+  "n_clusters": 50
+ },
+ "by_bin": {
+  "≤3": 0.0112,
+  "≤5": -0.025,
+  "≤7": -0.0092,
+  "≤10": 0.0037,
+  "≤99": 0.0162
+ },
+ "n_worse": 474,
+ "n_better": 438,
+ "worst": [
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.6045,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了 ‖ ， ‖ 他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说： ‖ “终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。 ‖ ”"
+  },
+  {
+   "id": "cmn_hans_cn_802",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.5422,
+   "before": "适量饮用含酒精的饮料。 ‖ 酒精对每个人的影响都不一样， ‖ 了解自己的饮酒 ‖ 极限 ‖ 非常 ‖ 重 ‖ 要 ‖ 。",
+   "after": "适量饮用含酒精的饮料 ‖ 。 ‖ 酒 ‖ 精 ‖ 对 ‖ 每 ‖ 个人的影响都不一样， ‖ 了解自己的饮酒极限非常重要。"
+  },
+  {
+   "id": "cmn_hans_cn_802",
+   "k": 8,
+   "bin": "≤5",
+   "delta": -0.5214,
+   "before": "适量饮用含酒精的饮料。 ‖ 酒精对每个人的影响都不一样， ‖ 了解自己的饮酒 ‖ 极 ‖ 限 ‖ 非常 ‖ 重 ‖ 要 ‖ 。",
+   "after": "适量饮用含酒精的饮料 ‖ 。 ‖ 酒 ‖ 精 ‖ 对 ‖ 每 ‖ 个 ‖ 人的影响都不一样， ‖ 了解自己的饮酒极限非常重要。"
+  },
+  {
+   "id": "cmn_hans_cn_802",
+   "k": 9,
+   "bin": "≤5",
+   "delta": -0.5109,
+   "before": "适量饮用含酒精的饮料。 ‖ 酒精对每个人的影响都不一样， ‖ 了解自己的 ‖ 饮酒 ‖ 极 ‖ 限 ‖ 非常 ‖ 重 ‖ 要 ‖ 。",
+   "after": "适量饮用含酒精的饮料 ‖ 。 ‖ 酒 ‖ 精 ‖ 对 ‖ 每 ‖ 个 ‖ 人 ‖ 的影响都不一样， ‖ 了解自己的饮酒极限非常重要。"
+  },
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 4,
+   "bin": "≤10",
+   "delta": -0.5074,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了 ‖ ， ‖ 他们开始从窗户逃出去 ‖ 。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说 ‖ ： ‖ “终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。 ‖ ”"
+  }
+ ],
+ "best": [
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7378,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万英镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.6555,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万 ‖ 英镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月 ‖ 从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 4,
+   "bin": "≤99",
+   "delta": 0.6487,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道其转会费为2700万 ‖ 英 ‖ 镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月 ‖ 从巴西的帕尔梅拉斯足球俱乐部 ‖ 加盟曼城， ‖ 据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 3,
+   "bin": "≤99",
+   "delta": 0.6259,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万 ‖ 英 ‖ 镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月 ‖ 从巴西的帕尔梅拉斯足球俱乐部 ‖ 加盟曼城，据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 5,
+   "bin": "≤10",
+   "delta": 0.5922,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城 ‖ ， ‖ 据报道其转会费为2700万 ‖ 英 ‖ 镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月 ‖ 从巴西的帕尔梅拉斯足球俱乐部 ‖ 加盟曼城 ‖ ， ‖ 据报道其转会费为2700万英镑。"
+  }
+ ],
+ "why": "The prompt now avoids cutting inside verbal complexes (C4) so predicates and their punctuation tend to stay intact—helpful for long-latency examples—but the new C3 rule for splitting multi-token spans was applied too broadly, causing over‑splitting (even into single characters) and isolating punctuation/quotes; that fragmentation shows up as losses in the ≤5 and ≤7 bins despite gains at very short (≤3) and very long (≤99) latencies.",
+ "lesson": "Narrow the multi-token-splitting rule so it only splits true multi-token names when necessary and never breaks ordinary words or isolates punctuation/quotes; keep the verbal-complex protection but avoid applying splitting heuristics that fragment short/medium pieces.",
+ "blamed": [
+  "C3 «- Consider left‑headed modifiers (long pre‑nominal relative »",
+  "C4 «- Treat verbal complexes as atomic: do not cut so that negat»"
+ ]
+}

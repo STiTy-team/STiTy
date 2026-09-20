@@ -1,0 +1,25 @@
+{
+  "source_language": "Japanese",
+  "word_order": "SOV — verbs and inflected auxiliaries appear at the end of clauses after noun phrases and particles throughout the sample (e.g. '引退しましたが、…復帰する予定でした', '建築は、建物の設計や建設に関係しています').",
+  "register": "formal written informative text (encyclopedic/news-style sentences, factual reporting and definitions).",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "contrastive connectives (しかし, が as clause-linker)",
+    "additive/continuation adverbials (また)",
+    "purpose/connective phrases (ために)"
+  ],
+  "clause_boundary_signals": [
+    "finite verb forms and sentence-final auxiliaries (past/polite inflections such as ～ました, copula ～です/だ)",
+    "nominalizing/categorical copulas in predicative position (～である, ～である/～です)"
+  ],
+  "non_boundary_traps": [
+    "verb-conjunctive endings that only link clauses (continuative 連用形 / connective ～し, ～て)",
+    "noun-modifying relative-clause structure (verbs/adjectives directly preceding a noun; long prenominal clauses are not independent clauses)",
+    "particle ambiguity where a particle can be subject marker or conjunction (が)"
+  ],
+  "unstable_prefix_signals": [
+    "continuative verb/connective forms after which the clause likely continues (～し, ～て)",
+    "topic/demonstrative openings that may be completed or reinterpreted by what follows (この, その)"
+  ],
+  "notes_for_prompt_writer": "Japanese in the sample is head-final: heads (verbs, auxiliaries, copulas) occur at clause ends and noun modifiers precede nouns. Particles (は, が, に, を, で, など) attach to noun phrases to encode grammatical relations and can serve discourse/connecting roles. Connective verb forms (～て, ～し) and certain particles are continuation signals rather than clause-final punctuation; relative clauses are prenominal and do not terminate a clause."
+}

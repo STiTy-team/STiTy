@@ -1,0 +1,228 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Evaluate discourse connectors and coordination: conjunctions and contrastive markers often begin clauses whose sense requires the continuation. Avoid isolating unfinished coordination; when enforcing cohesion do not leave extremely short fragments by themselves—attach such tiny pieces to the phrase they belong to."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Avoid cutting inside numeric expressions: treat a numeral together with its unit, percent/rate/duration or time expression as an atomic unit for segmentation so quantities, rates and timestamps remain clear and non‑contradictory."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Keep multi-character named entities and transliterations contiguous: do not insert cuts inside person/place/organization names or transliterated sequences; preserving contiguous characters maintains recoverable referents."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": 53
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 232
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 224
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8473,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Do not cut inside multi-character named entities or transliterations (people, places, organizations, romanized spans): keep the name characters contiguous so the referent remains recoverable."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Do not cut inside numeric or measurement expressions: treat numeral+unit spans (percentages, durations, speeds, ratios, measurements) as atomic for segmentation to avoid losing quantity or unit information."
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- If pieces are translated independently, their joined outputs must convey the same overall meaning, referents, and relations as the full sentence. When enforcing 'do not split' constraints, avoid leaving punctuation, quotes, or single-character function words isolated — attach such tiny tokens to the adjacent phrase they punctuate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": -34
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": -28
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": 133
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8035,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_1068",
+    "text": "Input: 暴 <SEG:?> 民 <SEG:?> 强 <SEG:?> 迫 <SEG:?> 国 <SEG:?> 王 <SEG:?> 和 <SEG:?> 王 <SEG:?> 后 <SEG:?> 把 <SEG:?> 马 <SEG:?> 车 <SEG:?> 的 <SEG:?> 窗 <SEG:?> 户 <SEG:?> 完 <SEG:?> 全 <SEG:?> 打 <SEG:?> 开 <SEG:?> 。\nOutput: 暴 <SEG:56> 民 <SEG:78> 强 <SEG:67> 迫 <SEG:72> 国 <SEG:17> 王 <SEG:50> 和 <SEG:61> 王 <SEG:33> 后 <SEG:94> 把 <SEG:28> 马 <SEG:22> 车 <SEG:6> 的 <SEG:11> 窗 <SEG:89> 户 <SEG:83> 完 <SEG:44> 全 <SEG:39> 打 <SEG:0> 开 <SEG:100> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_974",
+    "text": "Input: 在 <SEG:?> 世 <SEG:?> 界 <SEG:?> 上 <SEG:?> 许 <SEG:?> 多 <SEG:?> 地 <SEG:?> 方 <SEG:?> ， <SEG:?> 挥 <SEG:?> 手 <SEG:?> 是 <SEG:?> 一 <SEG:?> 种 <SEG:?> 友 <SEG:?> 好 <SEG:?> 的 <SEG:?> 表 <SEG:?> 示 <SEG:?> ， <SEG:?> 意 <SEG:?> 思 <SEG:?> 是 <SEG:?> “ <SEG:?> 你 <SEG:?> 好 <SEG:?> ” <SEG:?> 。\nOutput: 在 <SEG:81> 世 <SEG:38> 界 <SEG:58> 上 <SEG:73> 许 <SEG:27> 多 <SEG:8> 地 <SEG:62> 方 <SEG:77> ， <SEG:50> 挥 <SEG:15> 手 <SEG:19> 是 <SEG:31> 一 <SEG:65> 种 <SEG:12> 友 <SEG:23> 好 <SEG:96> 的 <SEG:100> 表 <SEG:4> 示 <SEG:85> ， <SEG:88> 意 <SEG:35> 思 <SEG:69> 是 <SEG:46> “ <SEG:54> 你 <SEG:0> 好 <SEG:92> ” <SEG:42> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_1025",
+    "text": "Input: 虽 <SEG:?> 然 <SEG:?> 在 <SEG:?> 洪 <SEG:?> 水 <SEG:?> 过 <SEG:?> 后 <SEG:?> ， <SEG:?> 水 <SEG:?> 位 <SEG:?> 只 <SEG:?> 会 <SEG:?> 上 <SEG:?> 升 <SEG:?> 几 <SEG:?> 英 <SEG:?> 尺 <SEG:?> ， <SEG:?> 但 <SEG:?> 官 <SEG:?> 员 <SEG:?> 们 <SEG:?> 希 <SEG:?> 望 <SEG:?> 这 <SEG:?> 足 <SEG:?> 以 <SEG:?> 恢 <SEG:?> 复 <SEG:?> 下 <SEG:?> 游 <SEG:?> 被 <SEG:?> 侵 <SEG:?> 蚀 <SEG:?> 的 <SEG:?> 沙 <SEG:?> 洲 <SEG:?> 。\nOutput: 虽 <SEG:83> 然 <SEG:94> 在 <SEG:64> 洪 <SEG:33> 水 <SEG:61> 过 <SEG:56> 后 <SEG:92> ， <SEG:78> 水 <SEG:86> 位 <SEG:36> 只 <SEG:31> 会 <SEG:19> 上 <SEG:50> 升 <SEG:53> 几 <SEG:22> 英 <SEG:11> 尺 <SEG:97> ， <SEG:89> 但 <SEG:100> 官 <SEG:67> 员 <SEG:75> 们 <SEG:72> 希 <SEG:47> 望 <SEG:81> 这 <SEG:28> 足 <SEG:58> 以 <SEG:42> 恢 <SEG:44> 复 <SEG:39> 下 <SEG:25> 游 <SEG:6> 被 <SEG:14> 侵 <SEG:17> 蚀 <SEG:3> 的 <SEG:8> 沙 <SEG:0> 洲 <SEG:69> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_1413",
+    "text": "Input: 3 <SEG:?> 4 <SEG:?> % <SEG:?> 的 <SEG:?> 受 <SEG:?> 访 <SEG:?> 者 <SEG:?> 一 <SEG:?> 致 <SEG:?> 表 <SEG:?> 示 <SEG:?> ， <SEG:?> 希 <SEG:?> 望 <SEG:?> 英 <SEG:?> 国 <SEG:?> 女 <SEG:?> 王 <SEG:?> 伊 <SEG:?> 丽 <SEG:?> 莎 <SEG:?> 白 <SEG:?> 二 <SEG:?> 世 <SEG:?> 成 <SEG:?> 为 <SEG:?> 澳 <SEG:?> 大 <SEG:?> 利 <SEG:?> 亚 <SEG:?> 的 <SEG:?> 最 <SEG:?> 后 <SEG:?> 一 <SEG:?> 任 <SEG:?> 君 <SEG:?> 主 <SEG:?> 。\nOutput: 3 <SEG:3> 4 <SEG:6> % <SEG:97> 的 <SEG:100> 受 <SEG:61> 访 <SEG:67> 者 <SEG:78> 一 <SEG:69> 致 <SEG:94> 表 <SEG:81> 示 <SEG:83> ， <SEG:92> 希 <SEG:22> 望 <SEG:89> 英 <SEG:47> 国 <SEG:14> 女 <SEG:33> 王 <SEG:86> 伊 <SEG:72> 丽 <SEG:42> 莎 <SEG:31> 白 <SEG:36> 二 <SEG:28> 世 <SEG:44> 成 <SEG:39> 为 <SEG:17> 澳 <SEG:25> 大 <SEG:8> 利 <SEG:0> 亚 <SEG:11> 的 <SEG:53> 最 <SEG:19> 后 <SEG:56> 一 <SEG:64> 任 <SEG:75> 君 <SEG:50> 主 <SEG:58> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -63
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -105
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -84
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -418
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7294,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "text": "- If pieces are translated independently, their joined outputs must convey the same overall meaning, referents, and relations as the full source. When protecting tight spans (for example verb+complement), do so without leaving punctuation, quotes, or single-character function words isolated: attach such tiny tokens to the adjacent phrase."
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "text": "- Consider left-headed modifiers (long prenominal relative or adjectival phrases): do not separate a modifier from its head noun, since that severs referential links and creates orphan fragments."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Do not cut inside numeric or measurement expressions: treat numeral+unit spans (percentages, durations, speeds, currencies, dates/times and similar measurements) as atomic units so quantities and rates remain coherent and avoid contradiction."
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Keep multi-character named entities and transliterations contiguous: do not insert cuts inside personal, place, organization names or transliterations that must remain readable as a unit, since splitting them breaks referent recovery."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "chars_change": 139
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "chars_change": -32
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 245
+   },
+   {
+    "edit": 3,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 237
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8553,
+  "errors": null
+ }
+]

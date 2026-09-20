@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underweights contradiction: it tells the scorer not to treat contra as a separate tier, so the model sometimes prefers positions with decent cohesion despite very high contradiction, producing cuts that are later overturned (contra_kill).",
+    "evidence": "['ja_jp_955','ja_jp_96','ja_jp_346','ja_jp_933','ja_jp_1081','ja_jp_1130','ja_jp_561','ja_jp_627','ja_jp_645','ja_jp_957','ja_jp_800','ja_jp_906'] — each policy kept a cut that the set-level score was zeroed by a single high-contra boundary (contra_kill=true).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the left fragment taken alone would contradict or reverse the whole sentence, treat that boundary as effectively invalid—strongly deprioritize it regardless of cohesion."
+    }
+   },
+   {
+    "diagnosis": "The prompt fails to forbid internal-word/particle fragmentation: examples and principles encourage avoiding clause‑final cuts but do not explicitly forbid cuts that split lexical morphemes or detach particles, producing fragmentary, incoherent pieces.",
+    "evidence": "['ja_jp_955','ja_jp_1130','ja_jp_800','ja_jp_906','ja_jp_346','ja_jp_561'] — policy cuts fragment words/particles into non‑translatable pieces (gibberish tokens across languages), showing the model is cutting inside morphemes or attached particles.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside a lexical word, bound morpheme, or between a content word and its immediately attached particles/auxiliaries; prefer whole-word or syntactic boundaries to avoid fragmentary pieces."
+    }
+   },
+   {
+    "diagnosis": "The prompt lacks a short‑latency condition: by treating 'avoid clause‑final predicates' as broadly absolute, the model thins cuts in ≤3/≤5 bins and loses density that short budgets need. The rule must be conditional on safety, not unconditional.",
+    "evidence": "['ja_jp_955','ja_jp_1130','ja_jp_800','ja_jp_96'] — these short‑bin cases show the model moved cuts away from clause ends or over‑merged, harming ≤3/≤5 performance despite cuts being safe when dense.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "In very short‑latency contexts (dense cuts), allow denser boundaries when each resulting right fragment can be independently interpreted without relying on later clause‑final predicates or arguments."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underweights contradiction: it tells the scorer not to treat contra as a separate tier, so the model sometimes prefers positions with decent cohesion despite very high contradiction, producing cuts that are later overturned (contra_kill).",
+   "evidence": "['ja_jp_955','ja_jp_96','ja_jp_346','ja_jp_933','ja_jp_1081','ja_jp_1130','ja_jp_561','ja_jp_627','ja_jp_645','ja_jp_957','ja_jp_800','ja_jp_906'] — each policy kept a cut that the set-level score was zeroed by a single high-contra boundary (contra_kill=true).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the left fragment taken alone would contradict or reverse the whole sentence, treat that boundary as effectively invalid—strongly deprioritize it regardless of cohesion."
+   }
+  },
+  {
+   "diagnosis": "The prompt fails to forbid internal-word/particle fragmentation: examples and principles encourage avoiding clause‑final cuts but do not explicitly forbid cuts that split lexical morphemes or detach particles, producing fragmentary, incoherent pieces.",
+   "evidence": "['ja_jp_955','ja_jp_1130','ja_jp_800','ja_jp_906','ja_jp_346','ja_jp_561'] — policy cuts fragment words/particles into non‑translatable pieces (gibberish tokens across languages), showing the model is cutting inside morphemes or attached particles.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside a lexical word, bound morpheme, or between a content word and its immediately attached particles/auxiliaries; prefer whole-word or syntactic boundaries to avoid fragmentary pieces."
+   }
+  },
+  {
+   "diagnosis": "The prompt lacks a short‑latency condition: by treating 'avoid clause‑final predicates' as broadly absolute, the model thins cuts in ≤3/≤5 bins and loses density that short budgets need. The rule must be conditional on safety, not unconditional.",
+   "evidence": "['ja_jp_955','ja_jp_1130','ja_jp_800','ja_jp_96'] — these short‑bin cases show the model moved cuts away from clause ends or over‑merged, harming ≤3/≤5 performance despite cuts being safe when dense.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "In very short‑latency contexts (dense cuts), allow denser boundaries when each resulting right fragment can be independently interpreted without relying on later clause‑final predicates or arguments."
+   }
+  }
+ ]
+}

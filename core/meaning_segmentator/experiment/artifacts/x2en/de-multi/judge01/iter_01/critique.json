@@ -1,0 +1,47 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt repeatedly treats an incomplete or fragmentary prefix (a piece that lacks the finishing verb, complement, or reported content) as if it were a high-probability contradiction of the whole sentence. In many cases the prefix is merely incomplete (a cohesion problem) rather than asserting something the rest of the sentence contradicts; the prompt therefore over-allocates 'contra' mass to fragmentation and overturns good dense segmentations.",
+    "evidence": "10 cases (de_de_341, de_de_1143, de_de_476, de_de_736, de_de_906, de_de_649, de_de_517, de_de_1527, de_de_441, de_de_867) share the same pattern: the policy kept a cut that produced a prefix missing its predicate/complement and the policy_worst_contra is ~0.94–0.999, zeroing the set ('contra_kill'=true). In all these, the offline target removes that single high-contra cut and restores a segmentation with much higher H_set, showing the high contra was the decisive error rather than an unavoidable cohesion loss.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "2) Contra question (whether the left fragment alone is likely to contradict the whole sentence):",
+     "text": "2) Contra question (is the prefix likely to assert something that the whole sentence later denies or reverses?):\n- Ask: \"If the left fragment were read by itself, would a listener take away a concrete assertion that the remainder of the sentence explicitly negates, reverses, or limits?\"\n- Crucial distinction: incompleteness (a missing verb, complement, or reported content) is primarily a cohesion problem, not automatically a contradiction. Only raise contra toward 1.0 when the prefix by itself makes an affirmative claim that the remainder explicitly rejects or when the remainder contains an explicit negation, reversal, or semantic denial of the prefix's asserted proposition. Examples of true contradiction are: a positive assertion later negated by 'nicht', 'nie', an explicit reversal introduced by a contrast clause that cancels the earlier claim, or a subordinate clause that directly qualifies and negates the prefix's asserted fact.\n- When the prefix lacks its completing predicate (common with verb-final subordinate clauses, speech-act verbs without the reported content, isolated determiners/prepositions), score this as a cohesion shortfall (reduce cohesion) rather than immediately assigning high contra. Only move contra upward when the remainder explicitly reverses or denies the prefix's asserted content."
+    }
+   },
+   {
+    "diagnosis": "The prompt conflates speech-act or reporting verbs and left fragments that name an act ('erklärten', 'wurden', 'belegt', 'wurden am ... gezwungen') with contradicted factual assertions. It therefore assigns large contradiction probability to prefixes that report an act but do not assert propositional content; this routinely kills otherwise acceptable cuts.",
+    "evidence": "At least 6 cases (de_de_476, de_de_1637, de_de_906, de_de_1527, de_de_517, de_de_1143) show cuts immediately after or before reporting/speech-act material (e.g. 'erklärten', 'wurden', 'belegt', 'erklärten,') where the policy's contra ≈ 0.94–0.99 but the offline target moves the cut so the reported content sits with its report or the report is left as a low-contra prefix. These cuts are fixed by treating such prefixes as incomplete report acts (cohesion loss) rather than contradiction.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Guideline (speech-acts & reporting verbs): When a prefix ends with a speech-act or reporting verb (e.g. 'erklärten', 'sagte', passive event verbs like 'wurden ... gezwungen', 'belegte'), or when the remainder supplies the reported content or the clause-final verb, treat the harm as cohesion/incompleteness. Do not raise contra unless the prefix, by itself, asserts a factual proposition that the remainder explicitly denies. Practical question to ask: \"Does the prefix alone attribute a proposition that the rest of the sentence explicitly denies?\" If the answer is no, lower contra and reflect the problem in the cohesion score instead."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt repeatedly treats an incomplete or fragmentary prefix (a piece that lacks the finishing verb, complement, or reported content) as if it were a high-probability contradiction of the whole sentence. In many cases the prefix is merely incomplete (a cohesion problem) rather than asserting something the rest of the sentence contradicts; the prompt therefore over-allocates 'contra' mass to fragmentation and overturns good dense segmentations.",
+   "evidence": "10 cases (de_de_341, de_de_1143, de_de_476, de_de_736, de_de_906, de_de_649, de_de_517, de_de_1527, de_de_441, de_de_867) share the same pattern: the policy kept a cut that produced a prefix missing its predicate/complement and the policy_worst_contra is ~0.94–0.999, zeroing the set ('contra_kill'=true). In all these, the offline target removes that single high-contra cut and restores a segmentation with much higher H_set, showing the high contra was the decisive error rather than an unavoidable cohesion loss.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "2) Contra question (whether the left fragment alone is likely to contradict the whole sentence):",
+    "text": "2) Contra question (is the prefix likely to assert something that the whole sentence later denies or reverses?):\n- Ask: \"If the left fragment were read by itself, would a listener take away a concrete assertion that the remainder of the sentence explicitly negates, reverses, or limits?\"\n- Crucial distinction: incompleteness (a missing verb, complement, or reported content) is primarily a cohesion problem, not automatically a contradiction. Only raise contra toward 1.0 when the prefix by itself makes an affirmative claim that the remainder explicitly rejects or when the remainder contains an explicit negation, reversal, or semantic denial of the prefix's asserted proposition. Examples of true contradiction are: a positive assertion later negated by 'nicht', 'nie', an explicit reversal introduced by a contrast clause that cancels the earlier claim, or a subordinate clause that directly qualifies and negates the prefix's asserted fact.\n- When the prefix lacks its completing predicate (common with verb-final subordinate clauses, speech-act verbs without the reported content, isolated determiners/prepositions), score this as a cohesion shortfall (reduce cohesion) rather than immediately assigning high contra. Only move contra upward when the remainder explicitly reverses or denies the prefix's asserted content."
+   }
+  },
+  {
+   "diagnosis": "The prompt conflates speech-act or reporting verbs and left fragments that name an act ('erklärten', 'wurden', 'belegt', 'wurden am ... gezwungen') with contradicted factual assertions. It therefore assigns large contradiction probability to prefixes that report an act but do not assert propositional content; this routinely kills otherwise acceptable cuts.",
+   "evidence": "At least 6 cases (de_de_476, de_de_1637, de_de_906, de_de_1527, de_de_517, de_de_1143) show cuts immediately after or before reporting/speech-act material (e.g. 'erklärten', 'wurden', 'belegt', 'erklärten,') where the policy's contra ≈ 0.94–0.99 but the offline target moves the cut so the reported content sits with its report or the report is left as a low-contra prefix. These cuts are fixed by treating such prefixes as incomplete report acts (cohesion loss) rather than contradiction.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Guideline (speech-acts & reporting verbs): When a prefix ends with a speech-act or reporting verb (e.g. 'erklärten', 'sagte', passive event verbs like 'wurden ... gezwungen', 'belegte'), or when the remainder supplies the reported content or the clause-final verb, treat the harm as cohesion/incompleteness. Do not raise contra unless the prefix, by itself, asserts a factual proposition that the remainder explicitly denies. Practical question to ask: \"Does the prefix alone attribute a proposition that the rest of the sentence explicitly denies?\" If the answer is no, lower contra and reflect the problem in the cohesion score instead."
+   }
+  }
+ ]
+}

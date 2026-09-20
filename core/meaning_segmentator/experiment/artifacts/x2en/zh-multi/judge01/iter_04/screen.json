@@ -1,0 +1,120 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  13,
+  18,
+  22,
+  27,
+  31,
+  37,
+  44,
+  45,
+  55,
+  60,
+  62,
+  64,
+  67,
+  73,
+  74,
+  75,
+  80,
+  87,
+  90,
+  94,
+  100,
+  103,
+  104,
+  105,
+  115,
+  116,
+  117,
+  119,
+  133,
+  141,
+  142,
+  144,
+  146,
+  147,
+  151,
+  152,
+  153,
+  156,
+  164,
+  169,
+  173,
+  177,
+  181,
+  182,
+  187,
+  188,
+  190,
+  196,
+  197
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00132,
+    "lo": -0.02088,
+    "hi": 0.01866,
+    "n": 976,
+    "n_clusters": 50
+   },
+   "chars": 8349,
+   "changelog": [
+    "Replace C4 to address the primary finding: require verbal complexes (negation, resultatives, verb–object compounds, auxiliaries/aspect markers, tightly bound predicates) to stay with their complements and advise how a GOOD cut looks (after a completed predicate and with punctuation/quotes attached).",
+    "Replace C3 to keep left-headed modifier guidance but add the measured tradeoff: do not preserve multi-token names when that would isolate punctuation, reporting verbs, or core predicates—split names if needed so predicates and their punctuation remain intact."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.02179,
+    "lo": -0.04704,
+    "hi": 0.00485,
+    "n": 976,
+    "n_clusters": 50
+   },
+   "chars": 8279,
+   "changelog": [
+    "Replace C4 to require verbal complexes (negation, resultatives, VO compounds, auxiliaries/aspect markers, tightly bound predicate material) stay with their verb/complements and to state what a good cut looks like (after a completed predicate, with punctuation/closing particles attached).",
+    "Replace C8 to deprioritize preserving multi-token names when doing so would isolate punctuation, reporting verbs, or core predicates; prefer splits that keep predicates and their punctuation/quotes intact."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.0209,
+    "lo": -0.0527,
+    "hi": 0.01128,
+    "n": 976,
+    "n_clusters": 50
+   },
+   "chars": 7566,
+   "changelog": [
+    "Replace E1 with labeled example cmn_hans_cn_236 to teach the model about splits that orphan negated or tightly bound predicate material (primary finding evidence).",
+    "Replace E2 with labeled example cmn_hans_cn_398 to show cases where verb complexes are split and produce high contradiction scores.",
+    "Replace E3 with labeled example cmn_hans_cn_979 to illustrate resultative/verb-object bindings that must stay intact for entailment.",
+    "Replace E4 with labeled example cmn_hans_cn_880 to include another measured instance from the primary finding set (tight predicate/complement splits)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.02872,
+    "lo": -0.06614,
+    "hi": 0.00608,
+    "n": 976,
+    "n_clusters": 50
+   },
+   "chars": 6630,
+   "changelog": [
+    "Delete E3 and E4 to reduce prompt length substantially (remove long example units that inflate size).",
+    "Insert new core-principle after C8: require verbal complexes to stay with their complements and prioritize keeping predicates/punctuation intact over preserving multi-token names, with guidance on what a good cut looks like."
+   ]
+  }
+ ]
+}

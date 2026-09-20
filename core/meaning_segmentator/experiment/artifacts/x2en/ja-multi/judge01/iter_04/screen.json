@@ -1,0 +1,118 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  7,
+  13,
+  18,
+  22,
+  27,
+  31,
+  37,
+  44,
+  45,
+  55,
+  60,
+  62,
+  64,
+  67,
+  73,
+  74,
+  75,
+  80,
+  87,
+  90,
+  94,
+  100,
+  103,
+  104,
+  105,
+  115,
+  116,
+  117,
+  119,
+  133,
+  141,
+  142,
+  144,
+  146,
+  147,
+  151,
+  152,
+  153,
+  156,
+  164,
+  169,
+  173,
+  177,
+  181,
+  182,
+  187,
+  188,
+  190,
+  196,
+  197
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00233,
+    "lo": -0.04343,
+    "hi": 0.03596,
+    "n": 1264,
+    "n_clusters": 50
+   },
+   "chars": 8778,
+   "changelog": [
+    "Append a narrow contradiction veto: treat cuts with very-high contra (≥0.90) as effectively catastrophic and rank them at the bottom — addresses the primary finding that high-contradiction signals were underweighted.",
+    "Append a short‑latency allowance: permit cuts adjacent to particles or bound‑morpheme boundaries when needed for dense, very-low-latency output, but insist on preserving lexical-word integrity and predicate/attachment coherence — addresses the secondary finding about over-strict bans on internal splits while preventing regressions into word-internal fragmentation."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00954,
+    "lo": -0.03945,
+    "hi": 0.02037,
+    "n": 1264,
+    "n_clusters": 50
+   },
+   "chars": 8494,
+   "changelog": [
+    "Replace C3 to relax the categorical ban on internal splits and teach what a GOOD dense cut looks like: allow particle/bound‑morpheme adjacent cuts in very‑short latency when the left fragment is coherent and non‑contradictory and the right fragment can be translated on its own; prefer morpheme/phrase boundaries and avoid splitting inside lexical words."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00748,
+    "lo": -0.05345,
+    "hi": 0.03487,
+    "n": 1264,
+    "n_clusters": 50
+   },
+   "chars": 9181,
+   "changelog": [
+    "Replace E1 with measured example ja_jp_1211 to teach scorers to avoid cuts that carry very-high contradiction (addresses primary finding).",
+    "Replace E2 with measured example ja_jp_918 to reinforce correct ranking in short/medium latency cases where high-contra cuts appeared too favorable.",
+    "Replace E3 with measured example ja_jp_773 to supply a short-latency (≤3) case that showed catastrophic high-contra cuts, guiding safer bottom-ranking of those positions.",
+    "Replace E4 with measured example ja_jp_1159 to cover ≤5 latency failure modes and help rebalance against over-ranking high-contra cuts while showing acceptable dense-cut patterns."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.01279,
+    "lo": -0.01506,
+    "hi": 0.04179,
+    "n": 1264,
+    "n_clusters": 50
+   },
+   "chars": 8700,
+   "changelog": [
+    "Insert a targeted, actionable principle that rescues dense short‑latency choices: allow particle/bound‑morpheme–adjacent cuts conditionally and specify what a GOOD dense cut looks like, so scorers can place dense boundaries without resorting to intra‑word fragmentation (addresses the primary finding about an over‑strict internal‑split ban)."
+   ]
+  }
+ ]
+}

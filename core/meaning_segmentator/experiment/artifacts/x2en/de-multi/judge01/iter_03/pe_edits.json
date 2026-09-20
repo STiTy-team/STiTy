@@ -1,0 +1,123 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "text": "- If a cut leaves the prefix ending on a finite verb, a reporting verb (e.g. \"sagte\"/\"berichtete\") or any other predicate‑like token without its resolving complements, treat that prefix as an independent assertion. Ask: \"Could the remainder negate, reverse, or substantially qualify this claim?\" If the answer is yes, assign a near‑maximal contra."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 348
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9452,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- In German, high contra risk arises when the left fragment, taken alone, reads like a finished assertion because it ends on a finite or reporting verb or other predicate‑like material but lacks its complement or clause‑closing material. In such cases explicitly ask whether the remainder could reverse, negate, or strongly qualify that apparent claim; if the remainder can do so, raise contra toward a near‑maximal value. Contra remains graded in less decisive cases."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": -161
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8943,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "de_de_1000",
+    "text": "Input: Die <SEG:?> Polizei <SEG:?> sagte, <SEG:?> dass <SEG:?> sie <SEG:?> einen <SEG:?> militanten <SEG:?> Anhänger <SEG:?> von <SEG:?> Daesh <SEG:?> (ISIL) <SEG:?> hinter <SEG:?> dem <SEG:?> Angriff <SEG:?> vermuten.\nOutput: Die <SEG:85> Polizei <SEG:77> sagte, <SEG:100> dass <SEG:92> sie <SEG:0> einen <SEG:23> militanten <SEG:62> Anhänger <SEG:38> von <SEG:8> Daesh <SEG:69> (ISIL) <SEG:31> hinter <SEG:46> dem <SEG:15> Angriff <SEG:54> vermuten."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "de_de_1529",
+    "text": "Input: Rings <SEG:?> CEO <SEG:?> Jamie <SEG:?> Siminoff <SEG:?> sagte <SEG:?> einmal, <SEG:?> dass <SEG:?> er <SEG:?> das <SEG:?> Unternehmen <SEG:?> gegründet <SEG:?> habe, <SEG:?> nachdem <SEG:?> er <SEG:?> von <SEG:?> seiner <SEG:?> Garagenwerkstatt <SEG:?> aus <SEG:?> seine <SEG:?> Türklingel <SEG:?> nicht <SEG:?> hören <SEG:?> konnte.\nOutput: Rings <SEG:62> CEO <SEG:95> Jamie <SEG:71> Siminoff <SEG:81> sagte <SEG:67> einmal, <SEG:100> dass <SEG:76> er <SEG:90> das <SEG:57> Unternehmen <SEG:43> gegründet <SEG:48> habe, <SEG:86> nachdem <SEG:38> er <SEG:29> von <SEG:5> seiner <SEG:14> Garagenwerkstatt <SEG:24> aus <SEG:10> seine <SEG:19> Türklingel <SEG:0> nicht <SEG:52> hören <SEG:33> konnte."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "de_de_296",
+    "text": "Input: Die <SEG:?> zwölf <SEG:?> Besatzungsmitglieder <SEG:?> wurden <SEG:?> mit <SEG:?> Hubschraubern <SEG:?> gerettet <SEG:?> und <SEG:?> die <SEG:?> einzige <SEG:?> Verletzung <SEG:?> war <SEG:?> eine <SEG:?> gebrochene <SEG:?> Nase.\nOutput: Die <SEG:46> zwölf <SEG:62> Besatzungsmitglieder <SEG:69> wurden <SEG:77> mit <SEG:38> Hubschraubern <SEG:85> gerettet <SEG:100> und <SEG:92> die <SEG:54> einzige <SEG:31> Verletzung <SEG:23> war <SEG:8> eine <SEG:15> gebrochene <SEG:0> Nase."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 160
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 10
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -18
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9256,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C17",
+    "kind": "change",
+    "text": "- Special-case: predicate-ending prefixes — If a cut leaves the left fragment ending on a finite or reporting verb (or any predicate-like token) while the complement, outcome, or qualifying material remains on the right, treat the prefix as likely to be read as an independent assertion. Concretely: ask whether the remainder could reverse, negate, qualify, or complete that asserted claim; if so, raise contra to a near‑maximal value (close to 1.0). For borderline qualifications (minor scope or stylistic softeners) reduce contra proportionally, but prefer conservative (higher) contra when in doubt."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C17",
+    "kind": "change",
+    "chars_change": 603
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9707,
+  "errors": null
+ }
+]

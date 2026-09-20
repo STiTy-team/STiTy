@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer underestimates near‑certain contradiction: it lets boundaries with very high entailment‑contra remain high ranked because moderate cohesion rescues them, instead of treating almost‑certain contradiction as effectively fatal for streaming cuts.",
+    "evidence": "['ja_jp_1285', 'ja_jp_327', 'ja_jp_1640', 'ja_jp_1256', 'ja_jp_1310', 'ja_jp_1635', 'ja_jp_770', 'ja_jp_547', 'ja_jp_594', 'ja_jp_1208', 'ja_jp_1415', 'ja_jp_626', 'ja_jp_1635'] — each policy kept at least one boundary with an almost‑certain contradiction (policy_worst_contra ~1.0) that the offline target removed.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the left fragment, taken alone, is judged by an entailment model to be near‑certainly contradicted by the whole sentence, treat that boundary as unacceptable and rank it lowest regardless of moderate cohesion."
+    }
+   },
+   {
+    "diagnosis": "The scorer's 'no internal split' avoidance is applied too mechanically: it shifts cuts earlier (or into orthographic fragments) to avoid splitting bound morphemes, producing left fragments that lack their predicate/argument and thus reduce cohesion or create contradiction.",
+    "evidence": "['ja_jp_1310', 'ja_jp_1208', 'ja_jp_1256', 'ja_jp_547', 'ja_jp_770', 'ja_jp_594', 'ja_jp_1635'] — in these cases the policy moved boundaries to earlier character positions to avoid internal splits, which detached predicates/auxiliaries or closing punctuation that the target preserves.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When forbidding internal word/particle splits, do not move the cut earlier if that leaves the left fragment without its predicate, auxiliary chain, or necessary noun head; prefer boundaries that keep predicate+auxiliary or modifier+head intact."
+    }
+   },
+   {
+    "diagnosis": "The scorer over‑bans cuts in the name of cohesion for short‑latency (dense) settings, thinning segment density and losing short‑bin quality — short budgets need permitted dense cuts that still yield self‑contained, non‑contradictory right fragments.",
+    "evidence": "['ja_jp_1285', 'ja_jp_1635', 'ja_jp_1415', 'ja_jp_327', 'ja_jp_626'] — these short‑latency cases show targets with denser boundaries that preserve local predicate/attachment; the policy removed many of those dense cuts and lost ≤3/≤5 performance.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "For very short‑latency needs, allow denser boundaries when each resulting right fragment is independently translatable (no near‑certain contradiction, and predicate/attachment needed for meaning is present on the right)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer underestimates near‑certain contradiction: it lets boundaries with very high entailment‑contra remain high ranked because moderate cohesion rescues them, instead of treating almost‑certain contradiction as effectively fatal for streaming cuts.",
+   "evidence": "['ja_jp_1285', 'ja_jp_327', 'ja_jp_1640', 'ja_jp_1256', 'ja_jp_1310', 'ja_jp_1635', 'ja_jp_770', 'ja_jp_547', 'ja_jp_594', 'ja_jp_1208', 'ja_jp_1415', 'ja_jp_626', 'ja_jp_1635'] — each policy kept at least one boundary with an almost‑certain contradiction (policy_worst_contra ~1.0) that the offline target removed.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the left fragment, taken alone, is judged by an entailment model to be near‑certainly contradicted by the whole sentence, treat that boundary as unacceptable and rank it lowest regardless of moderate cohesion."
+   }
+  },
+  {
+   "diagnosis": "The scorer's 'no internal split' avoidance is applied too mechanically: it shifts cuts earlier (or into orthographic fragments) to avoid splitting bound morphemes, producing left fragments that lack their predicate/argument and thus reduce cohesion or create contradiction.",
+   "evidence": "['ja_jp_1310', 'ja_jp_1208', 'ja_jp_1256', 'ja_jp_547', 'ja_jp_770', 'ja_jp_594', 'ja_jp_1635'] — in these cases the policy moved boundaries to earlier character positions to avoid internal splits, which detached predicates/auxiliaries or closing punctuation that the target preserves.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When forbidding internal word/particle splits, do not move the cut earlier if that leaves the left fragment without its predicate, auxiliary chain, or necessary noun head; prefer boundaries that keep predicate+auxiliary or modifier+head intact."
+   }
+  },
+  {
+   "diagnosis": "The scorer over‑bans cuts in the name of cohesion for short‑latency (dense) settings, thinning segment density and losing short‑bin quality — short budgets need permitted dense cuts that still yield self‑contained, non‑contradictory right fragments.",
+   "evidence": "['ja_jp_1285', 'ja_jp_1635', 'ja_jp_1415', 'ja_jp_327', 'ja_jp_626'] — these short‑latency cases show targets with denser boundaries that preserve local predicate/attachment; the policy removed many of those dense cuts and lost ≤3/≤5 performance.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "For very short‑latency needs, allow denser boundaries when each resulting right fragment is independently translatable (no near‑certain contradiction, and predicate/attachment needed for meaning is present on the right)."
+   }
+  }
+ ]
+}

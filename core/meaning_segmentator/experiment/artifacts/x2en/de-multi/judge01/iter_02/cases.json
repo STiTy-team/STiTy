@@ -1,0 +1,1656 @@
+[
+ {
+  "id": "de_de_86",
+  "cuts": 4,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5749,
+  "policy_worst_contra": 0.9755,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    3,
+    7,
+    9
+   ],
+   "H_set": 0.0128,
+   "text": "Pittman ‖ deutete an, ‖ dass sich die Bedingungen ‖ erst irgendwann ‖ in der nächsten Woche verbessern würden.",
+   "pieces": {
+    "English": [
+     "Pittman",
+     "hinted at,",
+     "that the conditions",
+     "someday",
+     "in the next week."
+    ],
+    "Chinese": [
+     "皮特曼",
+     "说着,她就站起来。",
+     "条件",
+     "某天",
+     "下周会有所改善。"
+    ],
+    "Japanese": [
+     "ピットマン",
+     "彼は言いました",
+     "私たちは こうした状況が",
+     "いつか",
+     "来週改善すると言うのです"
+    ],
+    "Spanish": [
+     "Pittman",
+     "indicó,",
+     "Las condiciones",
+     "Hasta algún día",
+     "mejoraría la próxima semana."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "H_set": 0.5877,
+   "text": "Pittman ‖ deutete ‖ an, ‖ dass ‖ sich die Bedingungen erst irgendwann in der nächsten Woche verbessern würden.",
+   "pieces": {
+    "English": [
+     "Pittman",
+     "deutete",
+     "an,",
+     "that",
+     "conditions would not improve until sometime in the next week."
+    ],
+    "Chinese": [
+     "皮特曼",
+     "德伊泰特",
+     "一个",
+     "达斯",
+     "下周的某个时候才会有所改善。"
+    ],
+    "Japanese": [
+     "ピットマン",
+     "ドイテテ",
+     "あの...",
+     "それは",
+     "来週のどこかで状況が改善すると予想しました"
+    ],
+    "Spanish": [
+     "Pittman",
+     "deutete",
+     "an,",
+     "Das",
+     "Las condiciones no mejorarían hasta la semana que viene."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "dass sich die Bedingungen",
+     "right": "erst irgendwann in der",
+     "H": 0.0193,
+     "H_pct": 0.0,
+     "contra": 0.9755,
+     "cohesion": 0.7881
+    },
+    {
+     "pos": 9,
+     "left": "die Bedingungen erst irgendwann",
+     "right": "in der nächsten Woche",
+     "H": 0.6887,
+     "H_pct": 61.5,
+     "contra": 0.006,
+     "cohesion": 0.6929
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Pittman deutete",
+     "right": "an, dass sich die",
+     "H": 0.7891,
+     "H_pct": 84.6,
+     "contra": 0.0006,
+     "cohesion": 0.7895
+    },
+    {
+     "pos": 4,
+     "left": "Pittman deutete an, dass",
+     "right": "sich die Bedingungen erst",
+     "H": 0.8174,
+     "H_pct": 92.3,
+     "contra": 0.0363,
+     "cohesion": 0.8481
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_240",
+  "cuts": 6,
+  "avg_chunk": 3.9,
+  "latency_bin": "≤5",
+  "gap": 0.5385,
+  "policy_worst_contra": 0.973,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    6,
+    11,
+    17,
+    19
+   ],
+   "H_set": 0.0201,
+   "text": "Das Problem ‖ begann ‖ am 1. Januar, ‖ als sich Dutzende von Anwohnern ‖ beim Postamt von Obanazawa darüber beschwerten, ‖ dass sie ‖ ihre traditionellen und üblichen Neuhjahrskarten nicht bekommen hatten.",
+   "pieces": {
+    "English": [
+     "The problem",
+     "started",
+     "on 1 January,",
+     "as dozens of residents",
+     "complained to the post office in Obanazawa",
+     "that they",
+     "had not received their traditional and usual New Year's cards."
+    ],
+    "Chinese": [
+     "问题",
+     "开始",
+     "1月1日",
+     "当几十个居民",
+     "他们在小早川邮局抱怨",
+     "他们",
+     "他们没有收到传统的新年贺卡。"
+    ],
+    "Japanese": [
+     "問題",
+     "始まった",
+     "1月1日",
+     "何十人もの住民が",
+     "小笠原郵便局に不満を持ちました",
+     "彼女は",
+     "伝統的な新年のカードを 受け取れなかったのです"
+    ],
+    "Spanish": [
+     "El problema",
+     "comenzó",
+     "el 1 de enero,",
+     "cuando docenas de vecinos se reunieron",
+     "se quejaron en la oficina de correos de Obanazawa,",
+     "que",
+     "que no habían recibido sus tradicionales y habituales tarjetas de Año Nuevo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    5,
+    6,
+    9,
+    11
+   ],
+   "H_set": 0.5586,
+   "text": "Das Problem begann ‖ am ‖ 1. ‖ Januar, ‖ als sich Dutzende ‖ von Anwohnern ‖ beim Postamt von Obanazawa darüber beschwerten, dass sie ihre traditionellen und üblichen Neuhjahrskarten nicht bekommen hatten.",
+   "pieces": {
+    "English": [
+     "The problem started",
+     "am",
+     "1. 1996-1997",
+     "January,",
+     "as dozens",
+     "by residents",
+     "complained to the post office in Obanazawa that they had not received their traditional and usual New Year's cards."
+    ],
+    "Chinese": [
+     "问题开始了",
+     "上午",
+     "1. 关于联合国系统内部的工作",
+     "1月(1天)",
+     "当几十个",
+     "居民",
+     "向小早川邮局抱怨没有收到他们传统的新年贺卡。"
+    ],
+    "Japanese": [
+     "問題は始まった",
+     "私は",
+     "1 つの",
+     "1月",
+     "何十もの人々が",
+     "地元の人々が",
+     "伝統的な年賀状が届かないと 小笠原郵便局に不平を言った人がいます"
+    ],
+    "Spanish": [
+     "El problema comenzó",
+     "am",
+     "1. Aplicación de la Convención",
+     "Enero",
+     "cuando decenas de personas",
+     "de residentes",
+     "se quejaron en la oficina de correos de Obanazawa de que no habían recibido sus tradicionales y habituales tarjetas de Año Nuevo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Das Problem",
+     "right": "begann am 1. Januar,",
+     "H": 0.7962,
+     "H_pct": 76.0,
+     "contra": 0.0004,
+     "cohesion": 0.7965
+    },
+    {
+     "pos": 17,
+     "left": "von Obanazawa darüber beschwerten,",
+     "right": "dass sie ihre traditionellen",
+     "H": 0.7634,
+     "H_pct": 68.0,
+     "contra": 0.0294,
+     "cohesion": 0.7865
+    },
+    {
+     "pos": 19,
+     "left": "darüber beschwerten, dass sie",
+     "right": "ihre traditionellen und üblichen",
+     "H": 0.021,
+     "H_pct": 4.0,
+     "contra": 0.973,
+     "cohesion": 0.779
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Das Problem begann am",
+     "right": "1. Januar, als sich",
+     "H": 0.8148,
+     "H_pct": 92.0,
+     "contra": 0.0064,
+     "cohesion": 0.82
+    },
+    {
+     "pos": 5,
+     "left": "Problem begann am 1.",
+     "right": "Januar, als sich Dutzende",
+     "H": 0.8057,
+     "H_pct": 84.0,
+     "contra": 0.0008,
+     "cohesion": 0.8064
+    },
+    {
+     "pos": 9,
+     "left": "Januar, als sich Dutzende",
+     "right": "von Anwohnern beim Postamt",
+     "H": 0.8008,
+     "H_pct": 80.0,
+     "contra": 0.011,
+     "cohesion": 0.8097
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_114",
+  "cuts": 4,
+  "avg_chunk": 6.8,
+  "latency_bin": "≤7",
+  "gap": 0.5593,
+  "policy_worst_contra": 0.6966,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    9,
+    12,
+    23
+   ],
+   "H_set": 0.2527,
+   "text": "Australiens ehemalige konservative Regierung ‖ weigerte sich, Kyoto zu ratifizieren, ‖ mit der Begründung, ‖ es würde der Wirtschaft mit seiner starken Abhängigkeit von Kohleexporten schaden, ‖ während Länder wie Indien und China nicht an Emissionsziele gebunden seien.",
+   "pieces": {
+    "English": [
+     "Australia's former Conservative governments",
+     "refused to ratify Kyoto,",
+     "with the reasoning,",
+     "it would harm the economy with its heavy dependence on coal exports,",
+     "while countries like India and China are not bound by emission targets."
+    ],
+    "Chinese": [
+     "澳大利亚前保守党政府",
+     "拒绝批准京都议定书,",
+     "并附上理由，",
+     "它会损害经济,因为它严重依赖煤炭出口,",
+     "而印度和中国等国家则没有排放目标。"
+    ],
+    "Japanese": [
+     "オーストラリアの保守党首相",
+     "京都議定書の批准を拒否し",
+     "理由は",
+     "石炭輸出に依存している経済に 悪影響を及ぼすでしょう",
+     "インドや中国のような国は 排出量削減の目標を持っていません"
+    ],
+    "Spanish": [
+     "Antiguo gobierno conservador de Australia",
+     "se negó a ratificar Kyoto,",
+     "con la justificación de que",
+     "perjudicaría a la economía, que depende en gran medida de las exportaciones de carbón,",
+     "mientras que países como India y China no están sujetos a objetivos de emisiones."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    9,
+    10,
+    23,
+    24
+   ],
+   "H_set": 0.8119,
+   "text": "Australiens ehemalige konservative Regierung weigerte sich, Kyoto zu ratifizieren, ‖ mit ‖ der Begründung, es würde der Wirtschaft mit seiner starken Abhängigkeit von Kohleexporten schaden, ‖ während ‖ Länder wie Indien und China nicht an Emissionsziele gebunden seien.",
+   "pieces": {
+    "English": [
+     "Australia's former Conservative government refused to ratify Kyoto,",
+     "with",
+     "the argument that it would harm the economy with its heavy dependence on coal exports,",
+     "while",
+     "Countries like India and China are not bound by emission targets."
+    ],
+    "Chinese": [
+     "澳大利亚前保守党政府拒绝批准京都议定书",
+     "与",
+     "因为它会损害严重依赖煤炭出口的经济，",
+     "期间",
+     "印度和中国等国家不受排放目标的约束。"
+    ],
+    "Japanese": [
+     "オーストラリアの保守党政府は京都議定書の批准を拒否しました",
+     "と",
+     "石炭輸出に依存している経済に 悪影響を及ぼすと主張しました",
+     "間に",
+     "インドや中国のような国々は排出量削減目標に拘束されていない。"
+    ],
+    "Spanish": [
+     "El anterior gobierno conservador de Australia se negó a ratificar Kyoto,",
+     "con",
+     "la justificación de que perjudicaría a la economía, que depende en gran medida de las exportaciones de carbón,",
+     "durante",
+     "Países como India y China no están vinculados a objetivos de emisiones."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "Australiens ehemalige konservative Regierung",
+     "right": "weigerte sich, Kyoto zu",
+     "H": 0.7556,
+     "H_pct": 46.9,
+     "contra": 0.0009,
+     "cohesion": 0.7562
+    },
+    {
+     "pos": 12,
+     "left": "ratifizieren, mit der Begründung,",
+     "right": "es würde der Wirtschaft",
+     "H": 0.2566,
+     "H_pct": 9.4,
+     "contra": 0.6966,
+     "cohesion": 0.8458
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "Kyoto zu ratifizieren, mit",
+     "right": "der Begründung, es würde",
+     "H": 0.8362,
+     "H_pct": 90.6,
+     "contra": 0.0212,
+     "cohesion": 0.8543
+    },
+    {
+     "pos": 24,
+     "left": "von Kohleexporten schaden, während",
+     "right": "Länder wie Indien und",
+     "H": 0.8422,
+     "H_pct": 96.9,
+     "contra": 0.0113,
+     "cohesion": 0.8518
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_845",
+  "cuts": 2,
+  "avg_chunk": 8.3,
+  "latency_bin": "≤10",
+  "gap": 0.5912,
+  "policy_worst_contra": 0.6992,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    22
+   ],
+   "H_set": 0.2018,
+   "text": "Obwohl es alles andere als ein modernes Phänomen ist, ‖ verbinden die meisten Menschen es wahrscheinlich mit Jugendlichen, die öffentliches und privates Eigentum ‖ mit Sprühfarbe zerstören.",
+   "pieces": {
+    "English": [
+     "Although it's anything but a modern phenomenon,",
+     "most people probably associate it with young people who are destroying public and private property",
+     "with spray paint destroy."
+    ],
+    "Chinese": [
+     "虽然这绝非现代现象,",
+     "大多数人可能会把它和年轻人联系起来,他们在公共和私人财产上",
+     "用喷漆摧毁。"
+    ],
+    "Japanese": [
+     "近代的な現象とは言い難いが",
+     "多くの人は 若者が公共財や私有財産を 破壊すると思うでしょう",
+     "塗りつぶしてしまうのです"
+    ],
+    "Spanish": [
+     "Aunque no es un fenómeno moderno,",
+     "la mayoría de la gente probablemente lo asocia con jóvenes que violan la propiedad pública y privada",
+     "Destruir con pintura en aerosol."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    9,
+    17
+   ],
+   "H_set": 0.793,
+   "text": "Obwohl es alles andere als ein modernes Phänomen ist, ‖ verbinden die meisten Menschen es wahrscheinlich mit Jugendlichen, ‖ die öffentliches und privates Eigentum mit Sprühfarbe zerstören.",
+   "pieces": {
+    "English": [
+     "Although it's anything but a modern phenomenon,",
+     "most people probably associate it with teenagers,",
+     "who destroy public and private property with spray paint."
+    ],
+    "Chinese": [
+     "虽然这绝非现代现象,",
+     "大多数人可能会把它和青少年联系起来,",
+     "用喷漆摧毁公共和私人财产。"
+    ],
+    "Japanese": [
+     "近代的な現象とは言い難いが",
+     "多くの人は 若者と思い浮かべます",
+     "ペンキを吹き付けて 公共財や私有財産を破壊しています"
+    ],
+    "Spanish": [
+     "Aunque no es un fenómeno moderno,",
+     "la mayoría de la gente probablemente lo asocia con los adolescentes,",
+     "que destruyen la propiedad pública y privada con pintura en aerosol."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 22,
+     "left": "öffentliches und privates Eigentum",
+     "right": "mit Sprühfarbe zerstören.",
+     "H": 0.183,
+     "H_pct": 13.0,
+     "contra": 0.6992,
+     "cohesion": 0.6083
+    }
+   ],
+   "added": [
+    {
+     "pos": 17,
+     "left": "es wahrscheinlich mit Jugendlichen,",
+     "right": "die öffentliches und privates",
+     "H": 0.7797,
+     "H_pct": 95.7,
+     "contra": 0.0088,
+     "cohesion": 0.7866
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_111",
+  "cuts": 1,
+  "avg_chunk": 17.0,
+  "latency_bin": "≤99",
+  "gap": 0.1466,
+  "policy_worst_contra": 0.0037,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    10
+   ],
+   "H_set": 0.6423,
+   "text": "Stardust wird einen neuen Allzeitrekord als das schnellste Raumfahrzeug aufstellen, ‖ das je zur Erde zurückgekehrt ist. Damit bricht es den bisherigen Rekord, der im Mai 1969 bei der Rückkehr des Apollo X-Kommandomoduls aufgestellt wurde.",
+   "pieces": {
+    "English": [
+     "Stardust will set a new all-time record as the fastest spacecraft,",
+     "The Apollo 11 is the longest-lived spacecraft to ever return to Earth, breaking the record set by the Apollo X command module in May 1969."
+    ],
+    "Chinese": [
+     "星尘将创造一个新的历史记录,成为最快的航天器,",
+     "阿波罗10号指挥舱是迄今为止返回地球的最长的指挥舱,打破了1969年5月阿波罗10号指挥舱返回地球时的记录。"
+    ],
+    "Japanese": [
+     "スターダストは最速の宇宙船として 歴代最速記録を更新します",
+     "1969年5月にアポロXの司令船が 地球に帰還した時の記録を 破りました"
+    ],
+    "Spanish": [
+     "Stardust establecerá un nuevo récord de todos los tiempos como la nave espacial más rápida,",
+     "El módulo de mando del Apolo X es el módulo de mando más grande que ha vuelto a la Tierra, superando el récord establecido en mayo de 1969 por el módulo de mando del Apolo X."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    19
+   ],
+   "H_set": 0.7889,
+   "text": "Stardust wird einen neuen Allzeitrekord als das schnellste Raumfahrzeug aufstellen, das je zur Erde zurückgekehrt ist. Damit bricht es ‖ den bisherigen Rekord, der im Mai 1969 bei der Rückkehr des Apollo X-Kommandomoduls aufgestellt wurde.",
+   "pieces": {
+    "English": [
+     "Stardust will set a new all-time record as the fastest spacecraft ever to return to Earth, breaking the",
+     "the previous record set in May 1969 when the Apollo X command module returned."
+    ],
+    "Chinese": [
+     "星尘号将打破有史以来最快返回地球的航天器的记录,打破了",
+     "1969年5月阿波罗10号指挥舱返回月球时创下的记录。"
+    ],
+    "Japanese": [
+     "スターダストは 地球に帰還した 最速の宇宙船として 歴代の記録を更新します",
+     "1969年5月にアポロX号の司令船が 月に帰還した時の記録を更新しました"
+    ],
+    "Spanish": [
+     "Stardust establecerá un nuevo récord de velocidad como la nave espacial más rápida en regresar a la Tierra, rompiendo el récord de velocidad de la NASA.",
+     "el récord anterior, establecido en mayo de 1969 con el regreso del módulo de mando del Apolo X."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "das schnellste Raumfahrzeug aufstellen,",
+     "right": "das je zur Erde",
+     "H": 0.6423,
+     "H_pct": 3.1,
+     "contra": 0.0037,
+     "cohesion": 0.6446
+    }
+   ],
+   "added": [
+    {
+     "pos": 19,
+     "left": "ist. Damit bricht es",
+     "right": "den bisherigen Rekord, der",
+     "H": 0.7889,
+     "H_pct": 100.0,
+     "contra": 0.0017,
+     "cohesion": 0.7902
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_587",
+  "cuts": 8,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.5687,
+  "policy_worst_contra": 0.9978,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    8,
+    11,
+    12,
+    13
+   ],
+   "H_set": 0.0014,
+   "text": "Diese Teleskope ‖ nutzten ‖ eine ‖ Kombination ‖ aus zwei Linsen, ‖ um entfernte Objekte ‖ sowohl ‖ näher ‖ als auch größer erscheinen zu lassen.",
+   "pieces": {
+    "English": [
+     "These telescopes",
+     "used",
+     "one",
+     "Combination",
+     "of two lenses,",
+     "around distant objects",
+     "both",
+     "closer",
+     "and also to make it appear larger."
+    ],
+    "Chinese": [
+     "这些望远镜",
+     "使用",
+     "一",
+     "组合",
+     "由两个透镜,",
+     "围绕遥远的物体",
+     "两者",
+     "更近",
+     "并且让它看起来更大。"
+    ],
+    "Japanese": [
+     "これらの望遠鏡は",
+     "利用",
+     "1つ",
+     "組み合わせ",
+     "二つのレンズから",
+     "遠くの物体を",
+     "両方とも",
+     "近づいて",
+     "大きく見えるようにするのです"
+    ],
+    "Spanish": [
+     "Estos telescopios",
+     "Utilizaron",
+     "una",
+     "Combinación",
+     "de dos lentes,",
+     "alrededor de objetos distantes",
+     "Both",
+     "Cerca",
+     "y también para hacerlo parecer más grande."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    5,
+    7,
+    8,
+    9,
+    10,
+    13
+   ],
+   "H_set": 0.5702,
+   "text": "Diese Teleskope ‖ nutzten ‖ eine Kombination ‖ aus zwei ‖ Linsen, ‖ um ‖ entfernte ‖ Objekte sowohl näher ‖ als auch größer erscheinen zu lassen.",
+   "pieces": {
+    "English": [
+     "These telescopes",
+     "used",
+     "a combination",
+     "of two",
+     "Lentils,",
+     "um",
+     "removed",
+     "Objects both closer",
+     "and also to make it appear larger."
+    ],
+    "Chinese": [
+     "这些望远镜",
+     "使用",
+     "组合",
+     "两个",
+     "扁豆",
+     "乌姆",
+     "远程",
+     "对象都更接近",
+     "并且让它看起来更大。"
+    ],
+    "Japanese": [
+     "これらの望遠鏡は",
+     "利用",
+     "組み合わせ",
+     "2つの",
+     "レンズ",
+     "うん",
+     "遠隔",
+     "近くにある物体を",
+     "大きく見えるようにするのです"
+    ],
+    "Spanish": [
+     "Estos telescopios",
+     "Utilizaron",
+     "Una combinación",
+     "de dos",
+     "Lentejas,",
+     "um",
+     "removido",
+     "Objetos tanto más cerca",
+     "y también para hacerlo parecer más grande."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "Diese Teleskope nutzten eine",
+     "right": "Kombination aus zwei Linsen,",
+     "H": 0.0017,
+     "H_pct": 0.0,
+     "contra": 0.9978,
+     "cohesion": 0.7941
+    },
+    {
+     "pos": 11,
+     "left": "Linsen, um entfernte Objekte",
+     "right": "sowohl näher als auch",
+     "H": 0.6887,
+     "H_pct": 23.5,
+     "contra": 0.002,
+     "cohesion": 0.6901
+    },
+    {
+     "pos": 12,
+     "left": "um entfernte Objekte sowohl",
+     "right": "näher als auch größer",
+     "H": 0.6536,
+     "H_pct": 5.9,
+     "contra": 0.0015,
+     "cohesion": 0.6546
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "eine Kombination aus zwei",
+     "right": "Linsen, um entfernte Objekte",
+     "H": 0.7896,
+     "H_pct": 70.6,
+     "contra": 0.0122,
+     "cohesion": 0.7994
+    },
+    {
+     "pos": 9,
+     "left": "aus zwei Linsen, um",
+     "right": "entfernte Objekte sowohl näher",
+     "H": 0.8232,
+     "H_pct": 88.2,
+     "contra": 0.0032,
+     "cohesion": 0.8258
+    },
+    {
+     "pos": 10,
+     "left": "zwei Linsen, um entfernte",
+     "right": "Objekte sowohl näher als",
+     "H": 0.7739,
+     "H_pct": 64.7,
+     "contra": 0.0012,
+     "cohesion": 0.7748
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_958",
+  "cuts": 5,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.5294,
+  "policy_worst_contra": 0.966,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    11,
+    14,
+    16,
+    18,
+    22
+   ],
+   "H_set": 0.0213,
+   "text": "Wenn man in der südlichen Hemisphäre vollständig die Welt umrunden will, ‖ ist die Auswahl ‖ an Flügen ‖ und Reisezielen ‖ aufgrund fehlender transozeanischer Routen ‖ sehr begrenzt.",
+   "pieces": {
+    "English": [
+     "If you want to completely circumnavigate the world in the southern hemisphere,",
+     "is the selection",
+     "Number of flights",
+     "and destinations",
+     "due to lack of transoceanic routes",
+     "very limited."
+    ],
+    "Chinese": [
+     "如果你想在南半球环绕地球,",
+     "是选择",
+     "航班",
+     "城市和目的地",
+     "因为缺乏跨洋航线",
+     "非常有限。"
+    ],
+    "Japanese": [
+     "南半球で地球を一周するには",
+     "選択は",
+     "飛行機",
+     "旅行先を選ぶとき",
+     "海を越えての輸送路がないためです",
+     "非常に限られています"
+    ],
+    "Spanish": [
+     "Si quieres dar la vuelta al mundo en el hemisferio sur,",
+     "Es la selección",
+     "Número de vuelos",
+     "Ciudades y destinos",
+     "debido a la falta de rutas transoceánicas",
+     "Muy limitado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    11,
+    18,
+    20
+   ],
+   "H_set": 0.5508,
+   "text": "Wenn ‖ man ‖ in der südlichen Hemisphäre vollständig die Welt umrunden will, ‖ ist die Auswahl an Flügen und Reisezielen ‖ aufgrund fehlender ‖ transozeanischer Routen sehr begrenzt.",
+   "pieces": {
+    "English": [
+     "Wenn",
+     "man",
+     "in the southern hemisphere, wants to completely circumnavigate the world,",
+     "is the choice of flights and destinations",
+     "due to missing",
+     "transoceanic routes very limited."
+    ],
+    "Chinese": [
+     "万",
+     "人",
+     "想要在南半球环绕地球,",
+     "是航班和目的地的选择",
+     "缺乏资料",
+     "跨大西洋航线的数量非常有限。"
+    ],
+    "Japanese": [
+     "ワン",
+     "人間",
+     "南半球で地球を一周したいと思っているのです",
+     "飛行機や目的地の選択肢です",
+     "私たちは 人間の",
+     "海を渡るルートは 非常に限られています"
+    ],
+    "Spanish": [
+     "Si",
+     "hombre",
+     "quiere dar la vuelta al mundo en el hemisferio sur,",
+     "es la selección de vuelos y destinos",
+     "Falta de",
+     "de rutas transoceánicas muy limitadas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "will, ist die Auswahl",
+     "right": "an Flügen und Reisezielen",
+     "H": 0.0273,
+     "H_pct": 9.1,
+     "contra": 0.966,
+     "cohesion": 0.8037
+    },
+    {
+     "pos": 16,
+     "left": "die Auswahl an Flügen",
+     "right": "und Reisezielen aufgrund fehlender",
+     "H": 0.7453,
+     "H_pct": 63.6,
+     "contra": 0.0012,
+     "cohesion": 0.7462
+    },
+    {
+     "pos": 22,
+     "left": "aufgrund fehlender transozeanischer Routen",
+     "right": "sehr begrenzt.",
+     "H": 0.7605,
+     "H_pct": 72.7,
+     "contra": 0.0011,
+     "cohesion": 0.7613
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Wenn",
+     "right": "man in der südlichen",
+     "H": 0.7791,
+     "H_pct": 86.4,
+     "contra": 0.0014,
+     "cohesion": 0.7802
+    },
+    {
+     "pos": 2,
+     "left": "Wenn man",
+     "right": "in der südlichen Hemisphäre",
+     "H": 0.7813,
+     "H_pct": 90.9,
+     "contra": 0.0009,
+     "cohesion": 0.782
+    },
+    {
+     "pos": 20,
+     "left": "und Reisezielen aufgrund fehlender",
+     "right": "transozeanischer Routen sehr begrenzt.",
+     "H": 0.77,
+     "H_pct": 81.8,
+     "contra": 0.0058,
+     "cohesion": 0.7745
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_278",
+  "cuts": 3,
+  "avg_chunk": 5.5,
+  "latency_bin": "≤7",
+  "gap": 0.4105,
+  "policy_worst_contra": 0.4663,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    8
+   ],
+   "H_set": 0.4406,
+   "text": "Der ehemalige Gouverneur von Massachusetts, ‖ Mitt Romney, ‖ gewann ‖ am Dienstag die Präsidentschaftsvorwahl der Republikaner in Florida mit über 46 Prozent der Stimmen.",
+   "pieces": {
+    "English": [
+     "The former governor of Massachusetts,",
+     "Mitt Romney,",
+     "won",
+     "on Tuesday the presidential primary of the Republicans in Florida with over 46 percent of the votes."
+    ],
+    "Chinese": [
+     "马萨诸塞州州长",
+     "米特·罗姆尼",
+     "赢得",
+     "周二,共和党在佛罗里达州的总统初选中以超过46%的选票。"
+    ],
+    "Japanese": [
+     "元マサチューセッツ州知事",
+     "ミット・ロムニー",
+     "勝利",
+     "火曜日のフロリダ州の共和党予備選挙では 46%以上の票を獲得しました"
+    ],
+    "Spanish": [
+     "El ex gobernador de Massachusetts,",
+     "Mitt Romney, el candidato demócrata",
+     "ganó",
+     "El martes, la primaria presidencial de los republicanos en Florida con más del 46 por ciento de los votos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    10,
+    16
+   ],
+   "H_set": 0.8511,
+   "text": "Der ehemalige ‖ Gouverneur von Massachusetts, Mitt Romney, gewann am Dienstag ‖ die Präsidentschaftsvorwahl der Republikaner in Florida ‖ mit über 46 Prozent der Stimmen.",
+   "pieces": {
+    "English": [
+     "The former",
+     "Massachusetts Governor Mitt Romney won Tuesday",
+     "the Republican presidential primary in Florida",
+     "with over 46 percent of the votes."
+    ],
+    "Chinese": [
+     "前任",
+     "马萨诸塞州州长米特·罗姆尼,赢得了周二",
+     "佛罗里达州共和党总统初选",
+     "超过46%的选票。"
+    ],
+    "Japanese": [
+     "元",
+     "マサチューセッツ州知事のミット・ロムニーが 火曜日に勝利しました",
+     "フロリダ州の共和党予備選挙です",
+     "46%以上の票を獲得しました"
+    ],
+    "Spanish": [
+     "El ex",
+     "El gobernador de Massachusetts, Mitt Romney, ganó el martes",
+     "la primaria presidencial republicana en Florida",
+     "con más del 46 por ciento de los votos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "ehemalige Gouverneur von Massachusetts,",
+     "right": "Mitt Romney, gewann am",
+     "H": 0.4439,
+     "H_pct": 10.0,
+     "contra": 0.4663,
+     "cohesion": 0.8318
+    },
+    {
+     "pos": 7,
+     "left": "von Massachusetts, Mitt Romney,",
+     "right": "gewann am Dienstag die",
+     "H": 0.8032,
+     "H_pct": 40.0,
+     "contra": 0.002,
+     "cohesion": 0.8048
+    },
+    {
+     "pos": 8,
+     "left": "Massachusetts, Mitt Romney, gewann",
+     "right": "am Dienstag die Präsidentschaftsvorwahl",
+     "H": 0.854,
+     "H_pct": 80.0,
+     "contra": 0.0004,
+     "cohesion": 0.8543
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Der ehemalige",
+     "right": "Gouverneur von Massachusetts, Mitt",
+     "H": 0.869,
+     "H_pct": 95.0,
+     "contra": 0.0017,
+     "cohesion": 0.8704
+    },
+    {
+     "pos": 10,
+     "left": "Romney, gewann am Dienstag",
+     "right": "die Präsidentschaftsvorwahl der Republikaner",
+     "H": 0.8664,
+     "H_pct": 90.0,
+     "contra": 0.0004,
+     "cohesion": 0.8668
+    },
+    {
+     "pos": 16,
+     "left": "der Republikaner in Florida",
+     "right": "mit über 46 Prozent",
+     "H": 0.8801,
+     "H_pct": 100.0,
+     "contra": 0.0017,
+     "cohesion": 0.8816
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_23",
+  "cuts": 1,
+  "avg_chunk": 9.0,
+  "latency_bin": "≤10",
+  "gap": 0.2226,
+  "policy_worst_contra": 0.005,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.5904,
+   "text": "Trotz dieser Vorwürfe hat Ma auf einem Podium, ‖ das für engere Beziehungen zum chinesischen Festland eintritt, mühelos gewonnen.x",
+   "pieces": {
+    "English": [
+     "Despite these accusations, Ma has spoken on a podium,",
+     "that advocates closer ties with mainland China, effortlessly won.x"
+    ],
+    "Chinese": [
+     "尽管有这些指控,马英九还是站在了讲台上,",
+     "支持与中国大陆关系更加紧密的民主党。"
+    ],
+    "Japanese": [
+     "これらの非難にもかかわらず 馬は講演会で",
+     "簡単に勝利しました"
+    ],
+    "Spanish": [
+     "A pesar de estas acusaciones, Ma habló en un podio,",
+     "que aboga por una relación más estrecha con China continental, ganado sin esfuerzo.x"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4
+   ],
+   "H_set": 0.813,
+   "text": "Trotz dieser Vorwürfe hat ‖ Ma auf einem Podium, das für engere Beziehungen zum chinesischen Festland eintritt, mühelos gewonnen.x",
+   "pieces": {
+    "English": [
+     "Despite these accusations,",
+     "Ma won effortlessly on a podium that advocates closer ties with mainland China.x"
+    ],
+    "Chinese": [
+     "尽管有这些指控，",
+     "马英九在一个主张与中国大陆关系更加紧密的讲台上轻松赢得了胜利。"
+    ],
+    "Japanese": [
+     "これらの批判にもかかわらず",
+     "馬は、中国本土との関係の強化を主張する講壇で、簡単に勝利した。"
+    ],
+    "Spanish": [
+     "A pesar de estas acusaciones,",
+     "Ma ganó fácilmente en un podio que aboga por relaciones más estrechas con China continental.x"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Ma auf einem Podium,",
+     "right": "das für engere Beziehungen",
+     "H": 0.5904,
+     "H_pct": 43.8,
+     "contra": 0.005,
+     "cohesion": 0.5934
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Trotz dieser Vorwürfe hat",
+     "right": "Ma auf einem Podium,",
+     "H": 0.813,
+     "H_pct": 100.0,
+     "contra": 0.0032,
+     "cohesion": 0.8156
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_71",
+  "cuts": 1,
+  "avg_chunk": 14.0,
+  "latency_bin": "≤99",
+  "gap": 0.1068,
+  "policy_worst_contra": 0.003,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    18
+   ],
+   "H_set": 0.739,
+   "text": "Die Managementfirma der Band, HK Management Inc., gab keinen anfänglichen Grund an, als sie am 20. September absagte, ‖ machte aber bereits am nächsten Tag logistische Gründe dafür verantwortlich.",
+   "pieces": {
+    "English": [
+     "The band's management company, HK Management Inc., gave no initial reason when it cancelled the tour on September 20, 2017.",
+     "but already the next day made logistical reasons responsible for this."
+    ],
+    "Chinese": [
+     "乐队的管理公司HK Management Inc. 9月20日取消了他们的首次演唱会,并没有提供任何理由。",
+     "次日，他就因政治原因辞职。"
+    ],
+    "Japanese": [
+     "9月20日にバンドのマネージメント会社HK Management Inc.は 当初の理由を明かさずにキャンセルした",
+     "翌日 彼は物流上の問題を 理由にしたのです"
+    ],
+    "Spanish": [
+     "La compañía de gestión de la banda, HK Management Inc., no dio una razón inicial cuando canceló el 20 de septiembre,",
+     "Al día siguiente, se le atribuyeron razones logísticas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4
+   ],
+   "H_set": 0.8458,
+   "text": "Die Managementfirma der Band, ‖ HK Management Inc., gab keinen anfänglichen Grund an, als sie am 20. September absagte, machte aber bereits am nächsten Tag logistische Gründe dafür verantwortlich.",
+   "pieces": {
+    "English": [
+     "The management company of the band,",
+     "HK Management Inc., did not give an initial reason when it cancelled on September 20, but already the next day blamed logistical reasons."
+    ],
+    "Chinese": [
+     "乐队的管理公司",
+     "香港管理公司在9月20日取消了这次演出，但没有提供任何理由，但在第二天就指出了后勤原因。"
+    ],
+    "Japanese": [
+     "彼らのマネジメント会社",
+     "HKマネジメントは9月20日にキャンセルしたとき、当初の理由を明らかにしなかったが、翌日に物流上の理由を挙げた。"
+    ],
+    "Spanish": [
+     "La compañía de gestión de la banda,",
+     "HK Management Inc., no dio una razón inicial cuando canceló el 20 de septiembre, pero al día siguiente atribuyó la cancelación a razones logísticas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 18,
+     "left": "am 20. September absagte,",
+     "right": "machte aber bereits am",
+     "H": 0.739,
+     "H_pct": 65.4,
+     "contra": 0.003,
+     "cohesion": 0.7412
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Die Managementfirma der Band,",
+     "right": "HK Management Inc., gab",
+     "H": 0.8458,
+     "H_pct": 100.0,
+     "contra": 0.005,
+     "cohesion": 0.85
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_594",
+  "cuts": 6,
+  "avg_chunk": 2.7,
+  "latency_bin": "≤3",
+  "gap": 0.5494,
+  "policy_worst_contra": 0.9953,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    6,
+    13,
+    15,
+    16,
+    17
+   ],
+   "H_set": 0.0025,
+   "text": "Ausschließlich die Tiere ‖ besitzen ein Gehirn ‖ (selbst wenn noch nicht einmal sämtliche Tiere ‖ eines besitzen; ‖ Quallen ‖ besitzen ‖ beispielsweise keines).",
+   "pieces": {
+    "English": [
+     "Exclusively the animals",
+     "have a brain",
+     "(even if not all animals",
+     "possess one;",
+     "Jellyfish",
+     "besitzen",
+     "for example, none)."
+    ],
+    "Chinese": [
+     "动物",
+     "拥有大脑",
+     "(即使不是所有的动物",
+     "拥有一个；",
+     "水母",
+     "拥有",
+     "例如，没有。"
+    ],
+    "Japanese": [
+     "動物のみ",
+     "脳を持っています",
+     "動物の全てが",
+     "持っているのです",
+     "クラゲ",
+     "持っている",
+     "例えば 何もない"
+    ],
+    "Spanish": [
+     "Exclusivo de los animales",
+     "poseen un cerebro",
+     "(aunque ni siquiera todos los animales",
+     "poseer uno;",
+     "Medusas",
+     "Poseer",
+     "por ejemplo, ninguna)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    5,
+    6,
+    7,
+    15
+   ],
+   "H_set": 0.5519,
+   "text": "Ausschließlich die ‖ Tiere ‖ besitzen ein ‖ Gehirn ‖ (selbst ‖ wenn noch nicht einmal sämtliche Tiere eines besitzen; ‖ Quallen besitzen beispielsweise keines).",
+   "pieces": {
+    "English": [
+     "Exclusively the",
+     "Animals",
+     "have a",
+     "Brain",
+     "(even",
+     "if not all animals have one;",
+     "Jellyfish, for example, do not have one)."
+    ],
+    "Chinese": [
+     "仅限于",
+     "动物",
+     "拥有",
+     "大脑",
+     "2004年12月31日终了的两年期收入和支出及准备金和基金结余变动表",
+     "即使不是所有的动物都有一个;",
+     " 例如，没有一个有理数。"
+    ],
+    "Japanese": [
+     "ただ",
+     "動物",
+     "私たちは",
+     "脳",
+     "もしも",
+     "動物全てが持っているわけではありません",
+     " 例えば、アリはそれを持たない。"
+    ],
+    "Spanish": [
+     "Exclusivo",
+     "Animales",
+     "poseen un",
+     "Cerebro",
+     "(incluso",
+     "si ni siquiera todos los animales tienen uno;",
+     "Por ejemplo, las medusas no tienen ninguna)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "nicht einmal sämtliche Tiere",
+     "right": "eines besitzen; Quallen besitzen",
+     "H": 0.6347,
+     "H_pct": 29.4,
+     "contra": 0.0055,
+     "cohesion": 0.6382
+    },
+    {
+     "pos": 16,
+     "left": "Tiere eines besitzen; Quallen",
+     "right": "besitzen beispielsweise keines).",
+     "H": 0.6938,
+     "H_pct": 58.8,
+     "contra": 0.0052,
+     "cohesion": 0.6975
+    },
+    {
+     "pos": 17,
+     "left": "eines besitzen; Quallen besitzen",
+     "right": "beispielsweise keines).",
+     "H": 0.0031,
+     "H_pct": 5.9,
+     "contra": 0.9953,
+     "cohesion": 0.6634
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Ausschließlich die",
+     "right": "Tiere besitzen ein Gehirn",
+     "H": 0.7061,
+     "H_pct": 70.6,
+     "contra": 0.0126,
+     "cohesion": 0.7151
+    },
+    {
+     "pos": 5,
+     "left": "die Tiere besitzen ein",
+     "right": "Gehirn (selbst wenn noch",
+     "H": 0.7183,
+     "H_pct": 76.5,
+     "contra": 0.0048,
+     "cohesion": 0.7217
+    },
+    {
+     "pos": 7,
+     "left": "besitzen ein Gehirn (selbst",
+     "right": "wenn noch nicht einmal",
+     "H": 0.7194,
+     "H_pct": 88.2,
+     "contra": 0.0034,
+     "cohesion": 0.7219
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_648",
+  "cuts": 8,
+  "avg_chunk": 3.2,
+  "latency_bin": "≤5",
+  "gap": 0.5199,
+  "policy_worst_contra": 0.9397,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    6,
+    8,
+    10,
+    15,
+    19,
+    21,
+    24
+   ],
+   "H_set": 0.0303,
+   "text": "So viele von uns erwischen ‖ sich ‖ beim Anschauen ‖ einer Fernsehsendung, ‖ die uns über einen Prozess ‖ oder eine Erfahrung informiert, ‖ obwohl wir ‖ nie daran teilhaben ‖ oder dieses Wissen anwenden werden.",
+   "pieces": {
+    "English": [
+     "So many of us catch",
+     "sie",
+     "while watching",
+     "a television show,",
+     "that we have a process",
+     "or an experience informed,",
+     "although we",
+     "never participate in it",
+     "or will apply this knowledge."
+    ],
+    "Chinese": [
+     "我们很多人都被",
+     "西西",
+     "他们是眼睁睁看着死亡的。",
+     "一个电视节目,",
+     "我们在一个过程中",
+     "或者一个经验,",
+     "尽管我们",
+     "永远不会参与",
+     "或者是如何运用这些知识。"
+    ],
+    "Japanese": [
+     "私たちの多くは",
+     "あなた",
+     "見てるだけで",
+     "テレビ番組で",
+     "プロセスを説明します",
+     "経験を知らせるもので",
+     "私たちは",
+     "決して参加しません",
+     "実際に使うことも できないのです"
+    ],
+    "Spanish": [
+     "Tantos de nosotros nos atrapamos",
+     "Sie",
+     "mientras miras",
+     "un programa de televisión,",
+     "Nos hablan de un proceso.",
+     "o una experiencia informada,",
+     "Aunque nosotros",
+     "nunca participar en ella",
+     "o aplicarán este conocimiento."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    6,
+    7,
+    10,
+    18,
+    19,
+    20
+   ],
+   "H_set": 0.5502,
+   "text": "So ‖ viele ‖ von uns erwischen sich ‖ beim ‖ Anschauen einer Fernsehsendung, ‖ die uns über einen Prozess oder eine Erfahrung ‖ informiert, ‖ obwohl ‖ wir nie daran teilhaben oder dieses Wissen anwenden werden.",
+   "pieces": {
+    "English": [
+     "So",
+     "many",
+     "of us catch each other",
+     "when",
+     "Watching a TV show,",
+     "that tell us about a process or an experience",
+     "informed,",
+     "Although",
+     "we will never share or apply this knowledge."
+    ],
+    "Chinese": [
+     "是的",
+     "许多",
+     "我们中的一些人",
+     "2004年12月31日终了年度的收入和支出及准备金和基金结余变动表",
+     "观看电视节目,",
+     "让我们了解一个过程或经历",
+     "了解情况，",
+     "虽然",
+     "我们永远不会分享或应用这些知识。"
+    ],
+    "Japanese": [
+     "だから",
+     "多く",
+     "私たちの多くは",
+     "あなたが",
+     "テレビ番組を見る",
+     "プロセスや経験について",
+     "情報を得るために",
+     "でも",
+     "私たちは決してその知識を共有したり 応用したりしません"
+    ],
+    "Spanish": [
+     "Así que",
+     "Muchos",
+     "De nosotros nos atrapamos",
+     "en el",
+     "Ver un programa de televisión,",
+     "que nos hablan de un proceso o experiencia.",
+     "informado,",
+     "aunque",
+     "Nunca compartiremos o aplicaremos este conocimiento."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "viele von uns erwischen",
+     "right": "sich beim Anschauen einer",
+     "H": 0.7222,
+     "H_pct": 37.0,
+     "contra": 0.0007,
+     "cohesion": 0.7227
+    },
+    {
+     "pos": 8,
+     "left": "erwischen sich beim Anschauen",
+     "right": "einer Fernsehsendung, die uns",
+     "H": 0.7613,
+     "H_pct": 66.7,
+     "contra": 0.0011,
+     "cohesion": 0.7621
+    },
+    {
+     "pos": 15,
+     "left": "uns über einen Prozess",
+     "right": "oder eine Erfahrung informiert,",
+     "H": 0.7299,
+     "H_pct": 44.4,
+     "contra": 0.0021,
+     "cohesion": 0.7314
+    },
+    {
+     "pos": 21,
+     "left": "Erfahrung informiert, obwohl wir",
+     "right": "nie daran teilhaben oder",
+     "H": 0.0477,
+     "H_pct": 0.0,
+     "contra": 0.9397,
+     "cohesion": 0.7914
+    },
+    {
+     "pos": 24,
+     "left": "wir nie daran teilhaben",
+     "right": "oder dieses Wissen anwenden",
+     "H": 0.7045,
+     "H_pct": 29.6,
+     "contra": 0.0775,
+     "cohesion": 0.7637
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "So",
+     "right": "viele von uns erwischen",
+     "H": 0.7917,
+     "H_pct": 100.0,
+     "contra": 0.0109,
+     "cohesion": 0.8004
+    },
+    {
+     "pos": 2,
+     "left": "So viele",
+     "right": "von uns erwischen sich",
+     "H": 0.7729,
+     "H_pct": 85.2,
+     "contra": 0.0005,
+     "cohesion": 0.7733
+    },
+    {
+     "pos": 7,
+     "left": "uns erwischen sich beim",
+     "right": "Anschauen einer Fernsehsendung, die",
+     "H": 0.7681,
+     "H_pct": 81.5,
+     "contra": 0.0027,
+     "cohesion": 0.7702
+    },
+    {
+     "pos": 18,
+     "left": "Prozess oder eine Erfahrung",
+     "right": "informiert, obwohl wir nie",
+     "H": 0.7671,
+     "H_pct": 77.8,
+     "contra": 0.0036,
+     "cohesion": 0.7699
+    },
+    {
+     "pos": 20,
+     "left": "eine Erfahrung informiert, obwohl",
+     "right": "wir nie daran teilhaben",
+     "H": 0.7884,
+     "H_pct": 96.3,
+     "contra": 0.007,
+     "cohesion": 0.794
+    }
+   ]
+  }
+ }
+]

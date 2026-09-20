@@ -1,0 +1,44 @@
+{
+ "iter": 3,
+ "candidate": 3,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00163,
+  "lo": -0.01242,
+  "hi": 0.00996,
+  "n": 401,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Insert a focused contra rule after C17: explicitly flag cuts that leave the prefix ending on a finite/reporting verb or other predicate-like token without its complement and require treating such cases as high contradiction risk. This addresses the primary finding that the prompt underestimates contra for prefixes that read like independent assertions."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C17",
+   "kind": "change",
+   "was": "- High contradiction risk: the remainder contains an explicit negation/qualifica",
+   "now": "- Special-case: predicate-ending prefixes — If a cut leaves the left fragment en"
+  }
+ ],
+ "findings": [
+  "The prompt systematically underestimates contradiction risk when a cut leaves a prefix that reads like an independent assertion because it ends on a finite/reporting verb or other predicate‑like material without its resolving complement, so high‑contra cuts are ranked too high."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0092,
+   "≤5": -0.0161,
+   "≤7": -0.0027,
+   "≤10": -0.0054,
+   "≤99": -0.0017
+  },
+  "n_worse": 147,
+  "n_better": 143,
+  "why": "The inserted special-case penalised cuts that leave the left fragment ending on a finite/reporting verb, so the scorer shifted cuts away from verb-final prefixes (e.g. merged 'Schlafen ‖ Sie' into 'Schlafen Sie ...' and kept verb+object together). That change helped the smallest-piece bin (≤3 pieces: +0.0092) but displaced cuts into other boundaries—sometimes splitting named entities and enumerations (e.g. 'Mission Bay' was split)—producing net small harms in the mid/longer bins (≤5: −0.0161, ≤10: −0.0054) and nearly balanced n_worse/n_better.",
+  "lesson": "A later revision should respect that penalising predicate-ending prefixes helps very short-piece cuts but can push cuts into names/enumerations and hurt mid-length cases, so its scope must be constrained to avoid creating those splits.",
+  "blamed": [
+   "C17 «- High contradiction risk: the remainder contains an explici»"
+  ]
+ }
+}

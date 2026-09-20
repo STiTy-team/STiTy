@@ -1,0 +1,121 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  3,
+  6,
+  10,
+  13,
+  18,
+  20,
+  23,
+  27,
+  30,
+  32,
+  37,
+  38,
+  50,
+  52,
+  54,
+  56,
+  65,
+  68,
+  73,
+  75,
+  82,
+  85,
+  87,
+  93,
+  101,
+  104,
+  105,
+  111,
+  112,
+  113,
+  118,
+  120,
+  122,
+  125,
+  128,
+  131,
+  134,
+  135,
+  138,
+  143,
+  146,
+  149,
+  159,
+  173,
+  178,
+  179,
+  188,
+  197,
+  199
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00328,
+    "lo": -0.04643,
+    "hi": 0.03824,
+    "n": 1359,
+    "n_clusters": 50
+   },
+   "chars": 6904,
+   "changelog": [
+    "Replace C1 to implement the primary finding: add a narrow contradiction veto that ranks boundaries with near‑certain entailment contradiction lowest while restricting the veto to well‑formed left fragments.",
+    "Delete E4 to reduce prompt size and bring the prompt back under the budget (removes a large example that was inflating prompt length)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00804,
+    "lo": -0.0276,
+    "hi": 0.04567,
+    "n": 1359,
+    "n_clusters": 50
+   },
+   "chars": 8875,
+   "changelog": [
+    "Paraphrased C2 to be shorter while preserving the judgement about head-final dependency; frees space and keeps the same guidance.",
+    "Inserted a new core principle after C3 that constrains no-internal-split handling: do not shift cuts earlier if that leaves the left fragment missing its predicate/auxiliary/necessary head; prefer later intact boundaries. This directly addresses the primary finding.",
+    "Inserted a new core principle after C4 describing what a good dense cut looks like for very short-latency settings: allow denser boundaries only when the right fragment is independently translatable and the left fragment passes a narrow contradiction check."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00314,
+    "lo": -0.03886,
+    "hi": 0.02856,
+    "n": 1359,
+    "n_clusters": 50
+   },
+   "chars": 9182,
+   "changelog": [
+    "Replace E1–E4 with four measured labeled examples from short/medium latency bins to teach the model about safe dense cuts that preserve predicate/attachment and avoid near‑certain contradiction.",
+    "Swapped handcrafted examples for real measured cases (≤3/≤5/≤7/≤10 bins) so the scorer learns where denser, safe boundaries are useful and how the target ranks them."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.0045,
+    "lo": -0.04228,
+    "hi": 0.03342,
+    "n": 1359,
+    "n_clusters": 50
+   },
+   "chars": 10057,
+   "changelog": [
+    "Insert a narrow, conditional contradiction‑veto at the top: rank near‑certainly contradicted left fragments lowest, but apply the veto only to well‑formed left chunks to avoid overblocking.",
+    "After C3, add a rule constraining 'no internal split' handling: do not move cuts earlier if that leaves the left fragment missing its predicate/auxiliary or required noun head; prefer later intact boundaries.",
+    "After C4, add a rule describing when dense cuts are acceptable: permit denser boundaries for very short‑latency only when right fragments are independently translatable and the contradiction veto does not apply.",
+    "Replace all four handcrafted examples with four measured labeled examples (ja_jp_1640, ja_jp_1256, ja_jp_1310, ja_jp_594) so the scorer learns from real cases that show near‑certain contradiction, predicate/attachment needs, and safe dense cuts."
+   ]
+  }
+ ]
+}

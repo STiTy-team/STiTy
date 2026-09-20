@@ -1,0 +1,54 @@
+{
+ "iter": 4,
+ "candidate": 0,
+ "adopted": false,
+ "screened_only": true,
+ "delta": {
+  "mean": -0.00132,
+  "lo": -0.02088,
+  "hi": 0.01866,
+  "n": 976,
+  "n_clusters": 50
+ },
+ "changelog": [
+  "Replace C4 to address the primary finding: require verbal complexes (negation, resultatives, verb–object compounds, auxiliaries/aspect markers, tightly bound predicates) to stay with their complements and advise how a GOOD cut looks (after a completed predicate and with punctuation/quotes attached).",
+  "Replace C3 to keep left-headed modifier guidance but add the measured tradeoff: do not preserve multi-token names when that would isolate punctuation, reporting verbs, or core predicates—split names if needed so predicates and their punctuation remain intact."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C4",
+   "kind": "change",
+   "was": "- Consider whether aspectual or perfective framing closes an event clause; when ",
+   "now": "- Treat verbal complexes as atomic: do not cut so that negation, resultative com"
+  },
+  {
+   "op": "replace",
+   "id": "C3",
+   "kind": "change",
+   "was": "- Consider whether Chinese left-headed modifiers (long pre-nominal relative or a",
+   "now": "- Consider left‑headed modifiers (long pre‑nominal relative or adjectival phrase"
+  }
+ ],
+ "findings": [
+  "The prompt fails to treat verbal complexes (negation, resultatives, verb‑object compounds, auxiliaries/aspect markers) as atomic for entailment: it ranks cuts that orphan or split predicates too highly.",
+  "The prompt overweights protecting multi-character names/transliterations/technical tokens and therefore shifts cuts to avoid splitting them, often creating isolated punctuation, reporting verbs, or short predicate fragments that become unentailed."
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0112,
+   "≤5": -0.025,
+   "≤7": -0.0092,
+   "≤10": 0.0037,
+   "≤99": 0.0162
+  },
+  "n_worse": 474,
+  "n_better": 438,
+  "why": "The prompt now avoids cutting inside verbal complexes (C4) so predicates and their punctuation tend to stay intact—helpful for long-latency examples—but the new C3 rule for splitting multi-token spans was applied too broadly, causing over‑splitting (even into single characters) and isolating punctuation/quotes; that fragmentation shows up as losses in the ≤5 and ≤7 bins despite gains at very short (≤3) and very long (≤99) latencies.",
+  "lesson": "Narrow the multi-token-splitting rule so it only splits true multi-token names when necessary and never breaks ordinary words or isolates punctuation/quotes; keep the verbal-complex protection but avoid applying splitting heuristics that fragment short/medium pieces.",
+  "blamed": [
+   "C3 «- Consider left‑headed modifiers (long pre‑nominal relative »",
+   "C4 «- Treat verbal complexes as atomic: do not cut so that negat»"
+  ]
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underweights high-contradiction signals: scorers rank positions with strong contradiction probabilities too highly when cohesion looks acceptable, letting single high-contra cuts zero the set.",
+    "evidence": "['ja_jp_1211','ja_jp_918','ja_jp_773','ja_jp_1159','ja_jp_1325','ja_jp_740','ja_jp_1562','ja_jp_1257'] — in each case the policy kept a cut with very high contra (≈0.92–0.999) that destroyed the H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If a cut's contra ≥ 0.90, treat it as effectively catastrophic: rank it at the bottom regardless of cohesion and avoid keeping such cuts."
+    }
+   },
+   {
+    "diagnosis": "The prompt applies a categorical prohibition on 'internal splits' (particles/bound morphemes) that is too strict for very short‑latency settings, causing scorers to thin needed dense boundaries and lose short‑bin performance.",
+    "evidence": "['ja_jp_1211','ja_jp_773','ja_jp_740','ja_jp_918','ja_jp_1159','ja_jp_1325'] — these short/≤5‑latency cases show targets placing denser early cuts (including adjacent to particles/morpheme boundaries) that the policy avoided, improving H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "In very short‑latency (dense) settings, allow cuts adjacent to particles or bound‑morpheme boundaries when the left fragment alone is coherent and non‑contradictory; do not forbid them categorically."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underweights high-contradiction signals: scorers rank positions with strong contradiction probabilities too highly when cohesion looks acceptable, letting single high-contra cuts zero the set.",
+   "evidence": "['ja_jp_1211','ja_jp_918','ja_jp_773','ja_jp_1159','ja_jp_1325','ja_jp_740','ja_jp_1562','ja_jp_1257'] — in each case the policy kept a cut with very high contra (≈0.92–0.999) that destroyed the H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If a cut's contra ≥ 0.90, treat it as effectively catastrophic: rank it at the bottom regardless of cohesion and avoid keeping such cuts."
+   }
+  },
+  {
+   "diagnosis": "The prompt applies a categorical prohibition on 'internal splits' (particles/bound morphemes) that is too strict for very short‑latency settings, causing scorers to thin needed dense boundaries and lose short‑bin performance.",
+   "evidence": "['ja_jp_1211','ja_jp_773','ja_jp_740','ja_jp_918','ja_jp_1159','ja_jp_1325'] — these short/≤5‑latency cases show targets placing denser early cuts (including adjacent to particles/morpheme boundaries) that the policy avoided, improving H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "In very short‑latency (dense) settings, allow cuts adjacent to particles or bound‑morpheme boundaries when the left fragment alone is coherent and non‑contradictory; do not forbid them categorically."
+   }
+  }
+ ]
+}

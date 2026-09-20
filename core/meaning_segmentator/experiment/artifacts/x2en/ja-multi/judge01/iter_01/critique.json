@@ -1,0 +1,47 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer routinely allows cuts that isolate sentence-final predicates/auxiliaries, negation, or closing punctuation as their own right-hand fragment — these positions nearly always flip or void the left fragment and should be treated as very bad cuts.",
+    "evidence": "ids: [\"ja_jp_968\",\"ja_jp_563\",\"ja_jp_1584\",\"ja_jp_1071\",\"ja_jp_63\",\"ja_jp_1187\",\"ja_jp_1447\",\"ja_jp_789\",\"ja_jp_713\",\"ja_jp_919\"]; each policy kept a cut that leaves a trailing auxiliary/copula/negator or the closing mark as a separate segment (contra ≈ 1 and H near zero) and the offline target consistently removes that cut.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If the right fragment begins with a sentence‑final auxiliary, copula, negation, or closing punctuation (i.e. material that completes or can flip the predicate), treat that cut as among the worst: rank it very low so it will not be chosen."
+    }
+   },
+   {
+    "diagnosis": "The instruction to 'spread distinct integers across the full 0–100 range' pushes scorers to exaggerate separations and prevents clustering of many equally poor (or equally good) positions; this interacts badly with short‑latency bins and thins needed dense cuts.",
+    "evidence": "ids: [\"ja_jp_1187\",\"ja_jp_713\",\"ja_jp_736\",\"ja_jp_741\",\"ja_jp_1447\"]; these policies produce many tiny single‑character segments and preserve low‑quality cuts, while targets concentrate cuts into cohesive pieces—showing the current spreading rule harms dense, short‑chunk bins.",
+    "edit": {
+     "where": "core_principles",
+     "action": "replace",
+     "target": "Use the full 0-100 range to separate them; if two positions feel equal, decide which one you would rather cut at and score it higher.",
+     "text": "Do not require spreading scores across the entire 0–100 range. Use any distinct integers that preserve the ORDER by target; clustering adjacent ranks is allowed when targets are similar so short‑bin density is preserved."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer routinely allows cuts that isolate sentence-final predicates/auxiliaries, negation, or closing punctuation as their own right-hand fragment — these positions nearly always flip or void the left fragment and should be treated as very bad cuts.",
+   "evidence": "ids: [\"ja_jp_968\",\"ja_jp_563\",\"ja_jp_1584\",\"ja_jp_1071\",\"ja_jp_63\",\"ja_jp_1187\",\"ja_jp_1447\",\"ja_jp_789\",\"ja_jp_713\",\"ja_jp_919\"]; each policy kept a cut that leaves a trailing auxiliary/copula/negator or the closing mark as a separate segment (contra ≈ 1 and H near zero) and the offline target consistently removes that cut.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If the right fragment begins with a sentence‑final auxiliary, copula, negation, or closing punctuation (i.e. material that completes or can flip the predicate), treat that cut as among the worst: rank it very low so it will not be chosen."
+   }
+  },
+  {
+   "diagnosis": "The instruction to 'spread distinct integers across the full 0–100 range' pushes scorers to exaggerate separations and prevents clustering of many equally poor (or equally good) positions; this interacts badly with short‑latency bins and thins needed dense cuts.",
+   "evidence": "ids: [\"ja_jp_1187\",\"ja_jp_713\",\"ja_jp_736\",\"ja_jp_741\",\"ja_jp_1447\"]; these policies produce many tiny single‑character segments and preserve low‑quality cuts, while targets concentrate cuts into cohesive pieces—showing the current spreading rule harms dense, short‑chunk bins.",
+   "edit": {
+    "where": "core_principles",
+    "action": "replace",
+    "target": "Use the full 0-100 range to separate them; if two positions feel equal, decide which one you would rather cut at and score it higher.",
+    "text": "Do not require spreading scores across the entire 0–100 range. Use any distinct integers that preserve the ORDER by target; clustering adjacent ranks is allowed when targets are similar so short‑bin density is preserved."
+   }
+  }
+ ]
+}

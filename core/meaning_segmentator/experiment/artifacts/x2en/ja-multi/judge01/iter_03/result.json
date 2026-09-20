@@ -1,0 +1,102 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01053,
+  "lo": -0.00906,
+  "hi": 0.02985,
+  "n": 5033,
+  "n_clusters": 199
+ },
+ "gain": {
+  "mean": 0.00651,
+  "lo": -0.0062,
+  "hi": 0.01865,
+  "n": 10111,
+  "n_clusters": 398,
+  "dev_a": {
+   "mean": 0.01053,
+   "lo": -0.00906,
+   "hi": 0.02985,
+   "n": 5033,
+   "n_clusters": 199
+  },
+  "dev_b": {
+   "mean": 0.00253,
+   "lo": -0.0151,
+   "hi": 0.0204,
+   "n": 5078,
+   "n_clusters": 199
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Paraphrased C2 to be shorter while preserving the judgement about head-final dependency; frees space and keeps the same guidance.",
+  "Inserted a new core principle after C3 that constrains no-internal-split handling: do not shift cuts earlier if that leaves the left fragment missing its predicate/auxiliary/necessary head; prefer later intact boundaries. This directly addresses the primary finding.",
+  "Inserted a new core principle after C4 describing what a good dense cut looks like for very short-latency settings: allow denser boundaries only when the right fragment is independently translatable and the left fragment passes a narrow contradiction check."
+ ],
+ "findings": [
+  "The scorer underestimates near‑certain contradiction: it lets boundaries with very high entailment‑contra remain high ranked because moderate cohesion rescues them, instead of treating almost‑certain contradiction as effectively fatal for streaming cuts.",
+  "The scorer's 'no internal split' avoidance is applied too mechanically: it shifts cuts earlier (or into orthographic fragments) to avoid splitting bound morphemes, producing left fragments that lack their predicate/argument and thus reduce cohesion or create contradiction.",
+  "The scorer over‑bans cuts in the name of cohesion for short‑latency (dense) settings, thinning segment density and losing short‑bin quality — short budgets need permitted dense cuts that still yield self‑contained, non‑contradictory right fragments."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "paraphrase",
+   "was": "- If the left and right fragments are translated independently and then joined, ",
+   "now": "- Check whether translating left and right fragments independently and then join"
+  },
+  {
+   "op": "insert_after",
+   "id": "C3",
+   "kind": "change",
+   "was": "- Is the material after the cut merely a continuation of the same clause (contin",
+   "now": "- When forbidding internal splits of words, bound morphemes, or particles, do no"
+  },
+  {
+   "op": "insert_after",
+   "id": "C4",
+   "kind": "change",
+   "was": "- Is the right-hand material a prenominal modifier that must attach to a followi",
+   "now": "- For very short‑latency (dense) settings, permit denser boundaries only when ea"
+  }
+ ],
+ "built_on": "iter 1 near miss (+0.0109 [-0.0008, +0.0227])",
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.014,
+   "≤5": 0.0079,
+   "≤7": 0.0142,
+   "≤10": 0.0137,
+   "≤99": 0.0021
+  },
+  "n_worse": 2139,
+  "n_better": 2285,
+  "why": "The new inserts changed cut placement: the C4 dense-boundary allowance produced measurable gains for very short latencies (≤10 pieces), while the C3 wording around forbidding internal splits caused many cuts to shift earlier in longer-latency cases (≤99), sometimes creating word-internal or head-missing left fragments (seen in the worst tail).",
+  "lesson": "Keep the short-latency permissive wording from C4 but ensure any prohibition on internal splits (C3) cannot force earlier cuts that split words or leave the left fragment without its predicate/necessary head.",
+  "blamed": [
+   "C3 «- Is the material after the cut merely a continuation of the»",
+   "C4 «- When forbidding internal splits of words, bound morphemes,»"
+  ],
+  "vs_base": {
+   "delta": {
+    "mean": -0.0083,
+    "lo": -0.02207,
+    "hi": 0.00462,
+    "n": 5033,
+    "n_clusters": 199
+   },
+   "by_bin": {
+    "≤3": 0.0001,
+    "≤5": -0.0031,
+    "≤7": -0.0157,
+    "≤10": -0.0214,
+    "≤99": -0.0247
+   },
+   "n_worse": 2224,
+   "n_better": 1863
+  }
+ }
+}

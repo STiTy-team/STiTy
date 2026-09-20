@@ -1,0 +1,259 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C11",
+    "kind": "change",
+    "text": "Prefer very-early cuts after initial clause-introducing words (conjunctions, subordinators, and initial adverbials like \"Wenn man\", \"Auch wenn\"). These positions are often safe and should be raised unless the remainder contains explicit qualification, negation, or scope-bearing material that would reverse the prefix."
+   },
+   {
+    "op": "insert_after",
+    "id": "C17",
+    "kind": "change",
+    "text": "Make any penalty for a cut that leaves the left piece ending on a finite/predicate verb conditional: apply it only when the remainder carries clause-level qualification, negation, or other scope-bearing elements that can change the left fragment's asserted meaning. Otherwise allow dense cuts (e.g., inside names or enumerations) when they are harmless."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "de_de_840",
+    "text": "Input: Wenn <SEG:?> man <SEG:?> bedenkt, <SEG:?> wie <SEG:?> abgelegen <SEG:?> viele <SEG:?> der <SEG:?> Pueblos <SEG:?> sind, <SEG:?> werden <SEG:?> Sie <SEG:?> kein <SEG:?> nennenswertes <SEG:?> Nachtleben <SEG:?> finden, <SEG:?> wenn <SEG:?> Sie <SEG:?> nicht <SEG:?> nach <SEG:?> Albuquerque <SEG:?> oder <SEG:?> Santa <SEG:?> Fe <SEG:?> reisen.\nOutput: Wenn <SEG:64> man <SEG:68> bedenkt, <SEG:95> wie <SEG:82> abgelegen <SEG:59> viele <SEG:50> der <SEG:77> Pueblos <SEG:73> sind, <SEG:100> werden <SEG:14> Sie <SEG:0> kein <SEG:5> nennenswertes <SEG:23> Nachtleben <SEG:41> finden, <SEG:55> wenn <SEG:27> Sie <SEG:9> nicht <SEG:32> nach <SEG:18> Albuquerque <SEG:86> oder <SEG:45> Santa <SEG:36> Fe <SEG:91> reisen."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C11",
+    "kind": "change",
+    "chars_change": 319
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C17",
+    "kind": "change",
+    "chars_change": 354
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 430
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10207,
+  "errors": [
+   "길이 초과: 10207 > 10014"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Look for cohesion damage typical in German: cuts that separate predicates from required arguments or modifiers; split scope carriers (negation, quantifiers, modals, auxiliaries) from what they scope over; cut inside noun or prepositional phrases so the head or its core complements appear on the other side; leave subordinate or relative clauses without their final verb. Small modifier loss causes minor degradation; missing core arguments or reversed scope causes severe loss."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Contra arises when the left fragment alone asserts or implies something the whole sentence denies, limits, or reverses. In German this often occurs when a subordinate clause, contrastive connector, negation, or a later modal/auxiliary changes the apparent claim. Treat contra as graded: small risk for slight qualifiers, near-certain when the remainder contains explicit negation or reversal."
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "text": "- Make both judgments from meaning relations, not token lists. For German, prefer very-early cuts after initial clause-introducing words (conjunctions, subordinators, and initial adverbials such as \"Wenn man\", \"Auch wenn\") unless the remainder contains explicit qualification, negation, or scope-bearing material that would reverse the prefix. Also pay special attention to:"
+   },
+   {
+    "op": "replace",
+    "id": "C17",
+    "kind": "change",
+    "text": "- High contradiction risk: the remainder contains explicit negation, qualification, or an outcome that reverses or limits the prefix's plain assertion; the prefix alone asserts something the whole sentence does not endorse. Special-case: penalize cuts that leave the left fragment ending on a finite/predicate verb only when the remainder carries clause-level qualification, negation, or other scope-bearing elements able to change the prefix's asserted meaning. Otherwise allow dense cuts (for example inside names or enumerations) when they are harmless."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -408
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -235
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "chars_change": 263
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "C17",
+    "kind": "change",
+    "chars_change": 332
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9056,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C18",
+    "kind": "change",
+    "text": "Prefer very-early cuts immediately after initial clause-introducing words (subordinators, conjunctions, discourse adverbials such as \"Wenn man\", \"Auch wenn\") because these often isolate the introducer safely. Make any penalty for a cut that leaves the left fragment ending on a finite/predicate verb conditional: apply the penalty only when the remainder contains clause-level qualifiers, explicit negation, or other scope-bearing material that would change, qualify, or reverse the prefix's asserted meaning. Otherwise allow dense cuts (including inside names, enumerations, or short chunks) when no such remainder-level reversal risk exists. Always prefer to describe a GOOD cut in terms of preserved arguments/scope and lack of reversal rather than a blanket no-cut rule."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C18",
+    "kind": "change",
+    "chars_change": 775
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9879,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "de_de_953",
+    "text": "Input: Auch <SEG:?> wenn <SEG:?> Sie <SEG:?> vielleicht <SEG:?> denken, <SEG:?> dass <SEG:?> man <SEG:?> instinktiv <SEG:?> die <SEG:?> Fluggesellschaft <SEG:?> nehmen <SEG:?> sollte, <SEG:?> mit <SEG:?> der <SEG:?> man <SEG:?> am <SEG:?> meisten <SEG:?> fliegt, <SEG:?> sollten <SEG:?> Sie <SEG:?> beachten, <SEG:?> dass <SEG:?> die <SEG:?> angebotenen <SEG:?> Vorteile <SEG:?> oft <SEG:?> unterschiedlich <SEG:?> sind. <SEG:?> Vielfliegerpunkte <SEG:?> könnten <SEG:?> bei <SEG:?> einer <SEG:?> anderen <SEG:?> Fluggesellschaft <SEG:?> bei <SEG:?> der <SEG:?> gleichen <SEG:?> Verbindung <SEG:?> großzügiger <SEG:?> vergeben <SEG:?> werden.\nOutput: Auch <SEG:90> wenn <SEG:100> Sie <SEG:77> vielleicht <SEG:41> denken, <SEG:67> dass <SEG:62> man <SEG:28> instinktiv <SEG:26> die <SEG:0> Fluggesellschaft <SEG:46> nehmen <SEG:31> sollte, <SEG:74> mit <SEG:38> der <SEG:79> man <SEG:59> am <SEG:87> meisten <SEG:85> fliegt, <SEG:64> sollten <SEG:95> Sie <SEG:56> beachten, <SEG:92> dass <SEG:72> die <SEG:21> angebotenen <SEG:49> Vorteile <SEG:44> oft <SEG:51> unterschiedlich <SEG:97> sind. <SEG:82> Vielfliegerpunkte <SEG:54> könnten <SEG:13> bei <SEG:18> einer <SEG:8> anderen <SEG:3> Fluggesellschaft <SEG:36> bei <SEG:10> der <SEG:5> gleichen <SEG:23> Verbindung <SEG:15> großzügiger <SEG:33> vergeben <SEG:69> werden."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "de_de_327",
+    "text": "Input: Da <SEG:?> der <SEG:?> Sturm <SEG:?> noch <SEG:?> weit <SEG:?> davon <SEG:?> entfernt <SEG:?> ist, <SEG:?> ins <SEG:?> Land <SEG:?> einzufallen, <SEG:?> ist <SEG:?> es <SEG:?> immer <SEG:?> noch <SEG:?> schwierig, <SEG:?> die <SEG:?> möglichen <SEG:?> Auswirkungen <SEG:?> auf <SEG:?> die <SEG:?> Vereinigten <SEG:?> Staaten <SEG:?> oder <SEG:?> die <SEG:?> Karibik <SEG:?> abzuschätzen.\nOutput: Da <SEG:72> der <SEG:68> Sturm <SEG:20> noch <SEG:16> weit <SEG:76> davon <SEG:60> entfernt <SEG:8> ist, <SEG:28> ins <SEG:32> Land <SEG:44> einzufallen, <SEG:100> ist <SEG:92> es <SEG:84> immer <SEG:0> noch <SEG:96> schwierig, <SEG:88> die <SEG:64> möglichen <SEG:48> Auswirkungen <SEG:80> auf <SEG:56> die <SEG:12> Vereinigten <SEG:4> Staaten <SEG:52> oder <SEG:36> die <SEG:24> Karibik <SEG:40> abzuschätzen."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "de_de_55",
+    "text": "Input: Peter <SEG:?> Costello, <SEG:?> australischer <SEG:?> Schatzmeister <SEG:?> und <SEG:?> der <SEG:?> Mann, <SEG:?> der <SEG:?> am <SEG:?> ehesten <SEG:?> die <SEG:?> Nachfolge <SEG:?> von <SEG:?> Premierminister <SEG:?> John <SEG:?> Howard <SEG:?> als <SEG:?> Parteivorsitzender <SEG:?> der <SEG:?> Liberalen <SEG:?> antreten <SEG:?> wird, <SEG:?> hat <SEG:?> seine <SEG:?> Unterstützung <SEG:?> für <SEG:?> eine <SEG:?> Kernkraftindustrie <SEG:?> in <SEG:?> Australien <SEG:?> zum <SEG:?> Ausdruck <SEG:?> gebracht.\nOutput: Peter <SEG:97> Costello, <SEG:94> australischer <SEG:90> Schatzmeister <SEG:87> und <SEG:100> der <SEG:81> Mann, <SEG:39> der <SEG:61> am <SEG:6> ehesten <SEG:35> die <SEG:16> Nachfolge <SEG:29> von <SEG:48> Premierminister <SEG:52> John <SEG:13> Howard <SEG:19> als <SEG:3> Parteivorsitzender <SEG:32> der <SEG:0> Liberalen <SEG:45> antreten <SEG:42> wird, <SEG:77> hat <SEG:84> seine <SEG:68> Unterstützung <SEG:71> für <SEG:65> eine <SEG:26> Kernkraftindustrie <SEG:74> in <SEG:10> Australien <SEG:55> zum <SEG:23> Ausdruck <SEG:58> gebracht."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 1032
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 119
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 571
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10826,
+  "errors": [
+   "길이 초과: 10826 > 10014"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1"
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   },
+   {
+    "op": "delete",
+    "id": "E3"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "chars_change": -292
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -696
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -506
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7608,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C18",
+    "kind": "change",
+    "text": "Prefer very-early cuts immediately after initial clause-introducing words (subordinators, conjunctions, clause‑introducers such as \"Wenn man\", \"Auch wenn\", and initial adverbials) when the remainder does not contain an explicit qualification, negation, or other scope-bearing material that would reverse the prefix. Make any penalty for a cut that leaves the left fragment ending on a finite/predicate verb conditional: apply it only when the right-hand remainder contains clause-level qualifiers, negation, or scope carriers that can change the prefix's asserted meaning. Otherwise allow dense cuts (including inside names/enumerations or short chunks) when no clause-level reversal or scope effect is present."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C18",
+    "kind": "change",
+    "chars_change": 712
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9816,
+  "errors": null
+ }
+]

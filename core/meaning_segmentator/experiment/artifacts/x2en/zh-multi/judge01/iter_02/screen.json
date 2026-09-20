@@ -1,0 +1,124 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.01774,
+    "lo": -0.00836,
+    "hi": 0.04322,
+    "n": 933,
+    "n_clusters": 50
+   },
+   "chars": 8473,
+   "changelog": [
+    "Paraphrased C8 to be shorter and to add an explicit instruction preventing extremely short fragments from being left alone when enforcing cohesion (addresses verb–complement shift side-effect).",
+    "Inserted a new Core Principle after C8 prohibiting cuts inside numeric/measurement/time expressions (addresses the primary finding about splitting quantities).",
+    "Inserted a new Core Principle after C8 requiring multi-character named entities and transliterations remain contiguous (addresses the finding about splitting names and transliterations)."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00096,
+    "lo": -0.02801,
+    "hi": 0.03143,
+    "n": 933,
+    "n_clusters": 50
+   },
+   "chars": 8035,
+   "changelog": [
+    "Replaced C3 with an explicit named-entity rule: forbid cuts inside multi-character names/transliterations so referents remain recoverable (addresses the primary finding).",
+    "Replaced C7 with an explicit numeric-expression rule: forbid cuts inside numeral+unit/percentage/duration/speed expressions and treat them as atomic (addresses the measurement-splitting finding).",
+    "Paraphrased C2 to be shorter and to add an instruction preventing enforcement of 'no-split' rules from leaving punctuation, quotes, or single-character function words isolated (addresses the verb–complement side-effect)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00283,
+    "lo": -0.0241,
+    "hi": 0.01741,
+    "n": 933,
+    "n_clusters": 50
+   },
+   "chars": 7294,
+   "changelog": [
+    "Replace E1 with measured example cmn_hans_cn_1068 to teach the model about cuts that orphan verbs/punctuation in very short pieces (addresses the primary finding about short-bin harm).",
+    "Replace E2 with measured example cmn_hans_cn_974 to show cases where enforcing no verb–complement splits can leave tiny tokens isolated (short latency bin).",
+    "Replace E3 with measured example cmn_hans_cn_1025 to expose numeric/measurement and tiny-token isolation tradeoffs in ≤5 bin cases.",
+    "Replace E4 with measured example cmn_hans_cn_1413 to give a measured case where splitting numeric/percent spans and adjacent tiny tokens harms cohesion and raises contradiction risk."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.01285,
+    "lo": -0.01542,
+    "hi": 0.0441,
+    "n": 933,
+    "n_clusters": 50
+   },
+   "chars": 8553,
+   "changelog": [
+    "Insert a Core Principle forbidding cuts inside numeric/measurement expressions (addresses the primary finding: splitting quantities harms cohesion/contradiction).",
+    "Insert a Core Principle requiring multi-character named entities and transliterations remain contiguous (prevents severing referents).",
+    "Paraphrase C2 to be shorter and explicitly instruct that enforcing no-split constraints must not leave punctuation, quotes, or single-character function words isolated — attach such tiny tokens to the adjacent phrase (addresses the short-piece harm).",
+    "Paraphrase C3 to a shorter form preserving the modifier/head warning (keeps the original judgement but frees space for new rules)."
+   ]
+  }
+ ]
+}

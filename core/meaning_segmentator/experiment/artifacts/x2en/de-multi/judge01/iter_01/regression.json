@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00254,
+  "lo": -0.00524,
+  "hi": 0.01041,
+  "n": 1779,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0005,
+  "≤5": 0.0059,
+  "≤7": 0.0071,
+  "≤10": -0.0002,
+  "≤99": 0.0014
+ },
+ "n_worse": 641,
+ "n_better": 624,
+ "worst": [
+  {
+   "id": "de_de_912",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6211,
+   "before": "Da die Anrufe über das Internet geroutet werden, ‖ müssen Sie keine Telefongesellschaft ‖ nutzen, ‖ die an Ihrem Wohn- oder Reiseort angesiedelt ist.",
+   "after": "Da die Anrufe über das Internet geroutet werden, ‖ müssen Sie ‖ keine Telefongesellschaft nutzen, ‖ die an Ihrem Wohn- oder Reiseort angesiedelt ist."
+  },
+  {
+   "id": "de_de_1006",
+   "k": 7,
+   "bin": "≤3",
+   "delta": -0.5982,
+   "before": "Jeder Tempel ‖ hatte ‖ einen offenen Tempelhof ‖ und dann ‖ einen inneren Altarraum, ‖ der nur von Priestern ‖ betreten ‖ werden durfte.",
+   "after": "Jeder ‖ Tempel ‖ hatte ‖ einen offenen Tempelhof ‖ und dann ‖ einen inneren ‖ Altarraum, ‖ der nur von Priestern betreten werden durfte."
+  },
+  {
+   "id": "de_de_91",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.5749,
+   "before": "Zur Zeit ‖ ist nicht bekannt, ‖ welche Vorwürfe erhoben werden ‖ oder was die Behörden ‖ zu dem Jungen geführt hat, ‖ aber ‖ vor dem Bundesgericht ‖ hat ein Jugendverfahren begonnen.",
+   "after": "Zur Zeit ‖ ist ‖ nicht bekannt, ‖ welche Vorwürfe erhoben werden ‖ oder was die Behörden zu dem Jungen ‖ geführt hat, ‖ aber vor dem Bundesgericht ‖ hat ein Jugendverfahren begonnen."
+  },
+  {
+   "id": "de_de_1006",
+   "k": 6,
+   "bin": "≤3",
+   "delta": -0.5707,
+   "before": "Jeder Tempel ‖ hatte ‖ einen offenen Tempelhof ‖ und dann einen inneren Altarraum, ‖ der nur von Priestern ‖ betreten ‖ werden durfte.",
+   "after": "Jeder ‖ Tempel ‖ hatte ‖ einen offenen Tempelhof ‖ und dann ‖ einen inneren Altarraum, ‖ der nur von Priestern betreten werden durfte."
+  },
+  {
+   "id": "de_de_91",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.5704,
+   "before": "Zur Zeit ist nicht bekannt, ‖ welche Vorwürfe erhoben werden ‖ oder was die Behörden ‖ zu dem Jungen geführt hat, ‖ aber ‖ vor dem Bundesgericht ‖ hat ein Jugendverfahren begonnen.",
+   "after": "Zur Zeit ‖ ist ‖ nicht bekannt, ‖ welche Vorwürfe erhoben werden ‖ oder was die Behörden zu dem Jungen geführt hat, ‖ aber vor dem Bundesgericht ‖ hat ein Jugendverfahren begonnen."
+  }
+ ],
+ "best": [
+  {
+   "id": "de_de_678",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6819,
+   "before": "Anforderungen und Kosten ‖ für ein Visa ‖ sind mit jedem Land ‖ verschieden ‖ und hängen von dem Land ab, ‖ aus dem Sie stammen.",
+   "after": "Anforderungen ‖ und Kosten ‖ für ein Visa ‖ sind mit jedem Land verschieden ‖ und hängen von dem Land ab, ‖ aus dem Sie stammen."
+  },
+  {
+   "id": "de_de_394",
+   "k": 4,
+   "bin": "≤7",
+   "delta": 0.6734,
+   "before": "Deutschland verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen ‖ verlorengegangen, ‖ die Armee war also ",
+   "after": "Deutschland verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen verlorengegangen, ‖ die Armee ‖ war also "
+  },
+  {
+   "id": "de_de_365",
+   "k": 1,
+   "bin": "≤7",
+   "delta": 0.6698,
+   "before": "Zuerst muss der Schalter der Leuchte ‖ ausgeschaltet oder die Kabelverbindung unterbrochen werden.",
+   "after": "Zuerst ‖ muss der Schalter der Leuchte ausgeschaltet oder die Kabelverbindung unterbrochen werden."
+  },
+  {
+   "id": "de_de_394",
+   "k": 5,
+   "bin": "≤7",
+   "delta": 0.6358,
+   "before": "Deutschland ‖ verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen ‖ verlorengegangen, ‖ die Armee war als",
+   "after": "Deutschland verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil ‖ der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen verlorengegangen, ‖ die Armee ‖ war als"
+  },
+  {
+   "id": "de_de_1289",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.602,
+   "before": "Haie existieren, ‖ aber sie greifen ‖ selten ‖ Menschen an. ‖ Die meisten Haie ‖ haben ‖ Angst vor Menschen ‖ und würden wegschwimmen.",
+   "after": "Haie ‖ existieren, ‖ aber sie ‖ greifen selten Menschen an. ‖ Die meisten Haie ‖ haben Angst ‖ vor Menschen ‖ und würden wegschwimmen."
+  }
+ ],
+ "why": "The new examples shifted the model toward making earlier cuts in many short/medium spans (it began inserting cuts between auxiliaries/short verbs and their objects and even inside noun phrases), producing large negative moves on examples that were split inside NPs or that separated verb+argument; at the same time the reporting-verb example improved handling of enumerations and some medium-length predicate groupings, which matches the positive deltas in the ≤5 and ≤7 bins.",
+ "lesson": "Keep the reporting-verb example that helped medium-length predicate/enumeration splits, but avoid examples or placements that encourage premature cuts inside noun phrases or between auxiliaries and their complements.",
+ "blamed": [
+  "E1",
+  "E3"
+ ]
+}

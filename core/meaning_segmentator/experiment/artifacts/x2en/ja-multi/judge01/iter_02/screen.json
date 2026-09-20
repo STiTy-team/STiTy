@@ -1,0 +1,123 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00191,
+    "lo": -0.03349,
+    "hi": 0.03423,
+    "n": 1278,
+    "n_clusters": 50
+   },
+   "chars": 8831,
+   "changelog": [
+    "Add a principle that strongly deprioritizes any boundary where the left fragment alone would contradict or reverse the whole sentence — to address the primary finding that contradiction was underweighted.",
+    "Add a principle banning cuts that split lexical words, bound morphemes, or separate a content word from its immediately attached particles/auxiliaries — to stop fragmentary, incoherent pieces.",
+    "Add a conditional guideline allowing denser cuts in very short‑latency contexts only when the right fragment is independently interpretable (a short, self‑contained continuation) — to recover short‑bin density without encouraging unsafe predicate splits."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.00567,
+    "lo": -0.04259,
+    "hi": 0.02905,
+    "n": 1255,
+    "n_clusters": 49
+   },
+   "chars": 8392,
+   "changelog": [
+    "C3: added an explicit ban on cutting inside lexical words, bound morphemes, or between a content word and its immediately attached particles/auxiliaries to stop fragmentary, incoherent pieces (addresses the primary finding).",
+    "C8: made contradiction a decisive de‑prioritizer (treat boundaries where the left fragment alone would contradict/negate/reverse the sentence as effectively invalid) and added a conditional dense‑cut allowance for very short‑latency settings only when the right fragment is independently interpretable (addresses underweighted contra and short‑latency loss)."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.0188,
+    "lo": -0.00523,
+    "hi": 0.04222,
+    "n": 1278,
+    "n_clusters": 50
+   },
+   "chars": 7781,
+   "changelog": [
+    "Replace E1 with labeled example ja_jp_96 to teach the scorer about dangerous cuts that fragment lexical words/particles in short‑latency (≤5) contexts — addresses the finding that the prompt failed to forbid internal-word/particle fragmentation.",
+    "Replace E2 with labeled example ja_jp_955 to expose a ≤3 short‑latency case where contradiction risk is decisive, so scorers learn to avoid boundaries whose left fragment alone would reverse/negate the sentence — addresses the underweighted contradiction finding and the primary short‑latency issue.",
+    "Replace E3 with labeled example ja_jp_346 to show a case where early cuts can misassign roles or leave predicate structure incomplete, reinforcing that safe dense cuts must still preserve independent interpretability of the right fragment.",
+    "Replace E4 with labeled example ja_jp_561 to add another ≤5 measured case emphasizing both particle/auxiliary attachment and contradiction risk so scorers prefer dense but safe boundaries rather than fragmentary or high‑contra ones."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": 0.01883,
+    "lo": -0.00747,
+    "hi": 0.04692,
+    "n": 1255,
+    "n_clusters": 49
+   },
+   "chars": 9481,
+   "changelog": [
+    "Append a principle that makes contradiction a near‑veto for high ranks: if the left fragment taken alone contradicts/negates/reverses the whole sentence, treat that boundary as unacceptable for top placements — addresses the primary finding that contra was underweighted.",
+    "Append a principle banning internal‑word/particle fragmentation: do not cut inside lexical words, bound morphemes, or between a content word and its immediately attached particles/auxiliaries — addresses the failure to forbid internal fragmentation.",
+    "Append a conditional dense‑cut guideline that says what a good dense cut looks like (right fragment must be independently interpretable and not begin with predicate‑final auxiliaries/negation), so short‑latency density can be recovered safely without blanket bans — addresses short‑latency loss while avoiding an absolute penalty on predicate/argument splits.",
+    "Replace Example E1 with measured labeled example ja_jp_933 so scorers see a real case where contradiction and attachment mistakes matter directly."
+   ]
+  }
+ ]
+}

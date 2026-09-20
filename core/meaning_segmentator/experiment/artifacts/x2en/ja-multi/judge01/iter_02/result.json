@@ -1,0 +1,112 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00921,
+  "lo": -0.00708,
+  "hi": 0.02481,
+  "n": 5057,
+  "n_clusters": 199
+ },
+ "gain": {
+  "mean": 0.00027,
+  "lo": -0.01209,
+  "hi": 0.01356,
+  "n": 10125,
+  "n_clusters": 398,
+  "dev_a": {
+   "mean": 0.00921,
+   "lo": -0.00708,
+   "hi": 0.02481,
+   "n": 5057,
+   "n_clusters": 199
+  },
+  "dev_b": {
+   "mean": -0.00865,
+   "lo": -0.02822,
+   "hi": 0.01169,
+   "n": 5068,
+   "n_clusters": 199
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Append a principle that makes contradiction a near‑veto for high ranks: if the left fragment taken alone contradicts/negates/reverses the whole sentence, treat that boundary as unacceptable for top placements — addresses the primary finding that contra was underweighted.",
+  "Append a principle banning internal‑word/particle fragmentation: do not cut inside lexical words, bound morphemes, or between a content word and its immediately attached particles/auxiliaries — addresses the failure to forbid internal fragmentation.",
+  "Append a conditional dense‑cut guideline that says what a good dense cut looks like (right fragment must be independently interpretable and not begin with predicate‑final auxiliaries/negation), so short‑latency density can be recovered safely without blanket bans — addresses short‑latency loss while avoiding an absolute penalty on predicate/argument splits.",
+  "Replace Example E1 with measured labeled example ja_jp_933 so scorers see a real case where contradiction and attachment mistakes matter directly."
+ ],
+ "findings": [
+  "The prompt underweights contradiction: it tells the scorer not to treat contra as a separate tier, so the model sometimes prefers positions with decent cohesion despite very high contradiction, producing cuts that are later overturned (contra_kill).",
+  "The prompt fails to forbid internal-word/particle fragmentation: examples and principles encourage avoiding clause‑final cuts but do not explicitly forbid cuts that split lexical morphemes or detach particles, producing fragmentary, incoherent pieces.",
+  "The prompt lacks a short‑latency condition: by treating 'avoid clause‑final predicates' as broadly absolute, the model thins cuts in ≤3/≤5 bins and loses density that short budgets need. The rule must be conditional on safety, not unconditional."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- If the left fragment, read on its own, would imply, negate, or reverse the sen"
+  },
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Do not cut inside a lexical word or bound morpheme, and do not split a content"
+  },
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- For very short‑latency (dense) needs, denser boundaries are permitted only whe"
+  },
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: こ <SEG:?> れ <SEG:?> ら <SEG:?> の <SEG:?> 村 <SEG:?> は <SEG:?> ユ <SEG:?> ネ <",
+   "now": "Input: 学 <SEG:?> 生 <SEG:?> ビ <SEG:?> ザ <SEG:?> は <SEG:?> 一 <SEG:?> 般 <SEG:?> 的 <",
+   "labeled_example": "ja_jp_933"
+  }
+ ],
+ "built_on": "iter 1 near miss (+0.0109 [-0.0008, +0.0227])",
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0051,
+   "≤5": 0.0123,
+   "≤7": 0.0119,
+   "≤10": 0.0075,
+   "≤99": 0.0124
+  },
+  "n_worse": 2181,
+  "n_better": 2360,
+  "why": "The new contradiction‑veto and no‑internal‑split principles made the scorer avoid boundaries that would leave a left fragment that contradicts the whole sentence and avoid some particle/attachment cuts, and the conditional dense‑cut rule partly recovered denser short‑latency choices; this produced small gains in the short bins (≤3–≤7) but caused many cuts to be displaced into intra‑word/character positions or earlier long‑latency boundaries, producing the long‑bin degradations and the internal splits seen in the tails.",
+  "lesson": "When adding contradiction vetoes or banning particle/word splits, ensure the scorer is constrained so it does not simply shift boundaries into intra‑word/character positions or earlier long‑latency cuts — enforce no‑internal‑split without creating new illegal splits and apply contradiction checks narrowly so they don't displace previously good long‑latency boundaries.",
+  "blamed": [
+   "C_end (contradiction‑veto)",
+   "C_end (no‑internal‑word/particle split)",
+   "C_end (conditional dense‑cut guidance)"
+  ],
+  "vs_base": {
+   "delta": {
+    "mean": -0.00887,
+    "lo": -0.02356,
+    "hi": 0.00591,
+    "n": 5057,
+    "n_clusters": 199
+   },
+   "by_bin": {
+    "≤3": -0.0084,
+    "≤5": 0.0015,
+    "≤7": -0.0145,
+    "≤10": -0.027,
+    "≤99": -0.0141
+   },
+   "n_worse": 2346,
+   "n_better": 1857
+  }
+ }
+}

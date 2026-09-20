@@ -1,0 +1,96 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.018,
+  "lo": 0.00026,
+  "hi": 0.03734,
+  "n": 5080,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.0109,
+  "lo": -0.00081,
+  "hi": 0.02267,
+  "n": 10158,
+  "n_clusters": 399,
+  "dev_a": {
+   "mean": 0.018,
+   "lo": 0.00026,
+   "hi": 0.03734,
+   "n": 5080,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": 0.00379,
+   "lo": -0.01212,
+   "hi": 0.01929,
+   "n": 5078,
+   "n_clusters": 199
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Replace E1 with measured example ja_jp_968 to teach the model that cuts isolating the sentence-final predicate/auxiliary are very bad (addresses the primary finding).",
+  "Replace E2 with measured example ja_jp_563 to show a short-latency case where trailing auxiliaries/negation flip meaning and should be ranked low.",
+  "Replace E3 with measured example ja_jp_1584 to provide a mid-latency instance demonstrating predicate continuation risks when cutting before clause-final material.",
+  "Replace E4 with measured example ja_jp_919 to provide a long-latency example where separating final predicate/punctuation harms cohesion and should be penalized."
+ ],
+ "findings": [
+  "The scorer routinely allows cuts that isolate sentence-final predicates/auxiliaries, negation, or closing punctuation as their own right-hand fragment — these positions nearly always flip or void the left fragment and should be treated as very bad cuts.",
+  "The instruction to 'spread distinct integers across the full 0–100 range' pushes scorers to exaggerate separations and prevents clustering of many equally poor (or equally good) positions; this interacts badly with short‑latency bins and thins needed dense cuts."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: 聴 <SEG:?> 聞 <SEG:?> 会 <SEG:?> で <SEG:?> は <SEG:?> 、 <SEG:?> 迅 <SEG:?> 速 <",
+   "now": "Input: こ <SEG:?> れ <SEG:?> ら <SEG:?> の <SEG:?> 村 <SEG:?> は <SEG:?> ユ <SEG:?> ネ <",
+   "labeled_example": "ja_jp_968"
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: サ <SEG:?> ン <SEG:?> ゴ <SEG:?> 礁 <SEG:?> へ <SEG:?> の <SEG:?> 旅 <SEG:?> 行 <",
+   "now": "Input: 助 <SEG:?> け <SEG:?> よ <SEG:?> う <SEG:?> と <SEG:?> し <SEG:?> て <SEG:?> 怪 <",
+   "labeled_example": "ja_jp_563"
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: 文 <SEG:?> 書 <SEG:?> に <SEG:?> は <SEG:?> 、 <SEG:?> 富 <SEG:?> 裕 <SEG:?> 層 <",
+   "now": "Input: ビ <SEG:?> シ <SEG:?> ュ <SEG:?> ケ <SEG:?> ク <SEG:?> の <SEG:?> 街 <SEG:?> 路 <",
+   "labeled_example": "ja_jp_1584"
+  },
+  {
+   "op": "replace",
+   "id": "E4",
+   "kind": "example",
+   "was": "Input: ジ <SEG:?> ェ <SEG:?> ー <SEG:?> ム <SEG:?> ズ <SEG:?> ・ <SEG:?> ユ <SEG:?> ー <",
+   "now": "Input: 母 <SEG:?> 国 <SEG:?> を <SEG:?> 離 <SEG:?> れ <SEG:?> て <SEG:?> い <SEG:?> る <",
+   "labeled_example": "ja_jp_919"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0136,
+   "≤5": 0.0107,
+   "≤7": 0.0262,
+   "≤10": 0.0343,
+   "≤99": 0.0262
+  },
+  "n_worse": 2014,
+  "n_better": 2411,
+  "why": "Replacing the four examples with measured Japanese cases that penalize isolating sentence-final predicates/auxiliaries moved the model away from placing cuts immediately before clause-final material, yielding most of the measured gain in the mid-to-long latency bins (≤7–≤10). However the model overcorrected in many instances by shifting cuts into internal morpheme/character boundaries (fragmenting words and particles), producing the large negative tail moves despite the net positive bin-level effect.",
+  "lesson": "Keep the emphasis that cutting off clause‑final predicates/auxiliaries is harmful, but avoid example edits that encourage overcorrection into internal-word/particle fragmentation.",
+  "blamed": [
+   "E3 «Input: ビ <SEG:?> シ <SEG:?> ュ <SEG:?> ケ <SEG:?> ク <SEG:?> の <»",
+   "E4 «Input: 母 <SEG:?> 国 <SEG:?> を <SEG:?> 離 <SEG:?> れ <SEG:?> て <»",
+   "E2 «Input: 助 <SEG:?> け <SEG:?> よ <SEG:?> う <SEG:?> と <SEG:?> し <»",
+   "E1 «Input: こ <SEG:?> れ <SEG:?> ら <SEG:?> の <SEG:?> 村 <SEG:?> は <»"
+  ]
+ }
+}

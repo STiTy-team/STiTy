@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "Treats cuts after short bound function morphemes or degree/comparative prefixes as safe; it fails to require that the preceding fragment be independently entailed by the whole sentence, so isolated prefixes or partial adverbials become contradictory or orphaned.",
+    "evidence": "cmn_hans_cn_1268, cmn_hans_cn_405, cmn_hans_cn_686, cmn_hans_cn_934, cmn_hans_cn_1140, cmn_hans_cn_569, cmn_hans_cn_299, cmn_hans_cn_750 — these 8 cases all show a cut immediately after a short function-like fragment (degree/negation/comparative/prefix) whose continuation completes or reverses the assertion, producing a high-contradiction earlier stretch.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after bound function morphemes or short degree/negation/comparative/aspectual prefixes whose assertion is completed only by the following word; require the left fragment to be independently entailed by the full sentence before allowing such a cut."
+    }
+   },
+   {
+    "diagnosis": "Does not reliably keep multi-character names, transliterations and fixed technical terms contiguous when punctuation or parentheses intervene, producing orphan fragments that lose reference or contradict the whole.",
+    "evidence": "cmn_hans_cn_1330, cmn_hans_cn_654, cmn_hans_cn_405 — these 3 cases each split multi-character names/transliterations or fixed terms (including alphanumeric/lettered labels), creating fragments that are uninterpretable or contradicted by the sentence.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Keep multi-character named entities, transliterations and fixed technical terms contiguous even across punctuation/parentheses; do not cut inside them unless the left piece is a valid, independently entailed unit."
+    }
+   },
+   {
+    "diagnosis": "Underestimates that causal/resultative and predicate-completion constructions (cause/result markers, resultatives, verb–object completions, 'make/allow' sequences) require the continuation to complete the predicate; cutting before completion yields contradictory or incomplete assertions.",
+    "evidence": "cmn_hans_cn_1140, cmn_hans_cn_299, cmn_hans_cn_686, cmn_hans_cn_569, cmn_hans_cn_1317 — these 5 cases show cuts placed before the completion of causal/resultative or predicate-completion structures, producing high contradiction or loss of core predicate information.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cuts that separate a core predicate from its result/argument or that break causal/resultative chains; only allow such cuts if the left fragment already expresses a stable, entailed proposition."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "Treats cuts after short bound function morphemes or degree/comparative prefixes as safe; it fails to require that the preceding fragment be independently entailed by the whole sentence, so isolated prefixes or partial adverbials become contradictory or orphaned.",
+   "evidence": "cmn_hans_cn_1268, cmn_hans_cn_405, cmn_hans_cn_686, cmn_hans_cn_934, cmn_hans_cn_1140, cmn_hans_cn_569, cmn_hans_cn_299, cmn_hans_cn_750 — these 8 cases all show a cut immediately after a short function-like fragment (degree/negation/comparative/prefix) whose continuation completes or reverses the assertion, producing a high-contradiction earlier stretch.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after bound function morphemes or short degree/negation/comparative/aspectual prefixes whose assertion is completed only by the following word; require the left fragment to be independently entailed by the full sentence before allowing such a cut."
+   }
+  },
+  {
+   "diagnosis": "Does not reliably keep multi-character names, transliterations and fixed technical terms contiguous when punctuation or parentheses intervene, producing orphan fragments that lose reference or contradict the whole.",
+   "evidence": "cmn_hans_cn_1330, cmn_hans_cn_654, cmn_hans_cn_405 — these 3 cases each split multi-character names/transliterations or fixed terms (including alphanumeric/lettered labels), creating fragments that are uninterpretable or contradicted by the sentence.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Keep multi-character named entities, transliterations and fixed technical terms contiguous even across punctuation/parentheses; do not cut inside them unless the left piece is a valid, independently entailed unit."
+   }
+  },
+  {
+   "diagnosis": "Underestimates that causal/resultative and predicate-completion constructions (cause/result markers, resultatives, verb–object completions, 'make/allow' sequences) require the continuation to complete the predicate; cutting before completion yields contradictory or incomplete assertions.",
+   "evidence": "cmn_hans_cn_1140, cmn_hans_cn_299, cmn_hans_cn_686, cmn_hans_cn_569, cmn_hans_cn_1317 — these 5 cases show cuts placed before the completion of causal/resultative or predicate-completion structures, producing high contradiction or loss of core predicate information.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cuts that separate a core predicate from its result/argument or that break causal/resultative chains; only allow such cuts if the left fragment already expresses a stable, entailed proposition."
+   }
+  }
+ ]
+}

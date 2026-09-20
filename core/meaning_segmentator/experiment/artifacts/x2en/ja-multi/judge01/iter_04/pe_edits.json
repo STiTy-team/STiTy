@@ -1,0 +1,150 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- If an entailment/contra signal for a candidate position is very high (≥ 0.90), treat that cut as effectively catastrophic: rank it among the lowest positions regardless of apparent cohesion and avoid choosing such cuts."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- For very short‑latency (dense) needs, allow cuts adjacent to particles or bound‑morpheme boundaries when the left fragment, taken alone, is coherent and not contradictory. Do not, however, split inside a lexical word or sever required predicate/ head attachments; if density would force internal word splits or remove a needed predicate from the left fragment, prefer a nearby cut that preserves word integrity and grammatical attachment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 222
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 441
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8778,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- When a candidate cut falls at a particle or bound‑morpheme boundary, do not forbid it categorically. For very short‑latency (dense) needs, allow such cuts only when the left fragment, taken alone, is a coherent, non‑contradictory piece and the right fragment begins with material that can be translated independently (for example a noun head, clause marker, or clause‑initial predicate). Prefer cuts that align with morphological or phrase boundaries and avoid splitting inside a lexical word; in other words, describe and prefer GOOD dense cuts (interpretable left piece, attachable right piece) instead of a blanket ban."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 379
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8494,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "ja_jp_1211",
+    "text": "Input: 外 <SEG:?> 国 <SEG:?> 政 <SEG:?> 府 <SEG:?> が <SEG:?> こ <SEG:?> れ <SEG:?> ら <SEG:?> の <SEG:?> 書 <SEG:?> 類 <SEG:?> を <SEG:?> 認 <SEG:?> め <SEG:?> よ <SEG:?> う <SEG:?> と <SEG:?> す <SEG:?> る <SEG:?> 意 <SEG:?> 志 <SEG:?> も <SEG:?> 、 <SEG:?> 同 <SEG:?> 様 <SEG:?> に <SEG:?> 非 <SEG:?> 常 <SEG:?> に <SEG:?> 多 <SEG:?> 様 <SEG:?> で <SEG:?> す <SEG:?> 。\nOutput: 外 <SEG:88> 国 <SEG:94> 政 <SEG:53> 府 <SEG:91> が <SEG:69> こ <SEG:78> れ <SEG:22> ら <SEG:31> の <SEG:44> 書 <SEG:9> 類 <SEG:6> を <SEG:3> 認 <SEG:16> め <SEG:34> よ <SEG:41> う <SEG:25> と <SEG:66> す <SEG:56> る <SEG:59> 意 <SEG:50> 志 <SEG:75> も <SEG:28> 、 <SEG:84> 同 <SEG:12> 様 <SEG:19> に <SEG:72> 非 <SEG:0> 常 <SEG:62> に <SEG:47> 多 <SEG:38> 様 <SEG:81> で <SEG:100> す <SEG:97> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "ja_jp_918",
+    "text": "Input: こ <SEG:?> の <SEG:?> カ <SEG:?> テ <SEG:?> ゴ <SEG:?> リ <SEG:?> ー <SEG:?> で <SEG:?> 最 <SEG:?> も <SEG:?> 有 <SEG:?> 名 <SEG:?> な <SEG:?> ア <SEG:?> プ <SEG:?> リ <SEG:?> の <SEG:?> 1 <SEG:?> つ <SEG:?> が <SEG:?> G <SEG:?> o <SEG:?> o <SEG:?> g <SEG:?> l <SEG:?> e <SEG:?> 翻 <SEG:?> 訳 <SEG:?> で <SEG:?> あ <SEG:?> り <SEG:?> 、 <SEG:?> 翻 <SEG:?> 訳 <SEG:?> し <SEG:?> た <SEG:?> い <SEG:?> 言 <SEG:?> 語 <SEG:?> デ <SEG:?> ー <SEG:?> タ <SEG:?> を <SEG:?> ダ <SEG:?> ウ <SEG:?> ン <SEG:?> ロ <SEG:?> ー <SEG:?> ド <SEG:?> し <SEG:?> た <SEG:?> 後 <SEG:?> で <SEG:?> オ <SEG:?> フ <SEG:?> ラ <SEG:?> イ <SEG:?> ン <SEG:?> 翻 <SEG:?> 訳 <SEG:?> が <SEG:?> 可 <SEG:?> 能 <SEG:?> で <SEG:?> す <SEG:?> 。\nOutput: こ <SEG:30> の <SEG:27> カ <SEG:19> テ <SEG:23> ゴ <SEG:52> リ <SEG:70> ー <SEG:92> で <SEG:98> 最 <SEG:66> も <SEG:58> 有 <SEG:55> 名 <SEG:80> な <SEG:89> ア <SEG:56> プ <SEG:97> リ <SEG:88> の <SEG:59> 1 <SEG:64> つ <SEG:81> が <SEG:86> G <SEG:22> o <SEG:6> o <SEG:17> g <SEG:28> l <SEG:42> e <SEG:50> 翻 <SEG:5> 訳 <SEG:47> で <SEG:67> あ <SEG:41> り <SEG:95> 、 <SEG:94> 翻 <SEG:69> 訳 <SEG:91> し <SEG:78> た <SEG:62> い <SEG:75> 言 <SEG:31> 語 <SEG:73> デ <SEG:20> ー <SEG:9> タ <SEG:45> を <SEG:84> ダ <SEG:11> ウ <SEG:3> ン <SEG:0> ロ <SEG:12> ー <SEG:2> ド <SEG:48> し <SEG:53> た <SEG:36> 後 <SEG:39> で <SEG:34> オ <SEG:16> フ <SEG:25> ラ <SEG:8> イ <SEG:14> ン <SEG:38> 翻 <SEG:44> 訳 <SEG:33> が <SEG:61> 可 <SEG:77> 能 <SEG:72> で <SEG:100> す <SEG:83> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "ja_jp_773",
+    "text": "Input: 世 <SEG:?> 界 <SEG:?> 博 <SEG:?> 覧 <SEG:?> 会 <SEG:?> （ <SEG:?> 通 <SEG:?> 称 <SEG:?> は <SEG:?> 万 <SEG:?> 国 <SEG:?> 博 <SEG:?> 覧 <SEG:?> 会 <SEG:?> 、 <SEG:?> ま <SEG:?> た <SEG:?> は <SEG:?> 単 <SEG:?> に <SEG:?> 万 <SEG:?> 博 <SEG:?> ） <SEG:?> は <SEG:?> 、 <SEG:?> 芸 <SEG:?> 術 <SEG:?> と <SEG:?> 科 <SEG:?> 学 <SEG:?> を <SEG:?> 展 <SEG:?> 示 <SEG:?> す <SEG:?> る <SEG:?> 大 <SEG:?> 規 <SEG:?> 模 <SEG:?> な <SEG:?> 国 <SEG:?> 際 <SEG:?> 的 <SEG:?> 祭 <SEG:?> 典 <SEG:?> で <SEG:?> す <SEG:?> 。\nOutput: 世 <SEG:24> 界 <SEG:67> 博 <SEG:27> 覧 <SEG:84> 会 <SEG:80> （ <SEG:58> 通 <SEG:53> 称 <SEG:47> は <SEG:20> 万 <SEG:18> 国 <SEG:44> 博 <SEG:76> 覧 <SEG:64> 会 <SEG:71> 、 <SEG:16> ま <SEG:2> た <SEG:49> は <SEG:60> 単 <SEG:13> に <SEG:9> 万 <SEG:29> 博 <SEG:73> ） <SEG:89> は <SEG:51> 、 <SEG:38> 芸 <SEG:7> 術 <SEG:33> と <SEG:42> 科 <SEG:87> 学 <SEG:36> を <SEG:98> 展 <SEG:56> 示 <SEG:82> す <SEG:93> る <SEG:100> 大 <SEG:96> 規 <SEG:40> 模 <SEG:91> な <SEG:69> 国 <SEG:0> 際 <SEG:22> 的 <SEG:31> 祭 <SEG:4> 典 <SEG:11> で <SEG:78> す <SEG:62> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "ja_jp_1159",
+    "text": "Input: 周 <SEG:?> 期 <SEG:?> 的 <SEG:?> リ <SEG:?> ズ <SEG:?> ム <SEG:?> は <SEG:?> 、 <SEG:?> 単 <SEG:?> に <SEG:?> 外 <SEG:?> 部 <SEG:?> か <SEG:?> ら <SEG:?> の <SEG:?> 周 <SEG:?> 期 <SEG:?> 的 <SEG:?> な <SEG:?> 合 <SEG:?> 図 <SEG:?> へ <SEG:?> の <SEG:?> 応 <SEG:?> 答 <SEG:?> で <SEG:?> は <SEG:?> な <SEG:?> く <SEG:?> 、 <SEG:?> 細 <SEG:?> 菌 <SEG:?> 、 <SEG:?> 真 <SEG:?> 菌 <SEG:?> 、 <SEG:?> 植 <SEG:?> 物 <SEG:?> 、 <SEG:?> 動 <SEG:?> 物 <SEG:?> を <SEG:?> 含 <SEG:?> む <SEG:?> ほ <SEG:?> と <SEG:?> ん <SEG:?> ど <SEG:?> の <SEG:?> 生 <SEG:?> 物 <SEG:?> に <SEG:?> つ <SEG:?> い <SEG:?> て <SEG:?> 記 <SEG:?> 録 <SEG:?> さ <SEG:?> れ <SEG:?> て <SEG:?> い <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: 周 <SEG:32> 期 <SEG:94> 的 <SEG:92> リ <SEG:37> ズ <SEG:29> ム <SEG:69> は <SEG:81> 、 <SEG:79> 単 <SEG:8> に <SEG:6> 外 <SEG:24> 部 <SEG:23> か <SEG:39> ら <SEG:26> の <SEG:21> 周 <SEG:19> 期 <SEG:11> 的 <SEG:18> な <SEG:15> 合 <SEG:16> 図 <SEG:5> へ <SEG:2> の <SEG:13> 応 <SEG:10> 答 <SEG:3> で <SEG:0> は <SEG:71> な <SEG:82> く <SEG:47> 、 <SEG:68> 細 <SEG:27> 菌 <SEG:35> 、 <SEG:53> 真 <SEG:56> 菌 <SEG:50> 、 <SEG:74> 植 <SEG:77> 物 <SEG:44> 、 <SEG:63> 動 <SEG:42> 物 <SEG:34> を <SEG:48> 含 <SEG:95> む <SEG:89> ほ <SEG:85> と <SEG:45> ん <SEG:66> ど <SEG:31> の <SEG:65> 生 <SEG:40> 物 <SEG:84> に <SEG:76> つ <SEG:98> い <SEG:97> て <SEG:90> 記 <SEG:52> 録 <SEG:55> さ <SEG:60> れ <SEG:73> て <SEG:58> い <SEG:61> ま <SEG:100> す <SEG:87> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 188
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 815
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 104
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -41
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9181,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "text": "- For very short‑latency (dense) needs prefer GOOD dense cuts instead of a blanket ban on internal splits: allow a cut at a particle or bound‑morpheme boundary only when the left fragment is a coherent, standalone phrase (it contains no missing predicate or argument that would change roles or polarity), the left fragment does not contradict or reverse the whole sentence on its own, and the right fragment can be translated independently without requiring a clause‑final predicate/auxiliary. Never split inside a lexical content word or break a bound morpheme within a content word."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 585
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8700,
+  "errors": null
+ }
+]

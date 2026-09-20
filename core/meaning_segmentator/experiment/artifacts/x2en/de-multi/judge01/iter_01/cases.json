@@ -1,0 +1,1552 @@
+[
+ {
+  "id": "de_de_341",
+  "cuts": 2,
+  "avg_chunk": 2.3,
+  "latency_bin": "≤3",
+  "gap": 0.7191,
+  "policy_worst_contra": 0.9943,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    5
+   ],
+   "H_set": 0.0036,
+   "text": "Zayat ‖ wurde bei dem Unfall ‖ nicht verletzt.",
+   "pieces": {
+    "English": [
+     "Zayat",
+     "was in the accident",
+     "Not injured."
+    ],
+    "Chinese": [
+     "扎亚特",
+     "事故中死亡",
+     "没有受伤。"
+    ],
+    "Japanese": [
+     "ザヤト",
+     "事故で死んだのは",
+     "怪我はない"
+    ],
+    "Spanish": [
+     "Zayat",
+     "En el accidente",
+     "No se lesionó."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3
+   ],
+   "H_set": 0.7227,
+   "text": "Zayat ‖ wurde bei ‖ dem Unfall nicht verletzt.",
+   "pieces": {
+    "English": [
+     "Zayat",
+     "was at",
+     "not injured in the accident."
+    ],
+    "Chinese": [
+     "扎亚特",
+     "已",
+     "没有受伤。"
+    ],
+    "Japanese": [
+     "ザヤト",
+     "加わった",
+     "怪我はしていません"
+    ],
+    "Spanish": [
+     "Zayat",
+     "fue",
+     "No se lesionó en el accidente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "wurde bei dem Unfall",
+     "right": "nicht verletzt.",
+     "H": 0.0036,
+     "H_pct": 0.0,
+     "contra": 0.9943,
+     "cohesion": 0.6294
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "Zayat wurde bei",
+     "right": "dem Unfall nicht verletzt.",
+     "H": 0.7576,
+     "H_pct": 80.0,
+     "contra": 0.0038,
+     "cohesion": 0.7605
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1143",
+  "cuts": 4,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.7931,
+  "policy_worst_contra": 0.9487,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    12,
+    13,
+    16
+   ],
+   "H_set": 0.0333,
+   "text": "Dies ist anderenorts in Großbritannien gängige Praxis, ‖ aber die schottische Justiz arbeitet ‖ anders, ‖ und die Gerichte ‖ haben die Veröffentlichung von Fotos als potenziell schädlich erachtet.",
+   "pieces": {
+    "English": [
+     "This is common practice elsewhere in the UK,",
+     "but the Scottish justice system is working",
+     "otherwise,",
+     "and the dishes",
+     "have considered the publication of photos as potentially harmful."
+    ],
+    "Chinese": [
+     "这是英国其他地方的惯例,",
+     "但苏格兰的司法系统正在运作",
+     "其他",
+     "与衡量",
+     "认为发布照片可能有害。"
+    ],
+    "Japanese": [
+     "これはイギリスの他の場所でも行われています",
+     "しかしスコットランドの司法制度は",
+     "別の方法は",
+     "裁判所は",
+     "写真を公開することは 危険な可能性があると考えていました"
+    ],
+    "Spanish": [
+     "Esta es una práctica común en otras partes del Reino Unido,",
+     "Pero la justicia escocesa está trabajando.",
+     "Otros",
+     "y los tribunales",
+     "han considerado que la publicación de fotos es potencialmente perjudicial."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    8,
+    13,
+    14
+   ],
+   "H_set": 0.8263,
+   "text": "Dies ist anderenorts in Großbritannien gängige Praxis, ‖ aber ‖ die schottische Justiz arbeitet anders, ‖ und ‖ die Gerichte haben die Veröffentlichung von Fotos als potenziell schädlich erachtet.",
+   "pieces": {
+    "English": [
+     "This is common practice elsewhere in the UK,",
+     "but",
+     "the Scottish justice system works differently,",
+     "and",
+     "the courts have considered the publication of photos as potentially harmful."
+    ],
+    "Chinese": [
+     "这是英国其他地方的惯例,",
+     "但",
+     "苏格兰的司法系统是不一样的,",
+     "以及",
+     "法院认为发布照片有潜在的伤害性。"
+    ],
+    "Japanese": [
+     "これはイギリスの他の場所でも行われています",
+     "でも",
+     "スコットランドの司法制度は 違います",
+     "それに",
+     "裁判所は 写真の公開が 危険な可能性があると判断しました"
+    ],
+    "Spanish": [
+     "Esta es una práctica común en otras partes del Reino Unido,",
+     "pero",
+     "La justicia escocesa funciona de manera diferente,",
+     "y",
+     "Los tribunales han considerado que la publicación de fotos es potencialmente perjudicial."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "die schottische Justiz arbeitet",
+     "right": "anders, und die Gerichte",
+     "H": 0.0397,
+     "H_pct": 0.0,
+     "contra": 0.9487,
+     "cohesion": 0.7738
+    },
+    {
+     "pos": 16,
+     "left": "anders, und die Gerichte",
+     "right": "haben die Veröffentlichung von",
+     "H": 0.7306,
+     "H_pct": 30.4,
+     "contra": 0.0372,
+     "cohesion": 0.7588
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "Großbritannien gängige Praxis, aber",
+     "right": "die schottische Justiz arbeitet",
+     "H": 0.8608,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8618
+    },
+    {
+     "pos": 14,
+     "left": "Justiz arbeitet anders, und",
+     "right": "die Gerichte haben die",
+     "H": 0.8457,
+     "H_pct": 87.0,
+     "contra": 0.0143,
+     "cohesion": 0.8579
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_476",
+  "cuts": 2,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.7229,
+  "policy_worst_contra": 0.9469,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    11,
+    15
+   ],
+   "H_set": 0.0446,
+   "text": "Der Geschichte zufolge lag seine Motivation in Ruhm um jeden Preis. ‖ Die erbosten Epheser erklärten, ‖ Herostratos' Name würde niemals aufgezeichnet werden.",
+   "pieces": {
+    "English": [
+     "According to the story, his motivation was to achieve fame at all costs.",
+     "The angry Ephesians declared,",
+     "Herostratos' name would never be recorded."
+    ],
+    "Chinese": [
+     " 故事中，他不惜一切代價追求名聲。",
+     "以弗所人愤怒地宣称,",
+     " 赫罗斯特拉托斯的名字从未被记录下来。"
+    ],
+    "Japanese": [
+     "彼の動機は、どんな代償を払っても名声を得ることだった。",
+     "怒ったエフェソス人は宣言しました",
+     "ヘロストラトスの名前は決して記録されることはなかった。"
+    ],
+    "Spanish": [
+     "Según la historia, su motivación era la fama a toda costa.",
+     "Los enfurecidos Efesios declararon:",
+     "El nombre de Herostratos nunca sería registrado."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    12
+   ],
+   "H_set": 0.7674,
+   "text": "Der ‖ Geschichte zufolge lag seine Motivation in Ruhm um jeden Preis. Die ‖ erbosten Epheser erklärten, Herostratos' Name würde niemals aufgezeichnet werden.",
+   "pieces": {
+    "English": [
+     "Der",
+     "According to history, his motivation lay in fame at all costs. The",
+     "angry Ephesians declared that Herostratus' name would never be recorded."
+    ],
+    "Chinese": [
+     "德尔",
+     "根据历史记载，他的动机是不惜一切代价获得荣誉。",
+     "愤怒的以弗所人宣布,Herostratos的名字将永远不会被记录。"
+    ],
+    "Japanese": [
+     "ダー",
+     "歴史家によれば 彼の動機は どんな代償を払っても名声を得ることでした",
+     "怒ったエフェソス人は ヘロストラトスの名は決して 記録されないと宣言しました"
+    ],
+    "Spanish": [
+     "Der",
+     "Según la historia, su motivación radicaba en la fama a toda costa. La",
+     "Los efesios enfurecidos declararon que el nombre de Herostrato nunca sería registrado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 11,
+     "left": "Ruhm um jeden Preis.",
+     "right": "Die erbosten Epheser erklärten,",
+     "H": 0.7431,
+     "H_pct": 89.5,
+     "contra": 0.0031,
+     "cohesion": 0.7454
+    },
+    {
+     "pos": 15,
+     "left": "Die erbosten Epheser erklärten,",
+     "right": "Herostratos' Name würde niemals",
+     "H": 0.0382,
+     "H_pct": 15.8,
+     "contra": 0.9469,
+     "cohesion": 0.72
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Der",
+     "right": "Geschichte zufolge lag seine",
+     "H": 0.7717,
+     "H_pct": 94.7,
+     "contra": 0.0323,
+     "cohesion": 0.7974
+    },
+    {
+     "pos": 12,
+     "left": "um jeden Preis. Die",
+     "right": "erbosten Epheser erklärten, Herostratos'",
+     "H": 0.8322,
+     "H_pct": 100.0,
+     "contra": 0.0304,
+     "cohesion": 0.8583
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_736",
+  "cuts": 3,
+  "avg_chunk": 7.2,
+  "latency_bin": "≤10",
+  "gap": 0.7188,
+  "policy_worst_contra": 0.9742,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    16,
+    23
+   ],
+   "H_set": 0.0185,
+   "text": "Sirena ist die einzige Rangerstation, ‖ die neben Zelten auch Übernachtung im Schlafsaal und warme Mahlzeiten anbietet. ‖ La Leona, San Pedrillo und Los Patos ‖ bieten nur Camping ohne Verpflegung an.",
+   "pieces": {
+    "English": [
+     "Sirena is the only Ranger Station",
+     "which offers tents, dormitory accommodation and hot meals.",
+     "La Leona, San Pedrillo and Los Patos",
+     "we only offer camping without board."
+    ],
+    "Chinese": [
+     "Sirena是唯一一个能够",
+     "除了帐篷,还提供宿舍间住宿和热餐。",
+     "拉莱奥纳、圣佩德里略和洛斯帕托斯",
+     "仅提供露营不含餐饮。"
+    ],
+    "Japanese": [
+     "サイレナは唯一のレンジャー基地です",
+     "テントのほかに 宿泊施設や 温かい食事を提供しています",
+     "ラ・レオナ・サン・ペドリージョ・ロス・パトス",
+     "食事なしのキャンプを提供しています"
+    ],
+    "Spanish": [
+     "Sirena es la única estación de guardabosques",
+     "Ofrece alojamiento en habitaciones compartidas y comidas calientes, además de tiendas de campaña.",
+     "La Leona, San Pedrillo y Los Patos",
+     "Ofrecemos solo camping sin comidas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    16,
+    17,
+    28
+   ],
+   "H_set": 0.7373,
+   "text": "Sirena ist die einzige Rangerstation, die neben Zelten auch Übernachtung im Schlafsaal und warme Mahlzeiten anbietet. ‖ La ‖ Leona, San Pedrillo und Los Patos bieten nur Camping ohne Verpflegung ‖ an.",
+   "pieces": {
+    "English": [
+     "Sirena is the only Ranger Station that offers tents, dormitory accommodation and hot meals.",
+     "La",
+     "Leona, San Pedrillo and Los Patos offer only self-catering camping",
+     "an."
+    ],
+    "Chinese": [
+     " 西里纳是唯一一个提供帐篷、宿舍和热餐的野生动物保护站。",
+     "拉",
+     "Leona、San Pedrillo 和 Los Patos 仅提供自助式露营",
+     "一个。"
+    ],
+    "Japanese": [
+     " シレナはテントのほかに宿泊施設と温かい食事を提供する唯一のレンジャー基地である。",
+     "ル・ア",
+     "レオナ、サンペドリヨ、ロスパトスは自炊式のキャンプ場のみを提供している。",
+     "あん"
+    ],
+    "Spanish": [
+     "Sirena es la única estación de guardabosques que ofrece alojamiento en dormitorios y comidas calientes, además de tiendas de campaña.",
+     "La",
+     "Leona, San Pedrillo y Los Patos ofrecen solo camping sin comidas",
+     "an."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "ist die einzige Rangerstation,",
+     "right": "die neben Zelten auch",
+     "H": 0.658,
+     "H_pct": 63.0,
+     "contra": 0.0012,
+     "cohesion": 0.6588
+    },
+    {
+     "pos": 23,
+     "left": "Pedrillo und Los Patos",
+     "right": "bieten nur Camping ohne",
+     "H": 0.0157,
+     "H_pct": 3.7,
+     "contra": 0.9742,
+     "cohesion": 0.6072
+    }
+   ],
+   "added": [
+    {
+     "pos": 17,
+     "left": "warme Mahlzeiten anbietet. La",
+     "right": "Leona, San Pedrillo und",
+     "H": 0.7721,
+     "H_pct": 96.3,
+     "contra": 0.0318,
+     "cohesion": 0.7975
+    },
+    {
+     "pos": 28,
+     "left": "nur Camping ohne Verpflegung",
+     "right": "an.",
+     "H": 0.7717,
+     "H_pct": 92.6,
+     "contra": 0.0032,
+     "cohesion": 0.7742
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_283",
+  "cuts": 1,
+  "avg_chunk": 12.5,
+  "latency_bin": "≤99",
+  "gap": 0.2886,
+  "policy_worst_contra": 0.3404,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    22
+   ],
+   "H_set": 0.5773,
+   "text": "Auch in Paris, Sofia in Bulgarien, Vilnius in Litauen, Valletta auf Malta, Tallinn in Estland und in Edinburgh und Glasgow in Schottland ‖ gab es Proteste.",
+   "pieces": {
+    "English": [
+     "Also in Paris, Sofia in Bulgaria, Vilnius in Lithuania, Valletta in Malta, Tallinn in Estonia and in Edinburgh and Glasgow in Scotland",
+     "there were protests."
+    ],
+    "Chinese": [
+     "还有巴黎、保加利亚索非亚、立陶宛维尔纽斯、马耳他瓦莱塔、爱沙尼亚塔林以及苏格兰爱丁堡和格拉斯哥",
+     "还有抗议活动。"
+    ],
+    "Japanese": [
+     "パリ、ブルガリアのソフィア、リトアニアのヴィリニュス、マルタのバレッタ、エストニアのタリン、スコットランドのエディンバラとグラスゴーにもある。",
+     "抗議が起こりました"
+    ],
+    "Spanish": [
+     "También en París, Sofía en Bulgaria, Vilna en Lituania, La Valeta en Malta, Tallin en Estonia y en Edimburgo y Glasgow en Escocia",
+     "Hubo protestas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6
+   ],
+   "H_set": 0.8659,
+   "text": "Auch in Paris, Sofia in Bulgarien, ‖ Vilnius in Litauen, Valletta auf Malta, Tallinn in Estland und in Edinburgh und Glasgow in Schottland gab es Proteste.",
+   "pieces": {
+    "English": [
+     "Also in Paris, Sofia in Bulgaria,",
+     "Protests took place in Vilnius in Lithuania, Valletta in Malta, Tallinn in Estonia, and Edinburgh and Glasgow in Scotland."
+    ],
+    "Chinese": [
+     "巴黎,索非亚,保加利亚",
+     "立陶宛的维尔纽斯、马耳他的瓦莱塔、爱沙尼亚的塔林以及苏格兰的爱丁堡和格拉斯哥都发生了抗议活动。"
+    ],
+    "Japanese": [
+     "パリやブルガリアのソフィア",
+     "リトアニアのヴィリニュス、マルタのバレタ、エストニアのタリン、スコットランドのエディンバラとグラスゴーで抗議行動が行われた。"
+    ],
+    "Spanish": [
+     "También en París, Sofía en Bulgaria,",
+     "Se han producido protestas en Vilna, Lituania, La Valeta, Malta, Tallin, Estonia, y Edimburgo y Glasgow, Escocia."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 22,
+     "left": "und Glasgow in Schottland",
+     "right": "gab es Proteste.",
+     "H": 0.5773,
+     "H_pct": 17.4,
+     "contra": 0.3404,
+     "cohesion": 0.8752
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "Paris, Sofia in Bulgarien,",
+     "right": "Vilnius in Litauen, Valletta",
+     "H": 0.8659,
+     "H_pct": 100.0,
+     "contra": 0.0115,
+     "cohesion": 0.876
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_906",
+  "cuts": 8,
+  "avg_chunk": 2.0,
+  "latency_bin": "≤3",
+  "gap": 0.6452,
+  "policy_worst_contra": 0.9483,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    5,
+    6,
+    7,
+    8,
+    9,
+    16
+   ],
+   "H_set": 0.0336,
+   "text": "Persönliche ‖ VPN-Anbieter ‖ (virtual private network) ‖ sind ‖ eine ‖ ausgezeichnete ‖ Möglichkeit, ‖ sowohl politische Zensur als auch kommerzielle IP-Geofilter ‖ zu umgehen.",
+   "pieces": {
+    "English": [
+     "Personal",
+     "VPN providers",
+     "(virtual private network)",
+     "are",
+     "one",
+     "excellent",
+     "possibility,",
+     "both political censorship and commercial IP geofilters",
+     "to bypass."
+    ],
+    "Chinese": [
+     "个人",
+     "VPN提供商",
+     "虚拟专用网络",
+     "是",
+     "一",
+     "优秀",
+     "可能性",
+     "政治审查和商业IP地理过滤",
+     "为了避免这种情况。"
+    ],
+    "Japanese": [
+     "個人",
+     "VPNプロバイダ",
+     "仮想プライベートネットワーク",
+     "シン",
+     "1つ",
+     "優秀",
+     "可能性",
+     "政治的検閲と商業的なIP地理フィルタリングの両方を",
+     "回避するためです"
+    ],
+    "Spanish": [
+     "Personal",
+     "Proveedores de VPN",
+     "(red privada virtual)",
+     "son",
+     "una",
+     "Excelente",
+     "Posibilidad",
+     "Censura política y geofiltros de IP comerciales",
+     "para evitarlo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    5,
+    6,
+    7,
+    9,
+    12,
+    13,
+    14
+   ],
+   "H_set": 0.6788,
+   "text": "Persönliche VPN-Anbieter ‖ (virtual private network) ‖ sind ‖ eine ‖ ausgezeichnete Möglichkeit, ‖ sowohl politische Zensur ‖ als ‖ auch ‖ kommerzielle IP-Geofilter zu umgehen.",
+   "pieces": {
+    "English": [
+     "Personal VPN Providers",
+     "(virtual private network)",
+     "are",
+     "one",
+     "excellent opportunity,",
+     "both political censorship",
+     "as",
+     "also",
+     "bypass commercial IP geofilters."
+    ],
+    "Chinese": [
+     "个人VPN提供商",
+     "虚拟专用网络",
+     "是",
+     "一",
+     "一个很好的机会",
+     "政治审查",
+     "如",
+     "还",
+     "绕过商业IP地理过滤。"
+    ],
+    "Japanese": [
+     "個人向けVPNプロバイダ",
+     "仮想プライベートネットワーク",
+     "シン",
+     "1つ",
+     "素晴らしい機会です",
+     "政治的検閲と",
+     "もし",
+     "また",
+     "商用IPの地理的フィルタリングを 回避することができます"
+    ],
+    "Spanish": [
+     "Proveedores de VPN personales",
+     "(red privada virtual)",
+     "son",
+     "una",
+     "Excelente oportunidad,",
+     "tanto censura política",
+     "como",
+     "También",
+     "Evitar geofiltros de IP comerciales."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "Persönliche",
+     "right": "VPN-Anbieter (virtual private network)",
+     "H": 0.5844,
+     "H_pct": 18.8,
+     "contra": 0.3078,
+     "cohesion": 0.8443
+    },
+    {
+     "pos": 8,
+     "left": "network) sind eine ausgezeichnete",
+     "right": "Möglichkeit, sowohl politische Zensur",
+     "H": 0.7964,
+     "H_pct": 50.0,
+     "contra": 0.0003,
+     "cohesion": 0.7966
+    },
+    {
+     "pos": 16,
+     "left": "als auch kommerzielle IP-Geofilter",
+     "right": "zu umgehen.",
+     "H": 0.0376,
+     "H_pct": 0.0,
+     "contra": 0.9483,
+     "cohesion": 0.727
+    }
+   ],
+   "added": [
+    {
+     "pos": 12,
+     "left": "Möglichkeit, sowohl politische Zensur",
+     "right": "als auch kommerzielle IP-Geofilter",
+     "H": 0.8524,
+     "H_pct": 81.2,
+     "contra": 0.0041,
+     "cohesion": 0.8559
+    },
+    {
+     "pos": 13,
+     "left": "sowohl politische Zensur als",
+     "right": "auch kommerzielle IP-Geofilter zu",
+     "H": 0.8102,
+     "H_pct": 56.2,
+     "contra": 0.006,
+     "cohesion": 0.8151
+    },
+    {
+     "pos": 14,
+     "left": "politische Zensur als auch",
+     "right": "kommerzielle IP-Geofilter zu umgehen.",
+     "H": 0.8259,
+     "H_pct": 68.8,
+     "contra": 0.0063,
+     "cohesion": 0.8311
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_649",
+  "cuts": 6,
+  "avg_chunk": 3.7,
+  "latency_bin": "≤5",
+  "gap": 0.6918,
+  "policy_worst_contra": 0.9984,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    6,
+    12,
+    15,
+    20
+   ],
+   "H_set": 0.0012,
+   "text": "Wir werden ‖ niemals ‖ ein Auto überholen, ‖ einen Brunnen in unserem Hinterhof bauen, ‖ nach Peru reisen, ‖ um antike Ruinen zu untersuchen, ‖ oder das Haus unseres Nachbarn umgestalten.",
+   "pieces": {
+    "English": [
+     "We will",
+     "never",
+     "overtake a car,",
+     "build a well in our backyard,",
+     "travel to Peru,",
+     "to investigate ancient ruins,",
+     "or redesign our neighbor's house."
+    ],
+    "Chinese": [
+     "我们将",
+     "从未",
+     "超车一辆车,",
+     "在我们的后院建一口井,",
+     "前往秘鲁,",
+     "去研究古代遗迹,",
+     "或者重新设计邻居的房子。"
+    ],
+    "Japanese": [
+     "私たちは",
+     "決して",
+     "車を追い越すのです",
+     "裏庭に井戸を作り",
+     "ペルーに行くこともできます",
+     "古代遺跡を調査するために",
+     "近所の家を改装するのです"
+    ],
+    "Spanish": [
+     "Vamos a",
+     "nunca",
+     "adelantar un coche,",
+     "Construir un pozo en nuestro patio trasero,",
+     "Viaje a Perú,",
+     "para investigar ruinas antiguas,",
+     "o remodelar la casa de nuestro vecino."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    6,
+    12,
+    15,
+    20,
+    21
+   ],
+   "H_set": 0.6929,
+   "text": "Wir werden niemals ‖ ein Auto überholen, ‖ einen Brunnen in unserem Hinterhof bauen, ‖ nach Peru reisen, ‖ um antike Ruinen zu untersuchen, ‖ oder ‖ das Haus unseres Nachbarn umgestalten.",
+   "pieces": {
+    "English": [
+     "We will never",
+     "overtake a car,",
+     "build a well in our backyard,",
+     "travel to Peru,",
+     "to investigate ancient ruins,",
+     "or",
+     "redesign our neighbor's house."
+    ],
+    "Chinese": [
+     "我们永远不会",
+     "超车一辆车,",
+     "在我们的后院建一口井,",
+     "前往秘鲁,",
+     "去研究古代遗迹,",
+     "或者",
+     "重新设计我们邻居的房子。"
+    ],
+    "Japanese": [
+     "私たちは決して",
+     "車を追い越すのです",
+     "裏庭に井戸を作り",
+     "ペルーに行くこともできます",
+     "古代遺跡を調査するために",
+     "または",
+     "近所の家を改装しました"
+    ],
+    "Spanish": [
+     "Nunca lo haremos",
+     "adelantar un coche,",
+     "Construir un pozo en nuestro patio trasero,",
+     "Viaje a Perú,",
+     "para investigar ruinas antiguas,",
+     "o",
+     "Remodelar la casa de nuestro vecino."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Wir werden",
+     "right": "niemals ein Auto überholen,",
+     "H": 0.0012,
+     "H_pct": 0.0,
+     "contra": 0.9984,
+     "cohesion": 0.7438
+    }
+   ],
+   "added": [
+    {
+     "pos": 21,
+     "left": "Ruinen zu untersuchen, oder",
+     "right": "das Haus unseres Nachbarn",
+     "H": 0.7482,
+     "H_pct": 91.7,
+     "contra": 0.0181,
+     "cohesion": 0.762
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_517",
+  "cuts": 3,
+  "avg_chunk": 6.0,
+  "latency_bin": "≤7",
+  "gap": 0.6754,
+  "policy_worst_contra": 0.9439,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    13
+   ],
+   "H_set": 0.0337,
+   "text": "Im Gegensatz zu anderen Primaten ‖ benutzen Hominiden ‖ nicht mehr die Hände zur Fortbewegung, ‖ um Lasten zu tragen oder um sich durch Bäume zu schwingen.",
+   "pieces": {
+    "English": [
+     "Unlike other primates",
+     "use hominins",
+     "no longer the hands to move,",
+     "to carry loads or to swing through trees."
+    ],
+    "Chinese": [
+     "与其他灵长类动物不同",
+     "我们使用原始人类",
+     "没有手来移动,",
+     "你們用它們載重，用它們攀登樹木。"
+    ],
+    "Japanese": [
+     "他の霊長類とは違い",
+     "ヒト科動物を使って",
+     "動く手がなくなりました",
+     "重荷を運び 木に乗り上げるために"
+    ],
+    "Spanish": [
+     "A diferencia de otros primates",
+     "Homínidos de uso",
+     "ya no las manos para moverse,",
+     "para llevar cargas o para subirse a los árboles."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    5,
+    17
+   ],
+   "H_set": 0.7091,
+   "text": "Im Gegensatz ‖ zu anderen Primaten ‖ benutzen Hominiden nicht mehr die Hände zur Fortbewegung, um Lasten zu tragen ‖ oder um sich durch Bäume zu schwingen.",
+   "pieces": {
+    "English": [
+     "In contrast",
+     "to other primates",
+     "hominins no longer use their hands to move around and carry loads",
+     "or to swing through trees."
+    ],
+    "Chinese": [
+     "相反",
+     "其他灵长类动物",
+     "原始人不再用手来移动 、 搬运重物 。",
+     "或者通过树木摇摆。"
+    ],
+    "Japanese": [
+     "対照的に",
+     "人間と同じように",
+     "ヒト科動物はもはや手を使って 物を運ぶことはなくなりました",
+     "木の上をゆらゆらと動くこともできます"
+    ],
+    "Spanish": [
+     "En contraste",
+     "a otros primates",
+     "Los homínidos ya no usan las manos para moverse, para llevar cargas.",
+     "o para balancearse entre los árboles."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "anderen Primaten benutzen Hominiden",
+     "right": "nicht mehr die Hände",
+     "H": 0.0402,
+     "H_pct": 4.5,
+     "contra": 0.9439,
+     "cohesion": 0.7168
+    },
+    {
+     "pos": 13,
+     "left": "die Hände zur Fortbewegung,",
+     "right": "um Lasten zu tragen",
+     "H": 0.6725,
+     "H_pct": 59.1,
+     "contra": 0.0682,
+     "cohesion": 0.7217
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Im Gegensatz",
+     "right": "zu anderen Primaten benutzen",
+     "H": 0.7834,
+     "H_pct": 95.5,
+     "contra": 0.0014,
+     "cohesion": 0.7845
+    },
+    {
+     "pos": 17,
+     "left": "um Lasten zu tragen",
+     "right": "oder um sich durch",
+     "H": 0.7759,
+     "H_pct": 90.9,
+     "contra": 0.0158,
+     "cohesion": 0.7884
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1527",
+  "cuts": 3,
+  "avg_chunk": 7.5,
+  "latency_bin": "≤10",
+  "gap": 0.6333,
+  "policy_worst_contra": 0.9571,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    12,
+    17,
+    23
+   ],
+   "H_set": 0.0279,
+   "text": "Der sehbehinderte polnische Skifahrer Maciej Krezel und die Begleitläuferin Anna Ogarzynska belegten ‖ im Super-G den dreizehnten Platz. ‖ Der Südkoreaner Jong Seork Park belegte ‖ im Super-G der Männer den vierundzwanzigsten Platz.",
+   "pieces": {
+    "English": [
+     "The visually impaired Polish skier Maciej Krezel and his companion Anna Ogarzynska took",
+     "in the Super-G the thirteenth place.",
+     "The South Korean Jong Seork Park placed",
+     "in the men's Super-G the twenty-fourth place."
+    ],
+    "Chinese": [
+     "波兰视力残疾滑雪运动员 Maciej Krezel 和他的伴侣 Anna Ogarzynska 获得了",
+     " 於第13話登場。",
+     " 韓國的韓國人 韓國人",
+     " 於第24集登場，為超級英雄。"
+    ],
+    "Japanese": [
+     "ポーランドの視覚障害者のスキーヤー マチェイ・クレゼルと 彼の相棒のアンナ・オガジンスカが",
+     "スーパーGで13位に入りました",
+     "韓国のパク・ジョンソクが",
+     "男性スーパーGでは24位に入りました"
+    ],
+    "Spanish": [
+     "El esquiador polaco con discapacidad visual Maciej Krezel y la corredora acompañante Anna Ogarzynska",
+     "En el Super-G el decimotercer lugar.",
+     "El surcoreano Jong Seork Park ocupó",
+     "En el Super-G de los hombres el vigésimo cuarto lugar."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    16,
+    17
+   ],
+   "H_set": 0.6611,
+   "text": "Der sehbehinderte ‖ polnische Skifahrer Maciej Krezel und die Begleitläuferin Anna Ogarzynska belegten im Super-G den dreizehnten ‖ Platz. ‖ Der Südkoreaner Jong Seork Park belegte im Super-G der Männer den vierundzwanzigsten Platz.",
+   "pieces": {
+    "English": [
+     "The visually impaired",
+     "Polish skier Maciej Krezel and his companion Anna Ogarzynska finished thirteenth in the Super-G",
+     "Place.",
+     "South Korean Jong Seork Park finished twenty-fourth in the men's Super-G."
+    ],
+    "Chinese": [
+     "视力障碍者",
+     "波兰滑雪运动员 Maciej Krezel 和伴侣 Anna Ogarzynska 在超级大回转中排名第十三",
+     " 位置。",
+     " 韓國男子羽毛球隊在男子雙打項目中排名第24。"
+    ],
+    "Japanese": [
+     "視覚障害者",
+     "ポーランドのマチェイ ・ クレゼルと 彼女のパートナーのアンナ ・ オガジンスカは スーパーGで13位に入り",
+     "スペース",
+     "韓国のパク・ジョンソクは男子スーパーGで24位に入った。"
+    ],
+    "Spanish": [
+     "El deficiente visual",
+     "El esquiador polaco Maciej Krezel y la corredora acompañante Anna Ogarzynska ocuparon el decimotercer lugar en el Super-G",
+     "- Ahora.",
+     "El surcoreano Jong Seork Park fue el vigésimo cuarto en el Super G masculino."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "Begleitläuferin Anna Ogarzynska belegten",
+     "right": "im Super-G den dreizehnten",
+     "H": 0.6415,
+     "H_pct": 46.4,
+     "contra": 0.0062,
+     "cohesion": 0.6455
+    },
+    {
+     "pos": 23,
+     "left": "Jong Seork Park belegte",
+     "right": "im Super-G der Männer",
+     "H": 0.0287,
+     "H_pct": 3.6,
+     "contra": 0.9571,
+     "cohesion": 0.6696
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Der sehbehinderte",
+     "right": "polnische Skifahrer Maciej Krezel",
+     "H": 0.7921,
+     "H_pct": 96.4,
+     "contra": 0.0023,
+     "cohesion": 0.7939
+    },
+    {
+     "pos": 16,
+     "left": "im Super-G den dreizehnten",
+     "right": "Platz. Der Südkoreaner Jong",
+     "H": 0.8047,
+     "H_pct": 100.0,
+     "contra": 0.0031,
+     "cohesion": 0.8072
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1637",
+  "cuts": 1,
+  "avg_chunk": 24.5,
+  "latency_bin": "≤99",
+  "gap": 0.1892,
+  "policy_worst_contra": 0.2113,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    32
+   ],
+   "H_set": 0.6231,
+   "text": "Der in Panik versetzte König Ludwig der XIV., Königin Marie-Antoinette, ihre beiden kleinen Kinder (die 11 Jahre alte Marie-Therese und der 4 Jahre alte Louis-Charles) sowie die Schwester des Königs, Madame Elisabeth ‖ wurden am 6. Oktober 1789 in Versailles von einem Mob aus Marktfrauen zur Rückkehr nach Paris gezwungen.",
+   "pieces": {
+    "English": [
+     "The panicked King Louis XIV, Queen Marie-Antoinette, her two young children (the 11-year-old Marie-Therese and the 4-year-old Louis-Charles) and the King's sister, Madame Elisabeth",
+     "were forced to return to Paris by a mob of market women on 6 October 1789 in Versailles."
+    ],
+    "Chinese": [
+     "惊慌失措的路易十四国王、玛丽·安托瓦内特王后、两个年幼的孩子(11岁的玛丽·特蕾西和4岁的路易·查尔斯)以及国王的姐姐伊丽莎白夫人",
+     "1789年10月6日,在凡尔赛,一群市场女工强迫他们返回巴黎。"
+    ],
+    "Japanese": [
+     " 恐慌に陥ったルイ14世、マリー・アントワネット、2人の子供（11歳のマリー・テレーズと4歳のルイ・シャルル）、国王の妹エリザベート夫人。",
+     "1789年10月6日 ヴェルサイユで 市場の女たちの暴徒に 追い出され パリに戻った"
+    ],
+    "Spanish": [
+     "El rey Luis XIV, en pánico, la reina María Antonieta, sus dos hijos pequeños (María Teresa, de 11 años, y Luis Carlos, de 4 años), y la hermana del rey, Madame Elisabeth",
+     "El 6 de octubre de 1789, una turba de mujeres del mercado en Versalles los obligó a regresar a París."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5
+   ],
+   "H_set": 0.8123,
+   "text": "Der in Panik versetzte König ‖ Ludwig der XIV., Königin Marie-Antoinette, ihre beiden kleinen Kinder (die 11 Jahre alte Marie-Therese und der 4 Jahre alte Louis-Charles) sowie die Schwester des Königs, Madame Elisabeth wurden am 6. Oktober 1789 in Versailles von einem Mob aus Marktfrauen zur Rückkehr nach Paris gezwungen.",
+   "pieces": {
+    "English": [
+     "The King in Panic",
+     "Louis XIV, Queen Marie-Antoinette, their two young children (the 11-year-old Marie-Therese and the 4-year-old Louis-Charles) and the king's sister, Madame Elisabeth, were forced to return to Paris on 6 October 1789 in Versailles by a mob of market women."
+    ],
+    "Chinese": [
+     "恐慌的国王",
+     " 1789年10月6日，路易十四、玛丽·安托瓦内特、两个孩子（11岁的玛丽·特蕾西娅和4岁的路易·查尔斯）和国王的姐姐伊丽莎白夫人在凡尔赛被一群市场女工强行带回巴黎。"
+    ],
+    "Japanese": [
+     "恐怖の王",
+     " 1789年10月6日、ルイ14世、王妃マリー・アントワネット、2人の幼い子供（11歳のマリー・テレーズと4歳のルイ・シャルル）、王の妹エリザベート夫人は、ヴェルサイユで市場の女たちの暴徒によりパリに戻ることを強いられた。"
+    ],
+    "Spanish": [
+     "El rey en pánico",
+     "Luis XIV, la reina María Antonieta, sus dos hijos pequeños (María Teresa de 11 años y Luis Carlos de 4 años) y la hermana del rey, Madame Elisabeth, fueron obligados a regresar a París el 6 de octubre de 1789 en Versalles por una turba de mujeres del mercado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 32,
+     "left": "des Königs, Madame Elisabeth",
+     "right": "wurden am 6. Oktober",
+     "H": 0.6231,
+     "H_pct": 21.3,
+     "contra": 0.2113,
+     "cohesion": 0.79
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "in Panik versetzte König",
+     "right": "Ludwig der XIV., Königin",
+     "H": 0.8123,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8131
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_441",
+  "cuts": 4,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.6421,
+  "policy_worst_contra": 0.9156,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    10,
+    11,
+    13
+   ],
+   "H_set": 0.0527,
+   "text": "Während des 18. Jahrhunderts ‖ war Kambodscha zwischen zwei mächtigen Nachbarn ‖ eingezwängt ‖ – Thailand ‖ und Vietnam.",
+   "pieces": {
+    "English": [
+     "During the 18th century",
+     "was Cambodia between two powerful neighbors",
+     "forced",
+     "– Thailand",
+     "and Vietnam."
+    ],
+    "Chinese": [
+     "18世纪",
+     "柬埔寨被两个强大的邻国",
+     "强制",
+     "－ 泰国",
+     "越南。"
+    ],
+    "Japanese": [
+     "18世紀のイタリア",
+     "カンボジアは 2つの強大な隣国の間にあり",
+     "強制的に",
+     "タイ",
+     "それからベトナムです"
+    ],
+    "Spanish": [
+     "Durante el siglo XVIII",
+     "Camboya estaba entre dos vecinos poderosos.",
+     "Coercición",
+     "– Tailandia",
+     "y Vietnam."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    5,
+    6
+   ],
+   "H_set": 0.6948,
+   "text": "Während des ‖ 18. Jahrhunderts ‖ war ‖ Kambodscha ‖ zwischen zwei mächtigen Nachbarn eingezwängt – Thailand und Vietnam.",
+   "pieces": {
+    "English": [
+     "During the",
+     "18th century",
+     "on",
+     "Cambodia",
+     "between two powerful neighbours – Thailand and Vietnam."
+    ],
+    "Chinese": [
+     "期间",
+     "18世纪",
+     "战争",
+     "柬埔寨",
+     "被两个强大的邻国 — — 泰国和越南所包围。"
+    ],
+    "Japanese": [
+     "ここで",
+     "18世紀の人物",
+     "戦争",
+     "カンボジア",
+     "タイとベトナムという 強力な隣国の間に 押し込まれています"
+    ],
+    "Spanish": [
+     "Durante el",
+     "Siglo XVIII",
+     "war",
+     "10. Camboya",
+     "entre dos vecinos poderosos: Tailandia y Vietnam."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "zwischen zwei mächtigen Nachbarn",
+     "right": "eingezwängt – Thailand und",
+     "H": 0.7402,
+     "H_pct": 38.5,
+     "contra": 0.0133,
+     "cohesion": 0.7501
+    },
+    {
+     "pos": 11,
+     "left": "zwei mächtigen Nachbarn eingezwängt",
+     "right": "– Thailand und Vietnam.",
+     "H": 0.7294,
+     "H_pct": 30.8,
+     "contra": 0.175,
+     "cohesion": 0.8841
+    },
+    {
+     "pos": 13,
+     "left": "Nachbarn eingezwängt – Thailand",
+     "right": "und Vietnam.",
+     "H": 0.0697,
+     "H_pct": 0.0,
+     "contra": 0.9156,
+     "cohesion": 0.8262
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Während des",
+     "right": "18. Jahrhunderts war Kambodscha",
+     "H": 0.8407,
+     "H_pct": 76.9,
+     "contra": 0.0039,
+     "cohesion": 0.844
+    },
+    {
+     "pos": 5,
+     "left": "des 18. Jahrhunderts war",
+     "right": "Kambodscha zwischen zwei mächtigen",
+     "H": 0.8824,
+     "H_pct": 100.0,
+     "contra": 0.0029,
+     "cohesion": 0.885
+    },
+    {
+     "pos": 6,
+     "left": "18. Jahrhunderts war Kambodscha",
+     "right": "zwischen zwei mächtigen Nachbarn",
+     "H": 0.8807,
+     "H_pct": 92.3,
+     "contra": 0.004,
+     "cohesion": 0.8842
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_867",
+  "cuts": 7,
+  "avg_chunk": 3.5,
+  "latency_bin": "≤5",
+  "gap": 0.6336,
+  "policy_worst_contra": 0.9945,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    18,
+    19,
+    20,
+    21,
+    22,
+    24,
+    26
+   ],
+   "H_set": 0.0033,
+   "text": "Wenn Sie zum ersten Mal in ein Entwicklungsland – oder in einen neuen Teil der Welt – reisen, ‖ sollten ‖ Sie ‖ nicht ‖ unterschätzen, ‖ wie stark ‖ der Kulturschock ‖ sein kann.",
+   "pieces": {
+    "English": [
+     "If you are travelling to a developing country – or a new part of the world – for the first time,",
+     "should",
+     "Sie",
+     "not",
+     "underestimate,",
+     "how strong",
+     "the culture shock",
+     "can be."
+    ],
+    "Chinese": [
+     "如果您是第一次前往发展中国家或世界的新地区,",
+     "应",
+     "西",
+     "非",
+     "低估了",
+     "多强烈",
+     "文化冲击",
+     "可能是。"
+    ],
+    "Japanese": [
+     "発展途上国や新しい地域に初めて行くとき",
+     "あなたは",
+     "彼女",
+     "いや",
+     "過小評価するのです",
+     "どれくらい強いか",
+     "文化的ショック",
+     "可能性がある"
+    ],
+    "Spanish": [
+     "Si es la primera vez que viaja a un país en desarrollo o a una nueva parte del mundo,",
+     "Deberían",
+     "Sie",
+     "no",
+     "subestimar,",
+     "¿Qué tan fuerte?",
+     "El choque cultural",
+     "Puede ser."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    8,
+    9,
+    10,
+    16,
+    18,
+    20
+   ],
+   "H_set": 0.6369,
+   "text": "Wenn Sie ‖ zum ersten Mal in ein Entwicklungsland ‖ – ‖ oder ‖ in einen neuen Teil der Welt ‖ – reisen, ‖ sollten Sie ‖ nicht unterschätzen, wie stark der Kulturschock sein kann.",
+   "pieces": {
+    "English": [
+     "If you",
+     "for the first time in a developing country",
+     "–",
+     "or",
+     "to a new part of the world",
+     "– travel,",
+     "should you",
+     "do not underestimate how strong the culture shock can be."
+    ],
+    "Chinese": [
+     "如您",
+     "首次到发展中国家",
+     "- 其他",
+     "或者",
+     "到一个新的世界",
+     "旅行；",
+     "您应该",
+     "不要低估文化冲击的强度。"
+    ],
+    "Japanese": [
+     "あなたが",
+     "初めて発展途上国に行きました",
+     "あなたは　私のことを知ってる",
+     "または",
+     "世界の新しい地域に",
+     "旅行",
+     "あなたは",
+     "文化的ショックがどれだけ強力なものか 過小評価してはいけません"
+    ],
+    "Spanish": [
+     "Si usted",
+     "por primera vez en un país en desarrollo.",
+     "–",
+     "o",
+     "A una nueva parte del mundo",
+     "– viajes,",
+     "Debe",
+     "No subestimes lo fuerte que puede ser el choque cultural."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 19,
+     "left": "Welt – reisen, sollten",
+     "right": "Sie nicht unterschätzen, wie",
+     "H": 0.7808,
+     "H_pct": 61.5,
+     "contra": 0.0021,
+     "cohesion": 0.7824
+    },
+    {
+     "pos": 21,
+     "left": "reisen, sollten Sie nicht",
+     "right": "unterschätzen, wie stark der",
+     "H": 0.0044,
+     "H_pct": 0.0,
+     "contra": 0.9945,
+     "cohesion": 0.7953
+    },
+    {
+     "pos": 22,
+     "left": "sollten Sie nicht unterschätzen,",
+     "right": "wie stark der Kulturschock",
+     "H": 0.7214,
+     "H_pct": 19.2,
+     "contra": 0.0022,
+     "cohesion": 0.723
+    },
+    {
+     "pos": 24,
+     "left": "nicht unterschätzen, wie stark",
+     "right": "der Kulturschock sein kann.",
+     "H": 0.7754,
+     "H_pct": 53.8,
+     "contra": 0.001,
+     "cohesion": 0.7762
+    },
+    {
+     "pos": 26,
+     "left": "wie stark der Kulturschock",
+     "right": "sein kann.",
+     "H": 0.7646,
+     "H_pct": 34.6,
+     "contra": 0.0005,
+     "cohesion": 0.765
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Wenn Sie",
+     "right": "zum ersten Mal in",
+     "H": 0.7937,
+     "H_pct": 80.8,
+     "contra": 0.0006,
+     "cohesion": 0.7942
+    },
+    {
+     "pos": 8,
+     "left": "Mal in ein Entwicklungsland",
+     "right": "– oder in einen",
+     "H": 0.8041,
+     "H_pct": 88.5,
+     "contra": 0.001,
+     "cohesion": 0.8049
+    },
+    {
+     "pos": 9,
+     "left": "in ein Entwicklungsland –",
+     "right": "oder in einen neuen",
+     "H": 0.8162,
+     "H_pct": 92.3,
+     "contra": 0.0017,
+     "cohesion": 0.8175
+    },
+    {
+     "pos": 10,
+     "left": "ein Entwicklungsland – oder",
+     "right": "in einen neuen Teil",
+     "H": 0.8327,
+     "H_pct": 100.0,
+     "contra": 0.0016,
+     "cohesion": 0.8341
+    },
+    {
+     "pos": 16,
+     "left": "neuen Teil der Welt",
+     "right": "– reisen, sollten Sie",
+     "H": 0.7937,
+     "H_pct": 76.9,
+     "contra": 0.0031,
+     "cohesion": 0.7962
+    }
+   ]
+  }
+ }
+]

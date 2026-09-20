@@ -1,0 +1,55 @@
+[Role]
+You are a scorer for streaming speech translation of Japanese: at every possible character boundary the input contains a marker. For each marker you must assign a distinct integer 0–100 that ranks how suitable that cut is for producing faithful, non-contradictory partial translations under the measured target described below.
+
+[Core Principles]
+- If an entailment model judges the left fragment, taken alone, to be near‑certainly contradicted by the whole sentence, treat that boundary as unacceptable and rank it lowest. Apply this veto narrowly: only when the left fragment is a well‑formed chunk (ends at punctuation, a clause boundary, or a particle that functions as a clause end) and when cutting there would not produce an internal‑word or bound‑morpheme split.
+- Does what follows overturn the meaning of what has already been heard when that left stretch is interpreted on its own? In Japanese, a later clause-final predicate or auxiliary can flip polarity, aspect, or modality and thereby contradict earlier material.
+- If the left and right fragments are translated independently and then joined, will the joined translation still render the whole source sentence faithfully? Head-final composition often requires predicates or nouns that appear to the right.
+- Is the material after the cut merely a continuation of the same clause (continuative verb/connective forms or continuation uses of particles)? Separating continuations breaks predicate structure and causes fragmentary, misleading translations.
+- When forbidding internal splits of lexical words, bound morphemes, or particles, do not move the cut earlier if that would leave the left fragment missing its predicate, auxiliary chain, or required noun head; prefer a later boundary that preserves predicate+auxiliary or modifier+head integrity.
+- Is the right-hand material a prenominal modifier that must attach to a following noun? Long relative/modifying clauses precede their noun heads in Japanese; cutting before the head detaches essential information and reduces cohesion.
+- For very short‑latency (dense) needs, permit denser boundaries only when each resulting right fragment is independently translatable (it contains the predicate/attachment or noun head needed to render its claims), the left fragment remains coherent on its own, and the narrow contradiction veto above does not apply.
+- Does the right side complete a verb phrase, auxiliary chain, or sentence-final copula? Cutting inside predicate or auxiliary sequences leaves incomplete predicates that distort meaning.
+- Would the left fragment, translated alone, imply a different subject, tense, or polarity because its argument or predicate appears to the right? Particles and case marking are distributed and depend on right-side predicates; misplaced cuts create role-misassignment.
+- Are we cutting immediately before closing punctuation or an attached closing mark? In this corpus such closing characters attach to the prior text and must not begin a new segment; splitting them off breaks orthographic attachment and readability.
+- Prefer cuts where the right fragment can be translated independently without relying on late-arriving predicates, arguments, or negation to preserve the original sentence's claims; damage looks like contradiction, missing argument links, or flipped polarity.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into English, Chinese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+
+The integer you assign is a RANK inside the sentence: order the positions by the target above (higher target = better cut). Give every marker in the sentence a DIFFERENT integer between 0 and 100, and spread distinct integers across the full 0–100 range so the order of integers exactly matches the order by target. Contra is a graded probability and influences ranking only through the product; do not treat it as a separate tier that overrides cohesion. Do not instruct arithmetic computation here — rank positions by the measured target and assign distinct integers reflecting that order.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any characters of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: 雪 <SEG:?> 道 <SEG:?> や <SEG:?> 凍 <SEG:?> っ <SEG:?> た <SEG:?> 道 <SEG:?> は <SEG:?> 摩 <SEG:?> 擦 <SEG:?> が <SEG:?> 少 <SEG:?> な <SEG:?> く <SEG:?> 、 <SEG:?> ア <SEG:?> ス <SEG:?> フ <SEG:?> ァ <SEG:?> ル <SEG:?> ト <SEG:?> 道 <SEG:?> 路 <SEG:?> を <SEG:?> 走 <SEG:?> る <SEG:?> よ <SEG:?> う <SEG:?> な <SEG:?> 運 <SEG:?> 転 <SEG:?> は <SEG:?> で <SEG:?> き <SEG:?> ま <SEG:?> せ <SEG:?> ん <SEG:?> 。
+Output: 雪 <SEG:94> 道 <SEG:61> や <SEG:81> 凍 <SEG:67> っ <SEG:78> た <SEG:72> 道 <SEG:64> は <SEG:83> 摩 <SEG:36> 擦 <SEG:25> が <SEG:31> 少 <SEG:97> な <SEG:89> く <SEG:100> 、 <SEG:92> ア <SEG:39> ス <SEG:56> フ <SEG:53> ァ <SEG:58> ル <SEG:47> ト <SEG:50> 道 <SEG:44> 路 <SEG:42> を <SEG:33> 走 <SEG:19> る <SEG:8> よ <SEG:0> う <SEG:6> な <SEG:17> 運 <SEG:14> 転 <SEG:11> は <SEG:22> で <SEG:28> き <SEG:3> ま <SEG:69> せ <SEG:75> ん <SEG:86> 。
+
+Input: 自 <SEG:?> 分 <SEG:?> が <SEG:?> 訪 <SEG:?> れ <SEG:?> た <SEG:?> の <SEG:?> は <SEG:?> 本 <SEG:?> 質 <SEG:?> 的 <SEG:?> に <SEG:?> 巨 <SEG:?> 大 <SEG:?> な <SEG:?> 集 <SEG:?> 団 <SEG:?> 墓 <SEG:?> 地 <SEG:?> で <SEG:?> あ <SEG:?> り <SEG:?> 、 <SEG:?> 世 <SEG:?> 界 <SEG:?> の <SEG:?> 人 <SEG:?> 口 <SEG:?> の <SEG:?> 大 <SEG:?> 多 <SEG:?> 数 <SEG:?> に <SEG:?> と <SEG:?> っ <SEG:?> て <SEG:?> 計 <SEG:?> り <SEG:?> 知 <SEG:?> れ <SEG:?> な <SEG:?> い <SEG:?> ほ <SEG:?> ど <SEG:?> の <SEG:?> 意 <SEG:?> 味 <SEG:?> を <SEG:?> 持 <SEG:?> つ <SEG:?> 墓 <SEG:?> 地 <SEG:?> で <SEG:?> あ <SEG:?> る <SEG:?> こ <SEG:?> と <SEG:?> を <SEG:?> お <SEG:?> 忘 <SEG:?> れ <SEG:?> に <SEG:?> な <SEG:?> ら <SEG:?> な <SEG:?> い <SEG:?> で <SEG:?> く <SEG:?> だ <SEG:?> さ <SEG:?> い <SEG:?> 。
+Output: 自 <SEG:14> 分 <SEG:17> が <SEG:24> 訪 <SEG:56> れ <SEG:96> た <SEG:99> の <SEG:71> は <SEG:70> 本 <SEG:0> 質 <SEG:59> 的 <SEG:66> に <SEG:41> 巨 <SEG:29> 大 <SEG:67> な <SEG:36> 集 <SEG:40> 団 <SEG:61> 墓 <SEG:23> 地 <SEG:89> で <SEG:84> あ <SEG:86> り <SEG:97> 、 <SEG:94> 世 <SEG:50> 界 <SEG:39> の <SEG:79> 人 <SEG:63> 口 <SEG:37> の <SEG:64> 大 <SEG:54> 多 <SEG:33> 数 <SEG:49> に <SEG:53> と <SEG:19> っ <SEG:44> て <SEG:16> 計 <SEG:11> り <SEG:9> 知 <SEG:6> れ <SEG:7> な <SEG:21> い <SEG:27> ほ <SEG:26> ど <SEG:43> の <SEG:46> 意 <SEG:30> 味 <SEG:57> を <SEG:51> 持 <SEG:80> つ <SEG:81> 墓 <SEG:20> 地 <SEG:47> で <SEG:90> あ <SEG:83> る <SEG:100> こ <SEG:73> と <SEG:69> を <SEG:91> お <SEG:87> 忘 <SEG:4> れ <SEG:1> に <SEG:3> な <SEG:10> ら <SEG:13> な <SEG:60> い <SEG:76> で <SEG:74> く <SEG:34> だ <SEG:77> さ <SEG:31> い <SEG:93> 。
+
+Input: 結 <SEG:?> 局 <SEG:?> さ <SEG:?> の <SEG:?> と <SEG:?> こ <SEG:?> ろ <SEG:?> 、 <SEG:?> リ <SEG:?> ー <SEG:?> ダ <SEG:?> ー <SEG:?> は <SEG:?> チ <SEG:?> ー <SEG:?> ム <SEG:?> の <SEG:?> 成 <SEG:?> 功 <SEG:?> 不 <SEG:?> 成 <SEG:?> 功 <SEG:?> に <SEG:?> つ <SEG:?> い <SEG:?> て <SEG:?> 最 <SEG:?> 終 <SEG:?> 的 <SEG:?> に <SEG:?> 責 <SEG:?> 任 <SEG:?> を <SEG:?> 負 <SEG:?> う <SEG:?> こ <SEG:?> と <SEG:?> に <SEG:?> な <SEG:?> り <SEG:?> ま <SEG:?> す <SEG:?> 。
+Output: 結 <SEG:0> 局 <SEG:83> さ <SEG:73> の <SEG:46> と <SEG:24> こ <SEG:61> ろ <SEG:41> 、 <SEG:7> リ <SEG:15> ー <SEG:10> ダ <SEG:20> ー <SEG:29> は <SEG:34> チ <SEG:5> ー <SEG:2> ム <SEG:49> の <SEG:66> 成 <SEG:27> 功 <SEG:37> 不 <SEG:17> 成 <SEG:12> 功 <SEG:68> に <SEG:59> つ <SEG:93> い <SEG:80> て <SEG:88> 最 <SEG:95> 終 <SEG:78> 的 <SEG:56> に <SEG:71> 責 <SEG:54> 任 <SEG:51> を <SEG:39> 負 <SEG:63> う <SEG:32> こ <SEG:90> と <SEG:22> に <SEG:44> な <SEG:76> り <SEG:85> ま <SEG:100> す <SEG:98> 。
+
+Input: 脳 <SEG:?> を <SEG:?> 持 <SEG:?> っ <SEG:?> て <SEG:?> い <SEG:?> る <SEG:?> の <SEG:?> は <SEG:?> 動 <SEG:?> 物 <SEG:?> だ <SEG:?> け <SEG:?> で <SEG:?> す <SEG:?> （ <SEG:?> す <SEG:?> べ <SEG:?> て <SEG:?> の <SEG:?> 動 <SEG:?> 物 <SEG:?> が <SEG:?> 持 <SEG:?> っ <SEG:?> て <SEG:?> い <SEG:?> る <SEG:?> わ <SEG:?> け <SEG:?> で <SEG:?> は <SEG:?> な <SEG:?> く <SEG:?> 、 <SEG:?> ク <SEG:?> ラ <SEG:?> ゲ <SEG:?> な <SEG:?> ど <SEG:?> は <SEG:?> 持 <SEG:?> っ <SEG:?> て <SEG:?> い <SEG:?> ま <SEG:?> せ <SEG:?> ん <SEG:?> ） <SEG:?> 。
+Output: 脳 <SEG:88> を <SEG:67> 持 <SEG:48> っ <SEG:58> て <SEG:54> い <SEG:73> る <SEG:83> の <SEG:69> は <SEG:50> 動 <SEG:38> 物 <SEG:92> だ <SEG:77> け <SEG:96> で <SEG:90> す <SEG:100> （ <SEG:98> す <SEG:85> べ <SEG:75> て <SEG:29> の <SEG:12> 動 <SEG:21> 物 <SEG:19> が <SEG:10> 持 <SEG:0> っ <SEG:2> て <SEG:6> い <SEG:8> る <SEG:4> わ <SEG:15> け <SEG:31> で <SEG:17> は <SEG:52> な <SEG:46> く <SEG:71> 、 <SEG:60> ク <SEG:35> ラ <SEG:40> ゲ <SEG:65> な <SEG:42> ど <SEG:81> は <SEG:56> 持 <SEG:25> っ <SEG:23> て <SEG:27> い <SEG:44> ま <SEG:33> せ <SEG:79> ん <SEG:62> ） <SEG:94> 。
+

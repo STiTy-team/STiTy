@@ -1,0 +1,116 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  3,
+  6,
+  10,
+  13,
+  18,
+  20,
+  23,
+  27,
+  30,
+  32,
+  37,
+  38,
+  50,
+  52,
+  54,
+  56,
+  65,
+  68,
+  73,
+  75,
+  82,
+  85,
+  87,
+  93,
+  101,
+  104,
+  105,
+  111,
+  112,
+  113,
+  118,
+  120,
+  122,
+  125,
+  128,
+  131,
+  134,
+  135,
+  138,
+  143,
+  146,
+  149,
+  159,
+  173,
+  178,
+  179,
+  188,
+  197,
+  199
+ ],
+ "best": 3,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.0079,
+    "lo": -0.0319,
+    "hi": 0.01202,
+    "n": 401,
+    "n_clusters": 50
+   },
+   "chars": 9452,
+   "changelog": [
+    "Insert a focused contra rule after C6 to address the primary finding: explicitly flag cuts that end on a finite/reporting verb or other predicate-like token and require asking whether the remainder negates/reverses/qualifies the prefix; if so, assign a near-maximal contra. This directly targets the measured underestimation of contradiction risk."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.01357,
+    "lo": -0.0371,
+    "hi": 0.00429,
+    "n": 401,
+    "n_clusters": 50
+   },
+   "chars": 8943,
+   "changelog": [
+    "Replace C7 to explicitly flag cuts that leave a prefix that reads like a complete assertion (e.g., ends on a finite or reporting verb or other predicate-like material) and require asking whether the remainder could reverse/negate/qualify that claim; if so, assign a near-maximal contra. This directly addresses the primary finding that contradiction risk was being underestimated for such cuts."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00485,
+    "lo": -0.02189,
+    "hi": 0.01008,
+    "n": 401,
+    "n_clusters": 50
+   },
+   "chars": 9256,
+   "changelog": [
+    "Replace E1 with labeled example de_de_1000 to teach the model about high contradiction risk when a cut ends on a reporting/finite verb (reporting-verb prefix).",
+    "Replace E2 with labeled example de_de_1529 to provide a measured case where a prefix ending on a reporting verb ('sagte') is later qualified, causing high contra.",
+    "Replace E3 with labeled example de_de_296 to show a short-latency case where a cut leaves an unresolved predicate and the remainder changes interpretation."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00163,
+    "lo": -0.01242,
+    "hi": 0.00996,
+    "n": 401,
+    "n_clusters": 50
+   },
+   "chars": 9707,
+   "changelog": [
+    "Insert a focused contra rule after C17: explicitly flag cuts that leave the prefix ending on a finite/reporting verb or other predicate-like token without its complement and require treating such cases as high contradiction risk. This addresses the primary finding that the prompt underestimates contra for prefixes that read like independent assertions."
+   ]
+  }
+ ]
+}

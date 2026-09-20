@@ -1,0 +1,2830 @@
+[
+ {
+  "id": "cmn_hans_cn_1268",
+  "cuts": 15,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.4421,
+  "policy_worst_contra": 0.9926,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    9,
+    16,
+    17,
+    18,
+    24,
+    29,
+    30,
+    32,
+    33,
+    39
+   ],
+   "H_set": 0.0031,
+   "text": "航 ‖ 空 ‖ 公 ‖ 司 ‖ 非 ‖ 常清楚， ‖ 有一些核心乘客 ‖ 愿 ‖ 花 ‖ 高价获得快速 ‖ 、舒适出行 ‖ 的 ‖ 特权 ‖ ， ‖ 因此航空公司 ‖ 会相应地收取费用。",
+   "pieces": {
+    "English": [
+     "Air",
+     "No",
+     "Public",
+     "Division",
+     "Non",
+     "It is always clear,",
+     "There are some core passengers",
+     "Wish",
+     "Flowers",
+     "High prices get fast",
+     "Comfortable travel",
+     "The",
+     "Privileges",
+     ",",
+     "So the airline",
+     "Fees will be charged accordingly."
+    ],
+    "Japanese": [
+     "航",
+     "空",
+     "公",
+     "司",
+     "非",
+     "明らかに",
+     "乗客の中核を占める人々がいます",
+     "願い",
+     "花",
+     "高値で高速化",
+     "楽しんで",
+     "の",
+     "特権",
+     "ああ",
+     "航空会社は",
+     "相応の料金がかかる。"
+    ],
+    "German": [
+     "Luftfahrt",
+     "Leere",
+     "Public",
+     "Division",
+     "Non",
+     "Es ist immer klar,",
+     "Es gibt einige Kernpassagiere",
+     "Wunsch",
+     "Blume",
+     "Hohe Preise schneller",
+     "Einfach und bequem",
+     "Die",
+     "Privileg",
+     ",",
+     "Also die Fluggesellschaften",
+     "Entsprechende Gebühren werden berechnet."
+    ],
+    "Spanish": [
+     "Aviación",
+     "Vacío",
+     "Public",
+     "División",
+     "No",
+     "Siempre claro,",
+     "Hay algunos pasajeros básicos",
+     "Deseo",
+     "Flores",
+     "El precio alto se hace rápido",
+     "Cómodo y cómodo",
+     "De",
+     "Privilegios",
+     ",",
+     "Por consiguiente, las compañías aéreas",
+     "Se cobrará una tarifa en consecuencia."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    9,
+    18,
+    28,
+    29,
+    30,
+    32,
+    33,
+    35,
+    36,
+    37,
+    38,
+    40,
+    46
+   ],
+   "H_set": 0.4452,
+   "text": "航 ‖ 空 ‖ 公司非常清楚， ‖ 有一些核心乘客愿花 ‖ 高价获得快速、舒适出 ‖ 行 ‖ 的 ‖ 特权 ‖ ， ‖ 因此 ‖ 航 ‖ 空 ‖ 公 ‖ 司会 ‖ 相应地收取费 ‖ 用。",
+   "pieces": {
+    "English": [
+     "Air",
+     "No",
+     "The company is very clear,",
+     "There are some core passengers willing to spend",
+     "Get out of the high price fast and comfortable",
+     "Row",
+     "The",
+     "Privileges",
+     ",",
+     "Therefore,",
+     "Air",
+     "No",
+     "Public",
+     "Chairperson",
+     "Charges are charged accordingly",
+     "Use."
+    ],
+    "Japanese": [
+     "航",
+     "空",
+     "会社は明確に",
+     "乗客の中には 支払いを希望する者もいます",
+     "快適で高価なものを手に入れようとする",
+     "行",
+     "の",
+     "特権",
+     "ああ",
+     "だから",
+     "航",
+     "空",
+     "公",
+     "司会者",
+     "それに応じて料金を課す",
+     "使う。"
+    ],
+    "German": [
+     "Luftfahrt",
+     "Leere",
+     "Das Unternehmen ist sehr klar,",
+     "Es gibt einige Kern-Passagiere bereit zu verbringen",
+     "Schnell und bequem aus dem hohen Preis",
+     "Zeilen",
+     "Die",
+     "Privileg",
+     ",",
+     "Also...",
+     "Luftfahrt",
+     "Leere",
+     "Public",
+     "Moderator",
+     "Gebühren entsprechend berechnet",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Aviación",
+     "Vacío",
+     "La compañía es muy clara,",
+     "Hay algunos pasajeros de núcleo dispuestos a gastar",
+     "El precio alto se obtiene rápido y cómodo",
+     "Línea",
+     "De",
+     "Privilegios",
+     ",",
+     "Por consiguiente,",
+     "Aviación",
+     "Vacío",
+     "Public",
+     "Presidente",
+     "Cobrar los honorarios correspondientes",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "航空公",
+     "right": "司非常清",
+     "H": 0.6931,
+     "H_pct": 21.7,
+     "contra": 0.0173,
+     "cohesion": 0.7053
+    },
+    {
+     "pos": 4,
+     "left": "航空公司",
+     "right": "非常清楚",
+     "H": 0.7456,
+     "H_pct": 54.3,
+     "contra": 0.0008,
+     "cohesion": 0.7461
+    },
+    {
+     "pos": 5,
+     "left": "空公司非",
+     "right": "常清楚，",
+     "H": 0.005,
+     "H_pct": 0.0,
+     "contra": 0.9926,
+     "cohesion": 0.6746
+    },
+    {
+     "pos": 16,
+     "left": "核心乘客",
+     "right": "愿花高价",
+     "H": 0.7294,
+     "H_pct": 45.7,
+     "contra": 0.0005,
+     "cohesion": 0.7297
+    },
+    {
+     "pos": 17,
+     "left": "心乘客愿",
+     "right": "花高价获",
+     "H": 0.6791,
+     "H_pct": 10.9,
+     "contra": 0.0015,
+     "cohesion": 0.6802
+    },
+    {
+     "pos": 24,
+     "left": "获得快速",
+     "right": "、舒适出",
+     "H": 0.6726,
+     "H_pct": 8.7,
+     "contra": 0.0009,
+     "cohesion": 0.6733
+    },
+    {
+     "pos": 39,
+     "left": "航空公司",
+     "right": "会相应地",
+     "H": 0.7521,
+     "H_pct": 63.0,
+     "contra": 0.0102,
+     "cohesion": 0.7598
+    }
+   ],
+   "added": [
+    {
+     "pos": 28,
+     "left": "、舒适出",
+     "right": "行的特权",
+     "H": 0.7704,
+     "H_pct": 76.1,
+     "contra": 0.0017,
+     "cohesion": 0.7717
+    },
+    {
+     "pos": 35,
+     "left": "权，因此",
+     "right": "航空公司",
+     "H": 0.7716,
+     "H_pct": 78.3,
+     "contra": 0.0045,
+     "cohesion": 0.7751
+    },
+    {
+     "pos": 36,
+     "left": "，因此航",
+     "right": "空公司会",
+     "H": 0.7612,
+     "H_pct": 71.7,
+     "contra": 0.0037,
+     "cohesion": 0.764
+    },
+    {
+     "pos": 37,
+     "left": "因此航空",
+     "right": "公司会相",
+     "H": 0.7768,
+     "H_pct": 82.6,
+     "contra": 0.0056,
+     "cohesion": 0.7812
+    },
+    {
+     "pos": 38,
+     "left": "此航空公",
+     "right": "司会相应",
+     "H": 0.7581,
+     "H_pct": 69.6,
+     "contra": 0.0058,
+     "cohesion": 0.7625
+    },
+    {
+     "pos": 40,
+     "left": "空公司会",
+     "right": "相应地收",
+     "H": 0.7857,
+     "H_pct": 91.3,
+     "contra": 0.0041,
+     "cohesion": 0.789
+    },
+    {
+     "pos": 46,
+     "left": "地收取费",
+     "right": "用。",
+     "H": 0.7813,
+     "H_pct": 87.0,
+     "contra": 0.0007,
+     "cohesion": 0.7819
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1317",
+  "cuts": 13,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.4835,
+  "policy_worst_contra": 0.9923,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    17,
+    18,
+    19,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    53,
+    54,
+    65
+   ],
+   "H_set": 0.0035,
+   "text": "自给农业 ‖ 是一种简单且通常是有机的系 ‖ 统 ‖ ， ‖ 利用该生态区内保存的 ‖ 本 ‖ 地 ‖ 种 ‖ 子 ‖ ， ‖ 与农作物轮作或其他相对简单的技术相结合 ‖ ， ‖ 从而最大限度地提高产量 ‖ 。",
+   "pieces": {
+    "English": [
+     "Subsistence agriculture",
+     "A simple and usually organic system",
+     "Unit",
+     ",",
+     "The use of preserved species in the ecozone",
+     "Ben.",
+     "Earth",
+     "Species",
+     "Child",
+     ",",
+     "Combined with crop rotation or other relatively simple techniques",
+     ",",
+     "Maximizes production",
+     "."
+    ],
+    "Japanese": [
+     "自給農業",
+     "単純で有機的なシステムです",
+     "統一",
+     "ああ",
+     "生態系の中で保存されている",
+     "本",
+     "地球",
+     "種",
+     "子",
+     "ああ",
+     "作物輪作や他の比較的簡単な技術と組み合わせることで",
+     "ああ",
+     "生産性を最大化するために",
+     "ああ ああ"
+    ],
+    "German": [
+     "Subsistenzlandwirtschaft",
+     "Ein einfaches und meist organisches System",
+     "Unit",
+     ",",
+     "Nutzen Sie die in der Ökoregion erhaltenen",
+     "Ben.",
+     "Land",
+     "Art",
+     "Kinder",
+     ",",
+     "Kombinieren Sie mit Fruchtfolge oder anderen relativ einfachen Techniken",
+     ",",
+     "Maximieren Sie Ihren Ertrag",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Agricultura de subsistencia",
+     "Es un sistema simple y generalmente orgánico",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     ",",
+     "Utilización de los recursos naturales conservados en la zona ecológica",
+     "Ben",
+     "Tierra",
+     "Especies",
+     "Niño",
+     ",",
+     "Combinación con rotación de cultivos u otras técnicas relativamente sencillas",
+     ",",
+     "Maximice la producción",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    5,
+    6,
+    7,
+    10,
+    16,
+    19,
+    20,
+    21,
+    24,
+    52,
+    54
+   ],
+   "H_set": 0.487,
+   "text": "自给 ‖ 农业 ‖ 是 ‖ 一 ‖ 种 ‖ 简单且 ‖ 通常是有机的 ‖ 系统， ‖ 利 ‖ 用 ‖ 该生态 ‖ 区内保存的本地种子，与农作物轮作或其他相对简单的技术相结 ‖ 合， ‖ 从而最大限度地提高产量。",
+   "pieces": {
+    "English": [
+     "Self-sufficiency",
+     "Agriculture",
+     "Yes, I am.",
+     "One",
+     "Species",
+     "Simple and easy.",
+     "It's usually organic.",
+     "systems,",
+     "Li",
+     "Use",
+     "The ecosystem",
+     "Local seeds preserved in the area, combined with crop rotation or other relatively simple techniques",
+     "Sha,",
+     "This maximizes the yield."
+    ],
+    "Japanese": [
+     "自給自足",
+     "農業",
+     "ああ　そうだ",
+     "1つ",
+     "種",
+     "簡単で",
+     "普段は有機的なものです",
+     "システム",
+     "利",
+     "用途",
+     "生態系",
+     "地域の種子を保存し 作物輪作や他の比較的簡単な技術と結びつける",
+     "ハード・サーン",
+     "生産量を最大限に増やす。"
+    ],
+    "German": [
+     "Selbstversorgung",
+     "Landwirtschaft",
+     "- Ja.",
+     "Ein",
+     "Art",
+     "Es ist einfach und",
+     "Normalerweise organisch",
+     "System",
+     "Li",
+     "Benutzung",
+     "Die Ökologie",
+     "Einheimisches Saatgut, das in der Region gespeichert wird, kombiniert mit Fruchtfolgen oder anderen relativ einfachen Techniken",
+     "Ha-Siin.",
+     "Damit wird die Ertragsleistung maximiert."
+    ],
+    "Spanish": [
+     "Autosuficiencia",
+     "Agricultura",
+     "- Sí.",
+     "I",
+     "Especies",
+     "Simple y",
+     "Por lo general, orgánico",
+     "Sistemas,",
+     "Li",
+     "Uso",
+     "El ecosistema",
+     "Conservación de semillas autóctonas en la zona, combinadas con rotación de cultivos u otras técnicas relativamente sencillas",
+     ",",
+     "Esto maximiza la producción."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 17,
+     "left": "有机的系",
+     "right": "统，利用",
+     "H": 0.7723,
+     "H_pct": 76.6,
+     "contra": 0.0013,
+     "cohesion": 0.7733
+    },
+    {
+     "pos": 18,
+     "left": "机的系统",
+     "right": "，利用该",
+     "H": 0.718,
+     "H_pct": 23.4,
+     "contra": 0.0009,
+     "cohesion": 0.7186
+    },
+    {
+     "pos": 29,
+     "left": "内保存的",
+     "right": "本地种子",
+     "H": 0.6825,
+     "H_pct": 7.8,
+     "contra": 0.1639,
+     "cohesion": 0.8163
+    },
+    {
+     "pos": 30,
+     "left": "保存的本",
+     "right": "地种子，",
+     "H": 0.0057,
+     "H_pct": 0.0,
+     "contra": 0.9923,
+     "cohesion": 0.734
+    },
+    {
+     "pos": 31,
+     "left": "存的本地",
+     "right": "种子，与",
+     "H": 0.6905,
+     "H_pct": 9.4,
+     "contra": 0.0525,
+     "cohesion": 0.7288
+    },
+    {
+     "pos": 32,
+     "left": "的本地种",
+     "right": "子，与农",
+     "H": 0.0076,
+     "H_pct": 1.6,
+     "contra": 0.9893,
+     "cohesion": 0.7102
+    },
+    {
+     "pos": 33,
+     "left": "本地种子",
+     "right": "，与农作",
+     "H": 0.7401,
+     "H_pct": 42.2,
+     "contra": 0.0028,
+     "cohesion": 0.7422
+    },
+    {
+     "pos": 34,
+     "left": "地种子，",
+     "right": "与农作物",
+     "H": 0.7379,
+     "H_pct": 35.9,
+     "contra": 0.009,
+     "cohesion": 0.7446
+    },
+    {
+     "pos": 53,
+     "left": "术相结合",
+     "right": "，从而最",
+     "H": 0.7685,
+     "H_pct": 71.9,
+     "contra": 0.0083,
+     "cohesion": 0.775
+    },
+    {
+     "pos": 65,
+     "left": "提高产量",
+     "right": "。",
+     "H": 0.7524,
+     "H_pct": 60.9,
+     "contra": 0.0037,
+     "cohesion": 0.7552
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "自给",
+     "right": "农业是一",
+     "H": 0.8071,
+     "H_pct": 95.3,
+     "contra": 0.0021,
+     "cohesion": 0.8088
+    },
+    {
+     "pos": 5,
+     "left": "给农业是",
+     "right": "一种简单",
+     "H": 0.8158,
+     "H_pct": 98.4,
+     "contra": 0.0014,
+     "cohesion": 0.817
+    },
+    {
+     "pos": 6,
+     "left": "农业是一",
+     "right": "种简单且",
+     "H": 0.7809,
+     "H_pct": 82.8,
+     "contra": 0.0026,
+     "cohesion": 0.7829
+    },
+    {
+     "pos": 7,
+     "left": "业是一种",
+     "right": "简单且通",
+     "H": 0.7964,
+     "H_pct": 92.2,
+     "contra": 0.001,
+     "cohesion": 0.7972
+    },
+    {
+     "pos": 10,
+     "left": "种简单且",
+     "right": "通常是有",
+     "H": 0.7936,
+     "H_pct": 87.5,
+     "contra": 0.0006,
+     "cohesion": 0.7941
+    },
+    {
+     "pos": 16,
+     "left": "是有机的",
+     "right": "系统，利",
+     "H": 0.7797,
+     "H_pct": 81.2,
+     "contra": 0.0006,
+     "cohesion": 0.7801
+    },
+    {
+     "pos": 20,
+     "left": "系统，利",
+     "right": "用该生态",
+     "H": 0.7883,
+     "H_pct": 85.9,
+     "contra": 0.0083,
+     "cohesion": 0.7949
+    },
+    {
+     "pos": 21,
+     "left": "统，利用",
+     "right": "该生态区",
+     "H": 0.7966,
+     "H_pct": 93.8,
+     "contra": 0.0065,
+     "cohesion": 0.8018
+    },
+    {
+     "pos": 24,
+     "left": "用该生态",
+     "right": "区内保存",
+     "H": 0.7962,
+     "H_pct": 90.6,
+     "contra": 0.0054,
+     "cohesion": 0.8005
+    },
+    {
+     "pos": 52,
+     "left": "技术相结",
+     "right": "合，从而",
+     "H": 0.7842,
+     "H_pct": 84.4,
+     "contra": 0.0226,
+     "cohesion": 0.8023
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1140",
+  "cuts": 5,
+  "avg_chunk": 5.5,
+  "latency_bin": "≤7",
+  "gap": 0.5456,
+  "policy_worst_contra": 0.9938,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    20,
+    21,
+    22,
+    31,
+    32
+   ],
+   "H_set": 0.0031,
+   "text": "当然，长期剥削菲律宾人民所获得的高额利润 ‖ 成 ‖ 为 ‖ 美帝国主义的基本收 ‖ 益 ‖ 。",
+   "pieces": {
+    "English": [
+     "Of course, the long-term exploitation of the high profits made by the Filipino people",
+     "Chang",
+     "For",
+     "The Basics of American Imperialism",
+     "Yi",
+     "."
+    ],
+    "Japanese": [
+     "もちろん、フィリピンの人々を長期間搾取して得た高額の利益は、",
+     "成",
+     "は",
+     "アメリカ帝国主義の基本的な収益",
+     "利益",
+     "ああ ああ"
+    ],
+    "German": [
+     "Natürlich durch die Ausbeutung der philippinischen Bevölkerung, die auf lange Sicht hohe Gewinne erzielt.",
+     "Chang",
+     "Für",
+     "Die Grundlagen des US-Imperialismus",
+     "Yi",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Por supuesto, la explotación prolongada de los altos beneficios obtenidos por el pueblo filipino.",
+     "1999-2000: 1.200 millones de dólares",
+     "Por",
+     "El principal producto del imperialismo estadounidense",
+     "Beneficios",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    32
+   ],
+   "H_set": 0.5487,
+   "text": "当然 ‖ ， ‖ 长 ‖ 期 ‖ 剥削菲律宾人民所获得的高额利润成为美帝国主义的基本收益 ‖ 。",
+   "pieces": {
+    "English": [
+     "Of course.",
+     ",",
+     "Long",
+     "Period",
+     "The high profits from the exploitation of the Filipino people are the basic gains of US imperialism",
+     "."
+    ],
+    "Japanese": [
+     "もちろんだ",
+     "ああ",
+     "ルン",
+     "期間",
+     "フィリピンの人々を搾取して得た高い利益が、アメリカ帝国主義の基本的な利益となった。",
+     "ああ ああ"
+    ],
+    "German": [
+     "- Natürlich.",
+     ",",
+     "Long",
+     "Periode",
+     "Die Ausbeutung des philippinischen Volkes und die daraus resultierenden hohen Profite sind die Hauptgewinne des US-Imperialismus.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "- Claro que sí.",
+     ",",
+     "Long",
+     "Período",
+     "Los grandes beneficios obtenidos de la explotación del pueblo filipino son el principal beneficio del imperialismo norteamericano",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 20,
+     "left": "高额利润",
+     "right": "成为美帝",
+     "H": 0.7508,
+     "H_pct": 80.6,
+     "contra": 0.0023,
+     "cohesion": 0.7526
+    },
+    {
+     "pos": 21,
+     "left": "额利润成",
+     "right": "为美帝国",
+     "H": 0.6652,
+     "H_pct": 25.8,
+     "contra": 0.0074,
+     "cohesion": 0.6702
+    },
+    {
+     "pos": 22,
+     "left": "利润成为",
+     "right": "美帝国主",
+     "H": 0.6279,
+     "H_pct": 22.6,
+     "contra": 0.006,
+     "cohesion": 0.6317
+    },
+    {
+     "pos": 31,
+     "left": "的基本收",
+     "right": "益。",
+     "H": 0.0046,
+     "H_pct": 0.0,
+     "contra": 0.9938,
+     "cohesion": 0.748
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "当然",
+     "right": "，长期剥",
+     "H": 0.8382,
+     "H_pct": 96.8,
+     "contra": 0.0007,
+     "cohesion": 0.8388
+    },
+    {
+     "pos": 3,
+     "left": "当然，",
+     "right": "长期剥削",
+     "H": 0.8404,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.8413
+    },
+    {
+     "pos": 4,
+     "left": "当然，长",
+     "right": "期剥削菲",
+     "H": 0.7713,
+     "H_pct": 90.3,
+     "contra": 0.0014,
+     "cohesion": 0.7724
+    },
+    {
+     "pos": 5,
+     "left": "然，长期",
+     "right": "剥削菲律",
+     "H": 0.7687,
+     "H_pct": 87.1,
+     "contra": 0.0014,
+     "cohesion": 0.7698
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_444",
+  "cuts": 3,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.4964,
+  "policy_worst_contra": 0.6005,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    14,
+    21,
+    31
+   ],
+   "H_set": 0.2594,
+   "text": "百分之十八的委内瑞拉人失业， ‖ 而大部分就业者 ‖ 是非正规经济从业人员 ‖ 。",
+   "pieces": {
+    "English": [
+     "Eighteen per cent of Venezuelans are unemployed,",
+     "And most of the people in employment",
+     "Informal economy workers",
+     "."
+    ],
+    "Japanese": [
+     "ベネズエラ人の18%が失業しています",
+     "雇用者の大半は",
+     "非正規経済の労働者です",
+     "ああ ああ"
+    ],
+    "German": [
+     "18 Prozent der Venezolaner sind arbeitslos,",
+     "Und die meisten Arbeitnehmer",
+     "Sie sind im informellen Sektor tätig",
+     "- Ja."
+    ],
+    "Spanish": [
+     "El 18% de los venezolanos están desempleados,",
+     "La mayoría de los empleados",
+     "Trabajadores del sector no estructurado",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    13,
+    14,
+    16
+   ],
+   "H_set": 0.7558,
+   "text": "百分之十八的委内瑞拉人失业 ‖ ， ‖ 而大 ‖ 部分就业者是非正规经济从业人员。",
+   "pieces": {
+    "English": [
+     "Eighteen percent of Venezuelans are unemployed",
+     ",",
+     "And big",
+     "Some of the employed are informal workers."
+    ],
+    "Japanese": [
+     "ベネズエラ人の18 % が失業しています",
+     "ああ",
+     "巨大な",
+     " 労働者の多くは非正規雇用である。"
+    ],
+    "German": [
+     "Achtzehn Prozent der Venezolaner sind arbeitslos",
+     ",",
+     "Und groß",
+     "Ein Großteil der Beschäftigten ist in der informellen Wirtschaft tätig."
+    ],
+    "Spanish": [
+     "El 18% de los venezolanos están desempleados",
+     ",",
+     "Grande",
+     "Parte de los empleados son trabajadores de la economía informal."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 21,
+     "left": "分就业者",
+     "right": "是非正规",
+     "H": 0.2869,
+     "H_pct": 13.3,
+     "contra": 0.6005,
+     "cohesion": 0.7181
+    },
+    {
+     "pos": 31,
+     "left": "从业人员",
+     "right": "。",
+     "H": 0.7494,
+     "H_pct": 90.0,
+     "contra": 0.0332,
+     "cohesion": 0.7751
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "拉人失业",
+     "right": "，而大部",
+     "H": 0.8663,
+     "H_pct": 96.7,
+     "contra": 0.0023,
+     "cohesion": 0.8683
+    },
+    {
+     "pos": 16,
+     "left": "业，而大",
+     "right": "部分就业",
+     "H": 0.8363,
+     "H_pct": 93.3,
+     "contra": 0.0146,
+     "cohesion": 0.8487
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1330",
+  "cuts": 5,
+  "avg_chunk": 10.7,
+  "latency_bin": "≤99",
+  "gap": 0.516,
+  "policy_worst_contra": 0.9194,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    26,
+    46,
+    52,
+    53,
+    54
+   ],
+   "H_set": 0.0401,
+   "text": "共享资源管理员亚当·库尔登(AdamCuerden) ‖ 上个月在接受维基新闻(Wikinews) ‖ 采访时表达了 ‖ 他 ‖ 对 ‖ 删除相关内容的不满。",
+   "pieces": {
+    "English": [
+     "Adam Cuerden, Shared Resource Manager",
+     "Last month on Wikinews",
+     "The interviews were conducted in the following languages:",
+     "He...",
+     "Yes, sir.",
+     "Remove content that is not satisfying."
+    ],
+    "Japanese": [
+     "共有管理者",
+     "ここにいるのは",
+     "彼はインタビューで",
+     "彼は",
+     "ああ　そうだ",
+     " 内容の不満を取り除く。"
+    ],
+    "German": [
+     "Adam Cuerden, Administrator für Freigaben",
+     "Letzter Monat auf Wikinews",
+     "Ich habe es gesagt.",
+     "Er ist...",
+     "- Ja, das ist es.",
+     "Entfernen Sie die Inhalte, die Sie nicht zufrieden stellen."
+    ],
+    "Spanish": [
+     "Adam Cuerden, administrador de recursos compartidos",
+     "El mes pasado en Wikinoticias",
+     "En entrevistas",
+     "- ¿Está bien?",
+     "- Sí.",
+     "Eliminar el contenido que no le gusta."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    5,
+    34,
+    36
+   ],
+   "H_set": 0.556,
+   "text": "共享 ‖ 资源 ‖ 管 ‖ 理员亚当·库尔登(AdamCuerden)上个月在接受维基 ‖ 新闻 ‖ (Wikinews)采访时表达了他对删除相关内容的不满。",
+   "pieces": {
+    "English": [
+     "Share",
+     "Resources",
+     "Pipe",
+     "Adam Cuerden, a trustee, was interviewed by WikiLeaks last month.",
+     "News",
+     "In an interview with Wikinews, he expressed his discontent with the removal of the content."
+    ],
+    "Japanese": [
+     "共有",
+     "リソース",
+     "管",
+     "先月 監査役のアダム・クーデンは",
+     "ニュース",
+     " また、ウィキペディアは、その内容を削除すると発表した。"
+    ],
+    "German": [
+     "Share",
+     "Ressourcen",
+     "Rohr",
+     "Der Kurator Adam Cuerden hat im letzten Monat ein Interview mit Wikileaks gegeben.",
+     "Nachrichten",
+     "In einem Interview mit Wikinews äußerte er sich über die Entfernung des Inhalts unzufrieden."
+    ],
+    "Spanish": [
+     "Compartir",
+     "Recursos",
+     "Tubo",
+     "El mes pasado, el director Adam Cuerden fue entrevistado por WikiLeaks.",
+     "Información pública",
+     "En una entrevista con Wikinews, expresó su descontento con la eliminación del contenido."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 26,
+     "left": "den)",
+     "right": "上个月在",
+     "H": 0.6562,
+     "H_pct": 67.7,
+     "contra": 0.002,
+     "cohesion": 0.6575
+    },
+    {
+     "pos": 46,
+     "left": "ews)",
+     "right": "采访时表",
+     "H": 0.6696,
+     "H_pct": 71.0,
+     "contra": 0.0031,
+     "cohesion": 0.6717
+    },
+    {
+     "pos": 52,
+     "left": "时表达了",
+     "right": "他对删除",
+     "H": 0.7022,
+     "H_pct": 88.7,
+     "contra": 0.083,
+     "cohesion": 0.7657
+    },
+    {
+     "pos": 53,
+     "left": "表达了他",
+     "right": "对删除相",
+     "H": 0.5928,
+     "H_pct": 40.3,
+     "contra": 0.1507,
+     "cohesion": 0.698
+    },
+    {
+     "pos": 54,
+     "left": "达了他对",
+     "right": "删除相关",
+     "H": 0.0543,
+     "H_pct": 11.3,
+     "contra": 0.9194,
+     "cohesion": 0.6737
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "共享",
+     "right": "资源管理",
+     "H": 0.7106,
+     "H_pct": 93.5,
+     "contra": 0.01,
+     "cohesion": 0.7178
+    },
+    {
+     "pos": 4,
+     "left": "共享资源",
+     "right": "管理员亚",
+     "H": 0.7264,
+     "H_pct": 96.8,
+     "contra": 0.0065,
+     "cohesion": 0.7312
+    },
+    {
+     "pos": 5,
+     "left": "享资源管",
+     "right": "理员亚当",
+     "H": 0.7198,
+     "H_pct": 95.2,
+     "contra": 0.0037,
+     "cohesion": 0.7225
+    },
+    {
+     "pos": 34,
+     "left": "接受维基",
+     "right": "新闻(W",
+     "H": 0.7298,
+     "H_pct": 100.0,
+     "contra": 0.0073,
+     "cohesion": 0.7351
+    },
+    {
+     "pos": 36,
+     "left": "维基新闻",
+     "right": "(Wik",
+     "H": 0.7265,
+     "H_pct": 98.4,
+     "contra": 0.0041,
+     "cohesion": 0.7295
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_405",
+  "cuts": 8,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.4364,
+  "policy_worst_contra": 0.9971,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "H_set": 0.0012,
+   "text": "德国潜艇被 ‖ 称为 ‖ U型潜艇 ‖ 。 ‖ 德 ‖ 国 ‖ 人 ‖ 非 ‖ 常擅长导航和操作潜艇。",
+   "pieces": {
+    "English": [
+     "German submarine cover",
+     "Known as",
+     "U-class submarine",
+     ".",
+     "De",
+     "Country",
+     "People",
+     "Non",
+     "He often excelled in navigation and operation of submarines."
+    ],
+    "Japanese": [
+     "ドイツの潜水艦",
+     "呼ばれています",
+     "U型潜水艦",
+     "ああ ああ",
+     "                                                                                                                                                                                               ",
+     "国",
+     "人間",
+     "非",
+     "潜水艦の操縦や航法に長けている。"
+    ],
+    "German": [
+     "U-Boot-Deck",
+     "Bekannt als",
+     "U-Boot-Klasse 10",
+     "- Ja.",
+     "Deutsch",
+     "Nation",
+     "Person",
+     "Non",
+     "Er ist ein guter Navigator und U-Boot-Bediener."
+    ],
+    "Spanish": [
+     "Submarinos alemanes",
+     "Conocido como",
+     "Submarinos de clase U",
+     ". (FR) Gracias.",
+     "Deutsch",
+     "País",
+     "Personas",
+     "No",
+     "A menudo estuvo a cargo de la navegación y el manejo de submarinos."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    21
+   ],
+   "H_set": 0.4376,
+   "text": "德国 ‖ 潜艇被称为U ‖ 型 ‖ 潜 ‖ 艇 ‖ 。 ‖ 德 ‖ 国人非常擅长导航 ‖ 和操作潜艇。",
+   "pieces": {
+    "English": [
+     "Germany 1996",
+     "The submarine was called U",
+     "Type",
+     "Submarine",
+     "Boat",
+     ".",
+     "De",
+     "The Chinese are very good at navigating.",
+     "and operating submarines."
+    ],
+    "Japanese": [
+     "ドイツ",
+     "潜水艦はUと呼ばれています",
+     "タイプ",
+     "潜水艦",
+     "ボート",
+     "ああ ああ",
+     "                                                                                                                                                                                               ",
+     "国民は航海が得意です",
+     "潜水艦の操縦も担当。"
+    ],
+    "German": [
+     "Deutschland",
+     "Das U-Boot wurde als U bezeichnet",
+     "Typ",
+     "U-Boot",
+     "Boot",
+     "- Ja.",
+     "Deutsch",
+     "Die Nationalisten sind sehr gut in der Navigation.",
+     "U-Boot-Befehlshaber."
+    ],
+    "Spanish": [
+     "Alemania 1996",
+     "El submarino se conoce como U",
+     "Tipo",
+     "Submarino",
+     "Barco",
+     ". (FR) Gracias.",
+     "Deutsch",
+     "Los nativos son muy buenos en la navegación",
+     "y operar submarinos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "国潜艇被",
+     "right": "称为U型",
+     "H": 0.6216,
+     "H_pct": 28.0,
+     "contra": 0.026,
+     "cohesion": 0.6382
+    },
+    {
+     "pos": 7,
+     "left": "艇被称为",
+     "right": "U型潜艇",
+     "H": 0.6381,
+     "H_pct": 36.0,
+     "contra": 0.0197,
+     "cohesion": 0.6509
+    },
+    {
+     "pos": 14,
+     "left": "艇。德国",
+     "right": "人非常擅",
+     "H": 0.6854,
+     "H_pct": 56.0,
+     "contra": 0.0232,
+     "cohesion": 0.7016
+    },
+    {
+     "pos": 15,
+     "left": "。德国人",
+     "right": "非常擅长",
+     "H": 0.6876,
+     "H_pct": 60.0,
+     "contra": 0.0297,
+     "cohesion": 0.7087
+    },
+    {
+     "pos": 16,
+     "left": "德国人非",
+     "right": "常擅长导",
+     "H": 0.0018,
+     "H_pct": 0.0,
+     "contra": 0.9971,
+     "cohesion": 0.6145
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "德国",
+     "right": "潜艇被称",
+     "H": 0.7475,
+     "H_pct": 84.0,
+     "contra": 0.0009,
+     "cohesion": 0.7482
+    },
+    {
+     "pos": 8,
+     "left": "被称为U",
+     "right": "型潜艇。",
+     "H": 0.7321,
+     "H_pct": 76.0,
+     "contra": 0.0007,
+     "cohesion": 0.7326
+    },
+    {
+     "pos": 9,
+     "left": "称为U型",
+     "right": "潜艇。德",
+     "H": 0.7666,
+     "H_pct": 96.0,
+     "contra": 0.0008,
+     "cohesion": 0.7672
+    },
+    {
+     "pos": 10,
+     "left": "为U型潜",
+     "right": "艇。德国",
+     "H": 0.7511,
+     "H_pct": 92.0,
+     "contra": 0.0101,
+     "cohesion": 0.7587
+    },
+    {
+     "pos": 21,
+     "left": "擅长导航",
+     "right": "和操作潜",
+     "H": 0.715,
+     "H_pct": 72.0,
+     "contra": 0.0007,
+     "cohesion": 0.7155
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_686",
+  "cuts": 9,
+  "avg_chunk": 4.7,
+  "latency_bin": "≤5",
+  "gap": 0.4833,
+  "policy_worst_contra": 0.9994,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    27,
+    28,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+   ],
+   "H_set": 0.0003,
+   "text": "但与大多数其他皇家陵墓相比，图坦卡蒙陵墓几乎不值得参观 ‖ ， ‖ 因为它的规 ‖ 模 ‖ 要 ‖ 小 ‖ 得 ‖ 多 ‖ ， ‖ 装饰也平淡无奇。",
+   "pieces": {
+    "English": [
+     "But compared to most other royal tombs, the tomb of Tutankhamun is hardly worth visiting.",
+     ",",
+     "Because of it.",
+     "Mo",
+     "I want to.",
+     "Small",
+     "De",
+     "Do",
+     ",",
+     "The decor is also plain and unobtrusive."
+    ],
+    "Japanese": [
+     "しかし、他の王家の陵墓と比べて、トゥタンカモンの陵墓はほとんど見る価値がない。",
+     "ああ",
+     "それは　私の仕事だ",
+     "模",
+     "必要",
+     "小さい",
+     "得",
+     "多く",
+     "ああ",
+     "装飾も軽快である。"
+    ],
+    "German": [
+     "Doch im Vergleich zu den meisten anderen königlichen Grabmäler ist das Grab Tutanchamuns kaum einen Besuch wert.",
+     ",",
+     "Das ist es.",
+     "Modul",
+     "Ich will",
+     "Klein",
+     "Der",
+     "Do",
+     ",",
+     "Die Dekoration ist ebenfalls unscheinbar."
+    ],
+    "Spanish": [
+     "Pero en comparación con la mayoría de las otras tumbas reales, la tumba de Tutankamón es casi imposible de visitar",
+     ",",
+     "Es una buena noticia.",
+     "Módulo",
+     "- Sí.",
+     "Pequeño",
+     "- ¿Qué?",
+     "Más",
+     ",",
+     "La decoración es sencilla y sencilla."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    11,
+    13,
+    14,
+    36,
+    38,
+    39,
+    44,
+    46
+   ],
+   "H_set": 0.4835,
+   "text": "但 ‖ 与大多数其他皇家陵墓 ‖ 相比 ‖ ， ‖ 图坦卡蒙陵墓几乎不值得参观，因为它的规模要小 ‖ 得多 ‖ ， ‖ 装饰也平淡 ‖ 无奇 ‖ 。",
+   "pieces": {
+    "English": [
+     "But",
+     "Like most other royal tombs",
+     "Comparison",
+     ",",
+     "The tomb of Tutankhamun is hardly worth visiting because of its small size.",
+     "Dedo",
+     ",",
+     "The decoration is also plain.",
+     "Nothing else.",
+     "."
+    ],
+    "Japanese": [
+     "だが",
+     "ほとんどの王家の墓と同じように",
+     "比較",
+     "ああ",
+     "ツタンカーメンの墓は 見る価値がない 規模が小さいから",
+     "デトロイト",
+     "ああ",
+     "装飾も薄い",
+     "ノーマル",
+     "ああ ああ"
+    ],
+    "German": [
+     "Aber",
+     "Wie die meisten anderen königlichen Mausoleums",
+     "Vergleich",
+     ",",
+     "Das Mausoleum von Tutanchamun ist kaum einen Besuch wert, weil es klein ist.",
+     "Dedo",
+     ",",
+     "Die Einrichtung ist auch schlicht.",
+     "Unheimlich",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Pero...",
+     "Como la mayoría de los otros mausoleos reales",
+     "Comparación",
+     ",",
+     "La tumba de Tutankamón no merece la pena visitarla, ya que es más pequeña",
+     "- Mucho.",
+     ",",
+     "La decoración es también tenue.",
+     "- No es extraño.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 27,
+     "left": "值得参观",
+     "right": "，因为它",
+     "H": 0.6797,
+     "H_pct": 60.0,
+     "contra": 0.0027,
+     "cohesion": 0.6816
+    },
+    {
+     "pos": 28,
+     "left": "得参观，",
+     "right": "因为它的",
+     "H": 0.6836,
+     "H_pct": 64.4,
+     "contra": 0.0048,
+     "cohesion": 0.6869
+    },
+    {
+     "pos": 33,
+     "left": "为它的规",
+     "right": "模要小得",
+     "H": 0.0883,
+     "H_pct": 4.4,
+     "contra": 0.8745,
+     "cohesion": 0.7035
+    },
+    {
+     "pos": 34,
+     "left": "它的规模",
+     "right": "要小得多",
+     "H": 0.0005,
+     "H_pct": 0.0,
+     "contra": 0.9994,
+     "cohesion": 0.7729
+    },
+    {
+     "pos": 35,
+     "left": "的规模要",
+     "right": "小得多，",
+     "H": 0.0006,
+     "H_pct": 2.2,
+     "contra": 0.9992,
+     "cohesion": 0.7243
+    },
+    {
+     "pos": 37,
+     "left": "模要小得",
+     "right": "多，装饰",
+     "H": 0.6648,
+     "H_pct": 40.0,
+     "contra": 0.0597,
+     "cohesion": 0.707
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "但",
+     "right": "与大多数",
+     "H": 0.8437,
+     "H_pct": 100.0,
+     "contra": 0.0034,
+     "cohesion": 0.8466
+    },
+    {
+     "pos": 11,
+     "left": "皇家陵墓",
+     "right": "相比，图",
+     "H": 0.7499,
+     "H_pct": 82.2,
+     "contra": 0.0139,
+     "cohesion": 0.7604
+    },
+    {
+     "pos": 13,
+     "left": "陵墓相比",
+     "right": "，图坦卡",
+     "H": 0.8189,
+     "H_pct": 95.6,
+     "contra": 0.0075,
+     "cohesion": 0.8251
+    },
+    {
+     "pos": 14,
+     "left": "墓相比，",
+     "right": "图坦卡蒙",
+     "H": 0.8168,
+     "H_pct": 93.3,
+     "contra": 0.0347,
+     "cohesion": 0.8462
+    },
+    {
+     "pos": 44,
+     "left": "饰也平淡",
+     "right": "无奇。",
+     "H": 0.7876,
+     "H_pct": 91.1,
+     "contra": 0.0012,
+     "cohesion": 0.7885
+    },
+    {
+     "pos": 46,
+     "left": "平淡无奇",
+     "right": "。",
+     "H": 0.7778,
+     "H_pct": 88.9,
+     "contra": 0.0012,
+     "cohesion": 0.7788
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_569",
+  "cuts": 9,
+  "avg_chunk": 6.5,
+  "latency_bin": "≤7",
+  "gap": 0.4973,
+  "policy_worst_contra": 0.9612,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    12,
+    21,
+    28,
+    40,
+    41,
+    42,
+    43,
+    44,
+    46
+   ],
+   "H_set": 0.0194,
+   "text": "不同的构造有不同的功能， ‖ 对不同的波长敏感， ‖ 且敏锐度不同。 ‖ 它们也需要不同的处理方式 ‖ 来 ‖ 理 ‖ 解 ‖ 输 ‖ 入， ‖ 并需要不同数量的输入才能达到最佳效果。",
+   "pieces": {
+    "English": [
+     "Different structures have different functions.",
+     "Sensitive to different wavelengths,",
+     "And the sensitivity is different.",
+     "They also need different treatment.",
+     "Come on.",
+     "Ri",
+     "Sol",
+     "Lose",
+     "In,",
+     "And different amounts of input are needed to achieve the best results."
+    ],
+    "Japanese": [
+     "構造は異なり 機能も異なります",
+     "波長に敏感で",
+     "感度が異なる。",
+     "それぞれに異なる処理方法が必要です",
+     "こっちだ",
+     "理",
+     "解",
+     "負け",
+     "入って",
+     " また、最適な効果を得るためには、異なる量の入力が必要となる。"
+    ],
+    "German": [
+     "Die verschiedenen Strukturen haben unterschiedliche Funktionen.",
+     "Empfindlich für verschiedene Wellenlängen,",
+     "Die Empfindlichkeit ist unterschiedlich.",
+     "Sie brauchen auch eine andere Behandlung.",
+     "Komm, komm.",
+     "Ri",
+     "Lösung",
+     "Verlieren",
+     "Eingang",
+     "Für optimale Ergebnisse sind unterschiedliche Eingabemengen erforderlich."
+    ],
+    "Spanish": [
+     "Diferentes estructuras tienen diferentes funciones,",
+     "Sensibilidad a diferentes longitudes de onda",
+     "Y la sensibilidad es diferente.",
+     "También necesitan un tratamiento diferente.",
+     "- Ven.",
+     "- ¿Qué?",
+     "Solución",
+     "Perdió.",
+     "Entra,",
+     "Y se necesitan diferentes cantidades de entrada para obtener los mejores resultados."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    12,
+    20,
+    21,
+    25,
+    27,
+    28,
+    29,
+    31,
+    33
+   ],
+   "H_set": 0.5168,
+   "text": "不同的构造有不同的功能， ‖ 对不同的波长敏感 ‖ ， ‖ 且敏锐度 ‖ 不同 ‖ 。 ‖ 它 ‖ 们也 ‖ 需要 ‖ 不同的处理方式来理解输入，并需要不同数量的输入才能达到最佳效果。",
+   "pieces": {
+    "English": [
+     "Different structures have different functions.",
+     "Sensitive to different wavelengths",
+     ",",
+     "And sensitivity",
+     "Different",
+     ".",
+     "It's...",
+     "They are.",
+     "Need",
+     "Different processing methods understand inputs and require different amounts of input to achieve optimum results."
+    ],
+    "Japanese": [
+     "構造は異なり 機能も異なります",
+     "波長に敏感です",
+     "ああ",
+     "感度",
+     "違う",
+     "ああ ああ",
+     "それは",
+     "あなたも",
+     "ニーズ",
+     " 入力を理解する方法は異なり、最適な結果を得るために異なる入力量が必要となる。"
+    ],
+    "German": [
+     "Die verschiedenen Strukturen haben unterschiedliche Funktionen.",
+     "Empfindlich auf verschiedene Wellenlängen",
+     ",",
+     "Sensitivität",
+     "Differenz",
+     "- Ja.",
+     "Es ist...",
+     "- Sie auch.",
+     "Bedürfnis",
+     "Die verschiedenen Verarbeitungsmethoden verstehen die Eingaben unterschiedlich und benötigen unterschiedliche Mengen an Eingaben, um optimale Ergebnisse zu erzielen."
+    ],
+    "Spanish": [
+     "Diferentes estructuras tienen diferentes funciones,",
+     "Sensibilidad a diferentes longitudes de onda",
+     ",",
+     "Sensibilidad",
+     "Diferente",
+     ". (FR) Gracias.",
+     "- Es...",
+     "- No, no lo hago.",
+     "Necesidades",
+     "Diferentes procesos interpretan los insumos y requieren diferentes cantidades de insumos para obtener resultados óptimos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 40,
+     "left": "处理方式",
+     "right": "来理解输",
+     "H": 0.749,
+     "H_pct": 57.1,
+     "contra": 0.0043,
+     "cohesion": 0.7523
+    },
+    {
+     "pos": 41,
+     "left": "理方式来",
+     "right": "理解输入",
+     "H": 0.679,
+     "H_pct": 23.8,
+     "contra": 0.0245,
+     "cohesion": 0.696
+    },
+    {
+     "pos": 42,
+     "left": "方式来理",
+     "right": "解输入，",
+     "H": 0.6247,
+     "H_pct": 12.7,
+     "contra": 0.113,
+     "cohesion": 0.7043
+    },
+    {
+     "pos": 43,
+     "left": "式来理解",
+     "right": "输入，并",
+     "H": 0.6797,
+     "H_pct": 25.4,
+     "contra": 0.0085,
+     "cohesion": 0.6856
+    },
+    {
+     "pos": 44,
+     "left": "来理解输",
+     "right": "入，并需",
+     "H": 0.0266,
+     "H_pct": 1.6,
+     "contra": 0.9612,
+     "cohesion": 0.6862
+    },
+    {
+     "pos": 46,
+     "left": "解输入，",
+     "right": "并需要不",
+     "H": 0.7659,
+     "H_pct": 74.6,
+     "contra": 0.0102,
+     "cohesion": 0.7738
+    }
+   ],
+   "added": [
+    {
+     "pos": 20,
+     "left": "波长敏感",
+     "right": "，且敏锐",
+     "H": 0.8278,
+     "H_pct": 96.8,
+     "contra": 0.0008,
+     "cohesion": 0.8284
+    },
+    {
+     "pos": 25,
+     "left": "且敏锐度",
+     "right": "不同。它",
+     "H": 0.8079,
+     "H_pct": 90.5,
+     "contra": 0.0007,
+     "cohesion": 0.8085
+    },
+    {
+     "pos": 27,
+     "left": "锐度不同",
+     "right": "。它们也",
+     "H": 0.8185,
+     "H_pct": 93.7,
+     "contra": 0.0021,
+     "cohesion": 0.8202
+    },
+    {
+     "pos": 29,
+     "left": "不同。它",
+     "right": "们也需要",
+     "H": 0.8148,
+     "H_pct": 92.1,
+     "contra": 0.0088,
+     "cohesion": 0.822
+    },
+    {
+     "pos": 31,
+     "left": "。它们也",
+     "right": "需要不同",
+     "H": 0.8063,
+     "H_pct": 88.9,
+     "contra": 0.0055,
+     "cohesion": 0.8108
+    },
+    {
+     "pos": 33,
+     "left": "们也需要",
+     "right": "不同的处",
+     "H": 0.8058,
+     "H_pct": 87.3,
+     "contra": 0.0023,
+     "cohesion": 0.8077
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_654",
+  "cuts": 8,
+  "avg_chunk": 7.8,
+  "latency_bin": "≤10",
+  "gap": 0.4777,
+  "policy_worst_contra": 0.9509,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    14,
+    23,
+    30,
+    33,
+    56,
+    57,
+    66
+   ],
+   "H_set": 0.0224,
+   "text": "在加拿大， ‖ 格陵兰岛的土著居民 ‖ 称自己为因纽特人， ‖ 在格陵兰岛则称 ‖ 自己为 ‖ Kalaalleq（复数为Kalaallit） ‖ ， ‖ 也就是“格陵兰人” ‖ 的意思。",
+   "pieces": {
+    "English": [
+     "In Canada,",
+     "Aboriginal people of Greenland",
+     "who call themselves Inuit,",
+     "In Greenland, it is called",
+     "You're the one.",
+     "Kalaalleq (plural Kalaallit)",
+     ",",
+     "\"The Greenlanders\"",
+     "I mean."
+    ],
+    "Japanese": [
+     "カナダでは",
+     "グリーンランドの先住民族",
+     "自分たちをイヌイットと呼んでいます",
+     "グリーンランドでは",
+     "私がやったんだ",
+     "カラアレク島",
+     "ああ",
+     "グリーンランド人です",
+     "意味がわからない"
+    ],
+    "German": [
+     "In Kanada",
+     "Aborigines in Grönland",
+     "Sie nennen sich Inuit,",
+     "In Grönland heißt es",
+     "Ich bin für dich da",
+     "Kalaalleq",
+     ",",
+     "Das ist der Grönländer.",
+     "Das bedeutet."
+    ],
+    "Spanish": [
+     "En el Canadá,",
+     "Población indígena de Groenlandia",
+     "Se autodenominan inuit,",
+     "En Groenlandia se llama",
+     "Por su cuenta",
+     "Kalaalleq (plural: Kalaallit)",
+     ",",
+     "Esto es lo que es.",
+     "No es el caso."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8,
+    9,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23
+   ],
+   "H_set": 0.5001,
+   "text": "在加拿大，格陵兰 ‖ 岛 ‖ 的土著 ‖ 居 ‖ 民 ‖ 称 ‖ 自己为因纽特人 ‖ ， ‖ 在格陵兰岛则称自己为Kalaalleq（复数为Kalaallit），也就是“格陵兰人”的意思。",
+   "pieces": {
+    "English": [
+     "Greenland in Canada",
+     "Island",
+     "Indigenous peoples of",
+     "Qi",
+     "People",
+     "Chi",
+     "Being Inuit",
+     ",",
+     "In Greenland, they refer to themselves as Kalaalleq (plural Kalaallit), meaning \"Greenlandic\"."
+    ],
+    "Japanese": [
+     "カナダのグリーンランド",
+     "島",
+     "先住民族",
+     "居",
+     "民",
+     "称号",
+     "自分をイヌイットだと思う人",
+     "ああ",
+     " グリーンランドでは自らをKalaallit（複数形はKalaallit）と呼び、「グリーンランド人」を意味する。"
+    ],
+    "German": [
+     "Grönland in Kanada",
+     "Insel",
+     "Indigene Völker",
+     "Gi",
+     "Min",
+     "Name",
+     "Ich bin Inuit",
+     ",",
+     "In Grönland bezeichnen sich die Inuit als Kalaallit („Grönländer“)."
+    ],
+    "Spanish": [
+     "Groenlandia, Canadá",
+     "Islas",
+     "de los pueblos indígenas",
+     "- ¿Dónde estás?",
+     "Civil",
+     "Nombre",
+     "Se consideran inuit",
+     ",",
+     "En Groenlandia, los groenlandeses se llaman a sí mismos Kalaalleq (en plural Kalaallit), que significa \"greenlandeses\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "加拿大，",
+     "right": "格陵兰岛",
+     "H": 0.6757,
+     "H_pct": 76.5,
+     "contra": 0.0013,
+     "cohesion": 0.6766
+    },
+    {
+     "pos": 30,
+     "left": "兰岛则称",
+     "right": "自己为K",
+     "H": 0.3128,
+     "H_pct": 44.1,
+     "contra": 0.563,
+     "cohesion": 0.7158
+    },
+    {
+     "pos": 33,
+     "left": "称自己为",
+     "right": "Kala",
+     "H": 0.0347,
+     "H_pct": 27.9,
+     "contra": 0.9509,
+     "cohesion": 0.7077
+    },
+    {
+     "pos": 56,
+     "left": "lit）",
+     "right": "，也就是",
+     "H": 0.3348,
+     "H_pct": 47.1,
+     "contra": 0.5561,
+     "cohesion": 0.7543
+    },
+    {
+     "pos": 57,
+     "left": "it），",
+     "right": "也就是“",
+     "H": 0.3277,
+     "H_pct": 45.6,
+     "contra": 0.5523,
+     "cohesion": 0.732
+    },
+    {
+     "pos": 66,
+     "left": "陵兰人”",
+     "right": "的意思。",
+     "H": 0.5632,
+     "H_pct": 57.4,
+     "contra": 0.1664,
+     "cohesion": 0.6756
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "，格陵兰",
+     "right": "岛的土著",
+     "H": 0.7875,
+     "H_pct": 97.1,
+     "contra": 0.0015,
+     "cohesion": 0.7887
+    },
+    {
+     "pos": 9,
+     "left": "格陵兰岛",
+     "right": "的土著居",
+     "H": 0.7335,
+     "H_pct": 92.6,
+     "contra": 0.0023,
+     "cohesion": 0.7352
+    },
+    {
+     "pos": 12,
+     "left": "岛的土著",
+     "right": "居民称自",
+     "H": 0.7601,
+     "H_pct": 95.6,
+     "contra": 0.0006,
+     "cohesion": 0.7606
+    },
+    {
+     "pos": 13,
+     "left": "的土著居",
+     "right": "民称自己",
+     "H": 0.7204,
+     "H_pct": 89.7,
+     "contra": 0.003,
+     "cohesion": 0.7225
+    },
+    {
+     "pos": 15,
+     "left": "著居民称",
+     "right": "自己为因",
+     "H": 0.7284,
+     "H_pct": 91.2,
+     "contra": 0.0293,
+     "cohesion": 0.7504
+    },
+    {
+     "pos": 22,
+     "left": "因纽特人",
+     "right": "，在格陵",
+     "H": 0.7968,
+     "H_pct": 100.0,
+     "contra": 0.0026,
+     "cohesion": 0.7989
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_299",
+  "cuts": 2,
+  "avg_chunk": 17.3,
+  "latency_bin": "≤99",
+  "gap": 0.4751,
+  "policy_worst_contra": 0.7253,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    15,
+    45
+   ],
+   "H_set": 0.1797,
+   "text": "本次的立法会议进行了一处修改， ‖ 先是众议院删除了其中的第二句话语，随后参议院在周一如法炮制， ‖ 使其获准通过。",
+   "pieces": {
+    "English": [
+     "The current Legislative Assembly has made one change,",
+     "First the House of Representatives deleted the second sentence, followed by the Senate on Monday,",
+     "10. The Committee approved the draft resolution."
+    ],
+    "Japanese": [
+     "議会は変更をしました",
+     "下院が第2の文を削除し 上院が月曜日に それを採択しました",
+     "これを承認する。"
+    ],
+    "German": [
+     "Diese Legislaturperiode hat eine Änderung vorgenommen,",
+     "Zuerst hat das Repräsentantenhaus den zweiten Satz gestrichen, und dann hat der Senat am Montag die gleiche Sache gemacht.",
+     "Sie wurde genehmigt."
+    ],
+    "Spanish": [
+     "En esta legislatura se ha introducido una modificación,",
+     "Primero la Cámara de Representantes eliminó la segunda frase, y luego el lunes el Senado lo hizo de la misma manera,",
+     ", se aprobó."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    7,
+    15
+   ],
+   "H_set": 0.6547,
+   "text": "本次的立法会议 ‖ 进行了一处修改， ‖ 先是众议院删除了其中的第二句话语，随后参议院在周一如法炮制，使其获准通过。",
+   "pieces": {
+    "English": [
+     "Current Legislative Session",
+     "There was a change,",
+     "First, the House of Representatives deleted the second sentence, and then the Senate, on Monday, made it through."
+    ],
+    "Japanese": [
+     "議会",
+     "変更が加えられました",
+     "下院は最初に第2の文を削除し、その後月曜日に上院が法案を通過させた。"
+    ],
+    "German": [
+     "Die aktuelle Legislaturperiode",
+     "Es gab eine Veränderung,",
+     "Zuerst wurde der zweite Satz vom Repräsentantenhaus gestrichen, und dann wurde er am Montag vom Senat durchgesetzt."
+    ],
+    "Spanish": [
+     "Sesión legislativa actual",
+     "Se ha introducido una modificación,",
+     "Primero la Cámara de Representantes eliminó la segunda frase, y luego el Senado lo hizo el lunes para aprobarlo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 45,
+     "left": "法炮制，",
+     "right": "使其获准",
+     "H": 0.1838,
+     "H_pct": 8.0,
+     "contra": 0.7253,
+     "cohesion": 0.6692
+    }
+   ],
+   "added": [
+    {
+     "pos": 7,
+     "left": "立法会议",
+     "right": "进行了一",
+     "H": 0.7253,
+     "H_pct": 100.0,
+     "contra": 0.0009,
+     "cohesion": 0.726
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_934",
+  "cuts": 15,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.4246,
+  "policy_worst_contra": 0.9713,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    12,
+    24,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    36,
+    38,
+    39,
+    40,
+    47
+   ],
+   "H_set": 0.0122,
+   "text": "在大多数国家， ‖ 你需要一份 ‖ 你希望就读的学校的录取通 ‖ 知书 ‖ ， ‖ 以 ‖ 及 ‖ 证 ‖ 明 ‖ 你 ‖ 有至少第 ‖ 一年 ‖ 课 ‖ 程 ‖ 所需资金的文件 ‖ 。",
+   "pieces": {
+    "English": [
+     "In most countries,",
+     "You need one.",
+     "Admission to the school you want to attend",
+     "Chi-sho",
+     ",",
+     "I",
+     "and",
+     "Certificate",
+     "Ming",
+     "You.",
+     "There is at least one",
+     "One year",
+     "Class",
+     "C.C.",
+     "Documentation of financial requirements",
+     "."
+    ],
+    "Japanese": [
+     "ほとんどの国では",
+     "あなたは一つ必要です。",
+     "あなたが入学したい学校の入学証明書",
+     "知書",
+     "ああ",
+     "これで",
+     "と",
+     "証明書",
+     "明",
+     "あなた",
+     "少なくとも",
+     "1年",
+     "授業",
+     "プロセス",
+     "資金調達のための文書",
+     "ああ ああ"
+    ],
+    "German": [
+     "In den meisten Ländern",
+     "Du brauchst eine Kopie.",
+     "Die Zulassungsbescheinigung der Schule, die Sie besuchen möchten",
+     "Chi-Shū",
+     ",",
+     "- Ja.",
+     "und",
+     "Bescheinigung",
+     "Ming",
+     "Du bist...",
+     "Es gibt mindestens einen",
+     "Ein Jahr",
+     "Lektion",
+     "Procedure",
+     "Dokumentation der benötigten Mittel",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En la mayoría de los países,",
+     "Necesita una copia.",
+     "La admisión a la escuela a la que deseas asistir",
+     "Libros",
+     ",",
+     "A",
+     "y",
+     "Certificado",
+     "- Claro.",
+     "- ¿Tú?",
+     "Al menos",
+     "Un año",
+     "Clases",
+     "Procedimiento",
+     "Documentación de las necesidades de financiación",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    3,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    27,
+    28,
+    29,
+    44,
+    45,
+    47
+   ],
+   "H_set": 0.4368,
+   "text": "在 ‖ 大多 ‖ 数国家 ‖ ， ‖ 你 ‖ 需 ‖ 要 ‖ 一 ‖ 份 ‖ 你希望就读的学校的录取通知书， ‖ 以 ‖ 及 ‖ 证明你有至少第一年课程所需资金 ‖ 的 ‖ 文件 ‖ 。",
+   "pieces": {
+    "English": [
+     "In",
+     "Majority",
+     "A number of countries",
+     ",",
+     "You.",
+     "Need",
+     "I want to.",
+     "One",
+     "1000 copies",
+     "Notice of admission from the school you wish to attend,",
+     "I",
+     "and",
+     "Proof of funding for at least the first year of your course",
+     "The",
+     "Documents",
+     "."
+    ],
+    "Japanese": [
+     "ここに",
+     "大多数",
+     "数の国",
+     "ああ",
+     "あなた",
+     "必要",
+     "必要",
+     "1つ",
+     "分",
+     "入学希望校の入学通知書",
+     "これで",
+     "と",
+     "少なくとも１年間の授業料を 払える証明書",
+     "の",
+     "ファイル",
+     "ああ ああ"
+    ],
+    "German": [
+     "In",
+     "Major",
+     "Mehrere Länder",
+     ",",
+     "Du bist...",
+     "Need",
+     "Ich will",
+     "Ein",
+     "Exemplar",
+     "Einen Zulassungsbescheid der Schule, die Sie besuchen möchten,",
+     "- Ja.",
+     "und",
+     "Nachweis, dass Sie über die erforderlichen Mittel für mindestens das erste Jahr verfügen",
+     "Die",
+     "Dokument",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En",
+     "La mayoría",
+     "Varios países",
+     ",",
+     "- ¿Tú?",
+     "Necesidad",
+     "- Sí.",
+     "I",
+     "Número de copias",
+     "- Certificado de admisión en la escuela a la que desea asistir;",
+     "A",
+     "y",
+     "Demostrar que tienes suficiente dinero para cubrir al menos el primer año de estudios",
+     "De",
+     "Documentación",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 24,
+     "left": "的录取通",
+     "right": "知书，以",
+     "H": 0.0201,
+     "H_pct": 2.2,
+     "contra": 0.9713,
+     "cohesion": 0.7014
+    },
+    {
+     "pos": 26,
+     "left": "取通知书",
+     "right": "，以及证",
+     "H": 0.7322,
+     "H_pct": 58.7,
+     "contra": 0.0011,
+     "cohesion": 0.733
+    },
+    {
+     "pos": 30,
+     "left": "，以及证",
+     "right": "明你有至",
+     "H": 0.7091,
+     "H_pct": 45.7,
+     "contra": 0.0023,
+     "cohesion": 0.7107
+    },
+    {
+     "pos": 31,
+     "left": "以及证明",
+     "right": "你有至少",
+     "H": 0.7641,
+     "H_pct": 65.2,
+     "contra": 0.0026,
+     "cohesion": 0.7661
+    },
+    {
+     "pos": 32,
+     "left": "及证明你",
+     "right": "有至少第",
+     "H": 0.767,
+     "H_pct": 67.4,
+     "contra": 0.0046,
+     "cohesion": 0.7706
+    },
+    {
+     "pos": 36,
+     "left": "有至少第",
+     "right": "一年课程",
+     "H": 0.6649,
+     "H_pct": 30.4,
+     "contra": 0.0502,
+     "cohesion": 0.7
+    },
+    {
+     "pos": 38,
+     "left": "少第一年",
+     "right": "课程所需",
+     "H": 0.6933,
+     "H_pct": 43.5,
+     "contra": 0.0693,
+     "cohesion": 0.745
+    },
+    {
+     "pos": 39,
+     "left": "第一年课",
+     "right": "程所需资",
+     "H": 0.1203,
+     "H_pct": 10.9,
+     "contra": 0.8313,
+     "cohesion": 0.7133
+    },
+    {
+     "pos": 40,
+     "left": "一年课程",
+     "right": "所需资金",
+     "H": 0.4119,
+     "H_pct": 13.0,
+     "contra": 0.4658,
+     "cohesion": 0.7711
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "在",
+     "right": "大多数国",
+     "H": 0.7825,
+     "H_pct": 78.3,
+     "contra": 0.0056,
+     "cohesion": 0.7869
+    },
+    {
+     "pos": 3,
+     "left": "在大多",
+     "right": "数国家，",
+     "H": 0.8006,
+     "H_pct": 87.0,
+     "contra": 0.0004,
+     "cohesion": 0.8009
+    },
+    {
+     "pos": 6,
+     "left": "多数国家",
+     "right": "，你需要",
+     "H": 0.8411,
+     "H_pct": 97.8,
+     "contra": 0.0004,
+     "cohesion": 0.8414
+    },
+    {
+     "pos": 8,
+     "left": "国家，你",
+     "right": "需要一份",
+     "H": 0.8232,
+     "H_pct": 91.3,
+     "contra": 0.0015,
+     "cohesion": 0.8244
+    },
+    {
+     "pos": 9,
+     "left": "家，你需",
+     "right": "要一份你",
+     "H": 0.7887,
+     "H_pct": 80.4,
+     "contra": 0.0017,
+     "cohesion": 0.79
+    },
+    {
+     "pos": 10,
+     "left": "，你需要",
+     "right": "一份你希",
+     "H": 0.795,
+     "H_pct": 84.8,
+     "contra": 0.0011,
+     "cohesion": 0.7959
+    },
+    {
+     "pos": 11,
+     "left": "你需要一",
+     "right": "份你希望",
+     "H": 0.7745,
+     "H_pct": 73.9,
+     "contra": 0.0051,
+     "cohesion": 0.7785
+    },
+    {
+     "pos": 44,
+     "left": "所需资金",
+     "right": "的文件。",
+     "H": 0.7728,
+     "H_pct": 71.7,
+     "contra": 0.002,
+     "cohesion": 0.7743
+    },
+    {
+     "pos": 45,
+     "left": "需资金的",
+     "right": "文件。",
+     "H": 0.8314,
+     "H_pct": 93.5,
+     "contra": 0.0038,
+     "cohesion": 0.8346
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_750",
+  "cuts": 6,
+  "avg_chunk": 4.9,
+  "latency_bin": "≤5",
+  "gap": 0.4829,
+  "policy_worst_contra": 0.9222,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    7,
+    18,
+    19,
+    31,
+    32,
+    33
+   ],
+   "H_set": 0.0312,
+   "text": "坐进自己的车， ‖ 开启一段漫长的公路之旅 ‖ ， ‖ 本身就有一种简单纯粹的吸 ‖ 引 ‖ 力 ‖ 。",
+   "pieces": {
+    "English": [
+     "Get in your car,",
+     "Start a long road trip",
+     ",",
+     "There is a simple, pure suction.",
+     "Inference",
+     "Force",
+     "."
+    ],
+    "Japanese": [
+     "車に乗り込み",
+     "遠くへの旅に出る",
+     "ああ",
+     "あなたは 私のために 何かをしたい",
+     "引用",
+     "力",
+     "ああ ああ"
+    ],
+    "German": [
+     "In meinen Wagen steigen,",
+     "Beginnen Sie eine lange Roadtrip",
+     ",",
+     "Es gibt eine einfache, reine Saugkraft.",
+     "Anführungszeichen",
+     "Kraft",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Sube a tu coche,",
+     "Empieza un largo viaje por carretera",
+     ",",
+     "Hay una cosa que no me gusta.",
+     "Cita",
+     "Fuerza",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    9,
+    13,
+    14,
+    16,
+    19,
+    21
+   ],
+   "H_set": 0.5141,
+   "text": "坐进自己的车，开启 ‖ 一段漫长 ‖ 的 ‖ 公路 ‖ 之旅， ‖ 本身 ‖ 就有一种简单纯粹的吸引力。",
+   "pieces": {
+    "English": [
+     "Get in your car, start it.",
+     "A long time.",
+     "The",
+     "Roads",
+     "The journey,",
+     "Yourself",
+     "There is a simple and pure appeal."
+    ],
+    "Japanese": [
+     "車に乗って 始動しろ",
+     "あの長い道のり",
+     "の",
+     "道路",
+     "旅行",
+     "私自身",
+     "単純で純粋な魅力があります"
+    ],
+    "German": [
+     "Steigen Sie in Ihr Auto und starten Sie es.",
+     "Ein langer Weg",
+     "Die",
+     "Straße",
+     "Reisen",
+     "Selbst",
+     "Es gibt eine einfache, reine Anziehungskraft."
+    ],
+    "Spanish": [
+     "Entra en tu coche y enciéndelo.",
+     "Un largo tiempo",
+     "De",
+     "Carreteras",
+     "Viaje,",
+     "Por sí mismo",
+     "Hay un atractivo simple y puro."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "己的车，",
+     "right": "开启一段",
+     "H": 0.6628,
+     "H_pct": 65.6,
+     "contra": 0.002,
+     "cohesion": 0.6641
+    },
+    {
+     "pos": 18,
+     "left": "公路之旅",
+     "right": "，本身就",
+     "H": 0.6839,
+     "H_pct": 78.1,
+     "contra": 0.0015,
+     "cohesion": 0.6849
+    },
+    {
+     "pos": 31,
+     "left": "纯粹的吸",
+     "right": "引力。",
+     "H": 0.039,
+     "H_pct": 0.0,
+     "contra": 0.9222,
+     "cohesion": 0.5019
+    },
+    {
+     "pos": 32,
+     "left": "粹的吸引",
+     "right": "力。",
+     "H": 0.6253,
+     "H_pct": 34.4,
+     "contra": 0.0005,
+     "cohesion": 0.6256
+    },
+    {
+     "pos": 33,
+     "left": "的吸引力",
+     "right": "。",
+     "H": 0.6683,
+     "H_pct": 68.8,
+     "contra": 0.0004,
+     "cohesion": 0.6685
+    }
+   ],
+   "added": [
+    {
+     "pos": 9,
+     "left": "车，开启",
+     "right": "一段漫长",
+     "H": 0.6977,
+     "H_pct": 84.4,
+     "contra": 0.0022,
+     "cohesion": 0.6992
+    },
+    {
+     "pos": 13,
+     "left": "一段漫长",
+     "right": "的公路之",
+     "H": 0.7423,
+     "H_pct": 100.0,
+     "contra": 0.0027,
+     "cohesion": 0.7443
+    },
+    {
+     "pos": 14,
+     "left": "段漫长的",
+     "right": "公路之旅",
+     "H": 0.7321,
+     "H_pct": 96.9,
+     "contra": 0.002,
+     "cohesion": 0.7335
+    },
+    {
+     "pos": 16,
+     "left": "长的公路",
+     "right": "之旅，本",
+     "H": 0.7044,
+     "H_pct": 90.6,
+     "contra": 0.0014,
+     "cohesion": 0.7054
+    },
+    {
+     "pos": 21,
+     "left": "旅，本身",
+     "right": "就有一种",
+     "H": 0.703,
+     "H_pct": 87.5,
+     "contra": 0.0007,
+     "cohesion": 0.7035
+    }
+   ]
+  }
+ }
+]

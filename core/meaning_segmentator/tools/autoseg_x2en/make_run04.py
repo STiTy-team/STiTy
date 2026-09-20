@@ -118,12 +118,47 @@ if a.phase == 'build':
     sys.exit(0)
 
 if a.phase in ('labels', 'merge'):
-    # run03 의 같은 단계 코드를 그대로 쓴다 — 분할 이름만 `new` 다.
-    import importlib
-    sys.argv = ['x', '--lang', a.lang, '--phase', a.phase, '--run', a.run, '--splits', NEW_SPLIT]
-    m = 'core.meaning_segmentator.tools.autoseg_x2en.make_run03'
-    sys.modules.pop(m, None)
-    importlib.import_module(m)
+    # **run03 에 위임하지 않는다.** 그쪽은 자기 905 매니페스트에서 분할을 다시 만들므로 `new` 를
+    # 알 수 없다(실측으로 거기서 죽었다). 절차는 같고 대상만 `data/new.json` 이다.
+    import statistics as st
+    from core.meaning_segmentator.autoseg.loop import target_is_spaced
+    from core.meaning_segmentator.autoseg.runtime import labels as L, metrics
+    cfg = json.loads((R / 'config.json').read_text(encoding='utf-8'))
+    spaced = cfg['spaced']
+    rows = json.loads((R / f'data/{NEW_SPLIT}.json').read_text(encoding='utf-8'))
+
+    if a.phase == 'labels':
+        adequacy = metrics.make_adequacy_backend(cfg.get('adequacy_backend', 'cometkiwi'), batch_size=32)
+        contradiction = metrics.make_contradiction_backend()
+        L.compute_labels(R, NEW_SPLIT, [x['id'] for x in rows], [x['text'] for x in rows], targets,
+                         spaced, adequacy, contradiction, cfg['local_mt_model'], target_is_spaced,
+                         contra_source='source', translators={})
+        print(f'-> {R}/oracle_labels_{NEW_SPLIT}.json (cohesion 은 pseudoref 뒤 merge)', flush=True)
+        sys.exit(0)
+
+    lab_path = R / f'oracle_labels_{NEW_SPLIT}.json'
+    lab = json.loads(lab_path.read_text(encoding='utf-8'))
+    if all(d.get('label_form') == 'cohesion x (1 - contra)' for d in next(iter(lab.values()))):
+        print(f'[{a.lang}/{NEW_SPLIT}] 이미 합쳐진 라벨 — 건너뜀'); sys.exit(0)
+    pre = json.loads((R / f'pseudoref_{NEW_SPLIT}.json').read_text(encoding='utf-8'))
+    base = next(iter(lab.values()))
+    out = {}
+    for tgt in targets:
+        per = lab.get(tgt, base)
+        merged = []
+        for i, d in enumerate(per):
+            assert d['id'] == rows[i]['id']
+            coh = [pre[str(i)][str(j)][tgt][1] for j in range(1, len(d['contra']) + 1)]
+            assert len(coh) == len(d['contra'])
+            merged.append({'id': d['id'], 'contra': d['contra'], 'ent': d['ent'],
+                           'contra_floor': d['contra_floor'], 'adq_l': coh, 'adq_r': coh,
+                           'hyp_units': d['hyp_units'], 'contra_source': 'source',
+                           'label_form': 'cohesion x (1 - contra)'})
+        out[tgt] = merged
+    lab_path.write_text(json.dumps(out, ensure_ascii=False), encoding='utf-8')
+    v = [(1 - r['contra'][k]) * st.mean(out[t][i]['adq_l'][k] for t in targets)
+         for i, r in enumerate(out[targets[0]]) for k in range(len(r['contra']))]
+    print(f'[{a.lang}/{NEW_SPLIT}] {len(rows)}문장 / 경계 {len(v)} / 라벨 평균 {st.mean(v):.4f}')
     sys.exit(0)
 
 # ── compose: run03 라벨(문장 단위) + 새 라벨 → train/dev/test ────────────────────────

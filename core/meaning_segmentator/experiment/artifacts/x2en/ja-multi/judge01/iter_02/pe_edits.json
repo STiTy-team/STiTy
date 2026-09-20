@@ -1,0 +1,216 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- If the left fragment taken alone would contradict, negate, or reverse the whole sentence's claim, treat that boundary as effectively invalid: strongly deprioritize it even if cohesion looks acceptable."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Do not cut inside a lexical word or bound morpheme, and do not split a content word from immediately attached particles or auxiliaries. Prefer whole-word or clear syntactic boundaries so each fragment remains translatable."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- In very short‑latency (dense) settings, denser boundaries are permitted only when each resulting right fragment is independently interpretable (a short, self‑contained continuation) and does not rely on later clause‑final predicates, arguments, or auxiliaries to state its core claim."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 204
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 225
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 287
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8831,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Do not cut inside a lexical word, bound morpheme, or between a content word and its immediately attached particles or auxiliaries; prefer whole‑word or clear syntactic boundaries. In particular, do not separate continuative verb/connective forms or continuation uses of particles from their clause — such splits produce fragmentary, misleading translations."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Strongly deprioritize any boundary where the left fragment, taken alone, would contradict, negate, or reverse the whole sentence; treat such cuts as effectively invalid regardless of cohesion. In very short‑latency (dense) settings, allow denser boundaries only when each resulting right fragment can be interpreted on its own without relying on later clause‑final predicates, auxiliaries, negation, or missing arguments."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 114
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 163
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8392,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "ja_jp_96",
+    "text": "Input: 調 <SEG:?> 査 <SEG:?> の <SEG:?> た <SEG:?> め <SEG:?> に <SEG:?> 調 <SEG:?> 査 <SEG:?> 機 <SEG:?> 関 <SEG:?> が <SEG:?> 設 <SEG:?> 立 <SEG:?> さ <SEG:?> れ <SEG:?> ま <SEG:?> し <SEG:?> た <SEG:?> 。\nOutput: 調 <SEG:24> 査 <SEG:76> の <SEG:59> た <SEG:71> め <SEG:88> に <SEG:82> 調 <SEG:47> 査 <SEG:12> 機 <SEG:0> 関 <SEG:29> が <SEG:6> 設 <SEG:18> 立 <SEG:41> さ <SEG:53> れ <SEG:65> ま <SEG:35> し <SEG:100> た <SEG:94> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "ja_jp_955",
+    "text": "Input: ト <SEG:?> ル <SEG:?> コ <SEG:?> 航 <SEG:?> 空 <SEG:?> は <SEG:?> 2 <SEG:?> 0 <SEG:?> 1 <SEG:?> 4 <SEG:?> 年 <SEG:?> 現 <SEG:?> 在 <SEG:?> 、 <SEG:?> ア <SEG:?> フ <SEG:?> リ <SEG:?> カ <SEG:?> 3 <SEG:?> 0 <SEG:?> カ <SEG:?> 国 <SEG:?> 3 <SEG:?> 9 <SEG:?> 都 <SEG:?> 市 <SEG:?> に <SEG:?> 就 <SEG:?> 航 <SEG:?> し <SEG:?> て <SEG:?> い <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: ト <SEG:39> ル <SEG:45> コ <SEG:94> 航 <SEG:88> 空 <SEG:91> は <SEG:76> 2 <SEG:12> 0 <SEG:6> 1 <SEG:9> 4 <SEG:82> 年 <SEG:79> 現 <SEG:64> 在 <SEG:48> 、 <SEG:73> ア <SEG:24> フ <SEG:30> リ <SEG:18> カ <SEG:27> 3 <SEG:3> 0 <SEG:15> カ <SEG:42> 国 <SEG:58> 3 <SEG:0> 9 <SEG:21> 都 <SEG:36> 市 <SEG:33> に <SEG:55> 就 <SEG:52> 航 <SEG:61> し <SEG:70> て <SEG:67> い <SEG:85> ま <SEG:100> す <SEG:97> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "ja_jp_346",
+    "text": "Input: 幸 <SEG:?> い <SEG:?> に <SEG:?> も <SEG:?> 私 <SEG:?> は <SEG:?> 被 <SEG:?> 害 <SEG:?> に <SEG:?> 遭 <SEG:?> い <SEG:?> ま <SEG:?> せ <SEG:?> ん <SEG:?> で <SEG:?> し <SEG:?> た <SEG:?> が <SEG:?> 、 <SEG:?> 人 <SEG:?> 々 <SEG:?> が <SEG:?> 窓 <SEG:?> を <SEG:?> 割 <SEG:?> っ <SEG:?> て <SEG:?> 外 <SEG:?> に <SEG:?> 出 <SEG:?> よ <SEG:?> う <SEG:?> と <SEG:?> し <SEG:?> て <SEG:?> い <SEG:?> る <SEG:?> と <SEG:?> い <SEG:?> う <SEG:?> 不 <SEG:?> 気 <SEG:?> 味 <SEG:?> な <SEG:?> 光 <SEG:?> 景 <SEG:?> を <SEG:?> 目 <SEG:?> に <SEG:?> し <SEG:?> ま <SEG:?> し <SEG:?> た <SEG:?> 。\nOutput: 幸 <SEG:65> い <SEG:50> に <SEG:71> も <SEG:98> 私 <SEG:40> は <SEG:85> 被 <SEG:10> 害 <SEG:8> に <SEG:6> 遭 <SEG:4> い <SEG:0> ま <SEG:2> せ <SEG:73> ん <SEG:90> で <SEG:37> し <SEG:12> た <SEG:69> が <SEG:58> 、 <SEG:27> 人 <SEG:44> 々 <SEG:19> が <SEG:31> 窓 <SEG:33> を <SEG:25> 割 <SEG:21> っ <SEG:38> て <SEG:48> 外 <SEG:15> に <SEG:17> 出 <SEG:46> よ <SEG:35> う <SEG:63> と <SEG:79> し <SEG:81> て <SEG:75> い <SEG:96> る <SEG:88> と <SEG:94> い <SEG:92> う <SEG:87> 不 <SEG:77> 気 <SEG:23> 味 <SEG:52> な <SEG:56> 光 <SEG:13> 景 <SEG:60> を <SEG:62> 目 <SEG:29> に <SEG:54> し <SEG:67> ま <SEG:42> し <SEG:100> た <SEG:83> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "ja_jp_561",
+    "text": "Input: 被 <SEG:?> 害 <SEG:?> 者 <SEG:?> を <SEG:?> 保 <SEG:?> 護 <SEG:?> す <SEG:?> る <SEG:?> に <SEG:?> は <SEG:?> 、 <SEG:?> ま <SEG:?> ず <SEG:?> 現 <SEG:?> 場 <SEG:?> を <SEG:?> 調 <SEG:?> 査 <SEG:?> し <SEG:?> て <SEG:?> 安 <SEG:?> 全 <SEG:?> を <SEG:?> 確 <SEG:?> 保 <SEG:?> し <SEG:?> な <SEG:?> け <SEG:?> れ <SEG:?> ば <SEG:?> な <SEG:?> り <SEG:?> ま <SEG:?> せ <SEG:?> ん <SEG:?> 。\nOutput: 被 <SEG:41> 害 <SEG:24> 者 <SEG:26> を <SEG:29> 保 <SEG:56> 護 <SEG:94> す <SEG:97> る <SEG:88> に <SEG:85> は <SEG:100> 、 <SEG:91> ま <SEG:18> ず <SEG:74> 現 <SEG:71> 場 <SEG:50> を <SEG:65> 調 <SEG:38> 査 <SEG:79> し <SEG:68> て <SEG:82> 安 <SEG:32> 全 <SEG:44> を <SEG:47> 確 <SEG:53> 保 <SEG:62> し <SEG:59> な <SEG:3> け <SEG:0> れ <SEG:6> ば <SEG:12> な <SEG:35> り <SEG:21> ま <SEG:15> せ <SEG:9> ん <SEG:76> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -125
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 167
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 251
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -627
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7781,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- If the left fragment, read on its own, would imply, negate, or reverse the sentence-level claim (i.e., translating it alone yields a contradiction with the whole), treat that boundary as effectively unacceptable for top ranks. Such boundaries should be ranked below positions whose left fragment remains consistent with the whole; avoid choosing cuts that the right context must undo."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Do not cut inside a lexical word or bound morpheme, and do not split a content word from immediately attached particles or auxiliaries. Prefer whole-word and clear syntactic/orthographic boundaries so each fragment can be translated into a coherent, stand‑alone piece."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- For very short‑latency (dense) needs, denser boundaries are permitted only when the right fragment is independently interpretable: it should begin with a stable unit (e.g., a standalone phrase, interjection, or a clause fragment that does not depend on a later predicate, auxiliary, or negation to state its claim). Do not use density as an excuse to produce fragments that require later material to be coherent."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "ja_jp_933",
+    "text": "Input: 学 <SEG:?> 生 <SEG:?> ビ <SEG:?> ザ <SEG:?> は <SEG:?> 一 <SEG:?> 般 <SEG:?> 的 <SEG:?> に <SEG:?> 通 <SEG:?> 常 <SEG:?> の <SEG:?> 観 <SEG:?> 光 <SEG:?> ビ <SEG:?> ザ <SEG:?> や <SEG:?> ビ <SEG:?> ジ <SEG:?> ネ <SEG:?> ス <SEG:?> ビ <SEG:?> ザ <SEG:?> と <SEG:?> は <SEG:?> 要 <SEG:?> 件 <SEG:?> や <SEG:?> 申 <SEG:?> 手 <SEG:?> 続 <SEG:?> き <SEG:?> が <SEG:?> 異 <SEG:?> な <SEG:?> り <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: 学 <SEG:54> 生 <SEG:92> ビ <SEG:68> ザ <SEG:97> は <SEG:100> 一 <SEG:49> 般 <SEG:86> 的 <SEG:70> に <SEG:73> 通 <SEG:38> 常 <SEG:41> の <SEG:8> 観 <SEG:11> 光 <SEG:30> ビ <SEG:16> ザ <SEG:27> や <SEG:0> ビ <SEG:14> ジ <SEG:22> ネ <SEG:19> ス <SEG:5> ビ <SEG:24> ザ <SEG:3> と <SEG:59> は <SEG:62> 要 <SEG:57> 件 <SEG:51> や <SEG:76> 申 <SEG:81> 手 <SEG:46> 続 <SEG:32> き <SEG:35> が <SEG:65> 異 <SEG:78> な <SEG:84> り <SEG:89> ま <SEG:43> す <SEG:95> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 387
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 271
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 415
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 293
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9481,
+  "errors": null
+ }
+]

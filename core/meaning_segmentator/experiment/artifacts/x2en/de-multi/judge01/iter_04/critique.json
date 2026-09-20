@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The scorer systematically undervalues very-early, dense cuts immediately after clause-introducing particles and initial subordinators (e.g. 'Wenn man', 'Auch wenn', initial adverbials). Those prefixes are often the safest place to cut because they isolate the clause introducer and prevent the left fragment from asserting a claim later reversed or qualified — ask: does the remainder contain an explicit qualification/negation that would reverse the prefix? If not, prefer the early cut.",
+    "evidence": "de_de_840, de_de_953, de_de_1562, de_de_1094, de_de_418, de_de_327, de_de_610 — in each case the offline target adds a high-scoring cut immediately after an initial clause-introducer or subordinating particle and that cut has high cohesion/low contra (the policy left those positions too low-ranked, causing loss concentrated in the ≤3 and ≤5 bins).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Treat initial clause-introducing words (conjunctions, subordinators, 'Wenn man', 'Auch wenn', initial adverbials) as preferred early cut points unless the remainder contains an explicit qualification, negation, or scope-bearing element that would reverse the prefix."
+    }
+   },
+   {
+    "diagnosis": "The prompt applies a blanket penalty to cuts that leave the left fragment ending on a finite verb or 'predicate-ending' prefix. Applied globally, this shifts cuts into names and enumerations and harms mid-length bins. The correct judgement is conditional: penalize predicate-ending prefixes only when the right-hand remainder contains clause-level qualifiers/negation or scope carriers that would change the left fragment's asserted meaning; do not forbid dense cuts inside names/enumerations or short chunks when no such clause-level reversal exists.",
+    "evidence": "de_de_55, de_de_854, de_de_465, de_de_547, de_de_610 — these cases show that imposing a broad predicate-ending no-cut rule pushes segmentation into harmful splits of names/enumerations or forces larger chunks; the offline targets instead allow or restrict such penalties conditionally, improving H_set in mid/long bins.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Apply any penalty for cuts that leave the left piece ending in a finite/predicate verb only when the remainder contains clause-level qualification, negation, or other scope-bearing material; otherwise allow dense cuts even inside names/enumerations."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The scorer systematically undervalues very-early, dense cuts immediately after clause-introducing particles and initial subordinators (e.g. 'Wenn man', 'Auch wenn', initial adverbials). Those prefixes are often the safest place to cut because they isolate the clause introducer and prevent the left fragment from asserting a claim later reversed or qualified — ask: does the remainder contain an explicit qualification/negation that would reverse the prefix? If not, prefer the early cut.",
+   "evidence": "de_de_840, de_de_953, de_de_1562, de_de_1094, de_de_418, de_de_327, de_de_610 — in each case the offline target adds a high-scoring cut immediately after an initial clause-introducer or subordinating particle and that cut has high cohesion/low contra (the policy left those positions too low-ranked, causing loss concentrated in the ≤3 and ≤5 bins).",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Treat initial clause-introducing words (conjunctions, subordinators, 'Wenn man', 'Auch wenn', initial adverbials) as preferred early cut points unless the remainder contains an explicit qualification, negation, or scope-bearing element that would reverse the prefix."
+   }
+  },
+  {
+   "diagnosis": "The prompt applies a blanket penalty to cuts that leave the left fragment ending on a finite verb or 'predicate-ending' prefix. Applied globally, this shifts cuts into names and enumerations and harms mid-length bins. The correct judgement is conditional: penalize predicate-ending prefixes only when the right-hand remainder contains clause-level qualifiers/negation or scope carriers that would change the left fragment's asserted meaning; do not forbid dense cuts inside names/enumerations or short chunks when no such clause-level reversal exists.",
+   "evidence": "de_de_55, de_de_854, de_de_465, de_de_547, de_de_610 — these cases show that imposing a broad predicate-ending no-cut rule pushes segmentation into harmful splits of names/enumerations or forces larger chunks; the offline targets instead allow or restrict such penalties conditionally, improving H_set in mid/long bins.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Apply any penalty for cuts that leave the left piece ending in a finite/predicate verb only when the remainder contains clause-level qualification, negation, or other scope-bearing material; otherwise allow dense cuts even inside names/enumerations."
+   }
+  }
+ ]
+}

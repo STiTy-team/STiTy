@@ -1,0 +1,648 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00824,
+   "lo": -0.001,
+   "hi": 0.01695,
+   "n": 450,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C4 to a much shorter statement summarizing cohesion harms in German so the prompt is more concise and to free size headroom; this addresses the need to keep cohesion/incompleteness distinct from contradiction as highlighted in the critique.",
+   "Paraphrased C7 to a concise rule that contra is raised only for explicit negation/reversal and that incompleteness is primarily a cohesion issue; this directly responds to the finding that the prompt over-allocated contra to fragmentary prefixes and reporting verbs and reduces verbosity to meet size limits."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "was": "- Look for damage that in German typically lowers cohesion: splitting a predicat",
+    "now": "- Look for cohesion damage common in German: cutting a predicate away from its r"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- Contra is a graded probability and should be raised mainly when the prefix by "
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.0011,
+   "lo": -0.01106,
+   "hi": 0.00846,
+   "n": 450,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C4 to a much shorter, clearer summary of cohesion harms in German, to focus ratable harms (predicate/argument splits, NP/PP fragmentation, verb-final clause separation) and reduce prompt size.",
+   "Paraphrased C7 to a concise rule that contra measures explicit reversal/negation while treating incompleteness primarily as cohesion; this addresses the finding that the prompt over-allocated contra to fragmentary prefixes and reporting verbs.",
+   "Deleted example E2 (longest example) to free space so the prompt meets size limits while retaining other examples and measured cases."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "was": "- Look for damage that in German typically lowers cohesion: splitting a predicat",
+    "now": "- Look for common German cohesion failures: a cut that leaves the predicate, ver"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- Contra estimates how likely the prefix alone will assert a proposition that th"
+   },
+   {
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "was": "Input: Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatl",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00374,
+   "lo": -0.01725,
+   "hi": 0.01244,
+   "n": 450,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C6 to clarify the crucial distinction between incompleteness (cohesion) and true contradiction (contra), and to add explicit guidance for speech-act/reporting verbs — this directly addresses the finding that contra was over-allocated to fragmentary prefixes and reporting verbs.",
+   "Delete C4 (long, unmeasured list of cohesion harms) to remove redundancy, shorten the prompt, and meet the size budget while keeping the essential guidance relocated into the revised C6."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Ask: \"Taken alone, does the prefix assert or imply something that the whole se",
+    "now": "- Ask: \"If the left fragment were read alone, would a listener take away a concr"
+   },
+   {
+    "op": "delete",
+    "id": "C4",
+    "kind": "delete",
+    "was": "- Look for damage that in German typically lowers cohesion: splitting a predicat",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00254,
+   "lo": -0.00524,
+   "hi": 0.01041,
+   "n": 1779,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00254,
+   "lo": -0.00524,
+   "hi": 0.01041,
+   "n": 1779,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace E1 with measured example de_de_341 to teach the model that a prefix missing a predicate is often a cohesion problem, not automatically high contra (addresses finding about over-allocated contra).",
+   "Replace E2 with measured example de_de_476 to show reporting/speech-act verbs (\"erklärten\") should be treated as cohesion/incompleteness unless the remainder explicitly negates the prefix (addresses finding about reporting verbs).",
+   "Replace E3 with measured example de_de_1143 to provide a longer-clause case where qualification/contrast determines contra versus cohesion, reinforcing the distinction cited in the critique."
+  ],
+  "findings": [
+   "The prompt repeatedly treats an incomplete or fragmentary prefix (a piece that lacks the finishing verb, complement, or reported content) as if it were a high-probability contradiction of the whole sentence. In many cases the prefix is merely incomplete (a cohesion problem) rather than asserting something the rest of the sentence contradicts; the prompt therefore over-allocates 'contra' mass to fragmentation and overturns good dense segmentations.",
+   "The prompt conflates speech-act or reporting verbs and left fragments that name an act ('erklärten', 'wurden', 'belegt', 'wurden am ... gezwungen') with contradicted factual assertions. It therefore assigns large contradiction probability to prefixes that report an act but do not assert propositional content; this routinely kills otherwise acceptable cuts."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Nicht <SEG:?> alle <SEG:?> sprachen <SEG:?> sich <SEG:?> für <SEG:?> die ",
+    "now": "Input: Zayat <SEG:?> wurde <SEG:?> bei <SEG:?> dem <SEG:?> Unfall <SEG:?> nicht "
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatl",
+    "now": "Input: Der <SEG:?> Geschichte <SEG:?> zufolge <SEG:?> lag <SEG:?> seine <SEG:?> "
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Bobek, <SEG:?> in <SEG:?> der <SEG:?> kroatischen <SEG:?> Hauptstadt <SEG",
+    "now": "Input: Dies <SEG:?> ist <SEG:?> anderenorts <SEG:?> in <SEG:?> Großbritannien <S"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0005,
+    "≤5": 0.0059,
+    "≤7": 0.0071,
+    "≤10": -0.0002,
+    "≤99": 0.0014
+   },
+   "n_worse": 641,
+   "n_better": 624,
+   "why": "The new examples shifted the model toward making earlier cuts in many short/medium spans (it began inserting cuts between auxiliaries/short verbs and their objects and even inside noun phrases), producing large negative moves on examples that were split inside NPs or that separated verb+argument; at the same time the reporting-verb example improved handling of enumerations and some medium-length predicate groupings, which matches the positive deltas in the ≤5 and ≤7 bins.",
+   "lesson": "Keep the reporting-verb example that helped medium-length predicate/enumeration splits, but avoid examples or placements that encourage premature cuts inside noun phrases or between auxiliaries and their complements.",
+   "blamed": [
+    "E1",
+    "E3"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00499,
+   "lo": -0.02397,
+   "hi": 0.01301,
+   "n": 445,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C7 to explicitly treat cuts that end inside subordinate/verb‑final clauses or before a clause‑finishing verb that provides a qualification/reversal as very high contradiction risk — addresses the primary finding that contra is underestimated for such prefixes.",
+   "Replace C12 to allow, when dense (short‑chunk) segmentation is required, cuts immediately after determiners/short prepositions provided they do not separate a head from its required complements — addresses the finding that the prompt discouraged needed early cuts in short‑latency settings."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- In German, high contra risk arises when the prefix asserts something that the "
+   },
+   {
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "was": "  - Nominal and prepositional phrases: determiners and short prepositions are un",
+    "now": "- Nominal and prepositional phrases: determiners and short prepositions are unst"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00191,
+   "lo": -0.02611,
+   "hi": 0.02691,
+   "n": 445,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with labeled example de_de_86 to teach the model that cuts ending inside subordinate/verb-final clauses (before the clause-finishing verb/qualification) carry very high contradiction risk.",
+   "Replace E2 with labeled example de_de_587 to expose short-latency cases where early cuts after function words may be acceptable and to show trade-offs for dense segmentation.",
+   "Replace E3 with labeled example de_de_240 to add a measured short/medium example that illustrates fragmentation after determiners/prepositions and helps the model learn when such cuts are harmful versus acceptable."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Nicht <SEG:?> alle <SEG:?> sprachen <SEG:?> sich <SEG:?> für <SEG:?> die ",
+    "now": "Input: Pittman <SEG:?> deutete <SEG:?> an, <SEG:?> dass <SEG:?> sich <SEG:?> die",
+    "labeled_example": "de_de_86"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatl",
+    "now": "Input: Diese <SEG:?> Teleskope <SEG:?> nutzten <SEG:?> eine <SEG:?> Kombination ",
+    "labeled_example": "de_de_587"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Bobek, <SEG:?> in <SEG:?> der <SEG:?> kroatischen <SEG:?> Hauptstadt <SEG",
+    "now": "Input: Das <SEG:?> Problem <SEG:?> begann <SEG:?> am <SEG:?> 1. <SEG:?> Januar, ",
+    "labeled_example": "de_de_240"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.0056,
+   "lo": -0.0296,
+   "hi": 0.01897,
+   "n": 445,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C7 to explicitly mark cuts that end inside subordinate/verb‑final clauses (before the clause‑finishing verb or qualifying phrase) as high contradiction risk, addressing the finding that contra was underestimated for such prefixes.",
+   "Replace C12 to relax the rule for determiners/short prepositions in dense (short‑chunk) settings: allow cuts after them when they do not detach a head noun or required complements, addressing the finding that the prompt was too conservative and lost short‑latency gains."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- High contra risk arises when a cut ends inside a subordinate or verb‑final cla"
+   },
+   {
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "was": "  - Nominal and prepositional phrases: determiners and short prepositions are un",
+    "now": "- Nominal and prepositional phrases: determiners and short prepositions commonly"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00362,
+   "lo": -0.01333,
+   "hi": 0.00595,
+   "n": 1779,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": -0.00362,
+   "lo": -0.01333,
+   "hi": 0.00595,
+   "n": 1779,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Replace C12 to allow cuts after determiners/short prepositions in dense (short‑chunk) settings when they do not detach a head from required complements — addresses the primary finding that the prompt was too conservative and lost short‑latency gains.",
+   "Insert after C7 a new principle that treats cuts ending inside subordinate/verb‑final clauses (before the clause‑finishing verb that supplies a qualification/reversal) as very high contra risk — addresses the finding that contra was underestimated for unfinished subordinate/verb‑final clauses."
+  ],
+  "findings": [
+   "The prompt underestimates contra risk for prefixes that stop inside subordinate/verb‑final clauses or before a clause‑finishing verb/qualification: it lets cuts that leave an asserted prefix which the remainder then negates or qualifies (contra≈1) survive.",
+   "The prompt's warning about determiners/short prepositions is being applied too conservatively in dense (short‑chunk) settings: it discourages early cuts after function words even when short‑latency segmentation requires many small pieces and the split causes only minor cohesion loss."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- If a cut ends inside a subordinate or verb‑final clause (i.e., before the clau"
+   },
+   {
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "was": "  - Nominal and prepositional phrases: determiners and short prepositions are un",
+    "now": "- Nominal and prepositional phrases: determiners and short prepositions are unst"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0033,
+    "≤5": -0.008,
+    "≤7": 0.001,
+    "≤10": 0.0016,
+    "≤99": -0.0014
+   },
+   "n_worse": 642,
+   "n_better": 617,
+   "why": "The C12 relaxation made the model more willing to place cuts after determiners/short prepositions, which produced more earlier/single‑word-ish cuts and harmed the smallest latency bins (≤3, ≤5); the inserted C7 rule pushed the model away from cuts that end inside subordinate/verb‑final clauses, which slightly improved mid/longer bins (≤7, ≤10). The two edits offset each other so the net H_set change is near zero but with small harms concentrated in short‑latency settings.",
+   "lesson": "Respect the binwise tradeoff: keep permissive cuts that help very short latencies only insofar as they don't create isolated verb/auxiliary or other head‑detaching cuts, while retaining the clause‑final protection for true subordinate/verb‑final fragments.",
+   "blamed": [
+    "C12 «- Verb-final subordinate/relative clauses: these typically m»",
+    "C7 «- In German, this commonly arises when the prefix carries a »"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.0079,
+   "lo": -0.0319,
+   "hi": 0.01202,
+   "n": 401,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a focused contra rule after C6 to address the primary finding: explicitly flag cuts that end on a finite/reporting verb or other predicate-like token and require asking whether the remainder negates/reverses/qualifies the prefix; if so, assign a near-maximal contra. This directly targets the measured underestimation of contradiction risk."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Ask: \"Taken alone, does the prefix assert or imply something that the whole se",
+    "now": "- If a cut leaves the prefix ending on a finite verb, a reporting verb (e.g. \"sa"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.01357,
+   "lo": -0.0371,
+   "hi": 0.00429,
+   "n": 401,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C7 to explicitly flag cuts that leave a prefix that reads like a complete assertion (e.g., ends on a finite or reporting verb or other predicate-like material) and require asking whether the remainder could reverse/negate/qualify that claim; if so, assign a near-maximal contra. This directly addresses the primary finding that contradiction risk was being underestimated for such cuts."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- In German, high contra risk arises when the left fragment, taken alone, reads "
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00485,
+   "lo": -0.02189,
+   "hi": 0.01008,
+   "n": 401,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with labeled example de_de_1000 to teach the model about high contradiction risk when a cut ends on a reporting/finite verb (reporting-verb prefix).",
+   "Replace E2 with labeled example de_de_1529 to provide a measured case where a prefix ending on a reporting verb ('sagte') is later qualified, causing high contra.",
+   "Replace E3 with labeled example de_de_296 to show a short-latency case where a cut leaves an unresolved predicate and the remainder changes interpretation."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: Nicht <SEG:?> alle <SEG:?> sprachen <SEG:?> sich <SEG:?> für <SEG:?> die ",
+    "now": "Input: Die <SEG:?> Polizei <SEG:?> sagte, <SEG:?> dass <SEG:?> sie <SEG:?> einen",
+    "labeled_example": "de_de_1000"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatl",
+    "now": "Input: Rings <SEG:?> CEO <SEG:?> Jamie <SEG:?> Siminoff <SEG:?> sagte <SEG:?> ei",
+    "labeled_example": "de_de_1529"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: Bobek, <SEG:?> in <SEG:?> der <SEG:?> kroatischen <SEG:?> Hauptstadt <SEG",
+    "now": "Input: Die <SEG:?> zwölf <SEG:?> Besatzungsmitglieder <SEG:?> wurden <SEG:?> mit",
+    "labeled_example": "de_de_296"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "screened_only": true,
+  "delta": {
+   "mean": -0.00163,
+   "lo": -0.01242,
+   "hi": 0.00996,
+   "n": 401,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a focused contra rule after C17: explicitly flag cuts that leave the prefix ending on a finite/reporting verb or other predicate-like token without its complement and require treating such cases as high contradiction risk. This addresses the primary finding that the prompt underestimates contra for prefixes that read like independent assertions."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C17",
+    "kind": "change",
+    "was": "- High contradiction risk: the remainder contains an explicit negation/qualifica",
+    "now": "- Special-case: predicate-ending prefixes — If a cut leaves the left fragment en"
+   }
+  ],
+  "findings": [
+   "The prompt systematically underestimates contradiction risk when a cut leaves a prefix that reads like an independent assertion because it ends on a finite/reporting verb or other predicate‑like material without its resolving complement, so high‑contra cuts are ranked too high."
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0092,
+    "≤5": -0.0161,
+    "≤7": -0.0027,
+    "≤10": -0.0054,
+    "≤99": -0.0017
+   },
+   "n_worse": 147,
+   "n_better": 143,
+   "why": "The inserted special-case penalised cuts that leave the left fragment ending on a finite/reporting verb, so the scorer shifted cuts away from verb-final prefixes (e.g. merged 'Schlafen ‖ Sie' into 'Schlafen Sie ...' and kept verb+object together). That change helped the smallest-piece bin (≤3 pieces: +0.0092) but displaced cuts into other boundaries—sometimes splitting named entities and enumerations (e.g. 'Mission Bay' was split)—producing net small harms in the mid/longer bins (≤5: −0.0161, ≤10: −0.0054) and nearly balanced n_worse/n_better.",
+   "lesson": "A later revision should respect that penalising predicate-ending prefixes helps very short-piece cuts but can push cuts into names/enumerations and hurt mid-length cases, so its scope must be constrained to avoid creating those splits.",
+   "blamed": [
+    "C17 «- High contradiction risk: the remainder contains an explici»"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00275,
+   "lo": -0.02398,
+   "hi": 0.01987,
+   "n": 479,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C4 to a much shorter summary of common German cohesion failures so we free space while preserving the judgement.",
+   "Paraphrased C7 to a concise statement of what drives contra in German, reducing length without changing meaning.",
+   "Changed C9 to add the primary finding: prefer very-early cuts after initial clause-introducers unless the remainder contains explicit qualification/negation/scope-bearing material; kept the reminder to judge by meaning, not token lists.",
+   "Changed C17 to keep the high-contradiction definition but make predicate-ending penalties explicitly conditional (only apply when remainder can change the prefix's asserted meaning); allow harmless dense cuts otherwise."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "was": "- Look for damage that in German typically lowers cohesion: splitting a predicat",
+    "now": "- Look for cohesion damage typical in German: cuts that separate predicates from"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+    "now": "- Contra arises when the left fragment alone asserts or implies something the wh"
+   },
+   {
+    "op": "replace",
+    "id": "C9",
+    "kind": "change",
+    "was": "- Both judgments must be made from meaning relations, not by token lists. For Ge",
+    "now": "- Make both judgments from meaning relations, not token lists. For German, prefe"
+   },
+   {
+    "op": "replace",
+    "id": "C17",
+    "kind": "change",
+    "was": "- High contradiction risk: the remainder contains an explicit negation/qualifica",
+    "now": "- High contradiction risk: the remainder contains explicit negation, qualificati"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00298,
+   "lo": -0.02462,
+   "hi": 0.01845,
+   "n": 479,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a new Core Principle that (a) prefers very-early cuts after initial clause-introducing words unless the remainder contains explicit qualification/negation/scope carriers, and (b) makes penalties for predicate-ending prefixes explicitly conditional on the remainder containing clause-level qualifiers/negation/scope — directly addressing the primary finding about overbroad predicate-ending penalties and the underweighting of early clause-introducers."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C18",
+    "kind": "change",
+    "was": "Score both judgments continuously for each marker and use them together (see Sco",
+    "now": "Prefer very-early cuts immediately after initial clause-introducing words (subor"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00277,
+   "lo": -0.0184,
+   "hi": 0.01354,
+   "n": 479,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Delete E1 to remove a hand-written example that encouraged premature cuts and contributed to the size overrun; this addresses the history/blame that E1 shifted the model toward harmful early/inside-NP cuts.",
+   "Delete E2 to remove a large hand-written example (Northern-Rock) that increased prompt length and pushed the prompt over the size budget.",
+   "Delete E3 to remove another large hand-written example (Bobek...) that both contributed to the size overrun and was blamed in prior iterations for encouraging unwanted segmentation behavior."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E1",
+    "kind": "delete",
+    "was": "Input: Nicht <SEG:?> alle <SEG:?> sprachen <SEG:?> sich <SEG:?> für <SEG:?> die ",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "was": "Input: Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatl",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "was": "Input: Bobek, <SEG:?> in <SEG:?> der <SEG:?> kroatischen <SEG:?> Hauptstadt <SEG",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00053,
+   "lo": -0.00718,
+   "hi": 0.00839,
+   "n": 1779,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00053,
+   "lo": -0.00718,
+   "hi": 0.00839,
+   "n": 1779,
+   "n_clusters": 200
+  },
+  "changelog": [
+   "Insert a new Core Principle directing the scorer to prefer very-early cuts after initial clause-introducers when safe and to make predicate-ending penalties explicitly conditional on the remainder containing clause-level qualifiers/negation/scope carriers — this addresses the primary finding that a blanket predicate-ending penalty and underweighting of clause-introducers harmed mid-length bins."
+  ],
+  "findings": [
+   "The scorer systematically undervalues very-early, dense cuts immediately after clause-introducing particles and initial subordinators (e.g. 'Wenn man', 'Auch wenn', initial adverbials). Those prefixes are often the safest place to cut because they isolate the clause introducer and prevent the left fragment from asserting a claim later reversed or qualified — ask: does the remainder contain an explicit qualification/negation that would reverse the prefix? If not, prefer the early cut.",
+   "The prompt applies a blanket penalty to cuts that leave the left fragment ending on a finite verb or 'predicate-ending' prefix. Applied globally, this shifts cuts into names and enumerations and harms mid-length bins. The correct judgement is conditional: penalize predicate-ending prefixes only when the right-hand remainder contains clause-level qualifiers/negation or scope carriers that would change the left fragment's asserted meaning; do not forbid dense cuts inside names/enumerations or short chunks when no such clause-level reversal exists."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C18",
+    "kind": "change",
+    "was": "Score both judgments continuously for each marker and use them together (see Sco",
+    "now": "Prefer very-early cuts immediately after initial clause-introducing words (subor"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0002,
+    "≤5": -0.0006,
+    "≤7": 0.0038,
+    "≤10": 0.0048,
+    "≤99": -0.0022
+   },
+   "n_worse": 653,
+   "n_better": 637,
+   "why": "The new Core Principle (prefer very-early cuts after clause-introducers and make predicate-ending penalties conditional) made the scorer cut earlier around initial clause-introducers, which raised H_set in mid-length bins (≤7 and ≤10) by reducing the previous over-penalization of predicate endings, but caused more harmful very-early splits in short pieces (≤3 and ≤5) that fragment heads/NPs, leaving the overall effect near zero.",
+   "lesson": "Respect that preferring very-early cuts helps mid-length examples but can hurt very-short pieces by splitting heads/NPs, so later revisions should avoid forcing those very-early cuts in short contexts.",
+   "blamed": [
+    "C18 «Score both judgments continuously for each marker and use th»"
+   ]
+  }
+ }
+]

@@ -1,0 +1,31 @@
+{
+  "source_language": "Chinese (Mandarin)",
+  "word_order": "SVO | Examples in the sample show subjects before verbs and objects after (e.g. “政府 正在采取 措施 来保护公众的安全”, “学生 可以 观看 博物馆的人工制品”).",
+  "register": "written, edited expository prose (news/encyclopedic/technical style); formally phrased rather than spontaneous speech.",
+  "fillers_and_hesitations": [
+    "minimal/no discourse fillers observed (none attested in these samples)"
+  ],
+  "discourse_markers": [
+    "contrastive conjunctions (而, 但)",
+    "alternative/coordinating markers (或者, 或)",
+    "topic/opening prepositions or frame-setters (关于, 鉴于)",
+    "reporting/evidential prefaces (据, 据报告)",
+    "emphatic/hedging particle (当然)"
+  ],
+  "clause_boundary_signals": [
+    "perfective/aspect particle (了) often closes an event clause (e.g. 接受了治疗)",
+    "passive introducer (被) which typically begins a passive predication (e.g. 被疏散, 被雪桥掩盖)",
+    "copular framing pattern (是 ... 的) that delimits a predication or emphatic statement (e.g. 这是一艘..., 这是...的一部分)"
+  ],
+  "non_boundary_traps": [
+    "modifier/nominalizer particle (的) that attaches long pre-nominal relative/attributive material and does not by itself end the unit (e.g. 普林塞萨港的途中, 前往巴拉望的普林塞萨港)",
+    "prepositional/locative adjuncts (在...下 / 在...上 / 在这些地区) which are embedded adjuncts rather than clause ends (e.g. 在这些官员的陪同下)",
+    "numeral-classifier noun phrases (近 100 名, 五 人) which form compact noun phrases and can be mistaken for clause boundaries"
+  ],
+  "unstable_prefix_signals": [
+    "topic/antecedent markers that start long dependent material (关于 ... ) where the content and scope can be extended by what follows (e.g. 关于梵语的起源...)",
+    "reporting/introductory prefaces (据 ...) that introduce reported material whose scope and complementation are not fixed until more follows (e.g. 据报告, 据故事情节所写)",
+    "locative/temporal fronting (在... / 目前 / 当时) that commonly begins extended adjunct phrases and does not by itself determine clause-final structure (e.g. 在这些地区, 当时, 目前)"
+  ],
+  "notes_for_prompt_writer": "This corpus is topic-prominent, SVO Chinese prose with frequent pre-nominal modifiers marked by 的; relative clauses and adjectival/nominal modifiers precede the noun head and can be long. Aspect particle 了 and the passive marker 被 are reliable signals that an event clause is complete, while 的 attaches modifiers and should not be taken as a clause boundary by itself. Conjunctions like 而/但/或者 and reporting prefaces (据, 鉴于) link clauses but often begin extended material rather than immediately terminating it."
+}

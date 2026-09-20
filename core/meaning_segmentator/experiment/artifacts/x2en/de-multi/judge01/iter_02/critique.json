@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates contra risk for prefixes that stop inside subordinate/verb‑final clauses or before a clause‑finishing verb/qualification: it lets cuts that leave an asserted prefix which the remainder then negates or qualifies (contra≈1) survive.",
+    "evidence": "de_de_86, de_de_240, de_de_958, de_de_648, de_de_587, de_de_594 — all show the policy keeping a cut that leaves a subordinate or qualifying clause unfinished and that cut has very high measured contra; the offline target removes or moves that cut.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If a cut would end inside a subordinate/verb‑final clause or before the clause’s finishing verb that supplies a qualification or reversal, treat the prefix as high contradiction risk (score the cut very low)."
+    }
+   },
+   {
+    "diagnosis": "The prompt's warning about determiners/short prepositions is being applied too conservatively in dense (short‑chunk) settings: it discourages early cuts after function words even when short‑latency segmentation requires many small pieces and the split causes only minor cohesion loss.",
+    "evidence": "de_de_86, de_de_587, de_de_594, de_de_648, de_de_240 — all are in short latency bins where the offline target adds earlier cuts (including after small function words) to achieve much higher H_set; the policy avoided those cuts and lost most of the gap in short bins.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When dense segmentation is required, allow cuts immediately after determiners/short prepositions provided they do not separate a head from its required complements; prefer small cohesion loss to failing to produce the needed density."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates contra risk for prefixes that stop inside subordinate/verb‑final clauses or before a clause‑finishing verb/qualification: it lets cuts that leave an asserted prefix which the remainder then negates or qualifies (contra≈1) survive.",
+   "evidence": "de_de_86, de_de_240, de_de_958, de_de_648, de_de_587, de_de_594 — all show the policy keeping a cut that leaves a subordinate or qualifying clause unfinished and that cut has very high measured contra; the offline target removes or moves that cut.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If a cut would end inside a subordinate/verb‑final clause or before the clause’s finishing verb that supplies a qualification or reversal, treat the prefix as high contradiction risk (score the cut very low)."
+   }
+  },
+  {
+   "diagnosis": "The prompt's warning about determiners/short prepositions is being applied too conservatively in dense (short‑chunk) settings: it discourages early cuts after function words even when short‑latency segmentation requires many small pieces and the split causes only minor cohesion loss.",
+   "evidence": "de_de_86, de_de_587, de_de_594, de_de_648, de_de_240 — all are in short latency bins where the offline target adds earlier cuts (including after small function words) to achieve much higher H_set; the policy avoided those cuts and lost most of the gap in short bins.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When dense segmentation is required, allow cuts immediately after determiners/short prepositions provided they do not separate a head from its required complements; prefer small cohesion loss to failing to produce the needed density."
+   }
+  }
+ ]
+}

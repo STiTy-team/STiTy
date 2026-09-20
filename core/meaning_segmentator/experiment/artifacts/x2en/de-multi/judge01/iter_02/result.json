@@ -1,0 +1,59 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00362,
+  "lo": -0.01333,
+  "hi": 0.00595,
+  "n": 1779,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": -0.00362,
+  "lo": -0.01333,
+  "hi": 0.00595,
+  "n": 1779,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace C12 to allow cuts after determiners/short prepositions in dense (short‑chunk) settings when they do not detach a head from required complements — addresses the primary finding that the prompt was too conservative and lost short‑latency gains.",
+  "Insert after C7 a new principle that treats cuts ending inside subordinate/verb‑final clauses (before the clause‑finishing verb that supplies a qualification/reversal) as very high contra risk — addresses the finding that contra was underestimated for unfinished subordinate/verb‑final clauses."
+ ],
+ "findings": [
+  "The prompt underestimates contra risk for prefixes that stop inside subordinate/verb‑final clauses or before a clause‑finishing verb/qualification: it lets cuts that leave an asserted prefix which the remainder then negates or qualifies (contra≈1) survive.",
+  "The prompt's warning about determiners/short prepositions is being applied too conservatively in dense (short‑chunk) settings: it discourages early cuts after function words even when short‑latency segmentation requires many small pieces and the split causes only minor cohesion loss."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C7",
+   "kind": "change",
+   "was": "- In German, this commonly arises when the prefix carries a positive assertion t",
+   "now": "- If a cut ends inside a subordinate or verb‑final clause (i.e., before the clau"
+  },
+  {
+   "op": "replace",
+   "id": "C12",
+   "kind": "change",
+   "was": "  - Nominal and prepositional phrases: determiners and short prepositions are un",
+   "now": "- Nominal and prepositional phrases: determiners and short prepositions are unst"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0033,
+   "≤5": -0.008,
+   "≤7": 0.001,
+   "≤10": 0.0016,
+   "≤99": -0.0014
+  },
+  "n_worse": 642,
+  "n_better": 617,
+  "why": "The C12 relaxation made the model more willing to place cuts after determiners/short prepositions, which produced more earlier/single‑word-ish cuts and harmed the smallest latency bins (≤3, ≤5); the inserted C7 rule pushed the model away from cuts that end inside subordinate/verb‑final clauses, which slightly improved mid/longer bins (≤7, ≤10). The two edits offset each other so the net H_set change is near zero but with small harms concentrated in short‑latency settings.",
+  "lesson": "Respect the binwise tradeoff: keep permissive cuts that help very short latencies only insofar as they don't create isolated verb/auxiliary or other head‑detaching cuts, while retaining the clause‑final protection for true subordinate/verb‑final fragments.",
+  "blamed": [
+   "C12 «- Verb-final subordinate/relative clauses: these typically m»",
+   "C7 «- In German, this commonly arises when the prefix carries a »"
+  ]
+ }
+}

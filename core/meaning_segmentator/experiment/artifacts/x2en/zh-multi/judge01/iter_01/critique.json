@@ -1,0 +1,27 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates how tightly verbs bind to their complements: it permits cuts that separate a predicate from its essential object/resultative/degree/particle, producing standalone fragments whose meaning is completed, negated, or reversed by the continuation.",
+    "evidence": "cmn_hans_cn_605, cmn_hans_cn_982, cmn_hans_cn_1099, cmn_hans_cn_234, cmn_hans_cn_362, cmn_hans_cn_600, cmn_hans_cn_1572, cmn_hans_cn_137, cmn_hans_cn_1646, cmn_hans_cn_1309, cmn_hans_cn_1618, cmn_hans_cn_627 — each shows the policy kept a cut inside a predicate or between verb and its complement, yielding a high-contradiction fragment that the offline target repairs by keeping the predicate+complement together.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting between a predicate and its essential complement (verb + object/resultative/degree/particle). If the following text completes, reverses, or negates the predicate, treat the verb+complement as a tight unit and score internal cuts low."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates how tightly verbs bind to their complements: it permits cuts that separate a predicate from its essential object/resultative/degree/particle, producing standalone fragments whose meaning is completed, negated, or reversed by the continuation.",
+   "evidence": "cmn_hans_cn_605, cmn_hans_cn_982, cmn_hans_cn_1099, cmn_hans_cn_234, cmn_hans_cn_362, cmn_hans_cn_600, cmn_hans_cn_1572, cmn_hans_cn_137, cmn_hans_cn_1646, cmn_hans_cn_1309, cmn_hans_cn_1618, cmn_hans_cn_627 — each shows the policy kept a cut inside a predicate or between verb and its complement, yielding a high-contradiction fragment that the offline target repairs by keeping the predicate+complement together.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting between a predicate and its essential complement (verb + object/resultative/degree/particle). If the following text completes, reverses, or negates the predicate, treat the verb+complement as a tight unit and score internal cuts low."
+   }
+  }
+ ]
+}

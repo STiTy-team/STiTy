@@ -1,0 +1,119 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  3,
+  6,
+  10,
+  13,
+  18,
+  20,
+  23,
+  27,
+  30,
+  32,
+  37,
+  38,
+  50,
+  52,
+  54,
+  56,
+  65,
+  68,
+  73,
+  75,
+  82,
+  85,
+  87,
+  93,
+  101,
+  104,
+  105,
+  111,
+  112,
+  113,
+  118,
+  120,
+  122,
+  125,
+  128,
+  131,
+  134,
+  135,
+  138,
+  143,
+  146,
+  149,
+  159,
+  173,
+  178,
+  179,
+  188,
+  197,
+  199
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00425,
+    "lo": -0.0383,
+    "hi": 0.02793,
+    "n": 846,
+    "n_clusters": 50
+   },
+   "chars": 7991,
+   "changelog": [
+    "Paraphrased C1 to a shorter, clearer prompt so we can add a new, targeted rule within size limits.",
+    "Replaced C7 with a rule addressing the primary finding: forbid cuts immediately after bound function morphemes or short degree/negation/comparative/aspectual prefixes unless the left fragment is independently entailed by the full sentence. This directly prevents isolated prefixes/adverbials from becoming contradictory or orphaned."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.02931,
+    "lo": -0.0036,
+    "hi": 0.066,
+    "n": 846,
+    "n_clusters": 50
+   },
+   "chars": 8129,
+   "changelog": [
+    "Paraphrased C1 to a shorter, clearer statement so we can add one targeted rule within size limits.",
+    "Inserted a new core principle to address the primary finding: forbid cuts inside multi-character named entities, transliterations and fixed technical terms across punctuation/parentheses unless the left fragment is independently entailed."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.0166,
+    "lo": -0.02077,
+    "hi": 0.05459,
+    "n": 846,
+    "n_clusters": 50
+   },
+   "chars": 5874,
+   "changelog": [
+    "Replaced E1 with labeled example cmn_hans_cn_1140 to teach the scorer the primary finding (predicate-completion / causal/resultative danger) using a measured case.",
+    "Replaced E2 with labeled example cmn_hans_cn_299 to add another measured case showing predicate/predicate-completion failure modes.",
+    "Deleted E3 (large hand-written example) to reduce prompt size and remove a verbose, unsupported example.",
+    "Deleted E4 (largest hand-written example) to recover the character/word budget and keep the prompt within limits."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00482,
+    "lo": -0.03974,
+    "hi": 0.03571,
+    "n": 846,
+    "n_clusters": 50
+   },
+   "chars": 8282,
+   "changelog": [
+    "Inserted a targeted core principle to address the primary finding: forbid cuts immediately after bound function morphemes or short degree/negation/comparative/aspectual prefixes unless the left fragment is independently entailed by the full sentence, preventing isolated prefixes/adverbials from becoming contradictory or orphaned."
+   ]
+  }
+ ]
+}

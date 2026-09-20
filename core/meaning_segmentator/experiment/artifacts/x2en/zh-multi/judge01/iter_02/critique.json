@@ -1,0 +1,65 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt underestimates the harm of cutting inside numeric/measurement/time expressions: splitting percentages, speeds, durations or numeral+unit sequences often creates contradiction or loses core quantity information.",
+    "evidence": "['cmn_hans_cn_1413','cmn_hans_cn_242','cmn_hans_cn_1607','cmn_hans_cn_1169']: each case shows a cut that breaks a percent/measurement/time expression and yields high contra or low H.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut inside numeral+unit/measurement/percentage/time/duration/speed expressions; treat the whole numeric expression as an atomic unit for segmentation."
+    }
+   },
+   {
+    "diagnosis": "The prompt allows cuts that split multi-character proper names or transliterations, which severs referents and causes contradictions or incoherent fragments.",
+    "evidence": "['cmn_hans_cn_1532','cmn_hans_cn_542','cmn_hans_cn_55']: each case shows a policy cut that divides a person/place name or transliterated token and the target keeps the name contiguous.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not insert cuts inside multi-character named entities or transliterated proper names; keep name characters contiguous so the referent remains recoverable."
+    }
+   },
+   {
+    "diagnosis": "When rules forbid verb–complement splits, the prompt sometimes repositions cuts in ways that isolate punctuation or single-character function words; that trade harms short-piece bins.",
+    "evidence": "['cmn_hans_cn_1413','cmn_hans_cn_974','cmn_hans_cn_8']: these show punctuation or tiny tokens isolated as standalone pieces after cut moves producing low H or high contra.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "When preventing verb–object/resultative splits, avoid moves that leave punctuation, quotes, or single-character function words as isolated pieces; attach such tiny tokens to the adjacent phrase they punctuate."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt underestimates the harm of cutting inside numeric/measurement/time expressions: splitting percentages, speeds, durations or numeral+unit sequences often creates contradiction or loses core quantity information.",
+   "evidence": "['cmn_hans_cn_1413','cmn_hans_cn_242','cmn_hans_cn_1607','cmn_hans_cn_1169']: each case shows a cut that breaks a percent/measurement/time expression and yields high contra or low H.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut inside numeral+unit/measurement/percentage/time/duration/speed expressions; treat the whole numeric expression as an atomic unit for segmentation."
+   }
+  },
+  {
+   "diagnosis": "The prompt allows cuts that split multi-character proper names or transliterations, which severs referents and causes contradictions or incoherent fragments.",
+   "evidence": "['cmn_hans_cn_1532','cmn_hans_cn_542','cmn_hans_cn_55']: each case shows a policy cut that divides a person/place name or transliterated token and the target keeps the name contiguous.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not insert cuts inside multi-character named entities or transliterated proper names; keep name characters contiguous so the referent remains recoverable."
+   }
+  },
+  {
+   "diagnosis": "When rules forbid verb–complement splits, the prompt sometimes repositions cuts in ways that isolate punctuation or single-character function words; that trade harms short-piece bins.",
+   "evidence": "['cmn_hans_cn_1413','cmn_hans_cn_974','cmn_hans_cn_8']: these show punctuation or tiny tokens isolated as standalone pieces after cut moves producing low H or high contra.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "When preventing verb–object/resultative splits, avoid moves that leave punctuation, quotes, or single-character function words as isolated pieces; attach such tiny tokens to the adjacent phrase they punctuate."
+   }
+  }
+ ]
+}

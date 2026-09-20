@@ -1,0 +1,143 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00027,
+  "lo": -0.01209,
+  "hi": 0.01356,
+  "n": 10125,
+  "n_clusters": 398,
+  "dev_a": {
+   "mean": 0.00921,
+   "lo": -0.00708,
+   "hi": 0.02481,
+   "n": 5057,
+   "n_clusters": 199
+  },
+  "dev_b": {
+   "mean": -0.00865,
+   "lo": -0.02822,
+   "hi": 0.01169,
+   "n": 5068,
+   "n_clusters": 199
+  },
+  "pooled": true
+ },
+ "by_bin": {
+  "≤3": 0.0051,
+  "≤5": 0.0123,
+  "≤7": 0.0119,
+  "≤10": 0.0075,
+  "≤99": 0.0124
+ },
+ "n_worse": 2181,
+ "n_better": 2360,
+ "worst": [
+  {
+   "id": "ja_jp_842",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.6981,
+   "before": "注意：この辺りにある居酒屋は、州外から来た旅行客がたむろするのに必ずしも良い場所ではありません ‖ 。",
+   "after": "注意：この辺りにある居酒屋は、州外から来た旅行客がたむろする ‖ のに必ずしも良い場所ではありません。"
+  },
+  {
+   "id": "ja_jp_896",
+   "k": 4,
+   "bin": "≤99",
+   "delta": -0.6816,
+   "before": "少なくとも、 ‖ それなりの靴底の靴が必要です。 ‖ 通常、 ‖ 夏用の靴で氷上や雪上を歩くと滑ってしまい、 ‖ 冬用のブーツでも十分とは限りません。",
+   "after": "少なくとも、それなりの靴底の靴が ‖ 必要です。通常、夏用の靴で氷上や雪上を歩くと滑ってしまい、冬用のブーツでも ‖ 十 ‖ 分 ‖ とは限りません。"
+  },
+  {
+   "id": "ja_jp_1570",
+   "k": 2,
+   "bin": "≤10",
+   "delta": -0.6609,
+   "before": "州間の税法や関税を無効にする権限もありませんでし ‖ た ‖ 。",
+   "after": "州間の税法や関税を無効にする権限 ‖ もありませんでした ‖ 。"
+  },
+  {
+   "id": "ja_jp_896",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.6029,
+   "before": "少なくとも、それなりの靴底の靴が必要です。通常、 ‖ 夏用の靴で氷上や雪上を歩くと滑ってしまい、冬用のブーツでも十分とは限りません。",
+   "after": "少なくとも、それなりの靴底の靴が必要です。通常、夏用の靴で氷上や雪上を歩くと滑ってしまい、冬用のブーツでも十 ‖ 分とは限りません。"
+  },
+  {
+   "id": "ja_jp_896",
+   "k": 5,
+   "bin": "≤99",
+   "delta": -0.6005,
+   "before": "少なくとも、 ‖ それなりの靴底 ‖ の靴が必要です。 ‖ 通常、 ‖ 夏用の靴で氷上や雪上を歩くと滑ってしまい、 ‖ 冬用のブーツでも十分とは限りません。",
+   "after": "少なくとも、それなりの靴底の靴が ‖ 必要です。通常、夏用の靴で氷上や雪上を歩くと滑ってしまい、冬用のブーツで ‖ も ‖ 十 ‖ 分 ‖ とは限りません。"
+  }
+ ],
+ "best": [
+  {
+   "id": "ja_jp_787",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.8821,
+   "before": "世界には5 ‖ ,000以上の言語があり、そのうち5,000万人以上の話者がいる言語は20を超えます。",
+   "after": "世界には5,000以上の言語があり、 ‖ そのうち5,000万人以上の話者がいる言語は20を超えます。"
+  },
+  {
+   "id": "ja_jp_1359",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.8024,
+   "before": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、 ‖ そうすると歴史的証拠 ‖ は残りません。",
+   "after": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、そうすると歴史的証拠は残りませ ‖ ん ‖ 。"
+  },
+  {
+   "id": "ja_jp_1648",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.7719,
+   "before": "カナンの地には ‖ 大規模な森林 ‖ が存在しなかったので木材は非常に高価で貴重なものでした。",
+   "after": "カナンの地には ‖ 大規模な森林が存在しなかったので木材は非常に高価で貴重なものでした ‖ 。"
+  },
+  {
+   "id": "ja_jp_1359",
+   "k": 3,
+   "bin": "≤99",
+   "delta": 0.7302,
+   "before": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、 ‖ そうすると歴史的証拠 ‖ は ‖ 残りません。",
+   "after": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、そうすると歴史的証拠は残りま ‖ せ ‖ ん ‖ 。"
+  },
+  {
+   "id": "ja_jp_1648",
+   "k": 3,
+   "bin": "≤99",
+   "delta": 0.6764,
+   "before": "カナンの地 ‖ には ‖ 大規模な森林 ‖ が存在しなかったので木材は非常に高価で貴重なものでした。",
+   "after": "カナンの地には ‖ 大規模な森林が存在しなかったので木材は ‖ 非常に高価で貴重なものでした ‖ 。"
+  }
+ ],
+ "vs_base": {
+  "delta": {
+   "mean": -0.00887,
+   "lo": -0.02356,
+   "hi": 0.00591,
+   "n": 5057,
+   "n_clusters": 199
+  },
+  "by_bin": {
+   "≤3": -0.0084,
+   "≤5": 0.0015,
+   "≤7": -0.0145,
+   "≤10": -0.027,
+   "≤99": -0.0141
+  },
+  "n_worse": 2346,
+  "n_better": 1857
+ },
+ "why": "The new contradiction‑veto and no‑internal‑split principles made the scorer avoid boundaries that would leave a left fragment that contradicts the whole sentence and avoid some particle/attachment cuts, and the conditional dense‑cut rule partly recovered denser short‑latency choices; this produced small gains in the short bins (≤3–≤7) but caused many cuts to be displaced into intra‑word/character positions or earlier long‑latency boundaries, producing the long‑bin degradations and the internal splits seen in the tails.",
+ "lesson": "When adding contradiction vetoes or banning particle/word splits, ensure the scorer is constrained so it does not simply shift boundaries into intra‑word/character positions or earlier long‑latency cuts — enforce no‑internal‑split without creating new illegal splits and apply contradiction checks narrowly so they don't displace previously good long‑latency boundaries.",
+ "blamed": [
+  "C_end (contradiction‑veto)",
+  "C_end (no‑internal‑word/particle split)",
+  "C_end (conditional dense‑cut guidance)"
+ ]
+}

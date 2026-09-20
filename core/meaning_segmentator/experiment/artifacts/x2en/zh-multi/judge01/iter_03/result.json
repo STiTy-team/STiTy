@@ -1,0 +1,75 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01253,
+  "lo": -0.00256,
+  "hi": 0.02803,
+  "n": 3726,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00342,
+  "lo": -0.00719,
+  "hi": 0.01396,
+  "n": 7350,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.01253,
+   "lo": -0.00256,
+   "hi": 0.02803,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": -0.00594,
+   "lo": -0.01948,
+   "hi": 0.00834,
+   "n": 3624,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Paraphrased C1 to a shorter, clearer statement so we can add one targeted rule within size limits.",
+  "Inserted a new core principle to address the primary finding: forbid cuts inside multi-character named entities, transliterations and fixed technical terms across punctuation/parentheses unless the left fragment is independently entailed."
+ ],
+ "findings": [
+  "Treats cuts after short bound function morphemes or degree/comparative prefixes as safe; it fails to require that the preceding fragment be independently entailed by the whole sentence, so isolated prefixes or partial adverbials become contradictory or orphaned.",
+  "Does not reliably keep multi-character names, transliterations and fixed technical terms contiguous when punctuation or parentheses intervene, producing orphan fragments that lose reference or contradict the whole.",
+  "Underestimates that causal/resultative and predicate-completion constructions (cause/result markers, resultatives, verb–object completions, 'make/allow' sequences) require the continuation to complete the predicate; cutting before completion yields contradictory or incomplete assertions."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C1",
+   "kind": "paraphrase",
+   "was": "- At this cut, ask: does the upcoming material negate, reverse, or materially ch",
+   "now": "- Ask whether the following material negates, reverses, or materially changes th"
+  },
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+   "now": "- Keep multi-character named entities, transliterations, and fixed technical ter"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0182,
+   "≤5": 0.0044,
+   "≤7": 0.0105,
+   "≤10": 0.0179,
+   "≤99": 0.0118
+  },
+  "n_worse": 1686,
+  "n_better": 1805,
+  "why": "The inserted core principle forbidding cuts inside multi-character named entities/transliterations/fixed technical terms made the model avoid splitting names and parentheticals, giving small overall gains (largest in the shortest bin ≤3) by preserving those spans, but it also pushed cuts around parentheses, colons and quotation marks (moving cuts earlier or after parentheticals) and so created many regressions where punctuation or reporting verbs became isolated.",
+  "lesson": "When protecting multi-token names/terms, don't force cuts that isolate punctuation, colons/quotes, or reporting verbs—avoid moving cuts so the left fragment becomes a dangling or unentailed piece.",
+  "blamed": [
+   "C8 «- Evaluate discourse connectors and coordination: conjunctio»",
+   "C1 «- Ask whether the following material negates, reverses, or m»"
+  ]
+ }
+}

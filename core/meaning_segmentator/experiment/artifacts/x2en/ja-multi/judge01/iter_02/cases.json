@@ -1,0 +1,2842 @@
+[
+ {
+  "id": "ja_jp_955",
+  "cuts": 12,
+  "avg_chunk": 2.7,
+  "latency_bin": "≤3",
+  "gap": 0.4453,
+  "policy_worst_contra": 0.9993,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34
+   ],
+   "H_set": 0.0003,
+   "text": "トルコ航空は2014年現在、アフリカ30カ国3 ‖ 9 ‖ 都 ‖ 市 ‖ に ‖ 就 ‖ 航 ‖ し ‖ て ‖ い ‖ ま ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "Turkish Airlines operates flights to 30 African countries as of 2014.",
+     "9",
+     "Du",
+     "City",
+     "To",
+     "Just...",
+     "Air",
+     "Shi",
+     "- Yeah.",
+     "I",
+     "Ma",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     " 2014年，土耳其航空在非洲30个国家开设了30个航线。",
+     "9个国家",
+     "都",
+     "市",
+     "上",
+     "是的",
+     "航",
+     "西",
+     "是的",
+     "是啊",
+     "马",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Turkish Airlines fliegt in 30 afrikanische Länder.",
+     "9",
+     "Du",
+     "Stadt",
+     "",
+     "- Ja.",
+     "Luftfahrt",
+     "Shi",
+     "- Ich weiß.",
+     "- Ich.",
+     "Ma",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En 2014, la aerolínea operaba vuelos a 30 destinos en África.",
+     "9 de diciembre de 1999",
+     "Todos",
+     "Ciudad",
+     "A",
+     "- Sí.",
+     "Aviación",
+     "- Sí.",
+     "- ¿Qué?",
+     "- Sí.",
+     "- No.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    5,
+    6,
+    10,
+    11,
+    14,
+    30,
+    31,
+    32,
+    33,
+    34
+   ],
+   "H_set": 0.4456,
+   "text": "トルコ ‖ 航 ‖ 空 ‖ は ‖ 2014 ‖ 年 ‖ 現在、 ‖ アフリカ30カ国39都市に就航し ‖ て ‖ い ‖ ま ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "Turkey",
+     "Air",
+     "No",
+     "- Yeah.",
+     "2014",
+     "Year",
+     "Now,",
+     "We &apos;re flying to 39 cities in 30 countries in Africa.",
+     "- Yeah.",
+     "I",
+     "Ma",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "10. 土耳其",
+     "航",
+     "空",
+     "是",
+     "2014年 2015年 2016年 2017年 2018年 2019年 2020年 2021年 2022年 2023年 2024年 2025年 2026年 2027年 2028年 2029年 2030年 2031年 2032年 2033年 2034年 2035年 2036年 2037年 2038年 2039年 2040年 2041年 2042年 2043年 2044年 2045年",
+     "年份",
+     "现在",
+     "飞往30个非洲国家的39个城市",
+     "是的",
+     "是啊",
+     "马",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Türkei",
+     "Luftfahrt",
+     "Leere",
+     "Ha",
+     "2014",
+     "Jahr",
+     "Nun,",
+     "Wir fliegen in 39 Städte in 30 Ländern Afrikas.",
+     "- Ich weiß.",
+     "- Ich.",
+     "Ma",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "11. Turquía",
+     "Aviación",
+     "Vacío",
+     "- ¿Qué?",
+     "2014",
+     "Año",
+     "Ahora,",
+     "Volamos a 39 ciudades en 30 países africanos.",
+     "- ¿Qué?",
+     "- Sí.",
+     "- No.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 23,
+     "left": "0カ国3",
+     "right": "9都市に",
+     "H": 0.0004,
+     "H_pct": 0.0,
+     "contra": 0.9993,
+     "cohesion": 0.6016
+    },
+    {
+     "pos": 24,
+     "left": "カ国39",
+     "right": "都市に就",
+     "H": 0.5658,
+     "H_pct": 21.2,
+     "contra": 0.0142,
+     "cohesion": 0.574
+    },
+    {
+     "pos": 25,
+     "left": "国39都",
+     "right": "市に就航",
+     "H": 0.6165,
+     "H_pct": 36.4,
+     "contra": 0.0043,
+     "cohesion": 0.6191
+    },
+    {
+     "pos": 26,
+     "left": "39都市",
+     "right": "に就航し",
+     "H": 0.6044,
+     "H_pct": 33.3,
+     "contra": 0.0118,
+     "cohesion": 0.6116
+    },
+    {
+     "pos": 27,
+     "left": "9都市に",
+     "right": "就航して",
+     "H": 0.6711,
+     "H_pct": 54.5,
+     "contra": 0.0023,
+     "cohesion": 0.6726
+    },
+    {
+     "pos": 28,
+     "left": "都市に就",
+     "right": "航してい",
+     "H": 0.6651,
+     "H_pct": 51.5,
+     "contra": 0.0045,
+     "cohesion": 0.6682
+    },
+    {
+     "pos": 29,
+     "left": "市に就航",
+     "right": "していま",
+     "H": 0.6908,
+     "H_pct": 60.6,
+     "contra": 0.0028,
+     "cohesion": 0.6927
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "トルコ",
+     "right": "航空は2",
+     "H": 0.7861,
+     "H_pct": 93.9,
+     "contra": 0.0152,
+     "cohesion": 0.7983
+    },
+    {
+     "pos": 4,
+     "left": "トルコ航",
+     "right": "空は20",
+     "H": 0.7806,
+     "H_pct": 87.9,
+     "contra": 0.0087,
+     "cohesion": 0.7874
+    },
+    {
+     "pos": 5,
+     "left": "ルコ航空",
+     "right": "は201",
+     "H": 0.7844,
+     "H_pct": 90.9,
+     "contra": 0.0005,
+     "cohesion": 0.7848
+    },
+    {
+     "pos": 6,
+     "left": "コ航空は",
+     "right": "2014",
+     "H": 0.7342,
+     "H_pct": 75.8,
+     "contra": 0.0008,
+     "cohesion": 0.7348
+    },
+    {
+     "pos": 10,
+     "left": "2014",
+     "right": "年現在、",
+     "H": 0.7396,
+     "H_pct": 81.8,
+     "contra": 0.0013,
+     "cohesion": 0.7406
+    },
+    {
+     "pos": 11,
+     "left": "014年",
+     "right": "現在、ア",
+     "H": 0.7387,
+     "H_pct": 78.8,
+     "contra": 0.0011,
+     "cohesion": 0.7395
+    },
+    {
+     "pos": 14,
+     "left": "年現在、",
+     "right": "アフリカ",
+     "H": 0.733,
+     "H_pct": 72.7,
+     "contra": 0.0046,
+     "cohesion": 0.7364
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_96",
+  "cuts": 4,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.5545,
+  "policy_worst_contra": 0.9133,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "H_set": 0.0362,
+   "text": "調査のために ‖ 調 ‖ 査 ‖ 機 ‖ 関が設立されました。",
+   "pieces": {
+    "English": [
+     "For the sake of investigation.",
+     "Mode",
+     "Sa",
+     "Machine",
+     "The Kan was established."
+    ],
+    "Chinese": [
+     "为了调查",
+     "调",
+     "查",
+     "机器",
+     " 關係已建立。"
+    ],
+    "German": [
+     "Für die Untersuchung.",
+     "Ton ",
+     "Sa",
+     "Maschine",
+     "Die Grenze wurde geschaffen."
+    ],
+    "Spanish": [
+     "Para la investigación.",
+     "Tono",
+     "- ¿Qué?",
+     "Máquina",
+     "Se estableció el vínculo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    17,
+    18
+   ],
+   "H_set": 0.5907,
+   "text": "調査のため ‖ に ‖ 調査機関が設立されまし ‖ た ‖ 。",
+   "pieces": {
+    "English": [
+     "For the investigation.",
+     "To",
+     "An investigation has been set up.",
+     "- Yeah.",
+     "."
+    ],
+    "Chinese": [
+     "为了调查",
+     "上",
+     "我们建立了一个调查机构",
+     "太",
+     "................................................................................................"
+    ],
+    "German": [
+     "- Ich erforsche das.",
+     "",
+     "Es wurde eine Untersuchungskommission gegründet.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "- Para investigar.",
+     "A",
+     "Se creó una agencia de investigación.",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "ために調",
+     "right": "査機関が",
+     "H": 0.5957,
+     "H_pct": 47.1,
+     "contra": 0.0055,
+     "cohesion": 0.599
+    },
+    {
+     "pos": 8,
+     "left": "めに調査",
+     "right": "機関が設",
+     "H": 0.5337,
+     "H_pct": 11.8,
+     "contra": 0.0006,
+     "cohesion": 0.534
+    },
+    {
+     "pos": 9,
+     "left": "に調査機",
+     "right": "関が設立",
+     "H": 0.0394,
+     "H_pct": 0.0,
+     "contra": 0.9133,
+     "cohesion": 0.454
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "査のため",
+     "right": "に調査機",
+     "H": 0.7243,
+     "H_pct": 88.2,
+     "contra": 0.0004,
+     "cohesion": 0.7246
+    },
+    {
+     "pos": 17,
+     "left": "されまし",
+     "right": "た。",
+     "H": 0.807,
+     "H_pct": 100.0,
+     "contra": 0.0026,
+     "cohesion": 0.8091
+    },
+    {
+     "pos": 18,
+     "left": "れました",
+     "right": "。",
+     "H": 0.7587,
+     "H_pct": 94.1,
+     "contra": 0.0034,
+     "cohesion": 0.7613
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_346",
+  "cuts": 7,
+  "avg_chunk": 6.8,
+  "latency_bin": "≤7",
+  "gap": 0.6677,
+  "policy_worst_contra": 0.9991,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "H_set": 0.0005,
+   "text": "幸 ‖ い ‖ に ‖ も ‖ 私 ‖ は ‖ 被 ‖ 害に遭いませんでしたが、人々が窓を割って外に出ようとしているという不気味な光景を目にしました。",
+   "pieces": {
+    "English": [
+     "Yu",
+     "I",
+     "To",
+     "- I'm sorry.",
+     "I",
+     "- Yeah.",
+     "Be",
+     "I was not hurt, but I saw a creepy sight of people trying to break the window and get out."
+    ],
+    "Chinese": [
+     "幸",
+     "是啊",
+     "上",
+     "还有",
+     "我",
+     "是",
+     "被",
+     " 雖然沒有受傷，但我看到了一些人試圖從窗戶逃出來的可怕景象。"
+    ],
+    "German": [
+     "Yu",
+     "- Ich.",
+     "",
+     "Auch",
+     "Ich",
+     "Ha",
+     "Be",
+     "Ich wurde nicht verletzt, sah aber die unheimliche Szene, wie die Leute versuchten, die Fenster zu brechen und nach draußen zu gelangen."
+    ],
+    "Spanish": [
+     "- ¡Gracias!",
+     "- Sí.",
+     "A",
+     "- Sí.",
+     "- Yo.",
+     "- ¿Qué?",
+     "Se",
+     "No se lesionó, pero vio una visión espeluznante de gente rompiendo ventanas y tratando de salir."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    14,
+    36,
+    37,
+    38,
+    39,
+    52
+   ],
+   "H_set": 0.6682,
+   "text": "幸いにも ‖ 私は被害に遭いません ‖ でしたが、人々が窓を割って外に出ようとしてい ‖ る ‖ と ‖ い ‖ う不気味な光景を目にしまし ‖ た。",
+   "pieces": {
+    "English": [
+     "Thank God.",
+     "I wasn't hurt.",
+     "But people were trying to break the window and get out.",
+     "る",
+     "And",
+     "I",
+     "I saw a creepy sight.",
+     "- Yeah."
+    ],
+    "Chinese": [
+     "幸运的是",
+     "我没有受伤",
+     "人们试图从窗户里逃出来",
+     "是的",
+     "与",
+     "是啊",
+     "我们看到了一个可怕的景象",
+     "       "
+    ],
+    "German": [
+     "Zum Glück.",
+     "Ich bin nicht verletzt worden.",
+     "Aber die Leute versuchten, das Fenster zu brechen und rauszukommen.",
+     "- Ja.",
+     "Und",
+     "- Ich.",
+     "Ich sah etwas sehr Unheimliches.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Afortunadamente, sí.",
+     "No me hice daño.",
+     "Pero la gente estaba rompiendo las ventanas y tratando de salir.",
+     "- Sí.",
+     "Y",
+     "- Sí.",
+     "Vi una escena espeluznante.",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "幸",
+     "right": "いにも私",
+     "H": 0.7518,
+     "H_pct": 65.4,
+     "contra": 0.0029,
+     "cohesion": 0.754
+    },
+    {
+     "pos": 2,
+     "left": "幸い",
+     "right": "にも私は",
+     "H": 0.7086,
+     "H_pct": 50.0,
+     "contra": 0.0009,
+     "cohesion": 0.7092
+    },
+    {
+     "pos": 3,
+     "left": "幸いに",
+     "right": "も私は被",
+     "H": 0.7661,
+     "H_pct": 71.2,
+     "contra": 0.0007,
+     "cohesion": 0.7667
+    },
+    {
+     "pos": 5,
+     "left": "いにも私",
+     "right": "は被害に",
+     "H": 0.6886,
+     "H_pct": 40.4,
+     "contra": 0.0066,
+     "cohesion": 0.6932
+    },
+    {
+     "pos": 6,
+     "left": "にも私は",
+     "right": "被害に遭",
+     "H": 0.8101,
+     "H_pct": 84.6,
+     "contra": 0.0082,
+     "cohesion": 0.8167
+    },
+    {
+     "pos": 7,
+     "left": "も私は被",
+     "right": "害に遭い",
+     "H": 0.0007,
+     "H_pct": 9.6,
+     "contra": 0.9991,
+     "cohesion": 0.7689
+    }
+   ],
+   "added": [
+    {
+     "pos": 14,
+     "left": "いません",
+     "right": "でしたが",
+     "H": 0.8218,
+     "H_pct": 90.4,
+     "contra": 0.0011,
+     "cohesion": 0.8227
+    },
+    {
+     "pos": 36,
+     "left": "としてい",
+     "right": "るという",
+     "H": 0.8347,
+     "H_pct": 96.2,
+     "contra": 0.0089,
+     "cohesion": 0.8422
+    },
+    {
+     "pos": 37,
+     "left": "している",
+     "right": "という不",
+     "H": 0.8205,
+     "H_pct": 88.5,
+     "contra": 0.0035,
+     "cohesion": 0.8234
+    },
+    {
+     "pos": 38,
+     "left": "ていると",
+     "right": "いう不気",
+     "H": 0.8301,
+     "H_pct": 94.2,
+     "contra": 0.0121,
+     "cohesion": 0.8402
+    },
+    {
+     "pos": 39,
+     "left": "いるとい",
+     "right": "う不気味",
+     "H": 0.8277,
+     "H_pct": 92.3,
+     "contra": 0.0138,
+     "cohesion": 0.8393
+    },
+    {
+     "pos": 52,
+     "left": "にしまし",
+     "right": "た。",
+     "H": 0.8424,
+     "H_pct": 100.0,
+     "contra": 0.0142,
+     "cohesion": 0.8545
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_933",
+  "cuts": 3,
+  "avg_chunk": 9.8,
+  "latency_bin": "≤10",
+  "gap": 0.6746,
+  "policy_worst_contra": 0.9962,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    16,
+    23
+   ],
+   "H_set": 0.0024,
+   "text": "学生ビザは ‖ 一般的に通常の観光ビザ ‖ やビジネスビザ ‖ とは要件や申手続きが異なります。",
+   "pieces": {
+    "English": [
+     "What about the student visa?",
+     "Generally, normal tourist visas.",
+     "And business visas.",
+     "The requirements and application procedures are different."
+    ],
+    "Chinese": [
+     "学生签证",
+     "一般来说,普通的旅游签证",
+     "商务签证",
+     " 不同程度的要求和要求。"
+    ],
+    "German": [
+     "Was ist ein Studentenvisum?",
+     "Ein normales Touristenvisum",
+     "Ich habe kein Geschäftsvisum.",
+     "Die Anforderungen und die Verfahren sind unterschiedlich."
+    ],
+    "Spanish": [
+     "¿Qué es una visa de estudiante?",
+     "Visa de turista normal.",
+     "Visa de negocios",
+     "Las condiciones y los requisitos son diferentes."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    38
+   ],
+   "H_set": 0.677,
+   "text": "学生ビザ ‖ は ‖ 一般的に通常の観光ビザやビジネスビザとは要件や申手続きが異なります ‖ 。",
+   "pieces": {
+    "English": [
+     "Student visa",
+     "- Yeah.",
+     "Generally, it &apos;s different from a normal tourist or business visa, in terms of requirements and procedures.",
+     "."
+    ],
+    "Chinese": [
+     "学生签证",
+     "是",
+     "一般而言, 旅游签证和商务签证 都有不同的要求和申请流程.",
+     "................................................................................................"
+    ],
+    "German": [
+     "Studentenvisum",
+     "Ha",
+     "Es gibt andere Anforderungen und Verfahren als für ein normales Touristen- oder Geschäftsvisum.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Visa de estudiante",
+     "- ¿Qué?",
+     "Por lo general, los requisitos y el proceso son diferentes a los de una visa de turista o de negocios.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 16,
+     "left": "観光ビザ",
+     "right": "やビジネ",
+     "H": 0.0116,
+     "H_pct": 27.0,
+     "contra": 0.9838,
+     "cohesion": 0.7186
+    },
+    {
+     "pos": 23,
+     "left": "ネスビザ",
+     "right": "とは要件",
+     "H": 0.0027,
+     "H_pct": 2.7,
+     "contra": 0.9962,
+     "cohesion": 0.7095
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "学生ビザ",
+     "right": "は一般的",
+     "H": 0.8399,
+     "H_pct": 97.3,
+     "contra": 0.0011,
+     "cohesion": 0.8408
+    },
+    {
+     "pos": 38,
+     "left": "なります",
+     "right": "。",
+     "H": 0.8391,
+     "H_pct": 94.6,
+     "contra": 0.0022,
+     "cohesion": 0.8409
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_1081",
+  "cuts": 1,
+  "avg_chunk": 24.0,
+  "latency_bin": "≤99",
+  "gap": 0.7546,
+  "policy_worst_contra": 0.9781,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    47
+   ],
+   "H_set": 0.0139,
+   "text": "さらに南にはナイアガラの滝があり、北にはムスコカをはじめとする手つかずの自然美が広がっています ‖ 。",
+   "pieces": {
+    "English": [
+     "In addition, Niagara Falls is located in the south, and the untouched natural beauty of the Muscoka Mountains is located in the north.",
+     "."
+    ],
+    "Chinese": [
+     "南边是尼亚加拉瀑布，北边是原始的美丽，包括马斯科卡。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Im Süden liegen die Niagarafälle und im Norden die unberührte Natur mit den Muskogewächsen.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Y al sur, las cataratas del Niágara, y al norte, la belleza natural virgen de la región de Muskoka.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.7685,
+   "text": "さらに ‖ 南にはナイアガラの滝があり、北にはムスコカをはじめとする手つかずの自然美が広がっています。",
+   "pieces": {
+    "English": [
+     "And more.",
+     "Niagara Falls is located in the south, and the untouched natural beauty of the Muscoka Mountains is located in the north."
+    ],
+    "Chinese": [
+     "再说一遍",
+     "南部有尼亚加拉瀑布，北部有莫斯科卡等原始自然美景。"
+    ],
+    "German": [
+     "Und noch mehr.",
+     "Im Süden liegen die Niagarafälle, im Norden die unberührte Naturschönheit der Muskogee."
+    ],
+    "Spanish": [
+     "Y más.",
+     "Al sur se encuentran las Cataratas del Niágara, mientras que al norte se encuentran las bellezas naturales vírgenes de Muskoka."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 47,
+     "left": "ています",
+     "right": "。",
+     "H": 0.0139,
+     "H_pct": 0.0,
+     "contra": 0.9781,
+     "cohesion": 0.635
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "さらに",
+     "right": "南にはナ",
+     "H": 0.7686,
+     "H_pct": 100.0,
+     "contra": 0.007,
+     "cohesion": 0.774
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_1130",
+  "cuts": 13,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.4269,
+  "policy_worst_contra": 0.9907,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+   ],
+   "H_set": 0.0038,
+   "text": "人の心の安らぎを示す度合いは、身体や精神の緊張の度合い ‖ と ‖ は ‖ 正 ‖ 反 ‖ 対 ‖ の関 ‖ 係 ‖ に ‖ あ ‖ り ‖ ま ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "The degree of a person's mental calm is the degree of tension in the body and mind.",
+     "And",
+     "- Yeah.",
+     "100%",
+     "Contra",
+     "Pair",
+     "Nokan",
+     "Officer",
+     "To",
+     "Oh, yeah.",
+     "Ri",
+     "Ma",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "心灵的平静程度 是身体和精神的紧张程度",
+     "与",
+     "是",
+     "正",
+     "反",
+     "对",
+     "之關",
+     "官员",
+     "上",
+     "哦",
+     "里",
+     "马",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Die Ruhe eines Menschen zeigt sich in der Anspannung seines Körpers und Geistes.",
+     "Und",
+     "Ha",
+     "Positiv",
+     "Anti",
+     "Paar",
+     "Nokan",
+     "Beamter",
+     "",
+     "- Oh, ja.",
+     "Ri",
+     "Ma",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "La calma de la mente de una persona es la medida de la tensión de su cuerpo y mente.",
+     "Y",
+     "- ¿Qué?",
+     "Positivo",
+     "Contra",
+     "Par",
+     "Nokan",
+     "Agente",
+     "A",
+     "- Ah, sí.",
+     "- Sí.",
+     "- No.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    32,
+    35,
+    36,
+    37,
+    38,
+    40
+   ],
+   "H_set": 0.4307,
+   "text": "人の ‖ 心の安らぎを示 ‖ す ‖ 度合 ‖ い ‖ は ‖ 、 ‖ 身体や精神の緊張の度合いとは正反対 ‖ の関係 ‖ に ‖ あ ‖ り ‖ ます ‖ 。",
+   "pieces": {
+    "English": [
+     "People.",
+     "It shows the peace of mind.",
+     "- Oh, my God.",
+     "Dojo",
+     "I",
+     "- Yeah.",
+     ",",
+     "It's the opposite of the degree of physical and mental tension.",
+     "Relationships",
+     "To",
+     "Oh, yeah.",
+     "Ri",
+     "- Yeah. - Yeah.",
+     "."
+    ],
+    "Chinese": [
+     "人",
+     "心灵的平静",
+     "哦，我知道。",
+     "度合",
+     "是啊",
+     "是",
+     ",,,",
+     "与身体和精神的紧张程度相反。",
+     "关系",
+     "上",
+     "哦",
+     "里",
+     "是的，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Menschen.",
+     "Zeige mir deinen Frieden.",
+     "- Ja.",
+     "Rituale",
+     "- Ich.",
+     "Ha",
+     ",",
+     "Es ist das Gegenteil von körperlicher und geistiger Anspannung.",
+     "Beziehung",
+     "",
+     "- Oh, ja.",
+     "Ri",
+     "- Ich bin da.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "- Hombre.",
+     "Muestra tu paz mental.",
+     "- ¡Sí!",
+     "Concentración",
+     "- Sí.",
+     "- ¿Qué?",
+     ",",
+     "Es lo opuesto a la tensión física y mental.",
+     "Relaciones",
+     "A",
+     "- Ah, sí.",
+     "- Sí.",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 27,
+     "left": "の度合い",
+     "right": "とは正反",
+     "H": 0.0121,
+     "H_pct": 12.8,
+     "contra": 0.9823,
+     "cohesion": 0.6851
+    },
+    {
+     "pos": 28,
+     "left": "度合いと",
+     "right": "は正反対",
+     "H": 0.4188,
+     "H_pct": 35.9,
+     "contra": 0.4001,
+     "cohesion": 0.6981
+    },
+    {
+     "pos": 29,
+     "left": "合いとは",
+     "right": "正反対の",
+     "H": 0.0483,
+     "H_pct": 30.8,
+     "contra": 0.9307,
+     "cohesion": 0.6976
+    },
+    {
+     "pos": 30,
+     "left": "いとは正",
+     "right": "反対の関",
+     "H": 0.0058,
+     "H_pct": 0.0,
+     "contra": 0.9907,
+     "cohesion": 0.6277
+    },
+    {
+     "pos": 31,
+     "left": "とは正反",
+     "right": "対の関係",
+     "H": 0.6103,
+     "H_pct": 61.5,
+     "contra": 0.009,
+     "cohesion": 0.6158
+    },
+    {
+     "pos": 34,
+     "left": "反対の関",
+     "right": "係にあり",
+     "H": 0.5678,
+     "H_pct": 48.7,
+     "contra": 0.0474,
+     "cohesion": 0.596
+    },
+    {
+     "pos": 39,
+     "left": "にありま",
+     "right": "す。",
+     "H": 0.6248,
+     "H_pct": 66.7,
+     "contra": 0.1999,
+     "cohesion": 0.781
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "人の",
+     "right": "心の安ら",
+     "H": 0.6264,
+     "H_pct": 69.2,
+     "contra": 0.0025,
+     "cohesion": 0.628
+    },
+    {
+     "pos": 9,
+     "left": "らぎを示",
+     "right": "す度合い",
+     "H": 0.6704,
+     "H_pct": 89.7,
+     "contra": 0.0022,
+     "cohesion": 0.6718
+    },
+    {
+     "pos": 10,
+     "left": "ぎを示す",
+     "right": "度合いは",
+     "H": 0.6562,
+     "H_pct": 82.1,
+     "contra": 0.0009,
+     "cohesion": 0.6568
+    },
+    {
+     "pos": 12,
+     "left": "示す度合",
+     "right": "いは、身",
+     "H": 0.6475,
+     "H_pct": 79.5,
+     "contra": 0.0009,
+     "cohesion": 0.6481
+    },
+    {
+     "pos": 13,
+     "left": "す度合い",
+     "right": "は、身体",
+     "H": 0.6687,
+     "H_pct": 87.2,
+     "contra": 0.001,
+     "cohesion": 0.6693
+    },
+    {
+     "pos": 14,
+     "left": "度合いは",
+     "right": "、身体や",
+     "H": 0.6374,
+     "H_pct": 71.8,
+     "contra": 0.0018,
+     "cohesion": 0.6385
+    },
+    {
+     "pos": 15,
+     "left": "合いは、",
+     "right": "身体や精",
+     "H": 0.6452,
+     "H_pct": 76.9,
+     "contra": 0.0055,
+     "cohesion": 0.6487
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_561",
+  "cuts": 7,
+  "avg_chunk": 4.5,
+  "latency_bin": "≤5",
+  "gap": 0.5528,
+  "policy_worst_contra": 0.9922,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    20,
+    22,
+    24,
+    25,
+    33,
+    34,
+    35
+   ],
+   "H_set": 0.0039,
+   "text": "被害者を保護するには、まず現場を調査して ‖ 安全 ‖ を確 ‖ 保 ‖ しなければなりま ‖ せ ‖ ん ‖ 。",
+   "pieces": {
+    "English": [
+     "To protect the victims, we need to investigate the scene first.",
+     "Security",
+     "- Yes, I am.",
+     "Bo",
+     "I have to.",
+     "She",
+     "- Oh, yeah.",
+     "."
+    ],
+    "Chinese": [
+     "要保护受害者，首先要调查现场",
+     "安全",
+     "确定",
+     "保",
+     "我们得走了",
+     "塞",
+     "嗯",
+     "................................................................................................"
+    ],
+    "German": [
+     "Um die Opfer zu schützen, müssen wir zuerst die Szene untersuchen.",
+     "Sicherheit",
+     "- Ja.",
+     "Bo",
+     "Ich muss es tun.",
+     "Se",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Para proteger a las víctimas, primero hay que investigar el lugar.",
+     "Seguridad",
+     "- Sí.",
+     "- ¡Así es!",
+     "- Tengo que hacerlo.",
+     "- ¡Ahora!",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    20
+   ],
+   "H_set": 0.5567,
+   "text": "被害者を保護 ‖ す ‖ る ‖ に ‖ は ‖ 、 ‖ まず現場を調査して ‖ 安全を確保しなければなりません。",
+   "pieces": {
+    "English": [
+     "Protecting victims.",
+     "- Oh, my God.",
+     "る",
+     "To",
+     "- Yeah.",
+     ",",
+     "First, we'll investigate the scene.",
+     "We have to ensure safety."
+    ],
+    "Chinese": [
+     "保护受害者",
+     "哦，我知道。",
+     "是的",
+     "上",
+     "是",
+     ",,,",
+     "我们要调查现场",
+     "我们必须保证安全。"
+    ],
+    "German": [
+     "Opferschutz",
+     "- Ja.",
+     "- Ja.",
+     "",
+     "Ha",
+     ",",
+     "Erst einmal, wir haben die Szene untersucht.",
+     "Wir müssen für Sicherheit sorgen."
+    ],
+    "Spanish": [
+     "Protección de las víctimas",
+     "- ¡Sí!",
+     "- Sí.",
+     "A",
+     "- ¿Qué?",
+     ",",
+     "Primero, investigamos el lugar.",
+     "Debemos garantizar la seguridad."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 22,
+     "left": "して安全",
+     "right": "を確保し",
+     "H": 0.6406,
+     "H_pct": 44.1,
+     "contra": 0.0026,
+     "cohesion": 0.6423
+    },
+    {
+     "pos": 24,
+     "left": "安全を確",
+     "right": "保しなけ",
+     "H": 0.6544,
+     "H_pct": 52.9,
+     "contra": 0.0141,
+     "cohesion": 0.6638
+    },
+    {
+     "pos": 25,
+     "left": "全を確保",
+     "right": "しなけれ",
+     "H": 0.7102,
+     "H_pct": 61.8,
+     "contra": 0.0017,
+     "cohesion": 0.7114
+    },
+    {
+     "pos": 33,
+     "left": "ばなりま",
+     "right": "せん。",
+     "H": 0.2128,
+     "H_pct": 14.7,
+     "contra": 0.74,
+     "cohesion": 0.8183
+    },
+    {
+     "pos": 34,
+     "left": "なりませ",
+     "right": "ん。",
+     "H": 0.0063,
+     "H_pct": 8.8,
+     "contra": 0.9922,
+     "cohesion": 0.803
+    },
+    {
+     "pos": 35,
+     "left": "りません",
+     "right": "。",
+     "H": 0.7672,
+     "H_pct": 76.5,
+     "contra": 0.0031,
+     "cohesion": 0.7696
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "者を保護",
+     "right": "するには",
+     "H": 0.8152,
+     "H_pct": 94.1,
+     "contra": 0.001,
+     "cohesion": 0.8161
+    },
+    {
+     "pos": 7,
+     "left": "を保護す",
+     "right": "るには、",
+     "H": 0.8154,
+     "H_pct": 97.1,
+     "contra": 0.0014,
+     "cohesion": 0.8165
+    },
+    {
+     "pos": 8,
+     "left": "保護する",
+     "right": "には、ま",
+     "H": 0.796,
+     "H_pct": 88.2,
+     "contra": 0.0014,
+     "cohesion": 0.7972
+    },
+    {
+     "pos": 9,
+     "left": "護するに",
+     "right": "は、まず",
+     "H": 0.796,
+     "H_pct": 85.3,
+     "contra": 0.0037,
+     "cohesion": 0.799
+    },
+    {
+     "pos": 10,
+     "left": "するには",
+     "right": "、まず現",
+     "H": 0.8438,
+     "H_pct": 100.0,
+     "contra": 0.0021,
+     "cohesion": 0.8456
+    },
+    {
+     "pos": 11,
+     "left": "るには、",
+     "right": "まず現場",
+     "H": 0.804,
+     "H_pct": 91.2,
+     "contra": 0.0378,
+     "cohesion": 0.8356
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_627",
+  "cuts": 9,
+  "avg_chunk": 6.2,
+  "latency_bin": "≤7",
+  "gap": 0.5791,
+  "policy_worst_contra": 0.989,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+   ],
+   "H_set": 0.0052,
+   "text": "この考え方の最も重要な要素は、「正解は1つしかない」という点です。正しいか間違っているかという2つの答えし ‖ か ‖ 考 ‖ え ‖ な ‖ い ‖ の ‖ で ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "The most important element of this approach is that there is only one correct answer.",
+     "Ka",
+     "Kao",
+     "Uh-huh.",
+     "Na",
+     "I",
+     "の",
+     "And",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "这个思维方式的最重要特点是“只有一个正确的答案 ” 。",
+     "是",
+     "考",
+     "哦",
+     "是啊",
+     "是啊",
+     "的",
+     "是的，我知道。",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Das wichtigste Element dieser Denkweise ist, dass es nur eine richtige Antwort gibt.",
+     "- Ja.",
+     "Kaohsiung",
+     "- Ja.",
+     "- Nein.",
+     "- Ich.",
+     "の",
+     "- Ich bin da.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "El elemento más importante de esta visión es que solo hay una respuesta correcta.",
+     "¿O?",
+     "Kaohsiung",
+     "- Sí.",
+     "- No.",
+     "- Sí.",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "- ¿Qué?",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    21,
+    25,
+    26,
+    27,
+    28,
+    30,
+    31,
+    32,
+    33
+   ],
+   "H_set": 0.5843,
+   "text": "この考え方の最も重要な要素は、「正解は1つ ‖ しかない ‖ 」 ‖ と ‖ い ‖ う点 ‖ で ‖ す ‖ 。 ‖ 正しいか間違っているかという2つの答えしか考えないのです。",
+   "pieces": {
+    "English": [
+     "The most important element of this approach is that there is only one correct answer.",
+     "There's no other way.",
+     "\"",
+     "And",
+     "I",
+     "Point",
+     "And",
+     "- Oh, my God.",
+     ".",
+     "They only think of two answers : right or wrong."
+    ],
+    "Chinese": [
+     "这个思维的最重要部分是:",
+     "我们没有其他选择。",
+     "》。",
+     "与",
+     "是啊",
+     "点",
+     "是的，我知道。",
+     "哦，我知道。",
+     "................................................................................................",
+     "只有两个答案:对或错。"
+    ],
+    "German": [
+     "Das wichtigste Element dieser Denkweise ist, dass es nur eine richtige Antwort gibt,",
+     "Das ist alles, was wir haben.",
+     "\"",
+     "Und",
+     "- Ich.",
+     "Punkt",
+     "- Ich bin da.",
+     "- Ja.",
+     "- Ja.",
+     "Es gibt nur zwei Antworten: richtig oder falsch."
+    ],
+    "Spanish": [
+     "El elemento más importante de este enfoque es que \"hay una sola respuesta correcta,",
+     "No hay otra opción.",
+     "\"",
+     "Y",
+     "- Sí.",
+     "Punto",
+     "- ¿Qué?",
+     "- ¡Sí!",
+     ". (FR) Gracias.",
+     "Solo hay dos respuestas: correcta o incorrecta."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 53,
+     "left": "の答えし",
+     "right": "か考えな",
+     "H": 0.0815,
+     "H_pct": 11.7,
+     "contra": 0.8538,
+     "cohesion": 0.5576
+    },
+    {
+     "pos": 54,
+     "left": "答えしか",
+     "right": "考えない",
+     "H": 0.0727,
+     "H_pct": 8.3,
+     "contra": 0.8722,
+     "cohesion": 0.5686
+    },
+    {
+     "pos": 55,
+     "left": "えしか考",
+     "right": "えないの",
+     "H": 0.0213,
+     "H_pct": 3.3,
+     "contra": 0.9625,
+     "cohesion": 0.5691
+    },
+    {
+     "pos": 56,
+     "left": "しか考え",
+     "right": "ないので",
+     "H": 0.0063,
+     "H_pct": 0.0,
+     "contra": 0.989,
+     "cohesion": 0.574
+    },
+    {
+     "pos": 57,
+     "left": "か考えな",
+     "right": "いのです",
+     "H": 0.5179,
+     "H_pct": 38.3,
+     "contra": 0.083,
+     "cohesion": 0.5647
+    },
+    {
+     "pos": 58,
+     "left": "考えない",
+     "right": "のです。",
+     "H": 0.514,
+     "H_pct": 36.7,
+     "contra": 0.1836,
+     "cohesion": 0.6296
+    },
+    {
+     "pos": 59,
+     "left": "えないの",
+     "right": "です。",
+     "H": 0.2558,
+     "H_pct": 23.3,
+     "contra": 0.5804,
+     "cohesion": 0.6096
+    },
+    {
+     "pos": 60,
+     "left": "ないので",
+     "right": "す。",
+     "H": 0.7036,
+     "H_pct": 51.7,
+     "contra": 0.0418,
+     "cohesion": 0.7343
+    },
+    {
+     "pos": 61,
+     "left": "いのです",
+     "right": "。",
+     "H": 0.2437,
+     "H_pct": 21.7,
+     "contra": 0.6482,
+     "cohesion": 0.6928
+    }
+   ],
+   "added": [
+    {
+     "pos": 21,
+     "left": "解は1つ",
+     "right": "しかない",
+     "H": 0.8506,
+     "H_pct": 88.3,
+     "contra": 0.0039,
+     "cohesion": 0.8539
+    },
+    {
+     "pos": 25,
+     "left": "しかない",
+     "right": "」という",
+     "H": 0.8505,
+     "H_pct": 86.7,
+     "contra": 0.0043,
+     "cohesion": 0.8542
+    },
+    {
+     "pos": 26,
+     "left": "かない」",
+     "right": "という点",
+     "H": 0.8721,
+     "H_pct": 100.0,
+     "contra": 0.004,
+     "cohesion": 0.8756
+    },
+    {
+     "pos": 27,
+     "left": "ない」と",
+     "right": "いう点で",
+     "H": 0.8567,
+     "H_pct": 91.7,
+     "contra": 0.0224,
+     "cohesion": 0.8763
+    },
+    {
+     "pos": 28,
+     "left": "い」とい",
+     "right": "う点です",
+     "H": 0.8643,
+     "H_pct": 98.3,
+     "contra": 0.0085,
+     "cohesion": 0.8717
+    },
+    {
+     "pos": 30,
+     "left": "という点",
+     "right": "です。正",
+     "H": 0.8634,
+     "H_pct": 96.7,
+     "contra": 0.0053,
+     "cohesion": 0.868
+    },
+    {
+     "pos": 31,
+     "left": "いう点で",
+     "right": "す。正し",
+     "H": 0.8612,
+     "H_pct": 93.3,
+     "contra": 0.0174,
+     "cohesion": 0.8764
+    },
+    {
+     "pos": 32,
+     "left": "う点です",
+     "right": "。正しい",
+     "H": 0.8521,
+     "H_pct": 90.0,
+     "contra": 0.0074,
+     "cohesion": 0.8585
+    },
+    {
+     "pos": 33,
+     "left": "点です。",
+     "right": "正しいか",
+     "H": 0.8616,
+     "H_pct": 95.0,
+     "contra": 0.0105,
+     "cohesion": 0.8707
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_645",
+  "cuts": 4,
+  "avg_chunk": 9.8,
+  "latency_bin": "≤10",
+  "gap": 0.6022,
+  "policy_worst_contra": 0.992,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    45,
+    46,
+    47,
+    48
+   ],
+   "H_set": 0.0048,
+   "text": "ポストモダンの学習方法は、絶対的な考え方から解放されています。優れた学習方法は1つではあり ‖ ま ‖ せ ‖ ん ‖ 。",
+   "pieces": {
+    "English": [
+     "Postmodern learning is freed from the absolute thinking. There is no one excellent learning method.",
+     "Ma",
+     "She",
+     "- Oh, yeah.",
+     "."
+    ],
+    "Chinese": [
+     "后现代学习方法已经摆脱了绝对的思维。",
+     "马",
+     "塞",
+     "嗯",
+     "................................................................................................"
+    ],
+    "German": [
+     "Postmoderne Lernmethoden sind frei von der absoluten Vorstellung, dass es nur eine einzige gute Lernmethode gibt.",
+     "Ma",
+     "Se",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "El método posmoderno de aprendizaje se libera de la idea de que hay una única forma de aprender.",
+     "- No.",
+     "- ¡Ahora!",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    25,
+    29,
+    30,
+    31
+   ],
+   "H_set": 0.607,
+   "text": "ポストモダンの学習方法は、絶対的な考え方から解放さ ‖ れていま ‖ す ‖ 。 ‖ 優れた学習方法は1つではありません。",
+   "pieces": {
+    "English": [
+     "The postmodern learning method is free from the absolute thinking.",
+     "I'm in the mood.",
+     "- Oh, my God.",
+     ".",
+     "There is not one excellent way of learning."
+    ],
+    "Chinese": [
+     "后现代学习方法是从绝对主义思维中解放出来的",
+     "我们在这里",
+     "哦，我知道。",
+     "................................................................................................",
+     "没有一个学习方法是最好的。"
+    ],
+    "German": [
+     "Die postmoderne Lernmethode befreit uns von der absoluten Denkweise.",
+     "Ich bin verrückt.",
+     "- Ja.",
+     "- Ja.",
+     "Es gibt nicht nur eine gute Art zu lernen."
+    ],
+    "Spanish": [
+     "El método posmoderno de aprendizaje se libera de la idea de que todo es absoluto.",
+     "- Estoy enfermo.",
+     "- ¡Sí!",
+     ". (FR) Gracias.",
+     "No hay una única forma de aprender."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 45,
+     "left": "ではあり",
+     "right": "ません。",
+     "H": 0.0057,
+     "H_pct": 10.6,
+     "contra": 0.992,
+     "cohesion": 0.707
+    },
+    {
+     "pos": 46,
+     "left": "はありま",
+     "right": "せん。",
+     "H": 0.6793,
+     "H_pct": 59.6,
+     "contra": 0.001,
+     "cohesion": 0.68
+    },
+    {
+     "pos": 47,
+     "left": "ありませ",
+     "right": "ん。",
+     "H": 0.6929,
+     "H_pct": 70.2,
+     "contra": 0.0005,
+     "cohesion": 0.6932
+    },
+    {
+     "pos": 48,
+     "left": "りません",
+     "right": "。",
+     "H": 0.6988,
+     "H_pct": 74.5,
+     "contra": 0.0005,
+     "cohesion": 0.6991
+    }
+   ],
+   "added": [
+    {
+     "pos": 25,
+     "left": "ら解放さ",
+     "right": "れていま",
+     "H": 0.8228,
+     "H_pct": 95.7,
+     "contra": 0.0116,
+     "cohesion": 0.8324
+    },
+    {
+     "pos": 29,
+     "left": "れていま",
+     "right": "す。優れ",
+     "H": 0.8402,
+     "H_pct": 97.9,
+     "contra": 0.0015,
+     "cohesion": 0.8415
+    },
+    {
+     "pos": 30,
+     "left": "ています",
+     "right": "。優れた",
+     "H": 0.8084,
+     "H_pct": 93.6,
+     "contra": 0.0027,
+     "cohesion": 0.8105
+    },
+    {
+     "pos": 31,
+     "left": "います。",
+     "right": "優れた学",
+     "H": 0.8479,
+     "H_pct": 100.0,
+     "contra": 0.0056,
+     "cohesion": 0.8527
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_957",
+  "cuts": 3,
+  "avg_chunk": 12.8,
+  "latency_bin": "≤99",
+  "gap": 0.7141,
+  "policy_worst_contra": 0.9887,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    48,
+    49,
+    50
+   ],
+   "H_set": 0.0078,
+   "text": "アフリカ以外の場所を訪れる場合、ビザの追加申請、出国税、地上交通費などの追加費用も忘れてはなりま ‖ せ ‖ ん ‖ 。",
+   "pieces": {
+    "English": [
+     "If you are visiting places outside Africa, you should also consider the additional costs of additional visa applications, exit taxes, ground transportation costs, etc.",
+     "She",
+     "- Oh, yeah.",
+     "."
+    ],
+    "Chinese": [
+     "当你去非洲以外的地方时,你还要考虑额外的签证费用、出境税和地面交通费。",
+     "塞",
+     "嗯",
+     "................................................................................................"
+    ],
+    "German": [
+     "Wenn Sie außerhalb Afrikas reisen, müssen Sie zusätzliche Kosten für Visa, Ausreisesteuern und Bodentransporte tragen.",
+     "Se",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Si viajas fuera de África, no olvides los costos adicionales de solicitar un visado adicional, pagar impuestos de salida y pagar el transporte terrestre.",
+     "- ¡Ahora!",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    36,
+    40,
+    41
+   ],
+   "H_set": 0.7219,
+   "text": "アフリカ以外の場所を訪れる場合、ビザの追加申請、出国税、地上交通費などの ‖ 追加費用 ‖ も ‖ 忘れてはなりません。",
+   "pieces": {
+    "English": [
+     "If you are visiting places outside Africa, you may have to apply for additional visas, pay exit taxes, and pay for ground transportation.",
+     "Additional costs",
+     "- I'm sorry.",
+     "We must not forget."
+    ],
+    "Chinese": [
+     "非洲以外的旅游者,可能会面临额外的签证申请、出境税、地面交通费等问题。",
+     "附加费用",
+     "还有",
+     "我们不应该忘记。"
+    ],
+    "German": [
+     "Wenn Sie außerhalb Afrikas reisen, müssen Sie zusätzliche Visa beantragen, Ausreisesteuern zahlen,",
+     "Zusatzkosten",
+     "Auch",
+     "Das darf man nicht vergessen."
+    ],
+    "Spanish": [
+     "Si viajas fuera de África, tendrás que pagar por visados adicionales, impuestos de salida, transporte terrestre, etc.",
+     "Costos adicionales",
+     "- Sí.",
+     "No lo olvides."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 48,
+     "left": "はなりま",
+     "right": "せん。",
+     "H": 0.0087,
+     "H_pct": 8.2,
+     "contra": 0.9887,
+     "cohesion": 0.77
+    },
+    {
+     "pos": 49,
+     "left": "なりませ",
+     "right": "ん。",
+     "H": 0.1647,
+     "H_pct": 18.4,
+     "contra": 0.7953,
+     "cohesion": 0.8048
+    },
+    {
+     "pos": 50,
+     "left": "りません",
+     "right": "。",
+     "H": 0.7558,
+     "H_pct": 93.9,
+     "contra": 0.0399,
+     "cohesion": 0.7872
+    }
+   ],
+   "added": [
+    {
+     "pos": 36,
+     "left": "費などの",
+     "right": "追加費用",
+     "H": 0.7894,
+     "H_pct": 98.0,
+     "contra": 0.0066,
+     "cohesion": 0.7946
+    },
+    {
+     "pos": 40,
+     "left": "追加費用",
+     "right": "も忘れて",
+     "H": 0.7747,
+     "H_pct": 95.9,
+     "contra": 0.0044,
+     "cohesion": 0.7781
+    },
+    {
+     "pos": 41,
+     "left": "加費用も",
+     "right": "忘れては",
+     "H": 0.8264,
+     "H_pct": 100.0,
+     "contra": 0.0042,
+     "cohesion": 0.8299
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_800",
+  "cuts": 17,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.4264,
+  "policy_worst_contra": 0.9993,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    30,
+    31,
+    38,
+    40,
+    52
+   ],
+   "H_set": 0.0003,
+   "text": "ムース（別名ヘラジカ） ‖ は ‖ 、 ‖ 本 ‖ 来 ‖ は ‖ 攻 ‖ 撃 ‖ 的 ‖ な ‖ 性 ‖ 質 ‖ ではありませんが ‖ 、 ‖ 脅威を感知する ‖ と、 ‖ 自己防衛のために戦います ‖ 。",
+   "pieces": {
+    "English": [
+     "Mouse (also known as Heracica)",
+     "- Yeah.",
+     ",",
+     "Ben.",
+     "Come on.",
+     "- Yeah.",
+     "Attack",
+     "Shot",
+     "The",
+     "Na",
+     "Sex",
+     "Quality",
+     "Not really.",
+     ",",
+     "It's a threat sensing system.",
+     "And,",
+     "We're fighting for ourselves.",
+     "."
+    ],
+    "Chinese": [
+     " 穆斯（ムース，聲：小林由美子） 另一名為「赫拉奇卡」。",
+     "是",
+     ",,,",
+     "本",
+     "来吧",
+     "是",
+     "攻击",
+     "击",
+     "的",
+     "是啊",
+     "性别",
+     "质量",
+     "不是",
+     ",,,",
+     "感知威胁",
+     "还有",
+     "为了自卫而战",
+     "................................................................................................"
+    ],
+    "German": [
+     "Hera",
+     "Ha",
+     ",",
+     "Ben.",
+     "Komm, komm.",
+     "Ha",
+     "Angriff",
+     "Shot",
+     "Die",
+     "- Nein.",
+     "Sex",
+     "Qualität",
+     "Das ist nicht der Fall.",
+     ",",
+     "Erkennt Bedrohungen.",
+     "Und",
+     "Sie kämpfen zur Selbstverteidigung.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Musa",
+     "- ¿Qué?",
+     ",",
+     "Ben",
+     "- Ven.",
+     "- ¿Qué?",
+     "Ataque",
+     "Dispara.",
+     "De",
+     "- No.",
+     "Sexo",
+     "Calidad",
+     "No, no lo es.",
+     ",",
+     "Detecta amenazas.",
+     "Y",
+     "Luchamos en defensa propia.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    10,
+    11,
+    30,
+    35,
+    37,
+    38,
+    39,
+    40,
+    42,
+    50,
+    51,
+    52
+   ],
+   "H_set": 0.4266,
+   "text": "ムー ‖ ス ‖ （ ‖ 別 ‖ 名 ‖ ヘラジカ ‖ ） ‖ は、本来は攻撃的な性質ではありませんが ‖ 、脅威を感 ‖ 知す ‖ る ‖ と ‖ 、 ‖ 自己 ‖ 防衛のために戦い ‖ ま ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "Moe",
+     "S",
+     "(",
+     "Be",
+     "Name",
+     "Heracica",
+     "(1998)",
+     "It's not an aggressive nature.",
+     "I feel threatened.",
+     "I'll tell you.",
+     "る",
+     "And",
+     ",",
+     "Self",
+     "Fight for your defense.",
+     "Ma",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "穆",
+     "斯",
+     "（第10次会议）",
+     "别",
+     "姓名",
+     "黑拉吉卡",
+     ")",
+     "虽然它们本身并不具有攻击性",
+     "感觉到威胁",
+     "让我知道",
+     "是的",
+     "与",
+     ",,,",
+     "自己",
+     "为了防御而战",
+     "马",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Mu",
+     "S",
+     "(",
+     "Be",
+     "Name",
+     "Heradika",
+     "(",
+     "Das ist nicht anfällig.",
+     "Ich fühle mich bedroht.",
+     "Ich werde es dir sagen.",
+     "- Ja.",
+     "Und",
+     ",",
+     "Selbst",
+     "Kämpfen für die Verteidigung",
+     "Ma",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Mu",
+     "S",
+     "(",
+     "No",
+     "Nombre",
+     "Heracica",
+     "(1999)",
+     "No es una naturaleza agresiva.",
+     "Sentí una amenaza.",
+     "- Lo sé.",
+     "- Sí.",
+     "Y",
+     ",",
+     "- Sí.",
+     "Luchar por la defensa.",
+     "- No.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 12,
+     "left": "ジカ）は",
+     "right": "、本来は",
+     "H": 0.497,
+     "H_pct": 19.6,
+     "contra": 0.0035,
+     "cohesion": 0.4988
+    },
+    {
+     "pos": 13,
+     "left": "カ）は、",
+     "right": "本来は攻",
+     "H": 0.5956,
+     "H_pct": 29.4,
+     "contra": 0.0053,
+     "cohesion": 0.5988
+    },
+    {
+     "pos": 14,
+     "left": "）は、本",
+     "right": "来は攻撃",
+     "H": 0.592,
+     "H_pct": 27.5,
+     "contra": 0.0339,
+     "cohesion": 0.6128
+    },
+    {
+     "pos": 15,
+     "left": "は、本来",
+     "right": "は攻撃的",
+     "H": 0.634,
+     "H_pct": 41.2,
+     "contra": 0.002,
+     "cohesion": 0.6352
+    },
+    {
+     "pos": 16,
+     "left": "、本来は",
+     "right": "攻撃的な",
+     "H": 0.5792,
+     "H_pct": 23.5,
+     "contra": 0.0028,
+     "cohesion": 0.5808
+    },
+    {
+     "pos": 17,
+     "left": "本来は攻",
+     "right": "撃的な性",
+     "H": 0.0008,
+     "H_pct": 11.8,
+     "contra": 0.9988,
+     "cohesion": 0.6487
+    },
+    {
+     "pos": 18,
+     "left": "来は攻撃",
+     "right": "的な性質",
+     "H": 0.0007,
+     "H_pct": 7.8,
+     "contra": 0.9989,
+     "cohesion": 0.6596
+    },
+    {
+     "pos": 19,
+     "left": "は攻撃的",
+     "right": "な性質で",
+     "H": 0.0008,
+     "H_pct": 9.8,
+     "contra": 0.9988,
+     "cohesion": 0.6467
+    },
+    {
+     "pos": 20,
+     "left": "攻撃的な",
+     "right": "性質では",
+     "H": 0.0007,
+     "H_pct": 5.9,
+     "contra": 0.9989,
+     "cohesion": 0.6495
+    },
+    {
+     "pos": 21,
+     "left": "撃的な性",
+     "right": "質ではあ",
+     "H": 0.0005,
+     "H_pct": 3.9,
+     "contra": 0.9991,
+     "cohesion": 0.5657
+    },
+    {
+     "pos": 22,
+     "left": "的な性質",
+     "right": "ではあり",
+     "H": 0.0004,
+     "H_pct": 0.0,
+     "contra": 0.9993,
+     "cohesion": 0.6325
+    },
+    {
+     "pos": 31,
+     "left": "せんが、",
+     "right": "脅威を感",
+     "H": 0.6626,
+     "H_pct": 58.8,
+     "contra": 0.0025,
+     "cohesion": 0.6642
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "ムー",
+     "right": "ス（別名",
+     "H": 0.6912,
+     "H_pct": 72.5,
+     "contra": 0.0053,
+     "cohesion": 0.6948
+    },
+    {
+     "pos": 3,
+     "left": "ムース",
+     "right": "（別名ヘ",
+     "H": 0.7791,
+     "H_pct": 100.0,
+     "contra": 0.0016,
+     "cohesion": 0.7803
+    },
+    {
+     "pos": 4,
+     "left": "ムース（",
+     "right": "別名ヘラ",
+     "H": 0.7381,
+     "H_pct": 96.1,
+     "contra": 0.0036,
+     "cohesion": 0.7408
+    },
+    {
+     "pos": 5,
+     "left": "ース（別",
+     "right": "名ヘラジ",
+     "H": 0.7305,
+     "H_pct": 90.2,
+     "contra": 0.0134,
+     "cohesion": 0.7404
+    },
+    {
+     "pos": 6,
+     "left": "ス（別名",
+     "right": "ヘラジカ",
+     "H": 0.6962,
+     "H_pct": 76.5,
+     "contra": 0.0168,
+     "cohesion": 0.7081
+    },
+    {
+     "pos": 10,
+     "left": "ヘラジカ",
+     "right": "）は、本",
+     "H": 0.7342,
+     "H_pct": 94.1,
+     "contra": 0.0019,
+     "cohesion": 0.7356
+    },
+    {
+     "pos": 35,
+     "left": "脅威を感",
+     "right": "知すると",
+     "H": 0.71,
+     "H_pct": 80.4,
+     "contra": 0.0035,
+     "cohesion": 0.7125
+    },
+    {
+     "pos": 37,
+     "left": "を感知す",
+     "right": "ると、自",
+     "H": 0.701,
+     "H_pct": 78.4,
+     "contra": 0.0018,
+     "cohesion": 0.7023
+    },
+    {
+     "pos": 39,
+     "left": "知すると",
+     "right": "、自己防",
+     "H": 0.7257,
+     "H_pct": 88.2,
+     "contra": 0.0043,
+     "cohesion": 0.7288
+    },
+    {
+     "pos": 42,
+     "left": "と、自己",
+     "right": "防衛のた",
+     "H": 0.6864,
+     "H_pct": 70.6,
+     "contra": 0.0015,
+     "cohesion": 0.6875
+    },
+    {
+     "pos": 50,
+     "left": "めに戦い",
+     "right": "ます。",
+     "H": 0.6749,
+     "H_pct": 68.6,
+     "contra": 0.0012,
+     "cohesion": 0.6757
+    },
+    {
+     "pos": 51,
+     "left": "に戦いま",
+     "right": "す。",
+     "H": 0.7335,
+     "H_pct": 92.2,
+     "contra": 0.001,
+     "cohesion": 0.7342
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_906",
+  "cuts": 12,
+  "avg_chunk": 4.8,
+  "latency_bin": "≤5",
+  "gap": 0.5107,
+  "policy_worst_contra": 0.9956,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    60,
+    61
+   ],
+   "H_set": 0.002,
+   "text": "パーソナルVPN（仮想私設網）プロバイダーは、政治的検閲と商業的IPジオフィルタリング ‖ の ‖ 両 ‖ 方 ‖ を ‖ 回 ‖ 避 ‖ す ‖ る ‖ う ‖ えで優れた方法で ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "Personal VPN providers are the ones who are the most vulnerable to political censorship and commercial IP geofiltering.",
+     "の",
+     "Both",
+     "Fang",
+     "を",
+     "Round",
+     "Avoid",
+     "- Oh, my God.",
+     "る",
+     "Uh-huh.",
+     "It's a great way to do it.",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     " 个人VPN提供商可以通过政治审查和商业IP地理过滤来保护用户的隐私。",
+     "的",
+     "两",
+     "方",
+     "是的",
+     "回",
+     "避",
+     "哦，我知道。",
+     "是的",
+     "哦",
+     "我们可以用最好的方式",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Private VPN-Anbieter schützen vor politischer Zensur und kommerzieller IP-Geofilterung.",
+     "の",
+     "両",
+     "1.2.2.2.2.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "- Ich weiß.",
+     "Runde",
+     "Abwehr",
+     "- Ja.",
+     "- Ja.",
+     "- Oh.",
+     "Es ist eine sehr gute Idee.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Los proveedores de VPN personales se enfrentan a la censura política y al geofiltrado comercial de IP.",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "Ambos",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "- Sí.",
+     "- ¡Ahora!",
+     "Evitar",
+     "- ¡Sí!",
+     "- Sí.",
+     "- ¿Qué?",
+     "Es una forma excelente de hacerlo.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    8,
+    9,
+    10,
+    11,
+    14,
+    15,
+    20,
+    21,
+    54,
+    60,
+    61
+   ],
+   "H_set": 0.5127,
+   "text": "パーソナル ‖ VPN ‖ （ ‖ 仮 ‖ 想 ‖ 私設網 ‖ ） ‖ プロバイダ ‖ ー ‖ は、政治的検閲と商業的IPジオフィルタリングの両方を回避するうえで ‖ 優れた方法で ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "Personal",
+     "VPN",
+     "(",
+     "Temporary",
+     "Think.",
+     "Private network",
+     "(1998)",
+     "Provider",
+     "-",
+     "The ability to avoid both political censorship and commercial IP geofiltering,",
+     "It's a great way to do it.",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "个人",
+     "网络私人密码",
+     "（第10次会议）",
+     "临时",
+     "想想",
+     "私有网络",
+     ")",
+     "提供者",
+     "－",
+     "避免政治审查和商业IP地理过滤",
+     "我们做得很好",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Personal",
+     "VPN",
+     "(",
+     "Temporär",
+     "Denken",
+     "Privates Netzwerk",
+     "(",
+     "Provider",
+     "- Ja.",
+     "und gleichzeitig politische Zensur und kommerzielle IP-Geofilterung vermeiden.",
+     "Das ist eine großartige Art und Weise.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Personal",
+     "VPN",
+     "(",
+     "Temporal",
+     "- Piensa.",
+     "Redes privadas",
+     "(1999)",
+     "Proveedor",
+     "- ¿Qué?",
+     "y evitar la censura política y el geofiltrado de IP comerciales.",
+     "De una manera excelente.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 43,
+     "left": "タリング",
+     "right": "の両方を",
+     "H": 0.7291,
+     "H_pct": 41.7,
+     "contra": 0.0868,
+     "cohesion": 0.7984
+    },
+    {
+     "pos": 44,
+     "left": "リングの",
+     "right": "両方を回",
+     "H": 0.2229,
+     "H_pct": 10.0,
+     "contra": 0.7317,
+     "cohesion": 0.8308
+    },
+    {
+     "pos": 45,
+     "left": "ングの両",
+     "right": "方を回避",
+     "H": 0.5938,
+     "H_pct": 16.7,
+     "contra": 0.2173,
+     "cohesion": 0.7587
+    },
+    {
+     "pos": 46,
+     "left": "グの両方",
+     "right": "を回避す",
+     "H": 0.003,
+     "H_pct": 0.0,
+     "contra": 0.9956,
+     "cohesion": 0.6897
+    },
+    {
+     "pos": 47,
+     "left": "の両方を",
+     "right": "回避する",
+     "H": 0.0063,
+     "H_pct": 1.7,
+     "contra": 0.992,
+     "cohesion": 0.7931
+    },
+    {
+     "pos": 48,
+     "left": "両方を回",
+     "right": "避するう",
+     "H": 0.7842,
+     "H_pct": 68.3,
+     "contra": 0.0347,
+     "cohesion": 0.8124
+    },
+    {
+     "pos": 49,
+     "left": "方を回避",
+     "right": "するうえ",
+     "H": 0.8165,
+     "H_pct": 78.3,
+     "contra": 0.0006,
+     "cohesion": 0.817
+    },
+    {
+     "pos": 50,
+     "left": "を回避す",
+     "right": "るうえで",
+     "H": 0.7694,
+     "H_pct": 63.3,
+     "contra": 0.0016,
+     "cohesion": 0.7707
+    },
+    {
+     "pos": 51,
+     "left": "回避する",
+     "right": "うえで優",
+     "H": 0.8128,
+     "H_pct": 76.7,
+     "contra": 0.0008,
+     "cohesion": 0.8134
+    },
+    {
+     "pos": 52,
+     "left": "避するう",
+     "right": "えで優れ",
+     "H": 0.8115,
+     "H_pct": 75.0,
+     "contra": 0.0029,
+     "cohesion": 0.8138
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "ーソナル",
+     "right": "VPN（",
+     "H": 0.851,
+     "H_pct": 98.3,
+     "contra": 0.0043,
+     "cohesion": 0.8547
+    },
+    {
+     "pos": 8,
+     "left": "ルVPN",
+     "right": "（仮想私",
+     "H": 0.8512,
+     "H_pct": 100.0,
+     "contra": 0.0013,
+     "cohesion": 0.8523
+    },
+    {
+     "pos": 9,
+     "left": "VPN（",
+     "right": "仮想私設",
+     "H": 0.8409,
+     "H_pct": 93.3,
+     "contra": 0.0033,
+     "cohesion": 0.8437
+    },
+    {
+     "pos": 10,
+     "left": "PN（仮",
+     "right": "想私設網",
+     "H": 0.8298,
+     "H_pct": 91.7,
+     "contra": 0.001,
+     "cohesion": 0.8306
+    },
+    {
+     "pos": 11,
+     "left": "N（仮想",
+     "right": "私設網）",
+     "H": 0.8222,
+     "H_pct": 86.7,
+     "contra": 0.0041,
+     "cohesion": 0.8256
+    },
+    {
+     "pos": 14,
+     "left": "想私設網",
+     "right": "）プロバ",
+     "H": 0.8417,
+     "H_pct": 95.0,
+     "contra": 0.0039,
+     "cohesion": 0.845
+    },
+    {
+     "pos": 15,
+     "left": "私設網）",
+     "right": "プロバイ",
+     "H": 0.8215,
+     "H_pct": 85.0,
+     "contra": 0.0027,
+     "cohesion": 0.8237
+    },
+    {
+     "pos": 20,
+     "left": "ロバイダ",
+     "right": "ーは、政",
+     "H": 0.8264,
+     "H_pct": 90.0,
+     "contra": 0.0028,
+     "cohesion": 0.8287
+    },
+    {
+     "pos": 21,
+     "left": "バイダー",
+     "right": "は、政治",
+     "H": 0.8196,
+     "H_pct": 83.3,
+     "contra": 0.0023,
+     "cohesion": 0.8215
+    },
+    {
+     "pos": 54,
+     "left": "るうえで",
+     "right": "優れた方",
+     "H": 0.8243,
+     "H_pct": 88.3,
+     "contra": 0.0012,
+     "cohesion": 0.8253
+    }
+   ]
+  }
+ }
+]

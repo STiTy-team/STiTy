@@ -1,0 +1,126 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.0109,
+  "lo": -0.00081,
+  "hi": 0.02267,
+  "n": 10158,
+  "n_clusters": 399,
+  "dev_a": {
+   "mean": 0.018,
+   "lo": 0.00026,
+   "hi": 0.03734,
+   "n": 5080,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": 0.00379,
+   "lo": -0.01212,
+   "hi": 0.01929,
+   "n": 5078,
+   "n_clusters": 199
+  },
+  "pooled": true
+ },
+ "by_bin": {
+  "≤3": 0.0136,
+  "≤5": 0.0107,
+  "≤7": 0.0262,
+  "≤10": 0.0343,
+  "≤99": 0.0262
+ },
+ "n_worse": 2014,
+ "n_better": 2411,
+ "worst": [
+  {
+   "id": "ja_jp_1598",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.7456,
+   "before": "車の衝突時には３人が家の中に ‖ いました ‖ が、 ‖ 怪我人はいませんでした。",
+   "after": "車の衝突時には３人が家の中にいました ‖ が、怪我人は ‖ いませんでした ‖ 。"
+  },
+  {
+   "id": "ja_jp_802",
+   "k": 3,
+   "bin": "≤99",
+   "delta": -0.7434,
+   "before": "お酒はほどほどに飲むようにしましょう。アルコールの影響は人それぞれであり、自分の限界を知ることは非常に重要 ‖ で ‖ す ‖ 。",
+   "after": "お酒はほどほどに飲むようにしましょう。アルコールの影響は人それぞれであり、自分の限界を知ることは非 ‖ 常 ‖ に ‖ 重要です。"
+  },
+  {
+   "id": "ja_jp_202",
+   "k": 4,
+   "bin": "≤10",
+   "delta": -0.6792,
+   "before": "その名残からほとんどの島々ではにわか雨が発生しました ‖ が、 ‖ まだ被害や洪水は報告されていませ ‖ ん ‖ 。",
+   "after": "その名残からほとんどの島々ではにわか雨が発生しました ‖ が、 ‖ まだ被害や洪 ‖ 水は報告されていません ‖ 。"
+  },
+  {
+   "id": "ja_jp_896",
+   "k": 4,
+   "bin": "≤99",
+   "delta": -0.6678,
+   "before": "少なくとも、 ‖ それなりの靴底の靴が必要です。 ‖ 通常、 ‖ 夏用の靴で氷上や雪上を歩くと滑ってしまい、 ‖ 冬用のブーツでも十分とは限りません。",
+   "after": "少 ‖ な ‖ く ‖ と ‖ も、それなりの靴底の靴が必要です。通常、夏用の靴で氷上や雪上を歩くと滑ってしまい、冬用のブーツでも十分とは限りません。"
+  },
+  {
+   "id": "ja_jp_802",
+   "k": 4,
+   "bin": "≤99",
+   "delta": -0.6455,
+   "before": "お酒はほどほどに飲むようにしましょう。アルコールの影響は人それぞれであり、自分の限界を知ることは非常に重 ‖ 要 ‖ で ‖ す ‖ 。",
+   "after": "お酒はほどほどに飲むようにしましょう。アルコールの影響は人それぞれであり、自分の限界を知ることは ‖ 非 ‖ 常 ‖ に ‖ 重要です。"
+  }
+ ],
+ "best": [
+  {
+   "id": "ja_jp_787",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.8821,
+   "before": "世界には5 ‖ ,000以上の言語があり、そのうち5,000万人以上の話者がいる言語は20を超えます。",
+   "after": "世界には5,000以上の言語があり、 ‖ そのうち5,000万人以上の話者がいる言語は20を超えます。"
+  },
+  {
+   "id": "ja_jp_1359",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.7913,
+   "before": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、 ‖ そうすると歴史的証拠 ‖ は残りません。",
+   "after": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、 ‖ そうすると歴史的証拠は残りません ‖ 。"
+  },
+  {
+   "id": "ja_jp_1359",
+   "k": 3,
+   "bin": "≤99",
+   "delta": 0.776,
+   "before": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く、 ‖ そうすると歴史的証拠 ‖ は ‖ 残りません。",
+   "after": "主流からはずれた文化は、正式な文明として認識されないまま消滅することが多く ‖ 、 ‖ そうすると歴史的証拠は残りません ‖ 。"
+  },
+  {
+   "id": "ja_jp_1092",
+   "k": 3,
+   "bin": "≤10",
+   "delta": 0.6989,
+   "before": "微気候のため、土壌や標高の範囲が極めて広いので、植物群落の種類が非 ‖ 常 ‖ に ‖ 豊富です。",
+   "after": "微気候のため、土壌や標高の範囲が極めて広いので、植物群落の種類が非常に豊富 ‖ で ‖ す ‖ 。"
+  },
+  {
+   "id": "ja_jp_787",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.6924,
+   "before": "世界には5 ‖ ,000以上の言語があ ‖ り、そのうち5,000万人以上の話者がいる言語は20を超えます。",
+   "after": "世界には5,000以上の言語があり、 ‖ そのうち5,000万 ‖ 人以上の話者がいる言語は20を超えます。"
+  }
+ ],
+ "why": "Replacing the four examples with measured Japanese cases that penalize isolating sentence-final predicates/auxiliaries moved the model away from placing cuts immediately before clause-final material, yielding most of the measured gain in the mid-to-long latency bins (≤7–≤10). However the model overcorrected in many instances by shifting cuts into internal morpheme/character boundaries (fragmenting words and particles), producing the large negative tail moves despite the net positive bin-level effect.",
+ "lesson": "Keep the emphasis that cutting off clause‑final predicates/auxiliaries is harmful, but avoid example edits that encourage overcorrection into internal-word/particle fragmentation.",
+ "blamed": [
+  "E3 «Input: ビ <SEG:?> シ <SEG:?> ュ <SEG:?> ケ <SEG:?> ク <SEG:?> の <»",
+  "E4 «Input: 母 <SEG:?> 国 <SEG:?> を <SEG:?> 離 <SEG:?> れ <SEG:?> て <»",
+  "E2 «Input: 助 <SEG:?> け <SEG:?> よ <SEG:?> う <SEG:?> と <SEG:?> し <»",
+  "E1 «Input: こ <SEG:?> れ <SEG:?> ら <SEG:?> の <SEG:?> 村 <SEG:?> は <»"
+ ]
+}

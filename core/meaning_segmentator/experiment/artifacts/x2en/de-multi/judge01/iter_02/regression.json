@@ -1,0 +1,109 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.00362,
+  "lo": -0.01333,
+  "hi": 0.00595,
+  "n": 1779,
+  "n_clusters": 200
+ },
+ "by_bin": {
+  "≤3": -0.0033,
+  "≤5": -0.008,
+  "≤7": 0.001,
+  "≤10": 0.0016,
+  "≤99": -0.0014
+ },
+ "n_worse": 642,
+ "n_better": 617,
+ "worst": [
+  {
+   "id": "de_de_678",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.7259,
+   "before": "Anforderungen und Kosten ‖ für ein Visa ‖ sind mit jedem Land verschieden ‖ und hängen von dem Land ab, ‖ aus dem Sie stammen.",
+   "after": "Anforderungen und Kosten für ein Visa ‖ sind mit jedem Land ‖ verschieden ‖ und hängen von dem Land ab, ‖ aus dem Sie stammen."
+  },
+  {
+   "id": "de_de_285",
+   "k": 7,
+   "bin": "≤5",
+   "delta": -0.6703,
+   "before": "Im letzten Monat ‖ gab es in Polen ‖ große Proteste, ‖ als das Land das ACTA unterzeichnete, ‖ was dazu führte, ‖ dass die polnische Regierung sich entschied, ‖ vorerst ‖ das Abkommen nicht zu ratifizieren.",
+   "after": "Im letzten Monat gab ‖ es in Polen ‖ große Proteste, ‖ als das Land das ACTA unterzeichnete, ‖ was dazu führte, ‖ dass die polnische Regierung sich entschied, ‖ vorerst das Abkommen ‖ nicht zu ratifizieren."
+  },
+  {
+   "id": "de_de_285",
+   "k": 8,
+   "bin": "≤5",
+   "delta": -0.6339,
+   "before": "Im letzten Monat ‖ gab es in Polen ‖ große Proteste, ‖ als das Land das ACTA unterzeichnete, ‖ was dazu führte, ‖ dass die polnische Regierung ‖ sich entschied, ‖ vorerst ‖ das Abkommen nicht zu ratifizieren.",
+   "after": "Im letzten Monat ‖ gab ‖ es in Polen ‖ große Proteste, ‖ als das Land das ACTA unterzeichnete, ‖ was dazu führte, ‖ dass die polnische Regierung sich entschied, ‖ vorerst das Abkommen ‖ nicht zu ratifizieren."
+  },
+  {
+   "id": "de_de_464",
+   "k": 4,
+   "bin": "≤7",
+   "delta": -0.5897,
+   "before": "Leider werden die Ränder ‖ höchstwahrscheinlich auch abgeschnitten, ‖ wenn man eine DVD macht, ‖ und wenn im Video die Untertitel zu nahe am unteren Rand stehen, ‖ werden sie nicht vollständig angezeigt.",
+   "after": "Leider werden die Ränder höchstwahrscheinlich auch abgeschnitten, ‖ wenn man eine DVD macht, ‖ und wenn im Video die Untertitel zu nahe am unteren Rand stehen, ‖ werden ‖ sie nicht vollständig angezeigt."
+  },
+  {
+   "id": "de_de_285",
+   "k": 9,
+   "bin": "≤3",
+   "delta": -0.5888,
+   "before": "Im letzten Monat ‖ gab es ‖ in Polen ‖ große Proteste, ‖ als das Land das ACTA unterzeichnete, ‖ was dazu führte, ‖ dass die polnische Regierung ‖ sich entschied, ‖ vorerst ‖ das Abkommen nicht zu ratifizieren.",
+   "after": "Im letzten Monat ‖ gab ‖ es in Polen ‖ große Proteste, ‖ als das Land das ACTA ‖ unterzeichnete, ‖ was dazu führte, ‖ dass die polnische Regierung sich entschied, ‖ vorerst das Abkommen ‖ nicht zu ratifizieren."
+  }
+ ],
+ "best": [
+  {
+   "id": "de_de_394",
+   "k": 4,
+   "bin": "≤7",
+   "delta": 0.6466,
+   "before": "Deutschland verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen ‖ verlorengegangen, ‖ die Armee war also ",
+   "after": "Deutschland verlieh der Attacke den Decknamen ‖ „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen verlorengegangen, ‖ die Armee war also "
+  },
+  {
+   "id": "de_de_394",
+   "k": 5,
+   "bin": "≤7",
+   "delta": 0.6277,
+   "before": "Deutschland ‖ verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen ‖ verlorengegangen, ‖ die Armee war als",
+   "after": "Deutschland ‖ verlieh der Attacke den Decknamen ‖ „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen verlorengegangen, ‖ die Armee war als"
+  },
+  {
+   "id": "de_de_394",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.6086,
+   "before": "Deutschland ‖ verlieh der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen ‖ und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen ‖ verlorengegangen, ‖ die Armee war a",
+   "after": "Deutschland ‖ verlieh der Attacke den Decknamen ‖ „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen ‖ und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen verlorengegangen, ‖ die Armee war a"
+  },
+  {
+   "id": "de_de_394",
+   "k": 7,
+   "bin": "≤5",
+   "delta": 0.5927,
+   "before": "Deutschland ‖ verlieh ‖ der Attacke den Decknamen „Unternehmen Seelöwe“. ‖ Der Großteil der schweren Waffen ‖ und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen ‖ verlorengegangen, ‖ die Armee war",
+   "after": "Deutschland ‖ verlieh der Attacke den Decknamen ‖ „Unternehmen Seelöwe“. ‖ Der Großteil ‖ der schweren Waffen ‖ und Vorräte der britischen Armee ‖ waren bei der Evakuation aus Dünkirchen verlorengegangen, ‖ die Armee war"
+  },
+  {
+   "id": "de_de_1289",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.592,
+   "before": "Haie existieren, ‖ aber sie greifen ‖ selten ‖ Menschen an. ‖ Die meisten Haie ‖ haben ‖ Angst vor Menschen ‖ und würden wegschwimmen.",
+   "after": "Haie ‖ existieren, ‖ aber sie ‖ greifen selten Menschen an. ‖ Die meisten Haie ‖ haben ‖ Angst vor Menschen ‖ und würden wegschwimmen."
+  }
+ ],
+ "why": "The C12 relaxation made the model more willing to place cuts after determiners/short prepositions, which produced more earlier/single‑word-ish cuts and harmed the smallest latency bins (≤3, ≤5); the inserted C7 rule pushed the model away from cuts that end inside subordinate/verb‑final clauses, which slightly improved mid/longer bins (≤7, ≤10). The two edits offset each other so the net H_set change is near zero but with small harms concentrated in short‑latency settings.",
+ "lesson": "Respect the binwise tradeoff: keep permissive cuts that help very short latencies only insofar as they don't create isolated verb/auxiliary or other head‑detaching cuts, while retaining the clause‑final protection for true subordinate/verb‑final fragments.",
+ "blamed": [
+  "C12 «- Verb-final subordinate/relative clauses: these typically m»",
+  "C7 «- In German, this commonly arises when the prefix carries a »"
+ ]
+}

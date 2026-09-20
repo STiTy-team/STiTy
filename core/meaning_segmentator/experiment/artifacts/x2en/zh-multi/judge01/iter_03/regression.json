@@ -1,0 +1,124 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00342,
+  "lo": -0.00719,
+  "hi": 0.01396,
+  "n": 7350,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.01253,
+   "lo": -0.00256,
+   "hi": 0.02803,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": -0.00594,
+   "lo": -0.01948,
+   "hi": 0.00834,
+   "n": 3624,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "by_bin": {
+  "≤3": 0.0182,
+  "≤5": 0.0044,
+  "≤7": 0.0105,
+  "≤10": 0.0179,
+  "≤99": 0.0118
+ },
+ "n_worse": 1686,
+ "n_better": 1805,
+ "worst": [
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.6753,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了，他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说： ‖ “终于有一块玻璃碎了，他们开始从窗户逃出去。”"
+  },
+  {
+   "id": "cmn_hans_cn_781",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.6307,
+   "before": "这样一来， ‖ 分辨率几乎达到了 ‖ 35mm底片（3136mm2对864）的四倍。",
+   "after": "这样一来， ‖ 分辨率几乎达到了35mm底片（3136mm2对864） ‖ 的四倍。"
+  },
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.6027,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了 ‖ ， ‖ 他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说 ‖ ： ‖ “终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。”"
+  },
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.5973,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说： ‖ “终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。”"
+  },
+  {
+   "id": "cmn_hans_cn_1089",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.5682,
+   "before": "如果没有熨斗，或者你不喜欢穿熨烫过的袜子，那你可以用吹风机试试（如果有的话） ‖ 。",
+   "after": "如果没有熨斗，或者你不喜欢穿熨烫过的袜子， ‖ 那你可以用吹风机试试（如果有的话）。"
+  }
+ ],
+ "best": [
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.8376,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万英镑 ‖ 。",
+   "after": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 2,
+   "bin": "≤99",
+   "delta": 0.7609,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万 ‖ 英镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 3,
+   "bin": "≤99",
+   "delta": 0.72,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万 ‖ 英 ‖ 镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月 ‖ 从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 4,
+   "bin": "≤99",
+   "delta": 0.6962,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道其转会费为2700万 ‖ 英 ‖ 镑 ‖ 。",
+   "after": "21岁的杰西（Jesus） ‖ 于2017年1月 ‖ 从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道 ‖ 其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_658",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6412,
+   "before": "夏季漫长的白昼 ‖ 会导致睡眠 ‖ 不足 ‖ 和相关健康问题 ‖ 。",
+   "after": "夏季漫长的白昼 ‖ 会 ‖ 导致 ‖ 睡眠不足 ‖ 和相关健康问题。"
+  }
+ ],
+ "why": "The inserted core principle forbidding cuts inside multi-character named entities/transliterations/fixed technical terms made the model avoid splitting names and parentheticals, giving small overall gains (largest in the shortest bin ≤3) by preserving those spans, but it also pushed cuts around parentheses, colons and quotation marks (moving cuts earlier or after parentheticals) and so created many regressions where punctuation or reporting verbs became isolated.",
+ "lesson": "When protecting multi-token names/terms, don't force cuts that isolate punctuation, colons/quotes, or reporting verbs—avoid moving cuts so the left fragment becomes a dangling or unentailed piece.",
+ "blamed": [
+  "C8 «- Evaluate discourse connectors and coordination: conjunctio»",
+  "C1 «- Ask whether the following material negates, reverses, or m»"
+ ]
+}

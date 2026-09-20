@@ -1,0 +1,137 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Avoid cutting between a verb and its essential complement (object, resultative/degree complement, aspect particle): continuations commonly complete, reverse, or negate the predicate. A GOOD cut keeps the full verb phrase together; if unavoidable, cut after the complement or at a natural boundary that preserves predicate+core complement; score internal cuts low."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 366
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8330,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- When aspectual or clause-closing signals indicate an event is complete, cutting after them usually preserves event integrity. More generally, prefer cuts that keep a verb together with its essential complement (object, resultative, degree word, or aspect/particle). A GOOD cut ends after a complete predicate or lawful clause boundary; avoid cuts that leave a predicate awaiting completion, reversal, or negation."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 147
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8111,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_605",
+    "text": "Input: 虽 <SEG:?> 然 <SEG:?> 它 <SEG:?> 的 <SEG:?> 物 <SEG:?> 理 <SEG:?> 状 <SEG:?> 态 <SEG:?> 可 <SEG:?> 能 <SEG:?> 会 <SEG:?> 改 <SEG:?> 变 <SEG:?> ， <SEG:?> 但 <SEG:?> 化 <SEG:?> 学 <SEG:?> 状 <SEG:?> 态 <SEG:?> 保 <SEG:?> 持 <SEG:?> 不 <SEG:?> 变 <SEG:?> 。\nOutput: 虽 <SEG:64> 然 <SEG:82> 它 <SEG:68> 的 <SEG:41> 物 <SEG:23> 理 <SEG:32> 状 <SEG:9> 态 <SEG:27> 可 <SEG:14> 能 <SEG:18> 会 <SEG:36> 改 <SEG:100> 变 <SEG:86> ， <SEG:91> 但 <SEG:95> 化 <SEG:5> 学 <SEG:45> 状 <SEG:50> 态 <SEG:77> 保 <SEG:59> 持 <SEG:73> 不 <SEG:0> 变 <SEG:55> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_982",
+    "text": "Input: 尤 <SEG:?> 其 <SEG:?> 在 <SEG:?> 夏 <SEG:?> 天 <SEG:?> ， <SEG:?> 如 <SEG:?> 果 <SEG:?> 你 <SEG:?> 决 <SEG:?> 定 <SEG:?> 徒 <SEG:?> 步 <SEG:?> 穿 <SEG:?> 越 <SEG:?> 雨 <SEG:?> 林 <SEG:?> ， <SEG:?> 就 <SEG:?> 需 <SEG:?> 要 <SEG:?> 小 <SEG:?> 心 <SEG:?> 蚊 <SEG:?> 子 <SEG:?> 。\nOutput: 尤 <SEG:33> 其 <SEG:100> 在 <SEG:96> 夏 <SEG:75> 天 <SEG:71> ， <SEG:67> 如 <SEG:42> 果 <SEG:83> 你 <SEG:50> 决 <SEG:21> 定 <SEG:54> 徒 <SEG:38> 步 <SEG:29> 穿 <SEG:8> 越 <SEG:12> 雨 <SEG:4> 林 <SEG:88> ， <SEG:92> 就 <SEG:62> 需 <SEG:58> 要 <SEG:25> 小 <SEG:0> 心 <SEG:17> 蚊 <SEG:46> 子 <SEG:79> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_1099",
+    "text": "Input: 发 <SEG:?> 射 <SEG:?> 大 <SEG:?> 约 <SEG:?> 3 <SEG:?> 分 <SEG:?> 钟 <SEG:?> 后 <SEG:?> ， <SEG:?> 箭 <SEG:?> 载 <SEG:?> 摄 <SEG:?> 像 <SEG:?> 机 <SEG:?> 显 <SEG:?> 示 <SEG:?> 大 <SEG:?> 量 <SEG:?> 绝 <SEG:?> 缘 <SEG:?> 泡 <SEG:?> 沫 <SEG:?> 碎 <SEG:?> 片 <SEG:?> 从 <SEG:?> 燃 <SEG:?> 料 <SEG:?> 箱 <SEG:?> 脱 <SEG:?> 落 <SEG:?> 。\nOutput: 发 <SEG:62> 射 <SEG:100> 大 <SEG:83> 约 <SEG:93> 3 <SEG:79> 分 <SEG:45> 钟 <SEG:90> 后 <SEG:97> ， <SEG:76> 箭 <SEG:28> 载 <SEG:24> 摄 <SEG:86> 像 <SEG:59> 机 <SEG:66> 显 <SEG:38> 示 <SEG:17> 大 <SEG:7> 量 <SEG:14> 绝 <SEG:31> 缘 <SEG:41> 泡 <SEG:0> 沫 <SEG:34> 碎 <SEG:52> 片 <SEG:48> 从 <SEG:10> 燃 <SEG:3> 料 <SEG:21> 箱 <SEG:55> 脱 <SEG:72> 落 <SEG:69> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_362",
+    "text": "Input: 光 <SEG:?> 子 <SEG:?> 甚 <SEG:?> 至 <SEG:?> 比 <SEG:?> 构 <SEG:?> 成 <SEG:?> 原 <SEG:?> 子 <SEG:?> 的 <SEG:?> 物 <SEG:?> 质 <SEG:?> 还 <SEG:?> 要 <SEG:?> 小 <SEG:?> ！\nOutput: 光 <SEG:86> 子 <SEG:100> 甚 <SEG:50> 至 <SEG:93> 比 <SEG:71> 构 <SEG:57> 成 <SEG:29> 原 <SEG:14> 子 <SEG:43> 的 <SEG:36> 物 <SEG:64> 质 <SEG:21> 还 <SEG:0> 要 <SEG:7> 小 <SEG:79> ！"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 20
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -147
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -230
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -878
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6729,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Treat core predicate structures (verb + essential complement, passives, and 是…的 copular frames) as tight units: splitting a verb from its object/resultative/degree/particle often yields fragments whose truth or meaning is completed, reversed, or negated by what follows. Prefer cuts after a completed predicate or a clear clause closer (aspect markers, sentence particles, punctuation); only accept an earlier cut when the continuation merely supplies optional modifiers or parenthetical detail."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 267
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8231,
+  "errors": null
+ }
+]

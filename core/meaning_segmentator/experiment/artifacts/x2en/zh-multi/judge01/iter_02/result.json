@@ -1,0 +1,84 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00711,
+  "lo": -0.00842,
+  "hi": 0.02211,
+  "n": 3726,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00322,
+  "lo": -0.00654,
+  "hi": 0.01325,
+  "n": 7350,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00711,
+   "lo": -0.00842,
+   "hi": 0.02211,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": -0.00078,
+   "lo": -0.01251,
+   "hi": 0.01126,
+   "n": 3624,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Paraphrased C8 to be shorter and to add an explicit instruction preventing extremely short fragments from being left alone when enforcing cohesion (addresses verb–complement shift side-effect).",
+  "Inserted a new Core Principle after C8 prohibiting cuts inside numeric/measurement/time expressions (addresses the primary finding about splitting quantities).",
+  "Inserted a new Core Principle after C8 requiring multi-character named entities and transliterations remain contiguous (addresses the finding about splitting names and transliterations)."
+ ],
+ "findings": [
+  "The prompt underestimates the harm of cutting inside numeric/measurement/time expressions: splitting percentages, speeds, durations or numeral+unit sequences often creates contradiction or loses core quantity information.",
+  "The prompt allows cuts that split multi-character proper names or transliterations, which severs referents and causes contradictions or incoherent fragments.",
+  "When rules forbid verb–complement splits, the prompt sometimes repositions cuts in ways that isolate punctuation or single-character function words; that trade harms short-piece bins."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C8",
+   "kind": "paraphrase",
+   "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+   "now": "- Evaluate discourse connectors and coordination: conjunctions and contrastive m"
+  },
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+   "now": "- Avoid cutting inside numeric expressions: treat a numeral together with its un"
+  },
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+   "now": "- Keep multi-character named entities and transliterations contiguous: do not in"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0086,
+   "≤5": 0.0037,
+   "≤7": 0.0117,
+   "≤10": 0.0087,
+   "≤99": 0.005
+  },
+  "n_worse": 1627,
+  "n_better": 1829,
+  "why": "Adding explicit rules to keep numbers and multi-character names contiguous pushed the model to stop splitting amounts/names (small positive gains across bins), but the paraphrase of C8 about avoiding extremely short fragments was interpreted in a way that moved cuts earlier and produced isolated single-character pieces (e.g. splitting 你 / 的), which explains the harmful tail moves even though overall bins improved slightly.",
+  "lesson": "When strengthening safety for numbers and names, make the ‘avoid extremely short fragments’ instruction precise so it does not encourage moving cuts earlier and creating isolated one-character fragments.",
+  "blamed": [
+   "C8 «- Evaluate discourse connectors and coordination: conjunctio» (paraphrase)",
+   "insert: avoid cutting inside numeric expressions",
+   "insert: keep multi-character named entities and transliterations contiguous"
+  ]
+ }
+}

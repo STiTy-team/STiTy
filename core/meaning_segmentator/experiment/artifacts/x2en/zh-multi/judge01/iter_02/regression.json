@@ -1,0 +1,125 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00322,
+  "lo": -0.00654,
+  "hi": 0.01325,
+  "n": 7350,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.00711,
+   "lo": -0.00842,
+   "hi": 0.02211,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": -0.00078,
+   "lo": -0.01251,
+   "hi": 0.01126,
+   "n": 3624,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "by_bin": {
+  "≤3": 0.0086,
+  "≤5": 0.0037,
+  "≤7": 0.0117,
+  "≤10": 0.0087,
+  "≤99": 0.005
+ },
+ "n_worse": 1627,
+ "n_better": 1829,
+ "worst": [
+  {
+   "id": "cmn_hans_cn_592",
+   "k": 3,
+   "bin": "≤99",
+   "delta": -0.6799,
+   "before": "也许有一天，你的子孙后代会生活在外星世界 ‖ ， ‖ 猜测着他们远古的祖先当时过得是怎样的一种生活 ‖ 。",
+   "after": "也许有一天， ‖ 你 ‖ 的子孙后代会生活在外星世界， ‖ 猜测着他们远古的祖先当时过得是怎样的一种生活。"
+  },
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.6753,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了，他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说： ‖ “终于有一块玻璃碎了，他们开始从窗户逃出去。”"
+  },
+  {
+   "id": "cmn_hans_cn_592",
+   "k": 4,
+   "bin": "≤10",
+   "delta": -0.6603,
+   "before": "也许有一天， ‖ 你的子孙后代会生活在外星世界 ‖ ， ‖ 猜测着他们远古的祖先当时过得是怎样的一种生活 ‖ 。",
+   "after": "也许有一天， ‖ 你 ‖ 的 ‖ 子孙后代会生活在外星世界， ‖ 猜测着他们远古的祖先当时过得是怎样的一种生活。"
+  },
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.6093,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说： ‖ “终于有一块玻璃碎了，他们开始从窗户逃出去。 ‖ ”"
+  },
+  {
+   "id": "cmn_hans_cn_348",
+   "k": 3,
+   "bin": "≤10",
+   "delta": -0.6045,
+   "before": "幸存者弗朗齐歇克·科瓦尔说：“终于有一块玻璃碎了 ‖ ， ‖ 他们开始从窗户逃出去。 ‖ ”",
+   "after": "幸存者弗朗齐歇克·科瓦尔说： ‖ “终于有一块玻璃碎了， ‖ 他们开始从窗户逃出去。 ‖ ”"
+  }
+ ],
+ "best": [
+  {
+   "id": "cmn_hans_cn_270",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.8376,
+   "before": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城，据报道其转会费为2700万英镑 ‖ 。",
+   "after": "21岁的杰西（Jesus）于2017年1月从巴西的帕尔梅拉斯足球俱乐部加盟曼城， ‖ 据报道其转会费为2700万英镑。"
+  },
+  {
+   "id": "cmn_hans_cn_658",
+   "k": 4,
+   "bin": "≤5",
+   "delta": 0.6415,
+   "before": "夏季漫长的白昼 ‖ 会导致睡眠 ‖ 不足 ‖ 和相关健康问题 ‖ 。",
+   "after": "夏季漫长的白昼 ‖ 会导致睡眠不足 ‖ 和相关健康 ‖ 问题 ‖ 。"
+  },
+  {
+   "id": "cmn_hans_cn_950",
+   "k": 9,
+   "bin": "≤7",
+   "delta": 0.59,
+   "before": "基本上， ‖ 你可以张贴告示， ‖ 告知他人你可以提供帮助、 ‖ 在码头上来回走动、 ‖ 接触正在清理游艇的人 ‖ 或酒吧里的水 ‖ 手 ‖ 等 ‖ 等 ‖ 。",
+   "after": "基本上， ‖ 你 ‖ 可以张贴告示 ‖ ， ‖ 告知他人 ‖ 你可以提供帮助 ‖ 、 ‖ 在码头上来回走动、 ‖ 接触正在清理游艇的人 ‖ 或酒吧里的水手等等。"
+  },
+  {
+   "id": "cmn_hans_cn_35",
+   "k": 3,
+   "bin": "≤10",
+   "delta": 0.5889,
+   "before": "正值上午8点46分， ‖ 整座城市陷入了寂静， ‖ 标示了 ‖ 第一架飞机撞上目标的确切时间。",
+   "after": "正值上午8点46分， ‖ 整座城市陷入了寂静 ‖ ， ‖ 标示了第一架飞机撞上目标的确切时间。"
+  },
+  {
+   "id": "cmn_hans_cn_658",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.5522,
+   "before": "夏季漫长的白昼 ‖ 会导致睡眠 ‖ 不足 ‖ 和相关健康 ‖ 问题 ‖ 。",
+   "after": "夏季漫长的白昼 ‖ 会导致睡眠不足 ‖ 和相关健康 ‖ 问 ‖ 题 ‖ 。"
+  }
+ ],
+ "why": "Adding explicit rules to keep numbers and multi-character names contiguous pushed the model to stop splitting amounts/names (small positive gains across bins), but the paraphrase of C8 about avoiding extremely short fragments was interpreted in a way that moved cuts earlier and produced isolated single-character pieces (e.g. splitting 你 / 的), which explains the harmful tail moves even though overall bins improved slightly.",
+ "lesson": "When strengthening safety for numbers and names, make the ‘avoid extremely short fragments’ instruction precise so it does not encourage moving cuts earlier and creating isolated one-character fragments.",
+ "blamed": [
+  "C8 «- Evaluate discourse connectors and coordination: conjunctio» (paraphrase)",
+  "insert: avoid cutting inside numeric expressions",
+  "insert: keep multi-character named entities and transliterations contiguous"
+ ]
+}

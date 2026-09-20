@@ -1,0 +1,2902 @@
+[
+ {
+  "id": "ja_jp_968",
+  "cuts": 8,
+  "avg_chunk": 2.8,
+  "latency_bin": "≤3",
+  "gap": 0.5033,
+  "policy_worst_contra": 0.9958,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    14,
+    15,
+    16,
+    17,
+    18,
+    22,
+    23,
+    24
+   ],
+   "H_set": 0.002,
+   "text": "これらの村はユネスコの世界遺 ‖ 産 ‖ に ‖ 登 ‖ 録 ‖ されてい ‖ ま ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "These villages are UNESCO World Heritage Sites.",
+     "Production",
+     "To",
+     "Den",
+     "Record",
+     "I'm not.",
+     "Ma",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "这些村庄是联合国教科文组织的世界遗产",
+     "产",
+     "上",
+     "登",
+     "錄",
+     "被人发现了",
+     "马",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Diese Dörfer sind UNESCO-Weltkulturerbe.",
+     "Produktion",
+     "",
+     "Den ",
+     "Record",
+     "- Ich bin es.",
+     "Ma",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Estas aldeas son Patrimonio de la Humanidad de la UNESCO.",
+     "Producción",
+     "A",
+     "Dan.",
+     "Record",
+     "- Sí.",
+     "- No.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    6,
+    16,
+    20,
+    21,
+    23,
+    24
+   ],
+   "H_set": 0.5052,
+   "text": "これらの ‖ 村 ‖ は ‖ ユネスコの世界遺産に ‖ 登録され ‖ て ‖ いま ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "These.",
+     "Village",
+     "- Yeah.",
+     "UNESCO World Heritage Site",
+     "They're registered.",
+     "- Yeah.",
+     "Now.",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "他们",
+     "村",
+     "是",
+     "联合国教科文组织世界遗产",
+     "他们已经登记了",
+     "是的",
+     "现在",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Diese sind:",
+     "Dorf",
+     "Ha",
+     "UNESCO-Weltkulturerbe",
+     "Sie sind registriert.",
+     "- Ich weiß.",
+     "- Jetzt.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Estos son los",
+     "Aldea",
+     "- ¿Qué?",
+     "Patrimonio de la Humanidad por la UNESCO",
+     "Está registrado.",
+     "- ¿Qué?",
+     "Ahora mismo.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "の世界遺",
+     "right": "産に登録",
+     "H": 0.6376,
+     "H_pct": 17.4,
+     "contra": 0.0044,
+     "cohesion": 0.6404
+    },
+    {
+     "pos": 15,
+     "left": "世界遺産",
+     "right": "に登録さ",
+     "H": 0.6524,
+     "H_pct": 34.8,
+     "contra": 0.0004,
+     "cohesion": 0.6527
+    },
+    {
+     "pos": 17,
+     "left": "遺産に登",
+     "right": "録されて",
+     "H": 0.6391,
+     "H_pct": 21.7,
+     "contra": 0.0027,
+     "cohesion": 0.6409
+    },
+    {
+     "pos": 18,
+     "left": "産に登録",
+     "right": "されてい",
+     "H": 0.6736,
+     "H_pct": 47.8,
+     "contra": 0.0005,
+     "cohesion": 0.6739
+    },
+    {
+     "pos": 22,
+     "left": "されてい",
+     "right": "ます。",
+     "H": 0.0034,
+     "H_pct": 0.0,
+     "contra": 0.9958,
+     "cohesion": 0.8026
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "これらの",
+     "right": "村はユネ",
+     "H": 0.7336,
+     "H_pct": 73.9,
+     "contra": 0.0023,
+     "cohesion": 0.7353
+    },
+    {
+     "pos": 5,
+     "left": "れらの村",
+     "right": "はユネス",
+     "H": 0.7496,
+     "H_pct": 87.0,
+     "contra": 0.0007,
+     "cohesion": 0.7501
+    },
+    {
+     "pos": 6,
+     "left": "らの村は",
+     "right": "ユネスコ",
+     "H": 0.7356,
+     "H_pct": 78.3,
+     "contra": 0.0018,
+     "cohesion": 0.7369
+    },
+    {
+     "pos": 20,
+     "left": "登録され",
+     "right": "ています",
+     "H": 0.7609,
+     "H_pct": 91.3,
+     "contra": 0.0005,
+     "cohesion": 0.7612
+    },
+    {
+     "pos": 21,
+     "left": "録されて",
+     "right": "います。",
+     "H": 0.7448,
+     "H_pct": 82.6,
+     "contra": 0.0005,
+     "cohesion": 0.7452
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_563",
+  "cuts": 6,
+  "avg_chunk": 3.9,
+  "latency_bin": "≤5",
+  "gap": 0.5353,
+  "policy_worst_contra": 0.9934,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+   ],
+   "H_set": 0.0038,
+   "text": "助けようとして怪我をしたら、事態を悪化さ ‖ せ ‖ る ‖ だ ‖ け ‖ で ‖ す。",
+   "pieces": {
+    "English": [
+     "If you hurt someone trying to help, you'll make things worse.",
+     "She",
+     "る",
+     "- Yeah.",
+     "Ke",
+     "And",
+     "- Oh, yeah."
+    ],
+    "Chinese": [
+     "要是你想帮助他，就会伤害他，让事情变得更糟",
+     "塞",
+     "是的",
+     "是的，我知道。",
+     "克",
+     "是的，我知道。",
+     "                                                                                                                                                                                               "
+    ],
+    "German": [
+     "Wenn du dich verletzt, wenn du versuchst zu helfen, wird es noch schlimmer.",
+     "Se",
+     "- Ja.",
+     "- Das ist es.",
+     "Ke",
+     "- Ich bin da.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Si te lastimas tratando de ayudar, empeorarás las cosas.",
+     "- ¡Ahora!",
+     "- Sí.",
+     "- Sí.",
+     "- ¿Qué?",
+     "- ¿Qué?",
+     "- Sí."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    11,
+    12,
+    14,
+    22,
+    25,
+    26
+   ],
+   "H_set": 0.5391,
+   "text": "助けようとして怪我をし ‖ た ‖ ら、 ‖ 事態を悪化させる ‖ だけで ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "I was hurt trying to help.",
+     "- Yeah.",
+     "We,",
+     "It's going to make things worse.",
+     "Just...",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     "他们想帮助她,却受伤了。",
+     "太",
+     "我们",
+     "让事情变得更糟",
+     "只是",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Ich habe mich verletzt, als ich versuchte, ihm zu helfen.",
+     "- Ja.",
+     "Ich bin...",
+     "Das wird es nur noch schlimmer machen.",
+     "- Nur ein bisschen.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Me hice daño tratando de ayudar.",
+     "- Sí.",
+     "- Sí.",
+     "No lo haría peor.",
+     "- Solo.",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 20,
+     "left": "を悪化さ",
+     "right": "せるだけ",
+     "H": 0.0041,
+     "H_pct": 0.0,
+     "contra": 0.9934,
+     "cohesion": 0.6175
+    },
+    {
+     "pos": 21,
+     "left": "悪化させ",
+     "right": "るだけで",
+     "H": 0.5973,
+     "H_pct": 32.0,
+     "contra": 0.0006,
+     "cohesion": 0.5977
+    },
+    {
+     "pos": 23,
+     "left": "させるだ",
+     "right": "けです。",
+     "H": 0.6586,
+     "H_pct": 52.0,
+     "contra": 0.0007,
+     "cohesion": 0.6591
+    },
+    {
+     "pos": 24,
+     "left": "せるだけ",
+     "right": "です。",
+     "H": 0.655,
+     "H_pct": 48.0,
+     "contra": 0.0009,
+     "cohesion": 0.6556
+    }
+   ],
+   "added": [
+    {
+     "pos": 11,
+     "left": "怪我をし",
+     "right": "たら、事",
+     "H": 0.7826,
+     "H_pct": 100.0,
+     "contra": 0.0013,
+     "cohesion": 0.7836
+    },
+    {
+     "pos": 12,
+     "left": "我をした",
+     "right": "ら、事態",
+     "H": 0.7447,
+     "H_pct": 92.0,
+     "contra": 0.0011,
+     "cohesion": 0.7455
+    },
+    {
+     "pos": 14,
+     "left": "したら、",
+     "right": "事態を悪",
+     "H": 0.7494,
+     "H_pct": 96.0,
+     "contra": 0.0026,
+     "cohesion": 0.7514
+    },
+    {
+     "pos": 26,
+     "left": "だけです",
+     "right": "。",
+     "H": 0.7119,
+     "H_pct": 80.0,
+     "contra": 0.0008,
+     "cohesion": 0.7125
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_1584",
+  "cuts": 5,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.695,
+  "policy_worst_contra": 0.9888,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    7,
+    10,
+    15,
+    23
+   ],
+   "H_set": 0.0063,
+   "text": "ビシュケクの ‖ 街 ‖ 路には ‖ 法執行官が ‖ いなかったため、 ‖ 一晩中略奪が続いたと伝えられています。",
+   "pieces": {
+    "English": [
+     "Bishkek.",
+     "Street",
+     "On the road.",
+     "The bailiff.",
+     "Because there was no one.",
+     "It is reported that the looting continued all night."
+    ],
+    "Chinese": [
+     "比什凯克",
+     "街道",
+     "路上",
+     "警察",
+     "因为我没有",
+     "据报道，抢劫持续了一整晚。"
+    ],
+    "German": [
+     "Bischkek",
+     "Straße",
+     "Auf der Straße",
+     "Der Gerichtsvollzieher.",
+     "Da war er nicht.",
+     "Die Plünderungen dauerten die ganze Nacht an."
+    ],
+    "Spanish": [
+     "Bishkek.",
+     "Calle",
+     "En la calle.",
+     "Un agente de la ley.",
+     "No lo era.",
+     "Se dice que el robo continuó toda la noche."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    19,
+    20,
+    21,
+    22,
+    40
+   ],
+   "H_set": 0.7014,
+   "text": "ビシュケクの街路には法執行官がいなかっ ‖ た ‖ た ‖ め ‖ 、一晩中略奪が続いたと伝えられていま ‖ す。",
+   "pieces": {
+    "English": [
+     "There are no bailiffs in the streets of Bishkek.",
+     "- Yeah.",
+     "- Yeah.",
+     "Me",
+     "I'm told the looting has been going on all night.",
+     "- Oh, yeah."
+    ],
+    "Chinese": [
+     "比什凯克的街道上没有执法人员",
+     "太",
+     "太",
+     "梅",
+     "据报道，抢劫持续了一整晚",
+     "                                                                                                                                                                                               "
+    ],
+    "German": [
+     "Es gibt keine Gerichtsvollzieher auf den Straßen von Bischkek.",
+     "- Ja.",
+     "- Ja.",
+     "Me",
+     "Es wurde berichtet, dass die Plünderung die ganze Nacht andauerte.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "No hay policías en las calles de Bishkek.",
+     "- Sí.",
+     "- Sí.",
+     "- Sí.",
+     "Se dice que el saqueo duró toda la noche.",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "ュケクの",
+     "right": "街路には",
+     "H": 0.8237,
+     "H_pct": 82.5,
+     "contra": 0.0153,
+     "cohesion": 0.8365
+    },
+    {
+     "pos": 7,
+     "left": "ケクの街",
+     "right": "路には法",
+     "H": 0.7529,
+     "H_pct": 62.5,
+     "contra": 0.0032,
+     "cohesion": 0.7553
+    },
+    {
+     "pos": 10,
+     "left": "街路には",
+     "right": "法執行官",
+     "H": 0.75,
+     "H_pct": 55.0,
+     "contra": 0.0039,
+     "cohesion": 0.753
+    },
+    {
+     "pos": 15,
+     "left": "執行官が",
+     "right": "いなかっ",
+     "H": 0.0073,
+     "H_pct": 2.5,
+     "contra": 0.9888,
+     "cohesion": 0.6557
+    },
+    {
+     "pos": 23,
+     "left": "たため、",
+     "right": "一晩中略",
+     "H": 0.8309,
+     "H_pct": 87.5,
+     "contra": 0.0056,
+     "cohesion": 0.8356
+    }
+   ],
+   "added": [
+    {
+     "pos": 19,
+     "left": "いなかっ",
+     "right": "たため、",
+     "H": 0.8314,
+     "H_pct": 90.0,
+     "contra": 0.0011,
+     "cohesion": 0.8323
+    },
+    {
+     "pos": 20,
+     "left": "なかった",
+     "right": "ため、一",
+     "H": 0.8403,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8412
+    },
+    {
+     "pos": 21,
+     "left": "かったた",
+     "right": "め、一晩",
+     "H": 0.8351,
+     "H_pct": 95.0,
+     "contra": 0.0021,
+     "cohesion": 0.8368
+    },
+    {
+     "pos": 22,
+     "left": "ったため",
+     "right": "、一晩中",
+     "H": 0.8394,
+     "H_pct": 97.5,
+     "contra": 0.0043,
+     "cohesion": 0.8431
+    },
+    {
+     "pos": 40,
+     "left": "れていま",
+     "right": "す。",
+     "H": 0.8345,
+     "H_pct": 92.5,
+     "contra": 0.0024,
+     "cohesion": 0.8365
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_1071",
+  "cuts": 2,
+  "avg_chunk": 10.0,
+  "latency_bin": "≤10",
+  "gap": 0.7762,
+  "policy_worst_contra": 0.999,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10,
+    24
+   ],
+   "H_set": 0.0006,
+   "text": "国際的な制裁により、 ‖ 新しい航空機を購入することが ‖ できません。",
+   "pieces": {
+    "English": [
+     "International sanctions,",
+     "I'm not going to buy a new plane.",
+     "I can't."
+    ],
+    "Chinese": [
+     "国际制裁",
+     "买新飞机",
+     "不能。"
+    ],
+    "German": [
+     "Internationale Sanktionen",
+     "Sie müssen neue Flugzeuge kaufen.",
+     "Das kann ich nicht."
+    ],
+    "Spanish": [
+     "Las sanciones internacionales",
+     "Comprar un avión nuevo.",
+     "No puedo."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    28,
+    29
+   ],
+   "H_set": 0.7768,
+   "text": "国際的な制裁により、新しい航空機を購入することができませ ‖ ん ‖ 。",
+   "pieces": {
+    "English": [
+     "International sanctions prevented the purchase of new aircraft.",
+     "- Oh, yeah.",
+     "."
+    ],
+    "Chinese": [
+     "国际制裁使得他们无法购买新的飞机",
+     "嗯",
+     "................................................................................................"
+    ],
+    "German": [
+     "Internationale Sanktionen verhinderten den Kauf neuer Flugzeuge.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Las sanciones internacionales no le permiten comprar aviones nuevos.",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 10,
+     "left": "により、",
+     "right": "新しい航",
+     "H": 0.691,
+     "H_pct": 67.9,
+     "contra": 0.0088,
+     "cohesion": 0.6971
+    },
+    {
+     "pos": 24,
+     "left": "ることが",
+     "right": "できませ",
+     "H": 0.0007,
+     "H_pct": 17.9,
+     "contra": 0.999,
+     "cohesion": 0.7203
+    }
+   ],
+   "added": [
+    {
+     "pos": 28,
+     "left": "できませ",
+     "right": "ん。",
+     "H": 0.8441,
+     "H_pct": 100.0,
+     "contra": 0.0011,
+     "cohesion": 0.845
+    },
+    {
+     "pos": 29,
+     "left": "きません",
+     "right": "。",
+     "H": 0.8249,
+     "H_pct": 96.4,
+     "contra": 0.0021,
+     "cohesion": 0.8267
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_63",
+  "cuts": 1,
+  "avg_chunk": 29.0,
+  "latency_bin": "≤99",
+  "gap": 0.8887,
+  "policy_worst_contra": 0.9981,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    50
+   ],
+   "H_set": 0.0012,
+   "text": "ブラジルは地球上で最大のローマ・カトリックの国であり、ローマ・カトリック教会は一貫して同性婚の合法化 ‖ に反対してきた。",
+   "pieces": {
+    "English": [
+     "Brazil is the largest Roman Catholic country on the planet, and the Roman Catholic Church has consistently advocated the legalization of same-sex marriage.",
+     "The Japanese government has been opposed to the creation of a new Japanese language."
+    ],
+    "Chinese": [
+     " 巴西是世界上最大的天主教國家，天主教會一直支持同性婚姻。",
+     "反對者多。"
+    ],
+    "German": [
+     "Brasilien ist das größte römisch-katholische Land der Welt, und die römisch-katholische Kirche hat die gleichgeschlechtliche Ehe konsequent legalisiert.",
+     "Ich habe mich dagegen gewehrt."
+    ],
+    "Spanish": [
+     "Brasil es el país católico más grande del mundo, y la Iglesia Católica Romana ha legalizado el matrimonio entre personas del mismo sexo de manera consistente.",
+     "Se opuso a ello."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    26
+   ],
+   "H_set": 0.89,
+   "text": "ブラジルは地球上で最大のローマ・カトリックの国であり ‖ 、ローマ・カトリック教会は一貫して同性婚の合法化に反対してきた。",
+   "pieces": {
+    "English": [
+     "Brazil is the largest Roman Catholic country on the planet.",
+     "The Roman Catholic Church has consistently opposed the legalization of same-sex marriage."
+    ],
+    "Chinese": [
+     "巴西是世界上最大的罗马天主教国家",
+     " 罗马天主教会一直反对同性婚姻。"
+    ],
+    "German": [
+     "Brasilien ist das größte römisch-katholische Land der Welt.",
+     "Die römisch-katholische Kirche hat sich konsequent gegen die Legalisierung der gleichgeschlechtlichen Ehe ausgesprochen."
+    ],
+    "Spanish": [
+     "Brasil es el país católico más grande del mundo.",
+     "La Iglesia Católica Romana se ha opuesto sistemáticamente a la legalización del matrimonio entre personas del mismo sexo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 50,
+     "left": "の合法化",
+     "right": "に反対し",
+     "H": 0.0012,
+     "H_pct": 8.9,
+     "contra": 0.9981,
+     "cohesion": 0.6531
+    }
+   ],
+   "added": [
+    {
+     "pos": 26,
+     "left": "国であり",
+     "right": "、ローマ",
+     "H": 0.89,
+     "H_pct": 100.0,
+     "contra": 0.0005,
+     "cohesion": 0.8904
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_1187",
+  "cuts": 14,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.455,
+  "policy_worst_contra": 0.9776,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    24,
+    25,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38
+   ],
+   "H_set": 0.009,
+   "text": "ハーシーとチェイスはファージ（ウイルス）を使い、 ‖ そ ‖ のD ‖ N ‖ A ‖ を ‖ バ ‖ ク ‖ テ ‖ リ ‖ ア ‖ に ‖ 移 ‖ 植 ‖ しました。",
+   "pieces": {
+    "English": [
+     "Hershey and Chase used a phage.",
+     "So.",
+     "D",
+     "N",
+     "A",
+     "を",
+     "Ba",
+     "Ku",
+     "Te",
+     "Li",
+     "A",
+     "To",
+     "Move",
+     "Plants",
+     "I did."
+    ],
+    "Chinese": [
+     "赫西和蔡斯用了一个噬菌体",
+     "是的",
+     "的D",
+     "非洲",
+     "阿拉伯文",
+     "是的",
+     "巴",
+     "库",
+     "泰语",
+     "李",
+     "阿",
+     "上",
+     "移動",
+     "植物",
+     " 已完成。"
+    ],
+    "German": [
+     "Hershey und Chase verwenden einen Pharg.",
+     "So",
+     "D",
+     "N",
+     "A",
+     "- Ich weiß.",
+     "Ba",
+     "Ku",
+     "Te",
+     "Li",
+     "A",
+     "",
+     "Bewegung",
+     "Pflanze",
+     "Ich habe es getan."
+    ],
+    "Spanish": [
+     "Hershey y Chase usaron un fármaco.",
+     "- Sí.",
+     "D",
+     "N",
+     "A",
+     "- Sí.",
+     "Ba",
+     "- ¿Qué?",
+     "Te",
+     "Ri",
+     "A",
+     "A",
+     "Mover",
+     "Planta",
+     "Lo hice."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    10,
+    22,
+    23,
+    24,
+    38,
+    39,
+    40,
+    41
+   ],
+   "H_set": 0.464,
+   "text": "ハーシ ‖ ー ‖ と ‖ チェ ‖ イ ‖ ス ‖ は ‖ ファージ（ウイルス）を使 ‖ い ‖ 、 ‖ そのDNAをバクテリアに移植 ‖ し ‖ ま ‖ し ‖ た。",
+   "pieces": {
+    "English": [
+     "Harshi",
+     "-",
+     "And",
+     "Che",
+     "Yi",
+     "S",
+     "- Yeah.",
+     "We're using a phage.",
+     "I",
+     ",",
+     "We transferred that DNA into bacteria.",
+     "Shi",
+     "Ma",
+     "Shi",
+     "- Yeah."
+    ],
+    "Chinese": [
+     "哈希",
+     "－",
+     "与",
+     "切",
+     "李",
+     "斯",
+     "是",
+     "我们用了噬菌体",
+     "是啊",
+     ",,,",
+     "把DNA移植到细菌里",
+     "西",
+     "马",
+     "西",
+     "       "
+    ],
+    "German": [
+     "Hassi",
+     "- Ja.",
+     "Und",
+     "Che",
+     "Yi",
+     "S",
+     "Ha",
+     "Wir benutzen Phargen.",
+     "- Ich.",
+     ",",
+     "Wir setzen diese DNA in Bakterien ein.",
+     "Shi",
+     "Ma",
+     "Shi",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Harshi",
+     "- ¿Qué?",
+     "Y",
+     "Che.",
+     "I",
+     "S",
+     "- ¿Qué?",
+     "Usamos un fármaco.",
+     "- Sí.",
+     ",",
+     "Transplantamos ese ADN en bacterias.",
+     "- Sí.",
+     "- No.",
+     "- Sí.",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 25,
+     "left": "使い、そ",
+     "right": "のDNA",
+     "H": 0.6816,
+     "H_pct": 63.4,
+     "contra": 0.062,
+     "cohesion": 0.7267
+    },
+    {
+     "pos": 27,
+     "left": "、そのD",
+     "right": "NAをバ",
+     "H": 0.5232,
+     "H_pct": 34.1,
+     "contra": 0.08,
+     "cohesion": 0.5687
+    },
+    {
+     "pos": 28,
+     "left": "そのDN",
+     "right": "Aをバク",
+     "H": 0.533,
+     "H_pct": 39.0,
+     "contra": 0.1086,
+     "cohesion": 0.5979
+    },
+    {
+     "pos": 29,
+     "left": "のDNA",
+     "right": "をバクテ",
+     "H": 0.5321,
+     "H_pct": 36.6,
+     "contra": 0.1755,
+     "cohesion": 0.6454
+    },
+    {
+     "pos": 30,
+     "left": "DNAを",
+     "right": "バクテリ",
+     "H": 0.5099,
+     "H_pct": 29.3,
+     "contra": 0.2465,
+     "cohesion": 0.6767
+    },
+    {
+     "pos": 31,
+     "left": "NAをバ",
+     "right": "クテリア",
+     "H": 0.1438,
+     "H_pct": 7.3,
+     "contra": 0.7457,
+     "cohesion": 0.5654
+    },
+    {
+     "pos": 32,
+     "left": "Aをバク",
+     "right": "テリアに",
+     "H": 0.1783,
+     "H_pct": 9.8,
+     "contra": 0.663,
+     "cohesion": 0.529
+    },
+    {
+     "pos": 33,
+     "left": "をバクテ",
+     "right": "リアに移",
+     "H": 0.4513,
+     "H_pct": 22.0,
+     "contra": 0.2107,
+     "cohesion": 0.5718
+    },
+    {
+     "pos": 34,
+     "left": "バクテリ",
+     "right": "アに移植",
+     "H": 0.0161,
+     "H_pct": 0.0,
+     "contra": 0.9776,
+     "cohesion": 0.7203
+    },
+    {
+     "pos": 35,
+     "left": "クテリア",
+     "right": "に移植し",
+     "H": 0.4425,
+     "H_pct": 19.5,
+     "contra": 0.2422,
+     "cohesion": 0.5839
+    },
+    {
+     "pos": 36,
+     "left": "テリアに",
+     "right": "移植しま",
+     "H": 0.5881,
+     "H_pct": 46.3,
+     "contra": 0.1276,
+     "cohesion": 0.6742
+    },
+    {
+     "pos": 37,
+     "left": "リアに移",
+     "right": "植しまし",
+     "H": 0.6633,
+     "H_pct": 61.0,
+     "contra": 0.0096,
+     "cohesion": 0.6697
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "ハーシ",
+     "right": "ーとチェ",
+     "H": 0.7329,
+     "H_pct": 95.1,
+     "contra": 0.0103,
+     "cohesion": 0.7405
+    },
+    {
+     "pos": 4,
+     "left": "ハーシー",
+     "right": "とチェイ",
+     "H": 0.7308,
+     "H_pct": 92.7,
+     "contra": 0.0073,
+     "cohesion": 0.7361
+    },
+    {
+     "pos": 5,
+     "left": "ーシーと",
+     "right": "チェイス",
+     "H": 0.7249,
+     "H_pct": 82.9,
+     "contra": 0.0065,
+     "cohesion": 0.7297
+    },
+    {
+     "pos": 7,
+     "left": "ーとチェ",
+     "right": "イスはフ",
+     "H": 0.7044,
+     "H_pct": 75.6,
+     "contra": 0.0165,
+     "cohesion": 0.7162
+    },
+    {
+     "pos": 8,
+     "left": "とチェイ",
+     "right": "スはファ",
+     "H": 0.6993,
+     "H_pct": 73.2,
+     "contra": 0.0063,
+     "cohesion": 0.7038
+    },
+    {
+     "pos": 9,
+     "left": "チェイス",
+     "right": "はファー",
+     "H": 0.7418,
+     "H_pct": 97.6,
+     "contra": 0.0032,
+     "cohesion": 0.7441
+    },
+    {
+     "pos": 10,
+     "left": "ェイスは",
+     "right": "ファージ",
+     "H": 0.7646,
+     "H_pct": 100.0,
+     "contra": 0.0109,
+     "cohesion": 0.7731
+    },
+    {
+     "pos": 22,
+     "left": "ス）を使",
+     "right": "い、その",
+     "H": 0.7053,
+     "H_pct": 80.5,
+     "contra": 0.0029,
+     "cohesion": 0.7074
+    },
+    {
+     "pos": 23,
+     "left": "）を使い",
+     "right": "、そのD",
+     "H": 0.7299,
+     "H_pct": 90.2,
+     "contra": 0.0106,
+     "cohesion": 0.7377
+    },
+    {
+     "pos": 39,
+     "left": "に移植し",
+     "right": "ました。",
+     "H": 0.6932,
+     "H_pct": 70.7,
+     "contra": 0.0044,
+     "cohesion": 0.6963
+    },
+    {
+     "pos": 40,
+     "left": "移植しま",
+     "right": "した。",
+     "H": 0.6891,
+     "H_pct": 68.3,
+     "contra": 0.0055,
+     "cohesion": 0.6929
+    },
+    {
+     "pos": 41,
+     "left": "植しまし",
+     "right": "た。",
+     "H": 0.7048,
+     "H_pct": 78.0,
+     "contra": 0.0192,
+     "cohesion": 0.7186
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_1447",
+  "cuts": 12,
+  "avg_chunk": 4.3,
+  "latency_bin": "≤5",
+  "gap": 0.5159,
+  "policy_worst_contra": 0.9993,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    10,
+    11,
+    32,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+   ],
+   "H_set": 0.0003,
+   "text": "トニー・モール博士 ‖ は ‖ 、 ‖ 南アフリカのクワズールー・ナタール地方で、 ‖ 極度薬剤耐性結核 ‖ （ ‖ X ‖ D ‖ R ‖ - ‖ T ‖ B ‖ ）を発見しました。",
+   "pieces": {
+    "English": [
+     "Dr. Tony Moore",
+     "- Yeah.",
+     ",",
+     "In KwaZulu-Natal, South Africa,",
+     "Extremely drug-resistant tuberculosis",
+     "(",
+     "X",
+     "D",
+     "R",
+     "- Oh, yeah.",
+     "T",
+     "B",
+     "The discovery of the 100% fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional fractional "
+    ],
+    "Chinese": [
+     "托尼·莫尔博士",
+     "是",
+     ",,,",
+     "南非的夸祖鲁-纳塔尔地区",
+     "极端耐药结核病",
+     "（第10次会议）",
+     "十",
+     "德国",
+     "拉丁字母R",
+     "- 是的",
+     "特",
+     "2004年12月1日至2005年6月30日期间收入和支出及准备金和基金结余变动表",
+     "》中發現。"
+    ],
+    "German": [
+     "Dr. Tony Moore",
+     "Ha",
+     ",",
+     "in der Region KwaZulu-Natal in Südafrika.",
+     "Extreme Tuberkulose",
+     "(",
+     "X",
+     "D",
+     "R",
+     "- Ich bin es.",
+     "T",
+     "B",
+     "(Ich habe es gefunden.)"
+    ],
+    "Spanish": [
+     "Dr. Tony Moore",
+     "- ¿Qué?",
+     ",",
+     "en KwaZulu-Natal, Sudáfrica.",
+     "Tuberculosis extremadamente resistente a los medicamentos",
+     "(",
+     "X",
+     "D",
+     "R",
+     "- ¿Qué?",
+     "T",
+     "B",
+     "(Lo he descubierto)."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    6,
+    7,
+    9,
+    10,
+    11,
+    14,
+    30,
+    54,
+    55
+   ],
+   "H_set": 0.5162,
+   "text": "トニ ‖ ー ‖ ・ ‖ モー ‖ ル ‖ 博士 ‖ は ‖ 、 ‖ 南アフ ‖ リカのクワズールー・ナタール地方 ‖ で、極度薬剤耐性結核（XDR-TB）を発見しまし ‖ た ‖ 。",
+   "pieces": {
+    "English": [
+     "Tony.",
+     "-",
+     "・",
+     "Moe",
+     "Lu",
+     "Doctor",
+     "- Yeah.",
+     ",",
+     "South Af",
+     "KwaZulu-Natal",
+     "We have discovered extremely drug‐resistant tuberculosis (XDR‐TB).",
+     "- Yeah.",
+     "."
+    ],
+    "Chinese": [
+     "托尼",
+     "－",
+     "－ － －",
+     "莫",
+     "鲁",
+     "博士",
+     "是",
+     ",,,",
+     "南阿夫",
+     "利卡的夸祖魯-納塔爾地區",
+     "我们发现了一种极度耐药性结核病",
+     "太",
+     "................................................................................................"
+    ],
+    "German": [
+     "Tony",
+     "- Ja.",
+     "- Ja.",
+     "Moe",
+     "Le",
+     "Doktor",
+     "Ha",
+     ",",
+     "Süd-Afghanistan",
+     "KwaZulu-Natal",
+     "Und wir haben extrem arzneimittelresistente Tuberkulose entdeckt,",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Tony.",
+     "- ¿Qué?",
+     "*",
+     "Moe.",
+     "Lu.",
+     "Doctor",
+     "- ¿Qué?",
+     ",",
+     "Afganistán meridional",
+     "KwaZulu-Natal",
+     "Y descubrieron la tuberculosis extremadamente resistente a los medicamentos,",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 32,
+     "left": "地方で、",
+     "right": "極度薬剤",
+     "H": 0.7364,
+     "H_pct": 66.7,
+     "contra": 0.0171,
+     "cohesion": 0.7492
+    },
+    {
+     "pos": 40,
+     "left": "耐性結核",
+     "right": "（XDR",
+     "H": 0.6633,
+     "H_pct": 37.0,
+     "contra": 0.0012,
+     "cohesion": 0.6641
+    },
+    {
+     "pos": 41,
+     "left": "性結核（",
+     "right": "XDR-",
+     "H": 0.621,
+     "H_pct": 22.2,
+     "contra": 0.0272,
+     "cohesion": 0.6384
+    },
+    {
+     "pos": 42,
+     "left": "結核（X",
+     "right": "DR-T",
+     "H": 0.0554,
+     "H_pct": 3.7,
+     "contra": 0.9194,
+     "cohesion": 0.6876
+    },
+    {
+     "pos": 43,
+     "left": "核（XD",
+     "right": "R-TB",
+     "H": 0.1156,
+     "H_pct": 5.6,
+     "contra": 0.816,
+     "cohesion": 0.6285
+    },
+    {
+     "pos": 44,
+     "left": "（XDR",
+     "right": "-TB）",
+     "H": 0.6158,
+     "H_pct": 20.4,
+     "contra": 0.0109,
+     "cohesion": 0.6226
+    },
+    {
+     "pos": 45,
+     "left": "XDR-",
+     "right": "TB）を",
+     "H": 0.6854,
+     "H_pct": 42.6,
+     "contra": 0.0175,
+     "cohesion": 0.6976
+    },
+    {
+     "pos": 46,
+     "left": "DR-T",
+     "right": "B）を発",
+     "H": 0.0004,
+     "H_pct": 0.0,
+     "contra": 0.9993,
+     "cohesion": 0.5942
+    },
+    {
+     "pos": 47,
+     "left": "R-TB",
+     "right": "）を発見",
+     "H": 0.5951,
+     "H_pct": 18.5,
+     "contra": 0.0011,
+     "cohesion": 0.5958
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "トニ",
+     "right": "ー・モー",
+     "H": 0.8305,
+     "H_pct": 98.1,
+     "contra": 0.0015,
+     "cohesion": 0.8317
+    },
+    {
+     "pos": 3,
+     "left": "トニー",
+     "right": "・モール",
+     "H": 0.8228,
+     "H_pct": 92.6,
+     "contra": 0.0017,
+     "cohesion": 0.8242
+    },
+    {
+     "pos": 4,
+     "left": "トニー・",
+     "right": "モール博",
+     "H": 0.8257,
+     "H_pct": 96.3,
+     "contra": 0.003,
+     "cohesion": 0.8282
+    },
+    {
+     "pos": 6,
+     "left": "ー・モー",
+     "right": "ル博士は",
+     "H": 0.7788,
+     "H_pct": 85.2,
+     "contra": 0.0103,
+     "cohesion": 0.7869
+    },
+    {
+     "pos": 7,
+     "left": "・モール",
+     "right": "博士は、",
+     "H": 0.7769,
+     "H_pct": 83.3,
+     "contra": 0.0014,
+     "cohesion": 0.778
+    },
+    {
+     "pos": 14,
+     "left": "、南アフ",
+     "right": "リカのク",
+     "H": 0.7767,
+     "H_pct": 81.5,
+     "contra": 0.0011,
+     "cohesion": 0.7776
+    },
+    {
+     "pos": 30,
+     "left": "ール地方",
+     "right": "で、極度",
+     "H": 0.7615,
+     "H_pct": 79.6,
+     "contra": 0.0057,
+     "cohesion": 0.7659
+    },
+    {
+     "pos": 54,
+     "left": "見しまし",
+     "right": "た。",
+     "H": 0.824,
+     "H_pct": 94.4,
+     "contra": 0.0026,
+     "cohesion": 0.8262
+    },
+    {
+     "pos": 55,
+     "left": "しました",
+     "right": "。",
+     "H": 0.8106,
+     "H_pct": 88.9,
+     "contra": 0.0009,
+     "cohesion": 0.8113
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_789",
+  "cuts": 7,
+  "avg_chunk": 6.6,
+  "latency_bin": "≤7",
+  "gap": 0.5703,
+  "policy_worst_contra": 0.9852,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52
+   ],
+   "H_set": 0.0092,
+   "text": "多くの国では国民全体が英語に堪能であり、さらに多くの場合、特に若者たちには限られた知識しか期 ‖ 待 ‖ で ‖ き ‖ ま ‖ せ ‖ ん ‖ 。",
+   "pieces": {
+    "English": [
+     "In many countries, the entire population is fluent in English, and in many cases, especially young people, have only limited knowledge of it.",
+     "Wait.",
+     "And",
+     "Ki",
+     "Ma",
+     "She",
+     "- Oh, yeah.",
+     "."
+    ],
+    "Chinese": [
+     "许多国家的全体国民都能说流利的英语，而在许多情况下，特别是年轻人，他们的英语知识也很有限。",
+     "等等",
+     "是的，我知道。",
+     "奇",
+     "马",
+     "塞",
+     "嗯",
+     "................................................................................................"
+    ],
+    "German": [
+     "In vielen Ländern spricht die gesamte Bevölkerung Englisch und in vielen Fällen haben vor allem junge Menschen nur begrenzte Kenntnisse.",
+     "- Warte.",
+     "- Ich bin da.",
+     "Ki",
+     "Ma",
+     "Se",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En muchos países, la población entera domina el inglés y en muchos otros, especialmente entre los jóvenes, el conocimiento es limitado.",
+     "Espera.",
+     "- ¿Qué?",
+     "き",
+     "- No.",
+     "- ¡Ahora!",
+     "- Sí.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    13,
+    16,
+    17,
+    18,
+    20,
+    23,
+    31
+   ],
+   "H_set": 0.5795,
+   "text": "多くの国では国民全体が英語 ‖ に堪能 ‖ で ‖ あ ‖ り、 ‖ さらに ‖ 多くの場合、特に ‖ 若者たちには限られた知識しか期待できません。",
+   "pieces": {
+    "English": [
+     "In many countries, the entire population speaks English.",
+     "Ni Kanno",
+     "And",
+     "Oh, yeah.",
+     "り",
+     "And more.",
+     "In many cases, especially",
+     "Young people can only be expected to have limited knowledge."
+    ],
+    "Chinese": [
+     "很多国家的全民都会说英语",
+     "尼堪能",
+     "是的，我知道。",
+     "哦",
+     "是的，我知道。",
+     "再说一遍",
+     "很多时候,尤其是",
+     " 年輕人只能接受有限的教育。"
+    ],
+    "German": [
+     "In vielen Ländern spricht die gesamte Bevölkerung Englisch.",
+     "Ni Kannon",
+     "- Ich bin da.",
+     "- Oh, ja.",
+     "Und,",
+     "Und noch mehr.",
+     "In vielen Fällen, vor allem",
+     "Von jungen Menschen kann nur begrenztes Wissen erwartet werden."
+    ],
+    "Spanish": [
+     "En muchos países, la población total habla inglés.",
+     "- ¡Ahora!",
+     "- ¿Qué?",
+     "- Ah, sí.",
+     "Y,",
+     "Y más.",
+     "En muchos casos, especialmente",
+     "Los jóvenes no pueden esperar más que un conocimiento limitado."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 46,
+     "left": "識しか期",
+     "right": "待できま",
+     "H": 0.0286,
+     "H_pct": 3.9,
+     "contra": 0.959,
+     "cohesion": 0.6975
+    },
+    {
+     "pos": 47,
+     "left": "しか期待",
+     "right": "できませ",
+     "H": 0.0103,
+     "H_pct": 0.0,
+     "contra": 0.9852,
+     "cohesion": 0.6936
+    },
+    {
+     "pos": 48,
+     "left": "か期待で",
+     "right": "きません",
+     "H": 0.0217,
+     "H_pct": 2.0,
+     "contra": 0.97,
+     "cohesion": 0.7246
+    },
+    {
+     "pos": 49,
+     "left": "期待でき",
+     "right": "ません。",
+     "H": 0.3787,
+     "H_pct": 15.7,
+     "contra": 0.4683,
+     "cohesion": 0.7123
+    },
+    {
+     "pos": 50,
+     "left": "待できま",
+     "right": "せん。",
+     "H": 0.3891,
+     "H_pct": 17.6,
+     "contra": 0.5054,
+     "cohesion": 0.7868
+    },
+    {
+     "pos": 51,
+     "left": "できませ",
+     "right": "ん。",
+     "H": 0.1607,
+     "H_pct": 9.8,
+     "contra": 0.8031,
+     "cohesion": 0.8164
+    },
+    {
+     "pos": 52,
+     "left": "きません",
+     "right": "。",
+     "H": 0.8082,
+     "H_pct": 86.3,
+     "contra": 0.0042,
+     "cohesion": 0.8116
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "体が英語",
+     "right": "に堪能で",
+     "H": 0.8216,
+     "H_pct": 90.2,
+     "contra": 0.0006,
+     "cohesion": 0.8221
+    },
+    {
+     "pos": 16,
+     "left": "語に堪能",
+     "right": "であり、",
+     "H": 0.8409,
+     "H_pct": 98.0,
+     "contra": 0.0003,
+     "cohesion": 0.8411
+    },
+    {
+     "pos": 17,
+     "left": "に堪能で",
+     "right": "あり、さ",
+     "H": 0.8084,
+     "H_pct": 88.2,
+     "contra": 0.0004,
+     "cohesion": 0.8087
+    },
+    {
+     "pos": 18,
+     "left": "堪能であ",
+     "right": "り、さら",
+     "H": 0.8386,
+     "H_pct": 96.1,
+     "contra": 0.0004,
+     "cohesion": 0.8389
+    },
+    {
+     "pos": 20,
+     "left": "であり、",
+     "right": "さらに多",
+     "H": 0.8518,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.8523
+    },
+    {
+     "pos": 23,
+     "left": "、さらに",
+     "right": "多くの場",
+     "H": 0.8385,
+     "H_pct": 94.1,
+     "contra": 0.0017,
+     "cohesion": 0.8399
+    },
+    {
+     "pos": 31,
+     "left": "合、特に",
+     "right": "若者たち",
+     "H": 0.8356,
+     "H_pct": 92.2,
+     "contra": 0.0034,
+     "cohesion": 0.8385
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_736",
+  "cuts": 8,
+  "avg_chunk": 9.3,
+  "latency_bin": "≤10",
+  "gap": 0.6756,
+  "policy_worst_contra": 0.9962,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    13
+   ],
+   "H_set": 0.0021,
+   "text": "シ ‖ レ ‖ ナ ‖ は ‖ キ ‖ ャ ‖ ン ‖ プに加えて、 ‖ 寮宿泊や温かい食事を提供している唯一の森林管理施設です。ラ・レオナ、サン・ペドリロ、ロス・パトスはキャンプ場のみで、食事サービスはありません。",
+   "pieces": {
+    "English": [
+     "Shi",
+     "Le",
+     "Na",
+     "- Yeah.",
+     "Ki",
+     "Ya",
+     "N",
+     "In addition to the p,",
+     "It is the only forest management facility that offers dormitory accommodation and hot meals. La Leona, San Pedro and Los Patos are only campsites, and do not offer meals."
+    ],
+    "Chinese": [
+     "西",
+     "雷",
+     "娜",
+     "是",
+     "基",
+     "雅",
+     "恩",
+     "除了P",
+     "拉莱奥纳、圣佩德罗和洛斯帕托斯仅提供露营地，不提供餐饮服务。"
+    ],
+    "German": [
+     "Shi",
+     "Le",
+     "Na",
+     "Ha",
+     "Ki",
+     "Ja",
+     "N",
+     "Und noch mehr.",
+     "Es ist die einzige Waldbewirtschaftungsanlage, die Übernachtungsmöglichkeiten und warme Mahlzeiten anbietet. La Leona, San Pedro und Los Patos sind nur Campingplätze, die keine Mahlzeiten anbieten."
+    ],
+    "Spanish": [
+     "Si",
+     "Le",
+     "Na",
+     "- ¿Qué?",
+     "Ki",
+     "- ¿Qué?",
+     "N",
+     "Además,",
+     "La Leona, San Pedro y Los Patos son solo campamentos, sin servicio de comidas."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    47,
+    82
+   ],
+   "H_set": 0.6777,
+   "text": "シレナはキャンプに加えて、寮宿泊や温かい食事を提供している唯一の森林管理施 ‖ 設 ‖ で ‖ す ‖ 。 ‖ ラ ‖ ・レオナ、 ‖ サン・ペドリロ、ロス・パトスはキャンプ場のみで、食事サービスはありませ ‖ ん。",
+   "pieces": {
+    "English": [
+     "Sirena is the only forest management facility that offers dormitory accommodation and hot meals in addition to camp.",
+     "Se",
+     "And",
+     "- Oh, my God.",
+     ".",
+     "La",
+     "Leona.",
+     "San Pedro and Los Patos are only campgrounds, no catering.",
+     "Uh."
+    ],
+    "Chinese": [
+     "西雷纳是唯一一个除了营地之外还提供宿舍和热餐的森林管理机构。",
+     "设",
+     "是的，我知道。",
+     "哦，我知道。",
+     "................................................................................................",
+     "拉",
+     "莉昂娜",
+     "圣佩德罗和洛斯帕托斯仅提供露营地，不提供餐饮服务",
+     "嗯"
+    ],
+    "German": [
+     "Sirena ist die einzige Waldbewirtschaftungsanlage, die neben dem Camp auch Unterkunft und warme Mahlzeiten anbietet.",
+     "Se",
+     "- Ich bin da.",
+     "- Ja.",
+     "- Ja.",
+     "La",
+     "Leona.",
+     "San Pedro und Los Patos sind nur Campingplätze, keine Verpflegung.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Sirena es el único centro de manejo forestal que ofrece alojamiento y comida caliente, además de campamentos.",
+     "- Sí.",
+     "- ¿Qué?",
+     "- ¡Sí!",
+     ". (FR) Gracias.",
+     "La",
+     "Leona.",
+     "San Pedro y Los Patos son solo campamentos, no hay servicio de comidas.",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "シ",
+     "right": "レナはキ",
+     "H": 0.0031,
+     "H_pct": 0.0,
+     "contra": 0.9962,
+     "cohesion": 0.8156
+    },
+    {
+     "pos": 2,
+     "left": "シレ",
+     "right": "ナはキャ",
+     "H": 0.007,
+     "H_pct": 4.9,
+     "contra": 0.9904,
+     "cohesion": 0.727
+    },
+    {
+     "pos": 3,
+     "left": "シレナ",
+     "right": "はキャン",
+     "H": 0.0119,
+     "H_pct": 7.3,
+     "contra": 0.9829,
+     "cohesion": 0.6969
+    },
+    {
+     "pos": 4,
+     "left": "シレナは",
+     "right": "キャンプ",
+     "H": 0.0136,
+     "H_pct": 9.8,
+     "contra": 0.9791,
+     "cohesion": 0.6527
+    },
+    {
+     "pos": 5,
+     "left": "レナはキ",
+     "right": "ャンプに",
+     "H": 0.0032,
+     "H_pct": 1.2,
+     "contra": 0.9947,
+     "cohesion": 0.5974
+    },
+    {
+     "pos": 6,
+     "left": "ナはキャ",
+     "right": "ンプに加",
+     "H": 0.0076,
+     "H_pct": 6.1,
+     "contra": 0.987,
+     "cohesion": 0.5876
+    },
+    {
+     "pos": 7,
+     "left": "はキャン",
+     "right": "プに加え",
+     "H": 0.0068,
+     "H_pct": 3.7,
+     "contra": 0.9867,
+     "cohesion": 0.5077
+    },
+    {
+     "pos": 13,
+     "left": "加えて、",
+     "right": "寮宿泊や",
+     "H": 0.1041,
+     "H_pct": 13.4,
+     "contra": 0.8427,
+     "cohesion": 0.6619
+    }
+   ],
+   "added": [
+    {
+     "pos": 37,
+     "left": "林管理施",
+     "right": "設です。",
+     "H": 0.8458,
+     "H_pct": 98.8,
+     "contra": 0.0057,
+     "cohesion": 0.8507
+    },
+    {
+     "pos": 38,
+     "left": "管理施設",
+     "right": "です。ラ",
+     "H": 0.84,
+     "H_pct": 95.1,
+     "contra": 0.0018,
+     "cohesion": 0.8415
+    },
+    {
+     "pos": 39,
+     "left": "理施設で",
+     "right": "す。ラ・",
+     "H": 0.8419,
+     "H_pct": 96.3,
+     "contra": 0.0017,
+     "cohesion": 0.8434
+    },
+    {
+     "pos": 40,
+     "left": "施設です",
+     "right": "。ラ・レ",
+     "H": 0.842,
+     "H_pct": 97.6,
+     "contra": 0.0029,
+     "cohesion": 0.8444
+    },
+    {
+     "pos": 41,
+     "left": "設です。",
+     "right": "ラ・レオ",
+     "H": 0.8493,
+     "H_pct": 100.0,
+     "contra": 0.0034,
+     "cohesion": 0.8521
+    },
+    {
+     "pos": 42,
+     "left": "です。ラ",
+     "right": "・レオナ",
+     "H": 0.823,
+     "H_pct": 93.9,
+     "contra": 0.0179,
+     "cohesion": 0.838
+    },
+    {
+     "pos": 47,
+     "left": "レオナ、",
+     "right": "サン・ペ",
+     "H": 0.8223,
+     "H_pct": 92.7,
+     "contra": 0.0161,
+     "cohesion": 0.8358
+    },
+    {
+     "pos": 82,
+     "left": "ありませ",
+     "right": "ん。",
+     "H": 0.8199,
+     "H_pct": 91.5,
+     "contra": 0.0029,
+     "cohesion": 0.8223
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_919",
+  "cuts": 1,
+  "avg_chunk": 33.0,
+  "latency_bin": "≤99",
+  "gap": 0.7867,
+  "policy_worst_contra": 0.8947,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1
+   ],
+   "H_set": 0.0799,
+   "text": "母 ‖ 国を離れている間に目的地への行き方を調べるには、スマートフォンでGPSナビゲーションアプリを活用するのが最も簡単で便利な方法です。",
+   "pieces": {
+    "English": [
+     "Mother.",
+     "To find out how to get to your destination while away from home, the easiest and most convenient way is to use a GPS navigation app on your smartphone."
+    ],
+    "Chinese": [
+     "母亲",
+     " 使用GPS导航应用程序是离开国家时找到目的地的最简单、最方便的方式。"
+    ],
+    "German": [
+     "Mutter",
+     "Die einfachste und bequemste Art, sich zurechtzufinden, während man sich außerhalb des Landes befindet, ist die Nutzung einer GPS-Navigations-App auf dem Smartphone."
+    ],
+    "Spanish": [
+     "Madre",
+     "La forma más fácil y conveniente de saber cómo llegar a un destino mientras estás fuera del país es utilizar una aplicación de navegación GPS en tu teléfono inteligente."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    50
+   ],
+   "H_set": 0.8666,
+   "text": "母国を離れている間に目的地への行き方を調べるには、スマートフォンでGPSナビゲーションアプリを活用す ‖ るのが最も簡単で便利な方法です。",
+   "pieces": {
+    "English": [
+     "To find out how to get to a destination while away from home, we use a GPS navigation app on a smartphone.",
+     "The easiest and most convenient way is to use the."
+    ],
+    "Chinese": [
+     "当你离开家乡时,利用智能手机上的GPS导航应用程序来找到前往目的地的路线",
+     "是最简单、最方便的方法。"
+    ],
+    "German": [
+     "Wenn Sie sich nicht in Ihrem Heimatland befinden, können Sie eine GPS-Navigations-App auf Ihrem Smartphone verwenden, um zu erfahren, wie Sie zu Ihrem Ziel kommen.",
+     "Das ist die einfachste und bequemste Art."
+    ],
+    "Spanish": [
+     "Para saber cómo llegar a su destino mientras está lejos de casa, utilice una aplicación de navegación GPS en su teléfono inteligente.",
+     "Es la forma más fácil y conveniente."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "母",
+     "right": "国を離れ",
+     "H": 0.0799,
+     "H_pct": 0.0,
+     "contra": 0.8947,
+     "cohesion": 0.7584
+    }
+   ],
+   "added": [
+    {
+     "pos": 50,
+     "left": "を活用す",
+     "right": "るのが最",
+     "H": 0.8666,
+     "H_pct": 100.0,
+     "contra": 0.0009,
+     "cohesion": 0.8674
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_713",
+  "cuts": 17,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.4544,
+  "policy_worst_contra": 0.9876,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52
+   ],
+   "H_set": 0.0052,
+   "text": "ガラパゴス海域には60隻以上のクルーズ船が就航しており、大きさは8人乗り ‖ か ‖ ら ‖ 1 ‖ 0 ‖ 0 ‖ 人 ‖ 乗 ‖ り ‖ ま ‖ で ‖ さ ‖ ま ‖ ざ ‖ ま ‖ で ‖ す ‖ 。",
+   "pieces": {
+    "English": [
+     "More than 60 cruise ships, each of which can accommodate eight people, are operating in the Galapagos Sea.",
+     "Ka",
+     "ら",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "0",
+     "0",
+     "People",
+     "Multiply",
+     "Ri",
+     "Ma",
+     "And",
+     "- Oh, yeah.",
+     "Ma",
+     "Za",
+     "Ma",
+     "And",
+     "- Oh, my God.",
+     "."
+    ],
+    "Chinese": [
+     " 加拉帕戈斯群岛有超过60艘游轮，每艘游轮可容纳8人。",
+     "是",
+     "拉",
+     "1 日期不详",
+     "0 无法确定",
+     "0 无法确定",
+     "人",
+     "乘法",
+     "里",
+     "马",
+     "是的，我知道。",
+     "哦，是啊",
+     "马",
+     "扎",
+     "马",
+     "是的，我知道。",
+     "哦，我知道。",
+     "................................................................................................"
+    ],
+    "German": [
+     "Über 60 Kreuzfahrtschiffe fahren in die Galapagos-Meere, die Größe ist acht Personen.",
+     "- Ja.",
+     "Ra",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "0",
+     "0",
+     "Person",
+     "Multiplikation",
+     "Ri",
+     "Ma",
+     "- Ich bin da.",
+     "- Ja.",
+     "Ma",
+     "Za",
+     "Ma",
+     "- Ich bin da.",
+     "- Ja.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En las islas hay más de 60 cruceros, de tamaños que van desde los 8 pasajeros hasta los 100.",
+     "¿O?",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "1.1.1.",
+     "0",
+     "0",
+     "Personas",
+     "Factorización",
+     "- Sí.",
+     "- No.",
+     "- ¿Qué?",
+     "- ¿Qué?",
+     "- No.",
+     "- ¡Así es!",
+     "- No.",
+     "- ¿Qué?",
+     "- ¡Sí!",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    14,
+    15,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    28,
+    51
+   ],
+   "H_set": 0.4596,
+   "text": "ガラパゴス ‖ 海 ‖ 域 ‖ に ‖ は ‖ 60隻以上 ‖ の ‖ クルーズ ‖ 船 ‖ が ‖ 就 ‖ 航 ‖ し ‖ て ‖ お ‖ り、 ‖ 大きさは8人乗りから100人乗りまでさまざまで ‖ す。",
+   "pieces": {
+    "English": [
+     "Galapagos",
+     "Sea",
+     "Domain",
+     "To",
+     "- Yeah.",
+     "60 or more",
+     "の",
+     "Cruise",
+     "Ship",
+     "Ga",
+     "Just...",
+     "Air",
+     "Shi",
+     "- Yeah.",
+     "Oh.",
+     "り",
+     "They ranged in size from 8 to 100 people.",
+     "- Oh, yeah."
+    ],
+    "Chinese": [
+     "加拉帕戈斯群岛",
+     "海",
+     "域",
+     "上",
+     "是",
+     "60艘以上",
+     "的",
+     "巡航",
+     "船",
+     "是的",
+     "是的",
+     "航",
+     "西",
+     "是的",
+     "哦，我知道",
+     "是的，我知道。",
+     "从8人到100人不等",
+     "                                                                                                                                                                                               "
+    ],
+    "German": [
+     "Galapagos",
+     "Meer",
+     "Domain",
+     "",
+     "Ha",
+     "Mehr als 60",
+     "の",
+     "Cruise",
+     "Boot",
+     "- Ja.",
+     "- Ja.",
+     "Luftfahrt",
+     "Shi",
+     "- Ich weiß.",
+     "- Oh, nein.",
+     "Und,",
+     "Sie reichen von acht bis 100 Personen.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Islas Galápagos",
+     "Mar",
+     "Dominio",
+     "A",
+     "- ¿Qué?",
+     "Más de 60.",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "Crucero",
+     "Barco",
+     "- ¿Qué?",
+     "- Sí.",
+     "Aviación",
+     "- Sí.",
+     "- ¿Qué?",
+     "- ¡Ay!",
+     "Y,",
+     "Varían de 8 a 100 personas.",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 36,
+     "left": "8人乗り",
+     "right": "から10",
+     "H": 0.6219,
+     "H_pct": 19.6,
+     "contra": 0.113,
+     "cohesion": 0.7012
+    },
+    {
+     "pos": 37,
+     "left": "人乗りか",
+     "right": "ら100",
+     "H": 0.631,
+     "H_pct": 25.5,
+     "contra": 0.0446,
+     "cohesion": 0.6605
+    },
+    {
+     "pos": 38,
+     "left": "乗りから",
+     "right": "100人",
+     "H": 0.6508,
+     "H_pct": 27.5,
+     "contra": 0.0182,
+     "cohesion": 0.6629
+    },
+    {
+     "pos": 39,
+     "left": "りから1",
+     "right": "00人乗",
+     "H": 0.0872,
+     "H_pct": 3.9,
+     "contra": 0.843,
+     "cohesion": 0.5552
+    },
+    {
+     "pos": 40,
+     "left": "から10",
+     "right": "0人乗り",
+     "H": 0.0068,
+     "H_pct": 2.0,
+     "contra": 0.9876,
+     "cohesion": 0.5524
+    },
+    {
+     "pos": 41,
+     "left": "ら100",
+     "right": "人乗りま",
+     "H": 0.5903,
+     "H_pct": 15.7,
+     "contra": 0.0118,
+     "cohesion": 0.5973
+    },
+    {
+     "pos": 42,
+     "left": "100人",
+     "right": "乗りまで",
+     "H": 0.6667,
+     "H_pct": 37.3,
+     "contra": 0.0779,
+     "cohesion": 0.7231
+    },
+    {
+     "pos": 43,
+     "left": "00人乗",
+     "right": "りまでさ",
+     "H": 0.6223,
+     "H_pct": 21.6,
+     "contra": 0.044,
+     "cohesion": 0.6509
+    },
+    {
+     "pos": 44,
+     "left": "0人乗り",
+     "right": "までさま",
+     "H": 0.6169,
+     "H_pct": 17.6,
+     "contra": 0.0027,
+     "cohesion": 0.6185
+    },
+    {
+     "pos": 45,
+     "left": "人乗りま",
+     "right": "でさまざ",
+     "H": 0.7249,
+     "H_pct": 54.9,
+     "contra": 0.0056,
+     "cohesion": 0.7289
+    },
+    {
+     "pos": 46,
+     "left": "乗りまで",
+     "right": "さまざま",
+     "H": 0.6574,
+     "H_pct": 31.4,
+     "contra": 0.0021,
+     "cohesion": 0.6588
+    },
+    {
+     "pos": 47,
+     "left": "りまでさ",
+     "right": "まざまで",
+     "H": 0.6626,
+     "H_pct": 35.3,
+     "contra": 0.0209,
+     "cohesion": 0.6767
+    },
+    {
+     "pos": 48,
+     "left": "までさま",
+     "right": "ざまです",
+     "H": 0.6259,
+     "H_pct": 23.5,
+     "contra": 0.0063,
+     "cohesion": 0.6298
+    },
+    {
+     "pos": 49,
+     "left": "でさまざ",
+     "right": "まです。",
+     "H": 0.6599,
+     "H_pct": 33.3,
+     "contra": 0.0029,
+     "cohesion": 0.6618
+    },
+    {
+     "pos": 50,
+     "left": "さまざま",
+     "right": "です。",
+     "H": 0.6574,
+     "H_pct": 29.4,
+     "contra": 0.002,
+     "cohesion": 0.6587
+    },
+    {
+     "pos": 52,
+     "left": "ざまです",
+     "right": "。",
+     "H": 0.7411,
+     "H_pct": 62.7,
+     "contra": 0.0026,
+     "cohesion": 0.7431
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "ラパゴス",
+     "right": "海域には",
+     "H": 0.809,
+     "H_pct": 92.2,
+     "contra": 0.0015,
+     "cohesion": 0.8102
+    },
+    {
+     "pos": 6,
+     "left": "パゴス海",
+     "right": "域には6",
+     "H": 0.8047,
+     "H_pct": 88.2,
+     "contra": 0.0009,
+     "cohesion": 0.8054
+    },
+    {
+     "pos": 7,
+     "left": "ゴス海域",
+     "right": "には60",
+     "H": 0.8158,
+     "H_pct": 94.1,
+     "contra": 0.0009,
+     "cohesion": 0.8165
+    },
+    {
+     "pos": 8,
+     "left": "ス海域に",
+     "right": "は60隻",
+     "H": 0.7972,
+     "H_pct": 86.3,
+     "contra": 0.0008,
+     "cohesion": 0.7979
+    },
+    {
+     "pos": 9,
+     "left": "海域には",
+     "right": "60隻以",
+     "H": 0.7968,
+     "H_pct": 84.3,
+     "contra": 0.0012,
+     "cohesion": 0.7978
+    },
+    {
+     "pos": 14,
+     "left": "0隻以上",
+     "right": "のクルー",
+     "H": 0.7715,
+     "H_pct": 70.6,
+     "contra": 0.0015,
+     "cohesion": 0.7726
+    },
+    {
+     "pos": 15,
+     "left": "隻以上の",
+     "right": "クルーズ",
+     "H": 0.7883,
+     "H_pct": 80.4,
+     "contra": 0.0017,
+     "cohesion": 0.7896
+    },
+    {
+     "pos": 19,
+     "left": "クルーズ",
+     "right": "船が就航",
+     "H": 0.7874,
+     "H_pct": 78.4,
+     "contra": 0.0009,
+     "cohesion": 0.7882
+    },
+    {
+     "pos": 20,
+     "left": "ルーズ船",
+     "right": "が就航し",
+     "H": 0.8071,
+     "H_pct": 90.2,
+     "contra": 0.0006,
+     "cohesion": 0.8075
+    },
+    {
+     "pos": 21,
+     "left": "ーズ船が",
+     "right": "就航して",
+     "H": 0.8162,
+     "H_pct": 96.1,
+     "contra": 0.0006,
+     "cohesion": 0.8167
+    },
+    {
+     "pos": 22,
+     "left": "ズ船が就",
+     "right": "航してお",
+     "H": 0.8338,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8347
+    },
+    {
+     "pos": 23,
+     "left": "船が就航",
+     "right": "しており",
+     "H": 0.7903,
+     "H_pct": 82.4,
+     "contra": 0.0006,
+     "cohesion": 0.7908
+    },
+    {
+     "pos": 24,
+     "left": "が就航し",
+     "right": "ており、",
+     "H": 0.7844,
+     "H_pct": 74.5,
+     "contra": 0.001,
+     "cohesion": 0.7852
+    },
+    {
+     "pos": 25,
+     "left": "就航して",
+     "right": "おり、大",
+     "H": 0.7819,
+     "H_pct": 72.5,
+     "contra": 0.0009,
+     "cohesion": 0.7826
+    },
+    {
+     "pos": 26,
+     "left": "航してお",
+     "right": "り、大き",
+     "H": 0.7712,
+     "H_pct": 68.6,
+     "contra": 0.0067,
+     "cohesion": 0.7764
+    },
+    {
+     "pos": 28,
+     "left": "ており、",
+     "right": "大きさは",
+     "H": 0.8179,
+     "H_pct": 98.0,
+     "contra": 0.0026,
+     "cohesion": 0.8201
+    }
+   ]
+  }
+ },
+ {
+  "id": "ja_jp_741",
+  "cuts": 8,
+  "avg_chunk": 4.3,
+  "latency_bin": "≤5",
+  "gap": 0.5126,
+  "policy_worst_contra": 0.9905,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "H_set": 0.004,
+   "text": "ク ‖ ッ ‖ ク ‖ 諸 ‖ 島 ‖ は ‖ 、 ‖ 2 ‖ 20万平方キロメートルの海に広がる15の島々からなる群島です。",
+   "pieces": {
+    "English": [
+     "Ku",
+     "♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪",
+     "Ku",
+     "諸",
+     "Island",
+     "- Yeah.",
+     ",",
+     "2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2",
+     "It is an archipelago of 15 islands spread over a sea of 200,000 square kilometers."
+    ],
+    "Chinese": [
+     "库",
+     "哦，我的天啊。",
+     "库",
+     "諸",
+     "岛屿",
+     "是",
+     ",,,",
+     "2. 联合国系统各组织的工作人员",
+     " 该群岛由15个岛屿组成，面积20万平方公里。"
+    ],
+    "German": [
+     "Ku",
+     "- Ja.",
+     "Ku",
+     "諸",
+     "Insel",
+     "Ha",
+     ",",
+     "2",
+     "Es ist ein Archipel von 15 Inseln, die sich über 200.000 Quadratkilometer erstrecken."
+    ],
+    "Spanish": [
+     "- ¿Qué?",
+     "- ¿Qué?",
+     "- ¿Qué?",
+     "Todos",
+     "Islas",
+     "- ¿Qué?",
+     ",",
+     "2.1.2.",
+     "Se trata de un archipiélago de 15 islas que se extienden en un mar de 200.000 kilómetros cuadrados."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    6,
+    7,
+    19,
+    23,
+    24,
+    25,
+    37
+   ],
+   "H_set": 0.5166,
+   "text": "クック諸島 ‖ は ‖ 、 ‖ 220万平方キロメートル ‖ の海に広 ‖ が ‖ る ‖ 15の島々からなる群島で ‖ す。",
+   "pieces": {
+    "English": [
+     "Cook Islands",
+     "- Yeah.",
+     ",",
+     "2.2 million square kilometers.",
+     "The sea is wide.",
+     "Ga",
+     "る",
+     "It's an archipelago of 15 islands.",
+     "- Oh, yeah."
+    ],
+    "Chinese": [
+     "库克群岛",
+     "是",
+     ",,,",
+     "220万平方公里",
+     "海洋之光",
+     "是的",
+     "是的",
+     "一个由15个岛屿组成的群岛",
+     "                                                                                                                                                                                               "
+    ],
+    "German": [
+     "Cookinseln",
+     "Ha",
+     ",",
+     "2,2 Millionen Quadratkilometer",
+     "Das Meer ist weit",
+     "- Ja.",
+     "- Ja.",
+     "Es ist ein Archipel von 15 Inseln.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Islas Cook",
+     "- ¿Qué?",
+     ",",
+     "2,2 millones de kilómetros cuadrados.",
+     "En el mar",
+     "- ¿Qué?",
+     "- Sí.",
+     "Es un archipiélago de 15 islas.",
+     "- Sí."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "ク",
+     "right": "ック諸島",
+     "H": 0.7314,
+     "H_pct": 56.8,
+     "contra": 0.0863,
+     "cohesion": 0.8005
+    },
+    {
+     "pos": 2,
+     "left": "クッ",
+     "right": "ク諸島は",
+     "H": 0.6672,
+     "H_pct": 32.4,
+     "contra": 0.0523,
+     "cohesion": 0.704
+    },
+    {
+     "pos": 3,
+     "left": "クック",
+     "right": "諸島は、",
+     "H": 0.8268,
+     "H_pct": 78.4,
+     "contra": 0.013,
+     "cohesion": 0.8377
+    },
+    {
+     "pos": 4,
+     "left": "クック諸",
+     "right": "島は、2",
+     "H": 0.7306,
+     "H_pct": 54.1,
+     "contra": 0.011,
+     "cohesion": 0.7388
+    },
+    {
+     "pos": 8,
+     "left": "島は、2",
+     "right": "20万平",
+     "H": 0.008,
+     "H_pct": 2.7,
+     "contra": 0.9905,
+     "cohesion": 0.8443
+    }
+   ],
+   "added": [
+    {
+     "pos": 19,
+     "left": "メートル",
+     "right": "の海に広",
+     "H": 0.8347,
+     "H_pct": 81.1,
+     "contra": 0.0023,
+     "cohesion": 0.8366
+    },
+    {
+     "pos": 23,
+     "left": "の海に広",
+     "right": "がる15",
+     "H": 0.8432,
+     "H_pct": 86.5,
+     "contra": 0.0047,
+     "cohesion": 0.8472
+    },
+    {
+     "pos": 24,
+     "left": "海に広が",
+     "right": "る15の",
+     "H": 0.8457,
+     "H_pct": 89.2,
+     "contra": 0.004,
+     "cohesion": 0.8491
+    },
+    {
+     "pos": 25,
+     "left": "に広がる",
+     "right": "15の島",
+     "H": 0.8619,
+     "H_pct": 94.6,
+     "contra": 0.0014,
+     "cohesion": 0.8631
+    },
+    {
+     "pos": 37,
+     "left": "る群島で",
+     "right": "す。",
+     "H": 0.8364,
+     "H_pct": 83.8,
+     "contra": 0.0034,
+     "cohesion": 0.8393
+    }
+   ]
+  }
+ }
+]

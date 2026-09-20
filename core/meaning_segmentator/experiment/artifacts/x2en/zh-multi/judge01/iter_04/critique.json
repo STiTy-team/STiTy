@@ -1,0 +1,46 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt fails to treat verbal complexes (negation, resultatives, verb‑object compounds, auxiliaries/aspect markers) as atomic for entailment: it ranks cuts that orphan or split predicates too highly.",
+    "evidence": "['cmn_hans_cn_236','cmn_hans_cn_398','cmn_hans_cn_979','cmn_hans_cn_880'] — these 4 cases all show policy cuts that split negated or tightly bound predicate/complement sequences, producing very high contradiction scores for the left fragment.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut so that a negated verb, resultative, verb–object compound, auxiliary/aspect marker, or tightly bound predicate is left without its complements; keep predicates and their complements/aspectual markers together."
+    }
+   },
+   {
+    "diagnosis": "The prompt overweights protecting multi-character names/transliterations/technical tokens and therefore shifts cuts to avoid splitting them, often creating isolated punctuation, reporting verbs, or short predicate fragments that become unentailed.",
+    "evidence": "['cmn_hans_cn_438','cmn_hans_cn_111','cmn_hans_cn_947'] — these 3 cases share transliterations, named entities, or date/technical spans where preserving the token forced nearby punctuation or predicates into dangling, contradicted pieces.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not preserve multi-token names if doing so would isolate punctuation, reporting verbs, or core predicates; prefer cuts that keep clause predicates and their punctuation/verbs intact even if a long name is split."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt fails to treat verbal complexes (negation, resultatives, verb‑object compounds, auxiliaries/aspect markers) as atomic for entailment: it ranks cuts that orphan or split predicates too highly.",
+   "evidence": "['cmn_hans_cn_236','cmn_hans_cn_398','cmn_hans_cn_979','cmn_hans_cn_880'] — these 4 cases all show policy cuts that split negated or tightly bound predicate/complement sequences, producing very high contradiction scores for the left fragment.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not cut so that a negated verb, resultative, verb–object compound, auxiliary/aspect marker, or tightly bound predicate is left without its complements; keep predicates and their complements/aspectual markers together."
+   }
+  },
+  {
+   "diagnosis": "The prompt overweights protecting multi-character names/transliterations/technical tokens and therefore shifts cuts to avoid splitting them, often creating isolated punctuation, reporting verbs, or short predicate fragments that become unentailed.",
+   "evidence": "['cmn_hans_cn_438','cmn_hans_cn_111','cmn_hans_cn_947'] — these 3 cases share transliterations, named entities, or date/technical spans where preserving the token forced nearby punctuation or predicates into dangling, contradicted pieces.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "Do not preserve multi-token names if doing so would isolate punctuation, reporting verbs, or core predicates; prefer cuts that keep clause predicates and their punctuation/verbs intact even if a long name is split."
+   }
+  }
+ ]
+}

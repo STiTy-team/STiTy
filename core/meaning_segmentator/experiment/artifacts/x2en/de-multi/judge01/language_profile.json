@@ -1,0 +1,56 @@
+{
+  "source_language": "German",
+  "word_order": "other, because main clauses show V2 (roughly SVO) as in \"Achtzehn Prozent ... sind arbeitslos\", while subordinate and relative clauses are verb-final SOV as in \"der ... gegangen war\" or \"dass ... werden sollte\".",
+  "register": "formal written prose / newswire / encyclopedic (news reports and encyclopedic-style sentences)",
+  "fillers_and_hesitations": [
+    "äh",
+    "ähm",
+    "hm",
+    "also",
+    "na ja",
+    "tja"
+  ],
+  "discourse_markers": [
+    "und",
+    "aber",
+    "oder",
+    "dass",
+    "nach",
+    "während",
+    "der",
+    "die",
+    "das"
+  ],
+  "clause_boundary_signals": [
+    "dass",
+    "während",
+    "nach",
+    "und",
+    "aber",
+    "oder",
+    "der",
+    "die",
+    "das"
+  ],
+  "non_boundary_traps": [
+    "der (as determiner)",
+    "die (as determiner)",
+    "das (as determiner/pronoun)",
+    "zu (infinitive marker vs preposition)",
+    "im",
+    "am",
+    "von"
+  ],
+  "unstable_prefix_signals": [
+    "der",
+    "die",
+    "das",
+    "ein",
+    "eine",
+    "zu",
+    "nach",
+    "im",
+    "am"
+  ],
+  "notes_for_prompt_writer": "Prefer to emit segments at clear clause-connectors (coordinators like und/aber/oder or the subordinating complementizer dass) when they introduce an independent clause. Avoid finalizing a unit immediately after determiners or short prepositions (der/die/das, zu, im, am) because the following tokens will typically complete noun phrases or flip the reading. In subordinate/relative clauses expect verb-final placement — hold segmentation decisions until you see the clause's verb or sentence punctuation unless a coordinating connector makes an independent clause clear."
+}

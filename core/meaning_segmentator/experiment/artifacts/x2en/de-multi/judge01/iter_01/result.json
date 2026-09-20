@@ -1,0 +1,67 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00254,
+  "lo": -0.00524,
+  "hi": 0.01041,
+  "n": 1779,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00254,
+  "lo": -0.00524,
+  "hi": 0.01041,
+  "n": 1779,
+  "n_clusters": 200
+ },
+ "changelog": [
+  "Replace E1 with measured example de_de_341 to teach the model that a prefix missing a predicate is often a cohesion problem, not automatically high contra (addresses finding about over-allocated contra).",
+  "Replace E2 with measured example de_de_476 to show reporting/speech-act verbs (\"erklärten\") should be treated as cohesion/incompleteness unless the remainder explicitly negates the prefix (addresses finding about reporting verbs).",
+  "Replace E3 with measured example de_de_1143 to provide a longer-clause case where qualification/contrast determines contra versus cohesion, reinforcing the distinction cited in the critique."
+ ],
+ "findings": [
+  "The prompt repeatedly treats an incomplete or fragmentary prefix (a piece that lacks the finishing verb, complement, or reported content) as if it were a high-probability contradiction of the whole sentence. In many cases the prefix is merely incomplete (a cohesion problem) rather than asserting something the rest of the sentence contradicts; the prompt therefore over-allocates 'contra' mass to fragmentation and overturns good dense segmentations.",
+  "The prompt conflates speech-act or reporting verbs and left fragments that name an act ('erklärten', 'wurden', 'belegt', 'wurden am ... gezwungen') with contradicted factual assertions. It therefore assigns large contradiction probability to prefixes that report an act but do not assert propositional content; this routinely kills otherwise acceptable cuts."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "E1",
+   "kind": "example",
+   "was": "Input: Nicht <SEG:?> alle <SEG:?> sprachen <SEG:?> sich <SEG:?> für <SEG:?> die ",
+   "now": "Input: Zayat <SEG:?> wurde <SEG:?> bei <SEG:?> dem <SEG:?> Unfall <SEG:?> nicht "
+  },
+  {
+   "op": "replace",
+   "id": "E2",
+   "kind": "example",
+   "was": "Input: Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatl",
+   "now": "Input: Der <SEG:?> Geschichte <SEG:?> zufolge <SEG:?> lag <SEG:?> seine <SEG:?> "
+  },
+  {
+   "op": "replace",
+   "id": "E3",
+   "kind": "example",
+   "was": "Input: Bobek, <SEG:?> in <SEG:?> der <SEG:?> kroatischen <SEG:?> Hauptstadt <SEG",
+   "now": "Input: Dies <SEG:?> ist <SEG:?> anderenorts <SEG:?> in <SEG:?> Großbritannien <S"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0005,
+   "≤5": 0.0059,
+   "≤7": 0.0071,
+   "≤10": -0.0002,
+   "≤99": 0.0014
+  },
+  "n_worse": 641,
+  "n_better": 624,
+  "why": "The new examples shifted the model toward making earlier cuts in many short/medium spans (it began inserting cuts between auxiliaries/short verbs and their objects and even inside noun phrases), producing large negative moves on examples that were split inside NPs or that separated verb+argument; at the same time the reporting-verb example improved handling of enumerations and some medium-length predicate groupings, which matches the positive deltas in the ≤5 and ≤7 bins.",
+  "lesson": "Keep the reporting-verb example that helped medium-length predicate/enumeration splits, but avoid examples or placements that encourage premature cuts inside noun phrases or between auxiliaries and their complements.",
+  "blamed": [
+   "E1",
+   "E3"
+  ]
+ }
+}

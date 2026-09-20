@@ -1,0 +1,176 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- If the right fragment begins with a sentence‑final auxiliary, copula, explicit negator, or with closing punctuation (i.e. material that completes or can flip the predicate), treat that cut as among the worst: rank it very low so it will not be chosen."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Do not require spreading integers across the entire 0–100 range. Use any distinct integers that preserve the ORDER by target; clustering adjacent ranks is allowed when targets are similar so dense short‑latency cuts are not thinned out."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 254
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 239
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9654,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Prefer cuts whose right fragment can be translated on its own; avoid cuts that depend on late predicates, arguments, or negation, which commonly produce contradictions, missing links, or flipped polarity."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Ranking guidance and good dense cuts: reserve true extremes (very low integers near 0 for the worst cuts and very high near 100 for the best) for only the clearest worst/best positions. Otherwise do not force an even spread across 0–100: when targets are similar, assign adjacent or clustered integers so short‑latency density is preserved. Treat any cut whose right fragment BEGINS with a sentence‑final auxiliary, copula, explicit negator, or closing punctuation as among the worst (rank it very low). Prefer cuts at clause or punctuation boundaries, at item boundaries in enumerations, or where the right piece is independently translatable without detaching predicates, arguments, or prenominal modifiers."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -54
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 712
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9819,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "ja_jp_968",
+    "text": "Input: こ <SEG:?> れ <SEG:?> ら <SEG:?> の <SEG:?> 村 <SEG:?> は <SEG:?> ユ <SEG:?> ネ <SEG:?> ス <SEG:?> コ <SEG:?> の <SEG:?> 世 <SEG:?> 界 <SEG:?> 遺 <SEG:?> 産 <SEG:?> に <SEG:?> 登 <SEG:?> 録 <SEG:?> さ <SEG:?> れ <SEG:?> て <SEG:?> い <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: こ <SEG:57> れ <SEG:26> ら <SEG:65> の <SEG:74> 村 <SEG:87> は <SEG:78> ユ <SEG:9> ネ <SEG:4> ス <SEG:13> コ <SEG:52> の <SEG:43> 世 <SEG:39> 界 <SEG:30> 遺 <SEG:17> 産 <SEG:35> に <SEG:70> 登 <SEG:22> 録 <SEG:48> さ <SEG:61> れ <SEG:91> て <SEG:83> い <SEG:0> ま <SEG:100> す <SEG:96> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "ja_jp_563",
+    "text": "Input: 助 <SEG:?> け <SEG:?> よ <SEG:?> う <SEG:?> と <SEG:?> し <SEG:?> て <SEG:?> 怪 <SEG:?> 我 <SEG:?> を <SEG:?> し <SEG:?> た <SEG:?> ら <SEG:?> 、 <SEG:?> 事 <SEG:?> 態 <SEG:?> を <SEG:?> 悪 <SEG:?> 化 <SEG:?> さ <SEG:?> せ <SEG:?> る <SEG:?> だ <SEG:?> け <SEG:?> で <SEG:?> す <SEG:?> 。\nOutput: 助 <SEG:4> け <SEG:12> よ <SEG:8> う <SEG:16> と <SEG:40> し <SEG:76> て <SEG:72> 怪 <SEG:20> 我 <SEG:60> を <SEG:56> し <SEG:100> た <SEG:92> ら <SEG:68> 、 <SEG:96> 事 <SEG:44> 態 <SEG:64> を <SEG:36> 悪 <SEG:24> 化 <SEG:28> さ <SEG:0> せ <SEG:32> る <SEG:84> だ <SEG:52> け <SEG:48> で <SEG:88> す <SEG:80> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "ja_jp_1584",
+    "text": "Input: ビ <SEG:?> シ <SEG:?> ュ <SEG:?> ケ <SEG:?> ク <SEG:?> の <SEG:?> 街 <SEG:?> 路 <SEG:?> に <SEG:?> は <SEG:?> 法 <SEG:?> 執 <SEG:?> 行 <SEG:?> 官 <SEG:?> が <SEG:?> い <SEG:?> な <SEG:?> か <SEG:?> っ <SEG:?> た <SEG:?> た <SEG:?> め <SEG:?> 、 <SEG:?> 一 <SEG:?> 晩 <SEG:?> 中 <SEG:?> 略 <SEG:?> 奪 <SEG:?> が <SEG:?> 続 <SEG:?> い <SEG:?> た <SEG:?> と <SEG:?> 伝 <SEG:?> え <SEG:?> ら <SEG:?> れ <SEG:?> て <SEG:?> い <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: ビ <SEG:32> シ <SEG:10> ュ <SEG:15> ケ <SEG:48> ク <SEG:85> の <SEG:82> 街 <SEG:62> 路 <SEG:50> に <SEG:75> は <SEG:55> 法 <SEG:5> 執 <SEG:12> 行 <SEG:8> 官 <SEG:0> が <SEG:2> い <SEG:22> な <SEG:18> か <SEG:40> っ <SEG:90> た <SEG:100> た <SEG:95> め <SEG:98> 、 <SEG:88> 一 <SEG:78> 晩 <SEG:42> 中 <SEG:65> 略 <SEG:25> 奪 <SEG:35> が <SEG:28> 続 <SEG:20> い <SEG:70> た <SEG:60> と <SEG:52> 伝 <SEG:38> え <SEG:30> ら <SEG:45> れ <SEG:68> て <SEG:58> い <SEG:72> ま <SEG:92> す <SEG:80> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "ja_jp_919",
+    "text": "Input: 母 <SEG:?> 国 <SEG:?> を <SEG:?> 離 <SEG:?> れ <SEG:?> て <SEG:?> い <SEG:?> る <SEG:?> 間 <SEG:?> に <SEG:?> 目 <SEG:?> 的 <SEG:?> 地 <SEG:?> へ <SEG:?> の <SEG:?> 行 <SEG:?> き <SEG:?> 方 <SEG:?> を <SEG:?> 調 <SEG:?> べ <SEG:?> る <SEG:?> に <SEG:?> は <SEG:?> 、 <SEG:?> ス <SEG:?> マ <SEG:?> ー <SEG:?> ト <SEG:?> フ <SEG:?> ォ <SEG:?> ン <SEG:?> で <SEG:?> G <SEG:?> P <SEG:?> S <SEG:?> ナ <SEG:?> ビ <SEG:?> ゲ <SEG:?> ー <SEG:?> シ <SEG:?> ョ <SEG:?> ン <SEG:?> ア <SEG:?> プ <SEG:?> リ <SEG:?> を <SEG:?> 活 <SEG:?> 用 <SEG:?> す <SEG:?> る <SEG:?> の <SEG:?> が <SEG:?> 最 <SEG:?> も <SEG:?> 簡 <SEG:?> 単 <SEG:?> で <SEG:?> 便 <SEG:?> 利 <SEG:?> な <SEG:?> 方 <SEG:?> 法 <SEG:?> で <SEG:?> す <SEG:?> 。\nOutput: 母 <SEG:0> 国 <SEG:9> を <SEG:23> 離 <SEG:61> れ <SEG:70> て <SEG:50> い <SEG:66> る <SEG:73> 間 <SEG:44> に <SEG:34> 目 <SEG:3> 的 <SEG:8> 地 <SEG:25> へ <SEG:30> の <SEG:17> 行 <SEG:33> き <SEG:39> 方 <SEG:47> を <SEG:22> 調 <SEG:2> べ <SEG:58> る <SEG:36> に <SEG:11> は <SEG:14> 、 <SEG:56> ス <SEG:45> マ <SEG:48> ー <SEG:59> ト <SEG:64> フ <SEG:67> ォ <SEG:53> ン <SEG:31> で <SEG:19> G <SEG:6> P <SEG:16> S <SEG:55> ナ <SEG:77> ビ <SEG:28> ゲ <SEG:84> ー <SEG:27> シ <SEG:52> ョ <SEG:72> ン <SEG:75> ア <SEG:62> プ <SEG:41> リ <SEG:80> を <SEG:83> 活 <SEG:94> 用 <SEG:95> す <SEG:100> る <SEG:98> の <SEG:88> が <SEG:81> 最 <SEG:69> も <SEG:97> 簡 <SEG:89> 単 <SEG:91> で <SEG:86> 便 <SEG:20> 利 <SEG:38> な <SEG:12> 方 <SEG:5> 法 <SEG:42> で <SEG:92> す <SEG:78> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -168
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -397
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -313
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -168
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8115,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "text": "- Prefer cuts whose right fragment can be translated on its own; avoid cuts that rely on predicates, arguments, or negation appearing later, since those often flip claims or break argument links."
+   },
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Ranking and dense-cut guidance: Order positions by the measured target and assign distinct integers that preserve that order. You do not have to stretch scores across the entire 0–100 range; clustering adjacent ranks is acceptable when targets are similar so short‑latency, dense cuts remain available. Reserve near‑extreme values only for truly exceptional best/worst cuts. Prefer dense cuts at clause or phrase boundaries, after closing particles or punctuation, or between items in enumerations — these locations tend to produce self‑contained, translatable fragments. If the right fragment begins with a sentence‑final auxiliary, copula, explicit negator, or closing punctuation (i.e. material that completes or can flip the predicate), treat that cut as unsafe and rank it low unless the left fragment already contains a complete predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "chars_change": -65
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 848
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9944,
+  "errors": null
+ }
+]

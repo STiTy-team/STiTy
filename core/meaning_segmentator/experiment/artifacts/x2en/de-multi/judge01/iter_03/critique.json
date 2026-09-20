@@ -1,0 +1,27 @@
+{
+ "raw": {
+  "findings": [
+   {
+    "diagnosis": "The prompt systematically underestimates contradiction risk when a cut leaves a prefix that reads like an independent assertion because it ends on a finite/reporting verb or other predicate‑like material without its resolving complement, so high‑contra cuts are ranked too high.",
+    "evidence": "['de_de_296','de_de_1032','de_de_1009','de_de_1529','de_de_1108','de_de_1000','de_de_480']: each policy kept a cut that leaves an unresolved/assertive prefix (finite or reporting verb, or clause needing a final verb) and that cut has a high measured contra which zeroed the H_set.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "If a cut leaves a prefix that, taken alone, asserts a proposition because it ends on a finite or reporting verb (or other predicate‑like token) without its complement, ask: 'Could the remainder reverse/negate/complete this claim?' If yes, assign a near‑maximal contra."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "diagnosis": "The prompt systematically underestimates contradiction risk when a cut leaves a prefix that reads like an independent assertion because it ends on a finite/reporting verb or other predicate‑like material without its resolving complement, so high‑contra cuts are ranked too high.",
+   "evidence": "['de_de_296','de_de_1032','de_de_1009','de_de_1529','de_de_1108','de_de_1000','de_de_480']: each policy kept a cut that leaves an unresolved/assertive prefix (finite or reporting verb, or clause needing a final verb) and that cut has a high measured contra which zeroed the H_set.",
+   "edit": {
+    "where": "core_principles",
+    "action": "add",
+    "target": null,
+    "text": "If a cut leaves a prefix that, taken alone, asserts a proposition because it ends on a finite or reporting verb (or other predicate‑like token) without its complement, ask: 'Could the remainder reverse/negate/complete this claim?' If yes, assign a near‑maximal contra."
+   }
+  }
+ ]
+}

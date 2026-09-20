@@ -1,0 +1,1624 @@
+[
+ {
+  "id": "de_de_296",
+  "cuts": 4,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5466,
+  "policy_worst_contra": 0.7027,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    3,
+    7,
+    11,
+    12
+   ],
+   "H_set": 0.2181,
+   "text": "Die zwölf Besatzungsmitglieder ‖ wurden mit Hubschraubern gerettet ‖ und die einzige Verletzung ‖ war ‖ eine gebrochene Nase.",
+   "pieces": {
+    "English": [
+     "The Twelve Crew Members",
+     "were rescued by helicopters",
+     "and the only injury",
+     "on",
+     "a broken nose."
+    ],
+    "Chinese": [
+     "十二船员",
+     "被直升机救起",
+     "唯一的伤害",
+     "战争",
+     "一个破鼻子。"
+    ],
+    "Japanese": [
+     "十二人の乗組員",
+     "ヘリコプターで救助されました",
+     "唯一の怪我は",
+     "戦争",
+     "鼻が折れた"
+    ],
+    "Spanish": [
+     "Los doce miembros de la tripulación",
+     "fueron rescatados por helicópteros.",
+     "Y la única lesión",
+     "war",
+     "Una nariz rota."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    6,
+    7,
+    8
+   ],
+   "H_set": 0.7647,
+   "text": "Die zwölf Besatzungsmitglieder wurden ‖ mit Hubschraubern ‖ gerettet ‖ und ‖ die einzige Verletzung war eine gebrochene Nase.",
+   "pieces": {
+    "English": [
+     "The twelve crew members were",
+     "with helicopters",
+     "saved",
+     "and",
+     "the only injury was a broken nose."
+    ],
+    "Chinese": [
+     "12名机组人员被送往",
+     "直升机",
+     "救援",
+     "以及",
+     "唯一的伤是鼻子骨折"
+    ],
+    "Japanese": [
+     "乗組員12人は",
+     "ヘリコプターで",
+     "救助",
+     "それに",
+     "唯一の怪我は鼻の骨折でした"
+    ],
+    "Spanish": [
+     "Los doce miembros de la tripulación fueron",
+     "con helicópteros",
+     "Rescatado",
+     "y",
+     "La única lesión fue una nariz rota."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Die zwölf Besatzungsmitglieder",
+     "right": "wurden mit Hubschraubern gerettet",
+     "H": 0.8048,
+     "H_pct": 69.2,
+     "contra": 0.0007,
+     "cohesion": 0.8054
+    },
+    {
+     "pos": 11,
+     "left": "und die einzige Verletzung",
+     "right": "war eine gebrochene Nase.",
+     "H": 0.7105,
+     "H_pct": 23.1,
+     "contra": 0.166,
+     "cohesion": 0.8519
+    },
+    {
+     "pos": 12,
+     "left": "die einzige Verletzung war",
+     "right": "eine gebrochene Nase.",
+     "H": 0.2477,
+     "H_pct": 7.7,
+     "contra": 0.7027,
+     "cohesion": 0.8332
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Die zwölf Besatzungsmitglieder wurden",
+     "right": "mit Hubschraubern gerettet und",
+     "H": 0.8171,
+     "H_pct": 76.9,
+     "contra": 0.0032,
+     "cohesion": 0.8197
+    },
+    {
+     "pos": 6,
+     "left": "Besatzungsmitglieder wurden mit Hubschraubern",
+     "right": "gerettet und die einzige",
+     "H": 0.8433,
+     "H_pct": 84.6,
+     "contra": 0.0014,
+     "cohesion": 0.8445
+    },
+    {
+     "pos": 8,
+     "left": "mit Hubschraubern gerettet und",
+     "right": "die einzige Verletzung war",
+     "H": 0.8621,
+     "H_pct": 92.3,
+     "contra": 0.007,
+     "cohesion": 0.8682
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1032",
+  "cuts": 5,
+  "avg_chunk": 3.8,
+  "latency_bin": "≤5",
+  "gap": 0.4821,
+  "policy_worst_contra": 0.7446,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    9,
+    12,
+    15,
+    21
+   ],
+   "H_set": 0.1317,
+   "text": "Die Straße, ‖ auf der sich der Unfall ereignet hatte, ‖ wurde vorübergehend gesperrt, ‖ während die Rettungsdienste ‖ den Fahrer aus dem roten Audi ‖ TT befreiten.",
+   "pieces": {
+    "English": [
+     "The road,",
+     "on which the accident had occurred,",
+     "was temporarily blocked,",
+     "while the emergency services",
+     "the driver from the red Audi",
+     "TT freed."
+    ],
+    "Chinese": [
+     "路上",
+     "发生了灾难",
+     "已暂停使用",
+     "当急救服务",
+     "从红色的奥迪司机",
+     " 解放军撤退。"
+    ],
+    "Japanese": [
+     "道路",
+     "災害が起きた場所で",
+     "1ヶ月間 閉鎖されました",
+     "救急隊員が",
+     "赤いアウディの運転手は",
+     " 解放された。"
+    ],
+    "Spanish": [
+     "La calle,",
+     "en la que se produjo el accidente,",
+     "El sitio web ha sido suspendido temporalmente.",
+     "Mientras que los servicios de emergencia",
+     "El conductor del Audi rojo",
+     "T. Liberación."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    10,
+    11,
+    12
+   ],
+   "H_set": 0.6138,
+   "text": "Die Straße, auf der ‖ sich ‖ der Unfall ereignet hatte, wurde ‖ vorübergehend ‖ gesperrt, ‖ während die Rettungsdienste den Fahrer aus dem roten Audi TT befreiten.",
+   "pieces": {
+    "English": [
+     "The road on which",
+     "sie",
+     "the accident had occurred, was",
+     "Temporary",
+     "locked,",
+     "while the rescue services freed the driver from the red Audi TT."
+    ],
+    "Chinese": [
+     "路上",
+     "西西",
+     "事故发生后，",
+     "临时",
+     "被封锁",
+     "救援人员将司机从红色奥迪TT中解救出来。"
+    ],
+    "Japanese": [
+     "道路",
+     "あなた",
+     "事故が起きた時",
+     "一時的に",
+     "閉じ込められた",
+     "救急隊員が運転手を救出しました"
+    ],
+    "Spanish": [
+     "La calle en la que",
+     "Sie",
+     "El accidente había ocurrido, fue",
+     "Temporal",
+     "- Suspendido,",
+     "Mientras que los servicios de emergencia liberaron al conductor del Audi TT rojo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "Die Straße,",
+     "right": "auf der sich der",
+     "H": 0.6766,
+     "H_pct": 38.1,
+     "contra": 0.0019,
+     "cohesion": 0.6779
+    },
+    {
+     "pos": 9,
+     "left": "der Unfall ereignet hatte,",
+     "right": "wurde vorübergehend gesperrt, während",
+     "H": 0.7464,
+     "H_pct": 71.4,
+     "contra": 0.0024,
+     "cohesion": 0.7481
+    },
+    {
+     "pos": 15,
+     "left": "gesperrt, während die Rettungsdienste",
+     "right": "den Fahrer aus dem",
+     "H": 0.5674,
+     "H_pct": 28.6,
+     "contra": 0.2163,
+     "cohesion": 0.7239
+    },
+    {
+     "pos": 21,
+     "left": "aus dem roten Audi",
+     "right": "TT befreiten.",
+     "H": 0.1643,
+     "H_pct": 0.0,
+     "contra": 0.7446,
+     "cohesion": 0.6435
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "Die Straße, auf der",
+     "right": "sich der Unfall ereignet",
+     "H": 0.792,
+     "H_pct": 95.2,
+     "contra": 0.0011,
+     "cohesion": 0.7928
+    },
+    {
+     "pos": 5,
+     "left": "Straße, auf der sich",
+     "right": "der Unfall ereignet hatte,",
+     "H": 0.7915,
+     "H_pct": 90.5,
+     "contra": 0.0012,
+     "cohesion": 0.7925
+    },
+    {
+     "pos": 10,
+     "left": "Unfall ereignet hatte, wurde",
+     "right": "vorübergehend gesperrt, während die",
+     "H": 0.7699,
+     "H_pct": 81.0,
+     "contra": 0.0027,
+     "cohesion": 0.772
+    },
+    {
+     "pos": 11,
+     "left": "ereignet hatte, wurde vorübergehend",
+     "right": "gesperrt, während die Rettungsdienste",
+     "H": 0.7773,
+     "H_pct": 85.7,
+     "contra": 0.0014,
+     "cohesion": 0.7784
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1009",
+  "cuts": 5,
+  "avg_chunk": 5.5,
+  "latency_bin": "≤7",
+  "gap": 0.3496,
+  "policy_worst_contra": 0.6154,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    8,
+    14,
+    18,
+    27
+   ],
+   "H_set": 0.2229,
+   "text": "Die einzige Möglichkeit, es schneller durchzubekommen, ‖ bestand darin, ‖ es als aufgegebenes Gepäck zu versenden. ‖ Die Vorschriften der Fluggesellschaften ‖ erlauben es nicht, Gepäck ohne einen Passagier zu versenden, ‖ und da kommen Sie ins Spiel.",
+   "pieces": {
+    "English": [
+     "The only way to get through it faster",
+     "contained therein,",
+     "to ship it as checked baggage.",
+     "The regulations of the airlines",
+     "do not allow to send luggage without a passenger,",
+     "and that's where you come in."
+    ],
+    "Chinese": [
+     "唯一能让它更快完成的方法",
+     "他们将永居其中。",
+     "把它当作托运行李发送。",
+     "航空公司的规定",
+     "不允许在没有乘客的情况下托运行李,",
+     "这就是你们的作用所在。"
+    ],
+    "Japanese": [
+     "早く終わらせる唯一の方法は",
+     "それを持つ者",
+     "荷物として送るということです",
+     "航空会社の規則",
+     "乗客なしで荷物を送ることを許可しません",
+     "ここで あなたが役に立つのです"
+    ],
+    "Spanish": [
+     "La única manera de hacerlo más rápido",
+     "que se mantendrán en ella,",
+     "Enviarlo como equipaje facturado.",
+     "Las regulaciones de las compañías aéreas",
+     "no permiten el envío de equipaje sin un pasajero,",
+     "Y ahí es donde entras tú."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    14,
+    16,
+    26,
+    27,
+    28
+   ],
+   "H_set": 0.5725,
+   "text": "Die einzige Möglichkeit, es schneller durchzubekommen, bestand darin, es als aufgegebenes Gepäck zu versenden. ‖ Die Vorschriften ‖ der Fluggesellschaften erlauben es nicht, Gepäck ohne einen Passagier zu ‖ versenden, ‖ und ‖ da kommen Sie ins Spiel.",
+   "pieces": {
+    "English": [
+     "The only way to get it through faster was to send it as checked baggage.",
+     "The regulations",
+     "of the airlines do not allow to check luggage without a passenger",
+     "send,",
+     "and",
+     "That's where you come in."
+    ],
+    "Chinese": [
+     "唯一能让它更快地通过的方法是将它作为托运行李寄出。",
+     "规则",
+     "航空公司不允许行李没有乘客",
+     "誓以传达佳音，",
+     "以及",
+     "这就是你们的作用所在。"
+    ],
+    "Japanese": [
+     "早く届ける唯一の方法は 荷物として送ることだった",
+     "規則",
+     "航空会社は 乗客なしで荷物を運ぶことを許可しません",
+     "送信する",
+     "それに",
+     "ここで君が役に立つ"
+    ],
+    "Spanish": [
+     "La única manera de hacerlo pasar más rápido era enviarlo como equipaje facturado.",
+     "Las normas",
+     "Las compañías aéreas no permiten que el equipaje sea despachado sin un pasajero",
+     "Enviar,",
+     "y",
+     "Aquí es donde usted entra en juego."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "Möglichkeit, es schneller durchzubekommen,",
+     "right": "bestand darin, es als",
+     "H": 0.6777,
+     "H_pct": 77.4,
+     "contra": 0.0041,
+     "cohesion": 0.6805
+    },
+    {
+     "pos": 8,
+     "left": "schneller durchzubekommen, bestand darin,",
+     "right": "es als aufgegebenes Gepäck",
+     "H": 0.2509,
+     "H_pct": 12.9,
+     "contra": 0.6154,
+     "cohesion": 0.6523
+    },
+    {
+     "pos": 18,
+     "left": "Die Vorschriften der Fluggesellschaften",
+     "right": "erlauben es nicht, Gepäck",
+     "H": 0.6172,
+     "H_pct": 35.5,
+     "contra": 0.0054,
+     "cohesion": 0.6206
+    }
+   ],
+   "added": [
+    {
+     "pos": 16,
+     "left": "zu versenden. Die Vorschriften",
+     "right": "der Fluggesellschaften erlauben es",
+     "H": 0.7223,
+     "H_pct": 90.3,
+     "contra": 0.013,
+     "cohesion": 0.7318
+    },
+    {
+     "pos": 26,
+     "left": "ohne einen Passagier zu",
+     "right": "versenden, und da kommen",
+     "H": 0.7153,
+     "H_pct": 87.1,
+     "contra": 0.0035,
+     "cohesion": 0.7178
+    },
+    {
+     "pos": 28,
+     "left": "Passagier zu versenden, und",
+     "right": "da kommen Sie ins",
+     "H": 0.7695,
+     "H_pct": 100.0,
+     "contra": 0.0028,
+     "cohesion": 0.7716
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_940",
+  "cuts": 2,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.1994,
+  "policy_worst_contra": 0.1183,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3,
+    18
+   ],
+   "H_set": 0.5445,
+   "text": "Stellen Sie sicher, ‖ dass Sie wissen, was Sie einführen können und was nicht, und geben Sie alles an, ‖ was über die gesetzlichen Grenzen hinausgeht.",
+   "pieces": {
+    "English": [
+     "Make sure that",
+     "that you know what you can and cannot introduce, and state everything,",
+     "which goes beyond the legal limits."
+    ],
+    "Chinese": [
+     "请确保",
+     "确保你知道你能够和不能够输入什么,并且说明所有",
+     "超越法律界限。"
+    ],
+    "Japanese": [
+     "確認してください",
+     "何を入れるか 何を入れないか 何を入れるか 何を入れないか",
+     "法律の制限を超えて行われています"
+    ],
+    "Spanish": [
+     "Asegúrese de que",
+     "que usted sabe lo que puede introducir y lo que no, y especificar todo,",
+     "Más allá de los límites legales."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    14
+   ],
+   "H_set": 0.7439,
+   "text": "Stellen Sie sicher, dass Sie wissen, was Sie einführen können ‖ und was nicht, und ‖ geben Sie alles an, was über die gesetzlichen Grenzen hinausgeht.",
+   "pieces": {
+    "English": [
+     "Make sure you know what you can introduce",
+     "and what is not, and",
+     "indicate anything that goes beyond the legal limits."
+    ],
+    "Chinese": [
+     "确保您知道您可以引入什么",
+     "什么不是,以及",
+     "指明超出法律限制的任何内容。"
+    ],
+    "Japanese": [
+     "何を入れるかを知っておくこと",
+     "何が違うのか",
+     "法律の範囲を超えたものは すべて明らかにしてください"
+    ],
+    "Spanish": [
+     "Asegúrese de saber lo que puede introducir",
+     "y lo que no, y",
+     "Indique todo lo que vaya más allá de los límites legales."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Stellen Sie sicher,",
+     "right": "dass Sie wissen, was",
+     "H": 0.7626,
+     "H_pct": 86.4,
+     "contra": 0.0032,
+     "cohesion": 0.765
+    },
+    {
+     "pos": 18,
+     "left": "geben Sie alles an,",
+     "right": "was über die gesetzlichen",
+     "H": 0.5899,
+     "H_pct": 22.7,
+     "contra": 0.1183,
+     "cohesion": 0.6691
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "was Sie einführen können",
+     "right": "und was nicht, und",
+     "H": 0.7907,
+     "H_pct": 95.5,
+     "contra": 0.001,
+     "cohesion": 0.7914
+    },
+    {
+     "pos": 14,
+     "left": "und was nicht, und",
+     "right": "geben Sie alles an,",
+     "H": 0.8081,
+     "H_pct": 100.0,
+     "contra": 0.0179,
+     "cohesion": 0.8229
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_295",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.1045,
+  "policy_worst_contra": 0.0032,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.615,
+   "text": "\"Die \"\"Luno\"\" hatte 120-160 Kubikmeter Treibstoff an Bord, ‖ als sie in Seenot geriet und die starken Winde und Wellen sie gegen die Wellenbrecher drückten.\"",
+   "pieces": {
+    "English": [
+     "\"The \"\"Luno\"\" had 120-160 cubic meters of fuel on board,",
+     "When it was in trouble, and the strong wind and the waves pushed them against the breakers.\""
+    ],
+    "Chinese": [
+     "月球号载有120-160立方米的燃料",
+     "当时,船只遭遇狂风,波涛汹涌,船里的人都被淹死了。"
+    ],
+    "Japanese": [
+     "ルノ号は 120から160立方メートルの燃料を 搭載していた",
+     "それは風の猛烈な波と共に，かれらを襲った。"
+    ],
+    "Spanish": [
+     "\"El \"\"Luno\"\" tenía 120-160 metros cúbicos de combustible a bordo,",
+     "Cuando se encontró en el mar y el viento y las olas fuertes los empujaron hacia el borde de la brecha.\""
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.7195,
+   "text": "\"Die \"\"Luno\"\" hatte ‖ 120-160 Kubikmeter Treibstoff an Bord, als sie in Seenot geriet und die starken Winde und Wellen sie gegen die Wellenbrecher drückten.\"",
+   "pieces": {
+    "English": [
+     "\"The \"\"Luno\"\" had",
+     "120-160 cubic meters of fuel on board when she got into distress and the strong winds and waves pushed her against the breakwaters.\""
+    ],
+    "Chinese": [
+     "月球号",
+     "当它遇到困难时,船上有120-160立方米的燃料,强风和海浪将它推向防波堤 。 \""
+    ],
+    "Japanese": [
+     "ルノ号は",
+     "船上には120から160立方メートルの燃料が搭載されていたが、難破し、強風と波が防波堤に押し寄せた。"
+    ],
+    "Spanish": [
+     "\"El \"\"Luno\"\" tenía",
+     "Tenía entre 120 y 160 metros cúbicos de combustible a bordo cuando se encontró en peligro y los fuertes vientos y olas lo empujaron contra los rompeolas\"."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "Kubikmeter Treibstoff an Bord,",
+     "right": "als sie in Seenot",
+     "H": 0.615,
+     "H_pct": 40.9,
+     "contra": 0.0032,
+     "cohesion": 0.617
+    }
+   ],
+   "added": [
+    {
+     "pos": 3,
+     "left": "\"Die \"\"Luno\"\" hatte",
+     "right": "120-160 Kubikmeter Treibstoff an",
+     "H": 0.7195,
+     "H_pct": 100.0,
+     "contra": 0.0017,
+     "cohesion": 0.7207
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1529",
+  "cuts": 8,
+  "avg_chunk": 2.6,
+  "latency_bin": "≤3",
+  "gap": 0.5161,
+  "policy_worst_contra": 0.9941,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    5,
+    6,
+    12,
+    14,
+    17,
+    18,
+    20
+   ],
+   "H_set": 0.0029,
+   "text": "Rings CEO Jamie Siminoff ‖ sagte ‖ einmal, ‖ dass er das Unternehmen gegründet habe, ‖ nachdem er ‖ von seiner Garagenwerkstatt ‖ aus ‖ seine Türklingel ‖ nicht hören konnte.",
+   "pieces": {
+    "English": [
+     "Rings CEO Jamie Siminoff",
+     "said",
+     "once,",
+     "that he founded the company,",
+     "after he",
+     "from his garage workshop",
+     "off",
+     "his doorbell",
+     "could not hear."
+    ],
+    "Chinese": [
+     "戒指首席执行官 Jamie Siminoff",
+     "说",
+     "首先，",
+     "他创办了公司,",
+     "经过",
+     "从他的车库里",
+     "出",
+     "他的门铃",
+     "听不到"
+    ],
+    "Japanese": [
+     "ジェイミー・シミノフ",
+     "彼は言った",
+     "まず",
+     "彼が会社を設立したことを",
+     "彼が",
+     "ガレージの作業場から",
+     "アウト",
+     "彼のドアベル",
+     "聞こえなかったのです"
+    ],
+    "Spanish": [
+     "Director Ejecutivo de Rings, Jamie Siminoff",
+     "dijo",
+     "una vez,",
+     "que él fundó la compañía,",
+     "después de",
+     "Desde su taller de garaje",
+     "aus",
+     "Su timbre de puerta",
+     "No podía oír."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    12
+   ],
+   "H_set": 0.519,
+   "text": "Rings CEO ‖ Jamie ‖ Siminoff ‖ sagte ‖ einmal, ‖ dass ‖ er ‖ das Unternehmen gegründet habe, ‖ nachdem er von seiner Garagenwerkstatt aus seine Türklingel nicht hören konnte.",
+   "pieces": {
+    "English": [
+     "Rings CEO",
+     "Jamie",
+     "Siminoff",
+     "said",
+     "once,",
+     "that",
+     "is",
+     "founded the company,",
+     "after he could not hear his doorbell from his garage workshop."
+    ],
+    "Chinese": [
+     "环球首席执行官",
+     "杰米",
+     "西米诺夫",
+     "说",
+     "首先，",
+     "达斯",
+     "是",
+     "创办了公司,",
+     "因为他在车库里的车间里听不到门铃"
+    ],
+    "Japanese": [
+     "リングスCEO",
+     "ジェイミー",
+     "シミノフ",
+     "彼は言った",
+     "まず",
+     "それは",
+     "ああ",
+     "会社を立ち上げました",
+     "ガレージの修理工場で ドアベルが聞こえなくなった後"
+    ],
+    "Spanish": [
+     "Rings CEO",
+     "Jamie.",
+     "Siminoff",
+     "dijo",
+     "una vez,",
+     "Das",
+     "er",
+     "He fundado la empresa,",
+     "después de no poder escuchar el timbre de su puerta desde el taller de su garaje."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 14,
+     "left": "gegründet habe, nachdem er",
+     "right": "von seiner Garagenwerkstatt aus",
+     "H": 0.3115,
+     "H_pct": 28.6,
+     "contra": 0.5274,
+     "cohesion": 0.659
+    },
+    {
+     "pos": 17,
+     "left": "er von seiner Garagenwerkstatt",
+     "right": "aus seine Türklingel nicht",
+     "H": 0.2194,
+     "H_pct": 23.8,
+     "contra": 0.6356,
+     "cohesion": 0.6021
+    },
+    {
+     "pos": 18,
+     "left": "von seiner Garagenwerkstatt aus",
+     "right": "seine Türklingel nicht hören",
+     "H": 0.1265,
+     "H_pct": 9.5,
+     "contra": 0.8047,
+     "cohesion": 0.6477
+    },
+    {
+     "pos": 20,
+     "left": "Garagenwerkstatt aus seine Türklingel",
+     "right": "nicht hören konnte.",
+     "H": 0.0031,
+     "H_pct": 0.0,
+     "contra": 0.9941,
+     "cohesion": 0.5334
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Rings CEO",
+     "right": "Jamie Siminoff sagte einmal,",
+     "H": 0.7471,
+     "H_pct": 95.2,
+     "contra": 0.0007,
+     "cohesion": 0.7476
+    },
+    {
+     "pos": 3,
+     "left": "Rings CEO Jamie",
+     "right": "Siminoff sagte einmal, dass",
+     "H": 0.7019,
+     "H_pct": 71.4,
+     "contra": 0.0009,
+     "cohesion": 0.7025
+    },
+    {
+     "pos": 7,
+     "left": "Siminoff sagte einmal, dass",
+     "right": "er das Unternehmen gegründet",
+     "H": 0.7071,
+     "H_pct": 76.2,
+     "contra": 0.0651,
+     "cohesion": 0.7563
+    },
+    {
+     "pos": 8,
+     "left": "sagte einmal, dass er",
+     "right": "das Unternehmen gegründet habe,",
+     "H": 0.7307,
+     "H_pct": 90.5,
+     "contra": 0.0584,
+     "cohesion": 0.776
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1108",
+  "cuts": 4,
+  "avg_chunk": 5.0,
+  "latency_bin": "≤5",
+  "gap": 0.4675,
+  "policy_worst_contra": 0.6113,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    6,
+    11,
+    16,
+    21
+   ],
+   "H_set": 0.2459,
+   "text": "Truppen der Koalition und afghanische Truppen ‖ rückten in das Gebiet ein, ‖ um den Standort zu sichern, ‖ und andere Flugzeuge der Koalition ‖ wurden zur Unterstützung entsandt.",
+   "pieces": {
+    "English": [
+     "Coalition and Afghan troops",
+     "entered the area,",
+     "to secure the location,",
+     "and other aircraft of the coalition",
+     "were sent to assist."
+    ],
+    "Chinese": [
+     "联军和阿富汗军队",
+     "攻入敵圍的馬隊盟誓,",
+     "为了保护位置,",
+     "联军飞机",
+     "他们被派去支持。"
+    ],
+    "Japanese": [
+     "アフガニスタン軍",
+     "敵の中に突入し",
+     "場所を確保するために",
+     "連合軍の飛行機が",
+     "支援に送られました"
+    ],
+    "Spanish": [
+     "Fuerzas de la coalición y las tropas afganas",
+     "entraron en el territorio,",
+     "para asegurar la ubicación,",
+     "y otros aviones de la coalición",
+     "Se enviaron para ayudar."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    5,
+    11,
+    16,
+    17
+   ],
+   "H_set": 0.7134,
+   "text": "Truppen der Koalition und afghanische ‖ Truppen rückten in das Gebiet ein, ‖ um den Standort zu sichern, ‖ und ‖ andere Flugzeuge der Koalition wurden zur Unterstützung entsandt.",
+   "pieces": {
+    "English": [
+     "Coalition forces and Afghan",
+     "Troops moved into the area,",
+     "to secure the location,",
+     "and",
+     "other coalition aircraft were sent to support."
+    ],
+    "Chinese": [
+     "联军和阿富汗军队",
+     "军队进入了该地区,",
+     "为了保护位置,",
+     "以及",
+     "其他联军飞机被派去支持。"
+    ],
+    "Japanese": [
+     "アフガニスタン軍",
+     "軍隊がこの地域に入り",
+     "場所を確保するために",
+     "それに",
+     "連合軍の他の飛行機が 支援に送られました"
+    ],
+    "Spanish": [
+     "Fuerzas de la coalición y afganas",
+     "Las tropas entraron en el área,",
+     "para asegurar la ubicación,",
+     "y",
+     "Otros aviones de la coalición fueron enviados en apoyo."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 6,
+     "left": "Koalition und afghanische Truppen",
+     "right": "rückten in das Gebiet",
+     "H": 0.7055,
+     "H_pct": 30.4,
+     "contra": 0.0007,
+     "cohesion": 0.706
+    },
+    {
+     "pos": 21,
+     "left": "andere Flugzeuge der Koalition",
+     "right": "wurden zur Unterstützung entsandt.",
+     "H": 0.2689,
+     "H_pct": 0.0,
+     "contra": 0.6113,
+     "cohesion": 0.6919
+    }
+   ],
+   "added": [
+    {
+     "pos": 5,
+     "left": "der Koalition und afghanische",
+     "right": "Truppen rückten in das",
+     "H": 0.8219,
+     "H_pct": 100.0,
+     "contra": 0.001,
+     "cohesion": 0.8227
+    },
+    {
+     "pos": 17,
+     "left": "Standort zu sichern, und",
+     "right": "andere Flugzeuge der Koalition",
+     "H": 0.8202,
+     "H_pct": 95.7,
+     "contra": 0.0204,
+     "cohesion": 0.8373
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1017",
+  "cuts": 1,
+  "avg_chunk": 7.0,
+  "latency_bin": "≤7",
+  "gap": 0.1885,
+  "policy_worst_contra": 0.0005,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.5818,
+   "text": "Die Rockband sollte bis zum 16. September durch die Vereinigten Staaten und Kanada ‖ touren.",
+   "pieces": {
+    "English": [
+     "The rock band was scheduled to tour the United States and Canada by September 16",
+     "tours."
+    ],
+    "Chinese": [
+     " 1989年9月16日，美國和加拿大簽署《美國和加拿大關於在美國和加拿大之間的貿易協定》。",
+     "巡回演出。"
+    ],
+    "Japanese": [
+     "9月16日までに アメリカとカナダを巡るツアーを",
+     "ツアー"
+    ],
+    "Spanish": [
+     "La banda de rock debería haber viajado por los Estados Unidos y Canadá antes del 16 de septiembre",
+     "Tour."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2
+   ],
+   "H_set": 0.7703,
+   "text": "Die Rockband ‖ sollte bis zum 16. September durch die Vereinigten Staaten und Kanada touren.",
+   "pieces": {
+    "English": [
+     "The Rock Band",
+     "was scheduled to tour the United States and Canada until September 16."
+    ],
+    "Chinese": [
+     "摇滚乐队",
+     " 2016年9月16日，在美國和加拿大舉行首場巡演。"
+    ],
+    "Japanese": [
+     "ザ・ロック・バンド",
+     "9月16日まで アメリカとカナダをツアーする予定でした"
+    ],
+    "Spanish": [
+     "La banda de rock",
+     "Debería estar de gira por los Estados Unidos y Canadá hasta el 16 de septiembre."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 13,
+     "left": "Vereinigten Staaten und Kanada",
+     "right": "touren.",
+     "H": 0.5818,
+     "H_pct": 25.0,
+     "contra": 0.0005,
+     "cohesion": 0.5821
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "Die Rockband",
+     "right": "sollte bis zum 16.",
+     "H": 0.7702,
+     "H_pct": 100.0,
+     "contra": 0.0005,
+     "cohesion": 0.7706
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1401",
+  "cuts": 1,
+  "avg_chunk": 10.0,
+  "latency_bin": "≤10",
+  "gap": 0.1438,
+  "policy_worst_contra": 0.0008,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    3
+   ],
+   "H_set": 0.6522,
+   "text": "Keine unmittelbaren Berichte ‖ über Schäden gingen beim United States Geological Survey (USGS) und dem dazugehörigen National Earthquake Information Center ein.",
+   "pieces": {
+    "English": [
+     "No immediate reports",
+     "Reports of damage were received by the United States Geological Survey (USGS) and its National Earthquake Information Center."
+    ],
+    "Chinese": [
+     "没有直接报告",
+     " 美国地质调查局（USGS）和美国国家地震信息中心（NSSI）都收到了关于地震的报告。"
+    ],
+    "Japanese": [
+     "直接報告はありません",
+     "アメリカ地質調査所とその国立地震情報センターに 損害報告が入りました"
+    ],
+    "Spanish": [
+     "No hay informes inmediatos",
+     "El Servicio Geológico de los Estados Unidos (USGS) y el Centro Nacional de Información de Terremotos (NCTI) recibieron informes de daños."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    15
+   ],
+   "H_set": 0.796,
+   "text": "Keine unmittelbaren Berichte über Schäden gingen beim United States Geological Survey (USGS) und dem dazugehörigen ‖ National Earthquake Information Center ein.",
+   "pieces": {
+    "English": [
+     "No immediate reports of damage were received by the United States Geological Survey (USGS) and its",
+     "National Earthquake Information Center."
+    ],
+    "Chinese": [
+     "美国地质调查局和美国国家地质调查局没有收到任何直接的损失报告。",
+     " 国家地震信息中心"
+    ],
+    "Japanese": [
+     "アメリカ地質調査所や 地震調査局に 直接的な被害報告はありませんでした",
+     "国立地震情報センター"
+    ],
+    "Spanish": [
+     "No se recibieron informes inmediatos de daños al Servicio Geológico de los Estados Unidos (USGS) y su",
+     "National Earthquake Information Center (en inglés)."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "Keine unmittelbaren Berichte",
+     "right": "über Schäden gingen beim",
+     "H": 0.6522,
+     "H_pct": 22.2,
+     "contra": 0.0008,
+     "cohesion": 0.6527
+    }
+   ],
+   "added": [
+    {
+     "pos": 15,
+     "left": "(USGS) und dem dazugehörigen",
+     "right": "National Earthquake Information Center",
+     "H": 0.796,
+     "H_pct": 100.0,
+     "contra": 0.0049,
+     "cohesion": 0.7999
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_967",
+  "cuts": 1,
+  "avg_chunk": 12.0,
+  "latency_bin": "≤99",
+  "gap": 0.1004,
+  "policy_worst_contra": 0.0264,
+  "contra_kill": false,
+  "policy": {
+   "cut": [
+    8
+   ],
+   "H_set": 0.7343,
+   "text": "Cinque Terre, was soviel bedeutet wie Fünf Länder, ‖ umfasst die fünf kleinen Küstendörfer Riomaggiore, Manarola, Corniglia, Vernazza und Monterosso in der italienischen Region Ligurien.",
+   "pieces": {
+    "English": [
+     "Cinque Terre, which means Five Lands,",
+     "The Liguria region comprises the five small coastal villages of Riomaggiore, Manarola, Corniglia, Vernazza and Monterosso in the Italian region of Liguria."
+    ],
+    "Chinese": [
+     "五乡村,意思是五个国家,",
+     "里奥马焦雷 包括五个小的沿海村庄里奥马焦雷,马纳罗拉,科尔尼利亚,韦尔纳扎和蒙特罗索在意大利的利古里亚地区。"
+    ],
+    "Japanese": [
+     "チンクエ・テレは 五つの国を意味します",
+     "5つの小さな海岸村リオマッジョーレ、マナローラ、コルニリア、ヴェルナーッツァ、モンテロッソを含むイタリアのリグーリア地方。"
+    ],
+    "Spanish": [
+     "Cinque Terre, que significa Cinco Tierras,",
+     "La región de Liguria incluye los cinco pequeños pueblos costeros de Riomaggiore, Manarola, Corniglia, Vernazza y Monterosso en la región italiana de Liguria."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    13
+   ],
+   "H_set": 0.8347,
+   "text": "Cinque Terre, was soviel bedeutet wie Fünf Länder, umfasst die fünf kleinen Küstendörfer ‖ Riomaggiore, Manarola, Corniglia, Vernazza und Monterosso in der italienischen Region Ligurien.",
+   "pieces": {
+    "English": [
+     "Cinque Terre, meaning Five Lands, includes the five small coastal villages",
+     "Riomaggiore, Manarola, Corniglia, Vernazza and Monterosso in the Italian region of Liguria."
+    ],
+    "Chinese": [
+     "五乡村,意思是五个国家,包括五个小的海滨村庄",
+     "里奥马焦雷,马纳罗拉,科尔尼利亚,韦尔纳扎和蒙特罗索在意大利的利古里亚地区。"
+    ],
+    "Japanese": [
+     "チンクエ・テッレは 五つの国を意味し 海岸にある小さな村々を含みます",
+     "リオマッジョーレ、マナローラ、コルニリア、ヴェルナーッツァ、モンテロッソ"
+    ],
+    "Spanish": [
+     "Cinque Terre, que significa Cinco Tierras, incluye cinco pequeños pueblos costeros",
+     "Riomaggiore, Manarola, Corniglia, Vernazza y Monterosso en la región italiana de Liguria."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 8,
+     "left": "bedeutet wie Fünf Länder,",
+     "right": "umfasst die fünf kleinen",
+     "H": 0.7343,
+     "H_pct": 40.9,
+     "contra": 0.0264,
+     "cohesion": 0.7543
+    }
+   ],
+   "added": [
+    {
+     "pos": 13,
+     "left": "die fünf kleinen Küstendörfer",
+     "right": "Riomaggiore, Manarola, Corniglia, Vernazza",
+     "H": 0.8347,
+     "H_pct": 100.0,
+     "contra": 0.0152,
+     "cohesion": 0.8476
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_1000",
+  "cuts": 6,
+  "avg_chunk": 2.1,
+  "latency_bin": "≤3",
+  "gap": 0.5033,
+  "policy_worst_contra": 0.991,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    5,
+    8,
+    10,
+    11
+   ],
+   "H_set": 0.0047,
+   "text": "Die Polizei ‖ sagte, ‖ dass sie ‖ einen militanten Anhänger ‖ von Daesh ‖ (ISIL) ‖ hinter dem Angriff vermuten.",
+   "pieces": {
+    "English": [
+     "The police",
+     "said,",
+     "that they",
+     "a militant follower",
+     "of Daesh",
+     "(ISIL)",
+     "behind the attack."
+    ],
+    "Chinese": [
+     "警察",
+     "他说，",
+     "他们",
+     "一个激进的追随者",
+     "达伊沙",
+     "伊拉克和黎凡特伊斯兰国",
+     "是否有任何人在背后"
+    ],
+    "Japanese": [
+     "警察",
+     "彼は言った",
+     "彼女は",
+     "戦闘的な支持者を",
+     "イスラム国",
+     "イスラム国",
+     "犯人は 誰だと思いますか?"
+    ],
+    "Spanish": [
+     "La policía",
+     "dijo:",
+     "que",
+     "Un seguidor militante",
+     "por Daesh",
+     "(EIIL)",
+     "Detrás del ataque."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    7,
+    10
+   ],
+   "H_set": 0.5079,
+   "text": "Die ‖ Polizei ‖ sagte, ‖ dass ‖ sie einen militanten ‖ Anhänger von Daesh ‖ (ISIL) hinter dem Angriff vermuten.",
+   "pieces": {
+    "English": [
+     "Die",
+     "Police",
+     "said,",
+     "that",
+     "they a militant",
+     "Supporters of Daesh",
+     "(ISIL) behind the attack."
+    ],
+    "Chinese": [
+     "死亡",
+     "警察",
+     "他说，",
+     "达斯",
+     "她是一个激进分子",
+     "达伊沙支持者",
+     " 阿里·阿里（Ali Ali） 被認為是襲擊者。"
+    ],
+    "Japanese": [
+     "死",
+     "警察",
+     "彼は言った",
+     "それは",
+     "彼女は戦闘員で",
+     "イスラム国の支持者",
+     " 攻撃の背後にあると考えられている。"
+    ],
+    "Spanish": [
+     "Die",
+     "Policía",
+     "dijo:",
+     "Das",
+     "Ella es un militante",
+     "Afiliados de Daesh",
+     "(ISIL) detrás del ataque."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 5,
+     "left": "Polizei sagte, dass sie",
+     "right": "einen militanten Anhänger von",
+     "H": 0.0064,
+     "H_pct": 0.0,
+     "contra": 0.991,
+     "cohesion": 0.7065
+    },
+    {
+     "pos": 8,
+     "left": "sie einen militanten Anhänger",
+     "right": "von Daesh (ISIL) hinter",
+     "H": 0.6573,
+     "H_pct": 38.5,
+     "contra": 0.0084,
+     "cohesion": 0.6629
+    },
+    {
+     "pos": 11,
+     "left": "Anhänger von Daesh (ISIL)",
+     "right": "hinter dem Angriff vermuten.",
+     "H": 0.6453,
+     "H_pct": 30.8,
+     "contra": 0.0079,
+     "cohesion": 0.6504
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "Die",
+     "right": "Polizei sagte, dass sie",
+     "H": 0.7825,
+     "H_pct": 84.6,
+     "contra": 0.0039,
+     "cohesion": 0.7855
+    },
+    {
+     "pos": 4,
+     "left": "Die Polizei sagte, dass",
+     "right": "sie einen militanten Anhänger",
+     "H": 0.8478,
+     "H_pct": 92.3,
+     "contra": 0.0103,
+     "cohesion": 0.8566
+    },
+    {
+     "pos": 7,
+     "left": "dass sie einen militanten",
+     "right": "Anhänger von Daesh (ISIL)",
+     "H": 0.6941,
+     "H_pct": 61.5,
+     "contra": 0.0032,
+     "cohesion": 0.6964
+    }
+   ]
+  }
+ },
+ {
+  "id": "de_de_480",
+  "cuts": 6,
+  "avg_chunk": 4.6,
+  "latency_bin": "≤5",
+  "gap": 0.4343,
+  "policy_worst_contra": 0.9986,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    4,
+    6,
+    9,
+    14,
+    20,
+    25
+   ],
+   "H_set": 0.0009,
+   "text": "So ermüden Sie sich ‖ möglichst wenig. ‖ Denken Sie daran, ‖ dass es nicht nötig ist, ‖ die Tasten mit viel Kraft anzuschlagen, ‖ um zusätzliche Lautstärke zu erzielen, ‖ wie es beim Klavier der Fall ist.",
+   "pieces": {
+    "English": [
+     "How to get tired",
+     "as little as possible.",
+     "Remember that",
+     "that it is not necessary,",
+     "to hit the keys with a lot of force,",
+     "to achieve additional volume,",
+     "as it is with the piano."
+    ],
+    "Chinese": [
+     "如何让自己感到疲惫",
+     "尽可能少。",
+     "记住",
+     "没有必要,",
+     "用很大的力量按下键盘,",
+     "为了增加音量,",
+     "就像钢琴一样。"
+    ],
+    "Japanese": [
+     "疲れる",
+     "できるだけ少ない",
+     "覚えておいて",
+     "必要ないと思うのです",
+     "キーを押すのに 力を使うのです",
+     "音量を上げるために",
+     "ピアノのように 音を出すことができます"
+    ],
+    "Spanish": [
+     "Cómo cansarse",
+     "Lo menos posible.",
+     "Recuerda que",
+     "Que no es necesario",
+     "presionar las teclas con mucha fuerza,",
+     "para obtener volumen adicional,",
+     "como es el caso del piano."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    6,
+    8,
+    9,
+    10,
+    21
+   ],
+   "H_set": 0.4352,
+   "text": "So ‖ ermüden Sie sich möglichst wenig. ‖ Denken Sie ‖ daran, ‖ dass ‖ es nicht nötig ist, die Tasten mit viel Kraft anzuschlagen, um ‖ zusätzliche Lautstärke zu erzielen, wie es beim Klavier der Fall ist.",
+   "pieces": {
+    "English": [
+     "So",
+     "get as little tired as possible.",
+     "Think",
+     "thereon,",
+     "that",
+     "it is not necessary to press the keys with a lot of force to",
+     "to achieve additional volume, as is the case with the piano."
+    ],
+    "Chinese": [
+     "是的",
+     "尽量不要疲劳。",
+     "想想看",
+     "上面有许多迹象，",
+     "达斯",
+     "无需用很大的力量按下按键,",
+     "增加音量,就像钢琴一样。"
+    ],
+    "Japanese": [
+     "だから",
+     "疲れないでください",
+     "あなたは",
+     "それは",
+     "それは",
+     "キーを押すのに 力を入れる必要はありません",
+     "ピアノのように 音量を増やすこともできます"
+    ],
+    "Spanish": [
+     "Así que",
+     "Cansarse lo menos posible.",
+     "¿Crees que",
+     "daran,",
+     "Das",
+     "No es necesario presionar las teclas con mucha fuerza para",
+     "para lograr un volumen adicional, como es el caso del piano."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 4,
+     "left": "So ermüden Sie sich",
+     "right": "möglichst wenig. Denken Sie",
+     "H": 0.0008,
+     "H_pct": 6.7,
+     "contra": 0.9986,
+     "cohesion": 0.5951
+    },
+    {
+     "pos": 14,
+     "left": "es nicht nötig ist,",
+     "right": "die Tasten mit viel",
+     "H": 0.5345,
+     "H_pct": 33.3,
+     "contra": 0.0082,
+     "cohesion": 0.5389
+    },
+    {
+     "pos": 20,
+     "left": "mit viel Kraft anzuschlagen,",
+     "right": "um zusätzliche Lautstärke zu",
+     "H": 0.5773,
+     "H_pct": 66.7,
+     "contra": 0.0068,
+     "cohesion": 0.5813
+    },
+    {
+     "pos": 25,
+     "left": "zusätzliche Lautstärke zu erzielen,",
+     "right": "wie es beim Klavier",
+     "H": 0.581,
+     "H_pct": 76.7,
+     "contra": 0.002,
+     "cohesion": 0.5822
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "So",
+     "right": "ermüden Sie sich möglichst",
+     "H": 0.6322,
+     "H_pct": 93.3,
+     "contra": 0.0037,
+     "cohesion": 0.6345
+    },
+    {
+     "pos": 8,
+     "left": "möglichst wenig. Denken Sie",
+     "right": "daran, dass es nicht",
+     "H": 0.7025,
+     "H_pct": 96.7,
+     "contra": 0.0085,
+     "cohesion": 0.7085
+    },
+    {
+     "pos": 10,
+     "left": "Denken Sie daran, dass",
+     "right": "es nicht nötig ist,",
+     "H": 0.6185,
+     "H_pct": 90.0,
+     "contra": 0.1927,
+     "cohesion": 0.7662
+    },
+    {
+     "pos": 21,
+     "left": "viel Kraft anzuschlagen, um",
+     "right": "zusätzliche Lautstärke zu erzielen,",
+     "H": 0.6152,
+     "H_pct": 86.7,
+     "contra": 0.006,
+     "cohesion": 0.6189
+    }
+   ]
+  }
+ }
+]

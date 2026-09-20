@@ -1,0 +1,313 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "2) Contra question (is the prefix likely to assert something that the whole sentence later denies or reverses?):\n- Ask: \"If the left fragment were read by itself, would a listener take away a concrete assertion that the remainder explicitly negates, reverses, or limits?\"\n- Crucial distinction: simple incompleteness (e.g. a missing verb, absent complement, or incomplete reported content) is primarily a cohesion problem, not automatically a contradiction. Raise contra toward 1.0 only when the remainder contains an explicit negation, clear reversal, or semantic denial of the prefix's asserted proposition (for example explicit 'nicht'/'nie' negation, a contrast clause that cancels the earlier claim, or a subordinate clause that directly qualifies and negates the prefix's assertion).\n- When the prefix lacks its completing predicate (common with verb-final subordinate clauses or prefixes that end in reporting markers), reflect the harm mainly by reducing cohesion; increase contra only if the prefix by itself would be read as a concrete, affirmative claim that the remainder explicitly contradicts."
+   },
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "Guideline (speech-acts & reporting verbs): When a prefix ends with a speech-act or reporting verb (e.g. 'erklärten', 'sagte', passive event descriptions like 'wurden ... gezwungen') or when the remainder supplies reported content or the clause-final verb, treat the issue primarily as cohesion/incompleteness. Do not raise contra just because a report marker appears; only increase contra if the prefix by itself attributes a factual proposition that the rest of the sentence explicitly denies. Practical check: \"Does the prefix alone assert a fact that the remainder explicitly contradicts?\" If not, keep contra low and penalize cohesion instead."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "de_de_341",
+    "kind": "example",
+    "text": "Input: Zayat <SEG:?> wurde <SEG:?> bei <SEG:?> dem <SEG:?> Unfall <SEG:?> nicht <SEG:?> verletzt.\nOutput: Zayat <SEG:100> wurde <SEG:20> bei <SEG:80> dem <SEG:40> Unfall <SEG:0> nicht <SEG:60> verletzt."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "de_de_476",
+    "kind": "example",
+    "text": "Input: Der <SEG:?> Geschichte <SEG:?> zufolge <SEG:?> lag <SEG:?> seine <SEG:?> Motivation <SEG:?> in <SEG:?> Ruhm <SEG:?> um <SEG:?> jeden <SEG:?> Preis. <SEG:?> Die <SEG:?> erbosten <SEG:?> Epheser <SEG:?> erklärten, <SEG:?> Herostratos' <SEG:?> Name <SEG:?> würde <SEG:?> niemals <SEG:?> aufgezeichnet <SEG:?> werden.\nOutput: Der <SEG:95> Geschichte <SEG:42> zufolge <SEG:74> lag <SEG:63> seine <SEG:58> Motivation <SEG:53> in <SEG:32> Ruhm <SEG:84> um <SEG:37> jeden <SEG:68> Preis. <SEG:89> Die <SEG:100> erbosten <SEG:26> Epheser <SEG:21> erklärten, <SEG:16> Herostratos' <SEG:11> Name <SEG:5> würde <SEG:0> niemals <SEG:47> aufgezeichnet <SEG:79> werden."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 1011
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 648
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -89
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -34
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10640,
+  "errors": [
+   "길이 초과: 10640 > 10014"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Look for cohesion damage common in German: cutting a predicate away from its required arguments or modifiers; separating scope carriers (negation, quantifiers, modals, auxiliaries) from what they scope over; slicing inside noun or prepositional phrases so the head or core complement falls on the other side; or leaving a verb-final subordinate/relative clause without its finishing verb. Cohesion is graded: losing minor modifiers is a small hit; losing core arguments or producing reversed scope is serious."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Contra is a graded probability and should be raised mainly when the prefix by itself asserts a concrete proposition that the remainder explicitly negates, reverses, or cancels (for example explicit 'nicht'/'nie' negation, an introduced reversal that cancels the prior claim, or a subordinate clause that semantically denies the prefix). Mere incompleteness (missing verb, absent reported content, or a reporting verb without its report) is primarily a cohesion issue and should not automatically get high contra."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -377
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -115
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8612,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "2) Contra question (is the prefix likely to assert something the whole sentence later denies or reverses?):\n- Ask: \"If the left fragment were read by itself, would a listener take away a concrete assertion that the remainder explicitly negates, reverses, or strongly limits?\"\n- Crucial distinction: incompleteness (a missing verb, complement, reported content or other fragmentary piece) is primarily a cohesion problem, not automatically a contradiction. Do not raise contra simply because the prefix is fragmentary.\n- Raise contra toward high values only when the prefix, on its own, conveys a concrete proposition that the remainder explicitly rejects or cancels (for example explicit negation like 'nicht' or 'nie', an introduced reversal or contrast that cancels the earlier claim, or a subordinate clause that directly negates the prefix's asserted fact).\n- Contra is a graded probability: small qualifications or hedges in the remainder deserve modest contra; explicit, unambiguous denial/reversal justifies strong contra."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "Guideline (speech-act & reporting verbs): When a prefix ends with a speech-act or reporting verb (e.g. 'sagte', 'erklärten', passive event verbs like 'wurden ... gezwungen', or when the remainder contains the reported content or the clause-final verb), treat the issue primarily as cohesion/incompleteness. Do not increase contra merely because the prefix frames or names an act or report. Only raise contra if the prefix itself attributes a factual proposition that the remainder then explicitly denies or reverses."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 933
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 517
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10554,
+  "errors": [
+   "길이 초과: 10554 > 10014"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "text": "- Look for common German cohesion failures: a cut that leaves the predicate, verb, or clause-final element on the other side from its required subject/objects/modifiers; splitting a determiner or short preposition from its noun phrase; cutting inside a PP or NP so the head or core complements are separated. Verb-final subordinate/relative clauses are especially sensitive: separating them from their finishing verb typically causes large cohesion loss. Rate cohesion loss by how much core propositional content becomes orphaned (small for lost modifiers; large for missing predicates, arguments, or scope-bearing items)."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "text": "- Contra estimates how likely the prefix alone will assert a proposition that the remainder explicitly denies or reverses. Differentiate incompleteness from contradiction: a fragmentary prefix (missing verb, complement, or reported content) is usually a cohesion problem and should lower cohesion rather than drive contra high. Raise contra mainly when the remainder contains explicit negation, an unambiguous reversal or cancellation, or a subordinate clause that directly negates the prefix's asserted fact. Use graded values for weak qualifications or hedges."
+   },
+   {
+    "op": "delete",
+    "id": "E2"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "paraphrase",
+    "chars_change": -266
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C7",
+    "kind": "paraphrase",
+    "chars_change": -67
+   },
+   {
+    "edit": 2,
+    "op": "delete",
+    "id": "E2",
+    "kind": "delete",
+    "chars_change": -696
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8074,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "labeled_example": "de_de_341",
+    "kind": "example",
+    "text": "Input: Zayat <SEG:?> wurde <SEG:?> bei <SEG:?> dem <SEG:?> Unfall <SEG:?> nicht <SEG:?> verletzt.\nOutput: Zayat <SEG:100> wurde <SEG:20> bei <SEG:80> dem <SEG:40> Unfall <SEG:0> nicht <SEG:60> verletzt."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "labeled_example": "de_de_476",
+    "kind": "example",
+    "text": "Input: Der <SEG:?> Geschichte <SEG:?> zufolge <SEG:?> lag <SEG:?> seine <SEG:?> Motivation <SEG:?> in <SEG:?> Ruhm <SEG:?> um <SEG:?> jeden <SEG:?> Preis. <SEG:?> Die <SEG:?> erbosten <SEG:?> Epheser <SEG:?> erklärten, <SEG:?> Herostratos' <SEG:?> Name <SEG:?> würde <SEG:?> niemals <SEG:?> aufgezeichnet <SEG:?> werden.\nOutput: Der <SEG:95> Geschichte <SEG:42> zufolge <SEG:74> lag <SEG:63> seine <SEG:58> Motivation <SEG:53> in <SEG:32> Ruhm <SEG:84> um <SEG:37> jeden <SEG:68> Preis. <SEG:89> Die <SEG:100> erbosten <SEG:26> Epheser <SEG:21> erklärten, <SEG:16> Herostratos' <SEG:11> Name <SEG:5> würde <SEG:0> niemals <SEG:47> aufgezeichnet <SEG:79> werden."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "labeled_example": "de_de_1143",
+    "kind": "example",
+    "text": "Input: Dies <SEG:?> ist <SEG:?> anderenorts <SEG:?> in <SEG:?> Großbritannien <SEG:?> gängige <SEG:?> Praxis, <SEG:?> aber <SEG:?> die <SEG:?> schottische <SEG:?> Justiz <SEG:?> arbeitet <SEG:?> anders, <SEG:?> und <SEG:?> die <SEG:?> Gerichte <SEG:?> haben <SEG:?> die <SEG:?> Veröffentlichung <SEG:?> von <SEG:?> Fotos <SEG:?> als <SEG:?> potenziell <SEG:?> schädlich <SEG:?> erachtet.\nOutput: Dies <SEG:61> ist <SEG:57> anderenorts <SEG:52> in <SEG:17> Großbritannien <SEG:26> gängige <SEG:70> Praxis, <SEG:96> aber <SEG:100> die <SEG:83> schottische <SEG:65> Justiz <SEG:4> arbeitet <SEG:0> anders, <SEG:91> und <SEG:87> die <SEG:35> Gerichte <SEG:30> haben <SEG:78> die <SEG:13> Veröffentlichung <SEG:43> von <SEG:9> Fotos <SEG:22> als <SEG:74> potenziell <SEG:39> schädlich <SEG:48> erachtet."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": -89
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -34
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 293
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9274,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "2) Contra question (is the prefix likely to assert something that the whole sentence later denies or reverses?):\n- Ask: \"If the left fragment were read by itself, would a listener take away a concrete assertion that the remainder explicitly negates, reverses, or strongly qualifies?\"\n- Crucial distinction: incompleteness (a missing verb, complement, reported content) is primarily a cohesion problem, not automatically a contradiction. Only raise contra toward high values when the remainder contains explicit negation, reversal, or semantic denial of the prefix's asserted proposition. Score contra gradually: small if the qualifier is minor, large when the remainder clearly cancels the prefix's claim."
+   },
+   {
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "text": "Guideline (speech-acts & reporting verbs): When a prefix ends with a speech-act or reporting verb (e.g. \"sagte\", \"erklärten\", passive event verbs whose object or reported content appears later), treat the harm primarily as cohesion/incompleteness. Do not raise contra unless the prefix itself attributes a proposition that the remainder explicitly denies or negates."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 609
+   },
+   {
+    "edit": 1,
+    "op": "insert_after",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 367
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10080,
+  "errors": [
+   "길이 초과: 10080 > 10014"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Ask: \"If the left fragment were read alone, would a listener take away a concrete assertion that the remainder explicitly negates, reverses, or strongly qualifies?\"\n- Crucial distinction: incompleteness (a missing verb, complement, reported content, or fragmentary NP/PP) is primarily a cohesion problem. Treat such cases by lowering cohesion rather than by defaulting to high contra.\n- Raise contra toward high values only when the prefix by itself asserts a proposition that the remainder explicitly denies, cancels, or reverses (explicit negation, clear contrastive reversal, or an explicit semantic denial).\n- Guideline (speech-acts & reporting verbs): if a prefix ends with a reporting or speech-act verb (e.g. \"sagte\", \"erklärten\", passive event verbs whose reported content or clause-final verb appears later), consider the harm chiefly cohesion/incompleteness. Do not increase contra unless the prefix itself attributes a proposition that the remainder explicitly rejects."
+   },
+   {
+    "op": "delete",
+    "id": "C4"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 802
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "C4",
+    "kind": "delete",
+    "chars_change": -889
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9017,
+  "errors": null
+ }
+]

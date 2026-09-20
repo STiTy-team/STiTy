@@ -1,0 +1,744 @@
+[
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.02624,
+   "lo": -0.00988,
+   "hi": 0.06241,
+   "n": 940,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C4 to address the primary finding: emphasize verb+complement cohesion and describe what a GOOD cut looks like (end after a complete predicate or clause closer) rather than only penalizing cuts."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Consider whether aspectual or perfective framing closes an event clause; when ",
+    "now": "- When aspectual or clause-closing signals indicate an event is complete, cuttin"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00714,
+   "lo": -0.03447,
+   "hi": 0.0189,
+   "n": 940,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with measured example cmn_hans_cn_605 to teach the model about cuts that split predicate + complement (保持 不变).",
+   "Replace E2 with measured example cmn_hans_cn_982 to show cuts that separate verb phrases (需 要 / 小 心 蚊 子) in short-latency pairs.",
+   "Replace E3 with measured example cmn_hans_cn_1099 to expose predicate-complement splits around verb+object (脱 落) in medium-latency cases.",
+   "Replace E4 with measured example cmn_hans_cn_362 to illustrate harmful cuts that separate comparative/resultative constructions (还 要 小)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: 他 <SEG:?> 于 <SEG:?> 1 <SEG:?> 9 <SEG:?> 4 <SEG:?> 5 <SEG:?> 年 <SEG:?> 加 <",
+    "now": "Input: 虽 <SEG:?> 然 <SEG:?> 它 <SEG:?> 的 <SEG:?> 物 <SEG:?> 理 <SEG:?> 状 <SEG:?> 态 <",
+    "labeled_example": "cmn_hans_cn_605"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: 赏 <SEG:?> 樱 <SEG:?> ， <SEG:?> 亦 <SEG:?> 称 <SEG:?> “ <SEG:?> 花 <SEG:?> 见 <",
+    "now": "Input: 尤 <SEG:?> 其 <SEG:?> 在 <SEG:?> 夏 <SEG:?> 天 <SEG:?> ， <SEG:?> 如 <SEG:?> 果 <",
+    "labeled_example": "cmn_hans_cn_982"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: 这 <SEG:?> 种 <SEG:?> 思 <SEG:?> 维 <SEG:?> 模 <SEG:?> 式 <SEG:?> 最 <SEG:?> 重 <",
+    "now": "Input: 发 <SEG:?> 射 <SEG:?> 大 <SEG:?> 约 <SEG:?> 3 <SEG:?> 分 <SEG:?> 钟 <SEG:?> 后 <",
+    "labeled_example": "cmn_hans_cn_1099"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: 人 <SEG:?> 工 <SEG:?> 智 <SEG:?> 能 <SEG:?> 系 <SEG:?> 统 <SEG:?> 现 <SEG:?> 在 <",
+    "now": "Input: 光 <SEG:?> 子 <SEG:?> 甚 <SEG:?> 至 <SEG:?> 比 <SEG:?> 构 <SEG:?> 成 <SEG:?> 原 <",
+    "labeled_example": "cmn_hans_cn_362"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00077,
+   "lo": -0.03268,
+   "hi": 0.03328,
+   "n": 940,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C5 to address the primary finding: emphasize that verb+complement and related predicate frames are tight units and describe what a GOOD cut looks like (prefer cutting after a completed predicate or clause-closer rather than imposing a blanket ban)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Consider passive introducers and copular framing patterns: when a passive or a",
+    "now": "- Treat core predicate structures (verb + essential complement, passives, and 是…"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": 0.01401,
+   "lo": -0.00208,
+   "hi": 0.02904,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00181,
+   "lo": -0.00888,
+   "hi": 0.01316,
+   "n": 7350,
+   "n_clusters": 400,
+   "dev_a": {
+    "mean": 0.01401,
+    "lo": -0.00208,
+    "hi": 0.02904,
+    "n": 3726,
+    "n_clusters": 200
+   },
+   "dev_b": {
+    "mean": -0.01074,
+    "lo": -0.02755,
+    "hi": 0.00589,
+    "n": 3624,
+    "n_clusters": 200
+   },
+   "pooled": true
+  },
+  "changelog": [
+   "Add a core principle warning against cutting between a verb and its essential complement and describing what a GOOD cut looks like, to address the primary finding that the prompt underestimates how tightly verbs bind to complements."
+  ],
+  "findings": [
+   "The prompt underestimates how tightly verbs bind to their complements: it permits cuts that separate a predicate from its essential object/resultative/degree/particle, producing standalone fragments whose meaning is completed, negated, or reversed by the continuation."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Avoid cutting between a verb and its essential complement (object, resultative"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0186,
+    "≤5": 0.0109,
+    "≤7": 0.0125,
+    "≤10": 0.0154,
+    "≤99": 0.008
+   },
+   "n_worse": 1629,
+   "n_better": 1786,
+   "why": "Inserting a rule to avoid cutting between verbs and their essential complements made the model less likely to split verb–object/resultative chunks, giving small average gains (largest in the shortest latency bin ≤3) but also shifting many cuts so that punctuation or quotation marks became isolated fragments — those shifted cuts produced the large negative tail movements and left the net effect marginal.",
+   "lesson": "Respect verb–complement binding but avoid moving cuts in a way that leaves punctuation/quotes or other tiny tokens as isolated pieces; ensure punctuation stays attached to the unit it punctuates when enforcing verb-complement constraints.",
+   "blamed": [
+    "C8 «- Evaluate discourse connectors and coordination: conjunctio»"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.00096,
+   "lo": -0.02801,
+   "hi": 0.03143,
+   "n": 933,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replaced C3 with an explicit named-entity rule: forbid cuts inside multi-character names/transliterations so referents remain recoverable (addresses the primary finding).",
+   "Replaced C7 with an explicit numeric-expression rule: forbid cuts inside numeral+unit/percentage/duration/speed expressions and treat them as atomic (addresses the measurement-splitting finding).",
+   "Paraphrased C2 to be shorter and to add an instruction preventing enforcement of 'no-split' rules from leaving punctuation, quotes, or single-character function words isolated (addresses the verb–complement side-effect)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Consider whether Chinese left-headed modifiers (long pre-nominal relative or a",
+    "now": "- Do not cut inside multi-character named entities or transliterations (people, "
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Watch compact nominal sequences (numeral-classifier phrases, embedded preposit",
+    "now": "- Do not cut inside numeric or measurement expressions: treat numeral+unit spans"
+   },
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "was": "- At this cut, ask: if the text is translated before and after independently, wi",
+    "now": "- If pieces are translated independently, their joined outputs must convey the s"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00283,
+   "lo": -0.0241,
+   "hi": 0.01741,
+   "n": 933,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with measured example cmn_hans_cn_1068 to teach the model about cuts that orphan verbs/punctuation in very short pieces (addresses the primary finding about short-bin harm).",
+   "Replace E2 with measured example cmn_hans_cn_974 to show cases where enforcing no verb–complement splits can leave tiny tokens isolated (short latency bin).",
+   "Replace E3 with measured example cmn_hans_cn_1025 to expose numeric/measurement and tiny-token isolation tradeoffs in ≤5 bin cases.",
+   "Replace E4 with measured example cmn_hans_cn_1413 to give a measured case where splitting numeric/percent spans and adjacent tiny tokens harms cohesion and raises contradiction risk."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: 他 <SEG:?> 于 <SEG:?> 1 <SEG:?> 9 <SEG:?> 4 <SEG:?> 5 <SEG:?> 年 <SEG:?> 加 <",
+    "now": "Input: 暴 <SEG:?> 民 <SEG:?> 强 <SEG:?> 迫 <SEG:?> 国 <SEG:?> 王 <SEG:?> 和 <SEG:?> 王 <",
+    "labeled_example": "cmn_hans_cn_1068"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: 赏 <SEG:?> 樱 <SEG:?> ， <SEG:?> 亦 <SEG:?> 称 <SEG:?> “ <SEG:?> 花 <SEG:?> 见 <",
+    "now": "Input: 在 <SEG:?> 世 <SEG:?> 界 <SEG:?> 上 <SEG:?> 许 <SEG:?> 多 <SEG:?> 地 <SEG:?> 方 <",
+    "labeled_example": "cmn_hans_cn_974"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: 这 <SEG:?> 种 <SEG:?> 思 <SEG:?> 维 <SEG:?> 模 <SEG:?> 式 <SEG:?> 最 <SEG:?> 重 <",
+    "now": "Input: 虽 <SEG:?> 然 <SEG:?> 在 <SEG:?> 洪 <SEG:?> 水 <SEG:?> 过 <SEG:?> 后 <SEG:?> ， <",
+    "labeled_example": "cmn_hans_cn_1025"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: 人 <SEG:?> 工 <SEG:?> 智 <SEG:?> 能 <SEG:?> 系 <SEG:?> 统 <SEG:?> 现 <SEG:?> 在 <",
+    "now": "Input: 3 <SEG:?> 4 <SEG:?> % <SEG:?> 的 <SEG:?> 受 <SEG:?> 访 <SEG:?> 者 <SEG:?> 一 <",
+    "labeled_example": "cmn_hans_cn_1413"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.01285,
+   "lo": -0.01542,
+   "hi": 0.0441,
+   "n": 933,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Insert a Core Principle forbidding cuts inside numeric/measurement expressions (addresses the primary finding: splitting quantities harms cohesion/contradiction).",
+   "Insert a Core Principle requiring multi-character named entities and transliterations remain contiguous (prevents severing referents).",
+   "Paraphrase C2 to be shorter and explicitly instruct that enforcing no-split constraints must not leave punctuation, quotes, or single-character function words isolated — attach such tiny tokens to the adjacent phrase (addresses the short-piece harm).",
+   "Paraphrase C3 to a shorter form preserving the modifier/head warning (keeps the original judgement but frees space for new rules)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "paraphrase",
+    "was": "- At this cut, ask: if the text is translated before and after independently, wi",
+    "now": "- If pieces are translated independently, their joined outputs must convey the s"
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "paraphrase",
+    "was": "- Consider whether Chinese left-headed modifiers (long pre-nominal relative or a",
+    "now": "- Consider left-headed modifiers (long prenominal relative or adjectival phrases"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Do not cut inside numeric or measurement expressions: treat numeral+unit spans"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Keep multi-character named entities and transliterations contiguous: do not in"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": 0.00711,
+   "lo": -0.00842,
+   "hi": 0.02211,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00322,
+   "lo": -0.00654,
+   "hi": 0.01325,
+   "n": 7350,
+   "n_clusters": 400,
+   "dev_a": {
+    "mean": 0.00711,
+    "lo": -0.00842,
+    "hi": 0.02211,
+    "n": 3726,
+    "n_clusters": 200
+   },
+   "dev_b": {
+    "mean": -0.00078,
+    "lo": -0.01251,
+    "hi": 0.01126,
+    "n": 3624,
+    "n_clusters": 200
+   },
+   "pooled": true
+  },
+  "changelog": [
+   "Paraphrased C8 to be shorter and to add an explicit instruction preventing extremely short fragments from being left alone when enforcing cohesion (addresses verb–complement shift side-effect).",
+   "Inserted a new Core Principle after C8 prohibiting cuts inside numeric/measurement/time expressions (addresses the primary finding about splitting quantities).",
+   "Inserted a new Core Principle after C8 requiring multi-character named entities and transliterations remain contiguous (addresses the finding about splitting names and transliterations)."
+  ],
+  "findings": [
+   "The prompt underestimates the harm of cutting inside numeric/measurement/time expressions: splitting percentages, speeds, durations or numeral+unit sequences often creates contradiction or loses core quantity information.",
+   "The prompt allows cuts that split multi-character proper names or transliterations, which severs referents and causes contradictions or incoherent fragments.",
+   "When rules forbid verb–complement splits, the prompt sometimes repositions cuts in ways that isolate punctuation or single-character function words; that trade harms short-piece bins."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "paraphrase",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Evaluate discourse connectors and coordination: conjunctions and contrastive m"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Avoid cutting inside numeric expressions: treat a numeral together with its un"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Keep multi-character named entities and transliterations contiguous: do not in"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0086,
+    "≤5": 0.0037,
+    "≤7": 0.0117,
+    "≤10": 0.0087,
+    "≤99": 0.005
+   },
+   "n_worse": 1627,
+   "n_better": 1829,
+   "why": "Adding explicit rules to keep numbers and multi-character names contiguous pushed the model to stop splitting amounts/names (small positive gains across bins), but the paraphrase of C8 about avoiding extremely short fragments was interpreted in a way that moved cuts earlier and produced isolated single-character pieces (e.g. splitting 你 / 的), which explains the harmful tail moves even though overall bins improved slightly.",
+   "lesson": "When strengthening safety for numbers and names, make the ‘avoid extremely short fragments’ instruction precise so it does not encourage moving cuts earlier and creating isolated one-character fragments.",
+   "blamed": [
+    "C8 «- Evaluate discourse connectors and coordination: conjunctio» (paraphrase)",
+    "insert: avoid cutting inside numeric expressions",
+    "insert: keep multi-character named entities and transliterations contiguous"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00425,
+   "lo": -0.0383,
+   "hi": 0.02793,
+   "n": 846,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Paraphrased C1 to a shorter, clearer prompt so we can add a new, targeted rule within size limits.",
+   "Replaced C7 with a rule addressing the primary finding: forbid cuts immediately after bound function morphemes or short degree/negation/comparative/aspectual prefixes unless the left fragment is independently entailed by the full sentence. This directly prevents isolated prefixes/adverbials from becoming contradictory or orphaned."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "was": "- At this cut, ask: does the upcoming material negate, reverse, or materially ch",
+    "now": "- Ask whether the following words negate, reverse, or materially change the asse"
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Watch compact nominal sequences (numeral-classifier phrases, embedded preposit",
+    "now": "- Do not cut immediately after bound function morphemes or short degree/negation"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": 0.0166,
+   "lo": -0.02077,
+   "hi": 0.05459,
+   "n": 846,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replaced E1 with labeled example cmn_hans_cn_1140 to teach the scorer the primary finding (predicate-completion / causal/resultative danger) using a measured case.",
+   "Replaced E2 with labeled example cmn_hans_cn_299 to add another measured case showing predicate/predicate-completion failure modes.",
+   "Deleted E3 (large hand-written example) to reduce prompt size and remove a verbose, unsupported example.",
+   "Deleted E4 (largest hand-written example) to recover the character/word budget and keep the prompt within limits."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "was": "Input: 这 <SEG:?> 种 <SEG:?> 思 <SEG:?> 维 <SEG:?> 模 <SEG:?> 式 <SEG:?> 最 <SEG:?> 重 <",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "was": "Input: 人 <SEG:?> 工 <SEG:?> 智 <SEG:?> 能 <SEG:?> 系 <SEG:?> 统 <SEG:?> 现 <SEG:?> 在 <",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.00482,
+   "lo": -0.03974,
+   "hi": 0.03571,
+   "n": 846,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Inserted a targeted core principle to address the primary finding: forbid cuts immediately after bound function morphemes or short degree/negation/comparative/aspectual prefixes unless the left fragment is independently entailed by the full sentence, preventing isolated prefixes/adverbials from becoming contradictory or orphaned."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Do not cut immediately after bound function morphemes or very short degree/neg"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": false,
+  "delta": {
+   "mean": 0.01253,
+   "lo": -0.00256,
+   "hi": 0.02803,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "gain": {
+   "mean": 0.00342,
+   "lo": -0.00719,
+   "hi": 0.01396,
+   "n": 7350,
+   "n_clusters": 400,
+   "dev_a": {
+    "mean": 0.01253,
+    "lo": -0.00256,
+    "hi": 0.02803,
+    "n": 3726,
+    "n_clusters": 200
+   },
+   "dev_b": {
+    "mean": -0.00594,
+    "lo": -0.01948,
+    "hi": 0.00834,
+    "n": 3624,
+    "n_clusters": 200
+   },
+   "pooled": true
+  },
+  "changelog": [
+   "Paraphrased C1 to a shorter, clearer statement so we can add one targeted rule within size limits.",
+   "Inserted a new core principle to address the primary finding: forbid cuts inside multi-character named entities, transliterations and fixed technical terms across punctuation/parentheses unless the left fragment is independently entailed."
+  ],
+  "findings": [
+   "Treats cuts after short bound function morphemes or degree/comparative prefixes as safe; it fails to require that the preceding fragment be independently entailed by the whole sentence, so isolated prefixes or partial adverbials become contradictory or orphaned.",
+   "Does not reliably keep multi-character names, transliterations and fixed technical terms contiguous when punctuation or parentheses intervene, producing orphan fragments that lose reference or contradict the whole.",
+   "Underestimates that causal/resultative and predicate-completion constructions (cause/result markers, resultatives, verb–object completions, 'make/allow' sequences) require the continuation to complete the predicate; cutting before completion yields contradictory or incomplete assertions."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "paraphrase",
+    "was": "- At this cut, ask: does the upcoming material negate, reverse, or materially ch",
+    "now": "- Ask whether the following material negates, reverses, or materially changes th"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Keep multi-character named entities, transliterations, and fixed technical ter"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0182,
+    "≤5": 0.0044,
+    "≤7": 0.0105,
+    "≤10": 0.0179,
+    "≤99": 0.0118
+   },
+   "n_worse": 1686,
+   "n_better": 1805,
+   "why": "The inserted core principle forbidding cuts inside multi-character named entities/transliterations/fixed technical terms made the model avoid splitting names and parentheticals, giving small overall gains (largest in the shortest bin ≤3) by preserving those spans, but it also pushed cuts around parentheses, colons and quotation marks (moving cuts earlier or after parentheticals) and so created many regressions where punctuation or reporting verbs became isolated.",
+   "lesson": "When protecting multi-token names/terms, don't force cuts that isolate punctuation, colons/quotes, or reporting verbs—avoid moving cuts so the left fragment becomes a dangling or unentailed piece.",
+   "blamed": [
+    "C8 «- Evaluate discourse connectors and coordination: conjunctio»",
+    "C1 «- Ask whether the following material negates, reverses, or m»"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02179,
+   "lo": -0.04704,
+   "hi": 0.00485,
+   "n": 976,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C4 to require verbal complexes (negation, resultatives, VO compounds, auxiliaries/aspect markers, tightly bound predicate material) stay with their verb/complements and to state what a good cut looks like (after a completed predicate, with punctuation/closing particles attached).",
+   "Replace C8 to deprioritize preserving multi-token names when doing so would isolate punctuation, reporting verbs, or core predicates; prefer splits that keep predicates and their punctuation/quotes intact."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Consider whether aspectual or perfective framing closes an event clause; when ",
+    "now": "- Treat verbal complexes as atomic: do not cut so that negation words, resultati"
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- When a multi‑token name, transliteration, or technical term crosses a marker, "
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 2,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.0209,
+   "lo": -0.0527,
+   "hi": 0.01128,
+   "n": 976,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace E1 with labeled example cmn_hans_cn_236 to teach the model about splits that orphan negated or tightly bound predicate material (primary finding evidence).",
+   "Replace E2 with labeled example cmn_hans_cn_398 to show cases where verb complexes are split and produce high contradiction scores.",
+   "Replace E3 with labeled example cmn_hans_cn_979 to illustrate resultative/verb-object bindings that must stay intact for entailment.",
+   "Replace E4 with labeled example cmn_hans_cn_880 to include another measured instance from the primary finding set (tight predicate/complement splits)."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "was": "Input: 他 <SEG:?> 于 <SEG:?> 1 <SEG:?> 9 <SEG:?> 4 <SEG:?> 5 <SEG:?> 年 <SEG:?> 加 <",
+    "now": "Input: 当 <SEG:?> 被 <SEG:?> 问 <SEG:?> 及 <SEG:?> 父 <SEG:?> 亲 <SEG:?> 说 <SEG:?> 了 <",
+    "labeled_example": "cmn_hans_cn_236"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "was": "Input: 赏 <SEG:?> 樱 <SEG:?> ， <SEG:?> 亦 <SEG:?> 称 <SEG:?> “ <SEG:?> 花 <SEG:?> 见 <",
+    "now": "Input: 该 <SEG:?> 国 <SEG:?> 陆 <SEG:?> 军 <SEG:?> 和 <SEG:?> 海 <SEG:?> 军 <SEG:?> 都 <",
+    "labeled_example": "cmn_hans_cn_398"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "was": "Input: 这 <SEG:?> 种 <SEG:?> 思 <SEG:?> 维 <SEG:?> 模 <SEG:?> 式 <SEG:?> 最 <SEG:?> 重 <",
+    "now": "Input: 在 <SEG:?> 白 <SEG:?> 天 <SEG:?> 最 <SEG:?> 热 <SEG:?> 的 <SEG:?> 时 <SEG:?> 候 <",
+    "labeled_example": "cmn_hans_cn_979"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "was": "Input: 人 <SEG:?> 工 <SEG:?> 智 <SEG:?> 能 <SEG:?> 系 <SEG:?> 统 <SEG:?> 现 <SEG:?> 在 <",
+    "now": "Input: 多 <SEG:?> 国 <SEG:?> 政 <SEG:?> 府 <SEG:?> 要 <SEG:?> 求 <SEG:?> 入 <SEG:?> 境 <",
+    "labeled_example": "cmn_hans_cn_880"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "screened_out": true,
+  "delta": {
+   "mean": -0.02872,
+   "lo": -0.06614,
+   "hi": 0.00608,
+   "n": 976,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Delete E3 and E4 to reduce prompt length substantially (remove long example units that inflate size).",
+   "Insert new core-principle after C8: require verbal complexes to stay with their complements and prioritize keeping predicates/punctuation intact over preserving multi-token names, with guidance on what a good cut looks like."
+  ],
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "was": "Input: 这 <SEG:?> 种 <SEG:?> 思 <SEG:?> 维 <SEG:?> 模 <SEG:?> 式 <SEG:?> 最 <SEG:?> 重 <",
+    "now": ""
+   },
+   {
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "was": "Input: 人 <SEG:?> 工 <SEG:?> 智 <SEG:?> 能 <SEG:?> 系 <SEG:?> 统 <SEG:?> 现 <SEG:?> 在 <",
+    "now": ""
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+    "now": "- Treat verbal complexes as atomic: avoid cuts that separate negation, resultati"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 0,
+  "adopted": false,
+  "screened_only": true,
+  "delta": {
+   "mean": -0.00132,
+   "lo": -0.02088,
+   "hi": 0.01866,
+   "n": 976,
+   "n_clusters": 50
+  },
+  "changelog": [
+   "Replace C4 to address the primary finding: require verbal complexes (negation, resultatives, verb–object compounds, auxiliaries/aspect markers, tightly bound predicates) to stay with their complements and advise how a GOOD cut looks (after a completed predicate and with punctuation/quotes attached).",
+   "Replace C3 to keep left-headed modifier guidance but add the measured tradeoff: do not preserve multi-token names when that would isolate punctuation, reporting verbs, or core predicates—split names if needed so predicates and their punctuation remain intact."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Consider whether aspectual or perfective framing closes an event clause; when ",
+    "now": "- Treat verbal complexes as atomic: do not cut so that negation, resultative com"
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Consider whether Chinese left-headed modifiers (long pre-nominal relative or a",
+    "now": "- Consider left‑headed modifiers (long pre‑nominal relative or adjectival phrase"
+   }
+  ],
+  "findings": [
+   "The prompt fails to treat verbal complexes (negation, resultatives, verb‑object compounds, auxiliaries/aspect markers) as atomic for entailment: it ranks cuts that orphan or split predicates too highly.",
+   "The prompt overweights protecting multi-character names/transliterations/technical tokens and therefore shifts cuts to avoid splitting them, often creating isolated punctuation, reporting verbs, or short predicate fragments that become unentailed."
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0112,
+    "≤5": -0.025,
+    "≤7": -0.0092,
+    "≤10": 0.0037,
+    "≤99": 0.0162
+   },
+   "n_worse": 474,
+   "n_better": 438,
+   "why": "The prompt now avoids cutting inside verbal complexes (C4) so predicates and their punctuation tend to stay intact—helpful for long-latency examples—but the new C3 rule for splitting multi-token spans was applied too broadly, causing over‑splitting (even into single characters) and isolating punctuation/quotes; that fragmentation shows up as losses in the ≤5 and ≤7 bins despite gains at very short (≤3) and very long (≤99) latencies.",
+   "lesson": "Narrow the multi-token-splitting rule so it only splits true multi-token names when necessary and never breaks ordinary words or isolates punctuation/quotes; keep the verbal-complex protection but avoid applying splitting heuristics that fragment short/medium pieces.",
+   "blamed": [
+    "C3 «- Consider left‑headed modifiers (long pre‑nominal relative »",
+    "C4 «- Treat verbal complexes as atomic: do not cut so that negat»"
+   ]
+  }
+ }
+]

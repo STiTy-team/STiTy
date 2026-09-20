@@ -1,0 +1,120 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.00824,
+    "lo": -0.001,
+    "hi": 0.01695,
+    "n": 450,
+    "n_clusters": 50
+   },
+   "chars": 8612,
+   "changelog": [
+    "Paraphrased C4 to a much shorter statement summarizing cohesion harms in German so the prompt is more concise and to free size headroom; this addresses the need to keep cohesion/incompleteness distinct from contradiction as highlighted in the critique.",
+    "Paraphrased C7 to a concise rule that contra is raised only for explicit negation/reversal and that incompleteness is primarily a cohesion issue; this directly responds to the finding that the prompt over-allocated contra to fragmentary prefixes and reporting verbs and reduces verbosity to meet size limits."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.0011,
+    "lo": -0.01106,
+    "hi": 0.00846,
+    "n": 450,
+    "n_clusters": 50
+   },
+   "chars": 8074,
+   "changelog": [
+    "Paraphrased C4 to a much shorter, clearer summary of cohesion harms in German, to focus ratable harms (predicate/argument splits, NP/PP fragmentation, verb-final clause separation) and reduce prompt size.",
+    "Paraphrased C7 to a concise rule that contra measures explicit reversal/negation while treating incompleteness primarily as cohesion; this addresses the finding that the prompt over-allocated contra to fragmentary prefixes and reporting verbs.",
+    "Deleted example E2 (longest example) to free space so the prompt meets size limits while retaining other examples and measured cases."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.01225,
+    "lo": 0.00244,
+    "hi": 0.02268,
+    "n": 450,
+    "n_clusters": 50
+   },
+   "chars": 9274,
+   "changelog": [
+    "Replace E1 with measured example de_de_341 to teach the model that a prefix missing a predicate is often a cohesion problem, not automatically high contra (addresses finding about over-allocated contra).",
+    "Replace E2 with measured example de_de_476 to show reporting/speech-act verbs (\"erklärten\") should be treated as cohesion/incompleteness unless the remainder explicitly negates the prefix (addresses finding about reporting verbs).",
+    "Replace E3 with measured example de_de_1143 to provide a longer-clause case where qualification/contrast determines contra versus cohesion, reinforcing the distinction cited in the critique."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00374,
+    "lo": -0.01725,
+    "hi": 0.01244,
+    "n": 450,
+    "n_clusters": 50
+   },
+   "chars": 9017,
+   "changelog": [
+    "Replace C6 to clarify the crucial distinction between incompleteness (cohesion) and true contradiction (contra), and to add explicit guidance for speech-act/reporting verbs — this directly addresses the finding that contra was over-allocated to fragmentary prefixes and reporting verbs.",
+    "Delete C4 (long, unmeasured list of cohesion harms) to remove redundancy, shorten the prompt, and meet the size budget while keeping the essential guidance relocated into the revised C6."
+   ]
+  }
+ ]
+}

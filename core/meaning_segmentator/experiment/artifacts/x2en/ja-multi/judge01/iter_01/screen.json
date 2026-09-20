@@ -1,0 +1,120 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 2,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.004,
+    "lo": -0.03725,
+    "hi": 0.0304,
+    "n": 1271,
+    "n_clusters": 50
+   },
+   "chars": 9654,
+   "changelog": [
+    "Append a rule that marks cuts that leave a sentence-final auxiliary, copula, negation, or closing punctuation as very bad — addresses the primary finding that such right-hand fragments flip or void the left fragment.",
+    "Append a rule that removes any requirement to spread integers across the entire 0–100 range and allows clustered ranks when targets are similar — addresses the finding that forced spreading harms dense, short-latency cuts."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": -0.03405,
+    "lo": -0.07421,
+    "hi": 0.00637,
+    "n": 1271,
+    "n_clusters": 50
+   },
+   "chars": 9819,
+   "changelog": [
+    "Paraphrased C8 to a shorter form that preserves its judgement but frees space.",
+    "Appended a single combined principle that (a) changes the ranking guidance so scorers may cluster adjacent ranks and reserve extremes rather than forcibly spreading across 0–100, (b) marks cuts that leave a sentence‑final auxiliary/copula/negator or closing punctuation as very bad, and (c) gives positive guidance for good dense cuts (clause/punctuation boundaries, item boundaries in lists). This addresses the primary finding (forced spreading) with a different, actionable direction and also the high-loss finding about sentence‑final material."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": 0.0234,
+    "lo": -0.00736,
+    "hi": 0.05602,
+    "n": 1271,
+    "n_clusters": 50
+   },
+   "chars": 8115,
+   "changelog": [
+    "Replace E1 with measured example ja_jp_968 to teach the model that cuts isolating the sentence-final predicate/auxiliary are very bad (addresses the primary finding).",
+    "Replace E2 with measured example ja_jp_563 to show a short-latency case where trailing auxiliaries/negation flip meaning and should be ranked low.",
+    "Replace E3 with measured example ja_jp_1584 to provide a mid-latency instance demonstrating predicate continuation risks when cutting before clause-final material.",
+    "Replace E4 with measured example ja_jp_919 to provide a long-latency example where separating final predicate/punctuation harms cohesion and should be penalized."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00975,
+    "lo": -0.04251,
+    "hi": 0.02673,
+    "n": 1271,
+    "n_clusters": 50
+   },
+   "chars": 9944,
+   "changelog": [
+    "Paraphrased C8 to be shorter while preserving its judgement that cuts must not rely on late predicates/arguments/negation — frees space and keeps the original guidance.",
+    "Appended a new Core Principles unit giving explicit ranking guidance that (a) allows clustering of adjacent ranks instead of forcing spread across 0–100, (b) reserves extremes only for exceptional cases, (c) lists positive, safe places for dense cuts, and (d) warns that right fragments beginning with sentence‑final auxiliaries/copula/negation/closing punctuation are unsafe unless the left already contains a complete predicate. This directly addresses the primary finding about forced spreading and the high-loss finding about isolating sentence‑final material while giving constructive guidance for good dense cuts."
+   ]
+  }
+ ]
+}

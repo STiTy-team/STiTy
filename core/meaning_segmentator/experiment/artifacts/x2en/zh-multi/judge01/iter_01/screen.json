@@ -1,0 +1,117 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  1,
+  5,
+  9,
+  16,
+  18,
+  20,
+  23,
+  26,
+  28,
+  34,
+  36,
+  37,
+  38,
+  41,
+  43,
+  51,
+  54,
+  64,
+  72,
+  74,
+  75,
+  82,
+  85,
+  86,
+  89,
+  98,
+  100,
+  108,
+  109,
+  110,
+  120,
+  125,
+  130,
+  137,
+  145,
+  149,
+  161,
+  166,
+  167,
+  168,
+  171,
+  176,
+  177,
+  179,
+  183,
+  184,
+  186,
+  193,
+  195,
+  196
+ ],
+ "best": 0,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": 0.03209,
+    "lo": -0.00816,
+    "hi": 0.07083,
+    "n": 940,
+    "n_clusters": 50
+   },
+   "chars": 8330,
+   "changelog": [
+    "Add a core principle warning against cutting between a verb and its essential complement and describing what a GOOD cut looks like, to address the primary finding that the prompt underestimates how tightly verbs bind to complements."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.02624,
+    "lo": -0.00988,
+    "hi": 0.06241,
+    "n": 940,
+    "n_clusters": 50
+   },
+   "chars": 8111,
+   "changelog": [
+    "Replace C4 to address the primary finding: emphasize verb+complement cohesion and describe what a GOOD cut looks like (end after a complete predicate or clause closer) rather than only penalizing cuts."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00714,
+    "lo": -0.03447,
+    "hi": 0.0189,
+    "n": 940,
+    "n_clusters": 50
+   },
+   "chars": 6729,
+   "changelog": [
+    "Replace E1 with measured example cmn_hans_cn_605 to teach the model about cuts that split predicate + complement (保持 不变).",
+    "Replace E2 with measured example cmn_hans_cn_982 to show cuts that separate verb phrases (需 要 / 小 心 蚊 子) in short-latency pairs.",
+    "Replace E3 with measured example cmn_hans_cn_1099 to expose predicate-complement splits around verb+object (脱 落) in medium-latency cases.",
+    "Replace E4 with measured example cmn_hans_cn_362 to illustrate harmful cuts that separate comparative/resultative constructions (还 要 小)."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.00077,
+    "lo": -0.03268,
+    "hi": 0.03328,
+    "n": 940,
+    "n_clusters": 50
+   },
+   "chars": 8231,
+   "changelog": [
+    "Replace C5 to address the primary finding: emphasize that verb+complement and related predicate frames are tight units and describe what a GOOD cut looks like (prefer cutting after a completed predicate or clause-closer rather than imposing a blanket ban)."
+   ]
+  }
+ ]
+}

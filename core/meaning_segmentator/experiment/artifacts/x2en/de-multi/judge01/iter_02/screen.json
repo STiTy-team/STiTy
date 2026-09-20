@@ -1,0 +1,119 @@
+{
+ "n_sentences": 50,
+ "indices": [
+  2,
+  11,
+  14,
+  16,
+  19,
+  21,
+  23,
+  29,
+  30,
+  42,
+  45,
+  47,
+  62,
+  67,
+  68,
+  76,
+  81,
+  82,
+  85,
+  86,
+  87,
+  92,
+  94,
+  97,
+  100,
+  102,
+  103,
+  104,
+  114,
+  117,
+  121,
+  122,
+  124,
+  129,
+  137,
+  138,
+  149,
+  151,
+  152,
+  153,
+  154,
+  162,
+  163,
+  169,
+  172,
+  174,
+  179,
+  181,
+  184,
+  186
+ ],
+ "best": 1,
+ "candidates": [
+  {
+   "candidate": 0,
+   "delta": {
+    "mean": -0.00499,
+    "lo": -0.02397,
+    "hi": 0.01301,
+    "n": 445,
+    "n_clusters": 50
+   },
+   "chars": 9497,
+   "changelog": [
+    "Replace C7 to explicitly treat cuts that end inside subordinate/verb‑final clauses or before a clause‑finishing verb that provides a qualification/reversal as very high contradiction risk — addresses the primary finding that contra is underestimated for such prefixes.",
+    "Replace C12 to allow, when dense (short‑chunk) segmentation is required, cuts immediately after determiners/short prepositions provided they do not separate a head from its required complements — addresses the finding that the prompt discouraged needed early cuts in short‑latency settings."
+   ]
+  },
+  {
+   "candidate": 1,
+   "delta": {
+    "mean": 0.00201,
+    "lo": -0.01848,
+    "hi": 0.02731,
+    "n": 445,
+    "n_clusters": 50
+   },
+   "chars": 9621,
+   "changelog": [
+    "Replace C12 to allow cuts after determiners/short prepositions in dense (short‑chunk) settings when they do not detach a head from required complements — addresses the primary finding that the prompt was too conservative and lost short‑latency gains.",
+    "Insert after C7 a new principle that treats cuts ending inside subordinate/verb‑final clauses (before the clause‑finishing verb that supplies a qualification/reversal) as very high contra risk — addresses the finding that contra was underestimated for unfinished subordinate/verb‑final clauses."
+   ]
+  },
+  {
+   "candidate": 2,
+   "delta": {
+    "mean": -0.00191,
+    "lo": -0.02611,
+    "hi": 0.02691,
+    "n": 445,
+    "n_clusters": 50
+   },
+   "chars": 9491,
+   "changelog": [
+    "Replace E1 with labeled example de_de_86 to teach the model that cuts ending inside subordinate/verb-final clauses (before the clause-finishing verb/qualification) carry very high contradiction risk.",
+    "Replace E2 with labeled example de_de_587 to expose short-latency cases where early cuts after function words may be acceptable and to show trade-offs for dense segmentation.",
+    "Replace E3 with labeled example de_de_240 to add a measured short/medium example that illustrates fragmentation after determiners/prepositions and helps the model learn when such cuts are harmful versus acceptable."
+   ]
+  },
+  {
+   "candidate": 3,
+   "delta": {
+    "mean": -0.0056,
+    "lo": -0.0296,
+    "hi": 0.01897,
+    "n": 445,
+    "n_clusters": 50
+   },
+   "chars": 9142,
+   "changelog": [
+    "Replace C7 to explicitly mark cuts that end inside subordinate/verb‑final clauses (before the clause‑finishing verb or qualifying phrase) as high contradiction risk, addressing the finding that contra was underestimated for such prefixes.",
+    "Replace C12 to relax the rule for determiners/short prepositions in dense (short‑chunk) settings: allow cuts after them when they do not detach a head noun or required complements, addressing the finding that the prompt was too conservative and lost short‑latency gains."
+   ]
+  }
+ ]
+}

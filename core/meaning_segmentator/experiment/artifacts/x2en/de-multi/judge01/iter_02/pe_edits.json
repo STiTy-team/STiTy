@@ -1,0 +1,162 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- In German, high contra risk arises when the prefix asserts something that the remainder then negates, limits, or reverses. This often happens with subordinate or verb‑final clauses whose finishing verb or final phrase supplies the qualification or reversal. If a cut would end inside a subordinate/verb‑final clause or immediately before the clause’s finishing verb that provides the critical qualification or reversal, treat the prefix as very high contradiction risk (score the cut very low). Otherwise, keep Contra graded: small risk for minor qualifiers, near‑certain when the remainder explicitly reverses or negates the prefix."
+   },
+   {
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "text": "- Nominal and prepositional phrases: determiners and short prepositions are unstable prefixes because a cut after them can fragment a core phrase. However, when dense (short‑chunk) segmentation is required, allow cuts immediately after determiners or short prepositions provided the cut does not separate a head noun or preposition from required complements that would make the remaining piece uninterpretable. In short‑latency settings prefer a small cohesion loss to failing to achieve needed density; always avoid splits that orphan the head or its core arguments."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 6
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "chars_change": 387
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9497,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "- If a cut ends inside a subordinate or verb‑final clause (i.e., before the clause‑finishing verb that supplies a qualification, negation, or reversal), treat the left fragment as very high contradiction risk. Such cuts should be scored very low for target; do not let density needs justify leaving a qualifying or reversing clause unfinished."
+   },
+   {
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "text": "- Nominal and prepositional phrases: determiners and short prepositions are unstable prefixes in general, but when dense (short‑chunk) segmentation is required, cuts immediately after them are acceptable provided they do not separate a head from its required complements; prefer small cohesion loss to failing to achieve necessary short‑latency density."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 344
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "chars_change": 173
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9621,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "de_de_86",
+    "text": "Input: Pittman <SEG:?> deutete <SEG:?> an, <SEG:?> dass <SEG:?> sich <SEG:?> die <SEG:?> Bedingungen <SEG:?> erst <SEG:?> irgendwann <SEG:?> in <SEG:?> der <SEG:?> nächsten <SEG:?> Woche <SEG:?> verbessern <SEG:?> würden.\nOutput: Pittman <SEG:77> deutete <SEG:85> an, <SEG:100> dass <SEG:92> sich <SEG:23> die <SEG:8> Bedingungen <SEG:0> erst <SEG:54> irgendwann <SEG:62> in <SEG:31> der <SEG:15> nächsten <SEG:38> Woche <SEG:46> verbessern <SEG:69> würden."
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "de_de_587",
+    "text": "Input: Diese <SEG:?> Teleskope <SEG:?> nutzten <SEG:?> eine <SEG:?> Kombination <SEG:?> aus <SEG:?> zwei <SEG:?> Linsen, <SEG:?> um <SEG:?> entfernte <SEG:?> Objekte <SEG:?> sowohl <SEG:?> näher <SEG:?> als <SEG:?> auch <SEG:?> größer <SEG:?> erscheinen <SEG:?> zu <SEG:?> lassen.\nOutput: Diese <SEG:47> Teleskope <SEG:94> nutzten <SEG:76> eine <SEG:0> Kombination <SEG:59> aus <SEG:35> zwei <SEG:71> Linsen, <SEG:100> um <SEG:88> entfernte <SEG:65> Objekte <SEG:24> sowohl <SEG:6> näher <SEG:82> als <SEG:41> auch <SEG:53> größer <SEG:29> erscheinen <SEG:12> zu <SEG:18> lassen."
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "de_de_240",
+    "text": "Input: Das <SEG:?> Problem <SEG:?> begann <SEG:?> am <SEG:?> 1. <SEG:?> Januar, <SEG:?> als <SEG:?> sich <SEG:?> Dutzende <SEG:?> von <SEG:?> Anwohnern <SEG:?> beim <SEG:?> Postamt <SEG:?> von <SEG:?> Obanazawa <SEG:?> darüber <SEG:?> beschwerten, <SEG:?> dass <SEG:?> sie <SEG:?> ihre <SEG:?> traditionellen <SEG:?> und <SEG:?> üblichen <SEG:?> Neuhjahrskarten <SEG:?> nicht <SEG:?> bekommen <SEG:?> hatten.\nOutput: Das <SEG:52> Problem <SEG:76> begann <SEG:96> am <SEG:92> 1. <SEG:84> Januar, <SEG:100> als <SEG:64> sich <SEG:56> Dutzende <SEG:80> von <SEG:44> Anwohnern <SEG:88> beim <SEG:16> Postamt <SEG:48> von <SEG:8> Obanazawa <SEG:60> darüber <SEG:72> beschwerten, <SEG:68> dass <SEG:20> sie <SEG:4> ihre <SEG:12> traditionellen <SEG:24> und <SEG:32> üblichen <SEG:36> Neuhjahrskarten <SEG:0> nicht <SEG:40> bekommen <SEG:28> hatten."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 166
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": -116
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": 337
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9491,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- High contra risk arises when a cut ends inside a subordinate or verb‑final clause — that is, before the clause's finishing verb or a phrase that supplies a qualification or reversal. In such cases treat the prefix as likely misleading and score the cut very low. Raise contra toward certainty when the remainder contains explicit negation, a clear contrastive qualification, or a scope‑replacing auxiliary/modality."
+   },
+   {
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "text": "- Nominal and prepositional phrases: determiners and short prepositions commonly fragment core phrases and can reduce cohesion. However, when dense, short‑chunk segmentation is required, allow cuts immediately after determiners or short prepositions provided the cut does not detach the head noun or required complements from that function word. In those cases prefer a small cohesion loss to failing to meet needed piece density."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": -212
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C12",
+    "kind": "change",
+    "chars_change": 250
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9142,
+  "errors": null
+ }
+]

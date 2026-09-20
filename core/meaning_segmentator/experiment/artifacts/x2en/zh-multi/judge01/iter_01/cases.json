@@ -1,0 +1,2130 @@
+[
+ {
+  "id": "cmn_hans_cn_605",
+  "cuts": 7,
+  "avg_chunk": 3.0,
+  "latency_bin": "≤3",
+  "gap": 0.5452,
+  "policy_worst_contra": 0.9798,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    13,
+    14,
+    18,
+    20,
+    21,
+    22,
+    23
+   ],
+   "H_set": 0.0084,
+   "text": "虽然它的物理状态可能会改变 ‖ ， ‖ 但化学状 ‖ 态保 ‖ 持 ‖ 不 ‖ 变 ‖ 。",
+   "pieces": {
+    "English": [
+     "Although its physical state may change",
+     ",",
+     "But chemical state",
+     "Taobao",
+     "Hold",
+     "No.",
+     "Change",
+     "."
+    ],
+    "Japanese": [
+     "物理的な状態は変わりますが",
+     "ああ",
+     "化学式",
+     "態保",
+     "持って",
+     "いや",
+     "変化",
+     "ああ ああ"
+    ],
+    "German": [
+     "Obwohl sich der physische Zustand ändern kann,",
+     ",",
+     "Chemische Form",
+     "Achtung ",
+     "Halt!",
+     "- Nein, nein, nein.",
+     "Change",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Aunque su estado físico puede cambiar",
+     ",",
+     "Pero el estado químico",
+     "Mantenimiento",
+     "- ¡Agárrate!",
+     "No, no, no.",
+     "Cambios",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    12,
+    13,
+    14,
+    15,
+    19,
+    21
+   ],
+   "H_set": 0.5537,
+   "text": "虽然 ‖ 它的物理状态可能会改 ‖ 变 ‖ ， ‖ 但 ‖ 化学状态 ‖ 保持 ‖ 不变。",
+   "pieces": {
+    "English": [
+     "Although",
+     "Its physical state may change",
+     "Change",
+     ",",
+     "But",
+     "Chemical state",
+     "Keep",
+     "No change."
+    ],
+    "Japanese": [
+     "でも",
+     "物理的な状態が変わるかもしれません",
+     "変化",
+     "ああ",
+     "だが",
+     "化学状態",
+     "保持",
+     "変わらない"
+    ],
+    "German": [
+     "Obwohl",
+     "Sein physischer Zustand kann sich ändern",
+     "Change",
+     ",",
+     "Aber",
+     "Chemischer Zustand",
+     "Halten",
+     "Unverändert."
+    ],
+    "Spanish": [
+     "Aunque",
+     "Su estado físico puede cambiar",
+     "Cambios",
+     ",",
+     "Pero...",
+     "Estado químico",
+     "Mantener",
+     "Sin cambios."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 18,
+     "left": "但化学状",
+     "right": "态保持不",
+     "H": 0.7502,
+     "H_pct": 50.0,
+     "contra": 0.0035,
+     "cohesion": 0.7528
+    },
+    {
+     "pos": 20,
+     "left": "学状态保",
+     "right": "持不变。",
+     "H": 0.773,
+     "H_pct": 59.1,
+     "contra": 0.0007,
+     "cohesion": 0.7735
+    },
+    {
+     "pos": 22,
+     "left": "态保持不",
+     "right": "变。",
+     "H": 0.0138,
+     "H_pct": 0.0,
+     "contra": 0.9798,
+     "cohesion": 0.685
+    },
+    {
+     "pos": 23,
+     "left": "保持不变",
+     "right": "。",
+     "H": 0.7516,
+     "H_pct": 54.5,
+     "contra": 0.0011,
+     "cohesion": 0.7525
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "虽然",
+     "right": "它的物理",
+     "H": 0.7966,
+     "H_pct": 81.8,
+     "contra": 0.0013,
+     "cohesion": 0.7976
+    },
+    {
+     "pos": 12,
+     "left": "可能会改",
+     "right": "变，但化",
+     "H": 0.8494,
+     "H_pct": 100.0,
+     "contra": 0.0006,
+     "cohesion": 0.8499
+    },
+    {
+     "pos": 15,
+     "left": "改变，但",
+     "right": "化学状态",
+     "H": 0.8485,
+     "H_pct": 95.5,
+     "contra": 0.0122,
+     "cohesion": 0.859
+    },
+    {
+     "pos": 19,
+     "left": "化学状态",
+     "right": "保持不变",
+     "H": 0.7882,
+     "H_pct": 77.3,
+     "contra": 0.0032,
+     "cohesion": 0.7908
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_982",
+  "cuts": 5,
+  "avg_chunk": 4.3,
+  "latency_bin": "≤5",
+  "gap": 0.6826,
+  "policy_worst_contra": 0.9859,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    18,
+    22,
+    23,
+    24,
+    25
+   ],
+   "H_set": 0.006,
+   "text": "尤其在夏天，如果你决定徒步穿越雨林， ‖ 就需要小 ‖ 心 ‖ 蚊 ‖ 子 ‖ 。",
+   "pieces": {
+    "English": [
+     "Especially in the summer, if you decide to walk through the rainforest,",
+     "It's just small.",
+     "Heart",
+     "Mosquitoes",
+     "Child",
+     "."
+    ],
+    "Japanese": [
+     "特に夏の時期には 熱帯雨林を歩くことに決めたら",
+     "それは小さなものです",
+     "心",
+     "蚊",
+     "子",
+     "ああ ああ"
+    ],
+    "German": [
+     "Wenn Sie sich im Sommer entscheiden, durch den Regenwald zu wandern,",
+     "Es ist klein.",
+     "Herz",
+     "Mücken",
+     "Kinder",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Especialmente en verano, si decides caminar por la selva,",
+     "Es muy pequeño.",
+     "Corazón",
+     "Mosquitos",
+     "Niño",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    3,
+    8,
+    17,
+    18
+   ],
+   "H_set": 0.6887,
+   "text": "尤其 ‖ 在 ‖ 夏天，如果 ‖ 你决定徒步穿越雨林 ‖ ， ‖ 就需要小心蚊子。",
+   "pieces": {
+    "English": [
+     "In particular",
+     "In",
+     "Summer, if",
+     "You decide to walk through the rainforest",
+     ",",
+     "You need to be careful with mosquitoes."
+    ],
+    "Japanese": [
+     "特に",
+     "ここに",
+     "夏だったら",
+     "雨林を歩くことにしたのです",
+     "ああ",
+     "蚊に注意する必要がある。"
+    ],
+    "German": [
+     "In besonderer Weise",
+     "In",
+     "Sommer, wenn",
+     "Sie entscheiden sich für einen Spaziergang durch den Regenwald",
+     ",",
+     "Sie müssen vorsichtig sein mit den Mücken."
+    ],
+    "Spanish": [
+     "En particular,",
+     "En",
+     "Verano, si",
+     "Usted decide caminar a través de la selva tropical",
+     ",",
+     "Solo tienes que tener cuidado con los mosquitos."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 22,
+     "left": "就需要小",
+     "right": "心蚊子。",
+     "H": 0.0075,
+     "H_pct": 0.0,
+     "contra": 0.9859,
+     "cohesion": 0.5316
+    },
+    {
+     "pos": 23,
+     "left": "需要小心",
+     "right": "蚊子。",
+     "H": 0.5337,
+     "H_pct": 16.7,
+     "contra": 0.2843,
+     "cohesion": 0.7457
+    },
+    {
+     "pos": 24,
+     "left": "要小心蚊",
+     "right": "子。",
+     "H": 0.7023,
+     "H_pct": 45.8,
+     "contra": 0.0123,
+     "cohesion": 0.711
+    },
+    {
+     "pos": 25,
+     "left": "小心蚊子",
+     "right": "。",
+     "H": 0.7666,
+     "H_pct": 79.2,
+     "contra": 0.0076,
+     "cohesion": 0.7724
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "尤其",
+     "right": "在夏天，",
+     "H": 0.829,
+     "H_pct": 100.0,
+     "contra": 0.0061,
+     "cohesion": 0.834
+    },
+    {
+     "pos": 3,
+     "left": "尤其在",
+     "right": "夏天，如",
+     "H": 0.8018,
+     "H_pct": 95.8,
+     "contra": 0.0022,
+     "cohesion": 0.8035
+    },
+    {
+     "pos": 8,
+     "left": "天，如果",
+     "right": "你决定徒",
+     "H": 0.7688,
+     "H_pct": 83.3,
+     "contra": 0.0098,
+     "cohesion": 0.7764
+    },
+    {
+     "pos": 17,
+     "left": "穿越雨林",
+     "right": "，就需要",
+     "H": 0.7688,
+     "H_pct": 87.5,
+     "contra": 0.0231,
+     "cohesion": 0.787
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1099",
+  "cuts": 4,
+  "avg_chunk": 6.2,
+  "latency_bin": "≤7",
+  "gap": 0.5947,
+  "policy_worst_contra": 0.9,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    9,
+    14,
+    16,
+    30
+   ],
+   "H_set": 0.0548,
+   "text": "发射大约3分钟后， ‖ 箭载摄像机 ‖ 显示 ‖ 大量绝缘泡沫碎片从燃料箱脱落 ‖ 。",
+   "pieces": {
+    "English": [
+     "About three minutes after launch,",
+     "Arrow-mounted camera",
+     "Display",
+     "Large amounts of insulation foam pieces falling off the fuel tank",
+     "."
+    ],
+    "Japanese": [
+     "打ち上げから約3分後",
+     "矢印カメラ",
+     "ディスプレイ",
+     "燃料タンクから 泡が飛び散ってる",
+     "ああ ああ"
+    ],
+    "German": [
+     "Nach etwa drei Minuten Startzeit",
+     "Pfeilkamera",
+     "Display",
+     "Große Mengen an Isolierschaumstoffstücken lösten sich vom Kraftstofftank ab",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Aproximadamente tres minutos después del lanzamiento,",
+     "Cámaras de flecha",
+     "Exhibición",
+     "Se desprendieron grandes cantidades de espuma aislante del tanque de combustible",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    2,
+    4,
+    7,
+    8
+   ],
+   "H_set": 0.6495,
+   "text": "发射 ‖ 大约 ‖ 3分钟 ‖ 后 ‖ ，箭载摄像机显示大量绝缘泡沫碎片从燃料箱脱落。",
+   "pieces": {
+    "English": [
+     "Launch",
+     "Approximately",
+     "3 minutes",
+     "After",
+     "The arrow-borne cameras showed a large amount of insulating foam fragments falling off the fuel tank."
+    ],
+    "Japanese": [
+     "発射",
+     "約",
+     "3分",
+     "後",
+     " 燃料タンクの中にある大量のガスが燃料タンクから噴出しているのが見える。"
+    ],
+    "German": [
+     "Start",
+     "Ungefähr",
+     "3 Minuten",
+     "Nach",
+     "Die Kameras zeigten, dass sich große Mengen an Isolierschaum aus dem Kraftstofftank lösten."
+    ],
+    "Spanish": [
+     "Lanzamiento",
+     "Aproximadamente",
+     "3 minutos",
+     "Después",
+     "Las cámaras de la flecha mostraron que se habían desprendido grandes cantidades de fragmentos de espuma aislante de los tanques de combustible."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 9,
+     "left": "分钟后，",
+     "right": "箭载摄像",
+     "H": 0.6017,
+     "H_pct": 75.9,
+     "contra": 0.1595,
+     "cohesion": 0.7159
+    },
+    {
+     "pos": 14,
+     "left": "载摄像机",
+     "right": "显示大量",
+     "H": 0.5641,
+     "H_pct": 65.5,
+     "contra": 0.097,
+     "cohesion": 0.6247
+    },
+    {
+     "pos": 16,
+     "left": "像机显示",
+     "right": "大量绝缘",
+     "H": 0.0654,
+     "H_pct": 17.2,
+     "contra": 0.9,
+     "cohesion": 0.6537
+    },
+    {
+     "pos": 30,
+     "left": "料箱脱落",
+     "right": "。",
+     "H": 0.5958,
+     "H_pct": 69.0,
+     "contra": 0.0859,
+     "cohesion": 0.6517
+    }
+   ],
+   "added": [
+    {
+     "pos": 2,
+     "left": "发射",
+     "right": "大约3分",
+     "H": 0.7195,
+     "H_pct": 100.0,
+     "contra": 0.0024,
+     "cohesion": 0.7212
+    },
+    {
+     "pos": 4,
+     "left": "发射大约",
+     "right": "3分钟后",
+     "H": 0.68,
+     "H_pct": 93.1,
+     "contra": 0.008,
+     "cohesion": 0.6855
+    },
+    {
+     "pos": 7,
+     "left": "约3分钟",
+     "right": "后，箭载",
+     "H": 0.676,
+     "H_pct": 89.7,
+     "contra": 0.005,
+     "cohesion": 0.6794
+    },
+    {
+     "pos": 8,
+     "left": "3分钟后",
+     "right": "，箭载摄",
+     "H": 0.713,
+     "H_pct": 96.6,
+     "contra": 0.0133,
+     "cohesion": 0.7226
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1309",
+  "cuts": 6,
+  "avg_chunk": 9.7,
+  "latency_bin": "≤10",
+  "gap": 0.6001,
+  "policy_worst_contra": 0.9979,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    22
+   ],
+   "H_set": 0.0011,
+   "text": "与 ‖ 奖 ‖ 牌 ‖ 无 ‖ 缘 ‖ 的运动员包括荷兰的安娜·乔彻姆森， ‖ 她在昨天的女子站姿超级大回转比赛中获得第九名，芬兰的卡特娅·萨里宁则在同一比赛中获得第十名。",
+   "pieces": {
+    "English": [
+     "and",
+     "Awards",
+     "Cards",
+     "No",
+     "結",
+     "The athletes included Anna Jochemsen of the Netherlands,",
+     "She finished ninth in yesterday's women's standing super-G, and Katja Sarinen of Finland finished tenth in the same event."
+    ],
+    "Japanese": [
+     "と",
+     "賞",
+     "カード",
+     "なし",
+     "縁",
+     "選手たちはオランダのアンナ・ジョッチェムソン",
+     " 2001年の世界選手権では、女子シングルスで9位に入り、同年の女子ダブルスでは、フィンランドのカティア・サリニンとのペアで10位に入った。"
+    ],
+    "German": [
+     "Und",
+     "Auszeichnung",
+     "Karten",
+     "Keine",
+     "Gefühl",
+     "Zu den Athleten gehörte Anna Jochemsen aus den Niederlanden,",
+     "Im Super-G-Springen der Frauen wurde sie gestern Neunte, während Katja Sarinen aus Finnland im selben Wettbewerb Zehnte wurde."
+    ],
+    "Spanish": [
+     "y",
+     "Premios",
+     "Tarjetas",
+     "No se ha presentado ninguna",
+     "- ¿Qué?",
+     "Entre los atletas que participaron en los Juegos de 1992 figuraban Anna Jochemsen, de los Países Bajos,",
+     "Ayer, terminó novena en el Super Grand Slam de la categoría femenina, y la finlandesa Katja Sarinen quedó décima en la misma competición."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    9,
+    11,
+    43,
+    44,
+    45
+   ],
+   "H_set": 0.6012,
+   "text": "与奖牌无缘的 ‖ 运动员 ‖ 包括 ‖ 荷兰的安娜·乔彻姆森，她在昨天的女子站姿超级大回转比赛中获得第九 ‖ 名 ‖ ， ‖ 芬兰的卡特娅·萨里宁则在同一比赛中获得第十名。",
+   "pieces": {
+    "English": [
+     "No medals.",
+     "Athletes",
+     "Including",
+     "Anna Jochemsen of the Netherlands, who finished ninth in the women's standing super-G yesterday,",
+     "Name",
+     ",",
+     "Katja Sarinen of Finland finished tenth in the same competition."
+    ],
+    "Japanese": [
+     "メダルは取れない",
+     "スポーツ選手",
+     "含む",
+     "オランダのアンナ・ジョッチェムソンは 昨日の女子スタンドアップスーパーグランプリで 9位に入賞しました",
+     "姓",
+     "ああ",
+     "フィンランドのカティア・サリニンが10位に入賞した。"
+    ],
+    "German": [
+     "Die Medaillenloser",
+     "Sportler",
+     "Einschließlich",
+     "Anna Jochemsen aus den Niederlanden, die gestern im Super-G-Springen der Frauen den neunten Platz belegte.",
+     "Name",
+     ",",
+     "Die Finnin Katja Saarinen belegte im gleichen Wettbewerb den zehnten Platz."
+    ],
+    "Spanish": [
+     "Sin medalla",
+     "Deportistas",
+     "Incluidos",
+     "Anna Jochemsen, de los Países Bajos, que se ubicó en noveno lugar en el Super Grand Slam de la mujer en pie, que se celebró ayer.",
+     "Nombre",
+     ",",
+     "La finlandesa Katja Sarinen quedó décima en la misma competición."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 1,
+     "left": "与",
+     "right": "奖牌无缘",
+     "H": 0.0433,
+     "H_pct": 10.6,
+     "contra": 0.9415,
+     "cohesion": 0.7401
+    },
+    {
+     "pos": 2,
+     "left": "与奖",
+     "right": "牌无缘的",
+     "H": 0.0039,
+     "H_pct": 1.5,
+     "contra": 0.9944,
+     "cohesion": 0.6987
+    },
+    {
+     "pos": 3,
+     "left": "与奖牌",
+     "right": "无缘的运",
+     "H": 0.0014,
+     "H_pct": 0.0,
+     "contra": 0.9979,
+     "cohesion": 0.676
+    },
+    {
+     "pos": 4,
+     "left": "与奖牌无",
+     "right": "缘的运动",
+     "H": 0.6315,
+     "H_pct": 60.6,
+     "contra": 0.0027,
+     "cohesion": 0.6332
+    },
+    {
+     "pos": 5,
+     "left": "奖牌无缘",
+     "right": "的运动员",
+     "H": 0.6752,
+     "H_pct": 80.3,
+     "contra": 0.0019,
+     "cohesion": 0.6765
+    },
+    {
+     "pos": 22,
+     "left": "彻姆森，",
+     "right": "她在昨天",
+     "H": 0.7265,
+     "H_pct": 90.9,
+     "contra": 0.002,
+     "cohesion": 0.728
+    }
+   ],
+   "added": [
+    {
+     "pos": 6,
+     "left": "牌无缘的",
+     "right": "运动员包",
+     "H": 0.7296,
+     "H_pct": 92.4,
+     "contra": 0.0005,
+     "cohesion": 0.7299
+    },
+    {
+     "pos": 9,
+     "left": "的运动员",
+     "right": "包括荷兰",
+     "H": 0.7321,
+     "H_pct": 93.9,
+     "contra": 0.0006,
+     "cohesion": 0.7325
+    },
+    {
+     "pos": 11,
+     "left": "动员包括",
+     "right": "荷兰的安",
+     "H": 0.7579,
+     "H_pct": 100.0,
+     "contra": 0.0013,
+     "cohesion": 0.7589
+    },
+    {
+     "pos": 43,
+     "left": "获得第九",
+     "right": "名，芬兰",
+     "H": 0.7455,
+     "H_pct": 97.0,
+     "contra": 0.0033,
+     "cohesion": 0.748
+    },
+    {
+     "pos": 44,
+     "left": "得第九名",
+     "right": "，芬兰的",
+     "H": 0.7382,
+     "H_pct": 95.5,
+     "contra": 0.0026,
+     "cohesion": 0.7402
+    },
+    {
+     "pos": 45,
+     "left": "第九名，",
+     "right": "芬兰的卡",
+     "H": 0.7501,
+     "H_pct": 98.5,
+     "contra": 0.003,
+     "cohesion": 0.7524
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1618",
+  "cuts": 1,
+  "avg_chunk": 20.5,
+  "latency_bin": "≤99",
+  "gap": 0.766,
+  "policy_worst_contra": 0.9906,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    40
+   ],
+   "H_set": 0.0057,
+   "text": "北部，或者说森蒂纳尔岭，拥有南极洲最高的山脉文森山脉，最高峰是4892米的文森峰 ‖ 。",
+   "pieces": {
+    "English": [
+     "The north, or Sentinel Range, has the highest mountains in Antarctica, the Vincent Mountains, with the highest peak, Vincent Peak, at 4,892 metres.",
+     "."
+    ],
+    "Japanese": [
+     " 南極大陸の最高峰は、南極大陸の最高峰であるヴィンセンス山（4,892m）である。",
+     "ああ ああ"
+    ],
+    "German": [
+     "Im Norden des Sentinel Range befindet sich der höchste Berg der Antarktis, der Vinson Peak mit 4892 m ü. NN.",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En el norte, o en la cordillera de los Centinela, se encuentran las montañas más altas de la Antártida, las Montañas Vinson, con el pico Vinson, de 4.892 metros de altura.",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    27
+   ],
+   "H_set": 0.7717,
+   "text": "北部，或者说森蒂纳尔岭，拥有南极洲最高的山脉文森山脉， ‖ 最高峰是4892米的文森峰。",
+   "pieces": {
+    "English": [
+     "In the north, or the Sentinel Range, are the Vinson Mountains, the highest mountains in Antarctica,",
+     "The highest peak is the 4,892 m (15,900 ft) Vincent Peak."
+    ],
+    "Japanese": [
+     "北部のセンチネル山脈には 南極大陸で最も高い山々である ヴィンセンス山脈があり",
+     "最高峰は標高4,892mのヴィンセンス峰である。"
+    ],
+    "German": [
+     "Im Norden, oder im Sentinel Range, befinden sich die Vinson Mountains, die höchsten Berge der Antarktis.",
+     "Der höchste Gipfel ist der 4892 m hohe Vinson Peak."
+    ],
+    "Spanish": [
+     "En el norte, o en la cordillera de los Centinela, se encuentran las montañas Vincent, las más altas de la Antártida,",
+     "El pico más alto es el Pico Vincent, con 4.892 metros."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 40,
+     "left": "的文森峰",
+     "right": "。",
+     "H": 0.0057,
+     "H_pct": 10.3,
+     "contra": 0.9906,
+     "cohesion": 0.6032
+    }
+   ],
+   "added": [
+    {
+     "pos": 27,
+     "left": "森山脉，",
+     "right": "最高峰是",
+     "H": 0.7717,
+     "H_pct": 100.0,
+     "contra": 0.009,
+     "cohesion": 0.7787
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_234",
+  "cuts": 15,
+  "avg_chunk": 2.9,
+  "latency_bin": "≤3",
+  "gap": 0.498,
+  "policy_worst_contra": 0.9978,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    5,
+    7,
+    10,
+    11,
+    30,
+    31,
+    34,
+    35,
+    36,
+    37,
+    40,
+    41,
+    42,
+    43,
+    46
+   ],
+   "H_set": 0.0009,
+   "text": "2007年 ‖ 9月 ‖ 17日 ‖ ， ‖ 纳迪亚在俄罗斯阿莱克斯的一家妇产科诊所 ‖ 的 ‖ 剖腹产 ‖ 出 ‖ 生 ‖ ， ‖ 体重达 ‖ 1 ‖ 7 ‖ 磅 ‖ 1盎司 ‖ 。",
+   "pieces": {
+    "English": [
+     "2007",
+     "September",
+     "17th",
+     ",",
+     "Nadia in a gynecological and obstetric clinic in Alexey, Russia",
+     "The",
+     "Caesarean section",
+     "Out",
+     "Raw",
+     ",",
+     "Body weight",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "7.",
+     "Pound",
+     "One ounce.",
+     "."
+    ],
+    "Japanese": [
+     "2007年",
+     "9月",
+     "17日",
+     "ああ",
+     "ナディアはロシアのアレクサンドルにある 産婦人科のクリニックで働いています",
+     "の",
+     "帝王切開",
+     "出て行け",
+     "生",
+     "ああ",
+     "体重達成",
+     "1 日目",
+     "7 日目",
+     "ポンド",
+     "1オンス",
+     "ああ ああ"
+    ],
+    "German": [
+     "2007",
+     "September",
+     "17. Dezember",
+     ",",
+     "Nadia in einer gynäkologischen Klinik in Alex, Russland",
+     "Die",
+     "Kaiserschnitt",
+     "Aus",
+     "Roh",
+     ",",
+     "Gewichtszunahme",
+     "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1.1",
+     "7",
+     "Pfund",
+     "1 Unze",
+     "- Ja."
+    ],
+    "Spanish": [
+     "2007 (estimación)",
+     "Septiembre",
+     "17 de noviembre",
+     ",",
+     "Nadia en una clínica ginecológica en Alexey, Rusia",
+     "De",
+     "Cesárea",
+     "- ¡Sal!",
+     "Crudo",
+     ",",
+     "Peso corporal",
+     "1.1.1.",
+     "7 de diciembre de 1999",
+     "Libras",
+     "1 onza",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    5,
+    10,
+    11,
+    14,
+    18,
+    22,
+    23,
+    27,
+    28,
+    29,
+    31,
+    33,
+    36,
+    37
+   ],
+   "H_set": 0.4989,
+   "text": "2007 ‖ 年 ‖ 9月17日 ‖ ， ‖ 纳迪亚 ‖ 在俄罗斯 ‖ 阿莱克斯 ‖ 的 ‖ 一家妇产 ‖ 科 ‖ 诊 ‖ 所的 ‖ 剖腹 ‖ 产出生 ‖ ， ‖ 体重达17磅1盎司。",
+   "pieces": {
+    "English": [
+     "2007",
+     "Year",
+     "17 September",
+     ",",
+     "Nadia",
+     "In Russia",
+     "Alex.",
+     "The",
+     "A family of mothers",
+     "Family",
+     "Diagnosis",
+     "Whatever",
+     "Caesarean section",
+     "Births",
+     ",",
+     "Weight up to 17 pounds 1 ounce."
+    ],
+    "Japanese": [
+     "2007年のスポーツ",
+     "年",
+     "9月17日",
+     "ああ",
+     "ナディア",
+     "ロシアで",
+     "アレックス",
+     "の",
+     "産婦人科",
+     "科",
+     "診断",
+     "所の",
+     "帝王切開",
+     "出産",
+     "ああ",
+     "体重は17ポンド1オンス。"
+    ],
+    "German": [
+     "2007",
+     "Jahr",
+     "17. September",
+     ",",
+     "Nadia",
+     "In Russland",
+     "Alex",
+     "Die",
+     "Eine Familie",
+     "Familie",
+     "Diagnose",
+     "Das ist es.",
+     "Kaiserschnitt",
+     "Geburt",
+     ",",
+     "Das Gewicht beträgt 17 kg."
+    ],
+    "Spanish": [
+     "2007",
+     "Año",
+     "17 de septiembre",
+     ",",
+     "Nadia.",
+     "En Rusia",
+     "Alex.",
+     "De",
+     "Un parto por familia",
+     "Sección",
+     "Clínica",
+     "El objetivo",
+     "Cesárea",
+     "Nacimientos",
+     ",",
+     "Pesa hasta 17 libras 1 onza."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 7,
+     "left": "7年9月",
+     "right": "17日，",
+     "H": 0.7092,
+     "H_pct": 48.9,
+     "contra": 0.0004,
+     "cohesion": 0.7095
+    },
+    {
+     "pos": 30,
+     "left": "产科诊所",
+     "right": "的剖腹产",
+     "H": 0.7434,
+     "H_pct": 66.7,
+     "contra": 0.0017,
+     "cohesion": 0.7447
+    },
+    {
+     "pos": 34,
+     "left": "的剖腹产",
+     "right": "出生，体",
+     "H": 0.7398,
+     "H_pct": 64.4,
+     "contra": 0.0038,
+     "cohesion": 0.7426
+    },
+    {
+     "pos": 35,
+     "left": "剖腹产出",
+     "right": "生，体重",
+     "H": 0.6698,
+     "H_pct": 22.2,
+     "contra": 0.0471,
+     "cohesion": 0.7029
+    },
+    {
+     "pos": 40,
+     "left": "，体重达",
+     "right": "17磅1",
+     "H": 0.6355,
+     "H_pct": 13.3,
+     "contra": 0.0663,
+     "cohesion": 0.6806
+    },
+    {
+     "pos": 41,
+     "left": "体重达1",
+     "right": "7磅1盎",
+     "H": 0.0015,
+     "H_pct": 2.2,
+     "contra": 0.9978,
+     "cohesion": 0.6863
+    },
+    {
+     "pos": 42,
+     "left": "重达17",
+     "right": "磅1盎司",
+     "H": 0.6066,
+     "H_pct": 11.1,
+     "contra": 0.1865,
+     "cohesion": 0.7456
+    },
+    {
+     "pos": 43,
+     "left": "达17磅",
+     "right": "1盎司。",
+     "H": 0.6477,
+     "H_pct": 15.6,
+     "contra": 0.1291,
+     "cohesion": 0.7437
+    },
+    {
+     "pos": 46,
+     "left": "磅1盎司",
+     "right": "。",
+     "H": 0.7,
+     "H_pct": 44.4,
+     "contra": 0.0073,
+     "cohesion": 0.7052
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "2007",
+     "right": "年9月1",
+     "H": 0.7672,
+     "H_pct": 82.2,
+     "contra": 0.0035,
+     "cohesion": 0.7699
+    },
+    {
+     "pos": 14,
+     "left": "，纳迪亚",
+     "right": "在俄罗斯",
+     "H": 0.7499,
+     "H_pct": 73.3,
+     "contra": 0.0031,
+     "cohesion": 0.7522
+    },
+    {
+     "pos": 18,
+     "left": "在俄罗斯",
+     "right": "阿莱克斯",
+     "H": 0.7524,
+     "H_pct": 75.6,
+     "contra": 0.0003,
+     "cohesion": 0.7526
+    },
+    {
+     "pos": 22,
+     "left": "阿莱克斯",
+     "right": "的一家妇",
+     "H": 0.7679,
+     "H_pct": 84.4,
+     "contra": 0.0005,
+     "cohesion": 0.7682
+    },
+    {
+     "pos": 23,
+     "left": "莱克斯的",
+     "right": "一家妇产",
+     "H": 0.774,
+     "H_pct": 88.9,
+     "contra": 0.0016,
+     "cohesion": 0.7752
+    },
+    {
+     "pos": 27,
+     "left": "一家妇产",
+     "right": "科诊所的",
+     "H": 0.7489,
+     "H_pct": 71.1,
+     "contra": 0.0021,
+     "cohesion": 0.7505
+    },
+    {
+     "pos": 28,
+     "left": "家妇产科",
+     "right": "诊所的剖",
+     "H": 0.7623,
+     "H_pct": 80.0,
+     "contra": 0.0008,
+     "cohesion": 0.763
+    },
+    {
+     "pos": 29,
+     "left": "妇产科诊",
+     "right": "所的剖腹",
+     "H": 0.7776,
+     "H_pct": 91.1,
+     "contra": 0.0033,
+     "cohesion": 0.7802
+    },
+    {
+     "pos": 33,
+     "left": "所的剖腹",
+     "right": "产出生，",
+     "H": 0.7469,
+     "H_pct": 68.9,
+     "contra": 0.0032,
+     "cohesion": 0.7493
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_362",
+  "cuts": 3,
+  "avg_chunk": 4.0,
+  "latency_bin": "≤5",
+  "gap": 0.5497,
+  "policy_worst_contra": 0.8677,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    7
+   ],
+   "H_set": 0.072,
+   "text": "光子 ‖ 甚 ‖ 至比构成 ‖ 原子的物质还要小！",
+   "pieces": {
+    "English": [
+     "Photon",
+     "Gen",
+     "Total composition",
+     "Atoms are smaller!"
+    ],
+    "Japanese": [
+     "光子",
+     "甚",
+     "極比構成",
+     "原子の物質は小さい！"
+    ],
+    "German": [
+     "Photon",
+     "Gen",
+     "Absolute Komposition",
+     "Atome sind noch kleiner!"
+    ],
+    "Spanish": [
+     "Fotones",
+     "Muy",
+     "Composición relativa",
+     "¡La materia de los átomos es aún más pequeña!"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    1,
+    2,
+    4
+   ],
+   "H_set": 0.6217,
+   "text": "光 ‖ 子 ‖ 甚至 ‖ 比构成原子的物质还要小！",
+   "pieces": {
+    "English": [
+     "Light",
+     "Child",
+     "Even",
+     "Smaller than the matter that makes up atoms!"
+    ],
+    "Japanese": [
+     "光",
+     "子",
+     "それでさえ",
+     "原子を構成する物質よりも小さい！"
+    ],
+    "German": [
+     "Licht",
+     "Kinder",
+     "- Ja, sogar.",
+     "Kleiner als die Materie, aus der Atome bestehen!"
+    ],
+    "Spanish": [
+     "Luz",
+     "Niño",
+     "Incluso",
+     "¡Más pequeño que la materia que compone los átomos!"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 3,
+     "left": "光子甚",
+     "right": "至比构成",
+     "H": 0.2765,
+     "H_pct": 50.0,
+     "contra": 0.6299,
+     "cohesion": 0.747
+    },
+    {
+     "pos": 7,
+     "left": "至比构成",
+     "right": "原子的物",
+     "H": 0.0827,
+     "H_pct": 28.6,
+     "contra": 0.8677,
+     "cohesion": 0.625
+    }
+   ],
+   "added": [
+    {
+     "pos": 1,
+     "left": "光",
+     "right": "子甚至比",
+     "H": 0.7893,
+     "H_pct": 85.7,
+     "contra": 0.0024,
+     "cohesion": 0.7912
+    },
+    {
+     "pos": 4,
+     "left": "光子甚至",
+     "right": "比构成原",
+     "H": 0.7952,
+     "H_pct": 92.9,
+     "contra": 0.0032,
+     "cohesion": 0.7978
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_600",
+  "cuts": 3,
+  "avg_chunk": 5.5,
+  "latency_bin": "≤7",
+  "gap": 0.5934,
+  "policy_worst_contra": 0.9867,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    19,
+    20,
+    21
+   ],
+   "H_set": 0.0053,
+   "text": "它们看上去像房间。他是第一个观察死亡细 ‖ 胞 ‖ 的 ‖ 人",
+   "pieces": {
+    "English": [
+     "He was the first to observe the death of the details.",
+     "Cell",
+     "The",
+     "People"
+    ],
+    "Japanese": [
+     "彼は死の詳細を初めて観察した人物です",
+     "細胞",
+     "の",
+     "人間"
+    ],
+    "German": [
+     "Er war der erste, der die Details des Todes beobachtete.",
+     "Zyste",
+     "Die",
+     "Person"
+    ],
+    "Spanish": [
+     "Él fue el primero en observar los detalles de la muerte.",
+     "Célula",
+     "De",
+     "Personas"
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    8,
+    9,
+    11
+   ],
+   "H_set": 0.5987,
+   "text": "它们看上去像房间 ‖ 。 ‖ 他是 ‖ 第一个观察死亡细胞的人",
+   "pieces": {
+    "English": [
+     "They look like rooms.",
+     ".",
+     "He's...",
+     "The first person to observe cell death"
+    ],
+    "Japanese": [
+     "部屋のようなものです",
+     "ああ ああ",
+     "彼は...",
+     "死んだ細胞を見た最初の人間"
+    ],
+    "German": [
+     "Sie sehen aus wie Räume",
+     "- Ja.",
+     "Er ist...",
+     "Der erste Mensch, der Zellen sterben sah"
+    ],
+    "Spanish": [
+     "Se parecen a las habitaciones",
+     ". (FR) Gracias.",
+     "- ¿Qué es?",
+     "La primera persona en observar la muerte celular"
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 19,
+     "left": "察死亡细",
+     "right": "胞的人",
+     "H": 0.0053,
+     "H_pct": 0.0,
+     "contra": 0.9867,
+     "cohesion": 0.402
+    },
+    {
+     "pos": 20,
+     "left": "死亡细胞",
+     "right": "的人",
+     "H": 0.5297,
+     "H_pct": 70.0,
+     "contra": 0.0011,
+     "cohesion": 0.5303
+    },
+    {
+     "pos": 21,
+     "left": "亡细胞的",
+     "right": "人",
+     "H": 0.5093,
+     "H_pct": 60.0,
+     "contra": 0.0013,
+     "cohesion": 0.5099
+    }
+   ],
+   "added": [
+    {
+     "pos": 8,
+     "left": "去像房间",
+     "right": "。他是第",
+     "H": 0.6338,
+     "H_pct": 90.0,
+     "contra": 0.0033,
+     "cohesion": 0.6359
+    },
+    {
+     "pos": 9,
+     "left": "像房间。",
+     "right": "他是第一",
+     "H": 0.6533,
+     "H_pct": 95.0,
+     "contra": 0.0033,
+     "cohesion": 0.6555
+    },
+    {
+     "pos": 11,
+     "left": "间。他是",
+     "right": "第一个观",
+     "H": 0.6757,
+     "H_pct": 100.0,
+     "contra": 0.0058,
+     "cohesion": 0.6796
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1572",
+  "cuts": 2,
+  "avg_chunk": 8.0,
+  "latency_bin": "≤10",
+  "gap": 0.5955,
+  "policy_worst_contra": 0.7656,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    17,
+    23
+   ],
+   "H_set": 0.1431,
+   "text": "两小时内，政府大楼附近又发生了三起 ‖ 炸弹爆炸事件 ‖ 。",
+   "pieces": {
+    "English": [
+     "Three more attacks occurred in the vicinity of government buildings within two hours.",
+     "Bombing incidents",
+     "."
+    ],
+    "Japanese": [
+     "２時間以内に 政府ビルの近くで ３件の爆発が起きた",
+     "爆破事件",
+     "ああ ああ"
+    ],
+    "German": [
+     "Drei weitere Anschläge in der Nähe des Regierungsgebäudes innerhalb von zwei Stunden.",
+     "Bombenanschlag",
+     "- Ja."
+    ],
+    "Spanish": [
+     "En el lapso de dos horas, se produjeron otros tres ataques cerca del edificio del Gobierno.",
+     "Explosión de bombas",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    4,
+    14
+   ],
+   "H_set": 0.7386,
+   "text": "两小时内 ‖ ，政府大楼附近又发生 ‖ 了三起炸弹爆炸事件。",
+   "pieces": {
+    "English": [
+     "Within two hours.",
+     "It happened again near the government building.",
+     "There were three bomb explosions."
+    ],
+    "Japanese": [
+     "２時間以内に",
+     "政府のビルの近くで また起きた",
+     "3つの爆発事故が起きた。"
+    ],
+    "German": [
+     "Innerhalb von zwei Stunden",
+     "Es ist wieder passiert.",
+     "Es gab drei Bombenexplosionen."
+    ],
+    "Spanish": [
+     "Dentro de dos horas",
+     "El atentado se produjo cerca del edificio del Gobierno.",
+     "Se produjeron tres explosiones de bombas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 17,
+     "left": "生了三起",
+     "right": "炸弹爆炸",
+     "H": 0.706,
+     "H_pct": 63.6,
+     "contra": 0.0204,
+     "cohesion": 0.7208
+    },
+    {
+     "pos": 23,
+     "left": "爆炸事件",
+     "right": "。",
+     "H": 0.1712,
+     "H_pct": 13.6,
+     "contra": 0.7656,
+     "cohesion": 0.7304
+    }
+   ],
+   "added": [
+    {
+     "pos": 4,
+     "left": "两小时内",
+     "right": "，政府大",
+     "H": 0.8271,
+     "H_pct": 95.5,
+     "contra": 0.0022,
+     "cohesion": 0.8289
+    },
+    {
+     "pos": 14,
+     "left": "近又发生",
+     "right": "了三起炸",
+     "H": 0.8343,
+     "H_pct": 100.0,
+     "contra": 0.009,
+     "cohesion": 0.8419
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_627",
+  "cuts": 1,
+  "avg_chunk": 21.0,
+  "latency_bin": "≤99",
+  "gap": 0.759,
+  "policy_worst_contra": 0.8878,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    33
+   ],
+   "H_set": 0.0781,
+   "text": "这种思维模式最重要的因素是：正确答案只有一个。你只需考虑两个答案， ‖ 即对的或者是错的。",
+   "pieces": {
+    "English": [
+     "The most important element of this thinking is that there is only one correct answer.",
+     "It is either right or wrong."
+    ],
+    "Japanese": [
+     "この考え方の最も重要な要素は、正しい答えは一つしかないということです。",
+     "それは正しいか間違っているかです"
+    ],
+    "German": [
+     "Der wichtigste Aspekt dieser Denkweise ist, dass es nur eine richtige Antwort gibt.",
+     "Das ist richtig oder falsch."
+    ],
+    "Spanish": [
+     "El factor más importante de este modelo de pensamiento es que solo hay una respuesta correcta.",
+     "Es correcto o incorrecto."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    23
+   ],
+   "H_set": 0.8371,
+   "text": "这种思维模式最重要的因素是：正确答案只有一个。 ‖ 你只需考虑两个答案，即对的或者是错的。",
+   "pieces": {
+    "English": [
+     "The most important element of this mindset is that there is only one correct answer.",
+     "You only have to consider two answers, true or false."
+    ],
+    "Japanese": [
+     " こうした考え方の最も重要な要素は、正しい答えは1つしかないということである。",
+     " 2つの答えがある場合、正解か間違いかを選ぶ。"
+    ],
+    "German": [
+     "Der wichtigste Aspekt dieses Denkens ist, dass es nur eine richtige Antwort gibt.",
+     "Es gibt nur zwei Antworten: richtig oder falsch."
+    ],
+    "Spanish": [
+     "El elemento más importante de este modelo de pensamiento es que hay una sola respuesta correcta.",
+     "Solo hay dos respuestas que considerar: correcta o incorrecta."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 33,
+     "left": "个答案，",
+     "right": "即对的或",
+     "H": 0.0781,
+     "H_pct": 32.5,
+     "contra": 0.8878,
+     "cohesion": 0.6957
+    }
+   ],
+   "added": [
+    {
+     "pos": 23,
+     "left": "有一个。",
+     "right": "你只需考",
+     "H": 0.837,
+     "H_pct": 100.0,
+     "contra": 0.0048,
+     "cohesion": 0.8411
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_137",
+  "cuts": 10,
+  "avg_chunk": 2.2,
+  "latency_bin": "≤3",
+  "gap": 0.465,
+  "policy_worst_contra": 0.9987,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    23
+   ],
+   "H_set": 0.0006,
+   "text": "藻类 ‖ 能 ‖ 产 ‖ 生 ‖ 一 ‖ 种 ‖ 神 ‖ 经毒素 ‖ ， ‖ 能破坏人类和鱼类的神经 ‖ 。",
+   "pieces": {
+    "English": [
+     "Algae",
+     "Can",
+     "Production",
+     "Raw",
+     "One",
+     "Species",
+     "God",
+     "Peritoneal toxins",
+     ",",
+     "It can damage the nerves of humans and fish",
+     "."
+    ],
+    "Japanese": [
+     "藻類",
+     "能",
+     "生産",
+     "生",
+     "1つ",
+     "種",
+     "神",
+     "経毒素",
+     "ああ",
+     "人間や魚の神経を破壊する",
+     "ああ ああ"
+    ],
+    "German": [
+     "Alge",
+     "Kan",
+     "Produktion",
+     "Roh",
+     "Ein",
+     "Art",
+     "Gott",
+     "Peritonealtoxin",
+     ",",
+     "Nervenschädlich für Menschen und Fische",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Algas",
+     "- Sí.",
+     "Producción",
+     "Crudo",
+     "I",
+     "Especies",
+     "Dios",
+     "Toxina pélvica",
+     ",",
+     "Daña los nervios de los seres humanos y los peces",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    6,
+    10,
+    11,
+    12,
+    13,
+    17,
+    18,
+    20,
+    21,
+    23
+   ],
+   "H_set": 0.4656,
+   "text": "藻类能产生一 ‖ 种神经毒 ‖ 素 ‖ ， ‖ 能 ‖ 破坏人类 ‖ 和 ‖ 鱼类 ‖ 的 ‖ 神经 ‖ 。",
+   "pieces": {
+    "English": [
+     "Algae can produce a",
+     "Neurotoxins",
+     "Element",
+     ",",
+     "Can",
+     "Destroying humanity",
+     "And",
+     "Fish",
+     "The",
+     "Nerve",
+     "."
+    ],
+    "Japanese": [
+     "藻類は 1 を生成します",
+     "神経毒",
+     "元素",
+     "ああ",
+     "能",
+     "人類を破壊する",
+     "と",
+     "魚類",
+     "の",
+     "神経",
+     "ああ ああ"
+    ],
+    "German": [
+     "Algen können eine",
+     "Neurotoxin",
+     "Element",
+     ",",
+     "Kan",
+     "Zerstörung der Menschheit",
+     "Und",
+     "Fisch",
+     "Die",
+     "Nerven",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Las algas pueden producir un",
+     "Neurotóxicos",
+     "Elemento",
+     ",",
+     "- Sí.",
+     "Destruir a la humanidad",
+     "y",
+     "Pescado",
+     "De",
+     "Nervios",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 2,
+     "left": "藻类",
+     "right": "能产生一",
+     "H": 0.7304,
+     "H_pct": 54.5,
+     "contra": 0.001,
+     "cohesion": 0.7311
+    },
+    {
+     "pos": 3,
+     "left": "藻类能",
+     "right": "产生一种",
+     "H": 0.6726,
+     "H_pct": 13.6,
+     "contra": 0.0006,
+     "cohesion": 0.673
+    },
+    {
+     "pos": 4,
+     "left": "藻类能产",
+     "right": "生一种神",
+     "H": 0.6613,
+     "H_pct": 9.1,
+     "contra": 0.0004,
+     "cohesion": 0.6615
+    },
+    {
+     "pos": 5,
+     "left": "类能产生",
+     "right": "一种神经",
+     "H": 0.676,
+     "H_pct": 18.2,
+     "contra": 0.0004,
+     "cohesion": 0.6762
+    },
+    {
+     "pos": 7,
+     "left": "产生一种",
+     "right": "神经毒素",
+     "H": 0.7108,
+     "H_pct": 40.9,
+     "contra": 0.0007,
+     "cohesion": 0.7113
+    },
+    {
+     "pos": 8,
+     "left": "生一种神",
+     "right": "经毒素，",
+     "H": 0.0007,
+     "H_pct": 0.0,
+     "contra": 0.9987,
+     "cohesion": 0.5326
+    }
+   ],
+   "added": [
+    {
+     "pos": 10,
+     "left": "种神经毒",
+     "right": "素，能破",
+     "H": 0.7723,
+     "H_pct": 77.3,
+     "contra": 0.0005,
+     "cohesion": 0.7727
+    },
+    {
+     "pos": 13,
+     "left": "毒素，能",
+     "right": "破坏人类",
+     "H": 0.8346,
+     "H_pct": 90.9,
+     "contra": 0.0026,
+     "cohesion": 0.8368
+    },
+    {
+     "pos": 17,
+     "left": "破坏人类",
+     "right": "和鱼类的",
+     "H": 0.7661,
+     "H_pct": 72.7,
+     "contra": 0.0157,
+     "cohesion": 0.7783
+    },
+    {
+     "pos": 18,
+     "left": "坏人类和",
+     "right": "鱼类的神",
+     "H": 0.7429,
+     "H_pct": 68.2,
+     "contra": 0.0028,
+     "cohesion": 0.745
+    },
+    {
+     "pos": 20,
+     "left": "类和鱼类",
+     "right": "的神经。",
+     "H": 0.7395,
+     "H_pct": 63.6,
+     "contra": 0.0066,
+     "cohesion": 0.7444
+    },
+    {
+     "pos": 21,
+     "left": "和鱼类的",
+     "right": "神经。",
+     "H": 0.7788,
+     "H_pct": 81.8,
+     "contra": 0.0033,
+     "cohesion": 0.7814
+    }
+   ]
+  }
+ },
+ {
+  "id": "cmn_hans_cn_1646",
+  "cuts": 7,
+  "avg_chunk": 4.6,
+  "latency_bin": "≤5",
+  "gap": 0.5478,
+  "policy_worst_contra": 0.9837,
+  "contra_kill": true,
+  "policy": {
+   "cut": [
+    10,
+    19,
+    20,
+    29,
+    31,
+    32,
+    36
+   ],
+   "H_set": 0.0096,
+   "text": "奥克兰横跨两个港口， ‖ 因此当地有很多海滩 ‖ 。 ‖ 其中最有人气的海滩 ‖ 分布 ‖ 在 ‖ 三个地区 ‖ 。",
+   "pieces": {
+    "English": [
+     "Auckland crosses two ports,",
+     "There are many beaches in the area.",
+     ".",
+     "The most popular beaches",
+     "Distribution",
+     "In",
+     "Three regions",
+     "."
+    ],
+    "Japanese": [
+     "オークランドは2つの港を持ち",
+     "海岸が多くあります",
+     "ああ ああ",
+     "海岸の中で最も人気のある",
+     "分布",
+     "ここに",
+     "三国",
+     "ああ ああ"
+    ],
+    "German": [
+     "Auckland hat zwei Häfen,",
+     "So gibt es viele Strände in der Umgebung",
+     "- Ja.",
+     "Einer der beliebtesten Strände",
+     "Verteilung",
+     "In",
+     "Die drei Regionen",
+     "- Ja."
+    ],
+    "Spanish": [
+     "Auckland tiene dos puertos,",
+     "Por lo tanto, hay muchas playas en la zona",
+     ". (FR) Gracias.",
+     "Entre las playas más populares",
+     "Distribución",
+     "En",
+     "Tres regiones",
+     ". (FR) Gracias."
+    ]
+   }
+  },
+  "target": {
+   "cut": [
+    10,
+    12,
+    19,
+    20,
+    21,
+    22,
+    24
+   ],
+   "H_set": 0.5573,
+   "text": "奥克兰横跨两个港口， ‖ 因此 ‖ 当地有很多海滩 ‖ 。 ‖ 其 ‖ 中 ‖ 最有 ‖ 人气的海滩分布在三个地区。",
+   "pieces": {
+    "English": [
+     "Auckland crosses two ports,",
+     "Therefore,",
+     "There are many beaches in the area",
+     ".",
+     "Its",
+     "Central",
+     "Most",
+     "The popular beaches are distributed in three areas."
+    ],
+    "Japanese": [
+     "オークランドは2つの港を持ち",
+     "だから",
+     "海岸がたくさんある",
+     "ああ ああ",
+     "彼女",
+     "中",
+     "最高",
+     " 市域は3つの地区に分けられている。"
+    ],
+    "German": [
+     "Auckland hat zwei Häfen,",
+     "Also...",
+     "Es gibt viele Strände in der Umgebung",
+     "- Ja.",
+     "Die",
+     "In",
+     "Die meisten",
+     "Die beliebten Strände sind in drei Bereiche aufgeteilt."
+    ],
+    "Spanish": [
+     "Auckland tiene dos puertos,",
+     "Por consiguiente,",
+     "Hay muchas playas en la zona",
+     ". (FR) Gracias.",
+     "Otros",
+     "En el",
+     "El más alto",
+     "Las playas populares se distribuyen en tres zonas."
+    ]
+   }
+  },
+  "diff": {
+   "dropped": [
+    {
+     "pos": 29,
+     "left": "气的海滩",
+     "right": "分布在三",
+     "H": 0.7345,
+     "H_pct": 48.6,
+     "contra": 0.0054,
+     "cohesion": 0.7385
+    },
+    {
+     "pos": 31,
+     "left": "海滩分布",
+     "right": "在三个地",
+     "H": 0.6507,
+     "H_pct": 20.0,
+     "contra": 0.0049,
+     "cohesion": 0.6539
+    },
+    {
+     "pos": 32,
+     "left": "滩分布在",
+     "right": "三个地区",
+     "H": 0.1994,
+     "H_pct": 8.6,
+     "contra": 0.6982,
+     "cohesion": 0.6607
+    },
+    {
+     "pos": 36,
+     "left": "三个地区",
+     "right": "。",
+     "H": 0.0104,
+     "H_pct": 0.0,
+     "contra": 0.9837,
+     "cohesion": 0.6367
+    }
+   ],
+   "added": [
+    {
+     "pos": 12,
+     "left": "口，因此",
+     "right": "当地有很",
+     "H": 0.8475,
+     "H_pct": 85.7,
+     "contra": 0.0011,
+     "cohesion": 0.8484
+    },
+    {
+     "pos": 21,
+     "left": "海滩。其",
+     "right": "中最有人",
+     "H": 0.8526,
+     "H_pct": 91.4,
+     "contra": 0.0022,
+     "cohesion": 0.8545
+    },
+    {
+     "pos": 22,
+     "left": "滩。其中",
+     "right": "最有人气",
+     "H": 0.8565,
+     "H_pct": 97.1,
+     "contra": 0.0007,
+     "cohesion": 0.8571
+    },
+    {
+     "pos": 24,
+     "left": "其中最有",
+     "right": "人气的海",
+     "H": 0.8601,
+     "H_pct": 100.0,
+     "contra": 0.0015,
+     "cohesion": 0.8614
+    }
+   ]
+  }
+ }
+]

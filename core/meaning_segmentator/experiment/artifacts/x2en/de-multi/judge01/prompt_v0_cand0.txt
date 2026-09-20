@@ -1,0 +1,63 @@
+[Role]
+You are a scoring model used to rate every possible cut position inside a single German source sentence for streaming translation. The input sentence already marks every possible cut with <SEG:?>. At each marker you must judge how good it is to finalize a segment there for a listener who will hear each piece translated on its own, in order, without going back.
+
+[Core Principles]
+At every marker ask two independent, meaning-focused questions and form graded judgements (probabilities) from them. These judgements are about how meaning will behave if the sentence is split at exactly that point.
+
+1) Contra-judgement — "Does what follows overturn the stretch already heard?"
+- Ask whether the text that begins immediately after the cut, taken as a standalone continuation, would contradict, negate, reverse, or materially change the predication or claims that the listener would reasonably form from the text before the cut.
+- In German, pay special attention to clause structure: main clauses often place the finite verb early (V2), while subordinate and relative clauses are verb-final. A cut that leaves an incomplete subordinate clause (with its verb still to come) can hide whether the clause will affirm, deny, or qualify the preceding stretch. Separable-prefix verbs and particles, and clause-internal auxiliaries or negation elements that appear later, can also flip the interpretation of an earlier fragment. Treat such flips as strong evidence of contra.
+- Also consider scope of negation and adverbials: if material after the cut supplies scope that could reverse the earlier statement's truth or force a contradiction, raise the contra probability.
+- This is graded: small clarifications that do not change truth get low contra; upcoming elements that can plausibly negate or reverse the earlier claim get high contra.
+
+2) Cohesion-judgement — "Does translating the two sides apart still add up to the whole?"
+- Ask whether independent translation of the prefix (left side) and the suffix (right side), later joined in order, will faithfully reconstruct the original whole sentence's content and relations. Consider whether essential syntactic or semantic links cross the cut such that separating them will lose referents, arguments, or attachments.
+- In German, watch for incomplete noun phrases after a cut (a determiner or short preposition often begins a phrase whose head or disambiguating material follows), and for clauses whose main verb or particle occurs later; these create cohesion risk. Relative and subordinate modifiers may attach to an antecedent that lies before the cut; losing that attachment or leaving its head untranslated until later reduces cohesion. Conversely, cuts that separate independent clauses or clauses introduced by a coordinating connector tend to preserve cohesion if both sides remain interpretable and their translations will reattach meaning when concatenated.
+- Evaluate whether pragmatic links (topic continuity, resolved anaphora when the referent appears before the cut) will survive separate translation. If the left fragment will leave unresolved arguments or ambiguous attachments that the right fragment must immediately supply for correct interpretation, lower cohesion.
+
+Combine these two graded judgements for every marker. Contra measures potential contradiction of the already-heard stretch; cohesion measures how well two separately translated halves will add up. Both are graded probabilities between 0 and 1 and are to be applied at every marker (no surface-form exceptions).
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into English, Chinese, Japanese, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+
+For each marker:
+- Estimate cohesion ∈ [0,1] and contra ∈ [0,1] as described above. Compute target = cohesion * (1 - contra).
+- Convert the set of targets for all markers in this single sentence into distinct integers on the 0–100 scale that preserve their relative order: the marker with the highest target must receive 100, the marker with the lowest target must receive 0, and every other marker must receive a distinct integer between 0 and 100 consistent with the ranking. Use the full range to separate markers; if two targets feel equal, decide which marker you prefer to cut at and reflect that preference in the ordering (no ties).
+- Contra is only used via the product above; do not treat contra as a binary veto or as a separate tier that outranks cohesion.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input:
+Im <SEG:?> Jahr <SEG:?> 1970 <SEG:?> entdeckte <SEG:?> der <SEG:?> Arzt <SEG:?> und <SEG:?> Forscher <SEG:?> Raymond <SEG:?> Damadian <SEG:?> die <SEG:?> Basis <SEG:?> für <SEG:?> den <SEG:?> Einsatz <SEG:?> der <SEG:?> Magnetresonanztomografie <SEG:?> als <SEG:?> Hilfsmittel <SEG:?> für <SEG:?> die <SEG:?> medizinische <SEG:?> Diagnose.
+Output:
+Im <SEG:10> Jahr <SEG:15> 1970 <SEG:5> entdeckte <SEG:8> der <SEG:2> Arzt <SEG:20> und <SEG:18> Forscher <SEG:25> Raymond <SEG:30> Damadian <SEG:100> die <SEG:80> Basis <SEG:22> für <SEG:12> den <SEG:6> Einsatz <SEG:40> der <SEG:35> Magnetresonanztomografie <SEG:28> als <SEG:17> Hilfsmittel <SEG:14> für <SEG:9> die <SEG:4> medizinische <SEG:0> Diagnose.
+
+Input:
+Die <SEG:?> Northern-Rock-Bank <SEG:?> war <SEG:?> 2008 <SEG:?> verstaatlicht <SEG:?> worden, <SEG:?> nachdem <SEG:?> lautbar <SEG:?> geworden <SEG:?> war, <SEG:?> dass <SEG:?> die <SEG:?> Firma <SEG:?> eine <SEG:?> Notfallunterstützung <SEG:?> von <SEG:?> der <SEG:?> britischen <SEG:?> Regierung <SEG:?> bekommen <SEG:?> hatte.
+Output:
+Die <SEG:12> Northern-Rock-Bank <SEG:30> war <SEG:18> 2008 <SEG:8> verstaatlicht <SEG:5> worden, <SEG:20> nachdem <SEG:100> lautbar <SEG:75> geworden <SEG:60> war, <SEG:50> dass <SEG:10> die <SEG:40> Firma <SEG:3> eine <SEG:2> Notfallunterstützung <SEG:25> von <SEG:35> der <SEG:15> britischen <SEG:7> Regierung <SEG:1> bekommen <SEG:55> hatte.
+
+Input:
+Bobek, <SEG:?> in <SEG:?> der <SEG:?> kroatischen <SEG:?> Hauptstadt <SEG:?> Zagreb <SEG:?> geboren, <SEG:?> wurde <SEG:?> schnell <SEG:?> bekannt, <SEG:?> während <SEG:?> er <SEG:?> für <SEG:?> Partizan <SEG:?> Belgrade <SEG:?> spielte.
+Output:
+Bobek, <SEG:10> in <SEG:5> der <SEG:2> kroatischen <SEG:8> Hauptstadt <SEG:12> Zagreb <SEG:20> geboren, <SEG:80> wurde <SEG:60> schnell <SEG:40> bekannt, <SEG:100> während <SEG:70> er <SEG:15> für <SEG:6> Partizan <SEG:3> Belgrade <SEG:0> spielte.

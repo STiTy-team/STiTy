@@ -1,0 +1,64 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": 0.01401,
+  "lo": -0.00208,
+  "hi": 0.02904,
+  "n": 3726,
+  "n_clusters": 200
+ },
+ "gain": {
+  "mean": 0.00181,
+  "lo": -0.00888,
+  "hi": 0.01316,
+  "n": 7350,
+  "n_clusters": 400,
+  "dev_a": {
+   "mean": 0.01401,
+   "lo": -0.00208,
+   "hi": 0.02904,
+   "n": 3726,
+   "n_clusters": 200
+  },
+  "dev_b": {
+   "mean": -0.01074,
+   "lo": -0.02755,
+   "hi": 0.00589,
+   "n": 3624,
+   "n_clusters": 200
+  },
+  "pooled": true
+ },
+ "changelog": [
+  "Add a core principle warning against cutting between a verb and its essential complement and describing what a GOOD cut looks like, to address the primary finding that the prompt underestimates how tightly verbs bind to complements."
+ ],
+ "findings": [
+  "The prompt underestimates how tightly verbs bind to their complements: it permits cuts that separate a predicate from its essential object/resultative/degree/particle, producing standalone fragments whose meaning is completed, negated, or reversed by the continuation."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C8",
+   "kind": "change",
+   "was": "- Evaluate discourse connectors and coordination: conjunctions and reporting/con",
+   "now": "- Avoid cutting between a verb and its essential complement (object, resultative"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0186,
+   "≤5": 0.0109,
+   "≤7": 0.0125,
+   "≤10": 0.0154,
+   "≤99": 0.008
+  },
+  "n_worse": 1629,
+  "n_better": 1786,
+  "why": "Inserting a rule to avoid cutting between verbs and their essential complements made the model less likely to split verb–object/resultative chunks, giving small average gains (largest in the shortest latency bin ≤3) but also shifting many cuts so that punctuation or quotation marks became isolated fragments — those shifted cuts produced the large negative tail movements and left the net effect marginal.",
+  "lesson": "Respect verb–complement binding but avoid moving cuts in a way that leaves punctuation/quotes or other tiny tokens as isolated pieces; ensure punctuation stays attached to the unit it punctuates when enforcing verb-complement constraints.",
+  "blamed": [
+   "C8 «- Evaluate discourse connectors and coordination: conjunctio»"
+  ]
+ }
+}

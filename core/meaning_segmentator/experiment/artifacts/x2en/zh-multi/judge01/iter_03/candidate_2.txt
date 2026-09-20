@@ -1,0 +1,49 @@
+[Role]
+You are a sentence-internal segmentation scorer for streaming speech translation. For each Chinese source sentence you receive, every possible cut position is already marked with <SEG:?>. Your job is to judge, from the source alone, how good a cut at each marked position is for producing faithful, piecewise translations that, when joined, render the whole sentence.
+
+[Core Principles]
+- At this cut, ask: does the upcoming material negate, reverse, or materially change the assertions made so far (for example a later correction, contrast, or reversal that would contradict the preceding stretch)?
+- At this cut, ask: if the text is translated before and after independently, will the two outputs, read in order, together convey the same overall meaning, referents, and relations as the full source?
+- Consider whether Chinese left-headed modifiers (long pre-nominal relative or adjectival phrases) attach to the noun that follows; separating a modifier from its head risks losing referential links and creating orphan phrases.
+- Consider whether aspectual or perfective framing closes an event clause; when an aspectual device signals clause completion, cutting after it often preserves event integrity, while cutting before may split event structure and lose participants or temporal anchoring.
+- Consider passive introducers and copular framing patterns: when a passive or a 是…的 framing begins, the continuation often carries core predicates or arguments; cuts inside these constructs can obscure agency, focus, or emphasis.
+- Consider fronted adjuncts (locative, temporal or topic prefaces and reporting prefaces): they commonly start extended material whose scope is unresolved; cutting immediately after them can leave predicates orphaned or shift attachment.
+- Watch compact nominal sequences (numeral-classifier phrases, embedded prepositional adjuncts, long compound nouns): these are tight character sequences; cuts inside them commonly break reference and harm separable translation quality.
+- Evaluate discourse connectors and coordination: conjunctions and reporting/contrastive prefaces often begin clauses whose sense depends on continuation; isolating unfinished coordination or reported material can make the earlier stretch incomplete or misleading.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into English, Japanese, German, Spanish, joined in order, and a
+             reference-free quality estimator scored how faithfully that joined text renders the
+             WHOLE source sentence.
+  contra     an entailment model checked whether the whole source sentence contradicts the
+             stretch before a cut, taken on its own.
+  target = cohesion x (1 - contra)
+
+Assign scores that reflect the measured target above. Treat the target as defining an ordering of cut positions within the sentence. The integer you write at each marker is a RANK inside the sentence: order the positions by the product named above and map that ordering to distinct integers spanning the full 0–100 range. Use distinct integers for every marker in the sentence; contra is a graded probability and affects scores only via the product (do not convert it into a binary flag or a separate tier).
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any characters of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: 他 <SEG:?> 于 <SEG:?> 1 <SEG:?> 9 <SEG:?> 4 <SEG:?> 5 <SEG:?> 年 <SEG:?> 加 <SEG:?> 入 <SEG:?> 球 <SEG:?> 队 <SEG:?> ， <SEG:?> 一 <SEG:?> 直 <SEG:?> 效 <SEG:?> 力 <SEG:?> 到 <SEG:?> 1 <SEG:?> 9 <SEG:?> 5 <SEG:?> 8 <SEG:?> 年 <SEG:?> 。
+Output: 他 <SEG:100> 于 <SEG:67> 1 <SEG:24> 9 <SEG:19> 4 <SEG:14> 5 <SEG:57> 年 <SEG:95> 加 <SEG:52> 入 <SEG:90> 球 <SEG:38> 队 <SEG:81> ， <SEG:76> 一 <SEG:43> 直 <SEG:33> 效 <SEG:62> 力 <SEG:86> 到 <SEG:48> 1 <SEG:10> 9 <SEG:0> 5 <SEG:5> 8 <SEG:29> 年 <SEG:71> 。
+
+Input: 赏 <SEG:?> 樱 <SEG:?> ， <SEG:?> 亦 <SEG:?> 称 <SEG:?> “ <SEG:?> 花 <SEG:?> 见 <SEG:?> ” <SEG:?> （ <SEG:?> h <SEG:?> a <SEG:?> n <SEG:?> a <SEG:?> m <SEG:?> i <SEG:?> ） <SEG:?> ， <SEG:?> 从 <SEG:?> 8 <SEG:?> 世 <SEG:?> 纪 <SEG:?> 开 <SEG:?> 始 <SEG:?> 就 <SEG:?> 成 <SEG:?> 为 <SEG:?> 了 <SEG:?> 日 <SEG:?> 本 <SEG:?> 习 <SEG:?> 俗 <SEG:?> 。
+Output: 赏 <SEG:58> 樱 <SEG:77> ， <SEG:65> 亦 <SEG:81> 称 <SEG:29> “ <SEG:23> 花 <SEG:16> 见 <SEG:45> ” <SEG:39> （ <SEG:26> h <SEG:3> a <SEG:0> n <SEG:10> a <SEG:6> m <SEG:13> i <SEG:90> ） <SEG:74> ， <SEG:71> 从 <SEG:84> 8 <SEG:35> 世 <SEG:19> 纪 <SEG:87> 开 <SEG:94> 始 <SEG:100> 就 <SEG:97> 成 <SEG:48> 为 <SEG:52> 了 <SEG:61> 日 <SEG:55> 本 <SEG:68> 习 <SEG:42> 俗 <SEG:32> 。
+

@@ -1,0 +1,237 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Treat verbal complexes as atomic: do not cut so that negation, resultative complements, verb–object compounds, auxiliaries/aspect markers, or other tightly bound predicate material are left without their complements. Prefer cuts placed after the completed predicate or after clause‑final particles; attach closing punctuation or quotes to the piece that contains the predicate so the left fragment is not left dangling or unentailed."
+   },
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Consider left‑headed modifiers (long pre‑nominal relative or adjectival phrases): avoid separating a modifier from its head noun, since that breaks attachment and reference. That said, do not preserve multi‑token names or transliterations if keeping them whole would isolate punctuation, reporting verbs, or core predicates; in such cases prefer a cut that keeps the clause predicate and its punctuation/verb intact, even if the name is split."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 167
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 218
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8349,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Treat verbal complexes as atomic: do not cut so that negation words, resultative complements, verb–object compounds, auxiliaries/aspect markers, or other tightly bound predicate material are left separated from their verb or essential complements. Such splits commonly break entailment. A useful cut point is after a completed predicate (including its aspectual marker) and, when present, with the predicate's trailing punctuation or closing particle attached."
+   },
+   {
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "text": "- When a multi‑token name, transliteration, or technical term crosses a marker, do not preserve the name at the cost of isolating punctuation, a reporting verb/quote/colon, or a short predicate fragment. Prefer a cut that keeps the clause predicate and its attached punctuation/closing marks intact, even if the name must be split; ensure punctuation stays with the unit it punctuates."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 194
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 121
+   }
+  ],
+  "skipped": [],
+  "result_chars": 8279,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_236",
+    "text": "Input: 当 <SEG:?> 被 <SEG:?> 问 <SEG:?> 及 <SEG:?> 父 <SEG:?> 亲 <SEG:?> 说 <SEG:?> 了 <SEG:?> 什 <SEG:?> 么 <SEG:?> 时 <SEG:?> ， <SEG:?> 她 <SEG:?> 回 <SEG:?> 答 <SEG:?> 说 <SEG:?> ： <SEG:?> “ <SEG:?> 他 <SEG:?> 什 <SEG:?> 么 <SEG:?> 也 <SEG:?> 说 <SEG:?> 不 <SEG:?> 出 <SEG:?> 来 <SEG:?> ， <SEG:?> 只 <SEG:?> 是 <SEG:?> 站 <SEG:?> 在 <SEG:?> 那 <SEG:?> 里 <SEG:?> ， <SEG:?> 眨 <SEG:?> 着 <SEG:?> 眼 <SEG:?> 。 <SEG:?> ”\nOutput: 当 <SEG:76> 被 <SEG:57> 问 <SEG:30> 及 <SEG:62> 父 <SEG:59> 亲 <SEG:46> 说 <SEG:32> 了 <SEG:24> 什 <SEG:19> 么 <SEG:84> 时 <SEG:49> ， <SEG:89> 她 <SEG:92> 回 <SEG:51> 答 <SEG:81> 说 <SEG:100> ： <SEG:97> “ <SEG:86> 他 <SEG:8> 什 <SEG:5> 么 <SEG:3> 也 <SEG:65> 说 <SEG:0> 不 <SEG:16> 出 <SEG:54> 来 <SEG:43> ， <SEG:41> 只 <SEG:14> 是 <SEG:35> 站 <SEG:22> 在 <SEG:27> 那 <SEG:70> 里 <SEG:73> ， <SEG:68> 眨 <SEG:38> 着 <SEG:11> 眼 <SEG:78> 。 <SEG:95> ”"
+   },
+   {
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_398",
+    "text": "Input: 该 <SEG:?> 国 <SEG:?> 陆 <SEG:?> 军 <SEG:?> 和 <SEG:?> 海 <SEG:?> 军 <SEG:?> 都 <SEG:?> 比 <SEG:?> 较 <SEG:?> 弱 <SEG:?> ， <SEG:?> 尽 <SEG:?> 管 <SEG:?> 他 <SEG:?> 们 <SEG:?> 在 <SEG:?> 战 <SEG:?> 争 <SEG:?> 开 <SEG:?> 始 <SEG:?> 前 <SEG:?> 不 <SEG:?> 久 <SEG:?> 建 <SEG:?> 造 <SEG:?> 了 <SEG:?> 四 <SEG:?> 艘 <SEG:?> 新 <SEG:?> 舰 <SEG:?> 船 <SEG:?> 。\nOutput: 该 <SEG:61> 国 <SEG:97> 陆 <SEG:77> 军 <SEG:68> 和 <SEG:48> 海 <SEG:71> 军 <SEG:58> 都 <SEG:10> 比 <SEG:3> 较 <SEG:29> 弱 <SEG:84> ， <SEG:94> 尽 <SEG:52> 管 <SEG:90> 他 <SEG:23> 们 <SEG:74> 在 <SEG:87> 战 <SEG:19> 争 <SEG:16> 开 <SEG:13> 始 <SEG:6> 前 <SEG:81> 不 <SEG:0> 久 <SEG:100> 建 <SEG:65> 造 <SEG:42> 了 <SEG:32> 四 <SEG:26> 艘 <SEG:39> 新 <SEG:45> 舰 <SEG:35> 船 <SEG:55> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_979",
+    "text": "Input: 在 <SEG:?> 白 <SEG:?> 天 <SEG:?> 最 <SEG:?> 热 <SEG:?> 的 <SEG:?> 时 <SEG:?> 候 <SEG:?> ， <SEG:?> 旅 <SEG:?> 行 <SEG:?> 者 <SEG:?> 们 <SEG:?> 可 <SEG:?> 以 <SEG:?> 体 <SEG:?> 验 <SEG:?> 到 <SEG:?> 由 <SEG:?> 水 <SEG:?> （ <SEG:?> 或 <SEG:?> 其 <SEG:?> 他 <SEG:?> 东 <SEG:?> 西 <SEG:?> ） <SEG:?> 所 <SEG:?> 形 <SEG:?> 成 <SEG:?> 的 <SEG:?> 错 <SEG:?> 觉 <SEG:?> — <SEG:?> — <SEG:?> 海 <SEG:?> 市 <SEG:?> 蜃 <SEG:?> 楼 <SEG:?> 。\nOutput: 在 <SEG:95> 白 <SEG:8> 天 <SEG:92> 最 <SEG:68> 热 <SEG:63> 的 <SEG:37> 时 <SEG:89> 候 <SEG:87> ， <SEG:97> 旅 <SEG:34> 行 <SEG:74> 者 <SEG:82> 们 <SEG:61> 可 <SEG:58> 以 <SEG:84> 体 <SEG:79> 验 <SEG:18> 到 <SEG:45> 由 <SEG:5> 水 <SEG:32> （ <SEG:24> 或 <SEG:21> 其 <SEG:16> 他 <SEG:53> 东 <SEG:11> 西 <SEG:47> ） <SEG:42> 所 <SEG:66> 形 <SEG:26> 成 <SEG:39> 的 <SEG:50> 错 <SEG:29> 觉 <SEG:100> — <SEG:55> — <SEG:71> 海 <SEG:3> 市 <SEG:0> 蜃 <SEG:13> 楼 <SEG:76> 。"
+   },
+   {
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_880",
+    "text": "Input: 多 <SEG:?> 国 <SEG:?> 政 <SEG:?> 府 <SEG:?> 要 <SEG:?> 求 <SEG:?> 入 <SEG:?> 境 <SEG:?> 游 <SEG:?> 客 <SEG:?> 或 <SEG:?> 离 <SEG:?> 境 <SEG:?> 居 <SEG:?> 民 <SEG:?> 接 <SEG:?> 种 <SEG:?> 一 <SEG:?> 系 <SEG:?> 列 <SEG:?> 疾 <SEG:?> 病 <SEG:?> 疫 <SEG:?> 苗 <SEG:?> 。\nOutput: 多 <SEG:87> 国 <SEG:78> 政 <SEG:48> 府 <SEG:83> 要 <SEG:74> 求 <SEG:65> 入 <SEG:43> 境 <SEG:57> 游 <SEG:39> 客 <SEG:61> 或 <SEG:91> 离 <SEG:26> 境 <SEG:52> 居 <SEG:22> 民 <SEG:96> 接 <SEG:35> 种 <SEG:70> 一 <SEG:13> 系 <SEG:0> 列 <SEG:30> 疾 <SEG:17> 病 <SEG:9> 疫 <SEG:4> 苗 <SEG:100> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 334
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "E2",
+    "kind": "example",
+    "chars_change": 0
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E3",
+    "kind": "example",
+    "chars_change": -42
+   },
+   {
+    "edit": 3,
+    "op": "replace",
+    "id": "E4",
+    "kind": "example",
+    "chars_change": -690
+   }
+  ],
+  "skipped": [],
+  "result_chars": 7566,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Treat verbal complexes as atomic: avoid cuts that separate negation, resultative complements, verb–object compounds, auxiliaries/aspect markers, or other tightly bound predicate material from the verb or its core complements. A good cut generally comes after a completed predicate (including its aspectual/auxiliary material) and keeps any trailing punctuation or final particles attached to the same piece."
+   },
+   {
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Prioritize keeping clause predicates and their punctuation/quotation together over preserving multi‑token names, transliterations, or long technical terms. If retaining a long name would force a cut that isolates a reporting verb, punctuation, or core predicate, permit splitting the name; when you must split a name, choose a breakpoint that does not leave the adjacent fragment uninformative or likely to be unentailed."
+   },
+   {
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "labeled_example": "cmn_hans_cn_438",
+    "text": "Input: 据 <SEG:?> 说 <SEG:?> 扎 <SEG:?> 布 <SEG:?> 隆 <SEG:?> · <SEG:?> 阿 <SEG:?> 旺 <SEG:?> · <SEG:?> 纳 <SEG:?> 姆 <SEG:?> 耶 <SEG:?> 尔 <SEG:?> ( <SEG:?> Z <SEG:?> h <SEG:?> a <SEG:?> b <SEG:?> d <SEG:?> r <SEG:?> u <SEG:?> n <SEG:?> g <SEG:?> n <SEG:?> a <SEG:?> w <SEG:?> a <SEG:?> n <SEG:?> g <SEG:?> N <SEG:?> a <SEG:?> m <SEG:?> g <SEG:?> y <SEG:?> e <SEG:?> l <SEG:?> ) <SEG:?> 于 <SEG:?> 1 <SEG:?> 6 <SEG:?> 4 <SEG:?> 9 <SEG:?> 年 <SEG:?> 建 <SEG:?> 造 <SEG:?> 这 <SEG:?> 座 <SEG:?> 堡 <SEG:?> 垒 <SEG:?> ， <SEG:?> 是 <SEG:?> 为 <SEG:?> 了 <SEG:?> 纪 <SEG:?> 念 <SEG:?> 自 <SEG:?> 己 <SEG:?> 战 <SEG:?> 胜 <SEG:?> 藏 <SEG:?> 蒙 <SEG:?> 军 <SEG:?> 队 <SEG:?> 。\nOutput: 据 <SEG:95> 说 <SEG:100> 扎 <SEG:84> 布 <SEG:68> 隆 <SEG:74> · <SEG:76> 阿 <SEG:73> 旺 <SEG:82> · <SEG:65> 纳 <SEG:61> 姆 <SEG:77> 耶 <SEG:87> 尔 <SEG:89> ( <SEG:71> Z <SEG:23> h <SEG:5> a <SEG:10> b <SEG:40> d <SEG:32> r <SEG:42> u <SEG:24> n <SEG:35> g <SEG:58> n <SEG:31> a <SEG:13> w <SEG:21> a <SEG:3> n <SEG:26> g <SEG:50> N <SEG:19> a <SEG:8> m <SEG:15> g <SEG:6> y <SEG:11> e <SEG:45> l <SEG:63> ) <SEG:85> 于 <SEG:52> 1 <SEG:2> 6 <SEG:16> 4 <SEG:18> 9 <SEG:47> 年 <SEG:44> 建 <SEG:97> 造 <SEG:98> 这 <SEG:69> 座 <SEG:90> 堡 <SEG:66> 垒 <SEG:56> ， <SEG:53> 是 <SEG:48> 为 <SEG:27> 了 <SEG:29> 纪 <SEG:0> 念 <SEG:39> 自 <SEG:60> 己 <SEG:34> 战 <SEG:37> 胜 <SEG:55> 藏 <SEG:79> 蒙 <SEG:81> 军 <SEG:92> 队 <SEG:94> 。"
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 141
+   },
+   {
+    "edit": 1,
+    "op": "replace",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 187
+   },
+   {
+    "edit": 2,
+    "op": "replace",
+    "id": "E1",
+    "kind": "example",
+    "chars_change": 857
+   }
+  ],
+  "skipped": [],
+  "result_chars": 9149,
+  "errors": [
+   "길이 초과: 9149 > 8760"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "E3"
+   },
+   {
+    "op": "delete",
+    "id": "E4"
+   },
+   {
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "text": "- Treat verbal complexes as atomic: avoid cuts that separate negation, resultative complements, verb–object compounds, auxiliaries/aspect markers, or other tightly bound predicate material from their verb or core complements. A useful cut is generally after a completed predicate (including its aspectual/auxiliary material) and leaves any trailing punctuation, final particles, or closing quotes attached to that same piece.\n- Do not preserve multi-token names at the cost of isolating predicates, reporting verbs, or their punctuation: prefer cuts that keep clause predicates and their punctuation intact. If you must split a long name or transliteration, choose a breakpoint that leaves the adjacent fragments informative and unlikely to be unentailed."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "E3",
+    "kind": "delete",
+    "chars_change": -877
+   },
+   {
+    "edit": 1,
+    "op": "delete",
+    "id": "E4",
+    "kind": "delete",
+    "chars_change": -1211
+   },
+   {
+    "edit": 2,
+    "op": "insert_after",
+    "id": "C8",
+    "kind": "change",
+    "chars_change": 756
+   }
+  ],
+  "skipped": [],
+  "result_chars": 6630,
+  "errors": null
+ }
+]
