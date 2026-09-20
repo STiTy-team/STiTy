@@ -1,0 +1,158 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? Most severe when the cut severs a head (a verb or a noun) from an immediately following essential complement or modifier — e.g. an obligatory object, required prepositional phrase, infinitival or a that/which/who clause — or when attachment is left unresolved; mildest when the cut leaves the left span a grammatically complete unit (a full independent clause or an entire noun phrase), as when splitting between coordinate list items or after a complete clause.",
+    "_was": "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? The worst are fragments that lack a diagnosable main predicate or identity of agent when isolated; the mildest are independent clauses, appositives, or clearly parenthetical material that preserve truth when isolated."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 245
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10678,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "text": "When two candidate cuts fall inside the same attachment chain, prefer the cut that leaves the left span a grammatically complete unit (an independent clause or an entire NP) over the cut that leaves a fragment.",
+    "_was": "- When one cut falls between a verb and its obligatory object/complement and another falls earlier within pre-verbal adjunct material, prefer the later cut after the complement."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "chars_change": 33
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10466,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Is this marker immediately before an essential complement or modifier that completes the preceding noun or verb? Most severe when it severs a head (verb or noun) from a required complement — an obligatory object, an essential prepositional phrase, an infinitival or other verbal complement, or a that/which/who relative clause; mildest when the following material is parenthetical, coordinate, or when the left span is already a grammatically complete clause or full noun phrase.",
+    "_was": "- Will translating the left and right sides separately then joining them preserve the whole sentence meaning? Severe failures occur when the following words determine attachment, scope, or core argument roles; mild cases are when both sides are semantically independent lists or coordinate items."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 185
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10618,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "text": "When two candidate cuts fall inside the same attachment chain, prefer the cut that leaves the left span a grammatically complete unit (an independent clause or an entire NP) over the cut that leaves a fragment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 211
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10644,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Is this marker placed between a head (a verb or a noun) and an immediately following essential complement or modifier that completes it? Keep the head together with the complement that completes it: most severe when the following span is an obligatory complement (direct object, required prepositional complement, infinitival or that-clause, or a restrictive relative) whose attachment determines core argument or scope; mildest when the following material is parenthetical, optional/nonrestrictive, a coordinate/list item, or when the left span already forms a grammatically complete clause or full NP."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 606
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11039,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "O2",
+    "_was": "- When one marker detaches a relative clause from its head noun and another splits inside that relative clause, prefer the cut inside the relative clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "O2",
+    "kind": "delete",
+    "chars_change": -155
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10278,
+  "errors": null
+ }
+]

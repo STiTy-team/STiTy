@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00411,
+  "lo": -0.00093,
+  "hi": 0.00941,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.00411,
+  "lo": -0.00093,
+  "hi": 0.00941,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Replace O2 with an order rule that prefers the later cut which preserves a fronted adjunct over an earlier cut that fragments it — directly addresses the primary 'fronted adjunct' finding."
+ ],
+ "findings": [
+  "When two candidate cuts both lie inside the same fronted adjunct, the prompt often prefers an earlier split that fragments the adjunct; the better choice preserves the adjunct as a unit attached to the clause that follows.",
+  "The prompt permits cuts that sever an initial subordinate/adverbial/preposed phrase from the sentence's main finite predicate, producing left fragments that lose scope or contradict the whole sentence."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "O2",
+   "kind": "change",
+   "was": "- When one marker detaches a relative clause from its head noun and another spli",
+   "now": "When two markers split the same fronted adjunct, prefer the later cut that leave"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.006,
+   "≤5": 0.0049,
+   "≤7": 0.0025,
+   "≤10": -0.0,
+   "≤99": -0.0033
+  },
+  "n_worse": 2050,
+  "n_better": 2092,
+  "why": "The O2 replacement made the scorer prefer the later cut that preserves a fronted adjunct, so cuts were pushed later and the top-of-list choices at shallow depths shifted into deeper ranks. That produced gains for short-latency bins (≤3–7 pieces) which keep many candidates (rank-depth coincidence improved at deeper depths) but slightly reduced top-1 precision and produced a small loss for the longest bin (≤99).",
+  "lesson": "When preferring later cuts to keep fronted adjuncts intact, retain or recover precision for the very top ranks so long-latency budgets (which rely on the first one or two positions) are not harmed.",
+  "blamed": [
+   "O2"
+  ]
+ }
+}

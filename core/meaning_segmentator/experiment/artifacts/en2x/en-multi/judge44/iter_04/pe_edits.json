@@ -1,0 +1,128 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? The worst are fragments that lack a diagnosable main predicate or identity of agent when isolated, or cases where a cut splits a noun phrase so the left span omits the NP head or modifiers that determine reference; the mildest are independent clauses, appositives, or clearly parenthetical material, and any left span that already forms a grammatically complete unit — a full clause or a complete NP (head plus required pre/post modifiers) that preserves truth when isolated.",
+    "_was": "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? The worst are fragments that lack a diagnosable main predicate or identity of agent when isolated; the mildest are independent clauses, appositives, or clearly parenthetical material that preserve truth when isolated."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 258
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10922,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O4",
+    "kind": "change",
+    "text": "When two markers split the same noun phrase or nominal compound, prefer the later cut that leaves the NP intact.",
+    "_was": "When two cuts fall before the same finite verb, prefer the earlier cut if that earlier cut leaves the left span a grammatically complete clause (subject + finite verb) over the later cut that leaves a fragment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O4",
+    "kind": "change",
+    "chars_change": -98
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10566,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "When two markers split the same noun phrase or nominal compound, prefer the later cut that leaves the NP intact."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 113
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10777,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Is this marker immediately before a clause's finite verb or auxiliary when the words to its left form an identifiable subject noun phrase (a full NP or fronted NP)? Keep the subject NP together with the following finite verb/auxiliary: most severe when the left span is a multiword subject (a proper name or a noun head with modifiers) and the next word is the clause's finite verb or auxiliary that establishes tense/negation/scope; mildest when the left side is only a short determiner or pronoun, a clear parenthetical, or punctuation shows an effective sentence end."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 573
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11237,
+  "errors": null
+ }
+]

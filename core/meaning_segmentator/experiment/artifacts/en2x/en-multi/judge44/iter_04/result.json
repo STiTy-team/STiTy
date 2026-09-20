@@ -1,0 +1,50 @@
+{
+ "iter": 4,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00154,
+  "lo": -0.00348,
+  "hi": 0.00671,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.00154,
+  "lo": -0.00348,
+  "hi": 0.00671,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Replace C2 severity to make NP completeness part of what makes a left-span fragment worse or milder — addresses the primary finding that the scorer currently prefers earlier fragmenting cuts inside NPs while the target prefers the later cut that preserves the full NP."
+ ],
+ "findings": [
+  "When two cuts fall inside the same nominal expression, the prompt prefers earlier fragmenting cuts while the target prefers the later cut that preserves the full NP.",
+  "The prompt cuts where the left span is a subject/NP but the predicate (finite verb or auxiliary) immediately follows, producing a fragment that the continuation overturns or completes."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "change",
+   "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+   "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0033,
+   "≤5": 0.0008,
+   "≤7": -0.0006,
+   "≤10": -0.0008,
+   "≤99": 0.0008
+  },
+  "n_worse": 1999,
+  "n_better": 2174,
+  "why": "The edit made NP-completeness part of the left-fragment severity, so the scorer reduced many cuts that split NPs (giving a small net gain). However, that change often achieved NP preservation by moving the preferred cut earlier (detaching tiny left fragments or cutting before an NP) which harmed a sizable set of mid-length examples; improvements are concentrated in the very short latency bins (≤3, ≤5) while ≤7/≤10 bins show small losses. Rank_depth falls at depth1 and rises at depth2, indicating the edit shifted the top choice rather than uniformly improving deeper rankings.",
+  "lesson": "When increasing NP-completeness weight, preserve or improve top-1 alignment—avoid causing the model to favor earlier boundary placements that detach tiny left fragments even if they avoid cutting inside NPs.",
+  "blamed": [
+   "C2 «- If the left-side stretch is read alone, is it a coherent, »"
+  ]
+ }
+}

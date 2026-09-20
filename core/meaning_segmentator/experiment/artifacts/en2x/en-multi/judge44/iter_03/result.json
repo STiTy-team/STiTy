@@ -1,0 +1,50 @@
+{
+ "iter": 3,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00074,
+  "lo": -0.00449,
+  "hi": 0.00574,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.00074,
+  "lo": -0.00449,
+  "hi": 0.00574,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Add a fallback ordering in [Order Principles] that, when two cuts fall before the same finite verb, prefers the earlier cut if it leaves a grammatically complete subject+finite-verb left span over the later cut that leaves a fragment — to address the primary finding about pre-verbal splits."
+ ],
+ "findings": [
+  "When two candidate cuts lie in the pre-verbal span, the prompt prefers later splits that leave left-side fragments; the better choice is the earlier split if it yields a grammatically complete clause on the left.",
+  "The prompt lets cuts sever subject NPs from their finite verb, producing left fragments that the continuation must rescue."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "O_end",
+   "kind": "change",
+   "was": "",
+   "now": "When two cuts fall before the same finite verb, prefer the earlier cut if that e"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0027,
+   "≤5": -0.0013,
+   "≤7": -0.0012,
+   "≤10": 0.0004,
+   "≤99": 0.0008
+  },
+  "n_worse": 2061,
+  "n_better": 2082,
+  "why": "Inserting the fallback that prefers an earlier cut when two cuts fall before the same finite verb caused the model to promote earlier cut positions (so the top-ranked choices more often leave a grammatically complete subject+finite-verb left span).  That shift shows up in rank_depth (notably +0.264 at depth 1) and produced a tiny net change overall, with small gains in the shortest bin (≤3) but slight losses in the mid-length bins (≤5, ≤7) because some formerly-better later cuts that avoided splitting subjects or enumerations were demoted.",
+  "lesson": "Respect that this fallback mainly moves the very top choices (affecting long-latency/top-1 behaviour) and must be constrained/tested so it doesn't introduce harmful early splits that degrade medium-length segmentation (e.g., splitting subjects or breaking enumerations).",
+  "blamed": [
+   "O_end"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "verdict": "accept",
+ "delta": {
+  "mean": 0.00074,
+  "lo": -0.00449,
+  "hi": 0.00574,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": 0.0027,
+  "≤5": -0.0013,
+  "≤7": -0.0012,
+  "≤10": 0.0004,
+  "≤99": 0.0008
+ },
+ "n_worse": 2061,
+ "n_better": 2082,
+ "worst": [
+  {
+   "id": "en_us_313",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6465,
+   "before": "The 30-year-old husband, ‖ who was born in Buffalo, ‖ was one of the four ‖ killed ‖ in the shooting, ‖ but his wife was not hurt.",
+   "after": "The 30-year-old husband, ‖ who was born in Buffalo, ‖ was one of the four killed ‖ in the shooting, ‖ but his wife ‖ was not hurt."
+  },
+  {
+   "id": "en_us_313",
+   "k": 6,
+   "bin": "≤5",
+   "delta": -0.5972,
+   "before": "The 30-year-old husband, ‖ who was born in Buffalo, ‖ was ‖ one of the four ‖ killed ‖ in the shooting, ‖ but his wife was not hurt.",
+   "after": "The 30-year-old husband, ‖ who was born in Buffalo, ‖ was one ‖ of the four killed ‖ in the shooting, ‖ but his wife ‖ was not hurt."
+  },
+  {
+   "id": "en_us_1536",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.4832,
+   "before": "Local authorities are warning residents in the vicinity of the plant ‖ to stay indoors, ‖ turn off air-conditioners ‖ and not to drink tap water.",
+   "after": "Local authorities are warning residents in the vicinity of the plant to stay indoors, ‖ turn ‖ off air-conditioners ‖ and not to drink tap water."
+  },
+  {
+   "id": "en_us_1192",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.459,
+   "before": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!",
+   "after": "However, this does not come cheap: ‖ as rough rules of thumb, you can expect to pay up to four times the normal economy fare for business, ‖ and eleven times for first class!"
+  },
+  {
+   "id": "en_us_388",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.4285,
+   "before": "He originally named the Hangeul alphabet ‖ Hunmin Jeongeum, ‖ which means \"the correct sounds ‖ for the instruction of the people\".",
+   "after": "He originally named ‖ the Hangeul alphabet Hunmin Jeongeum, ‖ which means ‖ \"the correct sounds for the instruction of the people\"."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1593",
+   "k": 5,
+   "bin": "≤3",
+   "delta": 0.4918,
+   "before": "Eventually, wooden wheels ‖ were replaced ‖ by iron wheels. ‖ In 1767, ‖ the first full-iron rails ‖ were introduced.",
+   "after": "Eventually, wooden wheels were ‖ replaced ‖ by iron wheels. ‖ In 1767, the first full-iron rails ‖ were ‖ introduced."
+  },
+  {
+   "id": "en_us_657",
+   "k": 11,
+   "bin": "≤3",
+   "delta": 0.484,
+   "before": "If you visit ‖ Greenland ‖ during cold seasons ‖ (considering ‖ that ‖ the ‖ further ‖ north ‖ you go, ‖ the colder it will be), ‖ it is essential ‖ to bring warm enough clothing.",
+   "after": "If you visit Greenland ‖ during cold seasons ‖ (considering that the further north you go, ‖ the colder ‖ it ‖ will ‖ be), ‖ it is ‖ essential ‖ to bring ‖ warm ‖ enough clothing."
+  },
+  {
+   "id": "en_us_16",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.4638,
+   "before": "\"Panama ‖ Papers\" ‖ is an umbrella term ‖ for roughly ‖ ten ‖ million documents ‖ from Panamanian law firm Mossack Fonseca, ‖ leaked to the press in spring 2016.",
+   "after": "\"Panama Papers\" ‖ is ‖ an umbrella term ‖ for roughly ten million documents ‖ from Panamanian law firm Mossack Fonseca, ‖ leaked to the press ‖ in spring ‖ 2016."
+  },
+  {
+   "id": "en_us_657",
+   "k": 12,
+   "bin": "≤3",
+   "delta": 0.4349,
+   "before": "If you visit ‖ Greenland ‖ during cold seasons ‖ (considering ‖ that ‖ the ‖ further ‖ north ‖ you ‖ go, ‖ the colder it will be), ‖ it is essential ‖ to bring warm enough clothing.",
+   "after": "If you visit ‖ Greenland ‖ during cold seasons ‖ (considering that the further north you go, ‖ the colder ‖ it ‖ will ‖ be), ‖ it is ‖ essential ‖ to bring ‖ warm ‖ enough clothing."
+  },
+  {
+   "id": "en_us_579",
+   "k": 8,
+   "bin": "≤3",
+   "delta": 0.4306,
+   "before": "Cells ‖ are so basic and critical ‖ to the study ‖ of life, ‖ in fact, ‖ that they are often referred to as \"the building ‖ blocks ‖ of ‖ life\".",
+   "after": "Cells are so basic and critical to the ‖ study ‖ of ‖ life, ‖ in ‖ fact, ‖ that they are often ‖ referred ‖ to as \"the building blocks of life\"."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.678,
+   "2": 4.25,
+   "3": 2.843,
+   "4": 2.208,
+   "5": 1.809,
+   "6": 1.593,
+   "7": 1.422,
+   "8": 1.305,
+   "9": 1.233,
+   "10": 1.182,
+   "11": 1.144,
+   "12": 1.118,
+   "13": 1.1
+  },
+  "revision": {
+   "1": 7.942,
+   "2": 4.194,
+   "3": 2.887,
+   "4": 2.239,
+   "5": 1.873,
+   "6": 1.604,
+   "7": 1.443,
+   "8": 1.31,
+   "9": 1.239,
+   "10": 1.186,
+   "11": 1.147,
+   "12": 1.11,
+   "13": 1.085
+  },
+  "delta": {
+   "1": 0.264,
+   "2": -0.056,
+   "3": 0.044,
+   "4": 0.031,
+   "5": 0.064,
+   "6": 0.011,
+   "7": 0.021,
+   "8": 0.005,
+   "9": 0.006,
+   "10": 0.004,
+   "11": 0.003,
+   "12": -0.008,
+   "13": -0.015
+  }
+ },
+ "why": "Inserting the fallback that prefers an earlier cut when two cuts fall before the same finite verb caused the model to promote earlier cut positions (so the top-ranked choices more often leave a grammatically complete subject+finite-verb left span).  That shift shows up in rank_depth (notably +0.264 at depth 1) and produced a tiny net change overall, with small gains in the shortest bin (≤3) but slight losses in the mid-length bins (≤5, ≤7) because some formerly-better later cuts that avoided splitting subjects or enumerations were demoted.",
+ "lesson": "Respect that this fallback mainly moves the very top choices (affecting long-latency/top-1 behaviour) and must be constrained/tested so it doesn't introduce harmful early splits that degrade medium-length segmentation (e.g., splitting subjects or breaking enumerations).",
+ "blamed": [
+  "O_end"
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt permits cuts that sever an initial subordinate/adverbial/preposed phrase from the sentence's main finite predicate, producing left fragments that lose scope or contradict the whole sentence.",
+    "evidence": "en_us_174, en_us_1113, en_us_381, en_us_633 — each splits an introductory clause/phrase from the main finite verb so the isolated left span is incoherent or misleading.",
+    "type_predicate": "Markers that follow a sentence-initial subordinate clause, participial/adverbial preface, or other preposed phrase and where the next word begins the sentence's main finite verb/predicate.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between an initial subordinate/adverbial/preposed phrase and the sentence's main finite verb; keep the main clause (subject + finite verb/predicate) intact."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts both lie inside the same fronted adjunct, the prompt often prefers an earlier split that fragments the adjunct; the better choice preserves the adjunct as a unit attached to the clause that follows.",
+    "evidence": "en_us_174, en_us_381, en_us_1294, en_us_89 — each presents pairs of markers that would split a fronted adjunct, and the offline target prefers the cut that leaves the adjunct whole.",
+    "type_predicate": "Pairs of markers that both fall inside the same fronted adjunct (sentence-initial adverbial, preposed prepositional phrase, or subordinate clause) in a sentence.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two markers split the same fronted adjunct, prefer the later cut that leaves the adjunct intact and attaches it to the following clause."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts both lie inside the same fronted adjunct, the prompt often prefers an earlier split that fragments the adjunct; the better choice preserves the adjunct as a unit attached to the clause that follows.",
+   "evidence": "en_us_174, en_us_381, en_us_1294, en_us_89 — each presents pairs of markers that would split a fronted adjunct, and the offline target prefers the cut that leaves the adjunct whole.",
+   "type_predicate": "Pairs of markers that both fall inside the same fronted adjunct (sentence-initial adverbial, preposed prepositional phrase, or subordinate clause) in a sentence.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two markers split the same fronted adjunct, prefer the later cut that leaves the adjunct intact and attaches it to the following clause.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt permits cuts that sever an initial subordinate/adverbial/preposed phrase from the sentence's main finite predicate, producing left fragments that lose scope or contradict the whole sentence.",
+   "evidence": "en_us_174, en_us_1113, en_us_381, en_us_633 — each splits an introductory clause/phrase from the main finite verb so the isolated left span is incoherent or misleading.",
+   "type_predicate": "Markers that follow a sentence-initial subordinate clause, participial/adverbial preface, or other preposed phrase and where the next word begins the sentence's main finite verb/predicate.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between an initial subordinate/adverbial/preposed phrase and the sentence's main finite verb; keep the main clause (subject + finite verb/predicate) intact.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

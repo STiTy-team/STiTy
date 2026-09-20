@@ -1,0 +1,55 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that separate a head (verb or noun) from an immediately following essential complement or modifier, which often overturns the left clause's meaning.",
+    "evidence": "en_us_733, en_us_381, en_us_633, en_us_1636, en_us_1294, en_us_1199, en_us_574, en_us_378 — each policy cut separates a verb or head noun from an immediately following complement (object, prepositional phrase, or clause) that the offline target keeps attached.",
+    "type_predicate": "Positions that occur immediately before an essential complement or modifier: the following span is an immediate complement (a prepositional phrase, a that/which/who relative clause, an infinitival or other verbal complement) that completes the preceding noun or verb.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before an essential complement or modifier that completes the preceding noun or verb (prepositional phrase, that/which/who relative clause, infinitival or verb complement)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When several positions are already judged alike, the prompt ranks internal splits too high instead of preferring cuts that leave the left side a self-contained clause or full noun phrase.",
+    "evidence": "en_us_1636, en_us_655, en_us_633, en_us_872 — in each case two candidate cuts fall in the same attachment chain and the better cut (offline) leaves the left span grammatically complete while the prompt prefers an internal split.",
+    "type_predicate": "Configuration where two markers occur in the same sentence inside one attachment chain: one marker splits a head from its immediately following essential modifier/complement and the other splits inside that modifier/complement.",
+    "edit": {
+     "where": "order_principles",
+     "action": "replace",
+     "target": "When one cut falls between",
+     "text": "When two candidate cuts fall inside the same attachment chain, prefer the cut that leaves the left span a grammatically complete unit (an independent clause or an entire NP) over the cut that leaves a fragment."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When several positions are already judged alike, the prompt ranks internal splits too high instead of preferring cuts that leave the left side a self-contained clause or full noun phrase.",
+   "evidence": "en_us_1636, en_us_655, en_us_633, en_us_872 — in each case two candidate cuts fall in the same attachment chain and the better cut (offline) leaves the left span grammatically complete while the prompt prefers an internal split.",
+   "type_predicate": "Configuration where two markers occur in the same sentence inside one attachment chain: one marker splits a head from its immediately following essential modifier/complement and the other splits inside that modifier/complement.",
+   "edit": {
+    "action": "replace",
+    "target": "When one cut falls between",
+    "text": "When two candidate cuts fall inside the same attachment chain, prefer the cut that leaves the left span a grammatically complete unit (an independent clause or an entire NP) over the cut that leaves a fragment.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that separate a head (verb or noun) from an immediately following essential complement or modifier, which often overturns the left clause's meaning.",
+   "evidence": "en_us_733, en_us_381, en_us_633, en_us_1636, en_us_1294, en_us_1199, en_us_574, en_us_378 — each policy cut separates a verb or head noun from an immediately following complement (object, prepositional phrase, or clause) that the offline target keeps attached.",
+   "type_predicate": "Positions that occur immediately before an essential complement or modifier: the following span is an immediate complement (a prepositional phrase, a that/which/who relative clause, an infinitival or other verbal complement) that completes the preceding noun or verb.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before an essential complement or modifier that completes the preceding noun or verb (prepositional phrase, that/which/who relative clause, infinitival or verb complement).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

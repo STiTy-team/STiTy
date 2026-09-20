@@ -1,0 +1,668 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00513,
+   "lo": -0.00315,
+   "hi": 0.01333,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replaced C2 severity to distinguish cuts that sever a head from its essential complement (most severe) from cuts that leave the left span a grammatically complete unit (mildest). This addresses the primary finding that internal splits are ranked too high by giving the model a surface-recognisable severity axis favoring cuts that leave the left side complete."
+  ],
+  "delta_confirm": {
+   "mean": 0.00154,
+   "lo": -0.00481,
+   "hi": 0.00815,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+    "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01149,
+   "lo": -0.01988,
+   "hi": -0.0028,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replaced C3 to encode the primary finding: prefer avoiding cuts immediately before essential complements or modifiers that complete the preceding noun or verb, and give a clear severity axis (most severe = severs head from required complement; mildest = parenthetical/coordinate or left side already a full clause/NP). This makes the model favour cuts that leave the left span grammatically complete."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "was": "- Will translating the left and right sides separately then joining them preserv",
+    "now": "- Is this marker immediately before an essential complement or modifier that com"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00696,
+   "lo": -0.00083,
+   "hi": 0.01455,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Inserted an Order Principle that prefers cuts which leave the left span a grammatically complete unit (independent clause or whole NP) over internal splits that sever a head from its immediately following essential complement — to address the primary finding that the prompt ranks internal splits too highly when two candidates lie in the same attachment chain."
+  ],
+  "delta_confirm": {
+   "mean": 6e-05,
+   "lo": -0.00586,
+   "hi": 0.00575,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "was": "- When one cut is immediately before sentence-final closing material (end punctu",
+    "now": "When two candidate cuts fall inside the same attachment chain, prefer the cut th"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01694,
+   "lo": -0.02592,
+   "hi": -0.00778,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow binding check into [Core Principles] to keep a head (verb or noun) together with its immediately following essential complement — addresses the primary finding that the prompt allows cuts that sever a head from its essential complement and ranks internal splits too highly."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Is this marker immediately adjacent to sentence-final punctuation or closing q",
+    "now": "- Is this marker placed between a head (a verb or a noun) and an immediately fol"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 5,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00017,
+   "lo": -0.00786,
+   "hi": 0.00838,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete O2: remove an Order Principle that largely restates the embedded-modifier/relative-clause concern already covered by C4 and so earns its place least; this satisfies the 'prune' constraint and reduces principle count without removing the last ordering rule."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "O2",
+    "kind": "delete",
+    "was": "- When one marker detaches a relative clause from its head noun and another spli",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00929,
+   "lo": 0.00304,
+   "hi": 0.01528,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": 0.00929,
+   "lo": 0.00304,
+   "hi": 0.01528,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O1 to implement the primary 'order' finding: prefer cuts that leave the left span grammatically complete over internal splits that leave fragments, so the model favors clause/NP-completing cuts when two candidates lie in the same attachment chain."
+  ],
+  "findings": [
+   "When several positions are already judged alike, the prompt ranks internal splits too high instead of preferring cuts that leave the left side a self-contained clause or full noun phrase.",
+   "The prompt allows cuts that separate a head (verb or noun) from an immediately following essential complement or modifier, which often overturns the left clause's meaning."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "was": "- When one cut falls between a verb and its obligatory object/complement and ano",
+    "now": "When two candidate cuts fall inside the same attachment chain, prefer the cut th"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0108,
+    "≤5": 0.0111,
+    "≤7": 0.008,
+    "≤10": 0.0034,
+    "≤99": 0.0018
+   },
+   "n_worse": 1921,
+   "n_better": 2296,
+   "why": "Replacing O1 made the model prefer cuts that complete the left span (clause/NP‑completing cuts) when two candidates lie in the same attachment chain, which reordered many mid-to-deep candidates and produced the small overall gain concentrated in short-latency bins (≤3, ≤5). However the change slightly weakened the single top choice (rank‑1 fell), explaining the handful of large negative tail moves even though more (and deeper) positions improved.",
+   "lesson": "When adding an ‘prefer left‑span complete’ rule, target improvements to deeper candidate ranks (helping short-latency bins) without degrading the primary top‑1 cut—preserve the best early choice while reordering lower ranks.",
+   "blamed": [
+    "O1"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00625,
+   "lo": -0.01393,
+   "hi": 0.00107,
+   "n": 4521,
+   "n_clusters": 498
+  },
+  "changelog": [
+   "Replace C5 severity to make cuts that sever initial/preposed adjuncts from the main finite predicate more severe and to mark cuts that leave the adjunct intact as milder; this gives the model a severity axis that prefers keeping fronted adjuncts whole (addresses the primary 'fronted adjunct' order finding)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "was": "- Is this position where a clause-boundary signal typically ends a clause (a sub",
+    "now": "- Is this position where a clause-boundary signal typically ends a clause (a sub"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00895,
+   "lo": -0.0168,
+   "hi": -0.00102,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C4 with a core check that forbids cutting between an initial preposed adjunct and the sentence's main finite predicate; severity axis names worst: severs adjunct from governed predicate/scope (misleading/contradictory left span), mildest: clearly parenthetical or bracketed adjuncts or an explicit following subject+finite verb."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Does the marker fall inside an embedded modifier whose attachment is unresolve",
+    "now": "- Does this marker fall between an initial preposed adjunct (a sentence‑initial "
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00282,
+   "lo": -0.0047,
+   "hi": 0.01004,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add an Order Principle that prefers the later cut which preserves a fronted adjunct intact over an earlier cut that splits it — addresses the primary finding that fronted adjuncts should be kept whole and attached to the following clause."
+  ],
+  "delta_confirm": {
+   "mean": 0.00103,
+   "lo": -0.00451,
+   "hi": 0.00625,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "was": "- When one cut is immediately before sentence-final closing material (end punctu",
+    "now": "When two markers split the same fronted adjunct, prefer the later cut that leave"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.0094,
+   "lo": -0.01806,
+   "hi": -0.00148,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow Core Principle that binds sentence-initial preposed adjuncts to the subject+finite verb they modify, naming the worst case (unpunctuated adjunct followed immediately by the sentence's subject+finite-verb so the left fragment loses scope) and the mild case (clearly parenthetical or followed by punctuation or a non-finite continuation). This directly addresses the primary 'do not sever initial adjuncts' finding."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Does this marker fall between a sentence‑initial preposed adjunct (a subordina"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 5,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00584,
+   "lo": -0.01311,
+   "hi": 0.00117,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Delete O3: remove a weak v0 Order Principles line with no measured gain (low evidence/redundant) to satisfy the 'prune' constraint and reduce clutter while keeping the measured O1 and other order guidance."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "O3",
+    "kind": "delete",
+    "was": "- When one cut is immediately before sentence-final closing material (end punctu",
+    "now": ""
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00411,
+   "lo": -0.00093,
+   "hi": 0.00941,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": 0.00411,
+   "lo": -0.00093,
+   "hi": 0.00941,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O2 with an order rule that prefers the later cut which preserves a fronted adjunct over an earlier cut that fragments it — directly addresses the primary 'fronted adjunct' finding."
+  ],
+  "findings": [
+   "When two candidate cuts both lie inside the same fronted adjunct, the prompt often prefers an earlier split that fragments the adjunct; the better choice preserves the adjunct as a unit attached to the clause that follows.",
+   "The prompt permits cuts that sever an initial subordinate/adverbial/preposed phrase from the sentence's main finite predicate, producing left fragments that lose scope or contradict the whole sentence."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "was": "- When one marker detaches a relative clause from its head noun and another spli",
+    "now": "When two markers split the same fronted adjunct, prefer the later cut that leave"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.006,
+    "≤5": 0.0049,
+    "≤7": 0.0025,
+    "≤10": -0.0,
+    "≤99": -0.0033
+   },
+   "n_worse": 2050,
+   "n_better": 2092,
+   "why": "The O2 replacement made the scorer prefer the later cut that preserves a fronted adjunct, so cuts were pushed later and the top-of-list choices at shallow depths shifted into deeper ranks. That produced gains for short-latency bins (≤3–7 pieces) which keep many candidates (rank-depth coincidence improved at deeper depths) but slightly reduced top-1 precision and produced a small loss for the longest bin (≤99).",
+   "lesson": "When preferring later cuts to keep fronted adjuncts intact, retain or recover precision for the very top ranks so long-latency budgets (which rely on the first one or two positions) are not harmed.",
+   "blamed": [
+    "O2"
+   ]
+  }
+ },
+ {
+  "iter": 3,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01637,
+   "lo": -0.02504,
+   "hi": -0.00792,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C1 severity clause to make cuts that separate a subject NP from its following finite verb explicitly more severe, addressing the primary finding that pre-verbal cuts should prefer the earlier, clause-completing split."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "was": "- Does what follows this marker overturn the meaning asserted so far? An immedia",
+    "now": "- Does what follows this marker overturn the meaning asserted so far? It is most"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00293,
+   "lo": -0.01057,
+   "hi": 0.00459,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O2 with an explicit order preference that when two cuts fall before the same finite verb, prefer the earlier cut if it yields a complete subject+finite-verb left span; this directly addresses the primary finding that the prompt prefers later pre-verbal splits that leave left-side fragments."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "was": "When two markers split the same fronted adjunct, prefer the later cut that leave",
+    "now": "When two cuts fall before the same finite verb, prefer the earlier cut if that e"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.02644,
+   "lo": -0.03594,
+   "hi": -0.01657,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C6 to add a direct check that forbids cutting between a subject NP (name/pronoun) and its following finite verb, with a severity axis that makes separating an explicit subject from its immediate finite verb the most severe case. This targets the primary finding that pre-verbal cuts leave left-side fragments and must be kept together."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Does the left context contain provisional scope markers (focus/quantifiers, co",
+    "now": "- Is this marker placed between a subject noun/pronoun (a full NP or name) and t"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.02075,
+   "lo": -0.02988,
+   "hi": -0.0122,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow Core Principle that binds a subject NP (name/pronoun/full NP) to the immediately following finite verb/auxiliary, so cuts do not sever subject from its finite verb as the primary finding requires."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "was": "- Is this marker immediately adjacent to sentence-final punctuation or closing q",
+    "now": "- Is this marker placed between a subject noun/pronoun (a full NP or proper name"
+   }
+  ]
+ },
+ {
+  "iter": 3,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00074,
+   "lo": -0.00449,
+   "hi": 0.00574,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": 0.00074,
+   "lo": -0.00449,
+   "hi": 0.00574,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a fallback ordering in [Order Principles] that, when two cuts fall before the same finite verb, prefers the earlier cut if it leaves a grammatically complete subject+finite-verb left span over the later cut that leaves a fragment — to address the primary finding about pre-verbal splits."
+  ],
+  "findings": [
+   "When two candidate cuts lie in the pre-verbal span, the prompt prefers later splits that leave left-side fragments; the better choice is the earlier split if it yields a grammatically complete clause on the left.",
+   "The prompt lets cuts sever subject NPs from their finite verb, producing left fragments that the continuation must rescue."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "was": "",
+    "now": "When two cuts fall before the same finite verb, prefer the earlier cut if that e"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0027,
+    "≤5": -0.0013,
+    "≤7": -0.0012,
+    "≤10": 0.0004,
+    "≤99": 0.0008
+   },
+   "n_worse": 2061,
+   "n_better": 2082,
+   "why": "Inserting the fallback that prefers an earlier cut when two cuts fall before the same finite verb caused the model to promote earlier cut positions (so the top-ranked choices more often leave a grammatically complete subject+finite-verb left span).  That shift shows up in rank_depth (notably +0.264 at depth 1) and produced a tiny net change overall, with small gains in the shortest bin (≤3) but slight losses in the mid-length bins (≤5, ≤7) because some formerly-better later cuts that avoided splitting subjects or enumerations were demoted.",
+   "lesson": "Respect that this fallback mainly moves the very top choices (affecting long-latency/top-1 behaviour) and must be constrained/tested so it doesn't introduce harmful early splits that degrade medium-length segmentation (e.g., splitting subjects or breaking enumerations).",
+   "blamed": [
+    "O_end"
+   ]
+  }
+ },
+ {
+  "iter": 4,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00268,
+   "lo": -0.01049,
+   "hi": 0.00495,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O4 with an order rule that prefers the later cut which preserves a noun phrase, addressing the primary finding that the scorer currently favors earlier fragmenting cuts inside NPs while the target prefers keeping the NP intact."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O4",
+    "kind": "change",
+    "was": "When two cuts fall before the same finite verb, prefer the earlier cut if that e",
+    "now": "When two markers split the same noun phrase or nominal compound, prefer the late"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00119,
+   "lo": -0.00701,
+   "hi": 0.00913,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback order rule to prefer later cuts that keep a noun phrase/nominal compound intact over earlier fragmenting cuts — addresses the primary finding where the scorer favors earlier fragmenting cuts inside NPs while the target prefers preserving the full NP."
+  ],
+  "delta_confirm": {
+   "mean": -0.00551,
+   "lo": -0.01151,
+   "hi": 0.00015,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "was": "",
+    "now": "When two markers split the same noun phrase or nominal compound, prefer the late"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.0153,
+   "lo": -0.0247,
+   "hi": -0.00552,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a narrow Core Principle that binds a subject NP to its following finite verb/auxiliary, addressing the primary finding that the scorer cuts before finite verbs and fragments subject NPs instead of keeping subject+finite-verb together."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "was": "",
+    "now": "- Is this marker immediately before a clause's finite verb or auxiliary when the"
+   }
+  ]
+ },
+ {
+  "iter": 4,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00154,
+   "lo": -0.00348,
+   "hi": 0.00671,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": 0.00154,
+   "lo": -0.00348,
+   "hi": 0.00671,
+   "n": 4545,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C2 severity to make NP completeness part of what makes a left-span fragment worse or milder — addresses the primary finding that the scorer currently prefers earlier fragmenting cuts inside NPs while the target prefers the later cut that preserves the full NP."
+  ],
+  "findings": [
+   "When two cuts fall inside the same nominal expression, the prompt prefers earlier fragmenting cuts while the target prefers the later cut that preserves the full NP.",
+   "The prompt cuts where the left span is a subject/NP but the predicate (finite verb or auxiliary) immediately follows, producing a fragment that the continuation overturns or completes."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+    "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0033,
+    "≤5": 0.0008,
+    "≤7": -0.0006,
+    "≤10": -0.0008,
+    "≤99": 0.0008
+   },
+   "n_worse": 1999,
+   "n_better": 2174,
+   "why": "The edit made NP-completeness part of the left-fragment severity, so the scorer reduced many cuts that split NPs (giving a small net gain). However, that change often achieved NP preservation by moving the preferred cut earlier (detaching tiny left fragments or cutting before an NP) which harmed a sizable set of mid-length examples; improvements are concentrated in the very short latency bins (≤3, ≤5) while ≤7/≤10 bins show small losses. Rank_depth falls at depth1 and rises at depth2, indicating the edit shifted the top choice rather than uniformly improving deeper rankings.",
+   "lesson": "When increasing NP-completeness weight, preserve or improve top-1 alignment—avoid causing the model to favor earlier boundary placements that detach tiny left fragments even if they avoid cutting inside NPs.",
+   "blamed": [
+    "C2 «- If the left-side stretch is read alone, is it a coherent, »"
+   ]
+  }
+ }
+]

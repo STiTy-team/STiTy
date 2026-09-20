@@ -1,0 +1,152 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Does what follows this marker overturn the meaning asserted so far? It is most severe when the cut falls immediately after a subject noun/pronoun or a named NP while the next token to the right is a finite verb or auxiliary — i.e. the cut separates subject and finite verb and leaves the left span a fragment that the continuation must rescue. It is milder when the left span is a grammatically complete clause (contains subject + finite verb), when the cut coincides with a clause boundary, or when only a clearly nonrestrictive or parenthetical phrase follows.",
+    "_was": "- Does what follows this marker overturn the meaning asserted so far? An immediate contradiction or scope-reversing negation right after the cut is most severe; a mere narrowing or clarifying phrase that refines but does not reverse is the mildest."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 316
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10769,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When two cuts fall before the same finite verb, prefer the earlier cut if that earlier cut leaves the left span a grammatically complete clause (subject + finite verb) over the later cut that leaves a fragment.",
+    "_was": "When two markers split the same fronted adjunct, prefer the later cut that leaves the adjunct intact and attaches it to the following clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": 69
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10522,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Is this marker placed between a subject noun/pronoun (a full NP or name) and the sentence's following finite verb or auxiliary? It is most severe when the marker immediately follows an explicit subject NP or name and the very next lexical item is a finite verb or auxiliary, thereby separating subject and predicate and leaving a left fragment that cannot assert a complete proposition; it is mildest when the left NP is clearly parenthetical or set off by punctuation (commas, parentheses) or when the surface punctuation makes the left span a standalone clause.",
+    "_was": "- Does the left context contain provisional scope markers (focus/quantifiers, contrast markers, tentative adverbials) whose intended range can be revised by what follows? The most damaging case is when such a marker flips truth conditions of the main predicate when the continuation arrives; the mildest is when it only narrows an already local quantity without reversing truth."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 187
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10640,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "When two cuts fall before the same finite verb, prefer the earlier cut if that earlier cut leaves the left span a grammatically complete clause (subject + finite verb) over the later cut that leaves a fragment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 211
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10664,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "text": "- Is this marker placed between a subject noun/pronoun (a full NP or proper name) and the sentence's immediately following finite verb or auxiliary? Bind the subject to its finite verb: most severe when a bare name or pronoun sits alone on the left and the right-side word is the main finite verb/auxiliary (separating them will flip agent/time or leave a rescued fragment); mildest when the left NP is a clear parenthetical, vocative, or tag that can be isolated without changing the main predication."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C7",
+    "kind": "change",
+    "chars_change": 503
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10956,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 5,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ }
+]

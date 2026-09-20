@@ -1,0 +1,142 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Is this position where a clause-boundary signal typically ends a clause (a subordinating clause boundary, a coordinating split, or a sentence-level adverbial transition)? It is most harmful when the cut separates an initial or preposed adjunct (sentence-initial adverbial, preposed PP, or subordinate clause) from the sentence’s main finite verb or subject+predicate, leaving the left span a dangling adverbial or fragment that loses scope or reverses meaning; it is least harmful when the cut falls after a complete independent clause, between coordinate list items, or when an immediately adjacent later cut would keep the entire fronted adjunct attached to the following clause (i.e. milder where the adjunct can remain whole and attached).",
+    "_was": "- Is this position where a clause-boundary signal typically ends a clause (a subordinating clause boundary, a coordinating split, or a sentence-level adverbial transition)? It is most harmful when it severs a predicate from its required complement; least harmful when it splits between coordinate list elements or after a complete independent clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 395
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10861,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When two markers split the same fronted adjunct, prefer the later cut that leaves the adjunct intact and attaches it to the following clause.",
+    "_was": "- When one marker detaches a relative clause from its head noun and another splits inside that relative clause, prefer the cut inside the relative clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": -13
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10453,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Does this marker fall between an initial preposed adjunct (a sentence‑initial subordinate clause, participial/gerundial phrase, or fronted prepositional/adverbial phrase) and the sentence's main finite predicate (the following subject + finite verb)? Most severe when the cut detaches that adjunct from the governed predicate or scope so the left span becomes misleading, contradictory, or lacks a diagnosable subject/predicate; mildest when the adjunct is clearly parenthetical or bracketed (set off by commas) or when the following words begin a complete subject + finite verb so the main clause remains coherent.",
+    "_was": "- Does the marker fall inside an embedded modifier whose attachment is unresolved (participial, gerundial, or prepositional modifier, or a relative clause)? It is worst when the following material completes attachment that changes who did what; mild when the modifier is clearly nonrestrictive or adjunct and can be separated without changing core claims."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 262
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10728,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "text": "When two markers split the same fronted adjunct, prefer the later cut that leaves the adjunct intact and attaches it to the following clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 142
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10608,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Does this marker fall between a sentence‑initial preposed adjunct (a subordinate clause, participial phrase, or an adverbial/prepositional preface) and the sentence's main finite predicate (the subject plus its finite verb)? Keep such an initial adjunct bound to the subject+finite verb it attaches to: most severe when the adjunct is unpunctuated and the very next words begin the subject+finite‑verb sequence so a cut would leave a misleading or contradictory left fragment; mild when the adjunct is clearly parenthetical (set off by commas or parentheses), followed by sentence‑final punctuation, or continued by a non‑finite/quoted phrase that does not change the predicate's scope."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 689
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11155,
+  "errors": null
+ },
+ {
+  "candidate": 5,
+  "edits": [
+   {
+    "op": "delete",
+    "id": "O3",
+    "_was": "- When one cut is immediately before sentence-final closing material (end punctuation or terminal quotation) and another divides two independent clauses joined by a coordinating boundary, prefer the sentence-final cut."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "delete",
+    "id": "O3",
+    "kind": "delete",
+    "chars_change": -219
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10247,
+  "errors": null
+ }
+]

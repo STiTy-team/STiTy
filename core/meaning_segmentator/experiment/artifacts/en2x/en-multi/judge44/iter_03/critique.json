@@ -1,0 +1,56 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt lets cuts sever subject NPs from their finite verb, producing left fragments that the continuation must rescue.",
+    "evidence": "en_us_633, en_us_378, en_us_509, en_us_9 — each keeps a cut that leaves a noun/pronoun or named subject alone on the left while the main finite verb or predicate appears only on the right.",
+    "type_predicate": "a marker immediately follows a subject noun or pronoun (a full NP or name) and the next word to the right is a finite verb or auxiliary (e.g. is/are/was/blocked/observed/received).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between a subject noun/pronoun (or a full NP/name) and the sentence's following finite verb; keep subject and finite verb in the same piece."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts lie in the pre-verbal span, the prompt prefers later splits that leave left-side fragments; the better choice is the earlier split if it yields a grammatically complete clause on the left.",
+    "evidence": "en_us_9, en_us_633, en_us_381 — in each sentence two pre-verbal cuts compete and the measured target prefers the cut that yields a complete subject+verb span (earlier) over a later cut that leaves a fragment.",
+    "type_predicate": "two candidate markers both occur before the sentence's first finite verb (i.e. inside the same pre-verbal/initial constituent) so that one cut would leave a complete subject+verb on the left and the other would leave a fragment.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two cuts fall before the same finite verb, prefer the earlier cut if that earlier cut leaves the left span a grammatically complete clause (subject + finite verb) over the later cut that leaves a fragment."
+    }
+   }
+  ],
+  "checks_skipped": "",
+  "orders_skipped": ""
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts lie in the pre-verbal span, the prompt prefers later splits that leave left-side fragments; the better choice is the earlier split if it yields a grammatically complete clause on the left.",
+   "evidence": "en_us_9, en_us_633, en_us_381 — in each sentence two pre-verbal cuts compete and the measured target prefers the cut that yields a complete subject+verb span (earlier) over a later cut that leaves a fragment.",
+   "type_predicate": "two candidate markers both occur before the sentence's first finite verb (i.e. inside the same pre-verbal/initial constituent) so that one cut would leave a complete subject+verb on the left and the other would leave a fragment.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two cuts fall before the same finite verb, prefer the earlier cut if that earlier cut leaves the left span a grammatically complete clause (subject + finite verb) over the later cut that leaves a fragment.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt lets cuts sever subject NPs from their finite verb, producing left fragments that the continuation must rescue.",
+   "evidence": "en_us_633, en_us_378, en_us_509, en_us_9 — each keeps a cut that leaves a noun/pronoun or named subject alone on the left while the main finite verb or predicate appears only on the right.",
+   "type_predicate": "a marker immediately follows a subject noun or pronoun (a full NP or name) and the next word to the right is a finite verb or auxiliary (e.g. is/are/was/blocked/observed/received).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between a subject noun/pronoun (or a full NP/name) and the sentence's following finite verb; keep subject and finite verb in the same piece.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

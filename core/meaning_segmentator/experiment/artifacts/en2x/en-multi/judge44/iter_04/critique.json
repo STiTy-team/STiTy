@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt cuts where the left span is a subject/NP but the predicate (finite verb or auxiliary) immediately follows, producing a fragment that the continuation overturns or completes.",
+    "evidence": "en_us_399, en_us_381, en_us_1116, en_us_121, en_us_1157 — each prompt cut leaves a subject or fronted NP without its finite verb or main predicate, while the target keeps the subject+finite-verb together.",
+    "type_predicate": "A candidate marker that lies immediately before a finite main-clause verb or auxiliary, where the words to its left form an identifiable subject noun phrase (or fronted NP) and contain no finite verb.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before a clause's finite verb when the left side already contains the subject noun phrase (keep subject+finite-verb together)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two cuts fall inside the same nominal expression, the prompt prefers earlier fragmenting cuts while the target prefers the later cut that preserves the full NP.",
+    "evidence": "en_us_1636, en_us_89, en_us_399 — in each case two candidate markers split a single noun phrase or nominal compound and the measured target prefers the cut that leaves the NP intact (the later cut).",
+    "type_predicate": "A configuration with two markers that both divide the same noun phrase or compound nominal (one cut before the NP head or internal modifier, the other after it), so both candidate cuts occur inside the same NP.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two markers split the same noun phrase or nominal compound, prefer the later cut that leaves the NP intact."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two cuts fall inside the same nominal expression, the prompt prefers earlier fragmenting cuts while the target prefers the later cut that preserves the full NP.",
+   "evidence": "en_us_1636, en_us_89, en_us_399 — in each case two candidate markers split a single noun phrase or nominal compound and the measured target prefers the cut that leaves the NP intact (the later cut).",
+   "type_predicate": "A configuration with two markers that both divide the same noun phrase or compound nominal (one cut before the NP head or internal modifier, the other after it), so both candidate cuts occur inside the same NP.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two markers split the same noun phrase or nominal compound, prefer the later cut that leaves the NP intact.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt cuts where the left span is a subject/NP but the predicate (finite verb or auxiliary) immediately follows, producing a fragment that the continuation overturns or completes.",
+   "evidence": "en_us_399, en_us_381, en_us_1116, en_us_121, en_us_1157 — each prompt cut leaves a subject or fronted NP without its finite verb or main predicate, while the target keeps the subject+finite-verb together.",
+   "type_predicate": "A candidate marker that lies immediately before a finite main-clause verb or auxiliary, where the words to its left form an identifiable subject noun phrase (or fronted NP) and contain no finite verb.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before a clause's finite verb when the left side already contains the subject noun phrase (keep subject+finite-verb together).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}
