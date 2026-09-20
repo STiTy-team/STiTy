@@ -409,7 +409,10 @@ Hard constraints:
    near-duplicates.
    "replace": TRADE one existing line for the finding's judgement, keeping the PRINCIPLE COUNT the
    same — one line out, one line in. Your replacement must be a single line, and it may be up to
-   twice the length of the line you trade away; it does not have to match it. When the new line goes
+   twice the length of the line you trade away; it does not have to match it. The exact ceiling for
+   each unit is given to you as "max_chars_per_unit": look up the unit you are trading away and
+   count your replacement against that number BEFORE you write it, because code drops the edit
+   otherwise. If your judgement will not fit, trade away a longer unit instead. When the new line goes
    into [Core Principles] it is TWO PARTS like every line there — the question, then the severity
    naming both ends; code drops it otherwise. Either ONE
    edit with "op": "replace" on the unit you are trading away (same slot), or
@@ -443,6 +446,9 @@ Hard constraints:
    down to the lowest band, and the model supplies one — it separates them with no basis to separate
    them. Severity is the basis. Do not write a new prohibition and do not touch the question: a new
    condition only adds another way to say "bad", and "bad" is the thing there is already too much of.
+   Length: the rewritten line has a ceiling per unit, given to you as "max_chars_per_unit". Look up
+   the unit you are editing and count against that number before you write; code drops the edit
+   otherwise.
    "fallback": ADD a rule that ORDERS the positions every other principle rejects. Exactly one
    edit, an "insert_after" into [Order Principles] — that section holds the lines that weigh two
    positions against each other, and a rule of this shape is one of them; an edit of this role
@@ -1117,6 +1123,24 @@ MIN_GROWTH = 80            # 짧은 단위에서도 최소 이만큼은 준다 �
 def growth_cap(was: str, frac: float) -> int:
     """`was` 를 고치는 편집에 허용할 순증가. 대상이 짧아도 `MIN_GROWTH` 는 보장한다."""
     return max(MIN_GROWTH, int(len(was or "") * frac))
+
+# 역할별 순증가 비율. **한 군데에서만 정한다** — 검사와 PE 에게 알리는 값이 갈라지면 PE 는 지시를
+# 지켰는데 코드가 거부하는 상태가 된다.
+ROLE_GROWTH = {"replace": REPLACE_GROWTH, "severity": SEVERITY_GROWTH}
+
+
+def unit_budgets(prompt: str, role: str) -> dict[str, int]:
+    """이 역할이 한 단위를 고칠 때 새 문면이 넘지 못하는 글자 수. 상한 없는 역할은 빈 사전.
+
+    **쓰기 전에 알려 준다.** 상한을 거부 사유로만 알려 주면 PE 는 매번 한 번 쓰고 한 번 죽는다 —
+    `replace` 가 네 번 연속 첫 시도에서 그렇게 죽었다(+171 / +133 / +216 / +400 대 상한 80 / 105 /
+    101 / 248). 재시도가 정확한 숫자를 받으면 통과하므로, PE 가 글자를 못 세는 것이 아니라 **셀
+    기준을 안 받고 있었던 것**이다. 단위마다 값이 다르므로(비율이다) 표로 준다."""
+    frac = ROLE_GROWTH.get(role)
+    if frac is None:
+        return {}
+    return {u["id"]: len(u["text"]) + growth_cap(u["text"], frac) for u in edit_units(prompt)}
+
 SHORTEN_ROLE = "shorten"     # 후보 역할이 아니라 축소 패스 전용 — insert 를 뺀다
 
 

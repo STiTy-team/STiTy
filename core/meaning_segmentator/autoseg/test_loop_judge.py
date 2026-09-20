@@ -1263,6 +1263,54 @@ class EveryRoleWritesBothParts(unittest.TestCase):
         self.assertIn("Code checks it and drops the edit otherwise, whatever your role is", e)
 
 
+class TheCapIsToldBeforeWriting(unittest.TestCase):
+    """길이 상한은 **쓰기 전에** 전달된다 — 거부 사유로만 알려 주면 후보가 한 번 쓰고 한 번 죽는다.
+
+    `replace` 가 네 런 연속 첫 시도에서 그렇게 죽었다(+171 / +133 / +216 / +400 대 상한
+    80 / 105 / 101 / 248). 재시도는 정확한 숫자를 받으면 통과했으니 PE 가 글자를 못 세는 것이 아니라
+    셀 기준을 안 받고 있었다. 검사와 알려 주는 값이 **한 식에서 나와야** 한다."""
+
+    UNIT = ("- Does the cut strand a required complement? A cut there is worse the shorter the"
+            " remainder is, and mildest when what follows is a detachable afterthought.")
+
+    def prompt(self) -> str:
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        return ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n[Core Principles]\n"
+                + self.UNIT + "\n\n[Order Principles]\n- prefer A over B\n\n[Output Rules]\n- x"
+                "\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+
+    def test_budget_matches_what_the_check_allows(self):
+        """알려 준 상한에 딱 맞는 문면은 통과하고, 한 자 넘으면 거부된다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        cap = aj.unit_budgets(self.prompt(), "replace")["C1"]
+        self.assertEqual(cap, len(self.UNIT) + aj.growth_cap(self.UNIT, aj.REPLACE_GROWTH))
+        head = "- Does the cut split a name from its appositive? It is worse when "
+        fits = head + "x" * (cap - len(head) - len(" and milder otherwise.")) + " and milder otherwise."
+        self.assertEqual(len(fits), cap)
+        edit = {"op": "replace", "id": "C1", "text": fits, "_was": self.UNIT}
+        self.assertEqual(len(aj.enforce_role([edit], "replace")[0]), 1)
+        over = dict(edit, text=fits + "x")
+        keep, bad = aj.enforce_role([over], "replace")
+        self.assertEqual(keep, [])
+        self.assertIn("늘었다", bad[0]["reason"])
+
+    def test_severity_has_a_wider_budget_than_replace(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = self.prompt()
+        self.assertGreater(aj.unit_budgets(pr, "severity")["C1"],
+                           aj.unit_budgets(pr, "replace")["C1"])
+
+    def test_roles_without_a_cap_get_no_table(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        self.assertEqual(aj.unit_budgets(self.prompt(), "narrow_rule"), {})
+        self.assertEqual(aj.unit_budgets(self.prompt(), "fallback"), {})
+
+    def test_both_roles_are_told_to_read_the_table(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        e = " ".join(aj.ENGINEER_SYSTEM.split())
+        self.assertEqual(e.count("max_chars_per_unit"), 2)      # replace 와 severity
+
+
 class PruneOnlyRemovesDeadWeight(unittest.TestCase):
     """정도 축이 들어온 뒤 `prune` 의 대상이 좁아졌다 — 등급 안 서열을 든 줄은 못 지운다.
 

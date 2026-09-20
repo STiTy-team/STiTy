@@ -2024,6 +2024,12 @@ def main() -> int:
                 role = "free"
             if role not in ("free", "rewrite"):
                 extra["constraint"] = role
+                # **상한을 쓰기 전에 알려 준다.** 거부 사유로만 알려 주면 PE 는 한 번 쓰고 한 번
+                # 죽는다 — `replace` 가 네 번 연속 첫 시도에서 그렇게 죽었고 재시도는 정확한 숫자를
+                # 받으면 통과했다. PE 가 글자를 못 세는 것이 아니라 셀 기준을 안 받고 있었다.
+                budgets = aj.unit_budgets(prompt, role)
+                if budgets:
+                    extra["max_chars_per_unit"] = budgets
             if findings and role != "induce":
                 extra["primary_finding"] = findings[f_idx]["diagnosis"]
                 extra["primary_finding_kind"] = findings[f_idx].get("kind") or "check"
