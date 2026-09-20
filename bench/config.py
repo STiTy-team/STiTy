@@ -124,10 +124,10 @@ class BenchConfig(ConfigBody):
 
     @model_validator(mode="after")
     def resolve_pipeline(self) -> "BenchConfig":
-        from core import pipelines
+        from core import pipeline
 
         object.__setattr__(self, "stity", self.stity.model_copy(
-            update={"resolved": pipelines.validate(self.stity)}))
+            update={"resolved": pipeline.validate(self.stity)}))
         return self
 
     def resolved(self) -> dict:

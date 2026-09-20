@@ -1,7 +1,18 @@
+import importlib
+import inspect
+import pkgutil
 from dataclasses import dataclass
 from typing import Callable
 
 from core.errors import ConfigError
+from core.utils import timing
+
+
+def discover(package: str, *, packages: bool = False) -> None:
+    found = importlib.import_module(package)
+    for module in pkgutil.iter_modules(found.__path__):
+        if not module.name.startswith("_") and module.ispkg == packages:
+            importlib.import_module(f"{package}.{module.name}")
 
 
 @dataclass(frozen=True)
@@ -10,6 +21,36 @@ class Speech:
     started_at: float
     ended_at: float
     silence_waited_out_sec: float
+
+
+@dataclass(frozen=True)
+class Partial:
+
+    text: str
+    language: str
+    seq: int
+
+
+@dataclass(frozen=True)
+class Transcribed:
+
+    original: str
+    language: str
+    commit_reason: str
+    decision_audio_sec: float
+    recv_elapsed_sec: float
+
+
+@dataclass(frozen=True)
+class Final:
+
+    original: str
+    translation: str
+    language: str
+    target_lang: str
+    commit_reason: str
+    decision_audio_sec: float
+    recv_elapsed_sec: float
 
 
 class Component:
@@ -42,6 +83,18 @@ class Component:
         pass
 
 
+LIFECYCLE = frozenset({"load", "close", "start", "validate"})
+
+
+def _work_methods(cls: type) -> list[str]:
+    for base in cls.__mro__:
+        if Component in base.__bases__:
+            return [name for name, value in vars(base).items()
+                    if not name.startswith("_") and name not in LIFECYCLE
+                    and inspect.isfunction(value)]
+    return []
+
+
 class Registry:
 
     def __init__(self, kind: str):
@@ -56,6 +109,8 @@ class Registry:
                     f"already taken by {self._entries[name]!r}"
                 )
             cls.NAME = name
+            for method in _work_methods(cls):
+                setattr(cls, method, timing.measure(method)(getattr(cls, method)))
             self._entries[name] = cls
             return cls
 

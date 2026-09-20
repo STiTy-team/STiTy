@@ -3,7 +3,7 @@ from core.utils import logging
 from . import translators
 from .base import Translator
 
-logger = logging.getLogger("bench")
+log = logging.getLogger(__name__)
 
 DEFAULT_MODEL = "google/madlad400-3b-mt"
 
@@ -21,7 +21,7 @@ class LocalTranslation(Translator):
 
         self.model = self.settings.get("model", DEFAULT_MODEL)
         self.device = self.settings.get("device")
-        logger.info("loading translation model: %s", self.model)
+        log.info("[LOAD] translation model %s", self.model)
         self.translator = make_translator(model_name=self.model, device=self.device)
         self.translator.load()
 
@@ -36,7 +36,6 @@ class LocalTranslation(Translator):
                 text, target_lang, source_lang, context=context)
         except Exception as e:  # noqa: BLE001
             self.failed += 1
-            logging.emit("translate_error", detail=str(e))
-            logger.warning("translation failed: %s", e)
+            log.warning("[TRANS-ERROR] %s", e)
             return "", ""
 

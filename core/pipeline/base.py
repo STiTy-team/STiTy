@@ -1,7 +1,7 @@
 from core.errors import ConfigError
 from core.utils import logging
 
-logger = logging.getLogger("bench")
+log = logging.getLogger(__name__)
 
 
 class Pipeline:
@@ -36,14 +36,16 @@ class Pipeline:
             try:
                 await part.close()
             except Exception as e:  # noqa: BLE001
-                logger.warning("closing %s failed: %s", type(part).__name__, e)
+                log.warning("[CLOSE-FAILED] %s: %s", type(part).__name__, e)
 
     def start(self, *, src_lang: str | None, target_lang: str) -> None:
+        detector = self.part("vad")
         for part in self.parts.values():
-            part.start(language=src_lang)
+            part.start(language=src_lang,
+                       vad=None if part is detector else detector)
 
-    async def listen(self, audio: bytes) -> None:
+    async def listen(self, audio: bytes) -> list:
         raise NotImplementedError
 
-    async def finish(self) -> None:
+    async def finish(self) -> list:
         raise NotImplementedError

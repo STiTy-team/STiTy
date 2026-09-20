@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-from core.utils import logging
+from core.utils import stream
 
 
 class ItemWriter:
@@ -19,7 +19,7 @@ class ItemWriter:
 
     def read_back(self) -> list[dict]:
         self._file.flush()
-        return list(logging.read_stream(self.path))
+        return list(stream.read(self.path))
 
     def close(self) -> None:
         if not self._file.closed:
