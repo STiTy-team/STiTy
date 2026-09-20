@@ -1,0 +1,50 @@
+{
+ "iter": 5,
+ "adopted": true,
+ "delta": {
+  "mean": 0.00528,
+  "lo": 0.00088,
+  "hi": 0.01025,
+  "n": 4537,
+  "n_clusters": 499
+ },
+ "gain": {
+  "mean": 0.00528,
+  "lo": 0.00088,
+  "hi": 0.01025,
+  "n": 4537,
+  "n_clusters": 499
+ },
+ "changelog": [
+  "Replace C2 severity to emphasise NP-head preservation when a cut falls inside a multiword or coordinated NP: make the worst case when the left span omits the NP head (fragmenting reference) and the mild case when the left span already contains the NP head and only trailing modifiers or extra coordinated items are detached. This addresses the primary finding (order) by giving the principle a surface-distinguishable severity axis that separates two cuts inside the same NP."
+ ],
+ "findings": [
+  "When several candidate cuts fall inside the same multiword noun phrase or coordinated NP, the prompt sometimes ranks a cut that fragments the NP above one that preserves the NP head; the safer choice is to preserve a grammatically complete NP on the left.",
+  "The prompt routinely permits cuts that split a finite copula/auxiliary or main verb from the phrase that completes its core predicate, producing left fragments that contradict or lose the asserted meaning."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "change",
+   "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+   "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0116,
+   "≤5": 0.0033,
+   "≤7": -0.0013,
+   "≤10": -0.0052,
+   "≤99": 0.0002
+  },
+  "n_worse": 2073,
+  "n_better": 2125,
+  "why": "Raising the severity for cuts that omit an NP head made the model prefer cut positions that keep NP heads attached to the left span; that changed the top-ranked cut choices (drop in rank coincidence at depths 1–2) and thus shifted mass toward very-short segmentations (small bins ≤3 and ≤5 improved) while worsening many medium-length segmentations (≤7 and ≤10).",
+  "lesson": "When increasing NP‑head preservation severity, watch per‑bin effects: preserve heads without systematically pushing top choices into cuts that fragment mid‑length spans or break coordinated/enumerative structures.",
+  "blamed": [
+   "C2 «- If the left-side stretch is read alone, is it a coherent, »"
+  ]
+ }
+}

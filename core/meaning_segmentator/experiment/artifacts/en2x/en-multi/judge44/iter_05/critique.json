@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt routinely permits cuts that split a finite copula/auxiliary or main verb from the phrase that completes its core predicate, producing left fragments that contradict or lose the asserted meaning.",
+    "evidence": "en_us_721, en_us_378, en_us_399, en_us_1434, en_us_738 — each case shows a kept policy cut immediately after a finite copula/auxiliary or main verb while the offline target avoids cutting before the verb's required complement.",
+    "type_predicate": "a candidate cut that immediately follows a finite copular or auxiliary verb (e.g. is/are/was/were/has/have/does/did) and the next token begins a noun phrase, adjective phrase, or clause serving as that verb's complement",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a finite copula/auxiliary or main verb when the continuation begins a complement (NP/AdjP/that-clause); such cuts leave a predicate fragment that reverses or contradicts the isolated left span."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When several candidate cuts fall inside the same multiword noun phrase or coordinated NP, the prompt sometimes ranks a cut that fragments the NP above one that preserves the NP head; the safer choice is to preserve a grammatically complete NP on the left.",
+    "evidence": "en_us_998, en_us_334, en_us_121, en_us_1081 — in each sentence the measurement prefers preserving the multiword/coordinated NP intact, while the policy favored cuts that split the NP head from its modifiers.",
+    "type_predicate": "a configuration where both candidate cuts occur inside the same multiword noun phrase (including coordinated NPs or 'X of Y' constructions) in the same sentence",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two cuts lie inside the same noun phrase, prefer the cut that leaves the left span a complete NP (includes the NP head) over the cut that fragments the NP."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When several candidate cuts fall inside the same multiword noun phrase or coordinated NP, the prompt sometimes ranks a cut that fragments the NP above one that preserves the NP head; the safer choice is to preserve a grammatically complete NP on the left.",
+   "evidence": "en_us_998, en_us_334, en_us_121, en_us_1081 — in each sentence the measurement prefers preserving the multiword/coordinated NP intact, while the policy favored cuts that split the NP head from its modifiers.",
+   "type_predicate": "a configuration where both candidate cuts occur inside the same multiword noun phrase (including coordinated NPs or 'X of Y' constructions) in the same sentence",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two cuts lie inside the same noun phrase, prefer the cut that leaves the left span a complete NP (includes the NP head) over the cut that fragments the NP.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt routinely permits cuts that split a finite copula/auxiliary or main verb from the phrase that completes its core predicate, producing left fragments that contradict or lose the asserted meaning.",
+   "evidence": "en_us_721, en_us_378, en_us_399, en_us_1434, en_us_738 — each case shows a kept policy cut immediately after a finite copula/auxiliary or main verb while the offline target avoids cutting before the verb's required complement.",
+   "type_predicate": "a candidate cut that immediately follows a finite copular or auxiliary verb (e.g. is/are/was/were/has/have/does/did) and the next token begins a noun phrase, adjective phrase, or clause serving as that verb's complement",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a finite copula/auxiliary or main verb when the continuation begins a complement (NP/AdjP/that-clause); such cuts leave a predicate fragment that reverses or contradicts the isolated left span.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

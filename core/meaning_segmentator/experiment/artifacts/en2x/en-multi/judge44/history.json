@@ -664,5 +664,113 @@
     "C2 «- If the left-side stretch is read alone, is it a coherent, »"
    ]
   }
+ },
+ {
+  "iter": 5,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00261,
+   "lo": -0.00424,
+   "hi": 0.00954,
+   "n": 4537,
+   "n_clusters": 499
+  },
+  "changelog": [
+   "Insert a fallback Order Principle that, when two cuts fall inside the same multiword noun phrase, prefers the cut that leaves the left span a complete NP (contains the NP head) over the cut that fragments the NP — to address the primary 'preserve NP head' finding by ordering positions other principles leave tied."
+  ],
+  "delta_confirm": {
+   "mean": 0.00277,
+   "lo": -0.00223,
+   "hi": 0.00772,
+   "n": 4537,
+   "n_clusters": 499
+  },
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O1",
+    "kind": "change",
+    "was": "When two candidate cuts fall inside the same attachment chain, prefer the cut th",
+    "now": "When two cuts lie inside the same noun phrase, prefer the cut that leaves the le"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "candidate": 4,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00039,
+   "lo": -0.00725,
+   "hi": 0.0066,
+   "n": 4537,
+   "n_clusters": 499
+  },
+  "changelog": [
+   "Insert a narrow Core Principle that binds a finite verb (copula/auxiliary or main finite verb) to its immediately following complement so cuts that separate a required complement (NP/AdjP/that-clause) from the verb are dispreferred; phrased as a binding and with clear severity endpoints recognisable on the source surface."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Does the left context contain provisional scope markers (focus/quantifiers, co",
+    "now": "- Is this marker immediately after a finite copula/auxiliary or other finite mai"
+   }
+  ]
+ },
+ {
+  "iter": 5,
+  "adopted": true,
+  "delta": {
+   "mean": 0.00528,
+   "lo": 0.00088,
+   "hi": 0.01025,
+   "n": 4537,
+   "n_clusters": 499
+  },
+  "gain": {
+   "mean": 0.00528,
+   "lo": 0.00088,
+   "hi": 0.01025,
+   "n": 4537,
+   "n_clusters": 499
+  },
+  "changelog": [
+   "Replace C2 severity to emphasise NP-head preservation when a cut falls inside a multiword or coordinated NP: make the worst case when the left span omits the NP head (fragmenting reference) and the mild case when the left span already contains the NP head and only trailing modifiers or extra coordinated items are detached. This addresses the primary finding (order) by giving the principle a surface-distinguishable severity axis that separates two cuts inside the same NP."
+  ],
+  "findings": [
+   "When several candidate cuts fall inside the same multiword noun phrase or coordinated NP, the prompt sometimes ranks a cut that fragments the NP above one that preserves the NP head; the safer choice is to preserve a grammatically complete NP on the left.",
+   "The prompt routinely permits cuts that split a finite copula/auxiliary or main verb from the phrase that completes its core predicate, producing left fragments that contradict or lose the asserted meaning."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+    "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0116,
+    "≤5": 0.0033,
+    "≤7": -0.0013,
+    "≤10": -0.0052,
+    "≤99": 0.0002
+   },
+   "n_worse": 2073,
+   "n_better": 2125,
+   "why": "Raising the severity for cuts that omit an NP head made the model prefer cut positions that keep NP heads attached to the left span; that changed the top-ranked cut choices (drop in rank coincidence at depths 1–2) and thus shifted mass toward very-short segmentations (small bins ≤3 and ≤5 improved) while worsening many medium-length segmentations (≤7 and ≤10).",
+   "lesson": "When increasing NP‑head preservation severity, watch per‑bin effects: preserve heads without systematically pushing top choices into cuts that fragment mid‑length spans or break coordinated/enumerative structures.",
+   "blamed": [
+    "C2 «- If the left-side stretch is read alone, is it a coherent, »"
+   ]
+  }
  }
 ]
