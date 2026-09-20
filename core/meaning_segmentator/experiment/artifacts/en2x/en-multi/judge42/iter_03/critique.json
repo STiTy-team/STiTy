@@ -1,0 +1,55 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt treats clause- or phrase-initial function words (articles, demonstratives, clause‑initial auxiliaries/particles) as independent cut-points, causing left-side fragments that harm cohesion or trigger contradiction.",
+    "evidence": "['en_us_292','en_us_586','en_us_455','en_us_1017'] — these four cases all moved the cut so that an initial article/introductory function word is kept attached to the following content rather than left stranded, improving cohesion.",
+    "type_predicate": "A marker that immediately follows an initial clause- or phrase-introducing function word (an article, demonstrative, or clause‑initial auxiliary/particle) that begins the subsequent noun phrase or clause.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately after a clause- or phrase‑introducing function word (article, demonstrative, or clause‑initial auxiliary/particle); attach that function word to the following noun phrase or clause so the left side is not a stranded fragment."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts are otherwise comparable, the prompt sometimes prefers splitting a verb from its required object while keeping an earlier adjunct cut; this orders fragments badly and should prefer preserving verb+object.",
+    "evidence": "['en_us_633','en_us_481','en_us_381'] — in each the measured target prefers the cut that keeps the verb and its core object/complement together (later cut), while the prompt ranked the earlier adjunct split higher.",
+    "type_predicate": "A sentence containing both (A) a candidate cut placed between a verb (or auxiliary) and its required object/complement and (B) another candidate cut earlier in the pre‑verbal adjunct material (time/place/manner adjunct).",
+    "edit": {
+     "where": "order_principles",
+     "action": "replace",
+     "target": "When one cut falls between a verb and its obligatory object/complement",
+     "text": "When comparing two cuts in the same band, if one separates a verb/auxiliary from its core object or complement and the other falls earlier inside pre‑verbal adjuncts (time, place, manner), prefer the cut that preserves the verb+object (i.e., the later cut after the complement)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts are otherwise comparable, the prompt sometimes prefers splitting a verb from its required object while keeping an earlier adjunct cut; this orders fragments badly and should prefer preserving verb+object.",
+   "evidence": "['en_us_633','en_us_481','en_us_381'] — in each the measured target prefers the cut that keeps the verb and its core object/complement together (later cut), while the prompt ranked the earlier adjunct split higher.",
+   "type_predicate": "A sentence containing both (A) a candidate cut placed between a verb (or auxiliary) and its required object/complement and (B) another candidate cut earlier in the pre‑verbal adjunct material (time/place/manner adjunct).",
+   "edit": {
+    "action": "replace",
+    "target": "When one cut falls between a verb and its obligatory object/complement",
+    "text": "When comparing two cuts in the same band, if one separates a verb/auxiliary from its core object or complement and the other falls earlier inside pre‑verbal adjuncts (time, place, manner), prefer the cut that preserves the verb+object (i.e., the later cut after the complement).",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt treats clause- or phrase-initial function words (articles, demonstratives, clause‑initial auxiliaries/particles) as independent cut-points, causing left-side fragments that harm cohesion or trigger contradiction.",
+   "evidence": "['en_us_292','en_us_586','en_us_455','en_us_1017'] — these four cases all moved the cut so that an initial article/introductory function word is kept attached to the following content rather than left stranded, improving cohesion.",
+   "type_predicate": "A marker that immediately follows an initial clause- or phrase-introducing function word (an article, demonstrative, or clause‑initial auxiliary/particle) that begins the subsequent noun phrase or clause.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately after a clause- or phrase‑introducing function word (article, demonstrative, or clause‑initial auxiliary/particle); attach that function word to the following noun phrase or clause so the left side is not a stranded fragment.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

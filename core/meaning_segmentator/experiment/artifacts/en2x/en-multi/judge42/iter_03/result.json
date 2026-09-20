@@ -1,0 +1,50 @@
+{
+ "iter": 3,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00252,
+  "lo": -0.005,
+  "hi": 0.01036,
+  "n": 4533,
+  "n_clusters": 499
+ },
+ "gain": {
+  "mean": 0.00252,
+  "lo": -0.005,
+  "hi": 0.01036,
+  "n": 4533,
+  "n_clusters": 499
+ },
+ "changelog": [
+  "Insert a narrow_rule Core Principle that binds clause- or phrase-introducing function words to the following noun phrase or clause, preventing cuts immediately after articles, demonstratives, or clause-initial auxiliaries/particles; severe when detachment leaves a stranded fragment, mild when punctuation/parenthetical follows."
+ ],
+ "findings": [
+  "When two candidate cuts are otherwise comparable, the prompt sometimes prefers splitting a verb from its required object while keeping an earlier adjunct cut; this orders fragments badly and should prefer preserving verb+object.",
+  "The prompt treats clause- or phrase-initial function words (articles, demonstratives, clause‑initial auxiliaries/particles) as independent cut-points, causing left-side fragments that harm cohesion or trigger contradiction."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "C_end",
+   "kind": "change",
+   "was": "",
+   "now": "- Does the marker come immediately after a clause- or phrase-introducing functio"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0005,
+   "≤5": 0.0059,
+   "≤7": 0.0052,
+   "≤10": 0.0029,
+   "≤99": 0.002
+  },
+  "n_worse": 2029,
+  "n_better": 2225,
+  "why": "Inserting the narrow_rule forced the model to avoid cuts immediately after clause- or phrase-introducing function words, so many cuts were shifted later (binding the following NP/clause into the preceding piece). That shift slightly improved alignment for moderate-depth budgets (bins ≤5–≤7) where multiple candidates are kept, but degraded the top-1 choice and the very short bin (≤3) because the strongest single cut was displaced or produced awkward fragmentation in quotes/NPs (illustrated by the worst examples where cuts moved off sentence-introductory markers onto nearby nouns/quotes).",
+  "lesson": "A later revision should keep the binding of function words to following material limited so it benefits mid-depth rankings (≤5–≤7) without displacing top‑rank cuts or hurting the very short-piece bin (≤3).",
+  "blamed": [
+   "C_end"
+  ]
+ }
+}

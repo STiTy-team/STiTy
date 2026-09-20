@@ -1,0 +1,128 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "severity",
+    "text": "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? It is most severe when the cut falls between two tokens that are parts of the same multi-word personal name or when it separates a personal name from an immediately following appositive or title, since those splits leave a referent fragment and break cohesion; it is mildest when the left side is a complete independent clause, a true appositive or clearly parenthetical phrase that preserves truth when isolated, or when the cut merely separates coordinate list items or other clearly independent nominal elements.",
+    "_was": "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? The worst are fragments that lack a diagnosable main predicate or identity of agent when isolated; the mildest are independent clauses, appositives, or clearly parenthetical material that preserve truth when isolated."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "severity",
+    "chars_change": 298
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10731,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "If two candidates both split the same multi-word personal name, prefer the cut that keeps the entire name unbroken (place the full name on one side).",
+    "_was": "- When one marker detaches a relative clause from its head noun and another splits inside that relative clause, prefer the cut inside the relative clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": -5
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10428,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "If two candidates both split the same multi-word personal name, prefer the cut that keeps the entire name unbroken (place the full name on one side)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 150
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10583,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Is the marker placed between tokens that are part of the same contiguous multi-word personal name, or between a personal name and its immediately following appositive/title? Binding: keep the entire name together with any immediately attached appositive/title on one side (a true split of adjacent name tokens is the most severe); mildest when the marker only separates a detachable honorific or clearly parenthetical material."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 430
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10863,
+  "errors": null
+ }
+]

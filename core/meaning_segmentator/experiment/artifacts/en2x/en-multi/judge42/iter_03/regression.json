@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": 0.00252,
+  "lo": -0.005,
+  "hi": 0.01036,
+  "n": 4533,
+  "n_clusters": 499
+ },
+ "by_bin": {
+  "≤3": -0.0005,
+  "≤5": 0.0059,
+  "≤7": 0.0052,
+  "≤10": 0.0029,
+  "≤99": 0.002
+ },
+ "n_worse": 2029,
+ "n_better": 2225,
+ "worst": [
+  {
+   "id": "en_us_1593",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.7909,
+   "before": "Eventually, ‖ wooden wheels were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_1593",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.6932,
+   "before": "Eventually, ‖ wooden wheels were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced.",
+   "after": "Eventually, wooden wheels ‖ were replaced by iron wheels. ‖ In 1767, ‖ the first full-iron rails were introduced."
+  },
+  {
+   "id": "en_us_391",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.6898,
+   "before": "The earliest known book ‖ in the world ‖ was written ‖ in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit just faded due to hierarchy.",
+   "after": "The earliest known book in the world ‖ was written in Sanskrit. ‖ After the compilation of Upanishads, ‖ Sanskrit ‖ just faded ‖ due to hierarchy."
+  },
+  {
+   "id": "en_us_163",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.6895,
+   "before": "They also said ‖ in a statement, ‖ \"The crew is currently working to determine the best method of safely extracting the ship\".",
+   "after": "They also said in a statement, ‖ \"The ‖ crew is currently working to determine the best method of safely extracting the ship\"."
+  },
+  {
+   "id": "en_us_163",
+   "k": 3,
+   "bin": "≤7",
+   "delta": -0.6479,
+   "before": "They also said ‖ in a statement, ‖ \"The crew ‖ is currently working to determine the best method of safely extracting the ship\".",
+   "after": "They ‖ also said in a statement, ‖ \"The ‖ crew is currently working to determine the best method of safely extracting the ship\"."
+  }
+ ],
+ "best": [
+  {
+   "id": "en_us_1143",
+   "k": 6,
+   "bin": "≤5",
+   "delta": 0.5871,
+   "before": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts have viewed publication ‖ of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_243",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.5216,
+   "before": "Besides carrying three ‖ important ‖ scientific ‖ instruments, ‖ the lunar probe also carried the image ‖ of the Indian ‖ national flag, ‖ painted on all sides.",
+   "after": "Besides carrying three ‖ important ‖ scientific ‖ instruments, ‖ the lunar probe ‖ also carried the image of the Indian national flag, ‖ painted on all ‖ sides."
+  },
+  {
+   "id": "en_us_1143",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.5153,
+   "before": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but ‖ Scottish justice works ‖ differently ‖ and courts have viewed publication of photos as potentially prejudicial.",
+   "after": "This is common ‖ practice ‖ elsewhere ‖ in the UK ‖ but Scottish justice works differently ‖ and courts ‖ have viewed publication ‖ of photos as potentially prejudicial."
+  },
+  {
+   "id": "en_us_447",
+   "k": 7,
+   "bin": "≤3",
+   "delta": 0.5062,
+   "before": "Early ‖ in the nation's independence, ‖ Singapore ‖ Botanic Gardens' ‖ expertise ‖ helped to transform the island ‖ into a tropical Garden ‖ City.",
+   "after": "Early ‖ in the nation's independence, ‖ Singapore ‖ Botanic Gardens' ‖ expertise ‖ helped to transform the island ‖ into a tropical ‖ Garden City."
+  },
+  {
+   "id": "en_us_922",
+   "k": 9,
+   "bin": "≤3",
+   "delta": 0.5011,
+   "before": "Every corner store is filled with a confusing array of pre-paid ‖ phone ‖ cards ‖ that ‖ can be used ‖ from ‖ pay phones ‖ or ‖ ordinary ‖ telephones.",
+   "after": "Every corner ‖ store ‖ is ‖ filled ‖ with a confusing ‖ array ‖ of pre-paid ‖ phone cards ‖ that can be used from pay phones ‖ or ordinary telephones."
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.972,
+   "2": 4.239,
+   "3": 2.82,
+   "4": 2.185,
+   "5": 1.795,
+   "6": 1.575,
+   "7": 1.426,
+   "8": 1.297,
+   "9": 1.223,
+   "10": 1.165,
+   "11": 1.128,
+   "12": 1.095,
+   "13": 1.071
+  },
+  "revision": {
+   "1": 7.693,
+   "2": 4.219,
+   "3": 2.861,
+   "4": 2.169,
+   "5": 1.806,
+   "6": 1.581,
+   "7": 1.417,
+   "8": 1.317,
+   "9": 1.23,
+   "10": 1.183,
+   "11": 1.151,
+   "12": 1.11,
+   "13": 1.088
+  },
+  "delta": {
+   "1": -0.279,
+   "2": -0.02,
+   "3": 0.041,
+   "4": -0.016,
+   "5": 0.011,
+   "6": 0.006,
+   "7": -0.009,
+   "8": 0.02,
+   "9": 0.007,
+   "10": 0.018,
+   "11": 0.023,
+   "12": 0.015,
+   "13": 0.017
+  }
+ },
+ "why": "Inserting the narrow_rule forced the model to avoid cuts immediately after clause- or phrase-introducing function words, so many cuts were shifted later (binding the following NP/clause into the preceding piece). That shift slightly improved alignment for moderate-depth budgets (bins ≤5–≤7) where multiple candidates are kept, but degraded the top-1 choice and the very short bin (≤3) because the strongest single cut was displaced or produced awkward fragmentation in quotes/NPs (illustrated by the worst examples where cuts moved off sentence-introductory markers onto nearby nouns/quotes).",
+ "lesson": "A later revision should keep the binding of function words to following material limited so it benefits mid-depth rankings (≤5–≤7) without displacing top‑rank cuts or hurting the very short-piece bin (≤3).",
+ "blamed": [
+  "C_end"
+ ]
+}

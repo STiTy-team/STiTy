@@ -1,0 +1,51 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00842,
+  "lo": -0.01746,
+  "hi": 0.00096,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00842,
+  "lo": -0.01746,
+  "hi": 0.00096,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Inserted a fallback ordering rule into [Order Principles] that prefers cuts which keep a verb/auxiliary together with its required object/complement over cuts that split the verb from that complement — to address the primary finding that the prompt currently favors earlier splits that strand verbs or complements."
+ ],
+ "findings": [
+  "When two candidate cuts are both allowed, the prompt prefers earlier splits that leave verbs or complements stranded instead of preserving verb+object; the prompt should prefer cuts that keep a verb with its required complement.",
+  "The prompt allows cuts that leave a clause or predicate syntactically incomplete by separating it from a required complement or reason clause, which yields high contradiction and kills the set."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "O_end",
+   "kind": "change",
+   "was": "",
+   "now": "When one candidate splits a verb (or auxiliary) from its required object/complem"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0105,
+   "≤5": -0.0113,
+   "≤7": -0.004,
+   "≤10": -0.0019,
+   "≤99": 0.0008
+  },
+  "n_worse": 2067,
+  "n_better": 2191,
+  "why": "The new fallback ordering rule kept verbs/auxiliaries with their complements, shifting preferred cuts away from verb-complement splits; that helped deeper/long-budget positions slightly (≤99) but reduced agreement at the top ranks and hurt short-latency bins (≤3, ≤5, ≤7) by forcing cuts into noun compounds and internal phrase boundaries instead of the earlier verb splits.",
+  "lesson": "Do not let a fallback that protects verb–complement adjacency override constraints that prevent splitting tight noun compounds or internal phrase material, because that tradeoff improves long-budget rank depth at the cost of short-latency quality.",
+  "blamed": [
+   "Order Principles (inserted fallback)",
+   "O_end"
+  ]
+ }
+}

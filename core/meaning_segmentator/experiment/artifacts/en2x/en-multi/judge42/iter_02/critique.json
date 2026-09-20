@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that split multi-word personal names or separate a name from its immediately following appositive/title, which breaks cohesion and harms translation of the whole sentence.",
+    "evidence": "en_us_1369, en_us_1527, en_us_1309 — each case shows a cut inside a multi-word personal name or between a name and its appositive/title (Curtis Cooper; Maciej Krezel; Anna Jochemsen)",
+    "type_predicate": "a candidate marker that falls between two tokens that are part of the same multi-word personal name or between a personal name and its immediately following appositive/title",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between parts of the same multi-word personal name or between a personal name and its immediately following appositive/title."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When multiple candidate cuts all lie inside the same multi-word personal name the prompt ranks them inconsistently; the better choice is the cut that leaves the whole name unbroken in one piece.",
+    "evidence": "en_us_1369, en_us_1527, en_us_1309 — in each sentence two or more candidate cuts occur inside the same multi-word personal name and the measured target prefers keeping the entire name intact",
+    "type_predicate": "a configuration where BOTH candidate markers fall between adjacent tokens inside the same multi-word personal name (two or more contiguous name tokens)",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "If two candidates both split the same multi-word personal name, prefer the cut that keeps the entire name unbroken (place the full name on one side)."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When multiple candidate cuts all lie inside the same multi-word personal name the prompt ranks them inconsistently; the better choice is the cut that leaves the whole name unbroken in one piece.",
+   "evidence": "en_us_1369, en_us_1527, en_us_1309 — in each sentence two or more candidate cuts occur inside the same multi-word personal name and the measured target prefers keeping the entire name intact",
+   "type_predicate": "a configuration where BOTH candidate markers fall between adjacent tokens inside the same multi-word personal name (two or more contiguous name tokens)",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "If two candidates both split the same multi-word personal name, prefer the cut that keeps the entire name unbroken (place the full name on one side).",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that split multi-word personal names or separate a name from its immediately following appositive/title, which breaks cohesion and harms translation of the whole sentence.",
+   "evidence": "en_us_1369, en_us_1527, en_us_1309 — each case shows a cut inside a multi-word personal name or between a name and its appositive/title (Curtis Cooper; Maciej Krezel; Anna Jochemsen)",
+   "type_predicate": "a candidate marker that falls between two tokens that are part of the same multi-word personal name or between a personal name and its immediately following appositive/title",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between parts of the same multi-word personal name or between a personal name and its immediately following appositive/title.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

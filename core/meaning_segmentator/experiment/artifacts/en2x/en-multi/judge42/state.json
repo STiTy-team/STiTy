@@ -1,0 +1,440 @@
+{
+ "done": 3,
+ "prompt": "[Role]\nYou are a scoring model that reads a single English source sentence with a <SEG:?> marker at every possible cut. Using only the source text and the guidance below, assign each marker a distinct integer 0–100 replacing the question mark so the marker reads <SEG:NN>. Your numbers only order cuts inside this sentence according to the measured target defined in the Scoring Rules section.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.\n- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.\n- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary and carry both jobs: the question in each line decides which band a position goes in, and the severity in the same line — what makes that concern worse, what makes it milder — decides the order of positions inside one band. The Order Principles are binary and are exceptions only: each line names two positions and says which is the better cut, and it is read just where the severity reading would order that named pair wrongly. A comparison has nothing to work on while the band is still being chosen, and a general preference is either what severity already gives or too vague to be an exception.\n- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, order positions by how MILDLY the Core Principles' concerns apply to each — the position whose concerns are the mildest is the better cut of the two. Ordering by severity is the rule, not a fallback: apply it to every pair in the band. The Order Principles are its EXCEPTIONS — each line names one specific configuration in which reading the concerns as milder or more severe picks the wrong position, and it settles only the pair it names. Outside the configurations they name, order by severity. They never move a position into another band. When severity leaves two positions genuinely equal and no Order Principle names them, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.\n\n[Core Principles]\n- Does what follows this marker overturn the meaning asserted so far? An immediate contradiction or scope-reversing negation right after the cut is most severe; a mere narrowing or clarifying phrase that refines but does not reverse is the mildest.\n- If the left-side stretch is read alone, is it a coherent, self-contained proposition? The worst are fragments that lack a diagnosable main predicate or identity of agent when isolated; the mildest are independent clauses, appositives, or clearly parenthetical material that preserve truth when isolated.\n- Will translating the left and right sides separately then joining them preserve the whole sentence meaning? Severe failures occur when the following words determine attachment, scope, or core argument roles; mild cases are when both sides are semantically independent lists or coordinate items.\n- Does the marker fall inside an embedded modifier whose attachment is unresolved (participial, gerundial, or prepositional modifier, or a relative clause)? It is worst when the following material completes attachment that changes who did what; mild when the modifier is clearly nonrestrictive or adjunct and can be separated without changing core claims.\n- Is this position where a clause-boundary signal typically ends a clause (a subordinating clause boundary, a coordinating split, or a sentence-level adverbial transition)? It is most harmful when it severs a predicate from its required complement; least harmful when it splits between coordinate list elements or after a complete independent clause.\n- Does the left context contain provisional scope markers (focus/quantifiers, contrast markers, tentative adverbials) whose intended range can be revised by what follows? The most damaging case is when such a marker flips truth conditions of the main predicate when the continuation arrives; the mildest is when it only narrows an already local quantity without reversing truth.\n- Is this marker immediately adjacent to sentence-final punctuation or closing quotation such that the following text would mainly be trailing attribution or parenthesis? Cut is least harmful when it coincides with an effective sentence end; more harmful when only internal punctuation or a quoted fragment follows that changes the claim.\n\n[Order Principles]\n- When one cut falls between a verb and its obligatory object/complement and another falls earlier within pre-verbal adjunct material, prefer the later cut after the complement.\n- When one marker detaches a relative clause from its head noun and another splits inside that relative clause, prefer the cut inside the relative clause.\n- When one cut is immediately before sentence-final closing material (end punctuation or terminal quotation) and another divides two independent clauses joined by a coordinating boundary, prefer the sentence-final cut.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Content <SEG:?> theories <SEG:?> are <SEG:?> centered <SEG:?> on <SEG:?> finding <SEG:?> what <SEG:?> makes <SEG:?> people <SEG:?> tick <SEG:?> or <SEG:?> appeals <SEG:?> to <SEG:?> them.\nOutput: Content <SEG:75> theories <SEG:100> are <SEG:58> centered <SEG:50> on <SEG:83> finding <SEG:92> what <SEG:67> makes <SEG:33> people <SEG:0> tick <SEG:42> or <SEG:25> appeals <SEG:8> to <SEG:17> them.\n\nInput: Jerusalem <SEG:?> has <SEG:?> many <SEG:?> historic, <SEG:?> archeological <SEG:?> and <SEG:?> cultural <SEG:?> sites, <SEG:?> along <SEG:?> with <SEG:?> vibrant <SEG:?> and <SEG:?> crowded <SEG:?> shopping <SEG:?> centers, <SEG:?> cafés, <SEG:?> and <SEG:?> restaurants.\nOutput: Jerusalem <SEG:100> has <SEG:6> many <SEG:44> historic, <SEG:50> archeological <SEG:0> and <SEG:56> cultural <SEG:25> sites, <SEG:94> along <SEG:62> with <SEG:81> vibrant <SEG:88> and <SEG:19> crowded <SEG:38> shopping <SEG:12> centers, <SEG:69> cafés, <SEG:75> and <SEG:31> restaurants.\n\nInput: Regarding <SEG:?> the <SEG:?> global <SEG:?> financial <SEG:?> situation, <SEG:?> Zapatero <SEG:?> continued <SEG:?> by <SEG:?> saying <SEG:?> that <SEG:?> \"the <SEG:?> financial <SEG:?> system <SEG:?> is <SEG:?> a <SEG:?> part <SEG:?> of <SEG:?> the <SEG:?> economy, <SEG:?> a <SEG:?> crucial <SEG:?> part.\nOutput: Regarding <SEG:40> the <SEG:10> global <SEG:0> financial <SEG:5> situation, <SEG:100> Zapatero <SEG:20> continued <SEG:70> by <SEG:75> saying <SEG:95> that <SEG:90> \"the <SEG:55> financial <SEG:15> system <SEG:25> is <SEG:45> a <SEG:30> part <SEG:50> of <SEG:65> the <SEG:60> economy, <SEG:85> a <SEG:80> crucial <SEG:35> part.\n\nInput: What <SEG:?> is <SEG:?> a <SEG:?> cell? <SEG:?> The <SEG:?> word <SEG:?> cell <SEG:?> comes <SEG:?> from <SEG:?> the <SEG:?> Latin <SEG:?> word <SEG:?> \"cella\", <SEG:?> meaning <SEG:?> \"small <SEG:?> room\", <SEG:?> and <SEG:?> it <SEG:?> was <SEG:?> first <SEG:?> coined <SEG:?> by <SEG:?> a <SEG:?> microscopist <SEG:?> observing <SEG:?> the <SEG:?> structure <SEG:?> of <SEG:?> cork.\nOutput: What <SEG:22> is <SEG:96> a <SEG:59> cell? <SEG:100> The <SEG:67> word <SEG:89> cell <SEG:81> comes <SEG:78> from <SEG:52> the <SEG:4> Latin <SEG:93> word <SEG:85> \"cella\", <SEG:74> meaning <SEG:44> \"small <SEG:7> room\", <SEG:56> and <SEG:33> it <SEG:37> was <SEG:48> first <SEG:70> coined <SEG:63> by <SEG:26> a <SEG:30> microscopist <SEG:41> observing <SEG:15> the <SEG:0> structure <SEG:19> of <SEG:11> cork.\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01083,
+    "lo": -0.01925,
+    "hi": -0.00199,
+    "n": 4536,
+    "n_clusters": 499
+   },
+   "changelog": [
+    "Replaced O1 with a focused order rule to address the primary finding: prefer cuts that keep a verb/auxiliary with its required object/complement over earlier cuts that strand the verb."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O1",
+     "kind": "change",
+     "was": "- When one cut falls between a verb and its obligatory object/complement and ano",
+     "now": "When one candidate splits a verb (or auxiliary) from its required object/complem"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 4,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01618,
+    "lo": -0.02526,
+    "hi": -0.00735,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a narrow Core Principle that binds verbs/auxiliaries to immediately following required complements (e.g. 'that'/'because' clauses, infinitival 'to' complements, or an immediately following noun/pronoun object) so the model keeps predicates with the words that complete them — to fix the primary finding."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Does the right-side begin a required complement that completes the left predic"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00842,
+    "lo": -0.01746,
+    "hi": 0.00096,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": -0.00842,
+    "lo": -0.01746,
+    "hi": 0.00096,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Inserted a fallback ordering rule into [Order Principles] that prefers cuts which keep a verb/auxiliary together with its required object/complement over cuts that split the verb from that complement — to address the primary finding that the prompt currently favors earlier splits that strand verbs or complements."
+   ],
+   "findings": [
+    "When two candidate cuts are both allowed, the prompt prefers earlier splits that leave verbs or complements stranded instead of preserving verb+object; the prompt should prefer cuts that keep a verb with its required complement.",
+    "The prompt allows cuts that leave a clause or predicate syntactically incomplete by separating it from a required complement or reason clause, which yields high contradiction and kills the set."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O_end",
+     "kind": "change",
+     "was": "",
+     "now": "When one candidate splits a verb (or auxiliary) from its required object/complem"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0105,
+     "≤5": -0.0113,
+     "≤7": -0.004,
+     "≤10": -0.0019,
+     "≤99": 0.0008
+    },
+    "n_worse": 2067,
+    "n_better": 2191,
+    "why": "The new fallback ordering rule kept verbs/auxiliaries with their complements, shifting preferred cuts away from verb-complement splits; that helped deeper/long-budget positions slightly (≤99) but reduced agreement at the top ranks and hurt short-latency bins (≤3, ≤5, ≤7) by forcing cuts into noun compounds and internal phrase boundaries instead of the earlier verb splits.",
+    "lesson": "Do not let a fallback that protects verb–complement adjacency override constraints that prevent splitting tight noun compounds or internal phrase material, because that tradeoff improves long-budget rank depth at the cost of short-latency quality.",
+    "blamed": [
+     "Order Principles (inserted fallback)",
+     "O_end"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00116,
+    "lo": -0.00991,
+    "hi": 0.00729,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace O2 with an Order Principle that prefers cuts which keep multi-word personal names intact, to address the primary finding that the prompt ranks splits inside names inconsistently."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O2",
+     "kind": "change",
+     "was": "- When one marker detaches a relative clause from its head noun and another spli",
+     "now": "If two candidates both split the same multi-word personal name, prefer the cut t"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 3,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00314,
+    "lo": -0.01107,
+    "hi": 0.00403,
+    "n": 4532,
+    "n_clusters": 499
+   },
+   "changelog": [
+    "Add a fallback Order Principle that prefers cuts which keep a contiguous multi-word personal name intact, to fix inconsistent ranking of splits inside names (primary finding)."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O_end",
+     "kind": "change",
+     "was": "",
+     "now": "If two candidates both split the same multi-word personal name, prefer the cut t"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 4,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01062,
+    "lo": -0.0191,
+    "hi": -0.00283,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a narrow binding Core Principle to keep contiguous multi-word personal names and immediately attached appositives/titles intact, addressing the primary finding that cuts currently split names and harm cohesion."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Is the marker placed between tokens that are part of the same contiguous multi"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": 0.00028,
+    "lo": -0.00563,
+    "hi": 0.00605,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": 0.00028,
+    "lo": -0.00563,
+    "hi": 0.00605,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace C2 severity to mark splitting multi-word personal names or separating a name from its immediately following appositive/title as especially severe — to give the model a severity axis that orders cuts inside names in line with the measured target."
+   ],
+   "findings": [
+    "When multiple candidate cuts all lie inside the same multi-word personal name the prompt ranks them inconsistently; the better choice is the cut that leaves the whole name unbroken in one piece.",
+    "The prompt allows cuts that split multi-word personal names or separate a name from its immediately following appositive/title, which breaks cohesion and harms translation of the whole sentence."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C2",
+     "kind": "severity",
+     "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+     "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0027,
+     "≤5": 0.0042,
+     "≤7": 0.0036,
+     "≤10": -0.0025,
+     "≤99": -0.0
+    },
+    "n_worse": 2151,
+    "n_better": 2072,
+    "why": "Making cuts inside multi-word personal names or name+appositive especially severe caused the model to avoid splitting names (helping mid-length budgets: ≤5 and ≤7 showed small gains) but it also re-ranked the very top candidate cut positions (rank_depth 1..3 all fell), so for the shortest latency bins (≤3) the prompt now prefers earlier, worse splits of nearby noun phrases and determiners and H_set dropped there.",
+    "lesson": "When increasing severity for name-internal cuts, ensure the change does not re-rank the first one or two candidate cuts (short-latency depths), since that can force harmful early splits of adjacent noun phrases/determiners and degrade short-bin performance.",
+    "blamed": [
+     "C2 «- If the left-side stretch is read alone, is it a coherent, »"
+    ]
+   }
+  },
+  {
+   "iter": 3,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00237,
+    "lo": -0.01225,
+    "hi": 0.00605,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace C5 severity: clarify that cuts which sever a verb/auxiliary from its required object/complement are the most harmful, while splits inside pre‑verbal adjuncts (time/place/manner) are milder — addresses the primary finding that the prompt must prefer preserving verb+object over earlier adjunct splits."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C5",
+     "kind": "severity",
+     "was": "- Is this position where a clause-boundary signal typically ends a clause (a sub",
+     "now": "- Is this position where a clause-boundary signal typically ends a clause (a sub"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00798,
+    "lo": -0.01678,
+    "hi": 3e-05,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace O3 to prefer preserving a verb/auxiliary with its required object/complement over an earlier split inside pre‑verbal adjunct material; addresses the primary finding that the prompt was preferring adjunct splits that separate verbs from their objects."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O3",
+     "kind": "change",
+     "was": "- When one cut is immediately before sentence-final closing material (end punctu",
+     "now": "When comparing two cuts in the same band, if one separates a verb/auxiliary from"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "candidate": 3,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00312,
+    "lo": -0.01159,
+    "hi": 0.00528,
+    "n": 4545,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a fallback Order Principle that prefers preserving a verb/auxiliary with its core object/complement over an earlier pre‑verbal adjunct cut, but exempts cases where the later cut would split a tight nominal compound, multiword name, or fixed expression — addresses the primary finding while avoiding the short-latency harm seen when a blanket fallback pushed cuts into internal phrase material."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O_end",
+     "kind": "change",
+     "was": "",
+     "now": "When comparing two cuts in the same band, if one separates a verb/auxiliary from"
+    }
+   ]
+  },
+  {
+   "iter": 3,
+   "adopted": false,
+   "delta": {
+    "mean": 0.00252,
+    "lo": -0.005,
+    "hi": 0.01036,
+    "n": 4533,
+    "n_clusters": 499
+   },
+   "gain": {
+    "mean": 0.00252,
+    "lo": -0.005,
+    "hi": 0.01036,
+    "n": 4533,
+    "n_clusters": 499
+   },
+   "changelog": [
+    "Insert a narrow_rule Core Principle that binds clause- or phrase-introducing function words to the following noun phrase or clause, preventing cuts immediately after articles, demonstratives, or clause-initial auxiliaries/particles; severe when detachment leaves a stranded fragment, mild when punctuation/parenthetical follows."
+   ],
+   "findings": [
+    "When two candidate cuts are otherwise comparable, the prompt sometimes prefers splitting a verb from its required object while keeping an earlier adjunct cut; this orders fragments badly and should prefer preserving verb+object.",
+    "The prompt treats clause- or phrase-initial function words (articles, demonstratives, clause‑initial auxiliaries/particles) as independent cut-points, causing left-side fragments that harm cohesion or trigger contradiction."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "C_end",
+     "kind": "change",
+     "was": "",
+     "now": "- Does the marker come immediately after a clause- or phrase-introducing functio"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0005,
+     "≤5": 0.0059,
+     "≤7": 0.0052,
+     "≤10": 0.0029,
+     "≤99": 0.002
+    },
+    "n_worse": 2029,
+    "n_better": 2225,
+    "why": "Inserting the narrow_rule forced the model to avoid cuts immediately after clause- or phrase-introducing function words, so many cuts were shifted later (binding the following NP/clause into the preceding piece). That shift slightly improved alignment for moderate-depth budgets (bins ≤5–≤7) where multiple candidates are kept, but degraded the top-1 choice and the very short bin (≤3) because the strongest single cut was displaced or produced awkward fragmentation in quotes/NPs (illustrated by the worst examples where cuts moved off sentence-introductory markers onto nearby nouns/quotes).",
+    "lesson": "A later revision should keep the binding of function words to following material limited so it benefits mid-depth rankings (≤5–≤7) without displacing top‑rank cuts or hurting the very short-piece bin (≤3).",
+    "blamed": [
+     "C_end"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 10433,
+ "total_cost": 60.281757,
+ "provenance": {
+  "- Does what follows this marker overturn the meaning asserted so far? An immediate contradiction or scope-reversing negation right after the cut is most severe; a mere narrowing or clarifying phrase that refines but does not reverse is the mildest.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- If the left-side stretch is read alone, is it a coherent, self-contained proposition? The worst are fragments that lack a diagnosable main predicate or identity of agent when isolated; the mildest are independent clauses, appositives, or clearly parenthetical material that preserve truth when isolated.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Will translating the left and right sides separately then joining them preserve the whole sentence meaning? Severe failures occur when the following words determine attachment, scope, or core argument roles; mild cases are when both sides are semantically independent lists or coordinate items.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the marker fall inside an embedded modifier whose attachment is unresolved (participial, gerundial, or prepositional modifier, or a relative clause)? It is worst when the following material completes attachment that changes who did what; mild when the modifier is clearly nonrestrictive or adjunct and can be separated without changing core claims.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is this position where a clause-boundary signal typically ends a clause (a subordinating clause boundary, a coordinating split, or a sentence-level adverbial transition)? It is most harmful when it severs a predicate from its required complement; least harmful when it splits between coordinate list elements or after a complete independent clause.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the left context contain provisional scope markers (focus/quantifiers, contrast markers, tentative adverbials) whose intended range can be revised by what follows? The most damaging case is when such a marker flips truth conditions of the main predicate when the continuation arrives; the mildest is when it only narrows an already local quantity without reversing truth.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is this marker immediately adjacent to sentence-final punctuation or closing quotation such that the following text would mainly be trailing attribution or parenthesis? Cut is least harmful when it coincides with an effective sentence end; more harmful when only internal punctuation or a quoted fragment follows that changes the claim.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one cut falls between a verb and its obligatory object/complement and another falls earlier within pre-verbal adjunct material, prefer the later cut after the complement.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one marker detaches a relative clause from its head noun and another splits inside that relative clause, prefer the cut inside the relative clause.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one cut is immediately before sentence-final closing material (end punctuation or terminal quotation) and another divides two independent clauses joined by a coordinating boundary, prefer the sentence-final cut.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Content <SEG:?> theories <SEG:?> are <SEG:?> centered <SEG:?> on <SEG:?> finding <SEG:?> what <SEG:?> makes <SEG:?> people <SEG:?> tick <SEG:?> or <SEG:?> appeals <SEG:?> to <SEG:?> them.\nOutput: Content <SEG:75> theories <SEG:100> are <SEG:58> centered <SEG:50> on <SEG:83> finding <SEG:92> what <SEG:67> makes <SEG:33> people <SEG:0> tick <SEG:42> or <SEG:25> appeals <SEG:8> to <SEG:17> them.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Jerusalem <SEG:?> has <SEG:?> many <SEG:?> historic, <SEG:?> archeological <SEG:?> and <SEG:?> cultural <SEG:?> sites, <SEG:?> along <SEG:?> with <SEG:?> vibrant <SEG:?> and <SEG:?> crowded <SEG:?> shopping <SEG:?> centers, <SEG:?> cafés, <SEG:?> and <SEG:?> restaurants.\nOutput: Jerusalem <SEG:100> has <SEG:6> many <SEG:44> historic, <SEG:50> archeological <SEG:0> and <SEG:56> cultural <SEG:25> sites, <SEG:94> along <SEG:62> with <SEG:81> vibrant <SEG:88> and <SEG:19> crowded <SEG:38> shopping <SEG:12> centers, <SEG:69> cafés, <SEG:75> and <SEG:31> restaurants.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Regarding <SEG:?> the <SEG:?> global <SEG:?> financial <SEG:?> situation, <SEG:?> Zapatero <SEG:?> continued <SEG:?> by <SEG:?> saying <SEG:?> that <SEG:?> \"the <SEG:?> financial <SEG:?> system <SEG:?> is <SEG:?> a <SEG:?> part <SEG:?> of <SEG:?> the <SEG:?> economy, <SEG:?> a <SEG:?> crucial <SEG:?> part.\nOutput: Regarding <SEG:40> the <SEG:10> global <SEG:0> financial <SEG:5> situation, <SEG:100> Zapatero <SEG:20> continued <SEG:70> by <SEG:75> saying <SEG:95> that <SEG:90> \"the <SEG:55> financial <SEG:15> system <SEG:25> is <SEG:45> a <SEG:30> part <SEG:50> of <SEG:65> the <SEG:60> economy, <SEG:85> a <SEG:80> crucial <SEG:35> part.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: What <SEG:?> is <SEG:?> a <SEG:?> cell? <SEG:?> The <SEG:?> word <SEG:?> cell <SEG:?> comes <SEG:?> from <SEG:?> the <SEG:?> Latin <SEG:?> word <SEG:?> \"cella\", <SEG:?> meaning <SEG:?> \"small <SEG:?> room\", <SEG:?> and <SEG:?> it <SEG:?> was <SEG:?> first <SEG:?> coined <SEG:?> by <SEG:?> a <SEG:?> microscopist <SEG:?> observing <SEG:?> the <SEG:?> structure <SEG:?> of <SEG:?> cork.\nOutput: What <SEG:22> is <SEG:96> a <SEG:59> cell? <SEG:100> The <SEG:67> word <SEG:89> cell <SEG:81> comes <SEG:78> from <SEG:52> the <SEG:4> Latin <SEG:93> word <SEG:85> \"cella\", <SEG:74> meaning <SEG:44> \"small <SEG:7> room\", <SEG:56> and <SEG:33> it <SEG:37> was <SEG:48> first <SEG:70> coined <SEG:63> by <SEG:26> a <SEG:30> microscopist <SEG:41> observing <SEG:15> the <SEG:0> structure <SEG:19> of <SEG:11> cork.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": 0.00028,
+  "lo": -0.00563,
+  "hi": 0.00605,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": 0.00028,
+  "lo": -0.00563,
+  "hi": 0.00605,
+  "n": 4545,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Replace C2 severity to mark splitting multi-word personal names or separating a name from its immediately following appositive/title as especially severe — to give the model a severity axis that orders cuts inside names in line with the measured target."
+ ],
+ "findings": [
+  "When multiple candidate cuts all lie inside the same multi-word personal name the prompt ranks them inconsistently; the better choice is the cut that leaves the whole name unbroken in one piece.",
+  "The prompt allows cuts that split multi-word personal names or separate a name from its immediately following appositive/title, which breaks cohesion and harms translation of the whole sentence."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "severity",
+   "was": "- If the left-side stretch is read alone, is it a coherent, self-contained propo",
+   "now": "- If the left-side stretch is read alone, is it a coherent, self-contained propo"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0027,
+   "≤5": 0.0042,
+   "≤7": 0.0036,
+   "≤10": -0.0025,
+   "≤99": -0.0
+  },
+  "n_worse": 2151,
+  "n_better": 2072,
+  "why": "Making cuts inside multi-word personal names or name+appositive especially severe caused the model to avoid splitting names (helping mid-length budgets: ≤5 and ≤7 showed small gains) but it also re-ranked the very top candidate cut positions (rank_depth 1..3 all fell), so for the shortest latency bins (≤3) the prompt now prefers earlier, worse splits of nearby noun phrases and determiners and H_set dropped there.",
+  "lesson": "When increasing severity for name-internal cuts, ensure the change does not re-rank the first one or two candidate cuts (short-latency depths), since that can force harmful early splits of adjacent noun phrases/determiners and degrade short-bin performance.",
+  "blamed": [
+   "C2 «- If the left-side stretch is read alone, is it a coherent, »"
+  ]
+ }
+}

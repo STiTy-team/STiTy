@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that leave a clause or predicate syntactically incomplete by separating it from a required complement or reason clause, which yields high contradiction and kills the set.",
+    "evidence": "en_us_733, en_us_381, en_us_1199, en_us_1294, en_us_1636 — each shows the policy cutting so that the following words are required to complete the left clause (reason/complement/object), producing a high contra on that boundary.",
+    "type_predicate": "Positions immediately before a following phrase that is required to complete the preceding clause (a required complement or reason clause whose scope attaches to the left clause).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut where the right-side begins a required complement/reason clause that completes the preceding predicate (i.e. leaves a clause or verb stranded awaiting 'that/because'/an object)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts are both allowed, the prompt prefers earlier splits that leave verbs or complements stranded instead of preserving verb+object; the prompt should prefer cuts that keep a verb with its required complement.",
+    "evidence": "en_us_633, en_us_381, en_us_1636 — in each sentence the label prefers the cut that preserves the verb together with its object/complement while the prompt preferred splitting the verb or leaving the complement isolated.",
+    "type_predicate": "Pairs of positions in the same clause where one cut separates a verb/auxiliary from its required object/complement and the other falls earlier (separating subject/adjunct from the verb).",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When one candidate splits a verb (or auxiliary) from its required object/complement and the other splits earlier adjunct/subject material, prefer the cut that keeps the verb with its complement."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts are both allowed, the prompt prefers earlier splits that leave verbs or complements stranded instead of preserving verb+object; the prompt should prefer cuts that keep a verb with its required complement.",
+   "evidence": "en_us_633, en_us_381, en_us_1636 — in each sentence the label prefers the cut that preserves the verb together with its object/complement while the prompt preferred splitting the verb or leaving the complement isolated.",
+   "type_predicate": "Pairs of positions in the same clause where one cut separates a verb/auxiliary from its required object/complement and the other falls earlier (separating subject/adjunct from the verb).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When one candidate splits a verb (or auxiliary) from its required object/complement and the other splits earlier adjunct/subject material, prefer the cut that keeps the verb with its complement.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that leave a clause or predicate syntactically incomplete by separating it from a required complement or reason clause, which yields high contradiction and kills the set.",
+   "evidence": "en_us_733, en_us_381, en_us_1199, en_us_1294, en_us_1636 — each shows the policy cutting so that the following words are required to complete the left clause (reason/complement/object), producing a high contra on that boundary.",
+   "type_predicate": "Positions immediately before a following phrase that is required to complete the preceding clause (a required complement or reason clause whose scope attaches to the left clause).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut where the right-side begins a required complement/reason clause that completes the preceding predicate (i.e. leaves a clause or verb stranded awaiting 'that/because'/an object).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

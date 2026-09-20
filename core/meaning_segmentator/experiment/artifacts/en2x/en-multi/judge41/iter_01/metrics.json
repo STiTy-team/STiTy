@@ -1,0 +1,61 @@
+{
+ "usage": {
+  "calls": 607,
+  "prompt_tokens": 2325181,
+  "completion_tokens": 11069330,
+  "cached_tokens": 1672576,
+  "truncated": 0,
+  "cost": 22.343626,
+  "by_purpose": {
+   "segment": {
+    "calls": 578,
+    "prompt_tokens": 1880687,
+    "completion_tokens": 10912275,
+    "reasoning_tokens": 10518272,
+    "cached_tokens": 1409664,
+    "cost": 21.977547
+   },
+   "segment_retry": {
+    "calls": 21,
+    "prompt_tokens": 61686,
+    "completion_tokens": 142751,
+    "reasoning_tokens": 139840,
+    "cached_tokens": 46976,
+    "cost": 0.290354
+   },
+   "critic": {
+    "calls": 1,
+    "prompt_tokens": 120471,
+    "completion_tokens": 4592,
+    "reasoning_tokens": 4096,
+    "cached_tokens": 0,
+    "cost": 0.039302
+   },
+   "engineer": {
+    "calls": 5,
+    "prompt_tokens": 188299,
+    "completion_tokens": 6760,
+    "reasoning_tokens": 5888,
+    "cached_tokens": 142336,
+    "cost": 0.028569
+   },
+   "engineer:role_retry": {
+    "calls": 2,
+    "prompt_tokens": 74038,
+    "completion_tokens": 2952,
+    "reasoning_tokens": 2496,
+    "cached_tokens": 73600,
+    "cost": 0.007854
+   }
+  },
+  "by_key": {
+   "0": {
+    "calls": 607,
+    "prompt_tokens": 2325181,
+    "completion_tokens": 11069330,
+    "cost": 22.343626
+   }
+  }
+ },
+ "run_total_cost": 22.376621
+}

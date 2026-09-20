@@ -1,0 +1,137 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Does translating the piece before the marker on its own fail to supply material needed to reconstruct the whole sentence? Most severe when a verb and its core object or an essential coreference are split, or when the cut falls immediately after a single-word function token (determiner, pronoun, auxiliary, or discourse connective) that must be read with its following phrase; milder when only optional descriptors or peripheral adjuncts are postponed.",
+    "_was": "- Does translating the piece before the marker on its own fail to supply material needed to reconstruct the whole sentence? Worst when a verb and its core object or essential coreference are split; milder when only optional descriptors or peripheral adjuncts are postponed."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 181
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10644,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "text": "When one candidate is immediately after a single-word function token and the other is later inside the following phrase, prefer the later cut (keep the function word attached to its content).",
+    "_was": "- When one marker lies between a verb and its core object and another earlier marker falls inside a preceding adjunct, prefer the marker that keeps the verb and its object together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "chars_change": 10
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10473,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "When one candidate is immediately after a single-word function token and the other is later inside the following phrase, prefer the later cut (keep the function word attached to its content)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 192
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10655,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 4,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ }
+]

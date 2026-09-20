@@ -1,0 +1,56 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that leave a verb/copula or preposition that syntactically requires a following complement, producing fragments that read as contradictions or nonsense on their own.",
+    "evidence": "en_us_378, en_us_44, en_us_688, en_us_119 — each policy cut left a predicate or prepositional head (e.g. \"is called the\", \"is moving towards the\", \"been removed to the\", \"Japanese newspaper that they\") that required its complement and yielded very high contra.",
+    "type_predicate": "Positions where the token immediately before the candidate cut is a verb, copula, or preposition that normally requires a syntactic complement (i.e., the preceding fragment would be an incomplete predicate or PP without following words).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut when the token before the marker is a verb/copula or a preposition that syntactically requires a following complement (the fragment would be an incomplete predicate or PP)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two allowed cuts compete, the prompt prefers earlier cuts that isolate single-word function tokens; this harms short-latency segmentations that must keep function words attached to their content.",
+    "evidence": "en_us_381, en_us_633, en_us_1116 — in each case the policy favored a cut immediately after a single function word or discourse particle, while the target prefers the later cut that keeps that function word attached to its content.",
+    "type_predicate": "Pairs of candidate cuts in the same sentence where one cut falls immediately after a single-word function token (a determiner, pronoun, auxiliary or discourse connective) and the other falls later inside the following phrase.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When one candidate is immediately after a single-word function token and the other is later inside the following phrase, prefer the later cut (keep the function word attached to its content)."
+    }
+   }
+  ],
+  "checks_skipped": "",
+  "orders_skipped": ""
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two allowed cuts compete, the prompt prefers earlier cuts that isolate single-word function tokens; this harms short-latency segmentations that must keep function words attached to their content.",
+   "evidence": "en_us_381, en_us_633, en_us_1116 — in each case the policy favored a cut immediately after a single function word or discourse particle, while the target prefers the later cut that keeps that function word attached to its content.",
+   "type_predicate": "Pairs of candidate cuts in the same sentence where one cut falls immediately after a single-word function token (a determiner, pronoun, auxiliary or discourse connective) and the other falls later inside the following phrase.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When one candidate is immediately after a single-word function token and the other is later inside the following phrase, prefer the later cut (keep the function word attached to its content).",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that leave a verb/copula or preposition that syntactically requires a following complement, producing fragments that read as contradictions or nonsense on their own.",
+   "evidence": "en_us_378, en_us_44, en_us_688, en_us_119 — each policy cut left a predicate or prepositional head (e.g. \"is called the\", \"is moving towards the\", \"been removed to the\", \"Japanese newspaper that they\") that required its complement and yielded very high contra.",
+   "type_predicate": "Positions where the token immediately before the candidate cut is a verb, copula, or preposition that normally requires a syntactic complement (i.e., the preceding fragment would be an incomplete predicate or PP without following words).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut when the token before the marker is a verb/copula or a preposition that syntactically requires a following complement (the fragment would be an incomplete predicate or PP).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

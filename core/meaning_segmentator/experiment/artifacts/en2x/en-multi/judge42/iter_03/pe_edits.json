@@ -1,0 +1,128 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "severity",
+    "text": "- Is this position where a clause-boundary signal typically ends a clause (a subordinating clause boundary, a coordinating split, or a sentence-level adverbial transition)? It is most harmful when the following material completes or is required by the left-hand predicate — in particular when the cut separates a verb or auxiliary from its core object, complement, or required clausal complement (this typically forces reassignment of arguments or scope). It is milder when the cut falls inside or between pre-verbal adjunct material (time/place/manner) that merely modifies the clause rather than filling a required predicate slot, and least harmful when it splits between coordinate list elements or after a complete independent clause.",
+    "_was": "- Is this position where a clause-boundary signal typically ends a clause (a subordinating clause boundary, a coordinating split, or a sentence-level adverbial transition)? It is most harmful when it severs a predicate from its required complement; least harmful when it splits between coordinate list elements or after a complete independent clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "severity",
+    "chars_change": 388
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10821,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O3",
+    "kind": "change",
+    "text": "When comparing two cuts in the same band, if one separates a verb/auxiliary from its core object or complement and the other falls earlier inside pre‑verbal adjuncts (time, place, manner), prefer the cut that preserves the verb+object (i.e., the later cut after the complement).",
+    "_was": "- When one cut is immediately before sentence-final closing material (end punctuation or terminal quotation) and another divides two independent clauses joined by a coordinating boundary, prefer the sentence-final cut."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 60
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10493,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "text": "When comparing two cuts in the same band, if one separates a verb/auxiliary from its core object or complement and the other falls earlier inside pre‑verbal adjuncts (time, place, manner), prefer the cut that preserves the verb+object (i.e., the later cut after the complement)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "change",
+    "chars_change": 279
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10712,
+  "errors": null
+ },
+ {
+  "candidate": 4,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "text": "- Does the marker come immediately after a clause- or phrase-introducing function word (article, demonstrative, clause‑initial auxiliary or particle)? Keep that function word with the following noun phrase or clause (most severe: detaching it leaves a stranded fragment lacking a head; mild: following text is punctuation or parenthetical)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "C_end",
+    "kind": "change",
+    "chars_change": 341
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10774,
+  "errors": null
+ }
+]

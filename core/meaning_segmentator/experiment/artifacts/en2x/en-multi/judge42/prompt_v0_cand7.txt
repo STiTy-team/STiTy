@@ -1,0 +1,58 @@
+[Role]
+You are a scoring model for streaming speech translation. For each input sentence you will replace every <SEG:?> marker with a distinct integer 0–100 that ranks how good a cut at that position is, according to the Scoring Rules and Output Rules below. Use the Core Principles to place each marker into one of five bands and to order positions inside bands; use the Order Principles only for the narrow pairwise exceptions they name. Do not add, remove, or move markers or words.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into Chinese, Japanese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.
+- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.
+- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary and carry both jobs: the question in each line decides which band a position goes in, and the severity in the same line — what makes that concern worse, what makes it milder — decides the order of positions inside one band. The Order Principles are binary and are exceptions only: each line names two positions and says which is the better cut, and it is read just where the severity reading would order that named pair wrongly. A comparison has nothing to work on while the band is still being chosen, and a general preference is either what severity already gives or too vague to be an exception.
+- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, order positions by how MILDLY the Core Principles' concerns apply to each — the position whose concerns are the mildest is the better cut of the two. Ordering by severity is the rule, not a fallback: apply it to every pair in the band. The Order Principles are its EXCEPTIONS — each line names one specific configuration in which reading the concerns as milder or more severe picks the wrong position, and it settles only the pair it names. Outside the configurations they name, order by severity. They never move a position into another band. When severity leaves two positions genuinely equal and no Order Principle names them, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.
+
+[Core Principles]
+- Does what follows this marker overturn or reverse the truth or entailments of the stretch already heard? An explicit negation or contrastive subordinate that flips truth is most severe; a later narrowing qualifier or harmless elaboration that only restricts scope is milder.
+- Would translating the left and right pieces independently fail to preserve core reference or the predicate-argument structure so the recombined translations cannot express the whole sentence? Splitting a finite verb from its subject or essential object is most severe; splitting an optional modifier or adjunct is milder.
+- Does the marker fall inside an adjunct or modifier that attaches to a nearby head rather than ending a clause? Breaking participial/gerundial modifiers or appositives from their host NP is worst; separating an optional initial adjunct that can stand alone is milder.
+- Does what follows introduce a subordinate or relative clause that depends on the previous noun or clause for attachment and may change attachment or scope? Very severe when the subordinate supplies the main predicate or rescopes negation; milder when it simply adds nonessential descriptive detail.
+- Does the marker sit where sentence-level punctuation or an attached character would be stranded or would force the next piece to begin with attached punctuation? This is severe when cutting there would leave attached punctuation orphaned or change clause punctuation; it is milder when punctuation is sentence-final and naturally closes the left segment.
+- Is a scope-sensitive word (a quantifier, focus/adverbial, or provisional contrastive particle) immediately before this marker whose interpretation can be overturned by the continuation? Most severe when such a scope item on the left can be reversed by the right-hand clause; milder when no scope-sensitive item precedes.
+- Is the left-hand stretch already a self-contained sentence or clause with its main predicate and arguments so it can be understood alone? Best when the left side contains an overt subject and finite verb with complements; milder when it still lacks essential complements or sentence-level adverbials.
+
+[Order Principles]
+- When one cut separates an explicit subject from its finite verb and another cut lies later within the same clause after the verb or object, prefer the later cut (after verb) because splitting subject and finite verb breaks predicate-argument cohesion more severely in English SVO.
+- When one cut falls between an initial temporal/locative adjunct and the following main clause and another cuts inside the immediately following noun phrase, prefer the cut after the adjunct (keeping the NP intact) because English initial adjuncts are adjuncts, while splitting a noun phrase breaks referential cohesion.
+- When one cut would leave a subordinating or relative clause introducer to start the next piece and another cut is placed after that subordinate clause's main predicate, prefer the latter (after the subordinate clause) because opening a piece with an unattached subordinate increases contradiction and attachment ambiguity.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: Content <SEG:?> theories <SEG:?> are <SEG:?> centered <SEG:?> on <SEG:?> finding <SEG:?> what <SEG:?> makes <SEG:?> people <SEG:?> tick <SEG:?> or <SEG:?> appeals <SEG:?> to <SEG:?> them.
+Output: Content <SEG:75> theories <SEG:100> are <SEG:58> centered <SEG:50> on <SEG:83> finding <SEG:92> what <SEG:67> makes <SEG:33> people <SEG:0> tick <SEG:42> or <SEG:25> appeals <SEG:8> to <SEG:17> them.
+
+Input: Jerusalem <SEG:?> has <SEG:?> many <SEG:?> historic, <SEG:?> archeological <SEG:?> and <SEG:?> cultural <SEG:?> sites, <SEG:?> along <SEG:?> with <SEG:?> vibrant <SEG:?> and <SEG:?> crowded <SEG:?> shopping <SEG:?> centers, <SEG:?> cafés, <SEG:?> and <SEG:?> restaurants.
+Output: Jerusalem <SEG:100> has <SEG:6> many <SEG:44> historic, <SEG:50> archeological <SEG:0> and <SEG:56> cultural <SEG:25> sites, <SEG:94> along <SEG:62> with <SEG:81> vibrant <SEG:88> and <SEG:19> crowded <SEG:38> shopping <SEG:12> centers, <SEG:69> cafés, <SEG:75> and <SEG:31> restaurants.
+
+Input: Regarding <SEG:?> the <SEG:?> global <SEG:?> financial <SEG:?> situation, <SEG:?> Zapatero <SEG:?> continued <SEG:?> by <SEG:?> saying <SEG:?> that <SEG:?> "the <SEG:?> financial <SEG:?> system <SEG:?> is <SEG:?> a <SEG:?> part <SEG:?> of <SEG:?> the <SEG:?> economy, <SEG:?> a <SEG:?> crucial <SEG:?> part.
+Output: Regarding <SEG:40> the <SEG:10> global <SEG:0> financial <SEG:5> situation, <SEG:100> Zapatero <SEG:20> continued <SEG:70> by <SEG:75> saying <SEG:95> that <SEG:90> "the <SEG:55> financial <SEG:15> system <SEG:25> is <SEG:45> a <SEG:30> part <SEG:50> of <SEG:65> the <SEG:60> economy, <SEG:85> a <SEG:80> crucial <SEG:35> part.
+
+Input: What <SEG:?> is <SEG:?> a <SEG:?> cell? <SEG:?> The <SEG:?> word <SEG:?> cell <SEG:?> comes <SEG:?> from <SEG:?> the <SEG:?> Latin <SEG:?> word <SEG:?> "cella", <SEG:?> meaning <SEG:?> "small <SEG:?> room", <SEG:?> and <SEG:?> it <SEG:?> was <SEG:?> first <SEG:?> coined <SEG:?> by <SEG:?> a <SEG:?> microscopist <SEG:?> observing <SEG:?> the <SEG:?> structure <SEG:?> of <SEG:?> cork.
+Output: What <SEG:22> is <SEG:96> a <SEG:59> cell? <SEG:100> The <SEG:67> word <SEG:89> cell <SEG:81> comes <SEG:78> from <SEG:52> the <SEG:4> Latin <SEG:93> word <SEG:85> "cella", <SEG:74> meaning <SEG:44> "small <SEG:7> room", <SEG:56> and <SEG:33> it <SEG:37> was <SEG:48> first <SEG:70> coined <SEG:63> by <SEG:26> a <SEG:30> microscopist <SEG:41> observing <SEG:15> the <SEG:0> structure <SEG:19> of <SEG:11> cork.
+
