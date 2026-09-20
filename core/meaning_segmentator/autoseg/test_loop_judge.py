@@ -1044,7 +1044,7 @@ class GradedPrinciplesAreTheDefault(unittest.TestCase):
         self.assertEqual(aj.ungraded_principles(full), ["C1"])       # 검사: 비었다
         keep, bad = aj.enforce_role([{"op": "replace", "id": "C1", "text": q, "_was": q}], "severity")
         self.assertEqual(keep, [])                                   # 역할: 같은 이유로 거부
-        self.assertIn("정도 절이 비었다", bad[0]["reason"])
+        self.assertIn("정도 축이 아니다", bad[0]["reason"])
 
 
 class OrderPrinciplesAreExceptions(unittest.TestCase):
@@ -1103,6 +1103,68 @@ class OrderPrinciplesAreExceptions(unittest.TestCase):
         self.assertIn("prefer the one whose preceding stretch stands alone", w)   # 금지 예시로만 등장
 
 
+class EveryRoleWritesBothParts(unittest.TestCase):
+    """`[Core Principles]` 에 줄을 넣거나 바꾸는 편집은 **역할과 무관하게** 두 부분이어야 한다.
+
+    지시문만으로는 새어 나간다 — `narrow_rule` 은 "금지문 말고 결속문" 을 세 이터 연속 어겼다.
+    그리고 질문만 있는 원칙이 들어가면 프롬프트는 멀쩡해 보이고 골격 검사도 통과하지만, 그 원칙은
+    등급 배정만 하고 등급 안 서열에는 아무것도 주지 못한다. **점수에 안 잡히는 손실**이다."""
+
+    Q = "- Does the continuation reverse what came before?"
+    AXIS = " A cut here is worse the more complete the reversal, and mildest for a bare qualifier."
+    DIRECTION = " Such outcomes increase contradiction risk."
+
+    def test_every_role_that_touches_c_is_checked(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for role in ("free", "single_small", "narrow_rule", "induce", "replace", "fallback"):
+            for op in ("insert_after", "replace"):
+                keep, bad = aj.check_core_unit_shape(
+                    [{"op": op, "id": "C2", "text": self.Q + self.DIRECTION}], role)
+                self.assertEqual(keep, [], f"{role}/{op}")
+                self.assertIn("두 부분이 아니다", bad[0]["reason"])
+                ok, bad2 = aj.check_core_unit_shape(
+                    [{"op": op, "id": "C2", "text": self.Q + self.AXIS}], role)
+                self.assertEqual((len(ok), bad2), (1, []), f"{role}/{op}")
+
+    def test_other_sections_and_deletes_are_untouched(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for e in ({"op": "insert_after", "id": "O_end", "text": "- prefer A over B"},
+                  {"op": "insert_after", "id": "E_end", "text": "Input: a\nOutput: b"},
+                  {"op": "delete", "id": "C3"},
+                  {"op": "replace", "id": "E1", "labeled_example": "en_us_1"}):
+            keep, bad = aj.check_core_unit_shape([e], "free")
+            self.assertEqual((len(keep), bad), (1, []), str(e))
+
+    def test_one_judgement_in_one_place(self):
+        """세 군데가 같은 함수를 쓴다 — 따로 판정하면 한쪽을 통과한 편집이 다른 쪽에서 죽는다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        axis, direction = self.Q + self.AXIS, self.Q + self.DIRECTION
+        self.assertTrue(aj.has_severity(axis))
+        self.assertFalse(aj.has_severity(direction))
+        # 역할 검사
+        self.assertEqual(aj.enforce_role(
+            [{"op": "replace", "id": "C1", "text": direction, "_was": axis}], "severity")[0], [])
+        # 모양 검사
+        self.assertEqual(aj.check_core_unit_shape(
+            [{"op": "replace", "id": "C1", "text": direction}], "free")[0], [])
+        # v0 검사
+        head = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n[Core Principles]\n")
+        tail = ("\n\n[Order Principles]\n- prefer A over B\n\n[Output Rules]\n- x\n\n"
+                "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        self.assertEqual(aj.ungraded_principles(head + direction + tail), ["C1"])
+        self.assertEqual(aj.ungraded_principles(head + axis + tail), [])
+
+    def test_pe_is_told_which_job_each_role_serves(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        e = " ".join(aj.ENGINEER_SYSTEM.split())
+        self.assertIn("The prompt has two jobs and every role serves exactly one of them", e)
+        self.assertIn("BAND ASSIGNMENT", e)
+        self.assertIn("ORDER INSIDE A BAND", e)
+        self.assertIn("EXCEPTIONS", e)
+        self.assertIn("The role that serves it is \"severity\"", e)
+        self.assertIn("Code checks it and drops the edit otherwise, whatever your role is", e)
+
+
 class SeverityRole(unittest.TestCase):
     """`severity` 는 **등급 안 서열**을 움직이는 역할이다 — 질문이 아니라 정도 절을 고친다.
 
@@ -1118,7 +1180,8 @@ class SeverityRole(unittest.TestCase):
 
     Q = ("- Would placing a cut here leave trailing sentence-final material attached to the "
          "preceding word, producing an impossible or misleading fragment?")
-    SEV = " A cut here is worse the shorter that trailing remainder is."
+    SEV = (" A cut here is worse the shorter that trailing remainder is, and mildest when the"
+           " remainder is a detachable afterthought.")
 
     def edit(self, text, was=None, uid="C7", op="replace"):
         return [{"op": op, "id": uid, "text": text, "_was": was if was is not None else self.Q + self.SEV}]
@@ -1145,7 +1208,15 @@ class SeverityRole(unittest.TestCase):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         keep, bad = aj.enforce_role(self.edit(self.Q), "severity")
         self.assertEqual(keep, [])
-        self.assertIn("정도 절이 비었다", bad[0]["reason"])
+        self.assertIn("정도 축이 아니다", bad[0]["reason"])
+
+    def test_one_end_is_direction_not_an_axis(self):
+        """한쪽만 쓰면 방향이지 축이 아니다 — 등급 안 두 자리를 여전히 못 가른다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            self.edit(self.Q + " A cut here is worse the shorter that remainder is."), "severity")
+        self.assertEqual(keep, [])
+        self.assertIn("정도 축이 아니다", bad[0]["reason"])
 
     def test_only_replace_on_a_c_unit(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj

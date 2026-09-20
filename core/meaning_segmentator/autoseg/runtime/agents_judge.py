@@ -377,7 +377,26 @@ Hard constraints:
    "kind": "example"} or {"op": "insert_after", "id": "E_end", "labeled_example": "..."}.
    A measured example teaches the ranking directly where a principle only describes it; prefer
    replacing a hand-written example with a measured one over adding another principle.
-10. If "constraint" is present, obey it — code enforces it by dropping edits that violate it:
+10. If "constraint" is present, obey it — code enforces it by dropping edits that violate it.
+   The prompt has two jobs and every role serves exactly one of them. Know which is yours before
+   you write anything:
+     BAND ASSIGNMENT — which of the five bands a position goes in. This is decided by the QUESTION
+       in each [Core Principles] line. It already works: the top of the ranking is well separated.
+       Roles that serve it add or trade a question: "single_small", "narrow_rule", "induce", and
+       "replace" when it targets a C unit.
+     ORDER INSIDE A BAND — which of two positions that share a band is the better cut. This is
+       decided by the SEVERITY that follows the question on the same line: what makes that concern
+       worse, what makes it milder. This is where the ranking currently carries almost no
+       information, and it is where the measurement is read: the latency budget keeps several
+       positions per sentence, so the order among the middle positions decides what ships.
+       The role that serves it is "severity".
+     EXCEPTIONS — a named configuration where ordering by severity picks the wrong position.
+       [Order Principles] holds these, and only these. The role is "fallback".
+   Every [Core Principles] line you write or rewrite must have BOTH parts: the question, ending in a
+   question mark, then the severity naming both ends. Code checks it and drops the edit otherwise,
+   whatever your role is. A question with no severity assigns a band and then leaves the model to
+   invent the order inside it.
+   The constraints:
    "examples_only": edit only [Examples] units; no [Core Principles] edit at all. Add, replace
    or delete as many as you judge right — there is no cap. An example shows the WHOLE ordering
    of a sentence at once, so it teaches the lower ranks that prose cannot reach; pick the ones
@@ -843,19 +862,30 @@ def ungraded_principles(prompt: str) -> list[str]:
     두 자리를 여전히 못 가른다. `WRITER_SYSTEM` 이 요구하는 것은 **양쪽 끝**이므로 그것을 센다:
     심한 쪽 말(worse / worst / severe)과 가벼운 쪽 말(milder / mildest / mild / least / less /
     better / best)이 둘 다 있어야 한다. 한쪽만 있으면 축이 아니라 방향이다."""
-    out = []
-    for u in edit_units(prompt):
-        if u["section"] != "[Core Principles]":
-            continue
-        t = " ".join(u["text"].split())
-        i = t.find("?")
-        rest = t[i + 1:].strip().lower() if i >= 0 else ""
-        worse = any(w in rest for w in ("worse", "severe", "worst"))
-        milder = any(w in rest for w in ("milder", "mildest", "least", "less", "mild",
-                                         "better", "best"))
-        if not (worse and milder):
-            out.append(u["id"])
-    return out
+    return [u["id"] for u in edit_units(prompt)
+            if u["section"] == "[Core Principles]" and not has_severity(u["text"])]
+
+
+WORSE_WORDS = ("worse", "worst", "severe")
+MILDER_WORDS = ("milder", "mildest", "mild", "least", "less", "better", "best")
+
+
+def has_severity(text: str) -> bool:
+    """원칙 한 줄이 **정도 축**을 들고 있는가 — 질문 뒤에 심한 쪽과 가벼운 쪽이 둘 다 있는가.
+
+    **한 군데에서만 정한다.** `ungraded_principles`(v0 검사), `severity` 역할, 그리고 C 에 줄을
+    넣거나 바꾸는 모든 편집이 이 함수를 쓴다. 같은 것을 여러 군데서 다르게 판정하면 한쪽을 통과한
+    편집이 다른 쪽에서 죽거나, 더 나쁘게는 조용히 새어 나간다 — 밤새 그 버그를 두 번 겪었다.
+
+    방향만으로는 안 된다. combo 의 원칙 여덟은 물음표 뒤에 문장이 있지만 어느 쪽으로 미는지만
+    말한다("such outcomes increase contradiction risk"). 얼마나인지를 말하지 않으면 등급 안 두
+    자리를 여전히 못 가른다."""
+    t = " ".join(str(text or "").split())
+    i = t.find("?")
+    if i < 0:
+        return False
+    rest = t[i + 1:].strip().lower()
+    return (any(w in rest for w in WORSE_WORDS) and any(w in rest for w in MILDER_WORDS))
 
 
 def edit_units(prompt: str) -> list[dict]:
@@ -1061,6 +1091,30 @@ def is_prohibition(text: str) -> bool:
     return not any(m in t for m in BINDING_MARKERS)
 
 
+def check_core_unit_shape(edits, role: str) -> tuple[list, list[dict]]:
+    """`[Core Principles]` 에 줄을 넣거나 바꾸는 편집은 **질문 + 정도 축** 두 부분이어야 한다.
+
+    **역할과 무관하게 건다.** 지시문만으로는 새어 나간다 — `narrow_rule` 은 "금지문 말고 결속문" 을
+    세 이터 연속 어겼다. 그리고 질문만 있는 줄이 들어가면 프롬프트는 멀쩡해 보이고 골격 검사도
+    통과하지만, 그 원칙은 등급 배정만 하고 등급 안 서열에는 기여하지 못한다 — 정확히 방금 메운
+    구멍을 다시 뚫는 것이고, **점수에 안 잡히는 손실**이다.
+
+    `delete` 와 `labeled_example` 은 문면을 만들지 않으므로 건드리지 않는다. `E`·`O` 단위도 아니다."""
+    keep, bad = [], []
+    for n, e in enumerate(edits or []):
+        uid = str(e.get("id") or "")
+        text = str(e.get("text") or "")
+        touches_c = uid.startswith("C") and e.get("op") in ("insert_after", "replace")
+        if touches_c and text.strip() and not e.get("labeled_example") and not has_severity(text):
+            bad.append({"edit": n, "id": uid,
+                        "reason": f"{role} 인데 원칙 줄이 두 부분이 아니다 — 질문(물음표로 끝)과 그 뒤의 "
+                                  "정도 축(무엇이 더 심하고 무엇이 더 가벼운가)을 둘 다 쓸 것. 질문만 있는 "
+                                  "원칙은 등급 배정만 하고 등급 안 서열에는 아무것도 주지 못한다"})
+            continue
+        keep.append(e)
+    return keep, bad
+
+
 def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, list[dict]]:
     """후보 역할별 제약을 코드로 건다. 어기는 편집은 건너뛴다.
 
@@ -1233,9 +1287,10 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                         "reason": "severity 인데 질문이 바뀌었다 — 첫 물음표까지는 그대로 두고 그 뒤만 "
                                   "다시 쓸 것. 질문은 어느 등급으로 보낼지를 정하고 그쪽은 이미 작동한다"})
             keep = []
-        elif keep and not text[len(qt or ""):].strip():
+        elif keep and not has_severity(text):
             bad.append({"edit": 0, "id": uid,
-                        "reason": "severity 인데 정도 절이 비었다 — 무엇이 더 심하고 무엇이 더 가벼운지를 쓸 것"})
+                        "reason": "severity 인데 정도 축이 아니다 — 심한 쪽과 가벼운 쪽을 **둘 다** 쓸 것. "
+                                  "한쪽만 쓰면 방향이지 축이 아니고, 등급 안 두 자리를 못 가른다"})
             keep = []
         elif keep and len(text) - len(was) > SEVERITY_SLACK:
             bad.append({"edit": 0, "id": uid,

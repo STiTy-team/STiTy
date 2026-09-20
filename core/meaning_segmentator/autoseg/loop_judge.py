@@ -1814,6 +1814,10 @@ def main() -> int:
                 {"deleted": spent_deletes,
                  # 그 칸의 마지막 한 줄은 지울 수 없다 — 비면 골격이 참조할 것이 없다.
                  "order_units": sum(1 for k in units_now if k.startswith("O"))})
+            # **역할과 무관하게** 원칙 줄의 모양을 건다. 질문만 있는 원칙이 들어가면 등급 배정만
+            # 하고 등급 안 서열에 기여하지 못하는데, 프롬프트는 멀쩡해 보이고 골격 검사도 통과한다.
+            edits, bad_shape = aj.check_core_unit_shape(edits, role)
+            bad += bad_shape
             if finding:
                 edits, bad_k = aj.enforce_kind(edits, finding.get("kind"),
                                                "[Order Principles]" in prompt, role)
