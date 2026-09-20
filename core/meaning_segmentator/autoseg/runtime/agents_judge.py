@@ -1137,6 +1137,12 @@ def growth_cap(was: str, frac: float) -> int:
 ROLE_GROWTH = {"replace": REPLACE_GROWTH, "severity": SEVERITY_GROWTH}
 
 
+def unit_texts(prompt: str) -> dict[str, str]:
+    """단위 id → 본문. 검사는 본문으로 하고(id 는 이터마다 다시 매겨진다) 사람·PE 에게는 id 로
+    말해야 하므로 둘을 잇는 자리가 필요하다."""
+    return {u["id"]: u["text"] for u in edit_units(prompt)}
+
+
 def unit_budgets(prompt: str, role: str) -> dict[str, int]:
     """이 역할이 한 단위를 고칠 때 새 문면이 넘지 못하는 글자 수. 상한 없는 역할은 빈 사전.
 

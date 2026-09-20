@@ -1374,6 +1374,14 @@ class TheCapIsToldBeforeWriting(unittest.TestCase):
         self.assertEqual(aj.unit_budgets(self.prompt(), "narrow_rule"), {})
         self.assertEqual(aj.unit_budgets(self.prompt(), "fallback"), {})
 
+    def test_taken_units_are_named_by_id(self):
+        """이미 손댄 단위는 본문으로 판정하고 PE 에게는 id 로 알려 준다 — `prune` 이 세 이터 연속
+        앞 후보가 손댄 단위를 골라 첫 시도에서 죽었다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        texts = aj.unit_texts(self.prompt())
+        self.assertEqual(texts["C1"], self.UNIT)
+        self.assertIn("O1", texts)
+
     def test_both_roles_are_told_to_read_the_table(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         e = " ".join(aj.ENGINEER_SYSTEM.split())

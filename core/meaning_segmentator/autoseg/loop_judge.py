@@ -2040,6 +2040,14 @@ def main() -> int:
                 budgets = aj.unit_budgets(prompt, role)
                 if budgets:
                     extra["max_chars_per_unit"] = budgets
+                # **이미 손댄 단위도 쓰기 전에 알려 준다.** `sibling_candidates` 로 앞 후보의 편집을
+                # 보여주지만 PE 는 그것을 "고르면 안 되는 목록" 으로 읽지 않는다 — `prune` 이 세 이터
+                # 연속 첫 시도에서 앞 후보가 손댄 단위를 골라 죽었다. 검사는 본문으로 하고(id 는
+                # 이터마다 다시 매겨진다) 알려 줄 때는 id 로 준다.
+                taken = [uid for uid, txt in aj.unit_texts(prompt).items()
+                         if any(str(txt)[:60] == g[:60] for g in spent_deletes)]
+                if taken:
+                    extra["units_already_taken"] = taken
             if findings and role != "induce":
                 extra["primary_finding"] = findings[f_idx]["diagnosis"]
                 extra["primary_finding_kind"] = findings[f_idx].get("kind") or "check"
