@@ -1103,6 +1103,58 @@ class OrderPrinciplesAreExceptions(unittest.TestCase):
         self.assertIn("prefer the one whose preceding stretch stands alone", w)   # 금지 예시로만 등장
 
 
+class SeverityVocabularyIsCalibrated(unittest.TestCase):
+    """`has_severity` 의 표지는 **실제 생성물로 맞춘 것**이다.
+
+    처음에 `worse`/`severe` 만 두었더니 Writer 가 낸 정상 절 넷을 거부했다 —
+    "is most damaging; separating optional adjuncts is least", "Most harmful when …; milder when …".
+    Writer 는 damaging·harmful 을 쓰고 나는 worse·severe 만 찾고 있었다. **차단 검사에서 오탐은
+    후보를 조용히 잃는 것**이므로(같은 종류 버그를 두 번 겪었다) 목록이 넉넉해야 한다.
+
+    반대쪽도 지켜야 한다: 방향만 말하는 절("such outcomes increase contradiction risk")은 통과하면
+    안 된다. 그것이 통과하면 등급 안 서열 재료가 없는 원칙이 조용히 들어온다."""
+
+    AXES = [   # Writer 와 사람이 실제로 쓴 형태들
+        "Is it? An explicit sentential negation is the most severe; a narrow modifier is the mildest.",
+        "Is it? Splitting a verb from its primary object is most damaging; separating optional adjuncts is least.",
+        "Is it? Most harmful when a relative clause supplies the main predicate; milder when it is an aside.",
+        "Is it? It is worst where later material reattaches the adjunct; it is mild when detachable.",
+        "Is it? A cut here is better when the reversal is partial, worse when total.",
+    ]
+    DIRECTIONS = [   # 방향만 — 통과하면 안 된다
+        "Is it? Such outcomes increase contradiction risk.",
+        "Is it? If an essential complement would be lost, cohesion is reduced.",
+        "Is it? Separating head and modifier lowers cohesion.",
+        "Is it?",
+        "Is it? If yes, expect damage.",
+    ]
+
+    def test_accepts_every_shape_seen_in_real_output(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for c in self.AXES:
+            self.assertTrue(aj.has_severity(c), c[:70])
+
+    def test_rejects_direction_only(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for c in self.DIRECTIONS:
+            self.assertFalse(aj.has_severity(c), c[:70])
+
+    def test_both_ends_are_required_not_just_one(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        self.assertFalse(aj.has_severity("Is it? It is most damaging when the object is stranded."))
+        self.assertFalse(aj.has_severity("Is it? It is mildest when the tail is detachable."))
+
+    def test_the_reason_names_the_vocabulary(self):
+        """거부만 하고 무엇을 찾는지 안 알려주면 PE 가 맞출 수 없다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        _k, bad = aj.check_core_unit_shape(
+            [{"op": "insert_after", "id": "C_end", "text": self.DIRECTIONS[0]}], "narrow_rule")
+        r = bad[0]["reason"]
+        self.assertIn("양쪽 끝", r)
+        self.assertIn(aj.WORSE_WORDS[0], r)
+        self.assertIn(aj.MILDER_WORDS[0], r)
+
+
 class EveryRoleWritesBothParts(unittest.TestCase):
     """`[Core Principles]` 에 줄을 넣거나 바꾸는 편집은 **역할과 무관하게** 두 부분이어야 한다.
 

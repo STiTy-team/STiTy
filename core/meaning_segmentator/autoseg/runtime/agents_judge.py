@@ -866,8 +866,14 @@ def ungraded_principles(prompt: str) -> list[str]:
             if u["section"] == "[Core Principles]" and not has_severity(u["text"])]
 
 
-WORSE_WORDS = ("worse", "worst", "severe")
-MILDER_WORDS = ("milder", "mildest", "mild", "least", "less", "better", "best")
+# 정도 축의 두 끝을 가리키는 말. **실제 생성물에서 뽑았다** — 손으로 쓴 일곱 절과 Writer 가 낸
+# 스물네 절(후보 셋)에서 쓰인 낱말을 세어 맞췄다. 처음에 `worse`/`severe` 만 두었더니 Writer 가 쓴
+# "most damaging … least", "Most harmful … milder" 네 절을 **정상인데 거부**했다. 차단 검사에서
+# 오탐은 후보를 조용히 잃는 것이므로 목록은 넉넉해야 한다.
+WORSE_WORDS = ("worse", "worst", "severe", "severest", "damaging", "harmful", "harmfully",
+               "dangerous", "risky", "riskier", "riskiest", "costly", "serious", "destructive")
+MILDER_WORDS = ("milder", "mildest", "mild", "least", "less", "better", "best", "safer", "safest",
+                "harmless", "benign", "tolerable", "acceptable", "minor", "negligible")
 
 
 def has_severity(text: str) -> bool:
@@ -1108,8 +1114,10 @@ def check_core_unit_shape(edits, role: str) -> tuple[list, list[dict]]:
         if touches_c and text.strip() and not e.get("labeled_example") and not has_severity(text):
             bad.append({"edit": n, "id": uid,
                         "reason": f"{role} 인데 원칙 줄이 두 부분이 아니다 — 질문(물음표로 끝)과 그 뒤의 "
-                                  "정도 축(무엇이 더 심하고 무엇이 더 가벼운가)을 둘 다 쓸 것. 질문만 있는 "
-                                  "원칙은 등급 배정만 하고 등급 안 서열에는 아무것도 주지 못한다"})
+                                  "정도 축을 둘 다 쓸 것. 축은 **양쪽 끝**을 말해야 한다: 심한 쪽을 "
+                                  f"{'/'.join(WORSE_WORDS[:4])} 류로, 가벼운 쪽을 "
+                                  f"{'/'.join(MILDER_WORDS[:4])} 류로 이름 붙인다. 질문만 있거나 한쪽만 "
+                                  "있는 원칙은 등급 배정만 하고 등급 안 서열에는 아무것도 주지 못한다"})
             continue
         keep.append(e)
     return keep, bad
