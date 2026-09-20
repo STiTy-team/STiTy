@@ -1250,7 +1250,10 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
     같은 이터에 보폭이 다른 후보를 섞기 위해서다 — 원칙을 통째로 갈아끼운 후보(judge05~08 의
     기본형)는 매번 전 구간을 흔들었고, 어느 편집이 무엇을 바꿨는지도 남지 않았다.
 
-    `spent` 는 `{"deleted": {본문 앞부분, ...}}` — **이미 시도한 삭제를 막는다.** `prune` 은
+    `spent` 는 `{"deleted": {...}, "replaced": {...}}` — **같은 방식으로 같은 단위를 또 손대는 것을
+    막는다.** 두 집합을 나눠 두는 이유: 한 집합에 섞으면 `replace` 가 교체한 줄을 `prune` 이 지우지
+    못한다. 그 둘은 서로 다른 편집이고 다른 프롬프트가 나오는데, 대상이 몇 줄뿐인 역할은 그 충돌만
+    으로 후보 자리가 통째로 빈다(실측으로 세 이터 연속). `prune` 은
     judge23·24 에서 일곱 번 전부 같은 원칙을 지웠다. finding 을 갈라 줘도, 채택으로 프롬프트가
     바뀐 뒤에도 그랬다 — 기각되면 프롬프트가 안 바뀌고 프롬프트가 같으면 "가장 근거 약한 원칙"
     도 같다. `sibling_candidates` 로 보여주기만 하면 무시하므로 코드로 거부해야 하고, 그러면
@@ -1458,7 +1461,9 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
         # 그래서 지킬 것을 **문장 수**로 옮긴다. 한 단위를 지우고 한 단위를 넣으므로 원칙 개수가 늘지
         # 않고(주의 분산이 안 커진다), 새 줄은 한 줄이어야 한다. 글자 수는 대상의 두 배까지 허용하고
         # 전체 증가는 이터 단위 천장(`--growth-per-iter`)이 따로 막는다.
-        gone = set((spent or {}).get("deleted") or ())
+        # **같은 방식으로** 같은 단위를 또 고치는 것만 막는다. 형제가 그 줄을 지웠다고 해서 교체까지
+        # 막으면 서로 다른 편집을 막는 것이고, 대상이 몇 줄뿐인 역할은 그 충돌로 자리가 빈다.
+        gone = set((spent or {}).get("replaced") or ())
         n_order = (spent or {}).get("order_units", 99)
         # 한 자리 교체(`op="replace"`)면 편집 한 건으로 끝난다 — 지우는 자리와 넣는 자리가 같다.
         # 자리를 옮겨야 할 때는 삭제 한 건 + 추가 한 건이고, 그래도 원칙 개수는 그대로다.
@@ -1492,7 +1497,7 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
         was = str(dele.get("_was") or "")
         if was and any(was[:60] == g[:60] for g in gone):
             bad.append({"edit": 0, "id": did,
-                        "reason": "replace 인데 이미 손댄 단위를 또 고친다 — 다른 단위를 고를 것"})
+                        "reason": "replace 인데 이미 교체한 단위를 또 교체한다 — 다른 단위를 고를 것"})
             return [], bad
         new_text = str(ins.get("text") or "")
         if "\n" in new_text.strip():

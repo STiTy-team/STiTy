@@ -1802,12 +1802,31 @@ class ReplaceRole(unittest.TestCase):
         self.assertEqual(keep, [])
         self.assertIn("[Order Principles] 단위가 아니다", bad[0]["reason"])
 
-    def test_refuses_repeat_deletion(self):
+    def test_refuses_replacing_the_same_unit_twice(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.pair("- prefer a cut at A over one at B."), "replace",
+                                    {"replaced": {self.WAS}})
+        self.assertEqual(keep, [])
+        self.assertIn("이미 교체한", bad[0]["reason"])
+
+    def test_a_unit_a_sibling_deleted_is_still_replaceable(self):
+        """형제가 지운 줄을 교체하는 것은 **다른 편집**이다 — 한 집합에 섞으면 대상이 몇 줄뿐인
+        역할의 후보 자리가 통째로 빈다(실측으로 `prune` 이 세 이터 연속)."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         keep, bad = aj.enforce_role(self.pair("- prefer a cut at A over one at B."), "replace",
                                     {"deleted": {self.WAS}})
-        self.assertEqual(keep, [])
-        self.assertIn("이미 손댄", bad[0]["reason"])
+        self.assertEqual(len(keep), 2)
+        self.assertEqual(bad, [])
+
+    def test_a_unit_a_sibling_replaced_is_still_prunable(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        edit = [{"op": "delete", "id": "O2", "_was": "- prefer A over B"}]
+        self.assertEqual(len(aj.enforce_role(edit, "prune",
+                                             {"replaced": {"- prefer A over B"},
+                                              "order_units": 3})[0]), 1)
+        self.assertEqual(aj.enforce_role(edit, "prune",
+                                         {"deleted": {"- prefer A over B"},
+                                          "order_units": 3})[0], [])
 
     def test_kind_check_still_bars_binary_text(self):
         """이 역할도 `enforce_kind` 를 지난다 — 단항 발견에 비교문을 쓸 수는 없다."""

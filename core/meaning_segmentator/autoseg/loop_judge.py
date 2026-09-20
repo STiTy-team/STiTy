@@ -1790,10 +1790,15 @@ def main() -> int:
         # 두는데, 그 주석이 "id 는 이터마다 다시 매겨지므로 원문 앞부분을 싣는다" 로 이 쓰임을
         # 이미 예견했다. judge23·24 에서 `prune` 이 일곱 번 전부 같은 원칙을 지웠다.
         spent_deletes: set[str] = set()
+        spent_replaces: set[str] = set()
         for h in history:
             for e in (h.get("edits") or []):
-                if isinstance(e, dict) and e.get("kind") == "delete" and e.get("was"):
+                if not isinstance(e, dict) or not e.get("was"):
+                    continue
+                if e.get("kind") == "delete":
                     spent_deletes.add(str(e["was"]))
+                elif e.get("kind") == "change":
+                    spent_replaces.add(str(e["was"]))
 
         # `[Scoring Rules]` 는 빼고 units 로만 준다 — 같은 2.9KB 를 두 번 실을 일이 없고, "고정
         # 섹션" 이라는 이름이 `procedure` 역할과 모순된다. 못 고치는 줄은 S 태그 쪽에서 가린다.
@@ -1846,7 +1851,7 @@ def main() -> int:
                         f"{c['id']} — PE 가 쓴 것은 {c['was']!r}")
             edits, bad = aj.enforce_role(
                 pending, role,
-                {"deleted": spent_deletes,
+                {"deleted": spent_deletes, "replaced": spent_replaces,
                  # 그 칸의 마지막 한 줄은 지울 수 없다 — 비면 골격이 참조할 것이 없다.
                  "order_units": sum(1 for k in units_now if k.startswith("O"))})
             # **역할과 무관하게** 원칙 줄의 모양을 건다. 질문만 있는 원칙이 들어가면 등급 배정만
@@ -1865,9 +1870,15 @@ def main() -> int:
                 bad += bad2
                 used_examples.update(str(e["labeled_example"]) for e in edits
                                      if e.get("labeled_example"))
-            # 같은 이터의 뒤 후보가 같은 원칙을 또 지우지 못하게 누적한다.
+            # 같은 이터의 뒤 후보가 **같은 방식으로** 같은 원칙을 또 손대지 못하게 누적한다.
+            # **op 별로 나눈다.** 전에는 삭제든 교체든 한 집합에 넣어서, `replace` 가 O1 을 교체하면
+            # `prune` 이 O1 을 지우지 못했다. 그 둘은 다른 편집이고 다른 프롬프트가 나온다 — 막을
+            # 이유가 없다. 원래 막으려던 것은 `prune` 이 일곱 번 전부 같은 원칙을 지운 것(judge23·24)
+            # 이지 역할 사이의 충돌이 아니다. 대상이 세 줄뿐인 `prune` 은 그 충돌로 자리가 비었다.
             spent_deletes.update(str(e["_was"]) for e in edits
-                                 if e.get("op") in ("delete", "replace") and e.get("_was"))
+                                 if e.get("op") == "delete" and e.get("_was"))
+            spent_replaces.update(str(e["_was"]) for e in edits
+                                  if e.get("op") == "replace" and e.get("_was"))
             for b in bad:
                 log(f"[iter {it}] PE 편집 무시: edit {b['edit']} {b['reason']}")
             return {**pe_blob, "edits": edits}, bad
@@ -2044,8 +2055,11 @@ def main() -> int:
                 # 보여주지만 PE 는 그것을 "고르면 안 되는 목록" 으로 읽지 않는다 — `prune` 이 세 이터
                 # 연속 첫 시도에서 앞 후보가 손댄 단위를 골라 죽었다. 검사는 본문으로 하고(id 는
                 # 이터마다 다시 매겨진다) 알려 줄 때는 id 로 준다.
+                # 역할이 쓰는 방식으로 이미 손댄 단위만 알려 준다 — `prune` 에게 "교체된 단위"
+                # 를 금지 목록으로 주면 고를 것이 없다고 착각하고 빈 편집을 낸다.
+                same_op = spent_deletes if role == "prune" else spent_replaces
                 taken = [uid for uid, txt in aj.unit_texts(prompt).items()
-                         if any(str(txt)[:60] == g[:60] for g in spent_deletes)]
+                         if any(str(txt)[:60] == g[:60] for g in same_op)]
                 if taken:
                     extra["units_already_taken"] = taken
                 # **형제가 자리를 먹어 고를 것이 남지 않았으면 그 자리는 건너뛴다.** `usable_roles`
