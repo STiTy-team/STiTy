@@ -336,9 +336,13 @@ class CandidateRoles(unittest.TestCase):
                                      {"op": "delete", "id": "C2"}], "single_small")
         self.assertEqual(len(keep), 1)
         self.assertEqual(bad[0]["reason"], "single_small 인데 둘째 이후 편집")
-        keep, bad = aj.enforce_role([{"op": "replace", "id": "C1", "text": "w " * 61}], "single_small")
+        # 상한은 80단어다. 60 이었을 때는 원칙 한 줄(질문 + 정도 축, 실측 40~57단어)이 경계에
+        # 닿아 정상 편집이 걸릴 수 있었다.
+        ok, bad_ok = aj.enforce_role([{"op": "replace", "id": "C1", "text": "w " * 57}], "single_small")
+        self.assertEqual((len(ok), bad_ok), (1, []))
+        keep, bad = aj.enforce_role([{"op": "replace", "id": "C1", "text": "w " * 81}], "single_small")
         self.assertEqual(keep, [])
-        self.assertIn("61단어", bad[0]["reason"])
+        self.assertIn("81단어", bad[0]["reason"])
         keep, _ = aj.enforce_role([{"op": "replace", "id": "E1", "labeled_example": "s1"}],
                                   "single_small")
         self.assertEqual(len(keep), 1)

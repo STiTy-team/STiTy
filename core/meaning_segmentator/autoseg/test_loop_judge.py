@@ -1546,11 +1546,32 @@ class ReplaceRole(unittest.TestCase):
             "replace")
         self.assertEqual((len(keep), bad), (2, []))
 
-    def test_rejects_growth(self):
+    def test_keeps_the_principle_count_not_the_length(self):
+        """**문장 수 중립이지 길이 중립이 아니다.**
+
+        처음에는 길이 중립으로 잡았다(대상의 30%). 그런데 원칙 줄이 질문 + 정도 축 두 부분이 되면서
+        그 조건이 만족 불가능해졌다 — 발견을 그 형태로 쓰면 자연히 300~400자이고 338자 단위를
+        교체하면 순증가가 +200 쯤 난다. 실측으로 다섯 번 연속 걸렸다(+133/+166/+171/+208/+216 대
+        상한 80~113). 조건을 두 군데서 다르게 건 다섯 번째 사례다.
+
+        그래서 지킬 것을 문장 수로 옮겼다: 원칙 개수는 그대로(한 줄 지우고 한 줄 넣기), 새 줄은
+        한 줄, 글자 수는 두 배까지. 전체 증가는 이터 천장이 따로 막는다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        keep, bad = aj.enforce_role(self.pair("- " + "word " * 120), "replace")
+        # 정도 축을 갖춘 실제 크기의 교체는 통과해야 한다
+        ok, bad0 = aj.enforce_role(self.pair("- " + "word " * 60), "replace")
+        self.assertEqual(bad0, [], bad0)
+        self.assertTrue(ok)
+        # 두 배를 넘으면 막는다
+        keep, bad = aj.enforce_role(self.pair("- " + "word " * 300), "replace")
         self.assertEqual(keep, [])
-        self.assertIn("길이 중립", bad[0]["reason"])
+        self.assertIn("늘었다", bad[0]["reason"])
+
+    def test_rejects_extra_lines(self):
+        """한 줄이 한 단위다 — 줄을 늘리면 원칙 개수가 늘어난다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.pair("- first line\n- second line"), "replace")
+        self.assertEqual(keep, [])
+        self.assertIn("여러 줄", bad[0]["reason"])
 
     def test_requires_both_ops(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj

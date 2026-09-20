@@ -401,20 +401,24 @@ Hard constraints:
    or delete as many as you judge right — there is no cap. An example shows the WHOLE ordering
    of a sentence at once, so it teaches the lower ranks that prose cannot reach; pick the ones
    whose "latency_bin" is short and whose "gap" is large.
-   "replace": TRADE one existing line for the finding's judgement, at no net length. Either ONE
-   edit with "op": "replace" on the unit you are trading away (same slot, so length stays put), or
+   "replace": TRADE one existing line for the finding's judgement, keeping the PRINCIPLE COUNT the
+   same — one line out, one line in. Your replacement must be a single line, and it may be up to
+   twice the length of the line you trade away; it does not have to match it. When the new line goes
+   into [Core Principles] it is TWO PARTS like every line there — the question, then the severity
+   naming both ends; code drops it otherwise. Either ONE
+   edit with "op": "replace" on the unit you are trading away (same slot), or
    one "delete" plus one "insert_after" when the new line belongs in the other section (a unary
    finding goes to [Core Principles], a binary one to [Order Principles]). Units of BOTH sections are
    fair game, [Order Principles] included — its opening line was written by hand and never measured on
    its own, so replacing it with something the cases support is exactly what this role is for. The
    one limit: [Order Principles] must not end up empty, so its last remaining line can be replaced but
-   not deleted. The new line may exceed the old one by at most a few words — code measures it and
-   drops the edit otherwise, so pick a unit long enough to pay for what you write. Choose what to delete by
+   not deleted. What you must not do is add lines: one more principle divides the model's attention,
+   and that is the cost this role exists to avoid. Choose what to delete by
    EVIDENCE, exactly as constraint 2 says: a "v0" unit with no measured gain, or one the current
    critique faults, and never a unit whose "adopted_ci_lo" is positive. Why this role exists:
    adding a line has lost every time it was measured, while deleting a unit that the measurement
-   does not depend on came out at zero — if the cost is length rather than content, a trade starts
-   from zero instead of below it.
+   does not depend on came out at zero. So the cost looks like it is in the COUNT of principles, not
+   in their wording: a trade leaves the count alone and starts from zero instead of below it.
    "severity": RECALIBRATE how strongly one existing Core Principle applies. Exactly one edit, a
    "replace" on a "C" unit, and **everything up to and including the first question mark must come
    back byte-for-byte unchanged** — you rewrite only what follows it. Code compares the two and drops
@@ -455,6 +459,10 @@ Hard constraints:
    cuts have in common on the SOURCE SURFACE (a token class, a construction, what sits either
    side of the boundary), then state that commonality as a rule. Exactly one edit, an
    "insert_after" into [Core Principles].
+   Whatever you write into [Core Principles] is TWO PARTS: the question, ending in a question mark,
+   then the severity — what makes a cut at such a position worse, and what makes it milder. Name both
+   ends as configurations recognisable on the source surface. Code drops the edit if either part is
+   missing: a question alone assigns a band and then leaves the model to invent the order inside it.
    Do NOT copy a case sentence or its markers into the rule — a rule names the configuration,
    it does not quote an instance. Do NOT write it as a prohibition. Binding ("keep X with the Y
    that completes it") and ordering ("prefer a cut at A over one at B") are both fine; let the
@@ -462,12 +470,19 @@ Hard constraints:
    Why this role exists: every other role reads the Critic's DIAGNOSIS, which has already
    compressed the cases into one sentence. That compression is where a wrong generalisation
    enters. Here you see the evidence before it was compressed.
-   "single_small": exactly ONE edit, and its new text is at most 60 words — a small, precise
-   change whose effect can be attributed.
+   "single_small": exactly ONE edit, and its new text is at most 80 words — a small, precise
+   change whose effect can be attributed. When it goes into [Core Principles] it is TWO PARTS like
+   every line there: the question, then the severity naming both ends. Those two together are what
+   the 80 words are for — a full principle line runs about 55 to 60 words, so the room is there, but
+   do not spend it all on the question.
    "narrow_rule": ADD a check, do not retune an existing one. Exactly one edit, it must be an
    "insert_after" into [Core Principles], and its text must state a concrete condition that can
    be recognised in the SOURCE surface form alone (a specific construction, a token class and
    what must stay with it), not a change in how strongly an existing principle applies.
+   Whatever you write into [Core Principles] is TWO PARTS: the question, ending in a question mark,
+   then the severity — what makes a cut at such a position worse, and what makes it milder. Name both
+   ends as configurations recognisable on the source surface. Code drops the edit if either part is
+   missing: a question alone assigns a band and then leaves the model to invent the order inside it.
    Write it as a BINDING ("keep X together with the Y that completes it"), not as a prohibition
    ("do not cut after X"): a prohibition removes candidate positions while a binding only moves
    them, and the short budgets need a fixed number of positions either way. And state a condition
@@ -1059,7 +1074,10 @@ def unfreezes(role: str) -> tuple[str, ...]:
 # 길이 지시(9,500자)에서도 겪었다 — **정도 축을 요구하기 전에 쓴 숫자였다.**
 #
 # 그래서 비율로 둔다. 대상이 커지면 폭도 커지고, 구조가 또 바뀌어도 다시 안 고친다.
-REPLACE_GROWTH = 0.30      # 교체: 지운 단위의 30% 까지 순증가. 324자 단위면 +97자.
+REPLACE_GROWTH = 1.00      # 교체: 한 줄을 한 줄로 바꾸되 두 배까지. 324자 단위면 +324자.
+                           # 처음에 0.30 으로 두었더니 다섯 번 연속 걸렸다 — 발견을 질문 + 정도 축
+                           # 형태로 쓰면 자연히 300~400자라 338자 단위 교체에 +200 이 난다.
+                           # 지키는 것을 길이에서 **문장 수** 로 옮겼다(개수는 그대로, 줄은 한 줄).
 SEVERITY_GROWTH = 1.20     # 정도 축: 대상 줄의 120% 까지. 324자 줄이면 +389자 — 정도 절(190자)을
                            # 두 배 가까이 늘려 쓸 수 있다. 등급 안 서열을 가르는 것이 이 역할의
                            # 일이므로, 구별을 더 촘촘히 적는 데 자리가 필요하다.
@@ -1186,9 +1204,13 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
         bad = [{"edit": n, "id": e.get("id"), "reason": "single_small 인데 둘째 이후 편집"}
                for n, e in enumerate(edits) if n > 0]
         keep = edits[:1]
-        if keep and len(str(keep[0].get("text") or "").split()) > 60 and "labeled_example" not in keep[0]:
+        # 상한이 60단어였는데 원칙 한 줄이 **질문 + 정도 축** 두 부분이 되면서 한 줄이 55~60단어가
+        # 됐다 — 정상 편집이 경계에 걸린다. 80단어로 올린다. 같은 종류의 어긋남을 이 런에서만 다섯
+        # 번 겪었고(길이 상한 셋, 문면 되돌림, 이것) 원인이 매번 같다: 구조를 바꿀 때 그 구조에
+        # 걸려 있던 상수를 다시 보지 않았다.
+        if keep and len(str(keep[0].get("text") or "").split()) > 80 and "labeled_example" not in keep[0]:
             bad.append({"edit": 0, "id": keep[0].get("id"),
-                        "reason": f"single_small 인데 {len(str(keep[0]['text']).split())}단어 > 60"})
+                        "reason": f"single_small 인데 {len(str(keep[0]['text']).split())}단어 > 80"})
             keep = []
         return keep, bad
     if role == "prune":
@@ -1343,15 +1365,25 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
             keep = []
         return keep, bad
     if role == "replace":
-        # **길이 중립 편집.** 원칙 목록에 문장을 더한 스물세 번 가운데 스물두 번이 음수였고
-        # (−0.006 ~ −0.011), 무엇을 쓰든 크기가 비슷했다. 반면 judge31 에서 C4 를 지운 편집은
-        # 길이가 229자 줄면서 Δ 가 −0.0001 이었고 CI 가 0 을 정중앙에 뒀다. 손해가 내용이 아니라
-        # 길이·주의 분산에서 온다면, **지운 만큼만 넣는 편집은 0 에서 출발한다.** 그래서 삭제 한
-        # 건과 추가 한 건을 한 후보에 묶고 순증가를 대상 크기에 비례해 막는다.
+        # **문장 수 중립 편집 — 한 줄을 한 줄로.**
+        #
+        # 처음에는 *길이* 중립으로 잡았다. 원칙 목록에 문장을 더한 스물세 번 중 스물두 번이 음수였고
+        # (−0.006 ~ −0.011) judge31 에서 C4 를 지운 편집만 −0.0001 이었으니, 손해가 내용이 아니라
+        # 길이·주의 분산에서 온다면 지운 만큼만 넣는 편집은 0 에서 출발할 것이라고 봤다.
+        #
+        # 그런데 원칙 줄이 **질문 + 정도 축** 두 부분이 되면서 그 제약이 성립하지 않는다. 발견 하나를
+        # 그 형태로 쓰면 자연히 300~400자이고, 338자 단위를 교체하면 순증가가 +200 쯤 난다. 실측으로
+        # 다섯 번 연속 길이 상한에 걸렸다(+133 / +166 / +171 / +208 / +216 대 상한 80~113).
+        # **모양 검사가 두 부분을 요구하는 세계에서 "길이 중립" 은 만족 불가능한 조건이다** — 조건을
+        # 두 군데서 다르게 건 다섯 번째 사례다.
+        #
+        # 그래서 지킬 것을 **문장 수**로 옮긴다. 한 단위를 지우고 한 단위를 넣으므로 원칙 개수가 늘지
+        # 않고(주의 분산이 안 커진다), 새 줄은 한 줄이어야 한다. 글자 수는 대상의 두 배까지 허용하고
+        # 전체 증가는 이터 단위 천장(`--growth-per-iter`)이 따로 막는다.
         gone = set((spent or {}).get("deleted") or ())
         n_order = (spent or {}).get("order_units", 99)
-        # 한 자리 교체(`op="replace"`)면 편집 한 건으로 끝난다 — 지우는 자리와 넣는 자리가 같아
-        # 길이 중립이 저절로 가깝다. 자리를 옮겨야 할 때는 삭제 한 건 + 추가 한 건이다.
+        # 한 자리 교체(`op="replace"`)면 편집 한 건으로 끝난다 — 지우는 자리와 넣는 자리가 같다.
+        # 자리를 옮겨야 할 때는 삭제 한 건 + 추가 한 건이고, 그래도 원칙 개수는 그대로다.
         keep = edits[:1] if (edits and edits[0].get("op") == "replace") else edits[:2]
         bad = [{"edit": n, "id": e.get("id"), "reason": "replace 인데 허용 개수를 넘는 편집"}
                for n, e in enumerate(edits) if n >= len(keep)]
@@ -1384,12 +1416,18 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
             bad.append({"edit": 0, "id": did,
                         "reason": "replace 인데 이미 손댄 단위를 또 고친다 — 다른 단위를 고를 것"})
             return [], bad
-        grew = len(str(ins.get("text") or "")) - len(was)
+        new_text = str(ins.get("text") or "")
+        if "\n" in new_text.strip():
+            bad.append({"edit": 0, "id": ins.get("id"),
+                        "reason": "replace 인데 새 문면이 여러 줄이다 — 한 줄을 한 줄로 바꾸는 역할이다. "
+                                  "한 줄이 한 단위이므로 줄을 늘리면 원칙 개수가 늘어난다"})
+            return [], bad
+        grew = len(new_text) - len(was)
         cap = growth_cap(was, REPLACE_GROWTH)
         if grew > cap:
             bad.append({"edit": 0, "id": ins.get("id"),
-                        "reason": f"replace 인데 길이 중립이 아니다 — 순증가 {grew}자 > {cap}자 "
-                                  f"(지운 단위가 {len(was)}자다). 더 긴 단위를 고르거나 새 문장을 줄일 것"})
+                        "reason": f"replace 인데 {grew}자 늘었다 — 그 단위({len(was)}자)에는 {cap}자까지만 "
+                                  f"된다. 원칙 개수는 그대로 두되 한 줄이 두 배를 넘지는 않게 할 것"})
             return [], bad
         return keep, bad
     if role == "narrow_rule":
