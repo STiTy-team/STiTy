@@ -65,8 +65,16 @@ assert len(order) == len(allx) == 905, f'{dataset}: {len(allx)}문장 (905 이�
 splits = {s: [x.to_dict() for x in order[i * N_SPLIT:(i + 1) * N_SPLIT]] for i, s in enumerate(SPLITS)}
 pool = {r['id'] for s in splits.values() for r in s}
 spare = [x for x in allx if x.id not in pool]
-todo = [s for s in SPLITS if s in a.splits.split(',')]
-assert todo, f'--splits {a.splits!r}: {SPLITS} 중 하나여야 한다'
+# **분할 밖 문장도 이름 있는 분할로 라벨한다.** 판정 4분할(200×4)을 떼면 105문장이 남는데
+# 지금까지 라벨이 없었다 — 이 코퍼스에서 유일하게 남은 새 문장이 그것뿐이다(정렬 1,405 중
+# 0~739·1240~1404 가 loop905, 740~1239 는 BLEU 홀드아웃이라 건드리지 않는다).
+# `pool`·`spare` 를 센 **뒤에** 넣는다 — 분할 겹침 검사와 프로파일 재료 검사가 4분할 기준이다.
+# `loop_judge` 는 자기가 읽은 분할로만 `pool_ids` 를 만들므로 이 파일이 생겨도 프로파일 재료
+# (분할 밖 문장 앞 20)는 움직이지 않는다.
+SPARE = 'spare'
+splits[SPARE] = [x.to_dict() for x in order[N_SPLIT * len(SPLITS):]]
+todo = [s for s in (*SPLITS, SPARE) if s in a.splits.split(',')]
+assert todo, f'--splits {a.splits!r}: {(*SPLITS, SPARE)} 중 하나여야 한다'
 
 
 def n_units(text):
@@ -75,6 +83,7 @@ def n_units(text):
 
 if a.phase == 'build':
     assert len(pool) == N_SPLIT * len(SPLITS), '분할 사이에 겹치는 문장'
+    assert {r['id'] for r in splits[SPARE]} == {x.id for x in spare}, 'spare 가 분할 밖 문장과 다르다'
     assert len(spare) >= N_PROFILE, f'분할 밖 문장 {len(spare)} < 프로파일 재료 {N_PROFILE}'
     unit = '어절' if spaced else '자'
     for s, rows in splits.items():
@@ -105,7 +114,7 @@ if a.phase == 'build':
         't_grid': spec['t_grid'], 'final_t_grid': spec['final_t_grid'], 'main_t': spec['main_t'],
         'seed': SEED, 'targets': targets, 'spaced': spaced, 'mode': 'judge',
         'translator_id': 'local:google/madlad400-3b-mt:en:ctx=False',
-        'split_scheme': 'train/test_a/test_b/test', 'split_from': None, 'labels_from': None,
+        'split_scheme': 'train/test_a/test_b/test (+spare)', 'split_from': None, 'labels_from': None,
         'split_note': f'stratified_order(seed {SEED}) over {dataset} (905) → 200×4, spare {len(spare)}',
         'measured_profile_from': f'x2en/{lang}-en/run02',
     }

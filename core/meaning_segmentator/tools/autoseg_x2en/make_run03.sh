@@ -10,7 +10,10 @@ set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
 set -a; [ -f ./.env ] && . ./.env; set +a
 export PYTHONPATH=. PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-PY=${PY:-.venv/bin/python}
+# **`.venv-autoseg` 를 쓴다.** `.venv` 에는 `langcodes` 가 없어 라벨 단계가 import 에서 죽는다
+# (2026-09-20 실측). 라벨링에 필요한 것(langcodes·comet·transformers·sentencepiece)이 다 있는
+# 환경은 그쪽이고, judge 루프도 같은 환경으로 돈다.
+PY=${PY:-.venv-autoseg/bin/python}
 RUN=${RUN:-run03}
 LANGS=${LANGS:-de zh ja}
 SPLITS=${SPLITS:-train test_a test_b}   # test(최종 홀드아웃)는 나중에 SPLITS=test 로
