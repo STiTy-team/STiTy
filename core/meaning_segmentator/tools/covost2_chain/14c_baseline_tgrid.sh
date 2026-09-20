@@ -56,7 +56,8 @@ one () {   # <run 디렉토리 이름> <라벨 이름>
       --translate-engine local --local-mt-model google/madlad400-3b-mt --mt-batch 48 \
       --workers 24 --baselines $BASE --bootstrap 0 --no-sentence-bleu --no-auto-greedy \
       > $D/logs/bleu_eval_$t.tgrid.log 2>&1
-    echo "== $(ts) $1 bleu_eval $t exit=$?" >> $LOG
+    rc=$?
+    echo "== $(ts) $1 bleu_eval $t exit=$rc" >> $LOG
     # 이미 잰 조건의 COMET 을 새 파일로 옮겨 온다 — 조건 하나는 독립으로 계산되므로
     # T 격자가 넓어져도 `syntax_T2` 의 값은 같다. 이걸 안 옮기면 --only-missing 이
     # 56조건을 전부 다시 재서 타깃당 25분을 헛쓴다.
@@ -80,8 +81,11 @@ PYEOF
   $PY -u -m core.meaning_segmentator.autoseg.baselines.comet_score \
     --run-id $rid --dataset covost2 --manifest-tag full --src en \
     --label $label --split test --targets zh de ja --only-missing \
-    --model Unbabel/wmt22-comet-da --batch-size 256 > $D/logs/comet.tgrid.log 2>&1
-  echo "== $(ts) $1 comet exit=$?" >> $LOG
+    --model Unbabel/wmt22-comet-da --batch-size 64 > $D/logs/comet.tgrid.log 2>&1
+  # 종료코드는 명령 직후에 — echo 안의 $(ts) 가 $? 를 덮는다 (14b 주석 참조).
+  rc=$?
+  echo "== $(ts) $1 comet exit=$rc" >> $LOG
+  [ $rc -eq 0 ] || return 1
 }
 
 one full_j44v0   auto_j44v0   || exit 1

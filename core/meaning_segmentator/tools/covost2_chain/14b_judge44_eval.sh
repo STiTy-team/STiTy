@@ -18,6 +18,11 @@
 # (오늘 체인 로그 한 줄에 기댔다가 두 번 물렸다: 대기 줄이 자기 패턴에 걸려 즉시 통과했고,
 #  다음엔 완료 줄이 안 찍혀 한 시간을 헛기다렸다).
 #
+# COMET 배치는 **64 를 넘기지 말 것** — 256 으로 올렸다가 CUDA OOM 으로 죽었다(23.5GB 중
+# 270MB 남은 상태). 얻는 것도 거의 없다: 32→256 이 조건당 26초에서 24초로 8% 뿐이었고,
+# GPU 가 이미 100% 라 배치로 살 여유가 없었다. 길이 분포가 긴 조건에서만 터지므로
+# 스모크로는 안 걸린다 — v0 세 타깃을 통과하고 best 의 첫 타깃에서 터졌다.
+#
 # 비용: **API $0.** 번역은 로컬 madlad, COMET 도 로컬 GPU 다.
 # 시간: judge13 이 같은 코퍼스에서 비교군 5종까지 3타깃 × 2프롬프트를 48분에 끝냈다
 #       (번역 캐시를 ../full 에서 물려받았다). 우리 조건은 점수 격자 4개뿐이고 그 조각의 77%가
@@ -66,14 +71,20 @@ one () {   # <run 디렉토리 이름> <라벨 이름> <라벨 jsonl>
       --translate-engine local --local-mt-model google/madlad400-3b-mt --mt-batch 48 \
       --workers 24 --baselines $BASE --bootstrap 0 --no-sentence-bleu --no-auto-greedy \
       > $D/logs/bleu_eval_$t.log 2>&1
-    echo "== $(ts) $1 bleu_eval $t exit=$?" >> $LOG
+    rc=$?
+    echo "== $(ts) $1 bleu_eval $t exit=$rc" >> $LOG
   done
   echo "== $(ts) $1 comet" >> $LOG
   $PY -u -m core.meaning_segmentator.autoseg.baselines.comet_score \
     --run-id $rid --dataset covost2 --manifest-tag full --src en \
     --label $label --split test --targets zh de ja --only-missing \
-    --model Unbabel/wmt22-comet-da --batch-size 256 > $D/logs/comet.log 2>&1
-  echo "== $(ts) $1 comet exit=$?" >> $LOG
+    --model Unbabel/wmt22-comet-da --batch-size 64 > $D/logs/comet.log 2>&1
+  # **종료코드는 명령 직후에 잡는다.** `echo "… $(ts) … $?"` 로 쓰면 명령치환이 먼저 돌면서
+  # `$?` 를 자기 성공값으로 덮어써, 죽은 COMET 이 exit=0 으로 찍힌다. 실제로 한 번 그랬고
+  # 그 줄을 믿은 다음 체인이 빈 COMET 위에서 돌기 시작했다.
+  rc=$?
+  echo "== $(ts) $1 comet exit=$rc" >> $LOG
+  [ $rc -eq 0 ] || return 1
   date '+%F %T' >> $D/eval.done
 }
 
