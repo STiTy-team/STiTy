@@ -75,6 +75,9 @@ for NAME in $PROMPTS; do
   if ! gate "${NAME}_smoke"; then
     echo "!! $NAME 스모크 불통과 — 본런 중단"; exit 1
   fi
+  if [ -n "${SMOKE_ONLY:-}" ]; then
+    echo "  SMOKE_ONLY — 본런은 돌리지 않는다"; continue
+  fi
   echo "===== $NAME 본런 15,530문장 $(date '+%F %T') ====="
   label "$NAME" "$PROMPT" "" $BUDGET_MAIN
   rc=$?

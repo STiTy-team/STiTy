@@ -234,13 +234,12 @@ def realign_tags(marked: str, out: str, spaced: bool, max_changed_frac: float = 
         return None
 
     mapped = [to_orig(b) for b in bounds]
-    # **입력에 마커가 있을 때만 자리를 맞춰 본다.** distill 형식은 입력이 `<SEG:?>` 로 자리를
-    # 정해 주므로 옮긴 자리가 그것과 하나라도 다르면 포기해야 한다. 그런데 판정·라벨링 형식은
-    # 입력이 맨 문장이고 **모델이 자리를 고른다** — `want` 가 비어 있어 이 검사가 항상 걸렸고,
-    # 그래서 그 형식에서는 재정렬이 한 번도 성공할 수 없었다(실측: covost2 15,530문장에서
-    # 재시도 후에도 text_modified 로 남은 448건). 남는 안전장치는 그대로다: 바뀐 어절이
-    # max(2, 20%) 를 넘으면 포기하고, 태그가 바뀐 구간 안에 떨어지면 `to_orig` 가 None 을 준다.
-    if any(m is None for m in mapped) or (want and mapped != want):
+    # **자리 검사는 느슨하게 하지 않는다.** 한때 `want` 가 빌 때(=입력에 마커가 없을 때) 이
+    # 검사를 건너뛰게 했는데, 그런 입력 자체가 버그였다 — covost2 라벨링이 프롬프트의 계약
+    # (`[Output Rules]`: 입력에 이미 모든 후보에 마커가 있다)을 안 지키고 맨 문장을 넣고 있었다.
+    # 그 결과 문장 넷 중 하나가 후보를 빼먹었다(15,530 중 24.2%). 입력을 고치는 것이 답이고,
+    # 검사를 풀면 그 잘못된 입력을 조용히 받아 준다.
+    if any(m is None for m in mapped) or mapped != want:
         return None
     at = dict(zip(mapped, tags))
     sep = " " if spaced else ""

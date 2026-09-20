@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from core.meaning_segmentator.autoseg.infra import gateway
 from core.meaning_segmentator.autoseg.infra.gateway import Gateway
 from core.meaning_segmentator.autoseg.runtime import agents_distill as ad
+from core.meaning_segmentator.autoseg.runtime import labels as L
 from core.meaning_segmentator.autoseg.runtime import pipeline as P
 from core.meaning_segmentator.autoseg.loop import target_is_spaced
 
@@ -144,7 +145,22 @@ def main() -> int:
     for r in rows:
         r["src_text_raw"] = r["src_text"]
         r["src_text"] = unwrap(r["src_text"])
-    texts = [r["src_text"] for r in rows]
+    # **후보 경계를 코드가 박아 준다.** 판정 프롬프트의 `[Output Rules]` 첫 줄이 "입력에 이미
+    # 모든 후보 자리에 `<SEG:?>` 가 있다. 모든 마커를 유지하고 ? 를 0~100 정수로 바꿔라" 다.
+    # 그런데 여기서는 맨 문장을 넣고 있었다 — 모델이 자리까지 발명해야 했고, 실측으로 문장
+    # 넷 중 하나가 후보를 빼먹었다(covost2 15,530 중 24.2%). 1차 통과도 0.84/0.57 로 낮아
+    # 재시도가 호출의 45% 를 먹었다. 루프(`loop_judge` → `loop_distill.evaluate`)와 **같은
+    # 함수**로 박는다: 단위 나누기 → 후보 자리 → 마킹.
+    units = [L.units_of(t, SPACED) for t in [r["src_text"] for r in rows]]
+    cands = [ad.candidate_positions(len(u), a.min_gap) for u in units]
+    skip = [i for i, c in enumerate(cands) if not c]
+    if skip:
+        print(f"[label] 후보 자리가 없는 문장 {len(skip)}개는 분절하지 않는다 "
+              f"(단위 {min(len(units[i]) for i in skip)}~{max(len(units[i]) for i in skip)}개)",
+              flush=True)
+    keep = [i for i, c in enumerate(cands) if c]
+    rows = [rows[i] for i in keep]
+    texts = [ad.mark_candidates(units[i], cands[i]) for i in keep]
     prompt = Path(a.prompt).read_text(encoding="utf-8")
 
     # **문면과 인자가 어긋나면 시작하지 않는다.** 어긋난 채로 돌면 모델은 문면대로
@@ -172,9 +188,13 @@ def main() -> int:
             return 2
         print(f"[label] 경고(무시함): {msg}", flush=True)
 
-    need_fn = lambda t: P.coverage_need(t, a.t_floor, SPACED, a.min_gap)
-    validate_fn = lambda t, out: P.validate("", t, out, SPACED, True, need_fn(t))
-    normalize_fn = lambda t, o: P.normalize_tags(o, SPACED, None, min_gap=a.min_gap)
+    # 검증·정규화도 **점수 형식**의 것으로 바꾼다. `P.validate` 는 모델이 절단 자리를 고르는
+    # 형식(`<SEG>` 몇 개)을 검사하고 `coverage_need` 로 최소 개수를 요구하는데, 점수 형식에서는
+    # 자리가 이미 정해져 있어 그 요구가 뜻이 없다 — 봐야 할 것은 "마커를 하나도 잃지 않았고
+    # 전부 정수로 채웠는가" 다. 그게 `ad.validate_scored` 이고 루프가 쓰는 것과 같다.
+    need_fn = lambda t: None
+    validate_fn = lambda t, out: ad.validate_scored("", t, out, SPACED)
+    normalize_fn = ad.normalize_scored
 
     def cost_ticker(gw, every: float = 120.0):
         """누적 비용을 주기적으로 로그에 찍는다.
@@ -224,14 +244,20 @@ def main() -> int:
 
     n_ok = n_pres = 0
     out_rows = []
-    for r, o, first_ok in zip(rows, outs, ok):
-        viol = validate_fn(r["src_text"], o)
+    # **검증에는 마커가 박힌 입력을 준다.** `validate_scored` 는 "입력 마커를 하나도 잃지
+    # 않았는가" 를 보므로 맨 문장을 주면 기준이 없다. 원문 보존은 그대로 맨 문장과 견준다.
+    for r, mk, o, first_ok in zip(rows, texts, outs, ok):
+        viol = validate_fn(mk, o)
         pres = strip_seg(o, SPACED) == strip_seg(r["src_text"], SPACED)
         n_pres += pres
         n_ok += not viol
-        out_rows.append({**r, "seg_text": o,
+        out_rows.append({**r, "seg_text": o, "marked": mk,
                          "n_boundaries": len(SEG.findall(o)),
-                         "required": need_fn(r["src_text"]),
+                         # 점수 형식에서 "요구" 는 **코드가 박은 마커 수**다. 종전의
+                         # `coverage_need`(최소 몇 개를 잘라야 한다)는 모델이 자리를 고르는
+                         # 형식의 값이라 여기서는 뜻이 없다. 이 값과 `n_boundaries` 가 같아야
+                         # 후보를 하나도 안 잃은 것이다.
+                         "required": mk.count("<SEG:?>"),
                          "first_pass_ok": bool(first_ok),
                          "text_preserved": pres,
                          "violations": [getattr(v, "rule", str(v)) for v in viol]})
