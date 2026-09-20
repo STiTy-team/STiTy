@@ -1454,7 +1454,11 @@ def main() -> int:
                 pr = cand_path.read_text(encoding="utf-8")
                 log(f"[v0] 후보 {c} 파일 재사용")
             else:
-                pr = gw.chat(aj.writer_system(spaced, targets), user, max_tokens=16000,
+                # 고정분(주입 블록 + 예시)을 세어 넘긴다 — 지시문에 박힌 숫자는 정도 축을
+                # 요구하기 전 값이라 맞지 않는다.
+                fixed = (len(aj.scoring_rules(targets)) + len(out_rules)
+                         + len(examples_section(v0_examples)))
+                pr = gw.chat(aj.writer_system(spaced, targets, fixed), user, max_tokens=16000,
                              reasoning_effort=(None if a.agent_reasoning_effort == "none"
                                                else a.agent_reasoning_effort),
                              purpose="prompt_v0").strip()
@@ -1917,7 +1921,9 @@ def main() -> int:
                       + "\n\n".join(examples.values()) + "\n" if examples else ""))
             def write(user_msg: str) -> str:
                 t0 = time.perf_counter()
-                pr = gw.chat(aj.writer_system(spaced, targets), user_msg, max_tokens=16000,
+                fixed2 = sum(len(aj.section_of(prompt, h))
+                             for h in (*aj.FROZEN, "[Examples]"))
+                pr = gw.chat(aj.writer_system(spaced, targets, fixed2), user_msg, max_tokens=16000,
                              reasoning_effort=(None if a.agent_reasoning_effort == "none"
                                                else a.agent_reasoning_effort),
                              purpose="rewrite").strip()

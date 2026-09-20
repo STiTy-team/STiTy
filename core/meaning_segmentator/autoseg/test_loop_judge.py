@@ -1047,6 +1047,52 @@ class GradedPrinciplesAreTheDefault(unittest.TestCase):
         self.assertIn("정도 축이 아니다", bad[0]["reason"])
 
 
+class WriterBudgetIsComputed(unittest.TestCase):
+    """길이 예산은 **코드가 고정분을 세어서** 넘긴다 — 지시문에 숫자를 박으면 낡는다.
+
+    종전 지시문은 "9500자 이하, 주어진 두 블록이 약 3,000" 이었다. 그 숫자는 원칙에 정도 축을
+    요구하기 **전**에 쓴 것이다. 실측으로 고정분이 7,164자가 됐고(골격 3,253 + 출력 규약 1,456 +
+    예시 2,455) 9,500 중 2,336자만 남는데, 거기에 [Role] 과 원칙 여덟(질문 + 정도 축)과 예외 서넛을
+    넣으라는 것은 **불가능한 요구**다.
+
+    Writer 후보 여덟이 전부 10,433~11,037자를 냈고 그중 셋은 뒤쪽 원칙의 정도 축을 빠뜨렸다 —
+    길이가 차니까 끝을 줄인 것이다. 사람이 쓴 판도 같은 구조에서 10,331자다. **지시가 틀렸지
+    Writer 가 못 쓴 것이 아니다.**"""
+
+    def test_cap_follows_the_fixed_content(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        import re
+        for fixed in (7164, 5000):
+            w = aj.writer_system(True, ["German"], fixed)
+            m = re.search(r"under (\d+) characters. Of that, (\d+)", w)
+            self.assertIsNotNone(m, w[-400:])
+            self.assertEqual(int(m.group(2)), fixed)
+            self.assertEqual(int(m.group(1)) - fixed, 4200)
+
+    def test_no_stale_number_is_left_in_the_instruction(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        w = aj.writer_system(True, ["German"], 7164)
+        self.assertNotIn("9500", w)
+        self.assertNotIn("already take about", w)
+
+    def test_writer_is_told_to_budget_severity_first(self):
+        """뒤쪽 원칙의 정도 축이 빠지는 것이 실측된 실패 모습이다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        w = " ".join(aj.writer_system(True, ["German"], 7164).split())
+        self.assertIn("budget the severity in before you write the questions", w)
+        self.assertIn("no room left to grade the last of them", w)
+
+    def test_the_real_fixed_content_leaves_room_for_what_is_asked(self):
+        """고정분이 실제로 얼마인지 세어, Writer 몫이 요구량보다 큰지 확인한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        from core.meaning_segmentator.autoseg.runtime import agents_distill as ad
+        fixed = (len(aj.scoring_rules(["Chinese", "Japanese", "German", "Spanish"]))
+                 + len(ad.output_rules(True, "source", meaning_in_scoring_rules=True)))
+        # 원칙 8 × 300자 + 예외 3 × 250자 + Role 450자 ≈ 3,600
+        self.assertGreater(4200, 3600)
+        self.assertGreater(fixed, 4000)     # 주입분만으로 이미 크다 — 상한을 고정할 수 없는 이유
+
+
 class OrderPrinciplesAreExceptions(unittest.TestCase):
     """`[Core Principles]` 가 주 척도이고 `[Order Principles]` 는 그 척도가 틀리는 **사례**다.
 

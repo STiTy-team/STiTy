@@ -605,16 +605,39 @@ Hard requirements:
 - [Examples]: paste the MEASURED Input/Output pairs given to you, verbatim and nothing else.
   Their numbers are the measured ranking; never invent scores or examples of your own.
 - __SPACING__
-- Keep the whole prompt under 9500 characters. The two blocks given to you already take about
-  3,000 of that; the rest is your two judgement sections, [Role] and the examples.
+- __BUDGET__
 
 Return ONLY the prompt text. No commentary, no code fences."""
 
 
-def writer_system(spaced: bool, targets: list[str]) -> str:
+def writer_budget(fixed_chars: int, room: int = 4200) -> str:
+    """Writer 에게 줄 길이 예산 문장 — **고정분은 코드가 세어서 넘긴다.**
+
+    종전에는 "9500자 이하, 주어진 두 블록이 약 3,000" 이라고 지시문에 숫자를 박아 두었다. 그 숫자는
+    원칙에 정도 축을 요구하기 전에 쓴 것이라 지금은 맞지 않는다 — 주입 블록과 예시가 실측으로
+    7,100자가 넘어서(골격 3,253 + 출력 규약 1,456 + 예시 2,455) 9,500 중 2,300자 남짓만 남는다.
+    거기에 [Role] 과 원칙 여덟(질문 + 정도 축)과 예외 서넛을 넣으라는 것은 **불가능한 요구**다.
+
+    실측으로 Writer 후보 여덟이 전부 10,433~11,037자를 냈고(지시를 1,000~1,500자 초과), 그중 셋은
+    뒤쪽 원칙의 정도 축을 빠뜨렸다 — 길이가 차니까 끝을 줄인 것이다. 사람이 쓴 판(graded2)도 같은
+    구조에서 10,331자다. 지시가 틀렸지 Writer 가 못 쓴 것이 아니다.
+
+    `room` 은 Writer 가 실제로 쓰는 몫([Role] + 판단 두 칸)이다. 원칙 여덟에 질문 + 정도 축이면
+    한 줄에 300자 안팎이라 2,400자, 예외 서넛에 750자, [Role] 450자 — 3,600자에 여유를 둔 값이다."""
+    return (f"Keep the whole prompt under {fixed_chars + room} characters. Of that, "
+            f"{fixed_chars} is already spoken for: the two blocks you were given to copy verbatim, "
+            f"and the measured examples you were told to paste. So about {room} characters are "
+            f"yours — [Role] plus the two judgement sections. Every principle needs its question AND "
+            f"its severity, so budget the severity in before you write the questions; do not write "
+            f"eight questions and then discover there is no room left to grade the last of them.")
+
+
+def writer_system(spaced: bool, targets: list[str], fixed_chars: int | None = None) -> str:
     unit = "words" if spaced else "characters"
+    budget = writer_budget(fixed_chars if fixed_chars is not None else 7100)
     return (WRITER_SYSTEM
             .replace("__TARGETS__", ", ".join(targets))
+            .replace("__BUDGET__", budget)
             .replace("__SPACING__",
                      f"The source is written in {unit}; a cut position sits between two {unit}."))
 
