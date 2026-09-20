@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import shutil
 import time
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -179,22 +178,23 @@ def parse_args(argv: list[str] | None = None):
     )
 
     parser.add_argument(
-        "config",
-        nargs="?",
-        help="config.yml 파일",
+        "--config",
+        required=True,
+        help="파이프라인 설정 이름 (configs/pipelines/<이름>.yml)",
+    )
+    parser.add_argument(
+        "--dataset",
+        required=True,
+        help="데이터셋 설정 이름 (configs/datasets/<이름>.yml)",
     )
 
     args = parser.parse_args(argv)
     return args
 
 
-def load_config(path: str | None) -> BenchConfig:
+def load_config(args) -> BenchConfig:
     try:
-        if not path:
-            raise ConfigError(
-                "벤치마크 실행을 위해서는 config.yml 파일이 필요합니다!"
-            )
-        return config.load(path)
+        return config.load(args.config, args.dataset)
     except ConfigError as e:
         log.error("[FAILED] %s", e)
         raise SystemExit(2)
@@ -213,28 +213,18 @@ def data_root() -> Path:
     return root
 
 
-RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "config.yml")
+RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json")
 
 
-def open_run_dir(run_dir: Path, *, config_path: str | None) -> None:
+def open_run_dir(run_dir: Path) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
-    destination = (run_dir / "config.yml").resolve()
-    source = Path(config_path).resolve() if config_path else None
-    already_there = source == destination
-
     for name in RUN_FILES:
-        path = run_dir / name
-        if already_there and path.resolve() == destination:
-            continue
-        path.unlink(missing_ok=True)
-
-    if source is not None and not already_there:
-        shutil.copyfile(source, destination)
+        (run_dir / name).unlink(missing_ok=True)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    cfg = load_config(args.config)
+    cfg = load_config(args)
 
     failure = None
     try:
@@ -244,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
         started = datetime.now(timezone.utc)
         stamp = started.strftime("%Y%m%dT%H%M%S")
         run_dir = RUNS_DIR / cfg.name
-        open_run_dir(run_dir, config_path=args.config)
+        open_run_dir(run_dir)
 
         stream.attach(run_dir / "events.jsonl")
         stream.bind(run=cfg.name)

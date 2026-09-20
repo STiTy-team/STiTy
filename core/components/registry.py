@@ -66,7 +66,7 @@ class Component:
         unknown = sorted(set(options) - set(cls.SETTINGS))
         if unknown:
             raise ConfigError(
-                f"stity.{kind}: {cls.NAME!r} has no setting(s) {unknown} "
+                f"pipeline.{kind}: {cls.NAME!r} has no setting(s) {unknown} "
                 f"(it accepts: {sorted(cls.SETTINGS) or 'nothing'})"
             )
         return {stored: read(options[key])

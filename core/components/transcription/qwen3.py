@@ -58,6 +58,7 @@ class Qwen3Transcription(Transcriber):
         "gpu_memory_utilization": ("gpu_memory_utilization", float),
         "unfixed_chunk_num": ("unfixed_chunk_num", int),
         "unfixed_token_num": ("unfixed_token_num", int),
+        "restrict_languages": ("restrict_languages", bool),
     }
 
     model = None
@@ -67,6 +68,7 @@ class Qwen3Transcription(Transcriber):
     def validate(cls, options: dict, *, kind: str = "transcription") -> dict:
         out = super().validate(options, kind=kind)
         out.setdefault("model_path", DEFAULT_MODEL)
+        out.setdefault("restrict_languages", True)
         return out
 
     async def load(self) -> None:
@@ -104,7 +106,9 @@ class Qwen3Transcription(Transcriber):
         await warmup_streaming(self.model)
         self._log_gpu("after load")
 
-    def start(self, language: str | None = None, **_) -> None:
+    def start(self, language: str | None = None, target_lang: str | None = None,
+              **_) -> None:
+        self._languages = (language, target_lang)
         self._fed_samples = 0
         self._partial_seq = 0
         self._out: list = []
@@ -115,11 +119,11 @@ class Qwen3Transcription(Transcriber):
         return out
 
     def _allowed_language_names(self) -> list[str] | None:
-        if not self.cfg.languages.restrict:
+        if not self.settings.get("restrict_languages", True):
             return None
-        names = [langs.CODE_TO_NAME.get(code)
-                 for code in (self.cfg.languages.lang, self.cfg.languages.target)]
-        return [name for name in names if name] or None
+        names = [langs.CODE_TO_NAME.get(langs.norm_code(code or ""))
+                 for code in getattr(self, "_languages", ())]
+        return list(dict.fromkeys(name for name in names if name)) or None
 
     def _start_stream(self) -> None:
         kw = self.settings

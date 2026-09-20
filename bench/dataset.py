@@ -128,8 +128,6 @@ def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
         raise DataError(f"{manifest_path} has no items")
 
     items = _grouped_contiguously(items)
-    if cfg.limit is not None:
-        items = items[:cfg.limit]
 
     return DatasetSpec(
         name=str(spec.get("name") or cfg.name),

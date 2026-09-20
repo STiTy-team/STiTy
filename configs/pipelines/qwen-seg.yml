@@ -1,0 +1,18 @@
+pipeline:
+  name: cascade
+  transcription:
+    name: qwen-seg
+    model: Qwen/Qwen3-ASR-1.7B
+    chunk_size_sec: 2.0
+    max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
+  translation:
+    name: local
+    model: google/madlad400-3b-mt
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.42

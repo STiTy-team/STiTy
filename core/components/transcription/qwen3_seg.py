@@ -287,7 +287,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out.setdefault("rep_dedup", True)
         return out
 
-    def start(self, language: str | None = None, vad=None, **_) -> None:
+    def start(self, language: str | None = None, target_lang: str | None = None,
+              vad=None, **_) -> None:
+        self._languages = (language, target_lang)
         commit = self.cfg.stity.commit
         self.always_commit = commit.always_commit
         self.enable_dot_commit = commit.enable_dot_commit
