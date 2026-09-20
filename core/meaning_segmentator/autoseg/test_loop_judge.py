@@ -1010,11 +1010,29 @@ class GradedPrinciplesAreTheDefault(unittest.TestCase):
         base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
                 "[Core Principles]\n"
                 "- Does the continuation reverse what came before?\n"
-                "- Does the cut strand a required complement? A cut here is worse the shorter it is.\n\n"
+                "- Does the cut strand a required complement? A cut here is worse the shorter that"
+                " remainder is, and mildest when it is a detachable afterthought.\n\n"
                 "[Order Principles]\n- prefer A over B\n\n[Output Rules]\n- x\n\n"
                 "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
         self.assertEqual(aj.ungraded_principles(base), ["C1"])
         self.assertEqual(aj.check_skeleton(base), [])        # 골격 검사로는 안 잡힌다
+
+    def test_direction_alone_is_not_a_severity_axis(self):
+        """combo 의 원칙들이 여기 걸린다 — 물음표 뒤에 문장이 있지만 **방향만** 말한다.
+
+        "such outcomes increase contradiction risk" 는 어느 쪽으로 미는지는 알려주지만 얼마나인지,
+        무엇이 더 심하고 무엇이 더 가벼운지는 말하지 않는다. 그러면 등급 안 두 자리를 여전히 못
+        가른다. 물음표 뒤에 글이 있는지만 보면 이것을 통과시킨다 — 실제로 한 번 통과시켰다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        head = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n[Core Principles]\n")
+        tail = ("\n\n[Order Principles]\n- prefer A over B\n\n[Output Rules]\n- x\n\n"
+                "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        direction = "- Does the continuation negate what came before? Such outcomes increase contradiction risk."
+        self.assertEqual(aj.ungraded_principles(head + direction + tail), ["C1"])
+        # 양쪽 끝이 있으면 통과한다. 가벼운 쪽을 "better" 로 써도 된다.
+        for axis in ("- Does it negate? A cut here is worse the more complete the reversal, mildest for a qualifier.",
+                     "- Does it negate? A cut here is better when the reversal is partial, worse when total."):
+            self.assertEqual(aj.ungraded_principles(head + axis + tail), [], axis[:40])
 
     def test_uses_the_same_boundary_as_the_severity_role(self):
         """검사와 역할이 경계를 다르게 보면, 통과한 편집이 뒤에서 죽거나 빈 절이 통과한다."""

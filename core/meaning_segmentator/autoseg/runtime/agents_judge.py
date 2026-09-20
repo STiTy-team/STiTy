@@ -832,15 +832,24 @@ def ungraded_principles(prompt: str) -> list[str]:
     **+0.0066 [+0.0018, +0.0115]** 였고 이득이 자리를 여러 개 고르는 구간에 몰렸다.
 
     Writer 가 그 절을 빼먹으면 프롬프트는 멀쩡해 보이고 골격 검사도 통과한다. 그래서 따로 센다.
-    판정은 물음표 뒤에 글이 남아 있는지로 한다 — `severity` 역할이 쓰는 경계와 같은 것이라
-    한 군데서만 정의된다."""
+    경계는 첫 물음표다 — `severity` 역할이 쓰는 것과 같아서 한 군데에서만 정의된다. 그런데
+    **물음표 뒤에 글이 있는 것만으로는 모자란다.** combo 의 원칙 여덟은 뒤에 문장이 있는데 방향만
+    말한다("such outcomes increase contradiction risk", "cohesion is reduced") — 어느 쪽으로 미는지는
+    알려주지만 **얼마나** 인지, 무엇이 더 심하고 무엇이 더 가벼운지는 말하지 않는다. 그러면 등급 안
+    두 자리를 여전히 못 가른다. `WRITER_SYSTEM` 이 요구하는 것은 **양쪽 끝**이므로 그것을 센다:
+    심한 쪽 말(worse / worst / severe)과 가벼운 쪽 말(milder / mildest / mild / least / less /
+    better / best)이 둘 다 있어야 한다. 한쪽만 있으면 축이 아니라 방향이다."""
     out = []
     for u in edit_units(prompt):
         if u["section"] != "[Core Principles]":
             continue
         t = " ".join(u["text"].split())
         i = t.find("?")
-        if i < 0 or not t[i + 1:].strip():
+        rest = t[i + 1:].strip().lower() if i >= 0 else ""
+        worse = any(w in rest for w in ("worse", "severe", "worst"))
+        milder = any(w in rest for w in ("milder", "mildest", "least", "less", "mild",
+                                         "better", "best"))
+        if not (worse and milder):
             out.append(u["id"])
     return out
 
