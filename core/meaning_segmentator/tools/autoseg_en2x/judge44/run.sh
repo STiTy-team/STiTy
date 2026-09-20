@@ -25,12 +25,26 @@
 #   판에서는 `usable_roles` 가 역할을 아예 뺀다). O 세 줄은 반대로 지울 값어치가 있다 — 그 칸의
 #   계약이 "예외만, 적게, 좁게" 인데 Writer 가 셋을 썼으니 겹치는 것이 있을 수 있다.
 #
+# 두 관문 모두 **평균 > 0** 이다 — 하한 문턱을 내려놨다
+#   3벌 대 3벌이면 Δ 의 sd 가 0.0033 이라 하한 > 0 은 Δ +0.0065 를 요구한다. 한 편집의 진짜 효과는
+#   +0.003~0.01 이므로 그 문턱은 원리적으로 못 넘고, 실제로 judge08 이후 채택이 0 이다 — 앞 런의
+#   최선 후보가 1차 +0.0049 에서 2차 +0.0003 으로 떨어져 기각됐다.
+#   대신 두 관문을 **서로 독립된 추출**로 두고 둘 다 평균으로 본다: 1차는 평균 > 0.003(닿을 수 없는
+#   후보에 2차 채점을 쓰지 않는다), 2차는 새 3벌에서 평균 > 0 + 구간 퇴행 가드 0.01.
+#   효과가 0 인 후보가 둘 다 통과할 확률은 1차 18% × 2차 50% ≈ 9% 다. 후보 여섯 중 최선을 고르는
+#   구조라 이터당 한 번쯤은 잡음이 올라온다 — 그것을 **탐색 스텝으로 쓰고 판정을 런 끝 test 560
+#   3벌 비교 한 번으로 옮긴다.** 누적 Δ 는 위로 부풀지만 그 편향은 최종 비교에 안 들어간다.
+#   이 런이 답할 두 번째 질문이 그래서 "이터가 쌓이면 홀드아웃이 오르는가" 다. 하한 문턱에서는
+#   채택이 아예 없어서 그 질문을 한 번도 못 물어봤다.
+#
 # 볼 것
 #   (a) 후보 다섯이 다섯 다 채점까지 가는가. 그것이 이 런의 1차 판정이다.
 #   (b) `replace` 의 Δ — 처음으로 측정된다.
 #   (c) `severity` 의 Δ 가 앞 런(+0.0013, 2차 +0.0003)과 같은 방향인가. 기준선 벌이 같으므로
 #       그 비교가 이번에는 성립한다.
 #   (d) 세 이터가 같은 규칙을 되풀이하는가.
+#   (e) 채택이 나면 test 560 3벌에서 v0 대비 부호가 유지되는가. dev 에서 쌓인 이득이 잡음이었다면
+#       여기서 사라진다 — 그것을 보는 것이 평균 문턱을 쓰는 대가이자 목적이다.
 #
 # 예산 $100 — 기준선이 캐시라 이터당 $8~10, 3이터에 $30 안팎을 본다. 채택이 나면 최종 test 3벌이
 # $12 더 붙는다. 예산 가드는 런을 죽이므로 최악을 덮는 값으로 잡는다. 끊기면 `--resume` 이 이어받고
@@ -52,7 +66,7 @@ LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/judge44.log
     --candidates-cap 6 --findings-max 2 --full-score-max 6 \
     --pe-verbatim --critic-both-kinds --screen-n 0 \
     --baseline-draws 3 --confirm-draws 3 --final-draws 3 \
-    --gate-rule mean --gate-min 0.003 --adopt-rule lo --guard-bin 0.01 --no-near-miss \
+    --gate-rule mean --gate-min 0.003 --adopt-rule mean --guard-bin 0.01 --no-near-miss \
     --labeled-examples --growth-per-iter 0.15 --n-cases 100 --inversions-max 15 \
     --case-exclude bin --case-alloc loss \
     --min-gap 1 --min-chunk 2 --max-k 99 --k-samples 1 --iterations 3 \
