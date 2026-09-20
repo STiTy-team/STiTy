@@ -2048,6 +2048,15 @@ def main() -> int:
                          if any(str(txt)[:60] == g[:60] for g in spent_deletes)]
                 if taken:
                     extra["units_already_taken"] = taken
+                # **형제가 자리를 먹어 고를 것이 남지 않았으면 그 자리는 건너뛴다.** `usable_roles`
+                # 는 이터 시작 시점에 한 번 거르는데, `prune` 의 대상은 이 판에서 [Order Principles]
+                # 세 줄뿐이라 앞 후보 둘이 건드리면 남는 것이 없어진다. 그러면 PE 는 사유를 듣고도
+                # 빈 편집을 낼 수밖에 없다 — 실측으로 그렇게 두 이터를 잃었다. 에이전트 호출 두 번을
+                # 쓰고 후보를 잃는 대신, 부를 수 없는 자리를 조용히 비운다.
+                if role == "prune" and not [u for u in aj.prune_targets(prompt) if u not in taken]:
+                    log(f"[iter {it}] 후보 {j}: prune 을 건너뛴다 — 지울 수 있는 단위를 앞 후보들이 "
+                        f"이미 전부 건드렸다({', '.join(taken) or '없음'})")
+                    continue
             if findings and role != "induce":
                 extra["primary_finding"] = findings[f_idx]["diagnosis"]
                 extra["primary_finding_kind"] = findings[f_idx].get("kind") or "check"
