@@ -153,12 +153,17 @@ def main() -> int:
     # 함수**로 박는다: 단위 나누기 → 후보 자리 → 마킹.
     units = [L.units_of(t, SPACED) for t in [r["src_text"] for r in rows]]
     cands = [ad.candidate_positions(len(u), a.min_gap) for u in units]
+    # **후보 자리가 없는 문장은 빼지 않고 무분절로 낸다.** 한 단어 문장(covost2 test 에 5개:
+    # 'points', 'Amen.', 'Kettle-drums' …)은 어절 사이 자리가 없어 마커를 박을 데가 없다.
+    # 모델을 부를 일이 없을 뿐이고 결과에서 빠질 이유는 없다 — 빼면 n 이 달라져 같은 코퍼스의
+    # 다른 조건(비교군·이전 런)과 절대값을 나란히 못 놓는다. 호출 비용은 0 이다.
     skip = [i for i, c in enumerate(cands) if not c]
     if skip:
-        print(f"[label] 후보 자리가 없는 문장 {len(skip)}개는 분절하지 않는다 "
-              f"(단위 {min(len(units[i]) for i in skip)}~{max(len(units[i]) for i in skip)}개)",
-              flush=True)
+        print(f"[label] 후보 자리가 없는 문장 {len(skip)}개는 무분절로 낸다 "
+              f"(단위 {min(len(units[i]) for i in skip)}~{max(len(units[i]) for i in skip)}개, "
+              f"모델을 부르지 않는다)", flush=True)
     keep = [i for i, c in enumerate(cands) if c]
+    trivial = [rows[i] for i in skip]
     rows = [rows[i] for i in keep]
     texts = [ad.mark_candidates(units[i], cands[i]) for i in keep]
     prompt = Path(a.prompt).read_text(encoding="utf-8")
@@ -261,6 +266,11 @@ def main() -> int:
                          "first_pass_ok": bool(first_ok),
                          "text_preserved": pres,
                          "violations": [getattr(v, "rule", str(v)) for v in viol]})
+    for r in trivial:      # 자를 자리가 없는 문장 — 무분절 한 조각
+        out_rows.append({**r, "seg_text": r["src_text"], "marked": r["src_text"],
+                         "n_boundaries": 0, "required": 0, "first_pass_ok": True,
+                         "text_preserved": True, "violations": []})
+    n_ok += len(trivial); n_pres += len(trivial); n = len(out_rows)
     out_path = Path(a.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     # **1차 위반을 파일로 남긴다.** 종전에는 `first_pass` 비율만 요약에 찍혀서 "재시도가 비용의
