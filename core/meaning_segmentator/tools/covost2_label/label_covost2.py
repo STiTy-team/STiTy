@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from core.meaning_segmentator.autoseg.infra import gateway
 from core.meaning_segmentator.autoseg.infra.gateway import Gateway
+from core.meaning_segmentator.autoseg.runtime import agents_distill as ad
 from core.meaning_segmentator.autoseg.runtime import pipeline as P
 from core.meaning_segmentator.autoseg.loop import target_is_spaced
 
@@ -187,9 +188,12 @@ def main() -> int:
         def loop():
             while not stop.wait(every):
                 u = gw.usage.snapshot()
+                per = gateway.by_key_line(u, gw.key_names)
                 print(f"[label] 진행 calls={u['calls']} "
                       f"completion={u['completion_tokens']} "
-                      f"누적 비용 ${u['cost']:.4f}", flush=True)
+                      f"누적 비용 ${u['cost']:.4f}"
+                      + (f" | 429 {gw.rate_limited}회" if gw.rate_limited else "")
+                      + (f" | 키별 {per}" if per else ""), flush=True)
 
         threading.Thread(target=loop, daemon=True).start()
         return stop
@@ -207,6 +211,12 @@ def main() -> int:
     outs, ok = P.segment_batch(
         gw, prompt, texts, cache=cache, workers=a.workers,
         validate_fn=validate_fn, normalize_fn=normalize_fn,
+        # **태그만 옮겨 고칠 수 있으면 다시 부르지 않는다.** 위반이 `text_modified` 하나면
+        # 태그를 원문 어절 경계로 옮겨 본다 — 모델이 따옴표·철자를 바꾼 것뿐인데 LLM 을 다시
+        # 부를 이유가 없다. v0 실측에서 재시도가 호출의 45%였다. 안전장치는 `realign_tags`
+        # 안에 있다: 바뀐 어절이 max(2, 20%) 를 넘거나 태그가 바뀐 구간에 떨어지면 포기하고
+        # 종전대로 재시도한다(그 경로에서 오탐 0 / 36건 전부 검증 통과).
+        realign_fn=lambda t, o: ad.realign_tags(t, o, SPACED),
         reasoning_effort=a.seg_reasoning_effort, batch_size=a.batch_size,
         first_pass_sink=first, need_fn=need_fn)
     ticker.set()
@@ -227,11 +237,23 @@ def main() -> int:
                          "violations": [getattr(v, "rule", str(v)) for v in viol]})
     out_path = Path(a.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    # **1차 위반을 파일로 남긴다.** 종전에는 `first_pass` 비율만 요약에 찍혀서 "재시도가 비용의
+    # 45%" 는 알아도 그중 태그만 옮겨 고칠 수 있는 몫이 얼마인지 셀 수 없었다. 규칙별 분포와
+    # 재정렬 성공 여부가 여기 남으면 다음 런에서 바로 계산된다.
+    (out_path.parent / f"{out_path.stem}.first_pass.json").write_text(
+        json.dumps({"n": len(rows), "n_violations": len(first),
+                    "realigned": sum(1 for v in first if v.get("realigned")),
+                    "by_rule": {r: sum(1 for v in first if v["rule"] == r)
+                                for r in sorted({v["rule"] for v in first})},
+                    "samples": first[:20]}, ensure_ascii=False, indent=1), encoding="utf-8")
     with out_path.open("w", encoding="utf-8") as f:
         for r in out_rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
     u = gw.usage.snapshot()
+    per = gateway.by_key_line(u, gw.key_names)
+    if per:
+        print(f"[label] 키별 최종 지출 {per}", flush=True)
     nb = [r["n_boundaries"] for r in out_rows]
     rq = [r["required"] for r in out_rows]
     n = len(out_rows)

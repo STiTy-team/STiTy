@@ -17,12 +17,22 @@ FROM=${FROM:-run03}
 LANGS=${LANGS:-de zh ja}
 M=core.meaning_segmentator.tools.autoseg_x2en.make_run04
 A=core/meaning_segmentator/experiment/artifacts/x2en
-CHAIN=$A/logs/${FROM}_labels_chain.log
+# 무엇을 기다릴지는 호출하는 쪽이 정한다 — 앞 단계가 run03 체인일 수도, 먼저 띄운 run04
+# 세션일 수도 있다. **병렬은 메모리로 안전하지 않다**: de·zh 를 같이 돌리다 zh 가 타깃을
+# 넘어가며 12GB 로 커져 de 가 OOM 으로 죽었다(2026-09-20 21:04). 타깃마다 메모리가 커지므로
+# 첫 타깃에서 잰 17.9GB 로 판단하면 안 된다. 언어는 순차로 돌린다.
+CHAIN=${CHAIN:-$A/logs/${FROM}_labels_chain.log}
 WAIT_FOR=${WAIT_FOR:-"ALL DONE (de zh ja)"}
 
 if [ -n "$WAIT_FOR" ]; then
-  echo "== $(date '+%F %T') run04 대기: '$WAIT_FOR'" >> "$A/logs/${RUN}_labels_chain.log"
-  until grep -qF "$WAIT_FOR" "$CHAIN" 2>/dev/null; do sleep 30; done
+  # **대기 메시지를 감시 대상 로그에 쓰지 않는다.** 처음에 체인 로그에 "대기: 'ALL DONE (zh)'"
+  # 를 적고 같은 파일을 grep 했더니 자기 줄에 걸려 즉시 통과했다 — de 가 zh 와 병렬로 떠서
+  # 다시 OOM 위험에 들어갔다(2026-09-20 21:06). pgrep 이 자기 셸을 잡는 것과 같은 함정이다.
+  # 대기 표시는 따로 두고, 매칭도 **줄 시작에 고정**한다("== ... ALL DONE (zh)" 꼴만 센다).
+  echo "== $(date '+%F %T') run04 대기 시작 ($LANGS)" >> "$A/logs/${RUN}_wait.log"
+  until grep -qE "^== [0-9-]+ [0-9:]+ ALL DONE \\($(echo "$WAIT_FOR" | sed 's/.*(\(.*\))/\1/')\\)$" \
+        "$CHAIN" 2>/dev/null; do sleep 30; done
+  echo "== $(date '+%F %T') run04 대기 끝 ($LANGS)" >> "$A/logs/${RUN}_wait.log"
 fi
 
 for l in $LANGS; do

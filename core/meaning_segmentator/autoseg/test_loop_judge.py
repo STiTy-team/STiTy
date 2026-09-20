@@ -1309,6 +1309,42 @@ class EveryRoleWritesBothParts(unittest.TestCase):
         self.assertIn("Code checks it and drops the edit otherwise, whatever your role is", e)
 
 
+class RealignWorksWithoutMarkers(unittest.TestCase):
+    """입력에 마커가 없는 형식(판정·라벨링)에서도 재정렬이 된다 — 전에는 절대 성공하지 못했다.
+
+    `realign_tags` 는 distill 형식용이었다. 거기서는 입력이 `<SEG:?>` 로 자리를 정해 주므로
+    옮긴 자리가 그것과 다르면 포기해야 맞다. 그런데 판정·라벨링 형식은 입력이 맨 문장이고
+    **모델이 자리를 고른다** — `want` 가 비어 있어 `mapped != want` 가 항상 참이었다.
+    실측으로 covost2 15,530문장에서 재시도 후에도 `text_modified` 로 남은 448건 중 36건이
+    이 완화로 살아났고, 36건 전부 검증을 통과했다(오탐 0)."""
+
+    def test_a_quote_change_is_realigned(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_distill as ad
+        src = 'He said the plan was "ready" and left the room'
+        out = "He said the plan was 'ready' <SEG:5> and left the room"
+        got = ad.realign_tags(src, out, True)
+        self.assertIsNotNone(got)
+        self.assertIn("<SEG:5>", got)
+        self.assertEqual(got.replace(" <SEG:5>", ""), src)
+
+    def test_a_marked_input_still_demands_the_asked_positions(self):
+        """distill 경로는 그대로다 — 마커가 있으면 옮긴 자리가 다르면 포기한다.
+
+        문면이 그대로면(`out_units == orig_units`) 앞에서 그냥 통과하므로, 자리 검사를 보려면
+        **글자도 바뀌고 자리도 다른** 출력을 줘야 한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_distill as ad
+        marked = "alpha beta <SEG:?> gamma delta"          # 요구 자리 = 2번째 어절 뒤
+        self.assertIsNone(ad.realign_tags(marked, "alpha betta gamma <SEG:5> delta", True))
+        # 같은 글자 변형에 자리가 맞으면 통과한다 — 검사가 자리만 보는지 확인한다.
+        self.assertIsNotNone(ad.realign_tags(marked, "alpha betta <SEG:5> gamma delta", True))
+
+    def test_a_big_rewrite_is_refused(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_distill as ad
+        src = "one two three four five six seven eight"
+        out = "completely different words here <SEG:4> and more of them too"
+        self.assertIsNone(ad.realign_tags(src, out, True))
+
+
 class BulletsSurviveAnEdit(unittest.TestCase):
     """교체한 줄이 글머리 기호를 잃으면 그 칸만 들쭉날쭉해진다 — 실측으로 O1 이 그렇게 들어갔다."""
 

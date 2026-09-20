@@ -73,6 +73,19 @@ PROVIDERS: dict[str, Provider] = {
 DEFAULT_PROVIDER = "letsur"
 
 
+def by_key_line(usage_snapshot: dict, key_names: list[str]) -> str:
+    """`{"0": {...}, "1": {...}}` 을 `OPENAI_API_KEY $12.34(918콜)` 꼴로. 키가 하나면 빈 문자열.
+
+    **키별 지출은 나중에 대시보드와 맞춰 볼 수 있어야 한다.** `by_key` 가 인덱스로만 쌓여 있어
+    로그를 봐도 어느 키였는지 복원할 수 없었다 — 런 명령줄을 찾아야 알 수 있었다."""
+    bk = usage_snapshot.get("by_key") or {}
+    if len(bk) <= 1:
+        return ""
+    return " / ".join(
+        f"{key_names[int(i)] if int(i) < len(key_names) else 'key' + i} "
+        f"${v['cost']:.4f}({v['calls']}콜)" for i, v in sorted(bk.items(), key=lambda kv: int(kv[0])))
+
+
 def load_api_key(key_env: str, env_path: Path | None = None) -> str:
     """`key_env` 환경변수 > 레포 루트 `.env` 의 **같은 이름**. 다른 이름은 안 본다."""
     if os.environ.get(key_env):
@@ -262,6 +275,9 @@ class Gateway:
         max_connections: int = 16,
         # 호출마다 돌려 쓸 키 목록(다른 조직). 없으면 api_key 하나.
         api_keys: list[str] | None = None,
+        # 키의 **환경변수 이름**. `usage.by_key` 는 인덱스로 쌓이는데 그것만으로는 로그에서
+        # 어느 키였는지 알 수 없다 — 나중에 키별 지출을 맞춰 보려면 이름이 있어야 한다.
+        key_names: list[str] | None = None,
     ):
         if provider not in PROVIDERS:
             raise ValueError(f"모르는 provider: {provider!r}. {sorted(PROVIDERS)} 중 하나여야 한다")
@@ -273,7 +289,12 @@ class Gateway:
             api_key = load_api_key(spec.key_env) if spec.key_env else "local"
         self.api_key = api_key
         self._keys = list(api_keys) if api_keys else [api_key]
+        self.key_names = list(key_names) if key_names else [spec.key_env or "local"]
+        if len(self.key_names) != len(self._keys):     # 이름이 모자라면 인덱스로 채운다
+            self.key_names = [self.key_names[i] if i < len(self.key_names) else f"key{i}"
+                              for i in range(len(self._keys))]
         self._key_turn = 0
+        self.rate_limited = 0       # 429 를 맞은 횟수 (재시도는 따로 센다)
         self._key_lock = threading.Lock()
         self.base_url = (base_url or spec.base_url).rstrip("/")
         self.model = model
@@ -324,6 +345,7 @@ class Gateway:
             primary = kw.get("api_key") or (load_api_key(spec.key_env) if spec.key_env else "local")
             kw["api_key"] = primary
             kw["api_keys"] = [primary] + [load_api_key(e) for e in extra]
+            kw["key_names"] = [spec.key_env or "local"] + extra
         return cls(provider=args.provider, base_url=args.base_url, **kw)
 
     def close(self) -> None:
@@ -404,6 +426,11 @@ class Gateway:
                         self.omit_json_mode = True
                         continue
                 if r.status_code in (429, 500, 502, 503, 504, 529):
+                    # **429 를 센다.** 조용히 백오프만 하면 워커를 올렸을 때 느려지는 이유를
+                    # 로그에서 알 수 없다 — 호출이 도는 것처럼 보이면서 웨이브가 늘어진다.
+                    if r.status_code == 429:
+                        with self._key_lock:
+                            self.rate_limited += 1
                     wait = min(2 ** attempt, 30)
                     time.sleep(wait)
                     last_err = RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
