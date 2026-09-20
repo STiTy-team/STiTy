@@ -1306,9 +1306,14 @@ class SeverityRole(unittest.TestCase):
         out, changed = aj.pin_finding_text([dict(x) for x in e], finding, "severity")
         self.assertEqual(changed, [])
         self.assertEqual(out[0]["text"], self.Q + self.SEV)
-        # 다른 역할은 종전대로 되돌린다
-        out2, changed2 = aj.pin_finding_text([dict(x) for x in e], finding, "fallback")
-        self.assertEqual(len(changed2), 1)
+        # 면제는 **역할이 아니라 칸** 으로 정해진다 — 다른 역할이 C 를 겨눠도 보존된다.
+        out2, changed2 = aj.pin_finding_text([dict(x) for x in e], finding, "replace")
+        self.assertEqual(changed2, [])
+        self.assertEqual(out2[0]["text"], self.Q + self.SEV)
+        # O 단위는 되돌린다
+        eo = [{"op": "insert_after", "id": "O_end", "text": "prefer the later one"}]
+        _o3, changed3 = aj.pin_finding_text(eo, finding, "fallback")
+        self.assertEqual(len(changed3), 1)
 
     def test_whole_edit_path_survives(self):
         """역할 검사를 통과한 편집이 **프롬프트가 되는 데까지** 가는지. 이 확인을 빼먹어 두 번 물렸다."""
@@ -1559,12 +1564,34 @@ class PinFindingText(unittest.TestCase):
 
     FIND = {"kind": "check", "edit": {"text": "Keep a head with its modifier."}}
 
-    def test_replaces_text(self):
+    def test_replaces_text_in_the_order_section(self):
+        """`[Order Principles]` 단위에는 걸린다 — 그 칸의 형태가 이항 비교이고 발견 문면이 그것이다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         out, ch = aj.pin_finding_text(
-            [{"op": "insert_after", "id": "C_end", "text": "rank the later cut higher"}], self.FIND)
+            [{"op": "insert_after", "id": "O_end", "text": "rank the later cut higher"}], self.FIND)
         self.assertEqual(out[0]["text"], "Keep a head with its modifier.")
         self.assertEqual(len(ch), 1)
+
+    def test_never_replaces_text_in_the_core_section(self):
+        """**PE 가 옳게 쓴 줄을 되돌림이 망치던 자리다.**
+
+        `[Core Principles]` 단위는 질문 + 정도 축 두 부분이어야 하는데 Critic 의 발견 문면은 그 형태가
+        아니다 — 평서문이거나 금지문이다. 되돌리면 모양 검사나 금지문 검사가 **반드시** 거부한다.
+        실측으로 한 이터에서 후보 다섯 중 둘을 그렇게 잃었고, 로그만 보면 PE 탓처럼 보였다.
+
+        되돌림이 막으려던 것(단항 발견을 서열문으로 고쳐 쓰기)은 모양 검사가 대신 막는다 —
+        질문 + 정도 축은 그 자체로 단항이라 이항으로 새어 나갈 수 없다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        good = ("- Does cutting here strand a head that needs a complement? Worst when the complement"
+                " is required, mildest when it is optional.")
+        out, ch = aj.pin_finding_text(
+            [{"op": "insert_after", "id": "C_end", "text": good}], self.FIND)
+        self.assertEqual(out[0]["text"], good)
+        self.assertEqual(ch, [])
+        # 그리고 그 편집은 모양 검사를 통과한다 — 되돌리면 통과하지 못한다
+        self.assertEqual(aj.check_core_unit_shape(out, "narrow_rule")[1], [])
+        pinned = [{"op": "insert_after", "id": "C_end", "text": self.FIND["edit"]["text"]}]
+        self.assertEqual(aj.check_core_unit_shape(pinned, "narrow_rule")[0], [])
 
     def test_leaves_delete_and_examples(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj

@@ -1420,10 +1420,18 @@ def enforce_kind(edits, kind: str | None, has_order_section: bool = True,
     return keep, bad
 
 
-# 문면 되돌리기를 면제하는 역할. `severity` 의 편집 문면은 **바꾸지 않은 질문 + 새 정도 절**이라
-# Critic 문면으로 통째로 갈아 끼우면 질문이 사라져 `enforce_role` 이 거부한다. 이 역할에서 PE 가
-# 하는 일은 형태를 고쳐 쓰는 것이 아니라 발견이 가리킨 원칙의 정도 축을 다시 쓰는 것이다.
-VERBATIM_EXEMPT = ("severity",)
+# **문면 되돌리기는 `[Core Principles]` 단위에 걸지 않는다.**
+#
+# 그 칸의 단위는 **질문 + 정도 축** 두 부분이어야 하는데(`has_severity`), Critic 의 발견 문면은 그
+# 형태가 아니다 — 평서문 규칙이거나 금지문이다("Do not cut when the token before the marker is a
+# verb/copula …"). 되돌리면 PE 가 제대로 쓴 줄이 그 문면으로 갈아치워지고, 그러면 모양 검사나
+# 역할의 금지문 검사가 **반드시** 거부한다. 실측으로 이터 하나에서 후보 다섯 중 둘을 그렇게 잃었고,
+# 로그만 보면 PE 가 말을 안 들은 것처럼 보인다 — PE 는 옳게 썼고 되돌림이 망친 것이다.
+#
+# 되돌리기가 막으려던 것(PE 가 단항 발견을 서열문으로 고쳐 쓰는 것)은 이제 모양 검사가 대신 막는다:
+# 질문 + 정도 축은 그 자체로 단항이라 이항으로 새어 나갈 수 없다. `[Order Principles]` 단위에는
+# 그대로 걸린다 — 그 칸의 형태는 이항 비교이고 `order` 발견의 문면이 바로 그 형태다.
+VERBATIM_EXEMPT_SECTIONS = ("C",)
 
 
 def pin_finding_text(edits, finding: dict | None,
@@ -1438,8 +1446,6 @@ def pin_finding_text(edits, finding: dict | None,
     `delete` 와 `labeled_example` 은 문면을 만들지 않으므로 건드리지 않는다. 길이가 예산을 넘으면
     되돌리기 경로(`shorten`)가 따로 줄인다."""
     edits = [e for e in (edits or []) if isinstance(e, dict)]
-    if role in VERBATIM_EXEMPT:
-        return edits, []
     want = ((finding or {}).get("edit") or {}).get("text")
     want = str(want or "").strip()
     if not want:
@@ -1448,6 +1454,9 @@ def pin_finding_text(edits, finding: dict | None,
     for n, e in enumerate(edits):
         if e.get("op") == "delete" or e.get("labeled_example") or not str(e.get("text") or "").strip():
             out.append(e)
+            continue
+        if str(e.get("id") or "")[:1] in VERBATIM_EXEMPT_SECTIONS:
+            out.append(e)          # 그 칸의 형태를 발견 문면이 갖추지 못한다 — 위 주석 참고
             continue
         if " ".join(str(e["text"]).split()) == " ".join(want.split()):
             out.append(e)
