@@ -5,6 +5,11 @@
 # (`k = 어절/T`) 그 문장에 좋은 자리가 있는지와 무관하다. 임계값은 점수가 정하고, 올리면
 # 무분절로 수렴해 곡선의 끝점이 된다. 우리 프롬프트의 `auto_T*` 는 `--no-auto-t` 로 끈다.
 #
+# **격자는 곡선의 양쪽 끝까지 가야 한다.** 20~80 만 두면 실측 LAAL 0.8 어절 폭에 뭉친다 —
+# 후보 경계가 문장당 8.1 개인데 임계값 20 이 벌써 5.1 개를 자르고, 80 에서도 1.9 개가 남는다.
+# 낮은 쪽 5·10 이 6.9 / 6.1 자리를, 높은 쪽 90·95·99 가 절단이 1 밑으로 내려가 무분절로
+# 수렴하는 자리를 채운다. 그래야 비교군이 훑는 2.6~7.6 어절 구간과 같은 그림에 놓인다.
+#
 # **`--t-grid` 는 그래도 준다** — 비교군(punct·alignatt·mu_prefix·causal_align·syntax)의 지연
 # 노브가 그것이다. 비우면 비교군이 한 점으로 줄어 곡선이 사라진다. 두 노브는 x 축을 실측 LAAL
 # 로 두면 같은 그림에 놓인다(`laal_words`·`laal_ms` 가 이미 계산된다).
@@ -29,7 +34,7 @@ SRC=$A/en2x/covost2/full_judge44          # 라벨이 있는 곳
 FULL=$A/en2x/covost2/full                 # 캐시·비교군·prompt_eval 을 물려받을 곳
 WAIT=${WAIT:-$A/x2en/ja-multi/run04/labels.done}
 TGRID="${TGRID:-2 3 4 6}"
-SGRID="${SGRID:-20 40 60 80}"
+SGRID="${SGRID:-5 10 20 40 60 80 90 95 99}"
 BASE="${BASE:-punct alignatt mu_prefix causal_align syntax}"
 LOG=$SRC/logs/eval.log
 ts () { date '+%F %T'; }
