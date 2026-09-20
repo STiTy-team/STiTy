@@ -396,6 +396,24 @@ Hard constraints:
    adding a line has lost every time it was measured, while deleting a unit that the measurement
    does not depend on came out at zero — if the cost is length rather than content, a trade starts
    from zero instead of below it.
+   "severity": RECALIBRATE how strongly one existing Core Principle applies. Exactly one edit, a
+   "replace" on a "C" unit, and **everything up to and including the first question mark must come
+   back byte-for-byte unchanged** — you rewrite only what follows it. Code compares the two and drops
+   the edit on any difference, whitespace included.
+   What follows the question is that principle's SEVERITY: what makes a cut at such a position worse,
+   and what makes it milder. Say both ends. Name them on the source surface, as configurations that
+   can be recognised without the translation ("an explicit negation is the most severe, a narrowing
+   qualifier the mildest"), not as degrees of a feeling ("somewhat bad", "quite serious").
+   Your finding is a BINARY one: it names two positions and says which was the better cut. Use it as
+   evidence about a severity axis, not as a new comparison to write down — ask which principle fired
+   on both positions, and what it fails to distinguish between them. Then make that distinction part
+   of the principle's severity.
+   Why this role exists: the questions decide which BAND a position goes in, and that part works. What
+   the prompt has no vocabulary for is how strongly a concern applies, so it cannot order two positions
+   that share a band. The scoring procedure nevertheless demands a distinct number for every position,
+   down to the lowest band, and the model supplies one — it separates them with no basis to separate
+   them. Severity is the basis. Do not write a new prohibition and do not touch the question: a new
+   condition only adds another way to say "bad", and "bad" is the thing there is already too much of.
    "fallback": ADD a rule that ORDERS the positions every other principle rejects. Exactly one
    edit, an "insert_after" into [Order Principles] — that section holds the lines that weigh two
    positions against each other, and a rule of this shape is one of them; an edit of this role
@@ -918,7 +936,10 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
 
 
 ROLES = ("free", "examples_only", "single_small", "narrow_rule", "prune", "rewrite",
-         "fallback", "induce", "replace")
+         "fallback", "induce", "replace", "severity")
+# `severity` 가 정도 절을 다시 쓸 때 허용하는 순증감 폭. 지금 정도 절이 116~179자라 그 안에서
+# 다시 쓰고 한두 문장 덧붙일 여지를 준다. 질문 쪽은 한 글자도 못 바꾸므로 길이가 새지 않는다.
+SEVERITY_SLACK = 200
 # 역할별로 열어 주는 동결 섹션. 지금은 **비어 있다** — `[Output Rules]` 와 `[Scoring Rules]` 는
 # 어떤 역할에도 열리지 않는다. 호출부가 `unfreezes(role)` 를 그대로 넘기므로, 다시 열어야 할 때
 # 여기 한 줄만 고치면 된다. **어느 역할에 무엇이 열려 있는지는 한 군데서만 정한다** — 두 군데서
@@ -1119,6 +1140,64 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                                   "(prefer / rather than / over / last resort 류)"})
             keep = []
         return keep, bad
+    if role == "severity":
+        # **등급 안 서열을 움직이는 유일한 역할이다.**
+        #
+        # 실측이 이렇게 몰아붙였다. `[Core Principles]` 의 질문 일곱은 전부 예/아니오이고 전부 한
+        # 방향이라 등급 **배정**은 하지만 등급 **안** 서열은 못 만든다. 그런데 골격은 맨 아래 등급까지
+        # 서로 다른 번호를 요구하고, 모델은 그것을 지킨다 — 캐시된 출력에서 아래 등급도 99.7%가
+        # 다른 번호를 받고 등급 폭을 77% 쓴다. 근거 없이 지키는 것이다(순위 깊이 배수 8위 1.27배).
+        # 질문에 "무엇이 더 심하고 무엇이 더 가벼운가" 를 붙이니 dev 500 3벌에서 **+0.0076
+        # [+0.0028, +0.0127]** 이고 이득이 ≤3 구간에 +0.0143 으로 몰렸다.
+        #
+        # **질문은 못 고친다.** 질문이 등급 배정을 정하고 그쪽은 이미 작동한다(1위 6.16배). 질문까지
+        # 열면 무엇이 점수를 움직였는지 갈라지지 않고, 잘 되는 쪽을 망칠 여지만 생긴다. 첫 물음표
+        # 까지가 질문이고 **한 글자도 달라지면 거부한다** — 공백 정규화도 하지 않는다.
+        #
+        # 왜 `[Order Principles]` 가 아니라 여기인가: 그 칸의 계약은 골격 문장 그대로 "overrides that
+        # default for the configuration it names" 다. 정도 기반 서열이 이득을 내는데 그것을 덮어쓰면
+        # 이득을 깎는다 — 같은 편집이 v0 위에서 −0.0015, graded 위에서 −0.0053 이었다.
+        bad = [{"edit": n, "id": e.get("id"), "reason": "severity 인데 둘째 이후 편집"}
+               for n, e in enumerate(edits) if n > 0]
+        keep = edits[:1]
+        e = keep[0] if keep else None
+        uid = str((e or {}).get("id") or "")
+        text = str((e or {}).get("text") or "")
+        was = str((e or {}).get("_was") or "")
+
+        def question(t: str) -> str | None:
+            i = t.find("?")
+            return t[:i + 1] if i >= 0 else None
+
+        qw, qt = question(was), question(text)
+        if keep and e.get("op") != "replace":
+            bad.append({"edit": 0, "id": uid,
+                        "reason": f"severity 인데 {e.get('op')} — replace 만 된다. 정도는 새 줄이 "
+                                  "아니라 있는 줄의 뒷부분이다"})
+            keep = []
+        elif keep and not uid.startswith("C"):
+            bad.append({"edit": 0, "id": uid,
+                        "reason": "severity 인데 [Core Principles] 단위가 아니다 — C 로 시작하는 id 여야 한다"})
+            keep = []
+        elif keep and qw is None:
+            bad.append({"edit": 0, "id": uid,
+                        "reason": "그 단위에 물음표가 없다 — 질문과 정도를 가를 수 없어 이 역할이 못 쓴다"})
+            keep = []
+        elif keep and qt != qw:
+            bad.append({"edit": 0, "id": uid,
+                        "reason": "severity 인데 질문이 바뀌었다 — 첫 물음표까지는 그대로 두고 그 뒤만 "
+                                  "다시 쓸 것. 질문은 어느 등급으로 보낼지를 정하고 그쪽은 이미 작동한다"})
+            keep = []
+        elif keep and not text[len(qt or ""):].strip():
+            bad.append({"edit": 0, "id": uid,
+                        "reason": "severity 인데 정도 절이 비었다 — 무엇이 더 심하고 무엇이 더 가벼운지를 쓸 것"})
+            keep = []
+        elif keep and len(text) - len(was) > SEVERITY_SLACK:
+            bad.append({"edit": 0, "id": uid,
+                        "reason": f"severity 인데 {len(text) - len(was)}자 늘었다 — "
+                                  f"{SEVERITY_SLACK}자까지만 된다"})
+            keep = []
+        return keep, bad
     if role == "replace":
         # **길이 중립 편집.** 원칙 목록에 문장을 더한 스물세 번 가운데 스물두 번이 음수였고
         # (−0.006 ~ −0.011), 무엇을 쓰든 크기가 비슷했다. 반면 judge31 에서 C4 를 지운 편집은
@@ -1191,7 +1270,15 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
     return edits, []
 
 
-def enforce_kind(edits, kind: str | None, has_order_section: bool = True) -> tuple[list, list[dict]]:
+# 칸을 **역할이 직접 고정하는** 역할들. `enforce_kind` 의 칸 검사를 건너뛴다 — 두 검사가 같은 것을
+# 서로 다르게 요구하면 `enforce_role` 을 통과한 편집이 뒤에서 죽는다(그 버그를 두 번 겪었다).
+# `severity` 는 이항 발견을 받아 `[Core Principles]` 의 정도 절을 고친다: 발견이 두 자리를 견주지만
+# 편집은 새 비교문을 넣는 것이 아니라 기존 원칙의 **정도 축을 교정**하는 것이므로 C 단위가 맞다.
+SELF_PINNED_SECTION = ("severity",)
+
+
+def enforce_kind(edits, kind: str | None, has_order_section: bool = True,
+                 role: str | None = None) -> tuple[list, list[dict]]:
     """발견의 형태(`kind`)와 편집의 **칸·문면**을 맞춘다. 역할 검사와는 따로 걸린다.
 
     `[Order Principles]` 는 등급 안에서 두 자리를 견주는 문장만 담는 칸이고 `[Core Principles]` 는
@@ -1200,7 +1287,7 @@ def enforce_kind(edits, kind: str | None, has_order_section: bool = True) -> tup
 
     `has_order_section` 이 거짓이면(그 섹션이 없는 프롬프트로 도는 런) 칸 검사를 건너뛴다."""
     edits = [e for e in (edits or []) if isinstance(e, dict)]
-    if kind not in ("check", "order"):
+    if kind not in ("check", "order") or role in SELF_PINNED_SECTION:
         return edits, []
     keep, bad = [], []
     for n, e in enumerate(edits):
@@ -1225,7 +1312,14 @@ def enforce_kind(edits, kind: str | None, has_order_section: bool = True) -> tup
     return keep, bad
 
 
-def pin_finding_text(edits, finding: dict | None) -> tuple[list, list[dict]]:
+# 문면 되돌리기를 면제하는 역할. `severity` 의 편집 문면은 **바꾸지 않은 질문 + 새 정도 절**이라
+# Critic 문면으로 통째로 갈아 끼우면 질문이 사라져 `enforce_role` 이 거부한다. 이 역할에서 PE 가
+# 하는 일은 형태를 고쳐 쓰는 것이 아니라 발견이 가리킨 원칙의 정도 축을 다시 쓰는 것이다.
+VERBATIM_EXEMPT = ("severity",)
+
+
+def pin_finding_text(edits, finding: dict | None,
+                     role: str | None = None) -> tuple[list, list[dict]]:
     """PE 가 쓴 문면을 Critic 이 낸 finding 의 문면으로 되돌린다 — **형태를 고쳐 쓰지 못하게.**
 
     judge31 이터 1·2 에서 PE 가 단항 금지문("Do not cut …")을 서열문("rank the cut after that
@@ -1236,6 +1330,8 @@ def pin_finding_text(edits, finding: dict | None) -> tuple[list, list[dict]]:
     `delete` 와 `labeled_example` 은 문면을 만들지 않으므로 건드리지 않는다. 길이가 예산을 넘으면
     되돌리기 경로(`shorten`)가 따로 줄인다."""
     edits = [e for e in (edits or []) if isinstance(e, dict)]
+    if role in VERBATIM_EXEMPT:
+        return edits, []
     want = ((finding or {}).get("edit") or {}).get("text")
     want = str(want or "").strip()
     if not want:

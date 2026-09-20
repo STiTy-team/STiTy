@@ -625,6 +625,11 @@ V0_TIE_BAND = 0.004
 # 목록에 없는 역할(`free`·`rewrite` 등)은 둘 다 받는다. `prune` 은 발견을 구현하는 역할이
 # 아니라 단위를 지우는 역할이라 짝을 짓지 않고 이터당 하나 둔다.
 ROLE_KINDS = {"fallback": {"order"},
+              # 이항 발견이 `[Order Principles]` 아닌 집을 갖는다. 그 칸의 계약은 골격의 등급 안
+              # 기본 서열을 **덮어쓰는** 것이라, 정도 기반 서열이 이득을 내는 위에서는 이득을 깎는다
+              # (같은 편집이 v0 위 −0.0015, graded 위 −0.0053). `severity` 는 대신 그 발견이 가리킨
+              # 원칙의 **정도 축**을 고친다 — 둘 중 어느 쪽이 덜 나쁜지를 말하는 자리다.
+              "severity": {"order"},
               "single_small": {"check"},
               "induce": {"check"},
               "narrow_rule": {"check"},
@@ -973,7 +978,12 @@ def main() -> int:
                         "narrow_rule 은 [Core Principles] 에 **추가**만 한다(insert_after 1개) — "
                         "실측상 채택된 둘은 좁은 점검 추가였고 원칙 재조정 다섯은 전부 실패했다. 후보 j 는 "
                         "roles[j %% len] 을 받는다. rewrite 는 Writer 가 [Core Principles]·[Examples] "
-                        "를 새로 쓴다(--generate-v0 런에서만). 예: free,examples_only,rewrite")
+                        "를 새로 쓴다(--generate-v0 런에서만). severity 는 [Core Principles] 원칙 "
+                        "하나의 **정도 절**(첫 물음표 뒤)만 다시 쓴다 — 질문은 한 글자도 못 바꾼다. "
+                        "질문은 등급 배정을 정하고 그쪽은 이미 작동하며(1위 6.16배), 없는 것은 등급 "
+                        "안 서열이다(8위 1.27배). 정도 절을 손으로 넣어 본 값이 dev 3벌 +0.0076 "
+                        "[+0.0028, +0.0127] 이고 이득이 ≤3 구간에 몰렸다. 이항 발견과 짝짓는다. "
+                        "예: free,examples_only,rewrite")
     p.add_argument("--case-alloc", default="uniform", choices=("uniform", "loss"),
                    help="구간별 사례 수 — uniform: 한 바퀴씩 균등 / loss: 구간별 손실 몫에 비례(최소 1). "
                         "test-A 실측은 손실의 61%% 가 ≤3, 26%% 가 ≤5 인데 균등 배분은 그 둘에 6/12 만 준다")
@@ -1789,7 +1799,7 @@ def main() -> int:
             if a.pe_verbatim and finding and pin:
                 # **PE 가 쓴 문면을 Critic 문면으로 되돌린다.** 형태(단항/이항)가 역할 배분의
                 # 근거인데 judge31 에서 PE 가 그것을 바꿔 썼다.
-                pending, pinned = aj.pin_finding_text(pending, finding)
+                pending, pinned = aj.pin_finding_text(pending, finding, role)
                 for c in pinned:
                     log(f"[iter {it}] PE 문면을 발견 문면으로 되돌렸다: edit {c['edit']} "
                         f"{c['id']} — PE 가 쓴 것은 {c['was']!r}")
@@ -1800,7 +1810,7 @@ def main() -> int:
                  "order_units": sum(1 for k in units_now if k.startswith("O"))})
             if finding:
                 edits, bad_k = aj.enforce_kind(edits, finding.get("kind"),
-                                               "[Order Principles]" in prompt)
+                                               "[Order Principles]" in prompt, role)
                 bad += bad_k
             if examples:
                 # 앞 후보가 쓴 예시는 없는 것으로 친다 — judge12 iter 1 은 후보 넷 중 셋이 같은

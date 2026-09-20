@@ -987,6 +987,106 @@ class PromptCarriesNoEnvironmentConstant(unittest.TestCase):
             self.assertIsNone(pat.search(txt), f"{name} 에 런 이름")
 
 
+class SeverityRole(unittest.TestCase):
+    """`severity` 는 **등급 안 서열**을 움직이는 역할이다 — 질문이 아니라 정도 절을 고친다.
+
+    왜 이 표면인가. `[Core Principles]` 의 질문 일곱은 전부 예/아니오이고 전부 한 방향이라 등급
+    **배정**은 하지만 등급 **안** 서열은 못 만든다. 그런데 골격은 맨 아래 등급까지 서로 다른 번호를
+    요구하고 모델은 그것을 지킨다 — 근거 없이 지킨다(순위 깊이 배수 1위 6.16배, 8위 1.27배).
+    질문에 "무엇이 더 심하고 무엇이 더 가벼운가" 를 손으로 붙여 재니 dev 500 3벌에서
+    **+0.0076 [+0.0028, +0.0127]** 이고 이득이 ≤3 구간에 +0.0143 으로 몰렸다.
+
+    왜 `[Order Principles]` 가 아닌가. 그 칸의 계약은 골격의 등급 안 기본 서열을 **덮어쓰는** 것이라,
+    정도 기반 서열이 이득을 내는 위에서는 이득을 깎는다 — 같은 편집이 v0 위 −0.0015, graded 위
+    −0.0053 이었다."""
+
+    Q = ("- Would placing a cut here leave trailing sentence-final material attached to the "
+         "preceding word, producing an impossible or misleading fragment?")
+    SEV = " A cut here is worse the shorter that trailing remainder is."
+
+    def edit(self, text, was=None, uid="C7", op="replace"):
+        return [{"op": op, "id": uid, "text": text, "_was": was if was is not None else self.Q + self.SEV}]
+
+    def test_rewrites_the_severity_clause(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        new = self.Q + (" A cut here is worse the shorter the remainder and the more it is required "
+                        "to complete what precedes it; it is mildest when the remainder is a "
+                        "detachable afterthought.")
+        keep, bad = aj.enforce_role(self.edit(new), "severity")
+        self.assertEqual((len(keep), bad), (1, []))
+
+    def test_question_must_come_back_byte_identical(self):
+        """질문은 등급 배정을 정하고 그쪽은 이미 작동한다 — 열면 무엇이 움직였는지 갈라지지 않는다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        for tweak in (self.Q.replace("Would", "Does"),          # 낱말 하나
+                      self.Q.replace("  ", " ").replace("cut here", "cut  here"),   # 공백
+                      self.Q[:-1] + " or an awkward one?"):     # 질문 확장
+            keep, bad = aj.enforce_role(self.edit(tweak + self.SEV), "severity")
+            self.assertEqual(keep, [], tweak[:40])
+            self.assertIn("질문이 바뀌었다", bad[0]["reason"])
+
+    def test_severity_may_not_be_empty(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(self.edit(self.Q), "severity")
+        self.assertEqual(keep, [])
+        self.assertIn("정도 절이 비었다", bad[0]["reason"])
+
+    def test_only_replace_on_a_c_unit(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        k1, b1 = aj.enforce_role(self.edit(self.Q + self.SEV, op="insert_after"), "severity")
+        self.assertEqual(k1, []); self.assertIn("replace 만 된다", b1[0]["reason"])
+        k2, b2 = aj.enforce_role(self.edit(self.Q + self.SEV, uid="O1"), "severity")
+        self.assertEqual(k2, []); self.assertIn("[Core Principles] 단위가 아니다", b2[0]["reason"])
+
+    def test_caps_growth(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        big = self.Q + self.SEV + " x" * (aj.SEVERITY_SLACK // 2 + 10)
+        keep, bad = aj.enforce_role(self.edit(big), "severity")
+        self.assertEqual(keep, [])
+        self.assertIn("늘었다", bad[0]["reason"])
+
+    def test_pairs_with_binary_findings_and_keeps_its_section(self):
+        """이항 발견을 받되 **칸 검사에 걸리지 않는다** — 역할이 칸을 스스로 고정한다.
+
+        이 둘을 따로 정했다가 `enforce_role` 을 통과한 편집이 뒤에서 죽는 일을 두 번 겪었다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        import core.meaning_segmentator.autoseg.loop_judge as lj
+        self.assertEqual(lj.ROLE_KINDS["severity"], {"order"})
+        e = [{"op": "replace", "id": "C7", "text": self.Q + self.SEV}]
+        keep, bad = aj.enforce_kind([dict(x) for x in e], "order", True, "severity")
+        self.assertEqual((len(keep), bad), (1, []))
+        # 역할을 안 주면 종전대로 칸 검사가 걸린다
+        keep2, bad2 = aj.enforce_kind([dict(x) for x in e], "order", True)
+        self.assertEqual(keep2, [])
+
+    def test_verbatim_pinning_is_exempt(self):
+        """`--pe-verbatim` 이 문면을 Critic 문면으로 갈아 끼우면 질문이 사라져 역할 검사가 거부한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        finding = {"edit": {"text": "prefer a cut at A over one at B"}}
+        e = [{"op": "replace", "id": "C7", "text": self.Q + self.SEV}]
+        out, changed = aj.pin_finding_text([dict(x) for x in e], finding, "severity")
+        self.assertEqual(changed, [])
+        self.assertEqual(out[0]["text"], self.Q + self.SEV)
+        # 다른 역할은 종전대로 되돌린다
+        out2, changed2 = aj.pin_finding_text([dict(x) for x in e], finding, "fallback")
+        self.assertEqual(len(changed2), 1)
+
+    def test_whole_edit_path_survives(self):
+        """역할 검사를 통과한 편집이 **프롬프트가 되는 데까지** 가는지. 이 확인을 빼먹어 두 번 물렸다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
+                "[Core Principles]\n" + self.Q + self.SEV + "\n\n[Order Principles]\n- prefer A over B\n\n"
+                "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        was = {u["id"]: u["text"] for u in aj.edit_units(base)}["C1"]
+        new = self.Q + " A cut here is worse the shorter the remainder; mildest when detachable."
+        keep, bad = aj.enforce_role([{"op": "replace", "id": "C1", "text": new, "_was": was}], "severity")
+        self.assertEqual((len(keep), bad), (1, []))
+        cand, note, *_ = aj.parse_edits({"edits": keep}, base, 20_000)
+        self.assertIsNotNone(cand, note)
+        self.assertIn("mildest when detachable", cand)
+        self.assertEqual(aj.check_skeleton(cand, base=base), [])
+
+
 class ScoringRulesFrozen(unittest.TestCase):
     """`[Scoring Rules]` 는 **루프가 건드리지 않는다.** judge34 에서 `procedure` 역할로 열어 실측했고
     이득이 없었다(절차 줄 −0.0028 / −0.0037). 같은 발견을 판단 줄에 넣은 것(−0.0080 / −0.0157)보다는
