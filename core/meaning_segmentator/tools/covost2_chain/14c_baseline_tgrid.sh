@@ -87,5 +87,9 @@ PYEOF
 one full_j44v0   auto_j44v0   || exit 1
 one full_j44best auto_j44best || exit 1
 $PY core/meaning_segmentator/tools/covost2_chain/plot_score_grid.py \
+    --run full_j44v0 --run full_j44best --metric comet >> $LOG 2>&1
+$PY core/meaning_segmentator/tools/covost2_chain/plot_score_grid.py \
+    --run full_j44v0 --run full_j44best --metric bleu >> $LOG 2>&1
+$PY core/meaning_segmentator/tools/covost2_chain/summarize_bleu.py \
     --run full_j44v0 --run full_j44best >> $LOG 2>&1
 echo "== $(ts) ALL DONE" >> $LOG

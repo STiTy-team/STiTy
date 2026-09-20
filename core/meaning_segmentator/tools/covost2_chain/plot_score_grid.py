@@ -4,6 +4,13 @@ x 축은 **실측 LAAL** 이다. 우리 노브(점수 임계값)와 비교군 �
 다르므로 노브 값으로는 나란히 놓을 수 없고, 둘 다 같은 자로 잰 지연으로 환산해야
 한 그림이 된다.
 
+**기본은 ms 다** (`--x ms`). 문헌의 LAAL 이 ms 이고, 청자가 겪는 지연도 시간이지
+어절 수가 아니다. 두 축은 조건의 순서를 실제로 다르게 매긴다 — zh 실측으로
+`auto_T4` 는 `syntax_T6` 보다 어절을 더 읽지만(4.18 대 3.92) 시간은 덜 쓴다
+(1,389 대 1,434ms). 점수 기반 절단이 **짧게 발음되는 어절 뒤에** 떨어지기 때문이다.
+어절 축으로 읽으면 이 이득이 통째로 사라져 판정이 뒤집힌다. `--x words` 는 강제정렬
+타임스탬프가 없는 데이터셋용으로만 남긴다.
+
 비교군은 `alignatt` · `mu_prefix` · `causal_align` · `syntax` 다. `punct` 는 뺐다 —
 T 격자에 반응하지 않아 점 여럿이 LAAL 7.5 어절대에 겹쳐 쌓이기만 한다.
 
@@ -37,13 +44,20 @@ p.add_argument("--run", action="append", required=True,
                help="비교할 런 디렉토리 이름. 두 번까지 준다 (첫째 실선, 둘째 파선)")
 p.add_argument("--targets", nargs="+", default=["zh", "de", "ja"])
 p.add_argument("--metric", default="bleu", choices=("bleu", "comet"))
+p.add_argument("--x", default="ms", choices=("ms", "words"),
+               help="지연 축. ms 가 기본이자 문헌 표준 — words 는 타임스탬프가 없을 때만")
 p.add_argument("--out", default=None)
 a = p.parse_args()
 
 
+XKEY = {"ms": "laal_ms", "words": "laal_words"}[a.x]
+XLABEL = {"ms": "LAAL (ms of source audio)",
+          "words": "LAAL (source words)"}[a.x]
+
+
 def curve(cond: dict, pick) -> list[tuple[float, float]]:
-    """(LAAL 어절, 지표) 를 지연 오름차순으로. 값이 없는 조건은 빠진다."""
-    return sorted((v["laal_words"], v[a.metric]) for n, v in cond.items()
+    """(LAAL, 지표) 를 지연 오름차순으로. 값이 없는 조건은 빠진다."""
+    return sorted((v[XKEY], v[a.metric]) for n, v in cond.items()
                   if pick(n) and v.get(a.metric) is not None)
 
 
@@ -76,12 +90,13 @@ for ax, t in zip(axes, a.targets):
     unseg = cond0["unsegmented"]
     fmt = "{:.4f}" if a.metric == "comet" else "{:.1f}"
     ax.axhline(unseg[a.metric], color="#8a8a8a", ls=":", lw=1.2, zorder=1)
-    ax.annotate(f"unsegmented {fmt.format(unseg[a.metric])}  "
-                f"(LAAL {unseg['laal_words']:.1f}w)",
+    ux = (f"{unseg['laal_ms']:.0f}ms" if a.x == "ms"
+          else f"{unseg['laal_words']:.1f}w")
+    ax.annotate(f"unsegmented {fmt.format(unseg[a.metric])}  (LAAL {ux})",
                 xy=(0.985, unseg[a.metric]), xycoords=("axes fraction", "data"),
                 ha="right", va="bottom", fontsize=8, color="#5a5a5a")
     ax.set_title(f"en→{t}", fontsize=12)
-    ax.set_xlabel("LAAL (source words)")
+    ax.set_xlabel(XLABEL)
     ax.grid(True, color="#e8e7e3", lw=0.8, zorder=0)
     ax.set_axisbelow(True)
 
@@ -93,7 +108,7 @@ fig.suptitle("CoVoST2 test 15,530 — quality vs latency"
              fontsize=10, y=0.985)
 fig.tight_layout(rect=(0, 0, 1, 0.955))
 out = (Path(a.out) if a.out else
-       A / runs[0][0] / "bleu" / f"tradeoff_score_grid_{a.metric}.png")
+       A / runs[0][0] / "bleu" / f"tradeoff_score_grid_{a.metric}_{a.x}.png")
 out.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(out, dpi=170)
 print(out)
