@@ -8,7 +8,7 @@ from pathlib import Path
 
 from core.errors import AudioError, DataError
 from core.utils import audio as audio_mod
-from core.utils import env, logging
+from core.utils import env, stream
 
 PORT = 9130
 TEMPLATE = Path(__file__).with_name("replay.html")
@@ -30,7 +30,7 @@ def audio_index(summary: dict) -> dict[str, dict]:
         if not manifest.is_file():
             continue
         index = {}
-        for raw in logging.read_stream(manifest):
+        for raw in stream.read(manifest):
             item_id = raw.get("id")
             if not item_id or not raw.get("audio"):
                 continue
@@ -63,13 +63,13 @@ def payload(run_dir: Path) -> dict:
     path = run_dir / "events.jsonl"
     if not path.is_file():
         raise DataError(f"{path} is missing -- replay reads a run's event stream")
-    events = list(logging.read_stream(path))
+    events = list(stream.read(path))
     if not events:
         raise DataError(f"{path} has no events")
 
     rows = {}
     if (run_dir / "items.jsonl").is_file():
-        rows = {r.get("id"): r for r in logging.read_stream(run_dir / "items.jsonl")}
+        rows = {r.get("id"): r for r in stream.read(run_dir / "items.jsonl")}
     try:
         summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):

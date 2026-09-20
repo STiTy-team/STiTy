@@ -2,22 +2,24 @@ import argparse
 import asyncio
 import shutil
 import time
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 from core.errors import ConfigError, DataError, STiTyError
 from core.utils import audio as audio_mod
-from core.utils import env, logging, metrics
+from core.utils import env, logging, metrics, stream
 
 from . import config
 from . import dataset as datasets
 from . import report
-from core.pipelines import build as build_pipeline
-from core.pipelines import describe as describe_pipeline
+from core.components import Final, Partial, Speech, Transcribed
+from core.pipeline import build as build_pipeline
+from core.pipeline import describe as describe_pipeline
 
 from .config import BenchConfig
 
-logger = logging.getLogger("bench")
+log = logging.getLogger(__name__)
 
 RUNS_DIR = Path(__file__).resolve().parent / "runs"
 
@@ -44,14 +46,31 @@ def _row(item, *, status: str, **fields) -> dict:
     }
 
 
+def _written(produced: list) -> list[dict]:
+    finals = []
+    for made in produced:
+        if isinstance(made, Final):
+            row = asdict(made)
+            stream.record("final", **row)
+            finals.append(row)
+        elif isinstance(made, Transcribed):
+            stream.record("transcribed", **asdict(made))
+        elif isinstance(made, Partial):
+            stream.record("partial", **asdict(made))
+        elif isinstance(made, Speech):
+            stream.record("vad_speech_end", at=round(made.ended_at, 3),
+                          started_at=round(made.started_at, 3))
+    return finals
+
+
 async def _stream_item(pipeline, item, cfg) -> dict:
     try:
         audio = audio_mod.load_window(
             item.audio, offset=item.offset, duration=item.duration
         )
     except DataError as e:
-        logging.start_clock()
-        logging.emit("item_error", error="audio_load_failed", detail=str(e))
+        stream.start_clock()
+        stream.record("item_error", error="audio_load_failed", detail=str(e))
         return _row(item, status="error", error=str(e))
 
     pcm = audio_mod.to_pcm_bytes(audio)
@@ -61,8 +80,8 @@ async def _stream_item(pipeline, item, cfg) -> dict:
     audio_sec = len(pcm) / 2 / audio_mod.SAMPLING_RATE
     target_lang = cfg.languages.expected_target(item.src_lang)
 
-    logging.start_clock()
-    logging.emit(
+    stream.start_clock()
+    stream.record(
         "item_open",
         audio_sec=round(audio_sec, 3),
         src_lang=item.src_lang,
@@ -75,43 +94,43 @@ async def _stream_item(pipeline, item, cfg) -> dict:
 
     origin = time.perf_counter()
     sent_samples = 0
+    segments: list[dict] = []
 
     async def feed(chunk: bytes, *, silence: bool) -> None:
         nonlocal sent_samples
         sent_samples += len(chunk) // 2
-        logging.set_audio_position(sent_samples / audio_mod.SAMPLING_RATE)
+        stream.audio_position(sent_samples / audio_mod.SAMPLING_RATE)
         if REALTIME:
             delay = (
                 origin + sent_samples / audio_mod.SAMPLING_RATE - time.perf_counter()
             )
             if delay > 0:
                 await asyncio.sleep(delay)
-        await pipeline.listen(chunk)
-        logging.emit("chunk", silence=silence)
+        segments.extend(_written(await pipeline.listen(chunk)))
+        stream.record("chunk", silence=silence)
 
     try:
-        with logging.collect("final") as segments:
-            for start in range(0, len(pcm), bytes_per_chunk):
-                await feed(pcm[start : start + bytes_per_chunk], silence=False)
+        for start in range(0, len(pcm), bytes_per_chunk):
+            await feed(pcm[start : start + bytes_per_chunk], silence=False)
 
-            silence_left = TRAILING_SILENCE_MS
-            while silence_left > 0:
-                step = min(CHUNK_SIZE_MS, silence_left)
-                silence_left -= step
-                await feed(audio_mod.silence_bytes(step), silence=True)
+        silence_left = TRAILING_SILENCE_MS
+        while silence_left > 0:
+            step = min(CHUNK_SIZE_MS, silence_left)
+            silence_left -= step
+            await feed(audio_mod.silence_bytes(step), silence=True)
 
-            await pipeline.finish()
+        segments.extend(_written(await pipeline.finish()))
     finally:
-        logging.stop_clock()
-        logging.set_audio_position(None)
+        stream.stop_clock()
+        stream.audio_position(None)
 
     hypothesis = " ".join((s.get("original") or "").strip() for s in segments).strip()
     hyp_translation = " ".join(
         (s.get("translation") or "").strip() for s in segments
     ).strip()
 
-    logging.emit("item_close", n_finals=len(segments),
-                 empty_hypothesis=not hypothesis)
+    stream.record("item_close", n_finals=len(segments),
+                  empty_hypothesis=not hypothesis)
 
     return _row(item, status="ok", audio_sec=round(audio_sec, 3),
                 hypothesis=hypothesis, hypothesis_translation=hyp_translation,
@@ -134,16 +153,16 @@ async def _run(cfg, dataset, pipeline, writer) -> list[dict]:
     current_group = None
     await pipeline.load()
     for index, item in enumerate(dataset.items, start=1):
-        logging.bind(item=item.id, session=item.group)
+        stream.bind(item=item.id, session=item.group)
         if item.group != current_group:
             current_group = item.group
-            logging.emit("session_open", group=item.group)
+            stream.record("session_open", group=item.group)
         row = await _stream_item(pipeline, item, cfg)
         row = score_item(row, cfg)
         rows.append(row)
         writer.write(row)
-        logger.info(
-            "[%d/%d] %s wer=%s segments=%d",
+        log.info(
+            "[ITEM] %d/%d %s wer=%s segments=%d",
             index,
             len(dataset.items),
             item.id,
@@ -177,7 +196,7 @@ def load_config(path: str | None) -> BenchConfig:
             )
         return config.load(path)
     except ConfigError as e:
-        logger.error("%s", e)
+        log.error("[FAILED] %s", e)
         raise SystemExit(2)
 
 
@@ -227,9 +246,9 @@ def main(argv: list[str] | None = None) -> int:
         run_dir = RUNS_DIR / cfg.name
         open_run_dir(run_dir, config_path=args.config)
 
-        logging.attach_stream(run_dir / "events.jsonl")
-        logging.bind(run=cfg.name)
-        logging.emit(
+        stream.attach(run_dir / "events.jsonl")
+        stream.bind(run=cfg.name)
+        stream.record(
             "run_open",
             name=cfg.name,
             dataset=dataset.name,
@@ -243,13 +262,13 @@ def main(argv: list[str] | None = None) -> int:
         try:
             rows = asyncio.run(_run(cfg, dataset, pipeline, writer))
         except KeyboardInterrupt:
-            logger.warning("interrupted; scoring what was written so far")
+            log.warning("[INTERRUPTED] scoring what was written so far")
             status = "degraded"
             rows = writer.read_back()
         except ConfigError:
             raise
         except STiTyError as e:
-            logger.error("%s", e)
+            log.error("[FAILED] %s", e)
             status = "failed"
             failure = str(e)
             rows = writer.read_back()
@@ -257,8 +276,8 @@ def main(argv: list[str] | None = None) -> int:
             writer.close()
             asyncio.run(pipeline.close())
 
-        logging.bind(item="", session="")
-        logging.emit("run_close", n_rows=len(rows), status=status)
+        stream.bind(item="", session="")
+        stream.record("run_close", n_rows=len(rows), status=status)
 
         report.write_all(
             cfg=cfg,
@@ -279,10 +298,10 @@ def main(argv: list[str] | None = None) -> int:
         if failure is not None:
             return 1
     except ConfigError as e:
-        logger.error("%s", e)
+        log.error("[FAILED] %s", e)
         return 2
     except STiTyError as e:
-        logger.error("%s", e)
+        log.error("[FAILED] %s", e)
         return 1
 
     return 0

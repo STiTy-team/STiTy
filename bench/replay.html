@@ -19,6 +19,9 @@
     --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
     --device: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --audio: #9aa79a;
+    --lane-0: #4c9a5a; --lane-1: #d08a2a; --lane-2: #c0554f; --lane-3: #7b60c0;
+    --lane-4: #3f8a9c; --lane-5: #a0662a; --lane-6: #6d7fa8; --lane-7: #8a8f84;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -28,6 +31,9 @@
       --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
       --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
       --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
+      --audio: #6e7a6e;
+      --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
+      --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
     }
   }
   :root[data-theme="dark"] {
@@ -37,6 +43,9 @@
     --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
     --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
     --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
+    --audio: #6e7a6e;
+    --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
+    --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
   }
 
   * { box-sizing: border-box; }
@@ -244,6 +253,31 @@
   .items b { display: block; color: var(--ink); font-weight: 600; }
   .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--ink-faint); padding: 0 2px; }
   .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+
+  /* ── layer timing: a row per commit, a lane per thing that took time ──── */
+  .timing {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
+    overflow: hidden;
+  }
+  .timing-top {
+    padding: 10px 14px; border-bottom: 1px solid var(--rule);
+    display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;
+  }
+  .timing-top h2 { margin: 0; font-size: 13px; font-weight: 600; }
+  .timing-top p { margin: 0; font-size: 11px; color: var(--ink-faint); }
+  .timing-body { max-height: 440px; overflow: auto; padding: 4px 0 0; }
+  .timing-body svg { display: block; }
+  .timing-empty { padding: 26px 14px; font-size: 12px; color: var(--ink-faint); }
+  .tl-grid { stroke: var(--rule-soft); stroke-width: 1; }
+  .tl-grid.major { stroke: var(--rule); }
+  .tl-axis { fill: var(--ink-faint); font-family: var(--mono); font-size: 9px; }
+  .tl-row { fill: var(--ink-soft); font-family: var(--mono); font-size: 10px; }
+  .tl-note { fill: var(--ink-faint); font-family: var(--mono); font-size: 9px; }
+  .tl-fsl { fill: var(--ink); font-family: var(--mono); font-size: 9px; }
+  .tl-band { fill: var(--sunken); }
+  .tl-band.alt { fill: transparent; }
+  .tl-mark { fill: var(--panel); stroke: var(--ink); stroke-width: 1.2; }
+  .tl-commit { stroke: var(--ink); stroke-width: 1; }
 </style>
 
 <div class="wrap">
@@ -333,6 +367,17 @@
       </div>
     </section>
   </div>
+
+  <section class="timing">
+    <div class="timing-top">
+      <span class="eyebrow">Layer timing</span>
+      <h2 id="timing-title">—</h2>
+      <p>one row per commit · x is wall clock since the item's first chunk</p>
+      <span class="spacer"></span>
+      <div class="legend" id="timing-legend"></div>
+    </div>
+    <div class="timing-body" id="timing-body"></div>
+  </section>
 </div>
 
 <script>
@@ -349,6 +394,7 @@ const LANG = {
 const langColor = c => LANG[c] || {bubble:"#909090", avatar:"#B8B8B8"};
 const REASONS = {seg:"--seg", vad:"--vad", dot:"--dot", always:"--always", finish:"--finish"};
 const NOISY = new Set(["chunk", "partial"]);
+const laneOf = e => e.tag || e.type;
 const $ = id => document.getElementById(id);
 
 // ── one timeline over every item, so the run plays as it was recorded ──────
@@ -368,7 +414,8 @@ for (const it of items) {
     events.push({...e, item: e.item || it.id, audio, at: it.offset + audio, _it: it});
   }
 }
-events.sort((a, b) => a.at - b.at);
+events.sort((a, b) => (a.at - b.at)
+  || (a.t == null || b.t == null ? 0 : a.t - b.t));
 const pendingFinals = new Map();                       // transcribed -> its final
 events.forEach((e, i) => {
   if (e.type !== "transcribed") return;
@@ -425,7 +472,7 @@ for (const e of events) {
 
 // ── the log table: every event once, revealed as the clock passes it ──────
 const tbody = $("rows");
-const SKIP = new Set(["t", "type", "item", "session", "audio", "at", "_it"]);
+const SKIP = new Set(["t", "type", "tag", "item", "session", "audio", "at", "_it"]);
 function fieldsHtml(e) {
   const lead = ["original", "translation", "commit_reason", "detail", "error", "msg"];
   const out = [];
@@ -452,10 +499,10 @@ const rowEls = events.map(e => {
     `<td class="r">${e.audio.toFixed(2)}</td>` +
     `<td class="r">${lag == null ? "" : (lag >= 0 ? "+" : "") + lag.toFixed(2)}</td>` +
     `<td class="r">${esc(e.item || "")}</td>` +
-    `<td class="type">${esc(e.type)}</td>` +
+    `<td class="type">${esc(laneOf(e))}</td>` +
     `<td class="fields">${fieldsHtml(e)}</td>`;
-  tr.dataset.type = e.type;
-  tr.dataset.text = (e.type + " " + (e.item || "") + " " + tr.textContent).toLowerCase();
+  tr.dataset.type = laneOf(e);
+  tr.dataset.text = (laneOf(e) + " " + (e.item || "") + " " + tr.textContent).toLowerCase();
   tr.addEventListener("click", () => seek(e.at));
   tbody.appendChild(tr);
   return tr;
@@ -464,11 +511,11 @@ const rowEls = events.map(e => {
 function applyFilters() {
   rowEls.forEach((tr, i) => {
     const e = events[i];
-    const ok = !hidden.has(e.type) && (!query || tr.dataset.text.includes(query));
+    const ok = !hidden.has(laneOf(e)) && (!query || tr.dataset.text.includes(query));
     tr.hidden = !ok;
   });
 }
-const types = [...new Set(events.map(e => e.type))].sort();
+const types = [...new Set(events.map(laneOf))].sort();
 $("filters").innerHTML = types
   .map(t => `<button data-t="${esc(t)}" aria-pressed="${!hidden.has(t)}">${esc(t)}</button>`).join("");
 $("filters").addEventListener("click", ev => {
@@ -526,6 +573,191 @@ $("sound").addEventListener("click", ev => {
   ev.currentTarget.textContent = audioOn ? "♪ Sound" : "♪̸ Muted";
   render();
 });
+
+// ── layer timing: an event with a `dur` is a bar, its tag names the lane ──
+const LANE_VARS = ["--lane-0", "--lane-1", "--lane-2", "--lane-3",
+                   "--lane-4", "--lane-5", "--lane-6", "--lane-7"];
+const HEARD_SHADE = [0.85, 0.72], SILENT_SHADE = [0.22, 0.12];
+const timed = e => typeof e.dur === "number";
+const laneOrder = [];
+for (const e of events) {
+  if (timed(e) && !laneOrder.includes(laneOf(e))) laneOrder.push(laneOf(e));
+}
+const laneColor = type => `var(${LANE_VARS[laneOrder.indexOf(type) % LANE_VARS.length]})`;
+const lanes = [{name: "audio in", color: "var(--audio)"}]
+  .concat(laneOrder.map(type => ({name: type, color: laneColor(type)})));
+const TL = {padL: 64, padR: 18, padT: 12, lane: 9, bar: 7, label: 14, gap: 8, axis: 24};
+const TICKS = [0.25, 0.5, 1, 2, 5, 10, 30, 60];
+
+$("timing-legend").innerHTML = lanes
+  .map(l => `<span><i style="background:${l.color}"></i>${esc(l.name)}</span>`)
+  .concat([`<span>◆ commit decided</span>`,
+           `<span><i style="background:var(--ink-faint);opacity:.45"></i>silence waited out</span>`])
+  .join("");
+
+const newRow = (start, end, final) =>
+  ({start, end, final, spans: [], chunks: [], vad: [], commits: []});
+
+function timingModel(it) {
+  const clocked = it.events.filter(e => e.t != null);
+  const chunks = clocked.filter(e => e.type === "chunk");
+  const end = Math.max(0.001, ...clocked.map(e => timed(e) ? e.t + e.dur : e.t));
+  const rows = [];
+  let delivered = 0;
+  for (const final of clocked.filter(e => e.type === "final")) {
+    rows.push(newRow(delivered, final.t, final));
+    delivered = final.t;
+  }
+  const tail = newRow(delivered, end, null);
+  const place = t => rows.find(row => t <= row.end) || tail;
+  for (const e of clocked) {
+    if (timed(e)) place(e.t).spans.push(e);
+    else if (e.type === "chunk") place(e.t).chunks.push(e);
+    else if (e.type === "vad_speech_end") place(e.t).vad.push(e);
+    else if (e.type === "transcribed") place(e.t).commits.push(e);
+  }
+  if (tail.spans.length || tail.chunks.length || tail.commits.length) rows.push(tail);
+
+  const wallAt = audio => {
+    let before = null, after = null;
+    for (const chunk of chunks) {
+      const heard = chunk.audio == null ? 0 : chunk.audio;
+      if (heard <= audio) before = {heard, wall: chunk.t};
+      else { after = {heard, wall: chunk.t}; break; }
+    }
+    if (!before && !after) return audio;
+    if (!before) return Math.max(0, after.wall - (after.heard - audio));
+    if (!after) return before.wall + (audio - before.heard);
+    const heardSpan = after.heard - before.heard;
+    if (heardSpan <= 0) return before.wall;
+    return before.wall
+      + (after.wall - before.wall) * (audio - before.heard) / heardSpan;
+  };
+  return {rows, end, wallAt};
+}
+
+let timingFor = null, timingX = null, timingData = null;
+function drawTiming(it) {
+  timingFor = it.id;
+  timingX = null;
+  const body = $("timing-body");
+  const m = timingModel(it);
+  timingData = m;
+  const commits = it.events.filter(e => e.type === "final").length;
+  $("timing-title").textContent = `${it.id} · ${it.span.toFixed(1)}s audio · `
+    + `${commits} commit${commits === 1 ? "" : "s"}`;
+  if (!m.rows.length) {
+    body.innerHTML = `<div class="timing-empty">Nothing timed in this item — ` +
+      `a run recorded before the parts were timed has no lanes, and an item that ` +
+      `committed nothing has no rows.</div>`;
+    return;
+  }
+
+  const width = Math.max(560, body.clientWidth - 2);
+  const plot = width - TL.padL - TL.padR;
+  const rowH = TL.label + lanes.length * TL.lane + TL.gap;
+  const height = TL.padT + m.rows.length * rowH + TL.axis;
+  const x = t => TL.padL + plot * Math.min(1, Math.max(0, t / m.end));
+  timingX = x;
+
+  const step = TICKS.find(s => m.end / s <= 12) || TICKS.at(-1);
+  const out = [`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
+    `<defs><pattern id="tl-hatch" width="5" height="5" patternUnits="userSpaceOnUse"`,
+    ` patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--ink-faint)"`,
+    ` opacity="0.14"/><line x1="0" y1="0" x2="0" y2="5" stroke="var(--ink-faint)"`,
+    ` stroke-width="1.6" opacity="0.5"/></pattern></defs>`];
+
+  const axisY = TL.padT + m.rows.length * rowH;
+  for (let t = 0; t <= m.end + 1e-9; t += step) {
+    out.push(`<line class="tl-grid major" x1="${x(t)}" y1="${TL.padT}" x2="${x(t)}" y2="${axisY}"/>`,
+      `<text class="tl-axis" x="${x(t)}" y="${axisY + 14}" text-anchor="middle">${+t.toFixed(2)}</text>`);
+    const half = t + step / 2;
+    if (half < m.end) out.push(
+      `<line class="tl-grid" x1="${x(half)}" y1="${TL.padT}" x2="${x(half)}" y2="${axisY}"/>`);
+  }
+  m.rows.forEach((row, i) => {
+    const y0 = TL.padT + i * rowH;
+    const laneY = lane => y0 + TL.label + lane * TL.lane;
+    const label = row.final || row.commits.length ? `seg ${i + 1}` : "tail";
+    out.push(`<rect class="tl-band${i % 2 ? " alt" : ""}" x="${TL.padL}" y="${y0}"`,
+      ` width="${plot}" height="${rowH - TL.gap + 2}" rx="3"/>`,
+      `<text class="tl-row" x="${TL.padL - 8}" y="${laneY(1) + 6}" text-anchor="end">${esc(label)}</text>`);
+
+    let from = row.start;
+    row.chunks.forEach((chunk, k) => {
+      const width = Math.max(0.6, x(chunk.t) - x(from));
+      const heard = chunk.audio == null ? "" : ` · audio ${chunk.audio.toFixed(2)}s`;
+      const shade = (chunk.silence ? SILENT_SHADE : HEARD_SHADE)[k % 2];
+      out.push(`<rect x="${x(from)}" y="${laneY(0)}" width="${width}" height="${TL.bar}"`,
+        ` fill="var(--audio)" opacity="${shade}">`,
+        `<title>chunk${heard}${chunk.silence ? " (trailing silence)" : ""}</title></rect>`);
+      from = chunk.t;
+    });
+    for (const v of row.vad) {
+      const from = m.wallAt(v.at);
+      if (v.t - from <= 0.005) continue;
+      out.push(`<rect x="${x(from)}" y="${laneY(0)}" width="${x(v.t) - x(from)}"`,
+        ` height="${TL.bar}" fill="url(#tl-hatch)">`,
+        `<title>silence waited out: speech ended at audio ${v.at.toFixed(2)}s,`,
+        ` VAD said so at ${v.t.toFixed(2)}s</title></rect>`);
+    }
+    for (const bar of row.spans) {
+      const lane = 1 + laneOrder.indexOf(laneOf(bar));
+      const width = Math.max(0.8, x(bar.t + bar.dur) - x(bar.t));
+      out.push(`<rect x="${x(bar.t)}" y="${laneY(lane)}" width="${width}"`,
+        ` height="${TL.bar}" rx="1.5" fill="${laneColor(laneOf(bar))}">`,
+        `<title>${esc(laneOf(bar))} ${bar.dur.toFixed(3)}s`,
+        `${bar.reason ? ` (${esc(bar.reason)})` : ""} @ ${bar.t.toFixed(2)}s</title></rect>`);
+    }
+    row.commits.forEach((commit, k) => {
+      const cx = x(commit.t);
+      const top = laneY(0) - 1, bottom = laneY(lanes.length - 1) + TL.bar + 1;
+      const reason = commit.commit_reason || "";
+      out.push(`<line class="tl-commit" x1="${cx}" y1="${top}" x2="${cx}" y2="${bottom}"`,
+        ` opacity="0.5"/>`,
+        `<path class="tl-mark" d="M ${cx} ${top - 4} l 4 4 l -4 4 l -4 -4 z">`,
+        `<title>committed on ${esc(reason)} at ${commit.t.toFixed(2)}s`,
+        `${commit.original ? ` -- ${esc(commit.original)}` : ""}</title></path>`,
+        `<text class="tl-note" x="${x(row.start) + 3 + k * 34}" y="${y0 + 10}"`,
+        ` fill="var(${REASONS[reason] || "--finish"})">${esc(reason)}</text>`);
+    });
+    const last = row.commits.at(-1);
+    const fsl = last && last.recv_elapsed_sec != null && last.decision_audio_sec != null
+      ? last.recv_elapsed_sec - last.decision_audio_sec : null;
+    if (fsl != null) {
+      const anchor = x(row.final ? row.final.t : last.t) + 6;
+      const past = anchor > TL.padL + plot - 62;
+      out.push(`<text class="tl-fsl" x="${past ? TL.padL + plot : anchor}" y="${y0 + 10}"`,
+        ` text-anchor="${past ? "end" : "start"}">FSL ${fsl.toFixed(2)}s</text>`);
+    }
+  });
+
+  out.push(`<line id="tl-now" x1="${TL.padL}" y1="${TL.padT - 4}" x2="${TL.padL}"`,
+    ` y2="${axisY}" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>`);
+  out.push("</svg>");
+  body.innerHTML = out.join("");
+}
+
+function timingPlayhead(it) {
+  const head = $("tl-now");
+  if (!head || !timingX || !timingData) return;
+  const at = timingX(timingData.wallAt(now - it.offset));
+  head.setAttribute("x1", at);
+  head.setAttribute("x2", at);
+}
+
+let timingWidth = 0, redrawing = false;
+function timingResized() {
+  const width = $("timing-body").clientWidth;
+  if (redrawing || Math.abs(width - timingWidth) < 3) return;
+  timingWidth = width;
+  timingFor = null;
+  redrawing = true;
+  render();
+  redrawing = false;
+}
+if (window.ResizeObserver) new ResizeObserver(timingResized).observe($("timing-body"));
+addEventListener("resize", timingResized);
 
 // ── the phone: rebuilt from whatever is in the past, so seeking is exact ──
 const feed = $("feed"), feedRows = $("feed-rows"), liveEl = $("live");
@@ -589,6 +821,8 @@ function render() {
   const hearing = speaking && speaking.type === "vad_speech_start";
   $("pulse").className = "pulse" + (hearing ? " live" : "");
   $("rec-label").textContent = hearing ? "Listening…" : (playing ? "Paused between utterances" : "Idle");
+  if (timingFor !== current.id) drawTiming(current);
+  timingPlayhead(current);
   $("rec-time").textContent = (now - current.offset).toFixed(1) + "s";
   $("clock-item").textContent = current.id;
   $("clock-now").textContent = now.toFixed(2);

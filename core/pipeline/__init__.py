@@ -1,15 +1,14 @@
+from core.components.registry import Registry, discover
 from core.errors import ConfigError
 from core.utils.config import as_component
 
-from .registry import Component
-from .pipeline import CascadePipeline, Pipeline, pipelines
-from .correction import correctors
-from .transcription import transcribers
-from .translation import translators
-from .vad import detectors
+from .base import Pipeline
 
-__all__ = ["Pipeline", "Component", "CascadePipeline", "pipelines", "transcribers",
-           "translators", "detectors", "correctors", "validate", "build", "describe"]
+pipelines = Registry("pipeline")
+
+discover(__name__)
+
+__all__ = ["Pipeline", "pipelines", "validate", "build", "describe"]
 
 
 def _registries(pipeline_name: str) -> list[tuple]:

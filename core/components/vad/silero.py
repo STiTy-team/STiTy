@@ -7,7 +7,7 @@ from core.utils import logging
 from . import detectors
 from .base import Detector, Speech
 
-logger = logging.getLogger("bench")
+log = logging.getLogger(__name__)
 
 SILERO_WINDOW_SAMPLES_AT_16K = 512
 
@@ -38,15 +38,17 @@ class SileroVad(Detector):
         buffer = io.BytesIO()
         torch.jit.save(load_silero_vad(), buffer)
         self.model_bytes = buffer.getvalue()
-        logger.info("silero VAD loaded (min_silence=%dms threshold=%.2f)",
-                    self.settings.get("min_silence_ms", 800),
-                    self.settings.get("threshold", 0.5))
+        log.info("[LOAD] silero VAD min_silence=%dms threshold=%.2f",
+                 self.settings.get("min_silence_ms", 800),
+                 self.settings.get("threshold", 0.5))
 
     def start(self, **_) -> None:
         import io
 
         import torch
         from silero_vad import VADIterator
+
+        super().start(**_)
 
         self.iterator = VADIterator(
             model=torch.jit.load(io.BytesIO(self.model_bytes)),
@@ -77,19 +79,19 @@ class SileroVad(Detector):
                           / audio_mod.SAMPLING_RATE)
                     if "start" in mark:
                         self.speech_started = max(0.0, at)
-                        logging.emit("vad_speech_start", at=round(at, 3))
+                        self.spans.append([max(0.0, at), None])
                     if "end" in mark:
                         silence = float(self.settings.get("min_silence_ms", 800)) / 1000
                         ended = Speech(started_at=self.speech_started,
                                        ended_at=max(0.0, at), silence_waited_out_sec=silence)
-                        logging.emit("vad_speech_end", at=round(at, 3),
-                                     started_at=round(self.speech_started, 3))
+                        if self.spans and self.spans[-1][1] is None:
+                            self.spans[-1][1] = max(0.0, at)
                 offset += SILERO_WINDOW_SAMPLES_AT_16K
             self.consumed += offset
             self.buffer = self.buffer[offset:]
         except Exception as e:  # noqa: BLE001
-            logging.emit("vad_error", detail=str(e))
-            logger.warning("VAD failed, disabled for this item: %s", e)
+            log.warning("[VAD-ERROR] disabled for this item: %s", e)
             self.disabled = True
+            self.spans = []
         return ended
 

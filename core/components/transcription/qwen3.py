@@ -5,12 +5,13 @@ from core.errors import ConfigError
 from core.utils import audio as audio_mod
 from core.utils import langs
 from core.utils import logging
+from core.utils import timing
 
 from . import transcribers
-from ..registry import Speech
+from ..registry import Partial, Speech, Transcribed
 from .base import Transcriber
 
-logger = logging.getLogger("bench")
+log = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MODEL = "Qwen/Qwen3-ASR-1.7B"
@@ -75,7 +76,7 @@ class Qwen3Transcription(Transcriber):
 
         kw = self.settings
         max_new_tokens = int(kw.get("max_new_tokens", 128))
-        logger.info("loading model: %s", kw["model_path"])
+        log.info("[LOAD] model %s", kw["model_path"])
         self.model = Qwen3ASRModel.LLM(
             model=kw["model_path"],
             gpu_memory_utilization=float(
@@ -105,9 +106,13 @@ class Qwen3Transcription(Transcriber):
 
     def start(self, language: str | None = None, **_) -> None:
         self._fed_samples = 0
-        self._opened_at = time.perf_counter()
         self._partial_seq = 0
+        self._out: list = []
         self._start_stream()
+
+    def _drain(self) -> list:
+        out, self._out = self._out, []
+        return out
 
     def _allowed_language_names(self) -> list[str] | None:
         if not self.cfg.languages.restrict:
@@ -128,7 +133,7 @@ class Qwen3Transcription(Transcriber):
         self._partial_text = None
         self._partial_at = 0.0
 
-    async def transcribe(self, audio: bytes) -> None:
+    async def transcribe(self, audio: bytes) -> list:
         self._fed_samples += len(audio) // 2
         await self.model.streaming_transcribe(
             audio_mod.from_pcm_bytes(audio), self.state,
@@ -138,17 +143,20 @@ class Qwen3Transcription(Transcriber):
         if self.cfg.stity.commit.always_commit:
             self._take("always")
         self._offer_partial(force=True)
+        return self._drain()
 
-    async def flush(self, reason: str, speech: Speech | None = None) -> None:
-        await self.finish(reason, speech)
+    async def flush(self, reason: str, speech: Speech | None = None) -> list:
+        out = await self.finish(reason, speech)
         self._start_stream()
+        return out
 
     async def finish(self, reason: str = "finish",
-                     speech: Speech | None = None) -> None:
+                     speech: Speech | None = None) -> list:
         if speech is not None:
             self._drop_trailing_silence(speech)
         await self.model.finish_streaming_transcribe(self.state)
         self._take(reason)
+        return self._drain()
 
     def _drop_trailing_silence(self, speech: Speech) -> None:
         cut = int(max(0.0, speech.silence_waited_out_sec - KEEP_AFTER_SPEECH_SEC)
@@ -168,7 +176,7 @@ class Qwen3Transcription(Transcriber):
             state.buffer = buffer[: buffered - from_buffer]
         if cut > from_buffer:
             state.audio_accum = accum[: accumulated - (cut - from_buffer)]
-        logging.emit("tail_trimmed", sec=round(cut / audio_mod.SAMPLING_RATE, 3))
+        log.info("[TAIL-TRIM] %.3fs", cut / audio_mod.SAMPLING_RATE)
 
     def _trigger(self, reason: str):
         commit = self.cfg.stity.commit
@@ -206,9 +214,10 @@ class Qwen3Transcription(Transcriber):
             return
         self._partial_text = text
         self._partial_seq += 1
-        logging.emit("partial", text=text,
-                     language=langs.norm_code(self.state.language or ""),
-                     seq=self._partial_seq)
+        self._out.append(Partial(
+            text=text,
+            language=langs.norm_code(self.state.language or ""),
+            seq=self._partial_seq))
 
     def _take(self, reason: str) -> None:
         decoded = (self.state.text or "").replace("<SEG>", "")
@@ -217,23 +226,22 @@ class Qwen3Transcription(Transcriber):
         if decoded.startswith(already):
             new = decoded[len(already):].strip()
         elif already.startswith(decoded):
-            logging.emit("retracted_after_commit", was=already[len(decoded):])
+            log.info("[RETRACTED] was=%r", already[len(decoded):])
             new = ""
         else:
             resume_at = _last_word_boundary(decoded, already)
-            logging.emit("revised_after_commit",
-                         was=already[resume_at:], now=decoded[resume_at:])
+            log.info("[REVISED] was=%r now=%r",
+                     already[resume_at:], decoded[resume_at:])
             new = decoded[resume_at:].strip()
         if not new:
             return
-        logging.emit(
-            "transcribed",
+        self._out.append(Transcribed(
             original=new,
             language=langs.norm_code(self.state.language or ""),
             commit_reason=reason,
             decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
-            recv_elapsed_sec=round(time.perf_counter() - self._opened_at, 4),
-        )
+            recv_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+        ))
         self._offer_partial(force=True)
 
     def _log_gpu(self, when: str) -> None:
@@ -244,8 +252,7 @@ class Qwen3Transcription(Transcriber):
                 return
             free, total = torch.cuda.mem_get_info()
             free_gib, total_gib = round(free / 2**30, 2), round(total / 2**30, 2)
-            logging.emit("gpu_memory", when=when, free_gib=free_gib,
-                         total_gib=total_gib)
-            logger.info("GPU %s: %.2f GiB free of %.2f GiB", when, free_gib, total_gib)
+            log.info("[GPU] %s: %.2f GiB free of %.2f GiB",
+                     when, free_gib, total_gib)
         except Exception:  # noqa: BLE001 - diagnostics only
             pass
