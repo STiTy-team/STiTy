@@ -1047,6 +1047,62 @@ class GradedPrinciplesAreTheDefault(unittest.TestCase):
         self.assertIn("정도 절이 비었다", bad[0]["reason"])
 
 
+class OrderPrinciplesAreExceptions(unittest.TestCase):
+    """`[Core Principles]` 가 주 척도이고 `[Order Principles]` 는 그 척도가 틀리는 **사례**다.
+
+    종전 계약은 골격 문장 그대로 O 줄이 등급 안 기본 서열을 *"overrides that default"* 하는 것이었다.
+    그런데 이득을 내는 것이 정도 기반 서열이므로, 덮어쓰면 이득을 깎는다 — 같은 에이전트 편집이
+    v0 위 −0.0015, 정도 절을 붙인 판 위 −0.0053 이었다. 칸이 문제가 아니라 **계약**이 문제였다.
+
+    이름과도 맞는다: Core 가 중심 척도를 들고, Order 는 그 척도로 잘못 서는 짝을 하나씩 집는다."""
+
+    def rules(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        return " ".join(aj.scoring_rules(["German"]).split())
+
+    def writer(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        return " ".join(aj.WRITER_SYSTEM.split())
+
+    def test_severity_is_the_rule_not_a_fallback(self):
+        r = self.rules()
+        self.assertIn("Ordering by severity is the rule, not a fallback", r)
+        self.assertIn("apply it to every pair in the band", r)
+
+    def test_order_principles_are_exceptions_that_settle_only_their_pair(self):
+        r = self.rules()
+        self.assertIn("The Order Principles are its EXCEPTIONS", r)
+        self.assertIn("settles only the pair it names", r)
+        self.assertIn("Outside the configurations they name, order by severity", r)
+
+    def test_the_override_contract_is_gone(self):
+        """이 문구가 돌아오면 정도 절의 이득이 다시 밀려난다."""
+        r = self.rules()
+        self.assertNotIn("overrides that default", r)
+        self.assertNotIn("read only to settle the order of positions that already share a band", r)
+
+    def test_definition_and_contract_tell_one_story(self):
+        """정의문과 계약문이 어긋나면 모델이 둘 중 하나를 고르게 된다."""
+        r = self.rules()
+        self.assertIn("the severity in the same line", r)       # Core 가 두 일을 한다
+        self.assertIn("are exceptions only", r)                 # O 는 예외뿐
+        self.assertIn("a general preference is either what severity already gives", r)
+
+    def test_writer_is_told_to_write_few_and_narrow(self):
+        w = self.writer()
+        self.assertIn("holds the EXCEPTIONS to ordering by severity", w)
+        self.assertIn("do not restate that", w)
+        self.assertIn("Write few and write them narrow", w)
+        # 일반 선호는 어느 칸에도 안 된다 — 종전 O1·O3 이 정확히 그것이었다
+        self.assertIn("belongs nowhere", w)
+
+    def test_the_duplicated_default_is_not_reintroduced(self):
+        """옛 표면형 기본값(앞이 홀로 설 수 있는 쪽 / 늦은 쪽)은 Writer 가 O1·O3 으로 되풀이하던 것이다."""
+        r, w = self.rules(), self.writer()
+        self.assertNotIn("prefer the one whose preceding stretch can stand alone", r)
+        self.assertIn("prefer the one whose preceding stretch stands alone", w)   # 금지 예시로만 등장
+
+
 class SeverityRole(unittest.TestCase):
     """`severity` 는 **등급 안 서열**을 움직이는 역할이다 — 질문이 아니라 정도 절을 고친다.
 
@@ -1214,7 +1270,7 @@ class FixedSkeleton(unittest.TestCase):
         sr = aj.scoring_rules(["Chinese", "German"])
         self.assertTrue(sr.startswith("[Scoring Rules]"))
         for must in ("five bands", "one position at a time", "choose again among the rest",
-                     "Core Principles decide", "Order Principles section"):
+                     "Core Principles decide", "Order Principles are its EXCEPTIONS"):
             self.assertIn(must, sr)
         self.assertIn("Chinese, German", sr)
         self.assertNotIn("__TARGETS__", sr)
@@ -1237,8 +1293,8 @@ class FixedSkeleton(unittest.TestCase):
         ws = " ".join(aj.writer_system(True, ["German"]).split())
         self.assertIn("[Core Principles] decides WHICH BAND", ws)
         self.assertIn("Every line is UNARY", ws)
-        self.assertIn("[Order Principles] decides, among positions the Core Principles put in the SAME "
-                      "band", ws)
+        self.assertIn("[Order Principles] holds the EXCEPTIONS to ordering by severity", ws)
+        self.assertIn("The question decides the band; the severity decides the order INSIDE a band", ws)
         self.assertIn("Every line is BINARY", ws)
         self.assertIn("[Scoring Rules], [Core Principles], [Order Principles], [Output Rules], "
                       "[Examples]", ws)
