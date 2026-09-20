@@ -1041,9 +1041,6 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
 
 ROLES = ("free", "examples_only", "single_small", "narrow_rule", "prune", "rewrite",
          "fallback", "induce", "replace", "severity")
-# `severity` 가 정도 절을 다시 쓸 때 허용하는 순증감 폭. 지금 정도 절이 116~179자라 그 안에서
-# 다시 쓰고 한두 문장 덧붙일 여지를 준다. 질문 쪽은 한 글자도 못 바꾸므로 길이가 새지 않는다.
-SEVERITY_SLACK = 200
 # 역할별로 열어 주는 동결 섹션. 지금은 **비어 있다** — `[Output Rules]` 와 `[Scoring Rules]` 는
 # 어떤 역할에도 열리지 않는다. 호출부가 `unfreezes(role)` 를 그대로 넘기므로, 다시 열어야 할 때
 # 여기 한 줄만 고치면 된다. **어느 역할에 무엇이 열려 있는지는 한 군데서만 정한다** — 두 군데서
@@ -1053,10 +1050,25 @@ ROLE_UNFREEZES: dict[str, tuple[str, ...]] = {}
 
 def unfreezes(role: str) -> tuple[str, ...]:
     return ROLE_UNFREEZES.get(role, ())
-# `replace` 역할이 허용하는 **순증가** 상한. 0 으로 두면 PE 가 지운 것보다 한 글자라도 길게 쓰면
-# 거부돼 재시도만 태운다. 원칙 하나가 200~300자이고 Critic 의 문면이 60단어 이하(350자 안팎)라
-# 한 줄을 지우고 비슷한 한 줄을 넣는 폭을 준다.
-REPLACE_SLACK = 80
+# 편집별 길이 상한 — **절대값이 아니라 대상 단위 크기에 비례해서** 잡는다.
+#
+# 절대값으로 두면 프롬프트 구조가 바뀔 때 조용히 병목이 된다. 실측으로 원칙 한 줄이 질문만 있던
+# 시절 187자에서 질문 + 정도 축 324자로 커졌고(정도 절만 190자), 그러자 옛 상수들이 전부 막기
+# 시작했다: `severity` 가 +215자를 쓰려는데 상한이 200 이라 15자 차이로 반려되고, `replace` 가
+# +166자에 상한 80 이라 반려됐다. 한 이터에서 후보 다섯 중 둘을 그렇게 잃었다. 같은 일을 Writer
+# 길이 지시(9,500자)에서도 겪었다 — **정도 축을 요구하기 전에 쓴 숫자였다.**
+#
+# 그래서 비율로 둔다. 대상이 커지면 폭도 커지고, 구조가 또 바뀌어도 다시 안 고친다.
+REPLACE_GROWTH = 0.30      # 교체: 지운 단위의 30% 까지 순증가. 324자 단위면 +97자.
+SEVERITY_GROWTH = 1.20     # 정도 축: 대상 줄의 120% 까지. 324자 줄이면 +389자 — 정도 절(190자)을
+                           # 두 배 가까이 늘려 쓸 수 있다. 등급 안 서열을 가르는 것이 이 역할의
+                           # 일이므로, 구별을 더 촘촘히 적는 데 자리가 필요하다.
+MIN_GROWTH = 80            # 짧은 단위에서도 최소 이만큼은 준다 — 옛 REPLACE_SLACK 값이다.
+
+
+def growth_cap(was: str, frac: float) -> int:
+    """`was` 를 고치는 편집에 허용할 순증가. 대상이 짧아도 `MIN_GROWTH` 는 보장한다."""
+    return max(MIN_GROWTH, int(len(was or "") * frac))
 SHORTEN_ROLE = "shorten"     # 후보 역할이 아니라 축소 패스 전용 — insert 를 뺀다
 
 
@@ -1323,10 +1335,11 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                         "reason": "severity 인데 정도 축이 아니다 — 심한 쪽과 가벼운 쪽을 **둘 다** 쓸 것. "
                                   "한쪽만 쓰면 방향이지 축이 아니고, 등급 안 두 자리를 못 가른다"})
             keep = []
-        elif keep and len(text) - len(was) > SEVERITY_SLACK:
+        elif keep and len(text) - len(was) > growth_cap(was, SEVERITY_GROWTH):
+            cap = growth_cap(was, SEVERITY_GROWTH)
             bad.append({"edit": 0, "id": uid,
-                        "reason": f"severity 인데 {len(text) - len(was)}자 늘었다 — "
-                                  f"{SEVERITY_SLACK}자까지만 된다"})
+                        "reason": f"severity 인데 {len(text) - len(was)}자 늘었다 — 그 줄({len(was)}자)에는 "
+                                  f"{cap}자까지만 된다"})
             keep = []
         return keep, bad
     if role == "replace":
@@ -1334,7 +1347,7 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
         # (−0.006 ~ −0.011), 무엇을 쓰든 크기가 비슷했다. 반면 judge31 에서 C4 를 지운 편집은
         # 길이가 229자 줄면서 Δ 가 −0.0001 이었고 CI 가 0 을 정중앙에 뒀다. 손해가 내용이 아니라
         # 길이·주의 분산에서 온다면, **지운 만큼만 넣는 편집은 0 에서 출발한다.** 그래서 삭제 한
-        # 건과 추가 한 건을 한 후보에 묶고 순증가를 `REPLACE_SLACK` 으로 막는다.
+        # 건과 추가 한 건을 한 후보에 묶고 순증가를 대상 크기에 비례해 막는다.
         gone = set((spent or {}).get("deleted") or ())
         n_order = (spent or {}).get("order_units", 99)
         # 한 자리 교체(`op="replace"`)면 편집 한 건으로 끝난다 — 지우는 자리와 넣는 자리가 같아
@@ -1372,10 +1385,11 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                         "reason": "replace 인데 이미 손댄 단위를 또 고친다 — 다른 단위를 고를 것"})
             return [], bad
         grew = len(str(ins.get("text") or "")) - len(was)
-        if grew > REPLACE_SLACK:
+        cap = growth_cap(was, REPLACE_GROWTH)
+        if grew > cap:
             bad.append({"edit": 0, "id": ins.get("id"),
-                        "reason": f"replace 인데 길이 중립이 아니다 — 순증가 {grew}자 > "
-                                  f"{REPLACE_SLACK}자. 더 긴 단위를 고르거나 새 문장을 줄일 것"})
+                        "reason": f"replace 인데 길이 중립이 아니다 — 순증가 {grew}자 > {cap}자 "
+                                  f"(지운 단위가 {len(was)}자다). 더 긴 단위를 고르거나 새 문장을 줄일 것"})
             return [], bad
         return keep, bad
     if role == "narrow_rule":

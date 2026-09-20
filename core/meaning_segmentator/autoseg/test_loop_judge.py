@@ -1323,12 +1323,27 @@ class SeverityRole(unittest.TestCase):
         k2, b2 = aj.enforce_role(self.edit(self.Q + self.SEV, uid="O1"), "severity")
         self.assertEqual(k2, []); self.assertIn("[Core Principles] 단위가 아니다", b2[0]["reason"])
 
-    def test_caps_growth(self):
+    def test_caps_growth_in_proportion_to_the_line(self):
+        """상한은 **대상 줄 크기에 비례**한다 — 절대값으로 두면 구조가 바뀔 때 조용히 병목이 된다.
+
+        실측으로 원칙 한 줄이 질문만 있던 시절 187자에서 질문 + 정도 축 324자로 커졌고, 그러자 옛
+        상수 200 이 막기 시작했다: PE 가 +215자를 쓰려는데 15자 차이로 반려돼 후보를 잃었다.
+        Writer 길이 지시(9,500자)에서 겪은 것과 같은 종류다 — 정도 축을 요구하기 전에 쓴 숫자였다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        big = self.Q + self.SEV + " x" * (aj.SEVERITY_SLACK // 2 + 10)
-        keep, bad = aj.enforce_role(self.edit(big), "severity")
+        was = self.Q + self.SEV
+        cap = aj.growth_cap(was, aj.SEVERITY_GROWTH)
+        self.assertGreater(cap, 200)                      # 옛 절대 상한보다 넉넉하다
+        ok = aj.enforce_role(self.edit(was + "y" * (cap - 10)), "severity")
+        self.assertEqual((len(ok[0]), ok[1]), (1, []))
+        keep, bad = aj.enforce_role(self.edit(was + "y" * (cap + 50)), "severity")
         self.assertEqual(keep, [])
         self.assertIn("늘었다", bad[0]["reason"])
+        self.assertIn(str(cap), bad[0]["reason"])         # 얼마까지 되는지 알려준다
+
+    def test_short_lines_still_get_a_floor(self):
+        """짧은 줄에서도 최소 폭은 준다 — 비율만 쓰면 짧은 단위를 고칠 수 없게 된다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        self.assertEqual(aj.growth_cap("- Is it? Worse when X, milder when Y.", 0.01), aj.MIN_GROWTH)
 
     def test_pairs_with_binary_findings_and_keeps_its_section(self):
         """이항 발견을 받되 **칸 검사에 걸리지 않는다** — 역할이 칸을 스스로 고정한다.
