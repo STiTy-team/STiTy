@@ -55,7 +55,31 @@ one () {   # <run 디렉토리 이름> <라벨 이름>
       --workers 24 --baselines $BASE --bootstrap 0 --no-sentence-bleu --no-auto-greedy \
       > $D/logs/bleu_eval_$t.tgrid.log 2>&1
     echo "== $(ts) $1 bleu_eval $t exit=$?" >> $LOG
+    # 이미 잰 조건의 COMET 을 새 파일로 옮겨 온다 — 조건 하나는 독립으로 계산되므로
+    # T 격자가 넓어져도 `syntax_T2` 의 값은 같다. 이걸 안 옮기면 --only-missing 이
+    # 56조건을 전부 다시 재서 타깃당 25분을 헛쓴다.
+    $PY - "$D/bleu_t6/$t.json" "$D/bleu/$t.json" <<'PYEOF' >> $LOG 2>&1
+import json, sys
+from pathlib import Path
+old, new = Path(sys.argv[1]), Path(sys.argv[2])
+if old.exists() and new.exists():
+    o = json.loads(old.read_text())["conditions"]
+    b = json.loads(new.read_text()); n = 0
+    for name, cell in b["conditions"].items():
+        src = o.get(name)
+        if src and src.get("comet") is not None and cell.get("comet") is None:
+            cell["comet"], cell["comet_seg"] = src["comet"], src.get("comet_seg")
+            n += 1
+    new.write_text(json.dumps(b, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"   COMET 재사용 {n}조건 → {new.name}")
+PYEOF
   done
+  echo "== $(ts) $1 comet (새 T 조건만)" >> $LOG
+  $PY -u -m core.meaning_segmentator.autoseg.baselines.comet_score \
+    --run-id $rid --dataset covost2 --manifest-tag full --src en \
+    --label $label --split test --targets zh de ja --only-missing \
+    --model Unbabel/wmt22-comet-da --batch-size 32 > $D/logs/comet.tgrid.log 2>&1
+  echo "== $(ts) $1 comet exit=$?" >> $LOG
 }
 
 one full_j44v0   auto_j44v0   || exit 1
