@@ -47,5 +47,10 @@ for l in $LANGS; do
     $PY -u -m $M --lang $l --phase compose --from-run $FROM --run $RUN || { echo "compose FAIL"; exit 1; }
     echo "== $(date '+%F %T') $l $RUN DONE"
   } >> "$LOG" 2>&1 || exit 1
+  # **언어마다 자기 마커를 남긴다.** 종전에는 루프가 다 끝난 뒤 체인 로그에 한 줄을 쓰고
+  # 다음 단계가 그 줄을 grep 했는데, zh 가 정상 종료(로그에 DONE)했는데도 그 줄이 안 남아
+  # 뒤 단계가 한 시간을 헛기다렸다(2026-09-20 22:06). 원인은 못 특정했고, 특정할 필요도 없다 —
+  # 산출물 옆에 파일로 남기면 공유 로그 한 줄에 기대지 않는다.
+  date '+%F %T' >> "$A/${l}-multi/$RUN/labels.done"
 done
 echo "== $(date '+%F %T') ALL DONE ($LANGS)" >> "$A/logs/${RUN}_labels_chain.log"

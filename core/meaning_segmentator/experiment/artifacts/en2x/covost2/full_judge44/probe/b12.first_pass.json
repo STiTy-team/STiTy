@@ -1,0 +1,24 @@
+{
+ "n": 60,
+ "n_violations": 2,
+ "realigned": 2,
+ "by_rule": {
+  "text_modified": 2
+ },
+ "samples": [
+  {
+   "rule": "text_modified",
+   "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "It <SEG:?> seemed <SEG:?> to <SEG:?> him <SEG:?> that <SEG:?> it <SEG:?> fell <SEG:?> to <SEG:?> earth <SEG:?> about <SEG:?> one <SEG:?> hundred <SEG:?> miles <SEG:?> east <SEG:?> of <SEG:?> here.",
+   "seg_text": "It <SEG:35> seemed <SEG:40> to <SEG:12> him <SEG:95> that <SEG:2> it <SEG:8> fell <SEG:4> to <SEG:6> earth <SEG:85> about <SEG:45> one <SEG:55> hundred <SEG:50> miles <SEG:65> east <SEG:60> of <SEG:10> here .",
+   "realigned": true
+  },
+  {
+   "rule": "text_modified",
+   "detail": "마커를 뺀 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "He <SEG:?> took <SEG:?> the <SEG:?> fourth <SEG:?> part <SEG:?> and <SEG:?> handed <SEG:?> it <SEG:?> to <SEG:?> the <SEG:?> monk.",
+   "seg_text": "He <SEG:30> took <SEG:4> the <SEG:20> fourth <SEG:18> part <SEG:95> and <SEG:6> handed <SEG:8> it <SEG:75> to <SEG:22> the <SEG:24> monk .",
+   "realigned": true
+  }
+ ]
+}

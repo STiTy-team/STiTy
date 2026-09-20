@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import statistics
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -171,9 +172,49 @@ def make_translator(args, cfg: dict, code: str, cache: JsonCache):
                                       backend=inherited)
 
 
+SCORE_RE = re.compile(r"<SEG:(\d+)>")
+
+
+def cut_at_threshold(seg_text: str, text: str, th: int, spaced: bool = True) -> list[str]:
+    """점수가 `th` 이상인 경계에서만 자른 조각. 하나도 없으면 무분절(문장 전체 한 조각).
+
+    **T 격자와 다른 노브다.** T 는 문장 길이만 보고 `k = 어절/T` 를 정하므로 그 문장에 좋은
+    자리가 있는지와 무관하게 같은 수를 자른다. 임계값은 자리가 좋은 문장을 더 자르고 나쁜 문장을
+    덜 자른다 — 목적함수(`H_set`: 남긴 절단 집합의 최악 한 자리)가 재는 것과 방향이 같다.
+
+    임계값을 올리면 절단이 줄다가 **무분절로 수렴한다** — 그게 곡선의 끝점이라 최소 절단 수를
+    억지로 보장하지 않는다. 실측(covost2 15,525문장, v0 라벨): 임계값 10/30/50/70/90 에서
+    문장당 절단 6.13/4.48/3.42/2.23/1.16, 절단 0개 문장 0.2%/1.6%/2.7%/5.2%/12.1%.
+
+    쓸 수 있는 근거는 모델이 **문장마다 0~100 을 거의 꽉 쓴다**는 실측이다(문장 최고점 중앙 99,
+    최저점 중앙 0). 프롬프트는 "점수를 문장 사이에 비교하지 말라" 고 하므로 그 성질은 계약이
+    아니라 관찰이다 — 곡선의 x 축을 임계값이 아니라 **실측 LAAL** 로 두어야 T 격자와 같은 축에서
+    비교된다(`laal_words`·`laal_ms` 가 이미 계산된다)."""
+    parts = SCORE_RE.split(seg_text)
+    if len(parts) < 3:
+        return split_segments(seg_text) or [text]
+    pieces, cur = [], parts[0]
+    for i in range(1, len(parts) - 1, 2):
+        if int(parts[i]) >= th:
+            if cur.strip():
+                pieces.append(cur.strip())
+            cur = parts[i + 1]
+        else:
+            # **태그 자리를 이어 붙이면 공백이 틀어진다.** 마킹 형식은 태그 양옆에 공백을 두므로
+            # 태그를 버리고 이으면 영어는 공백이 두 개가 되고(`Do <SEG:0> you` → `Do  you`),
+            # 일본어·중국어는 **없던 공백이 생긴다**(`学校に <SEG:20> 行く` → `学校に 行く`).
+            # 조각을 이어 붙인 것이 원문과 달라지면 BLEU 가 흔들리므로 언어별로 맞춘다.
+            cur = (cur.rstrip() + " " + parts[i + 1].lstrip()) if spaced \
+                else (cur.rstrip() + parts[i + 1].lstrip())
+    if cur.strip():
+        pieces.append(cur.strip())
+    return pieces or [text]
+
+
 def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
                      mech_every: int, has_auto: bool = True,
-                     no_greedy: bool = False) -> dict[str, list[dict]]:
+                     no_greedy: bool = False,
+                     score_grid: list[int] | None = None) -> dict[str, list[dict]]:
     """조건 이름 → 문장별 {seg_text, pieces}. pieces 가 1개면 무분절과 같다."""
     out: dict[str, list[dict]] = {}
     out["unsegmented"] = [{"seg_text": r["text"], "pieces": [r["text"]]} for r in rows]
@@ -193,6 +234,12 @@ def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
             pc = coarsen(all_pieces, T, spaced)
             cond.append({"seg_text": " <SEG> ".join(pc), "pieces": pc})
         out[f"auto_greedy_T{T}"] = cond
+    for th in (score_grid or []):
+        cond = []
+        for r in rows:
+            pc = cut_at_threshold(r["seg_text"], r["text"], th, spaced)
+            cond.append({"seg_text": " <SEG> ".join(pc), "pieces": pc})
+        out[f"auto_S{th}"] = cond
     mech = []
     for r in rows:
         seg = metrics.mechanical_split(r["text"], mech_every, spaced)
@@ -264,6 +311,12 @@ def main() -> int:
     p.add_argument("--src-spaced", type=int, default=1,
                    help="measured_profile.json 이 없을 때 쓸 소스 띄어쓰기 여부")
     p.add_argument("--t-grid", type=int, nargs="+", default=[4, 6, 8, 12])
+    p.add_argument("--score-grid", type=int, nargs="*", default=None,
+                   help="점수 임계값 격자 — 그 값 이상인 경계에서만 자른다(`auto_S<th>` 조건). "
+                        "T 격자는 문장 길이로 절단 수를 정하는데 이쪽은 **점수가 정한다**: 좋은 자리가 "
+                        "많은 문장은 더 잘리고 없는 문장은 덜 잘린다. 임계값을 올리면 무분절로 수렴하니 "
+                        "그게 곡선의 끝점이다. 곡선은 임계값이 아니라 실측 LAAL 을 x 로 그릴 것 — "
+                        "그래야 T 격자 점들과 같은 축에 놓인다. 예: --score-grid 20 40 60 80")
     p.add_argument("--mech-every", type=int, default=8)
     p.add_argument("--workers", type=int, default=4,
                    help="문장 단위 병렬도. **기본 4 는 gtx 무료 엔드포인트의 rate limit "
@@ -335,6 +388,7 @@ def main() -> int:
               f"({len(rows)}문장, 소스 띄어쓰기 {spaced})")
 
     conds = build_conditions(rows, args.t_grid, spaced, args.mech_every, has_auto,
+                             score_grid=args.score_grid,
                              no_greedy=args.no_auto_greedy)
 
     out_dir = run_dir / "bleu"

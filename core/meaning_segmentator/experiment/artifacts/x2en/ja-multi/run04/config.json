@@ -1,0 +1,47 @@
+{
+  "dataset": "evaluation/ast/manifests/fleurs_nway_ja-en_multi2en_loop1430.jsonl",
+  "src_lang": "Japanese",
+  "pair_id": "x2en/ja-multi",
+  "run_id": "run04",
+  "model": "gpt-5-mini",
+  "provider": "openai",
+  "base_url": null,
+  "seg_reasoning_effort": "medium",
+  "agent_reasoning_effort": "medium",
+  "batch_size": 6,
+  "contra_source": "source",
+  "k_samples": 3,
+  "workers": 16,
+  "local_mt_model": "google/madlad400-3b-mt",
+  "adequacy_backend": "cometkiwi",
+  "comet_batch_size": 64,
+  "min_gap": 7,
+  "units_per_sec_source": "alignment:fleurs_nway_ja-en_multi2en_loop405_unittimes.json",
+  "t_grid": [
+    9,
+    14,
+    27
+  ],
+  "final_t_grid": [
+    9,
+    14,
+    18,
+    27
+  ],
+  "main_t": 14,
+  "seed": 20260916,
+  "targets": [
+    "English",
+    "Chinese",
+    "German",
+    "Spanish"
+  ],
+  "spaced": false,
+  "mode": "judge",
+  "translator_id": "local:google/madlad400-3b-mt:en:ctx=False",
+  "split_scheme": "train/dev/test",
+  "split_from": null,
+  "labels_from": "x2en/ja-multi/run03",
+  "split_note": "run03 200x4+spare105 를 옮겨 담고 새 문장 475 추가 (train=450/dev=450/test=480); 새 문장은 stratified_order(20260916)",
+  "measured_profile_from": "x2en/ja-en/run02"
+}

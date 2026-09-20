@@ -1,0 +1,19 @@
+[label] 소스 ['en'] / spaced=True / min_gap=1 t_floor=2 / n=60
+[gateway] 경고: 'gpt-5-mini' 가 temperature 를 거부해 기본값으로 돈다 — **분절이 비결정론적이 된다**. Claude 계열은 사고를 켜면 temperature 를 1 로만 받으므로, 결정론이 필요하면 `--seg-reasoning-effort none` 으로 사고를 끌 것.
+[label] 진행 calls=9 completion=80490 누적 비용 $0.1621
+{
+ "model": "gpt-5-mini",
+ "prompt": "core/meaning_segmentator/experiment/artifacts/en2x/en-multi/judge44/prompt_v0.txt",
+ "n": 60,
+ "wall_sec": 134.7,
+ "format_pass": 1.0,
+ "first_pass": 0.883,
+ "text_preserved": 1.0,
+ "mean_boundaries": 8.13,
+ "mean_required": 8.13,
+ "coverage_met": 1.0,
+ "calls": 10,
+ "completion_tokens": 96651,
+ "cost": 0.1946
+}
+LABELDONE

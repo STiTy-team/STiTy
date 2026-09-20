@@ -2111,3 +2111,55 @@ class PromptsAreEnvironmentFree(unittest.TestCase):
             if name.isupper() and isinstance(v, str) and len(v) > 150:
                 self.assertIsNone(bad.search(v), f"{name} 에 런 고유 정보가 있다: "
                                                  f"{(bad.search(v) or '').group(0) if bad.search(v) else ''}")
+
+
+class ScoreThresholdGrid(unittest.TestCase):
+    """점수 임계값을 지연 노브로 쓴다 — T 격자와 나란히 놓을 조건을 만든다.
+
+    T 는 문장 길이만 보고 `k = 어절/T` 를 정하므로 그 문장에 좋은 자리가 있는지와 무관하게 같은
+    수를 자른다. 임계값은 점수가 정한다 — 자리가 좋은 문장은 더 잘리고 없는 문장은 덜 잘린다.
+    임계값을 올리면 무분절로 수렴하므로 최소 절단을 억지로 보장하지 않는다(그게 곡선의 끝점이다).
+
+    쓸 수 있는 근거는 모델이 문장마다 0~100 을 거의 꽉 쓴다는 실측이다 — covost2 15,525문장에서
+    문장 최고점 중앙 99, 최저점 중앙 0, 임계 10/30/50/70/90 에서 문장당 절단
+    6.13/4.48/3.42/2.23/1.16 으로 매끄럽게 줄어든다.
+    """
+
+    SEG = "Do <SEG:0> you <SEG:50> mean <SEG:100> it?"
+    SRC = "Do you mean it?"
+
+    def cut(self, th, spaced=True, seg=None, src=None):
+        from core.meaning_segmentator.autoseg.scoring.bleu_eval import cut_at_threshold
+        return cut_at_threshold(seg or self.SEG, src or self.SRC, th, spaced)
+
+    def test_raising_the_threshold_merges_pieces(self):
+        self.assertEqual(self.cut(0), ["Do", "you", "mean", "it?"])
+        self.assertEqual(self.cut(40), ["Do you", "mean", "it?"])
+        self.assertEqual(self.cut(60), ["Do you mean", "it?"])
+
+    def test_the_top_of_the_grid_is_unsegmented(self):
+        """임계값이 최고점을 넘으면 문장 전체 한 조각 — 곡선의 끝점이다."""
+        self.assertEqual(self.cut(101), [self.SRC])
+
+    def test_pieces_rejoin_into_the_source(self):
+        """**조각을 이어 붙이면 원문이어야 한다.** 마킹 형식은 태그 양옆에 공백을 두므로 태그를
+        버리고 이으면 영어는 공백이 둘이 되고 일본어는 없던 공백이 생긴다 — 그러면 번역 결과가
+        원문과 다른 문장의 것이 되어 BLEU 가 흔들린다."""
+        for th in (0, 40, 60, 101):
+            self.assertEqual(" ".join(self.cut(th)), self.SRC, f"임계 {th}")
+        ja_seg, ja_src = "私は <SEG:80> 学校に <SEG:20> 行く", "私は学校に行く"
+        for th in (0, 50, 90):
+            self.assertEqual("".join(self.cut(th, False, ja_seg, ja_src)), ja_src, f"임계 {th}")
+
+    def test_unscored_tags_and_no_tags_still_work(self):
+        self.assertEqual(self.cut(50, True, "a <SEG> b", "a b"), ["a", "b"])
+        self.assertEqual(self.cut(50, True, "a b c", "a b c"), ["a b c"])
+
+    def test_grid_shows_up_as_its_own_conditions(self):
+        from core.meaning_segmentator.autoseg.scoring.bleu_eval import build_conditions
+        rows = [{"text": self.SRC, "seg_text": self.SEG, "by_T": {}}]
+        conds = build_conditions(rows, [], True, 8, has_auto=False, score_grid=[40, 90])
+        self.assertIn("auto_S40", conds)
+        self.assertIn("auto_S90", conds)
+        self.assertEqual(conds["auto_S40"][0]["pieces"], ["Do you", "mean", "it?"])
+        self.assertEqual(conds["unsegmented"][0]["pieces"], [self.SRC])
