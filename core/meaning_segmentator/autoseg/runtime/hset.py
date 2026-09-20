@@ -100,6 +100,7 @@ class HsetScorer:
     qe: object
     spaced: bool
     target_spaced: dict          # 타깃 이름 → 조각 번역을 공백으로 이을지
+    contra_agg: str = "max"      # 절단집합의 contra 를 모으는 법 — "max" 가 지표, "mean" 은 진단용
     _tr_cache: dict = field(default_factory=dict)     # 타깃 → {조각 원문: 번역}
 
     def piece(self, tgt: str, units: list[str], a: int, b: int) -> str:
@@ -129,6 +130,17 @@ class HsetScorer:
         """`jobs` = [(문장 index, 절단집합)] → 각각의 `H_set`.
 
         `contra_of(i, j)` 는 위치 j 의 소스 contra. 절단이 없으면 contra 항은 1 이다.
+
+        **`contra_agg` 는 지표를 바꾸는 손잡이가 아니라 진단 도구다.** 기본 `"max"` 가 지금까지
+        모든 값을 잰 목적함수이고, 청자를 모형화한 선택이다 — 스트리밍에서 모순된 조각 하나는
+        이미 들려버렸고 되돌아갈 수 없으므로 평균으로 상쇄되지 않는다.
+
+        `"mean"` 을 두는 이유는 따로다. `max` 는 **기울기가 희소하다**: 여러 자리를 조금씩 낫게
+        만든 개정은 최악 하나를 못 고치면 보이지 않고, 반대로 방향 없는 재배열이 나쁜 자리를
+        채택 집합에 들이면 문장 전체가 깎인다. 실측으로 부검의 나빠진 짝과 좋아진 짝이 매번
+        반반인데 합은 음수였다(judge31~34). 그래서 "루프가 개정을 못 찾은 것인가, 목적함수가
+        개정을 못 본 것인가" 를 가르려면 같은 개정을 두 집계로 재 봐야 한다. 분절·번역이
+        캐시되어 있으면 이 비교는 API 비용이 0 이다.
         """
         units = {i: units_of(texts[i], self.spaced) for i, _ in jobs}
         spans = {(i, a, b) for i, c in jobs for a, b in pieces_of(units[i], c, self.spaced)}
@@ -145,10 +157,12 @@ class HsetScorer:
         for (n, _tgt), v in zip(owner, got):
             per.setdefault(n, []).append(v)
         out = []
+        agg = st.mean if self.contra_agg == "mean" else max
         for n, (i, c) in enumerate(jobs):
             q = st.mean(per.get(n, [0.0]))
-            worst = max((contra_of(i, j) for j in c), default=0.0)
-            out.append(q * (1 - worst))
+            vals = [contra_of(i, j) for j in c]
+            pen = agg(vals) if vals else 0.0
+            out.append(q * (1 - pen))
         return out
 
 

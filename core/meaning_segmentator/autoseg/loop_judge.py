@@ -1023,6 +1023,13 @@ def main() -> int:
     p.add_argument("--draw-tag", default=None,
                    help="벌별 캐시 파일 이름에 쓰는 꼬리표. 기본은 런 이름이다. **다른 런에서 뽑아 둔 "
                         "벌을 재사용하려면 그 런과 같은 값을 준다** — 기준선 3벌을 다시 뽑지 않아도 된다")
+    p.add_argument("--contra-agg", default="max", choices=("max", "mean"),
+                   help="절단집합의 contra 를 모으는 법. **기본 max 가 지표다** — 청자를 모형화한 "
+                        "선택이고 지금까지의 모든 값이 그 위에 있다. mean 은 진단용이다: max 는 "
+                        "최악 하나에 지배돼 기울기가 희소하고, 여러 자리를 조금씩 낫게 만든 개정이 "
+                        "보이지 않는다. 같은 개정을 두 집계로 재면 '루프가 못 찾은 것인가 목적함수가 "
+                        "못 본 것인가' 가 갈린다. 분절·번역이 캐시돼 있으면 API 비용은 0 이다. "
+                        "**이 값으로 잰 수치는 다른 런의 값과 비교하면 안 된다**")
     p.add_argument("--score-prompts", default=None,
                    help="--score-only 에서 기준선과 맞붙일 프롬프트 파일 여러 개를 쉼표로. 한 프로세스에서 "
                         "전부 병렬로 재므로 기준선을 한 번만 뽑고 GPU 경합도 없다. --prompt 는 무시된다")
@@ -1265,7 +1272,7 @@ def main() -> int:
                                       cache=JsonCache(run_dir / "cache" /
                                                       f"translate_{to_lang_code(t)}.json"))
                    for t in targets}
-    scorer = hset.HsetScorer(translators=translators,
+    scorer = hset.HsetScorer(contra_agg=a.contra_agg, translators=translators,
                              qe=metrics.make_adequacy_backend(cfg.get("adequacy_backend",
                                                                       "cometkiwi"),
                                                               batch_size=a.comet_batch_size),

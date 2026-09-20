@@ -948,6 +948,45 @@ class KindEnforced(unittest.TestCase):
         self.assertNotIn('"insert_after" into [Core Principles]', spec)
 
 
+class PromptCarriesNoEnvironmentConstant(unittest.TestCase):
+    """**코드가 주입하는 프롬프트에는 이 평가 환경에서만 참인 값을 넣지 않는다.**
+
+    프롬프트는 배포되는 산출물이다. 평가 환경의 상수를 품고 있으면 다른 코퍼스·언어쌍·지연 설정에서
+    모델에게 **틀린 말**을 하게 된다. 실측은 문서와 커밋 메시지가 담당한다.
+
+    실제로 둘이 걸렸다. `[Output Rules]` 를 고친 judge35 의 변형이 "약 여덟 자리가 채택된다" 고 썼는데
+    그건 dev 500 과 이 latency bin 구성에서 잰 값이고(평균 k 8.42), 배포 예산이 다르면 거짓이 된다 —
+    dev 에서 +0.0017 로 재였지만 그래서 안 넣었다. 그리고 `[Scoring Rules]` 에 "아래 등급이 보통 가장
+    많은 자리를 담는다" 가 있었는데 그것도 이 데이터의 분포다.
+
+    구조를 말하는 것은 된다("지연 예산이 몇 개를 남길지 정한다"). 그 환경의 값은 안 된다("약 여덟")."""
+
+    def injected(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        from core.meaning_segmentator.autoseg.runtime import agents_distill as ad
+        return {"[Scoring Rules]": aj.scoring_rules(["Chinese", "German"]),
+                "[Output Rules]": ad.output_rules(True, "source", meaning_in_scoring_rules=True)}
+
+    def test_no_distribution_claim_or_measured_quantity(self):
+        import re
+        pat = re.compile(r"\busually\b|\bmost of\b|\babout \d|\d+\s*%")
+        for name, txt in self.injected().items():
+            hits = [ln.strip()[:90] for ln in txt.split("\n") if pat.search(ln)]
+            self.assertEqual(hits, [], f"{name} 에 환경 의존 주장: {hits}")
+
+    def test_no_run_name(self):
+        """런 이름은 프롬프트에도 에이전트 지시문에도 넣지 않는다 — 읽는 쪽이 그 런을 모른다."""
+        import re
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pat = re.compile(r"\bjudge\d|\brun\d")
+        for name, txt in self.injected().items():
+            self.assertIsNone(pat.search(txt), f"{name} 에 런 이름")
+        for name, txt in (("WRITER_SYSTEM", aj.WRITER_SYSTEM),
+                          ("ENGINEER_SYSTEM", aj.ENGINEER_SYSTEM),
+                          ("CRITIC_SYSTEM", aj.CRITIC_SYSTEM)):
+            self.assertIsNone(pat.search(txt), f"{name} 에 런 이름")
+
+
 class ScoringRulesFrozen(unittest.TestCase):
     """`[Scoring Rules]` 는 **루프가 건드리지 않는다.** judge34 에서 `procedure` 역할로 열어 실측했고
     이득이 없었다(절차 줄 −0.0028 / −0.0037). 같은 발견을 판단 줄에 넣은 것(−0.0080 / −0.0157)보다는

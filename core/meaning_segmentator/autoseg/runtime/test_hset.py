@@ -171,3 +171,56 @@ class ScorerCacheKey(unittest.TestCase):
         self.assertEqual(sorted(x for c in calls for x in c), ["a b", "c d", "p q", "r s"])
         s.score(["a b c d"], [(0, (2,))], lambda i, j: 0.0)      # 같은 조각은 다시 번역 안 한다
         self.assertEqual(len([x for c in calls for x in c]), 4)
+
+
+class ContraAggregation(unittest.TestCase):
+    """`contra_agg` 는 지표를 바꾸는 손잡이가 아니라 진단 도구다 — 기본은 항상 `max` 여야 한다."""
+
+    class _QE:
+        def score(self, srcs, hyps):
+            return [1.0] * len(srcs)
+
+    class _TR:
+        def full(self, xs):
+            return list(xs)
+
+    def scorer(self, agg="max"):
+        from core.meaning_segmentator.autoseg.runtime import hset
+        kw = {} if agg is None else {"contra_agg": agg}
+        return hset.HsetScorer(translators={"de": self._TR()}, qe=self._QE(),
+                               spaced=True, target_spaced={"de": True}, **kw)
+
+    def run_one(self, agg, contra):
+        sc = self.scorer(agg) if agg else self.scorer(None)
+        texts = ["a b c d e f"]
+        jobs = [(0, (1, 2, 3))]
+        return sc.score(texts, jobs, lambda i, j: contra[j])[0]
+
+    def test_default_is_max(self):
+        """기본값이 바뀌면 지금까지 잰 모든 값과 비교 가능성이 끊긴다."""
+        from core.meaning_segmentator.autoseg.runtime import hset
+        self.assertEqual(hset.HsetScorer.contra_agg, "max")
+        c = {1: 0.0, 2: 0.9, 3: 0.0}
+        self.assertAlmostEqual(self.run_one(None, c), 1.0 - 0.9, places=6)
+
+    def test_max_is_dominated_by_one_bad_cut(self):
+        """이것이 max 의 성질이자 기울기가 희소한 이유다 — 나머지를 아무리 고쳐도 안 움직인다."""
+        worst_only = {1: 0.0, 2: 0.9, 3: 0.0}
+        all_mid = {1: 0.4, 2: 0.9, 3: 0.4}
+        self.assertAlmostEqual(self.run_one("max", worst_only),
+                               self.run_one("max", all_mid), places=6)
+
+    def test_mean_sees_what_max_cannot(self):
+        """같은 두 집합이 mean 에서는 갈린다 — 진단이 물을 수 있는 것이 이것이다."""
+        worst_only = {1: 0.0, 2: 0.9, 3: 0.0}
+        all_mid = {1: 0.4, 2: 0.9, 3: 0.4}
+        a = self.run_one("mean", worst_only)
+        b = self.run_one("mean", all_mid)
+        self.assertGreater(a, b)
+        self.assertAlmostEqual(a, 1.0 - 0.9 / 3, places=6)
+
+    def test_no_cuts_is_unpenalised_either_way(self):
+        for agg in ("max", "mean"):
+            sc = self.scorer(agg)
+            self.assertAlmostEqual(sc.score(["a b c"], [(0, ())], lambda i, j: 1.0)[0],
+                                   1.0, places=6)
