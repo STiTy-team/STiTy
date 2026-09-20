@@ -1263,6 +1263,75 @@ class EveryRoleWritesBothParts(unittest.TestCase):
         self.assertIn("Code checks it and drops the edit otherwise, whatever your role is", e)
 
 
+class BulletsSurviveAnEdit(unittest.TestCase):
+    """교체한 줄이 글머리 기호를 잃으면 그 칸만 들쭉날쭉해진다 — 실측으로 O1 이 그렇게 들어갔다."""
+
+    def prompt(self) -> str:
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        return ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n[Core Principles]\n"
+                "- Does the cut strand a complement? It is worse when short, milder otherwise.\n\n"
+                "[Order Principles]\n- prefer A over B\n- prefer C over D\n\n"
+                "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+
+    def test_a_replacement_without_a_bullet_gets_one(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        out, errs, _ = aj.apply_edits(self.prompt(),
+                                      [{"op": "replace", "id": "O1", "text": "prefer E over F"}])
+        self.assertEqual(errs, [])
+        lines = [l for l in out.split("[Order Principles]")[1].split("[Output Rules]")[0].strip().split("\n") if l.strip()]
+        self.assertEqual(lines, ["- prefer E over F", "- prefer C over D"])
+
+    def test_an_existing_bullet_is_not_doubled(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        out, _, _ = aj.apply_edits(self.prompt(),
+                                   [{"op": "replace", "id": "O1", "text": "- prefer E over F"}])
+        self.assertIn("- prefer E over F", out)
+        self.assertNotIn("- - ", out)
+
+    def test_a_section_without_bullets_stays_without_them(self):
+        """없던 기호를 만들지 않는다 — 같은 칸의 다른 줄이 전부 글머리일 때만 붙인다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = self.prompt().replace("- prefer A over B\n- prefer C over D",
+                                   "prefer A over B\nprefer C over D")
+        out, _, _ = aj.apply_edits(pr, [{"op": "replace", "id": "O1", "text": "prefer E over F"}])
+        self.assertIn("prefer E over F", out)
+        self.assertNotIn("- prefer E over F", out)
+
+
+class BothGatesUseTheSameRuler(unittest.TestCase):
+    """1차와 2차 문턱은 **한 플래그**가 정한다 — 2차에 하한이 박혀 있으면 플래그가 거짓말이 된다.
+
+    실측으로 `--adopt-rule mean` 을 주고 돌렸는데 후보가 여럿이라 2차가 하한 > 0 으로 갈랐다.
+    로그는 "하한 최고 후보 채택" 이라고 정직하게 찍었지만, 설정한 규칙과 작동한 규칙이 달랐다."""
+
+    def cand(self, mean: float, lo: float) -> dict:
+        return {"j": 0, "boot_avg": {"mean": mean, "lo": lo, "hi": mean + 0.01}}
+
+    def test_mean_rule_passes_a_candidate_whose_lower_bound_is_negative(self):
+        c = [self.cand(+0.0015, -0.0048)]
+        self.assertEqual(len(lj.confirmed(c, "mean")), 1)
+        self.assertEqual(lj.confirmed(c, "lo"), [])
+
+    def test_lo_rule_is_unchanged(self):
+        c = [self.cand(+0.0093, +0.0030)]
+        self.assertEqual(len(lj.confirmed(c, "lo")), 1)
+        self.assertEqual(len(lj.confirmed(c, "mean")), 1)
+
+    def test_a_negative_mean_never_passes(self):
+        c = [self.cand(-0.0002, -0.0070)]
+        self.assertEqual(lj.confirmed(c, "mean"), [])
+        self.assertEqual(lj.confirmed(c, "lo"), [])
+
+    def test_the_ruler_comes_from_pick_key(self):
+        """줄 세우는 자와 가르는 자가 같은 함수에서 나와야 한다 — 갈라지면 평균이 높고 분산이 큰
+        후보가 선택 단계에서 조용히 떨어진다."""
+        cs = [self.cand(+0.0015, -0.0048), self.cand(+0.0009, +0.0002)]
+        ok = lj.confirmed(cs, "mean")
+        key = lj.pick_key("mean")
+        self.assertEqual(max(ok, key=lambda f: key(f["boot_avg"])), cs[0])
+        self.assertEqual(lj.confirmed(cs, "lo"), [cs[1]])
+
+
 class TheCapIsToldBeforeWriting(unittest.TestCase):
     """길이 상한은 **쓰기 전에** 전달된다 — 거부 사유로만 알려 주면 후보가 한 번 쓰고 한 번 죽는다.
 

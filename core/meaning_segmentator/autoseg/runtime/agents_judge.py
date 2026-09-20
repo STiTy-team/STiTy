@@ -1025,6 +1025,14 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
         # PE 가 단위 id 를 본문 머리에 써 넣는다("C11: At every marker …", judge05 iter 4). 그 글자는
         # 분절기 프롬프트에 그대로 들어가므로 뗀다.
         text = re.sub(rf"^\s*[{TAG_CLASS}]\d+\s*[:.)\-–]\s*", "", text)
+        # **글머리 기호를 지킨다.** 실측으로 O1 을 교체한 편집이 "- " 없이 들어가 그 칸의 세 줄 중
+        # 하나만 모양이 달라졌다. 점수에는 안 나타나지만 이터가 쌓이면 목록이 너덜해지고, PE 는 다음
+        # 이터에 그 들쭉날쭉한 것을 본보기로 읽는다. 같은 칸의 다른 줄이 전부 글머리를 달고 있을
+        # 때만 붙인다 — 원래 글머리가 없는 칸에 없던 기호를 만들지 않는다.
+        if uid[:1] in ("C", "O") and text and not text.lstrip().startswith(("-", "*", "•")):
+            siblings = [t for i, t in known.items() if i[:1] == uid[:1] and i != uid]
+            if siblings and all(str(t).lstrip().startswith("- ") for t in siblings):
+                text = "- " + text.lstrip()
         if op not in ("replace", "delete", "insert_after"):
             errs.append({"edit": n, "id": uid, "reason": f"모르는 op {op!r}"})
             continue

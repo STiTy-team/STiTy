@@ -779,6 +779,16 @@ def pick_key(rule: str):
     return (lambda d: d["mean"]) if rule == "mean" else (lambda d: d["lo"])
 
 
+def confirmed(passers: list[dict], rule: str) -> list[dict]:
+    """2차(독립 추출) 를 통과한 후보. **문턱의 자는 `--adopt-rule` 하나가 정한다.**
+
+    여기에 하한 > 0 이 박혀 있어서 `--adopt-rule mean` 을 줘도 후보가 여럿이면 하한으로 갈렸다 —
+    플래그가 후보를 줄 세우는 데만 쓰이고 통과 여부는 안 건드렸다. 한 조건을 두 군데서 다르게 거는
+    그 버그의 또 한 사례다. 자를 함수 하나로 모아 테스트가 따라갈 수 있게 한다."""
+    key = pick_key(rule)
+    return [f for f in passers if key(f["boot_avg"]) > 0]
+
+
 def decide(boot: dict, strong: float = 0.005, rule: str = "lo",
            bins: dict[str, dict] | None = None, guard: float = 0.0) -> str:
     """`rule="lo"` 는 CI 하한으로 가른다 — 종전 1 se 문턱은 재채점 잡음(+0.023±0.017)이 그냥 넘었다.
@@ -2490,10 +2500,15 @@ def main() -> int:
             log(f"[iter {it}] 1차({gname} > {a.gate_min:+.4f}) 통과 {len(passers)}/{len(pool)}개"
                 + (" — " + ", ".join(f"후보 {f['j']}" for f in passers) if passers else ""))
             confirm_draws(passers)
-            ok = [f for f in passers if f["boot_avg"]["lo"] > 0]
+            # **2차 문턱도 `--adopt-rule` 을 따른다.** 여기에 하한 > 0 이 박혀 있어서 플래그를
+            # mean 으로 줘도 후보가 여럿이면 하한으로 갈랐다 — 플래그가 후보를 **고르는 자**로만
+            # 쓰이고 통과 여부는 안 건드렸다. 조건을 두 군데서 다르게 거는 그 버그의 또 한 사례다.
+            akey = pick_key(a.adopt_rule)
+            aname = "평균" if a.adopt_rule == "mean" else "하한"
+            ok = confirmed(passers, a.adopt_rule)
             if ok:
-                chosen = max(ok, key=lambda f: f["boot_avg"]["lo"])
-                log(f"[iter {it}] 2차 통과 {len(ok)}/{len(passers)}개 — 하한 최고 후보 "
+                chosen = max(ok, key=lambda f: akey(f["boot_avg"]))
+                log(f"[iter {it}] 2차 통과 {len(ok)}/{len(passers)}개 — {aname} 최고 후보 "
                     f"{chosen['j']} 채택")
             else:
                 chosen = max(pool, key=lambda f: fkey(f["boot"]))
@@ -2525,8 +2540,9 @@ def main() -> int:
             log(f"[iter {it}] 예시로 들어간 dev-A 문장 {len(excl)}개는 판정에서 뺀다")
         keys, vbins = chosen["keys"], chosen.get("bins_avg") or chosen["bins"]
         if multi:
-            # 2차가 이미 갈랐다 — 하한 > 0 인 후보 중에서만 chosen 이 나온다.
-            verdict = "accept" if "boot_avg" in chosen and boot["lo"] > 0 else "reject"
+            # 2차가 이미 갈랐다 — 같은 자(`--adopt-rule`)로 통과한 후보 중에서만 chosen 이 나온다.
+            verdict = ("accept" if "boot_avg" in chosen and pick_key(a.adopt_rule)(boot) > 0
+                       else "reject")
         else:
             verdict = decide(boot, strong=a.adopt_strong, rule=a.adopt_rule,
                              bins=vbins, guard=a.guard_bin)
