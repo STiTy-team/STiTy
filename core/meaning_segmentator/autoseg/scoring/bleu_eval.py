@@ -214,11 +214,16 @@ def cut_at_threshold(seg_text: str, text: str, th: int, spaced: bool = True) -> 
 def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
                      mech_every: int, has_auto: bool = True,
                      no_greedy: bool = False,
-                     score_grid: list[int] | None = None) -> dict[str, list[dict]]:
-    """조건 이름 → 문장별 {seg_text, pieces}. pieces 가 1개면 무분절과 같다."""
+                     score_grid: list[int] | None = None,
+                     no_auto_t: bool = False) -> dict[str, list[dict]]:
+    """조건 이름 → 문장별 {seg_text, pieces}. pieces 가 1개면 무분절과 같다.
+
+    `no_auto_t` 는 **우리 프롬프트의 `auto_T*` 만** 끈다. `t_grid` 는 비교군(punct·alignatt …)의
+    지연 노브로도 쓰이므로 인자 자체를 비울 수는 없다 — 비우면 비교군이 한 점으로 줄어 곡선이
+    사라진다. 노브를 점수 임계값으로 바꿀 때 쓴다."""
     out: dict[str, list[dict]] = {}
     out["unsegmented"] = [{"seg_text": r["text"], "pieces": [r["text"]]} for r in rows]
-    if has_auto:
+    if has_auto and not no_auto_t:
         for T in t_grid:
             key = str(T)
             cond = []
@@ -227,7 +232,7 @@ def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
                 cond.append({"seg_text": cell["seg_text"],
                              "pieces": cell["pieces_src"]})
             out[f"auto_T{T}"] = cond
-    for T in (t_grid if (has_auto and not no_greedy) else []):
+    for T in (t_grid if (has_auto and not no_greedy and not no_auto_t) else []):
         cond = []
         for r in rows:
             all_pieces = split_segments(r["seg_text"]) or [r["text"]]
@@ -311,6 +316,10 @@ def main() -> int:
     p.add_argument("--src-spaced", type=int, default=1,
                    help="measured_profile.json 이 없을 때 쓸 소스 띄어쓰기 여부")
     p.add_argument("--t-grid", type=int, nargs="+", default=[4, 6, 8, 12])
+    p.add_argument("--no-auto-t", action="store_true",
+                   help="우리 프롬프트의 `auto_T*` 조건을 만들지 않는다 — 지연 노브를 점수 임계값"
+                        "(`--score-grid`)으로만 낼 때. **`--t-grid` 는 그대로 줘야 한다**: 비교군의 "
+                        "지연 노브가 그것이고, 비우면 비교군이 한 점으로 줄어 곡선이 사라진다.")
     p.add_argument("--score-grid", type=int, nargs="*", default=None,
                    help="점수 임계값 격자 — 그 값 이상인 경계에서만 자른다(`auto_S<th>` 조건). "
                         "T 격자는 문장 길이로 절단 수를 정하는데 이쪽은 **점수가 정한다**: 좋은 자리가 "
@@ -388,7 +397,7 @@ def main() -> int:
               f"({len(rows)}문장, 소스 띄어쓰기 {spaced})")
 
     conds = build_conditions(rows, args.t_grid, spaced, args.mech_every, has_auto,
-                             score_grid=args.score_grid,
+                             score_grid=args.score_grid, no_auto_t=args.no_auto_t,
                              no_greedy=args.no_auto_greedy)
 
     out_dir = run_dir / "bleu"
