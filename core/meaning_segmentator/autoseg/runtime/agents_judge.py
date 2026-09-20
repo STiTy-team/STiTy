@@ -1126,11 +1126,28 @@ SEVERITY_GROWTH = 1.20     # 정도 축: 대상 줄의 120% 까지. 324자 줄�
                            # 두 배 가까이 늘려 쓸 수 있다. 등급 안 서열을 가르는 것이 이 역할의
                            # 일이므로, 구별을 더 촘촘히 적는 데 자리가 필요하다.
 MIN_GROWTH = 80            # 짧은 단위에서도 최소 이만큼은 준다 — 옛 REPLACE_SLACK 값이다.
+LINE_CEILING = 620         # **원칙 한 줄이 닿아도 되는 크기.** 비례식만 두면 거꾸로 된다 — 정도 축이
+                           # 가장 얇은 줄(그래서 고쳐야 할 바로 그 줄)이 가장 짧아서 가장 좁은 상한을
+                           # 받는다. 실측: 지금 원칙 줄이 248~378자인데 정도 축을 제대로 갖춘 줄은
+                           # 500~590자로 나온다(통과한 편집 C5 350 → 517자). 짧은 줄도 그 크기까지는
+                           # 닿게 둔다. 프롬프트 전체가 부는 것은 이터 단위 천장(`--growth-per-iter`)
+                           # 이 따로 막으므로 여기서 두 번 막을 일이 아니다.
+                           # `[Order Principles]` 에는 적용하지 않는다 — 그 칸의 계약이 "예외만, 적게,
+                           # 좁게" 라서 길어지는 것 자체가 계약 위반이다.
 
 
-def growth_cap(was: str, frac: float) -> int:
-    """`was` 를 고치는 편집에 허용할 순증가. 대상이 짧아도 `MIN_GROWTH` 는 보장한다."""
-    return max(MIN_GROWTH, int(len(was or "") * frac))
+def growth_cap(was: str, frac: float, ceiling: int = 0) -> int:
+    """`was` 를 고치는 편집에 허용할 순증가.
+
+    셋 중 가장 큰 값이다 — 짧은 단위에도 보장하는 `MIN_GROWTH`, 대상 크기에 비례하는 몫, 그리고
+    `ceiling` 이 주어지면 그 크기까지 닿게 하는 몫."""
+    n = len(was or "")
+    return max(MIN_GROWTH, int(n * frac), (ceiling - n) if ceiling else 0)
+
+
+def unit_ceiling(uid: str) -> int:
+    """그 단위가 닿아도 되는 크기. `[Core Principles]` 만 `LINE_CEILING` 을 쓴다."""
+    return LINE_CEILING if str(uid or "")[:1] == "C" else 0
 
 # 역할별 순증가 비율. **한 군데에서만 정한다** — 검사와 PE 에게 알리는 값이 갈라지면 PE 는 지시를
 # 지켰는데 코드가 거부하는 상태가 된다.
@@ -1153,7 +1170,8 @@ def unit_budgets(prompt: str, role: str) -> dict[str, int]:
     frac = ROLE_GROWTH.get(role)
     if frac is None:
         return {}
-    return {u["id"]: len(u["text"]) + growth_cap(u["text"], frac) for u in edit_units(prompt)}
+    return {u["id"]: len(u["text"]) + growth_cap(u["text"], frac, unit_ceiling(u["id"]))
+            for u in edit_units(prompt)}
 
 SHORTEN_ROLE = "shorten"     # 후보 역할이 아니라 축소 패스 전용 — insert 를 뺀다
 
@@ -1438,8 +1456,8 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                         "reason": "severity 인데 정도 축이 아니다 — 심한 쪽과 가벼운 쪽을 **둘 다** 쓸 것. "
                                   "한쪽만 쓰면 방향이지 축이 아니고, 등급 안 두 자리를 못 가른다"})
             keep = []
-        elif keep and len(text) - len(was) > growth_cap(was, SEVERITY_GROWTH):
-            cap = growth_cap(was, SEVERITY_GROWTH)
+        elif keep and len(text) - len(was) > growth_cap(was, SEVERITY_GROWTH, unit_ceiling(uid)):
+            cap = growth_cap(was, SEVERITY_GROWTH, unit_ceiling(uid))
             bad.append({"edit": 0, "id": uid,
                         "reason": f"severity 인데 {len(text) - len(was)}자 늘었다 — 그 줄({len(was)}자)에는 "
                                   f"{cap}자까지만 된다"})
@@ -1506,7 +1524,7 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                                   "한 줄이 한 단위이므로 줄을 늘리면 원칙 개수가 늘어난다"})
             return [], bad
         grew = len(new_text) - len(was)
-        cap = growth_cap(was, REPLACE_GROWTH)
+        cap = growth_cap(was, REPLACE_GROWTH, unit_ceiling(did))
         if grew > cap:
             bad.append({"edit": 0, "id": ins.get("id"),
                         "reason": f"replace 인데 {grew}자 늘었다 — 그 단위({len(was)}자)에는 {cap}자까지만 "

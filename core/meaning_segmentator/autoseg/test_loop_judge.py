@@ -1352,7 +1352,8 @@ class TheCapIsToldBeforeWriting(unittest.TestCase):
         """알려 준 상한에 딱 맞는 문면은 통과하고, 한 자 넘으면 거부된다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         cap = aj.unit_budgets(self.prompt(), "replace")["C1"]
-        self.assertEqual(cap, len(self.UNIT) + aj.growth_cap(self.UNIT, aj.REPLACE_GROWTH))
+        self.assertEqual(cap, len(self.UNIT) + aj.growth_cap(self.UNIT, aj.REPLACE_GROWTH,
+                                                             aj.unit_ceiling("C1")))
         head = "- Does the cut split a name from its appositive? It is worse when "
         fits = head + "x" * (cap - len(head) - len(" and milder otherwise.")) + " and milder otherwise."
         self.assertEqual(len(fits), cap)
@@ -1363,9 +1364,33 @@ class TheCapIsToldBeforeWriting(unittest.TestCase):
         self.assertEqual(keep, [])
         self.assertIn("늘었다", bad[0]["reason"])
 
-    def test_severity_has_a_wider_budget_than_replace(self):
+    def test_a_short_core_line_may_reach_the_ceiling(self):
+        """비례식만 두면 거꾸로 된다 — 정도 축이 가장 얇은 줄이 가장 짧아서 상한이 가장 좁다.
+        실측으로 `severity` 가 그 줄을 골라 두 번 연속 걸렸다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        pr = self.prompt()
+        short = "- Does the cut strand a complement? Worse when short, milder otherwise."
+        self.assertLess(len(short) * 2, aj.LINE_CEILING)
+        cap = len(short) + aj.growth_cap(short, aj.SEVERITY_GROWTH, aj.unit_ceiling("C1"))
+        self.assertEqual(cap, aj.LINE_CEILING)
+
+    def test_a_long_core_line_keeps_the_proportional_cap(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        long = "- " + "x" * 400
+        cap = len(long) + aj.growth_cap(long, aj.SEVERITY_GROWTH, aj.unit_ceiling("C1"))
+        self.assertGreater(cap, aj.LINE_CEILING)
+
+    def test_order_lines_do_not_get_the_ceiling(self):
+        """그 칸의 계약이 "예외만, 적게, 좁게" 라 길어지는 것 자체가 계약 위반이다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        short = "- prefer A over B"
+        self.assertEqual(aj.unit_ceiling("O2"), 0)
+        cap = len(short) + aj.growth_cap(short, aj.REPLACE_GROWTH, aj.unit_ceiling("O2"))
+        self.assertLess(cap, aj.LINE_CEILING)
+
+    def test_severity_has_a_wider_budget_than_replace(self):
+        """천장 위로 올라간 긴 줄에서만 갈린다 — 짧은 줄은 둘 다 천장에서 만난다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = self.prompt().replace(self.UNIT, "- " + "x" * 400 + "? Worse when short, milder when long.")
         self.assertGreater(aj.unit_budgets(pr, "severity")["C1"],
                            aj.unit_budgets(pr, "replace")["C1"])
 
@@ -1519,7 +1544,7 @@ class SeverityRole(unittest.TestCase):
         Writer 길이 지시(9,500자)에서 겪은 것과 같은 종류다 — 정도 축을 요구하기 전에 쓴 숫자였다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
         was = self.Q + self.SEV
-        cap = aj.growth_cap(was, aj.SEVERITY_GROWTH)
+        cap = aj.growth_cap(was, aj.SEVERITY_GROWTH, aj.unit_ceiling("C1"))
         self.assertGreater(cap, 200)                      # 옛 절대 상한보다 넉넉하다
         ok = aj.enforce_role(self.edit(was + "y" * (cap - 10)), "severity")
         self.assertEqual((len(ok[0]), ok[1]), (1, []))
