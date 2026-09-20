@@ -8,6 +8,7 @@
 | `translator/gpt_corrector.py` | `GPTCorrector` — 교정만. 서버 `--correction`으로 활성화 |
 | `translator/local_translator.py` | 로컬 번역기 — seq2seq(MADLAD/NLLB)와 `LLMTranslator`(지시형 LLM, **앞 발화를 문맥으로 받을 수 있는 유일한 백엔드**), 그리고 독립 번역 서버를 부르는 HTTP 클라이언트 `RemoteTranslator`. `make_translator` 가 모델 이름으로 고른다 |
 | `translator/LOCAL_TRANSLATION.md` | 어떤 로컬 번역 모델을 올릴지, 문맥을 몇 턴 줄지 — 실측표 |
+| `config.py` | **파이프라인 설정** — `configs/pipelines/*.yml` 하나를 읽어 부품까지 해석한다. 재는 대상(부품·커밋 정책·`gpu_memory_utilization`)만 적히고 무엇이 오디오를 넣어 주는지는 없으므로, bench 와 서버가 같은 파일을 읽는다. 이름으로 파일을 찾는 `resolve` 도 여기다 — `baseline` → `configs/pipelines/baseline.yml`. 데이터셋 설정은 그걸 가진 쪽(`bench/config.py`)이 읽는다 |
 | `components/` | 파이프라인이 끼워 쓰는 부품. 종류별 서브패키지 하나, 그 안에 레지스트리 하나, 파일 하나가 백엔드 하나 — `vad/`(`detectors`) · `transcription/`(`transcribers`) · `translation/`(`translators`) · `correction/`(`correctors`). 설정 파일이 이름으로 고른다 |
 | `pipeline/` | 부품을 엮는 쪽. `Pipeline` 과 `cascade`, 그리고 설정을 읽어 조립하는 `validate`·`build`·`describe`. **파이프라인은 부품이 아니다** — `Component` 를 상속하지 않고, 그래서 시간도 안 재진다 |
 | `utils/metrics/` | 음성 번역 공용 채점 — WER·CER·BLEU·FSL·LAAL·커밋 사유·라우팅. 입구는 `score_item`·`score_run` 둘. STiTy `final` 필드를 그대로 읽고(`Utterance`/`Segment`), 데이터가 못 받치는 지표는 **값이 빠지고 `unavailable` 에 이유가 남는다** — `null` 도 예외도 없다. 실행·설정·보고서 형식은 모른다 |

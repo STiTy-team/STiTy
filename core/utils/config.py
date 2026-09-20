@@ -94,6 +94,11 @@ class ConfigBody(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def from_wire(cls, raw: Any) -> Any:
+        if isinstance(raw, cls):
+            # Already parsed, by whoever owns the file it came from. Re-expanding a
+            # stored body would feed `expand` its own output, and the error would
+            # name a path in the composed object rather than in the file.
+            return raw
         raw = cls.normalize(raw)
         if isinstance(raw, dict) and cls.rewrites_keys():
             # A body that rewrites its keys has to be checked before it does so --

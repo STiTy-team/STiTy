@@ -19,7 +19,7 @@ class Pipeline:
         if options:
             takes = sorted(r.kind for r in cls.REQUIRED + cls.OPTIONAL)
             raise ConfigError(
-                f"stity.pipeline: {cls.NAME!r} does not take {sorted(options)} "
+                f"pipeline: {cls.NAME!r} does not take {sorted(options)} "
                 f"(its parts are {takes}; it has no other settings)"
             )
         return {}
@@ -41,7 +41,7 @@ class Pipeline:
     def start(self, *, src_lang: str | None, target_lang: str) -> None:
         detector = self.part("vad")
         for part in self.parts.values():
-            part.start(language=src_lang,
+            part.start(language=src_lang, target_lang=target_lang,
                        vad=None if part is detector else detector)
 
     async def listen(self, audio: bytes) -> list:

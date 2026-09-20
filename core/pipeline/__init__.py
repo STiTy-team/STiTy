@@ -34,7 +34,7 @@ def validate(cfg_stity) -> dict:
         try:
             name, part_options = as_component(raw)
         except ValueError as e:
-            raise ConfigError(f"stity.pipeline.{registry.kind}: {e}") from None
+            raise ConfigError(f"pipeline.{registry.kind}: {e}") from None
         parts[registry.kind] = {
             "name": name,
             "kwargs": registry.get(name).validate(part_options, kind=registry.kind),
