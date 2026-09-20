@@ -193,6 +193,16 @@ core/meaning_segmentator/experiment/artifacts/covost2/**
 !core/meaning_segmentator/experiment/artifacts/covost2/**/
 !core/meaning_segmentator/experiment/artifacts/covost2/**/*.md
 
+# en2x/covost2 의 `bleu/<타깃>.json` 도 같은 이유로 담지 않는다 — 한 개가 45~52MB 이고
+# 부피는 전부 `hyps` 와 `comet_seg` 다. 표·그림에 쓰는 조건별 값만 추린 `summary.json`
+# (수십 KB) 을 대신 추적한다: tools/covost2_chain/summarize_bleu.py 가 만든다.
+# 이 규칙 전에 들어온 런들(full, full_judge13*)은 이미 추적 중이라 그대로 둔다.
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu/zh.json
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu/de.json
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu/ja.json
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_t6/
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_grid4/
+
 # DailyTalk 창 SEG 학습 산출물 (체크포인트 대용량)
 Qwen3-ASR/finetuning/finetuning-out-en-win/
 # AST 샘플 오디오 (저장소는 wav 를 추적하지 않는다)
