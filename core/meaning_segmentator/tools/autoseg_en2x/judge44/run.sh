@@ -29,11 +29,16 @@
 #   3벌 대 3벌이면 Δ 의 sd 가 0.0033 이라 하한 > 0 은 Δ +0.0065 를 요구한다. 한 편집의 진짜 효과는
 #   +0.003~0.01 이므로 그 문턱은 원리적으로 못 넘고, 실제로 judge08 이후 채택이 0 이다 — 앞 런의
 #   최선 후보가 1차 +0.0049 에서 2차 +0.0003 으로 떨어져 기각됐다.
-#   대신 두 관문을 **서로 독립된 추출**로 두고 둘 다 평균으로 본다: 1차는 평균 > 0.003(닿을 수 없는
-#   후보에 2차 채점을 쓰지 않는다), 2차는 새 3벌에서 평균 > 0 + 구간 퇴행 가드 0.01.
-#   효과가 0 인 후보가 둘 다 통과할 확률은 1차 18% × 2차 50% ≈ 9% 다. 후보 여섯 중 최선을 고르는
-#   구조라 이터당 한 번쯤은 잡음이 올라온다 — 그것을 **탐색 스텝으로 쓰고 판정을 런 끝 test 560
-#   3벌 비교 한 번으로 옮긴다.** 누적 Δ 는 위로 부풀지만 그 편향은 최종 비교에 안 들어간다.
+#   대신 두 관문을 **서로 독립된 추출**로 두고 둘 다 평균 > 0 으로 본다. 2차는 새 3벌에 구간 퇴행
+#   가드 0.01 을 더한다.
+#   1차에 있던 하한 0.003 도 뺐다. 2차 문턱이 0 이 된 뒤에는 그 값이 (0, 0.003) 구간 후보를 2차에
+#   못 가게 막는데, 그 구간도 원리적으로는 통과할 수 있다. 실측으로 iter 2 는 최고 후보가 +0.0013
+#   이어서 **2차가 한 번도 안 돌고 이터가 끝났다** — 한 벌 sd 가 0.0035 라 그 값은 "효과 없음" 이
+#   아니라 "한 벌로는 모름" 이다. 판정을 1차 한 벌에 맡기지 않는다. 대신 2차 채점이 이터당 서넛으로
+#   늘어 $10~14 가 더 든다.
+#   효과가 0 인 후보가 둘 다 통과할 확률은 1차 50% × 2차 50% = 25% 다. 후보 여섯 중 최선을 고르는
+#   구조라 이터마다 잡음이 올라온다 — 그것을 **탐색 스텝으로 쓰고 판정을 런 끝 test 560 3벌 비교
+#   한 번으로 옮긴다.** 누적 Δ 는 위로 부풀지만 그 편향은 최종 비교에 안 들어간다.
 #   이 런이 답할 두 번째 질문이 그래서 "이터가 쌓이면 홀드아웃이 오르는가" 다. 하한 문턱에서는
 #   채택이 아예 없어서 그 질문을 한 번도 못 물어봤다.
 #
@@ -50,6 +55,21 @@
 # $12 더 붙는다. 예산 가드는 런을 죽이므로 최악을 덮는 값으로 잡는다. 끊기면 `--resume` 이 이어받고
 # 이미 쓴 돈을 차감한다.
 #
+# 이터 4·5 를 뒤에 붙였다 (2026-09-20 16:57)
+#   세 이터가 dev 에서 +0.0122 를 쌓고 test 560 3벌에서 **+0.0123 [+0.0055, +0.0193]** 로 유지됐다.
+#   쌓인 양이 홀드아웃에 거의 그대로 넘어왔으므로 같은 구성으로 두 이터를 더 본다. 다만 신호가
+#   이터마다 줄고 있다(최고 후보 +0.0111 → +0.0043 → +0.0031, 채택 2차 +0.0093 → +0.0041 → +0.0007).
+#   `prune` 은 빼고 간다 — 대상이 소진됐다. 지울 수 있는 것이 `[Order Principles]` 세 줄뿐인데
+#   둘은 iter 1·2 가 실측으로 채택한 줄이라 PE 가 (옳게) 건드리지 않고, 남은 O3 는 iter 2 에서 이미
+#   재봤다(−0.0058, 기각). 그래서 iter 3 에서 PE 는 금지된 O3 만 고집하다 빈 편집을 냈다. 코드를 더
+#   만지면 "PE 가 지우기 싫어하는 줄을 지우게 하는" 장치가 되는데 그것은 잡음을 사는 것이다.
+#   후보는 이터당 다섯이다(severity×order, replace×order, replace×check, fallback×order,
+#   narrow_rule×check).
+#
+#   **iter 4 가 기각되면 iter 5 는 돌리지 않고 거기서 멈춘다** — 프롬프트가 안 바뀌면 위 test 숫자가
+#   그대로 유효해서 최종 비교를 다시 살 필요가 없다. 그래서 `--iterations 4` 로 두 번 돌리지 않고
+#   5 로 한 번 띄운 뒤 iter 4 판정에서 끊는다. 최종 비교는 어느 쪽이든 한 번만 돈다.
+#
 #   tmux new-session -d -s judge44 -c <저장소> "bash core/meaning_segmentator/tools/autoseg_en2x/judge44/run.sh"
 set -u
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
@@ -62,15 +82,15 @@ LOG=core/meaning_segmentator/experiment/artifacts/en2x/logs/judge44.log
 .venv-autoseg/bin/python -u -m core.meaning_segmentator.autoseg.loop_judge \
     --from-run en2x/en-multi/run30 --run-id en2x/en-multi/judge44 \
     --prompt "$V0" --draw-tag judge42 --resume \
-    --candidate-roles severity,replace,fallback,narrow_rule,prune --candidates-cross \
+    --candidate-roles severity,replace,fallback,narrow_rule --candidates-cross \
     --candidates-cap 6 --findings-max 2 --full-score-max 6 \
     --pe-verbatim --critic-both-kinds --screen-n 0 \
     --baseline-draws 3 --confirm-draws 3 --final-draws 3 \
-    --gate-rule mean --gate-min 0.003 --adopt-rule mean --guard-bin 0.01 --no-near-miss \
+    --gate-rule mean --gate-min 0.0 --adopt-rule mean --guard-bin 0.01 --no-near-miss \
     --labeled-examples --growth-per-iter 0.15 --n-cases 100 --inversions-max 15 \
     --case-exclude bin --case-alloc loss \
-    --min-gap 1 --min-chunk 2 --max-k 99 --k-samples 1 --iterations 3 \
+    --min-gap 1 --min-chunk 2 --max-k 99 --k-samples 1 --iterations "${ITER:-5}" \
     --workers 720 --score-workers 8 \
-    --provider openai --model gpt-5-mini --budget "${BUDGET:-100}" >> "$LOG" 2>&1
+    --provider openai --model gpt-5-mini --budget "${BUDGET:-240}" >> "$LOG" 2>&1
 rc=$?
 echo "== $(date '+%F %T') judge44 exit=$rc" >> "$LOG"
