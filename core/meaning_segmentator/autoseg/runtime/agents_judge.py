@@ -288,8 +288,7 @@ ENGINEER_SYSTEM = """You revise the system prompt of a scoring model, one iterat
 numbered units of it. You do not rewrite the prompt — code applies your edits.
 
 What you can edit:
-- "units" lists every unit of [Scoring Rules] (ids S1, S2, ...; one line each), of
-  [Core Principles] (ids C1, C2, ...; one line each), of
+- "units" lists every unit of [Core Principles] (ids C1, C2, ...; one line each), of
   [Order Principles] (ids O1, O2, ...; one line each) and of
   [Examples] (ids E1, E2, ...; one Input/Output pair each), with its exact text, its length
   ("chars") and its evidence:
@@ -298,12 +297,9 @@ What you can edit:
     "near_miss_delta" (only on units from a "base" revision) the measured mean gain of that
                      revision, "near_miss_ci_lo" its lower bound (touched zero, so not adopted)
                      (null for v0 units — nothing was measured about them one by one)
-- The S units of [Scoring Rules] are editable by ONE role only, "procedure", and only the ones
-  whose text begins with "- ": those state the PROCEDURE for turning the measurement into numbers.
-  The ones that do not begin with "- " say what was MEASURED (cohesion, contra, target) and are
-  never editable by any role — the prompt has to keep saying what the measurement actually is.
-  Under any other role, leave every S unit alone; code drops an edit that touches one.
-- Every other section — [Role], [Output Rules] — stays as it is.
+- Every other section — [Role], [Scoring Rules], [Output Rules] — stays as it is.
+  [Scoring Rules] says what was MEASURED (cohesion, contra, target) and the procedure for turning
+  that into numbers; neither is yours to change, and code drops an edit that touches either.
 
 Hard constraints:
 1. The two principle sections are read at different moments by the scoring procedure and are not
@@ -400,27 +396,6 @@ Hard constraints:
    adding a line has lost every time it was measured, while deleting a unit that the measurement
    does not depend on came out at zero — if the cost is length rather than content, a trade starts
    from zero instead of below it.
-   "procedure": REWRITE ONE LINE of [Scoring Rules] — the section that says how the numbers are
-   BUILT. Exactly one edit, a "replace" on an "S" unit. You get no finding for this role: read the
-   critique's diagnosis and the measured cases, and ask what the PROCEDURE is failing to do, not
-   which configuration it mishandles.
-   Only the lines that begin with "- " are yours. The three lines above them define what was
-   MEASURED (cohesion, contra, target = cohesion x (1 - contra)); the prompt has to keep saying what
-   the measurement actually is, so an edit there is dropped. Your replacement must itself be a
-   single line beginning with "- ", and may grow by a few sentences at most.
-   Why this role exists: every other role edits a JUDGEMENT — one more condition, one better
-   comparison, one unit traded for another. Those have been measured many times and the best of them
-   came out at zero. The procedure that turns judgements into numbers has been measured twice, and
-   BOTH times it moved the score more than any judgement edit ever did: stating a banding step and
-   a repeated-selection step, instead of only requiring that the result be a ranking, gained about
-   +0.008 on held-out sentences, and the gain was concentrated in the short latency budgets that
-   read deep into the order. So the leverage is here, and nothing has looked at it since.
-   What to look for: the procedure has to produce a FULL order, one distinct number per position,
-   including the worst positions. Where it lets the model stop deciding — a step it can satisfy
-   without comparing, a tier it can dump many positions into, an instruction to compute rather than
-   to compare, a place where the deep part of the order is left to chance — that is what to fix.
-   Check the "rank_depth" numbers you were given: they say at which depth the order stops carrying
-   information. A procedure that decides only the top few positions will show exactly that.
    "fallback": ADD a rule that ORDERS the positions every other principle rejects. Exactly one
    edit, an "insert_after" into [Order Principles] — that section holds the lines that weigh two
    positions against each other, and a rule of this shape is one of them; an edit of this role
@@ -514,10 +489,12 @@ def scoring_rules(targets: list[str]) -> str:
     차이가 test 560 에서 3벌씩 재어 +0.0084 였고, Writer 의 지시문은 선언형만 안다. v0 를
     생성하는 런에서도 이 절을 덮어써 골격을 고정한다 — `[Output Rules]` 와 같은 방식이다.
 
-    루프가 닿는 길은 **`procedure` 역할 하나뿐이다.** 그 역할은 `- ` 로 시작하는 절차 줄 하나를
-    다시 쓰고(`replace`), 위의 정의 세 줄은 못 고친다 — 정의가 바뀌면 프롬프트가 측정과 다른 말을
-    하게 되고 그때 오르는 점수는 판단이 나아진 것이 아니다. Writer 가 프롬프트를 통째로 다시 쓰는
-    길(`rewrite`)에서는 `FROZEN` 이 이 절을 원본으로 되돌린다.
+    **루프는 이 절을 고치지 않는다.** `UNIT_TAGS` 에 없어 어떤 편집도 닿지 못하고, Writer 가
+    프롬프트를 통째로 다시 쓰는 길(`rewrite`)에서는 `FROZEN` 이 원본으로 되돌린다. judge34 에서
+    `procedure` 역할로 열어 실측했는데 이득이 없었다 — 절차 줄을 고친 두 후보가 −0.0028 / −0.0037
+    이다. 같은 발견을 판단 줄에 넣은 것(−0.0080 / −0.0157)보다는 나아서 **자리에 뜻은 있지만**
+    그것만으로는 부호가 안 바뀐다. 사람이 바꿀 때만 바뀌고, 바꾸면 그 자체를 `--score-only` 로
+    다시 재야 한다.
     """
     return "[Scoring Rules]\n" + SCORING_RULES_BODY.replace("__TARGETS__", ", ".join(targets))
 
@@ -789,11 +766,11 @@ def only_too_long(errs: list[str]) -> bool:
 # judge03 에서 초과량을 알려 되돌려도 다섯 번 중 네 번이 상한을 못 맞췄다(두 번은 더 길어졌다).
 # 1만 자를 통째로 다시 쓰는 한 길이는 모델 손을 떠난다. 편집만 받고 적용과 길이는 코드가 한다.
 
-# `[Scoring Rules]` 의 `S` 는 **`procedure` 역할만** 건드린다 — `enforce_kind` 가 발견을 구현하는
-# 역할의 S 편집을 막고, 그 절의 첫 세 줄(cohesion·contra·target 정의)은 `procedure` 가 다시 막는다.
-# 여기 없는 섹션은 `apply_edits` 가 재조립하지 않으므로 어떤 편집도 닿지 못한다.
-UNIT_TAGS = {"[Scoring Rules]": "S", "[Core Principles]": "C", "[Order Principles]": "O",
-             "[Examples]": "E"}
+# **`[Scoring Rules]` 는 여기 없다.** 여기 없는 섹션은 `apply_edits` 가 재조립하지 않으므로 어떤
+# 편집도 닿지 못한다 — 그게 이 절을 지키는 방법이다. judge34 에서 `procedure` 역할로 열어 실측했고
+# 이득이 없었다(−0.0028 / −0.0037). 같은 발견을 판단 줄에 넣은 것(−0.0080 / −0.0157)보다는 나았지만
+# 둘 다 음수다. 사람이 고치고 루프는 그 위에서 돈다.
+UNIT_TAGS = {"[Core Principles]": "C", "[Order Principles]": "O", "[Examples]": "E"}
 # 단위 id 의 머리글자 집합 — 정규식 문자 클래스로 쓴다. 칸을 늘릴 때 여기 하드코딩된 글자를
 # 놓치면 새 칸의 `_end` 앵커가 "없는 id" 로 반려된다.
 TAG_CLASS = "".join(UNIT_TAGS.values())
@@ -941,13 +918,12 @@ def apply_edits(prompt: str, edits) -> tuple[str | None, list[dict], list[dict]]
 
 
 ROLES = ("free", "examples_only", "single_small", "narrow_rule", "prune", "rewrite",
-         "fallback", "induce", "replace", "procedure")
-# `procedure` 가 한 줄을 다시 쓸 때 허용하는 순증감 폭. 절차문 한 줄이 1,200자쯤이라 `REPLACE_SLACK`
-# (80자) 으로는 어순만 바꿔도 걸린다. 절차를 **바꾸라는** 역할이므로 문장을 덧붙일 여지를 준다.
-PROCEDURE_SLACK = 300
-# 역할별로 열어 주는 동결 섹션. `frozen_intact` 가 이걸 받아 적용만 한다 — 어느 역할에 무엇이
-# 열려 있는지를 두 군데서 정하면 한쪽을 고쳐도 다른 쪽이 죽인다(judge34 iter 1 이 그랬다).
-ROLE_UNFREEZES = {"procedure": ("[Scoring Rules]",)}
+         "fallback", "induce", "replace")
+# 역할별로 열어 주는 동결 섹션. 지금은 **비어 있다** — `[Output Rules]` 와 `[Scoring Rules]` 는
+# 어떤 역할에도 열리지 않는다. 호출부가 `unfreezes(role)` 를 그대로 넘기므로, 다시 열어야 할 때
+# 여기 한 줄만 고치면 된다. **어느 역할에 무엇이 열려 있는지는 한 군데서만 정한다** — 두 군데서
+# 정했다가 `enforce_role` 을 통과한 편집이 `frozen_intact` 에서 다시 죽는 일을 겪었다.
+ROLE_UNFREEZES: dict[str, tuple[str, ...]] = {}
 
 
 def unfreezes(role: str) -> tuple[str, ...]:
@@ -1143,54 +1119,6 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
                                   "(prefer / rather than / over / last resort 류)"})
             keep = []
         return keep, bad
-    if role == "procedure":
-        # **점수를 만드는 절차를 고치게 하는 유일한 역할이다.** 지금까지 실측된 이득은 여기서만
-        # 나왔다 — 원칙 목록에 문장을 더한 스물세 번은 −0.011~+0.001 인데, 이 절을 선언형("결과가
-        # 순위여야 한다")에서 절차형(다섯 등급으로 가른 뒤 등급 안에서 하나씩 뽑는다)으로 바꾼 것은
-        # 홀드아웃 560문장에서 +0.0084 였다. 그런데 루프는 이 절을 건드릴 수 없었으므로, 이득이
-        # 있는 자리를 빼고 없는 자리만 뒤지고 있었다.
-        #
-        # 제약이 좁은 이유: 이 절은 **측정의 정의**(cohesion·contra·target)와 **그것으로 순위를
-        # 만드는 절차**가 한 섹션에 같이 있다. 정의가 바뀌면 프롬프트가 측정과 다른 말을 하게 되고,
-        # 그때 오르는 점수는 판단이 나아진 것이 아니다. 정의 세 줄은 `- ` 로 시작하지 않으므로
-        # 그것으로 가린다(코드가 주입하는 절이라 모양이 고정이다). 줄을 늘리거나 지우는 것도 막는다
-        # — 줄 수가 변하면 S 번호가 밀려 다음 이터의 `S1`~`S3` 이 정의가 아니게 된다.
-        bad = [{"edit": n, "id": e.get("id"), "reason": "procedure 인데 둘째 이후 편집"}
-               for n, e in enumerate(edits) if n > 0]
-        keep = edits[:1]
-        e = keep[0] if keep else None
-        uid = str((e or {}).get("id") or "")
-        text = str((e or {}).get("text") or "")
-        was = str((e or {}).get("_was") or "")
-        if keep and e.get("op") != "replace":
-            bad.append({"edit": 0, "id": uid,
-                        "reason": f"procedure 인데 {e.get('op')} — replace 만 된다. 절차는 줄을 "
-                                  "늘리거나 지우는 게 아니라 다시 쓰는 것이다"})
-            keep = []
-        elif keep and not uid.startswith("S"):
-            bad.append({"edit": 0, "id": uid,
-                        "reason": "procedure 인데 [Scoring Rules] 단위가 아니다 — S 로 시작하는 id 여야 한다"})
-            keep = []
-        elif keep and not was.startswith("- "):
-            bad.append({"edit": 0, "id": uid,
-                        "reason": "procedure 인데 측정의 정의를 고친다 (cohesion·contra·target) — "
-                                  "고칠 수 있는 것은 '- ' 로 시작하는 절차 줄이다"})
-            keep = []
-        elif keep and not text.startswith("- "):
-            bad.append({"edit": 0, "id": uid,
-                        "reason": "procedure 인데 새 문면이 '- ' 로 시작하지 않는다 — 절차 줄의 모양을 지킬 것"})
-            keep = []
-        elif keep and "\n" in text.strip():
-            bad.append({"edit": 0, "id": uid,
-                        "reason": "procedure 인데 새 문면이 여러 줄이다 — 한 줄이 한 단위이고, 줄 수가 "
-                                  "변하면 다음 이터의 S 번호가 밀린다"})
-            keep = []
-        elif keep and len(text) - len(was) > PROCEDURE_SLACK:
-            bad.append({"edit": 0, "id": uid,
-                        "reason": f"procedure 인데 {len(text) - len(was)}자 늘었다 — "
-                                  f"{PROCEDURE_SLACK}자까지만 된다"})
-            keep = []
-        return keep, bad
     if role == "replace":
         # **길이 중립 편집.** 원칙 목록에 문장을 더한 스물세 번 가운데 스물두 번이 음수였고
         # (−0.006 ~ −0.011), 무엇을 쓰든 크기가 비슷했다. 반면 judge31 에서 C4 를 지운 편집은
@@ -1278,11 +1206,6 @@ def enforce_kind(edits, kind: str | None, has_order_section: bool = True) -> tup
     for n, e in enumerate(edits):
         uid = str(e.get("id") or "")
         text = str(e.get("text") or "")
-        if uid.startswith("S"):
-            bad.append({"edit": n, "id": uid,
-                        "reason": "발견을 구현하는 편집인데 [Scoring Rules] 를 고친다 — 그 절은 "
-                                  "점수를 만드는 절차이고 `procedure` 역할만 손댄다"})
-            continue
         if kind == "order" and has_order_section and e.get("op") != "delete" \
                 and not uid.startswith("O"):
             bad.append({"edit": n, "id": uid,

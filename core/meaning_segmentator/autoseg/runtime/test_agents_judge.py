@@ -107,7 +107,7 @@ class Size(unittest.TestCase):
 class Edits(unittest.TestCase):
     def test_units(self):
         u = {x["id"]: x for x in aj.edit_units(BASE)}
-        self.assertEqual(sorted(u), ["C1", "C2", "E1", "S1"])
+        self.assertEqual(sorted(u), ["C1", "C2", "E1"])
         self.assertEqual(u["C1"]["text"], "- (1) ask this")
         self.assertEqual(u["E1"]["text"], "Input: a <SEG:?> b\nOutput: a <SEG:50> b")
         self.assertEqual(u["C2"]["chars"], len("- (2) ask that"))
@@ -120,9 +120,8 @@ class Edits(unittest.TestCase):
             "changelog": ["seam"]}, BASE, budget=10_000)
         self.assertIsNotNone(pr, note)
         self.assertNotIn("ask this", pr)
-        self.assertEqual([x["id"] for x in aj.edit_units(pr)], ["S1", "C1", "E1", "E2"])
-        self.assertEqual([u["text"] for u in aj.edit_units(pr)
-                          if u["id"][0] == "C"], ["- (2) check the seam"])
+        self.assertEqual([x["id"] for x in aj.edit_units(pr)], ["C1", "E1", "E2"])
+        self.assertEqual(aj.edit_units(pr)[0]["text"], "- (2) check the seam")
         for h in ("[Role]", "[Scoring Rules]", "[Output Rules]"):
             self.assertEqual(aj.section_of(pr, h), aj.section_of(BASE, h))
         self.assertEqual(deltas[1]["chars_change"], -(len("- (1) ask this") + 1))
@@ -157,7 +156,7 @@ class Edits(unittest.TestCase):
         pr, _n, _d, _de, _sk = aj.parse_edits(
             {"edits": [{"op": "insert_after", "id": "E_end",
                         "text": "Input: c <SEG:?> d\nOutput: c <SEG:9> d"}]}, BASE, 10_000)
-        self.assertEqual([u["id"] for u in aj.edit_units(pr)], ["S1", "C1", "C2", "E1", "E2"])
+        self.assertEqual([u["id"] for u in aj.edit_units(pr)], ["C1", "C2", "E1", "E2"])
 
     def test_id_past_last(self):
         pr, errs, _d, _de, skipped = aj.parse_edits(
@@ -215,7 +214,7 @@ class Provenance(unittest.TestCase):
 
     def test_init_v0(self):
         prov = aj.init_provenance(BASE)
-        self.assertEqual(len(prov), 4)      # S1 + C1 + C2 + E1
+        self.assertEqual(len(prov), 3)
         self.assertTrue(all(r["origin"] == "v0" and r["adopted_delta"] is None
                             for r in prov.values()))
 
@@ -291,11 +290,10 @@ class MeasurementInOnePlace(unittest.TestCase):
     def test_scoring_rules_is_the_place(self):
         flat = " ".join(aj.writer_system(True, ["German"]).split())
         self.assertIn("ONLY place that states how the target was measured", flat)
-        # PE 에게도 측정이 어디에 적혀 있는지, 그리고 그 줄은 누구도 못 고친다는 것을 말한다.
-        # `procedure` 역할이 이 절을 열었으므로 "통째로 고정" 이 아니라 **정의 줄만** 고정이다.
+        # PE 에게도 측정이 어디에 적혀 있는지, 그리고 그 절은 못 고친다는 것을 말한다.
         pe = " ".join(aj.engineer_system(100, 100).split())
-        self.assertIn("say what was MEASURED (cohesion, contra, target)", pe)
-        self.assertIn("never editable by any role", pe)
+        self.assertIn("[Scoring Rules] says what was MEASURED (cohesion, contra, target)", pe)
+        self.assertIn("neither is yours to change", pe)
 
 
 if __name__ == "__main__":
@@ -378,7 +376,7 @@ class RewriteShorten(unittest.TestCase):
         draft = BASE.replace("- (2) ask that", "- (2) ask that " + "y" * 40)
         findings = [{"diagnosis": "d", "evidence": "e", "edit": {}}]
         u = aj.shorten_user(draft, len(BASE), findings)
-        self.assertEqual([x["id"] for x in u["units"]], ["S1", "C1", "C2", "E1"])
+        self.assertEqual([x["id"] for x in u["units"]], ["C1", "C2", "E1"])
         self.assertTrue(all(x["origin"] == "rewrite" for x in u["units"]))
         self.assertIn("[Role]", u["fixed_sections"])
         self.assertEqual(u["findings"], findings)

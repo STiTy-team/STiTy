@@ -948,123 +948,62 @@ class KindEnforced(unittest.TestCase):
         self.assertNotIn('"insert_after" into [Core Principles]', spec)
 
 
-class ProcedureRole(unittest.TestCase):
-    """`procedure` 는 **점수를 만드는 절차**를 고치는 역할이다. 지금까지 실측된 이득이 그 절에서만
-    나왔는데(홀드아웃 560문장 +0.0084) 루프는 그 절을 건드릴 수 없었다 — 이득이 있는 자리를 빼고
-    없는 자리만 뒤지고 있었다는 뜻이다. 제약이 좁은 이유는 그 절이 **측정의 정의**와 **절차**를
-    한 섹션에 같이 담고 있어서다. 정의가 바뀌면 프롬프트가 측정과 다른 말을 하고, 그때 오르는
-    점수는 판단이 나아진 것이 아니다."""
+class ScoringRulesFrozen(unittest.TestCase):
+    """`[Scoring Rules]` 는 **루프가 건드리지 않는다.** judge34 에서 `procedure` 역할로 열어 실측했고
+    이득이 없었다(절차 줄 −0.0028 / −0.0037). 같은 발견을 판단 줄에 넣은 것(−0.0080 / −0.0157)보다는
+    나아서 자리에 뜻은 있지만 부호가 안 바뀐다. 그래서 다시 닫았다.
 
-    PROC = "- Work in bands, then order inside each band by repeated selection."
+    닫는 길이 둘이고 **둘 다 있어야 한다** — `UNIT_TAGS` 에 없어 편집이 단위를 못 만들고,
+    `FROZEN` 이 통째 재작성 경로를 되돌린다. 하나만 있으면 다른 쪽으로 샌다."""
 
-    def edit(self, uid, text, was, op="replace"):
-        return [{"op": op, "id": uid, "text": text, "_was": was}]
+    BASE = None
 
-    def test_rewrites_a_procedure_line(self):
+    def base(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        keep, bad = aj.enforce_role(
-            self.edit("S7", self.PROC + " Compare the pair on the target itself.", self.PROC),
-            "procedure")
-        self.assertEqual((len(keep), bad), (1, []))
-
-    def test_refuses_the_measurement_definitions(self):
-        """S1~S3 은 무엇을 측정했는지를 말하는 줄이다 — `- ` 로 시작하지 않는 것으로 가린다."""
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        keep, bad = aj.enforce_role(
-            self.edit("S3", "- target = cohesion", "target = cohesion x (1 - contra)"),
-            "procedure")
-        self.assertEqual(keep, [])
-        self.assertIn("측정의 정의", bad[0]["reason"])
-
-    def test_only_replace(self):
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        for op in ("insert_after", "delete"):
-            keep, bad = aj.enforce_role(self.edit("S7", "- x", self.PROC, op=op), "procedure")
-            self.assertEqual(keep, [], op)
-            self.assertIn("replace 만 된다", bad[0]["reason"])
-
-    def test_refuses_other_sections(self):
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        keep, bad = aj.enforce_role(self.edit("C1", "- x", "- a"), "procedure")
-        self.assertEqual(keep, [])
-        self.assertIn("[Scoring Rules] 단위가 아니다", bad[0]["reason"])
-
-    def test_refuses_extra_lines(self):
-        """줄 수가 변하면 다음 이터의 S 번호가 밀려 S1~S3 이 정의가 아니게 된다."""
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        keep, bad = aj.enforce_role(
-            self.edit("S7", "- first line\n- second line", self.PROC), "procedure")
-        self.assertEqual(keep, [])
-        self.assertIn("여러 줄", bad[0]["reason"])
-
-    def test_caps_growth(self):
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        big = self.PROC + "x" * (aj.PROCEDURE_SLACK + 1)
-        keep, bad = aj.enforce_role(self.edit("S7", big, self.PROC), "procedure")
-        self.assertEqual(keep, [])
-        self.assertIn("늘었다", bad[0]["reason"])
-
-    def test_finding_roles_may_not_touch_the_procedure(self):
-        """발견을 구현하는 역할이 절차를 고치면 무엇이 점수를 움직였는지 갈라지지 않는다."""
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        for kind in ("check", "order"):
-            keep, bad = aj.enforce_kind(
-                [{"op": "replace", "id": "S7", "text": "- x"}], kind)
-            self.assertEqual(keep, [], kind)
-            self.assertIn("[Scoring Rules]", bad[0]["reason"])
-
-    def test_takes_no_finding_and_runs_once_per_iter(self):
-        import core.meaning_segmentator.autoseg.loop_judge as lj
-        self.assertIn("procedure", lj.UNPAIRED_ROLES)
-        plan = lj.candidate_plan(["fallback", "single_small", "replace", "procedure"],
-                                 2, True, 4, 8, ["check", "order"])
-        self.assertEqual([r for r, _ in plan].count("procedure"), 1)
-
-    def test_survives_the_whole_edit_path(self):
-        """`enforce_role` 을 통과한 편집이 **뒤에서 다시 죽지 않는지.**
-
-        이 버그가 두 번 물었다. 한 번은 `enforce_kind` 가 `fallback` 의 칸을 지시문과 다르게
-        요구해서, 한 번은 `frozen_intact` 가 역할과 무관하게 `[Scoring Rules]` 를 지켜서
-        ("동결 섹션이 바뀌었다: [Scoring Rules]"). 둘 다 후보가 조용히 사라지고 로그만 보면
-        PE 탓처럼 보인다. **역할 검사 하나만 통과시키는 테스트로는 못 잡는다** — 편집이 실제로
-        프롬프트가 되는 데까지 가 봐야 한다."""
-        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
+        return ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
                 "[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
                 "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
-        s7 = {u["id"]: u["text"] for u in aj.edit_units(base)}["S7"]
-        edit = [{"op": "replace", "id": "S7", "text": s7 + " Tie: take the later.", "_was": s7}]
 
-        keep, bad = aj.enforce_role([dict(e) for e in edit], "procedure")
-        self.assertEqual((len(keep), bad), (1, []))
-        cand, note, _d, deltas, _sk = aj.parse_edits(
-            {"edits": [dict(e) for e in edit]}, base, 20_000, aj.unfreezes("procedure"))
-        self.assertIsNotNone(cand, note)                     # 여기서 죽으면 후보가 사라진다
-        self.assertIn("Tie: take the later.", cand)
-        self.assertEqual(len(aj.edit_units(cand)), len(aj.edit_units(base)))
-        self.assertEqual(aj.check_skeleton(cand, base=base), [])
-
-    def test_other_roles_still_cannot_reach_it(self):
-        """열어 준 것은 `procedure` 한 역할뿐이다 — 기본값으로는 여전히 막힌다."""
+    def test_no_editable_unit_in_it(self):
+        """단위가 없으면 PE 가 가리킬 id 자체가 없다 — 이것이 첫째 자물쇠다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
-                "[Core Principles]\n- a\n\n[Order Principles]\n- prefer A over B\n\n"
-                "[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
-        s7 = {u["id"]: u["text"] for u in aj.edit_units(base)}["S7"]
+        ids = [u["id"] for u in aj.edit_units(self.base())]
+        self.assertEqual([i for i in ids if i.startswith("S")], [])
+        self.assertNotIn("[Scoring Rules]", aj.UNIT_TAGS)
+
+    def test_edit_naming_an_s_id_is_dropped(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        base = self.base()
         cand, note, *_ = aj.parse_edits(
-            {"edits": [{"op": "replace", "id": "S7", "text": s7 + " x", "_was": s7}]},
+            {"edits": [{"op": "replace", "id": "S7", "text": "- rewritten procedure"}]},
             base, 20_000)
         self.assertIsNone(cand)
-        self.assertTrue(any("[Scoring Rules]" in n for n in note), note)
-        self.assertEqual(aj.unfreezes("replace"), ())
-        self.assertEqual(aj.unfreezes("procedure"), ("[Scoring Rules]",))
 
-    def test_instruction_points_at_the_measured_lever(self):
+    def test_whole_prompt_path_restores_it(self):
+        """둘째 자물쇠 — Writer 가 통째로 다시 써도 `FROZEN` 이 되돌린다."""
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
-        spec = aj.ENGINEER_SYSTEM[aj.ENGINEER_SYSTEM.index('"procedure"'):]
-        spec = spec[:spec.index('"fallback"')]
-        self.assertIn('"replace" on an "S" unit', spec)
-        self.assertIn("cohesion, contra", spec)          # 못 고치는 줄이 무엇인지 말해 준다
+        base = self.base()
+        tampered = base.replace("Work in bands", "Just pick the best one")
+        self.assertIn("[Scoring Rules]", aj.frozen_intact(base, tampered))
+        cand, note = aj.parse_prompt({"prompt": tampered}, base, 20_000)
+        self.assertIsNone(cand)
+        self.assertTrue(any("[Scoring Rules]" in n for n in note), note)
+
+    def test_nothing_is_unfrozen_for_any_role(self):
+        """열려 있는 역할이 하나도 없다. 다시 열려면 `ROLE_UNFREEZES` 한 군데만 고친다 —
+        어느 역할에 무엇이 열려 있는지를 두 군데에서 정했다가 `enforce_role` 을 통과한 편집이
+        `frozen_intact` 에서 다시 죽는 일을 겪었다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        self.assertEqual(aj.ROLE_UNFREEZES, {})
+        for r in aj.ROLES:
+            self.assertEqual(aj.unfreezes(r), (), r)
+
+    def test_procedure_role_is_gone(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        import core.meaning_segmentator.autoseg.loop_judge as lj
+        self.assertNotIn("procedure", aj.ROLES)
+        self.assertNotIn("procedure", lj.UNPAIRED_ROLES)
+        self.assertNotIn('"procedure"', aj.ENGINEER_SYSTEM)
 
 
 class FixedSkeleton(unittest.TestCase):
@@ -1091,15 +1030,8 @@ class FixedSkeleton(unittest.TestCase):
         self.assertIn("five bands", fixed)
         self.assertNotIn("spread distinct integers\n", fixed)
         self.assertEqual(aj.check_skeleton(fixed, base=fixed), [])
-        # 판단 두 칸과 예시는 그대로 남는다.
-        self.assertEqual([u["id"] for u in aj.edit_units(fixed) if u["id"][0] != "S"],
-                         ["C1", "O1", "E1"])
-        # 주입한 골격은 정의 세 줄(S1~S3)과 절차 네 줄(S4~S7)로 쪼개진다 — `procedure` 역할이
-        # 고칠 수 있는 것은 뒤의 넷이고, 앞의 셋은 무엇을 측정했는지를 말하는 줄이다.
-        srule = [u for u in aj.edit_units(fixed) if u["id"][0] == "S"]
-        self.assertEqual(len(srule), 7)
-        self.assertEqual([u["id"] for u in srule if u["text"].startswith("- ")],
-                         ["S4", "S5", "S6", "S7"])
+        # 판단 두 칸과 예시는 그대로 남고, 주입한 골격은 **편집 단위를 하나도 만들지 않는다.**
+        self.assertEqual([u["id"] for u in aj.edit_units(fixed)], ["C1", "O1", "E1"])
 
     def test_writer_is_told_what_each_section_decides(self):
         import core.meaning_segmentator.autoseg.runtime.agents_judge as aj

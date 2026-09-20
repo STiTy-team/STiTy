@@ -629,9 +629,9 @@ ROLE_KINDS = {"fallback": {"order"},
               "induce": {"check"},
               "narrow_rule": {"check"},
               "examples_only": {"check"}}
-# 발견과 짝짓지 않는 역할 — 이터당 하나다. `prune` 은 단위를 지우는 일이고, `procedure` 는
-# 점수를 만드는 절차를 다시 쓰는 일이라 둘 다 Critic 의 발견을 구현하는 역할이 아니다.
-UNPAIRED_ROLES = {"prune", "procedure"}
+# 발견과 짝짓지 않는 역할 — 이터당 하나다. `prune` 은 발견을 구현하는 역할이 아니라 단위를
+# 지우는 역할이라 짝을 짓지 않는다.
+UNPAIRED_ROLES = {"prune"}
 
 
 def candidate_plan(roles: list[str], n_find: int, cross: bool, n_default: int,
@@ -973,10 +973,7 @@ def main() -> int:
                         "narrow_rule 은 [Core Principles] 에 **추가**만 한다(insert_after 1개) — "
                         "실측상 채택된 둘은 좁은 점검 추가였고 원칙 재조정 다섯은 전부 실패했다. 후보 j 는 "
                         "roles[j %% len] 을 받는다. rewrite 는 Writer 가 [Core Principles]·[Examples] "
-                        "를 새로 쓴다(--generate-v0 런에서만). procedure 는 [Scoring Rules] 의 "
-                        "절차 줄 하나를 다시 쓴다 — 지금까지 실측된 이득은 그 절에서만 나왔고"
-                        "(홀드아웃 560문장 +0.0084) 루프는 그 절을 건드릴 수 없었다. 발견과 짝짓지 "
-                        "않으므로 이터당 하나다. 예: free,examples_only,rewrite")
+                        "를 새로 쓴다(--generate-v0 런에서만). 예: free,examples_only,rewrite")
     p.add_argument("--case-alloc", default="uniform", choices=("uniform", "loss"),
                    help="구간별 사례 수 — uniform: 한 바퀴씩 균등 / loss: 구간별 손실 몫에 비례(최소 1). "
                         "test-A 실측은 손실의 61%% 가 ≤3, 26%% 가 ≤5 인데 균등 배분은 그 둘에 6/12 만 준다")
@@ -2019,7 +2016,7 @@ def main() -> int:
                                                  if x["id"] not in used_examples]
             if role != "free":
                 log(f"[iter {it}] 후보 {j} 역할 {role}")
-            f_cur = (findings[f_idx] if findings and role not in ("induce", "rewrite", "procedure")
+            f_cur = (findings[f_idx] if findings and role not in ("induce", "rewrite")
                      else None)
             pe, cand, note, deltas, tries = (rewrite(j) if role == "rewrite"
                                              else revise(j, extra, role, f_cur))
