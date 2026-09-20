@@ -2129,8 +2129,10 @@ class BaselinesCanReachUnsegmented(unittest.TestCase):
         self.assertEqual(coarsen(self.P, 6, True), ["the cat sat on the mat today"])
         self.assertEqual(coarsen(self.P, 24, True), ["the cat sat on the mat today"])
 
-    def test_a_small_T_is_unchanged_by_the_lower_floor(self):
-        """하한이 걸리지 않는 구간은 종전과 같아야 한다 — 기존 수치가 안 흔들린다."""
+    def test_a_small_T_is_unchanged_only_where_the_floor_never_bound(self):
+        """하한이 안 걸리던 자리는 그대로다. **다만 그 자리는 생각보다 좁다** —
+        CoVoST2 test 는 문장이 평균 9.1 어절이라 T=6 에서 이미 46% 가 k=1 로 내려간다.
+        "작은 T 는 안 흔들린다" 는 긴 문장에서만 참이다."""
         from .baselines import coarsen
         self.assertEqual(coarsen(self.P, 2, True), self.P)
         self.assertEqual(coarsen(self.P, 3, True),

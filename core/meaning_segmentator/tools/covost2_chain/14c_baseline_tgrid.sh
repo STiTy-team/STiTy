@@ -7,9 +7,15 @@
 # 그래서 4 어절 오른쪽의 "우리가 이긴다" 는 비교군 두 점 사이를 직선으로 이어 만든
 # 값이라 근거가 없다 — ja 는 4.70 과 6.26 사이 1.6 어절이 통째로 비어 있다.
 #
-# 어디까지 늘리나 — `syntax` 자신의 실측 기울기로 잡는다. T 를 2→6 으로 늘리는 동안
-# LAAL 이 3.15→3.92 로 0.77 어절 올랐으니 T 한 칸이 0.2 어절 남짓이다. 우리 곡선의
-# 끝(zh 5.33 / ja 5.55)에 닿으려면 T 24 까지 필요하다. 8·12·16·24 를 더한다.
+# 어디까지 늘리나 — **코퍼스 길이 분포가 정한다.** CoVoST2 test 는 문장이 평균 9.1 어절
+# (중앙 9, p10 5, p90 14)이라 `k = round(어절/T)` 가 T 10 부터 거의 전부 1 이 된다:
+#
+#     T      4     6     7     8    10    12    16    24
+#     평균 k  2.39  1.59  1.36  1.27  1.05  1.01  1.00  1.00
+#     무분절  17%   46%   65%   74%   96%   99%  100%  100%
+#
+# 12 위는 무분절 한 점 위에 조건이 겹쳐 쌓일 뿐이라 COMET 만 헛쓰고 그림에서도
+# 오해를 부른다. 빈 구간(k 1.59 -> 1.05)을 7·10 으로 채우는 쪽이 맞다.
 #
 # 비용: **API $0.** 번역은 로컬 madlad 고, 기존 조각은 ../full 캐시에 걸린다.
 # 늘어나는 것은 새 T 조각의 로컬 번역뿐이다 (비교군 4 × T 4 × 타깃 3).
@@ -29,7 +35,7 @@ PY=${PY:-.venv-autoseg/bin/python}
 A=core/meaning_segmentator/experiment/artifacts
 SRC=$A/en2x/covost2/full_judge44
 WAIT=${WAIT:-$A/en2x/covost2/full_j44best/eval.done}
-TGRID="${TGRID:-2 3 4 6 8 12 16 24}"
+TGRID="${TGRID:-2 3 4 6 7 8 10}"
 SGRID="${SGRID:-5 10 20 40 60 80 90 95 99}"
 BASE="${BASE:-alignatt mu_prefix causal_align syntax}"
 LOG=$SRC/logs/tgrid.log
