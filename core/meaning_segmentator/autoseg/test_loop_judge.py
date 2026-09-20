@@ -2113,6 +2113,40 @@ class PromptsAreEnvironmentFree(unittest.TestCase):
                                                  f"{(bad.search(v) or '').group(0) if bad.search(v) else ''}")
 
 
+class BaselinesCanReachUnsegmented(unittest.TestCase):
+    """비교군의 T 노브도 무분절까지 가야 한다 — 우리 곡선만 갈 수 있으면 비교가 기운다.
+
+    `coarsen` 의 예산 하한이 2 로 남아 있었고 `pipeline.chunk_budget` 만 1 로 내려가서,
+    T 를 아무리 키워도 비교군은 문장당 경계 하나를 유지했다. CoVoST2 test 15,530 실측으로
+    T 8·12·16·24 에서 `syntax` 의 k 가 1.99 에 고정되고 LAAL 이 1,450ms 에서 안 움직였는데,
+    같은 런의 `auto_T6` 은 k 1.59 였다. 곡선 오른쪽 끝의 우위 일부가 여기서 나왔다.
+    """
+
+    P = ["the cat", "sat on", "the mat", "today"]      # 8어절 4조각
+
+    def test_a_large_T_collapses_to_one_piece(self):
+        from .baselines import coarsen
+        self.assertEqual(coarsen(self.P, 6, True), ["the cat sat on the mat today"])
+        self.assertEqual(coarsen(self.P, 24, True), ["the cat sat on the mat today"])
+
+    def test_a_small_T_is_unchanged_by_the_lower_floor(self):
+        """하한이 걸리지 않는 구간은 종전과 같아야 한다 — 기존 수치가 안 흔들린다."""
+        from .baselines import coarsen
+        self.assertEqual(coarsen(self.P, 2, True), self.P)
+        self.assertEqual(coarsen(self.P, 3, True),
+                         ["the cat sat on", "the mat today"])
+
+    def test_the_budget_matches_the_truncator(self):
+        """같은 규칙이라고 적어 둔 두 곳이 실제로 같은 k 를 낸다."""
+        from .baselines import coarsen
+        from .runtime.pipeline import chunk_budget
+        text = " ".join(self.P)
+        for T in (2, 3, 4, 6, 8, 12, 24):
+            self.assertEqual(len(coarsen(self.P, T, True)),
+                             min(chunk_budget(text, T, True), len(self.P)),
+                             f"T={T}")
+
+
 class ScoreThresholdGrid(unittest.TestCase):
     """점수 임계값을 지연 노브로 쓴다 — T 격자와 나란히 놓을 조건을 만든다.
 

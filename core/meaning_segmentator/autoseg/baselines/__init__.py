@@ -18,8 +18,21 @@ def coarsen(pieces: list[str], target_chunk: int, spaced: bool = True) -> list[s
     """정책이 낸 경계 중 일부만 남겨 목표 조각 크기 `T` 에 맞춘다.
 
     조각 수 예산은 절단기(`pipeline.chunk_budget`)와 **같은 규칙**이다:
-    `k = max(2, round(단위수 / T))`. 그래야 같은 T 에서 정책 간 k 가 맞아 지연 격자가
+    `k = max(1, round(단위수 / T))`. 그래야 같은 T 에서 정책 간 k 가 맞아 지연 격자가
     비교 가능해진다.
+
+    **하한은 1 이다 — 종전 2 에서 내렸다.** `chunk_budget` 이 같은 이유로 먼저 1 이
+    됐는데 이쪽이 안 따라와서, 제안 곡선만 무분절까지 갈 수 있고 비교군은 못 가는
+    비대칭이 생겼다. CoVoST2 test 15,530 실측으로 T 를 8 위로 올려도 네 정책 전부
+    멈춘다:
+
+        syntax        T6 k 2.02 -> T8 1.99 -> T12 1.99 -> T24 1.99 (laal 1450ms 고정)
+        alignatt      T6 k 1.99 -> T24 1.96
+        causal_align  T6 k 2.01 -> T24 1.98
+
+    같은 런의 `auto_T6` 은 k 1.59 로 그 아래에 있었다. 곡선 오른쪽 끝에서 제안이
+    앞선 것 중 일부가 **비교군이 그 자리에 못 간 결과**였다는 뜻이다. 작은 T 에서는
+    하한이 안 걸려 결과가 그대로다 — 짧은 문장에서만 달라진다.
 
     비교군에는 순위가 없어 어느 경계를 버릴지 고를 근거가 없으므로, 등간격 이상 위치에
     **가장 가까운** 경계를 고른다 — 결정론적이고 정책의 경계 *위치*만 쓴다(새 경계를
@@ -37,7 +50,7 @@ def coarsen(pieces: list[str], target_chunk: int, spaced: bool = True) -> list[s
     if total <= 0:
         return list(pieces)
 
-    k = max(2, round(total / target_chunk))
+    k = max(1, round(total / target_chunk))
     if len(pieces) <= k:
         return list(pieces)
 

@@ -58,9 +58,10 @@ one () {   # <run 디렉토리 이름> <라벨 이름>
       > $D/logs/bleu_eval_$t.tgrid.log 2>&1
     rc=$?
     echo "== $(ts) $1 bleu_eval $t exit=$rc" >> $LOG
-    # 이미 잰 조건의 COMET 을 새 파일로 옮겨 온다 — 조건 하나는 독립으로 계산되므로
-    # T 격자가 넓어져도 `syntax_T2` 의 값은 같다. 이걸 안 옮기면 --only-missing 이
-    # 56조건을 전부 다시 재서 타깃당 25분을 헛쓴다.
+    # 이미 잰 조건의 COMET 을 새 파일로 옮겨 온다. **이름이 아니라 출력이 같을 때만
+    # 옮긴다** — 예산 하한을 2 에서 1 로 내리면서 비교군 분절이 짧은 문장에서 달라졌으므로,
+    # 이름만 보고 가져오면 `syntax_T2` 에 옛 분절의 점수가 박힌다. 우리 조건(auto_S*)과
+    # 무분절·기계분절은 안 바뀌어 그대로 걸린다.
     $PY - "$D/bleu_t6/$t.json" "$D/bleu/$t.json" <<'PYEOF' >> $LOG 2>&1
 import json, sys
 from pathlib import Path
@@ -68,13 +69,18 @@ old, new = Path(sys.argv[1]), Path(sys.argv[2])
 if old.exists() and new.exists():
     o = json.loads(old.read_text())["conditions"]
     b = json.loads(new.read_text()); n = 0
+    skipped = 0
     for name, cell in b["conditions"].items():
         src = o.get(name)
-        if src and src.get("comet") is not None and cell.get("comet") is None:
-            cell["comet"], cell["comet_seg"] = src["comet"], src.get("comet_seg")
-            n += 1
+        if not (src and src.get("comet") is not None and cell.get("comet") is None):
+            continue
+        if src.get("hyps") != cell.get("hyps"):      # 분절이 바뀌었다 — 다시 재야 한다
+            skipped += 1
+            continue
+        cell["comet"], cell["comet_seg"] = src["comet"], src.get("comet_seg")
+        n += 1
     new.write_text(json.dumps(b, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"   COMET 재사용 {n}조건 → {new.name}")
+    print(f"   COMET 재사용 {n}조건 / 분절이 바뀌어 재측정 {skipped}조건 → {new.name}")
 PYEOF
   done
   echo "== $(ts) $1 comet (새 T 조건만)" >> $LOG
