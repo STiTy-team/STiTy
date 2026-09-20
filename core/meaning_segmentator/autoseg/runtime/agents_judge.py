@@ -401,6 +401,12 @@ Hard constraints:
    or delete as many as you judge right — there is no cap. An example shows the WHOLE ordering
    of a sentence at once, so it teaches the lower ranks that prose cannot reach; pick the ones
    whose "latency_bin" is short and whose "gap" is large.
+   The risk in this role is the opposite of the other roles': examples are the easiest way to FIT
+   the sentences you were shown and then carry nothing to sentences you were not. It has happened —
+   a set of examples that gained clearly on the sentences behind the critique lost on held-out ones.
+   So choose each example for the SHAPE it demonstrates, one a rule could be read off, not for a
+   sentence whose ordering happens to be wrong right now, and prefer a few clear shapes to many
+   near-duplicates.
    "replace": TRADE one existing line for the finding's judgement, keeping the PRINCIPLE COUNT the
    same — one line out, one line in. Your replacement must be a single line, and it may be up to
    twice the length of the line you trade away; it does not have to match it. When the new line goes
@@ -488,11 +494,16 @@ Hard constraints:
    them, and the short budgets need a fixed number of positions either way. And state a condition
    recognisable in the SOURCE surface alone rather than a change in how strongly an existing
    principle applies — reweighting gives the model no new way to tell two positions apart.
-   "prune": REMOVE one [Core Principles] unit. Exactly one edit, op "delete", a "C" unit, and
-   nothing added anywhere. Pick the principle that earns its place least — one that restates
-   another, or that names a condition the measured target does not actually punish. When the
+   "prune": REMOVE one unit. Exactly one edit, op "delete", and nothing added anywhere. When the
    prompt already carries many principles, one more divides the model's attention more than it
-   adds, and removing is the one direction an added rule cannot test.
+   adds, and removing is the one direction an added rule cannot test. But only some units are
+   yours to remove, because a [Core Principles] line does TWO jobs: the question assigns the band,
+   the severity orders the positions inside it. Deleting a line that has both throws away ordering
+   information, so code refuses it. What you may delete: a [Core Principles] line with NO severity
+   clause — it assigns a band and then gives the order inside it nothing — or an [Order Principles]
+   line while more than one remains there. Among those, pick the one that earns its place least:
+   one that restates another, or that names a condition the measured target does not actually
+   punish.
 
 What the model is judged on: the cut sets its scores produce are translated piece by piece and
 scored against the source as a whole, with the worst contradiction risk in the set applied as a
@@ -904,6 +915,25 @@ def ungraded_principles(prompt: str) -> list[str]:
             if u["section"] == "[Core Principles]" and not has_severity(u["text"])]
 
 
+def prune_targets(prompt: str) -> list[str]:
+    """`prune` 이 지울 수 있는 단위 id. 빈 목록이면 이 판에서는 그 역할에 할 일이 없다.
+
+    **정도 축이 들어온 뒤로 C 단위 삭제는 등급 안 서열 재료를 지우는 일이 됐다.** 한 줄이 두 일을
+    한다 — 질문이 등급을 정하고 정도 절이 그 등급 **안** 순서를 정한다. 그래서 지울 값어치가 있는
+    C 단위는 정도 절이 없는 줄, 즉 등급만 정하고 서열에는 아무것도 안 주는 줄뿐이다. 정도 절을
+    가진 줄을 지우면 이득이 나오는 바로 그 자리를 깎는다.
+
+    `[Order Principles]` 는 다르다. 그 칸은 예외만 담아 서로 겹치기 쉽고, 두 줄 이상 있으면 하나는
+    지울 수 있다(칸이 비면 골격이 참조할 것이 없다).
+
+    **역할을 못 지킬 조건으로 묶지 않는다.** 정도 절 검사만 코드에 넣으면, 모든 C 줄이 등급을 가진
+    판(지금 v0 가 그렇다)에서 `prune` 은 매번 전부 기각되고 후보 한 자리가 조용히 빈다. 같은 종류의
+    버그를 이 런에서 다섯 번 겪었다 — 한 편집을 두 군데서 서로 만족 못 할 조건으로 묶는 것이다.
+    그래서 여기서 **먼저 세고**, 지울 것이 없으면 호출하는 쪽이 역할을 아예 안 준다."""
+    order = [u["id"] for u in edit_units(prompt) if u["section"] == "[Order Principles]"]
+    return ungraded_principles(prompt) + (order if len(order) > 1 else [])
+
+
 # 정도 축의 두 끝을 가리키는 말. **실제 생성물에서 뽑았다** — 손으로 쓴 일곱 절과 Writer 가 낸
 # 스물네 절(후보 셋)에서 쓰인 낱말을 세어 맞췄다. 처음에 `worse`/`severe` 만 두었더니 Writer 가 쓴
 # "most damaging … least", "Most harmful … milder" 네 절을 **정상인데 거부**했다. 차단 검사에서
@@ -1242,6 +1272,16 @@ def enforce_role(edits, role: str, spent: dict | None = None) -> tuple[list, lis
         elif keep and not str(keep[0].get("id") or "").startswith(("C", "O")):
             bad.append({"edit": 0, "id": keep[0].get("id"),
                         "reason": "prune 인데 [Core Principles]·[Order Principles] 단위가 아니다"})
+            keep = []
+        elif (keep and str(keep[0].get("id") or "").startswith("C")
+              and has_severity(str(keep[0].get("_was") or ""))):
+            # 정도 축을 가진 줄은 등급 안 서열을 들고 있다 — 지우면 이득이 나오는 자리를 깎는다.
+            # 지울 값어치가 있는 C 줄은 정도 절이 없는 줄뿐이고, 그런 줄이 아예 없는 판에서는
+            # `prune_targets` 가 비어서 이 역할이 후보에 안 들어간다.
+            bad.append({"edit": 0, "id": keep[0].get("id"),
+                        "reason": "prune 인데 정도 축을 가진 원칙을 지운다 — 그 줄은 등급 안 서열을 "
+                                  "들고 있다. 정도 절(물음표 뒤에 심한 쪽·가벼운 쪽을 둘 다 말하는 "
+                                  "부분)이 없는 원칙을 고를 것"})
             keep = []
         elif (keep and str(keep[0].get("id") or "").startswith("O")
               and (spent or {}).get("order_units", 99) <= 1):

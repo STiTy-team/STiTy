@@ -639,6 +639,27 @@ ROLE_KINDS = {"fallback": {"order"},
 UNPAIRED_ROLES = {"prune"}
 
 
+def usable_roles(roles: list[str], prompt: str) -> tuple[list[str], list[tuple[str, str]]]:
+    """이 판에서 **할 일이 있는** 역할만 남긴다. 둘째 값은 (뺀 역할, 사유).
+
+    `prune` 은 지울 것이 있을 때만 후보가 된다. 정도 축이 들어온 뒤로 `[Core Principles]` 한 줄은
+    두 일을 한다 — 질문이 등급을 정하고 정도 절이 그 등급 안 순서를 정한다. 그래서 코드가 정도 축을
+    가진 줄의 삭제를 거부하고(`enforce_role`), 지울 값어치가 있는 것은 정도 절이 없는 줄이나
+    `[Order Principles]` 의 남는 줄뿐이다(`aj.prune_targets`).
+
+    **그 검사만 두면 안 된다.** 지금 v0 는 모든 C 줄이 등급을 가지므로 `prune` 후보는 매 이터 전부
+    기각되고 후보 한 자리가 조용히 빈다 — 한 편집을 서로 만족 못 할 두 조건으로 묶는, 이 런에서만
+    다섯 번 겪은 그 버그다. 먼저 세고, 지울 것이 없으면 역할을 아예 주지 않는다."""
+    out, dropped = [], []
+    for r in roles:
+        if r == "prune" and not aj.prune_targets(prompt):
+            dropped.append((r, "지울 수 있는 단위가 없다 — [Core Principles] 줄이 모두 정도 축을 "
+                               "갖고 [Order Principles] 는 한 줄 이하다"))
+            continue
+        out.append(r)
+    return out, dropped
+
+
 def candidate_plan(roles: list[str], n_find: int, cross: bool, n_default: int,
                    cap: int = 16, kinds: list[str] | None = None) -> list[tuple[str, int]]:
     """후보 j 에게 줄 (역할, finding 인덱스) 표.
@@ -1978,6 +1999,9 @@ def main() -> int:
             return pe, cand, note, deltas, tries
 
         roles = [r.strip() for r in (a.candidate_roles or "").split(",") if r.strip()]
+        roles, dropped = usable_roles(roles, prompt)
+        for r, why in dropped:
+            log(f"[iter {it}] 역할 '{r}' 을 뺀다 — {why}")
         # 후보 배정 — 기본은 역할·finding 각각 독립 나머지 연산이라 주기가 LCM(역할수, finding수) 이다.
         # 역할 4 · finding 4 면 4쌍이 반복돼 후보를 늘려도 실질 시도가 안 는다. `--candidates-cross`
         # 는 (역할 × finding) 을 한 번씩 전부 돌려 시도 폭을 finding 수에 맞춰 자동으로 맞춘다.

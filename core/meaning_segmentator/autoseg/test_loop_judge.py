@@ -1263,6 +1263,69 @@ class EveryRoleWritesBothParts(unittest.TestCase):
         self.assertIn("Code checks it and drops the edit otherwise, whatever your role is", e)
 
 
+class PruneOnlyRemovesDeadWeight(unittest.TestCase):
+    """정도 축이 들어온 뒤 `prune` 의 대상이 좁아졌다 — 등급 안 서열을 든 줄은 못 지운다.
+
+    한 줄이 두 일을 한다(질문 = 등급, 정도 절 = 등급 안 순서). 그래서 지울 값어치가 있는 C 줄은
+    정도 절이 없는 줄뿐이다. 그리고 **검사만 두면 역할이 죽는다** — 모든 C 줄이 등급을 가진 판에서는
+    매번 전부 기각되므로, 먼저 세어 지울 것이 없으면 역할을 아예 주지 않는다."""
+
+    def prompt(self, core: str, order: str) -> str:
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        return ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n[Core Principles]\n"
+                + core + "\n\n[Order Principles]\n" + order
+                + "\n\n[Output Rules]\n- x\n\n[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+
+    GRADED = ("- Does the cut strand a required complement? A cut there is worse the shorter the"
+              " remainder is, and mildest when what follows is a detachable afterthought.")
+    UNGRADED = "- Does the continuation reverse what came before?"
+
+    def test_nothing_to_prune_when_every_line_is_graded(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = self.prompt(self.GRADED, "- prefer A over B")
+        self.assertEqual(aj.prune_targets(pr), [])
+        self.assertEqual(lj.usable_roles(["severity", "prune"], pr)[0], ["severity"])
+        self.assertIn("지울 수 있는 단위가 없다", lj.usable_roles(["prune"], pr)[1][0][1])
+
+    def test_an_ungraded_line_is_the_target(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = self.prompt(self.UNGRADED + "\n" + self.GRADED, "- prefer A over B")
+        self.assertEqual(aj.prune_targets(pr), ["C1"])
+        self.assertEqual(lj.usable_roles(["prune"], pr)[0], ["prune"])
+
+    def test_a_spare_order_line_is_also_prunable(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        pr = self.prompt(self.GRADED, "- prefer A over B\n- prefer C over D")
+        self.assertEqual(aj.prune_targets(pr), ["O1", "O2"])
+
+    def test_deleting_a_graded_line_is_refused(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            [{"op": "delete", "id": "C2", "_was": self.GRADED}], "prune")
+        self.assertEqual(keep, [])
+        self.assertIn("정도 축을 가진 원칙을 지운다", bad[0]["reason"])
+
+    def test_deleting_an_ungraded_line_passes(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        keep, bad = aj.enforce_role(
+            [{"op": "delete", "id": "C1", "_was": self.UNGRADED}], "prune")
+        self.assertEqual(len(keep), 1)
+        self.assertEqual(bad, [])
+
+    def test_pe_is_told_which_units_it_may_delete(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        e = " ".join(aj.ENGINEER_SYSTEM.split())
+        self.assertIn("a [Core Principles] line with NO severity clause", e)
+        self.assertIn("Deleting a line that has both throws away ordering information", e)
+
+    def test_examples_role_is_warned_about_holdout(self):
+        """`examples_only` 는 실측에서 사례에 맞추고 홀드아웃에서 잃었다 — 지시문이 그것을 말해야 한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        e = " ".join(aj.ENGINEER_SYSTEM.split())
+        self.assertIn("examples are the easiest way to FIT the sentences you were shown", e)
+        self.assertIn("lost on held-out ones", e)
+
+
 class SeverityRole(unittest.TestCase):
     """`severity` 는 **등급 안 서열**을 움직이는 역할이다 — 질문이 아니라 정도 절을 고친다.
 
