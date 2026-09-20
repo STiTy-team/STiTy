@@ -987,6 +987,48 @@ class PromptCarriesNoEnvironmentConstant(unittest.TestCase):
             self.assertIsNone(pat.search(txt), f"{name} 에 런 이름")
 
 
+class GradedPrinciplesAreTheDefault(unittest.TestCase):
+    """새 v0 는 **질문 + 정도 절** 구조로 생성돼야 한다. 정도 절이 빠지면 이득이 조용히 사라진다."""
+
+    def test_skeleton_orders_by_severity(self):
+        """골격의 등급 안 기본 서열이 정도를 가리켜야 한다 — 안 그러면 정도 절을 써도 읽히지 않는다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        sr = " ".join(aj.scoring_rules(["German"]).split())
+        self.assertIn("order positions by how MILDLY the Core Principles' concerns apply", sr)
+        # 옛 표면형 기본값은 사라졌다
+        self.assertNotIn("prefer the one whose preceding stretch can stand alone", sr)
+
+    def test_writer_is_told_to_write_both_parts(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        w = " ".join(aj.WRITER_SYSTEM.split())
+        self.assertIn("Each line has two parts", w)
+        self.assertIn("what makes a cut at such a position worse, and what makes it milder", w)
+        self.assertIn("The question decides the band; the severity decides the order INSIDE a band", w)
+
+    def test_detects_a_question_with_no_severity(self):
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        base = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n"
+                "[Core Principles]\n"
+                "- Does the continuation reverse what came before?\n"
+                "- Does the cut strand a required complement? A cut here is worse the shorter it is.\n\n"
+                "[Order Principles]\n- prefer A over B\n\n[Output Rules]\n- x\n\n"
+                "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        self.assertEqual(aj.ungraded_principles(base), ["C1"])
+        self.assertEqual(aj.check_skeleton(base), [])        # 골격 검사로는 안 잡힌다
+
+    def test_uses_the_same_boundary_as_the_severity_role(self):
+        """검사와 역할이 경계를 다르게 보면, 통과한 편집이 뒤에서 죽거나 빈 절이 통과한다."""
+        import core.meaning_segmentator.autoseg.runtime.agents_judge as aj
+        q = "- Does the cut strand a required complement?"
+        full = ("[Role]\nr\n\n" + aj.scoring_rules(["German"]) + "\n\n[Core Principles]\n" + q
+                + "\n\n[Order Principles]\n- prefer A over B\n\n[Output Rules]\n- x\n\n"
+                "[Examples]\nInput: a <SEG:?> b\nOutput: a <SEG:5> b\n")
+        self.assertEqual(aj.ungraded_principles(full), ["C1"])       # 검사: 비었다
+        keep, bad = aj.enforce_role([{"op": "replace", "id": "C1", "text": q, "_was": q}], "severity")
+        self.assertEqual(keep, [])                                   # 역할: 같은 이유로 거부
+        self.assertIn("정도 절이 비었다", bad[0]["reason"])
+
+
 class SeverityRole(unittest.TestCase):
     """`severity` 는 **등급 안 서열**을 움직이는 역할이다 — 질문이 아니라 정도 절을 고친다.
 

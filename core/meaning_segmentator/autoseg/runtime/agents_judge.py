@@ -496,7 +496,7 @@ target = cohesion x (1 - contra)
 - Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.
 - The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.
 - The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary: each line asks something about ONE position on its own, and the answers decide which band that position goes in. The Order Principles are binary: each line names two positions and says which of them is the better cut, and they are read only to settle the order of positions that already share a band. A unary judgement cannot separate two positions of one band, and a comparison has nothing to work on while the band is still being chosen.
-- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, when two positions are otherwise alike, prefer the one whose preceding stretch can stand alone as a statement; if both can, prefer the later one. A line in the Order Principles section overrides that default for the configuration it names; those lines settle the order within a band and never move a position into another band. When neither settles the pair, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing."""
+- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, order positions by how MILDLY the Core Principles' concerns apply to each — the position whose concerns are the mildest is the better cut of the two. A line in the Order Principles section overrides that default for the configuration it names; those lines settle the order within a band and never move a position into another band. When neither settles the pair, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing."""
 
 
 def scoring_rules(targets: list[str]) -> str:
@@ -551,7 +551,16 @@ Hard requirements:
   each ONE judgement of at most 60 words. Every line is UNARY — a question asked about one
   position on its own ("does what follows the marker overturn what came before?"), so that reading
   it at a marker tells you which band that marker belongs in. One line is later one editable unit,
-  so a 1,000-character line cannot be revised without rewriting it. Two of the judgements carry the
+  so a 1,000-character line cannot be revised without rewriting it.
+  **Each line has two parts.** First the question, ending in a question mark. Then one or two
+  sentences saying how STRONGLY the concern applies: what makes a cut at such a position worse, and
+  what makes it milder. Say both ends, and name them as configurations recognisable on the source
+  surface ("an explicit negation is the most severe, a narrowing qualifier the mildest"), never as
+  degrees of a feeling ("somewhat bad", "fairly serious").
+  The question decides the band; the severity decides the order INSIDE a band. A question with no
+  severity leaves the model separating positions of one band with nothing to separate them by, and
+  the scoring procedure demands a distinct number for every position, so it will invent the
+  difference. Write the severity for every line. Two of the judgements carry the
   measurement: whether what follows overturns the stretch already heard, and whether translating
   the two sides apart still adds up to the source. Say what damage looks like in THIS source language, using what the
   profile tells you about how it builds clauses, where it puts negation and heads, and what it
@@ -811,6 +820,29 @@ def _items(prompt: str, header: str) -> list[str | None]:
         else:
             items.append(line)
     return items
+
+
+def ungraded_principles(prompt: str) -> list[str]:
+    """정도 절이 없는 `[Core Principles]` 단위의 id. 없으면 빈 목록.
+
+    **정도 절이 빠지면 이득이 조용히 사라진다.** 질문은 어느 등급으로 보낼지를 정하고 그쪽은 이미
+    작동한다(순위 깊이 배수 1위 6.16배). 없는 것은 등급 **안** 서열이고(8위 1.27배), 골격은 맨 아래
+    등급까지 서로 다른 번호를 요구하므로 모델은 근거 없이 구별을 발명한다 — 캐시된 출력에서 아래
+    등급도 99.7%가 다른 번호를 받는다. 정도 절을 손으로 붙인 판이 홀드아웃 560문장에서
+    **+0.0066 [+0.0018, +0.0115]** 였고 이득이 자리를 여러 개 고르는 구간에 몰렸다.
+
+    Writer 가 그 절을 빼먹으면 프롬프트는 멀쩡해 보이고 골격 검사도 통과한다. 그래서 따로 센다.
+    판정은 물음표 뒤에 글이 남아 있는지로 한다 — `severity` 역할이 쓰는 경계와 같은 것이라
+    한 군데서만 정의된다."""
+    out = []
+    for u in edit_units(prompt):
+        if u["section"] != "[Core Principles]":
+            continue
+        t = " ".join(u["text"].split())
+        i = t.find("?")
+        if i < 0 or not t[i + 1:].strip():
+            out.append(u["id"])
+    return out
 
 
 def edit_units(prompt: str) -> list[dict]:

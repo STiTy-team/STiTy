@@ -1468,6 +1468,12 @@ def main() -> int:
             if errs:
                 log(f"[v0] 후보 {c} 골격 실패: {errs}")
                 continue
+            # **정도 절이 빠지면 이득이 조용히 사라진다.** 프롬프트는 멀쩡해 보이고 골격 검사도
+            # 통과하는데, 등급 안 서열을 만들 재료가 없어 모델이 구별을 발명한다. 버리지는 않고
+            # 로그에 남긴다 — 후보가 둘뿐일 때 둘 다 걸리면 런이 죽는 것보다 낫다.
+            miss = aj.ungraded_principles(pr)
+            if miss:
+                log(f"[v0] 후보 {c} 정도 절 없는 원칙 {miss} — 등급 안 서열 재료가 그만큼 빈다")
             cands.append(pr)
         if not cands:
             log("[stop] v0 후보가 전부 골격 검증에 걸렸다")
