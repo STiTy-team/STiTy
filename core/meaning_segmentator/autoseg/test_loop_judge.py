@@ -2138,12 +2138,23 @@ class BaselinesCanReachUnsegmented(unittest.TestCase):
         self.assertEqual(coarsen(self.P, 3, True),
                          ["the cat sat on", "the mat today"])
 
+    def test_a_fractional_T_lands_between_the_integers(self):
+        """정수만으로는 T 2 와 3 사이를 못 메운다 — 짧은 코퍼스에서 거기 조각 수가
+        4.8 에서 3.0 으로 건너뛴다."""
+        from .baselines import coarsen
+        five = ["a", "b", "c", "d", "e"]
+        self.assertEqual(len(coarsen(five, 2, True)), 3)
+        self.assertEqual(len(coarsen(five, 2.5, True)), 2)
+        self.assertEqual(len(coarsen(five, 3.5, True)), 1)
+
     def test_the_budget_matches_the_truncator(self):
         """같은 규칙이라고 적어 둔 두 곳이 실제로 같은 k 를 낸다."""
         from .baselines import coarsen
         from .runtime.pipeline import chunk_budget
         text = " ".join(self.P)
-        for T in (2, 3, 4, 6, 8, 12, 24):
+        # .5 가 나오는 값을 일부러 넣는다 — `round` 는 은행가 반올림이라 절단기의
+        # `round_half_up` 과 거기서 갈렸다 (5어절/T2 = 2.5 -> 2 대 3).
+        for T in (2, 2.5, 3, 3.5, 4, 6, 8, 12, 24):
             self.assertEqual(len(coarsen(self.P, T, True)),
                              min(chunk_budget(text, T, True), len(self.P)),
                              f"T={T}")

@@ -14,11 +14,13 @@
 
 
 
-def coarsen(pieces: list[str], target_chunk: int, spaced: bool = True) -> list[str]:
+from ..runtime.pipeline import round_half_up
+
+def coarsen(pieces: list[str], target_chunk: float, spaced: bool = True) -> list[str]:
     """정책이 낸 경계 중 일부만 남겨 목표 조각 크기 `T` 에 맞춘다.
 
     조각 수 예산은 절단기(`pipeline.chunk_budget`)와 **같은 규칙**이다:
-    `k = max(1, round(단위수 / T))`. 그래야 같은 T 에서 정책 간 k 가 맞아 지연 격자가
+    `k = max(1, round_half_up(단위수 / T))`. 그래야 같은 T 에서 정책 간 k 가 맞아 지연 격자가
     비교 가능해진다.
 
     **하한은 1 이다 — 종전 2 에서 내렸다.** `chunk_budget` 이 같은 이유로 먼저 1 이
@@ -50,7 +52,10 @@ def coarsen(pieces: list[str], target_chunk: int, spaced: bool = True) -> list[s
     if total <= 0:
         return list(pieces)
 
-    k = max(1, round(total / target_chunk))
+    # `round` 는 은행가 반올림이라 .5 에서 절단기(`round_half_up`)와 갈린다 — 5어절을
+    # T=2 로 나누면 2.5 가 나오는데 이쪽은 2, 저쪽은 3 이었다. 짧은 문장이 많은
+    # 코퍼스에서는 T=2 조건이 통째로 달라진다. 주석이 "같은 규칙" 이라고 적은 대로 맞춘다.
+    k = max(1, round_half_up(total / target_chunk))
     if len(pieces) <= k:
         return list(pieces)
 

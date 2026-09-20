@@ -17,6 +17,11 @@
 # 12 위는 무분절 한 점 위에 조건이 겹쳐 쌓일 뿐이라 COMET 만 헛쓰고 그림에서도
 # 오해를 부른다. 빈 구간(k 1.59 -> 1.05)을 7·10 으로 채우는 쪽이 맞다.
 #
+# **정수만으로는 성긴다.** T 2->3 에서 k 가 4.79->3.03 으로 건너뛰는데 우리 점수 격자의
+# S60(k 3.91)·S80(2.93)이 바로 거기 있고, 1,379~1,826ms 구간에는 비교군 점이 아예 없어
+# S90·S95 의 우위가 보간 위에 떠 있었다. 반올림 자리(2.5·3.5·4.5·5)를 넣어 k 간격을
+# 0.2~0.4 로 고르게 만든다 — `--t-grid` 가 실수를 받게 고쳤다.
+#
 # 비용: **API $0.** 번역은 로컬 madlad 고, 기존 조각은 ../full 캐시에 걸린다.
 # 늘어나는 것은 새 T 조각의 로컬 번역뿐이다 (비교군 4 × T 4 × 타깃 3).
 #
@@ -35,7 +40,7 @@ PY=${PY:-.venv-autoseg/bin/python}
 A=core/meaning_segmentator/experiment/artifacts
 SRC=$A/en2x/covost2/full_judge44
 WAIT=${WAIT:-$A/en2x/covost2/full_j44best/eval.done}
-TGRID="${TGRID:-2 3 4 6 7 8 10}"
+TGRID="${TGRID:-2 2.5 3 3.5 4 4.5 5 6 7 8 10}"
 SGRID="${SGRID:-5 10 20 40 60 80 90 95 99}"
 BASE="${BASE:-alignatt mu_prefix causal_align syntax}"
 LOG=$SRC/logs/tgrid.log

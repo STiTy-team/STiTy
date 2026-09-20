@@ -315,7 +315,10 @@ def main() -> int:
                         "과 정렬 파일 이름에 쓴다. X→en 트랙은 de/ja/zh 를 준다")
     p.add_argument("--src-spaced", type=int, default=1,
                    help="measured_profile.json 이 없을 때 쓸 소스 띄어쓰기 여부")
-    p.add_argument("--t-grid", type=int, nargs="+", default=[4, 6, 8, 12])
+    # **실수를 받는다.** 정수만 받으면 T 2 와 3 사이를 못 메우는데, 짧은 코퍼스에서는
+    # 거기서 조각 수가 4.8 에서 3.0 으로 건너뛴다 (CoVoST2 test 평균 9.1 어절 실측).
+    # 조건 이름은 `syntax_T2.5` 처럼 붙는다.
+    p.add_argument("--t-grid", type=float, nargs="+", default=[4, 6, 8, 12])
     p.add_argument("--no-auto-t", action="store_true",
                    help="우리 프롬프트의 `auto_T*` 조건을 만들지 않는다 — 지연 노브를 점수 임계값"
                         "(`--score-grid`)으로만 낼 때. **`--t-grid` 는 그대로 줘야 한다**: 비교군의 "
