@@ -12,9 +12,11 @@
 # 끝(zh 5.33 / ja 5.55)에 닿으려면 T 24 까지 필요하다. 8·12·16·24 를 더한다.
 #
 # 비용: **API $0.** 번역은 로컬 madlad 고, 기존 조각은 ../full 캐시에 걸린다.
-# 늘어나는 것은 새 T 조각의 로컬 번역뿐이다 (비교군 5 × T 4 × 타깃 3).
+# 늘어나는 것은 새 T 조각의 로컬 번역뿐이다 (비교군 4 × T 4 × 타깃 3).
 #
-# `punct` 는 T 에 반응하지 않아 새 값이 기존 점과 같아진다 — 캐시에 걸리므로 그냥 둔다.
+# `punct` 는 뺀다 — T 에 반응하지 않아 네 점이 LAAL 7.5 어절대에 겹쳐 쌓이기만 하고
+# 곡선에 보태는 것이 없다. 그 자리를 COMET 으로 재는 데만 10분이 든다. 기존 값은
+# bleu_t6/ 에 남아 있으니 필요하면 거기서 읽는다.
 #
 # 선행: 진행 중인 9점 평가가 끝나야 GPU 가 빈다. 마커 파일로 기다린다.
 #
@@ -29,7 +31,7 @@ SRC=$A/en2x/covost2/full_judge44
 WAIT=${WAIT:-$A/en2x/covost2/full_j44best/eval.done}
 TGRID="${TGRID:-2 3 4 6 8 12 16 24}"
 SGRID="${SGRID:-5 10 20 40 60 80 90 95 99}"
-BASE="${BASE:-punct alignatt mu_prefix causal_align syntax}"
+BASE="${BASE:-alignatt mu_prefix causal_align syntax}"
 LOG=$SRC/logs/tgrid.log
 ts () { date '+%F %T'; }
 
@@ -78,7 +80,7 @@ PYEOF
   $PY -u -m core.meaning_segmentator.autoseg.baselines.comet_score \
     --run-id $rid --dataset covost2 --manifest-tag full --src en \
     --label $label --split test --targets zh de ja --only-missing \
-    --model Unbabel/wmt22-comet-da --batch-size 32 > $D/logs/comet.tgrid.log 2>&1
+    --model Unbabel/wmt22-comet-da --batch-size 256 > $D/logs/comet.tgrid.log 2>&1
   echo "== $(ts) $1 comet exit=$?" >> $LOG
 }
 

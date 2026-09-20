@@ -72,7 +72,7 @@ one () {   # <run 디렉토리 이름> <라벨 이름> <라벨 jsonl>
   $PY -u -m core.meaning_segmentator.autoseg.baselines.comet_score \
     --run-id $rid --dataset covost2 --manifest-tag full --src en \
     --label $label --split test --targets zh de ja --only-missing \
-    --model Unbabel/wmt22-comet-da --batch-size 32 > $D/logs/comet.log 2>&1
+    --model Unbabel/wmt22-comet-da --batch-size 256 > $D/logs/comet.log 2>&1
   echo "== $(ts) $1 comet exit=$?" >> $LOG
   date '+%F %T' >> $D/eval.done
 }
