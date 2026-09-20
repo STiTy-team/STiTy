@@ -298,6 +298,24 @@ def rank_inversions(rows: list[dict], sents: list, spaced: bool, n_max: int = 15
     return out[:n_max]
 
 
+def contra_reader(lab: dict, targets: list[str]):
+    """`H_set` 의 모순 항을 읽는 함수 `(문장 index, 위치 j) -> contra` 를 만든다.
+
+    **소스 NLI 와 번역 NLI 에서 규칙이 다르다.** 소스 모드(`labels.apply_source_contra`)는
+    원문끼리 재므로 네 타깃에 같은 값이 복사되어 있다 — 첫 타깃 하나만 읽어도 결과가 같고,
+    평균을 내는 것은 같은 수를 네 번 더하는 일이다.
+
+    번역 모드는 타깃마다 값이 갈린다. 번역 NLI contra 는 타깃 간 순위상관이 0.21 로 라벨
+    성분 중 가장 타깃 종속적이다(dev, 2026-09-13). 거기서 한 타깃만 집으면 `H_set` 의
+    cohesion 은 네 타깃 평균인데 모순 항만 그 언어 전용이 되고, `build_cases` 가 사례에 찍는
+    `policy_worst_contra`(타깃 평균)·`labels.label_value`(타깃 평균)와도 규칙이 어긋난다.
+    그래서 번역 모드에서만 타깃 평균으로 모은다.
+    """
+    if L.contra_source_of(lab) == "source":
+        return lambda i, j: lab[targets[0]][i]["contra"][j - 1]
+    return lambda i, j: st.mean(per[i]["contra"][j - 1] for per in lab.values())
+
+
 def build_cases(sents: list, lab: dict, pol: dict, ora: dict, pol_h: dict, ora_h: dict,
                 spaced: bool, min_gap: int, n_cases: int, pieces_tr=None,
                 exclude_ids: set[str] = frozenset(), alloc: str = "uniform", *,
@@ -1338,8 +1356,7 @@ def main() -> int:
         keys = sorted(sets)
         texts = [s.text for s in sents]
 
-        def contra_of(i, j):
-            return lab[targets[0]][i]["contra"][j - 1]
+        contra_of = contra_reader(lab, targets)
 
         with score_lock:
             vals = scorer.score(texts, [(i, sets[(i, T)]) for i, T in keys], contra_of)

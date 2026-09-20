@@ -111,6 +111,52 @@ class Latency(unittest.TestCase):
         self.assertEqual(got, {"≤3": 0.4, "≤7": 0.8})
 
 
+class ContraReader(unittest.TestCase):
+    """`H_set` 의 모순 항을 어느 타깃에서 읽는가 — 소스 NLI 와 번역 NLI 에서 규칙이 다르다."""
+
+    def lab(self, per_target, source_mode):
+        """타깃별 contra 벡터 하나씩. 위치는 j=1,2 둘뿐이다."""
+        extra = {"contra_source": "source"} if source_mode else {}
+        return {tgt: [{"id": "s0", "contra": vec, "ent": [0.0] * len(vec),
+                       "contra_floor": [0.0] * len(vec), "adq_l": [0.5] * len(vec),
+                       "adq_r": [0.5] * len(vec), "hyp_units": [1] * len(vec), **extra}]
+                for tgt, vec in per_target.items()}
+
+    def test_source_mode_reads_one_target(self):
+        """소스 모드는 네 타깃에 같은 값이 복사돼 있다 — 첫 타깃만 읽는다.
+
+        값이 갈린 라벨을 일부러 넣어 규칙 자체를 고정한다. 평균이면 0.4 가 나온다.
+        """
+        lab = self.lab({"Chinese": [0.2, 0.9], "German": [0.6, 0.1]}, source_mode=True)
+        f = lj.contra_reader(lab, ["Chinese", "German"])
+        self.assertAlmostEqual(f(0, 1), 0.2)
+        self.assertAlmostEqual(f(0, 2), 0.9)
+
+    def test_source_mode_follows_targets_order_not_dict_order(self):
+        lab = self.lab({"Chinese": [0.2, 0.9], "German": [0.6, 0.1]}, source_mode=True)
+        f = lj.contra_reader(lab, ["German", "Chinese"])
+        self.assertAlmostEqual(f(0, 1), 0.6)
+
+    def test_translation_mode_means_over_targets(self):
+        """번역 NLI 는 타깃마다 값이 갈린다 — cohesion·라벨과 같은 규칙(타깃 평균)으로 모은다."""
+        lab = self.lab({"Chinese": [0.2, 0.9], "German": [0.6, 0.1]}, source_mode=False)
+        f = lj.contra_reader(lab, ["Chinese", "German"])
+        self.assertAlmostEqual(f(0, 1), 0.4)
+        self.assertAlmostEqual(f(0, 2), 0.5)
+
+    def test_label_files_without_the_field_are_translation_mode(self):
+        """`contra_source` 가 붙기 전 라벨 파일은 번역 NLI 다 — `labels.contra_source_of` 기본값."""
+        lab = self.lab({"Chinese": [0.2], "German": [0.6]}, source_mode=False)
+        for per in lab.values():
+            per[0].pop("contra_source", None)
+        self.assertAlmostEqual(lj.contra_reader(lab, ["Chinese", "German"])(0, 1), 0.4)
+
+    def test_single_target_is_the_same_either_way(self):
+        for mode in (True, False):
+            f = lj.contra_reader(self.lab({"Chinese": [0.3]}, source_mode=mode), ["Chinese"])
+            self.assertAlmostEqual(f(0, 1), 0.3)
+
+
 class Cases(unittest.TestCase):
     def setUp(self):
         self.texts = ["a b c d e f g h i j k l"]
