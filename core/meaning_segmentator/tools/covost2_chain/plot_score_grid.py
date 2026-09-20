@@ -37,11 +37,15 @@ BASE = [("syntax", "#c2453a", "s", "syntax (SASST)"),
         ("causal_align", "#2f7d4f", "^", "causal_align"),
         ("alignatt", "#c98a1e", "v", "alignatt"),
         ("mu_prefix", "#7b5aa6", "D", "mu_prefix")]
+# 두 런을 겹칠 때는 선 모양만으로는 안 갈린다 — 색도 함께 바꾼다.
 OURS = ("#1a4f9c", "o", "auto (score threshold)")
+OURS2 = "#00a0a8"
 
 p = argparse.ArgumentParser()
 p.add_argument("--run", action="append", required=True,
-               help="비교할 런 디렉토리 이름. 두 번까지 준다 (첫째 실선, 둘째 파선)")
+               help="비교할 런 디렉토리 이름. 두 번까지 준다 (첫째 실선, 둘째 파선). "
+                    "`이름@하위디렉토리` 로 주면 bleu/ 대신 그곳에서 읽는다 — 격자를 "
+                    "넓혀 다시 돌리는 동안 이전 격자(bleu_t6/)를 읽을 때 쓴다")
 p.add_argument("--targets", nargs="+", default=["zh", "de", "ja"])
 p.add_argument("--metric", default="bleu", choices=("bleu", "comet"))
 p.add_argument("--x", default="ms", choices=("ms", "words"),
@@ -65,8 +69,13 @@ def fam(name: str):
     return lambda n: n == name or n.startswith(name + "_T")
 
 
-runs = [(r, {t: json.loads((A / r / "bleu" / f"{t}.json").read_text())["conditions"]
-             for t in a.targets}) for r in a.run]
+def load(spec: str):
+    rid, _, sub = spec.partition("@")
+    return rid, {t: json.loads((A / rid / (sub or "bleu") / f"{t}.json")
+                               .read_text())["conditions"] for t in a.targets}
+
+
+runs = [load(r) for r in a.run]
 
 plt.rcParams.update({"font.family": ["Liberation Sans", "DejaVu Sans"], "font.size": 10,
                      "axes.facecolor": "#ffffff", "figure.facecolor": "#ffffff"})
@@ -83,8 +92,10 @@ for ax, t in zip(axes, a.targets):
                     label=label, zorder=3)
     for i, (rid, per) in enumerate(runs):
         pts = curve(per[t], lambda n: n.startswith("auto_S"))
-        ax.plot(*zip(*pts), color=OURS[0], marker=OURS[1], ms=5, lw=2.2,
-                ls="-" if i == 0 else "--", zorder=4,
+        if not pts:
+            continue
+        ax.plot(*zip(*pts), color=OURS[0] if i == 0 else OURS2, marker=OURS[1],
+                ms=5, lw=2.2, ls="-" if i == 0 else "--", zorder=4 + i,
                 label=f"{OURS[2]} — {rid.replace('full_j44', '')}"
                       if len(runs) > 1 else OURS[2])
     unseg = cond0["unsegmented"]
