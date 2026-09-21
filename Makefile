@@ -6,4 +6,4 @@ bench:
 	$(PYTHON) -m bench --config $(CONFIG) --dataset $(DATASET)
 
 replay:
-	$(PYTHON) -m bench.replay $(RUN)
+	$(PYTHON) -m bench.replay $(RUN) $(TOPK:%=--top-k %)

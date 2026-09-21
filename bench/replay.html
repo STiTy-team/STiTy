@@ -22,6 +22,7 @@
     --audio: #9aa79a;
     --lane-0: #4c9a5a; --lane-1: #d08a2a; --lane-2: #c0554f; --lane-3: #7b60c0;
     --lane-4: #3f8a9c; --lane-5: #a0662a; --lane-6: #6d7fa8; --lane-7: #8a8f84;
+    color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -34,6 +35,7 @@
       --audio: #6e7a6e;
       --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
       --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
+      color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
@@ -46,6 +48,7 @@
     --audio: #6e7a6e;
     --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
     --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
+    color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
@@ -84,11 +87,6 @@
     position: absolute; inset: 14px 0 16px; background: var(--sunken);
     border-radius: 3px; overflow: hidden;
   }
-  .ribbon-item {
-    position: absolute; top: 0; bottom: 0; border-right: 1px solid var(--rule);
-  }
-  .ribbon-item:last-child { border-right: 0; }
-  .ribbon-item.speech { background: var(--accent-soft); }
   .tick { position: absolute; top: 8px; width: 2px; height: 22px; border-radius: 1px; }
   .tick.lab { top: 2px; height: 28px; }
   .playhead {
@@ -99,23 +97,18 @@
     content: ""; position: absolute; top: -4px; left: -3px;
     width: 7px; height: 7px; border-radius: 2px; background: var(--ink);
   }
-  .ribbon-labels {
-    position: absolute; left: 0; right: 0; bottom: 0; display: flex;
-    font-size: 9px; color: var(--ink-faint); font-family: var(--mono);
-  }
-  .ribbon-labels span {
-    border-left: 1px solid var(--rule-soft); padding-left: 4px;
-    overflow: hidden; white-space: nowrap;
-  }
 
   .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .btn {
-    background: var(--panel); border: 1px solid var(--rule); border-radius: 7px;
-    padding: 6px 12px; font-size: 13px; font-weight: 500;
+    background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
+    border-radius: 7px; padding: 6px 12px; font-size: 13px; font-weight: 500;
   }
   .btn:hover { border-color: var(--ink-faint); }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn.primary:hover { filter: brightness(1.08); }
+  /* `color-scheme` alone doesn't reach every browser's native <option> popup --
+     pin both sides of the pair explicitly so it can't render invisible text. */
+  select.btn option { background: var(--panel); color: var(--ink); }
   .seg-group { display: flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; }
   .seg-group button {
     background: var(--panel); border: 0; padding: 6px 10px; font-size: 12px;
@@ -126,13 +119,58 @@
   .clock { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
   .clock b { color: var(--ink); font-weight: 600; }
 
-  /* ── two columns: the device, and the instrument ─────────────────────── */
-  .cols { display: grid; grid-template-columns: 384px minmax(0, 1fr); gap: 16px; align-items: start; }
-  @media (max-width: 900px) { .cols { grid-template-columns: 1fr; } }
+  /* ── normally one model (phone, instrument side by side); a compare target
+     makes it two full mirrored columns, each with its own phone, log stream
+     and timing plot, so the two runs read the same way left-to-right ──────── */
+  .cols {
+    display: grid; gap: 16px; align-items: start;
+    grid-template-columns: 384px minmax(0, 1fr);
+    grid-template-areas: "phoneA logs";
+  }
+  .cols.comparing {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "phoneA phoneB" "logs logsB";
+  }
+  @media (max-width: 900px) {
+    .cols, .cols.comparing {
+      grid-template-columns: 1fr; grid-template-areas: "phoneA" "phoneB" "logs" "logsB";
+    }
+  }
+  #phone-a-section { grid-area: phoneA; }
+  #phone-b-section { grid-area: phoneB; }
+  #logs-section { grid-area: logs; }
+  #logs-b-section { grid-area: logsB; }
+  /* Both column heads are one baseline-aligned row, but a <select> is taller
+     than plain eyebrow text -- pin a shared height so a phone with a picker
+     for a head doesn't start lower than the one next to it. */
   .col-head {
-    display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; padding: 0 2px;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 0 2px;
+    min-height: 32px;
   }
   .col-head p { margin: 0; font-size: 11px; color: var(--ink-faint); }
+  #compare-caption { color: var(--ink-soft); }
+  .timing-row { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  .timing-row.comparing { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+  /* ── per-item scores, then the run's own config and aggregate metrics ─── */
+  .stats-row { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  .stats-row.comparing { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .readout {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 14px 18px; display: grid; gap: 10px; align-content: start;
+  }
+  .stat-tiles { display: flex; flex-wrap: wrap; gap: 18px 28px; padding: 0 2px 4px; }
+  .stat-tile { display: flex; flex-direction: column; gap: 3px; }
+  .stat-tile .stat-value {
+    font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink);
+    font-variant-numeric: normal;
+  }
+  .code-block {
+    background: var(--sunken); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 10px 12px; margin: 0; overflow: auto; max-height: 280px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft);
+    white-space: pre;
+  }
 
   /* phone */
   .phone {
@@ -219,6 +257,7 @@
   .filters button {
     background: var(--sunken); border: 1px solid var(--rule); border-radius: 999px;
     padding: 3px 9px; font-size: 11px; font-family: var(--mono); color: var(--ink-soft);
+    user-select: text;
   }
   .filters button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
   .find {
@@ -243,14 +282,6 @@
   td.fields { color: var(--ink-soft); word-break: break-word; }
   td.fields b { color: var(--ink); font-weight: 500; }
   .reason { display: inline-block; padding: 0 5px; border-radius: 3px; color: #fff; font-size: 10px; }
-  .items { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
-  .items button {
-    background: var(--sunken); border: 1px solid var(--rule); border-radius: 7px;
-    padding: 5px 9px; text-align: left; white-space: nowrap; font-size: 11px;
-    font-family: var(--mono); color: var(--ink-soft); line-height: 1.35;
-  }
-  .items button[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
-  .items b { display: block; color: var(--ink); font-weight: 600; }
   .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--ink-faint); padding: 0 2px; }
   .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
 
@@ -287,9 +318,11 @@
         <div class="eyebrow">Session replay</div>
         <h1 id="run-name">—</h1>
       </div>
+      <select class="btn" id="run-picker" aria-label="Run"></select>
       <span class="chip" id="run-stamp"></span>
       <span class="chip" id="run-status"></span>
-      <span class="chip" id="run-dir"></span>
+      <span class="chip" id="run-shown"></span>
+      <select class="btn" id="item-picker" aria-label="Item"></select>
       <span class="spacer"></span>
       <div class="clock">
         <b id="clock-now">0.00</b> / <span id="clock-end">0.00</span> s of recording
@@ -300,7 +333,6 @@
     <div class="ribbon" id="ribbon" role="slider" tabindex="0" aria-label="Seek"
          aria-valuemin="0" aria-valuenow="0">
       <div class="ribbon-track" id="ribbon-track"></div>
-      <div class="ribbon-labels" id="ribbon-labels"></div>
       <div class="playhead" id="playhead" style="left:0"></div>
     </div>
 
@@ -315,11 +347,13 @@
     </div>
   </header>
 
-  <div class="cols">
-    <section>
+  <div class="cols" id="cols">
+    <section id="phone-a-section">
       <div class="col-head">
         <span class="eyebrow">On the phone</span>
         <p>what the client rendered from <code>final</code></p>
+        <span class="spacer"></span>
+        <select class="btn" id="compare-picker" aria-label="Compare with"></select>
       </div>
       <div class="phone">
         <div class="screen">
@@ -344,13 +378,33 @@
       </div>
     </section>
 
-    <section>
+    <section id="phone-b-section" hidden>
+      <div class="col-head" id="phone-b-head">
+        <p id="compare-caption">—</p>
+      </div>
+      <div class="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="status"><span>9:41</span><span>STiTy</span></div>
+          <div class="appbar">
+            <div class="langpill"><span class="dotmark" id="pill-src-dot-cmp"></span><span id="pill-src-cmp">—</span></div>
+            <span class="arrow">→</span>
+            <div class="langpill"><span class="dotmark" id="pill-tgt-dot-cmp"></span><span id="pill-tgt-cmp">—</span></div>
+          </div>
+          <div class="feed" id="feed-cmp">
+            <div id="feed-rows-cmp"><div class="feed-empty">—</div></div>
+            <div id="live-cmp" hidden></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="logs-section">
       <div class="col-head">
         <span class="eyebrow">Not on the phone</span>
         <p>the recorded stream — every event, at the point in the audio it came from</p>
       </div>
       <div class="logs">
-        <div class="items" id="items"></div>
         <div class="logs-top">
           <div class="filters" id="filters"></div>
           <input class="find" id="find" type="search" placeholder="filter text…" aria-label="Filter events">
@@ -366,18 +420,73 @@
         </div>
       </div>
     </section>
+
+    <section id="logs-b-section" hidden>
+      <div class="col-head">
+        <span class="eyebrow">Not on the phone</span>
+        <p>the recorded stream, for the compared run</p>
+      </div>
+      <div class="logs">
+        <div class="logs-top">
+          <div class="filters" id="filters-cmp"></div>
+          <input class="find" id="find-cmp" type="search" placeholder="filter text…" aria-label="Filter events (compare)">
+        </div>
+        <div class="stream" id="stream-cmp">
+          <table>
+            <thead><tr>
+              <th style="width:62px">audio</th><th style="width:50px">lag</th>
+              <th style="width:78px">item</th><th style="width:120px">event</th><th>fields</th>
+            </tr></thead>
+            <tbody id="rows-cmp"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <section class="timing">
-    <div class="timing-top">
-      <span class="eyebrow">Layer timing</span>
-      <h2 id="timing-title">—</h2>
-      <p>one row per commit · x is wall clock since the item's first chunk</p>
-      <span class="spacer"></span>
-      <div class="legend" id="timing-legend"></div>
-    </div>
-    <div class="timing-body" id="timing-body"></div>
-  </section>
+  <div class="timing-row" id="timing-row">
+    <section class="timing" id="timing-a">
+      <div class="timing-top">
+        <span class="eyebrow">Layer timing</span>
+        <h2 id="timing-title">—</h2>
+        <p>one row per commit · x is wall clock since the item's first chunk</p>
+        <span class="spacer"></span>
+        <div class="legend" id="timing-legend"></div>
+      </div>
+      <div class="timing-body" id="timing-body"></div>
+    </section>
+
+    <section class="timing" id="timing-b" hidden>
+      <div class="timing-top">
+        <span class="eyebrow">Layer timing</span>
+        <h2 id="timing-title-cmp">—</h2>
+        <p>one row per commit · x is wall clock since the item's first chunk</p>
+        <span class="spacer"></span>
+        <div class="legend" id="timing-legend-cmp"></div>
+      </div>
+      <div class="timing-body" id="timing-body-cmp"></div>
+    </section>
+  </div>
+
+  <div class="stats-row" id="stats-row">
+    <section class="readout" id="readout-a">
+      <div class="col-head"><span class="eyebrow">Item metrics</span><p>scores for the item on screen</p></div>
+      <div class="stat-tiles" id="tiles-a"></div>
+      <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
+      <pre class="code-block"><code id="yaml-a"></code></pre>
+      <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
+      <pre class="code-block"><code id="summary-a"></code></pre>
+    </section>
+
+    <section class="readout" id="readout-b" hidden>
+      <div class="col-head"><span class="eyebrow">Item metrics</span><p>scores for the item on screen</p></div>
+      <div class="stat-tiles" id="tiles-b"></div>
+      <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
+      <pre class="code-block"><code id="yaml-b"></code></pre>
+      <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
+      <pre class="code-block"><code id="summary-b"></code></pre>
+    </section>
+  </div>
 </div>
 
 <script>
@@ -396,47 +505,40 @@ const REASONS = {seg:"--seg", vad:"--vad", dot:"--dot", always:"--always", finis
 const NOISY = new Set(["chunk", "partial"]);
 const laneOf = e => e.tag || e.type;
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-// ── one timeline over every item, so the run plays as it was recorded ──────
-let T = 0;
-const items = DATA.items.map(it => {
-  const span = Math.max(it.duration || 0, ...it.events.map(e => e.audio || 0), 0.001);
-  const entry = {...it, offset: T, span};
-  T += span;
-  return entry;
-});
-const events = [];
-for (const it of items) {
-  for (const e of it.events) {
-    const audio = e.audio == null
-      ? (e.type === "item_close" ? it.span : 0)      // bookends carry no position
-      : e.audio;
-    events.push({...e, item: e.item || it.id, audio, at: it.offset + audio, _it: it});
-  }
-}
-events.sort((a, b) => (a.at - b.at)
-  || (a.t == null || b.t == null ? 0 : a.t - b.t));
-const pendingFinals = new Map();                       // transcribed -> its final
-events.forEach((e, i) => {
-  if (e.type !== "transcribed") return;
-  const f = events.slice(i + 1).find(x => x.type === "final" && x.item === e.item);
-  if (f) pendingFinals.set(e, f.at);
-});
+// ── items: each replays on its own clock -- there is no run-wide timeline ──
+const items = DATA.items.map(it => ({
+  ...it, span: Math.max(it.duration || 0, ...it.events.map(e => e.audio || 0), 0.001),
+}));
 
-let now = 0, playing = false, speed = 1, lastFrame = null, cursor = -1;
+let current = null;                 // the item currently loaded into the player
+let events = [];                    // current item's events only, each with `.at`
+let T = 0.001;                      // current item's span -- the seek bound
+const pendingFinals = new Map();    // transcribed -> its final, rebuilt per item
+
+let now = 0, playing = false, speed = 1, lastFrame = null;
 let feedKey = null, liveShown = "";
-const shown = new Set(), hidden = new Set(NOISY);
 let query = "";
+let audioFor = null, pendingTime = null;
 
 // ── header ────────────────────────────────────────────────────────────────
 $("run-name").textContent = DATA.run.name || "replay";
 $("run-stamp").textContent = DATA.run.stamp || "";
-$("run-dir").textContent = DATA.run.dir || "";
 const st = $("run-status");
 st.textContent = DATA.run.status || "";
 st.className = "chip " + (DATA.run.status === "ok" ? "ok" : DATA.run.status ? "bad" : "");
 if (!DATA.run.status) st.hidden = true;
-$("clock-end").textContent = T.toFixed(2);
+$("run-shown").textContent = `${DATA.run.n_shown}/${DATA.run.n_total} shown`
+  + (DATA.run.n_shown < DATA.run.n_total ? ` (worst ${DATA.run.top_k} by wer + failures)` : "");
+const picker = $("run-picker");
+picker.innerHTML = (DATA.runs || []).map(r =>
+  `<option value="${esc(r.name)}"${r.name === DATA.run.dir ? " selected" : ""}>${esc(r.name)}</option>`
+).join("");
+picker.addEventListener("change", () => {
+  location.search = "?run=" + encodeURIComponent(picker.value);
+});
+
 const src = DATA.run.src_lang || "", tgt = DATA.run.target_lang || "";
 $("pill-src").textContent = (src || "?").toUpperCase();
 $("pill-tgt").textContent = (tgt || "?").toUpperCase();
@@ -445,33 +547,72 @@ $("pill-tgt-dot").style.background = langColor(tgt).bubble;
 $("legend").innerHTML = Object.entries(REASONS)
   .map(([r, v]) => `<span><i style="background:var(${v})"></i>${r}</span>`).join("");
 
-// ── ribbon: item blocks, speech shading, a tick per commit ────────────────
-const track = $("ribbon-track"), labels = $("ribbon-labels");
-for (const it of items) {
-  const block = document.createElement("div");
-  block.className = "ribbon-item";
-  block.style.left = (100 * it.offset / T) + "%";
-  block.style.width = (100 * it.span / T) + "%";
-  track.appendChild(block);
-  const label = document.createElement("span");
-  label.style.width = (100 * it.span / T) + "%";
-  label.textContent = it.id;
-  labels.appendChild(label);
+// ── per-item score tiles, plus the run's own config and aggregate metrics ──
+const METRIC_DISPLAY = {
+  wer: {label: "WER", fmt: v => v.toFixed(2)},
+  cer: {label: "CER", fmt: v => v.toFixed(2)},
+  sentence_bleu: {label: "BLEU", fmt: v => v.toFixed(1)},
+  avg_fsl_sec: {label: "FSL", fmt: v => v.toFixed(2) + "s"},
+  laal_ms: {label: "LAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
+  n_segments: {label: "Segments", fmt: v => String(v)},
+  route_errors: {label: "Route errors", fmt: v => String(v)},
+};
+function renderStatTiles(el, metrics) {
+  const entries = Object.entries(METRIC_DISPLAY).filter(([k]) => metrics && metrics[k] != null);
+  el.innerHTML = entries.length
+    ? entries.map(([k, spec]) =>
+        `<div class="stat-tile"><span class="eyebrow">${esc(spec.label)}</span>` +
+        `<span class="stat-value">${esc(spec.fmt(metrics[k]))}</span></div>`).join("")
+    : `<div class="feed-empty">no per-item metrics for this item</div>`;
 }
-for (const e of events) {
-  if (e.type !== "final" && e.type !== "vad_speech_end") continue;
-  const tick = document.createElement("div");
-  const reason = e.commit_reason || "";
-  tick.className = "tick" + (e.type === "final" ? " lab" : "");
-  tick.style.left = (100 * e.at / T) + "%";
-  tick.style.background = e.type === "final"
-    ? `var(${REASONS[reason] || "--finish"})` : "var(--ink-faint)";
-  tick.title = e.type === "final" ? `${reason} @ ${e.audio.toFixed(2)}s` : "speech end";
-  track.appendChild(tick);
+function renderReadout(prefix, runInfo) {
+  $(`yaml-${prefix}`).textContent = (runInfo && runInfo.pipeline_yaml) || "(no pipeline config recorded)";
+  $(`summary-${prefix}`).textContent = JSON.stringify((runInfo && runInfo.summary_metrics) || {}, null, 2);
+}
+renderReadout("a", DATA.run);
+
+// ── layer timing constants: an event with a `dur` is a bar, its tag names the lane ──
+const LANE_VARS = ["--lane-0", "--lane-1", "--lane-2", "--lane-3",
+                   "--lane-4", "--lane-5", "--lane-6", "--lane-7"];
+const HEARD_SHADE = [0.85, 0.72], SILENT_SHADE = [0.22, 0.12];
+const timed = e => typeof e.dur === "number";
+const TL = {padL: 64, padR: 18, padT: 12, lane: 9, bar: 7, label: 14, gap: 8, axis: 24};
+const TICKS = [0.25, 0.5, 1, 2, 5, 10, 30, 60];
+
+// ── a "column" is one model's full read-out: log table + timing plot ───────
+// Comparing puts two of these side by side; each keeps its own filter/search
+// state and lane-color assignment, since two pipelines rarely emit the same
+// set of tagged spans.
+function makeColumn(ids) {
+  return {
+    tbody: $(ids.rows), filtersEl: $(ids.filters), findEl: $(ids.find),
+    timingTitle: $(ids.timingTitle), timingLegend: $(ids.timingLegend), timingBody: $(ids.timingBody),
+    events: [], rowEls: [], cursor: -1,
+    hidden: new Set(NOISY), query: "",
+    laneOrder: [], lanes: [],
+    timingFor: null, timingX: null, timingData: null,
+  };
+}
+const colA = makeColumn({
+  rows: "rows", filters: "filters", find: "find",
+  timingTitle: "timing-title", timingLegend: "timing-legend", timingBody: "timing-body",
+});
+const colB = makeColumn({
+  rows: "rows-cmp", filters: "filters-cmp", find: "find-cmp",
+  timingTitle: "timing-title-cmp", timingLegend: "timing-legend-cmp", timingBody: "timing-body-cmp",
+});
+const laneColorFor = (col, type) => {
+  const i = col.laneOrder.indexOf(type);
+  return `var(${LANE_VARS[i < 0 ? 0 : i % LANE_VARS.length]})`;
+};
+
+function buildColumnEvents(rawEvents, span) {
+  return rawEvents.map(e => {
+    const audio = e.audio == null ? (e.type === "item_close" ? span : 0) : e.audio;
+    return {...e, audio, at: audio};
+  }).sort((a, b) => (a.at - b.at) || (a.t == null || b.t == null ? 0 : a.t - b.t));
 }
 
-// ── the log table: every event once, revealed as the clock passes it ──────
-const tbody = $("rows");
 const SKIP = new Set(["t", "type", "tag", "item", "session", "audio", "at", "_it"]);
 function fieldsHtml(e) {
   const lead = ["original", "translation", "commit_reason", "detail", "error", "msg"];
@@ -488,59 +629,279 @@ function fieldsHtml(e) {
   }
   return out.join(" ");
 }
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(3);
 
-const rowEls = events.map(e => {
-  const tr = document.createElement("tr");
-  tr.className = "future";
-  const lag = (e.t != null && e.audio != null) ? (e.t - e.audio) : null;
-  tr.innerHTML =
-    `<td class="r">${e.audio.toFixed(2)}</td>` +
-    `<td class="r">${lag == null ? "" : (lag >= 0 ? "+" : "") + lag.toFixed(2)}</td>` +
-    `<td class="r">${esc(e.item || "")}</td>` +
-    `<td class="type">${esc(laneOf(e))}</td>` +
-    `<td class="fields">${fieldsHtml(e)}</td>`;
-  tr.dataset.type = laneOf(e);
-  tr.dataset.text = (laneOf(e) + " " + (e.item || "") + " " + tr.textContent).toLowerCase();
-  tr.addEventListener("click", () => seek(e.at));
-  tbody.appendChild(tr);
-  return tr;
-});
-
-function applyFilters() {
-  rowEls.forEach((tr, i) => {
-    const e = events[i];
-    const ok = !hidden.has(laneOf(e)) && (!query || tr.dataset.text.includes(query));
+function applyFilters(col) {
+  col.rowEls.forEach((tr, i) => {
+    const e = col.events[i];
+    const ok = !col.hidden.has(laneOf(e)) && (!col.query || tr.dataset.text.includes(col.query));
     tr.hidden = !ok;
   });
 }
-const types = [...new Set(events.map(laneOf))].sort();
-$("filters").innerHTML = types
-  .map(t => `<button data-t="${esc(t)}" aria-pressed="${!hidden.has(t)}">${esc(t)}</button>`).join("");
-$("filters").addEventListener("click", ev => {
-  const b = ev.target.closest("button"); if (!b) return;
-  const t = b.dataset.t;
-  hidden.has(t) ? hidden.delete(t) : hidden.add(t);
-  b.setAttribute("aria-pressed", String(!hidden.has(t)));
-  applyFilters();
-});
-$("find").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); applyFilters(); });
+function wireColumnControls(col) {
+  col.filtersEl.addEventListener("click", ev => {
+    const b = ev.target.closest("button"); if (!b) return;
+    const t = b.dataset.t;
+    col.hidden.has(t) ? col.hidden.delete(t) : col.hidden.add(t);
+    b.setAttribute("aria-pressed", String(!col.hidden.has(t)));
+    applyFilters(col);
+  });
+  col.findEl.addEventListener("input", e => {
+    col.query = e.target.value.trim().toLowerCase();
+    applyFilters(col);
+  });
+}
+wireColumnControls(colA);
+wireColumnControls(colB);
 
-$("items").innerHTML = items.map(it => {
+function revealRows(col, edge) {
+  if (edge === col.cursor) return;
+  col.rowEls.forEach((tr, i) => {
+    tr.classList.toggle("future", i >= edge);
+    tr.classList.toggle("now", i === edge - 1);
+  });
+  const newest = col.rowEls[edge - 1];
+  if (newest && playing && !newest.hidden) {
+    newest.scrollIntoView({block: "nearest", behavior: "smooth"});
+  }
+  col.cursor = edge;
+}
+
+// Loads one item's data into a column: its log table, filters and lane colors.
+// Returns the `.at`-augmented events (the log table's own sort order).
+function loadColumn(col, it) {
+  const computed = buildColumnEvents(it.events, it.span);
+  col.events = computed;
+  col.tbody.innerHTML = "";
+  col.rowEls = computed.map(e => {
+    const tr = document.createElement("tr");
+    tr.className = "future";
+    const lag = (e.t != null && e.audio != null) ? (e.t - e.audio) : null;
+    tr.innerHTML =
+      `<td class="r">${e.audio.toFixed(2)}</td>` +
+      `<td class="r">${lag == null ? "" : (lag >= 0 ? "+" : "") + lag.toFixed(2)}</td>` +
+      `<td class="r">${esc(e.item || "")}</td>` +
+      `<td class="type">${esc(laneOf(e))}</td>` +
+      `<td class="fields">${fieldsHtml(e)}</td>`;
+    tr.dataset.type = laneOf(e);
+    tr.dataset.text = (laneOf(e) + " " + (e.item || "") + " " + tr.textContent).toLowerCase();
+    tr.addEventListener("click", () => seek(e.at));
+    col.tbody.appendChild(tr);
+    return tr;
+  });
+  const types = [...new Set(computed.map(laneOf))].sort();
+  col.filtersEl.innerHTML = types
+    .map(t => `<button data-t="${esc(t)}" aria-pressed="${!col.hidden.has(t)}">${esc(t)}</button>`).join("");
+  applyFilters(col);
+
+  col.laneOrder = [];
+  for (const e of it.events) {
+    if (timed(e) && !col.laneOrder.includes(laneOf(e))) col.laneOrder.push(laneOf(e));
+  }
+  col.lanes = [{name: "audio in", color: "var(--audio)"}]
+    .concat(col.laneOrder.map(type => ({name: type, color: laneColorFor(col, type)})));
+  col.timingLegend.innerHTML = col.lanes
+    .map(l => `<span><i style="background:${l.color}"></i>${esc(l.name)}</span>`)
+    .concat([`<span>◆ commit decided</span>`,
+             `<span><i style="background:var(--ink-faint);opacity:.45"></i>silence waited out</span>`])
+    .join("");
+
+  col.cursor = -1;
+  col.timingFor = null;  // force a redraw next render()
+  return computed;
+}
+
+// ── ribbon: a tick per commit in whichever item is loaded ──────────────────
+const track = $("ribbon-track");
+
+// ── load one item onto the player -- it gets its own clock, starting at 0 ──
+function loadItem(it) {
+  current = it;
+  events = loadColumn(colA, it);
+  T = Math.max(it.span, 0.001);
+  now = 0; playing = false; lastFrame = null; feedKey = null; liveShown = "";
+  audioFor = null; pendingTime = null;
+  $("play").textContent = "▶ Play";
+
+  pendingFinals.clear();
+  events.forEach((e, i) => {
+    if (e.type !== "transcribed") return;
+    const f = events.slice(i + 1).find(x => x.type === "final");
+    if (f) pendingFinals.set(e, f.at);
+  });
+
+  track.querySelectorAll(".tick").forEach(t => t.remove());
+  for (const e of events) {
+    if (e.type !== "final" && e.type !== "vad_speech_end") continue;
+    const tick = document.createElement("div");
+    const reason = e.commit_reason || "";
+    tick.className = "tick" + (e.type === "final" ? " lab" : "");
+    tick.style.left = (100 * e.at / T) + "%";
+    tick.style.background = e.type === "final"
+      ? `var(${REASONS[reason] || "--finish"})` : "var(--ink-faint)";
+    tick.title = e.type === "final" ? `${reason} @ ${e.audio.toFixed(2)}s` : "speech end";
+    track.appendChild(tick);
+  }
+
+  $("clock-end").textContent = T.toFixed(2);
+  itemPicker.value = it.id;
+  renderStatTiles($("tiles-a"), it.metrics);
+  if (compareRun) loadCompare(it.id);
+  render();
+}
+
+const itemPicker = $("item-picker");
+const loadedIds = new Set(items.map(it => it.id));
+const fetchedItems = new Map();  // id -> item, for picks outside the loaded top-k
+
+function optionFor(it) {
   const n = it.events.filter(e => e.type === "final").length;
   const wer = it.wer == null ? "" : ` · wer ${it.wer.toFixed(2)}`;
-  return `<button data-at="${it.offset}" aria-pressed="false"><b>${esc(it.id)}</b>` +
-         `${it.span.toFixed(1)}s · ${n} commit${n === 1 ? "" : "s"}${esc(wer)}</button>`;
-}).join("");
-$("items").addEventListener("click", ev => {
-  const b = ev.target.closest("button"); if (b) seek(Number(b.dataset.at) + 0.0001);
+  return `<option value="${esc(it.id)}">${esc(it.id)} — ${it.span.toFixed(1)}s · `
+       + `${n} commit${n === 1 ? "" : "s"}${esc(wer)}</option>`;
+}
+function lightOptionFor(row) {
+  const wer = row.wer == null ? "" : ` · wer ${row.wer.toFixed(2)}`;
+  return `<option value="${esc(row.id)}">${esc(row.id)}${esc(wer)}</option>`;
+}
+const rest = (DATA.all_items || []).filter(r => !loadedIds.has(r.id));
+itemPicker.innerHTML =
+  `<optgroup label="Worst ${DATA.run.top_k} (loaded)">${items.map(optionFor).join("")}</optgroup>`
+  + (rest.length
+      ? `<optgroup label="Rest of the run (${rest.length})">${rest.map(lightOptionFor).join("")}</optgroup>`
+      : "");
+
+async function fetchItem(runName, id) {
+  const res = await fetch(`/item/${encodeURIComponent(runName)}/${encodeURIComponent(id)}`);
+  if (!res.ok) throw new Error("not found");
+  const raw = await res.json();
+  return {...raw, span: Math.max(raw.duration || 0, ...raw.events.map(e => e.audio || 0), 0.001)};
+}
+
+itemPicker.addEventListener("change", async () => {
+  const id = itemPicker.value;
+  let it = items.find(x => x.id === id) || fetchedItems.get(id);
+  if (it) { loadItem(it); return; }
+  itemPicker.disabled = true;
+  try {
+    it = await fetchItem(DATA.run.dir, id);
+    fetchedItems.set(id, it);
+  } catch (e) {
+    console.error(`item ${id} couldn't be loaded from ${DATA.run.dir}:`, e);
+    itemPicker.disabled = false;
+    itemPicker.value = current.id;
+    return;
+  }
+  itemPicker.disabled = false;
+  loadItem(it);
+});
+
+// ── compare: a second column, fetching one item from another run over the
+// same dataset. The picker lives in column A until a comparison starts, then
+// becomes column B's own label -- there is exactly one, it just moves. ─────
+let compareRun = null, compareItem = null, compareFeedKey = null, compareRequest = 0;
+const comparePicker = $("compare-picker");
+const compareCaption = $("compare-caption");
+const phoneBHead = $("phone-b-head");
+const pickerHome = document.createComment("compare-picker-home");
+comparePicker.before(pickerHome);
+
+const compareCandidates = (DATA.runs || [])
+  .filter(r => r.dataset_sha && r.dataset_sha === DATA.run.dataset_sha && r.name !== DATA.run.dir);
+comparePicker.innerHTML = `<option value="">— compare with —</option>`
+  + compareCandidates.map(r => `<option value="${esc(r.name)}">${esc(r.name)}</option>`).join("");
+comparePicker.hidden = compareCandidates.length === 0;
+
+function clearColumn(col) {
+  col.tbody.innerHTML = ""; col.rowEls = []; col.cursor = -1;
+  col.filtersEl.innerHTML = ""; col.events = [];
+  col.timingBody.innerHTML = ""; col.timingTitle.textContent = "—";
+  col.timingLegend.innerHTML = ""; col.timingFor = null;
+}
+
+async function loadCompare(itemId) {
+  if (!compareRun) return;
+  const requestedRun = compareRun, myRequest = ++compareRequest;
+  compareCaption.textContent = "loading…";
+  let item = null, statusText;
+  try {
+    item = await fetchItem(requestedRun, itemId);
+    statusText = item.wer == null ? itemId : `${itemId} · wer ${item.wer.toFixed(2)}`;
+  } catch {
+    statusText = `${itemId} not in ${requestedRun}`;
+  }
+  // A later switch (item or compare-run) may have landed while this was in flight.
+  if (myRequest !== compareRequest) return;
+  compareItem = item;
+  compareCaption.textContent = statusText;
+  $("pill-src-cmp").textContent = $("pill-src").textContent;
+  $("pill-tgt-cmp").textContent = $("pill-tgt").textContent;
+  $("pill-src-dot-cmp").style.background = $("pill-src-dot").style.background;
+  $("pill-tgt-dot-cmp").style.background = $("pill-tgt-dot").style.background;
+  compareFeedKey = null;
+  if (compareItem) loadColumn(colB, compareItem);
+  else clearColumn(colB);
+  renderStatTiles($("tiles-b"), compareItem && compareItem.metrics);
+  renderCompare();
+}
+
+function renderCompare() {
+  const finals = compareItem
+    ? compareItem.events.filter(e => e.type === "final" && (e.audio ?? 0) <= now)
+    : [];
+  const key = finals.length + "|" + (compareItem ? compareItem.id : "none");
+  if (key !== compareFeedKey) {
+    compareFeedKey = key;
+    $("feed-rows-cmp").innerHTML = finals.length
+      ? finals.map(e => bubble((e.language || "").toLowerCase(),
+                               e.translation || e.original || "",
+                               e.translation ? e.original : "", false)).join("")
+      : `<div class="feed-empty">${compareItem ? "Nothing committed yet" : "—"}</div>`;
+    $("feed-cmp").scrollTop = $("feed-cmp").scrollHeight;
+  }
+  if (!compareItem || !colB.events.length) return;
+  const uptoB = colB.events.findIndex(e => e.at > now);
+  revealRows(colB, uptoB === -1 ? colB.events.length : uptoB);
+  if (colB.timingFor !== compareItem.id) drawTiming(colB, compareItem);
+  timingPlayhead(colB, compareItem);
+}
+
+function layoutComparePicker() {
+  if (compareRun) {
+    phoneBHead.insertBefore(comparePicker, compareCaption);
+  } else {
+    pickerHome.after(comparePicker);
+  }
+}
+
+comparePicker.addEventListener("change", () => {
+  compareRun = comparePicker.value || null;
+  compareRequest++;  // invalidate any fetch still in flight for the old selection
+  $("phone-b-section").hidden = !compareRun;
+  $("logs-b-section").hidden = !compareRun;
+  $("timing-b").hidden = !compareRun;
+  $("readout-b").hidden = !compareRun;
+  $("cols").classList.toggle("comparing", !!compareRun);
+  $("timing-row").classList.toggle("comparing", !!compareRun);
+  $("stats-row").classList.toggle("comparing", !!compareRun);
+  layoutComparePicker();
+  compareItem = null;
+  compareFeedKey = null;
+  if (compareRun) {
+    const runInfo = (DATA.runs || []).find(r => r.name === compareRun);
+    renderReadout("b", runInfo);
+  } else {
+    clearColumn(colB);
+    renderStatTiles($("tiles-b"), null);
+  }
+  renderCompare();
+  if (compareRun) loadCompare(current.id);
 });
 
 const player = $("player");
 const AUDIO_MAX_SPEED = 4;
 const DRIFT_SEC = 0.25;
-let audioOn = true, audioFor = null, pendingTime = null;
+let audioOn = true;
 
 player.addEventListener("loadedmetadata", () => {
   if (pendingTime != null) { player.currentTime = pendingTime; pendingTime = null; }
@@ -555,7 +916,7 @@ function syncAudio(current) {
     pendingTime = null;
     player.src = current.audio_url;
   }
-  const want = now - current.offset;
+  const want = now;
   const dur = Number.isFinite(player.duration) ? player.duration : null;
   const inClip = want >= 0 && (dur == null || want < dur - 0.02);
   player.playbackRate = Math.min(speed, AUDIO_MAX_SPEED);
@@ -573,27 +934,6 @@ $("sound").addEventListener("click", ev => {
   ev.currentTarget.textContent = audioOn ? "♪ Sound" : "♪̸ Muted";
   render();
 });
-
-// ── layer timing: an event with a `dur` is a bar, its tag names the lane ──
-const LANE_VARS = ["--lane-0", "--lane-1", "--lane-2", "--lane-3",
-                   "--lane-4", "--lane-5", "--lane-6", "--lane-7"];
-const HEARD_SHADE = [0.85, 0.72], SILENT_SHADE = [0.22, 0.12];
-const timed = e => typeof e.dur === "number";
-const laneOrder = [];
-for (const e of events) {
-  if (timed(e) && !laneOrder.includes(laneOf(e))) laneOrder.push(laneOf(e));
-}
-const laneColor = type => `var(${LANE_VARS[laneOrder.indexOf(type) % LANE_VARS.length]})`;
-const lanes = [{name: "audio in", color: "var(--audio)"}]
-  .concat(laneOrder.map(type => ({name: type, color: laneColor(type)})));
-const TL = {padL: 64, padR: 18, padT: 12, lane: 9, bar: 7, label: 14, gap: 8, axis: 24};
-const TICKS = [0.25, 0.5, 1, 2, 5, 10, 30, 60];
-
-$("timing-legend").innerHTML = lanes
-  .map(l => `<span><i style="background:${l.color}"></i>${esc(l.name)}</span>`)
-  .concat([`<span>◆ commit decided</span>`,
-           `<span><i style="background:var(--ink-faint);opacity:.45"></i>silence waited out</span>`])
-  .join("");
 
 const newRow = (start, end, final) =>
   ({start, end, final, spans: [], chunks: [], vad: [], commits: []});
@@ -636,15 +976,14 @@ function timingModel(it) {
   return {rows, end, wallAt};
 }
 
-let timingFor = null, timingX = null, timingData = null;
-function drawTiming(it) {
-  timingFor = it.id;
-  timingX = null;
-  const body = $("timing-body");
+function drawTiming(col, it) {
+  col.timingFor = it.id;
+  col.timingX = null;
+  const body = col.timingBody;
   const m = timingModel(it);
-  timingData = m;
+  col.timingData = m;
   const commits = it.events.filter(e => e.type === "final").length;
-  $("timing-title").textContent = `${it.id} · ${it.span.toFixed(1)}s audio · `
+  col.timingTitle.textContent = `${it.id} · ${it.span.toFixed(1)}s audio · `
     + `${commits} commit${commits === 1 ? "" : "s"}`;
   if (!m.rows.length) {
     body.innerHTML = `<div class="timing-empty">Nothing timed in this item — ` +
@@ -655,10 +994,10 @@ function drawTiming(it) {
 
   const width = Math.max(560, body.clientWidth - 2);
   const plot = width - TL.padL - TL.padR;
-  const rowH = TL.label + lanes.length * TL.lane + TL.gap;
+  const rowH = TL.label + col.lanes.length * TL.lane + TL.gap;
   const height = TL.padT + m.rows.length * rowH + TL.axis;
   const x = t => TL.padL + plot * Math.min(1, Math.max(0, t / m.end));
-  timingX = x;
+  col.timingX = x;
 
   const step = TICKS.find(s => m.end / s <= 12) || TICKS.at(-1);
   const out = [`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
@@ -702,16 +1041,16 @@ function drawTiming(it) {
         ` VAD said so at ${v.t.toFixed(2)}s</title></rect>`);
     }
     for (const bar of row.spans) {
-      const lane = 1 + laneOrder.indexOf(laneOf(bar));
+      const lane = 1 + col.laneOrder.indexOf(laneOf(bar));
       const width = Math.max(0.8, x(bar.t + bar.dur) - x(bar.t));
       out.push(`<rect x="${x(bar.t)}" y="${laneY(lane)}" width="${width}"`,
-        ` height="${TL.bar}" rx="1.5" fill="${laneColor(laneOf(bar))}">`,
+        ` height="${TL.bar}" rx="1.5" fill="${laneColorFor(col, laneOf(bar))}">`,
         `<title>${esc(laneOf(bar))} ${bar.dur.toFixed(3)}s`,
         `${bar.reason ? ` (${esc(bar.reason)})` : ""} @ ${bar.t.toFixed(2)}s</title></rect>`);
     }
     row.commits.forEach((commit, k) => {
       const cx = x(commit.t);
-      const top = laneY(0) - 1, bottom = laneY(lanes.length - 1) + TL.bar + 1;
+      const top = laneY(0) - 1, bottom = laneY(col.lanes.length - 1) + TL.bar + 1;
       const reason = commit.commit_reason || "";
       out.push(`<line class="tl-commit" x1="${cx}" y1="${top}" x2="${cx}" y2="${bottom}"`,
         ` opacity="0.5"/>`,
@@ -732,31 +1071,43 @@ function drawTiming(it) {
     }
   });
 
-  out.push(`<line id="tl-now" x1="${TL.padL}" y1="${TL.padT - 4}" x2="${TL.padL}"`,
+  out.push(`<line class="tl-now" x1="${TL.padL}" y1="${TL.padT - 4}" x2="${TL.padL}"`,
     ` y2="${axisY}" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>`);
   out.push("</svg>");
   body.innerHTML = out.join("");
 }
 
-function timingPlayhead(it) {
-  const head = $("tl-now");
-  if (!head || !timingX || !timingData) return;
-  const at = timingX(timingData.wallAt(now - it.offset));
+function timingPlayhead(col, it) {
+  const head = col.timingBody.querySelector(".tl-now");
+  if (!head || !col.timingX || !col.timingData) return;
+  const at = col.timingX(col.timingData.wallAt(now));
   head.setAttribute("x1", at);
   head.setAttribute("x2", at);
 }
 
-let timingWidth = 0, redrawing = false;
+let redrawing = false;
+const timingWidths = new WeakMap();
 function timingResized() {
-  const width = $("timing-body").clientWidth;
-  if (redrawing || Math.abs(width - timingWidth) < 3) return;
-  timingWidth = width;
-  timingFor = null;
+  if (redrawing) return;
+  let changed = false;
+  for (const col of [colA, colB]) {
+    const w = col.timingBody.clientWidth;
+    if (Math.abs(w - (timingWidths.get(col) || 0)) >= 3) {
+      timingWidths.set(col, w);
+      col.timingFor = null;
+      changed = true;
+    }
+  }
+  if (!changed) return;
   redrawing = true;
   render();
   redrawing = false;
 }
-if (window.ResizeObserver) new ResizeObserver(timingResized).observe($("timing-body"));
+if (window.ResizeObserver) {
+  const ro = new ResizeObserver(timingResized);
+  ro.observe(colA.timingBody);
+  ro.observe(colB.timingBody);
+}
 addEventListener("resize", timingResized);
 
 // ── the phone: rebuilt from whatever is in the past, so seeking is exact ──
@@ -780,16 +1131,14 @@ function render() {
   const edge = upto === -1 ? events.length : upto;
   const past = events.filter(e => e.at <= now);
   const finals = past.filter(e => e.type === "final");
-  const current = items.find(it => now >= it.offset && now < it.offset + it.span) || items.at(-1);
-  const mine = finals.filter(e => e.item === current.id);
 
-  const key = current.id + "|" + mine.length + "|" + (now > 0);
+  const key = finals.length + "|" + (now > 0);
   if (key !== feedKey) {
     feedKey = key;
-    feedRows.innerHTML = mine.length
-      ? mine.map(e => bubble((e.language || "").toLowerCase(),
-                             e.translation || e.original || "",
-                             e.translation ? e.original : "", false)).join("")
+    feedRows.innerHTML = finals.length
+      ? finals.map(e => bubble((e.language || "").toLowerCase(),
+                               e.translation || e.original || "",
+                               e.translation ? e.original : "", false)).join("")
       : `<div class="feed-empty">${now > 0 ? "Nothing committed yet" : "Press play"}</div>`;
     feed.scrollTop = feed.scrollHeight;
   }
@@ -797,7 +1146,6 @@ function render() {
   let live = null;
   for (let i = edge - 1; i >= 0; i--) {
     const e = events[i];
-    if (e.item !== current.id) continue;
     if (e.type === "final" || e.type === "item_open") break;
     if (e.type === "partial") { live = e; break; }
   }
@@ -811,42 +1159,31 @@ function render() {
   }
 
   syncAudio(current);
+  renderCompare();
 
   // A commit is decided before it is delivered; that gap is the dots.
   const waiting = [...pendingFinals].some(([e, at]) => e.at <= now && at > now);
   $("pending").hidden = !waiting || !!liveShown;
 
-  const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "vad_speech_end")
-                       .filter(e => e.item === current.id).at(-1);
+  const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "vad_speech_end").at(-1);
   const hearing = speaking && speaking.type === "vad_speech_start";
   $("pulse").className = "pulse" + (hearing ? " live" : "");
   $("rec-label").textContent = hearing ? "Listening…" : (playing ? "Paused between utterances" : "Idle");
-  if (timingFor !== current.id) drawTiming(current);
-  timingPlayhead(current);
-  $("rec-time").textContent = (now - current.offset).toFixed(1) + "s";
+  if (colA.timingFor !== current.id) drawTiming(colA, current);
+  timingPlayhead(colA, current);
+  $("rec-time").textContent = now.toFixed(1) + "s";
   $("clock-item").textContent = current.id;
   $("clock-now").textContent = now.toFixed(2);
   $("playhead").style.left = (100 * now / T) + "%";
   $("ribbon").setAttribute("aria-valuenow", now.toFixed(2));
-  for (const b of $("items").children) b.setAttribute("aria-pressed", String(b.dataset.at == current.offset));
 
-  // Reveal up to the clock, and mark the newest row.
-  if (edge !== cursor) {
-    rowEls.forEach((tr, i) => {
-      tr.classList.toggle("future", i >= edge);
-      tr.classList.toggle("now", i === edge - 1);
-    });
-    const newest = rowEls[edge - 1];
-    if (newest && playing && !newest.hidden) {
-      newest.scrollIntoView({block: "nearest", behavior: "smooth"});
-    }
-    cursor = edge;
-  }
+  revealRows(colA, edge);
 }
 
 function seek(to) {
   now = Math.max(0, Math.min(T, to));
-  cursor = -1;
+  colA.cursor = -1;
+  colB.cursor = -1;
   render();
 }
 function frame(ts) {
@@ -891,6 +1228,9 @@ addEventListener("keydown", ev => {
   if (ev.code === "Space") { toggle(); ev.preventDefault(); }
 });
 
-applyFilters();
-render();
+if (items.length) {
+  loadItem(items[0]);
+} else {
+  $("stream").innerHTML = `<div class="timing-empty">This run has no items to replay.</div>`;
+}
 </script>
