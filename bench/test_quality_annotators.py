@@ -6,9 +6,13 @@ from pathlib import Path
 
 from bench.quality_annotators import (
     OpenAIJsonJudge,
+    ReferenceSpanCache,
+    annotate_candidate_critical_information,
     annotate_critical_information,
     annotate_fluency,
+    annotate_reference_critical_information,
     extract_critical_values,
+    gold_reference_spans,
 )
 
 
@@ -70,6 +74,70 @@ class QualityAnnotatorsTest(unittest.TestCase):
         self.assertEqual(text[number["start"]:number["end"]], "1990")
         self.assertEqual(number["canonical_value"], "1990")
 
+    def _values(self, text, lang):
+        return {(v["type"], v["text"], v["canonical_value"])
+                for v in extract_critical_values(text, lang)}
+
+    def test_dotted_meridiem_after_clock_time_is_read(self):
+        # FLEURS ko_1748: four translators wrote "11:35 p.m." and were scored wrong.
+        self.assertEqual(self._values("They put it out by 11:35 p.m.", "en"),
+                         {("time", "11:35 p.m.", "23:35")})
+        self.assertEqual(self._values("at 11:35 today", "en"), {("time", "11:35", "11:35")})
+        # The sentence's own full stop is not part of an undotted "PM".
+        self.assertEqual(self._values("by 11:35 PM.", "en"), {("time", "11:35 PM", "23:35")})
+
+    def test_english_number_words_compose(self):
+        # FLEURS ko_1980: "one-hundred percent" was read as 1, failing every system.
+        self.assertEqual(self._values("with one-hundred percent certainty", "en"),
+                         {("unit", "one-hundred percent", "100 %")})
+        self.assertEqual(self._values("with 100% certainty", "en"), {("unit", "100%", "100 %")})
+        self.assertEqual(self._values("twenty-five people", "en"),
+                         {("number", "twenty-five", "25")})
+        self.assertEqual(self._values("three hundred and five seats", "en"),
+                         {("number", "three hundred and five", "305")})
+        self.assertEqual(self._values("about 2 million users", "en"),
+                         {("number", "2 million", "2000000")})
+
+    def test_hyphenated_name_and_bare_pronoun_one_are_not_numbers(self):
+        # FLEURS ko_1946 ("COVID-19") and ko_1677 ("One day").
+        self.assertEqual(self._values("COVID-19 policies", "en"), set())
+        self.assertEqual(self._values("One day, the one I liked left.", "en"), set())
+        self.assertEqual(self._values("It costs one dollar.", "en"),
+                         {("money", "one dollar", "USD:1")})
+        self.assertEqual(self._values("pages 3-4", "en"),
+                         {("number", "3", "3"), ("number", "4", "4")})
+
+    def test_korean_answer_and_demonstrative_are_not_numbers(self):
+        self.assertEqual(self._values("네, 이 시간에 이 분이 오셨어요.", "ko"), set())
+        self.assertEqual(self._values("세 시간 걸려요.", "ko"), {("number", "세", "3")})
+
+    def test_korean_numerals_need_a_counter(self):
+        self.assertEqual(self._values("사과 두 개랑 한 사람", "ko"),
+                         {("number", "두", "2"), ("number", "한", "1")})
+        self.assertEqual(self._values("한국 세상", "ko"), set())
+        self.assertEqual(self._values("두 번 말했어", "ko"), {("number", "두", "2")})
+        self.assertEqual(self._values("두 번째 줄", "ko"), {("ordinal", "두 번째", "2")})
+
+    def test_korean_scale_numerals_compose(self):
+        self.assertEqual(self._values("3만 원", "ko"), {("money", "3만 원", "KRW:30000")})
+        self.assertEqual(self._values("1억 2천만 원이", "ko"),
+                         {("money", "1억 2천만 원", "KRW:120000000")})
+        self.assertEqual(self._values("삼백 명", "ko"), {("number", "삼백", "300")})
+        self.assertEqual(self._values("이천에 가요", "ko"), set())
+        self.assertEqual(self._values("각각 6 만 원씩", "ko"),
+                         {("money", "6 만 원", "KRW:60000")})
+        self.assertEqual(self._values("각각 6 만원씩", "ko"), {("money", "6 만원", "KRW:60000")})
+        self.assertEqual(self._values("3 백화점", "ko"), {("number", "3", "3")})
+
+    def test_korean_clock_times(self):
+        self.assertEqual(self._values("두 시 반에 봐", "ko"), {("time", "두 시 반", "02:30")})
+        self.assertEqual(self._values("오후 세 시쯤", "ko"), {("time", "오후 세 시", "15:00")})
+        self.assertEqual(self._values("밤 열 시", "ko"), {("time", "밤 열 시", "22:00")})
+        self.assertEqual(self._values("오전 다섯 시인가요?", "ko"),
+                         {("time", "오전 다섯 시", "05:00")})
+        self.assertEqual(self._values("7시는 차 있고 7시 30분은 돼요.", "ko"),
+                         {("time", "7시", "07:00"), ("time", "7시 30분", "07:30")})
+
     def test_judge_appends_usage_for_every_billed_call(self):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "judge_usage.jsonl"
@@ -110,10 +178,11 @@ class QualityAnnotatorsTest(unittest.TestCase):
             "reference_spans": [{"type": "location", "text": ref_place,
                                  "start": ref_start, "end": ref_start + len(ref_place),
                                  "canonical_value": "gangnam_station"}],
+        }, {
             "candidate_spans": [{"type": "location", "text": ref_place,
                                  "start": cand_start, "end": cand_start + len(ref_place),
                                  "canonical_value": "gangnam_station"}],
-            "alignments": [{"reference_index": 0, "candidate_index": 0,
+            "alignments": [{"reference_index": 1, "candidate_index": 0,
                             "relation": "equivalent"}],
         }])
         result = asyncio.run(annotate_critical_information(
@@ -126,9 +195,47 @@ class QualityAnnotatorsTest(unittest.TestCase):
         self.assertIn(("time", "15:00"), refs)
         self.assertIn(("time", "16:00"), hyps)
         self.assertEqual(result["annotation_source"], "automatic")
+        self.assertEqual(result["alignment"][0]["candidate_text"], ref_place)
+
+    def test_reference_spans_are_extracted_without_the_candidate(self):
+        # The reference set is the denominator every system is scored against, so it
+        # must not depend on which candidate happened to be in the same call.
+        judge = _Judge([{"reference_spans": [
+            {"type": "location", "text": "Paris", "start": 9, "end": 14,
+             "canonical_value": "paris"}]}])
+        result = asyncio.run(annotate_reference_critical_information(
+            judge=judge, source="3시에 파리에서", reference="At 3 PM, Paris.",
+            source_lang="ko", target_lang="en"))
+        self.assertNotIn("candidate", judge.calls[0]["payload"])
+        self.assertEqual({(v["type"], v["canonical_value"], v["origin"])
+                          for v in result["reference_spans"]},
+                         {("time", "15:00", "rule"), ("location", "paris", "llm")})
+
+    def test_candidate_annotation_rescues_only_paraphrased_reference_values(self):
+        reference_spans = [{"type": "number", "text": "12", "start": 4, "end": 6,
+                            "canonical_value": "12", "origin": "rule"}]
+        candidate = "Buy a dozen eggs, not 13 apples."
+        judge = _Judge([{"candidate_spans": [
+            # the same value in other words: accepted
+            {"type": "number", "text": "a dozen", "canonical_value": "12"},
+            # on top of the rule's own 13: rejected, the rule's value stands
+            {"type": "number", "text": "13", "canonical_value": "12"},
+            # a value the reference does not have: rejected
+            {"type": "number", "text": "apples", "canonical_value": "99"},
+            # "domain term" is the prompt's own wording for the term type
+            {"type": "domain term", "text": "eggs", "canonical_value": "egg"},
+        ], "alignments": []}])
+        result = asyncio.run(annotate_candidate_critical_information(
+            judge=judge, source="", reference="Buy 12 eggs.", candidate=candidate,
+            reference_spans=reference_spans, source_lang="ko", target_lang="en"))
+        self.assertEqual({(v["type"], v["text"], v["canonical_value"], v["origin"])
+                          for v in result["candidate_spans"]},
+                         {("number", "a dozen", "12", "llm_value"),
+                          ("number", "13", "13", "rule"),
+                          ("term", "eggs", "egg", "llm")})
 
     def test_gold_span_without_offsets_is_preserved(self):
-        judge = _Judge([{"reference_spans": [], "candidate_spans": [], "alignments": []}])
+        judge = _Judge([{"reference_spans": []}, {"candidate_spans": [], "alignments": []}])
         result = asyncio.run(annotate_critical_information(
             judge=judge, source="김민수에게 전화해", reference="Call Minsoo Kim",
             candidate="Call Minsoo Kim", source_lang="ko", target_lang="en",
@@ -136,7 +243,41 @@ class QualityAnnotatorsTest(unittest.TestCase):
                                    "canonical_value": "kim_minsoo",
                                    "accepted_values": ["김민수"]}]))
         self.assertEqual(result["reference_spans"][0]["canonical_value"], "kim_minsoo")
+        self.assertEqual(result["reference_spans"][0]["origin"], "gold")
         self.assertEqual(result["annotation_source"], "human_gold+automatic")
+
+    def test_only_human_reference_spans_count_as_gold(self):
+        manifest = {"reference_spans": [{"type": "person", "canonical_value": "kim"}]}
+        legacy_automatic = {"annotation_source": "automatic", "reference_spans": [
+            {"type": "person", "canonical_value": "kim"}]}
+        mixed = {"annotation_source": "human_gold+automatic", "reference_spans": [
+            {"type": "person", "canonical_value": "kim", "origin": "gold"},
+            {"type": "time", "canonical_value": "15:00", "origin": "rule"}]}
+        self.assertEqual(len(gold_reference_spans(manifest)), 1)
+        self.assertEqual(gold_reference_spans(legacy_automatic), [])
+        self.assertEqual([v["origin"] for v in gold_reference_spans(mixed)], ["gold"])
+
+    def test_reference_cache_keeps_the_first_written_spans(self):
+        async def run(directory):
+            path = Path(directory) / "cache.jsonl"
+            first, second = ReferenceSpanCache(path), ReferenceSpanCache(path)
+
+            async def racing_factory():
+                # Another process wrote this key while we were computing ours.
+                await first.get("k", lambda: _value("theirs"))
+                return {"reference_spans": ["ours"]}
+
+            ours = await second.get("k", racing_factory)
+            again = await ReferenceSpanCache(path).get("k", lambda: _value("never"))
+            return ours, again
+
+        async def _value(name):
+            return {"reference_spans": [name]}
+
+        with tempfile.TemporaryDirectory() as directory:
+            ours, again = asyncio.run(run(directory))
+        self.assertEqual(ours, {"reference_spans": ["theirs"]})
+        self.assertEqual(again, {"reference_spans": ["theirs"]})
 
     def test_fluency_annotation_repairs_unique_span_offset(self):
         candidate = "I has a ticket."
@@ -154,6 +295,20 @@ class QualityAnnotatorsTest(unittest.TestCase):
         self.assertEqual(result["mqm_errors"][0]["start"], 2)
         self.assertEqual(result["target_token_count"], 4)
         self.assertEqual(judge.calls[0]["payload"]["preceding_target_turns"], ["Earlier turn"])
+
+    def test_fluency_error_offsets_resolve_to_the_nearest_occurrence(self):
+        # A repeated word is exactly the error whose text appears more than once.
+        candidate = "I saw the the cat."
+        judge = _Judge([{"score": 3, "reason": "", "errors": [
+            {"category": "repetition", "severity": "minor", "start": 11, "end": 14,
+             "text": "the"},
+            {"category": "grammar", "severity": "minor", "start": 0, "end": 3,
+             "text": "not in the text"},
+        ]}])
+        result = asyncio.run(annotate_fluency(judge=judge, candidate=candidate,
+                                              target_lang="en"))
+        self.assertEqual([(e["start"], e["end"]) for e in result["mqm_errors"]], [(10, 13)])
+        self.assertEqual(result["mqm_unlocated_errors"], 1)
 
 
 if __name__ == "__main__":

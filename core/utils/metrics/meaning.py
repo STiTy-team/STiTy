@@ -202,11 +202,16 @@ def corpus(items, *, languages) -> tuple[dict, dict]:
     items = list(items)
     samples = []
     pair_ids = []
+    # The source the learned metrics read is the gold transcript when the dataset
+    # has one. The ASR transcript differs per ASR system, so reading it would score
+    # two systems against different sources; it is only the fallback.
+    source_text = {"reference_transcript": 0, "asr_hypothesis": 0}
     for item in items:
         target = languages.expected_target(item.src_lang)
         ref = item.reference_translation(target)
         if item.hypothesis_translation and ref:
-            samples.append({"id": item.id, "src": item.hypothesis,
+            source_text["reference_transcript" if item.reference else "asr_hypothesis"] += 1
+            samples.append({"id": item.id, "src": item.reference or item.hypothesis,
                             "mt": item.hypothesis_translation, "ref": ref})
             pair_ids.append(item.id)
 
@@ -235,7 +240,8 @@ def corpus(items, *, languages) -> tuple[dict, dict]:
                 f"no precomputed metric_inputs.meaning.{name} and {env_name} is not set")
         else:
             try:
-                axis[name] = scorer(samples, model_name=model_name)
+                axis[name] = {**scorer(samples, model_name=model_name),
+                              "source_text": dict(source_text)}
             except Exception as exc:  # noqa: BLE001 - model/cache/auth errors vary by backend
                 unavailable[f"meaning.{name}"] = f"scorer unavailable: {exc}"
             finally:

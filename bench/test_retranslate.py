@@ -84,6 +84,15 @@ class RetranslateTest(unittest.TestCase):
         self.assertNotIn("candidate_spans", inputs["critical_information"])
         self.assertEqual(inputs["intent"]["polarity"], {"reference": "positive"})
 
+    def test_automatic_reference_spans_are_not_carried_as_human_ones(self):
+        # A previous annotation run wrote these; the next one must regenerate them
+        # rather than read them back as human gold.
+        row = _row("a", ["one"])
+        row["metric_inputs"]["critical_information"]["annotation_source"] = "automatic"
+        rows = asyncio.run(retranslate_rows(
+            [row], translator=_Translator(), languages=_Languages(), context_scope="item"))
+        self.assertNotIn("critical_information", rows[0]["metric_inputs"])
+
     def test_translation_score_excludes_inherited_asr_metrics(self):
         translator = _Translator()
         rows = asyncio.run(retranslate_rows(

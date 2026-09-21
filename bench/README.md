@@ -345,21 +345,49 @@ python -m bench.annotate_quality \
 `core/meaning_segmentator/autoseg/infra/gateway.py`의 `_PRICES` 하나를 같이 쓴다 — 표에 없는
 모델은 비용이 0으로 잡히므로 시작할 때 경고한다.
 
-중요 정보는 한↔영만 지원한다. 날짜·시간·금액·수량·단위·전화번호는 결정론적 추출기로
-canonical value를 만들고, 인명·지명·기관·제품·전문용어와 양쪽 span 정렬은 고정 JSON
-판정기로 생성한다. 데이터셋에 사람 검수 `reference_spans`가 있으면 그것을 우선 보존한다.
-후보에 종속된 `candidate_spans`와 판정 provenance는 파생 run에만 저장된다.
+중요 정보는 한↔영만 지원한다. 날짜·시간·금액·수량·단위·서수·전화번호는 결정론적
+추출기(`bench/critical_values.py`)로 canonical value를 만들고, 인명·지명·기관·제품·전문용어는
+고정 JSON 판정기로 뽑는다. 판정기는 두 번 부른다.
+
+- **참조 span은 후보를 보지 않고 문장마다 한 번만 뽑는다.** 모든 번역기가 같은 참조 span으로
+  채점돼야 서로 비교가 되기 때문이다. 결과는 `--reference-cache`(기본
+  `bench/runs/_cache/critical_reference_spans.jsonl`)에 쌓이고, 다른 번역기 run은 이 파일에서
+  꺼내 쓴다. 여러 run이 동시에 돌아도 파일에 **먼저 쓰인 값**을 모두가 쓴다.
+- **후보 span은 그 고정된 참조 목록에 맞춰 뽑는다.** 같은 개체면 참조의 canonical value를
+  그대로 쓰고, 참조에 없는 사실은 따로 뽑아 환각으로 잡는다. 규칙이 못 읽은 같은 값의 다른
+  표현("a dozen" = 12)은 판정기가 채울 수 있다. 다만 규칙이 이미 읽은 값을 덮거나 참조에 없는
+  값을 새로 만들 수는 없다.
+
+span마다 `origin`(`gold`·`rule`·`llm`·`llm_value`)이 붙는다. 데이터셋에 사람이 검수한
+`reference_spans`가 있으면 `origin: gold`로 우선 보존한다. 이전 주석 run이 자동으로 만든
+span은 사람 정답으로 넘기지 않는다(`retranslate`도 버린다). 후보에 종속된 `candidate_spans`와
+판정 provenance는 파생 run에만 저장된다.
 
 유창성 판정기는 원문과 참조를 받지 않는다. 후보와 같은 대화의 앞선 목표 언어 최대 3턴만
-보고 1~5 Spoken Fluency 점수와 MQM fluency/style 오류 span을 한 번에 생성한다.
-pseudo-perplexity 기본 checkpoint는 영어 `FacebookAI/roberta-base`, 한국어
-`klue/roberta-base`다. 언어 간 절대값은 합치지 않고 `by_target`으로 보고한다. 모델을 받지
-않을 실행은 `--skip-pseudo-perplexity`를 지정한다.
+보고 1~5 Spoken Fluency 점수와 MQM fluency/style 오류 span을 한 번에 생성한다. 판정기가
+준 오류 위치가 틀리면 같은 문자열 중 가장 가까운 곳으로 옮기고, 후보에 없는 문자열은 버린
+뒤 그 개수를 `mqm_unlocated_errors`로 남긴다. pseudo-perplexity 기본 checkpoint는 영어
+`FacebookAI/roberta-base`, 한국어 `klue/roberta-base`다. 문장별 값과 함께 NLL 합과 토큰 수를
+저장해 코퍼스 값은 토큰 기준으로 모은다. MQM 오류율과 pseudo-perplexity 모두 언어 간 값은
+합치지 않고 `by_target`으로 보고한다. 모델을 받지 않을 실행은 `--skip-pseudo-perplexity`를
+지정한다.
 
 ### 전사문 기반 ASR 강건성
 
-오디오나 ASR을 다시 실행하지 않는다. 저장된 `hypothesis`에 재현 가능한 삭제·혼동 치환·숫자
-손상·반복·구두점/띄어쓰기 손상을 가하고, clean/noisy 텍스트를 같은 번역기로 다시 번역한다.
+오디오나 ASR을 다시 실행하지 않는다. **clean 입력은 정답 전사(`reference`)**다. 정답 전사가
+없는 행만 `hypothesis`를 clean으로 쓰고 `clean_source`에 그렇게 적는다. 같은 번역기로 세 가지를
+번역한다.
+
+- clean 전사
+- **실제 ASR 출력(`hypothesis`)** — 정답 전사와 다를 때만. `quality_drop`과
+  `translation_invariance`는 이 조건 하나로 계산한다.
+- clean 전사에 합성 노이즈를 강도별로 넣은 변형 — 품질 저하 곡선용
+
+합성 노이즈는 단어마다 요청 강도의 확률로 오류를 하나 넣는다. 종류는 치환 60%, 삭제 25%,
+삽입(반복) 15%라서 실제로 잰 WER이 요청 강도에 가깝다. 치환은 혼동어 사전, 숫자 한 자리
+바꾸기, 비슷한 소리로 바꾸기(한국어는 모음·받침·된소리, 영어는 복수·과거 어미와 모음) 중
+하나다. 영어 모음 바꾸기는 사전에 없는 단어를 만들 수 있어서, 합성 곡선은 실제 ASR 출력을
+보충하는 용도로 쓴다.
 
 ```bash
 python -m bench.asr_text_robustness \
@@ -368,12 +396,19 @@ python -m bench.asr_text_robustness \
   --noise-levels 0.08,0.18,0.32 --seed 20260921
 ```
 
-각 강도에서 chrF++ 참조 품질을 계산해 quality drop·degradation slope/AUC를 만들고,
-`relative_drop`은 **평균 하락폭 / 평균 clean 품질**이다(항목별 비율은 `per_item`에만 둔다 —
-clean 품질이 0에 가까운 항목 하나가 비율 평균의 부호를 뒤집는다),
+품질은 문장 chrF++다. `relative_drop`은 **평균 하락폭 / 평균 clean 품질**이다(항목별 비율은
+`per_item`에만 둔다 — clean 품질이 0에 가까운 항목 하나가 비율 평균의 부호를 뒤집는다).
 clean/noisy 번역의 의미 invariance는 기본적으로
 `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` cosine similarity로 계산한다.
-모든 noisy 전사, 조작 목록, 실제 clean 대비 WER, 번역, 모델과 seed는 결과에 남는다.
+
+저하 곡선의 가로축은 요청 강도가 아니라 **각 변형의 실측 WER**이다. 기울기·AUC·최악 구간은
+강도별 평균점으로 이은 곡선에서 구한다(`curve`에 점이 남는다). 합성 변형의 의미 유사도는
+곡선의 `similarity` 지표로 따로 나온다.
+
+실제 ASR 출력이 비었거나 번역이 비면 **치명적 실패**로 보고 빼지 않는다. 품질은 빈 문자열의
+점수, 유사도는 0으로 들어가고 `catastrophic_failures`에 따로 센다. 번역기 자체가 오류를 낸
+조건은 인프라 실패라서 drop과 invariance 양쪽에서 똑같이 빠진다. 모든 noisy 전사, 조작 목록,
+실측 WER·CER, 번역, 모델과 seed는 결과에 남는다.
 
 참조 번역이 없으면 `laal` 도 빠진다. 분모가 `max(|Y_hyp|, |Y_ref|)` 라서 `|Y_ref|` 를 빼면
 근사가 아니라 **다른 지표(AL)** 가 되고, AL 은 짧게 생성할수록 점수가 좋아지는 구멍이 있다.

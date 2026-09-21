@@ -14,8 +14,10 @@ from core.utils.metrics import critical_information, fluency
 from .quality_annotators import (
     OpenAIJsonJudge,
     QUALITY_ANNOTATOR_VERSION,
+    ReferenceSpanCache,
     annotate_critical_information,
     annotate_fluency,
+    gold_reference_spans,
 )
 
 
@@ -23,6 +25,10 @@ DEFAULT_LM = {
     "en": "FacebookAI/roberta-base",
     "ko": "klue/roberta-base",
 }
+# Shared by every annotation run so that all systems are scored against one reference
+# span set per sentence; see ReferenceSpanCache.
+DEFAULT_REFERENCE_CACHE = Path(__file__).resolve().parent / "runs" / "_cache" / \
+    "critical_reference_spans.jsonl"
 
 
 class KoEnLanguages:
@@ -78,9 +84,11 @@ def _contexts(rows: list[dict]) -> dict[int, list[str]]:
 
 async def annotate_rows(rows: list[dict], *, judge, concurrency: int = 4,
                         annotate_critical: bool = True,
-                        annotate_spoken_fluency: bool = True) -> list[dict]:
+                        annotate_spoken_fluency: bool = True,
+                        reference_cache: ReferenceSpanCache | None = None) -> list[dict]:
     contexts = _contexts(rows)
     semaphore = asyncio.Semaphore(max(1, concurrency))
+    reference_cache = reference_cache or ReferenceSpanCache(None)
 
     async def annotate(index: int, source_row: dict) -> dict:
         row = copy.deepcopy(source_row)
@@ -88,7 +96,9 @@ async def annotate_rows(rows: list[dict], *, judge, concurrency: int = 4,
             return row
         source_lang = str(row.get("src_lang") or "").lower()
         target_lang = _target_lang(row)
-        source = str(row.get("hypothesis") or row.get("reference") or "").strip()
+        # Only the gold transcript: the ASR transcript differs per ASR system, and the
+        # reference spans must be the same for every system scored against them.
+        source = str(row.get("reference") or "").strip()
         candidate = str(row.get("hypothesis_translation") or "").strip()
         reference = str((row.get("reference_translations") or {}).get(target_lang) or "").strip()
         if not candidate:
@@ -96,14 +106,13 @@ async def annotate_rows(rows: list[dict], *, judge, concurrency: int = 4,
         metric_inputs = copy.deepcopy(row.get("metric_inputs") or {})
         annotation_errors = []
         async with semaphore:
-            if annotate_critical and source and reference:
-                gold = ((metric_inputs.get("critical_information") or {})
-                        .get("reference_spans"))
+            if annotate_critical and reference:
+                gold = gold_reference_spans(metric_inputs.get("critical_information") or {})
                 try:
                     metric_inputs["critical_information"] = await annotate_critical_information(
                         judge=judge, source=source, reference=reference, candidate=candidate,
                         source_lang=source_lang, target_lang=target_lang,
-                        gold_reference_spans=gold,
+                        gold_reference_spans=gold, reference_cache=reference_cache,
                     )
                 except Exception as exc:
                     annotation_errors.append({"axis": "critical_information",
@@ -148,6 +157,8 @@ def add_pseudo_perplexity(rows: list[dict], *, models: dict[str, str],
                 row = by_id[item_id]
                 block = row.setdefault("metric_inputs", {}).setdefault("fluency", {})
                 block["target_lm_pseudo_perplexity"] = value
+                block["target_lm_nll_sum"] = result["per_item_nll_sum"][item_id]
+                block["target_lm_token_count"] = result["per_item_token_count"][item_id]
                 block["target_lm_model"] = model
                 block["target_lang"] = lang
         finally:
@@ -205,6 +216,7 @@ def _summary(*, rows: list[dict], score: metrics.RunScore, source_run: Path,
             "spoken_fluency_mqm": not args.skip_judge,
             "pseudo_perplexity": not args.skip_pseudo_perplexity,
             "lm": {"en": args.lm_en, "ko": args.lm_ko},
+            "reference_cache": str(getattr(args, "reference_cache", "") or ""),
         },
     }
 
@@ -225,6 +237,9 @@ def parse_args(argv=None):
     parser.add_argument("--skip-critical", action="store_true")
     parser.add_argument("--skip-judge", action="store_true")
     parser.add_argument("--skip-pseudo-perplexity", action="store_true")
+    parser.add_argument("--reference-cache", type=Path, default=DEFAULT_REFERENCE_CACHE,
+                        help="번역기끼리 공유하는 참조 중요 정보 span 캐시(JSONL). "
+                             "같은 문장은 모든 번역기가 같은 참조 span으로 채점된다")
     parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args(argv)
 
@@ -249,6 +264,7 @@ def main(argv=None) -> int:
         rows, judge=judge, concurrency=args.concurrency,
         annotate_critical=not args.skip_critical,
         annotate_spoken_fluency=not args.skip_judge,
+        reference_cache=ReferenceSpanCache(args.reference_cache),
     ))
     if not args.skip_pseudo_perplexity:
         add_pseudo_perplexity(

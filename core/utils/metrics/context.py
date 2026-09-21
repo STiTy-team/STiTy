@@ -9,29 +9,59 @@ from __future__ import annotations
 from collections import defaultdict
 from statistics import mean
 
+from .fluency import DEFAULT_SEVERITY_WEIGHTS
 
-def context_mqm_score(judgements) -> dict:
+
+def _mqm(errors, weights) -> float:
+    return -sum(float(weights.get(str((error or {}).get("severity") or "minor").lower(),
+                                  weights["minor"]))
+                for error in errors if isinstance(error, dict))
+
+
+def _mqm_score(row, errors_key, score_key, weights) -> float | None:
+    """MQM score of one turn: minus the severity-weighted error sum (0 is perfect).
+
+    Computed from the error list when there is one, so every producer shares the
+    fluency axis's severity weights. A bare score must already be on that scale; a
+    positive one is a rubric score (e.g. 1-5) and would silently invert the
+    direction, so it is rejected rather than averaged in.
+    """
+    if isinstance(row.get(errors_key), list):
+        return _mqm(row[errors_key], weights)
+    score = row.get(score_key)
+    if isinstance(score, bool) or not isinstance(score, (int, float)):
+        return None
+    if score > 0:
+        raise ValueError(f"Context-MQM {score_key} must be an MQM score <= 0 "
+                         f"(minus severity-weighted errors), got {score}")
+    return float(score)
+
+
+def context_mqm_score(judgements, *, severity_weights=None) -> dict:
     """Aggregate context-conditioned MQM scores and optional no-context deltas."""
+    weights = dict(DEFAULT_SEVERITY_WEIGHTS)
+    weights.update(severity_weights or {})
     scores = []
     baselines = []
     per_item = {}
     errors = {}
     for index, row in enumerate(judgements):
-        score = row.get("score")
-        if isinstance(score, bool) or not isinstance(score, (int, float)):
+        score = _mqm_score(row, "errors", "score", weights)
+        if score is None:
             continue
         item_id = str(row.get("id", index))
-        score = float(score)
         scores.append(score)
         per_item[item_id] = score
-        baseline = row.get("score_without_context")
-        if isinstance(baseline, (int, float)) and not isinstance(baseline, bool):
-            baselines.append(score - float(baseline))
+        baseline = _mqm_score(row, "errors_without_context", "score_without_context",
+                              weights)
+        if baseline is not None:
+            baselines.append(score - baseline)
         if row.get("errors"):
             errors[item_id] = list(row["errors"])
     if not scores:
         raise ValueError("no Context-MQM judgements")
-    result = {"score": mean(scores), "n_scored": len(scores), "per_item": per_item}
+    result = {"score": mean(scores), "n_scored": len(scores), "per_item": per_item,
+              "severity_weights": weights}
     if baselines:
         result["mean_context_gain"] = mean(baselines)
         result["n_paired_without_context"] = len(baselines)

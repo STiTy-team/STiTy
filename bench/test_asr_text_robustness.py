@@ -1,9 +1,11 @@
 import asyncio
 import unittest
+from collections import Counter
 from unittest.mock import patch
 
 from bench.asr_text_robustness import evaluate_robustness_rows, score_robustness
 from bench.text_noise import perturb_transcript
+from core.utils.metrics.text import levenshtein, normalize_words
 
 
 class _Languages:
@@ -12,27 +14,66 @@ class _Languages:
 
 
 class _Translator:
-    def __init__(self):
+    def __init__(self, fail_on=()):
         self.calls = []
+        self.fail_on = set(fail_on)
 
     def start(self, **kwargs):
         pass
 
     async def translate(self, text, target_lang, source_lang=None, context=None):
         self.calls.append(text)
+        if text in self.fail_on:
+            raise RuntimeError("backend down")
         return f"{target_lang}:{text}", source_lang
 
 
-def _row():
+GOLD = "오늘 오후 세 시에 만나요."
+
+
+def _row(hypothesis=GOLD, reference=GOLD):
     return {
         "id": "a",
         "status": "ok",
         "src_lang": "ko",
-        "hypothesis": "오늘 오후 세 시에 만나요.",
+        "reference": reference,
+        "hypothesis": hypothesis,
         "hypothesis_translation": "old",
         "reference_translations": {"en": "Let's meet at 3 PM today."},
         "metric_inputs": {},
     }
+
+
+def _similarities(pairs):
+    return {row["id"]: .8 for row in pairs}
+
+
+def _run(rows, translator, levels=(.2, .4)):
+    with patch("bench.asr_text_robustness._chrf_quality",
+               side_effect=lambda candidate, reference: 100.0 if GOLD in candidate else 60.0):
+        return asyncio.run(evaluate_robustness_rows(
+            rows, translator=translator, languages=_Languages(),
+            noise_levels=list(levels), seed=2, similarity_scorer=_similarities))
+
+
+_EN_TEXT = (
+    "We should meet at the station before the train leaves because the tickets are "
+    "already paid and the manager wants everyone there early. My sister called "
+    "yesterday about the dinner reservation, and she asked whether the restaurant "
+    "still serves the seafood pasta that we ordered last time. I think the weather "
+    "will be fine this weekend, so we could walk to the museum after lunch and then "
+    "visit the market near the river where they sell fresh bread and flowers. "
+) * 4
+_KO_TEXT = (
+    "내일 아침에 회의가 있어서 일찍 출발해야 할 것 같아요. 어제 동생이 저녁 예약 때문에 "
+    "전화했는데 식당에서 해산물 파스타를 아직 파는지 물어봤어요. 이번 주말에는 날씨가 "
+    "괜찮을 것 같으니까 점심 먹고 박물관까지 걸어가서 강 근처 시장도 구경해요. "
+) * 4
+
+
+def _wer(reference, hypothesis):
+    words = normalize_words(reference)
+    return levenshtein(words, normalize_words(hypothesis)) / len(words)
 
 
 class AsrTextRobustnessTest(unittest.TestCase):
@@ -46,28 +87,70 @@ class AsrTextRobustnessTest(unittest.TestCase):
         self.assertNotEqual(first[0], "오늘 오후 세 시에 만나요.")
         self.assertTrue(first[1])
 
-    def test_clean_and_noisy_are_translated_and_scored(self):
+    def test_substitutions_are_the_most_common_word_error(self):
+        # ASR errors are mostly substitutions. The earlier generator only ever
+        # deleted, repeated or dropped punctuation: its dictionary substitutions
+        # fired on 0 of 90 Korean variants.
+        for lang, text in (("en", _EN_TEXT), ("ko", _KO_TEXT)):
+            with self.subTest(lang=lang):
+                _, operations = perturb_transcript(text, lang=lang, level=.3, seed=1,
+                                                   item_id="x")
+                kinds = Counter(op["type"] for op in operations)
+                self.assertGreater(kinds["substitution"], kinds["word_deletion"])
+                self.assertGreater(kinds["word_deletion"], 0)
+                self.assertGreater(kinds["word_repetition"], 0)
+
+    def test_requested_level_approximates_the_word_error_rate(self):
+        for level in (.1, .3):
+            noisy, _ = perturb_transcript(_EN_TEXT, lang="en", level=level, seed=3,
+                                          item_id="x")
+            self.assertAlmostEqual(_wer(_EN_TEXT, noisy), level, delta=.08)
+
+    def test_clean_is_the_gold_transcript_and_noisy_is_the_real_asr_output(self):
         translator = _Translator()
-
-        def similarities(pairs):
-            return {row["id"]: .8 for row in pairs}
-
-        with patch("bench.asr_text_robustness._chrf_quality",
-                   side_effect=lambda candidate, reference: 100.0 if "오늘 오후" in candidate else 60.0):
-            rows = asyncio.run(evaluate_robustness_rows(
-                [_row()], translator=translator, languages=_Languages(),
-                noise_levels=[.2, .4], seed=2, similarity_scorer=similarities))
+        rows = _run([_row(hypothesis="오늘 오후 세시 만나요")], translator)
         block = rows[0]["metric_inputs"]["asr_robustness"]
-        self.assertEqual(len(translator.calls), 3)
-        self.assertEqual(len(block["variants"]), 2)
+        self.assertEqual(translator.calls[0], GOLD)
+        self.assertEqual(block["clean_source"], "reference_transcript")
+        self.assertEqual(block["noisy_source"], "asr_hypothesis")
+        self.assertEqual(block["noisy_transcript"], "오늘 오후 세시 만나요")
+        self.assertAlmostEqual(block["noise_level"], _wer(GOLD, "오늘 오후 세시 만나요"))
+        self.assertEqual(block["noisy_quality"], {"chrfpp": 60.0})
         self.assertEqual(block["similarity"], .8)
-        self.assertIn("chrfpp", block["clean_quality"])
+        score = score_robustness(rows).aggregate["asr_robustness"]
+        self.assertAlmostEqual(score["quality_drop"]["chrfpp"]["absolute_drop"], 40.0)
+
+    def test_synthetic_curve_is_placed_at_the_measured_word_error_rate(self):
+        rows = _run([_row()], _Translator())
+        block = rows[0]["metric_inputs"]["asr_robustness"]
+        self.assertNotIn("noisy_quality", block)  # no ASR output distinct from the gold
+        clean, *noisy = block["quality_by_noise"]
+        self.assertEqual(clean["noise_level"], 0.0)
+        for point, variant in zip(noisy, block["variants"]):
+            self.assertEqual(point["noise_level"], variant["wer_from_clean"])
+            self.assertEqual(point["quality"]["similarity"], .8)
         score = score_robustness(rows)
-        self.assertIn("quality_drop", score.aggregate["asr_robustness"])
-        self.assertIn("translation_invariance", score.aggregate["asr_robustness"])
         self.assertIn("quality_noise_degradation", score.aggregate["asr_robustness"])
+        self.assertIn("asr_robustness.quality_drop", score.unavailable)
+
+    def test_empty_asr_output_is_a_catastrophic_failure_not_a_skipped_row(self):
+        translator = _Translator()
+        rows = _run([_row(hypothesis="")], translator)
+        block = rows[0]["metric_inputs"]["asr_robustness"]
+        self.assertTrue(block["catastrophic"])
+        self.assertEqual(block["similarity"], 0.0)
+        self.assertNotIn("", translator.calls)
+        score = score_robustness(rows).aggregate["asr_robustness"]
+        self.assertEqual(score["catastrophic_failures"]["count"], 1)
+        self.assertEqual(score["translation_invariance"]["n_pairs"], 1)
+
+    def test_translator_failure_is_left_out_of_both_drop_and_invariance(self):
+        rows = _run([_row(hypothesis="오늘 세시")], _Translator(fail_on={"오늘 세시"}))
+        block = rows[0]["metric_inputs"]["asr_robustness"]
+        self.assertNotIn("noisy_quality", block)
+        self.assertNotIn("similarity", block)
+        self.assertEqual(rows[0]["robustness_translation_status"], "degraded")
 
 
 if __name__ == "__main__":
     unittest.main()
-

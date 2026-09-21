@@ -1,3 +1,4 @@
+import math
 import os
 import sys
 import types
@@ -82,7 +83,7 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
         self.assertEqual(fluency.mqm_fluency_error_rate([
             {"target_token_count": 5, "errors": [{"severity": "minor"}]}
         ])["error_rate"], 0.2)
-        self.assertEqual(context.context_mqm_score([{"score": 80}])["score"], 80)
+        self.assertEqual(context.context_mqm_score([{"score": -3}])["score"], -3)
         self.assertEqual(context.dialogue_inconsistency_rate([
             {"inconsistencies": []}
         ])["error_rate"], 0)
@@ -118,6 +119,43 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
         self.assertAlmostEqual(result["absolute_drop"], 25 / 3)
         self.assertAlmostEqual(result["relative_drop"], 25 / 125)
         self.assertAlmostEqual(result["per_item"]["echo"]["relative_drop"], -2.0)
+
+    def test_degradation_auc_integrates_the_per_level_mean_curve(self):
+        # Two sentences per level. The mean curve is flat at 50, so its AUC is 50;
+        # trapezoids over the pooled, sorted points would pair the left level's
+        # best sentence with the right level's worst one and report 55.
+        result = asr_robustness.quality_noise_degradation([
+            {"noise_level": 0, "quality": {"q": 10}},
+            {"noise_level": 0, "quality": {"q": 90}},
+            {"noise_level": 1, "quality": {"q": 20}},
+            {"noise_level": 1, "quality": {"q": 80}},
+        ])["q"]
+        self.assertAlmostEqual(result["quality_auc"], 50.0)
+        self.assertAlmostEqual(result["degradation_slope"], 0.0)
+
+    def test_degradation_regresses_on_measured_noise_of_each_requested_level(self):
+        # The perturbation knob asked for .5 but the transcripts came out at WER .2
+        # and .4; the slope is per unit of measured noise, not per unit of knob.
+        result = asr_robustness.quality_noise_degradation([
+            {"noise_level": 0.0, "requested_noise_level": 0.0, "quality": {"q": 60}},
+            {"noise_level": 0.0, "requested_noise_level": 0.0, "quality": {"q": 60}},
+            {"noise_level": 0.2, "requested_noise_level": 0.5, "quality": {"q": 40}},
+            {"noise_level": 0.4, "requested_noise_level": 0.5, "quality": {"q": 50}},
+        ])["q"]
+        self.assertAlmostEqual(result["degradation_slope"], 50.0)
+        self.assertAlmostEqual(result["worst_bucket_noise"], 0.3)
+        self.assertAlmostEqual(result["worst_bucket_quality"], 45.0)
+        self.assertEqual([point["n"] for point in result["curve"]], [2, 2])
+
+    def test_robustness_treats_the_fluency_error_rate_as_lower_is_better(self):
+        item = metrics.Utterance.from_row({"id": "a", "metric_inputs": {"asr_robustness": {
+            "clean_quality": {"mqm_fluency_error_rate": .1},
+            "noisy_quality": {"mqm_fluency_error_rate": .3},
+        }}})
+        values, _ = asr_robustness.corpus([item])
+        drop = values["asr_robustness"]["quality_drop"]["mqm_fluency_error_rate"]
+        self.assertTrue(drop["lower_is_better"])
+        self.assertAlmostEqual(drop["absolute_drop"], .2)
 
     def test_metricx_runtime_disables_the_decoder_cache(self):
         class _Config:
@@ -203,8 +241,92 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
         values, _ = fluency.corpus(items)
         result = values["fluency"]["target_lm_pseudo_perplexity"]
         self.assertNotIn("pseudo_perplexity", result)
-        self.assertEqual(result["by_target"]["en"]["pseudo_perplexity"], 2.0)
-        self.assertEqual(result["by_target"]["ko"]["pseudo_perplexity"], 8.0)
+        self.assertAlmostEqual(result["by_target"]["en"]["pseudo_perplexity"], 2.0)
+        self.assertAlmostEqual(result["by_target"]["ko"]["pseudo_perplexity"], 8.0)
+
+    def test_stored_pseudo_perplexity_is_pooled_over_tokens(self):
+        # One 1-token sentence at NLL 1 and one 3-token sentence at NLL 3 per token:
+        # the corpus value is exp(total NLL / total tokens), as when scored directly,
+        # not the arithmetic mean of sentence perplexities that one outlier can drag.
+        items = [metrics.Utterance.from_row({"id": item_id, "metric_inputs": {"fluency": {
+            "target_lm_pseudo_perplexity": math.exp(nll / tokens), "target_lang": "en",
+            "target_lm_nll_sum": nll, "target_lm_token_count": tokens}}})
+            for item_id, nll, tokens in (("short", 1.0, 1), ("long", 9.0, 3))]
+        values, _ = fluency.corpus(items)
+        result = values["fluency"]["target_lm_pseudo_perplexity"]
+        self.assertAlmostEqual(result["pseudo_perplexity"], math.exp(2.5))
+        self.assertEqual(result["aggregation"], "token_weighted")
+        self.assertEqual(result["n_tokens"], 4)
+
+    def test_pseudo_perplexity_without_token_counts_uses_the_geometric_mean(self):
+        items = [metrics.Utterance.from_row({"id": item_id, "metric_inputs": {"fluency": {
+            "target_lm_pseudo_perplexity": value, "target_lang": "en"}}})
+            for item_id, value in (("a", 2.0), ("b", 8.0))]
+        values, _ = fluency.corpus(items)
+        result = values["fluency"]["target_lm_pseudo_perplexity"]
+        self.assertAlmostEqual(result["pseudo_perplexity"], 4.0)
+        self.assertEqual(result["aggregation"], "sentence_geometric_mean")
+
+    def test_mqm_error_rate_is_not_pooled_across_target_languages(self):
+        # English is counted in words and Korean in eojeol, so the per-token rates
+        # are on different scales.
+        result = fluency.mqm_fluency_error_rate([
+            {"id": "en", "target_lang": "en", "target_token_count": 10,
+             "errors": [{"severity": "minor"}]},
+            {"id": "ko", "target_lang": "ko", "target_token_count": 4,
+             "errors": [{"severity": "minor"}]},
+        ])
+        self.assertNotIn("error_rate", result)
+        self.assertAlmostEqual(result["by_target"]["en"]["error_rate"], .1)
+        self.assertAlmostEqual(result["by_target"]["ko"]["error_rate"], .25)
+
+    def test_mqm_reports_errors_the_annotator_could_not_locate(self):
+        item = metrics.Utterance.from_row({"id": "a", "metric_inputs": {"fluency": {
+            "mqm_errors": [], "target_token_count": 4, "mqm_unlocated_errors": 2}}})
+        values, _ = fluency.corpus([item])
+        self.assertEqual(values["fluency"]["mqm_fluency_error_rate"]["unlocated_errors"], 2)
+
+    def test_fact_error_rate_counts_facts_invented_where_the_reference_has_none(self):
+        result = critical_information.critical_fact_error_rate([
+            {"id": "kept", "reference_spans": [_span("time", "15:00")],
+             "candidate_spans": [_span("time", "15:00")]},
+            {"id": "invented", "reference_spans": [],
+             "candidate_spans": [_span("number", "5")]},
+            {"id": "empty", "reference_spans": [], "candidate_spans": []},
+        ])
+        self.assertAlmostEqual(result["error_rate"], .5)
+        self.assertEqual(result["eligible_items"], 2)
+        self.assertEqual(result["invented_only_items"], 1)
+
+    def test_learned_meaning_metrics_read_the_gold_transcript_as_source(self):
+        seen = []
+
+        def scorer(samples, *, model_name):
+            seen.extend(samples)
+            return {"score": .8, "model": model_name, "n_scored": len(samples)}
+
+        items = [metrics.Utterance.from_row({
+            "id": "gold", "src_lang": "ko", "reference": "정답 전사", "hypothesis": "ASR 전사",
+            "hypothesis_translation": "y", "reference_translations": {"en": "z"}}),
+            metrics.Utterance.from_row({
+            "id": "asr-only", "src_lang": "ko", "hypothesis": "ASR 전사",
+            "hypothesis_translation": "y", "reference_translations": {"en": "z"}})]
+        with patch.object(meaning, "comet_score", scorer), \
+                patch.dict(os.environ, {"STITY_COMET_MODEL": "comet"}):
+            axis, _ = meaning.corpus(items, languages=_Languages())
+        self.assertEqual([sample["src"] for sample in seen], ["정답 전사", "ASR 전사"])
+        self.assertEqual(axis["meaning"]["comet"]["source_text"],
+                         {"reference_transcript": 1, "asr_hypothesis": 1})
+
+    def test_context_mqm_is_the_negative_severity_weighted_error_sum(self):
+        result = context.context_mqm_score([{
+            "errors": [{"severity": "major"}],
+            "errors_without_context": [{"severity": "major"}, {"severity": "minor"}],
+        }])
+        self.assertEqual(result["score"], -5.0)
+        self.assertEqual(result["mean_context_gain"], 1.0)
+        with self.assertRaisesRegex(ValueError, "<= 0"):
+            context.context_mqm_score([{"score": 4}])
 
     def test_all_six_axes_are_wired_into_score_run(self):
         common = {
@@ -225,7 +347,7 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
                 "fluency": {"judge": {"score": 4}, "mqm_errors": [],
                             "target_token_count": 4,
                             "target_lm_pseudo_perplexity": 2.0},
-                "context": {"mqm": {"score": 4}, "inconsistencies": [],
+                "context": {"mqm": {"errors": []}, "inconsistencies": [],
                             "contrastive": {"selected_correct": True}},
                 "asr_robustness": {
                     "clean_quality": {"comet": .9}, "noisy_quality": {"comet": quality},

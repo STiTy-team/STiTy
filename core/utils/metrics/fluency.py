@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import math
 import os
-from statistics import mean
+from statistics import mean, median
 
 
 DEFAULT_SEVERITY_WEIGHTS = {"minor": 1.0, "major": 5.0, "critical": 25.0}
@@ -41,33 +41,43 @@ def spoken_fluency_judge_score(judgements) -> dict:
 
 
 def mqm_fluency_error_rate(rows, *, severity_weights=None) -> dict:
-    """Severity-weighted fluency/style errors per target-language token."""
+    """Severity-weighted fluency/style errors per target-language token.
+
+    Tokens are counted per language (English words, Korean eojeol), so rows are
+    pooled only within one ``target_lang``; the top-level rate exists only when a
+    single target language was scored.
+    """
     weights = dict(DEFAULT_SEVERITY_WEIGHTS)
     weights.update(severity_weights or {})
-    weighted_errors = 0.0
-    tokens = 0
-    counts = {key: 0 for key in weights}
+    groups = {}
     per_item = {}
     for index, row in enumerate(rows):
         n_tokens = int(row.get("target_token_count") or 0)
         if n_tokens <= 0:
             continue
+        group = groups.setdefault(str(row.get("target_lang") or "unknown"), {
+            "weighted_errors": 0.0, "target_tokens": 0,
+            "severity_counts": {key: 0 for key in weights}})
         item_weight = 0.0
         for error in row.get("errors") or []:
             severity = str(error.get("severity") or "minor").lower()
             weight = float(weights.get(severity, weights["minor"]))
             item_weight += weight
+            counts = group["severity_counts"]
             counts[severity] = counts.get(severity, 0) + 1
         item_id = str(row.get("id", index))
         per_item[item_id] = item_weight / n_tokens
-        weighted_errors += item_weight
-        tokens += n_tokens
-    if not tokens:
+        group["weighted_errors"] += item_weight
+        group["target_tokens"] += n_tokens
+    if not groups:
         raise ValueError("no MQM row has target_token_count")
-    return {"error_rate": weighted_errors / tokens,
-            "weighted_errors": weighted_errors, "target_tokens": tokens,
-            "severity_counts": counts, "severity_weights": weights,
-            "per_item": per_item}
+    for group in groups.values():
+        group["error_rate"] = group["weighted_errors"] / group["target_tokens"]
+    result = {"severity_weights": weights, "per_item": per_item,
+              "by_target": dict(sorted(groups.items()))}
+    if len(groups) == 1:
+        result.update(next(iter(groups.values())))
+    return result
 
 
 def _masked_lm(model_name: str, device: str):
@@ -102,6 +112,8 @@ def target_lm_pseudo_perplexity(texts, *, model_name: str,
     total_loss = 0.0
     total_tokens = 0
     per_item = {}
+    per_item_nll = {}
+    per_item_tokens = {}
     for index, raw in enumerate(texts):
         item_id = str(raw.get("id", index)) if isinstance(raw, dict) else str(index)
         text = str(raw.get("text") or "") if isinstance(raw, dict) else str(raw)
@@ -136,13 +148,39 @@ def target_lm_pseudo_perplexity(texts, *, model_name: str,
             losses.extend(float(value) for value in batch_losses.detach().cpu())
         sentence_loss = sum(losses) / len(losses)
         per_item[item_id] = math.exp(sentence_loss)
+        # Kept so stored sentence values can be pooled over tokens later exactly as
+        # this function pools them now.
+        per_item_nll[item_id] = sum(losses)
+        per_item_tokens[item_id] = len(losses)
         total_loss += sum(losses)
         total_tokens += len(losses)
     if not total_tokens:
         raise ValueError("no scoreable target-language tokens")
     return {"pseudo_perplexity": math.exp(total_loss / total_tokens),
+            "aggregation": "token_weighted",
             "model": model_name, "n_tokens": total_tokens,
-            "n_scored": len(per_item), "per_item": per_item}
+            "n_scored": len(per_item), "per_item": per_item,
+            "per_item_nll_sum": per_item_nll, "per_item_token_count": per_item_tokens}
+
+
+def _pool_perplexities(values) -> dict:
+    """Pool stored sentence values the way the scorer pools tokens.
+
+    With every sentence's NLL sum and token count this is exactly the scorer's
+    corpus value. Without them (runs annotated before the counts were stored) the
+    geometric mean -- exp of the mean sentence NLL -- is the closest honest value;
+    the arithmetic mean of perplexities is dominated by a single outlier sentence.
+    """
+    ppls = [ppl for ppl, _, _ in values]
+    result = {"median": median(ppls), "n_scored": len(values)}
+    if all(nll is not None and tokens for _, nll, tokens in values):
+        tokens = sum(count for _, _, count in values)
+        result.update(pseudo_perplexity=math.exp(sum(nll for _, nll, _ in values) / tokens),
+                      aggregation="token_weighted", n_tokens=tokens)
+    else:
+        result.update(pseudo_perplexity=math.exp(mean(math.log(ppl) for ppl in ppls)),
+                      aggregation="sentence_geometric_mean")
+    return result
 
 
 def corpus(items, **_) -> tuple[dict, dict]:
@@ -165,10 +203,15 @@ def corpus(items, **_) -> tuple[dict, dict]:
             if token_count is None:
                 token_count = len(item.hypothesis_translation.split())
             mqm_rows.append({"id": item.id, "errors": block.get("mqm_errors") or [],
-                             "target_token_count": token_count})
+                             "target_token_count": token_count,
+                             "target_lang": block.get("target_lang")})
         raw_ppl = block.get("target_lm_pseudo_perplexity")
-        if isinstance(raw_ppl, (int, float)) and not isinstance(raw_ppl, bool):
-            ppls[item.id] = float(raw_ppl)
+        if isinstance(raw_ppl, (int, float)) and not isinstance(raw_ppl, bool) and raw_ppl > 0:
+            nll = block.get("target_lm_nll_sum")
+            tokens = block.get("target_lm_token_count")
+            ppls[item.id] = (float(raw_ppl),
+                             float(nll) if isinstance(nll, (int, float)) else None,
+                             int(tokens) if isinstance(tokens, int) else None)
             ppl_targets[item.id] = str(block.get("target_lang") or "unknown")
             if block.get("target_lm_model"):
                 ppl_models[item.id] = str(block["target_lm_model"])
@@ -179,6 +222,11 @@ def corpus(items, **_) -> tuple[dict, dict]:
         unavailable["fluency.spoken_fluency_judge"] = str(exc)
     try:
         axis["mqm_fluency_error_rate"] = mqm_fluency_error_rate(mqm_rows)
+        # Errors the judge named but whose text is not in the candidate were dropped
+        # by the annotator; the rate cannot count them, so the reader is told how many.
+        axis["mqm_fluency_error_rate"]["unlocated_errors"] = sum(
+            int(block.get("mqm_unlocated_errors") or 0)
+            for _, block in blocks if "mqm_errors" in block)
     except ValueError as exc:
         unavailable["fluency.mqm_fluency_error_rate"] = str(exc)
 
@@ -186,13 +234,13 @@ def corpus(items, **_) -> tuple[dict, dict]:
         grouped = {}
         for item_id, value in ppls.items():
             grouped.setdefault(ppl_targets[item_id], []).append(value)
-        result = {"n_scored": len(ppls), "per_item": ppls,
-                  "source": "metric_inputs",
-                  "by_target": {lang: {"pseudo_perplexity": mean(values),
-                                       "n_scored": len(values)}
-                                for lang, values in sorted(grouped.items())}}
+        by_target = {lang: _pool_perplexities(values)
+                     for lang, values in sorted(grouped.items())}
+        result = {"n_scored": len(ppls),
+                  "per_item": {item_id: value[0] for item_id, value in ppls.items()},
+                  "source": "metric_inputs", "by_target": by_target}
         if len(grouped) == 1:
-            result["pseudo_perplexity"] = mean(ppls.values())
+            result.update(next(iter(by_target.values())))
         if ppl_models:
             result["models"] = sorted(set(ppl_models.values()))
         axis["target_lm_pseudo_perplexity"] = result

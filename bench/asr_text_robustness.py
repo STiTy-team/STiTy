@@ -88,10 +88,24 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
                                    similarity_device: str | None = None,
                                    similarity_batch_size: int = 32,
                                    similarity_scorer=None) -> list[dict]:
+    """Translate each item's clean transcript, its real ASR output and synthetic variants.
+
+    Clean is the gold transcript. Its real ASR output, when the row has one that
+    differs, is the noisy condition behind ``quality_drop`` and ``similarity`` --
+    the ASR-induced change the axis is named for. Synthetic variants of the clean
+    transcript at each requested level give the degradation curve, placed at the WER
+    each variant actually has.
+
+    An empty ASR output or an empty translation is a catastrophic failure and is
+    scored (quality of an empty string, similarity 0). A translator that raised is
+    an infrastructure failure: that condition is left out of every statistic, so
+    quality drop and invariance always cover the same pairs.
+    """
     if not noise_levels or any(not 0 < value <= 1 for value in noise_levels):
         raise ValueError("noise_levels must contain values in (0, 1]")
     levels = sorted(set(float(value) for value in noise_levels))
     output = []
+    # (pair id, clean translation, noisy translation, [(dict, key), ...] to fill)
     similarity_pairs = []
 
     for row_index, source_row in enumerate(rows):
@@ -105,7 +119,9 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
         if source_lang not in {"ko", "en"}:
             raise ValueError(f"ASR text robustness supports only ko/en, got {source_lang!r}")
         target_lang = languages.expected_target(source_lang)
-        clean_text = str(row.get("hypothesis") or row.get("reference") or "").strip()
+        gold = str(row.get("reference") or "").strip()
+        asr = str(row.get("hypothesis") or "").strip()
+        clean_text = gold or asr
         reference = str((row.get("reference_translations") or {}).get(target_lang) or "").strip()
         if not clean_text:
             output.append(row)
@@ -121,60 +137,74 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
                 {"condition": "clean", "error": type(exc).__name__, "detail": str(exc)}]
             output.append(row)
             continue
+
+        async def condition(name: str, text: str) -> dict | None:
+            try:
+                translation, _ = await _translate(
+                    translator, text=text, source_lang=source_lang, target_lang=target_lang)
+            except Exception as exc:
+                translation_errors.append({"condition": name, "error": type(exc).__name__,
+                                           "detail": str(exc)})
+                return None
+            score = _chrf_quality(translation, reference)
+            return {"transcript": text, "translation": translation,
+                    "quality": {"chrfpp": score} if score is not None else {},
+                    "wer_from_clean": _word_error_rate(clean_text, text),
+                    "cer_from_clean": _character_error_rate(clean_text, text),
+                    "catastrophic": not text or not translation}
+
         clean_score = _chrf_quality(clean_translation, reference)
         clean_quality = {"chrfpp": clean_score} if clean_score is not None else {}
+        block = {
+            "clean_source": "reference_transcript" if gold else "asr_hypothesis",
+            "clean_transcript": clean_text,
+            "clean_translation": clean_translation,
+            "clean_quality": clean_quality,
+            "noise_generator_version": NOISE_VERSION,
+            "seed": seed,
+            "detected_source_lang": detected,
+        }
+
+        if gold and asr != gold:
+            real = await condition("asr", asr)
+            if real is not None:
+                block.update({"noisy_source": "asr_hypothesis",
+                              "noisy_transcript": asr,
+                              "noisy_translation": real["translation"],
+                              "noisy_quality": real["quality"],
+                              "noise_level": real["wer_from_clean"],
+                              "cer_from_clean": real["cer_from_clean"],
+                              "catastrophic": real["catastrophic"]})
+                similarity_pairs.append((f"{item_id}@asr", clean_translation,
+                                         real["translation"], [(block, "similarity")]))
+
         variants = []
         quality_by_noise = [{"noise_level": 0.0, "requested_noise_level": 0.0,
                              "quality": clean_quality}]
         for level in levels:
             noisy_text, operations = perturb_transcript(
                 clean_text, lang=source_lang, level=level, seed=seed, item_id=item_id)
-            try:
-                noisy_translation, _ = await _translate(
-                    translator, text=noisy_text, source_lang=source_lang,
-                    target_lang=target_lang)
-            except Exception as exc:
-                translation_errors.append({"condition": f"noise:{level:g}",
-                                           "error": type(exc).__name__, "detail": str(exc)})
-                noisy_translation = ""
-            actual_wer = _word_error_rate(clean_text, noisy_text)
-            actual_cer = _character_error_rate(clean_text, noisy_text)
-            noisy_score = _chrf_quality(noisy_translation, reference)
-            noisy_quality = {"chrfpp": noisy_score} if noisy_score is not None else {}
             pair_id = f"{item_id}@{level:g}"
-            similarity_pairs.append({"id": pair_id,
-                                     "clean_translation": clean_translation,
-                                     "noisy_translation": noisy_translation})
-            variants.append({
-                "pair_id": pair_id,
-                "requested_noise_level": level,
-                "wer_from_clean": actual_wer,
-                "cer_from_clean": actual_cer,
-                "noisy_transcript": noisy_text,
-                "noisy_translation": noisy_translation,
-                "quality": noisy_quality,
-                "operations": operations,
-            })
-            quality_by_noise.append({"noise_level": level,
-                                     "requested_noise_level": level,
-                                     "wer_from_clean": actual_wer,
-                                     "cer_from_clean": actual_cer,
-                                     "quality": noisy_quality})
-        block = {
-            "clean_transcript": clean_text,
-            "clean_translation": clean_translation,
-            "clean_quality": clean_quality,
-            "quality_by_noise": quality_by_noise,
-            "variants": variants,
-            "noise_generator_version": NOISE_VERSION,
-            "seed": seed,
-            "detected_source_lang": detected,
-        }
-        worst = variants[-1]
-        block.update({"noisy_transcript": worst["noisy_transcript"],
-                      "noisy_translation": worst["noisy_translation"],
-                      "noisy_quality": worst["quality"],
-                      "noise_level": worst["requested_noise_level"]})
+            variant = {"pair_id": pair_id, "requested_noise_level": level,
+                       "noisy_transcript": noisy_text, "operations": operations}
+            variants.append(variant)
+            synthetic = await condition(f"noise:{level:g}", noisy_text)
+            if synthetic is None:
+                variant["translation_failed"] = True
+                continue
+            point = {"noise_level": synthetic["wer_from_clean"],
+                     "requested_noise_level": level,
+                     "cer_from_clean": synthetic["cer_from_clean"],
+                     "quality": dict(synthetic["quality"])}
+            variant.update({"wer_from_clean": synthetic["wer_from_clean"],
+                            "cer_from_clean": synthetic["cer_from_clean"],
+                            "noisy_translation": synthetic["translation"],
+                            "quality": synthetic["quality"],
+                            "catastrophic": synthetic["catastrophic"]})
+            quality_by_noise.append(point)
+            similarity_pairs.append((pair_id, clean_translation, synthetic["translation"],
+                                     [(variant, "similarity"), (point["quality"], "similarity")]))
+        block.update({"quality_by_noise": quality_by_noise, "variants": variants})
         row.setdefault("metric_inputs", {})["asr_robustness"] = block
         row["hypothesis_translation"] = clean_translation
         row["robustness_translation_status"] = "degraded" if translation_errors else "ok"
@@ -182,26 +212,30 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
             row["robustness_translation_errors"] = translation_errors
         output.append(row)
 
-    scoreable_pairs = [pair for pair in similarity_pairs
-                       if pair["clean_translation"] and pair["noisy_translation"]]
-    if scoreable_pairs:
+    # Both outputs present: the encoder decides. Exactly one empty: nothing of the
+    # clean meaning survived (0). Both empty: the output did not change (1).
+    scoreable = [{"id": pair_id, "clean_translation": clean, "noisy_translation": noisy}
+                 for pair_id, clean, noisy, _ in similarity_pairs if clean and noisy]
+    similarities = {}
+    if scoreable:
         if similarity_scorer is None:
-            similarity_result = asr_robustness.multilingual_semantic_similarity(
-                scoreable_pairs, model_name=similarity_model,
-                device=similarity_device, batch_size=similarity_batch_size)
-            similarities = similarity_result["per_item"]
+            similarities = asr_robustness.multilingual_semantic_similarity(
+                scoreable, model_name=similarity_model, device=similarity_device,
+                batch_size=similarity_batch_size)["per_item"]
         else:
-            similarities = similarity_scorer(scoreable_pairs)
-        for row in output:
-            block = (row.get("metric_inputs") or {}).get("asr_robustness")
-            if not block:
+            similarities = similarity_scorer(scoreable)
+    for pair_id, clean, noisy, targets in similarity_pairs:
+        if clean and noisy:
+            if pair_id not in similarities:
                 continue
-            for variant in block["variants"]:
-                if variant["pair_id"] in similarities:
-                    variant["similarity"] = float(similarities[variant["pair_id"]])
-            worst = block["variants"][-1]
-            if "similarity" in worst:
-                block["similarity"] = worst["similarity"]
+            value = float(similarities[pair_id])
+        else:
+            value = 0.0 if clean or noisy else 1.0
+        for holder, key in targets:
+            holder[key] = value
+    for row in output:
+        block = (row.get("metric_inputs") or {}).get("asr_robustness")
+        if block:
             block["similarity_model"] = similarity_model
     return output
 

@@ -73,23 +73,31 @@ def critical_span_f1(expected, predicted) -> dict:
 
 
 def critical_fact_error_rate(utterances) -> dict:
-    """Fraction of critical-information-bearing utterances with any span error."""
-    eligible = errors = 0
+    """Fraction of critical-information-bearing utterances with any span error.
+
+    An utterance bears critical information when either side has a span. A
+    translation that invents a phone number or a name where the reference has no
+    fact at all is exactly the failure this gate exists for, so it counts here
+    rather than only lowering span precision.
+    """
+    eligible = errors = invented_only = 0
     per_item = {}
     for row in utterances:
         expected = row.get("reference_spans") or []
-        if not expected:
-            continue
         predicted = row.get("candidate_spans") or []
+        if not expected and not predicted:
+            continue
         match = critical_span_f1(expected, predicted)
         has_error = not (match["true_positive"] == match["reference"] == match["predicted"])
         eligible += 1
         errors += int(has_error)
+        invented_only += int(not expected)
         per_item[str(row.get("id") or eligible)] = has_error
     if not eligible:
         raise ValueError("no utterance contains reviewed critical spans")
     return {"error_rate": errors / eligible, "error_items": errors,
-            "eligible_items": eligible, "per_item": per_item}
+            "eligible_items": eligible, "invented_only_items": invented_only,
+            "per_item": per_item}
 
 
 def corpus(items, **_) -> tuple[dict, dict]:

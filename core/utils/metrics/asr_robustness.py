@@ -94,44 +94,64 @@ def multilingual_semantic_similarity(pairs, *, model_name=DEFAULT_INVARIANCE_MOD
             "per_item": per_item, "model": model_name}
 
 
+def _is_number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
 def quality_noise_degradation(samples, *, lower_is_better=()) -> dict:
-    """Linear degradation slope, normalised AUC and worst-noise-bucket quality."""
+    """Linear degradation slope, normalised AUC and worst-noise-bucket quality.
+
+    ``noise_level`` is the noise each sample actually has (e.g. WER from the clean
+    transcript). Samples sharing a ``requested_noise_level`` form one bucket; without
+    it, samples with the same ``noise_level`` do. Every statistic is taken over the
+    bucket means -- the curve a reader would draw -- so the spread of individual
+    sentences inside a bucket cannot leak into the AUC. The slope is the least-squares
+    fit of those means weighted by bucket size, which equals the pooled fit whenever
+    every sample in a bucket has the same noise.
+    """
     lower = set(lower_is_better)
-    grouped = defaultdict(list)
+    grouped = defaultdict(lambda: defaultdict(list))
     for row in samples:
         noise = row.get("noise_level", row.get("wer"))
-        if not isinstance(noise, (int, float)) or isinstance(noise, bool):
+        if not _is_number(noise):
             continue
+        bucket = row.get("requested_noise_level")
+        bucket = float(bucket) if _is_number(bucket) else float(noise)
         for metric, quality in _quality_map(row.get("quality")).items():
-            grouped[metric].append((float(noise), quality))
-    if not any(len(points) >= 2 for points in grouped.values()):
-        raise ValueError("degradation needs at least two noise/quality points per metric")
+            grouped[metric][bucket].append((float(noise), quality))
 
     result = {}
-    for metric, points in sorted(grouped.items()):
-        if len(points) < 2:
+    for metric, buckets in sorted(grouped.items()):
+        curve = sorted(({"bucket": bucket,
+                         "noise_level": mean(x for x, _ in points),
+                         "quality": mean(y for _, y in points),
+                         "n": len(points)} for bucket, points in buckets.items()),
+                       key=lambda point: (point["noise_level"], point["bucket"]))
+        if len(curve) < 2:
             continue
-        points.sort()
-        xs = [p[0] for p in points]
-        ys = [p[1] for p in points]
-        x_mean, y_mean = mean(xs), mean(ys)
-        variance = sum((x - x_mean) ** 2 for x in xs)
+        weights = [point["n"] for point in curve]
+        xs = [point["noise_level"] for point in curve]
+        ys = [point["quality"] for point in curve]
+        total = sum(weights)
+        x_mean = sum(w * x for w, x in zip(weights, xs)) / total
+        y_mean = sum(w * y for w, y in zip(weights, ys)) / total
+        variance = sum(w * (x - x_mean) ** 2 for w, x in zip(weights, xs))
         if variance == 0:
             continue
-        raw_slope = sum((x - x_mean) * (y - y_mean) for x, y in points) / variance
+        raw_slope = sum(w * (x - x_mean) * (y - y_mean)
+                        for w, x, y in zip(weights, xs, ys)) / variance
         degradation_slope = -raw_slope if metric not in lower else raw_slope
         width = xs[-1] - xs[0]
-        auc = (sum((xs[i] - xs[i - 1]) * (ys[i] + ys[i - 1]) / 2
-                   for i in range(1, len(points))) / width) if width else ys[-1]
-        max_noise = xs[-1]
-        worst_bucket = mean(y for x, y in points if x == max_noise)
+        auc = sum((xs[i] - xs[i - 1]) * (ys[i] + ys[i - 1]) / 2
+                  for i in range(1, len(curve))) / width
         result[metric] = {"degradation_slope": degradation_slope,
                           "raw_quality_slope": raw_slope,
-                          "quality_auc": auc, "worst_bucket_quality": worst_bucket,
-                          "worst_bucket_noise": max_noise, "n_points": len(points),
-                          "lower_is_better": metric in lower}
+                          "quality_auc": auc, "worst_bucket_quality": ys[-1],
+                          "worst_bucket_noise": xs[-1], "n_points": total,
+                          "curve": curve, "lower_is_better": metric in lower}
     if not result:
-        raise ValueError("noise levels have zero variance")
+        raise ValueError("degradation needs at least two noise levels with quality "
+                         "for one metric")
     return result
 
 
@@ -141,7 +161,8 @@ def corpus(items, **_) -> tuple[dict, dict]:
         block = item.metric_inputs.get("asr_robustness") or {}
         if block:
             rows.append({"id": item.id, **block})
-    lower = {"metricx_24", "mqm_error_rate", "critical_fact_error_rate"}
+    lower = {"metricx_24", "mqm_fluency_error_rate", "critical_fact_error_rate",
+             "target_lm_pseudo_perplexity"}
     axis, unavailable = {}, {}
     try:
         axis["quality_drop"] = asr_induced_quality_drop(rows, lower_is_better=lower)
@@ -151,6 +172,14 @@ def corpus(items, **_) -> tuple[dict, dict]:
         axis["translation_invariance"] = translation_invariance_score(rows)
     except ValueError as exc:
         unavailable["asr_robustness.translation_invariance"] = str(exc)
+    # An empty ASR output or translation stays in the averages above (it is the worst
+    # case of robustness, not missing data) and is also counted on its own.
+    flagged = [row for row in rows if "catastrophic" in row]
+    if flagged:
+        failed = [row["id"] for row in flagged if row["catastrophic"]]
+        axis["catastrophic_failures"] = {"count": len(failed), "n_pairs": len(flagged),
+                                         "rate": len(failed) / len(flagged),
+                                         "items": failed}
 
     degradation_rows = []
     for row in rows:

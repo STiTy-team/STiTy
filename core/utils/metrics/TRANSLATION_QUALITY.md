@@ -40,10 +40,13 @@
       "judge": {"score": 5, "reason": "natural spoken English"},
       "mqm_errors": [],
       "target_token_count": 9,
-      "target_lm_pseudo_perplexity": 4.2
+      "target_lang": "en",
+      "target_lm_pseudo_perplexity": 4.2,
+      "target_lm_nll_sum": 14.35,
+      "target_lm_token_count": 10
     },
     "context": {
-      "mqm": {"score": 5, "score_without_context": 3, "errors": []},
+      "mqm": {"errors": [], "errors_without_context": [{"severity": "major"}]},
       "inconsistencies": [],
       "contrastive": {"selected_correct": true, "phenomenon": "ellipsis"}
     },
@@ -52,9 +55,10 @@
       "noisy_quality": {"comet": 0.81, "metricx_24": 2.1},
       "similarity": 0.94,
       "noise_level": 0.18,
+      "catastrophic": false,
       "quality_by_noise": [
-        {"noise_level": 0.0, "quality": {"comet": 0.86}},
-        {"noise_level": 0.18, "quality": {"comet": 0.81}}
+        {"noise_level": 0.0, "requested_noise_level": 0.0, "quality": {"comet": 0.86}},
+        {"noise_level": 0.13, "requested_noise_level": 0.18, "quality": {"comet": 0.81}}
       ]
     },
     "intent": {
@@ -69,6 +73,31 @@
 `candidate_spans`, judge 결과, 후보 intent label처럼 시스템 출력이 있어야 생성 가능한 필드는
 오프라인 판정 단계가 `items.jsonl`에 보강한 뒤 다시 `score_run`에 넣어도 된다. bench의
 dataset adapter는 `metric_inputs`를 해석하거나 버리지 않고 전달만 한다.
+
+## 지표 정의에서 헷갈리기 쉬운 것
+
+- **COMET·MetricX의 원문**은 정답 전사(`reference`)다. 정답 전사가 없는 항목만 ASR 전사를
+  쓴다. ASR 전사는 ASR 시스템마다 달라서, 그걸 원문으로 쓰면 시스템마다 다른 원문으로
+  채점된다. 결과의 `source_text`에 각각 몇 건인지 남는다.
+- **Critical Fact Error Rate**의 분모는 참조나 후보 **어느 한쪽에라도** 중요 span이 있는
+  발화다. 참조에 사실이 없는데 후보가 번호나 이름을 지어낸 경우도 오류로 센다
+  (`invented_only_items`).
+- **MQM fluency error rate**와 **pseudo-perplexity**는 목표 언어별(`by_target`)로만 합친다.
+  토큰 단위(영어 단어, 한국어 어절)와 언어 모델이 달라서 언어끼리 섞으면 뜻이 없다. 언어가
+  하나뿐일 때만 최상위 값이 생긴다. 저장된 pseudo-perplexity는 문장별 NLL 합과 토큰 수가
+  있으면 토큰 기준으로 모으고(`aggregation: token_weighted`), 없으면 문장 값의 기하평균으로
+  모은다(`sentence_geometric_mean`). 산술평균은 문장 하나에 끌려가서 쓰지 않는다.
+  pseudo-perplexity가 낮다고 좋은 번역은 아니다 — 뻔하고 짧은 문장일수록 낮다.
+- **Context-MQM** 점수는 MQM 점수(심각도 가중 오류 합에 마이너스, 0이 최고)다. `errors`
+  목록을 주면 유창성 축과 같은 가중치(minor 1, major 5, critical 25)로 계산한다. 숫자
+  `score`를 직접 줄 때는 0 이하여야 한다. 1~5 같은 루브릭 점수가 섞이면 방향이 뒤집히므로
+  양수는 거부한다. `errors_without_context`(또는 `score_without_context`)가 있으면 문맥을 준
+  점수와의 차가 `mean_context_gain`이다.
+- **ASR 강건성**의 `quality_drop`과 `similarity`는 clean(정답 전사)과 실제 ASR 출력 한 쌍으로
+  계산한다. 저하 곡선의 `noise_level`은 **실제로 잰 WER**이고, 같은
+  `requested_noise_level`을 가진 점들의 평균이 곡선의 한 점이다. 기울기·AUC·최악 구간은 그
+  평균 곡선에서 구한다. 빈 ASR 출력·빈 번역은 `catastrophic: true`로 평균에 포함하고
+  `catastrophic_failures`에 따로 센다.
 
 ## Learned metric 실행
 
@@ -109,9 +138,15 @@ python -m bench.retranslate \
 python -m bench.annotate_quality <source-run> <output-run>
 ```
 
-- 중요 정보: 결정론적 값 추출·canonical normalization + JSON entity/span 판정기
+- 중요 정보: 결정론적 값 추출·canonical normalization(`bench/critical_values.py`) + JSON
+  entity/span 판정기. 참조 span은 후보 없이 문장마다 한 번 뽑아 모든 번역기가 공유하고,
+  후보 span은 그 목록에 맞춰 뽑는다. span마다 `origin`이 남는다
 - 유창성: 후보만 보는 Spoken Fluency 1~5 judge + MQM 오류 span + masked-LM pseudo-perplexity
 - 기본 masked-LM: 영어 `FacebookAI/roberta-base`, 한국어 `klue/roberta-base`
+
+결정론적 추출기는 평범한 단어이기도 한 형태를 숫자로 읽지 않는다. 한국어 "네"(대답)·"이"
+(지시어)·"한국"의 "한", 영어 대명사 "one", "COVID-19"의 19가 그렇다. 관형사형 수사("두",
+"세")는 뒤에 단위 명사가 올 때만, 영어 "one"은 뒤에 단위나 통화가 올 때만 숫자로 읽는다.
 
 전사문 교란 기반 강건성 평가는 다음 명령으로 별도 파생 run을 만든다.
 
@@ -120,10 +155,11 @@ python -m bench.asr_text_robustness \
   <source-run> bench/quality_ko_en.example.yml <output-run>
 ```
 
-이 프로토콜은 오디오와 ASR을 재실행하지 않는다. 저장된 전사에 seed가 고정된 ASR 유사
-교란을 적용하고 clean/noisy 입력을 같은 번역기로 처리한다. 각 강도의 chrF++ 품질,
-quality drop, degradation slope/AUC, clean/noisy 번역 의미 유사도를 저장한다. 기본 의미
-유사도 checkpoint는 `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`다.
+이 프로토콜은 오디오와 ASR을 재실행하지 않는다. 정답 전사를 clean으로, 저장된 ASR 출력을
+실제 noisy 조건으로 쓰고, 정답 전사에 seed가 고정된 ASR 유사 교란(치환 중심)을 강도별로
+넣은 변형을 더한다. 셋 다 같은 번역기로 처리해 chrF++ 품질, quality drop, 실측 WER 기준
+degradation slope/AUC, clean/noisy 번역 의미 유사도를 저장한다. 기본 의미 유사도
+checkpoint는 `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`다.
 
 ## 방향
 
@@ -132,6 +168,6 @@ quality drop, degradation slope/AUC, clean/noisy 번역 의미 유사도를 저�
 - 낮을수록 좋음: MetricX-24, critical fact error rate, MQM fluency error rate,
   pseudo-perplexity, quality drop, degradation slope
 
-서로 다른 목표 언어의 pseudo-perplexity 절대값은 비교하지 않는다. `quality_drop`과 slope는
+서로 다른 목표 언어의 pseudo-perplexity와 MQM 오류율 절대값은 비교하지 않는다. `quality_drop`과 slope는
 MetricX 계열처럼 낮을수록 좋은 지표의 방향을 내부적으로 뒤집어, 양수가 곧 품질 저하가 되게
 보고한다.

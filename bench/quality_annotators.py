@@ -5,16 +5,25 @@ import hashlib
 import json
 import os
 import re
-from dataclasses import dataclass
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Protocol
 
+from core.utils.metrics.critical_information import VALUE_TYPES
 
-QUALITY_ANNOTATOR_VERSION = "2026-09-21.1"
-CRITICAL_PROMPT_VERSION = "ko-en-critical-v1"
+from .critical_values import Span, extract_critical_values
+
+
+QUALITY_ANNOTATOR_VERSION = "2026-09-21.2"
+CRITICAL_REFERENCE_PROMPT_VERSION = "ko-en-critical-reference-v2"
+CRITICAL_CANDIDATE_PROMPT_VERSION = "ko-en-critical-candidate-v2"
 FLUENCY_PROMPT_VERSION = "spoken-fluency-mqm-v1"
+
+ENTITY_TYPES = {"person", "location", "organization", "product", "term", "address",
+                "email", "url"}
+_TYPE_ALIASES = {"domain_term": "term", "terminology": "term", "postal_address": "address",
+                 "place": "location", "org": "organization", "company": "organization",
+                 "name": "person"}
 
 FLUENCY_SYSTEM_PROMPT = """You are a strict evaluator of spoken-language fluency.
 Judge only the candidate text as conversation in the target language. Do not infer or judge source meaning or translation faithfulness.
@@ -23,10 +32,21 @@ Also annotate MQM fluency/style errors. Allowed categories are grammar, word_ord
 Every error must identify an exact substring using zero-based start and exclusive end character offsets in the candidate. Do not create an error merely because a different wording would be preferable.
 Return one JSON object with keys score, reason, and errors. errors is an array of objects with category, severity, start, end, text, and explanation."""
 
-CRITICAL_SYSTEM_PROMPT = """You annotate critical information in Korean-English conversational translation.
-The source and reference establish which facts should be preserved. Extract only person, location, organization, product, domain term, postal address, email, and URL spans; numeric values are supplied separately and must not be repeated.
-For semantically corresponding reference and candidate spans, use exactly the same language-neutral canonical_value. Transliteration, translation, abbreviation, and original-script retention may be equivalent. Candidate-only invented facts must still be extracted with their own canonical_value.
-Every span must use an exact substring and zero-based start and exclusive end character offsets in its own text. Return JSON with reference_spans, candidate_spans, and alignments. Each span has type, text, start, end, canonical_value, and accepted_values. Each alignment has reference_index, candidate_index, and relation, where relation is equivalent or conflicting."""
+_CRITICAL_SPAN_RULES = """A span is critical only if it names a specific entity or a domain-specific term whose mistranslation would change who, what or where is meant. Do not extract generic common nouns (for example: cities, coffee, the stage, police headquarters, baked goods), pronouns, or descriptions.
+Types are person, location, organization, product, term, address, email and url.
+Every span must use an exact substring of its own text with zero-based start and exclusive end character offsets. Each span has type, text, start, end, canonical_value and accepted_values."""
+
+CRITICAL_REFERENCE_SYSTEM_PROMPT = f"""You annotate critical information in the reference translation of one Korean-English conversation turn. The source, when given, is only for disambiguation.
+Extract spans from the reference only. Numeric values (numbers, ordinals, dates, times, money, measurements, phone numbers) are already in known_reference_spans; do not repeat them.
+{_CRITICAL_SPAN_RULES}
+Give each span a language-neutral canonical_value (the lowercase English form of the name) and list valid alternative renderings (transliteration, translation, abbreviation, original script) in accepted_values.
+Return one JSON object with key reference_spans."""
+
+CRITICAL_CANDIDATE_SYSTEM_PROMPT = f"""You annotate critical information in a candidate translation against a fixed list of reference_spans. The reference_spans are final: never add, drop or change them.
+1. Extract the candidate's critical spans. When a candidate span refers to the same entity as a reference span, copy that reference span's canonical_value exactly; transliteration, translation, abbreviation and original-script retention may be equivalent. When it refers to something else, or to a fact absent from the reference, give it its own canonical_value: invented facts must be extracted.
+2. known_candidate_value_spans are the candidate's numeric values found by rule. If a reference span of type number, ordinal, date, time, money or unit has no candidate value span with the same canonical_value, but the candidate states exactly that value in other words (for example "a dozen" for 12), add a candidate span with that type, the reference's canonical_value, and the candidate's words as text. Never add a value span for a different value.
+{_CRITICAL_SPAN_RULES}
+Return one JSON object with keys candidate_spans and alignments. Each alignment has reference_index (into reference_spans), candidate_index (into your candidate_spans) and relation, which is equivalent or conflicting."""
 
 
 class JsonJudge(Protocol):
@@ -107,239 +127,67 @@ class OpenAIJsonJudge:
         raise RuntimeError(f"{purpose} failed after {self.max_retries} attempts: {last_error}")
 
 
-@dataclass(frozen=True)
-class Span:
-    type: str
-    text: str
-    start: int
-    end: int
-    canonical_value: str
+def _locate(text: str, surface: str, start, end) -> tuple[int, int] | None:
+    """Offsets of ``surface`` in ``text``, trusting the judge's offsets only if they hold.
 
-    def as_dict(self) -> dict:
-        return {
-            "type": self.type,
-            "text": self.text,
-            "start": self.start,
-            "end": self.end,
-            "canonical_value": self.canonical_value,
-        }
-
-
-_EN_NUMBERS = {
-    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
-    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
-    "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14,
-    "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
-    "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40,
-    "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90,
-}
-
-_KO_NUMBERS = {
-    "영": 0, "공": 0, "일": 1, "하나": 1, "한": 1, "첫": 1,
-    "이": 2, "둘": 2, "두": 2, "삼": 3, "셋": 3, "세": 3,
-    "사": 4, "넷": 4, "네": 4, "오": 5, "다섯": 5,
-    "육": 6, "여섯": 6, "칠": 7, "일곱": 7, "팔": 8, "여덟": 8,
-    "구": 9, "아홉": 9, "십": 10, "열": 10, "열한": 11,
-    "열두": 12, "열세": 13, "열네": 14, "스물": 20,
-}
-
-_UNIT_ALIASES = {
-    "km": "km", "kilometer": "km", "kilometers": "km", "킬로미터": "km",
-    "m": "m", "meter": "m", "meters": "m", "미터": "m",
-    "cm": "cm", "centimeter": "cm", "centimeters": "cm", "센티미터": "cm",
-    "mm": "mm", "millimeter": "mm", "millimeters": "mm", "밀리미터": "mm",
-    "kg": "kg", "kilogram": "kg", "kilograms": "kg", "킬로그램": "kg",
-    "g": "g", "gram": "g", "grams": "g", "그램": "g",
-    "l": "L", "liter": "L", "liters": "L", "litre": "L", "litres": "L", "리터": "L",
-    "ml": "mL", "milliliter": "mL", "milliliters": "mL", "밀리리터": "mL",
-    "°c": "°C", "celsius": "°C", "섭씨": "°C",
-    "°f": "°F", "fahrenheit": "°F", "화씨": "°F",
-    "%": "%", "percent": "%", "퍼센트": "%",
-}
-
-_CURRENCY_ALIASES = {
-    "₩": "KRW", "원": "KRW", "원화": "KRW", "won": "KRW", "krw": "KRW",
-    "$": "USD", "달러": "USD", "dollar": "USD", "dollars": "USD", "usd": "USD",
-    "€": "EUR", "유로": "EUR", "euro": "EUR", "euros": "EUR", "eur": "EUR",
-    "£": "GBP", "파운드": "GBP", "pound": "GBP", "pounds": "GBP", "gbp": "GBP",
-}
-
-
-def _decimal(raw: str) -> str | None:
-    try:
-        value = Decimal(raw.replace(",", ""))
-    except InvalidOperation:
+    Judges often miscount characters. When the substring occurs more than once (a
+    repeated word is the typical case), the occurrence nearest the claimed start is
+    taken; a surface that is not in the text at all cannot be located.
+    """
+    if (isinstance(start, int) and isinstance(end, int)
+            and 0 <= start < end <= len(text) and text[start:end] == surface):
+        return start, end
+    positions = [match.start() for match in re.finditer(re.escape(surface), text)]
+    if not positions:
         return None
-    text = format(value, "f")
-    return text.rstrip("0").rstrip(".") if "." in text else text
+    anchor = start if isinstance(start, int) else 0
+    best = min(positions, key=lambda position: (abs(position - anchor), position))
+    return best, best + len(surface)
 
 
-def _add(spans: list[Span], occupied: list[tuple[int, int]], span: Span) -> None:
-    if span.start >= span.end or any(span.start < end and start < span.end
-                                     for start, end in occupied):
-        return
-    spans.append(span)
-    occupied.append((span.start, span.end))
+def _span_type(raw) -> str:
+    kind = re.sub(r"[\s-]+", "_", str(raw or "").strip().lower())
+    return _TYPE_ALIASES.get(kind, kind)
 
 
-def _digit_values(text: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    for match in re.finditer(r"(?<![\w])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?![\w])", text):
-        canonical = _decimal(match.group())
-        if canonical is not None:
-            _add(spans, occupied, Span("number", match.group(), match.start(), match.end(), canonical))
-
-
-def _dates(text: str, lang: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    patterns = [
-        re.compile(r"(?P<y>\d{4})[-/.](?P<m>\d{1,2})[-/.](?P<d>\d{1,2})"),
-        re.compile(r"(?P<y>\d{4})년\s*(?P<m>\d{1,2})월\s*(?P<d>\d{1,2})일"),
-    ]
-    if lang == "en":
-        patterns.append(re.compile(r"(?P<m>\d{1,2})/(?P<d>\d{1,2})/(?P<y>\d{4})"))
-    for pattern in patterns:
-        for match in pattern.finditer(text):
-            y, m, d = int(match["y"]), int(match["m"]), int(match["d"])
-            if 1 <= m <= 12 and 1 <= d <= 31:
-                _add(spans, occupied, Span("date", match.group(), match.start(), match.end(),
-                                           f"{y:04d}-{m:02d}-{d:02d}"))
-
-
-def _times(text: str, lang: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    digit = re.compile(r"(?<!\d)(?P<h>\d{1,2}):(?P<m>\d{2})\s*(?P<p>am|pm)?\b", re.I)
-    for match in digit.finditer(text):
-        hour, minute = int(match["h"]), int(match["m"])
-        marker = (match["p"] or "").lower()
-        if marker and 1 <= hour <= 12:
-            hour = (hour % 12) + (12 if marker == "pm" else 0)
-        if 0 <= hour <= 23 and 0 <= minute <= 59:
-            _add(spans, occupied, Span("time", match.group(), match.start(), match.end(),
-                                       f"{hour:02d}:{minute:02d}"))
-    meridiem = re.compile(r"(?<!\d)(?P<h>\d{1,2})\s*(?P<p>a\.?m\.?|p\.?m\.?)(?![A-Za-z])", re.I)
-    for match in meridiem.finditer(text):
-        hour = int(match["h"])
-        marker = match["p"].lower().replace(".", "")
-        if not 1 <= hour <= 12:
-            continue
-        hour = (hour % 12) + (12 if marker == "pm" else 0)
-        _add(spans, occupied, Span("time", match.group(), match.start(), match.end(),
-                                   f"{hour:02d}:00"))
-    if lang == "ko":
-        pattern = re.compile(r"(?:(?P<p>오전|오후)\s*)?(?P<h>\d{1,2}|[가-힣]+)\s*시(?:\s*(?P<m>\d{1,2})\s*분)?")
-        for match in pattern.finditer(text):
-            raw_hour = match["h"]
-            hour = int(raw_hour) if raw_hour.isdigit() else _KO_NUMBERS.get(raw_hour)
-            minute = int(match["m"] or 0)
-            if hour is None or not 0 <= minute <= 59:
-                continue
-            if match["p"] == "오후" and hour < 12:
-                hour += 12
-            if match["p"] == "오전" and hour == 12:
-                hour = 0
-            if 0 <= hour <= 23:
-                _add(spans, occupied, Span("time", match.group(), match.start(), match.end(),
-                                           f"{hour:02d}:{minute:02d}"))
-    else:
-        words = "|".join(sorted(_EN_NUMBERS, key=len, reverse=True))
-        pattern = re.compile(rf"\b(?P<h>{words})\s*(?P<p>a\.?m\.?|p\.?m\.?|o'clock)\b", re.I)
-        for match in pattern.finditer(text):
-            hour = _EN_NUMBERS[match["h"].lower()]
-            marker = match["p"].lower().replace(".", "")
-            if marker == "pm" and hour < 12:
-                hour += 12
-            if marker == "am" and hour == 12:
-                hour = 0
-            _add(spans, occupied, Span("time", match.group(), match.start(), match.end(),
-                                       f"{hour:02d}:00"))
-
-
-def _money_and_units(text: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    currencies = "|".join(re.escape(v) for v in sorted(_CURRENCY_ALIASES, key=len, reverse=True))
-    money = re.compile(rf"(?:(?P<pre>{currencies})\s*)?(?P<n>\d[\d,]*(?:\.\d+)?)\s*(?P<post>{currencies})?", re.I)
-    for match in money.finditer(text):
-        currency = match["pre"] or match["post"]
-        if not currency:
-            continue
-        amount = _decimal(match["n"])
-        code = _CURRENCY_ALIASES[currency.casefold()]
-        _add(spans, occupied, Span("money", match.group(), match.start(), match.end(),
-                                   f"{code}:{amount}"))
-    units = "|".join(re.escape(v) for v in sorted(_UNIT_ALIASES, key=len, reverse=True))
-    pattern = re.compile(rf"(?P<n>[-+]?\d[\d,]*(?:\.\d+)?)\s*(?P<u>{units})(?![A-Za-z가-힣])", re.I)
-    for match in pattern.finditer(text):
-        number = _decimal(match["n"])
-        unit = _UNIT_ALIASES[match["u"].casefold()]
-        _add(spans, occupied, Span("unit", match.group(), match.start(), match.end(),
-                                   f"{number} {unit}"))
-
-
-def _phones(text: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    pattern = re.compile(r"(?<!\d)(?:\+?\d{1,3}[- .])?(?:\d{2,3}[- .])\d{3,4}[- .]\d{4}(?!\d)")
-    for match in pattern.finditer(text):
-        digits = re.sub(r"\D", "", match.group())
-        if 9 <= len(digits) <= 15:
-            _add(spans, occupied, Span("phone", match.group(), match.start(), match.end(), digits))
-
-
-def _ordinals(text: str, lang: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    if lang == "en":
-        names = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5,
-                 "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10}
-        pattern = re.compile(r"\b(?:\d+(?:st|nd|rd|th)|" + "|".join(names) + r")\b", re.I)
-        for match in pattern.finditer(text):
-            raw = match.group().lower()
-            value = names.get(raw) or int(re.match(r"\d+", raw).group())
-            _add(spans, occupied, Span("ordinal", match.group(), match.start(), match.end(), str(value)))
-    else:
-        pattern = re.compile(r"(?:\d+|첫|두|세|네)\s*번(?:째)?")
-        for match in pattern.finditer(text):
-            head = re.match(r"\d+|첫|두|세|네", match.group()).group()
-            value = int(head) if head.isdigit() else {"첫": 1, "두": 2, "세": 3, "네": 4}[head]
-            _add(spans, occupied, Span("ordinal", match.group(), match.start(), match.end(), str(value)))
-
-
-def _word_numbers(text: str, lang: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    table = _KO_NUMBERS if lang == "ko" else _EN_NUMBERS
-    boundary = r"(?<![가-힣])({})(?![가-힣])" if lang == "ko" else r"\b({})\b"
-    pattern = re.compile(boundary.format("|".join(re.escape(v) for v in sorted(table, key=len, reverse=True))),
-                         0 if lang == "ko" else re.I)
-    for match in pattern.finditer(text):
-        raw = match.group()
-        value = table.get(raw if lang == "ko" else raw.lower())
-        _add(spans, occupied, Span("number", raw, match.start(), match.end(), str(value)))
-
-
-def extract_critical_values(text: str, lang: str) -> list[dict]:
-    if lang not in {"ko", "en"}:
-        raise ValueError("critical-information extraction supports only ko and en")
-    spans: list[Span] = []
-    occupied: list[tuple[int, int]] = []
-    _phones(text, spans, occupied)
-    _dates(text, lang, spans, occupied)
-    _times(text, lang, spans, occupied)
-    _money_and_units(text, spans, occupied)
-    _ordinals(text, lang, spans, occupied)
-    _digit_values(text, spans, occupied)
-    _word_numbers(text, lang, spans, occupied)
-    return [span.as_dict() for span in sorted(spans, key=lambda value: value.start)]
-
-
-def _validated_span(text: str, raw: dict, allowed_types: set[str]) -> dict | None:
-    kind = str(raw.get("type") or "").strip().lower()
+def _validated_span(text: str, raw: dict, allowed_types: set[str], origin: str) -> dict | None:
+    kind = _span_type(raw.get("type"))
     surface = str(raw.get("text") or "")
     canonical = str(raw.get("canonical_value") or "").strip()
     if kind not in allowed_types or not surface or not canonical:
         return None
-    start, end = raw.get("start"), raw.get("end")
-    valid = (isinstance(start, int) and isinstance(end, int)
-             and 0 <= start < end <= len(text) and text[start:end] == surface)
-    if not valid:
-        matches = [match.start() for match in re.finditer(re.escape(surface), text)]
-        if len(matches) != 1:
-            return None
-        start, end = matches[0], matches[0] + len(surface)
+    located = _locate(text, surface, raw.get("start"), raw.get("end"))
+    if located is None:
+        return None
     accepted = [str(value) for value in raw.get("accepted_values") or [] if str(value).strip()]
-    return {"type": kind, "text": surface, "start": start, "end": end,
-            "canonical_value": canonical, "accepted_values": accepted}
+    return {"type": kind, "text": surface, "start": located[0], "end": located[1],
+            "canonical_value": canonical, "accepted_values": accepted, "origin": origin}
+
+
+def _unlocated(text: str, raw: dict) -> int:
+    """1 when a well-formed span was dropped only because its text is not in ``text``."""
+    surface = str(raw.get("text") or "")
+    return int(bool(surface and str(raw.get("canonical_value") or "").strip())
+               and _locate(text, surface, raw.get("start"), raw.get("end")) is None)
+
+
+def _with_origin(spans, origin: str) -> list[dict]:
+    return [{**span, "origin": span.get("origin") or origin} for span in spans]
+
+
+def gold_reference_spans(block: dict) -> list[dict]:
+    """The human-made reference spans of a ``critical_information`` block.
+
+    Spans this annotator writes carry an ``origin``; human spans from a dataset
+    manifest carry none (or ``origin: gold``). A block written before origins were
+    recorded has ``annotation_source`` but unmarked spans, which cannot be told apart,
+    so none of them is taken for human.
+    """
+    spans = [dict(span) for span in block.get("reference_spans") or [] if isinstance(span, dict)]
+    if "annotation_source" in block and not any("origin" in span for span in spans):
+        return []
+    return [{**span, "origin": "gold"} for span in spans
+            if span.get("origin", "gold") == "gold"]
 
 
 def _merge_spans(primary: list[dict], secondary: list[dict]) -> list[dict]:
@@ -376,47 +224,183 @@ def _merge_spans(primary: list[dict], secondary: list[dict]) -> list[dict]:
                                              value.get("end", len(output) + 1)))
 
 
+def _check_pair(source_lang: str, target_lang: str) -> None:
+    if {source_lang, target_lang} != {"ko", "en"}:
+        raise ValueError("critical-information annotation supports only ko<->en")
+
+
+def _sha256(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+async def annotate_reference_critical_information(
+        *, judge: JsonJudge, source: str, reference: str, source_lang: str,
+        target_lang: str, gold_reference_spans: list[dict] | None = None) -> dict:
+    """Critical spans of the reference translation, without looking at any candidate.
+
+    This set is the denominator every system is scored against, so it is extracted
+    once per reference and shared. ``source`` should be the gold transcript: the ASR
+    transcript differs per ASR system and would make the set system-dependent.
+    """
+    _check_pair(source_lang, target_lang)
+    gold = [{**dict(span), "origin": "gold"} for span in gold_reference_spans or []]
+    seed = _merge_spans(gold, _with_origin(extract_critical_values(reference, target_lang),
+                                           "rule"))
+    payload = {"source_language": source_lang, "target_language": target_lang,
+               "reference": reference, "known_reference_spans": seed}
+    if source:
+        payload["source"] = source
+    result = await judge.ask(purpose="critical_information_reference",
+                             system=CRITICAL_REFERENCE_SYSTEM_PROMPT, payload=payload)
+    llm, unlocated = [], 0
+    for raw in result.get("reference_spans") or []:
+        if not isinstance(raw, dict):
+            continue
+        span = _validated_span(reference, raw, ENTITY_TYPES, "llm")
+        if span:
+            llm.append(span)
+        else:
+            unlocated += _unlocated(reference, raw)
+    return {"reference_spans": _merge_spans(seed, llm),
+            "reference_unlocated_spans": unlocated,
+            "reference_prompt_version": CRITICAL_REFERENCE_PROMPT_VERSION,
+            "reference_judge_model": judge.model,
+            "reference_sha256": _sha256(reference)}
+
+
+async def annotate_candidate_critical_information(
+        *, judge: JsonJudge, source: str, reference: str, candidate: str,
+        reference_spans: list[dict], source_lang: str, target_lang: str) -> dict:
+    """Critical spans of one candidate, matched against a fixed reference span list."""
+    _check_pair(source_lang, target_lang)
+    rule = _with_origin(extract_critical_values(candidate, target_lang), "rule")
+    payload = {"source_language": source_lang, "target_language": target_lang,
+               "reference": reference, "reference_spans": reference_spans,
+               "candidate": candidate, "known_candidate_value_spans": rule}
+    if source:
+        payload["source"] = source
+    result = await judge.ask(purpose="critical_information_candidate",
+                             system=CRITICAL_CANDIDATE_SYSTEM_PROMPT, payload=payload)
+    raws = [raw for raw in result.get("candidate_spans") or [] if isinstance(raw, dict)]
+
+    # The judge may state a value the rules missed ("a dozen"), but only a reference
+    # value that no rule-found candidate value already matches; it can neither
+    # override a rule-found value nor introduce a value of its own.
+    found = {(span["type"], span["canonical_value"]) for span in rule}
+    missing = {(span.get("type"), span.get("canonical_value")) for span in reference_spans
+               if span.get("type") in VALUE_TYPES} - found
+    rescued, entities, unlocated = [], [], 0
+    for raw in raws:
+        kind = _span_type(raw.get("type"))
+        if kind in VALUE_TYPES:
+            span = _validated_span(candidate, raw, VALUE_TYPES, "llm_value")
+            if span and (span["type"], span["canonical_value"]) in missing:
+                rescued.append(span)
+        elif kind in ENTITY_TYPES:
+            span = _validated_span(candidate, raw, ENTITY_TYPES, "llm")
+            if span:
+                entities.append(span)
+            else:
+                unlocated += _unlocated(candidate, raw)
+    alignment = []
+    for link in result.get("alignments") or []:
+        if not isinstance(link, dict):
+            continue
+        ref_index, cand_index = link.get("reference_index"), link.get("candidate_index")
+        if (isinstance(ref_index, int) and isinstance(cand_index, int)
+                and 0 <= ref_index < len(reference_spans) and 0 <= cand_index < len(raws)):
+            alignment.append({
+                "reference_index": ref_index,
+                "reference_canonical_value": reference_spans[ref_index].get("canonical_value"),
+                "candidate_text": raws[cand_index].get("text"),
+                "candidate_canonical_value": raws[cand_index].get("canonical_value"),
+                "relation": str(link.get("relation") or ""),
+            })
+    return {"candidate_spans": _merge_spans(_merge_spans(rule, rescued), entities),
+            "alignment": alignment,
+            "candidate_unlocated_spans": unlocated,
+            "candidate_prompt_version": CRITICAL_CANDIDATE_PROMPT_VERSION,
+            "candidate_sha256": _sha256(candidate)}
+
+
+class ReferenceSpanCache:
+    """Reference spans shared by every system annotated against the same reference.
+
+    An append-only JSONL file. Several annotation processes may run at once; two
+    that both miss a key both ask the judge, and the judge need not answer alike. So
+    after writing, a process reads the file back and takes the *first* entry for
+    the key -- every process then scores against the same spans.
+    """
+
+    def __init__(self, path: str | Path | None):
+        self.path = Path(path) if path else None
+        self._memory: dict[str, dict] = {}
+        self._locks: dict[str, asyncio.Lock] = {}
+
+    @staticmethod
+    def key(*parts) -> str:
+        return _sha256(json.dumps(parts, ensure_ascii=False, sort_keys=True, default=str))
+
+    def _read(self, key: str) -> dict | None:
+        if self.path is None or not self.path.is_file():
+            return None
+        with open(self.path, encoding="utf-8") as source:
+            for line in source:
+                try:
+                    entry = json.loads(line)
+                except ValueError:  # a line another process is still writing
+                    continue
+                if isinstance(entry, dict) and entry.get("key") == key:
+                    return entry.get("value")
+        return None
+
+    async def get(self, key: str, factory) -> dict:
+        async with self._locks.setdefault(key, asyncio.Lock()):
+            if key in self._memory:
+                return self._memory[key]
+            value = self._read(key)
+            if value is None:
+                value = await factory()
+                if self.path is not None:
+                    self.path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(self.path, "a", encoding="utf-8") as output:
+                        output.write(json.dumps({"key": key, "value": value},
+                                                ensure_ascii=False) + "\n")
+                    value = self._read(key)
+            self._memory[key] = value
+            return value
+
+
 async def annotate_critical_information(*, judge: JsonJudge, source: str,
                                         reference: str, candidate: str,
                                         source_lang: str, target_lang: str,
-                                        gold_reference_spans: list[dict] | None = None) -> dict:
-    if {source_lang, target_lang} != {"ko", "en"}:
-        raise ValueError("critical-information annotation supports only ko<->en")
-    deterministic_reference = extract_critical_values(reference, target_lang)
-    deterministic_candidate = extract_critical_values(candidate, target_lang)
-    supplied_gold = [dict(value) for value in gold_reference_spans or []]
-    reference_seed = _merge_spans(supplied_gold, deterministic_reference)
-    result = await judge.ask(
-        purpose="critical_information",
-        system=CRITICAL_SYSTEM_PROMPT,
-        payload={
-            "source_language": source_lang,
-            "target_language": target_lang,
-            "source": source,
-            "reference": reference,
-            "candidate": candidate,
-            "known_reference_spans": reference_seed,
-            "known_candidate_value_spans": deterministic_candidate,
-        },
-    )
-    types = {"person", "location", "organization", "product", "term", "address", "email", "url"}
-    llm_reference = [value for raw in result.get("reference_spans") or []
-                     if isinstance(raw, dict)
-                     for value in [_validated_span(reference, raw, types)] if value]
-    llm_candidate = [value for raw in result.get("candidate_spans") or []
-                     if isinstance(raw, dict)
-                     for value in [_validated_span(candidate, raw, types)] if value]
-    reference_spans = _merge_spans(reference_seed, llm_reference)
-    candidate_spans = _merge_spans(deterministic_candidate, llm_candidate)
+                                        gold_reference_spans: list[dict] | None = None,
+                                        reference_cache: ReferenceSpanCache | None = None
+                                        ) -> dict:
+    gold = [dict(span) for span in gold_reference_spans or []]
+
+    async def extract():
+        return await annotate_reference_critical_information(
+            judge=judge, source=source, reference=reference, source_lang=source_lang,
+            target_lang=target_lang, gold_reference_spans=gold)
+
+    if reference_cache is None:
+        reference_block = await extract()
+    else:
+        reference_block = await reference_cache.get(ReferenceSpanCache.key(
+            QUALITY_ANNOTATOR_VERSION, CRITICAL_REFERENCE_PROMPT_VERSION, judge.model,
+            source_lang, target_lang, source, reference, gold), extract)
+    candidate_block = await annotate_candidate_critical_information(
+        judge=judge, source=source, reference=reference, candidate=candidate,
+        reference_spans=reference_block["reference_spans"], source_lang=source_lang,
+        target_lang=target_lang)
+    origins = {span.get("origin") for span in reference_block["reference_spans"]}
     return {
-        "reference_spans": reference_spans,
-        "candidate_spans": candidate_spans,
-        "alignment": result.get("alignments") or [],
-        "annotation_source": "human_gold+automatic" if supplied_gold else "automatic",
+        **reference_block,
+        **candidate_block,
+        "annotation_source": "human_gold+automatic" if "gold" in origins else "automatic",
         "annotator_version": QUALITY_ANNOTATOR_VERSION,
-        "prompt_version": CRITICAL_PROMPT_VERSION,
         "judge_model": judge.model,
-        "candidate_sha256": hashlib.sha256(candidate.encode("utf-8")).hexdigest(),
     }
 
 
@@ -443,20 +427,19 @@ async def annotate_fluency(*, judge: JsonJudge, candidate: str,
     allowed = {"grammar", "word_order", "word_form", "spelling", "punctuation",
                "register", "awkwardness", "repetition", "untranslated_fragment", "consistency"}
     errors = []
+    unlocated = 0
     for raw in result.get("errors") or []:
         if not isinstance(raw, dict):
             continue
         kind = str(raw.get("category") or "").lower()
         surface = str(raw.get("text") or "")
-        start, end = raw.get("start"), raw.get("end")
         if kind not in allowed or not surface:
             continue
-        if not (isinstance(start, int) and isinstance(end, int)
-                and 0 <= start < end <= len(candidate) and candidate[start:end] == surface):
-            matches = [match.start() for match in re.finditer(re.escape(surface), candidate)]
-            if len(matches) != 1:
-                continue
-            start, end = matches[0], matches[0] + len(surface)
+        located = _locate(candidate, surface, raw.get("start"), raw.get("end"))
+        if located is None:
+            unlocated += 1
+            continue
+        start, end = located
         severity = str(raw.get("severity") or "minor").lower()
         if severity not in {"minor", "major", "critical"}:
             severity = "minor"
@@ -465,6 +448,7 @@ async def annotate_fluency(*, judge: JsonJudge, candidate: str,
     return {
         "judge": {"score": float(score), "reason": str(result.get("reason") or "")},
         "mqm_errors": errors,
+        "mqm_unlocated_errors": unlocated,
         "target_token_count": target_token_count(candidate, target_lang),
         "target_lang": target_lang,
         "annotator_version": QUALITY_ANNOTATOR_VERSION,
@@ -472,3 +456,9 @@ async def annotate_fluency(*, judge: JsonJudge, candidate: str,
         "judge_model": judge.model,
         "candidate_sha256": hashlib.sha256(candidate.encode("utf-8")).hexdigest(),
     }
+
+
+__all__ = ["OpenAIJsonJudge", "ReferenceSpanCache", "Span",
+           "annotate_candidate_critical_information", "annotate_critical_information",
+           "annotate_fluency", "annotate_reference_critical_information",
+           "extract_critical_values", "gold_reference_spans", "target_token_count"]
