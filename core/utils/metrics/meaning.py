@@ -1,7 +1,7 @@
-"""Meaning preservation: XCOMET, MetricX-24 and chrF++.
+"""Meaning preservation: COMET, MetricX-24 and chrF++.
 
 The learned metrics are deliberately lazy.  A normal bench run uses a local
-checkpoint named by ``STITY_XCOMET_MODEL`` / ``STITY_METRICX_MODEL`` or consumes
+checkpoint named by ``STITY_COMET_MODEL`` / ``STITY_METRICX_MODEL`` or consumes
 precomputed per-item values from ``metric_inputs.meaning``.  It never downloads a
 multi-gigabyte checkpoint merely because a summary is being written.  The public
 scorers can still be called directly by an offline/GPU scoring job.
@@ -12,35 +12,50 @@ import os
 from statistics import mean
 
 
-DEFAULT_XCOMET_MODEL = "Unbabel/XCOMET-XL"
+DEFAULT_COMET_MODEL = "Unbabel/wmt22-comet-da"
 DEFAULT_METRICX_MODEL = "google/metricx-24-hybrid-large-v2p6"
 DEFAULT_METRICX_TOKENIZER = "google/mt5-xl"
 
 
-def _xcomet_model(model_name: str):
+def _download_failure(model_name: str) -> str:
+    from huggingface_hub import hf_hub_download
+
+    try:
+        hf_hub_download(model_name, "hparams.yaml")
+    except Exception as cause:  # noqa: BLE001 - hub errors differ by auth, gate and network
+        lines = [line.strip() for line in str(cause).splitlines() if line.strip()]
+        return (f"cannot download {model_name} "
+                f"({type(cause).__name__}): {lines[-1] if lines else ''}")
+    return f"cannot download {model_name}: COMET rejected a reachable checkpoint"
+
+
+def _comet_model(model_name: str):
     from comet import download_model, load_from_checkpoint
 
-    return load_from_checkpoint(download_model(model_name))
+    try:
+        checkpoint = download_model(model_name)
+    except KeyError as exc:
+        raise RuntimeError(_download_failure(model_name)) from exc
+    return load_from_checkpoint(checkpoint)
 
 
-def xcomet_score(samples, *, model_name: str = DEFAULT_XCOMET_MODEL,
-                  batch_size: int = 8, gpus: int | None = None) -> dict:
-    """Run the official Unbabel XCOMET implementation.
+def comet_score(samples, *, model_name: str = DEFAULT_COMET_MODEL,
+                batch_size: int = 8, gpus: int | None = None) -> dict:
+    """Run a reference-based Unbabel COMET checkpoint.
 
     ``samples`` contain ``src``, ``mt`` and ``ref``.  The result retains the
-    sentence scores and MQM-like error spans because a corpus mean alone cannot
-    diagnose omissions or additions.
+    sentence scores, and the error spans when the checkpoint produces them.
     """
     rows = list(samples)
     if not rows:
-        raise ValueError("XCOMET needs at least one sample")
+        raise ValueError("COMET needs at least one sample")
     if gpus is None:
         try:
             import torch
             gpus = 1 if torch.cuda.is_available() else 0
         except ImportError:
             gpus = 0
-    output = _xcomet_model(model_name).predict(
+    output = _comet_model(model_name).predict(
         [{"src": r["src"], "mt": r["mt"], "ref": r["ref"]} for r in rows],
         batch_size=batch_size,
         gpus=gpus,
@@ -72,6 +87,7 @@ def _metricx_runtime(model_name: str, tokenizer_name: str, device: str):
 
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
     model = MT5ForRegression.from_pretrained(model_name, torch_dtype="auto")
+    model.config.use_cache = False
     model.to(torch.device(device))
     model.eval()
     return tokenizer, model
@@ -205,7 +221,7 @@ def corpus(items, *, languages) -> tuple[dict, dict]:
     else:
         unavailable["meaning.chrfpp"] = "no candidate/reference translation pairs"
 
-    learned = (("xcomet", "STITY_XCOMET_MODEL", xcomet_score),
+    learned = (("comet", "STITY_COMET_MODEL", comet_score),
                ("metricx_24", "STITY_METRICX_MODEL", metricx24_score))
     for name, env_name, scorer in learned:
         ready = _precomputed(items, name)
@@ -223,10 +239,10 @@ def corpus(items, *, languages) -> tuple[dict, dict]:
             except Exception as exc:  # noqa: BLE001 - model/cache/auth errors vary by backend
                 unavailable[f"meaning.{name}"] = f"scorer unavailable: {exc}"
             finally:
-                # XCOMET and MetricX are both multi-GB models. Keep them
+                # COMET and MetricX are both multi-GB models. Keep them
                 # sequential so a single-GPU evaluator does not retain both.
                 _release_accelerator()
     return ({"meaning": axis} if axis else {}), unavailable
 
 
-__all__ = ["xcomet_score", "metricx24_score", "chrfpp_score", "corpus"]
+__all__ = ["comet_score", "metricx24_score", "chrfpp_score", "corpus"]

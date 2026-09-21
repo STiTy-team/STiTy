@@ -1,4 +1,8 @@
+import os
+import sys
+import types
 import unittest
+from contextlib import contextmanager
 from unittest.mock import patch
 
 from core.utils import metrics
@@ -11,13 +15,28 @@ class _Languages:
         return "en"
 
 
+@contextmanager
+def _modules(**fakes):
+    names = {name.replace("__", "."): module for name, module in fakes.items()}
+    saved = {name: sys.modules.get(name) for name in names}
+    sys.modules.update(names)
+    try:
+        yield
+    finally:
+        for name, module in saved.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
+
+
 def _span(kind, value):
     return {"type": kind, "canonical_value": value, "text": str(value)}
 
 
 class TranslationMetricFunctionsTest(unittest.TestCase):
 
-    def test_xcomet_official_adapter_keeps_scores_and_spans(self):
+    def test_comet_adapter_keeps_scores_and_optional_spans(self):
         class _Metadata:
             error_spans = [[{"start": 0, "end": 3, "severity": "minor"}]]
 
@@ -33,8 +52,8 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
                 return _Output()
 
         model = _Model()
-        with patch.object(meaning, "_xcomet_model", return_value=model):
-            result = meaning.xcomet_score(
+        with patch.object(meaning, "_comet_model", return_value=model):
+            result = meaning.comet_score(
                 [{"id": "a", "src": "x", "mt": "y", "ref": "z"}], gpus=0)
         self.assertEqual(result["score"], .75)
         self.assertEqual(result["per_item"], {"a": .75})
@@ -71,15 +90,15 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
             {"selected_correct": True}
         ])["accuracy"], 1)
         self.assertAlmostEqual(asr_robustness.asr_induced_quality_drop([
-            {"clean_quality": {"xcomet": .9}, "noisy_quality": {"xcomet": .7}}
-        ])["xcomet"]["absolute_drop"], .2)
+            {"clean_quality": {"comet": .9}, "noisy_quality": {"comet": .7}}
+        ])["comet"]["absolute_drop"], .2)
         self.assertEqual(asr_robustness.translation_invariance_score([
             {"similarity": .8}
         ])["score"], .8)
         self.assertGreater(asr_robustness.quality_noise_degradation([
-            {"noise_level": 0, "quality": {"xcomet": 1}},
-            {"noise_level": 1, "quality": {"xcomet": 0}},
-        ])["xcomet"]["degradation_slope"], 0)
+            {"noise_level": 0, "quality": {"comet": 1}},
+            {"noise_level": 1, "quality": {"comet": 0}},
+        ])["comet"]["degradation_slope"], 0)
         self.assertEqual(intent.polarity_preservation_accuracy([
             {"reference": "negative", "candidate": "positive"}
         ])["polarity_reversal_rate"], 1)
@@ -89,6 +108,87 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
         self.assertEqual(intent.modality_stance_preservation_accuracy([
             {"reference": "certain", "candidate": "possible"}
         ])["mean_ordinal_distance"], 2)
+
+    def test_relative_quality_drop_keeps_the_sign_of_the_absolute_drop(self):
+        result = asr_robustness.asr_induced_quality_drop([
+            {"id": "echo", "clean_quality": {"chrfpp": 5}, "noisy_quality": {"chrfpp": 15}},
+            {"id": "b", "clean_quality": {"chrfpp": 60}, "noisy_quality": {"chrfpp": 40}},
+            {"id": "c", "clean_quality": {"chrfpp": 60}, "noisy_quality": {"chrfpp": 45}},
+        ])["chrfpp"]
+        self.assertAlmostEqual(result["absolute_drop"], 25 / 3)
+        self.assertAlmostEqual(result["relative_drop"], 25 / 125)
+        self.assertAlmostEqual(result["per_item"]["echo"]["relative_drop"], -2.0)
+
+    def test_metricx_runtime_disables_the_decoder_cache(self):
+        class _Config:
+            use_cache = True
+
+        class _Model:
+            config = _Config()
+
+            def to(self, _device):
+                return self
+
+            def eval(self):
+                return self
+
+        class _MT5ForRegression:
+            @classmethod
+            def from_pretrained(cls, _name, **_kwargs):
+                return _Model()
+
+        package = types.ModuleType("metricx24")
+        models = types.ModuleType("metricx24.models")
+        models.MT5ForRegression = _MT5ForRegression
+        with _modules(metricx24=package, metricx24__models=models), \
+                patch("transformers.AutoTokenizer.from_pretrained", return_value=object()):
+            _tokenizer, model = meaning._metricx_runtime("model", "tokenizer", "cpu")
+        self.assertFalse(model.config.use_cache)
+
+    def test_comet_runs_the_ungated_da_checkpoint_named_by_its_env_var(self):
+        seen = []
+
+        def scorer(samples, *, model_name):
+            seen.append(model_name)
+            return {"score": .8, "model": model_name, "n_scored": len(samples)}
+
+        item = metrics.Utterance.from_row({
+            "id": "a", "src_lang": "ko", "hypothesis": "x", "hypothesis_translation": "y",
+            "reference_translations": {"en": "z"}})
+        self.assertEqual(meaning.DEFAULT_COMET_MODEL, "Unbabel/wmt22-comet-da")
+        with patch.object(meaning, "comet_score", scorer), \
+                patch.dict(os.environ, {"STITY_COMET_MODEL": meaning.DEFAULT_COMET_MODEL}):
+            axis, _unavailable = meaning.corpus([item], languages=_Languages())
+        self.assertEqual(seen, ["Unbabel/wmt22-comet-da"])
+        self.assertEqual(axis["meaning"]["comet"]["score"], .8)
+
+    def test_comet_download_failure_reports_the_hub_error(self):
+        class GatedRepoError(Exception):
+            pass
+
+        def download_model(name):
+            raise KeyError(f"Model '{name}' not supported by COMET.")
+
+        def hf_hub_download(_repo, _filename):
+            raise GatedRepoError(
+                "403 Client Error.\n\nCannot access gated repo.\n"
+                "Access to model Unbabel/wmt22-cometkiwi-da is restricted.")
+
+        comet = types.ModuleType("comet")
+        comet.download_model = download_model
+        comet.load_from_checkpoint = lambda path: path
+        hub = types.ModuleType("huggingface_hub")
+        hub.hf_hub_download = hf_hub_download
+        item = metrics.Utterance.from_row({
+            "id": "a", "src_lang": "ko", "hypothesis": "x", "hypothesis_translation": "y",
+            "reference_translations": {"en": "z"}})
+        with _modules(comet=comet, huggingface_hub=hub), \
+                patch.dict(os.environ, {"STITY_COMET_MODEL": "Unbabel/wmt22-cometkiwi-da"}):
+            _axis, unavailable = meaning.corpus([item], languages=_Languages())
+        reason = unavailable["meaning.comet"]
+        self.assertIn("GatedRepoError", reason)
+        self.assertIn("Access to model Unbabel/wmt22-cometkiwi-da is restricted.", reason)
+        self.assertNotIn("not supported by COMET", reason)
 
     def test_pseudo_perplexity_is_not_averaged_across_target_languages(self):
         items = [metrics.Utterance.from_row({
@@ -117,7 +217,7 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
         rows = []
         for index, quality in enumerate((.9, .7)):
             rows.append({"id": str(index), **common, "metric_inputs": {
-                "meaning": {"xcomet": quality, "metricx_24": 1 - quality},
+                "meaning": {"comet": quality, "metricx_24": 1 - quality},
                 "critical_information": {
                     "reference_spans": [_span("time", "15:00")],
                     "candidate_spans": [_span("time", "15:00")],
@@ -128,11 +228,11 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
                 "context": {"mqm": {"score": 4}, "inconsistencies": [],
                             "contrastive": {"selected_correct": True}},
                 "asr_robustness": {
-                    "clean_quality": {"xcomet": .9}, "noisy_quality": {"xcomet": quality},
+                    "clean_quality": {"comet": .9}, "noisy_quality": {"comet": quality},
                     "similarity": quality, "noise_level": index * .2,
                     "quality_by_noise": [
-                        {"noise_level": 0, "quality": {"xcomet": .9}},
-                        {"noise_level": .2, "quality": {"xcomet": .7}},
+                        {"noise_level": 0, "quality": {"comet": .9}},
+                        {"noise_level": .2, "quality": {"comet": .7}},
                     ],
                 },
                 "intent": {
@@ -148,7 +248,7 @@ class TranslationMetricFunctionsTest(unittest.TestCase):
         with patch.object(meaning, "chrfpp_score", return_value=fake_chrf):
             score = metrics.score_run(rows, languages=_Languages())
         expected = {
-            "meaning": {"xcomet", "metricx_24", "chrfpp"},
+            "meaning": {"comet", "metricx_24", "chrfpp"},
             "critical_information": {"normalized_value_accuracy", "critical_span_f1",
                                      "critical_fact_error_rate"},
             "fluency": {"spoken_fluency_judge", "mqm_fluency_error_rate",

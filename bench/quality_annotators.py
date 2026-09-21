@@ -6,7 +6,9 @@ import json
 import os
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
+from pathlib import Path
 from typing import Protocol
 
 
@@ -35,15 +37,50 @@ class JsonJudge(Protocol):
 
 
 class OpenAIJsonJudge:
+    retry_delay_sec = 1.0
+    report_every = 25
+
     def __init__(self, *, model: str = "gpt-5.4-mini", api_key: str | None = None,
-                 max_retries: int = 3):
-        key = api_key or os.environ.get("OPENAI_API_KEY")
-        if not key:
-            raise ValueError("OPENAI_API_KEY is required for automatic quality annotation")
-        from openai import AsyncOpenAI
-        self.client = AsyncOpenAI(api_key=key)
+                 max_retries: int = 3, usage_log: str | Path | None = None, client=None):
+        from core.meaning_segmentator.autoseg.infra.gateway import Usage, _price_of
+
+        if client is None:
+            key = api_key or os.environ.get("OPENAI_API_KEY")
+            if not key:
+                raise ValueError("OPENAI_API_KEY is required for automatic quality annotation")
+            from openai import AsyncOpenAI
+            client = AsyncOpenAI(api_key=key)
+        price = _price_of(model)
+        if price is None:
+            print(f"[judge] warning: no price for {model!r}; cost will be recorded as 0",
+                  flush=True)
+        self.client = client
         self.model = model
         self.max_retries = max_retries
+        self.usage = Usage(price=price)
+        self.usage_log = Path(usage_log) if usage_log else None
+
+    def _record(self, purpose: str, payload: dict) -> None:
+        before = self.usage.cost
+        self.usage.add(payload, purpose)
+        usage = payload.get("usage") or {}
+        if self.usage_log is not None:
+            line = {
+                "at": datetime.now(timezone.utc).isoformat(),
+                "purpose": purpose,
+                "model": self.model,
+                "prompt_tokens": usage.get("prompt_tokens", 0) or 0,
+                "completion_tokens": usage.get("completion_tokens", 0) or 0,
+                "cached_tokens": (usage.get("prompt_tokens_details") or {})
+                .get("cached_tokens", 0) or 0,
+                "cost": self.usage.cost - before,
+                "cumulative_cost": self.usage.cost,
+            }
+            with open(self.usage_log, "a", encoding="utf-8") as output:
+                output.write(json.dumps(line, ensure_ascii=False) + "\n")
+        if self.usage.calls % self.report_every == 0:
+            print(f"[judge] {self.usage.calls} calls, estimated cost "
+                  f"${self.usage.cost:.4f}", flush=True)
 
     async def ask(self, *, purpose: str, system: str, payload: dict) -> dict:
         last_error = None
@@ -58,6 +95,7 @@ class OpenAIJsonJudge:
                     temperature=0,
                     response_format={"type": "json_object"},
                 )
+                self._record(purpose, response.model_dump())
                 value = json.loads(response.choices[0].message.content)
                 if not isinstance(value, dict):
                     raise ValueError(f"{purpose} did not return a JSON object")
@@ -65,7 +103,7 @@ class OpenAIJsonJudge:
             except Exception as exc:
                 last_error = exc
                 if attempt + 1 < self.max_retries:
-                    await asyncio.sleep(min(2 ** attempt, 8))
+                    await asyncio.sleep(min(self.retry_delay_sec * 2 ** attempt, 8))
         raise RuntimeError(f"{purpose} failed after {self.max_retries} attempts: {last_error}")
 
 
@@ -145,7 +183,7 @@ def _add(spans: list[Span], occupied: list[tuple[int, int]], span: Span) -> None
 
 
 def _digit_values(text: str, spans: list[Span], occupied: list[tuple[int, int]]) -> None:
-    for match in re.finditer(r"(?<![\w])[-+]?\d[\d,]*(?:\.\d+)?(?![\w])", text):
+    for match in re.finditer(r"(?<![\w])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?![\w])", text):
         canonical = _decimal(match.group())
         if canonical is not None:
             _add(spans, occupied, Span("number", match.group(), match.start(), match.end(), canonical))

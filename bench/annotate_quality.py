@@ -184,9 +184,10 @@ def _prepare_output(path: Path, *, overwrite: bool) -> None:
 
 
 def _summary(*, rows: list[dict], score: metrics.RunScore, source_run: Path,
-             args, started: datetime, finished: datetime) -> dict:
+             args, started: datetime, finished: datetime, usage: dict | None = None) -> dict:
     errors = sum(len(row.get("quality_annotation_errors") or []) for row in rows)
     return {
+        "usage": usage or {},
         "mode": "quality_annotation",
         "status": "degraded" if errors else "ok",
         "started_at": started.isoformat(),
@@ -230,6 +231,9 @@ def parse_args(argv=None):
 
 def main(argv=None) -> int:
     args = parse_args(argv)
+    from core.utils import env
+
+    env.load()
     started = datetime.now(timezone.utc)
     source_run, source_items = _source_items(args.source_run)
     output = Path(args.output).resolve()
@@ -239,7 +243,8 @@ def main(argv=None) -> int:
     rows = _read_jsonl(source_items)
     judge = None
     if not args.skip_critical or not args.skip_judge:
-        judge = OpenAIJsonJudge(model=args.judge_model)
+        judge = OpenAIJsonJudge(model=args.judge_model,
+                                usage_log=output / "judge_usage.jsonl")
     rows = asyncio.run(annotate_rows(
         rows, judge=judge, concurrency=args.concurrency,
         annotate_critical=not args.skip_critical,
@@ -256,7 +261,8 @@ def main(argv=None) -> int:
     score = score_quality(rows)
     finished = datetime.now(timezone.utc)
     summary = _summary(rows=rows, score=score, source_run=source_run,
-                       args=args, started=started, finished=finished)
+                       args=args, started=started, finished=finished,
+                       usage=judge.usage.snapshot() if judge is not None else None)
     (output / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
     (output / "quality_config.json").write_text(

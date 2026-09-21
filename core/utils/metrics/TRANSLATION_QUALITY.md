@@ -22,7 +22,7 @@
   },
   "metric_inputs": {
     "meaning": {
-      "xcomet": {"score": 0.91, "error_spans": []},
+      "comet": {"score": 0.84},
       "metricx_24": 1.7
     },
     "critical_information": {
@@ -48,13 +48,13 @@
       "contrastive": {"selected_correct": true, "phenomenon": "ellipsis"}
     },
     "asr_robustness": {
-      "clean_quality": {"xcomet": 0.93, "metricx_24": 1.4},
-      "noisy_quality": {"xcomet": 0.88, "metricx_24": 2.1},
+      "clean_quality": {"comet": 0.86, "metricx_24": 1.4},
+      "noisy_quality": {"comet": 0.81, "metricx_24": 2.1},
       "similarity": 0.94,
       "noise_level": 0.18,
       "quality_by_noise": [
-        {"noise_level": 0.0, "quality": {"xcomet": 0.93}},
-        {"noise_level": 0.18, "quality": {"xcomet": 0.88}}
+        {"noise_level": 0.0, "quality": {"comet": 0.86}},
+        {"noise_level": 0.18, "quality": {"comet": 0.81}}
       ]
     },
     "intent": {
@@ -73,14 +73,21 @@ dataset adapter는 `metric_inputs`를 해석하거나 버리지 않고 전달만
 ## Learned metric 실행
 
 - 공통 선택 의존성: `pip install -r bench/requirements-translation-metrics.txt`
-- XCOMET: `pip install unbabel-comet`, `STITY_XCOMET_MODEL=Unbabel/XCOMET-XL`
+- COMET: `pip install unbabel-comet`, `STITY_COMET_MODEL=Unbabel/wmt22-comet-da`. 참조 기반
+  회귀 모델이라 문장 점수와 코퍼스 평균을 내고 오류 span은 내지 않는다. 게이트가 없어 Hugging
+  Face 라이선스 동의 없이 받아진다
 - MetricX-24: 공식 `google-research/metricx` 저장소의 `metricx24`를 `PYTHONPATH`에 두고
-  `STITY_METRICX_MODEL=google/metricx-24-hybrid-large-v2p6`
+  `STITY_METRICX_MODEL=google/metricx-24-hybrid-large-v2p6`. 디코더 캐시(`use_cache`)는 끄고
+  올린다 — 공식 모델의 디코더가 self/cross attention 캐시를 한 칸에 같이 써서
+  `transformers==4.57.6`에서는 켠 채로 돌리면 텐서 크기 불일치로 죽는다
+- COMET 체크포인트를 못 받으면 `unavailable["meaning.comet"]`에 Hub가 돌려준 실제 사유
+  (`GatedRepoError` 등)가 남는다. 게이트 모델을 지정했다면 로그인한 계정으로 그 모델 페이지에서
+  라이선스에 동의해야 한다
 - pseudo-perplexity: `transformers`, `torch`와 목표 언어를 지원하는 masked-LM을 설치하고
   `STITY_FLUENCY_LM=<checkpoint>`
 
 환경 변수가 없으면 모델을 다운로드하지 않는다. 세 지표 모두 사전 계산 값을 받을 수 있어
-GPU 벤치와 CPU 집계를 분리할 수 있다. XCOMET과 MetricX 결과에는 모델 이름, chrF++에는
+GPU 벤치와 CPU 집계를 분리할 수 있다. COMET과 MetricX 결과에는 모델 이름, chrF++에는
 sacreBLEU signature, pseudo-perplexity에는 LM checkpoint를 기록한다.
 
 기존 ASR 결과에 번역기만 다시 적용할 때는 다음처럼 translation-only run을 만든다.
@@ -120,7 +127,7 @@ quality drop, degradation slope/AUC, clean/noisy 번역 의미 유사도를 저�
 
 ## 방향
 
-- 높을수록 좋음: XCOMET, chrF++, value accuracy, span F1, fluency judge,
+- 높을수록 좋음: COMET, chrF++, value accuracy, span F1, fluency judge,
   Context-MQM, contrastive accuracy, invariance, intent metrics
 - 낮을수록 좋음: MetricX-24, critical fact error rate, MQM fluency error rate,
   pseudo-perplexity, quality drop, degradation slope

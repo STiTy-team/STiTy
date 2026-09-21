@@ -21,6 +21,7 @@ def asr_induced_quality_drop(pairs, *, lower_is_better=()) -> dict:
     """Mean clean-to-noisy degradation, direction-normalised so larger is worse."""
     lower = set(lower_is_better)
     grouped = defaultdict(list)
+    clean_levels = defaultdict(list)
     per_item = defaultdict(dict)
     for index, row in enumerate(pairs):
         clean = _quality_map(row.get("clean_quality"))
@@ -30,6 +31,7 @@ def asr_induced_quality_drop(pairs, *, lower_is_better=()) -> dict:
             raw = noisy[metric] - clean[metric] if metric in lower else clean[metric] - noisy[metric]
             grouped[metric].append(raw)
             denom = abs(clean[metric])
+            clean_levels[metric].append(denom)
             per_item[metric][item_id] = {
                 "absolute_drop": raw,
                 "relative_drop": raw / denom if denom else 0.0,
@@ -38,7 +40,8 @@ def asr_induced_quality_drop(pairs, *, lower_is_better=()) -> dict:
         raise ValueError("no paired clean_quality/noisy_quality values")
     return {metric: {
                 "absolute_drop": mean(values),
-                "relative_drop": mean(v["relative_drop"] for v in per_item[metric].values()),
+                "relative_drop": (mean(values) / mean(clean_levels[metric])
+                                  if mean(clean_levels[metric]) else 0.0),
                 "n_pairs": len(values), "lower_is_better": metric in lower,
                 "per_item": per_item[metric],
             } for metric, values in sorted(grouped.items())}

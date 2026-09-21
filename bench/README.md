@@ -36,7 +36,7 @@ VAD, ASR은 로드하지 않는다. 원본에 commit segment가 없는 옛 결�
 WER/FSL/LAAL로 보고하지 않는다. 새로 측정하는 시간은 segment별 `translation_elapsed_sec`과
 집계된 `translation_runtime`뿐이다.
 
-원본의 후보 번역에 종속된 XCOMET, span, judge, intent 판정은 새 번역에 재사용하지 않는다.
+원본의 후보 번역에 종속된 COMET, span, judge, intent 판정은 새 번역에 재사용하지 않는다.
 사람이 만든 reference span/label만 전달되고, 새 후보 주석을 생성하기 전까지 관련 지표는
 `unavailable`로 남는다.
 
@@ -199,7 +199,7 @@ runs/<name>/
 
 | 축 | 지표 |
 |---|---|
-| `meaning` | `xcomet`, `metricx_24`, `chrfpp` |
+| `meaning` | `comet`, `metricx_24`, `chrfpp` |
 | `critical_information` | `normalized_value_accuracy`, `critical_span_f1`, `critical_fact_error_rate` |
 | `fluency` | `spoken_fluency_judge`, `mqm_fluency_error_rate`, `target_lm_pseudo_perplexity` |
 | `context` | `context_mqm`, `dialogue_inconsistency_rate`, `context_contrastive_accuracy` |
@@ -210,22 +210,32 @@ runs/<name>/
 계약과 예시는 [`core/utils/metrics/TRANSLATION_QUALITY.md`](../core/utils/metrics/TRANSLATION_QUALITY.md)에
 있다. 주석이 없는 축은 값이 생기지 않고 `unavailable`에 구조화된 이유가 남는다.
 
-XCOMET과 MetricX-24는 큰 learned metric이라 평범한 CPU 스모크 실행에서 자동 다운로드하지
-않는다. `metric_inputs.meaning`에 사전 계산 값을 넣거나 각각 `STITY_XCOMET_MODEL`,
+COMET과 MetricX-24는 큰 learned metric이라 평범한 CPU 스모크 실행에서 자동 다운로드하지
+않는다. `metric_inputs.meaning`에 사전 계산 값을 넣거나 각각 `STITY_COMET_MODEL`,
 `STITY_METRICX_MODEL`을 설정한 scoring 환경에서 실행한다. masked-LM pseudo-perplexity도 같은
 이유로 사전 계산 값 또는 `STITY_FLUENCY_LM`을 사용한다.
 
 ### 한↔영 중요 정보·유창성 주석 생성
 
 기존 run의 후보 번역을 오프라인에서 보강한다. 원본 run은 수정하지 않으며 출력 디렉터리에
-새 `items.jsonl`, `summary.json`, `quality_config.json`을 만든다.
+새 `items.jsonl`, `summary.json`, `quality_config.json`, `judge_usage.jsonl`을 만든다.
 
 ```bash
 pip install -r bench/requirements-translation-metrics.txt
-export OPENAI_API_KEY=...
 python -m bench.annotate_quality \
   bench/runs/<source-run> bench/runs/<source-run>-quality
 ```
+
+판정기 키는 저장소 루트의 `.env`에 `OPENAI_API_KEY=...` 한 줄로 둔다. 셸에 같은 이름의
+환경변수가 있으면 그쪽이 이긴다.
+
+**판정기 비용은 호출마다 남는다.** `judge_usage.jsonl`에 호출 하나가 한 줄로 append 된다 —
+용도(`purpose`), 모델, 입력·출력 토큰, 그 호출의 추정 비용과 누적 추정 비용. JSON 파싱에
+실패해 재시도한 호출도 과금되므로 같이 기록한다. 중간에 죽어도 거기까지는 남고, `--overwrite`
+로 다시 돌려도 이 파일은 지우지 않고 이어 쓴다. 25호출마다 누적 추정 비용이 로그에 찍히고,
+끝나면 `summary.json.usage`에 합계가 들어간다. 단가표는
+`core/meaning_segmentator/autoseg/infra/gateway.py`의 `_PRICES` 하나를 같이 쓴다 — 표에 없는
+모델은 비용이 0으로 잡히므로 시작할 때 경고한다.
 
 중요 정보는 한↔영만 지원한다. 날짜·시간·금액·수량·단위·전화번호는 결정론적 추출기로
 canonical value를 만들고, 인명·지명·기관·제품·전문용어와 양쪽 span 정렬은 고정 JSON
@@ -251,6 +261,8 @@ python -m bench.asr_text_robustness \
 ```
 
 각 강도에서 chrF++ 참조 품질을 계산해 quality drop·degradation slope/AUC를 만들고,
+`relative_drop`은 **평균 하락폭 / 평균 clean 품질**이다(항목별 비율은 `per_item`에만 둔다 —
+clean 품질이 0에 가까운 항목 하나가 비율 평균의 부호를 뒤집는다),
 clean/noisy 번역의 의미 invariance는 기본적으로
 `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` cosine similarity로 계산한다.
 모든 noisy 전사, 조작 목록, 실제 clean 대비 WER, 번역, 모델과 seed는 결과에 남는다.

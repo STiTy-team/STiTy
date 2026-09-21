@@ -1,7 +1,11 @@
 import asyncio
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from bench.quality_annotators import (
+    OpenAIJsonJudge,
     annotate_critical_information,
     annotate_fluency,
     extract_critical_values,
@@ -20,7 +24,71 @@ class _Judge:
         return self.responses.pop(0)
 
 
+class _Message:
+    def __init__(self, content):
+        self.content = content
+
+
+class _Choice:
+    def __init__(self, content):
+        self.message = _Message(content)
+
+
+class _Response:
+    def __init__(self, content, prompt_tokens, completion_tokens):
+        self.choices = [_Choice(content)]
+        self._usage = {"prompt_tokens": prompt_tokens, "completion_tokens": completion_tokens}
+
+    def model_dump(self):
+        return {"choices": [{"finish_reason": "stop"}], "usage": dict(self._usage)}
+
+
+class _Completions:
+    def __init__(self, responses):
+        self.responses = list(responses)
+
+    async def create(self, **_kwargs):
+        return self.responses.pop(0)
+
+
+class _Chat:
+    def __init__(self, responses):
+        self.completions = _Completions(responses)
+
+
+class _Client:
+    def __init__(self, responses):
+        self.chat = _Chat(responses)
+
+
 class QualityAnnotatorsTest(unittest.TestCase):
+
+    def test_number_span_excludes_trailing_comma(self):
+        text = "In 1990, it cost 12,000 won."
+        number = next(v for v in extract_critical_values(text, "en") if v["type"] == "number")
+        self.assertEqual(number["text"], "1990")
+        self.assertEqual(text[number["start"]:number["end"]], "1990")
+        self.assertEqual(number["canonical_value"], "1990")
+
+    def test_judge_appends_usage_for_every_billed_call(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "judge_usage.jsonl"
+            judge = OpenAIJsonJudge(
+                model="gpt-5.4-mini", usage_log=log,
+                client=_Client([_Response("not json", 1000, 100),
+                                _Response('{"score": 5}', 2000, 200)]))
+            judge.retry_delay_sec = 0
+            result = asyncio.run(judge.ask(purpose="fluency", system="s", payload={}))
+            lines = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(result, {"score": 5})
+        self.assertEqual([line["prompt_tokens"] for line in lines], [1000, 2000])
+        self.assertEqual([line["completion_tokens"] for line in lines], [100, 200])
+        self.assertEqual({line["model"] for line in lines}, {"gpt-5.4-mini"})
+        self.assertEqual({line["purpose"] for line in lines}, {"fluency"})
+        self.assertAlmostEqual(lines[0]["cost"], (1000 * .75 + 100 * 4.5) / 1_000_000)
+        self.assertAlmostEqual(lines[1]["cumulative_cost"],
+                               (3000 * .75 + 300 * 4.5) / 1_000_000)
+        self.assertEqual(judge.usage.snapshot()["calls"], 2)
 
     def test_ko_en_values_share_canonical_forms(self):
         korean = extract_critical_values("오후 세 시에 12,000원 보내 줘", "ko")

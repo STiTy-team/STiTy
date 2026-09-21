@@ -39,7 +39,7 @@ def _row(item_id, originals):
             for index, text in enumerate(originals)
         ],
         "metric_inputs": {
-            "meaning": {"xcomet": .99},
+            "meaning": {"comet": .99},
             "critical_information": {
                 "reference_spans": [{"type": "time", "canonical_value": "15:00"}],
                 "candidate_spans": [{"type": "time", "canonical_value": "14:00"}],
