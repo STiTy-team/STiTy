@@ -99,16 +99,7 @@ def _is_number(value) -> bool:
 
 
 def quality_noise_degradation(samples, *, lower_is_better=()) -> dict:
-    """Linear degradation slope, normalised AUC and worst-noise-bucket quality.
-
-    ``noise_level`` is the noise each sample actually has (e.g. WER from the clean
-    transcript). Samples sharing a ``requested_noise_level`` form one bucket; without
-    it, samples with the same ``noise_level`` do. Every statistic is taken over the
-    bucket means -- the curve a reader would draw -- so the spread of individual
-    sentences inside a bucket cannot leak into the AUC. The slope is the least-squares
-    fit of those means weighted by bucket size, which equals the pooled fit whenever
-    every sample in a bucket has the same noise.
-    """
+    """Linear degradation slope, normalised AUC and worst-noise-bucket quality."""
     lower = set(lower_is_better)
     grouped = defaultdict(lambda: defaultdict(list))
     for row in samples:
@@ -172,8 +163,6 @@ def corpus(items, **_) -> tuple[dict, dict]:
         axis["translation_invariance"] = translation_invariance_score(rows)
     except ValueError as exc:
         unavailable["asr_robustness.translation_invariance"] = str(exc)
-    # An empty ASR output or translation stays in the averages above (it is the worst
-    # case of robustness, not missing data) and is also counted on its own.
     flagged = [row for row in rows if "catastrophic" in row]
     if flagged:
         failed = [row["id"] for row in flagged if row["catastrophic"]]

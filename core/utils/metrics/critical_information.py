@@ -73,13 +73,7 @@ def critical_span_f1(expected, predicted) -> dict:
 
 
 def critical_fact_error_rate(utterances) -> dict:
-    """Fraction of critical-information-bearing utterances with any span error.
-
-    An utterance bears critical information when either side has a span. A
-    translation that invents a phone number or a name where the reference has no
-    fact at all is exactly the failure this gate exists for, so it counts here
-    rather than only lowering span precision.
-    """
+    """Fraction of critical-information-bearing utterances with any span error."""
     eligible = errors = invented_only = 0
     per_item = {}
     for row in utterances:

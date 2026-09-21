@@ -202,9 +202,6 @@ def corpus(items, *, languages) -> tuple[dict, dict]:
     items = list(items)
     samples = []
     pair_ids = []
-    # The source the learned metrics read is the gold transcript when the dataset
-    # has one. The ASR transcript differs per ASR system, so reading it would score
-    # two systems against different sources; it is only the fallback.
     source_text = {"reference_transcript": 0, "asr_hypothesis": 0}
     for item in items:
         target = languages.expected_target(item.src_lang)

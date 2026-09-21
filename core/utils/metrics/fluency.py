@@ -41,12 +41,7 @@ def spoken_fluency_judge_score(judgements) -> dict:
 
 
 def mqm_fluency_error_rate(rows, *, severity_weights=None) -> dict:
-    """Severity-weighted fluency/style errors per target-language token.
-
-    Tokens are counted per language (English words, Korean eojeol), so rows are
-    pooled only within one ``target_lang``; the top-level rate exists only when a
-    single target language was scored.
-    """
+    """Severity-weighted fluency/style errors per target-language token."""
     weights = dict(DEFAULT_SEVERITY_WEIGHTS)
     weights.update(severity_weights or {})
     groups = {}
@@ -148,8 +143,6 @@ def target_lm_pseudo_perplexity(texts, *, model_name: str,
             losses.extend(float(value) for value in batch_losses.detach().cpu())
         sentence_loss = sum(losses) / len(losses)
         per_item[item_id] = math.exp(sentence_loss)
-        # Kept so stored sentence values can be pooled over tokens later exactly as
-        # this function pools them now.
         per_item_nll[item_id] = sum(losses)
         per_item_tokens[item_id] = len(losses)
         total_loss += sum(losses)
@@ -164,13 +157,6 @@ def target_lm_pseudo_perplexity(texts, *, model_name: str,
 
 
 def _pool_perplexities(values) -> dict:
-    """Pool stored sentence values the way the scorer pools tokens.
-
-    With every sentence's NLL sum and token count this is exactly the scorer's
-    corpus value. Without them (runs annotated before the counts were stored) the
-    geometric mean -- exp of the mean sentence NLL -- is the closest honest value;
-    the arithmetic mean of perplexities is dominated by a single outlier sentence.
-    """
     ppls = [ppl for ppl, _, _ in values]
     result = {"median": median(ppls), "n_scored": len(values)}
     if all(nll is not None and tokens for _, nll, tokens in values):
@@ -222,8 +208,6 @@ def corpus(items, **_) -> tuple[dict, dict]:
         unavailable["fluency.spoken_fluency_judge"] = str(exc)
     try:
         axis["mqm_fluency_error_rate"] = mqm_fluency_error_rate(mqm_rows)
-        # Errors the judge named but whose text is not in the candidate were dropped
-        # by the annotator; the rate cannot count them, so the reader is told how many.
         axis["mqm_fluency_error_rate"]["unlocated_errors"] = sum(
             int(block.get("mqm_unlocated_errors") or 0)
             for _, block in blocks if "mqm_errors" in block)

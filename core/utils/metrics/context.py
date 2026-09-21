@@ -19,13 +19,6 @@ def _mqm(errors, weights) -> float:
 
 
 def _mqm_score(row, errors_key, score_key, weights) -> float | None:
-    """MQM score of one turn: minus the severity-weighted error sum (0 is perfect).
-
-    Computed from the error list when there is one, so every producer shares the
-    fluency axis's severity weights. A bare score must already be on that scale; a
-    positive one is a rubric score (e.g. 1-5) and would silently invert the
-    direction, so it is rejected rather than averaged in.
-    """
     if isinstance(row.get(errors_key), list):
         return _mqm(row[errors_key], weights)
     score = row.get(score_key)
