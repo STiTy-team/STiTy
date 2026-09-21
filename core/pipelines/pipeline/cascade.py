@@ -3,6 +3,7 @@ from core.utils import logging
 from ..correction import correctors
 from ..transcription import transcribers
 from ..translation import translators
+from ..translation.dialogue import Dialogue
 from ..vad import detectors
 from . import pipelines
 from .base import Pipeline
@@ -15,11 +16,15 @@ class CascadePipeline(Pipeline):
     REQUIRED = (transcribers,)
     OPTIONAL = (detectors, correctors, translators)
 
-    def start(self, *, src_lang: str | None, target_lang: str) -> None:
+    def __init__(self, settings: dict, *, parts: dict, cfg):
+        super().__init__(settings, parts=parts, cfg=cfg)
+        self.dialogue = Dialogue()
+
+    def start(self, *, src_lang: str | None, target_lang: str, group: str = "") -> None:
         self.src_lang = src_lang
         self.target_lang = target_lang
-        self.said_so_far: list[str] = []
-        super().start(src_lang=src_lang, target_lang=target_lang)
+        self.dialogue.open(group=group)
+        super().start(src_lang=src_lang, target_lang=target_lang, group=group)
 
     async def listen(self, audio: bytes) -> None:
         transcriber = self.parts["transcription"]
@@ -44,13 +49,15 @@ class CascadePipeline(Pipeline):
             if corrector is not None:
                 original = await corrector.correct(original, language)
 
+            speaker = event.get("speaker") or ""
             translation, detected = ("", "")
             if translator is not None:
                 translation, detected = await translator.translate(
                     original, self.target_lang, language,
-                    context=list(self.said_so_far))
-            if original:
-                self.said_so_far.append(original)
+                    context=self.dialogue.context(self.target_lang),
+                    speaker=self.dialogue.label(speaker))
+            self.dialogue.said(original, translation, lang=language or "",
+                               target=self.target_lang, speaker=speaker)
 
             payload = {k: v for k, v in event.items()
                        if k not in ("t", "type", "session", "item", "audio")}

@@ -38,7 +38,7 @@ class Pipeline:
             except Exception as e:  # noqa: BLE001
                 logger.warning("closing %s failed: %s", type(part).__name__, e)
 
-    def start(self, *, src_lang: str | None, target_lang: str) -> None:
+    def start(self, *, src_lang: str | None, target_lang: str, group: str = "") -> None:
         for part in self.parts.values():
             part.start(language=src_lang)
 

@@ -300,6 +300,7 @@ class LLMTranslator:
         quant: str = "4bit",
         max_new_tokens: int = 200,
         context_window: int = 1,
+        always_use_context: bool = False,
         num_beams: int = 1,          # noqa: ARG002 — seq2seq 쪽과 인자 형태를 맞추기 위해 받는다
         **_ignored,
     ):
@@ -307,6 +308,9 @@ class LLMTranslator:
         self.quant = quant
         self.max_new_tokens = max_new_tokens
         self.context_window = context_window
+        # bench 가 모델끼리 같은 문맥을 줘야 할 때 켠다. 켜면 아래 두 안전장치(조각이면
+        # 문맥 빼기, 너무 짧으면 문맥 없이 다시)가 꺼져 받은 문맥이 그대로 쓰인다.
+        self.always_use_context = always_use_context
         self._device = device
         self._tokenizer = None
         self._model = None
@@ -360,14 +364,17 @@ class LLMTranslator:
         return self.LANG_NAME.get(code, code)
 
     def _context_block(self, context: list, target_code: str) -> str:
-        # 문맥 항목은 원문 문자열이거나 {text, lang, translation} 딕셔너리다. 딕셔너리는
+        # 문맥 항목은 원문 문자열이거나 {text, lang, translation, speaker} 딕셔너리다. speaker 는
+        # ASR 이 화자를 알려 줄 때 bench 가 매기는 A·B 이름표라 지금은 늘 비어 있고, 프록시도
+        # 보내지 않는다. 딕셔너리는
         # 프록시가 화자·언어 무관하게 시간순으로 모은 앞 턴이라 언어를 같이 적고,
         # 번역이 있으면 함께 보여 용어(pastel=케이크)와 격식의 기준점으로 삼는다.
         lines = []
         for c in context:
             if isinstance(c, dict):
                 lang = self._name(c.get("lang") or "") or "unknown language"
-                line = f"- [{lang}] {c.get('text', '')}"
+                speaker = f"{c['speaker']} " if c.get("speaker") else ""
+                line = f"- {speaker}[{lang}] {c.get('text', '')}"
                 tr = c.get("translation")
                 if tr:
                     line += f"  →  [{self._name(target_code)}] {tr}"
@@ -457,7 +464,7 @@ class LLMTranslator:
             return "", ""
         src = (source_code or "").strip() or guess_lang_code(text)
         ctx = list(context or [])[-self.context_window:] if self.context_window else []
-        if ctx and self._is_fragment(text):
+        if ctx and not self.always_use_context and self._is_fragment(text):
             # 문장 도중에 잘린 절에는 문맥을 주지 않는다. 스트리밍 ASR 은 절 경계
             # (`…되시면`, `…에서도`)에서 커밋하는데, 그 조각에 앞 턴을 보여 주면 모델이
             # 빠진 동사를 앞 턴에서 빌려 문장을 완성한다 — 실측 `지금 제 핸드폰처럼 폰
@@ -470,7 +477,8 @@ class LLMTranslator:
         try:
             translated = await asyncio.to_thread(
                 self._translate_sync, text, target_code, src, ctx)
-            if ctx and len(text) > 30 and len(translated) < 0.3 * len(text):
+            if (ctx and not self.always_use_context
+                    and len(text) > 30 and len(translated) < 0.3 * len(text)):
                 # 문맥을 주면 긴 문장이 `Thank you.` 한 마디로 나오는 일이 있다(실측:
                 # 앞 턴 `그리고 → and` 뒤의 영어 한 문장이 네 목표 모두 `Thank you.`).
                 # 원문 대비 터무니없이 짧으면 문맥 없이 한 번 더 한다.
@@ -565,7 +573,8 @@ def make_translator(model_name: str = DEFAULT_MODEL, **kwargs):
 
 def _seq2seq_kwargs(kwargs: dict) -> dict:
     """seq2seq 번역기가 모르는 LLM 전용 인자를 걷어낸다."""
-    return {k: v for k, v in kwargs.items() if k not in ("quant", "context_window")}
+    return {k: v for k, v in kwargs.items()
+            if k not in ("quant", "context_window", "always_use_context")}
 
 
 # ── 원격 번역기 ────────────────────────────────────────────────────────────────

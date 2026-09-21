@@ -60,7 +60,7 @@ def environment() -> dict:
 
 def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
               finished: datetime, run_dir: Path, components: dict, pacing: dict,
-              failure: str | None = None) -> Path:
+              usage: dict | None = None, failure: str | None = None) -> Path:
     errored = [r for r in rows if r.get("status") != "ok"]
     empty = [r for r in rows if r.get("status") == "ok"
              and not (r.get("hypothesis") or "").strip()]
@@ -93,6 +93,8 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
         "components": components,
         "environment": environment(),
     }
+    if usage is not None:
+        payload["usage"] = usage
 
     out_path = run_dir / "summary.json"
     out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str),
@@ -103,7 +105,8 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
 
 def write_translation_only(*, cfg, score, rows, source: dict, started: datetime,
                            finished: datetime, run_dir: Path,
-                           component: dict, failure: str | None = None) -> Path:
+                           component: dict, usage: dict | None = None,
+                           failure: str | None = None) -> Path:
     """Write a summary for a stored-ASR translation replay.
 
     ASR latency is intentionally absent: its clocks came from the source run and
@@ -155,6 +158,8 @@ def write_translation_only(*, cfg, score, rows, source: dict, started: datetime,
         },
         "environment": environment(),
     }
+    if usage is not None:
+        payload["usage"] = usage
     out_path = run_dir / "summary.json"
     out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str),
                         encoding="utf-8")

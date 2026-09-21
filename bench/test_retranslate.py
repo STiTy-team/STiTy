@@ -17,8 +17,8 @@ class _Translator:
     def start(self, **kwargs):
         self.started.append(kwargs)
 
-    async def translate(self, text, target_lang, source_lang=None, context=None):
-        self.calls.append((text, target_lang, source_lang, list(context or [])))
+    async def translate(self, text, target_lang, source_lang=None, context=None, speaker=""):
+        self.calls.append((text, target_lang, source_lang, list(context or []), speaker))
         return f"DE:{text}", source_lang or "en"
 
 
@@ -62,7 +62,8 @@ class RetranslateTest(unittest.TestCase):
             [_row("a", ["one", "two"]), _row("b", ["three"])],
             translator=translator, languages=_Languages(), context_scope="item"))
 
-        self.assertEqual([call[3] for call in translator.calls], [[], ["one"], []])
+        self.assertEqual([call[3] for call in translator.calls], [
+            [], [{"text": "one", "lang": "en", "translation": "DE:one"}], []])
         self.assertEqual(rows[0]["hypothesis_translation"], "DE:one DE:two")
         self.assertNotIn("wer", rows[0])
         self.assertNotIn("laal_ms", rows[0])
@@ -75,7 +76,8 @@ class RetranslateTest(unittest.TestCase):
             [_row("a", ["one"]), _row("b", ["two"])],
             translator=translator, languages=_Languages(), context_scope="group"))
 
-        self.assertEqual([call[3] for call in translator.calls], [[], ["one"]])
+        self.assertEqual([call[3] for call in translator.calls], [
+            [], [{"text": "one", "lang": "en", "translation": "DE:one"}]])
         inputs = rows[0]["metric_inputs"]
         self.assertNotIn("meaning", inputs)
         self.assertNotIn("fluency", inputs)

@@ -72,7 +72,7 @@ async def _stream_item(pipeline, item, cfg) -> dict:
         started_at=datetime.now(timezone.utc).isoformat(),
     )
 
-    pipeline.start(src_lang=item.src_lang, target_lang=target_lang)
+    pipeline.start(src_lang=item.src_lang, target_lang=target_lang, group=item.group)
 
     origin = time.perf_counter()
     sent_samples = 0
@@ -196,6 +196,7 @@ def data_root() -> Path:
 
 
 RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "config.yml")
+USAGE_LOG = "translation_usage.jsonl"
 
 
 def open_run_dir(run_dir: Path, *, config_path: str | None) -> None:
@@ -227,6 +228,9 @@ def main(argv: list[str] | None = None) -> int:
         stamp = started.strftime("%Y%m%dT%H%M%S")
         run_dir = RUNS_DIR / cfg.name
         open_run_dir(run_dir, config_path=args.config)
+        translator = pipeline.part("translation")
+        if translator is not None:
+            translator.usage_log = run_dir / USAGE_LOG
 
         logging.attach_stream(run_dir / "events.jsonl")
         logging.bind(run=cfg.name)
@@ -275,6 +279,7 @@ def main(argv: list[str] | None = None) -> int:
             pacing={"chunk_size_ms": CHUNK_SIZE_MS,
                     "trailing_silence_ms": TRAILING_SILENCE_MS,
                     "realtime": REALTIME},
+            usage=None if translator is None else translator.usage(),
             failure=failure,
         )
         if failure is not None:

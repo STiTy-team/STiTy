@@ -21,11 +21,13 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from core.pipelines.translation.dialogue import Dialogue
 from core.utils import metrics
 
 
 RUNS_DIR = Path(__file__).resolve().parent / "runs"
 RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "config.yml")
+USAGE_LOG = "translation_usage.jsonl"
 QUALITY_AXES = {
     "meaning", "critical_information", "fluency", "context",
     "asr_robustness", "intent",
@@ -82,7 +84,7 @@ def _detach_source_timing(segment: dict) -> dict:
 
 
 async def retranslate_row(row: dict, *, translator, languages,
-                          context: list[str] | None = None,
+                          dialogue: Dialogue | None = None,
                           on_segment=None) -> dict:
     """Translate one stored item while preserving ASR text and commit boundaries."""
     output = copy.deepcopy(row)
@@ -101,7 +103,8 @@ async def retranslate_row(row: dict, *, translator, languages,
     source_lang = str(row.get("src_lang") or "").lower()
     target_lang = languages.expected_target(source_lang)
     translator.start(language=source_lang)
-    running_context = context if context is not None else []
+    dialogue = dialogue if dialogue is not None else Dialogue()
+    dialogue.open(group=str(row.get("group") or row.get("id") or ""))
     source_segments, segmentation = _source_segments(row)
     translated_segments = []
     total_elapsed = 0.0
@@ -119,11 +122,13 @@ async def retranslate_row(row: dict, *, translator, languages,
         segment = _detach_source_timing(source)
         original = (segment.get("original") or "").strip()
         detected_source = (segment.get("language") or source_lang).lower()
+        speaker = str(segment.get("speaker") or "")
         started = time.perf_counter()
         try:
             translation, detected = await translator.translate(
                 original, target_lang, detected_source,
-                context=list(running_context),
+                context=dialogue.context(target_lang),
+                speaker=dialogue.label(speaker),
             )
         except Exception as exc:  # noqa: BLE001 - preserve the rest of the run
             translation, detected = "", ""
@@ -144,8 +149,8 @@ async def retranslate_row(row: dict, *, translator, languages,
         translated_segments.append(segment)
         if on_segment is not None:
             on_segment(segment, index)
-        if original:
-            running_context.append(original)
+        dialogue.said(original, translation or "", lang=detected_source,
+                      target=target_lang, speaker=speaker)
 
     output["segments"] = translated_segments
     output["hypothesis_translation"] = " ".join(
@@ -170,18 +175,19 @@ async def retranslate_rows(rows, *, translator, languages,
                            context_scope: str = "item",
                            before_item=None, after_item=None,
                            on_segment=None) -> list[dict]:
-    """Replay rows in source order; optionally carry source-text context by group."""
+    """Replay rows in source order; optionally carry earlier turns of the dialogue group."""
     if context_scope not in ("item", "group"):
         raise ValueError("context_scope must be 'item' or 'group'")
-    group_contexts: dict[str, list[str]] = {}
+    dialogues: dict[str, Dialogue] = {}
     output = []
     for row in rows:
         if before_item is not None:
             before_item(row)
         group = str(row.get("group") or row.get("id") or "")
-        context = [] if context_scope == "item" else group_contexts.setdefault(group, [])
+        dialogue = Dialogue() if context_scope == "item" else dialogues.setdefault(
+            group, Dialogue())
         translated = await retranslate_row(
-            row, translator=translator, languages=languages, context=context,
+            row, translator=translator, languages=languages, dialogue=dialogue,
             on_segment=on_segment)
         output.append(translated)
         if after_item is not None:
@@ -293,6 +299,7 @@ def main(argv=None) -> int:
 
         translator_cls = translators.get(cfg.translation.name)
         translator = translator_cls(cfg.translation.options, cfg=cfg)
+        translator.usage_log = run_dir / USAGE_LOG
         writer = report.ItemWriter(run_dir / "items.jsonl")
         started = datetime.now(timezone.utc)
         logging.emit("run_open", name=cfg.name, mode="translation_only",
@@ -374,7 +381,7 @@ def main(argv=None) -> int:
             cfg=cfg, score=quality, rows=rows, source=source_info,
             started=started, finished=finished, run_dir=run_dir,
             component={"backend": cfg.translation.name, **cfg.translation.options},
-            failure=failure)
+            usage=translator.usage(), failure=failure)
         logging.bind(item="", session="")
         logging.emit("run_close", n_rows=len(rows),
                      status="failed" if failure else "ok")

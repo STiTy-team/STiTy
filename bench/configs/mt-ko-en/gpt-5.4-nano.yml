@@ -1,14 +1,15 @@
-name: mt-ko-en-qwen3.5-4b
+name: mt-ko-en-gpt-5.4-nano
 
 languages:
   lang: ko
   target: en
 
 translation:
-  name: local
-  model: Qwen/Qwen3.5-4B
-  quant: 4bit
+  name: gpt
+  model: gpt-5.4-nano
+  reasoning_effort: none
   context: 10
   context_chars: 500
+  budget_usd: 1.0
 
 context_scope: item

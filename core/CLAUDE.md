@@ -31,14 +31,14 @@ class MyTranslator(Translator):
     async def load(self):
         self.model = ...
 
-    async def translate(self, text, target_lang, source_lang=None, context=None):
+    async def translate(self, text, target_lang, source_lang=None, context=None, speaker=""):
         return translated_text, source_lang
 ```
 
 | 종류 | 레지스트리 | 하는 일 |
 |---|---|---|
 | `transcription` | `transcribers` | `start(language)` / `transcribe(audio)` / `flush(reason, speech)` / `finish(reason, speech)` |
-| `translation` | `translators` | `translate(text, target_lang, source_lang, context)` → (번역문, 소스 언어) |
+| `translation` | `translators` | `translate(text, target_lang, source_lang, context, speaker)` → (번역문, 소스 언어). `context` 는 `Dialogue` 가 만든 앞 확정 문장 목록, `speaker` 는 ASR 이 준 화자 이름표(없으면 빈 문자열) |
 | `vad` | `detectors` | `detect(audio)` → 끝난 발화 `Speech` 또는 `None` |
 | `correction` | `correctors` | `correct(text, language)` → 고친 텍스트. **등록된 백엔드가 아직 없다** |
 | `pipeline` | `pipelines` | `start` / `listen(audio)` / `finish`. `REQUIRED`·`OPTIONAL` 로 자기 부품을 선언한다 |
@@ -60,13 +60,15 @@ class MyTranslator(Translator):
 
 두 GPT 모듈 모두 기본 모델은 `gpt-5.4-mini` (런타임 경로. `autoseg/`의 모델과 무관하다). 두 플래그 모두 꺼져 있으면 서버는 Google Translate로 번역하므로 `core/`의 GPT 경로를 아예 타지 않는다.
 
+`pipelines/translation/` 의 API 부품(`deepl`·`gemini`·`gpt`)은 이 런타임 경로와 별개로 bench 만 쓴다 — `gpt` 부품의 기본 모델은 `gpt-5.4-nano` 이고, 공통부는 `api.py`(키 확인·재시도·호출별 비용 기록·`budget_usd`)다. 문맥은 `dialogue.py` 의 `Dialogue` 가 대화(`group`) 안의 앞 확정 문장을 쌓아 만든다. 화자 이름표(`A`·`B`)는 ASR 이 화자를 알려 줄 때만 붙고 — 지금 ASR 은 화자를 못 나누므로 문맥은 한 덩어리다 — 데이터셋의 정답 화자는 쓰지 않는다. **bench 에서는 모든 번역기가 같은 문맥을 받는다** — 무엇을 줄지는 `dialogue.recent` 하나가 정하고, `local` 도 그 결과를 그대로 넘기며 로컬 LLM 의 문맥 빼기 안전장치(`always_use_context`)를 끈다. 문맥 자리가 없는 모델(`translategemma`, NLLB·MADLAD)에 `context` 를 주면 설정 오류다. Gemini·GPT 는 그 문맥을 `prompt.py` 지시문으로 받아 JSON 의 `translation` 필드만 돌려주고, DeepL 은 같은 문맥을 API 의 `context` 필드로 받는다. 설정과 비용 기록은 [../bench/README.md](../bench/README.md) 'API 번역기'.
+
 ## 규칙
 
 - 학습/실험 코드는 `research/` 아래에만. 런타임 파일 옆에 두지 말 것.
 - **주석을 쓰지 않는다.** `pipelines/` 와 `utils/metrics/` 에는 주석도 독스트링도 없다.
   주석으로만 알 수 있는 것이 있으면 그건 코드가 잘못된 것이다 — 이름과 구조로 드러내고,
   경위는 커밋 메시지에 적는다.
-- **문맥은 LLM 백엔드만 받는다.** 서버의 `--local-translation-context N` 이 앞 발화 원문을 넘기고,
+- **로컬 번역기 중 문맥은 LLM 백엔드만 받는다** (API 부품은 DeepL 까지 셋 다 받는다). 서버의 `--local-translation-context N` 이 앞 발화 원문을 넘기고,
   seq2seq 번역기는 그걸 받아서 버린다(경고 1회). 이어붙여 넣는 `--google-context` 방식은 Google 이
   줄바꿈을 보존해 주기 때문에 되는 것이라 로컬 모델에서는 깨진다 — NLLB 는 줄 수를 안 지켜
   문맥 덩어리가 통째로 자막에 나가고, MADLAD 는 번역 대신 잡음을 뱉는다. 실측과 문맥 깊이별

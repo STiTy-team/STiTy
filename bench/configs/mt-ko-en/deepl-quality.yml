@@ -1,14 +1,14 @@
-name: mt-ko-en-qwen3.5-4b
+name: mt-ko-en-deepl-quality
 
 languages:
   lang: ko
   target: en
 
 translation:
-  name: local
-  model: Qwen/Qwen3.5-4B
-  quant: 4bit
+  name: deepl
+  model_type: quality_optimized
   context: 10
   context_chars: 500
+  budget_usd: 1.0
 
 context_scope: item
