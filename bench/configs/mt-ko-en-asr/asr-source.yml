@@ -1,0 +1,28 @@
+# 실제 ko 오디오 30개를 운영 ko ASR 가중치로 받아 적는 원본 실행.
+# 번역기 비교는 이 실행의 확정 조각을 bench.retranslate 로 다시 번역해서 한다 —
+# 여기 붙은 madlad 번역은 cascade 가 번역기를 요구해서 넣은 것이고 비교 대상이 아니다.
+name: fleurs-ko-en-asr30
+
+# 이 데이터셋은 datasets 리포에 없다. FLEURS ko_kr 오디오와 ko_kr·en_us test.tsv 에서
+# fleurs-ko-en-text30 의 30개 id 만 골라 dataset.yml + manifest.jsonl 을 로컬에서 만든 것이다.
+dataset:
+  name: fleurs-ko-en-audio30   # bench/runs/fleurs-ko-en-text30 과 같은 30문장의 ko 낭독 오디오
+  limit: 30
+
+languages:
+  lang: ko
+  target: en
+
+stity:
+  pipeline:
+    name: cascade
+    transcription:
+      name: qwen3
+      model: /home/skkai/STiTy/models/Qwen3-ASR-1.7B-ko-silence-v4c900-merged
+      chunk_size_sec: 1.0      # 운영 ko 서버와 같은 값
+      max_new_tokens: 128
+      enforce_eager: true
+    translation: {name: local, model: google/madlad400-3b-mt, context: 0}
+    vad: {name: silero, min_silence_ms: 800}
+  commit: seg
+  gpu_memory_utilization: 0.3

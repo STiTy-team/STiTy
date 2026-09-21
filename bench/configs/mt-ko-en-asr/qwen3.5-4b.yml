@@ -1,0 +1,14 @@
+name: mt-ko-en-asr-qwen3.5-4b
+
+languages:
+  lang: ko
+  target: en
+
+translation:
+  name: local
+  model: Qwen/Qwen3.5-4B
+  quant: 4bit
+  context: 10
+  context_chars: 500
+
+context_scope: item

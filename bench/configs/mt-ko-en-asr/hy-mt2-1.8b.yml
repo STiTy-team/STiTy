@@ -1,0 +1,14 @@
+name: mt-ko-en-asr-hy-mt2-1.8b
+
+languages:
+  lang: ko
+  target: en
+
+translation:
+  name: local
+  model: tencent/Hy-MT2-1.8B
+  quant: 4bit
+  context: 10
+  context_chars: 500
+
+context_scope: item

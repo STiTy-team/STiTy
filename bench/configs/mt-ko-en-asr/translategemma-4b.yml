@@ -1,0 +1,15 @@
+name: mt-ko-en-asr-translategemma-4b
+
+languages:
+  lang: ko
+  target: en
+
+translation:
+  name: local
+  model: google/translategemma-4b-it
+  quant: 4bit
+  # chat template 에 문맥을 넣을 자리가 없다. 다른 번역기와 같은 문맥을 줄 수 없으므로
+  # 이 결과는 "문맥 없음" 조건이고, 문맥을 받는 조건과 나란히 비교하면 안 된다.
+  context: 0
+
+context_scope: item
