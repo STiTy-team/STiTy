@@ -18,9 +18,6 @@ make replay RUN=bench/runs/<이름>                   # 그 실행을 브라우�
 그린 화면 그대로(번역이 본문, 전사가 그 아래), 오른쪽은 **휴대폰에는 안 보이는** 이벤트
 줄기 전부다. 둘 다 같은 시계 — 이벤트의 `audio` 위치 — 가 움직인다.
 
-번역기만 바꿔 다시 돌리는 실행, API 번역기, 대화 번역 품질 지표와 그 파생 run 은
-[TRANSLATION.md](TRANSLATION.md) 에 있다.
-
 데이터셋은 `fleurs` 와 `acl6060` 둘이다. 계약(`dataset.yml` + `manifest.jsonl`)과 새
 코퍼스 붙이는 법은 그 리포의 README 에 있다. bench 에는 데이터셋별 분기가 없다.
 

@@ -1,6 +1,10 @@
+"""Reading a bench run and writing a run derived from it."""
 import hashlib
 import json
 from pathlib import Path
+
+
+BENCH_RUNS = Path(__file__).resolve().parents[3] / "bench" / "runs"
 
 
 def source_items(path: str | Path) -> tuple[Path, Path]:

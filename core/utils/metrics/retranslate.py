@@ -1,13 +1,4 @@
-"""Replay stored ASR commits through a different translation backend.
-
-Usage::
-
-    python -m bench.retranslate bench/runs/<source> bench/configs/examples/retranslate.yml
-
-No audio, VAD or ASR code is loaded.  The source run's committed
-``segments[*].original`` values are translated in their original order.  The new
-run therefore changes the translator while freezing ASR and segmentation.
-"""
+"""Translate a bench run's committed ASR segments again with another translator."""
 from __future__ import annotations
 
 import argparse
@@ -20,14 +11,14 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from bench.report import environment, print_summary
 from core.pipelines.translation.dialogue import Dialogue
 from core.utils import metrics
-from core.utils.metrics.metric_inputs import QUALITY_AXES, gold_inputs
 
-from .report import environment, print_summary
+from .derived import BENCH_RUNS
+from .metric_inputs import QUALITY_AXES, gold_inputs
 
 
-RUNS_DIR = Path(__file__).resolve().parent / "runs"
 RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "config.yml")
 USAGE_LOG = "translation_usage.jsonl"
 
@@ -62,7 +53,6 @@ def _detach_source_timing(segment: dict) -> dict:
 async def retranslate_row(row: dict, *, translator, languages,
                           dialogue: Dialogue | None = None,
                           on_segment=None) -> dict:
-    """Translate one stored item while preserving ASR text and commit boundaries."""
     output = copy.deepcopy(row)
     for key in _STALE_ITEM_METRICS:
         output.pop(key, None)
@@ -151,7 +141,6 @@ async def retranslate_rows(rows, *, translator, languages,
                            context_scope: str = "item",
                            before_item=None, after_item=None,
                            on_segment=None) -> list[dict]:
-    """Replay rows in source order; optionally carry earlier turns of the dialogue group."""
     if context_scope not in ("item", "group"):
         raise ValueError("context_scope must be 'item' or 'group'")
     dialogues: dict[str, Dialogue] = {}
@@ -172,7 +161,6 @@ async def retranslate_rows(rows, *, translator, languages,
 
 
 def score_translation_rows(rows, *, languages) -> metrics.RunScore:
-    """Score translation quality only; do not relabel inherited ASR latency."""
     score = metrics.score_run(
         [row for row in rows if row.get("status") == "ok"], languages=languages)
     aggregate = {
@@ -197,13 +185,6 @@ def _prepare_run_dir(run_dir: Path, *, source_run: Path, config_path: Path) -> N
 
 
 def _cuda_memory(loaded: dict | None = None) -> dict | None:
-    """Model footprint after load, then the peak reserved while translating.
-
-    Loading a 4bit model passes through bf16 shards, so the all-time peak would
-    report the load transient instead of what the translator holds while serving.
-    The peak counter is reset after load for that reason. torch is only looked up,
-    never imported: a CPU-only replay has nothing to report.
-    """
     torch = sys.modules.get("torch")
     if torch is None or not torch.cuda.is_available():
         return None
@@ -227,11 +208,6 @@ def write_summary(*, cfg, score, rows, source: dict, started: datetime,
                   finished: datetime, run_dir: Path,
                   component: dict, usage: dict | None = None,
                   failure: str | None = None) -> Path:
-    """Write a summary for a stored-ASR translation replay.
-
-    ASR latency is intentionally absent: its clocks came from the source run and
-    were not measured during this execution.
-    """
     errored = [row for row in rows if row.get("translation_status") not in
                ("ok", "skipped_source_error", "skipped_empty_source")]
     skipped_source_error = [row for row in rows
@@ -289,7 +265,7 @@ def write_summary(*, cfg, score, rows, source: dict, started: datetime,
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
-        prog="python -m bench.retranslate",
+        prog="python -m core.utils.metrics.retranslate",
         description="저장된 ASR commit을 번역기만 바꿔 다시 평가합니다.",
     )
     parser.add_argument("source_run", help="원본 run 디렉터리 또는 items.jsonl")
@@ -298,13 +274,13 @@ def parse_args(argv=None):
 
 
 def main(argv=None) -> int:
-    # Heavy/optional bench dependencies stay out of module import so the replay
-    # transform itself remains CPU-unit-testable.
     args = parse_args(argv)
     from core.errors import ConfigError
     from core.pipelines.translation import translators
     from core.utils import env, logging
-    from . import derived, report, translation_config
+    from bench import report
+
+    from . import derived, translation_config
 
     env.load()
     logging.configure()
@@ -315,7 +291,7 @@ def main(argv=None) -> int:
         if not source_rows:
             raise ConfigError(f"{source_items} has no readable rows")
 
-        run_dir = RUNS_DIR / cfg.name
+        run_dir = BENCH_RUNS / cfg.name
         _prepare_run_dir(run_dir, source_run=source_run,
                          config_path=Path(args.config).resolve())
         logging.attach_stream(run_dir / "events.jsonl")

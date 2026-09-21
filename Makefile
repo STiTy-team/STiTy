@@ -11,10 +11,10 @@ replay:
 .PHONY: retranslate annotate-quality asr-text-robustness
 
 retranslate:
-	$(PYTHON) -m bench.retranslate $(SOURCE) $(CONFIG)
+	$(PYTHON) -m core.utils.metrics.retranslate $(SOURCE) $(CONFIG)
 
 annotate-quality:
-	$(PYTHON) -m bench.annotate_quality $(SOURCE) $(OUTPUT)
+	$(PYTHON) -m core.utils.metrics.annotate_quality $(SOURCE) $(OUTPUT)
 
 asr-text-robustness:
-	$(PYTHON) -m bench.asr_text_robustness $(SOURCE) $(CONFIG) $(OUTPUT)
+	$(PYTHON) -m core.utils.metrics.asr_text_robustness $(SOURCE) $(CONFIG) $(OUTPUT)

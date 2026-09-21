@@ -1,3 +1,4 @@
+"""Add critical-information and fluency annotations to a copy of a bench run."""
 from __future__ import annotations
 
 import argparse
@@ -9,26 +10,22 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from core.utils import metrics
-from core.utils.metrics import critical_information, fluency
-from core.utils.metrics.critical_information import (
+
+from . import critical_information, derived, fluency
+from .critical_information import (
     ReferenceSpanCache,
     annotate_critical_information,
     gold_reference_spans,
 )
-from core.utils.metrics.fluency import annotate_fluency
-from core.utils.metrics.judge import QUALITY_ANNOTATOR_VERSION, OpenAIJsonJudge
-
-from . import derived
+from .fluency import annotate_fluency
+from .judge import QUALITY_ANNOTATOR_VERSION, OpenAIJsonJudge
 
 
 DEFAULT_LM = {
     "en": "FacebookAI/roberta-base",
     "ko": "klue/roberta-base",
 }
-# Shared by every annotation run so that all systems are scored against one reference
-# span set per sentence; see ReferenceSpanCache.
-DEFAULT_REFERENCE_CACHE = Path(__file__).resolve().parent / "runs" / "_cache" / \
-    "critical_reference_spans.jsonl"
+DEFAULT_REFERENCE_CACHE = derived.BENCH_RUNS / "_cache" / "critical_reference_spans.jsonl"
 OUTPUT_FILES = ("items.jsonl", "summary.json", "quality_config.json", "source_config.yml")
 
 
@@ -65,8 +62,6 @@ async def annotate_rows(rows: list[dict], *, judge, concurrency: int = 4,
             return row
         source_lang = str(row.get("src_lang") or "").lower()
         target_lang = _target_lang(row)
-        # Only the gold transcript: the ASR transcript differs per ASR system, and the
-        # reference spans must be the same for every system scored against them.
         source = str(row.get("reference") or "").strip()
         candidate = str(row.get("hypothesis_translation") or "").strip()
         reference = str((row.get("reference_translations") or {}).get(target_lang) or "").strip()
@@ -181,7 +176,7 @@ def _summary(*, rows: list[dict], score: metrics.RunScore, source_run: Path,
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
-        prog="python -m bench.annotate_quality",
+        prog="python -m core.utils.metrics.annotate_quality",
         description="한영 중요 정보와 목표 언어 유창성 주석을 기존 run에 생성합니다.",
     )
     parser.add_argument("source_run", help="원본 run 디렉터리 또는 items.jsonl")

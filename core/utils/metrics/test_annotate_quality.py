@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-from bench import annotate_quality
+from core.utils.metrics import annotate_quality
 from core.utils import metrics
 
 

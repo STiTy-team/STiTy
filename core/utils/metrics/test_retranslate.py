@@ -1,7 +1,7 @@
 import asyncio
 import unittest
 
-from bench.retranslate import retranslate_rows, score_translation_rows
+from core.utils.metrics.retranslate import retranslate_rows, score_translation_rows
 
 
 class _Languages:

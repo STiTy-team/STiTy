@@ -1,3 +1,4 @@
+"""Config of a translation-only run: one translator, one language pair."""
 from pathlib import Path
 from typing import Any
 
@@ -7,12 +8,10 @@ from pydantic import PrivateAttr, model_validator
 from core.errors import ConfigError
 from core.utils.config import ConfigBody, as_component
 
-from .config import LanguagesConfig
+from bench.config import LanguagesConfig
 
 
 class TranslationComponentConfig(ConfigBody):
-    """A translation backend resolved without constructing an ASR pipeline."""
-
     name: str
     options: dict = {}
 
@@ -26,8 +25,6 @@ class TranslationComponentConfig(ConfigBody):
 
 
 class RetranslateConfig(ConfigBody):
-    """Config for replaying stored ASR commits through one translator."""
-
     name: str
     languages: LanguagesConfig
     translation: TranslationComponentConfig

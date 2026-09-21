@@ -1,3 +1,4 @@
+"""Translate gold, real-ASR and synthetically corrupted transcripts of a bench run."""
 from __future__ import annotations
 
 import argparse
@@ -8,9 +9,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from core.utils import metrics
-from core.utils.metrics import asr_robustness
-from core.utils.metrics.metric_inputs import gold_inputs
-from core.utils.metrics.text_noise import NOISE_VERSION, perturb_transcript
+
+from . import asr_robustness
+from .metric_inputs import gold_inputs
+from .text_noise import NOISE_VERSION, perturb_transcript
 
 
 OUTPUT_FILES = ("items.jsonl", "summary.json", "robustness_config.json")
@@ -31,24 +33,10 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
                                    similarity_device: str | None = None,
                                    similarity_batch_size: int = 32,
                                    similarity_scorer=None) -> list[dict]:
-    """Translate each item's clean transcript, its real ASR output and synthetic variants.
-
-    Clean is the gold transcript. Its real ASR output, when the row has one that
-    differs, is the noisy condition behind ``quality_drop`` and ``similarity`` --
-    the ASR-induced change the axis is named for. Synthetic variants of the clean
-    transcript at each requested level give the degradation curve, placed at the WER
-    each variant actually has.
-
-    An empty ASR output or an empty translation is a catastrophic failure and is
-    scored (quality of an empty string, similarity 0). A translator that raised is
-    an infrastructure failure: that condition is left out of every statistic, so
-    quality drop and invariance always cover the same pairs.
-    """
     if not noise_levels or any(not 0 < value <= 1 for value in noise_levels):
         raise ValueError("noise_levels must contain values in (0, 1]")
     levels = sorted(set(float(value) for value in noise_levels))
     output = []
-    # (pair id, clean translation, noisy translation, [(dict, key), ...] to fill)
     similarity_pairs = []
 
     for row_index, source_row in enumerate(rows):
@@ -155,8 +143,6 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
             row["robustness_translation_errors"] = translation_errors
         output.append(row)
 
-    # Both outputs present: the encoder decides. Exactly one empty: nothing of the
-    # clean meaning survived (0). Both empty: the output did not change (1).
     scoreable = [{"id": pair_id, "clean_translation": clean, "noisy_translation": noisy}
                  for pair_id, clean, noisy, _ in similarity_pairs if clean and noisy]
     similarities = {}
@@ -192,7 +178,7 @@ def score_robustness(rows: list[dict]) -> metrics.RunScore:
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
-        prog="python -m bench.asr_text_robustness",
+        prog="python -m core.utils.metrics.asr_text_robustness",
         description="저장된 전사문을 ASR처럼 교란하고 clean/noisy 번역 강건성을 평가합니다.",
     )
     parser.add_argument("source_run", help="원본 run 디렉터리 또는 items.jsonl")
@@ -211,7 +197,9 @@ def main(argv=None) -> int:
     args = parse_args(argv)
     from core.pipelines.translation import translators
     from core.utils import env
-    from . import derived, report, translation_config
+    from bench import report
+
+    from . import derived, translation_config
 
     env.load()
     cfg = translation_config.load(args.config)

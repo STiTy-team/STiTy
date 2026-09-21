@@ -2,7 +2,7 @@ import asyncio
 import unittest
 from unittest.mock import patch
 
-from bench.asr_text_robustness import evaluate_robustness_rows, score_robustness
+from core.utils.metrics.asr_text_robustness import evaluate_robustness_rows, score_robustness
 from core.utils.metrics.text import levenshtein, normalize_words
 
 
