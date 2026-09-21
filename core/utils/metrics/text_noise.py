@@ -42,13 +42,19 @@ _KO_CONFUSIONS = {
     "일": "이", "이": "일", "삼": "상", "사": "싸",
 }
 
-# Hangul syllable = 0xAC00 + (initial * 21 + medial) * 28 + final.
-_KO_INITIAL_SWAPS = {0: 1, 1: 0, 3: 4, 4: 3, 7: 8, 8: 7, 9: 10, 10: 9, 12: 13, 13: 12, 14: 12}
-# ㅐ↔ㅔ, ㅒ↔ㅖ, ㅙ→ㅚ→ㅞ→ㅙ, ㅓ↔ㅗ, ㅜ↔ㅡ
-_KO_MEDIAL_SWAPS = {1: 5, 5: 1, 3: 7, 7: 3, 10: 11, 11: 15, 15: 10, 4: 8, 8: 4, 13: 18, 18: 13}
-# ㄴ↔ㅇ, ㅁ→ㄴ, ㄷ→ㅅ, ㅅ↔ㅆ, ㅈ→ㅅ, ㅂ↔ㅍ, ㄱ↔ㅋ, ㄲ→ㄱ, ㅎ→(none), ㄹ→(none)
-_KO_FINAL_SWAPS = {4: 21, 21: 4, 16: 4, 7: 19, 19: 20, 20: 19, 22: 19, 17: 26, 26: 17,
-                   1: 24, 24: 1, 2: 1, 27: 0, 8: 0}
+_HANGUL_FIRST = 0xAC00
+_KO_INITIALS = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
+_KO_MEDIALS = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ"
+_KO_FINALS = "_ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ"
+
+
+def _swaps(jamo: str, edits: str) -> dict[int, int]:
+    return {jamo.index(edit[0]): jamo.index(edit[1]) for edit in edits.split()}
+
+
+_KO_INITIAL_SWAPS = _swaps(_KO_INITIALS, "ㄱㄲ ㄲㄱ ㄷㄸ ㄸㄷ ㅂㅃ ㅃㅂ ㅅㅆ ㅆㅅ ㅈㅉ ㅉㅈ ㅊㅈ")
+_KO_MEDIAL_SWAPS = _swaps(_KO_MEDIALS, "ㅐㅔ ㅔㅐ ㅒㅖ ㅖㅒ ㅙㅚ ㅚㅞ ㅞㅙ ㅓㅗ ㅗㅓ ㅜㅡ ㅡㅜ")
+_KO_FINAL_SWAPS = _swaps(_KO_FINALS, "ㄴㅇ ㅇㄴ ㅁㄴ ㄷㅅ ㅅㅆ ㅆㅅ ㅈㅅ ㅂㅍ ㅍㅂ ㄱㅋ ㅋㄱ ㄲㄱ ㅎ_ ㄹ_")
 
 _EN_VOWEL_SWAPS = {"a": "e", "e": "i", "i": "e", "o": "u", "u": "o"}
 
@@ -80,10 +86,11 @@ def _corrupt_number(token: str, rng: random.Random) -> str:
 def _ko_sound_alike(token: str, rng: random.Random) -> str | None:
     edits = []
     for index, char in enumerate(token):
-        code = ord(char) - 0xAC00
-        if not 0 <= code < 11172:
+        code = ord(char) - _HANGUL_FIRST
+        if not 0 <= code < len(_KO_INITIALS) * len(_KO_MEDIALS) * len(_KO_FINALS):
             continue
-        initial, medial, final = code // 588, (code % 588) // 28, code % 28
+        initial, rest = divmod(code, len(_KO_MEDIALS) * len(_KO_FINALS))
+        medial, final = divmod(rest, len(_KO_FINALS))
         for part, table, value in (("initial", _KO_INITIAL_SWAPS, initial),
                                    ("medial", _KO_MEDIAL_SWAPS, medial),
                                    ("final", _KO_FINAL_SWAPS, final)):
@@ -95,7 +102,8 @@ def _ko_sound_alike(token: str, rng: random.Random) -> str | None:
     initial = new if part == "initial" else initial
     medial = new if part == "medial" else medial
     final = new if part == "final" else final
-    return token[:index] + chr(0xAC00 + (initial * 21 + medial) * 28 + final) + token[index + 1:]
+    syllable = _HANGUL_FIRST + (initial * len(_KO_MEDIALS) + medial) * len(_KO_FINALS) + final
+    return token[:index] + chr(syllable) + token[index + 1:]
 
 
 def _en_sound_alike(token: str, rng: random.Random) -> str | None:

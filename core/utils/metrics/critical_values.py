@@ -70,8 +70,6 @@ _KO_NATIVE_TENS = {"열": 10, "스물": 20, "스무": 20, "서른": 30, "마흔"
                    "예순": 60, "일흔": 70, "여든": 80, "아흔": 90}
 _KO_NATIVE_UNITS = {"하나": 1, "한": 1, "둘": 2, "두": 2, "셋": 3, "세": 3, "넷": 4,
                     "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9}
-# Determiner forms ("두 개") are also everyday words ("네" yes, "한국", "세상"), and
-# 열/쉰 are also verbs/adjectives; they count only in front of a counter.
 _KO_NEEDS_COUNTER = {"한", "두", "세", "네", "스무", "열", "쉰"}
 _KO_HOURS = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7,
              "여덟": 8, "아홉": 9, "열": 10, "열한": 11, "열두": 12}
@@ -87,8 +85,6 @@ _KO_PARTICLES = {
     "이내", "까지", "부터", "밖에", "뿐", "동안", "전", "후", "반", "짜리", "마다",
     "보다", "처럼", "에게", "한테", "요", "이요", "입니다", "이에요", "예요", "이고",
 }
-# What may follow 시/분 of a clock time: a particle or a copula ending, never the
-# rest of a word such as 시간 (hours), 시작, 시장.
 _KO_TIME_TAIL = _KO_PARTICLES | {
     "경", "께", "정각", "야", "였", "이후", "이전", "사이", "즈음", "다", "엔", "라",
     "면", "지", "죠", "니", "인가", "인데", "인지", "일",
@@ -121,8 +117,6 @@ def _is_latin(word: str) -> bool:
     return bool(re.fullmatch(r"[a-z ]+", word))
 
 
-# Latin unit and currency words must end a word ("5 m" but not "5 more"); Hangul and
-# symbols may be followed by a particle ("70킬로미터를", "3만 원이").
 _UNIT_AFTER = re.compile(
     rf"\s?(?P<u>(?:{_alternation(w for w in _UNIT_ALIASES if _is_latin(w))})(?![A-Za-z])"
     rf"|{_alternation(w for w in _UNIT_ALIASES if not _is_latin(w))})", re.I)
@@ -130,7 +124,6 @@ _CURRENCY_AFTER = re.compile(
     rf"\s?(?P<c>(?:{_alternation(w for w in _CURRENCY_ALIASES if _is_latin(w))})(?![A-Za-z])"
     rf"|(?:{_alternation(w for w in _CURRENCY_ALIASES if re.fullmatch('[가-힣]+', w))}))",
     re.I)
-# A digit run ends at a word boundary, or runs straight into a unit ("35mm").
 _DIGITS_END = (rf"(?:(?![\w])|(?=(?:{_alternation(w for w in _UNIT_ALIASES if _is_latin(w))})"
                rf"(?![A-Za-z])))")
 _CURRENCY_BEFORE = re.compile(r"(?P<c>us\$|[$₩€£]|(?<![A-Za-z])(?:usd|krw|eur|gbp|jpy))\s?$",
@@ -147,10 +140,6 @@ _EN_WORDS = re.compile(
     rf"\b(?:a\s+(?=(?:{_alternation(_EN_SCALES)})\b))?(?:{_EN_WORD})\b"
     rf"(?:(?:[\s-]+|\s+and\s+)(?:{_EN_WORD})\b)*", re.I)
 _KO_TOKEN = rf"(?:{_NUMBER}|[{''.join(_KO_SINO_DIGITS)}{''.join(_KO_SMALL)}{''.join(_KO_BIG)}])"
-# A scale may be spaced from its number ("6 만 원") and a new group may follow a big
-# scale after a space ("1억 2천만").
-# A spaced scale must end the word or run into another scale, a currency or a counter,
-# so "3 백화점" stays 3.
 _KO_SCALE = f"[{''.join(_KO_SMALL)}{''.join(_KO_BIG)}]"
 _KO_SCALE_END = (rf"(?=$|[^가-힣]|{_KO_SCALE}|(?:"
                  rf"{_alternation([w for w in _CURRENCY_ALIASES if re.fullmatch('[가-힣]+', w)] + list(_KO_COUNTERS))}))")
@@ -170,11 +159,6 @@ class _Quantity:
     start: int
     end: int
     value: Decimal
-    # "none": a number by itself; "counter": only before a counter, unit or currency;
-    # "spaced_counter": the same, with exactly one space between (single-syllable
-    # Sino numerals such as "오 분", which written together are words: "사원");
-    # "boundary": a number when the word ends there or a counter follows;
-    # "measure": only before a unit or currency (the English pronoun "one").
     needs: str = "none"
 
 
@@ -203,7 +187,6 @@ _EN_FOLLOWS = {
 
 
 def _en_word_quantities(text: str) -> list[_Quantity]:
-    """Split each run of number words into well-formed numbers ("two three" is two)."""
     output = []
     for match in _EN_WORDS.finditer(text):
         group = None
@@ -288,7 +271,6 @@ def _ko_sino_quantities(text: str) -> list[_Quantity]:
         if any(char.isdigit() for char in expression):
             needs = "none"
         elif len(expression) == 1:
-            # "이" is far more often "this" (이 분, 이 번) than two.
             if expression == "이":
                 continue
             needs = "spaced_counter"
@@ -368,7 +350,6 @@ def _dates(text: str, lang: str, spans: list[Span], occupied: list[tuple[int, in
                                            f"{y:04d}-{m:02d}-{d:02d}"))
 
 
-# "p.m." keeps its closing dot; an undotted "PM." leaves the sentence's full stop alone.
 _MERIDIEM = r"(?:[ap]\.\s?m\b\.?|[ap]\s?m\b)"
 
 
@@ -450,7 +431,6 @@ def _ordinals(text: str, lang: str, spans: list[Span], occupied: list[tuple[int,
         pattern = re.compile(rf"\b(?:\d+(?:st|nd|rd|th)|{_alternation(_EN_ORDINALS)})\b", re.I)
         for match in pattern.finditer(text):
             raw = match.group().lower()
-            # "a second", "per second": the unit of time, not the ordinal.
             if raw == "second" and re.search(r"\b(?:a|one|per|split)\s+$",
                                              text[:match.start()], re.I):
                 continue
@@ -458,7 +438,6 @@ def _ordinals(text: str, lang: str, spans: list[Span], occupied: list[tuple[int,
             _add(spans, occupied, Span("ordinal", match.group(), match.start(), match.end(),
                                        str(value)))
     else:
-        # "두 번" is twice, not second; only 번째/째/제N are ordinals.
         pattern = re.compile(
             rf"(?<![가-힣])(?:(?P<head>\d+|{_alternation(_KO_ORDINAL_HEADS)})\s?번째"
             rf"|(?P<noun>{_alternation(_KO_ORDINAL_NOUNS)})째|제\s?(?P<je>\d+))")

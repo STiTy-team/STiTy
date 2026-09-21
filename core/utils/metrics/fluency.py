@@ -1,17 +1,29 @@
 """Target-language spoken fluency metrics.
 
-The judge and MQM metrics aggregate reviewed/externally-produced annotations.
-Pseudo-perplexity has a complete masked-LM implementation and is activated in the
-bench by precomputed values or ``STITY_FLUENCY_LM``.
+``annotate_fluency`` has an LLM judge produce the 1-5 score and MQM error spans that
+the judge and MQM metrics aggregate. Pseudo-perplexity has a complete masked-LM
+implementation and is activated in the bench by precomputed values or
+``STITY_FLUENCY_LM``.
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import os
+import re
 from statistics import mean, median
+
+from .judge import QUALITY_ANNOTATOR_VERSION, JsonJudge, locate
 
 
 DEFAULT_SEVERITY_WEIGHTS = {"minor": 1.0, "major": 5.0, "critical": 25.0}
+FLUENCY_PROMPT_VERSION = "spoken-fluency-mqm-v1"
+FLUENCY_SYSTEM_PROMPT = """You are a strict evaluator of spoken-language fluency.
+Judge only the candidate text as conversation in the target language. Do not infer or judge source meaning or translation faithfulness.
+Use this 1-5 rubric: 5 fully natural spoken language; 4 natural with a small awkwardness; 3 understandable but noticeably awkward; 2 difficult or repeatedly ungrammatical; 1 unusable.
+Also annotate MQM fluency/style errors. Allowed categories are grammar, word_order, word_form, spelling, punctuation, register, awkwardness, repetition, untranslated_fragment, and consistency. Severity is minor, major, or critical. Critical is reserved for text that is effectively unusable as target-language conversation.
+Every error must identify an exact substring using zero-based start and exclusive end character offsets in the candidate. Do not create an error merely because a different wording would be preferable.
+Return one JSON object with keys score, reason, and errors. errors is an array of objects with category, severity, start, end, text, and explanation."""
 
 
 def spoken_fluency_judge_score(judgements) -> dict:
@@ -255,5 +267,60 @@ def corpus(items, **_) -> tuple[dict, dict]:
     return ({"fluency": axis} if axis else {}), unavailable
 
 
+def target_token_count(text: str, lang: str) -> int:
+    if lang == "ko":
+        return len(re.findall(r"\S+", text))
+    return len(re.findall(r"\b\w+(?:['’-]\w+)*\b", text, re.UNICODE))
+
+
+async def annotate_fluency(*, judge: JsonJudge, candidate: str,
+                           target_lang: str, previous_turns: list[str] | None = None) -> dict:
+    result = await judge.ask(
+        purpose="spoken_fluency_mqm",
+        system=FLUENCY_SYSTEM_PROMPT,
+        payload={
+            "target_language": target_lang,
+            "preceding_target_turns": list(previous_turns or [])[-3:],
+            "candidate": candidate,
+        },
+    )
+    score = result.get("score")
+    if isinstance(score, bool) or not isinstance(score, (int, float)) or not 1 <= float(score) <= 5:
+        raise ValueError("fluency judge returned a score outside [1, 5]")
+    allowed = {"grammar", "word_order", "word_form", "spelling", "punctuation",
+               "register", "awkwardness", "repetition", "untranslated_fragment", "consistency"}
+    errors = []
+    unlocated = 0
+    for raw in result.get("errors") or []:
+        if not isinstance(raw, dict):
+            continue
+        kind = str(raw.get("category") or "").lower()
+        surface = str(raw.get("text") or "")
+        if kind not in allowed or not surface:
+            continue
+        located = locate(candidate, surface, raw.get("start"), raw.get("end"))
+        if located is None:
+            unlocated += 1
+            continue
+        start, end = located
+        severity = str(raw.get("severity") or "minor").lower()
+        if severity not in {"minor", "major", "critical"}:
+            severity = "minor"
+        errors.append({"category": kind, "severity": severity, "start": start, "end": end,
+                       "text": surface, "explanation": str(raw.get("explanation") or "")})
+    return {
+        "judge": {"score": float(score), "reason": str(result.get("reason") or "")},
+        "mqm_errors": errors,
+        "mqm_unlocated_errors": unlocated,
+        "target_token_count": target_token_count(candidate, target_lang),
+        "target_lang": target_lang,
+        "annotator_version": QUALITY_ANNOTATOR_VERSION,
+        "prompt_version": FLUENCY_PROMPT_VERSION,
+        "judge_model": judge.model,
+        "candidate_sha256": hashlib.sha256(candidate.encode("utf-8")).hexdigest(),
+    }
+
+
 __all__ = ["spoken_fluency_judge_score", "mqm_fluency_error_rate",
-           "target_lm_pseudo_perplexity", "corpus"]
+           "target_lm_pseudo_perplexity", "corpus", "target_token_count",
+           "annotate_fluency"]

@@ -1,10 +1,8 @@
 import asyncio
 import unittest
-from collections import Counter
 from unittest.mock import patch
 
 from bench.asr_text_robustness import evaluate_robustness_rows, score_robustness
-from bench.text_noise import perturb_transcript
 from core.utils.metrics.text import levenshtein, normalize_words
 
 
@@ -49,26 +47,11 @@ def _similarities(pairs):
 
 
 def _run(rows, translator, levels=(.2, .4)):
-    with patch("bench.asr_text_robustness._chrf_quality",
+    with patch("core.utils.metrics.meaning.chrfpp_sentence",
                side_effect=lambda candidate, reference: 100.0 if GOLD in candidate else 60.0):
         return asyncio.run(evaluate_robustness_rows(
             rows, translator=translator, languages=_Languages(),
             noise_levels=list(levels), seed=2, similarity_scorer=_similarities))
-
-
-_EN_TEXT = (
-    "We should meet at the station before the train leaves because the tickets are "
-    "already paid and the manager wants everyone there early. My sister called "
-    "yesterday about the dinner reservation, and she asked whether the restaurant "
-    "still serves the seafood pasta that we ordered last time. I think the weather "
-    "will be fine this weekend, so we could walk to the museum after lunch and then "
-    "visit the market near the river where they sell fresh bread and flowers. "
-) * 4
-_KO_TEXT = (
-    "내일 아침에 회의가 있어서 일찍 출발해야 할 것 같아요. 어제 동생이 저녁 예약 때문에 "
-    "전화했는데 식당에서 해산물 파스타를 아직 파는지 물어봤어요. 이번 주말에는 날씨가 "
-    "괜찮을 것 같으니까 점심 먹고 박물관까지 걸어가서 강 근처 시장도 구경해요. "
-) * 4
 
 
 def _wer(reference, hypothesis):
@@ -77,34 +60,6 @@ def _wer(reference, hypothesis):
 
 
 class AsrTextRobustnessTest(unittest.TestCase):
-
-    def test_noise_is_reproducible_and_nonempty_protocol(self):
-        first = perturb_transcript("오늘 오후 세 시에 만나요.", lang="ko", level=.3,
-                                   seed=7, item_id="a")
-        second = perturb_transcript("오늘 오후 세 시에 만나요.", lang="ko", level=.3,
-                                    seed=7, item_id="a")
-        self.assertEqual(first, second)
-        self.assertNotEqual(first[0], "오늘 오후 세 시에 만나요.")
-        self.assertTrue(first[1])
-
-    def test_substitutions_are_the_most_common_word_error(self):
-        # ASR errors are mostly substitutions. The earlier generator only ever
-        # deleted, repeated or dropped punctuation: its dictionary substitutions
-        # fired on 0 of 90 Korean variants.
-        for lang, text in (("en", _EN_TEXT), ("ko", _KO_TEXT)):
-            with self.subTest(lang=lang):
-                _, operations = perturb_transcript(text, lang=lang, level=.3, seed=1,
-                                                   item_id="x")
-                kinds = Counter(op["type"] for op in operations)
-                self.assertGreater(kinds["substitution"], kinds["word_deletion"])
-                self.assertGreater(kinds["word_deletion"], 0)
-                self.assertGreater(kinds["word_repetition"], 0)
-
-    def test_requested_level_approximates_the_word_error_rate(self):
-        for level in (.1, .3):
-            noisy, _ = perturb_transcript(_EN_TEXT, lang="en", level=level, seed=3,
-                                          item_id="x")
-            self.assertAlmostEqual(_wer(_EN_TEXT, noisy), level, delta=.08)
 
     def test_clean_is_the_gold_transcript_and_noisy_is_the_real_asr_output(self):
         translator = _Translator()

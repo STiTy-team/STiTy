@@ -4,8 +4,22 @@ from __future__ import annotations
 from collections import defaultdict
 from statistics import mean
 
+from .text import levenshtein, normalize_words, strip_for_cer
+
 
 DEFAULT_INVARIANCE_MODEL = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+
+
+def _edit_rate(reference, hypothesis) -> float:
+    return levenshtein(reference, hypothesis) / len(reference) if reference else 0.0
+
+
+def word_error_rate(reference: str, hypothesis: str) -> float:
+    return _edit_rate(normalize_words(reference), normalize_words(hypothesis))
+
+
+def character_error_rate(reference: str, hypothesis: str) -> float:
+    return _edit_rate(strip_for_cer(reference), strip_for_cer(hypothesis))
 
 
 def _quality_map(value, default_name="quality") -> dict[str, float]:
@@ -188,4 +202,5 @@ def corpus(items, **_) -> tuple[dict, dict]:
 
 __all__ = ["asr_induced_quality_drop", "translation_invariance_score",
            "multilingual_semantic_similarity", "quality_noise_degradation",
+           "word_error_rate", "character_error_rate",
            "DEFAULT_INVARIANCE_MODEL", "corpus"]

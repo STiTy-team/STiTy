@@ -1,12 +1,14 @@
 PYTHON ?= python3
 
-.PHONY: bench replay retranslate annotate-quality asr-text-robustness
+.PHONY: bench replay
 
 bench:
 	$(PYTHON) -m bench $(CONFIG)
 
 replay:
 	$(PYTHON) -m bench.replay $(RUN)
+
+.PHONY: retranslate annotate-quality asr-text-robustness
 
 retranslate:
 	$(PYTHON) -m bench.retranslate $(SOURCE) $(CONFIG)

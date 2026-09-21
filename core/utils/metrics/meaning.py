@@ -134,14 +134,24 @@ def metricx24_score(samples, *, model_name: str = DEFAULT_METRICX_MODEL,
     }
 
 
+def _chrfpp():
+    from sacrebleu.metrics import CHRF
+
+    return CHRF(char_order=6, word_order=2, beta=2)
+
+
+def chrfpp_sentence(hypothesis: str, reference: str) -> float | None:
+    if not reference:
+        return None
+    return float(_chrfpp().sentence_score(hypothesis, [reference]).score)
+
+
 def chrfpp_score(pairs) -> dict:
     """Corpus chrF++ using sacreBLEU's reproducible implementation."""
     pairs = list(pairs)
     if not pairs:
         raise ValueError("chrF++ needs at least one hypothesis/reference pair")
-    from sacrebleu.metrics import CHRF
-
-    metric = CHRF(char_order=6, word_order=2, beta=2)
+    metric = _chrfpp()
     hyps = [p[0] for p in pairs]
     refs = [p[1] for p in pairs]
     score = metric.corpus_score(hyps, [refs])
@@ -248,4 +258,4 @@ def corpus(items, *, languages) -> tuple[dict, dict]:
     return ({"meaning": axis} if axis else {}), unavailable
 
 
-__all__ = ["comet_score", "metricx24_score", "chrfpp_score", "corpus"]
+__all__ = ["comet_score", "metricx24_score", "chrfpp_score", "chrfpp_sentence", "corpus"]

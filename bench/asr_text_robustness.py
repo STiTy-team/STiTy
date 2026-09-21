@@ -3,74 +3,17 @@ from __future__ import annotations
 import argparse
 import asyncio
 import copy
-import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 
 from core.utils import metrics
 from core.utils.metrics import asr_robustness
-from core.utils.metrics.text import levenshtein, normalize_words, strip_for_cer
-
-from .retranslate import _gold_metric_inputs
-from .text_noise import NOISE_VERSION, perturb_transcript
+from core.utils.metrics.metric_inputs import gold_inputs
+from core.utils.metrics.text_noise import NOISE_VERSION, perturb_transcript
 
 
-def _read_jsonl(path: Path) -> list[dict]:
-    output = []
-    with open(path, encoding="utf-8") as source:
-        for lineno, line in enumerate(source, start=1):
-            if not line.strip():
-                continue
-            value = json.loads(line)
-            if not isinstance(value, dict):
-                raise ValueError(f"{path}:{lineno} is not a JSON object")
-            output.append(value)
-    return output
-
-
-def _write_jsonl(path: Path, rows: list[dict]) -> None:
-    with open(path, "w", encoding="utf-8") as output:
-        for row in rows:
-            output.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
-
-
-def _source_items(path: str | Path) -> tuple[Path, Path]:
-    candidate = Path(path).resolve()
-    items = candidate if candidate.is_file() else candidate / "items.jsonl"
-    if not items.is_file():
-        raise ValueError(f"items.jsonl not found: {items}")
-    return items.parent, items
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with open(path, "rb") as source:
-        for chunk in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _word_error_rate(reference: str, hypothesis: str) -> float:
-    ref = normalize_words(reference)
-    if not ref:
-        return 0.0
-    return levenshtein(ref, normalize_words(hypothesis)) / len(ref)
-
-
-def _character_error_rate(reference: str, hypothesis: str) -> float:
-    ref = strip_for_cer(reference)
-    if not ref:
-        return 0.0
-    return levenshtein(ref, strip_for_cer(hypothesis)) / len(ref)
-
-
-def _chrf_quality(candidate: str, reference: str) -> float | None:
-    if not reference:
-        return None
-    from sacrebleu.metrics import CHRF
-    return float(CHRF(char_order=6, word_order=2, beta=2)
-                 .sentence_score(candidate, [reference]).score)
+OUTPUT_FILES = ("items.jsonl", "summary.json", "robustness_config.json")
 
 
 async def _translate(translator, *, text: str, source_lang: str,
@@ -110,7 +53,7 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
 
     for row_index, source_row in enumerate(rows):
         row = copy.deepcopy(source_row)
-        row["metric_inputs"] = _gold_metric_inputs(row.get("metric_inputs"))
+        row["metric_inputs"] = gold_inputs(row.get("metric_inputs"))
         if row.get("status") not in (None, "ok"):
             output.append(row)
             continue
@@ -146,14 +89,14 @@ async def evaluate_robustness_rows(rows: list[dict], *, translator, languages,
                 translation_errors.append({"condition": name, "error": type(exc).__name__,
                                            "detail": str(exc)})
                 return None
-            score = _chrf_quality(translation, reference)
+            score = metrics.meaning.chrfpp_sentence(translation, reference)
             return {"transcript": text, "translation": translation,
                     "quality": {"chrfpp": score} if score is not None else {},
-                    "wer_from_clean": _word_error_rate(clean_text, text),
-                    "cer_from_clean": _character_error_rate(clean_text, text),
+                    "wer_from_clean": asr_robustness.word_error_rate(clean_text, text),
+                    "cer_from_clean": asr_robustness.character_error_rate(clean_text, text),
                     "catastrophic": not text or not translation}
 
-        clean_score = _chrf_quality(clean_translation, reference)
+        clean_score = metrics.meaning.chrfpp_sentence(clean_translation, reference)
         clean_quality = {"chrfpp": clean_score} if clean_score is not None else {}
         block = {
             "clean_source": "reference_transcript" if gold else "asr_hypothesis",
@@ -247,16 +190,6 @@ def score_robustness(rows: list[dict]) -> metrics.RunScore:
     return metrics.RunScore(aggregate=values, unavailable=unavailable)
 
 
-def _prepare_output(path: Path, *, overwrite: bool) -> None:
-    path.mkdir(parents=True, exist_ok=True)
-    targets = [path / name for name in ("items.jsonl", "summary.json", "robustness_config.json")]
-    existing = [target for target in targets if target.exists()]
-    if existing and not overwrite:
-        raise ValueError(f"output already exists; pass --overwrite: {path}")
-    for target in existing:
-        target.unlink()
-
-
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         prog="python -m bench.asr_text_robustness",
@@ -278,19 +211,19 @@ def main(argv=None) -> int:
     args = parse_args(argv)
     from core.pipelines.translation import translators
     from core.utils import env
-    from . import config, report
+    from . import derived, report, translation_config
 
     env.load()
-    cfg = config.load_retranslate(args.config)
+    cfg = translation_config.load(args.config)
     if {cfg.languages.lang, cfg.languages.target} != {"ko", "en"}:
         raise ValueError("ASR text robustness currently supports only ko<->en")
     levels = [float(value.strip()) for value in args.noise_levels.split(",") if value.strip()]
-    source_run, source_items = _source_items(args.source_run)
+    source_run, source_items = derived.source_items(args.source_run)
     output_dir = Path(args.output).resolve()
     if output_dir == source_run:
         raise ValueError("robustness results must be written to a derived run directory")
-    _prepare_output(output_dir, overwrite=args.overwrite)
-    rows = _read_jsonl(source_items)
+    derived.prepare_output(output_dir, OUTPUT_FILES, overwrite=args.overwrite)
+    rows = derived.read_rows(source_items)
     translator_cls = translators.get(cfg.translation.name)
     translator = translator_cls(cfg.translation.options, cfg=cfg)
     started = datetime.now(timezone.utc)
@@ -308,7 +241,7 @@ def main(argv=None) -> int:
             await translator.close()
 
     evaluated = asyncio.run(execute())
-    _write_jsonl(output_dir / "items.jsonl", evaluated)
+    derived.write_rows(output_dir / "items.jsonl", evaluated)
     score = score_robustness(evaluated)
     finished = datetime.now(timezone.utc)
     translation_errors = sum(len(row.get("robustness_translation_errors") or [])
@@ -326,7 +259,7 @@ def main(argv=None) -> int:
         "status": "degraded" if translation_errors else "ok",
         "started_at": started.isoformat(),
         "finished_at": finished.isoformat(),
-        "source_run": {"path": str(source_run), "items_sha256": _sha256(source_items)},
+        "source_run": {"path": str(source_run), "items_sha256": derived.sha256(source_items)},
         "counts": {"items": len(evaluated),
                    "evaluated": sum("asr_robustness" in (row.get("metric_inputs") or {})
                                     for row in evaluated),

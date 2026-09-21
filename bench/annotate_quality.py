@@ -10,15 +10,15 @@ from pathlib import Path
 
 from core.utils import metrics
 from core.utils.metrics import critical_information, fluency
-
-from .quality_annotators import (
-    OpenAIJsonJudge,
-    QUALITY_ANNOTATOR_VERSION,
+from core.utils.metrics.critical_information import (
     ReferenceSpanCache,
     annotate_critical_information,
-    annotate_fluency,
     gold_reference_spans,
 )
+from core.utils.metrics.fluency import annotate_fluency
+from core.utils.metrics.judge import QUALITY_ANNOTATOR_VERSION, OpenAIJsonJudge
+
+from . import derived
 
 
 DEFAULT_LM = {
@@ -29,38 +29,7 @@ DEFAULT_LM = {
 # span set per sentence; see ReferenceSpanCache.
 DEFAULT_REFERENCE_CACHE = Path(__file__).resolve().parent / "runs" / "_cache" / \
     "critical_reference_spans.jsonl"
-
-
-class KoEnLanguages:
-    def expected_target(self, src_lang: str) -> str:
-        return "ko" if str(src_lang).lower() == "en" else "en"
-
-
-def _read_jsonl(path: Path) -> list[dict]:
-    rows = []
-    with open(path, encoding="utf-8") as source:
-        for lineno, line in enumerate(source, start=1):
-            if not line.strip():
-                continue
-            value = json.loads(line)
-            if not isinstance(value, dict):
-                raise ValueError(f"{path}:{lineno} is not a JSON object")
-            rows.append(value)
-    return rows
-
-
-def _write_jsonl(path: Path, rows: list[dict]) -> None:
-    with open(path, "w", encoding="utf-8") as output:
-        for row in rows:
-            output.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
-
-
-def _source_items(path: str | Path) -> tuple[Path, Path]:
-    candidate = Path(path).resolve()
-    items = candidate if candidate.is_file() else candidate / "items.jsonl"
-    if not items.is_file():
-        raise ValueError(f"items.jsonl not found: {items}")
-    return items.parent, items
+OUTPUT_FILES = ("items.jsonl", "summary.json", "quality_config.json", "source_config.yml")
 
 
 def _target_lang(row: dict) -> str:
@@ -183,17 +152,6 @@ def score_quality(rows: list[dict]) -> metrics.RunScore:
     return metrics.RunScore(aggregate=aggregate, unavailable=unavailable)
 
 
-def _prepare_output(path: Path, *, overwrite: bool) -> None:
-    path.mkdir(parents=True, exist_ok=True)
-    targets = [path / name for name in (
-        "items.jsonl", "summary.json", "quality_config.json", "source_config.yml")]
-    existing = [target for target in targets if target.exists()]
-    if existing and not overwrite:
-        raise ValueError(f"output already exists; pass --overwrite: {path}")
-    for target in existing:
-        target.unlink()
-
-
 def _summary(*, rows: list[dict], score: metrics.RunScore, source_run: Path,
              args, started: datetime, finished: datetime, usage: dict | None = None) -> dict:
     errors = sum(len(row.get("quality_annotation_errors") or []) for row in rows)
@@ -250,12 +208,12 @@ def main(argv=None) -> int:
 
     env.load()
     started = datetime.now(timezone.utc)
-    source_run, source_items = _source_items(args.source_run)
+    source_run, source_items = derived.source_items(args.source_run)
     output = Path(args.output).resolve()
     if output == source_run:
         raise ValueError("quality annotations must be written to a derived run directory")
-    _prepare_output(output, overwrite=args.overwrite)
-    rows = _read_jsonl(source_items)
+    derived.prepare_output(output, OUTPUT_FILES, overwrite=args.overwrite)
+    rows = derived.read_rows(source_items)
     judge = None
     if not args.skip_critical or not args.skip_judge:
         judge = OpenAIJsonJudge(model=args.judge_model,
@@ -270,7 +228,7 @@ def main(argv=None) -> int:
         add_pseudo_perplexity(
             rows, models={"en": args.lm_en, "ko": args.lm_ko},
             device=args.device, batch_size=args.lm_batch_size)
-    _write_jsonl(output / "items.jsonl", rows)
+    derived.write_rows(output / "items.jsonl", rows)
     source_config = source_run / "config.yml"
     if source_config.is_file():
         shutil.copyfile(source_config, output / "source_config.yml")

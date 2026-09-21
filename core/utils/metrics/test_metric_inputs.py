@@ -2,18 +2,21 @@ import asyncio
 import json
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
-from bench.quality_annotators import (
-    OpenAIJsonJudge,
+from core.utils.metrics.critical_information import (
     ReferenceSpanCache,
     annotate_candidate_critical_information,
     annotate_critical_information,
-    annotate_fluency,
     annotate_reference_critical_information,
-    extract_critical_values,
     gold_reference_spans,
 )
+from core.utils.metrics.critical_values import extract_critical_values
+from core.utils.metrics.fluency import annotate_fluency
+from core.utils.metrics.judge import OpenAIJsonJudge
+from core.utils.metrics.text import levenshtein, normalize_words
+from core.utils.metrics.text_noise import perturb_transcript
 
 
 class _Judge:
@@ -65,7 +68,7 @@ class _Client:
         self.chat = _Chat(responses)
 
 
-class QualityAnnotatorsTest(unittest.TestCase):
+class AnnotationTest(unittest.TestCase):
 
     def test_number_span_excludes_trailing_comma(self):
         text = "In 1990, it cost 12,000 won."
@@ -309,6 +312,57 @@ class QualityAnnotatorsTest(unittest.TestCase):
                                               target_lang="en"))
         self.assertEqual([(e["start"], e["end"]) for e in result["mqm_errors"]], [(10, 13)])
         self.assertEqual(result["mqm_unlocated_errors"], 1)
+
+
+_EN_TEXT = (
+    "We should meet at the station before the train leaves because the tickets are "
+    "already paid and the manager wants everyone there early. My sister called "
+    "yesterday about the dinner reservation, and she asked whether the restaurant "
+    "still serves the seafood pasta that we ordered last time. I think the weather "
+    "will be fine this weekend, so we could walk to the museum after lunch and then "
+    "visit the market near the river where they sell fresh bread and flowers. "
+) * 4
+_KO_TEXT = (
+    "내일 아침에 회의가 있어서 일찍 출발해야 할 것 같아요. 어제 동생이 저녁 예약 때문에 "
+    "전화했는데 식당에서 해산물 파스타를 아직 파는지 물어봤어요. 이번 주말에는 날씨가 "
+    "괜찮을 것 같으니까 점심 먹고 박물관까지 걸어가서 강 근처 시장도 구경해요. "
+) * 4
+
+
+def _wer(reference, hypothesis):
+    words = normalize_words(reference)
+    return levenshtein(words, normalize_words(hypothesis)) / len(words)
+
+
+class TextNoiseTest(unittest.TestCase):
+
+    def test_noise_is_reproducible_and_nonempty_protocol(self):
+        first = perturb_transcript("오늘 오후 세 시에 만나요.", lang="ko", level=.3,
+                                   seed=7, item_id="a")
+        second = perturb_transcript("오늘 오후 세 시에 만나요.", lang="ko", level=.3,
+                                    seed=7, item_id="a")
+        self.assertEqual(first, second)
+        self.assertNotEqual(first[0], "오늘 오후 세 시에 만나요.")
+        self.assertTrue(first[1])
+
+    def test_substitutions_are_the_most_common_word_error(self):
+        # ASR errors are mostly substitutions. The earlier generator only ever
+        # deleted, repeated or dropped punctuation: its dictionary substitutions
+        # fired on 0 of 90 Korean variants.
+        for lang, text in (("en", _EN_TEXT), ("ko", _KO_TEXT)):
+            with self.subTest(lang=lang):
+                _, operations = perturb_transcript(text, lang=lang, level=.3, seed=1,
+                                                   item_id="x")
+                kinds = Counter(op["type"] for op in operations)
+                self.assertGreater(kinds["substitution"], kinds["word_deletion"])
+                self.assertGreater(kinds["word_deletion"], 0)
+                self.assertGreater(kinds["word_repetition"], 0)
+
+    def test_requested_level_approximates_the_word_error_rate(self):
+        for level in (.1, .3):
+            noisy, _ = perturb_transcript(_EN_TEXT, lang="en", level=level, seed=3,
+                                          item_id="x")
+            self.assertAlmostEqual(_wer(_EN_TEXT, noisy), level, delta=.08)
 
 
 if __name__ == "__main__":

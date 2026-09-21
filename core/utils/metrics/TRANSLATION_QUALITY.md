@@ -124,11 +124,15 @@ sacreBLEU signature, pseudo-perplexity에는 LM checkpoint를 기록한다.
 ```bash
 python -m bench.retranslate \
   bench/runs/<source-run> \
-  bench/retranslate.example.yml
+  bench/configs/examples/retranslate.yml
 ```
 
 이 경로는 commit 경계와 ASR 문자열을 고정한다. 후보 출력에 종속된 기존 `metric_inputs`는
 자동으로 폐기하고 reference 주석만 전달하므로 이전 번역의 판정이 새 번역 점수로 섞이지 않는다.
+무엇이 사람 정답으로 남는지는 `gold_inputs`가 정한다. 데이터셋의 사람 span은 `origin`이 없거나
+`gold`다. 이전 주석 run이 만든 span은 다음 주석 run이 다시 만들므로 넘기지 않고, `origin`이
+기록되기 전의 블록(`annotation_source`는 있는데 span에 `origin`이 없음)은 사람 것과 구별할 수
+없어서 하나도 넘기지 않는다.
 
 ## 구현된 오프라인 생성 단계
 
@@ -138,26 +142,53 @@ python -m bench.retranslate \
 python -m bench.annotate_quality <source-run> <output-run>
 ```
 
-- 중요 정보: 결정론적 값 추출·canonical normalization(`bench/critical_values.py`) + JSON
-  entity/span 판정기. 참조 span은 후보 없이 문장마다 한 번 뽑아 모든 번역기가 공유하고,
-  후보 span은 그 목록에 맞춰 뽑는다. span마다 `origin`이 남는다
-- 유창성: 후보만 보는 Spoken Fluency 1~5 judge + MQM 오류 span + masked-LM pseudo-perplexity
+- 중요 정보: 결정론적 값 추출·canonical normalization(`critical_values.py`) + JSON
+  entity/span 판정기(`judge.py`, 주석은 `critical_information.py`). 참조 span은 후보 없이
+  문장마다 한 번 뽑아 모든 번역기가 공유하고, 후보 span은 그 목록에 맞춰 뽑는다. span마다
+  `origin`이 남는다
+- 유창성: 후보만 보는 Spoken Fluency 1~5 judge + MQM 오류 span(주석은 `fluency.py`) +
+  masked-LM pseudo-perplexity
 - 기본 masked-LM: 영어 `FacebookAI/roberta-base`, 한국어 `klue/roberta-base`
 
-결정론적 추출기는 평범한 단어이기도 한 형태를 숫자로 읽지 않는다. 한국어 "네"(대답)·"이"
-(지시어)·"한국"의 "한", 영어 대명사 "one", "COVID-19"의 19가 그렇다. 관형사형 수사("두",
-"세")는 뒤에 단위 명사가 올 때만, 영어 "one"은 뒤에 단위나 통화가 올 때만 숫자로 읽는다.
+판정기가 준 문자 위치는 그 자리에 정말 그 문자열이 있을 때만 믿는다. 아니면 같은 문자열 중
+판정기가 말한 위치에 가장 가까운 곳으로 옮기고, 후보에 아예 없으면 버린 뒤
+`*_unlocated_*`로 센다. 같은 단어가 두 번 나오는 반복 오류를 잃지 않으려는 것이다.
+
+참조 span 캐시(`ReferenceSpanCache`)는 append만 하는 JSONL이다. 여러 주석 run이 같은 문장을
+동시에 놓쳐 둘 다 판정기를 부르면 답이 다를 수 있다. 그래서 쓴 뒤 파일을 다시 읽어 그
+문장의 **처음 쓰인 값**을 모두가 쓴다. 판정기는 규칙이 못 읽은 참조 값의 다른 표현("a dozen"
+= 12)만 후보 쪽에 채울 수 있고, 규칙이 읽은 값을 덮거나 참조에 없는 값을 만들 수는 없다.
+
+결정론적 추출기는 평범한 단어이기도 한 형태를 숫자로 읽지 않는다. 참조와 후보가 같은 규칙을
+지나므로 규칙이 못 읽는 표현은 양쪽이 똑같이 못 읽지만, 숫자가 아닌 말을 숫자로 읽으면 맞는
+번역이 치명적 오류가 되기 때문이다.
+
+- 한국어 "네"(대답)·"이"(지시어, "이 분"·"이 번")·"한국"의 "한", 영어 대명사 "one",
+  "COVID-19"의 19는 숫자가 아니다.
+- 관형사형 수사(한·두·세·네·스무)와 동사·형용사이기도 한 열·쉰은 뒤에 단위 명사가 올 때만,
+  영어 "one"은 뒤에 단위나 통화가 올 때만 숫자다. 한 글자 한자어 수사는 단위 명사와 한 칸
+  띄어 있을 때만 숫자다("오 분"). 붙여 쓰면 "사원" 같은 단어다.
+- 라틴 문자 단위·통화는 단어가 끝나야 한다("5 m"는 되고 "5 more"는 안 된다). 한글 단위와
+  기호는 조사가 붙어도 되고("70킬로미터를", "3만 원이"), 숫자는 단위에 붙어 있어도 된다
+  ("35mm").
+- 한국어 큰 단위는 숫자와 띄어 쓸 수 있고("6 만 원"), 억·만 뒤에는 띄어서 다음 묶음이 올 수
+  있다("1억 2천만"). 띄어 쓴 단위는 거기서 단어가 끝나거나 다른 단위·통화·단위 명사로
+  이어져야 한다. 그래서 "3 백화점"은 3이다.
+- 시각의 "시"·"분" 뒤에는 조사나 서술격 어미만 온다. "시간"·"시작"·"시장"은 시각이 아니다.
+  "p.m."은 끝의 마침표까지 시각이고, 점 없는 "PM."의 마침표는 문장 끝으로 남는다.
+- "a second"·"per second"의 second는 서수가 아니다. 한국어 "두 번"은 서수가 아니라 2이고,
+  "번째"·"째"·"제N"만 서수다.
 
 전사문 교란 기반 강건성 평가는 다음 명령으로 별도 파생 run을 만든다.
 
 ```bash
 python -m bench.asr_text_robustness \
-  <source-run> bench/quality_ko_en.example.yml <output-run>
+  <source-run> bench/configs/examples/quality_ko_en.yml <output-run>
 ```
 
 이 프로토콜은 오디오와 ASR을 재실행하지 않는다. 정답 전사를 clean으로, 저장된 ASR 출력을
 실제 noisy 조건으로 쓰고, 정답 전사에 seed가 고정된 ASR 유사 교란(치환 중심)을 강도별로
-넣은 변형을 더한다. 셋 다 같은 번역기로 처리해 chrF++ 품질, quality drop, 실측 WER 기준
+넣은 변형(`text_noise.py`)을 더한다. 셋 다 같은 번역기로 처리해 chrF++ 품질, quality drop, 실측 WER 기준
 degradation slope/AUC, clean/noisy 번역 의미 유사도를 저장한다. 기본 의미 유사도
 checkpoint는 `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`다.
 
