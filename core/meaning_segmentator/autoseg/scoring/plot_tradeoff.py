@@ -39,7 +39,7 @@ from matplotlib.ticker import FixedLocator, MaxNLocator
 SURFACE = "#ffffff"   # 순백 배경 — 논문 지면/슬라이드에서 회색 판이 보이지 않게
 INK, INK2, GRID = "#0b0b0b", "#52514e", "#e6e5e1"
 BLUE, ORANGE, AQUA, VIOLET = "#2a78d6", "#eb6834", "#1baf7a", "#4a3aa7"
-MAGENTA, BROWN = "#c9268f", "#8a4b1a"
+MAGENTA, BROWN, GREEN = "#c9268f", "#8a4b1a", "#008300"
 
 SERIES = [
     ("auto",         BLUE,    "-",  "o", "Multi-agent loop (ours)"),
@@ -65,12 +65,26 @@ NATIVE = [
      [("alignatt", 2), ("alignatt_f4", 4), ("alignatt_f6", 6), ("alignatt_f8", 8)], "f="),
     # 판정용 내부 NMT 를 평가 번역기와 같은 madlad 로 맞춘 라벨들 (`*_mad_*`).
     # 옛 NLLB 산출과는 한 곡선에 못 섞는다 — 판정 모델이 다르면 다른 정책이다.
-    ("alignatt_mad", ORANGE, "--", "^", "AlignAtt native f-sweep (Papi et al., 2023)",
+    ("alignatt_mad", ORANGE, "--", "^", "AlignAtt, f knob (Papi et al., 2023)",
      [("alignatt_mad_f2", 2), ("alignatt_mad_f4", 4),
       ("alignatt_mad_f6", 6), ("alignatt_mad_f8", 8)], "f="),
     ("mu_prefix_mad", MAGENTA, "--", "v", "Prefix-match MU native n-sweep (Zhang et al., 2020)",
      [("mu_prefix_mad_n2", 2), ("mu_prefix_mad_n10", 10),
       ("mu_prefix_mad_n50", 50)], "n="),
+    # Qwen3-ASR 파인튜닝 디코더에 텍스트만 흘려 P(<SEG>) ≥ θ 에서 자른다 (`gates/qwen_seg_baselines.py`).
+    # 문장 끝을 안 보는 스트리밍 정책이고 노브는 임계값 θ 다.
+    ("qwenseg", GREEN, "-", "o", "Qwen3-ASR <SEG> stream (ours, no training)",
+     [(f"qwenseg_th{t}", t) for t in (0.001, 0.003, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5)], "θ="),
+    # judge13 채택 프롬프트(auto_judge13_iter3)의 auto_T — full_judge13_cmp 에서 `judge13_T*` 로 옮겨 온다
+    # (`tools/autoseg_en2x/qwenseg/covost2_plot_all.sh`). 문장 전체를 보고 점수를 매긴다.
+    ("judge13", BLUE, "-", "o", "judge13 prompt (LLM score), T",
+     [(f"judge13_T{t}", t) for t in (2, 3, 4, 6)], "T="),
+    # 같은 확률을 오프라인 점수로 — auto_T 와 같은 절단기(T, min_gap 1). 문장 끝을 봐야 한다
+    # (`gates/qwen_seg_offline_baselines.py`). p0 는 앞만 본 점수, lrall 은 뒤 어절까지 본 점수.
+    ("qwenp0", GREEN, "--", "s", "Qwen3-ASR P(<SEG>) offline, T",
+     [(f"qwenp0_T{t}", t) for t in (2, 3, 4, 6)], "T="),
+    ("qwenlrall", GREEN, ":", "D", "Qwen3-ASR <SEG> LR (full sentence), T",
+     [(f"qwenlrall_T{t}", t) for t in (2, 3, 4, 6)], "T="),
 ]
 T_GRID = [4, 6, 8, 12]   # 기본값. 실제로는 아래에서 blob 의 조건 이름으로 덮어쓴다
 GAP_MIN = 0.20   # 이보다 넓은 빈 구간만 축약 (전체 x 폭 대비).
@@ -120,7 +134,6 @@ _ap.add_argument("--metric", default="bleu", choices=["bleu", "comet"],
 _ap.add_argument("--out", default=None, help="출력 파일 stem (기본: tradeoff[_comet])")
 _ap.add_argument("--run-id", default="covost2/full")
 _ap.add_argument("--targets", nargs="+", default=["de", "ja"])
-_ap.add_argument("--title", default="unseen FLEURS 500")
 _ap.add_argument("--t-grid", nargs="+", type=int, default=None,
                  help="그릴 T 값. 기본은 데이터에 있는 격자의 **앞 5개** — 비교군은 T6 "
                       "부터 포화해 15ms 안에 겹치므로 뒤쪽을 다 그리면 ours 만 길어져 "
@@ -138,9 +151,6 @@ _ap.add_argument("--variant", action="append", default=[], metavar="PREFIX:LABEL
                       "하며, 두 런의 산출을 합치는 것은 `merge_variant.py` 가 한다. "
                       "제안 곡선과 같은 색에 파선·빈 마커로 그린다 — 같은 정책의 다른 "
                       "프롬프트라는 뜻이고, 비교군 5색은 그대로 둔다")
-_ap.add_argument("--no-header", action="store_true",
-                 help="상단 제목·설명 문단을 안 그린다. 논문/슬라이드에 캡션이 따로 붙는 "
-                      "경우 그림 안의 제목은 중복이고 패널 높이만 먹는다")
 _ap.add_argument("--legend-ncol", type=int, default=None,
                  help="범례 열 수. 기본은 패널 하나면 2, 둘이면 3, 셋 이상이면 4. 항목이 7개라 "
                       "3 을 주면 세 줄(3+3+1)로 접힌다 — 패널 하나짜리는 글자를 조금 줄여야 "
@@ -148,9 +158,34 @@ _ap.add_argument("--legend-ncol", type=int, default=None,
 _ap.add_argument("--drop", nargs="+", default=[],
                  help="그리지 않을 정책 (조건 접두사: punct / mu_prefix / syntax …). "
                       "빼면 x 범위·축약 구간·범례도 그 정책 없이 다시 잡힌다")
-_ap.add_argument("--short-ylabel", action="store_true",
-                 help="y축 라벨을 지표 이름만(BLEU / COMET) 적는다. 언어쌍은 패널 제목에, "
-                      "채점 모델은 캡션에 있으므로 논문 그림에서는 중복이다")
+_ap.add_argument("--solid", action="store_true",
+                 help="모든 곡선을 실선으로 그린다. 계열 구분은 색과 마커가 맡는다")
+_ap.add_argument("--xlim", nargs="+", default=None, metavar="LO:HI",
+                 help="패널마다 그릴 지연 구간(ms). `--targets` 와 같은 순서로 하나씩 준다 "
+                      "(`1000:1400 850:1350 1250:1550`). 등지연 비교가 성립하는 구간만 "
+                      "남기고 싶을 때 쓴다 — 곡선의 나머지 구간은 어느 정책도 상대가 "
+                      "없어서 맞댈 수 없다. 주면 y 범위도 그 구간 안의 점으로만 잡고, "
+                      "빈 구간 축약(`⋯`)은 하지 않는다")
+_ap.add_argument("--xlim-cover", default=None, metavar="PREFIX",
+                 help="이 정책의 **측정점 전부**가 들어가도록 지연 구간을 잡는다 "
+                      "(`--xlim` 대신). 격자가 성긴 비교군에 맞춰 그릴 때 쓴다 — 그 정책의 "
+                      "점을 하나도 빼지 않고, 다른 곡선은 `--xlim-snap` 으로 그 구간을 "
+                      "덮는 점까지만 그린다. 패널마다 따로 계산한다")
+_ap.add_argument("--xlim-snap", action="store_true",
+                 help="`--xlim` 구간을 **바깥쪽 실측점까지** 넓힌다. 구간 끝에서 곡선을 "
+                      "그냥 자르면 양 끝이 허공에서 시작·끝나 마커가 없는 선분이 되고, "
+                      "보는 사람이 그 자리를 측정점으로 읽는다. 구간을 바로 넘어서는 "
+                      "실측점을 한 개씩 넣어 곡선에 첫 점과 끝 점이 있게 한다")
+_ap.add_argument("--font-scale", type=float, default=1.0,
+                 help="글씨 전체 배율 — 눈금·축 제목·패널 제목·주석·범례에 같이 걸린다. "
+                      "여백(왼쪽·아래)도 같은 비율로 따라 넓어져 라벨이 잘리지 않는다. "
+                      "키울 때는 옆 패널 눈금 숫자와 부딪히지 않는지 보고 `--wspace` 를 "
+                      "함께 올린다")
+_ap.add_argument("--wspace", type=float, default=0.22,
+                 help="패널 사이 가로 간격 (패널 폭 대비 비율). 키우면 옆 패널의 y축 "
+                      "눈금 숫자와 이쪽 패널 오른쪽 끝이 덜 붙는다")
+_ap.add_argument("--panel-width", type=float, default=5.5,
+                 help="패널 하나의 폭(인치). 키우면 지연 축이 가로로 펴진다")
 _ap.add_argument("--no-cite", action="store_true",
                  help="범례에서 인용 표기(`Papi et al., 2023`)를 뺀다. 본문 캡션에 인용이 "
                       "붙는 논문 그림용")
@@ -164,6 +199,13 @@ _ap.add_argument("--ceiling-in-ylim", action="store_true",
                       "포함하면 곡선이 아래로 눌려 점 간격이 안 보인다")
 ARGS = _ap.parse_args()
 M = ARGS.metric
+if ARGS.xlim and ARGS.xlim_cover:
+    raise SystemExit("--xlim 과 --xlim-cover 는 함께 쓸 수 없다")
+XLIM = None
+if ARGS.xlim:
+    if len(ARGS.xlim) != len(ARGS.targets):
+        raise SystemExit(f"--xlim 은 타깃 수({len(ARGS.targets)})만큼 줘야 한다")
+    XLIM = [tuple(float(v) for v in spec.split(":")) for spec in ARGS.xlim]
 if ARGS.no_cite:
     def _strip(lbl):
         lbl = re.sub(r";?\s*[A-Z][A-Za-z]+ et al\., \d{4}", "", lbl)
@@ -180,6 +222,9 @@ for _i, _spec in enumerate(ARGS.variant):
 SERIES = [x for x in SERIES if x[0] not in ARGS.drop]
 SINGLE = [x for x in SINGLE if x[0] not in ARGS.drop]
 NATIVE = [x for x in NATIVE if x[0] not in ARGS.drop]
+if ARGS.solid:
+    SERIES = [(x[0], x[1], "-", *x[3:]) for x in SERIES]
+    NATIVE = [(x[0], x[1], "-", *x[3:]) for x in NATIVE]
 STEM = ARGS.out or ("tradeoff" if M == "bleu" else f"tradeoff_{M}")
 
 d = Path("core/meaning_segmentator/experiment/artifacts") / ARGS.run_id / "bleu"
@@ -201,30 +246,33 @@ plt.rcParams.update({
     "mathtext.fontset": "stix" if ARGS.serif else "dejavusans",
     # 논문 PDF 는 Type 3 폰트를 거부하는 곳이 많다 (IEEE/ACM 검사기). 세리프 모드는 TrueType 으로 심는다.
     "pdf.fonttype": 42 if ARGS.serif else 3,
-    "font.size": 11,
+    "font.size": 11 * ARGS.font_scale,
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
     "text.color": INK, "axes.labelcolor": INK, "axes.edgecolor": GRID,
     "xtick.color": INK, "ytick.color": INK, "axes.linewidth": 1.0,
     "axes.labelweight": _W, "axes.titleweight": _W,
-    "xtick.labelsize": 11 if len(TARGETS) > 1 else 13.5,
-    "ytick.labelsize": 11 if len(TARGETS) > 1 else 13.5,
+    "xtick.labelsize": (11 if len(TARGETS) > 1 else 13.5) * ARGS.font_scale,
+    "ytick.labelsize": (11 if len(TARGETS) > 1 else 13.5) * ARGS.font_scale,
     "font.weight": _W,
 })
 # 패널 하나짜리는 지면에서 한 칸을 통째로 차지하므로 글자를 한 단계 키운다.
-_FS = 1.0 if len(TARGETS) > 1 else 1.25
+_FS = (1.0 if len(TARGETS) > 1 else 1.25) * ARGS.font_scale
 fig, axes = plt.subplots(
     1, len(TARGETS), squeeze=False,
-    figsize=(5.5 * len(TARGETS) if len(TARGETS) > 1 else 9.2,
+    figsize=(ARGS.panel_width * len(TARGETS) if len(TARGETS) > 1 else 9.2,
              5.9 if len(TARGETS) > 1 else 6.6))
 axes = axes[0]
 _SINGLE = len(TARGETS) == 1
 _L = (0.095 if M == "comet" else 0.075) if not _SINGLE else \
      (0.11 if M == "comet" else 0.095)
-_TOP = 0.90 if ARGS.no_header else (0.815 if M == "comet" else 0.845)
+# 글씨를 키우면 y축 제목·눈금이 그만큼 왼쪽으로 번진다. 여백이 그대로면 잘린다.
+_L *= 1 + 0.5 * (ARGS.font_scale - 1)
+_TOP = 0.90
 # 패널 하나짜리는 폭이 좁아 범례를 2열로 접어야 한다 — 3열이면 긴 라벨(TransLLaMa 인용)이
 # 그림 밖으로 나간다. 그만큼 아래 여백을 더 준다.
+_BOTTOM = (0.255 if _SINGLE else 0.235) * (1 + 0.6 * (ARGS.font_scale - 1))
 fig.subplots_adjust(left=_L, right=0.985, top=_TOP,
-                    bottom=0.255 if _SINGLE else 0.235, wspace=0.22)
+                    bottom=_BOTTOM, wspace=ARGS.wspace)
 
 
 # **격자를 데이터에서 읽는다.** 종전에는 위 상수가 그대로 쓰여 T=2,3,5,7,10 점이
@@ -250,6 +298,16 @@ def native_curve(C, entries):
     pts = [(C[n]["laal_ms"], C[n][M], k) for n, k in entries
            if n in C and C[n].get("laal_ms") is not None and C[n].get(M) is not None]
     return sorted(pts)
+
+
+def snap(curve_xs, lo, hi):
+    """구간 [lo, hi] 를 **곡선마다** 바로 바깥의 실측점까지 넓힌다. 그래야 모든 곡선이
+    구간 안에 첫 점과 끝 점을 갖는다 — 넓히지 않으면 곡선이 허공에서 시작·끝나고,
+    마커가 없는 그 자리를 측정점으로 읽게 된다."""
+    for xs in curve_xs:
+        lo = min(lo, max((x for x in xs if x <= lo), default=lo))
+        hi = max(hi, min((x for x in xs if x >= hi), default=hi))
+    return lo, hi
 
 
 def label_points(ax, pts, color, prefix, dy):
@@ -280,7 +338,7 @@ def curve(C, prefix):
     return sorted(pts)
 
 
-for ax, tgt in zip(axes, TARGETS):
+for _pi, (ax, tgt) in enumerate(zip(axes, TARGETS)):
     C = blobs[tgt]["conditions"]
     unseg = C["unsegmented"]
     fmt = (lambda v: f"{v:.1f}") if M == "bleu" else (lambda v: f"{v:.3f}")
@@ -291,8 +349,32 @@ for ax, tgt in zip(axes, TARGETS):
     for s in ("right", "top"):
         ax.spines[s].set_visible(False)
 
+    _native = [] if ARGS.no_native else NATIVE
+    # **창을 그리기 전에 정하고 데이터를 잘라서 그린다.** 축 범위로만 자르면 창 밖의
+    # 점으로 가는 선분이 반쯤 남아, 마커 없는 선이 축 끝에서 흘러나간다.
+    # `--xlim-snap` 은 곡선마다 창 바로 바깥의 점을 한 개씩 끌어와 첫 점·끝 점을 만든다.
+    _WIN = None
+    if XLIM or ARGS.xlim_cover:
+        _all_xs = [[x for x, _, _ in pts] for pts in
+                   ([curve(C, p) for p, *_ in SERIES]
+                    + [native_curve(C, e) for *_h, e, _k in _native]
+                    + [curve(C, p) for p, *_ in VARIANTS]) if pts]
+        if ARGS.xlim_cover:
+            _cov = curve(C, ARGS.xlim_cover) or next(
+                (native_curve(C, e) for pre, *_h, e, _k in _native
+                 if pre == ARGS.xlim_cover), [])
+            if not _cov:
+                raise SystemExit(f"--xlim-cover {ARGS.xlim_cover}: [{tgt}] 에 점이 없다")
+            _base = (_cov[0][0], _cov[-1][0])
+        else:
+            _base = XLIM[_pi]
+        _WIN = snap(_all_xs, *_base) if ARGS.xlim_snap else _base
+
+    def clip(pts):
+        return pts if _WIN is None else [q for q in pts if _WIN[0] <= q[0] <= _WIN[1]]
+
     for si, (prefix, color, ls, mk, label) in enumerate(SERIES):
-        pts = curve(C, prefix)
+        pts = clip(curve(C, prefix))
         if not pts:
             continue
         ax.plot([p[0] for p in pts], [p[1] for p in pts], ls, marker=mk,
@@ -307,7 +389,7 @@ for ax, tgt in zip(axes, TARGETS):
             label_points(ax, [pts[0], pts[-1]], color, "T", _dy)
 
     for vi, (prefix, color, ls, mk, label) in enumerate(VARIANTS):
-        pts = curve(C, prefix)
+        pts = clip(curve(C, prefix))
         if not pts:
             continue
         ax.plot([p[0] for p in pts], [p[1] for p in pts], ls=ls, marker=mk,
@@ -319,9 +401,8 @@ for ax, tgt in zip(axes, TARGETS):
         if ARGS.point_labels == "all":
             label_points(ax, pts, color, "T", -10 - vi * 11)
 
-    _native = [] if ARGS.no_native else NATIVE
     for prefix, color, ls, mk, label, entries, knob in _native:
-        pts = native_curve(C, entries)
+        pts = clip(native_curve(C, entries))
         if len(pts) < 2:
             continue
         ax.plot([p[0] for p in pts], [p[1] for p in pts], ls, marker=mk,
@@ -339,15 +420,19 @@ for ax, tgt in zip(axes, TARGETS):
 
     single = [C[p] for p, *_ in SINGLE
               if p in C and C[p].get("laal_ms") is not None]
-    _nat_pts = [q for *_h, e, _k in _native for q in native_curve(C, e)]
-    _var_pts = [q for p, *_ in VARIANTS for q in curve(C, p)]
-    ys = ([y for p, *_ in SERIES for _, y, _ in curve(C, p)]
-          + [c[M] for c in single] + [y for _, y, _ in _nat_pts]
-          + [y for _, y, _ in _var_pts]
-          + ([unseg[M]] if ARGS.ceiling_in_ylim else []))
-    xs = ([x for p, *_ in SERIES for x, _, _ in curve(C, p)]
-          + [c["laal_ms"] for c in single] + [x for x, _, _ in _nat_pts]
-          + [x for x, _, _ in _var_pts])
+    _nat_pts = [q for *_h, e, _k in _native for q in clip(native_curve(C, e))]
+    _var_pts = [q for p, *_ in VARIANTS for q in clip(curve(C, p))]
+    # **xs 와 ys 는 같은 점을 같은 순서로 담는다** — `--xlim` 이 둘을 zip 해서 구간
+    # 안의 점만 고르므로, 한쪽에만 원소를 더하면 짝이 어긋난다. 상한은 점이 아니라
+    # 가로선이라 ys 에만 들어가고, 그래서 맨 뒤에 붙인다.
+    _pts = ([(x, y) for p, *_ in SERIES for x, y, _ in clip(curve(C, p))]
+            + [(c["laal_ms"], c[M]) for c in single]
+            + [(x, y) for x, y, _ in _nat_pts]
+            + [(x, y) for x, y, _ in _var_pts])
+    xs = [x for x, _ in _pts]
+    ys = [y for _, y in _pts]
+    _ceil_in_ylim = [unseg[M]] if ARGS.ceiling_in_ylim else []
+    ys = ys + _ceil_in_ylim
     ylo, yhi = min(ys) - pad, max(ys) + pad * 1.6
     # offline 상한 — gtx 통번역을 데이터셋 정답 번역으로 채점한 값.
     # 상한의 지연(x)은 축 밖이라 선으로만 긋고 값·지연은 주석으로 적는다.
@@ -377,9 +462,14 @@ for ax, tgt in zip(axes, TARGETS):
     # 표시가 들어갈 자리였고, 없으면 파선 상한만 빈 데로 한 마디 더 뻗는다.
     xlo, xhi = ((min(xs) - span * 0.04, max(xs) + span * 0.02) if _SINGLE
                 else (min(xs) - span * 0.06, max(xs) + span * 0.11))
+    if _WIN:
+        span = _WIN[1] - _WIN[0]
+        # 끝점 마커가 축선에 걸리지 않게 양쪽에 여유를 준다.
+        xlo, xhi = _WIN[0] - span * 0.03, _WIN[1] + span * 0.03
 
     # 점이 없는 넓은 구간을 축약한다 — 관심 구간(경쟁 정책들)이 짓눌리지 않도록.
-    gaps = find_gaps(xs, xlo, xhi)
+    # 구간을 직접 지정한 경우는 이미 관심 구간만 남아 축약할 것이 없다.
+    gaps = [] if _WIN else find_gaps(xs, xlo, xhi)
     if gaps:
         fwd, inv = gap_scale(gaps)
         ax.set_xscale("function", functions=(fwd, inv))
@@ -403,14 +493,7 @@ for ax, tgt in zip(axes, TARGETS):
                         transform=ax.transAxes, color=INK2, lw=1.1,
                         clip_on=False, zorder=10)
     ax.set_xlabel("LAAL (ms of source audio)", fontsize=12 * _FS, labelpad=8)
-    if ARGS.short_ylabel:
-        ax.set_ylabel(M.upper(), fontsize=12 * _FS, labelpad=8)
-    else:
-        ylab = (f"BLEU  (EN→{tgt.upper()}, {blobs[tgt]['tokenize']})" if M == "bleu"
-                else f"COMET  (EN→{tgt.upper()}, wmt22-comet-da)")
-        ax.set_ylabel(ylab, fontsize=12)
-        ax.yaxis.set_label_coords((-0.135 if M == "comet" else -0.085)
-                                  * (1.0 if len(TARGETS) > 1 else 0.68), 0.5)
+    ax.set_ylabel(M.upper(), fontsize=12 * _FS, labelpad=8)
     ax.set_title(f"EN→{tgt.upper()}", loc="left", fontsize=14 * _FS,
                  fontweight=_W, pad=8)
     ax.tick_params(length=4, width=1.0)
@@ -431,42 +514,18 @@ _NCOL = ARGS.legend_ncol or (2 if _SINGLE else (3 if len(TARGETS) < 3 else 4))
 if not ARGS.no_legend:
     _leg = fig.legend(h, l, loc="lower center", ncol=_NCOL,
                       frameon=False,
-                      fontsize=(10.5 if _NCOL >= 3 else 12.5) if _SINGLE else 11.5,
+                      fontsize=(((10.5 if _NCOL >= 3 else 12.5) if _SINGLE else 11.5)
+                                * ARGS.font_scale),
                       handlelength=2.6, handletextpad=0.7,
                       columnspacing=(1.1 if _NCOL >= 3 else 1.6) if _SINGLE else 2.0,
                       labelspacing=0.7, bbox_to_anchor=(0.5, 0.005))
     for _t in _leg.get_texts():
         _t.set_fontweight(_W)
         _t.set_color(INK)
-# **번역기 이름을 결과에서 읽는다.** 종전에는 "gtx" 가 제목에 박혀 있어서, madlad 로 잰
-# 그림이 스스로를 gtx 라고 말했다 (`bleu_eval` 리포트에 있던 것과 같은 종류의 사고다).
-_trs = sorted({b.get("translator", "?").split(":")[1] if b.get("translator", "").startswith("local:")
-               else b.get("translator", "?").split(":")[0] for b in blobs.values()})
-_MT = "/".join(t.split("/")[-1] for t in _trs)
-if not ARGS.no_header:
-    fig.text(0.008, 0.985, f"{'BLEU' if M == 'bleu' else 'COMET'}–latency trade-off on "
-             f"{ARGS.title}"
-             + ((f" (same translator, {_MT}; T = {_TSTR} per curve)")
-                if len(TARGETS) > 1 else f"  ·  {_MT}, T = {_TSTR}"),
-             ha="left", va="top", fontweight=_W,
-             fontsize=12.5 if len(TARGETS) > 1 else 12.0)
-    fig.text(0.008, 0.945,
-             "Upper-left is better. LAAL is forced-aligned (Qwen3-ForcedAligner; wav2vec2 CTC "
-             "agrees within 22 ms). Empty x ranges are compressed (break marks on the axis)."
-             "\nPunctuation has no latency knob (it segments below the T budget), so it is one "
-             "point; it and prefix-match MU sit in a slower band — shown, not matched.\n"
-             + ("BLEU is NOT comparable across panels (de 13a, ja ja-mecab)."
-                if M == "bleu" else
-                "COMET uses one multilingual encoder, so panels are far more comparable "
-                "than under BLEU — but it stays reference-based.")
-             if len(TARGETS) > 1 else
-             ("Punctuation has no latency knob (it segments below the T budget), so it is one "
-              "point, not a curve.\nIt and prefix-match MU sit in a slower latency band — shown, "
-              "but not matched head-to-head.\nEmpty x ranges are compressed (break marks on the "
-              "axis). "
-              + ("BLEU tokenisation: " + blobs[TARGETS[0]]["tokenize"] if M == "bleu"
-                 else "COMET: wmt22-comet-da (reference-based).")),
-             ha="left", va="top", fontsize=7.5, color=INK2, linespacing=1.6)
+    # 범례가 3줄을 넘으면 아래 여백이 모자라 축 제목을 덮는다 — 넘는 줄만큼만 늘린다 (3줄 이하는 종전 그대로)
+    _rows = -(-len(l) // _NCOL)
+    if _rows > 3 and not _SINGLE:
+        fig.subplots_adjust(bottom=_BOTTOM + 0.055 * (_rows - 3) * ARGS.font_scale)
 # 패널 하나짜리는 범례가 그림 폭을 정하므로 여백을 그려진 것에 맞춰 잘라낸다.
 # 다중 패널은 종전 여백을 유지한다 (기존 산출물과 크기가 달라지지 않게).
 _SAVE = dict(bbox_inches="tight", pad_inches=0.04) if _SINGLE else {}
