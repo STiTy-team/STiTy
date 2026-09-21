@@ -43,8 +43,11 @@ TGT_LANG = {"zh": "Chinese", "de": "German", "ja": "Japanese"}
 p = argparse.ArgumentParser()
 p.add_argument("--run", action="append", required=True)
 p.add_argument("--targets", nargs="+", default=["zh", "de", "ja"])
+# **기본값도 float 으로 적는다.** argparse 는 기본값에 `type` 을 적용하지 않아서
+# `2` 로 두면 int 로 남고, 조건 이름이 `syntax_T2` 가 되어 산출물의 `syntax_T2.0` 과
+# 안 맞는다 — 정수 T 여덟 개가 통째로 빠졌다(42/74).
 p.add_argument("--t-grid", type=float, nargs="+",
-               default=[2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8, 10])
+               default=[2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 10.0])
 p.add_argument("--score-grid", type=int, nargs="+",
                default=[0, 2, 5, 10, 20, 40, 60, 80, 90, 95, 99, 100])
 p.add_argument("--nli-batch", type=int, default=64)
