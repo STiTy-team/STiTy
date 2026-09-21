@@ -1,0 +1,1799 @@
+{
+  "run": "full_j44v0",
+  "targets": {
+    "zh": {
+      "n": 15530,
+      "tokenize": "zh",
+      "translator": "local:google/madlad400-3b-mt:zh:ctx=False",
+      "comet_model": "Unbabel/wmt22-comet-da",
+      "conditions": {
+        "unsegmented": {
+          "bleu": 40.638,
+          "chrf2": 33.889,
+          "comet": 0.8374,
+          "k": 1,
+          "piece_units": 9.1,
+          "laal_words": 9.1,
+          "laal_ms": 2651.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S5": {
+          "bleu": 8.144,
+          "chrf2": 11.873,
+          "comet": 0.5151,
+          "k": 7.95,
+          "piece_units": 1.17,
+          "laal_words": 2.72,
+          "laal_ms": 442.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S10": {
+          "bleu": 10.13,
+          "chrf2": 13.245,
+          "comet": 0.5438,
+          "k": 7.13,
+          "piece_units": 1.33,
+          "laal_words": 2.82,
+          "laal_ms": 526.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S20": {
+          "bleu": 13.14,
+          "chrf2": 15.114,
+          "comet": 0.5818,
+          "k": 6.14,
+          "piece_units": 1.62,
+          "laal_words": 2.97,
+          "laal_ms": 653.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S40": {
+          "bleu": 19.088,
+          "chrf2": 18.555,
+          "comet": 0.6444,
+          "k": 4.67,
+          "piece_units": 2.17,
+          "laal_words": 3.26,
+          "laal_ms": 865.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S60": {
+          "bleu": 22.77,
+          "chrf2": 20.569,
+          "comet": 0.6774,
+          "k": 3.91,
+          "piece_units": 2.5,
+          "laal_words": 3.4,
+          "laal_ms": 977.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S80": {
+          "bleu": 28.115,
+          "chrf2": 24.009,
+          "comet": 0.7254,
+          "k": 2.93,
+          "piece_units": 3.27,
+          "laal_words": 3.78,
+          "laal_ms": 1201.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S90": {
+          "bleu": 32.814,
+          "chrf2": 27.419,
+          "comet": 0.7687,
+          "k": 2.16,
+          "piece_units": 4.43,
+          "laal_words": 4.41,
+          "laal_ms": 1479.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S95": {
+          "bleu": 33.313,
+          "chrf2": 27.83,
+          "comet": 0.7732,
+          "k": 2.06,
+          "piece_units": 4.58,
+          "laal_words": 4.49,
+          "laal_ms": 1517.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "auto_S99": {
+          "bleu": 35.57,
+          "chrf2": 29.667,
+          "comet": 0.7918,
+          "k": 1.72,
+          "piece_units": 5.61,
+          "laal_words": 5.33,
+          "laal_ms": 1775.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mechanical_8": {
+          "bleu": 2.785,
+          "chrf2": 6.459,
+          "comet": 0.4042,
+          "k": 6.85,
+          "piece_units": 1.91,
+          "laal_words": 2.57,
+          "laal_ms": 1247.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt": {
+          "bleu": 15.504,
+          "chrf2": 17.038,
+          "comet": 0.6133,
+          "k": 4.95,
+          "piece_units": 2.03,
+          "laal_words": 3.33,
+          "laal_ms": 827.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T2.0": {
+          "bleu": 17.704,
+          "chrf2": 18.101,
+          "comet": 0.6321,
+          "k": 4.41,
+          "piece_units": 2.18,
+          "laal_words": 3.35,
+          "laal_ms": 865.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T2.5": {
+          "bleu": 21.606,
+          "chrf2": 19.999,
+          "comet": 0.6704,
+          "k": 3.58,
+          "piece_units": 2.61,
+          "laal_words": 3.44,
+          "laal_ms": 996.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T3.0": {
+          "bleu": 24.204,
+          "chrf2": 21.531,
+          "comet": 0.6963,
+          "k": 3.01,
+          "piece_units": 3.1,
+          "laal_words": 3.62,
+          "laal_ms": 1132.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T3.5": {
+          "bleu": 26.506,
+          "chrf2": 23.046,
+          "comet": 0.717,
+          "k": 2.58,
+          "piece_units": 3.64,
+          "laal_words": 3.89,
+          "laal_ms": 1277.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T4.0": {
+          "bleu": 27.408,
+          "chrf2": 23.614,
+          "comet": 0.7239,
+          "k": 2.39,
+          "piece_units": 3.88,
+          "laal_words": 3.97,
+          "laal_ms": 1329.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T4.5": {
+          "bleu": 29.704,
+          "chrf2": 25.257,
+          "comet": 0.7461,
+          "k": 2.03,
+          "piece_units": 4.56,
+          "laal_words": 4.37,
+          "laal_ms": 1499.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T5.0": {
+          "bleu": 31.287,
+          "chrf2": 26.414,
+          "comet": 0.7616,
+          "k": 1.84,
+          "piece_units": 5.08,
+          "laal_words": 4.8,
+          "laal_ms": 1633.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T6.0": {
+          "bleu": 33.386,
+          "chrf2": 28.012,
+          "comet": 0.7805,
+          "k": 1.59,
+          "piece_units": 5.82,
+          "laal_words": 5.36,
+          "laal_ms": 1818.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T7.0": {
+          "bleu": 35.827,
+          "chrf2": 29.896,
+          "comet": 0.8021,
+          "k": 1.36,
+          "piece_units": 6.82,
+          "laal_words": 6.43,
+          "laal_ms": 2081.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T8.0": {
+          "bleu": 36.823,
+          "chrf2": 30.663,
+          "comet": 0.8102,
+          "k": 1.27,
+          "piece_units": 7.31,
+          "laal_words": 6.99,
+          "laal_ms": 2207.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T10.0": {
+          "bleu": 39.952,
+          "chrf2": 33.38,
+          "comet": 0.8332,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.64,
+          "laal_ms": 2562.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix": {
+          "bleu": 21.979,
+          "chrf2": 22.135,
+          "comet": 0.6721,
+          "k": 3.83,
+          "piece_units": 3.84,
+          "laal_words": 4.64,
+          "laal_ms": 1367.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T2.0": {
+          "bleu": 25.103,
+          "chrf2": 23.654,
+          "comet": 0.7027,
+          "k": 3.23,
+          "piece_units": 4.02,
+          "laal_words": 4.7,
+          "laal_ms": 1439.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T2.5": {
+          "bleu": 27.698,
+          "chrf2": 25.02,
+          "comet": 0.7269,
+          "k": 2.75,
+          "piece_units": 4.3,
+          "laal_words": 4.8,
+          "laal_ms": 1525.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T3.0": {
+          "bleu": 29.621,
+          "chrf2": 26.044,
+          "comet": 0.744,
+          "k": 2.4,
+          "piece_units": 4.64,
+          "laal_words": 4.97,
+          "laal_ms": 1623.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T3.5": {
+          "bleu": 31.28,
+          "chrf2": 27.014,
+          "comet": 0.7595,
+          "k": 2.13,
+          "piece_units": 5.01,
+          "laal_words": 5.19,
+          "laal_ms": 1714.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T4.0": {
+          "bleu": 31.959,
+          "chrf2": 27.358,
+          "comet": 0.7648,
+          "k": 2.02,
+          "piece_units": 5.16,
+          "laal_words": 5.24,
+          "laal_ms": 1743.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T4.5": {
+          "bleu": 33.582,
+          "chrf2": 28.432,
+          "comet": 0.7783,
+          "k": 1.77,
+          "piece_units": 5.64,
+          "laal_words": 5.53,
+          "laal_ms": 1855.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T5.0": {
+          "bleu": 34.576,
+          "chrf2": 29.134,
+          "comet": 0.7882,
+          "k": 1.63,
+          "piece_units": 6.04,
+          "laal_words": 5.87,
+          "laal_ms": 1948.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T6.0": {
+          "bleu": 35.893,
+          "chrf2": 30.127,
+          "comet": 0.8004,
+          "k": 1.45,
+          "piece_units": 6.58,
+          "laal_words": 6.27,
+          "laal_ms": 2066.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T7.0": {
+          "bleu": 37.543,
+          "chrf2": 31.423,
+          "comet": 0.8148,
+          "k": 1.27,
+          "piece_units": 7.36,
+          "laal_words": 7.09,
+          "laal_ms": 2257.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T8.0": {
+          "bleu": 38.204,
+          "chrf2": 31.952,
+          "comet": 0.82,
+          "k": 1.2,
+          "piece_units": 7.75,
+          "laal_words": 7.53,
+          "laal_ms": 2347.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T10.0": {
+          "bleu": 40.202,
+          "chrf2": 33.576,
+          "comet": 0.8343,
+          "k": 1.04,
+          "piece_units": 8.8,
+          "laal_words": 8.73,
+          "laal_ms": 2584.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align": {
+          "bleu": 12.531,
+          "chrf2": 14.64,
+          "comet": 0.5672,
+          "k": 6.03,
+          "piece_units": 1.75,
+          "laal_words": 3.25,
+          "laal_ms": 698.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T2.0": {
+          "bleu": 18.732,
+          "chrf2": 18.116,
+          "comet": 0.6361,
+          "k": 4.42,
+          "piece_units": 2.18,
+          "laal_words": 3.4,
+          "laal_ms": 909.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T2.5": {
+          "bleu": 22.512,
+          "chrf2": 20.398,
+          "comet": 0.6749,
+          "k": 3.52,
+          "piece_units": 2.68,
+          "laal_words": 3.57,
+          "laal_ms": 1066.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T3.0": {
+          "bleu": 25.281,
+          "chrf2": 22.141,
+          "comet": 0.7018,
+          "k": 2.96,
+          "piece_units": 3.19,
+          "laal_words": 3.81,
+          "laal_ms": 1210.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T3.5": {
+          "bleu": 27.555,
+          "chrf2": 23.766,
+          "comet": 0.7245,
+          "k": 2.55,
+          "piece_units": 3.71,
+          "laal_words": 4.1,
+          "laal_ms": 1343.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T4.0": {
+          "bleu": 28.538,
+          "chrf2": 24.417,
+          "comet": 0.7327,
+          "k": 2.36,
+          "piece_units": 3.94,
+          "laal_words": 4.16,
+          "laal_ms": 1394.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T4.5": {
+          "bleu": 30.901,
+          "chrf2": 26.039,
+          "comet": 0.7544,
+          "k": 2.02,
+          "piece_units": 4.61,
+          "laal_words": 4.54,
+          "laal_ms": 1553.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T5.0": {
+          "bleu": 32.425,
+          "chrf2": 27.114,
+          "comet": 0.7685,
+          "k": 1.83,
+          "piece_units": 5.11,
+          "laal_words": 4.95,
+          "laal_ms": 1680.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T6.0": {
+          "bleu": 34.338,
+          "chrf2": 28.657,
+          "comet": 0.7855,
+          "k": 1.58,
+          "piece_units": 5.84,
+          "laal_words": 5.46,
+          "laal_ms": 1854.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T7.0": {
+          "bleu": 36.553,
+          "chrf2": 30.415,
+          "comet": 0.8053,
+          "k": 1.35,
+          "piece_units": 6.83,
+          "laal_words": 6.49,
+          "laal_ms": 2105.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T8.0": {
+          "bleu": 37.372,
+          "chrf2": 31.084,
+          "comet": 0.8128,
+          "k": 1.26,
+          "piece_units": 7.32,
+          "laal_words": 7.03,
+          "laal_ms": 2224.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T10.0": {
+          "bleu": 40.004,
+          "chrf2": 33.452,
+          "comet": 0.8336,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.64,
+          "laal_ms": 2564.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax": {
+          "bleu": 20.828,
+          "chrf2": 18.964,
+          "comet": 0.6369,
+          "k": 4.64,
+          "piece_units": 2.01,
+          "laal_words": 3.07,
+          "laal_ms": 849.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T2.0": {
+          "bleu": 22.004,
+          "chrf2": 19.624,
+          "comet": 0.6558,
+          "k": 4.3,
+          "piece_units": 2.14,
+          "laal_words": 3.12,
+          "laal_ms": 906.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T2.5": {
+          "bleu": 23.964,
+          "chrf2": 21.006,
+          "comet": 0.6867,
+          "k": 3.59,
+          "piece_units": 2.55,
+          "laal_words": 3.28,
+          "laal_ms": 1023.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T3.0": {
+          "bleu": 26.058,
+          "chrf2": 22.461,
+          "comet": 0.7128,
+          "k": 3.02,
+          "piece_units": 3.07,
+          "laal_words": 3.55,
+          "laal_ms": 1161.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T3.5": {
+          "bleu": 27.879,
+          "chrf2": 23.911,
+          "comet": 0.7338,
+          "k": 2.59,
+          "piece_units": 3.63,
+          "laal_words": 3.87,
+          "laal_ms": 1294.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T4.0": {
+          "bleu": 28.838,
+          "chrf2": 24.593,
+          "comet": 0.7415,
+          "k": 2.39,
+          "piece_units": 3.87,
+          "laal_words": 3.96,
+          "laal_ms": 1343.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T4.5": {
+          "bleu": 31.067,
+          "chrf2": 26.27,
+          "comet": 0.7624,
+          "k": 2.03,
+          "piece_units": 4.55,
+          "laal_words": 4.38,
+          "laal_ms": 1504.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T5.0": {
+          "bleu": 32.742,
+          "chrf2": 27.448,
+          "comet": 0.7766,
+          "k": 1.84,
+          "piece_units": 5.08,
+          "laal_words": 4.81,
+          "laal_ms": 1635.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T6.0": {
+          "bleu": 34.735,
+          "chrf2": 29.052,
+          "comet": 0.7933,
+          "k": 1.59,
+          "piece_units": 5.82,
+          "laal_words": 5.37,
+          "laal_ms": 1815.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T7.0": {
+          "bleu": 36.892,
+          "chrf2": 30.746,
+          "comet": 0.8105,
+          "k": 1.36,
+          "piece_units": 6.82,
+          "laal_words": 6.44,
+          "laal_ms": 2077.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T8.0": {
+          "bleu": 37.737,
+          "chrf2": 31.426,
+          "comet": 0.8171,
+          "k": 1.27,
+          "piece_units": 7.31,
+          "laal_words": 6.99,
+          "laal_ms": 2203.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        },
+        "syntax_T10.0": {
+          "bleu": 40.173,
+          "chrf2": 33.55,
+          "comet": 0.8344,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.64,
+          "laal_ms": 2563.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:zh|smooth:exp|version:2.6.0"
+        }
+      }
+    },
+    "de": {
+      "n": 15530,
+      "tokenize": "13a",
+      "translator": "local:google/madlad400-3b-mt:de:ctx=False",
+      "comet_model": "Unbabel/wmt22-comet-da",
+      "conditions": {
+        "unsegmented": {
+          "bleu": 40.56,
+          "chrf2": 65.063,
+          "comet": 0.8832,
+          "k": 1,
+          "piece_units": 9.1,
+          "laal_words": 9.1,
+          "laal_ms": 2666.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S5": {
+          "bleu": 5.668,
+          "chrf2": 38.896,
+          "comet": 0.5245,
+          "k": 7.95,
+          "piece_units": 1.17,
+          "laal_words": 1.29,
+          "laal_ms": 455.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S10": {
+          "bleu": 6.523,
+          "chrf2": 40.924,
+          "comet": 0.5334,
+          "k": 7.13,
+          "piece_units": 1.33,
+          "laal_words": 1.43,
+          "laal_ms": 512.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S20": {
+          "bleu": 8.261,
+          "chrf2": 43.678,
+          "comet": 0.5575,
+          "k": 6.14,
+          "piece_units": 1.62,
+          "laal_words": 1.64,
+          "laal_ms": 607.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S40": {
+          "bleu": 11.729,
+          "chrf2": 48.2,
+          "comet": 0.6085,
+          "k": 4.67,
+          "piece_units": 2.17,
+          "laal_words": 2.03,
+          "laal_ms": 790.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S60": {
+          "bleu": 13.747,
+          "chrf2": 50.679,
+          "comet": 0.6389,
+          "k": 3.91,
+          "piece_units": 2.5,
+          "laal_words": 2.24,
+          "laal_ms": 895.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S80": {
+          "bleu": 18.766,
+          "chrf2": 54.76,
+          "comet": 0.7049,
+          "k": 2.93,
+          "piece_units": 3.27,
+          "laal_words": 2.74,
+          "laal_ms": 1126.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S90": {
+          "bleu": 25.129,
+          "chrf2": 58.432,
+          "comet": 0.7747,
+          "k": 2.16,
+          "piece_units": 4.43,
+          "laal_words": 3.55,
+          "laal_ms": 1440.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S95": {
+          "bleu": 25.959,
+          "chrf2": 58.82,
+          "comet": 0.7812,
+          "k": 2.06,
+          "piece_units": 4.58,
+          "laal_words": 3.65,
+          "laal_ms": 1482.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "auto_S99": {
+          "bleu": 29.798,
+          "chrf2": 60.547,
+          "comet": 0.8108,
+          "k": 1.72,
+          "piece_units": 5.61,
+          "laal_words": 4.69,
+          "laal_ms": 1754.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mechanical_8": {
+          "bleu": 1.558,
+          "chrf2": 28.158,
+          "comet": 0.3417,
+          "k": 6.85,
+          "piece_units": 1.91,
+          "laal_words": 1.57,
+          "laal_ms": 1063.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt": {
+          "bleu": 11.766,
+          "chrf2": 46.727,
+          "comet": 0.6055,
+          "k": 5.31,
+          "piece_units": 1.93,
+          "laal_words": 1.96,
+          "laal_ms": 726.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T2.0": {
+          "bleu": 11.831,
+          "chrf2": 48.244,
+          "comet": 0.609,
+          "k": 4.52,
+          "piece_units": 2.14,
+          "laal_words": 2.06,
+          "laal_ms": 789.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T2.5": {
+          "bleu": 12.955,
+          "chrf2": 50.277,
+          "comet": 0.6383,
+          "k": 3.6,
+          "piece_units": 2.6,
+          "laal_words": 2.26,
+          "laal_ms": 870.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T3.0": {
+          "bleu": 15.348,
+          "chrf2": 52.113,
+          "comet": 0.6774,
+          "k": 3.01,
+          "piece_units": 3.1,
+          "laal_words": 2.54,
+          "laal_ms": 1003.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T3.5": {
+          "bleu": 18.476,
+          "chrf2": 54.042,
+          "comet": 0.7129,
+          "k": 2.58,
+          "piece_units": 3.63,
+          "laal_words": 2.91,
+          "laal_ms": 1164.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T4.0": {
+          "bleu": 19.846,
+          "chrf2": 54.903,
+          "comet": 0.7262,
+          "k": 2.39,
+          "piece_units": 3.88,
+          "laal_words": 3.04,
+          "laal_ms": 1227.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T4.5": {
+          "bleu": 23.727,
+          "chrf2": 56.888,
+          "comet": 0.7585,
+          "k": 2.03,
+          "piece_units": 4.55,
+          "laal_words": 3.56,
+          "laal_ms": 1421.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T5.0": {
+          "bleu": 26.225,
+          "chrf2": 58.148,
+          "comet": 0.7799,
+          "k": 1.84,
+          "piece_units": 5.08,
+          "laal_words": 4.09,
+          "laal_ms": 1570.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T6.0": {
+          "bleu": 29.651,
+          "chrf2": 59.873,
+          "comet": 0.8059,
+          "k": 1.59,
+          "piece_units": 5.82,
+          "laal_words": 4.79,
+          "laal_ms": 1778.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T7.0": {
+          "bleu": 33.44,
+          "chrf2": 61.728,
+          "comet": 0.8361,
+          "k": 1.36,
+          "piece_units": 6.82,
+          "laal_words": 6.03,
+          "laal_ms": 2061.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T8.0": {
+          "bleu": 35.193,
+          "chrf2": 62.554,
+          "comet": 0.8486,
+          "k": 1.27,
+          "piece_units": 7.31,
+          "laal_words": 6.67,
+          "laal_ms": 2196.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T10.0": {
+          "bleu": 39.561,
+          "chrf2": 64.581,
+          "comet": 0.8771,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.58,
+          "laal_ms": 2576.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix": {
+          "bleu": 18.486,
+          "chrf2": 51.977,
+          "comet": 0.6687,
+          "k": 3.91,
+          "piece_units": 3.25,
+          "laal_words": 3.13,
+          "laal_ms": 1150.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T2.0": {
+          "bleu": 18.551,
+          "chrf2": 52.853,
+          "comet": 0.6731,
+          "k": 3.47,
+          "piece_units": 3.38,
+          "laal_words": 3.2,
+          "laal_ms": 1183.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T2.5": {
+          "bleu": 19.704,
+          "chrf2": 54.201,
+          "comet": 0.6962,
+          "k": 2.98,
+          "piece_units": 3.66,
+          "laal_words": 3.34,
+          "laal_ms": 1250.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T3.0": {
+          "bleu": 21.579,
+          "chrf2": 55.537,
+          "comet": 0.7227,
+          "k": 2.62,
+          "piece_units": 3.99,
+          "laal_words": 3.55,
+          "laal_ms": 1346.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T3.5": {
+          "bleu": 23.816,
+          "chrf2": 56.759,
+          "comet": 0.7469,
+          "k": 2.31,
+          "piece_units": 4.38,
+          "laal_words": 3.83,
+          "laal_ms": 1460.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T4.0": {
+          "bleu": 24.791,
+          "chrf2": 57.354,
+          "comet": 0.757,
+          "k": 2.17,
+          "piece_units": 4.56,
+          "laal_words": 3.92,
+          "laal_ms": 1503.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T4.5": {
+          "bleu": 27.362,
+          "chrf2": 58.734,
+          "comet": 0.7813,
+          "k": 1.9,
+          "piece_units": 5.09,
+          "laal_words": 4.32,
+          "laal_ms": 1641.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T5.0": {
+          "bleu": 29.248,
+          "chrf2": 59.668,
+          "comet": 0.7975,
+          "k": 1.74,
+          "piece_units": 5.52,
+          "laal_words": 4.74,
+          "laal_ms": 1757.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T6.0": {
+          "bleu": 31.768,
+          "chrf2": 60.911,
+          "comet": 0.8178,
+          "k": 1.52,
+          "piece_units": 6.15,
+          "laal_words": 5.3,
+          "laal_ms": 1919.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T7.0": {
+          "bleu": 34.678,
+          "chrf2": 62.317,
+          "comet": 0.8429,
+          "k": 1.32,
+          "piece_units": 7.03,
+          "laal_words": 6.36,
+          "laal_ms": 2151.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T8.0": {
+          "bleu": 36.093,
+          "chrf2": 62.964,
+          "comet": 0.8536,
+          "k": 1.24,
+          "piece_units": 7.47,
+          "laal_words": 6.93,
+          "laal_ms": 2264.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T10.0": {
+          "bleu": 39.705,
+          "chrf2": 64.643,
+          "comet": 0.878,
+          "k": 1.04,
+          "piece_units": 8.76,
+          "laal_words": 8.63,
+          "laal_ms": 2588.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align": {
+          "bleu": 7.171,
+          "chrf2": 41.841,
+          "comet": 0.5518,
+          "k": 6.51,
+          "piece_units": 1.56,
+          "laal_words": 1.69,
+          "laal_ms": 628.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T2.0": {
+          "bleu": 8.409,
+          "chrf2": 46.677,
+          "comet": 0.577,
+          "k": 4.58,
+          "piece_units": 2.06,
+          "laal_words": 1.97,
+          "laal_ms": 728.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T2.5": {
+          "bleu": 11.327,
+          "chrf2": 49.666,
+          "comet": 0.6321,
+          "k": 3.58,
+          "piece_units": 2.6,
+          "laal_words": 2.26,
+          "laal_ms": 869.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T3.0": {
+          "bleu": 15.033,
+          "chrf2": 52.125,
+          "comet": 0.6815,
+          "k": 2.99,
+          "piece_units": 3.14,
+          "laal_words": 2.61,
+          "laal_ms": 1046.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T3.5": {
+          "bleu": 18.781,
+          "chrf2": 54.264,
+          "comet": 0.7187,
+          "k": 2.56,
+          "piece_units": 3.68,
+          "laal_words": 3.01,
+          "laal_ms": 1210.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T4.0": {
+          "bleu": 20.332,
+          "chrf2": 55.222,
+          "comet": 0.7319,
+          "k": 2.38,
+          "piece_units": 3.91,
+          "laal_words": 3.13,
+          "laal_ms": 1271.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T4.5": {
+          "bleu": 24.345,
+          "chrf2": 57.247,
+          "comet": 0.7639,
+          "k": 2.02,
+          "piece_units": 4.58,
+          "laal_words": 3.65,
+          "laal_ms": 1454.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T5.0": {
+          "bleu": 26.805,
+          "chrf2": 58.428,
+          "comet": 0.7845,
+          "k": 1.83,
+          "piece_units": 5.1,
+          "laal_words": 4.17,
+          "laal_ms": 1598.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T6.0": {
+          "bleu": 30.163,
+          "chrf2": 60.106,
+          "comet": 0.8097,
+          "k": 1.58,
+          "piece_units": 5.83,
+          "laal_words": 4.84,
+          "laal_ms": 1799.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T7.0": {
+          "bleu": 33.845,
+          "chrf2": 61.871,
+          "comet": 0.8388,
+          "k": 1.36,
+          "piece_units": 6.83,
+          "laal_words": 6.07,
+          "laal_ms": 2073.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T8.0": {
+          "bleu": 35.499,
+          "chrf2": 62.668,
+          "comet": 0.8508,
+          "k": 1.26,
+          "piece_units": 7.32,
+          "laal_words": 6.7,
+          "laal_ms": 2204.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T10.0": {
+          "bleu": 39.638,
+          "chrf2": 64.617,
+          "comet": 0.8777,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.58,
+          "laal_ms": 2577.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax": {
+          "bleu": 9.669,
+          "chrf2": 48.225,
+          "comet": 0.5826,
+          "k": 4.64,
+          "piece_units": 2.01,
+          "laal_words": 1.87,
+          "laal_ms": 760.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T2.0": {
+          "bleu": 10.113,
+          "chrf2": 49.072,
+          "comet": 0.5974,
+          "k": 4.3,
+          "piece_units": 2.14,
+          "laal_words": 1.94,
+          "laal_ms": 793.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T2.5": {
+          "bleu": 12.003,
+          "chrf2": 51.156,
+          "comet": 0.6384,
+          "k": 3.59,
+          "piece_units": 2.55,
+          "laal_words": 2.16,
+          "laal_ms": 892.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T3.0": {
+          "bleu": 14.88,
+          "chrf2": 53.033,
+          "comet": 0.6834,
+          "k": 3.02,
+          "piece_units": 3.07,
+          "laal_words": 2.51,
+          "laal_ms": 1045.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T3.5": {
+          "bleu": 18.51,
+          "chrf2": 54.94,
+          "comet": 0.7212,
+          "k": 2.59,
+          "piece_units": 3.63,
+          "laal_words": 2.92,
+          "laal_ms": 1207.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T4.0": {
+          "bleu": 20.098,
+          "chrf2": 55.816,
+          "comet": 0.7346,
+          "k": 2.39,
+          "piece_units": 3.87,
+          "laal_words": 3.05,
+          "laal_ms": 1269.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T4.5": {
+          "bleu": 24.244,
+          "chrf2": 57.78,
+          "comet": 0.7678,
+          "k": 2.03,
+          "piece_units": 4.55,
+          "laal_words": 3.58,
+          "laal_ms": 1458.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T5.0": {
+          "bleu": 26.777,
+          "chrf2": 58.928,
+          "comet": 0.7887,
+          "k": 1.84,
+          "piece_units": 5.08,
+          "laal_words": 4.11,
+          "laal_ms": 1601.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T6.0": {
+          "bleu": 29.996,
+          "chrf2": 60.395,
+          "comet": 0.814,
+          "k": 1.59,
+          "piece_units": 5.82,
+          "laal_words": 4.8,
+          "laal_ms": 1800.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T7.0": {
+          "bleu": 33.667,
+          "chrf2": 62.067,
+          "comet": 0.8418,
+          "k": 1.36,
+          "piece_units": 6.82,
+          "laal_words": 6.04,
+          "laal_ms": 2074.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T8.0": {
+          "bleu": 35.351,
+          "chrf2": 62.785,
+          "comet": 0.853,
+          "k": 1.27,
+          "piece_units": 7.31,
+          "laal_words": 6.68,
+          "laal_ms": 2205.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        },
+        "syntax_T10.0": {
+          "bleu": 39.613,
+          "chrf2": 64.633,
+          "comet": 0.8779,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.58,
+          "laal_ms": 2577.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0"
+        }
+      }
+    },
+    "ja": {
+      "n": 15530,
+      "tokenize": "ja-mecab",
+      "translator": "local:google/madlad400-3b-mt:ja:ctx=False",
+      "comet_model": "Unbabel/wmt22-comet-da",
+      "conditions": {
+        "unsegmented": {
+          "bleu": 25.583,
+          "chrf2": 33.894,
+          "comet": 0.8842,
+          "k": 1,
+          "piece_units": 9.1,
+          "laal_words": 9.1,
+          "laal_ms": 2761.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S5": {
+          "bleu": 3.912,
+          "chrf2": 15.796,
+          "comet": 0.5462,
+          "k": 7.95,
+          "piece_units": 1.17,
+          "laal_words": 3.2,
+          "laal_ms": 409.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S10": {
+          "bleu": 4.951,
+          "chrf2": 16.651,
+          "comet": 0.568,
+          "k": 7.13,
+          "piece_units": 1.33,
+          "laal_words": 3.29,
+          "laal_ms": 502.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S20": {
+          "bleu": 6.598,
+          "chrf2": 18.062,
+          "comet": 0.6004,
+          "k": 6.14,
+          "piece_units": 1.62,
+          "laal_words": 3.43,
+          "laal_ms": 642.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S40": {
+          "bleu": 9.533,
+          "chrf2": 20.513,
+          "comet": 0.6575,
+          "k": 4.67,
+          "piece_units": 2.17,
+          "laal_words": 3.67,
+          "laal_ms": 884.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S60": {
+          "bleu": 11.257,
+          "chrf2": 22.013,
+          "comet": 0.6904,
+          "k": 3.91,
+          "piece_units": 2.5,
+          "laal_words": 3.79,
+          "laal_ms": 1009.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S80": {
+          "bleu": 14.263,
+          "chrf2": 24.657,
+          "comet": 0.7449,
+          "k": 2.93,
+          "piece_units": 3.27,
+          "laal_words": 4.13,
+          "laal_ms": 1270.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S90": {
+          "bleu": 17.033,
+          "chrf2": 27.041,
+          "comet": 0.795,
+          "k": 2.16,
+          "piece_units": 4.43,
+          "laal_words": 4.7,
+          "laal_ms": 1604.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S95": {
+          "bleu": 17.417,
+          "chrf2": 27.35,
+          "comet": 0.7999,
+          "k": 2.06,
+          "piece_units": 4.58,
+          "laal_words": 4.77,
+          "laal_ms": 1647.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "auto_S99": {
+          "bleu": 19.325,
+          "chrf2": 28.921,
+          "comet": 0.8239,
+          "k": 1.72,
+          "piece_units": 5.61,
+          "laal_words": 5.55,
+          "laal_ms": 1912.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mechanical_8": {
+          "bleu": 1.277,
+          "chrf2": 9.041,
+          "comet": 0.4283,
+          "k": 6.85,
+          "piece_units": 1.91,
+          "laal_words": 3.53,
+          "laal_ms": 1118.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt": {
+          "bleu": 9.761,
+          "chrf2": 20.496,
+          "comet": 0.6707,
+          "k": 4.02,
+          "piece_units": 2.56,
+          "laal_words": 4.08,
+          "laal_ms": 1067.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T2.0": {
+          "bleu": 9.961,
+          "chrf2": 20.775,
+          "comet": 0.6759,
+          "k": 3.84,
+          "piece_units": 2.61,
+          "laal_words": 4.08,
+          "laal_ms": 1084.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T2.5": {
+          "bleu": 10.797,
+          "chrf2": 21.639,
+          "comet": 0.6974,
+          "k": 3.35,
+          "piece_units": 2.86,
+          "laal_words": 4.1,
+          "laal_ms": 1159.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T3.0": {
+          "bleu": 11.893,
+          "chrf2": 22.564,
+          "comet": 0.7233,
+          "k": 2.91,
+          "piece_units": 3.24,
+          "laal_words": 4.19,
+          "laal_ms": 1276.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T3.5": {
+          "bleu": 13.298,
+          "chrf2": 23.67,
+          "comet": 0.7489,
+          "k": 2.54,
+          "piece_units": 3.71,
+          "laal_words": 4.37,
+          "laal_ms": 1417.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T4.0": {
+          "bleu": 14.01,
+          "chrf2": 24.219,
+          "comet": 0.7602,
+          "k": 2.37,
+          "piece_units": 3.93,
+          "laal_words": 4.41,
+          "laal_ms": 1477.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T4.5": {
+          "bleu": 15.727,
+          "chrf2": 25.572,
+          "comet": 0.7875,
+          "k": 2.02,
+          "piece_units": 4.58,
+          "laal_words": 4.71,
+          "laal_ms": 1649.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T5.0": {
+          "bleu": 17.089,
+          "chrf2": 26.638,
+          "comet": 0.8048,
+          "k": 1.84,
+          "piece_units": 5.09,
+          "laal_words": 5.09,
+          "laal_ms": 1780.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T6.0": {
+          "bleu": 18.922,
+          "chrf2": 28.104,
+          "comet": 0.8263,
+          "k": 1.59,
+          "piece_units": 5.82,
+          "laal_words": 5.58,
+          "laal_ms": 1961.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T7.0": {
+          "bleu": 21.015,
+          "chrf2": 29.867,
+          "comet": 0.8494,
+          "k": 1.36,
+          "piece_units": 6.82,
+          "laal_words": 6.57,
+          "laal_ms": 2215.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T8.0": {
+          "bleu": 22.095,
+          "chrf2": 30.804,
+          "comet": 0.859,
+          "k": 1.27,
+          "piece_units": 7.31,
+          "laal_words": 7.09,
+          "laal_ms": 2333.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "alignatt_T10.0": {
+          "bleu": 24.965,
+          "chrf2": 33.427,
+          "comet": 0.8802,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.66,
+          "laal_ms": 2679.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix": {
+          "bleu": 18.48,
+          "chrf2": 27.931,
+          "comet": 0.7939,
+          "k": 2.46,
+          "piece_units": 5.68,
+          "laal_words": 6.26,
+          "laal_ms": 1993.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T2.0": {
+          "bleu": 18.715,
+          "chrf2": 28.194,
+          "comet": 0.802,
+          "k": 2.29,
+          "piece_units": 5.74,
+          "laal_words": 6.27,
+          "laal_ms": 2023.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T2.5": {
+          "bleu": 19.118,
+          "chrf2": 28.591,
+          "comet": 0.8131,
+          "k": 2.08,
+          "piece_units": 5.88,
+          "laal_words": 6.32,
+          "laal_ms": 2072.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T3.0": {
+          "bleu": 19.608,
+          "chrf2": 29.005,
+          "comet": 0.8237,
+          "k": 1.9,
+          "piece_units": 6.07,
+          "laal_words": 6.41,
+          "laal_ms": 2133.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T3.5": {
+          "bleu": 20.177,
+          "chrf2": 29.443,
+          "comet": 0.8331,
+          "k": 1.75,
+          "piece_units": 6.29,
+          "laal_words": 6.53,
+          "laal_ms": 2195.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T4.0": {
+          "bleu": 20.392,
+          "chrf2": 29.61,
+          "comet": 0.8375,
+          "k": 1.68,
+          "piece_units": 6.37,
+          "laal_words": 6.55,
+          "laal_ms": 2218.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T4.5": {
+          "bleu": 21.035,
+          "chrf2": 30.134,
+          "comet": 0.8475,
+          "k": 1.53,
+          "piece_units": 6.69,
+          "laal_words": 6.73,
+          "laal_ms": 2292.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T5.0": {
+          "bleu": 21.565,
+          "chrf2": 30.536,
+          "comet": 0.8538,
+          "k": 1.43,
+          "piece_units": 6.95,
+          "laal_words": 6.94,
+          "laal_ms": 2350.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T6.0": {
+          "bleu": 22.322,
+          "chrf2": 31.141,
+          "comet": 0.8617,
+          "k": 1.31,
+          "piece_units": 7.32,
+          "laal_words": 7.21,
+          "laal_ms": 2421.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T7.0": {
+          "bleu": 23.385,
+          "chrf2": 32.035,
+          "comet": 0.87,
+          "k": 1.19,
+          "piece_units": 7.86,
+          "laal_words": 7.74,
+          "laal_ms": 2530.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T8.0": {
+          "bleu": 23.886,
+          "chrf2": 32.462,
+          "comet": 0.8737,
+          "k": 1.14,
+          "piece_units": 8.14,
+          "laal_words": 8.04,
+          "laal_ms": 2582.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "mu_prefix_T10.0": {
+          "bleu": 25.28,
+          "chrf2": 33.684,
+          "comet": 0.8828,
+          "k": 1.02,
+          "piece_units": 8.92,
+          "laal_words": 8.89,
+          "laal_ms": 2730.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align": {
+          "bleu": 11.489,
+          "chrf2": 21.788,
+          "comet": 0.6869,
+          "k": 4.19,
+          "piece_units": 2.75,
+          "laal_words": 4.36,
+          "laal_ms": 1121.8,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T2.0": {
+          "bleu": 12.351,
+          "chrf2": 22.654,
+          "comet": 0.7074,
+          "k": 3.69,
+          "piece_units": 2.92,
+          "laal_words": 4.41,
+          "laal_ms": 1206.6,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T2.5": {
+          "bleu": 13.607,
+          "chrf2": 23.807,
+          "comet": 0.7348,
+          "k": 3.15,
+          "piece_units": 3.24,
+          "laal_words": 4.49,
+          "laal_ms": 1328.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T3.0": {
+          "bleu": 14.852,
+          "chrf2": 24.86,
+          "comet": 0.759,
+          "k": 2.74,
+          "piece_units": 3.64,
+          "laal_words": 4.65,
+          "laal_ms": 1462.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T3.5": {
+          "bleu": 16.029,
+          "chrf2": 25.821,
+          "comet": 0.779,
+          "k": 2.41,
+          "piece_units": 4.07,
+          "laal_words": 4.85,
+          "laal_ms": 1591.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T4.0": {
+          "bleu": 16.556,
+          "chrf2": 26.272,
+          "comet": 0.7881,
+          "k": 2.25,
+          "piece_units": 4.27,
+          "laal_words": 4.88,
+          "laal_ms": 1645.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T4.5": {
+          "bleu": 17.85,
+          "chrf2": 27.307,
+          "comet": 0.8089,
+          "k": 1.95,
+          "piece_units": 4.85,
+          "laal_words": 5.15,
+          "laal_ms": 1792.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T5.0": {
+          "bleu": 18.854,
+          "chrf2": 28.156,
+          "comet": 0.8218,
+          "k": 1.78,
+          "piece_units": 5.31,
+          "laal_words": 5.48,
+          "laal_ms": 1904.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T6.0": {
+          "bleu": 20.158,
+          "chrf2": 29.314,
+          "comet": 0.8387,
+          "k": 1.55,
+          "piece_units": 5.98,
+          "laal_words": 5.89,
+          "laal_ms": 2062.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T7.0": {
+          "bleu": 21.83,
+          "chrf2": 30.728,
+          "comet": 0.857,
+          "k": 1.34,
+          "piece_units": 6.91,
+          "laal_words": 6.77,
+          "laal_ms": 2280.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T8.0": {
+          "bleu": 22.652,
+          "chrf2": 31.401,
+          "comet": 0.864,
+          "k": 1.26,
+          "piece_units": 7.37,
+          "laal_words": 7.24,
+          "laal_ms": 2381.1,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "causal_align_T10.0": {
+          "bleu": 25.067,
+          "chrf2": 33.525,
+          "comet": 0.881,
+          "k": 1.04,
+          "piece_units": 8.73,
+          "laal_words": 8.68,
+          "laal_ms": 2685.7,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax": {
+          "bleu": 8.895,
+          "chrf2": 20.592,
+          "comet": 0.646,
+          "k": 4.64,
+          "piece_units": 2.01,
+          "laal_words": 3.48,
+          "laal_ms": 839.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T2.0": {
+          "bleu": 9.449,
+          "chrf2": 21.049,
+          "comet": 0.6625,
+          "k": 4.3,
+          "piece_units": 2.14,
+          "laal_words": 3.52,
+          "laal_ms": 900.0,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T2.5": {
+          "bleu": 10.93,
+          "chrf2": 22.263,
+          "comet": 0.6982,
+          "k": 3.59,
+          "piece_units": 2.55,
+          "laal_words": 3.66,
+          "laal_ms": 1051.9,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T3.0": {
+          "bleu": 12.481,
+          "chrf2": 23.426,
+          "comet": 0.7308,
+          "k": 3.02,
+          "piece_units": 3.07,
+          "laal_words": 3.91,
+          "laal_ms": 1230.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T3.5": {
+          "bleu": 14.159,
+          "chrf2": 24.67,
+          "comet": 0.7587,
+          "k": 2.59,
+          "piece_units": 3.63,
+          "laal_words": 4.2,
+          "laal_ms": 1395.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T4.0": {
+          "bleu": 14.842,
+          "chrf2": 25.207,
+          "comet": 0.7702,
+          "k": 2.39,
+          "piece_units": 3.87,
+          "laal_words": 4.28,
+          "laal_ms": 1462.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T4.5": {
+          "bleu": 16.435,
+          "chrf2": 26.398,
+          "comet": 0.796,
+          "k": 2.03,
+          "piece_units": 4.55,
+          "laal_words": 4.65,
+          "laal_ms": 1651.3,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T5.0": {
+          "bleu": 17.681,
+          "chrf2": 27.373,
+          "comet": 0.8119,
+          "k": 1.84,
+          "piece_units": 5.08,
+          "laal_words": 5.06,
+          "laal_ms": 1784.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T6.0": {
+          "bleu": 19.374,
+          "chrf2": 28.729,
+          "comet": 0.8315,
+          "k": 1.59,
+          "piece_units": 5.82,
+          "laal_words": 5.57,
+          "laal_ms": 1969.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T7.0": {
+          "bleu": 21.423,
+          "chrf2": 30.357,
+          "comet": 0.8527,
+          "k": 1.36,
+          "piece_units": 6.82,
+          "laal_words": 6.57,
+          "laal_ms": 2221.5,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T8.0": {
+          "bleu": 22.391,
+          "chrf2": 31.171,
+          "comet": 0.8611,
+          "k": 1.27,
+          "piece_units": 7.31,
+          "laal_words": 7.1,
+          "laal_ms": 2339.4,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        },
+        "syntax_T10.0": {
+          "bleu": 25.052,
+          "chrf2": 33.5,
+          "comet": 0.8806,
+          "k": 1.05,
+          "piece_units": 8.72,
+          "laal_words": 8.66,
+          "laal_ms": 2678.2,
+          "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ja-mecab-0.996-IPA|smooth:exp|version:2.6.0"
+        }
+      }
+    }
+  }
+}
