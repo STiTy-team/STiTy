@@ -25,6 +25,7 @@ class Item:
     offset: float | None = None
     transcript: str = ""
     translations: dict[str, str] = field(default_factory=dict)
+    metric_inputs: dict = field(default_factory=dict)
 
     def reference_translation(self, target_lang: str) -> str:
         return self.translations.get(target_lang, "")
@@ -84,6 +85,10 @@ def _parse_item(raw: dict, *, root: Path, default_lang: str) -> Item:
         offset=float(raw["offset"]) if raw.get("offset") is not None else None,
         transcript=reference.get("transcript") or "",
         translations=dict(reference.get("translations") or {}),
+        # Quality annotations intentionally stay schema-light here.  Each metric
+        # module owns its block, while the dataset adapter only guarantees that
+        # the manifest payload reaches items.jsonl without being discarded.
+        metric_inputs=dict(raw.get("metric_inputs") or {}),
     )
 
 

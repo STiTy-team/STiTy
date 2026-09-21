@@ -12,11 +12,33 @@ bash $STITY_DATA_ROOT/fleurs/install.sh        # 내려받고 변환까지
 
 make bench CONFIG=<설정>.yml                        # 실행
 make replay RUN=bench/runs/<이름>                   # 그 실행을 브라우저에서 다시 본다
+make retranslate SOURCE=bench/runs/<원본> \
+  CONFIG=bench/retranslate.example.yml              # 저장된 ASR로 번역만 재실행
 ```
 
 `make replay` 는 http://localhost:9130 에 페이지 하나를 띄운다. 왼쪽은 휴대폰이 `final` 로
 그린 화면 그대로(번역이 본문, 전사가 그 아래), 오른쪽은 **휴대폰에는 안 보이는** 이벤트
 줄기 전부다. 둘 다 같은 시계 — 이벤트의 `audio` 위치 — 가 움직인다.
+
+### 저장된 ASR로 번역기만 비교
+
+`python -m bench.retranslate <source-run> <config.yml>`은 원본 run의
+`items.jsonl`을 읽고 `segments[*].original`을 같은 순서로 새 번역기에 전달한다. 오디오,
+VAD, ASR은 로드하지 않는다. 원본에 commit segment가 없는 옛 결과만 전체 `hypothesis`를 한
+세그먼트로 사용하는 fallback이 명시적으로 기록된다.
+
+`context_scope: item`은 현재 실시간 pipeline과 동일하게 매 발화에서 문맥을 초기화한다.
+`context_scope: group`은 같은 대화 group의 이전 턴 원문까지 이어서 전달하는 별도 실험 조건이다.
+두 조건은 결과 config와 비교 없이 섞으면 안 된다.
+
+새 run의 `summary.json.source_run`에는 원본 경로, `items.jsonl` SHA-256, 원본 commit과 dataset
+정보가 남는다. ASR timing은 원본 segment의 `source_timing`으로만 보존하고 새 run의
+WER/FSL/LAAL로 보고하지 않는다. 새로 측정하는 시간은 segment별 `translation_elapsed_sec`과
+집계된 `translation_runtime`뿐이다.
+
+원본의 후보 번역에 종속된 XCOMET, span, judge, intent 판정은 새 번역에 재사용하지 않는다.
+사람이 만든 reference span/label만 전달되고, 새 후보 주석을 생성하기 전까지 관련 지표는
+`unavailable`로 남는다.
 
 데이터셋은 `fleurs` 와 `acl6060` 둘이다. 계약(`dataset.yml` + `manifest.jsonl`)과 새
 코퍼스 붙이는 법은 그 리포의 README 에 있다. bench 에는 데이터셋별 분기가 없다.
@@ -169,6 +191,69 @@ runs/<name>/
 | 오디오만 (전사·번역 참조 없음) | `fsl`·`commit`·`routing` | `wer`·`cer`·`bleu`·`laal` |
 | 전사는 있고 번역 참조 없음 | 위 + `wer`·`cer` | `bleu`·`laal` |
 | 일부 언어만 번역 참조 있음 | 그 언어들의 `bleu` | 참조 없는 언어 (`bleu_by_target` 의 이유에 적힌다) |
+
+### 대화 번역 품질 6축
+
+`core/utils/metrics`는 다음 scorecard도 매 실행에서 계산한다. 각 축은 세 지표를 가지며
+`summary.json.metrics.<axis>`에 중첩해 저장된다.
+
+| 축 | 지표 |
+|---|---|
+| `meaning` | `xcomet`, `metricx_24`, `chrfpp` |
+| `critical_information` | `normalized_value_accuracy`, `critical_span_f1`, `critical_fact_error_rate` |
+| `fluency` | `spoken_fluency_judge`, `mqm_fluency_error_rate`, `target_lm_pseudo_perplexity` |
+| `context` | `context_mqm`, `dialogue_inconsistency_rate`, `context_contrastive_accuracy` |
+| `asr_robustness` | `quality_drop`, `translation_invariance`, `quality_noise_degradation` |
+| `intent` | `polarity_preservation`, `speech_act_macro_f1`, `modality_stance_preservation` |
+
+매니페스트 항목의 선택적인 `metric_inputs` 블록은 그대로 `items.jsonl`로 전달된다. 세부
+계약과 예시는 [`core/utils/metrics/TRANSLATION_QUALITY.md`](../core/utils/metrics/TRANSLATION_QUALITY.md)에
+있다. 주석이 없는 축은 값이 생기지 않고 `unavailable`에 구조화된 이유가 남는다.
+
+XCOMET과 MetricX-24는 큰 learned metric이라 평범한 CPU 스모크 실행에서 자동 다운로드하지
+않는다. `metric_inputs.meaning`에 사전 계산 값을 넣거나 각각 `STITY_XCOMET_MODEL`,
+`STITY_METRICX_MODEL`을 설정한 scoring 환경에서 실행한다. masked-LM pseudo-perplexity도 같은
+이유로 사전 계산 값 또는 `STITY_FLUENCY_LM`을 사용한다.
+
+### 한↔영 중요 정보·유창성 주석 생성
+
+기존 run의 후보 번역을 오프라인에서 보강한다. 원본 run은 수정하지 않으며 출력 디렉터리에
+새 `items.jsonl`, `summary.json`, `quality_config.json`을 만든다.
+
+```bash
+pip install -r bench/requirements-translation-metrics.txt
+export OPENAI_API_KEY=...
+python -m bench.annotate_quality \
+  bench/runs/<source-run> bench/runs/<source-run>-quality
+```
+
+중요 정보는 한↔영만 지원한다. 날짜·시간·금액·수량·단위·전화번호는 결정론적 추출기로
+canonical value를 만들고, 인명·지명·기관·제품·전문용어와 양쪽 span 정렬은 고정 JSON
+판정기로 생성한다. 데이터셋에 사람 검수 `reference_spans`가 있으면 그것을 우선 보존한다.
+후보에 종속된 `candidate_spans`와 판정 provenance는 파생 run에만 저장된다.
+
+유창성 판정기는 원문과 참조를 받지 않는다. 후보와 같은 대화의 앞선 목표 언어 최대 3턴만
+보고 1~5 Spoken Fluency 점수와 MQM fluency/style 오류 span을 한 번에 생성한다.
+pseudo-perplexity 기본 checkpoint는 영어 `FacebookAI/roberta-base`, 한국어
+`klue/roberta-base`다. 언어 간 절대값은 합치지 않고 `by_target`으로 보고한다. 모델을 받지
+않을 실행은 `--skip-pseudo-perplexity`를 지정한다.
+
+### 전사문 기반 ASR 강건성
+
+오디오나 ASR을 다시 실행하지 않는다. 저장된 `hypothesis`에 재현 가능한 삭제·혼동 치환·숫자
+손상·반복·구두점/띄어쓰기 손상을 가하고, clean/noisy 텍스트를 같은 번역기로 다시 번역한다.
+
+```bash
+python -m bench.asr_text_robustness \
+  bench/runs/<source-run> bench/quality_ko_en.example.yml \
+  bench/runs/<source-run>-text-robustness \
+  --noise-levels 0.08,0.18,0.32 --seed 20260921
+```
+
+각 강도에서 chrF++ 참조 품질을 계산해 quality drop·degradation slope/AUC를 만들고,
+clean/noisy 번역의 의미 invariance는 기본적으로
+`sentence-transformers/paraphrase-multilingual-mpnet-base-v2` cosine similarity로 계산한다.
+모든 noisy 전사, 조작 목록, 실제 clean 대비 WER, 번역, 모델과 seed는 결과에 남는다.
 
 참조 번역이 없으면 `laal` 도 빠진다. 분모가 `max(|Y_hyp|, |Y_ref|)` 라서 `|Y_ref|` 를 빼면
 근사가 아니라 **다른 지표(AL)** 가 되고, AL 은 짧게 생성할수록 점수가 좋아지는 구멍이 있다.

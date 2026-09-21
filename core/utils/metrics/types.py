@@ -103,6 +103,7 @@ class Utterance:
     hypothesis_translation: str = ""
     duration_sec: float = 0.0
     reference_translations: Mapping[str, str] = field(default_factory=dict)
+    metric_inputs: Mapping[str, object] = field(default_factory=dict)
     segments: tuple[Segment, ...] = ()
 
     @classmethod
@@ -116,6 +117,7 @@ class Utterance:
             hypothesis_translation=_text(row.get("hypothesis_translation")),
             duration_sec=_number(row.get("duration_sec")) or 0.0,
             reference_translations={_code(k): _text(v) for k, v in refs.items()},
+            metric_inputs=dict(row.get("metric_inputs") or {}),
             segments=tuple(Segment.from_final(s) for s in (row.get("segments") or [])),
         )
 

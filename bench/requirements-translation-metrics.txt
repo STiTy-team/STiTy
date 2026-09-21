@@ -1,0 +1,11 @@
+-r requirements.txt
+
+# Optional learned metrics are separate from the ASR runtime because their torch /
+# transformers constraints and multi-GB checkpoints should not alter a baseline.
+unbabel-comet>=2.2
+transformers>=4.45
+sentence-transformers>=3.0
+openai>=1.0
+
+# MetricX-24 is not packaged on PyPI. Put the official google-research/metricx
+# checkout on PYTHONPATH so `metricx24.models.MT5ForRegression` is importable.

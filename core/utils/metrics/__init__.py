@@ -24,11 +24,14 @@ do with what comes back.
 """
 from dataclasses import dataclass, field
 
-from . import asr, bleu, commit, latency, routing, text
+from . import (asr, asr_robustness, bleu, commit, context,
+               critical_information, fluency, intent, latency, meaning, routing, text)
 from .langs_bridge import laal_unit
 from .types import Segment, TargetPolicy, Utterance
 
 __all__ = ["asr", "bleu", "commit", "latency", "routing", "text",
+           "meaning", "critical_information", "fluency", "context",
+           "asr_robustness", "intent",
            "Segment", "Utterance", "TargetPolicy",
            "RunScore", "score_item", "score_run"]
 
@@ -95,6 +98,12 @@ def score_run(rows, *, languages: TargetPolicy) -> RunScore:
         bleu.corpus(items, languages=languages),
         commit.corpus(items),
         routing.corpus(items, languages=languages),
+        meaning.corpus(items, languages=languages),
+        critical_information.corpus(items),
+        fluency.corpus(items),
+        context.corpus(items),
+        asr_robustness.corpus(items),
+        intent.corpus(items),
     ):
         aggregate.update(values)
         unavailable.update(missing)

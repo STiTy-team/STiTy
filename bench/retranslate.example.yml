@@ -1,0 +1,13 @@
+name: baseline-en-de-madlad-retranslate
+
+languages:
+  lang: en
+  target: de
+
+translation:
+  name: local
+  model: google/madlad400-3b-mt
+
+# item: 현재 실시간 pipeline과 동일하게 발화마다 문맥을 초기화한다.
+# group: 같은 group의 앞선 턴까지 문맥으로 전달한다.
+context_scope: item

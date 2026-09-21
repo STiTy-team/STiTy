@@ -39,6 +39,7 @@ def _row(item, *, status: str, **fields) -> dict:
         "hypothesis": "",
         "hypothesis_translation": "",
         "reference_translations": dict(item.translations),
+        "metric_inputs": dict(item.metric_inputs),
         "segments": [],
         **fields,
     }

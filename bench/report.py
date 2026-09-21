@@ -39,7 +39,7 @@ def environment() -> dict:
     import importlib.metadata as md
 
     versions = {}
-    for name in ("torch", "vllm", "transformers", "sacrebleu"):
+    for name in ("torch", "vllm", "transformers", "sacrebleu", "unbabel-comet"):
         try:
             versions[name] = md.version(name)
         except Exception:  # noqa: BLE001 - not installed is an answer
@@ -94,6 +94,67 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
         "environment": environment(),
     }
 
+    out_path = run_dir / "summary.json"
+    out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str),
+                        encoding="utf-8")
+    print_summary(payload, out_path)
+    return out_path
+
+
+def write_translation_only(*, cfg, score, rows, source: dict, started: datetime,
+                           finished: datetime, run_dir: Path,
+                           component: dict, failure: str | None = None) -> Path:
+    """Write a summary for a stored-ASR translation replay.
+
+    ASR latency is intentionally absent: its clocks came from the source run and
+    were not measured during this execution.
+    """
+    errored = [row for row in rows if row.get("translation_status") not in
+               ("ok", "skipped_source_error", "skipped_empty_source")]
+    skipped_source_error = [row for row in rows
+                            if row.get("translation_status") == "skipped_source_error"]
+    skipped_empty_source = [row for row in rows
+                            if row.get("translation_status") == "skipped_empty_source"]
+    empty = [row for row in rows if row.get("translation_calls", 0)
+             and not (row.get("hypothesis_translation") or "").strip()]
+    failed_ids = list(dict.fromkeys(
+        str(row.get("id") or "")
+        for row in errored + skipped_source_error + skipped_empty_source + empty))
+    wall_sec = (finished - started).total_seconds()
+    status = "failed" if failure else ("degraded" if failed_ids else "ok")
+    payload = {
+        "name": cfg.name,
+        "mode": "translation_only",
+        "stamp": started.strftime("%Y%m%dT%H%M%S"),
+        "status": status,
+        "failure": failure,
+        "started_at": started.isoformat(),
+        "finished_at": finished.isoformat(),
+        "metrics": score.aggregate,
+        "unavailable": score.unavailable,
+        "counts": {
+            "items": len(rows),
+            "sessions": len({row.get("group") for row in rows if row.get("group")}),
+            "segments": sum(len(row.get("segments") or []) for row in rows),
+            "translation_errors": sum(len(row.get("translation_errors") or [])
+                                      for row in rows),
+            "empty_translation": len(empty),
+            "source_error_skips": len(skipped_source_error),
+            "empty_source_skips": len(skipped_empty_source),
+            "wall_sec": round(wall_sec, 2),
+        },
+        "failed_items": failed_ids,
+        "misrouted_items": score.misrouted_items,
+        "config": cfg.raw,
+        "components": {"translation": component},
+        "source_run": source,
+        "measurement_scope": {
+            "asr": "frozen from source run; WER/FSL/LAAL not rescored",
+            "segmentation": "frozen committed segments from source run",
+            "translation": "executed in this run",
+        },
+        "environment": environment(),
+    }
     out_path = run_dir / "summary.json"
     out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str),
                         encoding="utf-8")

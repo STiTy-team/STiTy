@@ -40,3 +40,24 @@ class LocalTranslation(Translator):
             logger.warning("translation failed: %s", e)
             return "", ""
 
+    async def close(self) -> None:
+        """Release model memory before a later metric model is loaded."""
+        backend, self.translator = self.translator, None
+        if backend is None:
+            return
+        close = getattr(backend, "close", None)
+        if close is not None:
+            result = close()
+            if hasattr(result, "__await__"):
+                await result
+        del backend
+
+        import gc
+        gc.collect()
+        try:
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except ImportError:
+            pass
+
