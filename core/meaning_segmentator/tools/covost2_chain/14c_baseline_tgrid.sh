@@ -43,6 +43,9 @@ WAIT=${WAIT:-$A/en2x/covost2/full_j44best/eval.done}
 TGRID="${TGRID:-2 2.5 3 3.5 4 4.5 5 6 7 8 10}"
 SGRID="${SGRID:-5 10 20 40 60 80 90 95 99}"
 BASE="${BASE:-alignatt mu_prefix causal_align syntax}"
+# 이전 격자를 옮겨 둘 곳. **COMET 을 물려받는 원본이므로 세대마다 다른 이름을 준다** —
+# 같은 이름에 덮어쓰면 어느 코드로 잰 값인지 잃고, 낡은 값을 물려받을 위험이 생긴다.
+ARCH="${ARCH:-bleu_t6}"
 LOG=$SRC/logs/tgrid.log
 ts () { date '+%F %T'; }
 
@@ -54,8 +57,8 @@ echo "== $(ts) 선행 완료 확인 — 시작 (T: $TGRID)" >> $LOG
 one () {   # <run 디렉토리 이름> <라벨 이름>
   local rid=en2x/covost2/$1 label=$2 D=$A/en2x/covost2/$1
   # 기존 9점 결과는 기록으로 옮긴다 — 같은 파일에 덮어쓰면 무엇으로 잰 값인지 잃는다.
-  if [ -d $D/bleu ] && [ ! -d $D/bleu_t6 ]; then
-    mkdir -p $D/bleu_t6 && mv $D/bleu/*.json $D/bleu/report.md $D/bleu_t6/ 2>/dev/null
+  if [ -d $D/bleu ] && [ ! -d $D/$ARCH ]; then
+    mkdir -p $D/$ARCH && mv $D/bleu/*.json $D/bleu/report.md $D/$ARCH/ 2>/dev/null
   fi
   for t in zh de ja; do
     [ -s $D/bleu/$t.json ] && { echo "== $(ts) $1 $t skip (있음)" >> $LOG; continue; }
@@ -73,7 +76,7 @@ one () {   # <run 디렉토리 이름> <라벨 이름>
     # 옮긴다** — 예산 하한을 2 에서 1 로 내리면서 비교군 분절이 짧은 문장에서 달라졌으므로,
     # 이름만 보고 가져오면 `syntax_T2` 에 옛 분절의 점수가 박힌다. 우리 조건(auto_S*)과
     # 무분절·기계분절은 안 바뀌어 그대로 걸린다.
-    $PY - "$D/bleu_t6/$t.json" "$D/bleu/$t.json" <<'PYEOF' >> $LOG 2>&1
+    $PY - "$D/$ARCH/$t.json" "$D/bleu/$t.json" <<'PYEOF' >> $LOG 2>&1
 import json, sys
 from pathlib import Path
 old, new = Path(sys.argv[1]), Path(sys.argv[2])
