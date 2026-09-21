@@ -4,6 +4,7 @@ from pathlib import Path
 from core.errors import ConfigError
 from core.utils import audio as audio_mod
 from core.utils import langs
+from core.utils import cache
 from core.utils import logging
 from core.utils import timing
 
@@ -72,6 +73,23 @@ class Qwen3Transcription(Transcriber):
         return out
 
     async def load(self) -> None:
+        self.model = await cache.load(self._cache_key(), self._build_model)
+        self._log_gpu("after load")
+
+    def _gpu_memory_utilization(self) -> float:
+        return float(self.settings.get("gpu_memory_utilization")
+                     or self.cfg.stity.gpu_memory_utilization)
+
+    def _cache_key(self) -> tuple:
+        kw = self.settings
+        return ("qwen3-asr",
+                kw["model_path"],
+                self._gpu_memory_utilization(),
+                int(kw.get("max_new_tokens", 128)),
+                int(kw.get("beam_size", 1)),
+                bool(kw.get("enforce_eager", False)))
+
+    async def _build_model(self):
         from qwen_asr import Qwen3ASRModel
         from qwen_asr.inference.utils import warmup_streaming
         from vllm import SamplingParams
@@ -79,11 +97,9 @@ class Qwen3Transcription(Transcriber):
         kw = self.settings
         max_new_tokens = int(kw.get("max_new_tokens", 128))
         log.info("[LOAD] model %s", kw["model_path"])
-        self.model = Qwen3ASRModel.LLM(
+        model = Qwen3ASRModel.LLM(
             model=kw["model_path"],
-            gpu_memory_utilization=float(
-                kw.get("gpu_memory_utilization")
-                or self.cfg.stity.gpu_memory_utilization),
+            gpu_memory_utilization=self._gpu_memory_utilization(),
             max_new_tokens=max_new_tokens,
             max_model_len=MAX_MODEL_LEN,
             enforce_eager=bool(kw.get("enforce_eager", False)),
@@ -93,7 +109,7 @@ class Qwen3Transcription(Transcriber):
                       skip_special_tokens=True)
         if beam_size > 1:
             try:
-                self.model.sampling_params = SamplingParams(
+                model.sampling_params = SamplingParams(
                     use_beam_search=True, best_of=beam_size, **params)
             except TypeError:
                 raise ConfigError(
@@ -102,9 +118,9 @@ class Qwen3Transcription(Transcriber):
                     f"falling back to greedy would score a decoder nobody chose."
                 ) from None
         else:
-            self.model.sampling_params = SamplingParams(**params)
-        await warmup_streaming(self.model)
-        self._log_gpu("after load")
+            model.sampling_params = SamplingParams(**params)
+        await warmup_streaming(model)
+        return model
 
     def start(self, language: str | None = None, target_lang: str | None = None,
               **_) -> None:
