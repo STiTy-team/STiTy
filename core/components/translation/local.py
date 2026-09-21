@@ -1,3 +1,4 @@
+from core.utils import cache
 from core.utils import logging
 
 from . import translators
@@ -17,13 +18,18 @@ class LocalTranslation(Translator):
     failed = 0
 
     async def load(self) -> None:
-        from core.translator.local_translator import make_translator
-
         self.model = self.settings.get("model", DEFAULT_MODEL)
         self.device = self.settings.get("device")
+        cache_key = ("local-translator", self.model, self.device)
         log.info("[LOAD] translation model %s", self.model)
-        self.translator = make_translator(model_name=self.model, device=self.device)
-        self.translator.load()
+        self.translator = await cache.load(cache_key, self._build_translator)
+
+    async def _build_translator(self):
+        from core.translator.local_translator import make_translator
+
+        translator = make_translator(model_name=self.model, device=self.device)
+        translator.load()
+        return translator
 
     async def translate(self, text: str, target_lang: str,
                         source_lang: str | None = None,

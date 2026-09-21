@@ -2,6 +2,7 @@ import numpy as np
 
 from core.errors import ConfigError
 from core.utils import audio as audio_mod
+from core.utils import cache
 from core.utils import logging
 
 from . import detectors
@@ -22,6 +23,12 @@ class SileroVad(Detector):
     model_bytes = None
 
     async def load(self) -> None:
+        self.model_bytes = await cache.load("silero-vad", self._build_weights)
+        log.info("[LOAD] silero VAD min_silence=%dms threshold=%.2f",
+                 self.settings.get("min_silence_ms", 800),
+                 self.settings.get("threshold", 0.5))
+
+    async def _build_weights(self) -> bytes:
         import io
 
         import torch
@@ -37,10 +44,7 @@ class SileroVad(Detector):
 
         buffer = io.BytesIO()
         torch.jit.save(load_silero_vad(), buffer)
-        self.model_bytes = buffer.getvalue()
-        log.info("[LOAD] silero VAD min_silence=%dms threshold=%.2f",
-                 self.settings.get("min_silence_ms", 800),
-                 self.settings.get("threshold", 0.5))
+        return buffer.getvalue()
 
     def start(self, **_) -> None:
         import io
