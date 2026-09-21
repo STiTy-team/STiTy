@@ -1,0 +1,151 @@
+{
+  "name": "baseline-en-ko-seg",
+  "stamp": "20260912T163453",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-12T16:34:53.699118+00:00",
+  "finished_at": "2026-09-12T16:43:12.902376+00:00",
+  "metrics": {
+    "n_empty_hypothesis": 0,
+    "wer": 0.05113636363636364,
+    "wer_scored_only": 0.05113636363636364,
+    "cer": 0.050711743772241996,
+    "avg_fsl_sec": 0.1690677419354839,
+    "n_seg_with_fsl": 31,
+    "laal_ms": 7391.20577425026,
+    "laal_ca_ms": 8062.12764925026,
+    "laal_uncapped_ms": 7537.872440916926,
+    "bleu": 26.466604717546772,
+    "bleu_by_target": {
+      "ko": {
+        "bleu": 26.466604717546772,
+        "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:ko-mecab-0.996/ko-0.9.2-KO|smooth:exp|version:2.6.0",
+        "bleu_tokenize": "ko-mecab",
+        "n_pairs": 30
+      }
+    },
+    "bleu_all": 26.466604717546772,
+    "commit_stats": {
+      "counts": {
+        "vad": 31,
+        "seg": 0,
+        "dot": 0,
+        "always": 0,
+        "finish": 0
+      },
+      "total": 31,
+      "ratios": {
+        "vad": 1.0,
+        "seg": 0.0,
+        "dot": 0.0,
+        "always": 0.0,
+        "finish": 0.0
+      },
+      "finish_ratio": 0.0
+    },
+    "segments_per_item": 1.0333333333333334,
+    "n_direction_refix": 0,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "en->en": 31
+    },
+    "route_accuracy": 1.0,
+    "n_segments_routed": 31,
+    "n_misrouted": 0
+  },
+  "unavailable": {},
+  "counts": {
+    "items": 30,
+    "sessions": 30,
+    "errored": 0,
+    "empty_hypothesis": 0,
+    "audio_sec": 329.52,
+    "wall_sec": 499.2,
+    "realtime_factor": 0.66
+  },
+  "failed_items": [],
+  "misrouted_items": [],
+  "config": {
+    "name": "baseline-en-ko-seg",
+    "dataset": {
+      "name": "fleurs",
+      "limit": 30
+    },
+    "languages": {
+      "lang": "en",
+      "target": "ko"
+    },
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "qwen3",
+          "model": "Qwen/Qwen3-ASR-1.7B",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128
+        },
+        "translation": {
+          "name": "local",
+          "model": "google/madlad400-3b-mt"
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.42
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000,
+    "realtime": true
+  },
+  "dataset": {
+    "name": "fleurs",
+    "root": "/home/skkai/STiTy-team/datasets/fleurs",
+    "split": "test-en_us",
+    "languages": [
+      "en"
+    ],
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "de",
+        "ko"
+      ]
+    },
+    "group_rule": "id",
+    "manifest_sha256": "2814bb2726e1c4a5b673099e1844979a9e7d69d9bb422cf96fac140768340d52",
+    "n_items": 30,
+    "n_sessions": 30
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "qwen3",
+      "model_path": "Qwen/Qwen3-ASR-1.7B",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "local",
+      "model": "google/madlad400-3b-mt"
+    }
+  },
+  "environment": {
+    "commit": "ad3db10e",
+    "branch": "bench",
+    "dirty": true,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.9.1",
+    "vllm": "0.14.0",
+    "transformers": "4.57.6",
+    "sacrebleu": "2.6.0"
+  }
+}

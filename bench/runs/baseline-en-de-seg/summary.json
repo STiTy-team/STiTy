@@ -1,0 +1,150 @@
+{
+  "name": "baseline-en-de-seg",
+  "stamp": "20260912T164427",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-12T16:44:27.362907+00:00",
+  "finished_at": "2026-09-12T16:52:30.453352+00:00",
+  "metrics": {
+    "n_empty_hypothesis": 0,
+    "wer": 0.09943977591036414,
+    "wer_scored_only": 0.09943977591036414,
+    "cer": 0.05863192182410423,
+    "avg_fsl_sec": 0.12946000000000002,
+    "n_seg_with_fsl": 40,
+    "laal_ms": 6523.45,
+    "laal_ca_ms": 7532.910000000001,
+    "laal_uncapped_ms": 7403.45,
+    "bleu": 40.99238726240794,
+    "bleu_by_target": {
+      "de": {
+        "bleu": 40.99238726240794,
+        "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0",
+        "bleu_tokenize": "13a",
+        "n_pairs": 40
+      }
+    },
+    "bleu_all": 40.99238726240794,
+    "commit_stats": {
+      "counts": {
+        "vad": 40,
+        "seg": 0,
+        "dot": 0,
+        "always": 0,
+        "finish": 0
+      },
+      "total": 40,
+      "ratios": {
+        "vad": 1.0,
+        "seg": 0.0,
+        "dot": 0.0,
+        "always": 0.0,
+        "finish": 0.0
+      },
+      "finish_ratio": 0.0
+    },
+    "segments_per_item": 1.0,
+    "n_direction_refix": 0,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "en->en": 40
+    },
+    "route_accuracy": 1.0,
+    "n_segments_routed": 40,
+    "n_misrouted": 0
+  },
+  "unavailable": {},
+  "counts": {
+    "items": 40,
+    "sessions": 40,
+    "errored": 0,
+    "empty_hypothesis": 0,
+    "audio_sec": 260.94,
+    "wall_sec": 483.09,
+    "realtime_factor": 0.54
+  },
+  "failed_items": [],
+  "misrouted_items": [],
+  "config": {
+    "name": "baseline-en-de-seg",
+    "dataset": {
+      "name": "acl6060",
+      "limit": 40
+    },
+    "languages": {
+      "lang": "en",
+      "target": "de"
+    },
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "qwen3",
+          "model": "Qwen/Qwen3-ASR-1.7B",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128
+        },
+        "translation": {
+          "name": "local",
+          "model": "google/madlad400-3b-mt"
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.42
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000,
+    "realtime": true
+  },
+  "dataset": {
+    "name": "acl6060",
+    "root": "/home/skkai/STiTy-team/datasets/acl6060",
+    "split": "eval-hf",
+    "languages": [
+      "en"
+    ],
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "de"
+      ]
+    },
+    "group_rule": "id (the mirror carries no talk id)",
+    "manifest_sha256": "649fe42832f92547eeedb3b5d2573ce9f2e2c12bcea0163bbebae26087d78b16",
+    "n_items": 40,
+    "n_sessions": 40
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "qwen3",
+      "model_path": "Qwen/Qwen3-ASR-1.7B",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "local",
+      "model": "google/madlad400-3b-mt"
+    }
+  },
+  "environment": {
+    "commit": "ad3db10e",
+    "branch": "bench",
+    "dirty": true,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.9.1",
+    "vllm": "0.14.0",
+    "transformers": "4.57.6",
+    "sacrebleu": "2.6.0"
+  }
+}

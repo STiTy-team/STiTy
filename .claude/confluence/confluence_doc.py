@@ -656,6 +656,10 @@ def resolve_title(cf: "Confluence", d: dict, kind_ko: str, autonumber: bool) -> 
     sys.exit(f"같은 태그의 문서가 {MAX_SEQ} 개를 넘었다. seq 로 직접 번호를 지정할 것.")
 
 
+# 이보다 긴 항목 문구를 요약 없이 이슈 제목으로 쓰면 경고한다.
+SUMMARY_WARN_LEN = 30
+
+
 def slug(s: str) -> str:
     """Confluence 라벨은 공백을 못 쓴다."""
     return str(s).replace(" ", "")
@@ -667,6 +671,9 @@ def resolve_jira(spec, fields: dict, major: str, dry_run: bool) -> tuple[list[st
     spec 이 문자열이면 기존 이슈 하나를 그대로 쓴다. 객체면 create_from 이 가리키는
     항목의 목록 하나하나를 이슈로 만들고, keys 로 준 기존 이슈를 뒤에 덧붙인다.
     같은 요약의 이슈가 이미 있으면 새로 만들지 않고 재사용한다.
+
+    세분화 항목 문구는 길어서 이슈 제목으로 쓰면 목록에서 읽히지 않는다. 이슈 제목은
+    summary_by_item 의 짧은 요약을 쓰고, 항목 문구 전체는 이슈 설명에 넣는다.
     """
     if not spec:
         return [], []
@@ -693,6 +700,10 @@ def resolve_jira(spec, fields: dict, major: str, dry_run: bool) -> tuple[list[st
 
     default_who = spec.get("assignee")
     by_item = spec.get("assignee_by_item", {})
+    summaries = spec.get("summary_by_item", {})
+    unknown = [k for k in summaries if k not in items]
+    if unknown:
+        sys.exit(f"summary_by_item 의 키가 '{source}' 항목과 맞지 않는다: {unknown}")
 
     made, new_keys = [], []
     jira = None if dry_run else Jira(*load_env())
@@ -700,20 +711,31 @@ def resolve_jira(spec, fields: dict, major: str, dry_run: bool) -> tuple[list[st
     for item in items:
         who = by_item.get(item, default_who)
         label = f" -> {who}" if who else " -> (담당자 없음)"
+        summary = (summaries.get(item) or item).strip()
+        if summary == item.strip():
+            shown = item
+            if len(item) > SUMMARY_WARN_LEN:
+                print(f"경고: 이슈 제목이 {len(item)}자다. summary_by_item 으로 줄일 것 — {item}",
+                      file=sys.stderr)
+        else:
+            shown = f"{summary}  ← {item}"
+        description = "\n\n".join(s for s in (item if summary != item.strip() else "", note) if s)
         if dry_run:
-            made.append(f"[{project}/{issuetype}] {item}{label}")
+            made.append(f"[{project}/{issuetype}] {shown}{label}")
             continue
-        existing = jira.find_by_summary(project, item)
+        # 요약을 쓰기 전에 항목 문구 그대로 만든 이슈도 찾아야 같은 계획을 다시 돌려도 안 겹친다.
+        existing = (jira.find_by_summary(project, summary)
+                    or (summary != item.strip() and jira.find_by_summary(project, item)))
         if existing:
             new_keys.append(existing)
-            made.append(f"{existing}  (이미 있어서 재사용, 담당자는 건드리지 않음) {item}")
+            made.append(f"{existing}  (이미 있어서 재사용, 담당자는 건드리지 않음) {shown}")
             continue
         if who and who not in cache:
             cache[who] = jira.account_id(project, who)
-        key = jira.create(project, issuetype, item, note,
+        key = jira.create(project, issuetype, summary, description,
                           cache.get(who) if who else None)  # 유형이 없으면 여기서 멈춘다
         new_keys.append(key)
-        made.append(f"{key}  (새로 만듦){label} {item}")
+        made.append(f"{key}  (새로 만듦){label} {shown}")
     return new_keys + keys, made
 
 
