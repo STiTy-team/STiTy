@@ -1,0 +1,282 @@
+{
+  "usage": {
+    "calls": 60,
+    "prompt_tokens": 18779,
+    "completion_tokens": 9753,
+    "cached_tokens": 0,
+    "truncated": 0,
+    "cost": 0.057973,
+    "by_purpose": {
+      "critical_information": {
+        "calls": 30,
+        "prompt_tokens": 10728,
+        "completion_tokens": 7470,
+        "reasoning_tokens": 0,
+        "cached_tokens": 0,
+        "cost": 0.041661
+      },
+      "spoken_fluency_mqm": {
+        "calls": 30,
+        "prompt_tokens": 8051,
+        "completion_tokens": 2283,
+        "reasoning_tokens": 0,
+        "cached_tokens": 0,
+        "cost": 0.016312
+      }
+    }
+  },
+  "mode": "quality_annotation",
+  "status": "ok",
+  "started_at": "2026-09-21T07:06:17.641426+00:00",
+  "finished_at": "2026-09-21T07:06:41.529572+00:00",
+  "source_run": "/home/skkai/stity-langswitch/STiTy/bench/runs/mt-ko-en-hy-mt2-1.8b",
+  "counts": {
+    "items": 30,
+    "annotated": 30,
+    "annotation_errors": 0
+  },
+  "metrics": {
+    "critical_information": {
+      "normalized_value_accuracy": {
+        "accuracy": 0.875,
+        "correct": 14,
+        "total": 16,
+        "n_annotated_items": 30,
+        "n_missing_candidate_annotations": 0,
+        "by_type": {
+          "number": {
+            "correct": 11,
+            "total": 12,
+            "accuracy": 0.9166666666666666
+          },
+          "time": {
+            "correct": 0,
+            "total": 1,
+            "accuracy": 0.0
+          },
+          "unit": {
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0
+          }
+        }
+      },
+      "critical_span_f1": {
+        "precision": 0.8863636363636364,
+        "recall": 0.9285714285714286,
+        "f1": 0.9069767441860465,
+        "true_positive": 39,
+        "predicted": 44,
+        "reference": 42,
+        "n_annotated_items": 30,
+        "n_missing_candidate_annotations": 0
+      },
+      "critical_fact_error_rate": {
+        "error_rate": 0.2608695652173913,
+        "error_items": 6,
+        "eligible_items": 23,
+        "per_item": {
+          "fleurs-1685": false,
+          "fleurs-1827": false,
+          "fleurs-1704": true,
+          "fleurs-1749": true,
+          "fleurs-1946": false,
+          "fleurs-1864": false,
+          "fleurs-1748": true,
+          "fleurs-1782": false,
+          "fleurs-1999": false,
+          "fleurs-1699": false,
+          "fleurs-1828": false,
+          "fleurs-1678": false,
+          "fleurs-1848": false,
+          "fleurs-1806": false,
+          "fleurs-1980": true,
+          "fleurs-1830": true,
+          "fleurs-1714": false,
+          "fleurs-1662": false,
+          "fleurs-1845": true,
+          "fleurs-1916": false,
+          "fleurs-1742": false,
+          "fleurs-1886": false,
+          "fleurs-1859": false
+        },
+        "n_missing_candidate_annotations": 0
+      }
+    },
+    "fluency": {
+      "spoken_fluency_judge": {
+        "score": 4.466666666666667,
+        "n_scored": 30,
+        "per_item": {
+          "fleurs-1685": 4.0,
+          "fleurs-1827": 5.0,
+          "fleurs-1704": 5.0,
+          "fleurs-1749": 4.0,
+          "fleurs-1946": 3.0,
+          "fleurs-1864": 3.0,
+          "fleurs-1748": 5.0,
+          "fleurs-1988": 4.0,
+          "fleurs-1782": 4.0,
+          "fleurs-1999": 5.0,
+          "fleurs-1888": 4.0,
+          "fleurs-1699": 4.0,
+          "fleurs-1828": 4.0,
+          "fleurs-1678": 4.0,
+          "fleurs-1848": 4.0,
+          "fleurs-1806": 4.0,
+          "fleurs-1980": 5.0,
+          "fleurs-1830": 5.0,
+          "fleurs-1943": 5.0,
+          "fleurs-1714": 5.0,
+          "fleurs-1771": 5.0,
+          "fleurs-1662": 5.0,
+          "fleurs-1677": 5.0,
+          "fleurs-1861": 5.0,
+          "fleurs-1845": 5.0,
+          "fleurs-1916": 5.0,
+          "fleurs-1742": 5.0,
+          "fleurs-1973": 3.0,
+          "fleurs-1886": 5.0,
+          "fleurs-1859": 5.0
+        },
+        "reasons": {
+          "fleurs-1685": "Generally natural and understandable English, with only a small awkward phrasing choice.",
+          "fleurs-1827": "Fully natural and grammatical spoken English.",
+          "fleurs-1704": "The candidate is fluent, grammatical English and reads naturally as a spoken sentence.",
+          "fleurs-1749": "Generally natural and fluent English. The only notable issue is a slightly awkward phrasing in the first sentence, but it remains clear and conversational.",
+          "fleurs-1946": "Understandable, but the sentence is awkward and somewhat unnatural in spoken English, especially in the repeated noun phrase and the phrase \"refund policies due to the coronavirus pandemic.\"",
+          "fleurs-1864": "Understandable, but the sentence is noticeably awkward and has some unnatural phrasing for spoken English.",
+          "fleurs-1748": "Fully natural English sentence with no notable fluency issues.",
+          "fleurs-1988": "The sentence is grammatical and clear, but the phrasing \"attitudes among most citizens and in the country\" is slightly awkward and non-idiomatic for spoken English.",
+          "fleurs-1782": "Generally natural and fluent English. The phrasing is understandable and mostly well-formed, with only a small awkwardness in repetition and wording.",
+          "fleurs-1999": "Fully natural English sentence with clear grammar and idiomatic phrasing.",
+          "fleurs-1888": "Generally natural and clear English. The only noticeable issue is the slightly awkward phrase \"cultural shock,\" which is understandable but less idiomatic than the usual expression.",
+          "fleurs-1699": "The sentence is understandable and mostly natural, but it has a small article error before \"undemocratic\" that makes it slightly awkward.",
+          "fleurs-1828": "The sentence is clear and grammatical overall, but \"probably will\" sounds slightly awkward in spoken English.",
+          "fleurs-1678": "The sentence is clear and grammatical overall, but the phrasing \"understand his speech due to brain damage\" is a bit awkward and slightly ambiguous in spoken English.",
+          "fleurs-1848": "Generally natural and clear spoken English, but \"Last morning\" is slightly awkward in English and sounds less idiomatic than a more natural time expression.",
+          "fleurs-1806": "Generally natural and fluent English. The sentence is understandable and well-formed, with only a small awkwardness in phrasing.",
+          "fleurs-1980": "Fully natural spoken English with no notable fluency issues.",
+          "fleurs-1830": "Fully natural English sentence with no notable fluency issues.",
+          "fleurs-1943": "Fully natural and fluent English. The phrasing is grammatical, clear, and idiomatic enough for spoken conversation.",
+          "fleurs-1714": "Fully natural English overall. The candidate reads smoothly and is grammatical, with only a very minor stylistic awkwardness in the phrasing \"our light and vision.\"",
+          "fleurs-1771": "Fully natural spoken English with no notable fluency issues.",
+          "fleurs-1662": "Fully natural spoken English with no notable fluency issues.",
+          "fleurs-1677": "Fully natural English sentence with no notable fluency issues.",
+          "fleurs-1861": "The candidate is fluent, grammatical, and natural as spoken English. No clear fluency or style errors are present.",
+          "fleurs-1845": "Fully natural spoken English with no notable fluency issues.",
+          "fleurs-1916": "Fully natural spoken English overall. The second sentence is fluent and idiomatic; the first is also understandable and natural aside from a likely truncated word form.",
+          "fleurs-1742": "Fully natural and grammatical English; no notable fluency issues.",
+          "fleurs-1973": "Understandable spoken English, but it sounds noticeably awkward and somewhat non-native in phrasing and punctuation.",
+          "fleurs-1886": "Fully natural English sentence with no notable fluency issues.",
+          "fleurs-1859": "The candidate is fluent, grammatical, and natural as spoken English. No notable fluency or style issues."
+        }
+      },
+      "mqm_fluency_error_rate": {
+        "error_rate": 0.028011204481792718,
+        "weighted_errors": 20.0,
+        "target_tokens": 714,
+        "severity_counts": {
+          "minor": 20,
+          "major": 0,
+          "critical": 0
+        },
+        "severity_weights": {
+          "minor": 1.0,
+          "major": 5.0,
+          "critical": 25.0
+        },
+        "per_item": {
+          "fleurs-1685": 0.034482758620689655,
+          "fleurs-1827": 0.0,
+          "fleurs-1704": 0.0,
+          "fleurs-1749": 0.03125,
+          "fleurs-1946": 0.06896551724137931,
+          "fleurs-1864": 0.125,
+          "fleurs-1748": 0.0,
+          "fleurs-1988": 0.058823529411764705,
+          "fleurs-1782": 0.05714285714285714,
+          "fleurs-1999": 0.0,
+          "fleurs-1888": 0.0,
+          "fleurs-1699": 0.0,
+          "fleurs-1828": 0.05555555555555555,
+          "fleurs-1678": 0.045454545454545456,
+          "fleurs-1848": 0.034482758620689655,
+          "fleurs-1806": 0.03571428571428571,
+          "fleurs-1980": 0.0,
+          "fleurs-1830": 0.0,
+          "fleurs-1943": 0.0,
+          "fleurs-1714": 0.041666666666666664,
+          "fleurs-1771": 0.0,
+          "fleurs-1662": 0.0,
+          "fleurs-1677": 0.0,
+          "fleurs-1861": 0.0,
+          "fleurs-1845": 0.0,
+          "fleurs-1916": 0.05,
+          "fleurs-1742": 0.0,
+          "fleurs-1973": 0.06060606060606061,
+          "fleurs-1886": 0.0,
+          "fleurs-1859": 0.0
+        }
+      },
+      "target_lm_pseudo_perplexity": {
+        "n_scored": 30,
+        "per_item": {
+          "fleurs-1685": 4.425098916679916,
+          "fleurs-1827": 2.408304199141788,
+          "fleurs-1704": 4.532976400489876,
+          "fleurs-1749": 2.892814174141467,
+          "fleurs-1946": 5.040592387935675,
+          "fleurs-1864": 6.3403224070755195,
+          "fleurs-1748": 6.353483191299951,
+          "fleurs-1988": 5.064955821172352,
+          "fleurs-1782": 2.493460092532824,
+          "fleurs-1999": 3.4588031316178656,
+          "fleurs-1888": 2.5991007487428774,
+          "fleurs-1699": 2.2502795723461144,
+          "fleurs-1828": 9.99360299010859,
+          "fleurs-1678": 5.51337560631948,
+          "fleurs-1848": 2.021963588838111,
+          "fleurs-1806": 2.1684074037635077,
+          "fleurs-1980": 2.4271596334114225,
+          "fleurs-1830": 3.26622008725417,
+          "fleurs-1943": 4.090309199933535,
+          "fleurs-1714": 3.474277528194138,
+          "fleurs-1771": 6.527227787501273,
+          "fleurs-1662": 2.8022443244599646,
+          "fleurs-1677": 2.7279045883434785,
+          "fleurs-1861": 2.372704009958616,
+          "fleurs-1845": 2.1191419461680714,
+          "fleurs-1916": 4.345351895622368,
+          "fleurs-1742": 1.619277480224647,
+          "fleurs-1973": 3.0633385914353353,
+          "fleurs-1886": 7.189442271156644,
+          "fleurs-1859": 2.3639763820136888
+        },
+        "source": "metric_inputs",
+        "by_target": {
+          "en": {
+            "pseudo_perplexity": 3.8648705452627756,
+            "n_scored": 30
+          }
+        },
+        "pseudo_perplexity": 3.8648705452627756,
+        "models": [
+          "FacebookAI/roberta-base"
+        ]
+      }
+    }
+  },
+  "unavailable": {},
+  "annotation": {
+    "version": "2026-09-21.1",
+    "judge_model": "gpt-5.4-mini",
+    "critical_information": true,
+    "spoken_fluency_mqm": true,
+    "pseudo_perplexity": true,
+    "lm": {
+      "en": "FacebookAI/roberta-base",
+      "ko": "klue/roberta-base"
+    }
+  }
+}

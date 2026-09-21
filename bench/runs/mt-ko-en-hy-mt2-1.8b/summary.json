@@ -1,0 +1,144 @@
+{
+  "name": "mt-ko-en-hy-mt2-1.8b",
+  "mode": "translation_only",
+  "stamp": "20260921T070430",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-21T07:04:30.484763+00:00",
+  "finished_at": "2026-09-21T07:04:49.798061+00:00",
+  "metrics": {
+    "bleu": 25.540467155655993,
+    "bleu_by_target": {
+      "en": {
+        "bleu": 25.54046715565599,
+        "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0",
+        "bleu_tokenize": "13a",
+        "n_pairs": 30
+      }
+    },
+    "bleu_all": 25.540467155655993,
+    "meaning": {
+      "chrfpp": {
+        "score": 52.821168858387466,
+        "signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0",
+        "n_scored": 30,
+        "per_item": {
+          "fleurs-1685": 73.33483234606216,
+          "fleurs-1827": 47.20372365968279,
+          "fleurs-1704": 69.54886469036319,
+          "fleurs-1749": 45.588329755171515,
+          "fleurs-1946": 45.55376836930661,
+          "fleurs-1864": 61.2700764923437,
+          "fleurs-1748": 49.86811892531068,
+          "fleurs-1988": 65.61753845765483,
+          "fleurs-1782": 43.705332091871384,
+          "fleurs-1999": 41.04531950496547,
+          "fleurs-1888": 42.776881576720434,
+          "fleurs-1699": 35.11245747604767,
+          "fleurs-1828": 60.507604842561015,
+          "fleurs-1678": 41.95874649585425,
+          "fleurs-1848": 55.64490588706609,
+          "fleurs-1806": 40.151100641843755,
+          "fleurs-1980": 46.50541175860932,
+          "fleurs-1830": 74.99137978479526,
+          "fleurs-1943": 49.17046303623849,
+          "fleurs-1714": 77.73823849135174,
+          "fleurs-1771": 35.38777805596441,
+          "fleurs-1662": 88.60423059348626,
+          "fleurs-1677": 68.35939161678178,
+          "fleurs-1861": 55.01039346395131,
+          "fleurs-1845": 40.35894057948355,
+          "fleurs-1916": 64.23407817263491,
+          "fleurs-1742": 49.41404701031495,
+          "fleurs-1973": 43.83516666141042,
+          "fleurs-1886": 48.160831229613535,
+          "fleurs-1859": 48.506974971013825
+        }
+      }
+    },
+    "translation_runtime": {
+      "calls": 30,
+      "total_sec": 12.573189904214814,
+      "average_sec": 0.4191063301404938,
+      "max_sec": 1.072694897011388,
+      "cuda_memory": {
+        "loaded_allocated_gib": 1.2032756805419922,
+        "inference_peak_reserved_gib": 1.69921875
+      }
+    }
+  },
+  "unavailable": {
+    "meaning.comet": "no precomputed metric_inputs.meaning.comet and STITY_COMET_MODEL is not set",
+    "meaning.metricx_24": "no precomputed metric_inputs.meaning.metricx_24 and STITY_METRICX_MODEL is not set",
+    "critical_information.normalized_value_accuracy": "missing metric_inputs.critical_information.reference_spans",
+    "critical_information.critical_span_f1": "missing metric_inputs.critical_information.reference_spans",
+    "critical_information.critical_fact_error_rate": "missing metric_inputs.critical_information.reference_spans",
+    "fluency.spoken_fluency_judge": "no spoken fluency judge scores",
+    "fluency.mqm_fluency_error_rate": "no MQM row has target_token_count",
+    "fluency.target_lm_pseudo_perplexity": "no precomputed fluency value and STITY_FLUENCY_LM is not set",
+    "context.context_mqm": "no Context-MQM judgements",
+    "context.dialogue_inconsistency_rate": "no turns have dialogue inconsistency annotations",
+    "context.context_contrastive_accuracy": "no context contrastive examples",
+    "asr_robustness.quality_drop": "no paired clean_quality/noisy_quality values",
+    "asr_robustness.translation_invariance": "no translation invariance similarities or scorer",
+    "asr_robustness.quality_noise_degradation": "degradation needs at least two noise/quality points per metric",
+    "intent.polarity_preservation": "no paired polarity labels",
+    "intent.speech_act_macro_f1": "no paired speech-act labels",
+    "intent.modality_stance_preservation": "no paired modality/stance labels"
+  },
+  "counts": {
+    "items": 30,
+    "sessions": 30,
+    "segments": 30,
+    "translation_errors": 0,
+    "empty_translation": 0,
+    "source_error_skips": 0,
+    "empty_source_skips": 0,
+    "wall_sec": 19.31
+  },
+  "failed_items": [],
+  "misrouted_items": [],
+  "config": {
+    "name": "mt-ko-en-hy-mt2-1.8b",
+    "languages": {
+      "lang": "ko",
+      "target": "en"
+    },
+    "translation": {
+      "name": "local",
+      "model": "tencent/Hy-MT2-1.8B",
+      "quant": "4bit"
+    },
+    "context_scope": "item"
+  },
+  "components": {
+    "translation": {
+      "backend": "local",
+      "model": "tencent/Hy-MT2-1.8B",
+      "quant": "4bit"
+    }
+  },
+  "source_run": {
+    "path": "/home/skkai/stity-langswitch/STiTy/bench/runs/fleurs-ko-en-text30",
+    "items_sha256": "3ee6dbc2c809fadc8ba935e480441fced2d47d4ba1fa3f713820c0ba55d51f7c",
+    "name": null,
+    "commit": null,
+    "dataset": null
+  },
+  "measurement_scope": {
+    "asr": "frozen from source run; WER/FSL/LAAL not rescored",
+    "segmentation": "frozen committed segments from source run",
+    "translation": "executed in this run"
+  },
+  "environment": {
+    "commit": "0337b4ea",
+    "branch": "feat/translation-metrics",
+    "dirty": true,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.9.1",
+    "vllm": "0.14.0",
+    "transformers": "5.17.0",
+    "sacrebleu": "2.6.0",
+    "unbabel-comet": null
+  }
+}

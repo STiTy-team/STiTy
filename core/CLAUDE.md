@@ -6,7 +6,7 @@
 |---|---|
 | `translator/correct_and_trans.py` | `GPTTranslator` — 교정 + 번역 단일 GPT 호출. 서버 `--gpt-translation`으로 활성화 |
 | `translator/gpt_corrector.py` | `GPTCorrector` — 교정만. 서버 `--correction`으로 활성화 |
-| `translator/local_translator.py` | 로컬 번역기 — seq2seq(MADLAD/NLLB)와 `LLMTranslator`(지시형 LLM, **앞 발화를 문맥으로 받을 수 있는 유일한 백엔드**), 그리고 독립 번역 서버를 부르는 HTTP 클라이언트 `RemoteTranslator`. `make_translator` 가 모델 이름으로 고른다 |
+| `translator/local_translator.py` | 로컬 번역기 — seq2seq(MADLAD/NLLB)와 `LLMTranslator`(지시형 LLM, **앞 발화를 문맥으로 받을 수 있는 유일한 백엔드**), 지시문 형식이 모델에 박혀 있는 `TranslateGemmaTranslator`(문맥 불가)·`HyMTTranslator`, 그리고 독립 번역 서버를 부르는 HTTP 클라이언트 `RemoteTranslator`. `make_translator` 가 모델 이름으로 고른다 |
 | `translator/LOCAL_TRANSLATION.md` | 어떤 로컬 번역 모델을 올릴지, 문맥을 몇 턴 줄지 — 실측표 |
 | `pipelines/` | 벤치마크가 재는 파이프라인과 그 부품. 종류별 서브패키지 하나, 그 안에 레지스트리 하나, 파일 하나가 백엔드 하나 — `pipeline/`(`pipelines`) · `vad/`(`detectors`) · `transcription/`(`transcribers`) · `translation/`(`translators`) · `correction/`(`correctors`). 설정 파일이 이름으로 고른다 |
 | `utils/metrics/` | 음성 번역 공용 채점 — WER·CER·BLEU·FSL·LAAL·커밋 사유·라우팅. 입구는 `score_item`·`score_run` 둘. STiTy `final` 필드를 그대로 읽고(`Utterance`/`Segment`), 데이터가 못 받치는 지표는 **값이 빠지고 `unavailable` 에 이유가 남는다** — `null` 도 예외도 없다. 실행·설정·보고서 형식은 모른다 |

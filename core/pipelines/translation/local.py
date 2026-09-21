@@ -10,7 +10,7 @@ DEFAULT_MODEL = "google/madlad400-3b-mt"
 
 @translators.register('local')
 class LocalTranslation(Translator):
-    SETTINGS = {"model": ("model", str), "device": ("device", str)}
+    SETTINGS = {"model": ("model", str), "device": ("device", str), "quant": ("quant", str)}
 
     translator = None
     calls = 0
@@ -21,8 +21,9 @@ class LocalTranslation(Translator):
 
         self.model = self.settings.get("model", DEFAULT_MODEL)
         self.device = self.settings.get("device")
-        logger.info("loading translation model: %s", self.model)
-        self.translator = make_translator(model_name=self.model, device=self.device)
+        extra = {"quant": self.settings["quant"]} if "quant" in self.settings else {}
+        logger.info("loading translation model: %s %s", self.model, extra)
+        self.translator = make_translator(model_name=self.model, device=self.device, **extra)
         self.translator.load()
 
     async def translate(self, text: str, target_lang: str,

@@ -1,0 +1,227 @@
+{
+  "mode": "asr_text_robustness",
+  "status": "ok",
+  "started_at": "2026-09-21T07:04:50.496691+00:00",
+  "finished_at": "2026-09-21T07:05:49.349510+00:00",
+  "source_run": {
+    "path": "/home/skkai/stity-langswitch/STiTy/bench/runs/mt-ko-en-hy-mt2-1.8b",
+    "items_sha256": "683c92ee5e116d3b6177a194c987b0705c2f616b2d9e8e076353533543a59ff2"
+  },
+  "counts": {
+    "items": 30,
+    "evaluated": 30,
+    "translation_errors": 0
+  },
+  "metrics": {
+    "asr_robustness": {
+      "quality_drop": {
+        "chrfpp": {
+          "absolute_drop": 3.2316337046420105,
+          "relative_drop": 0.06024802649768507,
+          "n_pairs": 30,
+          "lower_is_better": false,
+          "per_item": {
+            "fleurs-1685": {
+              "absolute_drop": 14.859597408257194,
+              "relative_drop": 0.20262673183918592
+            },
+            "fleurs-1827": {
+              "absolute_drop": -3.6971269258098545,
+              "relative_drop": -0.07832278132260169
+            },
+            "fleurs-1704": {
+              "absolute_drop": 0.0,
+              "relative_drop": 0.0
+            },
+            "fleurs-1749": {
+              "absolute_drop": -0.7651970782952873,
+              "relative_drop": -0.01678493338985475
+            },
+            "fleurs-1946": {
+              "absolute_drop": 11.989105995247456,
+              "relative_drop": 0.26318582247798233
+            },
+            "fleurs-1864": {
+              "absolute_drop": 6.567870198370798,
+              "relative_drop": 0.10719539740074453
+            },
+            "fleurs-1748": {
+              "absolute_drop": 2.4185059932921362,
+              "relative_drop": 0.04849803933680397
+            },
+            "fleurs-1988": {
+              "absolute_drop": -0.3206007537347517,
+              "relative_drop": -0.0048859003441838345
+            },
+            "fleurs-1782": {
+              "absolute_drop": -1.8611297706812877,
+              "relative_drop": -0.042583586066090855
+            },
+            "fleurs-1999": {
+              "absolute_drop": 3.795476076722238,
+              "relative_drop": 0.09247037475888278
+            },
+            "fleurs-1888": {
+              "absolute_drop": 1.4740915282705842,
+              "relative_drop": 0.034460004421472325
+            },
+            "fleurs-1699": {
+              "absolute_drop": -2.906716012682516,
+              "relative_drop": -0.08278304116609787
+            },
+            "fleurs-1828": {
+              "absolute_drop": 5.1839748266591315,
+              "relative_drop": 0.08567476501751606
+            },
+            "fleurs-1678": {
+              "absolute_drop": 3.4467707035601762,
+              "relative_drop": 0.08214665573721884
+            },
+            "fleurs-1848": {
+              "absolute_drop": 0.0,
+              "relative_drop": 0.0
+            },
+            "fleurs-1806": {
+              "absolute_drop": -3.0330468004657476,
+              "relative_drop": -0.07554081337697717
+            },
+            "fleurs-1980": {
+              "absolute_drop": 1.7499814703372962,
+              "relative_drop": 0.037629630706652775
+            },
+            "fleurs-1830": {
+              "absolute_drop": 30.192505229645676,
+              "relative_drop": 0.40261301120595333
+            },
+            "fleurs-1943": {
+              "absolute_drop": 3.072978939183777,
+              "relative_drop": 0.06249644094095678
+            },
+            "fleurs-1714": {
+              "absolute_drop": 0.0,
+              "relative_drop": 0.0
+            },
+            "fleurs-1771": {
+              "absolute_drop": 1.4183182794459839,
+              "relative_drop": 0.04007932561357676
+            },
+            "fleurs-1662": {
+              "absolute_drop": 0.0,
+              "relative_drop": 0.0
+            },
+            "fleurs-1677": {
+              "absolute_drop": 0.0,
+              "relative_drop": 0.0
+            },
+            "fleurs-1861": {
+              "absolute_drop": 0.0,
+              "relative_drop": 0.0
+            },
+            "fleurs-1845": {
+              "absolute_drop": 3.031283323206779,
+              "relative_drop": 0.07510809946155352
+            },
+            "fleurs-1916": {
+              "absolute_drop": 3.9138199138141516,
+              "relative_drop": 0.06093058428106348
+            },
+            "fleurs-1742": {
+              "absolute_drop": -3.546689567077003,
+              "relative_drop": -0.07177492599091606
+            },
+            "fleurs-1973": {
+              "absolute_drop": 11.169204233161615,
+              "relative_drop": 0.2548000859546005
+            },
+            "fleurs-1886": {
+              "absolute_drop": 2.7698386948242657,
+              "relative_drop": 0.05751226928826602
+            },
+            "fleurs-1859": {
+              "absolute_drop": 6.02619523400751,
+              "relative_drop": 0.12423358161601637
+            }
+          }
+        }
+      },
+      "translation_invariance": {
+        "score": 0.9365027050177256,
+        "n_pairs": 30,
+        "per_item": {
+          "fleurs-1685": 0.9079560041427612,
+          "fleurs-1827": 0.9042693376541138,
+          "fleurs-1704": 1.000000238418579,
+          "fleurs-1749": 0.9286414980888367,
+          "fleurs-1946": 0.9276139140129089,
+          "fleurs-1864": 0.9200122356414795,
+          "fleurs-1748": 0.9702526330947876,
+          "fleurs-1988": 0.9924712181091309,
+          "fleurs-1782": 0.9789251685142517,
+          "fleurs-1999": 0.9041061401367188,
+          "fleurs-1888": 0.8466103076934814,
+          "fleurs-1699": 0.7972002029418945,
+          "fleurs-1828": 0.9351862668991089,
+          "fleurs-1678": 0.8972909450531006,
+          "fleurs-1848": 1.0,
+          "fleurs-1806": 0.9416641592979431,
+          "fleurs-1980": 0.980467677116394,
+          "fleurs-1830": 0.8667306900024414,
+          "fleurs-1943": 0.9831458330154419,
+          "fleurs-1714": 1.0000001192092896,
+          "fleurs-1771": 0.9154965281486511,
+          "fleurs-1662": 1.0,
+          "fleurs-1677": 1.0,
+          "fleurs-1861": 1.0,
+          "fleurs-1845": 0.9455887675285339,
+          "fleurs-1916": 0.9171064496040344,
+          "fleurs-1742": 0.9987503290176392,
+          "fleurs-1973": 0.8566850423812866,
+          "fleurs-1886": 0.8383786678314209,
+          "fleurs-1859": 0.9405307769775391
+        }
+      },
+      "quality_noise_degradation": {
+        "chrfpp": {
+          "degradation_slope": 9.79234892388866,
+          "raw_quality_slope": -9.79234892388866,
+          "quality_auc": 57.454630149120376,
+          "worst_bucket_quality": 50.40719718330717,
+          "worst_bucket_noise": 0.32,
+          "n_points": 120,
+          "lower_is_better": false
+        }
+      }
+    }
+  },
+  "unavailable": {},
+  "config": {
+    "noise_levels": [
+      0.08,
+      0.18,
+      0.32
+    ],
+    "seed": 20260921,
+    "noise_generator_version": "asr-text-noise-2026-09-21.1",
+    "similarity_model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+    "translation": {
+      "backend": "local",
+      "model": "tencent/Hy-MT2-1.8B",
+      "quant": "4bit"
+    },
+    "languages": {
+      "lang": "ko",
+      "target": "en"
+    }
+  },
+  "environment": {
+    "commit": "0337b4ea",
+    "branch": "feat/translation-metrics",
+    "dirty": true,
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.9.1",
+    "vllm": "0.14.0",
+    "transformers": "5.17.0",
+    "sacrebleu": "2.6.0",
+    "unbabel-comet": null
+  }
+}

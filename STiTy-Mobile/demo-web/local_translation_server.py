@@ -101,7 +101,8 @@ def main() -> None:
     app = web.Application()
     app["translator"] = translator
     app["model_name"] = args.model
-    app["supports_context"] = isinstance(translator, LLMTranslator)
+    app["supports_context"] = (isinstance(translator, LLMTranslator)
+                               and translator.SUPPORTS_CONTEXT)
     app["context_window"] = args.context_window if app["supports_context"] else 0
     app.router.add_post("/translate", handle_translate)
     app.router.add_get("/health", handle_health)

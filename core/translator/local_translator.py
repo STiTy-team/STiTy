@@ -273,6 +273,8 @@ class LLMTranslator:
     """
 
     DEFAULT_LLM = "Qwen/Qwen3-4B-Instruct-2507"
+    # 번역 서버가 /health 로 문맥 사용 여부를 알린다. 문맥을 넣을 자리가 없는 서브클래스는 끈다.
+    SUPPORTS_CONTEXT = True
     LANG_NAME = {
         "en": "English", "ko": "Korean", "ja": "Japanese", "zh": "Chinese", "es": "Spanish",
         "fr": "French", "de": "German", "pt": "Portuguese", "it": "Italian", "ru": "Russian",
@@ -357,25 +359,28 @@ class LLMTranslator:
     def _name(self, code: str) -> str:
         return self.LANG_NAME.get(code, code)
 
-    def _build_prompt(self, text: str, target_code: str, source_code: str,
-                      context: Optional[list] = None) -> str:
-        tok = self._tokenizer
+    def _context_block(self, context: list, target_code: str) -> str:
+        # 문맥 항목은 원문 문자열이거나 {text, lang, translation} 딕셔너리다. 딕셔너리는
+        # 프록시가 화자·언어 무관하게 시간순으로 모은 앞 턴이라 언어를 같이 적고,
+        # 번역이 있으면 함께 보여 용어(pastel=케이크)와 격식의 기준점으로 삼는다.
+        lines = []
+        for c in context:
+            if isinstance(c, dict):
+                lang = self._name(c.get("lang") or "") or "unknown language"
+                line = f"- [{lang}] {c.get('text', '')}"
+                tr = c.get("translation")
+                if tr:
+                    line += f"  →  [{self._name(target_code)}] {tr}"
+                lines.append(line)
+            else:
+                lines.append(f"- {c}")
+        return "\n".join(lines)
+
+    def _messages(self, text: str, target_code: str, source_code: str,
+                  context: Optional[list] = None) -> list[dict]:
+        """chat template 에 넣을 메시지. 모델마다 지시문 형식이 달라 서브클래스가 바꾼다."""
         if context:
-            # 문맥 항목은 원문 문자열이거나 {text, lang, translation} 딕셔너리다. 딕셔너리는
-            # 프록시가 화자·언어 무관하게 시간순으로 모은 앞 턴이라 언어를 같이 적고,
-            # 번역이 있으면 함께 보여 용어(pastel=케이크)와 격식의 기준점으로 삼는다.
-            lines = []
-            for c in context:
-                if isinstance(c, dict):
-                    lang = self._name(c.get("lang") or "") or "unknown language"
-                    line = f"- [{lang}] {c.get('text', '')}"
-                    tr = c.get("translation")
-                    if tr:
-                        line += f"  →  [{self._name(target_code)}] {tr}"
-                    lines.append(line)
-                else:
-                    lines.append(f"- {c}")
-            ctx_block = "\n".join(lines)
+            ctx_block = self._context_block(context, target_code)
             user = (f"Earlier turns of the conversation, oldest first (context only — they may "
                     f"be other speakers and other languages; do NOT translate these, do NOT "
                     f"repeat their translation):\n{ctx_block}\n\n"
@@ -385,7 +390,12 @@ class LLMTranslator:
         else:
             user = (f"Translate the following {self._name(source_code)} sentence into "
                     f"{self._name(target_code)}.\n\n{text}")
-        msgs = [{"role": "system", "content": self.SYSTEM}, {"role": "user", "content": user}]
+        return [{"role": "system", "content": self.SYSTEM}, {"role": "user", "content": user}]
+
+    def _build_prompt(self, text: str, target_code: str, source_code: str,
+                      context: Optional[list] = None) -> str:
+        tok = self._tokenizer
+        msgs = self._messages(text, target_code, source_code, context)
         try:
             # Qwen3 계열은 생각 모드를 끄지 않으면 출력이 길어져 자막 지연이 커진다.
             return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True,
@@ -402,8 +412,11 @@ class LLMTranslator:
 
         with self._lock:
             tok, model = self._tokenizer, self._model
+            # chat template 이 BOS 를 이미 써 넣는다. 토크나이저가 또 붙이면 gemma 계열은
+            # `<bos><bos>` 로 시작한다(실측, unsloth/gemma-3-4b-it). apply_chat_template 의
+            # tokenize=True 경로도 같은 이유로 add_special_tokens=False 를 쓴다.
             enc = tok(self._build_prompt(text, target_code, source_code, context),
-                      return_tensors="pt")
+                      return_tensors="pt", add_special_tokens=False)
             n_prompt = enc["input_ids"].shape[1]
             enc = {k: v.to(self._device) for k, v in enc.items()}
             with torch.inference_mode():
@@ -471,15 +484,80 @@ class LLMTranslator:
         return translated, src
 
 
+class TranslateGemmaTranslator(LLMTranslator):
+    """google/translategemma-*. 번역 지시문은 모델의 chat template 이 직접 만든다.
+
+    템플릿은 system 역할을 받지 않고(첫 메시지가 user 가 아니면 예외를 던진다), user
+    메시지는 ``{type, source_lang_code, target_lang_code, text}`` 한 항목짜리 리스트여야
+    한다. LLMTranslator 의 SYSTEM 과 문맥 블록을 넣을 자리가 없으므로 문맥은 받되 버리고
+    한 번 알린다(seq2seq 백엔드와 같은 처리). 언어 코드는 템플릿의 표에 있는 것만 된다 —
+    앱이 쓰는 두 글자 코드(ko, en, ja, zh, es …)는 전부 들어 있다.
+    """
+
+    SUPPORTS_CONTEXT = False
+    _context_warned = False
+
+    def _messages(self, text: str, target_code: str, source_code: str,
+                  context: Optional[list] = None) -> list[dict]:
+        return [{"role": "user", "content": [{
+            "type": "text", "source_lang_code": source_code,
+            "target_lang_code": target_code, "text": text}]}]
+
+    async def translate(
+        self, text: str, target_code: str, source_code: Optional[str] = None,
+        context: Optional[list] = None,
+    ) -> tuple[str, str]:
+        if context and not self._context_warned:
+            self._context_warned = True
+            logger.warning(
+                f"[local-translate] {self.model_name} 의 chat template 에는 문맥을 넣을 자리가 "
+                "없어 무시한다")
+        return await super().translate(text, target_code, source_code, context=None)
+
+
+class HyMTTranslator(LLMTranslator):
+    """tencent/Hy-MT2-*. 모델 카드의 지시문을 그대로 쓴다.
+
+    system prompt 가 없는 모델이라(카드: "our models do not have a default system_prompt")
+    지시문 전체가 user 메시지 하나다. 카드는 같은 지시문의 중국어판과 영어판을 나란히
+    싣는데, 여기서는 영어판을 쓴다 — 언어 이름도 영어로 적어야 한다. 문맥은 카드의
+    ``[Background Information]`` 지시문에 앞 턴을 넣어 전한다.
+    """
+
+    PROMPT = ("Translate the following text into {target}. Note that you should only output "
+              "the translated result without any additional explanation:\n\n{text}")
+    CONTEXT_PROMPT = ("[Background Information]\n{background}\n\n"
+                      "Please translate the following text into {target}, taking the provided "
+                      "background information into consideration.\n\n[Source Text]\n{text}")
+
+    def _messages(self, text: str, target_code: str, source_code: str,
+                  context: Optional[list] = None) -> list[dict]:
+        target = self._name(target_code)
+        if context:
+            content = self.CONTEXT_PROMPT.format(
+                background=self._context_block(context, target_code), target=target, text=text)
+        else:
+            content = self.PROMPT.format(target=target, text=text)
+        return [{"role": "user", "content": content}]
+
+
 def make_translator(model_name: str = DEFAULT_MODEL, **kwargs):
     """모델 이름으로 백엔드를 고른다.
 
-    이름에 ``madlad`` 가 들어가면 MADLAD, 지시형 LLM 으로 보이면 LLMTranslator,
+    이름에 ``madlad`` 가 들어가면 MADLAD, ``translategemma`` 와 ``hy-mt`` 는 각자 정해진
+    지시문 형식을 쓰는 전용 클래스, 그 밖에 지시형 LLM 으로 보이면 LLMTranslator,
     나머지는 NLLB 로 친다. LLM 만 문맥을 쓸 수 있다(LLMTranslator 주석 참고).
     """
     lowered = model_name.lower()
     if "madlad" in lowered:
         return MADLADTranslator(model_name=model_name, **_seq2seq_kwargs(kwargs))
+    # 아래 일반 LLM 판정보다 먼저 봐야 한다. translategemma 는 이름에 gemma·-it 가 있어
+    # LLMTranslator 로 가는데, 그 system 메시지를 템플릿이 예외로 거절한다. hy-mt 는 어느
+    # 키워드에도 안 걸려 NLLB 로 떨어진다.
+    if "translategemma" in lowered:
+        return TranslateGemmaTranslator(model_name=model_name, **kwargs)
+    if "hy-mt" in lowered:
+        return HyMTTranslator(model_name=model_name, **kwargs)
     if any(k in lowered for k in ("qwen", "instruct", "gemma", "llama", "mistral", "-it")):
         return LLMTranslator(model_name=model_name, **kwargs)
     return NLLBTranslator(model_name=model_name, **_seq2seq_kwargs(kwargs))

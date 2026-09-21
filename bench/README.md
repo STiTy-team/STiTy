@@ -84,6 +84,11 @@ stity:
 최상위로 평평하게 펴지 않는다. 컴포넌트가 모르는 키를 주면 **에러로 죽는다** — 조용히
 버려지면 `max_new_tokens: 256` 을 적어 놓고 아무 일도 안 일어난 채 그럴듯한 숫자가 나온다.
 
+`translation: local` 은 `model`·`device`·`quant` 를 받는다. `quant` 는 지시형 LLM 백엔드의
+정밀도(`4bit` | `8bit` | `none`)이고, 안 적으면 4bit 다. 모델을 비교하는 설정에는 적어 둔다 —
+결과의 `config.yml` 만 보고 정밀도를 알 수 있어야 한다. 로컬 모델 네 조건(`gemma3-4b`,
+`hy-mt2-1.8b`, `qwen3.5-4b`, `translategemma-4b`, 전부 4bit)의 설정은 `configs/mt-ko-en/` 에 있다.
+
 ### `commit` 은 명시적으로 풀린다
 
 | `commit` | `always_commit` | `enable_dot_commit` | `hide_seg` |

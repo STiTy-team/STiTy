@@ -16,6 +16,7 @@ import copy
 import hashlib
 import json
 import shutil
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -229,6 +230,24 @@ def _prepare_run_dir(run_dir: Path, *, source_run: Path, config_path: Path) -> N
     shutil.copyfile(config_path, run_dir / "config.yml")
 
 
+def _cuda_memory(loaded: dict | None = None) -> dict | None:
+    """Model footprint after load, then the peak reserved while translating.
+
+    Loading a 4bit model passes through bf16 shards, so the all-time peak would
+    report the load transient instead of what the translator holds while serving.
+    The peak counter is reset after load for that reason. torch is only looked up,
+    never imported: a CPU-only replay has nothing to report.
+    """
+    torch = sys.modules.get("torch")
+    if torch is None or not torch.cuda.is_available():
+        return None
+    gib = 1024 ** 3
+    if loaded is None:
+        torch.cuda.reset_peak_memory_stats()
+        return {"loaded_allocated_gib": torch.cuda.memory_allocated() / gib}
+    return {**loaded, "inference_peak_reserved_gib": torch.cuda.max_memory_reserved() / gib}
+
+
 def _runtime_metric(rows) -> dict:
     elapsed = [float(segment.get("translation_elapsed_sec") or 0)
                for row in rows for segment in (row.get("segments") or [])]
@@ -297,14 +316,20 @@ def main(argv=None) -> int:
                        if key not in {"t", "type", "item", "session", "audio"}}
             logging.emit("final", replay_segment_index=index, **payload)
 
+        memory = {}
+
         async def execute():
             try:
                 await translator.load()
-                return await retranslate_rows(
+                memory["loaded"] = _cuda_memory()
+                rows = await retranslate_rows(
                     source_rows, translator=translator, languages=cfg.languages,
                     context_scope=cfg.context_scope,
                     before_item=before, after_item=after,
                     on_segment=segment_event)
+                if memory["loaded"] is not None:
+                    memory["final"] = _cuda_memory(memory["loaded"])
+                return rows
             finally:
                 try:
                     await translator.close()
@@ -329,6 +354,8 @@ def main(argv=None) -> int:
         finished = datetime.now(timezone.utc)
         quality = score_translation_rows(rows, languages=cfg.languages)
         quality.aggregate["translation_runtime"] = _runtime_metric(rows)
+        if memory.get("final"):
+            quality.aggregate["translation_runtime"]["cuda_memory"] = memory["final"]
         source_summary_path = source_run / "summary.json"
         source_summary = {}
         if source_summary_path.is_file():
