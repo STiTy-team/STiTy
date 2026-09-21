@@ -115,7 +115,10 @@ for run in a.run:
     names = sorted(set.intersection(*(set(conds[t]) for t in a.targets)))
     log(f"== {run}: 조건 {len(names)}")
     for n in names:
-        key = f"{run}/{n}"
+        # **런에 따라 달라지는 것은 `auto_S*` 뿐이다.** 비교군·무분절·기계분절은 정책과
+        # 번역이 같아 두 런의 가설이 바이트까지 같다(확인함). 런마다 다시 재면 조건
+        # 124개가 되는데 공유하면 74개다.
+        key = f"{run}/{n}" if n.startswith("auto_") else n
         if key in result:
             continue
         per_t = []
