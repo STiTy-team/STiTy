@@ -2,7 +2,7 @@
 
 A line starts with its tag in brackets and reads as a sentence:
 
-    log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
+    log.info("[DEDUP-SKIP] rule=%s text=%r", rule, text)
 
 The tag is lifted out into a field of its own on the way to the stream, so it can be
 filtered on without anyone parsing prose. Numbers that get plotted or scored do not
@@ -26,6 +26,7 @@ STREAM_LEVEL = INFO
 TAG = re.compile(r"^\[([A-Z][A-Z0-9_-]*)\]\s*")
 
 NOISY_LOGGERS = (
+    "mosestokenizer",
     "vllm",
     "torch",
     "transformers",

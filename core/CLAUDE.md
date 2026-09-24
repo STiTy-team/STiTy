@@ -11,7 +11,6 @@
 | `config.py` | **파이프라인 설정** — `configs/pipelines/*.yml` 하나를 읽어 부품까지 해석한다. 재는 대상(부품·커밋 정책·`gpu_memory_utilization`)만 적히고 무엇이 오디오를 넣어 주는지는 없으므로, bench 와 서버가 같은 파일을 읽는다. 이름으로 파일을 찾는 `resolve` 도 여기다 — `baseline` → `configs/pipelines/baseline.yml`. 데이터셋 설정은 그걸 가진 쪽(`bench/config.py`)이 읽는다 |
 | `components/` | 파이프라인이 끼워 쓰는 부품. 종류별 서브패키지 하나, 그 안에 레지스트리 하나, 파일 하나가 백엔드 하나 — `vad/`(`detectors`) · `transcription/`(`transcribers`) · `translation/`(`translators`) · `correction/`(`correctors`). 설정 파일이 이름으로 고른다 |
 | `pipeline/` | 부품을 엮는 쪽. `Pipeline` 과 `cascade`, 그리고 설정을 읽어 조립하는 `validate`·`build`·`describe`. **파이프라인은 부품이 아니다** — `Component` 를 상속하지 않고, 그래서 시간도 안 재진다 |
-| `utils/metrics/` | 음성 번역 공용 채점 — WER·CER·BLEU·FSL·LAAL·커밋 사유·라우팅. 입구는 `score_item`·`score_run` 둘. STiTy `final` 필드를 그대로 읽고(`Utterance`/`Segment`), 데이터가 못 받치는 지표는 **값이 빠지고 `unavailable` 에 이유가 남는다** — `null` 도 예외도 없다. 실행·설정·보고서 형식은 모른다 |
 | `meaning_segmentator/utils/` | 의미 분절 연구 스크립트 (GPT `<SEG>` 마킹, 점진적 컨텍스트 번역, COMET 평가) |
 | `meaning_segmentator/autoseg/` | 분절 프롬프트 자동 생성 에이전트 루프. 코드가 하는 일 @meaning_segmentator/autoseg/AUTOSEG_SIMPLIFY.md, 사용법 @meaning_segmentator/autoseg/README.md |
 | ⤷ 근거·기각 기록 | 왜 이 지표 조합인가, 무엇을 검토하고 버렸나, 순위 축 진단, 참조 기반 평가 프로토콜 @meaning_segmentator/autoseg/AUTOSEG_DETAILS.md |
@@ -42,7 +41,7 @@ class MyTranslator(Translator):
 | `transcription` | `transcribers` | `start(language)` / `transcribe(audio)` / `flush(reason, speech)` / `finish(reason, speech)` → 만든 `Transcribed`·`Partial` 목록 |
 | `translation` | `translators` | `translate(text, target_lang, source_lang, context)` → (번역문, 소스 언어) |
 | `vad` | `detectors` | `detect(audio)` → 끝난 발화 `Speech` 또는 `None` |
-| `correction` | `correctors` | `correct(text, language)` → 고친 텍스트. **등록된 백엔드가 아직 없다** |
+| `correction` | `correctors` | `correct(text, language)` → 고친 텍스트. **`mock` 외에 등록된 백엔드가 아직 없다** |
 | `pipeline` | `pipelines` | `start` / `listen(audio)` / `finish`. `REQUIRED`·`OPTIONAL` 로 자기 부품을 선언한다 |
 
 **백엔드를 등록하는 자리는 파일 그 자체다.** 종류 패키지의 `__init__.py` 는 레지스트리를
@@ -122,7 +121,7 @@ class MyTranslator(Translator):
 ## 규칙
 
 - 학습/실험 코드는 `research/` 아래에만. 런타임 파일 옆에 두지 말 것.
-- **주석을 쓰지 않는다.** `components/`·`pipeline/` 과 `utils/metrics/` 에는 주석도 독스트링도 없다.
+- **주석을 쓰지 않는다.** `components/`·`pipeline/` 에는 주석도 독스트링도 없다.
   주석으로만 알 수 있는 것이 있으면 그건 코드가 잘못된 것이다 — 이름과 구조로 드러내고,
   경위는 커밋 메시지에 적는다.
 - **문맥은 LLM 백엔드만 받는다.** 서버의 `--local-translation-context N` 이 앞 발화 원문을 넘기고,

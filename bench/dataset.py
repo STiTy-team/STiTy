@@ -1,16 +1,18 @@
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Iterator
 
 import yaml
 
 from core.errors import DataError
+from core.utils.audio import probe_duration
 
 from .config import DatasetConfig
 
 MANIFEST_NAME = "manifest.jsonl"
+ALIGNMENT_NAME = "alignment.jsonl"
 SPEC_NAME = "dataset.yml"
 
 
@@ -25,6 +27,8 @@ class Item:
     offset: float | None = None
     transcript: str = ""
     translations: dict[str, str] = field(default_factory=dict)
+    alignment: tuple[dict, ...] = ()
+    segmentation: tuple[dict, ...] = ()
 
     def reference_translation(self, target_lang: str) -> str:
         return self.translations.get(target_lang, "")
@@ -40,6 +44,7 @@ class DatasetSpec:
     translation_langs: list[str]
     group_rule: str
     manifest_sha256: str
+    alignment_sha256: str | None
     items: list[Item]
 
     @property
@@ -56,6 +61,8 @@ class DatasetSpec:
                          "translations": list(self.translation_langs)},
             "group_rule": self.group_rule,
             "manifest_sha256": self.manifest_sha256,
+            "alignment_sha256": self.alignment_sha256,
+            "n_aligned": sum(1 for i in self.items if i.alignment),
             "n_items": len(self.items),
             "n_sessions": self.n_sessions,
         }
@@ -99,8 +106,50 @@ def _iter_manifest(path: Path) -> Iterator[tuple[int, dict]]:
                 raise DataError(f"{path}:{lineno}: invalid JSON ({e})") from e
 
 
+def _read_alignment(path: Path, items: list[Item]) -> list[Item]:
+    transcripts = {item.id: item.transcript for item in items}
+    words = {}
+    for _, row in _iter_manifest(path):
+        if transcripts.get(row["id"]) == row["transcript"]:
+            words[row["id"]] = tuple(row["words"])
+    return [replace(item, alignment=words.get(item.id, ())) for item in items]
+
+
 def _grouped_contiguously(items: list[Item]) -> list[Item]:
     return sorted(items, key=lambda item: item.group)
+
+
+def _talks(items: list[Item]) -> list[Item]:
+    by_group: dict[str, list[Item]] = {}
+    for item in items:
+        by_group.setdefault(item.group, []).append(item)
+
+    talks = []
+    for group, sentences in by_group.items():
+        if len({s.audio for s in sentences}) != 1 or any(s.offset is None for s in sentences):
+            raise DataError(
+                f"group {group!r}: longform needs every item of a group to be an "
+                f"offset window into one audio file")
+        sentences = sorted(sentences, key=lambda s: s.offset)
+        langs = {lang for s in sentences for lang in s.translations}
+        talks.append(Item(
+            id=group,
+            audio=sentences[0].audio,
+            duration=probe_duration(sentences[0].audio),
+            src_lang=sentences[0].src_lang,
+            group=group,
+            speaker=sentences[0].speaker,
+            transcript=" ".join(s.transcript for s in sentences),
+            translations={lang: " ".join(s.translations.get(lang, "") for s in sentences)
+                          for lang in langs},
+            alignment=tuple({**w, "start": w["start"] + s.offset, "end": w["end"] + s.offset}
+                            for s in sentences for w in s.alignment),
+            segmentation=tuple({"offset": s.offset, "duration": s.duration,
+                                "transcript": s.transcript,
+                                "translations": dict(s.translations)}
+                               for s in sentences),
+        ))
+    return talks
 
 
 def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
@@ -129,6 +178,16 @@ def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
 
     items = _grouped_contiguously(items)
 
+    alignment_path = ds_root / ALIGNMENT_NAME
+    alignment_digest = None
+    if alignment_path.is_file():
+        alignment_digest = hashlib.sha256(alignment_path.read_bytes()).hexdigest()
+        items = _read_alignment(alignment_path, items)
+
+    if cfg.longform:
+        items = _talks(items)
+    items = items[:cfg.limit]
+
     return DatasetSpec(
         name=str(spec.get("name") or cfg.name),
         root=ds_root,
@@ -138,5 +197,6 @@ def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
         translation_langs=translation_langs,
         group_rule=str(spec.get("group_rule") or "id"),
         manifest_sha256=digest,
+        alignment_sha256=alignment_digest,
         items=items,
     )

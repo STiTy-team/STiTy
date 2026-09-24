@@ -12,8 +12,11 @@ from core.errors import AudioError, DataError
 from core.utils import audio as audio_mod
 from core.utils import env, stream
 
-ITEM_METRIC_KEYS = ("wer", "cer", "sentence_bleu", "avg_fsl_sec", "laal_ms",
-                    "n_segments", "route_errors")
+ITEM_METRIC_KEYS = ("wer", "cer", "sentence_bleu", "avg_fsl_sec", "laal_ms", "yaal_ms",
+                    "longyaal_ms", "token_emission_ms", "n_segments", "route_errors")
+# Worst first: the first key an item has decides its place. Runs without transcripts
+# rank by translation, runs without any reference by latency.
+RANKING = (("wer", True), ("sentence_bleu", False), ("avg_fsl_sec", True))
 
 PORT = 9130
 TEMPLATE = Path(__file__).with_name("replay.html")
@@ -73,8 +76,8 @@ def run_catalog() -> list[dict]:
     return out
 
 
-def choose_items(rows: dict[str, dict], *, top_k: int) -> set[str]:
-    """Every failed/empty-hypothesis item, plus the worst-WER items up to top_k total.
+def choose_items(rows: dict[str, dict], *, top_k: int) -> list[str]:
+    """Every failed/empty-hypothesis item, then the worst of the rest, up to top_k.
 
     A failure is never crowded out by the ranking -- it is the reason the replay
     got opened. See bench/README.md's replay contract.
@@ -82,11 +85,15 @@ def choose_items(rows: dict[str, dict], *, top_k: int) -> set[str]:
     failed = [r for r in rows.values()
               if r.get("status") != "ok" or not (r.get("hypothesis") or "").strip()]
     failed_ids = {r["id"] for r in failed}
-    scored = sorted(
-        (r for r in rows.values() if r["id"] not in failed_ids and r.get("wer") is not None),
-        key=lambda r: r["wer"], reverse=True)
-    chosen = failed + scored[:max(0, top_k - len(failed))]
-    return {r["id"] for r in chosen}
+    rest = [r for r in rows.values() if r["id"] not in failed_ids]
+    return [r["id"] for r in failed + sorted(rest, key=_badness)][:max(top_k, len(failed))]
+
+
+def _badness(row: dict) -> tuple:
+    for rank, (key, higher_is_worse) in enumerate(RANKING):
+        if row.get(key) is not None:
+            return rank, -row[key] if higher_is_worse else row[key]
+    return len(RANKING), 0
 
 
 def audio_index(summary: dict) -> dict[str, dict]:
@@ -107,11 +114,12 @@ def audio_index(summary: dict) -> dict[str, dict]:
             item_id = raw.get("id")
             if not item_id or not raw.get("audio"):
                 continue
-            index[str(item_id)] = {
-                "path": ds_root / str(raw["audio"]),
-                "offset": raw.get("offset"),
-                "duration": raw.get("duration"),
-            }
+            path = ds_root / str(raw["audio"])
+            index[str(item_id)] = {"path": path, "offset": raw.get("offset"),
+                                   "duration": raw.get("duration")}
+            if raw.get("offset") is not None and raw.get("group"):
+                index.setdefault(str(raw["group"]), {"path": path, "offset": None,
+                                                     "duration": None})
         if index:
             return index
     return {}
@@ -129,7 +137,10 @@ def wav_bytes(entry: dict) -> bytes:
 
 def _finalize_item(item_id: str, events: list[dict], duration: float, *,
                    rows: dict[str, dict], clips: dict[str, dict], run_name: str) -> dict:
-    item = {"id": item_id, "events": events, "duration": duration}
+    opened = next((e for e in events if e.get("type") == "item_open"), {})
+    item = {"id": item_id, "events": events, "duration": duration,
+            "src_lang": opened.get("src_lang") or "",
+            "target_lang": opened.get("target_lang") or ""}
     row = rows.get(item_id) or {}
     wer = row.get("wer")
     if wer is not None:
@@ -137,6 +148,8 @@ def _finalize_item(item_id: str, events: list[dict], duration: float, *,
     metrics = {k: row[k] for k in ITEM_METRIC_KEYS if row.get(k) is not None}
     if metrics:
         item["metrics"] = metrics
+    item["reference"] = row.get("reference") or ""
+    item["reference_translations"] = row.get("reference_translations") or {}
     played_past_the_clip = [e.get("audio") or 0.0 for e in events]
     item["duration"] = max([item["duration"]] + played_past_the_clip)
     if item_id in clips:
@@ -179,12 +192,11 @@ def item_payload(run_dir: Path, item_id: str) -> dict | None:
 
 
 def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
-    """One run's replay data: the worst-`top_k` items by WER, plus every failure.
+    """One run's replay data: the worst-`top_k` items by `RANKING`, plus every failure.
 
-    Reads `items.jsonl` first to decide which items make the cut, then walks
-    `events.jsonl` once keeping only their events -- a run with hundreds of items
-    never has to materialize (or ship to the browser) the events of the ones
-    nobody asked to see.
+    Only the first item ships with its events; the page fetches any other one from
+    `/item/` when it is picked. A run of long talks would otherwise put every
+    chosen talk's event stream into one page.
     """
     run_dir = Path(run_dir)
     if not run_dir.is_dir():
@@ -200,55 +212,26 @@ def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
         rows = {r.get("id"): r for r in stream.read(run_dir / "items.jsonl")}
     summary = _read_summary(run_dir)
 
-    # An empty set means "no ranking data" (no items.jsonl) -- show everything
-    # rather than nothing.
-    chosen_ids = choose_items(rows, top_k=top_k) if rows else set()
-
-    items: dict[str, dict] = {}
-    order: list[str] = []
-    src = target = ""
-    n_events = 0
-    for event in stream.read(events_path):
-        n_events += 1
-        item_id = event.get("item")
-        if not item_id or (chosen_ids and item_id not in chosen_ids):
-            continue
-        if item_id not in items:
-            items[item_id] = {"id": item_id, "events": [], "duration": 0.0,
-                              "group": event.get("session") or ""}
-            order.append(item_id)
-        items[item_id]["events"].append(event)
-        if event.get("type") == "item_open":
-            items[item_id]["duration"] = float(event.get("audio_sec") or 0.0)
-            src = src or event.get("src_lang") or ""
-            target = target or event.get("target_lang") or ""
-    if n_events == 0:
-        raise DataError(f"{events_path} has no events")
-
-    clips = audio_index(summary)
-    items = {item_id: _finalize_item(item_id, item["events"], item["duration"],
-                                     rows=rows, clips=clips, run_name=run_dir.name)
-             for item_id, item in items.items()}
-
-    # Every item's id and score, with no events -- cheap enough to send in full so
-    # the picker can offer the rest of the run without loading their event streams.
-    all_items = [{"id": r["id"], "wer": r.get("wer")} for r in rows.values()]
+    worst = choose_items(rows, top_k=top_k)
+    first = worst[0] if worst else next(
+        (e["item"] for e in stream.read(events_path) if e.get("item")), None)
+    item = item_payload(run_dir, first) if first else None
+    if item is None:
+        raise DataError(f"{events_path} has no item events")
 
     return {
         "run": {"name": summary.get("name") or run_dir.name,
                 "stamp": summary.get("stamp") or "",
                 "status": summary.get("status") or "",
                 "dir": run_dir.name,
-                "src_lang": src, "target_lang": target,
                 "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
-                "n_audio": sum(1 for i in items.values() if i.get("audio_url")),
-                "n_total": len(rows) if rows else len(order),
-                "n_shown": len(order),
+                "n_total": len(rows),
                 "top_k": top_k,
                 "pipeline_yaml": _pipeline_yaml(summary),
                 "summary_metrics": summary.get("metrics") or {}},
-        "items": [items[i] for i in order],
-        "all_items": all_items,
+        "items": [item],
+        "worst": [{"id": i, "wer": rows[i].get("wer")} for i in worst],
+        "all_items": [{"id": r["id"], "wer": r.get("wer")} for r in rows.values()],
         "runs": run_catalog(),
     }
 

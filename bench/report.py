@@ -39,7 +39,8 @@ def environment() -> dict:
     import importlib.metadata as md
 
     versions = {}
-    for name in ("torch", "vllm", "transformers", "sacrebleu"):
+    for name in ("torch", "vllm", "transformers", "sacrebleu", "jiwer",
+                 "whisper-normalizer", "OmniSTEval"):
         try:
             versions[name] = md.version(name)
         except Exception:  # noqa: BLE001 - not installed is an answer
@@ -58,7 +59,7 @@ def environment() -> dict:
             "gpu": gpu, **versions}
 
 
-def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
+def write_all(*, cfg, dataset, scores, rows, stamp, status, started: datetime,
               finished: datetime, run_dir: Path, components: dict, pacing: dict,
               failure: str | None = None) -> Path:
     errored = [r for r in rows if r.get("status") != "ok"]
@@ -66,6 +67,7 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
              and not (r.get("hypothesis") or "").strip()]
     audio_sec = sum(float(r.get("audio_sec") or 0) for r in rows)
     wall_sec = (finished - started).total_seconds()
+    metrics, unavailable = scores
 
     payload = {
         "name": cfg.name,
@@ -74,8 +76,8 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
         "failure": failure,
         "started_at": started.isoformat(),
         "finished_at": finished.isoformat(),
-        "metrics": score.aggregate,
-        "unavailable": score.unavailable,
+        "metrics": metrics,
+        "unavailable": unavailable,
         "counts": {
             "items": len(rows),
             "sessions": len({r.get("group") for r in rows if r.get("group")}),
@@ -86,7 +88,6 @@ def write_all(*, cfg, dataset, score, rows, stamp, status, started: datetime,
             "realtime_factor": round(audio_sec / wall_sec, 3) if wall_sec else None,
         },
         "failed_items": [r.get("id") for r in errored + empty],
-        "misrouted_items": score.misrouted_items,
         "config": cfg.raw,
         "pacing": pacing,
         "dataset": dataset.provenance(),
