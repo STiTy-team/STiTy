@@ -4,9 +4,8 @@ version = "0.0.0"
 description = "COMET scoring for bench runs, in its own environment"
 requires-python = ">=3.12,<3.13"
 
-# unbabel-comet pins numpy<2 and protobuf<5, which would downgrade the shared
-# .venv that vLLM runs in. It gets this environment instead. The metric code
-# itself (core.utils.metrics) is pure Python and is imported from the repo.
+# unbabel-comet pins numpy<2 and protobuf<5, and vLLM 0.14 needs protobuf>=6.30,
+# so the two cannot share an environment.
 # setuptools<81: torchmetrics 0.10.x (pulled in by unbabel-comet) imports
 # pkg_resources, which setuptools 81 removed.
 dependencies = [

@@ -13,6 +13,8 @@ DATASET_KEYS = {"dataset", "languages"}
 
 class DatasetConfig(ConfigBody):
     name: str
+    longform: bool = False
+    limit: int | None = None
 
     @classmethod
     def normalize(cls, raw: Any) -> Any:
@@ -35,6 +37,13 @@ class LanguagesConfig(ConfigBody):
 
     def expected_target(self, src_lang: str) -> str:
         return self.lang if langs.norm_code(src_lang) == self.target else self.target
+
+    def target_for(self, language: str) -> str:
+        return self.expected_target(language)
+
+    def fix(self, detected: str, used: str) -> str | None:
+        target = self.expected_target(detected) if detected else ""
+        return target if target != used else None
 
 
 def _code(value: str, *, field: str) -> str:

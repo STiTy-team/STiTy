@@ -196,7 +196,8 @@ class Qwen3Transcription(Transcriber):
             state.buffer = buffer[: buffered - from_buffer]
         if cut > from_buffer:
             state.audio_accum = accum[: accumulated - (cut - from_buffer)]
-        log.info("[TAIL-TRIM] %.3fs", cut / audio_mod.SAMPLING_RATE)
+        log.debug("[AUDIO-TRIM] cause=tail-silence removed_sec=%.2f",
+                  cut / audio_mod.SAMPLING_RATE)
 
     def _trigger(self, reason: str):
         commit = self.cfg.stity.commit

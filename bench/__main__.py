@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import json
 import time
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -7,9 +8,10 @@ from pathlib import Path
 
 from core.errors import ConfigError, DataError, STiTyError
 from core.utils import audio as audio_mod
-from core.utils import env, logging, metrics, stream
+from core.utils import env, logging, stream
 
 from . import config
+from . import metrics
 from . import dataset as datasets
 from . import report
 from core.components import Final, Partial, Speech, Transcribed
@@ -41,11 +43,18 @@ def _row(item, *, status: str, **fields) -> dict:
         "hypothesis_translation": "",
         "reference_translations": dict(item.translations),
         "segments": [],
+        "emissions": [],
+        "reference_alignment": list(item.alignment),
+        "reference_segmentation": list(item.segmentation),
         **fields,
     }
 
 
-def _written(produced: list) -> list[dict]:
+def _emission(line: dict, kind: str, text: str) -> dict:
+    return {"kind": kind, "text": text, "t": line["t"], "audio": line.get("audio")}
+
+
+def _written(produced: list, emissions: list[dict]) -> list[dict]:
     finals = []
     for made in produced:
         if isinstance(made, Final):
@@ -53,9 +62,11 @@ def _written(produced: list) -> list[dict]:
             stream.record("final", **row)
             finals.append(row)
         elif isinstance(made, Transcribed):
-            stream.record("transcribed", **asdict(made))
+            line = stream.record("transcribed", **asdict(made))
+            emissions.append(_emission(line, "commit", made.original))
         elif isinstance(made, Partial):
-            stream.record("partial", **asdict(made))
+            line = stream.record("partial", **asdict(made))
+            emissions.append(_emission(line, "partial", made.text))
         elif isinstance(made, Speech):
             stream.record("vad_speech_end", at=round(made.ended_at, 3),
                           started_at=round(made.started_at, 3))
@@ -89,11 +100,13 @@ async def _stream_item(pipeline, item, cfg) -> dict:
         started_at=datetime.now(timezone.utc).isoformat(),
     )
 
-    pipeline.start(src_lang=item.src_lang, target_lang=target_lang)
+    pipeline.start(src_lang=cfg.languages.lang, target_lang=cfg.languages.target,
+                   direction=cfg.languages)
 
     origin = time.perf_counter()
     sent_samples = 0
     segments: list[dict] = []
+    emissions: list[dict] = []
 
     async def feed(chunk: bytes, *, silence: bool) -> None:
         nonlocal sent_samples
@@ -105,7 +118,7 @@ async def _stream_item(pipeline, item, cfg) -> dict:
             )
             if delay > 0:
                 await asyncio.sleep(delay)
-        segments.extend(_written(await pipeline.listen(chunk)))
+        segments.extend(_written(await pipeline.listen(chunk), emissions))
         stream.record("chunk", silence=silence)
 
     try:
@@ -118,7 +131,7 @@ async def _stream_item(pipeline, item, cfg) -> dict:
             silence_left -= step
             await feed(audio_mod.silence_bytes(step), silence=True)
 
-        segments.extend(_written(await pipeline.finish()))
+        segments.extend(_written(await pipeline.finish(), emissions))
     finally:
         stream.stop_clock()
         stream.audio_position(None)
@@ -133,20 +146,30 @@ async def _stream_item(pipeline, item, cfg) -> dict:
 
     return _row(item, status="ok", audio_sec=round(audio_sec, 3),
                 hypothesis=hypothesis, hypothesis_translation=hyp_translation,
-                segments=segments)
+                segments=segments, emissions=emissions)
 
 
 def score_item(row: dict, cfg) -> dict:
     if row.get("status") == "ok":
-        row.update(metrics.score_item(row, languages=cfg.languages))
+        row.update(metrics.score_row(row, cfg.languages))
     return row
 
 
-def score_run(rows, cfg) -> metrics.RunScore:
-    score = metrics.score_run([r for r in rows if r.get("status") == "ok"],
-                              languages=cfg.languages)
-    score.unavailable["comet"] = "scored separately by python -m bench.comet"
-    return score
+def score_run(rows, cfg) -> tuple[dict, dict]:
+    scores, unavailable = metrics.score_run(_ok(rows), cfg.languages)
+    unavailable["comet"] = "scored separately by python -m bench.comet"
+    return scores, unavailable
+
+
+def write_comet_inputs(rows, cfg, path: Path) -> None:
+    sentences = metrics.translation_sentences(_ok(rows), cfg.languages)
+    with path.open("w", encoding="utf-8") as f:
+        for sentence in sentences:
+            f.write(json.dumps(sentence, ensure_ascii=False) + "\n")
+
+
+def _ok(rows) -> list[dict]:
+    return [r for r in rows if r.get("status") == "ok"]
 
 
 async def _run(cfg, dataset, pipeline, writer) -> list[dict]:
@@ -215,7 +238,7 @@ def data_root() -> Path:
     return root
 
 
-RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json")
+RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "comet_inputs.jsonl")
 
 
 def open_run_dir(run_dir: Path) -> None:
@@ -271,10 +294,11 @@ def main(argv: list[str] | None = None) -> int:
         stream.bind(item="", session="")
         stream.record("run_close", n_rows=len(rows), status=status)
 
+        write_comet_inputs(rows, cfg, run_dir / "comet_inputs.jsonl")
         report.write_all(
             cfg=cfg,
             dataset=dataset,
-            score=score_run(rows, cfg),
+            scores=score_run(rows, cfg),
             rows=rows,
             stamp=stamp,
             status=status,

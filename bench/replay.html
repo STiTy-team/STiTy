@@ -472,6 +472,8 @@
     <section class="readout" id="readout-a">
       <div class="col-head"><span class="eyebrow">Item metrics</span><p>scores for the item on screen</p></div>
       <div class="stat-tiles" id="tiles-a"></div>
+      <div class="col-head"><span class="eyebrow">Reference</span><p>what the item should have produced</p></div>
+      <pre class="code-block" style="white-space: pre-wrap"><code id="ref-a"></code></pre>
       <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
       <pre class="code-block"><code id="yaml-a"></code></pre>
       <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
@@ -529,8 +531,8 @@ const st = $("run-status");
 st.textContent = DATA.run.status || "";
 st.className = "chip " + (DATA.run.status === "ok" ? "ok" : DATA.run.status ? "bad" : "");
 if (!DATA.run.status) st.hidden = true;
-$("run-shown").textContent = `${DATA.run.n_shown}/${DATA.run.n_total} shown`
-  + (DATA.run.n_shown < DATA.run.n_total ? ` (worst ${DATA.run.top_k} by wer + failures)` : "");
+$("run-shown").textContent = `${DATA.worst.length}/${DATA.run.n_total} listed`
+  + (DATA.worst.length < DATA.run.n_total ? ` (failures + worst by wer, else bleu, else fsl)` : "");
 const picker = $("run-picker");
 picker.innerHTML = (DATA.runs || []).map(r =>
   `<option value="${esc(r.name)}"${r.name === DATA.run.dir ? " selected" : ""}>${esc(r.name)}</option>`
@@ -539,11 +541,13 @@ picker.addEventListener("change", () => {
   location.search = "?run=" + encodeURIComponent(picker.value);
 });
 
-const src = DATA.run.src_lang || "", tgt = DATA.run.target_lang || "";
-$("pill-src").textContent = (src || "?").toUpperCase();
-$("pill-tgt").textContent = (tgt || "?").toUpperCase();
-$("pill-src-dot").style.background = langColor(src).bubble;
-$("pill-tgt-dot").style.background = langColor(tgt).bubble;
+function setPills(it) {
+  const src = it.src_lang || "", tgt = it.target_lang || "";
+  $("pill-src").textContent = (src || "?").toUpperCase();
+  $("pill-tgt").textContent = (tgt || "?").toUpperCase();
+  $("pill-src-dot").style.background = langColor(src).bubble;
+  $("pill-tgt-dot").style.background = langColor(tgt).bubble;
+}
 $("legend").innerHTML = Object.entries(REASONS)
   .map(([r, v]) => `<span><i style="background:var(${v})"></i>${r}</span>`).join("");
 
@@ -554,6 +558,9 @@ const METRIC_DISPLAY = {
   sentence_bleu: {label: "BLEU", fmt: v => v.toFixed(1)},
   avg_fsl_sec: {label: "FSL", fmt: v => v.toFixed(2) + "s"},
   laal_ms: {label: "LAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
+  yaal_ms: {label: "YAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
+  longyaal_ms: {label: "LongYAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
+  token_emission_ms: {label: "Token emission", fmt: v => (v / 1000).toFixed(2) + "s"},
   n_segments: {label: "Segments", fmt: v => String(v)},
   route_errors: {label: "Route errors", fmt: v => String(v)},
 };
@@ -564,6 +571,13 @@ function renderStatTiles(el, metrics) {
         `<div class="stat-tile"><span class="eyebrow">${esc(spec.label)}</span>` +
         `<span class="stat-value">${esc(spec.fmt(metrics[k]))}</span></div>`).join("")
     : `<div class="feed-empty">no per-item metrics for this item</div>`;
+}
+function renderReference(it) {
+  const lines = [];
+  if (it.reference) lines.push(`transcript: ${it.reference}`);
+  for (const [lang, text] of Object.entries(it.reference_translations || {}))
+    if (text) lines.push(`${lang}${lang === it.target_lang ? " (target)" : ""}: ${text}`);
+  $("ref-a").textContent = lines.length ? lines.join("\n\n") : "(this item has no reference)";
 }
 function renderReadout(prefix, runInfo) {
   $(`yaml-${prefix}`).textContent = (runInfo && runInfo.pipeline_yaml) || "(no pipeline config recorded)";
@@ -746,27 +760,23 @@ function loadItem(it) {
   $("clock-end").textContent = T.toFixed(2);
   itemPicker.value = it.id;
   renderStatTiles($("tiles-a"), it.metrics);
+  renderReference(it);
+  setPills(it);
   if (compareRun) loadCompare(it.id);
   render();
 }
 
 const itemPicker = $("item-picker");
-const loadedIds = new Set(items.map(it => it.id));
+const worstIds = new Set(DATA.worst.map(r => r.id));
 const fetchedItems = new Map();  // id -> item, for picks outside the loaded top-k
 
-function optionFor(it) {
-  const n = it.events.filter(e => e.type === "final").length;
-  const wer = it.wer == null ? "" : ` · wer ${it.wer.toFixed(2)}`;
-  return `<option value="${esc(it.id)}">${esc(it.id)} — ${it.span.toFixed(1)}s · `
-       + `${n} commit${n === 1 ? "" : "s"}${esc(wer)}</option>`;
-}
 function lightOptionFor(row) {
   const wer = row.wer == null ? "" : ` · wer ${row.wer.toFixed(2)}`;
   return `<option value="${esc(row.id)}">${esc(row.id)}${esc(wer)}</option>`;
 }
-const rest = (DATA.all_items || []).filter(r => !loadedIds.has(r.id));
+const rest = (DATA.all_items || []).filter(r => !worstIds.has(r.id));
 itemPicker.innerHTML =
-  `<optgroup label="Worst ${DATA.run.top_k} (loaded)">${items.map(optionFor).join("")}</optgroup>`
+  `<optgroup label="Worst ${DATA.run.top_k}">${DATA.worst.map(lightOptionFor).join("")}</optgroup>`
   + (rest.length
       ? `<optgroup label="Rest of the run (${rest.length})">${rest.map(lightOptionFor).join("")}</optgroup>`
       : "");
