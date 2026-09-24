@@ -24,11 +24,11 @@ do with what comes back.
 """
 from dataclasses import dataclass, field
 
-from . import asr, bleu, commit, latency, routing, text
+from . import asr, bleu, comet, commit, latency, routing, text
 from .langs_bridge import laal_unit
 from .types import Segment, TargetPolicy, Utterance
 
-__all__ = ["asr", "bleu", "commit", "latency", "routing", "text",
+__all__ = ["asr", "bleu", "comet", "commit", "latency", "routing", "text",
            "Segment", "Utterance", "TargetPolicy",
            "RunScore", "score_item", "score_run"]
 
@@ -69,6 +69,8 @@ def score_item(row, *, languages: TargetPolicy) -> dict:
     if fsl["n_seg_with_fsl"]:
         fields.update(fsl)
     fields.update(latency.laal_for_item(item, target_lang=target,
+                                       unit=laal_unit(target)))
+    fields.update(latency.yaal_for_item(item, target_lang=target,
                                        unit=laal_unit(target)))
     sentence_bleu = bleu.sentence(item.hypothesis_translation,
                                  item.reference_translation(target),

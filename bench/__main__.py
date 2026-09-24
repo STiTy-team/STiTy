@@ -143,8 +143,10 @@ def score_item(row: dict, cfg) -> dict:
 
 
 def score_run(rows, cfg) -> metrics.RunScore:
-    return metrics.score_run([r for r in rows if r.get("status") == "ok"],
-                             languages=cfg.languages)
+    score = metrics.score_run([r for r in rows if r.get("status") == "ok"],
+                              languages=cfg.languages)
+    score.unavailable["comet"] = "scored separately by python -m bench.comet"
+    return score
 
 
 async def _run(cfg, dataset, pipeline, writer) -> list[dict]:

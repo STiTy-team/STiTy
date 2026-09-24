@@ -1,9 +1,8 @@
-PYTHON ?= python3
-
 .PHONY: bench replay
 
 bench:
-	$(PYTHON) -m bench --config $(CONFIG) --dataset $(DATASET)
+	uv run --project bench python -m bench --config $(CONFIG) --dataset $(DATASET)
+	uv run --project bench/comet python -m bench.comet bench/runs/$(CONFIG)-$(DATASET)
 
 replay:
-	$(PYTHON) -m bench.replay $(RUN) $(TOPK:%=--top-k %)
+	uv run --project bench python -m bench.replay $(RUN) $(TOPK:%=--top-k %)

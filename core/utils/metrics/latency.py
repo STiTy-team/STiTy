@@ -21,6 +21,7 @@ LAAL values wrong by tens of seconds.
 from .text import count_units, mean_or_none
 
 LAAL_KEYS = ("laal_ms", "laal_ca_ms", "laal_uncapped_ms")
+YAAL_KEYS = ("yaal_ms", "yaal_ca_ms")
 
 
 def fsl_stats(segments) -> dict:
@@ -69,6 +70,28 @@ def laal_for_item(item, *, target_lang: str, unit: str = "word",
     out = {"laal_ms": laal("decision_audio_sec", cap=cap_source),
            "laal_uncapped_ms": laal("decision_audio_sec", cap=False),
            "laal_ca_ms": laal("recv_elapsed_sec", cap=False)}
+    return {k: v for k, v in out.items() if v is not None}
+
+
+def yaal_for_item(item, *, target_lang: str, unit: str = "word") -> dict:
+    reference = item.reference_translation(target_lang)
+    src_ms = item.duration_sec * 1000.0
+    if not count_units(reference, unit) or src_ms <= 0:
+        return {}
+    try:
+        from omnisteval import Instance, YAALScorer
+    except ImportError:
+        return {}
+
+    instance = Instance(
+        reference=reference,
+        latency_unit=unit,
+        source_length=src_ms,
+        emission_cu=expand_delays(item.segments, "decision_audio_sec", unit=unit),
+        emission_ca=expand_delays(item.segments, "recv_elapsed_sec", unit=unit),
+    )
+    out = {"yaal_ms": YAALScorer(computation_aware=False).compute(instance),
+           "yaal_ca_ms": YAALScorer(computation_aware=True).compute(instance)}
     return {k: v for k, v in out.items() if v is not None}
 
 
@@ -147,7 +170,31 @@ def corpus(items, *, languages, unit_for) -> tuple[dict, dict]:
             values[key] = value
     if "laal_ms" not in values:
         unavailable["laal"] = _why_no_laal(items, segments, languages)
+
+    per_item = [yaal_for_item(item, target_lang=target, unit=unit_for(target))
+                for item, target in ((i, languages.expected_target(i.src_lang))
+                                     for i in items)]
+    for key in YAAL_KEYS:
+        value = mean_or_none(d.get(key) for d in per_item)
+        if value is not None:
+            values[key] = value
+    if "yaal_ms" in values:
+        values["n_yaal_scored"] = sum(1 for d in per_item if "yaal_ms" in d)
+    else:
+        unavailable["yaal"] = _why_no_yaal(items, segments, languages)
     return values, unavailable
+
+
+def _why_no_yaal(items, segments, languages) -> str:
+    try:
+        import omnisteval  # noqa: F401
+    except ImportError:
+        return "OmniSTEval is not installed (pip install OmniSTEval)"
+    if any(s.decision_audio_sec is not None for s in segments) and any(
+            i.reference_translation(languages.expected_target(i.src_lang))
+            for i in items):
+        return "every item emitted its first target unit after the source ended"
+    return _why_no_laal(items, segments, languages)
 
 
 def _why_no_laal(items, segments, languages) -> str:

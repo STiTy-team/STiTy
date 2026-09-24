@@ -18,6 +18,11 @@ make replay                                         # bench/runs/ 중 가장 최
 make replay RUN=baseline-fleurs-en-ko TOPK=20       # 실행과 개수를 직접 고른다
 ```
 
+**bench 는 자기 uv 환경에서 돈다.** [uv](https://docs.astral.sh/uv/) 만 설치돼 있으면 된다 —
+`make` 가 `uv run --project bench` 로 부르고, uv 가 `bench/pyproject.toml`·`bench/uv.lock` 대로
+`bench/.venv` 를 만든다(처음 한 번 수 GB). 저장소 루트의 `.venv` 나 다른 파이썬 환경은 건드리지
+않는다. 의존성을 바꾸려면 `bench/pyproject.toml` 을 고치고 `uv lock --project bench` 로 잠근다.
+
 `make replay` 는 http://localhost:9130 에 페이지 하나를 띄운다. 헤더의 드롭다운으로
 `bench/runs/` 에 있는 다른 실행으로 서버를 다시 켜지 않고 바로 옮겨 갈 수 있다.
 
@@ -265,8 +270,23 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 | `fsl` | 커밋이 오디오보다 얼마나 늦게 도착했나 = `recv_elapsed_sec − decision_audio_sec`. **기록하지 않고 유도한다** — 두 시계가 이미 있으니 파이프라인이 따로 내면 어긋날 수 있다 |
 | `laal` | `decision_audio_sec` 이 `d_i` 다 |
 | `bleu` | 라우팅이 맞은 것만. 전체는 `bleu_all`. **발화 하나가 한 쌍**이다 — 세그먼트를 다시 이어 붙여 채점한다 |
+| `comet` | `Unbabel/wmt22-comet-da`. 원문은 참조 전사, 번역은 BLEU 와 같은 방식으로 라우팅이 맞은 세그먼트를 이어 붙인 것. **따로 도는 단계가 채점한다** — 아래 참고 |
+| `yaal_ms` | OmniSTEval 의 YAAL. LAAL 과 분모가 같고, 소스가 끝나기 **전에** 나온 단위만 센다. 첫 단위가 소스 끝 이후에 나온 항목은 채점하지 않는다 — 몇 개가 채점됐는지는 `n_yaal_scored`. `yaal_ca_ms` 는 벽시계 기준 |
 | `commit` | 사유별 개수·비율. `finish_ratio` 가 크면 축의 커밋 경로가 안 도는 것이다 |
 | `routing` | 언어 판정 정확도, 라우팅 정확도, 혼동 행렬 |
+
+**COMET 은 별도 환경에서 돈다.** `unbabel-comet` 이 numpy<2 를 고정해서 vLLM 이 쓰는
+`.venv` 에 깔면 그 환경이 내려간다. 그래서 `bench/comet/` 이 자기 uv 환경을 갖고, `make bench`
+가 실행이 끝난 뒤 이어서 부른다. 이미 쓰인 `items.jsonl` 을 한 번에 채점해 그 실행의
+`summary.json` 에 `comet` 을 더한다 — 항목 수만큼 도는 게 아니라 실행당 한 번이다.
+`python -m bench` 만 부르면 `comet` 은 `unavailable` 에 그 이유로 남는다. 지난 실행을 다시
+채점할 때는 그 한 줄만 부른다.
+
+```bash
+uv run --project bench/comet python -m bench.comet bench/runs/baseline-fleurs-en-ko
+```
+
+처음 한 번은 uv 가 환경(PyTorch 포함 수 GB)과 COMET 모델(약 2.3 GB)을 받는다.
 
 `wer` 과 `wer_scored_only` 를 둘 다 내는 이유: 기존 `compute_wer_for_rows` 는 가설이 빈
 행을 버리고(`scoring.py:19`), `process_batch` 가 그 행을 또 버린다. 실패한 발화가 두 번
@@ -281,11 +301,11 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 
 | 데이터 | 나오는 것 | 빠지는 것 |
 |---|---|---|
-| 오디오만 (전사·번역 참조 없음) | `fsl`·`commit`·`routing` | `wer`·`cer`·`bleu`·`laal` |
-| 전사는 있고 번역 참조 없음 | 위 + `wer`·`cer` | `bleu`·`laal` |
+| 오디오만 (전사·번역 참조 없음) | `fsl`·`commit`·`routing` | `wer`·`cer`·`bleu`·`comet`·`laal`·`yaal` |
+| 전사는 있고 번역 참조 없음 | 위 + `wer`·`cer` | `bleu`·`comet`·`laal`·`yaal` |
 | 일부 언어만 번역 참조 있음 | 그 언어들의 `bleu` | 참조 없는 언어 (`bleu_by_target` 의 이유에 적힌다) |
 
-참조 번역이 없으면 `laal` 도 빠진다. 분모가 `max(|Y_hyp|, |Y_ref|)` 라서 `|Y_ref|` 를 빼면
+참조 번역이 없으면 `laal`·`yaal` 도 빠진다. 분모가 `max(|Y_hyp|, |Y_ref|)` 라서 `|Y_ref|` 를 빼면
 근사가 아니라 **다른 지표(AL)** 가 되고, AL 은 짧게 생성할수록 점수가 좋아지는 구멍이 있다.
 그걸 `laal_ms` 칸에 적으면 비교가 불가능한 두 숫자가 한 열에 섞인다.
 
@@ -314,6 +334,8 @@ import 하지 않는다.
 
 ## 아직 안 되는 것
 
+- **LongYAAL.** 발표 하나를 끊지 않고 흘려야 의미가 있다. 지금은 항목마다 따로 흘리므로
+  녹음 하나에 참조 세그먼트가 하나이고, 이때 LongYAAL 은 `yaal_ms` 와 정확히 같다.
 - **동시 실행.** v1 은 순차 고정이다. `asr_lock` 이 생성을 직렬화하고 flush 가 겹친다.
 - **서버가 버리는 커밋을 싱크로 잡기.** 로그로는 보이므로 이벤트 줄기에서 읽는다.
 - **WebSocket 경로와의 대조 검증(S6).** 데이터와 가중치가 있는 머신에서 해야 한다.

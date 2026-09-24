@@ -1,0 +1,37 @@
+[project]
+name = "stity-bench"
+version = "0.0.0"
+description = "STiTy benchmark, in its own uv environment"
+requires-python = ">=3.12,<3.13"
+
+# Several of these are otherwise only present transitively, which is how a WER run
+# ends up emitting {"wer": null} and looking successful.
+#
+# sacrebleu[ja,ko]: without the MeCab tokenizers sacrebleu falls back to a
+# character tokenizer and records that in the signature, which makes scores
+# incomparable with runs that had them.
+#
+# sentencepiece: the MADLAD / NLLB tokenizers of the local translator.
+#
+# COMET is not here: unbabel-comet pins numpy<2, so it lives in bench/comet.
+dependencies = [
+    "qwen-asr[vllm]",
+    "silero-vad>=6.2",
+    "sentencepiece",
+    "python-dotenv",
+    "PyYAML>=6.0",
+    "numpy",
+    "soundfile",
+    "librosa",
+    "jiwer",
+    "sacrebleu[ja,ko]>=2.4",
+    "OmniSTEval",
+    "rich>=13.0",
+    "pydantic>=2.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+qwen-asr = { path = "../Qwen3-ASR", editable = true }
