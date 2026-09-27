@@ -1,0 +1,158 @@
+{
+  "name": "asr.qwen-seg-ko+mt.qwen3.5-4b-fleurs-ko-en",
+  "stamp": "20260927T111419",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-27T11:14:19.551344+00:00",
+  "finished_at": "2026-09-27T12:32:04.427134+00:00",
+  "metrics": {
+    "wer": 0.15637254901960784,
+    "wer_by_lang": {
+      "ko": 0.15637254901960784
+    },
+    "wer_scored_only": 0.15637254901960784,
+    "cer": 0.08080886945658963,
+    "cer_by_lang": {
+      "ko": 0.08080886945658963
+    },
+    "bleu": 21.906301517852572,
+    "bleu_by_pair": {
+      "ko-en": 21.906301517852572
+    },
+    "avg_fsl_sec": 0.19533218390804596,
+    "laal_ms": 3944.495196462366,
+    "laal_ca_ms": 4501.90826091324,
+    "yaal_ms": 3837.4333538039355,
+    "yaal_ca_ms": 4240.861194761403,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "ko->ko": 522
+    },
+    "commit_reasons": {
+      "vad": 0.2624521072796935,
+      "seg": 0.7375478927203065,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.0
+    },
+    "segments_per_item": 1.9333333333333333,
+    "token_emission_ms": 1472.0827509085825,
+    "token_emission_p50_ms": 1120.0,
+    "token_emission_p90_ms": 3279.9999999999995,
+    "token_emission_ca_ms": 1668.4500978473582,
+    "token_emission_ca_p50_ms": 1319.3000000000002,
+    "token_emission_ca_p90_ms": 3540.3,
+    "comet": 0.8365712937381532,
+    "comet_by_pair": {
+      "ko-en": 0.8365712937381532
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "longyaal_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "longyaal_ca_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence"
+  },
+  "counts": {
+    "items": 270,
+    "sessions": 270,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 3451.26,
+    "wall_sec": 4664.88,
+    "compute_sec": 438.27,
+    "realtime_factor": 0.097
+  },
+  "failed_items": [],
+  "config": {
+    "name": "asr.qwen-seg-ko+mt.qwen3.5-4b-fleurs-ko-en",
+    "dataset": {
+      "name": "fleurs/ko_kr"
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "qwen-seg",
+          "model": "Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128,
+          "dot_commit_confirm": true,
+          "dot_commit_stall_chunks": 1,
+          "rep_dedup": true
+        },
+        "translation": {
+          "name": "qwen3.5",
+          "url": "http://127.0.0.1:8100/v1",
+          "model": "Qwen/Qwen3.5-4B",
+          "gpu_memory_utilization": 0.52,
+          "context_turns": 1
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/ko_kr",
+    "split": "test",
+    "languages": [
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "id",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/ko_kr",
+    "manifest_sha256": "907fea5fe4f1f40e99eb456310917d42f1d9b13501c68f84a14269f6d99a5991",
+    "alignment_sha256": "0ce98269e3c8e8a517b048984f1dc4803e68151ddcb5e42cebb4679ed5c3c012",
+    "n_aligned": 270,
+    "n_items": 270,
+    "n_sessions": 270
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "qwen-seg",
+      "model_path": "Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128,
+      "dot_commit_confirm": true,
+      "dot_commit_stall_chunks": 1,
+      "rep_dedup": true,
+      "restrict_languages": true
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "qwen3.5",
+      "url": "http://127.0.0.1:8100/v1",
+      "model": "Qwen/Qwen3.5-4B",
+      "gpu_memory_utilization": 0.52,
+      "context_turns": 1
+    }
+  }
+}

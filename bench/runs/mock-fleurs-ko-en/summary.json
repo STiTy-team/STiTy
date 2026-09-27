@@ -1,0 +1,133 @@
+{
+  "name": "mock-fleurs-ko-en",
+  "stamp": "20260927T145451",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-27T14:54:51.682787+00:00",
+  "finished_at": "2026-09-27T16:10:55.828638+00:00",
+  "metrics": {
+    "wer": 5.582107843137255,
+    "wer_by_lang": {
+      "ko": 5.582107843137255
+    },
+    "wer_scored_only": 5.582107843137255,
+    "cer": 10.512101811367895,
+    "cer_by_lang": {
+      "ko": 10.512101811367895
+    },
+    "bleu": 0.0011560382999136198,
+    "bleu_by_pair": {
+      "ko-en": 0.0011560382999136198
+    },
+    "avg_fsl_sec": 0.0016953717591601284,
+    "laal_ms": 2059.1424959430487,
+    "laal_ca_ms": 2068.911804085173,
+    "yaal_ms": 2038.711236861531,
+    "yaal_ca_ms": 2041.1369133785665,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "ko->ko": 4667
+    },
+    "commit_reasons": {
+      "vad": 0.9528605099635741,
+      "seg": 0.0,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.04713949003642597
+    },
+    "segments_per_item": 17.285185185185185,
+    "comet": 0.2687393764654795,
+    "comet_by_pair": {
+      "ko-en": 0.2687393764654795
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "longyaal_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "longyaal_ca_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "token_emission_ms": "no item had both a reference alignment and recorded partials or commits, or no recognized word matched the reference",
+    "token_emission_ca_ms": "no item had both a reference alignment and recorded partials or commits, or no recognized word matched the reference"
+  },
+  "counts": {
+    "items": 270,
+    "sessions": 270,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 3451.26,
+    "wall_sec": 4564.15,
+    "compute_sec": 5.99,
+    "realtime_factor": 0.001
+  },
+  "failed_items": [],
+  "config": {
+    "name": "mock-fleurs-ko-en",
+    "dataset": {
+      "name": "fleurs/ko_kr"
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": "mock",
+        "vad": {
+          "name": "mock",
+          "speech_chunks": 5
+        },
+        "correction": "mock",
+        "translation": "mock"
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.1
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/ko_kr",
+    "split": "test",
+    "languages": [
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "id",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/ko_kr",
+    "manifest_sha256": "907fea5fe4f1f40e99eb456310917d42f1d9b13501c68f84a14269f6d99a5991",
+    "alignment_sha256": "0ce98269e3c8e8a517b048984f1dc4803e68151ddcb5e42cebb4679ed5c3c012",
+    "n_aligned": 270,
+    "n_items": 270,
+    "n_sessions": 270
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "mock"
+    },
+    "vad": {
+      "backend": "mock",
+      "speech_chunks": 5
+    },
+    "correction": {
+      "backend": "mock"
+    },
+    "translation": {
+      "backend": "mock"
+    }
+  }
+}

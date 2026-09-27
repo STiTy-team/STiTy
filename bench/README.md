@@ -13,10 +13,10 @@ git clone git@github.com:STiTy-team/datasets.git ~/datasets
 export STITY_DATA_ROOT=~/datasets
 SRC="en_us ko_kr" TGT=ko_kr bash $STITY_DATA_ROOT/fleurs/install.sh   # fleurs/en_us, fleurs/ko_kr
 
-make bench CONFIG=asr.qwen-seg+mt.qwen3.5-4b DATASET=fleurs-en-ko     # en→ko
-make bench CONFIG=asr.qwen-seg+mt.qwen3.5-4b DATASET=fleurs-ko-en     # ko→en
-make replay                                         # bench/runs/ 중 가장 최근 실행을 본다
-make replay RUN=asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko TOPK=20       # 실행과 개수를 직접 고른다
+make bench CONFIG=asr.qwen-seg-en+mt.qwen3.5-4b DATASET=fleurs-en-ko  # en→ko
+make bench CONFIG=asr.qwen-seg-ko+mt.qwen3.5-4b DATASET=fleurs-ko-en  # ko→en
+make replay                                         # 대시보드: 데이터셋별로 실행들을 비교한다
+make replay RUN=asr.qwen-seg-en+mt.qwen3.5-4b-fleurs-en-ko TOPK=20    # 그 실행의 세션 재생으로 바로 연다
 ```
 
 **bench 는 자기 uv 환경에서 돈다.** [uv](https://docs.astral.sh/uv/) 만 설치돼 있으면 된다 —
@@ -24,18 +24,63 @@ make replay RUN=asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko TOPK=20       # 실행�
 `bench/.venv` 를 만든다(처음 한 번 수 GB). 저장소 루트의 `.venv` 나 다른 파이썬 환경은 건드리지
 않는다. 의존성을 바꾸려면 `bench/pyproject.toml` 을 고치고 `uv lock --project bench` 로 잠근다.
 
-`make replay` 는 http://localhost:9130 에 페이지 하나를 띄운다. 헤더의 드롭다운으로
-`bench/runs/` 에 있는 다른 실행으로 서버를 다시 켜지 않고 바로 옮겨 갈 수 있다.
+`make replay` 는 http://localhost:9130 에 서버 하나를 띄운다(`bench/replay/`). 페이지는 둘이다.
+포트는 `python -m bench.replay --port N` 으로 바꾼다.
+
+**`/` 는 대시보드다 — 데이터셋 하나를 골라 그 데이터셋으로 돈 실행들을 비교한다.** 코퍼스(`fleurs`)를
+고르고 그 안의 데이터셋 설정(`fleurs-ko-en` 등)을 고른다. 같은 항목·같은 목표 언어로 채점된
+실행끼리만 한 화면에 모인다 — 다른 데이터셋의 숫자는 나란히 놓아도 비교가 안 된다. 데이터셋마다
+실행 수가 달라도 된다. 실행 이름 `<파이프라인>-<데이터셋 설정>` 을 `configs/datasets/` 에 있는
+이름으로 잘라 파이프라인 이름을 얻는다.
+
+- **Leaderboard** — `summary.json` 의 지표를 종류별(전사 정확도·전사 지연·번역 정확도·번역 지연·
+  언어 판정·분절)로 묶은 표. 열을 누르면 정렬되고, 열마다 가장 좋은 값이 초록이다. 좋은 방향
+  (↓ 낮을수록, ↑ 높을수록)은 `static/common.js` 의 `SCORES` 가 정한다. 이름을 누르면 그 실행의
+  세션 재생으로 간다. 아직 도는 실행(`summary.json` 이 없는)은 `running` 으로, 지금까지 끝낸 항목
+  수와 함께 나온다.
+- **Per-item distribution** — 평균 하나 대신 항목마다의 점수 분포를 실행마다 세로 기둥 하나로
+  그린다. 수염 끝이 최솟값·최댓값, 상자가 25–75%, 굵은 선이 중앙값, 마름모가 평균이고, 옅은 점이
+  항목 하나하나다(끌 수 있다). 중앙값이 좋은 실행이 왼쪽에 온다. 실행이 많으면 옆으로 넘긴다. 상자 그림만으로는 분포가 둘로
+  갈렸는지 한쪽으로 쏠렸는지 안 보여서 점을 함께 그린다(raincloud plot 의 권고). BLEU 는 표가
+  말뭉치 BLEU, 그림이 항목별 문장 BLEU 이고, COMET 은 문장마다의 점수(`comet_scores.jsonl`)다.
+- **Accuracy vs latency** — 정확도 하나와 지연 하나를 골라 실행을 점으로 찍는다. 두 축 모두
+  좋은 쪽이 오른쪽·위가 되도록 낮을수록 좋은 축은 뒤집는다. 점선은 두 축 모두에서 이기는
+  다른 실행이 없는 실행들(frontier)을 잇는다. `summary.json` 의 값을 찍으므로 아직 도는 실행은
+  빠지고, 빠진 실행과 이유가 그림 아래에 적힌다.
+
+헤더의 **Models** 메뉴로 그 데이터셋의 실행을 골라 뺄 수 있다(기본은 전부). 표와 두 그림이 모두
+따른다. 고른 데이터셋·모델·지표·정렬은 주소의 `#` 뒤에 남아 새로 고쳐도 유지되고 링크로 건넬 수 있다.
+
+**`/replay?run=<실행>` 은 세션 재생이다.** 헤더의 드롭다운으로 `bench/runs/` 의 다른 실행으로
+서버를 다시 켜지 않고 옮겨 가고, `← Dashboard` 로 돌아간다. 아직 도는 실행도 열린다 — 그때까지
+끝난 항목이 보이고, `summary.json` 이 없으니 설정은 `configs/` 에서 다시 읽어(그렇다고 적힌다)
+보이며, 데이터셋은 `items.jsonl` 의 오디오 경로에서 거슬러 찾는다. 실행 요약만 끝나야 생긴다.
 
 **항목 하나가 재생 단위다 — 실행 전체를 이어 붙이지 않는다.** 왼쪽 목록에서 항목을
 고르면 그 항목만 자기 시계(0초부터)로 재생된다. 목록 맨 위는 실패·빈 전사 항목 전부와
 최악 10개(기본값, `--top-k`/`TOPK=` 로 바꾼다)다. 최악은 `wer` 로 고르고, 전사 참조가 없는
-항목은 `sentence_bleu` 로, 참조가 아예 없으면 `avg_fsl_sec` 로 고른다(`replay.RANKING`).
+항목은 `sentence_bleu` 로, 참조가 아예 없으면 `avg_fsl_sec` 로 고른다(`replay/session.py` 의 `RANKING`).
 나머지 항목도 목록 아래에 전부 있다. **페이지에는 첫 항목의 이벤트만 실리고** 다른 항목은
 고를 때 서버에서 받는다 — 발표 하나의 이벤트만 수 MB 라 여러 개를 한 페이지에 실으면 멎는다.
 
 항목마다 **참조**(전사와 번역)가 "Reference" 칸에, 그 항목의 언어 쌍이 화면 위 두 알약에
 나온다. 발표 단위(`longform`) 항목은 발표 오디오 전체를 재생한다.
+
+**헤더 카드의 "Data" 표는 그 항목에 들어간 데이터 자체다** — 실행 결과와 나란히 보라고
+실행 이름·타임라인과 같은 카드에 있다. "Data" 줄을 누르면 접히고, 접었는지는 브라우저가 기억한다. 한 줄이 manifest 행 하나(섞인 대화면 turn 하나)로,
+시간 구간·언어·화자·오디오 크기(peak / rms, dBFS)·참조 전사와 목표 언어 번역이 나온다.
+줄을 누르면 그 turn 으로 가고, 재생 중에는 지금 turn 과 정렬된 단어가 칠해진다. turn 은
+타임라인 아래에도 언어 색 띠로 깔린다. 소리가 작은 turn 에는 `quiet` 가 붙는다 — peak 가
+-40 dBFS 아래이거나 그 항목에서 가장 큰 turn 보다 20 dB 이상 작을 때다. VAD 는 이런 turn 을
+놓치고 ASR 은 듣는 일이 있어, partial 은 나왔는데 커밋이 사라진 경우를 여기서 먼저 본다.
+접힌 칸에는 오디오 파일 헤더, `dataset.yml` 원문, manifest 원래 행과 줄 번호가 있다.
+**`augment` 를 쓴 실행은 입힌 소리 그대로 들린다.** 재생 소리와 "Data" 표의 크기(peak / rms)는
+원본 파일이 아니라 파이프라인이 들은 소리다. 입히기는 항목마다 늘 같으므로 replay 가 실행 설정의
+`augment` 로 다시 만들고, 행에 남은 선택(파일·시작 위치·level)과 같은지 확인한다. 그 사이
+`$STITY_DATA_ROOT/augment/` 의 파일이 바뀌어 다르게 나오면 다른 소리를 들려주는 대신 재생을 거부하고
+이유를 "Data" 줄에 적는다.
+manifest 를 못 찾는 실행(아직 도는 중이거나 summary 전에 죽은 실행)은 `items.jsonl` 의
+`reference_segmentation` 으로 turn 을 채우고, 화자와 원래 행은 비운다.
 
 **"On the phone" 옆 두 번째 드롭다운은 다른 실행과 나란히 본다.** 목록은 지금 보는
 실행과 `manifest.jsonl` 이 같은(=항목 id 가 겹치는) 실행만 나온다 — 다른 데이터셋으로
@@ -59,7 +104,7 @@ make replay RUN=asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko TOPK=20       # 실행�
 초)라 "오디오보다 얼마나 밀렸나"가 거리로 읽힌다. 레인 목록은 그 실행에 실제로 나온
 타입에서 만들어진다 — §시간은 자동으로 재진다.
 
-데이터셋은 `fleurs` 와 `acl6060` 둘이다. 계약(`dataset.yml` + `manifest.jsonl`)과 새
+데이터셋은 `fleurs` 다. 계약(`dataset.yml` + `manifest.jsonl`)과 새
 코퍼스 붙이는 법은 그 리포의 README 에 있다. bench 에는 데이터셋별 분기가 없다.
 
 ## 설정
@@ -69,20 +114,26 @@ make replay RUN=asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko TOPK=20       # 실행�
 실행마다 파일을 새로 만들지 않는다 — 있는 둘을 이름으로 골라 합친다.
 
 ```bash
-python -m bench --config asr.qwen-seg+mt.qwen3.5-4b --dataset fleurs-en-ko
+python -m bench --config asr.qwen-seg-en+mt.qwen3.5-4b --dataset fleurs-en-ko
 ```
 
-`configs/pipelines/asr.qwen-seg+mt.qwen3.5-4b.yml` — **재는 대상 그 자체다.** 무엇이 오디오를 넣어 주는지는
+`configs/pipelines/asr.qwen-seg-en+mt.qwen3.5-4b.yml` — **재는 대상 그 자체다.** 무엇이 오디오를 넣어 주는지는
 여기 없고, 그래서 이 파일은 bench 전용이 아니다. 이름은 부품을 역할별로 적는다 — ASR 은
 `qwen-seg`(프로덕션 커밋 경로를 옮긴 Qwen3-ASR), 번역(MT)은 `qwen3.5`(Qwen3.5-4B). 시험용
 `mock.yml` 도 있다.
+
+**모델은 언어마다 다르다 — 프로덕션이 그렇다.** 서버 하나는 모델 하나이고 클라이언트가 언어에
+맞는 서버를 고르므로, 파이프라인 설정도 언어마다 하나다. `asr.qwen-seg-en+mt.qwen3.5-4b` 는 영어
+`<SEG>` 파인튜닝 `Doo12/Qwen3-ASR-1.7B-en-silence-c80-merged`, `asr.qwen-seg-ko+mt.qwen3.5-4b` 는
+한국어 `Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged` 다. 언어가 섞인 `fleurs/ko_kr+en_us` 도
+서버 하나가 듣는 상황 그대로 한국어 설정으로 잰다.
 
 ```yaml
 pipeline:
   name: cascade
   transcription:
     name: qwen-seg
-    model: Qwen/Qwen3-ASR-1.7B
+    model: Doo12/Qwen3-ASR-1.7B-en-silence-c80-merged
     chunk_size_sec: 2.0      # 모델별 설정은 그 모델 밑에 둔다
     max_new_tokens: 128
     dot_commit_confirm: true
@@ -92,13 +143,13 @@ pipeline:
     name: qwen3.5
     url: http://127.0.0.1:8100/v1
     model: Qwen/Qwen3.5-4B
-    gpu_memory_utilization: 0.25
+    gpu_memory_utilization: 0.52
     context_turns: 1
   vad:
     name: silero
     min_silence_ms: 800
 commit: seg                  # seg | punct | always
-gpu_memory_utilization: 0.42
+gpu_memory_utilization: 0.30
 ```
 
 `configs/datasets/fleurs-en-ko.yml` — 데이터셋 하나와 목표 언어 하나다. 같은 데이터셋을 다른
@@ -131,7 +182,7 @@ dataset:
 
 ```yaml
 dataset:
-  name: acl6060
+  name: fleurs/ko_kr+en_us
   longform: true
 ```
 
@@ -139,7 +190,7 @@ dataset:
 묶어 **그 오디오 파일을 처음부터 끝까지 한 세션으로** 흘린다. 항목들은 버려지지 않고 그
 발표의 참조 분절이 된다 — 행의 `reference_segmentation`(문장마다 `offset`·`duration`·전사·번역)이
 IWSLT 의 segmentation yaml 과 같은 것이다. 그래서 그룹의 항목이 모두 한 오디오 파일 안의
-`offset` 구간이어야 한다(`acl6060`·`tedlium`). 아니면 시작 전에 죽는다.
+`offset` 구간이어야 한다(`fleurs/ko_kr+en_us` 의 대화가 그렇다). 아니면 시작 전에 죽는다.
 
 행 하나가 발표 하나라 문장 단위 지표는 달라진다.
 
@@ -152,6 +203,61 @@ IWSLT 의 segmentation yaml 과 같은 것이다. 그래서 그룹의 항목이 
 
 **일부만 돌리려면 `limit: N`** 을 쓴다(위 참고). 결과 디렉토리 이름은 그대로라, 일부만 돈
 결과가 전부 돈 결과를 덮어쓴다 — 두 결과는 비교가 안 되므로, 오래 남길 비교에는 쓰지 않는다.
+
+### 소음과 공간 입히기 (`augment`)
+
+데이터셋 설정에 `augment` 를 적으면 깨끗한 오디오에 장소 소음을 섞고 공간의 울림을 입혀서
+흘린다. 데이터셋 리포는 건드리지 않는다 — 입히는 일은 bench(`bench/augment/`)가 한다.
+
+```yaml
+dataset:
+  name: fleurs/en_us
+target: ko
+augment:
+  room:
+    place: hall             # 장소는 하나다
+    level: [0.5, 1.0]       # 울린 소리의 몫. 0 이면 원음 그대로, 1 이면 전부 울린 소리
+  noise:
+    place: cafe
+    level: [0.1, 0.4]       # 소음 크기 / 말소리 크기 (RMS). 0.5 면 소음이 말의 절반 크기
+  volume:
+    min_level_db: -23       # 최소 소리 크기 (RMS, dBFS). 이보다 작은 클립만 여기까지 키운다
+```
+
+**설정 하나에 장소는 하나다.** 장소를 여럿 섞으면 점수가 떨어져도 어느 장소 탓인지 가릴 수 없다.
+장소마다 설정 파일을 따로 둔다.
+
+- **숫자 값은 모두 범위 `[low, high]` 다.** 항목마다 그 안에서 고르게 뽑는다. `level: 0.3` 처럼
+  한 값만 쓰면 `[0.3, 0.3]` 이다.
+- 소음과 울림의 `level` 은 비율이고, 최소 음량 `min_level_db` 만 dB 다. 말소리는 보통 -26 ~ -20 dBFS 다.
+- **무작위지만 항목마다 늘 같다.** 뽑기는 `데이터셋 이름/항목 id` 와 그 효과의 설정으로 정해진다.
+  같은 설정으로 다시 돌리면 같은 소리가 나고, 효과 하나의 설정을 바꿔도 다른 효과의 선택은 그대로다.
+- 순서는 울림 → 소음 → 음량이다. 녹음된 장소 소음에는 그 장소의 울림이 이미 들어 있어서
+  소음을 울림 뒤에 섞는다. 음량은 섞인 결과 전체를 한 번에 키우므로 소음과 말의 비율은 그대로다.
+- `volume` 은 바닥만 정한다. `min_level_db` 보다 작은 클립은 거기까지 키우고, 이미 큰 클립은
+  건드리지 않는다. FLEURS 영어처럼 녹음이 아주 작은 데이터셋도 이 바닥 아래로는 들어가지 않는다.
+  키우다가 소리가 깨질 만큼 커지면 거기서 멈추고, 실제로 키운 양이 `gain_db` 에 남는다(안 키웠으면 0).
+- 울림은 직접음 위치에 맞춰 입혀서 말이 늦게 들리지 않고, 길이도 원래와 같다.
+- 항목마다 무엇을 골랐는지(파일·시작 위치·level)가 행과 `item_open` 이벤트의 `augment` 에 남는다.
+- 결과 디렉토리 이름은 데이터셋 설정 이름에서 온다. 소음 버전은 `fleurs-en-ko.cafe.yml` 처럼
+  **파일을 따로 두어야** 깨끗한 실행을 덮어쓰지 않는다.
+
+소음과 울림 파일은 `$STITY_DATA_ROOT/augment/` 아래에 장소 이름의 디렉토리로 둔다.
+디렉토리 안의 `.wav` 는 모두 후보고 항목마다 하나를 고른다. 장소 이름은 곧 디렉토리 이름이라, 없는 장소를 적으면
+있는 장소 목록을 알려주고 시작 전에 죽는다.
+
+```
+$STITY_DATA_ROOT/augment/
+  noise/<place>/*.wav    # 예: DEMAND(cafe·station·traffic…), TAU Urban Acoustic Scenes(airport…)
+  room/<place>/*.wav     # 공간의 임펄스 응답(RIR). 예: OpenAIR(hall·church), BUT ReverbDB(office)
+```
+
+`room` 은 소리가 거쳐 가는 곳이면 공간이 아니어도 된다. 전화기처럼 기기를 거친 소리도 그 기기의
+임펄스 응답을 `room/phone/` 에 두면 같은 방식으로 입혀진다. 이때 `level` 은 1 로 둔다 — 원음이
+섞이면 기기가 걸러낸 대역이 되살아난다.
+
+지금 있는 설정은 `fleurs-ko-en.cafe`(카페 소음)와 `fleurs-ko-en.hall`(홀의 울림)이다. 둘 다
+`volume` 으로 -23 dBFS 를 바닥으로 둔다.
 
 **이름이 틀리면 있는 이름들을 알려주고 죽는다.** 설정 안의 오류도 그 설정 파일 기준 경로로
 나온다 — `commit: unknown mode 'nope'`, `dataset: unknown key(s) ['nmae']`.
@@ -229,14 +335,15 @@ WER·언어 판정에는 쓴다.
 남는다는 뜻이다. 지우려면 그 디렉토리만 지우면 된다.
 
 ```
-runs/asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko/
+runs/asr.qwen-seg-en+mt.qwen3.5-4b-fleurs-en-ko/
   summary.json                      이 실행의 요약
   items.jsonl                       항목 단위 행. append (죽어도 채점된다)
   events.jsonl                      이벤트 전부. 리플레이가 읽는 것이다
   comet_inputs.jsonl                COMET 이 채점할 문장 쌍
+  comet_scores.jsonl                그 문장마다의 COMET 점수 (같은 순서). 대시보드의 분포 그림이 읽는다
 ```
 
-실행이 시작할 때 위 네 파일을 먼저 지운다(`reset_run_dir`). 스트림은 append 로 열리므로(중간에 죽어도
+실행이 시작할 때 위 다섯 파일을 먼저 지운다(`reset_run_dir`). 스트림은 append 로 열리므로(중간에 죽어도
 거기까지 채점된다) 안 지우면 지난 실행 뒤에 이어 붙어 두 실행이 한 기록으로 섞인다.
 
 **설정은 여기 복사되지 않는다.** 입력은 `configs/` 에 있고 여기는 산출물만 둔다. 무엇을
@@ -365,16 +472,18 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 | `lang_detect_accuracy`·`confusion` | 언어 판정 정확도와 혼동 행렬. ASR 이 커밋한 전사의 언어를 참조 언어와 비교하고, 모든 항목으로 낸다. 판정 정확도는 참조 언어와 판정 언어를 둘 다 언어 코드로 맞춘 뒤 비교하고, 언어를 내지 않은 세그먼트는 `?` 로 틀린 것으로 센다 |
 
 **COMET 은 별도 환경에서 돈다.** `unbabel-comet` 은 `protobuf<5`·`numpy<2` 를 고정하고 vLLM 0.14 는
-`protobuf>=6.30` 을 요구해서, 한 환경에 둘을 같이 풀 수 있는 버전이 없다. 그래서 `bench/metrics/comet/` 이 자기 uv 환경을 갖고, `python -m bench`
-가 실행이 끝난 뒤 `core/utils/process.py` 의 `run` 으로 그 환경에서 따로 부른다. 실행이 실패하면 부르지 않는다. 무엇을 채점할지는 bench 가 정한다 — `metrics/translation.py` 의 `translation_sentences`
+`protobuf>=6.30` 을 요구해서, 한 환경에 둘을 같이 풀 수 있는 버전이 없다. 그래서 `bench/metrics/comet/` 이 자기 uv 환경을 갖고, `make bench` 가
+`python -m bench` 프로세스가 끝난 뒤 그 환경에서 따로 부른다 — ASR 엔진과 번역 서버가 GPU 를 놓은 뒤라야
+COMET 모델이 올라간다. 실행이 실패하면 부르지 않는다. 무엇을 채점할지는 bench 가 정한다 — `metrics/translation.py` 의 `translation_sentences`
 가 BLEU 에 쓰는 문장 쌍을 원문과 함께 `comet_inputs.jsonl` 로 떨구고, `bench/metrics/comet` 은 그 파일만
-읽어 한 번에 채점해 그 실행의 `summary.json` 에 `comet`·`comet_by_pair` 를 더한다 — 항목 수만큼
+읽어 한 번에 채점해 그 실행의 `summary.json` 에 `comet`·`comet_by_pair` 를 더하고, 문장마다의 점수를
+`comet_scores.jsonl` 로 남긴다 — 항목 수만큼
 도는 게 아니라 실행당 한 번이다. 그래서 항목 제외·재분절·괄호 속 이벤트 제거 규칙이 두 환경에 따로 있지 않다.
 COMET 단계가 실패하면 `comet` 은 `unavailable` 에 그 이유로 남는다. 지난 실행을 다시
 채점할 때는 그 한 줄만 부른다.
 
 ```bash
-uv run --project bench/metrics/comet python -m bench.metrics.comet --run-dir bench/runs/asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko
+uv run --project bench/metrics/comet python -m bench.metrics.comet --run-dir bench/runs/asr.qwen-seg-en+mt.qwen3.5-4b-fleurs-en-ko
 ```
 
 처음 한 번은 uv 가 환경(PyTorch 포함 수 GB)과 COMET 모델(약 2.3 GB)을 받는다.
@@ -419,8 +528,17 @@ __main__.py   CLI + 실행. 파이프라인을 조립하는 유일한 모듈이�
 config.py     데이터셋 설정을 읽고 파이프라인 설정과 합친다. 점수를 바꾸는 값 전부 명시
               해석. 파이프라인 설정 자체는 `core/config.py` 가 읽는다 — 서버와 공유한다
 report.py     items.jsonl 행 + 채점 결과 → summary.json
-replay.py     events.jsonl·items.jsonl·summary.json → :9130 웹 페이지 (replay.html 이 화면 전부)
+replay/       events.jsonl·items.jsonl·summary.json → :9130 웹 페이지 둘
+  runs.py           실행 목록, 데이터셋별 묶기, 대시보드가 쓰는 항목별 점수 분포
+  session.py        실행 하나의 세션 재생 데이터 (항목·오디오·데이터셋 정보)
+  server.py         라우팅: / 대시보드, /replay 세션 재생, /api/·/item/·/data/·/audio/
+  static/           화면 전부: dashboard.html·.js, session.html, 둘이 함께 쓰는 common.css·.js
 dataset.py    dataset.yml + manifest.jsonl (+ 있으면 alignment.jsonl) 읽기
+augment/      데이터셋 설정의 augment → 흘리기 전 오디오에 울림·소음·음량을 입힌다
+  config.py         설정 모양. 숫자는 모두 Range([low, high])
+  augmenter.py      효과를 순서대로 부르고, 항목마다 같은 난수를 만든다
+  assets.py         $STITY_DATA_ROOT/augment/<종류>/<장소>/*.wav 찾기와 읽기
+  effects/          효과 하나가 파일 하나다. 순서는 __init__.py 의 ORDER (room → noise → volume)
 metrics/      items.jsonl 행 → 지표. 모듈 하나가 지표 묶음 하나다
   score.py          score_row(항목별)·score_run(실행 전체)이 아래를 모두 부른다
   transcription.py  wer·cer
@@ -437,7 +555,7 @@ metrics/      items.jsonl 행 → 지표. 모듈 하나가 지표 묶음 하나�
 항목 하나의 값은 행 하나짜리 목록으로 부른다. `score_row` 가 항목별 값을, `score_run` 이 실행
 전체 값을 모은다 — 설정에서 무엇을 계산할지 고르는 자리가 없으니 고를 코드도 없다.
 
-`config.py`·`dataset.py`·`report.py`·`replay.py` 는 `__main__.py` 를
+`config.py`·`dataset.py`·`report.py`·`replay/` 는 `__main__.py` 를
 import 하지 않는다.
 그래야 GPU 없이 돌릴 수 있다.
 

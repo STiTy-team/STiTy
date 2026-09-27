@@ -10,7 +10,9 @@ from core.utils import env, langs
 from core.utils.config import ConfigBody, as_component
 from core.utils.paths import get_project_root
 
-DATASET_KEYS = {"dataset", "target"}
+from .augment import AugmentConfig
+
+DATASET_KEYS = {"dataset", "target", "augment"}
 DATA_ROOT_ENV = "STITY_DATA_ROOT"
 
 
@@ -52,6 +54,7 @@ class BenchConfig(ConfigBody):
     name: str
     dataset: DatasetConfig
     target: str
+    augment: AugmentConfig | None = None
     stity: PipelineConfig
 
     _raw: dict = PrivateAttr(default_factory=dict)

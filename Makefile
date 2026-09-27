@@ -2,6 +2,7 @@
 
 bench:
 	uv run --project bench python -m bench --config $(CONFIG) --dataset $(DATASET)
+	uv run --project bench/metrics/comet python -m bench.metrics.comet --run-dir bench/runs/$(CONFIG)-$(DATASET)
 
 replay:
 	uv run --project bench python -m bench.replay $(RUN:%=--run-dir %) $(TOPK:%=--top-k %)
