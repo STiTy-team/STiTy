@@ -44,8 +44,11 @@ class ConversationService:
         log.info("Loaded models in %.1fs", clock.elapsed_since(started))
 
     def open_session(self) -> ConversationSession:
-        participant = Participant(id=str(uuid.uuid4()), inbox=Inbox(droppable=is_partial))
-        participant.delivery.has_target_stage = self._translation_stage is not None
+        participant = Participant(
+            id=str(uuid.uuid4()),
+            inbox=Inbox(droppable=is_partial),
+            expects_translations=self._translation_stage is not None,
+        )
         return ConversationSession(self, participant)
 
     async def join(self, participant: Participant, conversation_id: str | None) -> Conversation:

@@ -65,7 +65,7 @@ class TranslationWorker:
         self._task = asyncio.create_task(self._run(), name=f"translation:{conversation.id}:{lang}")
 
     async def settle(self) -> None:
-        while self._inbox.items and not self._task.done():
+        while len(self._inbox) and not self._task.done():
             await asyncio.sleep(0)
         await self._idle.wait()
 
@@ -91,7 +91,7 @@ class TranslationWorker:
             log.info("Stopped %s translation worker for conversation %s", lang, conversation_id)
 
     async def _next(self) -> ConversationEvent | None:
-        if not self._inbox.items:
+        if not len(self._inbox):
             self._idle.set()
         event = await self._inbox.get()
         self._idle.clear()
@@ -101,7 +101,7 @@ class TranslationWorker:
         record = event.record
         if not self._processor.accepts(record):
             return
-        if not self._conversation.wants(self._lang, record.language):
+        if not self._conversation.wants_translation(record.language, into=self._lang):
             self._processor.skip(record)
             return
         for output in await self._processor.process(record):
