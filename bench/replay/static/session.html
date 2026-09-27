@@ -8,59 +8,9 @@
      is the instrument, and reads as a different object. -->
 <link rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/static/common.css">
+<script src="/static/common.js"></script>
 <style>
-  :root {
-    --ground: #eef0ec; --panel: #fbfcfa; --sunken: #f2f4f0;
-    --ink: #12171a; --ink-soft: #5a6470; --ink-faint: #8b949e;
-    --rule: #dde1d9; --rule-soft: #e8ebe4;
-    --accent: #7a9030; --accent-soft: rgba(122, 144, 48, 0.12);
-    --seg: #6080c8; --vad: #7a9030; --dot: #c8a030;
-    --always: #9060c8; --finish: #8e9288; --alarm: #b85050;
-    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    --device: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --audio: #9aa79a;
-    --lane-0: #4c9a5a; --lane-1: #d08a2a; --lane-2: #c0554f; --lane-3: #7b60c0;
-    --lane-4: #3f8a9c; --lane-5: #a0662a; --lane-6: #6d7fa8; --lane-7: #8a8f84;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground: #0e1316; --panel: #151b1e; --sunken: #111619;
-      --ink: #e8ece6; --ink-soft: #9aa4a0; --ink-faint: #6b7572;
-      --rule: #252d30; --rule-soft: #1d2427;
-      --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
-      --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
-      --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
-      --audio: #6e7a6e;
-      --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
-      --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --ground: #0e1316; --panel: #151b1e; --sunken: #111619;
-    --ink: #e8ece6; --ink-soft: #9aa4a0; --ink-faint: #6b7572;
-    --rule: #252d30; --rule-soft: #1d2427;
-    --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
-    --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
-    --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
-    --audio: #6e7a6e;
-    --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
-    --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
-    color-scheme: dark;
-  }
-
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--ground); color: var(--ink);
-    font-family: var(--sans); font-size: 14px; line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  button { font: inherit; color: inherit; cursor: pointer; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
-
   /* ── frame ───────────────────────────────────────────────────────────── */
   .wrap { max-width: 1380px; margin: 0 auto; padding: 20px; display: grid; gap: 16px; }
   .bar {
@@ -69,18 +19,6 @@
   }
   .bar-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
   h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
-  .eyebrow {
-    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-  .chip {
-    font-size: 11px; font-family: var(--mono); padding: 2px 8px; border-radius: 999px;
-    background: var(--sunken); border: 1px solid var(--rule); color: var(--ink-soft);
-  }
-  .chip.ok { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
-  .chip.bad { color: var(--alarm); border-color: var(--alarm); }
-  .spacer { flex: 1; }
-
   /* ── timeline ribbon: every commit, by what triggered it ─────────────── */
   .ribbon { position: relative; height: 46px; cursor: pointer; user-select: none; }
   .ribbon-track {
@@ -99,24 +37,44 @@
   }
 
   .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .btn {
-    background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
-    border-radius: 7px; padding: 6px 12px; font-size: 13px; font-weight: 500;
-  }
-  .btn:hover { border-color: var(--ink-faint); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn.primary:hover { filter: brightness(1.08); }
-  /* `color-scheme` alone doesn't reach every browser's native <option> popup --
-     pin both sides of the pair explicitly so it can't render invisible text. */
-  select.btn option { background: var(--panel); color: var(--ink); }
-  .seg-group { display: flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; }
-  .seg-group button {
-    background: var(--panel); border: 0; padding: 6px 10px; font-size: 12px;
-    border-left: 1px solid var(--rule); font-family: var(--mono);
-  }
-  .seg-group button:first-child { border-left: 0; }
-  .seg-group button[aria-pressed="true"] { background: var(--accent); color: #fff; }
   .clock { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
+
+  /* ── the item's data: what the dataset says went into the run ────────── */
+  .data { border-top: 1px solid var(--rule-soft); padding-top: 10px; }
+  .data[open] { display: grid; gap: 8px; }
+  .data:not([open]) { display: block; }
+  .data-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; cursor: pointer; list-style: none; }
+  .data-head::-webkit-details-marker { display: none; }
+  .data-head::before {
+    content: "▸"; font-size: 10px; color: var(--ink-faint); transition: transform 0.12s;
+    display: inline-block;
+  }
+  .data[open] > .data-head::before { transform: rotate(90deg); }
+  .data-head .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+  .data-scroll { max-height: 260px; overflow: auto; border: 1px solid var(--rule-soft); border-radius: 8px; }
+  .turns { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 12px; }
+  .turns th {
+    position: sticky; top: 0; background: var(--panel); text-align: left; font-weight: 600;
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
+    padding: 6px 8px; border-bottom: 1px solid var(--rule);
+  }
+  .turns td { padding: 6px 8px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  .turns tr { cursor: pointer; }
+  .turns tr:hover td { background: var(--sunken); }
+  .turns tr.now td { background: var(--accent-soft); }
+  .turns td.r { font-family: var(--mono); font-size: 11px; white-space: nowrap; color: var(--ink-soft); text-align: left; }
+  .turns .lang { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; }
+  .turns .tr-sub { color: var(--ink-faint); margin-top: 2px; }
+  .turns .w.on { background: var(--accent); color: #fff; border-radius: 2px; }
+  .quiet { color: var(--alarm); font-weight: 600; }
+  .data details { font-size: 12px; }
+  .data details summary { cursor: pointer; color: var(--ink-soft); font-size: 11px; }
+  .data details pre {
+    margin: 6px 0 0; padding: 8px 10px; background: var(--sunken); border-radius: 6px;
+    font-family: var(--mono); font-size: 11px; max-height: 240px; overflow: auto; white-space: pre-wrap;
+  }
+  .turn-band { position: absolute; bottom: 0; height: 4px; opacity: 0.85; }
+  .turn-band.quiet-band { opacity: 0.35; }
   .clock b { color: var(--ink); font-weight: 600; }
 
   /* ── normally one model (phone, instrument side by side); a compare target
@@ -158,12 +116,6 @@
   .readout {
     background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
     padding: 14px 18px; display: grid; gap: 10px; align-content: start;
-  }
-  .stat-tiles { display: flex; flex-wrap: wrap; gap: 18px 28px; padding: 0 2px 4px; }
-  .stat-tile { display: flex; flex-direction: column; gap: 3px; }
-  .stat-tile .stat-value {
-    font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink);
-    font-variant-numeric: normal;
   }
   .code-block {
     background: var(--sunken); border: 1px solid var(--rule); border-radius: 8px;
@@ -318,6 +270,7 @@
         <div class="eyebrow">Session replay</div>
         <h1 id="run-name">—</h1>
       </div>
+      <a class="btn" href="/" title="all runs, compared per dataset">← Dashboard</a>
       <select class="btn" id="run-picker" aria-label="Run"></select>
       <span class="chip" id="run-stamp"></span>
       <span class="chip" id="run-status"></span>
@@ -345,6 +298,23 @@
       <span class="spacer"></span>
       <div class="legend" id="legend"></div>
     </div>
+
+    <details class="data" id="data" open>
+      <summary class="data-head">
+        <span class="eyebrow">Data</span>
+        <span class="meta" id="data-meta">—</span>
+      </summary>
+      <div class="data-scroll">
+        <table class="turns">
+          <thead><tr>
+            <th style="width:120px">time</th><th style="width:150px">lang · speaker</th>
+            <th style="width:120px">level (peak / rms)</th><th>reference</th>
+          </tr></thead>
+          <tbody id="turn-rows"></tbody>
+        </table>
+      </div>
+      <details><summary>audio file · dataset.yml · manifest rows</summary><pre id="data-raw"></pre></details>
+    </details>
   </header>
 
   <div class="cols" id="cols">
@@ -475,18 +445,18 @@
       <div class="col-head"><span class="eyebrow">Reference</span><p>what the item should have produced</p></div>
       <pre class="code-block" style="white-space: pre-wrap"><code id="ref-a"></code></pre>
       <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
-      <pre class="code-block"><code id="yaml-a"></code></pre>
+      <div class="kv-groups" id="config-a"></div>
       <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
-      <pre class="code-block"><code id="summary-a"></code></pre>
+      <div class="kv-groups" id="summary-a"></div>
     </section>
 
     <section class="readout" id="readout-b" hidden>
       <div class="col-head"><span class="eyebrow">Item metrics</span><p>scores for the item on screen</p></div>
       <div class="stat-tiles" id="tiles-b"></div>
       <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
-      <pre class="code-block"><code id="yaml-b"></code></pre>
+      <div class="kv-groups" id="config-b"></div>
       <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
-      <pre class="code-block"><code id="summary-b"></code></pre>
+      <div class="kv-groups" id="summary-b"></div>
     </section>
   </div>
 </div>
@@ -494,20 +464,9 @@
 <script>
 const DATA = __DATA__;
 
-// HomeScreen.tsx LANG_COLORS, verbatim -- the phone panel shows the app's colours.
-const LANG = {
-  en: {bubble:"#6080C8", avatar:"#9BB4D4"}, ko: {bubble:"#7A9030", avatar:"#A8B870"},
-  ja: {bubble:"#C87060", avatar:"#E0A898"}, zh: {bubble:"#9060C8", avatar:"#B898E0"},
-  es: {bubble:"#C8A030", avatar:"#E0C878"}, fr: {bubble:"#308898", avatar:"#78B8C8"},
-  id: {bubble:"#30A070", avatar:"#70C0A0"}, vi: {bubble:"#B85050", avatar:"#E09080"},
-  th: {bubble:"#5080C0", avatar:"#88B0E0"}, de: {bubble:"#C09050", avatar:"#E0C080"},
-};
-const langColor = c => LANG[c] || {bubble:"#909090", avatar:"#B8B8B8"};
 const REASONS = {seg:"--seg", vad:"--vad", dot:"--dot", always:"--always", finish:"--finish"};
 const NOISY = new Set(["chunk", "partial"]);
 const laneOf = e => e.tag || e.type;
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 // ── items: each replays on its own clock -- there is no run-wide timeline ──
 const items = DATA.items.map(it => ({
@@ -527,9 +486,11 @@ let audioFor = null, pendingTime = null;
 // ── header ────────────────────────────────────────────────────────────────
 $("run-name").textContent = DATA.run.name || "replay";
 $("run-stamp").textContent = DATA.run.stamp || "";
+$("run-stamp").hidden = !DATA.run.stamp;
 const st = $("run-status");
 st.textContent = DATA.run.status || "";
-st.className = "chip " + (DATA.run.status === "ok" ? "ok" : DATA.run.status ? "bad" : "");
+st.className = "chip " + (DATA.run.status === "ok" ? "ok"
+  : DATA.run.status && DATA.run.status !== "running" ? "bad" : "");
 if (!DATA.run.status) st.hidden = true;
 $("run-shown").textContent = `${DATA.worst.length}/${DATA.run.n_total} listed`
   + (DATA.worst.length < DATA.run.n_total ? ` (failures + worst by wer, else bleu, else fsl)` : "");
@@ -564,11 +525,13 @@ const METRIC_DISPLAY = {
   n_segments: {label: "Segments", fmt: v => String(v)},
 };
 function renderStatTiles(el, metrics) {
-  const entries = Object.entries(METRIC_DISPLAY).filter(([k]) => metrics && metrics[k] != null);
-  el.innerHTML = entries.length
-    ? entries.map(([k, spec]) =>
-        `<div class="stat-tile"><span class="eyebrow">${esc(spec.label)}</span>` +
-        `<span class="stat-value">${esc(spec.fmt(metrics[k]))}</span></div>`).join("")
+  const keys = Object.keys(METRIC_DISPLAY).filter(k => metrics && metrics[k] != null);
+  el.innerHTML = keys.length
+    ? `<div class="kv-row">` + byGroup(keys).map(([title, ks]) =>
+        groupHtml(title, "", `<div class="stat-tiles">` + ks.map(k =>
+          `<div class="stat-tile"><span class="eyebrow">${esc(METRIC_DISPLAY[k].label)}</span>` +
+          `<span class="stat-value">${esc(METRIC_DISPLAY[k].fmt(metrics[k]))}</span></div>`).join("") +
+          `</div>`)).join("") + `</div>`
     : `<div class="feed-empty">no per-item metrics for this item</div>`;
 }
 function renderReference(it) {
@@ -578,9 +541,55 @@ function renderReference(it) {
     if (text) lines.push(`${lang}${lang === it.target_lang ? " (target)" : ""}: ${text}`);
   $("ref-a").textContent = lines.length ? lines.join("\n\n") : "(this item has no reference)";
 }
+// Config: the loose top-level values first, then one group per pipeline component.
+function renderConfig(el, config) {
+  if (!config || !Object.keys(config).length) {
+    el.innerHTML = `<div class="feed-empty">(no pipeline config recorded)</div>`; return;
+  }
+  const {pipeline = {}, ...top} = config;
+  const loose = [], groups = [];
+  for (const [k, v] of Object.entries(pipeline)) {
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      const {name, ...rest} = v;
+      groups.push(groupHtml(k, name || "", tilesHtml(leaves(rest))));
+    } else loose.push([k === "name" ? "pipeline" : k, v]);
+  }
+  for (const [k, v] of Object.entries(top)) {
+    if (v && typeof v === "object" && !Array.isArray(v))
+      groups.push(groupHtml(k, "", tilesHtml(leaves(v))));
+    else loose.push([k, v]);
+  }
+  el.innerHTML = (loose.length ? groupHtml("run", "", tilesHtml(loose)) : "")
+    + `<div class="kv-row">${groups.join("")}</div>`;
+}
+
+// Summary: one group per kind of score; a breakdown (by lang, confusion, ...) sits
+// inside its kind's group under its own small title.
+function renderSummary(el, metrics) {
+  if (!metrics || !Object.keys(metrics).length) {
+    el.innerHTML = `<div class="feed-empty">(no run summary yet)</div>`; return;
+  }
+  el.innerHTML = `<div class="kv-row">` + byGroup(Object.keys(metrics)).map(([title, ks]) => {
+    const flat = ks.filter(k => !(metrics[k] && typeof metrics[k] === "object" && !Array.isArray(metrics[k])));
+    const nested = ks.filter(k => !flat.includes(k));
+    const body = (flat.length ? tilesHtml(flat.map(k => [k, metrics[k]])) : "") +
+      nested.map(k => `<div class="kv-sub">${esc(labelOf(k))}</div>` +
+        tilesHtml(leaves(metrics[k]), {parent: k, labels: false})).join("");
+    return groupHtml(title, "", body);
+  }).join("") + `</div>`;
+}
+
 function renderReadout(prefix, runInfo) {
-  $(`yaml-${prefix}`).textContent = (runInfo && runInfo.pipeline_yaml) || "(no pipeline config recorded)";
-  $(`summary-${prefix}`).textContent = JSON.stringify((runInfo && runInfo.summary_metrics) || {}, null, 2);
+  const running = runInfo && runInfo.status === "running";
+  const configEl = $(`config-${prefix}`), summaryEl = $(`summary-${prefix}`);
+  renderConfig(configEl, runInfo && runInfo.pipeline_config);
+  if (runInfo && runInfo.config_source === "configs")
+    configEl.insertAdjacentHTML("afterbegin", `<div class="feed-empty" style="text-align:left">` +
+      `read from configs/ — the run is still going, so its summary.json (which records the config ` +
+      `it actually used) does not exist yet</div>`);
+  renderSummary(summaryEl, runInfo && runInfo.summary_metrics);
+  if (running && !Object.keys(runInfo.summary_metrics || {}).length)
+    summaryEl.innerHTML = `<div class="feed-empty">(the run is still going — its summary is written when it finishes)</div>`;
 }
 renderReadout("a", DATA.run);
 
@@ -667,15 +676,34 @@ function wireColumnControls(col) {
 wireColumnControls(colA);
 wireColumnControls(colB);
 
+// Keeps the panels on the playhead while playing and after a seek. Scrolls the
+// panel's own box only -- scrollIntoView would drag the whole page along with it.
+let followJump = false;
+const following = () => playing || followJump;
+function follow(box, el) {
+  if (!box || !el) return;
+  const b = box.getBoundingClientRect(), r = el.getBoundingClientRect();
+  if (r.top >= b.top && r.bottom <= b.bottom) return;
+  box.scrollTop += r.top - b.top - (box.clientHeight - r.height) * 0.6;
+}
+function followY(box, top, height) {
+  if (!box) return;
+  if (top >= box.scrollTop && top + height <= box.scrollTop + box.clientHeight) return;
+  box.scrollTop = Math.max(0, top - (box.clientHeight - height) * 0.4);
+}
+
 function revealRows(col, edge) {
   if (edge === col.cursor) return;
   col.rowEls.forEach((tr, i) => {
     tr.classList.toggle("future", i >= edge);
     tr.classList.toggle("now", i === edge - 1);
   });
-  const newest = col.rowEls[edge - 1];
-  if (newest && playing && !newest.hidden) {
-    newest.scrollIntoView({block: "nearest", behavior: "smooth"});
+  // The newest past event is often a filtered-out chunk or partial; follow the
+  // newest one that is actually on screen.
+  if (following()) {
+    let i = edge - 1;
+    while (i >= 0 && col.rowEls[i].hidden) i--;
+    if (i >= 0) follow(col.tbody.closest(".stream"), col.rowEls[i]);
   }
   col.cursor = edge;
 }
@@ -763,7 +791,139 @@ function loadItem(it) {
   renderReference(it);
   setPills(it);
   if (compareRun) loadCompare(it.id);
+  loadData(it);
   render();
+}
+
+// ── the item's data: turns, levels, word timings, and the rows they came from ──
+// A turn is flagged quiet when it is far below full scale, or far below the item's
+// loudest turn -- either way a VAD can miss it while the ASR still hears it.
+const QUIET_ABS_DBFS = -40, QUIET_REL_DB = 20;
+let dataFor = null, dataRequest = 0, turnShown = -1, wordShown = null;
+let dataTurns = [];
+
+function markWords(text, words) {
+  // Alignment words are pieces of the transcript (Korean ones can be sub-word), so
+  // find each in order rather than splitting the text on spaces.
+  const out = []; let at = 0;
+  const lower = text.toLowerCase();
+  words.forEach(w => {
+    const k = lower.indexOf(String(w.word).toLowerCase(), at);
+    if (k < 0) return;
+    out.push(esc(text.slice(at, k)), `<span class="w" data-w="${w.i}">${esc(text.slice(k, k + w.word.length))}</span>`);
+    at = k + w.word.length;
+  });
+  out.push(esc(text.slice(at)));
+  return out.join("");
+}
+
+function renderData(d) {
+  const rows = $("turn-rows");
+  const loudest = Math.max(...d.turns.map(t => t.peak_dbfs ?? -Infinity));
+  const a = d.audio;
+  $("data-meta").textContent = [
+    d.dataset.name || "dataset unknown",
+    d.dataset.manifest_sha256 ? "sha " + d.dataset.manifest_sha256.slice(0, 12) : "",
+    a && a.sample_rate ? `${a.sample_rate} Hz · ${a.channels} ch · ${a.format}` : "",
+    a && a.file_sec != null ? `file ${a.file_sec.toFixed(2)}s` : "",
+    a && a.augment ? "augmented: " + Object.keys(a.augment).join(" → ") : "",
+    a && a.error ? "audio: " + a.error : "",
+    `${d.turns.length} turn${d.turns.length === 1 ? "" : "s"}`,
+    d.manifest_rows.length ? "" : "no manifest found — turns from the run's own rows",
+  ].filter(Boolean).join("  ·  ");
+
+  dataTurns = d.turns.map(t => {
+    const words = d.words.map((w, i) => ({...w, i}))
+      .filter(w => w.start >= t.start - 0.05 && w.start < t.end + 0.05);
+    const why = [];
+    if (t.peak_dbfs != null && t.peak_dbfs < QUIET_ABS_DBFS) why.push(`peak below ${QUIET_ABS_DBFS} dBFS`);
+    if (t.peak_dbfs != null && loudest - t.peak_dbfs >= QUIET_REL_DB)
+      why.push(`${(loudest - t.peak_dbfs).toFixed(0)} dB below the loudest turn`);
+    return {...t, words, quiet: why.join(", ")};
+  });
+
+  const tgt = current.target_lang;
+  rows.innerHTML = dataTurns.map((t, n) => {
+    const level = t.peak_dbfs == null ? "—"
+      : `${t.peak_dbfs.toFixed(1)} / ${t.rms_dbfs.toFixed(1)}` + (t.quiet ? ` <span class="quiet" title="${esc(t.quiet)}">quiet</span>` : "");
+    const translation = (t.translations || {})[tgt];
+    return `<tr data-n="${n}">` +
+      `<td class="r">${t.start.toFixed(2)}–${t.end.toFixed(2)}s</td>` +
+      `<td><span class="lang" style="background:${langColor(t.src_lang).bubble}"></span>${esc(t.src_lang || "?")}` +
+      `${t.speaker ? ` · <span class="tr-sub">${esc(t.speaker)}</span>` : ""}${t.partial ? " · cut" : ""}</td>` +
+      `<td class="r">${level}</td>` +
+      `<td><div>${markWords(t.transcript, t.words)}</div>` +
+      (translation && t.src_lang !== tgt ? `<div class="tr-sub">${esc(tgt)}: ${esc(translation)}</div>` : "") +
+      `</td></tr>`;
+  }).join("") || `<tr><td colspan="4" class="r">no turns</td></tr>`;
+  rows.querySelectorAll("tr[data-n]").forEach(tr =>
+    tr.addEventListener("click", () => seek(dataTurns[+tr.dataset.n].start)));
+
+  track.querySelectorAll(".turn-band").forEach(b => b.remove());
+  for (const t of dataTurns) {
+    const band = document.createElement("div");
+    band.className = "turn-band" + (t.quiet ? " quiet-band" : "");
+    band.style.left = (100 * t.start / T) + "%";
+    band.style.width = (100 * (t.end - t.start) / T) + "%";
+    band.style.background = langColor(t.src_lang).bubble;
+    band.title = `${t.src_lang} ${t.start.toFixed(2)}–${t.end.toFixed(2)}s${t.quiet ? " · quiet: " + t.quiet : ""}`;
+    track.appendChild(band);
+  }
+
+  const raw = [];
+  if (a) raw.push("# audio\n" + JSON.stringify(a, null, 2));
+  if (d.dataset.spec) raw.push(`# ${d.dataset.root}/dataset.yml\n` + d.dataset.spec.trim());
+  for (const r of d.manifest_rows) raw.push(`# manifest.jsonl:${r.line}\n` + JSON.stringify(r.row, null, 2));
+  $("data-raw").textContent = raw.join("\n\n") || "(nothing recorded)";
+  turnShown = -1; wordShown = null;
+}
+
+// Open or folded is a per-viewer preference, so it survives reloads and run switches.
+const DATA_OPEN_KEY = "replay.data.open";
+try {
+  const saved = localStorage.getItem(DATA_OPEN_KEY);
+  if (saved != null) $("data").open = saved === "1";
+} catch {}
+$("data").addEventListener("toggle", () => {
+  try { localStorage.setItem(DATA_OPEN_KEY, $("data").open ? "1" : "0"); } catch {}
+});
+
+async function loadData(it) {
+  const myRequest = ++dataRequest;
+  dataFor = null; dataTurns = [];
+  $("data-meta").textContent = "loading…";
+  $("turn-rows").innerHTML = "";
+  track.querySelectorAll(".turn-band").forEach(b => b.remove());
+  let d = null;
+  try {
+    const res = await fetch(`/data/${encodeURIComponent(DATA.run.dir)}/${encodeURIComponent(it.id)}`);
+    if (res.ok) d = await res.json();
+  } catch {}
+  if (myRequest !== dataRequest) return;
+  if (!d) { $("data-meta").textContent = "no dataset information for this item"; return; }
+  dataFor = it.id;
+  renderData(d);
+  renderDataNow();
+}
+
+// Highlights the turn and the word under the playhead; touches the DOM only on change.
+function renderDataNow() {
+  if (dataFor !== current.id) return;
+  const n = dataTurns.findIndex(t => now >= t.start && now < t.end);
+  if (n !== turnShown) {
+    const rows = $("turn-rows").querySelectorAll("tr[data-n]");
+    rows.forEach((tr, i) => tr.classList.toggle("now", i === n));
+    if (n >= 0 && following()) follow($("data").querySelector(".data-scroll"), rows[n]);
+    turnShown = n;
+  }
+  const t = dataTurns[n];
+  const w = t ? t.words.find(w => now >= w.start && now < w.end) : null;
+  const key = w ? w.i : null;
+  if (key !== wordShown) {
+    $("turn-rows").querySelectorAll(".w.on").forEach(el => el.classList.remove("on"));
+    if (key != null) $("turn-rows").querySelector(`.w[data-w="${key}"]`)?.classList.add("on");
+    wordShown = key;
+  }
 }
 
 const itemPicker = $("item-picker");
@@ -1057,11 +1217,13 @@ function drawTiming(col, it) {
         `<title>chunk${heard}${chunk.silence ? " (trailing silence)" : ""}</title></rect>`);
     }
     for (const v of row.vad) {
-      const from = m.wallAt(v.at);
+      // `ended_at` is when VAD reported the end, after waiting out the silence.
+      const spoke = (v.ended_at ?? v.audio) - (v.silence_waited_out_sec || 0);
+      const from = m.wallAt(spoke);
       if (v.t - from <= 0.005) continue;
       out.push(`<rect x="${x(from)}" y="${laneY(0)}" width="${x(v.t) - x(from)}"`,
         ` height="${TL.bar}" fill="url(#tl-hatch)">`,
-        `<title>silence waited out: speech ended at audio ${v.at.toFixed(2)}s,`,
+        `<title>silence waited out: speech ended at audio ${spoke.toFixed(2)}s,`,
         ` VAD said so at ${v.t.toFixed(2)}s</title></rect>`);
     }
     for (const bar of row.spans) {
@@ -1110,6 +1272,13 @@ function timingPlayhead(col, it) {
   const at = col.timingX(col.timingData.wallAt(now));
   head.setAttribute("x1", at);
   head.setAttribute("x2", at);
+  // The row being heard: the first commit that had not yet been decided at `now`.
+  if (!following()) return;
+  const rows = col.timingData.rows;
+  let k = rows.findIndex(row => row.commit && now <= row.commit.audio + 1e-6);
+  if (k < 0) k = rows.length - 1;
+  const rowH = TL.label + col.lanes.length * TL.lane + TL.gap;
+  followY(col.timingBody, TL.padT + k * rowH, rowH);
 }
 
 let redrawing = false;
@@ -1140,6 +1309,7 @@ addEventListener("resize", timingResized);
 // ── the phone: rebuilt from whatever is in the past, so seeking is exact ──
 const feed = $("feed"), feedRows = $("feed-rows"), liveEl = $("live");
 function bubble(lang, main, sub, caret) {
+  const src = current.src_lang || "", tgt = current.target_lang || "";
   const isMine = lang === src, isPeer = lang === tgt;
   const c = isMine ? {bubble:"#6080C8", avatar:"#9BB4D4", text:"#fff", sub:"rgba(255,255,255,0.65)"}
           : isPeer ? {bubble:"#f2f2f2", avatar:"#E8E0A0", text:"#1a1a1a", sub:"#aaa"}
@@ -1205,13 +1375,16 @@ function render() {
   $("ribbon").setAttribute("aria-valuenow", now.toFixed(2));
 
   revealRows(colA, edge);
+  renderDataNow();
 }
 
 function seek(to) {
   now = Math.max(0, Math.min(T, to));
   colA.cursor = -1;
   colB.cursor = -1;
+  followJump = true;
   render();
+  followJump = false;
 }
 function frame(ts) {
   if (!playing) return;

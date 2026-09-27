@@ -1,0 +1,104 @@
+/* Shared by the dashboard and the session replay: colour tokens (light and dark),
+   the base, and the widgets both pages use. */
+:root {
+  --ground: #eef0ec; --panel: #fbfcfa; --sunken: #f2f4f0;
+  --ink: #12171a; --ink-soft: #5a6470; --ink-faint: #8b949e;
+  --rule: #dde1d9; --rule-soft: #e8ebe4;
+  --accent: #7a9030; --accent-soft: rgba(122, 144, 48, 0.12);
+  --seg: #6080c8; --vad: #7a9030; --dot: #c8a030;
+  --always: #9060c8; --finish: #8e9288; --alarm: #b85050;
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --device: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --audio: #9aa79a;
+  --lane-0: #4c9a5a; --lane-1: #d08a2a; --lane-2: #c0554f; --lane-3: #7b60c0;
+  --lane-4: #3f8a9c; --lane-5: #a0662a; --lane-6: #6d7fa8; --lane-7: #8a8f84;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0e1316; --panel: #151b1e; --sunken: #111619;
+    --ink: #e8ece6; --ink-soft: #9aa4a0; --ink-faint: #6b7572;
+    --rule: #252d30; --rule-soft: #1d2427;
+    --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
+    --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
+    --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
+    --audio: #6e7a6e;
+    --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
+    --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0e1316; --panel: #151b1e; --sunken: #111619;
+  --ink: #e8ece6; --ink-soft: #9aa4a0; --ink-faint: #6b7572;
+  --rule: #252d30; --rule-soft: #1d2427;
+  --accent: #9cb544; --accent-soft: rgba(156, 181, 68, 0.14);
+  --seg: #85a3dd; --vad: #9cb544; --dot: #dab94e;
+  --always: #ab86dd; --finish: #7e837a; --alarm: #d97b7b;
+  --audio: #6e7a6e;
+  --lane-0: #5eb46d; --lane-1: #e6a344; --lane-2: #dc6f68; --lane-3: #9a7fe0;
+  --lane-4: #55a6bb; --lane-5: #c08146; --lane-6: #8798c8; --lane-7: #9aa094;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--sans); font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+/* `hidden` must win over the display: grid/flex the panels set below */
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+
+.eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.chip {
+  font-size: 11px; font-family: var(--mono); padding: 2px 8px; border-radius: 999px;
+  background: var(--sunken); border: 1px solid var(--rule); color: var(--ink-soft);
+}
+.chip.ok { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.chip.bad { color: var(--alarm); border-color: var(--alarm); }
+.spacer { flex: 1; }
+
+.btn {
+  background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
+  border-radius: 7px; padding: 6px 12px; font-size: 13px; font-weight: 500;
+}
+.btn:hover { border-color: var(--ink-faint); }
+a.btn { text-decoration: none; display: inline-block; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); }
+/* `color-scheme` alone doesn't reach every browser's native <option> popup --
+   pin both sides of the pair explicitly so it can't render invisible text. */
+select.btn option { background: var(--panel); color: var(--ink); }
+.seg-group { display: flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; }
+.seg-group button {
+  background: var(--panel); border: 0; padding: 6px 10px; font-size: 12px;
+  border-left: 1px solid var(--rule); font-family: var(--mono);
+}
+.seg-group button:first-child { border-left: 0; }
+.seg-group button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.stat-tiles { display: flex; flex-wrap: wrap; gap: 18px 28px; padding: 0 2px 4px; }
+.stat-tile { display: flex; flex-direction: column; gap: 3px; }
+.stat-tile .stat-value {
+  font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink);
+  font-variant-numeric: normal;
+}
+/* config and run summary: the same tiles as the item metrics, in labelled groups */
+.kv-groups { display: grid; gap: 12px; }
+.kv-group { display: grid; gap: 6px; align-content: start; }
+.kv-row { display: flex; flex-wrap: wrap; gap: 14px 44px; }
+.kv-sub { font-size: 10px; color: var(--ink-faint); margin-top: 2px; }
+.kv-group-title { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+.kv-group-title .dim { font-weight: 400; color: var(--ink-faint); font-family: var(--mono); }
+.stat-tiles.small { gap: 10px 24px; }
+.stat-tiles.small .stat-value { font-size: 14px; }
+.stat-tiles.small .stat-value.text {
+  font-family: var(--mono); font-size: 12px; font-weight: 500; word-break: break-all;
+}

@@ -5,10 +5,10 @@ from pathlib import Path
 
 from core.errors import STiTyError
 from core.utils import audio
-from core.utils import cli, clock, env, logging, process, stream
+from core.utils import cli, clock, env, logging, stream
 from core.utils.json import JsonlWriter, read_jsonl, write_jsonl
 
-from . import config
+from . import augment, config
 from .metrics.common import transcribed, translated
 from .metrics import score
 from .metrics.translation import translation_sentences
@@ -36,9 +36,10 @@ def _row(item, *, status: str, **fields) -> dict:
     }
 
 
-async def _stream_item(pipeline, item, cfg, languages: list[str]) -> dict:
+async def _stream_item(pipeline, augmenter, item, cfg, languages: list[str]) -> dict:
     try:
         samples = audio.load_window(item.audio, offset=item.offset, duration=item.duration_sec)
+        samples, augmented = augmenter.apply(samples, key=augment.item_key(cfg.dataset.name, item.id))
     except STiTyError as e:
         stream.start_clock()
         stream.record("item_error", error="audio_load_failed", detail=str(e))
@@ -57,7 +58,11 @@ async def _stream_item(pipeline, item, cfg, languages: list[str]) -> dict:
 
     stream.start_clock()
     stream.record(
-        "item_open", audio_sec=round(audio_sec, 3), src_lang=item.src_lang, target_lang=cfg.target
+        "item_open",
+        audio_sec=round(audio_sec, 3),
+        src_lang=item.src_lang,
+        target_lang=cfg.target,
+        augment=augmented,
     )
     pipeline.start(languages=languages, target_lang=cfg.target)
     try:
@@ -81,6 +86,7 @@ async def _stream_item(pipeline, item, cfg, languages: list[str]) -> dict:
         compute_sec=round(compute_sec, 4),
         transcription_output=transcription_output.strip(),
         records=records,
+        augment=augmented,
     )
 
 
@@ -100,7 +106,7 @@ def write_comet_inputs(rows, cfg, path: Path) -> None:
     write_jsonl(path, translation_sentences(rows, cfg.target))
 
 
-async def _run(cfg, dataset, pipeline, writer) -> None:
+async def _run(cfg, dataset, pipeline, augmenter, writer) -> None:
     current_group = None
     await pipeline.load()
     for index, item in enumerate(dataset.items, start=1):
@@ -108,7 +114,7 @@ async def _run(cfg, dataset, pipeline, writer) -> None:
         if item.group != current_group:
             current_group = item.group
             stream.record("session_open", group=item.group)
-        row = await _stream_item(pipeline, item, cfg, dataset.languages)
+        row = await _stream_item(pipeline, augmenter, item, cfg, dataset.languages)
         row = score_item(row, cfg)
         writer.write(row)
         log.info(
@@ -121,7 +127,13 @@ async def _run(cfg, dataset, pipeline, writer) -> None:
         )
 
 
-RUN_FILES = ("events.jsonl", "items.jsonl", "summary.json", "comet_inputs.jsonl")
+RUN_FILES = (
+    "events.jsonl",
+    "items.jsonl",
+    "summary.json",
+    "comet_inputs.jsonl",
+    "comet_scores.jsonl",
+)
 
 
 def reset_run_dir(run_dir: Path) -> None:
@@ -132,7 +144,9 @@ def reset_run_dir(run_dir: Path) -> None:
 
 def main(args: Namespace) -> None:
     cfg = config.load(args.config, args.dataset)
-    dataset = datasets.load(cfg.dataset, config.get_data_root())
+    data_root = config.get_data_root()
+    dataset = datasets.load(cfg.dataset, data_root)
+    augmenter = augment.build(cfg.augment, data_root=data_root)
     pipeline = build_pipeline(cfg)
 
     started = clock.now()
@@ -154,7 +168,7 @@ def main(args: Namespace) -> None:
     status, failure = "ok", None
     writer = JsonlWriter(run_dir / "items.jsonl")
     try:
-        asyncio.run(_run(cfg, dataset, pipeline, writer))
+        asyncio.run(_run(cfg, dataset, pipeline, augmenter, writer))
     except KeyboardInterrupt:
         log.warning("[INTERRUPTED] scoring what was written so far")
         status = "degraded"
@@ -183,8 +197,6 @@ def main(args: Namespace) -> None:
     )
     if failure is not None:
         raise failure
-
-    process.run("bench/metrics/comet", "python", "-m", "bench.metrics.comet", run_dir=run_dir)
 
 
 if __name__ == "__main__":

@@ -8,12 +8,13 @@ from core.utils.json import read_json, read_jsonl, write_json
 
 COMET_MODEL = "Unbabel/wmt22-comet-da"
 INPUTS = "comet_inputs.jsonl"
+SCORES = "comet_scores.jsonl"
 KEYS = ("comet", "comet_by_pair", "comet_model")
 
 
-def comet(sentences: list[dict]) -> dict[str, float] | None:
+def comet(sentences: list[dict], scores: list[float] | None = None) -> dict[str, float] | None:
     by_pair: dict[str, list[float]] = {}
-    for sentence, value in zip(sentences, sentence_scores(sentences)):
+    for sentence, value in zip(sentences, scores if scores is not None else sentence_scores(sentences)):
         by_pair.setdefault(sentence["pair"], []).append(value)
     return {pair: mean(values) for pair, values in sorted(by_pair.items())} or None
 
@@ -44,7 +45,13 @@ def score(run_dir: Path) -> dict:
     inputs_path = run_dir / INPUTS
     sentences = [s for s in read_jsonl(inputs_path) if s["src"]] if inputs_path.exists() else []
 
-    by_pair = comet(sentences)
+    scores = sentence_scores(sentences) if sentences else []
+    by_pair = comet(sentences, scores)
+    # One score per scored sentence, in `comet_inputs.jsonl` order -- the replay
+    # dashboard draws the run's COMET distribution from it, not just the mean.
+    with open(run_dir / SCORES, "w", encoding="utf-8") as f:
+        for sentence, value in zip(sentences, scores):
+            f.write(json.dumps({"pair": sentence["pair"], "comet": value}) + "\n")
     for key in KEYS:
         summary["metrics"].pop(key, None)
         summary["unavailable"].pop(key, None)
