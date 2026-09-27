@@ -2,13 +2,16 @@ from core.components.registry import Registry, discover
 from core.errors import ConfigError
 from core.utils.config import as_component
 
-from .base import Pipeline
+from .base import Pipeline, RunsPer, Stage
 
 pipelines = Registry("pipeline")
 
 discover(__name__)
 
-__all__ = ["Pipeline", "pipelines", "validate", "build", "describe"]
+__all__ = ["Pipeline", "RunsPer", "Stage", "pipelines", "validate", "build", "build_part",
+           "describe", "stages_of"]
+
+DEFAULT_PARTS = {"mixer": "mixdown"}
 
 
 def _registries(pipeline_name: str) -> list[tuple]:
@@ -52,6 +55,23 @@ def build(cfg) -> Pipeline:
              for kind, part in resolved["parts"].items()}
     return pipelines.get(cfg.stity.pipeline.name)(
         resolved["pipeline"], parts=parts, cfg=cfg)
+
+
+def stages_of(cfg) -> tuple[Stage, ...]:
+    return pipelines.get(cfg.stity.pipeline.name).STAGES
+
+
+async def build_part(cfg, kind: str):
+    by_kind = {registry.kind: registry
+               for registry, _ in _registries(cfg.stity.pipeline.name)}
+    part = cfg.stity.resolved["parts"].get(kind)
+    if part is None and kind in DEFAULT_PARTS:
+        part = {"name": DEFAULT_PARTS[kind], "kwargs": {}}
+    if part is None:
+        return None
+    built = by_kind[kind].get(part["name"])(part["kwargs"], cfg=cfg)
+    await built.load()
+    return built
 
 
 def describe(cfg) -> dict:

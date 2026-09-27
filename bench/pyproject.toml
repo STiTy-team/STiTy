@@ -13,7 +13,7 @@ requires-python = ">=3.12,<3.13"
 #
 # sentencepiece: the MADLAD / NLLB tokenizers of the local translator.
 #
-# COMET is not here: unbabel-comet pins numpy<2, so it lives in bench/comet.
+# COMET is not here: unbabel-comet pins numpy<2, so it lives in bench/metrics/comet.
 dependencies = [
     "qwen-asr[vllm]",
     "silero-vad>=6.2",
@@ -36,3 +36,6 @@ package = false
 
 [tool.uv.sources]
 qwen-asr = { path = "../Qwen3-ASR", editable = true }
+
+[tool.ruff]
+line-length = 100

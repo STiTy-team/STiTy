@@ -1,11 +1,11 @@
 import difflib
 import re
-import time
 from functools import cache
 
 import numpy as np
 
 from core.utils import audio as audio_mod
+from core.utils import clock
 from core.utils import langs
 from core.utils import logging
 from core.utils import timing
@@ -287,9 +287,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out.setdefault("rep_dedup", True)
         return out
 
-    def start(self, language: str | None = None, target_lang: str | None = None,
-              vad=None, **_) -> None:
-        self._languages = (language, target_lang)
+    def start(self, languages: list[str] | None = None, vad=None, **_) -> None:
+        self._languages = tuple(languages or ())
         commit = self.cfg.stity.commit
         self.always_commit = commit.always_commit
         self.enable_dot_commit = commit.enable_dot_commit
@@ -317,14 +316,6 @@ class Qwen3SegTranscription(Qwen3Transcription):
     def _drain(self) -> list:
         out, self._out = self._out, []
         return out
-
-    @timing.measure("decode")
-    async def _decode(self, state) -> None:
-        await self.model.finish_streaming_transcribe(state)
-
-    @timing.measure("decode")
-    async def _decode_stream(self, chunk, state, **callbacks) -> None:
-        await self.model.streaming_transcribe(chunk, state, **callbacks)
 
     def _new_state(self, seed_text: str = ""):
         kw = self.settings
@@ -602,8 +593,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
             current, slot["committed_display"], slot["committed_seg_count"]))
 
     def _offer_partial(self, *, force: bool = False) -> None:
-        now = time.perf_counter()
-        if not force and now - self._partial_at < PARTIAL_MIN_INTERVAL_SEC:
+        if not force and clock.elapsed_since(self._partial_at) < PARTIAL_MIN_INTERVAL_SEC:
             return
         text = self._uncommitted_display()
         if not text and not force:
@@ -612,10 +602,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if not force and previous and text != previous and previous.startswith(text):
             return
         if text == previous:
-            self._partial_at = now
+            self._partial_at = clock.monotonic()
             return
         self._partial_text = text
-        self._partial_at = now
+        self._partial_at = clock.monotonic()
         self._partial_seq += 1
         self._out.append(Partial(
             text=text,
@@ -626,7 +616,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if self._partial_text == "":
             return
         self._partial_text = ""
-        self._partial_at = time.perf_counter()
+        self._partial_at = clock.monotonic()
         self._partial_seq += 1
         self._out.append(Partial(text="", language="", seq=self._partial_seq))
 
@@ -1079,7 +1069,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
             language=self._language(),
             commit_reason=reason,
             decision_audio_sec=round(audio_end_sec, 3),
-            recv_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+            committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
         ))
         log.debug("[COMMIT] reason=%s text=%r", reason, original)
 

@@ -1,5 +1,5 @@
-from .registry import Component, Final, Partial, Speech, Transcribed, discover
+from .registry import Component, Partial, Record, Speech, Transcribed, Translated, discover
 
-discover(__name__, packages=True)
+discover(__name__)
 
-__all__ = ["Component", "Final", "Partial", "Speech", "Transcribed"]
+__all__ = ["Component", "Partial", "Record", "Speech", "Transcribed", "Translated"]

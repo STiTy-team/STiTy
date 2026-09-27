@@ -1,12 +1,12 @@
 import hashlib
-import json
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Iterator
 
 import yaml
 
 from core.errors import DataError
+from core.utils import langs
+from core.utils.json import read_jsonl
 from core.utils.audio import probe_duration
 
 from .config import DatasetConfig
@@ -20,32 +20,30 @@ SPEC_NAME = "dataset.yml"
 class Item:
     id: str
     audio: Path
-    duration: float
+    duration_sec: float
     src_lang: str
     group: str
     speaker: str
     offset: float | None = None
-    transcript: str = ""
-    translations: dict[str, str] = field(default_factory=dict)
-    alignment: tuple[dict, ...] = ()
-    segmentation: tuple[dict, ...] = ()
-
-    def reference_translation(self, target_lang: str) -> str:
-        return self.translations.get(target_lang, "")
+    partial: bool = False
+    reference: str = ""
+    reference_translations: dict[str, str] = field(default_factory=dict)
+    reference_alignment: tuple[dict, ...] = ()
+    reference_segmentation: tuple[dict, ...] = ()
 
 
 @dataclass(frozen=True)
 class DatasetSpec:
     name: str
     root: Path
-    split: str
-    languages: list[str]
-    has_transcript: bool
-    translation_langs: list[str]
-    group_rule: str
+    spec: dict
     manifest_sha256: str
     alignment_sha256: str | None
     items: list[Item]
+
+    @property
+    def languages(self) -> list[str]:
+        return [langs.norm_code(code) or code for code in self.spec["languages"]]
 
     @property
     def n_sessions(self) -> int:
@@ -53,16 +51,12 @@ class DatasetSpec:
 
     def provenance(self) -> dict:
         return {
+            **self.spec,
             "name": self.name,
             "root": str(self.root),
-            "split": self.split,
-            "languages": list(self.languages),
-            "provides": {"transcript": self.has_transcript,
-                         "translations": list(self.translation_langs)},
-            "group_rule": self.group_rule,
             "manifest_sha256": self.manifest_sha256,
             "alignment_sha256": self.alignment_sha256,
-            "n_aligned": sum(1 for i in self.items if i.alignment),
+            "n_aligned": sum(1 for i in self.items if i.reference_alignment),
             "n_items": len(self.items),
             "n_sessions": self.n_sessions,
         }
@@ -84,39 +78,24 @@ def _parse_item(raw: dict, *, root: Path, default_lang: str) -> Item:
     return Item(
         id=raw["id"],
         audio=root / raw["audio"],
-        duration=float(raw["duration"]),
+        duration_sec=float(raw["duration"]),
         src_lang=raw.get("src_lang") or default_lang,
         group=str(raw.get("group") or raw["id"]),
         speaker=str(raw.get("speaker") or ""),
         offset=float(raw["offset"]) if raw.get("offset") is not None else None,
-        transcript=reference.get("transcript") or "",
-        translations=dict(reference.get("translations") or {}),
+        partial=bool(raw.get("partial")),
+        reference=reference.get("transcript") or "",
+        reference_translations=dict(reference.get("translations") or {}),
     )
 
 
-def _iter_manifest(path: Path) -> Iterator[tuple[int, dict]]:
-    with open(path, encoding="utf-8") as f:
-        for lineno, line in enumerate(f, start=1):
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            try:
-                yield lineno, json.loads(line)
-            except json.JSONDecodeError as e:
-                raise DataError(f"{path}:{lineno}: invalid JSON ({e})") from e
-
-
 def _read_alignment(path: Path, items: list[Item]) -> list[Item]:
-    transcripts = {item.id: item.transcript for item in items}
+    transcripts = {item.id: item.reference for item in items}
     words = {}
-    for _, row in _iter_manifest(path):
+    for row in read_jsonl(path, strict=True):
         if transcripts.get(row["id"]) == row["transcript"]:
             words[row["id"]] = tuple(row["words"])
-    return [replace(item, alignment=words.get(item.id, ())) for item in items]
-
-
-def _grouped_contiguously(items: list[Item]) -> list[Item]:
-    return sorted(items, key=lambda item: item.group)
+    return [replace(item, reference_alignment=words.get(item.id, ())) for item in items]
 
 
 def _talks(items: list[Item]) -> list[Item]:
@@ -129,74 +108,85 @@ def _talks(items: list[Item]) -> list[Item]:
         if len({s.audio for s in sentences}) != 1 or any(s.offset is None for s in sentences):
             raise DataError(
                 f"group {group!r}: longform needs every item of a group to be an "
-                f"offset window into one audio file")
+                f"offset window into one audio file"
+            )
         sentences = sorted(sentences, key=lambda s: s.offset)
-        langs = {lang for s in sentences for lang in s.translations}
-        talks.append(Item(
-            id=group,
-            audio=sentences[0].audio,
-            duration=probe_duration(sentences[0].audio),
-            src_lang=sentences[0].src_lang,
-            group=group,
-            speaker=sentences[0].speaker,
-            transcript=" ".join(s.transcript for s in sentences),
-            translations={lang: " ".join(s.translations.get(lang, "") for s in sentences)
-                          for lang in langs},
-            alignment=tuple({**w, "start": w["start"] + s.offset, "end": w["end"] + s.offset}
-                            for s in sentences for w in s.alignment),
-            segmentation=tuple({"offset": s.offset, "duration": s.duration,
-                                "transcript": s.transcript,
-                                "translations": dict(s.translations)}
-                               for s in sentences),
-        ))
+        targets = {lang for s in sentences for lang in s.reference_translations}
+        talks.append(
+            Item(
+                id=group,
+                audio=sentences[0].audio,
+                duration_sec=probe_duration(sentences[0].audio),
+                src_lang="+".join(dict.fromkeys(s.src_lang for s in sentences)),
+                group=group,
+                speaker=sentences[0].speaker,
+                reference=" ".join(s.reference for s in sentences),
+                reference_translations={
+                    lang: " ".join(s.reference_translations.get(lang, "") for s in sentences)
+                    for lang in targets
+                },
+                reference_alignment=tuple(
+                    {**w, "start": w["start"] + s.offset, "end": w["end"] + s.offset}
+                    for s in sentences
+                    for w in s.reference_alignment
+                ),
+                reference_segmentation=tuple(
+                    {
+                        "offset": s.offset,
+                        "duration": s.duration_sec,
+                        "src_lang": s.src_lang,
+                        "partial": s.partial,
+                        "transcript": s.reference,
+                        "translations": dict(s.reference_translations),
+                    }
+                    for s in sentences
+                ),
+            )
+        )
     return talks
 
 
 def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
     ds_root = root / cfg.name
     spec = _read_spec(ds_root)
-
-    lang_codes = list(spec.get("languages") or [])
-    provides = spec.get("provides") or {}
-    translation_langs = list(provides.get("translations") or [])
-
-    manifest_path = ds_root / str(spec.get("manifest") or MANIFEST_NAME)
-    if not manifest_path.is_file():
-        raise DataError(f"{manifest_path} is missing")
-    digest = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-
-    if not lang_codes:
+    languages = spec.get("languages") or []
+    if not languages:
         raise DataError(
             f"{ds_root / SPEC_NAME} has no 'languages'. It is what an item without "
             f"its own src_lang falls back to, so there is no default for it."
         )
-    default_lang = lang_codes[0]
-    items = [_parse_item(raw, root=ds_root, default_lang=default_lang)
-             for _, raw in _iter_manifest(manifest_path)]
+
+    manifest_path = ds_root / str(spec.get("manifest") or MANIFEST_NAME)
+    if not manifest_path.is_file():
+        raise DataError(f"{manifest_path} is missing")
+    items = sorted(
+        (
+            _parse_item(raw, root=ds_root, default_lang=languages[0])
+            for raw in read_jsonl(manifest_path, strict=True)
+        ),
+        key=lambda item: item.group,
+    )
     if not items:
         raise DataError(f"{manifest_path} has no items")
 
-    items = _grouped_contiguously(items)
-
     alignment_path = ds_root / ALIGNMENT_NAME
-    alignment_digest = None
+    alignment_sha256 = None
     if alignment_path.is_file():
-        alignment_digest = hashlib.sha256(alignment_path.read_bytes()).hexdigest()
+        alignment_sha256 = _sha256(alignment_path)
         items = _read_alignment(alignment_path, items)
 
     if cfg.longform:
         items = _talks(items)
-    items = items[:cfg.limit]
 
     return DatasetSpec(
         name=str(spec.get("name") or cfg.name),
         root=ds_root,
-        split=str(spec.get("split") or ""),
-        languages=lang_codes,
-        has_transcript=bool(provides.get("transcript", True)),
-        translation_langs=translation_langs,
-        group_rule=str(spec.get("group_rule") or "id"),
-        manifest_sha256=digest,
-        alignment_sha256=alignment_digest,
-        items=items,
+        spec=spec,
+        manifest_sha256=_sha256(manifest_path),
+        alignment_sha256=alignment_sha256,
+        items=items[: cfg.limit],
     )
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()

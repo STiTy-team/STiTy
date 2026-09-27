@@ -33,6 +33,10 @@ NAME_TO_CODE = {v.lower(): k for k, v in CODE_TO_NAME.items()}
 CHAR_UNIT_LANGS = {"zh", "ja", "th"}
 
 
+def get_lang_name(code: str | None) -> str:
+    return CODE_TO_NAME.get(code or "", code or "the source language")
+
+
 def norm_code(value: str) -> str:
     """A code or a name to its code. `""` for anything unrecognised, `auto` included."""
     if not isinstance(value, str):

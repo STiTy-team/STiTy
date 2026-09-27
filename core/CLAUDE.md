@@ -61,7 +61,7 @@ class MyTranslator(Translator):
 
 **부품은 만든 것을 반환한다.** 전사기는 `Transcribed`(되돌리지 않을 텍스트)와
 `Partial`(지금 멈추면 이렇게 말하겠다는 것)을 만든 순서대로 돌려주고, 파이프라인이
-번역을 붙여 `Final` 로 바꾼다. 세 기록은 `registry.py` 에 있는 frozen dataclass 라
+번역을 붙여 `Translated` 로 바꾼다. 세 기록은 `registry.py` 에 있는 frozen dataclass 라
 필드가 닫혀 있다 — 오타가 조용히 빈칸이 되지 않는다.
 
 **기록은 실행을 모는 쪽이 한 곳에서 한다.** `core/components` 와 `core/pipeline` 의 어떤 파일도
@@ -71,17 +71,20 @@ class MyTranslator(Translator):
 그대로 재생된다.
 
 **시간은 `registry.register` 가 자동으로 잰다.** 등록될 때 그 종류의 베이스가 선언한
-메서드(`transcribe`·`flush`·`finish` / `translate` / `detect` / `correct`)에
+메서드(`flush`·`finish` / `translate` / `correct`)에
 `timing.measure` 를 씌우므로 **부품 코드에 계측이 한 줄도 없다** — 새 백엔드는 레인이
 그냥 생기고, 새 종류는 그 베이스가 선언한 메서드가 곧 레인이 된다. 나가는 줄은
-`{"t": 2.001, "type": "timing", "tag": "transcribe", "audio": 2.0, "dur": 0.353}` 이고
+`{"t": 2.001, "type": "timing", "tag": "flush", "audio": 2.0, "dur": 0.353}` 이고
 `t` 는 다른 줄과 같이 시작 시각이다. 읽는 쪽은 태그 목록 없이 규칙만 안다 — `dur` 이
 있으면 시간이 걸린 구간, `tag` 가 레인 이름. **시작한 뒤 끝내지 않을 방법이 없다** —
 데코레이터라 예외로 빠져나가도 막대가 닫힌다.
 
-`load`·`close`·`start` 는 항목 시계 밖이라 안 잰다. 파이프라인도 안 잰다 — 부품을 엮는
+`load`·`close`·`start` 는 항목 시계 밖이라 안 잰다. `transcribe`·`detect` 는 청크마다
+(200ms) 불려서 재면 이벤트 줄기가 그 막대로 덮인다 — 그래서 안 잰다(`registry.PER_CHUNK`).
+그 안에서 시간이 드는 모델 호출은 `decode` 로 따로 잰다. 파이프라인도 안 잰다 — 부품을 엮는
 쪽이고 그 막대는 부품 막대를 전부 덮는다. 메서드보다 잘게 재야 할 때만 `@timing.measure`
-를 직접 붙인다(트리에 한 군데, `qwen_seg.py` 의 `_decode`). **태그는 모델이 아니라 하는
+를 직접 붙인다(트리에 한 군데, `qwen3.py` 의 `_decode_chunks`·`_decode_tail` — `qwen-seg` 도 물려받는다.
+모델이 실제로 돌 때만 재고, 스트리밍 디코딩은 `decode`, VAD·종료 때 꼬리 디코딩은 `final_decode`). **태그는 모델이 아니라 하는
 일이다** — `qwen3_generate` 가 아니라 `decode` 여야 다른 백엔드의 같은 구간과 한 레인에서
 비교된다. 자세한 것은 [bench/README.md](../bench/README.md) 의 '시간은 자동으로 재진다'.
 
@@ -101,7 +104,7 @@ class MyTranslator(Translator):
 의 커밋 경로를 그대로 옮긴 것이다 — 커서 추적, 재방출 가드(`cross-dedup`·`cross-dedup-fuzzy`·
 `committed-suffix-dedup` 등), dot 확정 게이트 네 규칙(문맥·합의·정체·종료), SEG/헤더/길이
 초과 시의 슬롯 리셋과 오디오 carry, 꼬리 무음 트림과 짧은 발화 재시도, 언어 헤더·무음
-정형문·꼬리 조각 폐기(`[HALLUC-DROP]`·`[TAIL-DROP]` 등 같은 태그로 로그에 남는다).
+정형문·꼬리 조각 폐기(`[DROP] rule=silence-phrase`·`rule=tail-filler` 처럼 규칙 이름으로 로그에 남는다).
 프로덕션과 같은 숫자를 재려면 이쪽이고, 그 방어가 없을 때의 바닥선을 보려면 `qwen3` 다.
 `dot_commit_confirm`·`dot_commit_stall_chunks`·`rep_dedup` 은 `qwen-seg` 의 설정이다.
 
@@ -110,7 +113,7 @@ class MyTranslator(Translator):
 `Qwen3-ASR/tests/test_qwen_seg_parity.py`. 서버를 고치면 이 테스트가 `qwen_seg.py` 도 같이
 고치라고 알려 준다.
 
-**무음 위 커밋 폐기(`[SILENCE-DROP]`)는 VAD 구간이 있어야 판정된다.** 서버가 보는 것은
+**무음 위 커밋 폐기(`[DROP] rule=no-speech`, 서버에서는 `[SILENCE-DROP]`)는 VAD 구간이 있어야 판정된다.** 서버가 보는 것은
 "커밋 시점이 침묵인가"가 아니라 "이 커밋이 덮는 구간(직전 final 의 끝 ~ 이번 커밋)에 음성이
 있었나"라, 진행 중인 구간까지 포함한 구간 목록이 필요하다. 파이프라인이 `start` 에서
 `vad=` 로 검출기를 넘기고 전사 부품이 `detector.spans` 를 읽는다 — 검출기가 없거나 꺼진

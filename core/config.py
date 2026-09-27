@@ -15,9 +15,7 @@ from pydantic import model_validator
 
 from core.errors import ConfigError
 from core.utils.config import ConfigBody, as_component
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CONFIG_ROOT = PROJECT_ROOT / "configs"
+from core.utils.paths import get_project_root
 
 COMMIT_MODES = {
     "seg":    dict(always_commit=False, enable_dot_commit=False, hide_seg=False),
@@ -28,7 +26,7 @@ COMMIT_MODES = {
 
 def resolve(name: str, kind: str) -> Path:
     """A bare name to the file it stands for, under `configs/<kind>s/`."""
-    directory = CONFIG_ROOT / f"{kind}s"
+    directory = get_project_root() / "configs" / f"{kind}s"
     path = directory / f"{name}.yml"
     if path.is_file():
         return path

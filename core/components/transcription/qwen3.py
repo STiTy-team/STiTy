@@ -1,12 +1,13 @@
-import time
 from pathlib import Path
 
 from core.errors import ConfigError
 from core.utils import audio as audio_mod
+from core.utils import clock
 from core.utils import langs
 from core.utils import cache
 from core.utils import logging
 from core.utils import timing
+from core.utils.paths import get_project_root
 
 from . import transcribers
 from ..registry import Partial, Speech, Transcribed
@@ -14,7 +15,6 @@ from .base import Transcriber
 
 log = logging.getLogger(__name__)
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MODEL = "Qwen/Qwen3-ASR-1.7B"
 MAX_MODEL_LEN = 4096
 KEEP_AFTER_SPEECH_SEC = 0.1
@@ -34,7 +34,7 @@ def _last_word_boundary(decoded: str, already: str) -> int:
 def resolve_model(raw: str) -> str:
     path = Path(raw).expanduser()
     if not path.is_absolute():
-        candidate = PROJECT_ROOT / raw
+        candidate = get_project_root() / raw
         if candidate.exists():
             return str(candidate)
     if path.exists():
@@ -122,9 +122,8 @@ class Qwen3Transcription(Transcriber):
         await warmup_streaming(model)
         return model
 
-    def start(self, language: str | None = None, target_lang: str | None = None,
-              **_) -> None:
-        self._languages = (language, target_lang)
+    def start(self, languages: list[str] | None = None, **_) -> None:
+        self._languages = tuple(languages or ())
         self._fed_samples = 0
         self._partial_seq = 0
         self._out: list = []
@@ -153,9 +152,27 @@ class Qwen3Transcription(Transcriber):
         self._partial_text = None
         self._partial_at = 0.0
 
+    async def _decode(self, state) -> None:
+        if state.buffer.shape[0] > 0:
+            await self._decode_tail(state)
+
+    @timing.measure("final_decode")
+    async def _decode_tail(self, state) -> None:
+        await self.model.finish_streaming_transcribe(state)
+
+    async def _decode_stream(self, chunk, state, **callbacks) -> None:
+        if state.buffer.shape[0] + chunk.shape[0] < state.chunk_size_samples:
+            await self.model.streaming_transcribe(chunk, state, **callbacks)
+        else:
+            await self._decode_chunks(chunk, state, **callbacks)
+
+    @timing.measure("decode")
+    async def _decode_chunks(self, chunk, state, **callbacks) -> None:
+        await self.model.streaming_transcribe(chunk, state, **callbacks)
+
     async def transcribe(self, audio: bytes) -> list:
         self._fed_samples += len(audio) // 2
-        await self.model.streaming_transcribe(
+        await self._decode_stream(
             audio_mod.from_pcm_bytes(audio), self.state,
             on_seg=self._trigger("seg"), on_dot=self._trigger("dot"),
             on_partial=self._partial_callback(),
@@ -174,7 +191,7 @@ class Qwen3Transcription(Transcriber):
                      speech: Speech | None = None) -> list:
         if speech is not None:
             self._drop_trailing_silence(speech)
-        await self.model.finish_streaming_transcribe(self.state)
+        await self._decode(self.state)
         self._take(reason)
         return self._drain()
 
@@ -218,8 +235,7 @@ class Qwen3Transcription(Transcriber):
         return callback
 
     def _offer_partial(self, *, force: bool = False) -> None:
-        now = time.perf_counter()
-        if not force and now - self._partial_at < PARTIAL_MIN_INTERVAL_SEC:
+        if not force and clock.elapsed_since(self._partial_at) < PARTIAL_MIN_INTERVAL_SEC:
             return
         decoded = (self.state.text or "").replace("<SEG>", "")
         tail = decoded[len(self._emitted):] if decoded.startswith(self._emitted) \
@@ -230,7 +246,7 @@ class Qwen3Transcription(Transcriber):
         previous = self._partial_text
         if not force and previous and text != previous and previous.startswith(text):
             return
-        self._partial_at = now
+        self._partial_at = clock.monotonic()
         if text == (previous or ""):
             return
         self._partial_text = text
@@ -261,7 +277,7 @@ class Qwen3Transcription(Transcriber):
             language=langs.norm_code(self.state.language or ""),
             commit_reason=reason,
             decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
-            recv_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+            committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
         ))
         self._offer_partial(force=True)
 

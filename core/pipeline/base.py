@@ -1,12 +1,27 @@
+from dataclasses import dataclass
+from enum import StrEnum
+
 from core.errors import ConfigError
 from core.utils import logging
 
 log = logging.getLogger(__name__)
 
 
+class RunsPer(StrEnum):
+    ROOM = "room"
+    TARGET_LANG = "target_lang"
+
+
+@dataclass(frozen=True)
+class Stage:
+    parts: tuple[str, ...]
+    runs_per: RunsPer
+
+
 class Pipeline:
     REQUIRED: tuple = ()
     OPTIONAL: tuple = ()
+    STAGES: tuple[Stage, ...] = ()
 
     def __init__(self, settings: dict, *, parts: dict, cfg):
         self.settings = settings
@@ -38,10 +53,10 @@ class Pipeline:
             except Exception as e:  # noqa: BLE001
                 log.warning("[CLOSE-FAILED] %s: %s", type(part).__name__, e)
 
-    def start(self, *, src_lang: str | None, target_lang: str) -> None:
+    def start(self, *, languages: list[str], target_lang: str) -> None:
         detector = self.part("vad")
         for part in self.parts.values():
-            part.start(language=src_lang, target_lang=target_lang,
+            part.start(languages=languages, target_lang=target_lang,
                        vad=None if part is detector else detector)
 
     async def listen(self, audio: bytes) -> list:
