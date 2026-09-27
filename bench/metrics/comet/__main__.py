@@ -1,9 +1,10 @@
-import argparse
 import json
+from argparse import Namespace
 from pathlib import Path
 from statistics import mean
 
-from core.utils.stream import read
+from core.utils import cli
+from core.utils.json import read_json, read_jsonl, write_json
 
 COMET_MODEL = "Unbabel/wmt22-comet-da"
 INPUTS = "comet_inputs.jsonl"
@@ -28,45 +29,56 @@ def _predict(sentences: list[dict]) -> list[float]:
     from comet import download_model, load_from_checkpoint
 
     model = load_from_checkpoint(download_model(COMET_MODEL))
-    output = model.predict([{k: s[k] for k in ("src", "mt", "ref")} for s in sentences],
-                           batch_size=16, gpus=1 if torch.cuda.is_available() else 0,
-                           progress_bar=False)
+    output = model.predict(
+        [{k: s[k] for k in ("src", "mt", "ref")} for s in sentences],
+        batch_size=16,
+        gpus=1 if torch.cuda.is_available() else 0,
+        progress_bar=False,
+    )
     return list(output.scores)
 
 
 def score(run_dir: Path) -> dict:
     summary_path = run_dir / "summary.json"
-    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    summary = read_json(summary_path)
     inputs_path = run_dir / INPUTS
-    sentences = ([s for s in read(inputs_path) if s["src"]] if inputs_path.exists() else [])
+    sentences = [s for s in read_jsonl(inputs_path) if s["src"]] if inputs_path.exists() else []
 
     by_pair = comet(sentences)
     for key in KEYS:
         summary["metrics"].pop(key, None)
         summary["unavailable"].pop(key, None)
     if by_pair is None:
-        reason = (f"{INPUTS} is missing; rerun the bench" if not inputs_path.exists() else
-                  "no sentence had a reference transcript and a reference translation "
-                  "in its target language")
+        reason = (
+            f"{INPUTS} is missing; rerun the bench"
+            if not inputs_path.exists()
+            else "no sentence had a reference transcript and a reference translation "
+            "in its target language"
+        )
         summary["unavailable"].update({"comet": reason, "comet_by_pair": reason})
     else:
-        summary["metrics"].update({"comet": mean(by_pair.values()), "comet_by_pair": by_pair,
-                                   "comet_model": COMET_MODEL})
-    summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False, default=str),
-                            encoding="utf-8")
+        summary["metrics"].update(
+            {"comet": mean(by_pair.values()), "comet_by_pair": by_pair, "comet_model": COMET_MODEL}
+        )
+    write_json(summary_path, summary)
     return {key: summary["metrics"].get(key) for key in ("comet", "comet_by_pair")}
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        prog="python -m bench.comet",
-        description="bench 실행 하나에 COMET 을 채점해 summary.json 에 더한다",
-    )
-    parser.add_argument("run_dir", type=Path, help="bench/runs/<이름>")
-    args = parser.parse_args(argv)
+def main(args: Namespace) -> int:
     print(json.dumps(score(args.run_dir), ensure_ascii=False))
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    args = cli.parse(
+        [
+            {
+                "name": "run-dir",
+                "type": Path,
+                "help": "bench/runs/<이름>",
+            }
+        ],
+        prog="python -m bench.metrics.comet",
+        description="bench 실행 하나에 COMET 을 채점해 summary.json 에 더한다",
+    )
+    raise SystemExit(main(args))

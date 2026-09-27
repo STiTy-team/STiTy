@@ -562,7 +562,6 @@ const METRIC_DISPLAY = {
   longyaal_ms: {label: "LongYAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
   token_emission_ms: {label: "Token emission", fmt: v => (v / 1000).toFixed(2) + "s"},
   n_segments: {label: "Segments", fmt: v => String(v)},
-  route_errors: {label: "Route errors", fmt: v => String(v)},
 };
 function renderStatTiles(el, metrics) {
   const entries = Object.entries(METRIC_DISPLAY).filter(([k]) => metrics && metrics[k] != null);
@@ -717,6 +716,7 @@ function loadColumn(col, it) {
   col.timingLegend.innerHTML = col.lanes
     .map(l => `<span><i style="background:${l.color}"></i>${esc(l.name)}</span>`)
     .concat([`<span>◆ commit decided</span>`,
+             `<span><i style="background:var(--ink);width:2px"></i>audio heard at commit</span>`,
              `<span><i style="background:var(--ink-faint);opacity:.45"></i>silence waited out</span>`])
     .join("");
 
@@ -740,20 +740,20 @@ function loadItem(it) {
   pendingFinals.clear();
   events.forEach((e, i) => {
     if (e.type !== "transcribed") return;
-    const f = events.slice(i + 1).find(x => x.type === "final");
+    const f = events.slice(i + 1).find(x => x.type === "translated");
     if (f) pendingFinals.set(e, f.at);
   });
 
   track.querySelectorAll(".tick").forEach(t => t.remove());
   for (const e of events) {
-    if (e.type !== "final" && e.type !== "vad_speech_end") continue;
+    if (e.type !== "translated" && e.type !== "speech") continue;
     const tick = document.createElement("div");
     const reason = e.commit_reason || "";
-    tick.className = "tick" + (e.type === "final" ? " lab" : "");
+    tick.className = "tick" + (e.type === "translated" ? " lab" : "");
     tick.style.left = (100 * e.at / T) + "%";
-    tick.style.background = e.type === "final"
+    tick.style.background = e.type === "translated"
       ? `var(${REASONS[reason] || "--finish"})` : "var(--ink-faint)";
-    tick.title = e.type === "final" ? `${reason} @ ${e.audio.toFixed(2)}s` : "speech end";
+    tick.title = e.type === "translated" ? `${reason} @ ${e.audio.toFixed(2)}s` : "speech end";
     track.appendChild(tick);
   }
 
@@ -857,7 +857,7 @@ async function loadCompare(itemId) {
 
 function renderCompare() {
   const finals = compareItem
-    ? compareItem.events.filter(e => e.type === "final" && (e.audio ?? 0) <= now)
+    ? compareItem.events.filter(e => e.type === "translated" && (e.audio ?? 0) <= now)
     : [];
   const key = finals.length + "|" + (compareItem ? compareItem.id : "none");
   if (key !== compareFeedKey) {
@@ -945,28 +945,44 @@ $("sound").addEventListener("click", ev => {
   render();
 });
 
-const newRow = (start, end, final) =>
-  ({start, end, final, spans: [], chunks: [], vad: [], commits: []});
+const newRow = (commit, final) =>
+  ({commit, final, start: Infinity, spans: [], chunks: [], vad: []});
 
+// One row per commit. Audio goes to the first commit that had heard it; timed work goes
+// to the first commit delivered after the work ended, so a translation lands in its own
+// segment's row even when two commits came out of one decode.
 function timingModel(it) {
   const clocked = it.events.filter(e => e.t != null);
   const chunks = clocked.filter(e => e.type === "chunk");
+  const finals = clocked.filter(e => e.type === "translated");
   const end = Math.max(0.001, ...clocked.map(e => timed(e) ? e.t + e.dur : e.t));
-  const rows = [];
-  let delivered = 0;
-  for (const final of clocked.filter(e => e.type === "final")) {
-    rows.push(newRow(delivered, final.t, final));
-    delivered = final.t;
+  const rows = clocked.filter(e => e.type === "transcribed")
+    .sort((a, b) => a.t - b.t)
+    .map((commit, k) => newRow(commit, finals[k] || null));
+  const tail = newRow(null, null);
+  const translatedAt = row => row.final ? (row.final.translated_elapsed_sec ?? row.final.t) : row.commit.t;
+  const byAudio = heard => rows.find(row => heard <= row.commit.audio + 1e-6) || tail;
+  const byDelivery = t => rows.find(row => t <= translatedAt(row) + 1e-6) || tail;
+
+  const reads = clocked.filter(e => timed(e) && e.tag === "decode").map(e => e.t);
+  let from = 0;
+  for (const chunk of chunks) {
+    const row = byAudio(chunk.audio == null ? 0 : chunk.audio);
+    row.chunks.push({...chunk, from, read: reads.filter(t => t < from).length});
+    row.start = Math.min(row.start, from);
+    from = chunk.t;
   }
-  const tail = newRow(delivered, end, null);
-  const place = t => rows.find(row => t <= row.end) || tail;
   for (const e of clocked) {
-    if (timed(e)) place(e.t).spans.push(e);
-    else if (e.type === "chunk") place(e.t).chunks.push(e);
-    else if (e.type === "vad_speech_end") place(e.t).vad.push(e);
-    else if (e.type === "transcribed") place(e.t).commits.push(e);
+    if (timed(e)) {
+      const row = byDelivery(e.t + e.dur);
+      row.spans.push(e);
+      row.start = Math.min(row.start, e.t);
+    } else if (e.type === "speech") byAudio(e.audio).vad.push(e);
   }
-  if (tail.spans.length || tail.chunks.length || tail.commits.length) rows.push(tail);
+  if (tail.spans.length || tail.chunks.length) rows.push(tail);
+  for (const row of rows) {
+    if (row.start === Infinity) row.start = row.commit ? row.commit.t : 0;
+  }
 
   const wallAt = audio => {
     let before = null, after = null;
@@ -992,7 +1008,7 @@ function drawTiming(col, it) {
   const body = col.timingBody;
   const m = timingModel(it);
   col.timingData = m;
-  const commits = it.events.filter(e => e.type === "final").length;
+  const commits = it.events.filter(e => e.type === "translated").length;
   col.timingTitle.textContent = `${it.id} · ${it.span.toFixed(1)}s audio · `
     + `${commits} commit${commits === 1 ? "" : "s"}`;
   if (!m.rows.length) {
@@ -1027,21 +1043,19 @@ function drawTiming(col, it) {
   m.rows.forEach((row, i) => {
     const y0 = TL.padT + i * rowH;
     const laneY = lane => y0 + TL.label + lane * TL.lane;
-    const label = row.final || row.commits.length ? `seg ${i + 1}` : "tail";
+    const label = row.commit ? `seg ${i + 1}` : "tail";
     out.push(`<rect class="tl-band${i % 2 ? " alt" : ""}" x="${TL.padL}" y="${y0}"`,
       ` width="${plot}" height="${rowH - TL.gap + 2}" rx="3"/>`,
       `<text class="tl-row" x="${TL.padL - 8}" y="${laneY(1) + 6}" text-anchor="end">${esc(label)}</text>`);
 
-    let from = row.start;
-    row.chunks.forEach((chunk, k) => {
-      const width = Math.max(0.6, x(chunk.t) - x(from));
+    for (const chunk of row.chunks) {
+      const width = Math.max(0.6, x(chunk.t) - x(chunk.from));
       const heard = chunk.audio == null ? "" : ` · audio ${chunk.audio.toFixed(2)}s`;
-      const shade = (chunk.silence ? SILENT_SHADE : HEARD_SHADE)[k % 2];
-      out.push(`<rect x="${x(from)}" y="${laneY(0)}" width="${width}" height="${TL.bar}"`,
+      const shade = (chunk.silence ? SILENT_SHADE : HEARD_SHADE)[chunk.read % 2];
+      out.push(`<rect x="${x(chunk.from)}" y="${laneY(0)}" width="${width}" height="${TL.bar}"`,
         ` fill="var(--audio)" opacity="${shade}">`,
         `<title>chunk${heard}${chunk.silence ? " (trailing silence)" : ""}</title></rect>`);
-      from = chunk.t;
-    });
+    }
     for (const v of row.vad) {
       const from = m.wallAt(v.at);
       if (v.t - from <= 0.005) continue;
@@ -1058,23 +1072,26 @@ function drawTiming(col, it) {
         `<title>${esc(laneOf(bar))} ${bar.dur.toFixed(3)}s`,
         `${bar.reason ? ` (${esc(bar.reason)})` : ""} @ ${bar.t.toFixed(2)}s</title></rect>`);
     }
-    row.commits.forEach((commit, k) => {
-      const cx = x(commit.t);
-      const top = laneY(0) - 1, bottom = laneY(col.lanes.length - 1) + TL.bar + 1;
-      const reason = commit.commit_reason || "";
-      out.push(`<line class="tl-commit" x1="${cx}" y1="${top}" x2="${cx}" y2="${bottom}"`,
-        ` opacity="0.5"/>`,
-        `<path class="tl-mark" d="M ${cx} ${top - 4} l 4 4 l -4 4 l -4 -4 z">`,
-        `<title>committed on ${esc(reason)} at ${commit.t.toFixed(2)}s`,
-        `${commit.original ? ` -- ${esc(commit.original)}` : ""}</title></path>`,
-        `<text class="tl-note" x="${x(row.start) + 3 + k * 34}" y="${y0 + 10}"`,
-        ` fill="var(${REASONS[reason] || "--finish"})">${esc(reason)}</text>`);
-    });
-    const last = row.commits.at(-1);
-    const fsl = last && last.recv_elapsed_sec != null && last.decision_audio_sec != null
-      ? last.recv_elapsed_sec - last.decision_audio_sec : null;
+    const commit = row.commit;
+    if (!commit) return;
+    const reason = commit.commit_reason || "";
+    const top = laneY(0) - 1, bottom = laneY(col.lanes.length - 1) + TL.bar + 1;
+    const heardX = x(m.wallAt(commit.audio));
+    const during = row.spans.find(s => s.t <= commit.t && commit.t <= s.t + s.dur);
+    const markY = during ? laneY(1 + col.laneOrder.indexOf(laneOf(during))) + TL.bar / 2 : top + 4;
+    const cx = x(commit.t);
+    out.push(`<line class="tl-commit" x1="${heardX}" y1="${top}" x2="${heardX}" y2="${bottom}"`,
+      ` opacity="0.6"><title>audio heard when committed: ${commit.audio.toFixed(2)}s</title></line>`,
+      `<path class="tl-mark" d="M ${cx} ${markY - 4} l 4 4 l -4 4 l -4 -4 z">`,
+      `<title>committed on ${esc(reason)} at ${commit.t.toFixed(2)}s`,
+      `${commit.original ? ` -- ${esc(commit.original)}` : ""}</title></path>`,
+      `<text class="tl-note" x="${x(row.start) + 3}" y="${y0 + 10}"`,
+      ` fill="var(${REASONS[reason] || "--finish"})">${esc(reason)}</text>`);
+    const fsl = commit.committed_elapsed_sec != null && commit.decision_audio_sec != null
+      ? commit.committed_elapsed_sec - commit.decision_audio_sec : null;
     if (fsl != null) {
-      const anchor = x(row.final ? row.final.t : last.t) + 6;
+      const done = Math.max(commit.t, ...row.spans.map(s => s.t + s.dur));
+      const anchor = x(done) + 6;
       const past = anchor > TL.padL + plot - 62;
       out.push(`<text class="tl-fsl" x="${past ? TL.padL + plot : anchor}" y="${y0 + 10}"`,
         ` text-anchor="${past ? "end" : "start"}">FSL ${fsl.toFixed(2)}s</text>`);
@@ -1140,7 +1157,7 @@ function render() {
   const upto = events.findIndex(e => e.at > now);
   const edge = upto === -1 ? events.length : upto;
   const past = events.filter(e => e.at <= now);
-  const finals = past.filter(e => e.type === "final");
+  const finals = past.filter(e => e.type === "translated");
 
   const key = finals.length + "|" + (now > 0);
   if (key !== feedKey) {
@@ -1156,7 +1173,7 @@ function render() {
   let live = null;
   for (let i = edge - 1; i >= 0; i--) {
     const e = events[i];
-    if (e.type === "final" || e.type === "item_open") break;
+    if (e.type === "translated" || e.type === "item_open") break;
     if (e.type === "partial") { live = e; break; }
   }
   const liveKey = live && live.text ? live.seq + "|" + live.text : "";
@@ -1175,7 +1192,7 @@ function render() {
   const waiting = [...pendingFinals].some(([e, at]) => e.at <= now && at > now);
   $("pending").hidden = !waiting || !!liveShown;
 
-  const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "vad_speech_end").at(-1);
+  const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "speech").at(-1);
   const hearing = speaking && speaking.type === "vad_speech_start";
   $("pulse").className = "pulse" + (hearing ? " live" : "");
   $("rec-label").textContent = hearing ? "Listening…" : (playing ? "Paused between utterances" : "Idle");

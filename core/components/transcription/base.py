@@ -5,7 +5,7 @@ __all__ = ["Transcriber", "Partial", "Speech", "Transcribed"]
 
 class Transcriber(Component):
 
-    def start(self, language: str | None = None, **_) -> None:
+    def start(self, languages: list[str] | None = None, **_) -> None:
         pass
 
     async def transcribe(self, audio: bytes) -> list:

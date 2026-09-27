@@ -8,15 +8,28 @@ from core.errors import ConfigError
 from core.utils import timing
 
 
-def discover(package: str, *, packages: bool = False) -> None:
+def discover(package: str) -> None:
     found = importlib.import_module(package)
     for module in pkgutil.iter_modules(found.__path__):
-        if not module.name.startswith("_") and module.ispkg == packages:
-            importlib.import_module(f"{package}.{module.name}")
+        if module.name.startswith("_"):
+            continue
+        name = f"{package}.{module.name}"
+        if module.ispkg:
+            discover(name)
+        else:
+            importlib.import_module(name)
 
 
 @dataclass(frozen=True)
-class Speech:
+class Record:
+
+    @property
+    def type(self) -> str:
+        return type(self).__name__.lower()
+
+
+@dataclass(frozen=True)
+class Speech(Record):
 
     started_at: float
     ended_at: float
@@ -24,7 +37,7 @@ class Speech:
 
 
 @dataclass(frozen=True)
-class Partial:
+class Partial(Record):
 
     text: str
     language: str
@@ -32,17 +45,17 @@ class Partial:
 
 
 @dataclass(frozen=True)
-class Transcribed:
+class Transcribed(Record):
 
     original: str
     language: str
     commit_reason: str
     decision_audio_sec: float
-    recv_elapsed_sec: float
+    committed_elapsed_sec: float
 
 
 @dataclass(frozen=True)
-class Final:
+class Translated(Record):
 
     original: str
     translation: str
@@ -50,7 +63,8 @@ class Final:
     target_lang: str
     commit_reason: str
     decision_audio_sec: float
-    recv_elapsed_sec: float
+    committed_elapsed_sec: float
+    translated_elapsed_sec: float | None = None
 
 
 class Component:
@@ -84,13 +98,14 @@ class Component:
 
 
 LIFECYCLE = frozenset({"load", "close", "start", "validate"})
+PER_CHUNK = frozenset({"detect", "transcribe"})
 
 
 def _work_methods(cls: type) -> list[str]:
     for base in cls.__mro__:
         if Component in base.__bases__:
             return [name for name, value in vars(base).items()
-                    if not name.startswith("_") and name not in LIFECYCLE
+                    if not name.startswith("_") and name not in LIFECYCLE | PER_CHUNK
                     and inspect.isfunction(value)]
     return []
 

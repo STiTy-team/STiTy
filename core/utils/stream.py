@@ -8,31 +8,29 @@ The clock lives here because every line is stamped with it. `t` is seconds since
 driver opened the item, `audio` is where in the recording that moment fell, and the
 two together are what makes a run replayable faster than real time.
 """
-import json
-import time
 from contextvars import ContextVar
-from pathlib import Path
+
+from core.utils import clock
+from core.utils.json import JsonlWriter
 
 _ORIGIN: ContextVar[float | None] = ContextVar("stity_origin", default=None)
 _AUDIO: ContextVar[float | None] = ContextVar("stity_audio", default=None)
 _LABELS: ContextVar[dict] = ContextVar("stity_labels", default={})
 
-_file = None
+_writer: JsonlWriter | None = None
 
 
 def attach(path) -> None:
-    global _file
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    global _writer
     close()
-    _file = open(path, "a", encoding="utf-8")
+    _writer = JsonlWriter(path)
 
 
 def close() -> None:
-    global _file
-    if _file is not None and not _file.closed:
-        _file.close()
-    _file = None
+    global _writer
+    if _writer is not None:
+        _writer.close()
+    _writer = None
 
 
 def bind(**labels: str) -> None:
@@ -40,7 +38,7 @@ def bind(**labels: str) -> None:
 
 
 def start_clock() -> None:
-    _ORIGIN.set(time.perf_counter())
+    _ORIGIN.set(clock.monotonic())
 
 
 def stop_clock() -> None:
@@ -49,7 +47,7 @@ def stop_clock() -> None:
 
 def elapsed() -> float | None:
     origin = _ORIGIN.get()
-    return None if origin is None else round(time.perf_counter() - origin, 4)
+    return None if origin is None else round(clock.elapsed_since(origin), 4)
 
 
 def audio_position(seconds: float | None = ...) -> float | None:
@@ -65,17 +63,6 @@ def record(type: str, **fields) -> dict:
         line["audio"] = round(audio, 3)
     line.update({k: v for k, v in _LABELS.get().items() if v})
     line.update(fields)
-    if _file is not None and not _file.closed:
-        _file.write(json.dumps(line, ensure_ascii=False, default=str) + "\n")
-        _file.flush()
+    if _writer is not None:
+        _writer.write(line)
     return line
-
-
-def read(path):
-    with open(path, encoding="utf-8") as f:
-        for raw in f:
-            if raw.strip():
-                try:
-                    yield json.loads(raw)
-                except json.JSONDecodeError:
-                    continue

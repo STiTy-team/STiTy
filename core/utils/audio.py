@@ -6,11 +6,15 @@ file's encoding has to be declared alongside it and then kept true.
 Window slicing (offset/duration) reads just the requested frames, so a corpus of
 long recordings cut into segments never needs a second copy on disk.
 """
+import asyncio
+from dataclasses import dataclass
 from pathlib import Path
+from typing import AsyncIterator
 
 import numpy as np
 
 from core.errors import AudioError
+from core.utils import clock
 
 SAMPLING_RATE = 16000
 
@@ -64,3 +68,25 @@ def from_pcm_bytes(data: bytes) -> np.ndarray:
 
 def silence_bytes(ms: int) -> bytes:
     return np.zeros(int(SAMPLING_RATE * ms / 1000), dtype=np.int16).tobytes()
+
+
+async def stream_realtime(pcm: bytes, *, chunk_ms: int) -> AsyncIterator[bytes]:
+    step = SAMPLING_RATE * chunk_ms // 1000 * 2
+    origin = clock.monotonic()
+    for start in range(0, len(pcm), step):
+        end = min(start + step, len(pcm))
+        delay = end / 2 / SAMPLING_RATE - clock.elapsed_since(origin)
+        if delay > 0:
+            await asyncio.sleep(delay)
+        yield pcm[start:end]
+
+
+@dataclass(frozen=True)
+class MultiChannelAudio:
+    channels: tuple[str, ...]
+    samples: np.ndarray
+    start: float
+
+    @classmethod
+    def mono(cls, data: bytes, start: float = 0.0) -> "MultiChannelAudio":
+        return cls(channels=("mono",), samples=from_pcm_bytes(data)[np.newaxis, :], start=start)

@@ -11,11 +11,12 @@
 # 데이터셋은 별도 리포다. 체크아웃한 디렉토리가 곧 STITY_DATA_ROOT 다.
 git clone git@github.com:STiTy-team/datasets.git ~/datasets
 export STITY_DATA_ROOT=~/datasets
-bash $STITY_DATA_ROOT/fleurs/install.sh        # 내려받고 변환까지
+SRC="en_us ko_kr" TGT=ko_kr bash $STITY_DATA_ROOT/fleurs/install.sh   # fleurs/en_us, fleurs/ko_kr
 
-make bench CONFIG=baseline DATASET=fleurs-en-ko     # 실행
+make bench CONFIG=asr.qwen-seg+mt.qwen3.5-4b DATASET=fleurs-en-ko     # en→ko
+make bench CONFIG=asr.qwen-seg+mt.qwen3.5-4b DATASET=fleurs-ko-en     # ko→en
 make replay                                         # bench/runs/ 중 가장 최근 실행을 본다
-make replay RUN=baseline-fleurs-en-ko TOPK=20       # 실행과 개수를 직접 고른다
+make replay RUN=asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko TOPK=20       # 실행과 개수를 직접 고른다
 ```
 
 **bench 는 자기 uv 환경에서 돈다.** [uv](https://docs.astral.sh/uv/) 만 설치돼 있으면 된다 —
@@ -49,7 +50,12 @@ make replay RUN=baseline-fleurs-en-ko TOPK=20       # 실행과 개수를 직접
 
 그 아래가 **레이어 타이밍**이다. 커밋 하나가 한 줄이고, 줄 안에서 레인 하나가 시간이
 걸린 구간 하나다 — 오디오가 들어온 구간, 그 위에 무엇이 얼마나 돌았는지, 커밋이 정해진
-순간(◆)과 그때의 FSL 이 한 눈에 겹쳐 보인다. 가로축은 **벽시계**(그 항목의 첫 청크부터의
+순간(◆)과 그때의 FSL 이 한 눈에 겹쳐 보인다. ◆ 는 `Transcribed.committed_elapsed_sec`, 곧
+디코딩 도중 `<SEG>` 가 나온 순간이고, 세로선은 그때까지 들어온 오디오(`decision_audio_sec`)
+다. 오디오는 그 오디오를 처음 들은 커밋의 줄에, 번역처럼 시간이 걸린 일은 그 일이 끝난
+뒤 처음 전달된 커밋(`Translated.translated_elapsed_sec`)의 줄에 들어간다 — 디코딩 한 번에서
+커밋 둘이 나와도 번역 막대가 각자 자기 줄에 그려진다. 오디오 막대의 명암은 모델이 청크를
+한 번 읽을 때마다 바뀐다. 가로축은 **벽시계**(그 항목의 첫 청크부터의
 초)라 "오디오보다 얼마나 밀렸나"가 거리로 읽힌다. 레인 목록은 그 실행에 실제로 나온
 타입에서 만들어진다 — §시간은 자동으로 재진다.
 
@@ -63,39 +69,55 @@ make replay RUN=baseline-fleurs-en-ko TOPK=20       # 실행과 개수를 직접
 실행마다 파일을 새로 만들지 않는다 — 있는 둘을 이름으로 골라 합친다.
 
 ```bash
-python -m bench --config baseline --dataset acl6060-en-de
+python -m bench --config asr.qwen-seg+mt.qwen3.5-4b --dataset fleurs-en-ko
 ```
 
-`configs/pipelines/baseline.yml` — **재는 대상 그 자체다.** 무엇이 오디오를 넣어 주는지는
-여기 없고, 그래서 이 파일은 bench 전용이 아니다.
+`configs/pipelines/asr.qwen-seg+mt.qwen3.5-4b.yml` — **재는 대상 그 자체다.** 무엇이 오디오를 넣어 주는지는
+여기 없고, 그래서 이 파일은 bench 전용이 아니다. 이름은 부품을 역할별로 적는다 — ASR 은
+`qwen-seg`(프로덕션 커밋 경로를 옮긴 Qwen3-ASR), 번역(MT)은 `qwen3.5`(Qwen3.5-4B). 시험용
+`mock.yml` 도 있다.
 
 ```yaml
 pipeline:
   name: cascade
   transcription:
-    name: qwen3
+    name: qwen-seg
+    model: Qwen/Qwen3-ASR-1.7B
     chunk_size_sec: 2.0      # 모델별 설정은 그 모델 밑에 둔다
     max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
   translation:
-    name: local
-    model: google/madlad400-3b-mt
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.25
+    context_turns: 1
   vad:
     name: silero
     min_silence_ms: 800
 commit: seg                  # seg | punct | always
-gpu_memory_utilization: 0.5
+gpu_memory_utilization: 0.42
 ```
 
-`configs/datasets/acl6060-en-de.yml` — 코퍼스와 방향이 한 쌍이다. 한 코퍼스를 다른 방향으로
-재려면 파일을 하나 더 둔다 (`fleurs-en-ko`, `fleurs-en-de`, …). 파일 이름이 곧 그 쌍의 이름이다.
+`configs/datasets/fleurs-en-ko.yml` — 데이터셋 하나와 목표 언어 하나다. 같은 데이터셋을 다른
+목표 언어로 재려면 파일을 하나 더 둔다. 지금 있는 것은 `fleurs-en-ko`(`fleurs/en_us` → ko)와
+`fleurs-ko-en`(`fleurs/ko_kr` → en)이다. 둘은 **같은 270문장**이다 — FLEURS test 에서 영어와
+한국어 오디오가 모두 있는 문장이 270개이고, 위 설치 명령이 두 데이터셋을 서로를 번역 참조로
+삼아 만들면 양쪽 모두 정확히 그 270개가 된다(다른 언어를 참조로 더하면 그 언어의 참조가 없는
+문장이 빠져 둘이 어긋난다).
 
 ```yaml
 dataset:
-  name: acl6060
-languages:
-  lang: en
-  target: de
+  name: fleurs/en_us   # $STITY_DATA_ROOT 아래 디렉토리. 여러 언어로 된 코퍼스는 언어마다 하나다
+target: ko             # 들린 말을 모두 이 언어로 번역한다
 ```
+
+**원문 언어는 설정에 없다 — 데이터셋이 정한다.** `dataset.yml` 의 `languages` 가 그 데이터셋에서
+들릴 수 있는 언어이고, 보통 하나다(`fleurs/en_us` 는 `[en]`). 여러 언어가 섞인 입력을 재려면 그런
+데이터셋 디렉토리를 따로 만든다 — `dataset.yml` 에 언어를 여럿 적고 항목마다 `src_lang` 을 두면
+설정은 바뀌지 않는다.
 
 데이터셋이 크면 `limit: N` 으로 앞의 N개만 돈다(`longform` 이면 발표 N개).
 
@@ -128,11 +150,8 @@ IWSLT 의 segmentation yaml 과 같은 것이다. 그래서 그룹의 항목이 
 - `wer`·`cer`·`fsl`·`token_emission` 은 발표 전체에서 그대로 나온다. 정렬 시각은 문장
   `offset` 만큼 밀어 발표 시각으로 바꾼다.
 
-`configs/datasets/acl6060-en-de-longform.yml` 이 이 설정이다.
-
-**데이터셋은 통째로 돈다.** 개수를 줄이는 설정은 없다 — 일부만 돈 결과와 전부 돈 결과가
-같은 이름으로 같은 디렉토리에 쌓이면 나중에 어느 쪽인지 알 수 없고, 그 둘은 비교도 안 된다.
-빨리 보려면 항목이 적은 데이터셋을 따로 둔다.
+**일부만 돌리려면 `limit: N`** 을 쓴다(위 참고). 결과 디렉토리 이름은 그대로라, 일부만 돈
+결과가 전부 돈 결과를 덮어쓴다 — 두 결과는 비교가 안 되므로, 오래 남길 비교에는 쓰지 않는다.
 
 **이름이 틀리면 있는 이름들을 알려주고 죽는다.** 설정 안의 오류도 그 설정 파일 기준 경로로
 나온다 — `commit: unknown mode 'nope'`, `dataset: unknown key(s) ['nmae']`.
@@ -143,8 +162,8 @@ IWSLT 의 segmentation yaml 과 같은 것이다. 그래서 그룹의 항목이 
 
 `translation: gpt` 처럼 문자열만 쓰면 `{name: gpt}` 로 풀린다.
 
-**오디오를 어떻게 먹이는지는 설정이 아니다.** 청크 200ms, 클립 뒤에 붙이는 침묵 4000ms,
-실시간 속도 — 셋 다 `__main__.py` 의 상수다. 이건 클라이언트를 기술하는 값이지 재는
+**오디오를 어떻게 먹이는지는 설정이 아니다.** 오디오는 항상 실시간 속도로 먹이고, 청크
+200ms 와 클립 뒤에 붙이는 침묵 4000ms 는 `__main__.py` 의 상수다. 이건 클라이언트를 기술하는 값이지 재는
 대상이 아니고, 실행마다 다르게 먹인 두 결과는 애초에 비교가 안 된다. 쓰인 값은
 `summary.json` 의 `pacing` 에 남는다.
 
@@ -168,24 +187,40 @@ bench 는 `parse_args` 를 부르지 않고 위 표로만 푼다. 해석된 값�
 조용히 섞인다 — 실측으로 punct 축 커밋의 36%가 seg 였고, 그 커밋만 확정 게이트를 건너뛰어
 지연이 실제보다 좋게 잡혔다.
 
-### 한 실행은 한 방향이다
+### 한 실행은 한 청자다
 
-`lang` ↔ `target` 한 쌍이다. 서버의 방이 두 언어를 갖는 것과 같다 — `lang` 으로 들린 말은
-`target` 으로, `target` 으로 들린 말은 `lang` 으로 번역한다. 어느 쪽으로 들렸는지는 파이프라인이
-정한다: bench 는 이 쌍만 넘기고(`LanguagesConfig.target_for`), **항목의 실제 언어는 넘기지 않는다.**
-넘기면 언어 판정을 정답으로 대신하게 되어 `routing` 지표가 늘 1.0 근처로 나온다.
+`target` 은 들린 말을 모두 번역해 받을 언어 하나다. 서버에서 클라이언트마다 목표 언어를 하나
+고르는 것과 같다 — 실행 하나가 청자 한 명이다. 양쪽이 서로의 언어로 받는 대화를 재려면 `target`
+을 바꿔 두 번 돌린다.
 
-`lang`/`target` 은 그대로 ASR 의 `allowed_languages` 가 되어 언어 이름 토큰에 로짓 바이어스를
-건다. 즉 **언어 설정은 번역만이 아니라 WER 도 바꾼다.**
+어느 언어로 들렸는지는 파이프라인이 정한다. bench 는 데이터셋의 `languages` 와 `target` 만
+넘기고, **항목의 실제 언어는 넘기지 않는다.** 넘기면 언어 판정을 정답으로 대신하게 되어 언어 판정
+지표가 늘 1.0 근처로 나온다.
+
+**목표 언어로 들린 말은 번역하지 않고 그대로 넘긴다** (`fleurs/ko_kr` 를 `target: ko` 로 돌리거나,
+`[en, ko]` 가 섞인 데이터셋에서 한국어 발화). 그래서 번역 지표(BLEU·COMET·LAAL·YAAL·LongYAAL)는 원문 언어가 목표 언어와 같은 항목을
+빼고 낸다 — `ko-ko` 쌍은 ASR 을 한 번 더 재는 것일 뿐이라 평균을 부풀린다. WER·CER 과 언어 판정은
+모든 항목으로 낸다.
+
+**언어 판정은 따로 잰다** (`lang_detect_accuracy`·`confusion`). ASR 이 커밋한 전사(`transcribed`)의
+언어를 항목의 참조 언어와 비교한다. 번역기가 추정한 언어는 섞지 않는다. 판정이 틀리면 영어 발화를
+한국어로 알고 번역 없이 넘기는 식의 오류가 나므로, 번역 지표와 별개로 봐야 한다.
+
+**중간에 끊긴 발화**(항목의 `partial: true`, `fleurs/mix.py --cut` 이 만든다)는 전사가 실제로 말한
+단어까지이고 번역 참조는 문장 전체의 것이다. 반쪽 문장의 번역 참조는 없으므로 번역 지표에서 빼고,
+WER·언어 판정에는 쓴다.
+
+**언어가 섞인 대화를 `longform: true` 로 흘리면** 발표 하나의 원문 언어가 `ko+en` 처럼 적히고
+(WER 도 그 이름으로 묶인다), 문장마다의 언어는 `reference_segmentation` 에 남는다. 번역 지표는
+재분절한 **뒤에** 목표 언어로 된 문장을 뺀다 — 먼저 빼면 그대로 넘긴 말이 옆 문장에 붙는다. 언어
+판정은 커밋마다 그 커밋이 덮는 오디오와 가장 많이 겹치는 문장의 언어와 비교한다.
+
+데이터셋의 `languages` 는 그대로 ASR 의 `allowed_languages` 가 되어 언어 이름 토큰에 로짓 바이어스를 건다.
+즉 **언어 설정은 번역만이 아니라 WER 도 바꾼다.** 언어가 많을수록 제약이 약해진다.
 
 거는지 마는지는 **파이프라인 쪽 설정**이다 — `transcription: {restrict_languages: false}`
 로 끈다. 디코딩을 제약하는 값이라 재는 대상에 속하고, 어느 언어로 제약할지는 실행이
-시작될 때 정해진다. bench 는 데이터셋 설정의 `lang`/`target` 을 넘기고, 서버는 클라이언트가
-접속하며 고른 두 언어를 넘긴다.
-
-`routing` 지표가 언어 판정과 라우팅을 잰다. BLEU·COMET 은 **올바르게 라우팅된 세그먼트만**
-으로 낸다. 한국어 출력을 프랑스어 참조와 비교하면 번역 품질 문제와 언어 판정 문제가 한
-숫자에 섞여 둘 다 못 읽는다.
+시작될 때 정해진다.
 
 ## 나오는 것
 
@@ -194,13 +229,14 @@ bench 는 `parse_args` 를 부르지 않고 위 표로만 푼다. 해석된 값�
 남는다는 뜻이다. 지우려면 그 디렉토리만 지우면 된다.
 
 ```
-runs/baseline-fleurs-en-ko/
+runs/asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko/
   summary.json                      이 실행의 요약
   items.jsonl                       항목 단위 행. append (죽어도 채점된다)
-  events.jsonl                      이벤트 전부. 이게 원본이고 리플레이가 읽는 것이다
+  events.jsonl                      이벤트 전부. 리플레이가 읽는 것이다
+  comet_inputs.jsonl                COMET 이 채점할 문장 쌍
 ```
 
-실행이 시작할 때 위 세 파일을 먼저 지운다. 스트림은 append 로 열리므로(중간에 죽어도
+실행이 시작할 때 위 네 파일을 먼저 지운다(`reset_run_dir`). 스트림은 append 로 열리므로(중간에 죽어도
 거기까지 채점된다) 안 지우면 지난 실행 뒤에 이어 붙어 두 실행이 한 기록으로 섞인다.
 
 **설정은 여기 복사되지 않는다.** 입력은 `configs/` 에 있고 여기는 산출물만 둔다. 무엇을
@@ -212,25 +248,29 @@ runs/baseline-fleurs-en-ko/
 | `runs/<name>/summary.json` | 추적한다 (작다, 실행 비교가 diff 로 보인다) |
 | 나머지 | 안 한다 |
 
-요약과 리플레이는 이벤트 스트림을 다시 읽어 만든 **투영**이다. 전부 append 라 중간에
-죽어도 그때까지가 남고 채점된다.
+요약은 `items.jsonl` 을 다시 읽어 채점한 결과이고, 리플레이는 `events.jsonl` 을 읽는다. 둘 다
+append 라 중간에 죽어도 그때까지가 남고 채점된다.
 
-`summary.json` 의 `config.resolved` 에는 설정에 안 쓴 값까지 **실제로 쓰인 값**이
-들어간다. 이게 없으면 두 실행을 비교할 수 없다.
+`summary.json` 의 `config` 는 설정 파일에 적힌 그대로이고, `components` 에는 설정에 안 쓴
+값까지 **실제로 쓰인 값**이 들어간다. 두 실행을 비교할 때는 `components` 를 본다.
 
 ## 이벤트
 
-표준 `logging` 위에 올려서 한 줄 JSON 으로 흘린다. 시각 `t` 는 **그 항목의 첫 오디오
-청크로부터의 초**다(벽시계가 아니다) — 서버가 내는 모든 시간이 그 원점에서 재므로
-`fsl`/`laal` 검산이 그 시계에서만 성립한다.
+한 줄 JSON 으로 흘린다(`core/utils/stream.py`). 시각 `t` 는 **그 항목의 시계를 켠 뒤 흐른
+실제 초**이고, `audio` 는 그 순간까지 흘린 오디오 위치다. 오디오를 실시간으로 흘리므로 두 값의
+차이가 "오디오보다 얼마나 밀렸나" 다. 파이프라인이 내는 시각(`committed_elapsed_sec`,
+`translated_elapsed_sec`)도 같은 시계라 `fsl`·`laal_ca_ms` 검산이 이 시계에서 성립한다.
 
-서버 로그가 같은 줄기에 섞인다. 그래서 서버가 `send_message` 전에 버리는 커밋
-(`[SILENCE-DROP]`, `[HALLUC-DROP]`, `[EMPTY-DROP]`, `[TAIL-DROP]`, `[AST-LATE]`)이
-**공짜로 보인다** — 소켓 모양의 싱크로는 아예 안 보이는 것들이다. final 이 0건인 항목의
-이유를 여기서 찾는다.
+INFO 이상의 로그도 같은 줄기에 `log` 줄로 섞인다. 그래서 전사기가 커밋을 버린 이유
+(`[DROP] rule=no-speech`, `rule=tail-filler` 처럼 규칙 이름이 붙는다)가 **그대로 보인다**.
+번역이 0건인 항목의 이유를 여기서 찾는다.
 
-빈 전사와 실패한 항목은 버리지 않는다. `summary.json` 의 `counts.empty_hypothesis` 로 세고 리플레이에 **항상**
+빈 전사와 실패한 항목은 버리지 않는다. `summary.json` 의 `counts.empty_transcription_output` 로 세고 리플레이에 **항상**
 넣는다(top-k 와 무관하게).
+
+`counts.realtime_factor` 는 표준 RTF 다 — 파이프라인이 실제로 일한 시간(`counts.compute_sec`,
+항목마다 `pipeline.listen`·`finish` 안에 있던 시간의 합) ÷ 먹인 오디오 길이(끝의 무음 포함).
+1 보다 작으면 실시간보다 빠르다. 오디오를 실시간 속도로 먹이므로 벽시계(`wall_sec`)로는 속도를 잴 수 없다.
 
 **`partial` 은 아직 확정되지 않은 줄이다.** 커밋만 기록하면 한 발화가 끝에서 통째로
 튀어나오는 실행만 남는다 — 화면에 실제로 보이는 것도, 이 시스템이 하려는 것도 그게
@@ -270,11 +310,14 @@ runs/baseline-fleurs-en-ko/
 **파이프라인은 안 잰다** — 부품을 엮는 쪽이고 그 막대는 부품 막대를 전부 덮을 뿐이다.
 
 메서드 하나보다 잘게 재야 할 때만 직접 붙인다. 지금 트리에 한 군데 있다
-(`qwen3.py` 의 `_decode`·`_decode_stream` — 전사 백엔드가 모델을 부르는 자리. `qwen-seg` 도 물려받는다).
+(`qwen3.py` 의 `_decode_chunks`·`_decode_tail` — 전사 백엔드가 모델을 부르는 자리. `qwen-seg` 도 물려받는다).
+`_decode_stream`·`_decode` 는 모델이 실제로 돌 때만 이 둘로 넘긴다 — 청크가 2초 분량이
+차기 전의 호출은 버퍼에 쌓기만 해서, 재면 200ms 마다 길이 0 짜리 막대가 생긴다.
+스트리밍 중 디코딩은 `decode`, VAD·종료 커밋이 남은 꼬리를 푸는 디코딩은 `final_decode` 다.
 
 ```python
-@timing.measure("decode")
-async def _decode(self, state) -> None:
+@timing.measure("final_decode")
+async def _decode_tail(self, state) -> None:
     await self.model.finish_streaming_transcribe(state)
 ```
 
@@ -298,7 +341,7 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 ```
 
 **숫자를 문장에 녹이지 않는다.** 그림에 찍히거나 채점되는 값은 로그가 아니라 부품이
-돌려주는 기록(`Transcribed`·`Partial`·`Final`)으로 다닌다. 그래서 `core/components` 의
+돌려주는 기록(`Transcribed`·`Partial`·`Translated`)으로 다닌다. 그래서 `core/components` 의
 어떤 파일도 스트림에 직접 쓰지 않는다 — `events.jsonl` 은 `__main__.py` 가 돌려받은
 객체를 그대로 적는다.
 
@@ -311,27 +354,27 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 | `wer_scored_only` | 옛 숫자(빈 가설 제외). 대조용. `wer` 과 같은 방식으로 언어별 평균이다 |
 | `cer` | 문자 오류 합 / 참조 문자 합. `jiwer` 가 센다. `wer` 과 같은 정규화 뒤 공백을 지우고 센다 — 한국어 띄어쓰기는 참조마다 달라서 오류로 치지 않는다 |
 | `cer_by_lang` | 원문 언어별 `cer`. `cer` 은 이 값들의 단순 평균이다 |
-| `fsl` | 커밋이 오디오보다 얼마나 늦게 도착했나 = `recv_elapsed_sec − decision_audio_sec`. **기록하지 않고 유도한다** — 두 시계가 이미 있으니 파이프라인이 따로 내면 어긋날 수 있다 |
-| `laal` | OmniSTEval 의 LAAL(SimulEval 구현). `decision_audio_sec` 이 `d_i` 이고, 소스 길이에서 자른다 — 끝에 붙인 무음 동안 커밋해도 발화보다 긴 지연이 나오지 않게. 벽시계 기준은 `laal_ca_ms` |
-| `bleu` | 라우팅이 맞은 것만. **발화 하나가 한 쌍**이다 — 세그먼트를 다시 이어 붙여 채점한다. 아무것도 커밋하지 않은 발화는 빈 번역으로 채점한다. 언어 쌍마다 따로 채점하고(`bleu_by_pair`, 키는 `en-ko` 꼴) `bleu` 는 그 단순 평균이다 — 항목이 많은 쌍이 약한 쌍을 가리지 않게 |
-| `comet` | `Unbabel/wmt22-comet-da`. 원문은 참조 전사, 번역·참조는 **BLEU 와 똑같은 문장 쌍**이다(`comet_inputs.jsonl`). 번역이 빈 문장은 모델에 넣지 않고 0점으로 센다 — 모델은 빈 번역에도 0.5 안팎을 준다. 언어 쌍마다 평균을 내고(`comet_by_pair`) `comet` 은 그 단순 평균이다. **따로 도는 단계가 채점한다** — 아래 참고 |
+| `fsl` | 커밋이 오디오보다 얼마나 늦게 도착했나 = `committed_elapsed_sec − decision_audio_sec`. **기록하지 않고 유도한다** — 두 시계가 이미 있으니 파이프라인이 따로 내면 어긋날 수 있다 |
+| `laal` | OmniSTEval 의 LAAL(SimulEval 구현). 원문 언어가 목표 언어와 같은 항목은 뺀다. `decision_audio_sec` 이 `d_i` 이고, 소스 길이에서 자른다 — 끝에 붙인 무음 동안 커밋해도 발화보다 긴 지연이 나오지 않게. `laal_ca_ms` 는 벽시계 기준이고, 번역까지 끝나 전달된 시각(`Translated.translated_elapsed_sec`)을 `d_i` 로 쓴다 — 커밋 시각(`committed_elapsed_sec`)으로 재면 교정·번역 시간이 빠진다 |
+| `bleu` | 원문 언어가 목표 언어와 같은 항목은 뺀다. **발화 하나가 한 쌍**이다 — 세그먼트를 다시 이어 붙여 채점한다. 아무것도 커밋하지 않은 발화는 빈 번역으로 채점한다. 언어 쌍마다 따로 채점하고(`bleu_by_pair`, 키는 `en-ko` 꼴) `bleu` 는 그 단순 평균이다 — 항목이 많은 쌍이 약한 쌍을 가리지 않게 |
+| `comet` | `Unbabel/wmt22-comet-da`. 원문은 참조 전사, 번역·참조는 **BLEU 와 똑같은 문장 쌍**이다(`comet_inputs.jsonl`). 번역이 빈 문장은 모델에 넣지 않고 0점으로 센다 — 모델은 빈 번역에도 0.3~0.5 를 준다. Zouhar et al. 2024 ("Pitfalls and Outlooks in Using COMET", arXiv:2408.15366) 의 권고를 따른 것이다. 언어 쌍마다 평균을 내고(`comet_by_pair`) `comet` 은 그 단순 평균이다. **따로 도는 단계가 채점한다** — 아래 참고 |
 | `yaal_ms` | OmniSTEval 의 YAAL. LAAL 과 분모가 같고, 소스가 끝나기 **전에** 나온 단위만 센다. 첫 단위가 소스 끝 이후에 나온 항목은 채점하지 않는다. `yaal_ca_ms` 는 벽시계 기준 |
 | `longyaal_ms` | `longform` 실행에서만. OmniSTEval 이 가설을 참조 문장에 재분절(SoftSegmenter)하고 문장마다 YAAL 을 `is_longform=True` 로 낸 평균이다 — 문장 끝을 넘겨 나온 단위도 녹음이 끝날 때까지는 센다. 녹음 끝은 발표 오디오 길이다 — 마지막 참조 문장의 끝으로 잡으면 발화가 끝난 뒤 커밋되는 마지막 문장이 통째로 빠진다. `decision_audio_sec` 기준이고 벽시계 기준은 `longyaal_ca_ms`. 위 '발표를 통째로 흘리기' 참고 |
 | `token_emission_ms` | 단어가 실제로 발화된 끝 시각부터 화면에 **바뀌지 않고 남은** 채로 처음 나타난 시각까지. 참조와 맞게 인식된 단어만 센다. `audio` 시계 기준이고, 벽시계 기준은 `token_emission_ca_ms`. 둘 다 평균·`_p50_ms`·`_p90_ms`. 발화 시각은 데이터셋의 `alignment.jsonl` 에서 온다 — 아래 참고 |
 | `commit_reasons` | 사유별 비율. `finish` 비율이 크면 축의 커밋 경로가 안 도는 것이다 |
-| `lang_detect_accuracy`·`route_accuracy`·`confusion` | 언어 판정 정확도, 라우팅 정확도, 혼동 행렬. 항목별로는 `route_errors` |
+| `lang_detect_accuracy`·`confusion` | 언어 판정 정확도와 혼동 행렬. ASR 이 커밋한 전사의 언어를 참조 언어와 비교하고, 모든 항목으로 낸다. 판정 정확도는 참조 언어와 판정 언어를 둘 다 언어 코드로 맞춘 뒤 비교하고, 언어를 내지 않은 세그먼트는 `?` 로 틀린 것으로 센다 |
 
 **COMET 은 별도 환경에서 돈다.** `unbabel-comet` 은 `protobuf<5`·`numpy<2` 를 고정하고 vLLM 0.14 는
-`protobuf>=6.30` 을 요구해서, 한 환경에 둘을 같이 풀 수 있는 버전이 없다. 그래서 `bench/comet/` 이 자기 uv 환경을 갖고, `make bench`
-가 실행이 끝난 뒤 이어서 부른다. 무엇을 채점할지는 bench 가 정한다 — `metrics.translation_sentences`
-가 BLEU 에 쓰는 문장 쌍을 원문과 함께 `comet_inputs.jsonl` 로 떨구고, `bench/comet` 은 그 파일만
+`protobuf>=6.30` 을 요구해서, 한 환경에 둘을 같이 풀 수 있는 버전이 없다. 그래서 `bench/metrics/comet/` 이 자기 uv 환경을 갖고, `python -m bench`
+가 실행이 끝난 뒤 `core/utils/process.py` 의 `run` 으로 그 환경에서 따로 부른다. 실행이 실패하면 부르지 않는다. 무엇을 채점할지는 bench 가 정한다 — `metrics/translation.py` 의 `translation_sentences`
+가 BLEU 에 쓰는 문장 쌍을 원문과 함께 `comet_inputs.jsonl` 로 떨구고, `bench/metrics/comet` 은 그 파일만
 읽어 한 번에 채점해 그 실행의 `summary.json` 에 `comet`·`comet_by_pair` 를 더한다 — 항목 수만큼
-도는 게 아니라 실행당 한 번이다. 그래서 라우팅·재분절·괄호 속 이벤트 제거 규칙이 두 환경에 따로 있지 않다.
-`python -m bench` 만 부르면 `comet` 은 `unavailable` 에 그 이유로 남는다. 지난 실행을 다시
+도는 게 아니라 실행당 한 번이다. 그래서 항목 제외·재분절·괄호 속 이벤트 제거 규칙이 두 환경에 따로 있지 않다.
+COMET 단계가 실패하면 `comet` 은 `unavailable` 에 그 이유로 남는다. 지난 실행을 다시
 채점할 때는 그 한 줄만 부른다.
 
 ```bash
-uv run --project bench/comet python -m bench.comet bench/runs/baseline-fleurs-en-ko
+uv run --project bench/metrics/comet python -m bench.metrics.comet --run-dir bench/runs/asr.qwen-seg+mt.qwen3.5-4b-fleurs-en-ko
 ```
 
 처음 한 번은 uv 가 환경(PyTorch 포함 수 GB)과 COMET 모델(약 2.3 GB)을 받는다.
@@ -342,8 +385,9 @@ uv run --project bench/comet python -m bench.comet bench/runs/baseline-fleurs-en
 대상과 무관하다 — 참조 오디오와 참조 전사만 보므로 어떤 ASR 모델을 재든 같은 시각을 쓴다.
 클립 길이를 정렬 간격(80ms) 넘게 벗어난 시각은 쓰지 않는다 — ACL6060 에서 19개 단어가 그랬다.
 
-화면에 보인 시각은 `items.jsonl` 의 `emissions` 에 있다 — 전사기가 낸 `Partial` 과 `Transcribed`
-를 순서대로, 그때의 `t`·`audio` 와 함께. 화면 = 확정된 전사 + 지금의 partial 이고, 단어의
+화면에 보인 시각은 `items.jsonl` 의 `records` 에 있다 — 파이프라인이 낸 레코드 전부가 낸 순서대로
+`events.jsonl` 과 같은 줄 모양으로 들어 있고, 그중 `partial` 은 적힌 순간의 `t`·`audio` 를,
+`transcribed` 는 자기 커밋 시각(`committed_elapsed_sec`·`decision_audio_sec`)을 쓴다. 화면 = 확정된 전사 + 지금의 partial 이고, 단어의
 시각은 그 단어(와 그 앞 전부)가 그 뒤로 끝까지 안 바뀐 첫 순간이다. 잠깐 틀렸다가 고쳐진 단어는
 고쳐진 순간부터 센다. 번역을 기다리지 않는다 — ASR 지표다.
 
@@ -360,7 +404,7 @@ uv run --project bench/comet python -m bench.comet bench/runs/baseline-fleurs-en
 
 | 데이터 | 나오는 것 | 빠지는 것 |
 |---|---|---|
-| 오디오만 (전사·번역 참조 없음) | `fsl`·`commit_reasons`·`routing` | `wer`·`cer`·`token_emission`·`bleu`·`comet`·`laal`·`yaal` |
+| 오디오만 (전사·번역 참조 없음) | `fsl`·`commit_reasons`·`lang_detect_accuracy` | `wer`·`cer`·`token_emission`·`bleu`·`comet`·`laal`·`yaal` |
 | 전사는 있고 번역 참조 없음 | 위 + `wer`·`cer`·`token_emission` | `bleu`·`comet`·`laal`·`yaal` |
 
 참조 번역이 없으면 `laal`·`yaal` 도 빠진다. 분모가 `max(|Y_hyp|, |Y_ref|)` 라서 `|Y_ref|` 를 빼면
@@ -370,18 +414,26 @@ uv run --project bench/comet python -m bench.comet bench/runs/baseline-fleurs-en
 ## 구조
 
 ```
-__main__.py   CLI + 실행. ASR 서버를 import 하는 유일한 모듈이고, 그 import 는
-              Engine 안에서 늦게 일어난다 — 설정 오류는 모델을 올리기 전에 걸린다
+__main__.py   CLI + 실행. 파이프라인을 조립하는 유일한 모듈이다. 설정과 데이터셋을 먼저 읽고
+              검사하므로 설정 오류는 모델을 올리기 전에 걸린다
 config.py     데이터셋 설정을 읽고 파이프라인 설정과 합친다. 점수를 바꾸는 값 전부 명시
               해석. 파이프라인 설정 자체는 `core/config.py` 가 읽는다 — 서버와 공유한다
-report.py     이벤트 스트림 → summary.json
-replay.py     이벤트 스트림 → :9130 웹 페이지 (replay.html 이 화면 전부)
+report.py     items.jsonl 행 + 채점 결과 → summary.json
+replay.py     events.jsonl·items.jsonl·summary.json → :9130 웹 페이지 (replay.html 이 화면 전부)
 dataset.py    dataset.yml + manifest.jsonl (+ 있으면 alignment.jsonl) 읽기
-metrics.py    items.jsonl 행 → 지표. COMET 은 입력(comet_inputs.jsonl)만 여기서 만들고 채점은 bench/comet/__main__.py 가 자기 환경에서 한다
+metrics/      items.jsonl 행 → 지표. 모듈 하나가 지표 묶음 하나다
+  score.py          score_row(항목별)·score_run(실행 전체)이 아래를 모두 부른다
+  transcription.py  wer·cer
+  translation.py    bleu, 그리고 BLEU·COMET 이 함께 쓰는 문장 쌍(translation_sentences)
+  latency.py        fsl·laal·yaal·longyaal·token_emission
+  asr.py            language_detection·commit_reasons
+  common.py         여럿이 함께 쓰는 것: translated·per_lang·macro·정규화·재분절
+  comet/            COMET. 자기 uv 환경에서 돈다 — __init__.py 가 없는 이유다. 있으면 그 환경에
+                    없는 jiwer·omnisteval 을 import 하다 죽는다
 ```
 
-채점은 `metrics.py` 가 한다. 지표 하나가 함수 하나이고(`wer`·`cer`·`bleu`·`fsl`·`laal`·`yaal`·
-`token_emission`·`routing`·`commit_reasons`), 모두 `items.jsonl` 의 행 목록을 받는다.
+채점은 `metrics/` 가 한다. 지표 하나가 함수 하나이고(`wer`·`cer`·`bleu`·`fsl`·`laal`·`yaal`·
+`token_emission`·`language_detection`·`commit_reasons`), 모두 `items.jsonl` 의 행 목록을 받는다.
 항목 하나의 값은 행 하나짜리 목록으로 부른다. `score_row` 가 항목별 값을, `score_run` 이 실행
 전체 값을 모은다 — 설정에서 무엇을 계산할지 고르는 자리가 없으니 고를 코드도 없다.
 
@@ -394,8 +446,7 @@ import 하지 않는다.
 
 ## 아직 안 되는 것
 
-- **동시 실행.** v1 은 순차 고정이다. `asr_lock` 이 생성을 직렬화하고 flush 가 겹친다.
-- **서버가 버리는 커밋을 싱크로 잡기.** 로그로는 보이므로 이벤트 줄기에서 읽는다.
+- **동시 실행.** 항목은 한 번에 하나씩 순서대로 돈다.
 - **WebSocket 경로와의 대조 검증(S6).** 데이터와 가중치가 있는 머신에서 해야 한다.
   같은 항목을 두 경로로 돌려 **전사 문자열과 커밋 사유 분포가 같은지** 보는 단계이고,
   이걸 통과하기 전에는 bench 숫자를 보고서에 쓰지 않는다.

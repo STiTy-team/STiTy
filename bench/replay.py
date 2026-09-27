@@ -1,45 +1,56 @@
-import argparse
 import io
 import json
 import urllib.parse
 import webbrowser
+from argparse import Namespace
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import yaml
 
-from core.errors import AudioError, DataError
-from core.utils import audio as audio_mod
-from core.utils import env, stream
+from core.errors import DataError, STiTyError
+from core.utils import audio
+from core.utils import cli
+from core.utils.json import read_json, read_jsonl
 
-ITEM_METRIC_KEYS = ("wer", "cer", "sentence_bleu", "avg_fsl_sec", "laal_ms", "yaal_ms",
-                    "longyaal_ms", "token_emission_ms", "n_segments", "route_errors")
+from .config import get_data_root, get_runs_dir
+
+ITEM_METRIC_KEYS = (
+    "wer",
+    "cer",
+    "sentence_bleu",
+    "avg_fsl_sec",
+    "laal_ms",
+    "yaal_ms",
+    "longyaal_ms",
+    "token_emission_ms",
+    "n_segments",
+)
 # Worst first: the first key an item has decides its place. Runs without transcripts
 # rank by translation, runs without any reference by latency.
 RANKING = (("wer", True), ("sentence_bleu", False), ("avg_fsl_sec", True))
 
 PORT = 9130
 TEMPLATE = Path(__file__).with_name("replay.html")
-RUNS_DIR = Path(__file__).resolve().parent / "runs"
 AUDIO_PREFIX = "/audio/"
 ITEM_PREFIX = "/item/"
 DEFAULT_TOP_K = 10
 
 
 def list_runs() -> list[str]:
-    """Run directory names under RUNS_DIR, most recently finished first."""
+    """Run directory names under the runs directory, most recently finished first."""
+
     def stamp(d: Path) -> float:
         summary = d / "summary.json"
         return summary.stat().st_mtime if summary.is_file() else 0.0
 
-    dirs = [d for d in RUNS_DIR.glob("*")
-            if d.is_dir() and (d / "events.jsonl").is_file()]
+    dirs = [d for d in get_runs_dir().glob("*") if d.is_dir() and (d / "events.jsonl").is_file()]
     return [d.name for d in sorted(dirs, key=stamp, reverse=True)]
 
 
 def _read_summary(run_dir: Path) -> dict:
     try:
-        return json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
+        return read_json(run_dir / "summary.json")
     except (OSError, json.JSONDecodeError):
         return {}
 
@@ -68,25 +79,32 @@ def run_catalog() -> list[dict]:
     """
     out = []
     for name in list_runs():
-        summary = _read_summary(RUNS_DIR / name)
-        out.append({"name": name,
-                    "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
-                    "pipeline_yaml": _pipeline_yaml(summary),
-                    "summary_metrics": summary.get("metrics") or {}})
+        summary = _read_summary(get_runs_dir() / name)
+        out.append(
+            {
+                "name": name,
+                "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
+                "pipeline_yaml": _pipeline_yaml(summary),
+                "summary_metrics": summary.get("metrics") or {},
+            }
+        )
     return out
 
 
 def choose_items(rows: dict[str, dict], *, top_k: int) -> list[str]:
-    """Every failed/empty-hypothesis item, then the worst of the rest, up to top_k.
+    """Failed items and items with no transcription output first, then the worst of the rest, up to top_k.
 
     A failure is never crowded out by the ranking -- it is the reason the replay
     got opened. See bench/README.md's replay contract.
     """
-    failed = [r for r in rows.values()
-              if r.get("status") != "ok" or not (r.get("hypothesis") or "").strip()]
+    failed = [
+        r
+        for r in rows.values()
+        if r.get("status") != "ok" or not (r.get("transcription_output") or "").strip()
+    ]
     failed_ids = {r["id"] for r in failed}
     rest = [r for r in rows.values() if r["id"] not in failed_ids]
-    return [r["id"] for r in failed + sorted(rest, key=_badness)][:max(top_k, len(failed))]
+    return [r["id"] for r in failed + sorted(rest, key=_badness)][: max(top_k, len(failed))]
 
 
 def _badness(row: dict) -> tuple:
@@ -101,25 +119,30 @@ def audio_index(summary: dict) -> dict[str, dict]:
     if not declared:
         return {}
     candidates = [Path(declared)]
-    root = env.path("STITY_DATA_ROOT")
-    if root is not None:
-        candidates.append(root / Path(declared).name)
+    try:
+        candidates.append(get_data_root() / Path(declared).name)
+    except STiTyError:
+        pass
 
     for ds_root in candidates:
         manifest = ds_root / "manifest.jsonl"
         if not manifest.is_file():
             continue
         index = {}
-        for raw in stream.read(manifest):
+        for raw in read_jsonl(manifest):
             item_id = raw.get("id")
             if not item_id or not raw.get("audio"):
                 continue
             path = ds_root / str(raw["audio"])
-            index[str(item_id)] = {"path": path, "offset": raw.get("offset"),
-                                   "duration": raw.get("duration")}
+            index[str(item_id)] = {
+                "path": path,
+                "offset": raw.get("offset"),
+                "duration": raw.get("duration"),
+            }
             if raw.get("offset") is not None and raw.get("group"):
-                index.setdefault(str(raw["group"]), {"path": path, "offset": None,
-                                                     "duration": None})
+                index.setdefault(
+                    str(raw["group"]), {"path": path, "offset": None, "duration": None}
+                )
         if index:
             return index
     return {}
@@ -128,19 +151,41 @@ def audio_index(summary: dict) -> dict[str, dict]:
 def wav_bytes(entry: dict) -> bytes:
     import soundfile as sf
 
-    audio = audio_mod.load_window(entry["path"], offset=entry.get("offset"),
-                                  duration=entry.get("duration"))
+    samples = audio.load_window(
+        entry["path"], offset=entry.get("offset"), duration=entry.get("duration")
+    )
     buffer = io.BytesIO()
-    sf.write(buffer, audio, audio_mod.SAMPLING_RATE, format="WAV", subtype="PCM_16")
+    sf.write(buffer, samples, audio.SAMPLING_RATE, format="WAV", subtype="PCM_16")
     return buffer.getvalue()
 
 
-def _finalize_item(item_id: str, events: list[dict], duration: float, *,
-                   rows: dict[str, dict], clips: dict[str, dict], run_name: str) -> dict:
+def _at_commit(event: dict) -> dict:
+    if event.get("type") != "transcribed":
+        return event
+    return {
+        **event,
+        "t": event.get("committed_elapsed_sec", event.get("t")),
+        "audio": event.get("decision_audio_sec", event.get("audio")),
+    }
+
+
+def _finalize_item(
+    item_id: str,
+    events: list[dict],
+    duration: float,
+    *,
+    rows: dict[str, dict],
+    clips: dict[str, dict],
+    run_name: str,
+) -> dict:
     opened = next((e for e in events if e.get("type") == "item_open"), {})
-    item = {"id": item_id, "events": events, "duration": duration,
-            "src_lang": opened.get("src_lang") or "",
-            "target_lang": opened.get("target_lang") or ""}
+    item = {
+        "id": item_id,
+        "events": events,
+        "duration": duration,
+        "src_lang": opened.get("src_lang") or "",
+        "target_lang": opened.get("target_lang") or "",
+    }
     row = rows.get(item_id) or {}
     wer = row.get("wer")
     if wer is not None:
@@ -153,8 +198,9 @@ def _finalize_item(item_id: str, events: list[dict], duration: float, *,
     played_past_the_clip = [e.get("audio") or 0.0 for e in events]
     item["duration"] = max([item["duration"]] + played_past_the_clip)
     if item_id in clips:
-        item["audio_url"] = (AUDIO_PREFIX + urllib.parse.quote(item_id)
-                             + ".wav?run=" + urllib.parse.quote(run_name))
+        item["audio_url"] = (
+            AUDIO_PREFIX + urllib.parse.quote(item_id) + ".wav?run=" + urllib.parse.quote(run_name)
+        )
     return item
 
 
@@ -173,11 +219,11 @@ def item_payload(run_dir: Path, item_id: str) -> dict | None:
     events: list[dict] = []
     duration = 0.0
     found = False
-    for event in stream.read(events_path):
+    for event in read_jsonl(events_path):
         if event.get("item") != item_id:
             continue
         found = True
-        events.append(event)
+        events.append(_at_commit(event))
         if event.get("type") == "item_open":
             duration = float(event.get("audio_sec") or 0.0)
     if not found:
@@ -185,10 +231,9 @@ def item_payload(run_dir: Path, item_id: str) -> dict | None:
 
     rows = {}
     if (run_dir / "items.jsonl").is_file():
-        rows = {r.get("id"): r for r in stream.read(run_dir / "items.jsonl")}
+        rows = {r.get("id"): r for r in read_jsonl(run_dir / "items.jsonl")}
     clips = audio_index(_read_summary(run_dir))
-    return _finalize_item(item_id, events, duration,
-                          rows=rows, clips=clips, run_name=run_dir.name)
+    return _finalize_item(item_id, events, duration, rows=rows, clips=clips, run_name=run_dir.name)
 
 
 def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
@@ -201,34 +246,41 @@ def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
     run_dir = Path(run_dir)
     if not run_dir.is_dir():
         siblings = list_runs()
-        raise DataError(f"{run_dir} is not a directory. Runs in {RUNS_DIR}: "
-                        + (", ".join(siblings) if siblings else "none yet"))
+        raise DataError(
+            f"{run_dir} is not a directory. Runs in {get_runs_dir()}: "
+            + (", ".join(siblings) if siblings else "none yet")
+        )
     events_path = run_dir / "events.jsonl"
     if not events_path.is_file():
         raise DataError(f"{events_path} is missing -- replay reads a run's event stream")
 
     rows = {}
     if (run_dir / "items.jsonl").is_file():
-        rows = {r.get("id"): r for r in stream.read(run_dir / "items.jsonl")}
+        rows = {r.get("id"): r for r in read_jsonl(run_dir / "items.jsonl")}
     summary = _read_summary(run_dir)
 
     worst = choose_items(rows, top_k=top_k)
-    first = worst[0] if worst else next(
-        (e["item"] for e in stream.read(events_path) if e.get("item")), None)
+    first = (
+        worst[0]
+        if worst
+        else next((e["item"] for e in read_jsonl(events_path) if e.get("item")), None)
+    )
     item = item_payload(run_dir, first) if first else None
     if item is None:
         raise DataError(f"{events_path} has no item events")
 
     return {
-        "run": {"name": summary.get("name") or run_dir.name,
-                "stamp": summary.get("stamp") or "",
-                "status": summary.get("status") or "",
-                "dir": run_dir.name,
-                "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
-                "n_total": len(rows),
-                "top_k": top_k,
-                "pipeline_yaml": _pipeline_yaml(summary),
-                "summary_metrics": summary.get("metrics") or {}},
+        "run": {
+            "name": summary.get("name") or run_dir.name,
+            "stamp": summary.get("stamp") or "",
+            "status": summary.get("status") or "",
+            "dir": run_dir.name,
+            "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
+            "n_total": len(rows),
+            "top_k": top_k,
+            "pipeline_yaml": _pipeline_yaml(summary),
+            "summary_metrics": summary.get("metrics") or {},
+        },
         "items": [item],
         "worst": [{"id": i, "wer": rows[i].get("wer")} for i in worst],
         "all_items": [{"id": r["id"], "wer": r.get("wer")} for r in rows.values()],
@@ -242,26 +294,28 @@ def page(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> bytes:
 
 def render(data: dict) -> bytes:
     body = TEMPLATE.read_text(encoding="utf-8").replace(
-        "__DATA__", json.dumps(data, ensure_ascii=False))
+        "__DATA__", json.dumps(data, ensure_ascii=False)
+    )
     return (
         '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{data['run']['name']} — session replay</title>\n</head>\n<body>\n"
-        f"{body}\n</body>\n</html>\n").encode("utf-8")
+        f"{body}\n</body>\n</html>\n"
+    ).encode("utf-8")
 
 
 def resolve_run(requested: str | None) -> str:
     """The requested run if it exists, else the most recently finished one."""
     runs = list_runs()
     if not runs:
-        raise DataError(f"no runs yet in {RUNS_DIR}")
+        raise DataError(f"no runs yet in {get_runs_dir()}")
     if requested and requested in runs:
         return requested
     return runs[0]
 
 
 def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
-    default_run = resolve_run(initial_run)  # fails fast if RUNS_DIR is empty
+    default_run = resolve_run(initial_run)  # fails fast if there are no runs yet
 
     summaries: dict[str, dict] = {}
     clips_by_run: dict[str, dict] = {}
@@ -269,7 +323,7 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
 
     def summary_for(run_name: str) -> dict:
         if run_name not in summaries:
-            summaries[run_name] = _read_summary(RUNS_DIR / run_name)
+            summaries[run_name] = _read_summary(get_runs_dir() / run_name)
         return summaries[run_name]
 
     def clips_for(run_name: str) -> dict:
@@ -285,7 +339,7 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
         if key not in encoded:
             try:
                 encoded[key] = wav_bytes(clips[item_id])
-            except (AudioError, OSError, RuntimeError) as e:
+            except (STiTyError, OSError, RuntimeError) as e:
                 print(f"audio for {item_id} ({run_name}) is unreadable: {e}")
                 return None
         return encoded[key]
@@ -307,7 +361,7 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
             partial = False
             asked = self.headers.get("Range", "")
             if asked.startswith("bytes="):
-                first, _, last = asked[len("bytes="):].partition("-")
+                first, _, last = asked[len("bytes=") :].partition("-")
                 try:
                     if first:
                         start = int(first)
@@ -325,14 +379,13 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
                 return
 
             end = min(end, len(payload) - 1)
-            chunk = payload[start:end + 1]
+            chunk = payload[start : end + 1]
             self.send_response(206 if partial else 200)
             self.send_header("Content-Type", content_type)
             self.send_header("Accept-Ranges", "bytes")
             self.send_header("Content-Length", str(len(chunk)))
             if partial:
-                self.send_header("Content-Range",
-                                 f"bytes {start}-{end}/{len(payload)}")
+                self.send_header("Content-Range", f"bytes {start}-{end}/{len(payload)}")
             self.end_headers()
             self.wfile.write(chunk)
 
@@ -343,7 +396,7 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
             run_name = requested if requested in list_runs() else default_run
 
             if parsed.path.startswith(AUDIO_PREFIX):
-                name = urllib.parse.unquote(parsed.path[len(AUDIO_PREFIX):])
+                name = urllib.parse.unquote(parsed.path[len(AUDIO_PREFIX) :])
                 item_id = name[:-4] if name.endswith(".wav") else name
                 data = clip(run_name, item_id)
                 if data is None:
@@ -353,21 +406,23 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
                 return
 
             if parsed.path.startswith(ITEM_PREFIX):
-                other_run, _, item_id = parsed.path[len(ITEM_PREFIX):].partition("/")
+                other_run, _, item_id = parsed.path[len(ITEM_PREFIX) :].partition("/")
                 other_run = urllib.parse.unquote(other_run)
                 item_id = urllib.parse.unquote(item_id)
-                item = (item_payload(RUNS_DIR / other_run, item_id)
-                       if other_run in list_runs() else None)
+                item = (
+                    item_payload(get_runs_dir() / other_run, item_id)
+                    if other_run in list_runs()
+                    else None
+                )
                 if item is None:
                     self.send_error(404, "that run has no such item")
                     return
-                self._send(json.dumps(item, ensure_ascii=False).encode("utf-8"),
-                          "application/json")
+                self._send(json.dumps(item, ensure_ascii=False).encode("utf-8"), "application/json")
                 return
 
             try:
-                body = page(RUNS_DIR / run_name, top_k=top_k)
-            except DataError as e:
+                body = page(get_runs_dir() / run_name, top_k=top_k)
+            except STiTyError as e:
                 self._send(str(e).encode("utf-8"), "text/plain; charset=utf-8")
                 return
             self._send(body, "text/html; charset=utf-8")
@@ -379,8 +434,10 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
     with ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
         url = f"http://localhost:{port}/?run={urllib.parse.quote(default_run)}"
         runs = list_runs()
-        print(f"{url}  ({len(runs)} run{'s' if len(runs) != 1 else ''} to pick from, "
-              f"ctrl-c to stop)", flush=True)
+        print(
+            f"{url}  ({len(runs)} run{'s' if len(runs) != 1 else ''} to pick from, ctrl-c to stop)",
+            flush=True,
+        )
         try:
             webbrowser.open(url)
         except Exception:  # noqa: BLE001 - no browser here is not a failure
@@ -392,26 +449,36 @@ def serve(initial_run: str | None, *, port: int = PORT, top_k: int = DEFAULT_TOP
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="python -m bench.replay",
-                                     description="녹음된 세션을 브라우저에서 다시 재생한다")
-    parser.add_argument("run_dir", nargs="?", default=None,
-                        help="bench/runs/<name> (기본값: 가장 최근에 끝난 실행). "
-                             "떠 있는 페이지에서 다른 실행으로 언제든 바꿔 볼 수 있다")
-    parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K,
-                        help=f"실패·빈 전사 항목은 전부, 나머지는 WER 최악 순으로 몇 개까지 "
-                             f"보여줄지 (기본 {DEFAULT_TOP_K})")
-    args = parser.parse_args(argv)
+def main(args: Namespace) -> int:
     initial = Path(args.run_dir).name if args.run_dir else None
     try:
         return serve(initial, top_k=args.top_k)
-    except DataError as e:
+    except STiTyError as e:
         print(e)
-        return 1
+        return e.exit_code
     except OSError as e:
         print(f"port {PORT} is not available: {e}")
         return 1
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    args = cli.parse(
+        [
+            {
+                "name": "run-dir",
+                "default": None,
+                "help": "bench/runs/<name> (기본값: 가장 최근에 끝난 실행). "
+                "떠 있는 페이지에서 다른 실행으로 언제든 바꿔 볼 수 있다",
+            },
+            {
+                "name": "top-k",
+                "type": int,
+                "default": DEFAULT_TOP_K,
+                "help": f"실패·빈 전사 항목은 전부, 나머지는 WER 최악 순으로 몇 개까지 "
+                f"보여줄지 (기본 {DEFAULT_TOP_K})",
+            },
+        ],
+        prog="python -m bench.replay",
+        description="녹음된 세션을 브라우저에서 다시 재생한다",
+    )
+    raise SystemExit(main(args))

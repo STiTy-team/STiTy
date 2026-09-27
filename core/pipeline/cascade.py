@@ -1,23 +1,28 @@
 from core.components.correction import correctors
-from core.components.registry import Final, Transcribed
+from core.components.mixer import mixers
+from core.components.registry import Transcribed, Translated
 from core.components.transcription import transcribers
 from core.components.translation import translators
 from core.components.vad import detectors
+from core.utils import timing
 
 from . import pipelines
-from .base import Pipeline
+from .base import Pipeline, RunsPer, Stage
 
 
 @pipelines.register("cascade")
 class CascadePipeline(Pipeline):
     REQUIRED = (transcribers,)
-    OPTIONAL = (detectors, correctors, translators)
+    OPTIONAL = (mixers, detectors, correctors, translators)
+    STAGES = (
+        Stage(parts=("mixer", "vad", "transcription"), runs_per=RunsPer.ROOM),
+        Stage(parts=("correction", "translation"), runs_per=RunsPer.TARGET_LANG),
+    )
 
-    def start(self, *, src_lang: str | None, target_lang: str) -> None:
-        self.src_lang = src_lang
+    def start(self, *, languages: list[str], target_lang: str) -> None:
         self.target_lang = target_lang
         self.said_so_far: list[str] = []
-        super().start(src_lang=src_lang, target_lang=target_lang)
+        super().start(languages=languages, target_lang=target_lang)
 
     async def listen(self, audio: bytes) -> list:
         transcriber = self.parts["transcription"]
@@ -42,25 +47,28 @@ class CascadePipeline(Pipeline):
 
             out.append(item)
             original = item.original
-            language = item.language or self.src_lang or ""
+            language = item.language or ""
             if corrector is not None:
                 original = await corrector.correct(original, language)
 
             translation, detected = "", ""
-            if translator is not None:
+            target = self.target_lang
+            if language == target:
+                translation = original
+            elif translator is not None:
                 translation, detected = await translator.translate(
-                    original, self.target_lang, language,
-                    context=list(self.said_so_far))
+                    original, target, language or None, context=list(self.said_so_far))
             if original:
                 self.said_so_far.append(original)
 
-            out.append(Final(
+            out.append(Translated(
                 original=original,
                 translation=translation,
                 language=item.language or detected or "",
-                target_lang=self.target_lang if translator is not None else "",
+                target_lang=target,
                 commit_reason=item.commit_reason,
                 decision_audio_sec=item.decision_audio_sec,
-                recv_elapsed_sec=item.recv_elapsed_sec,
+                committed_elapsed_sec=item.committed_elapsed_sec,
+                translated_elapsed_sec=timing.elapsed(),
             ))
         return out
