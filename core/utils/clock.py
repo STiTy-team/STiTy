@@ -18,3 +18,9 @@ def monotonic() -> float:
 
 def elapsed_since(start: float) -> float:
     return time.perf_counter() - start
+
+
+def format_duration(seconds: float) -> str:
+    hours, rest = divmod(round(seconds, 2), 3600)
+    minutes, secs = divmod(rest, 60)
+    return f"{int(hours)}:{int(minutes):02d}:{secs:05.2f}"

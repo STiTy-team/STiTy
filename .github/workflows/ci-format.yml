@@ -2,9 +2,9 @@ name: ci/format
 
 on:
   push:
-    paths: ["bench/**", ".github/workflows/ci-format.yml"]
+    paths: ["bench/**", "server/**", ".github/workflows/ci-format.yml"]
   pull_request:
-    paths: ["bench/**", ".github/workflows/ci-format.yml"]
+    paths: ["bench/**", "server/**", ".github/workflows/ci-format.yml"]
 
 jobs:
   ruff:
@@ -14,5 +14,5 @@ jobs:
       - uses: astral-sh/ruff-action@v4.1.0
         with:
           version: "0.16.9"
-          src: bench
+          src: bench server
           args: format --check --diff

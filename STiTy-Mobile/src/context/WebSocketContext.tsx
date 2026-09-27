@@ -23,6 +23,7 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 const RUNPOD_SERVER_URL = 'wss://qx74ylzesr5sqr-8765.proxy.runpod.net';
+const CONVERSATION_PATH = '/api/v1/ws';
 
 const getServerUrl = () => {
   if (Platform.OS === 'web' && typeof window !== 'undefined' && process.env.EXPO_PUBLIC_USE_LOCAL_ASR === '1') {
@@ -30,7 +31,7 @@ const getServerUrl = () => {
     return `${protocol}://${window.location.host}/asr`;
   }
 
-  return RUNPOD_SERVER_URL;
+  return `${RUNPOD_SERVER_URL}${CONVERSATION_PATH}`;
 };
 
 const SERVER_URL = getServerUrl();

@@ -13,7 +13,7 @@ npm run android           # 또는 npm run ios
 ## 서버 연결
 
 `src/context/WebSocketContext.tsx` 상단의 `RUNPOD_SERVER_URL` 상수를 환경에 맞게 수정합니다.
-`getServerUrl()` 이 이 값을 쓰되, 웹에서 `EXPO_PUBLIC_USE_LOCAL_ASR=1` 이면 현재 호스트의
+`getServerUrl()` 이 이 값 뒤에 `CONVERSATION_PATH`(`/api/v1/ws`)를 붙여 쓰되, 웹에서 `EXPO_PUBLIC_USE_LOCAL_ASR=1` 이면 현재 호스트의
 `/asr` 로 붙습니다.
 
 ```typescript

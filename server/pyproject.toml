@@ -1,0 +1,28 @@
+[project]
+name = "stity-server"
+version = "0.0.0"
+description = "STiTy Server"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dependency-injector>=4.49.1",
+    "fastapi[standard]>=0.141.1",
+    "numpy>=2.5.3",
+    "pydantic-settings>=2.15.0",
+    "pyfiglet>=1.0.4",
+    "python-dotenv>=1.2.3",
+    "pyyaml>=6.0.3",
+    "rich>=15.0.0",
+]
+
+[tool.ruff]
+line-length = 100
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [".", ".."]
+testpaths = ["tests"]

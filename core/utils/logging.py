@@ -40,7 +40,15 @@ NOISY_LOGGERS = (
     "matplotlib",
 )
 
-LEVEL_STYLES = {"WARNING": "yellow", "ERROR": "bold red", "CRITICAL": "bold red"}
+LEVEL_STYLES = {
+    "DEBUG": "cyan",
+    "INFO": "green",
+    "WARNING": "yellow",
+    "ERROR": "red",
+    "CRITICAL": "bright_red",
+}
+
+LEVEL_WIDTH = len("CRITICAL:")
 
 
 def split_tag(message: str) -> tuple[str, str]:
@@ -69,12 +77,14 @@ class ConsoleHandler(logging.Handler):
 
     def emit(self, record: logging.LogRecord) -> None:
         tag, message = split_tag(record.getMessage())
-        style = LEVEL_STYLES.get(record.levelname, "dim")
+        style = LEVEL_STYLES.get(record.levelname, "default")
+        padding = " " * (LEVEL_WIDTH - len(record.levelname) - 1)
         at = stream.elapsed()
-        stamp = f"{at:7.3f}" if at is not None else "      -"
+        stamp = f"[dim]{at:.3f}s[/] " if at is not None else ""
         head = f"[cyan]{escape(tag)}[/] " if tag else ""
-        self.console.print(f"[dim]{stamp}[/]  [{style}]{record.levelname[0]}[/] "
-                           f"{head}{escape(message)}", highlight=False)
+        self.console.print(f"[{style}]{record.levelname}[/]:{padding} "
+                           f"{stamp}{head}{escape(message)}",
+                           highlight=False, soft_wrap=True)
 
 
 def _level(value) -> int:

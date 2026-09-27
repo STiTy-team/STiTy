@@ -2,14 +2,14 @@ from core.components.registry import Registry, discover
 from core.errors import ConfigError
 from core.utils.config import as_component
 
-from .base import Pipeline, RunsPer, Stage
+from .base import Pipeline, Processor, RunsPer, Stage
 
 pipelines = Registry("pipeline")
 
 discover(__name__)
 
-__all__ = ["Pipeline", "RunsPer", "Stage", "pipelines", "validate", "build", "build_part",
-           "describe", "stages_of"]
+__all__ = ["Pipeline", "Processor", "RunsPer", "Stage", "pipelines", "validate", "build",
+           "build_part", "build_processor", "describe", "stages_of"]
 
 DEFAULT_PARTS = {"mixer": "mixdown"}
 
@@ -72,6 +72,11 @@ async def build_part(cfg, kind: str):
     built = by_kind[kind].get(part["name"])(part["kwargs"], cfg=cfg)
     await built.load()
     return built
+
+
+async def build_processor(cfg, stage: Stage) -> Processor:
+    parts = {kind: await build_part(cfg, kind) for kind in stage.parts}
+    return stage.processor({kind: part for kind, part in parts.items() if part is not None})
 
 
 def describe(cfg) -> dict:

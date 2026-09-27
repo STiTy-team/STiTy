@@ -5,7 +5,7 @@ from typing import Any, Iterable, Iterator
 from core.errors import DataError
 
 
-def _dumps(data: Any, **options) -> str:
+def dumps(data: Any, **options) -> str:
     return json.dumps(data, ensure_ascii=False, default=str, **options)
 
 
@@ -14,7 +14,7 @@ def read_json(path: str | Path) -> Any:
 
 
 def write_json(path: str | Path, data: Any) -> None:
-    Path(path).write_text(_dumps(data, indent=2), encoding="utf-8")
+    Path(path).write_text(dumps(data, indent=2), encoding="utf-8")
 
 
 def read_jsonl(path: str | Path, *, strict: bool = False) -> Iterator[dict]:
@@ -33,7 +33,7 @@ def read_jsonl(path: str | Path, *, strict: bool = False) -> Iterator[dict]:
 def write_jsonl(path: str | Path, rows: Iterable[Any]) -> None:
     with open(path, "w", encoding="utf-8") as f:
         for row in rows:
-            f.write(_dumps(row) + "\n")
+            f.write(dumps(row) + "\n")
 
 
 class JsonlWriter:
@@ -43,7 +43,7 @@ class JsonlWriter:
         self._file = open(self.path, "a", encoding="utf-8")
 
     def write(self, row: Any) -> None:
-        self._file.write(_dumps(row) + "\n")
+        self._file.write(dumps(row) + "\n")
         self._file.flush()
 
     def close(self) -> None:
