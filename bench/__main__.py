@@ -8,7 +8,7 @@ from core.utils import audio
 from core.utils import cli, clock, env, logging, stream
 from core.utils.json import JsonlWriter, read_jsonl, write_jsonl
 
-from . import augment, config
+from . import augment, config, registry
 from .metrics.common import transcribed, translated
 from .metrics import score
 from .metrics.translation import translation_sentences
@@ -39,7 +39,9 @@ def _row(item, *, status: str, **fields) -> dict:
 async def _stream_item(pipeline, augmenter, item, cfg, languages: list[str]) -> dict:
     try:
         samples = audio.load_window(item.audio, offset=item.offset, duration=item.duration_sec)
-        samples, augmented = augmenter.apply(samples, key=augment.item_key(cfg.dataset.name, item.id))
+        samples, augmented = augmenter.apply(
+            samples, key=augment.item_key(cfg.dataset.name, item.id)
+        )
     except STiTyError as e:
         stream.start_clock()
         stream.record("item_error", error="audio_load_failed", detail=str(e))
@@ -144,14 +146,23 @@ def reset_run_dir(run_dir: Path) -> None:
 
 def main(args: Namespace) -> None:
     cfg = config.load(args.config, args.dataset)
+    if args.print_run_dir:
+        print(
+            cfg.run_dir.relative_to(Path.cwd())
+            if cfg.run_dir.is_relative_to(Path.cwd())
+            else cfg.run_dir
+        )
+        return
     data_root = config.get_data_root()
     dataset = datasets.load(cfg.dataset, data_root)
     augmenter = augment.build(cfg.augment, data_root=data_root)
     pipeline = build_pipeline(cfg)
 
+    registry.check(cfg.identity, dataset.manifest_sha256)
+
     started = clock.now()
     timer = clock.monotonic()
-    run_dir = config.get_runs_dir() / cfg.name
+    run_dir = cfg.run_dir
     reset_run_dir(run_dir)
 
     stream.attach(run_dir / "events.jsonl")
@@ -163,6 +174,9 @@ def main(args: Namespace) -> None:
         n_items=len(dataset.items),
         n_sessions=dataset.n_sessions,
         started_at=started.isoformat(),
+        config=cfg.raw,
+        identity=cfg.identity,
+        manifest_sha256=dataset.manifest_sha256,
     )
 
     status, failure = "ok", None
@@ -209,6 +223,12 @@ if __name__ == "__main__":
             {
                 "name": "dataset",
                 "help": "데이터셋 설정 이름 (configs/datasets/<이름>.yml)",
+            },
+            {
+                "name": "print-run-dir",
+                "action": "store_true",
+                "default": False,
+                "help": "돌리지 않고 이 실행의 결과 디렉토리(bench/runs/<데이터셋>/<파이프라인>)만 출력한다",
             },
         ],
         prog="python -m bench",

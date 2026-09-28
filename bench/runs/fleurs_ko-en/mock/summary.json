@@ -1,0 +1,159 @@
+{
+  "name": "fleurs_ko-en/mock",
+  "stamp": "20260928T001042",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-28T00:10:42.865923+00:00",
+  "finished_at": "2026-09-28T01:25:47.585001+00:00",
+  "metrics": {
+    "wer": 5.58390918065153,
+    "wer_by_lang": {
+      "ko": 5.58390918065153
+    },
+    "wer_scored_only": 5.58390918065153,
+    "cer": 10.511158258683011,
+    "cer_by_lang": {
+      "ko": 10.511158258683011
+    },
+    "bleu": 0.0011636850041190855,
+    "bleu_by_pair": {
+      "ko-en": 0.0011636850041190855
+    },
+    "avg_fsl_sec": 0.0009920836928387297,
+    "laal_ms": 2059.4069841318365,
+    "laal_ca_ms": 2068.1016506523606,
+    "yaal_ms": 2038.9734370905555,
+    "yaal_ca_ms": 2040.3509131354795,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "ko->ko": 4636
+    },
+    "commit_reasons": {
+      "vad": 0.9529767040552201,
+      "seg": 0.0,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.04702329594477998
+    },
+    "segments_per_item": 17.29850746268657,
+    "comet": 0.26879832015108707,
+    "comet_by_pair": {
+      "ko-en": 0.26879832015108707
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "longyaal_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "longyaal_ca_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "token_emission_ms": "no item had both a reference alignment and recorded partials or commits, or no recognized word matched the reference",
+    "token_emission_ca_ms": "no item had both a reference alignment and recorded partials or commits, or no recognized word matched the reference"
+  },
+  "counts": {
+    "items": 268,
+    "sessions": 268,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 3429.54,
+    "wall_sec": 4504.72,
+    "compute_sec": 2.32,
+    "realtime_factor": 0.001
+  },
+  "failed_items": [],
+  "config": {
+    "name": "fleurs_ko-en/mock",
+    "dataset": {
+      "name": "fleurs/ko_kr"
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": "mock",
+        "vad": {
+          "name": "mock",
+          "speech_chunks": 5
+        },
+        "correction": "mock",
+        "translation": "mock"
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.1
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/ko_kr",
+    "split": "test",
+    "languages": [
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "de",
+        "en"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "id",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/ko_kr",
+    "manifest_sha256": "454831e8db23122c75c9b7d6a4c1eaac1e16462501e3f693018ec1e8183dacab",
+    "alignment_sha256": "ab69a3ab9cd8a8660223dabe64698c5a1362bcad91e493d420c87e9cfc75ed55",
+    "n_aligned": 268,
+    "n_items": 268,
+    "n_sessions": 268
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "mock"
+    },
+    "vad": {
+      "backend": "mock",
+      "speech_chunks": 5
+    },
+    "correction": {
+      "backend": "mock"
+    },
+    "translation": {
+      "backend": "mock"
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "fleurs_ko-en",
+      "version": 1,
+      "ref": "fleurs_ko-en",
+      "hash": "d01519b27bbd",
+      "description": "FLEURS Korean sentences, translated to English",
+      "tags": [
+        "fleurs",
+        "sentence",
+        "clean"
+      ]
+    },
+    "pipeline": {
+      "name": "mock",
+      "version": 1,
+      "ref": "mock",
+      "hash": "0f6b0dd4236a",
+      "description": "Mock parts end to end, no model; checks the harness",
+      "tags": [
+        "cascade",
+        "mock"
+      ]
+    }
+  }
+}

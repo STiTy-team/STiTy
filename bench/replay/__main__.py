@@ -6,12 +6,19 @@ from pathlib import Path
 from core.errors import STiTyError
 from core.utils import cli
 
+from ..config import get_runs_dir
 from .server import PORT, serve
 from .session import DEFAULT_TOP_K
 
 
+def run_name(arg: str) -> str:
+    """`bench/runs/<dataset>/<pipeline>` or just `<dataset>/<pipeline>`."""
+    path, runs = Path(arg).resolve(), get_runs_dir().resolve()
+    return path.relative_to(runs).as_posix() if path.is_relative_to(runs) else Path(arg).as_posix()
+
+
 def main(args: Namespace) -> int:
-    initial = Path(args.run_dir).name if args.run_dir else None
+    initial = run_name(args.run_dir) if args.run_dir else None
     try:
         return serve(initial, port=args.port, top_k=args.top_k)
     except STiTyError as e:
@@ -28,7 +35,7 @@ if __name__ == "__main__":
             {
                 "name": "run-dir",
                 "default": None,
-                "help": "bench/runs/<name> 을 주면 대시보드 대신 그 실행의 세션 재생으로 연다. "
+                "help": "bench/runs/<데이터셋>/<파이프라인> 을 주면 대시보드 대신 그 실행의 세션 재생으로 연다. "
                 "떠 있는 페이지에서 다른 실행으로 언제든 바꿔 볼 수 있다",
             },
             {

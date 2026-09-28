@@ -1,0 +1,12 @@
+meta:
+  description: FLEURS Korean sentences with cafe noise (DEMAND SCAFE, level 0.1-0.5); quiet clips raised to -23 dB
+  tags: [fleurs, sentence, noise]
+dataset:
+  name: fleurs/ko_kr
+target: en
+augment:
+  noise:
+    place: cafe
+    level: [0.1, 0.5]
+  volume:
+    min_level_db: -23

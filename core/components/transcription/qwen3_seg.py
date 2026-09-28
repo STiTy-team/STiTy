@@ -1208,7 +1208,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
         after = (state.text or "").strip()
         uncommitted_after = uncommitted_from(
             after, self.slot["committed_display"], self.slot["committed_seg_count"])
-        if not uncommitted_after and uncommitted_before:
+        # The tail re-decode sometimes stops right after a fresh `language English` header;
+        # that has no words either, and taking it would drop what the partial already showed.
+        if (not strip_lang_headers(display_of(uncommitted_after))
+                and strip_lang_headers(display_of(uncommitted_before))):
             state.text = before
         await self._flush_uncommitted(reason=reason)
         self._reset_slot()

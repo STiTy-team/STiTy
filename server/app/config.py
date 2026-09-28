@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
+    SettingsConfigDict,
     YamlConfigSettingsSource,
 )
 
@@ -16,6 +17,7 @@ LOCAL_OVERLAY = CONFIG_DIR / "application.local.yml"
 
 
 class ServerSettings(BaseModel):
+    host: str = "127.0.0.1"
     port: int = 8765
 
 
@@ -24,6 +26,8 @@ class StitySettings(BaseModel):
 
 
 class AppSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="STITY_", env_nested_delimiter="__")
+
     server: ServerSettings = ServerSettings()
     stity: StitySettings
 
@@ -32,6 +36,7 @@ class AppSettings(BaseSettings):
         cls,
         settings_cls: type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
         **_: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
         files = [
@@ -49,7 +54,7 @@ class AppSettings(BaseSettings):
             deep_merge=True,
         )
 
-        return init_settings, yaml
+        return init_settings, env_settings, yaml
 
 
 class ServerConfig(ConfigBody):

@@ -15,7 +15,8 @@ from core.utils.json import read_jsonl
 
 from .. import augment
 from ..config import DatasetConfig, get_data_root, get_runs_dir
-from .runs import list_runs, read_summary, run_catalog, run_config
+from ..registry import run_name as name_of
+from .runs import list_runs, read_summary, run_catalog, run_config, run_meta
 
 ITEM_METRIC_KEYS = (
     "wer",
@@ -131,7 +132,7 @@ def run_clips(run_dir: Path) -> dict[str, dict]:
 
 @lru_cache(maxsize=8)
 def run_augmenter(run_dir: Path) -> tuple[augment.Augmenter, str]:
-    config, _ = run_config(run_dir.name, read_summary(run_dir))
+    config, _ = run_config(run_dir, read_summary(run_dir))
     spec = config.get("augment")
     if not spec:
         return augment.Augmenter([]), ""
@@ -278,9 +279,7 @@ def item_data(run_dir: Path, item_id: str) -> dict | None:
     if ds_root is not None and (ds_root / "dataset.yml").is_file():
         spec = (ds_root / "dataset.yml").read_text(encoding="utf-8")
     dataset = summary.get("dataset") or {}
-    name = dataset.get("name") or (run_config(run_dir.name, summary)[0].get("dataset") or {}).get(
-        "name"
-    )
+    name = dataset.get("name") or (run_config(run_dir, summary)[0].get("dataset") or {}).get("name")
     sha = dataset.get("manifest_sha256")
     if not sha and ds_root is not None:
         # A finished run records the hash; one still going has not yet, so take it
@@ -383,7 +382,9 @@ def item_payload(run_dir: Path, item_id: str) -> dict | None:
     if (run_dir / "items.jsonl").is_file():
         rows = {r.get("id"): r for r in read_jsonl(run_dir / "items.jsonl")}
     clips = run_clips(run_dir)
-    return _finalize_item(item_id, events, duration, rows=rows, clips=clips, run_name=run_dir.name)
+    return _finalize_item(
+        item_id, events, duration, rows=rows, clips=clips, run_name=name_of(run_dir)
+    )
 
 
 def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
@@ -419,14 +420,18 @@ def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
     if item is None:
         raise DataError(f"{events_path} has no item events")
 
-    config, config_source = run_config(run_dir.name, summary)
+    config, config_source = run_config(run_dir, summary)
+    catalog = run_catalog()
     return {
         "run": {
-            "name": summary.get("name") or run_dir.name,
+            "name": name_of(run_dir),
             "stamp": summary.get("stamp") or "",
             "status": summary.get("status") or ("running" if not summary else ""),
-            "dir": run_dir.name,
-            "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
+            "dir": name_of(run_dir),
+            "meta": run_meta(run_dir, summary),
+            "dataset_sha": next(
+                (r["dataset_sha"] for r in catalog if r["name"] == name_of(run_dir)), ""
+            ),
             "n_total": len(rows),
             "top_k": top_k,
             "pipeline_config": config.get("stity") or {},
@@ -436,7 +441,7 @@ def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
         "items": [item],
         "worst": [{"id": i, "wer": rows[i].get("wer")} for i in worst],
         "all_items": [{"id": r["id"], "wer": r.get("wer")} for r in rows.values()],
-        "runs": run_catalog(),
+        "runs": catalog,
     }
 
 
@@ -449,8 +454,8 @@ def render(data: dict) -> bytes:
         "__DATA__", json.dumps(data, ensure_ascii=False)
     )
     return (
-        '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+        '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-        f"<title>{data['run']['name']} — session replay</title>\n</head>\n<body>\n"
+        f"<title>{data['run']['name']} — 세션 재생</title>\n</head>\n<body>\n"
         f"{body}\n</body>\n</html>\n"
     ).encode("utf-8")
