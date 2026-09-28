@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import PrivateAttr
 
@@ -34,6 +34,7 @@ class DatasetConfig(ConfigBody):
     name: str
     longform: bool = False
     limit: int | None = None
+    pick: Literal["first", "longest"] = "first"
 
     @classmethod
     def normalize(cls, raw: Any) -> Any:

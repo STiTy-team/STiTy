@@ -170,12 +170,21 @@ target: ko             # 들린 말을 모두 이 언어로 번역한다
 데이터셋 디렉토리를 따로 만든다 — `dataset.yml` 에 언어를 여럿 적고 항목마다 `src_lang` 을 두면
 설정은 바뀌지 않는다.
 
-데이터셋이 크면 `limit: N` 으로 앞의 N개만 돈다(`longform` 이면 발표 N개).
+데이터셋이 크면 `limit: N` 으로 앞의 N개만 돈다(`longform` 이면 발표 N개). **`limit` 은 반드시
+따로 된 설정 파일에 둔다** — 실행 이름이 설정 파일 이름에서 나오므로, 같은 파일에 `limit` 을 넣었다
+뺐다 하면 일부만 돈 결과가 전부 돈 결과를 덮어쓰고 대시보드에서도 한데 섞인다. 지금 있는 것은
+`fleurs-en-ko.first50`·`fleurs-ko-en.first50`(앞의 50문장)이다.
+
+`pick: longest` 를 같이 적으면 앞의 N개 대신 **가장 긴 N개**를 돈다(`longform` 이면 가장 긴 발표 N개).
+순서는 그대로 `group` 순이다. 같은 문장이라도 언어마다 오디오 길이가 달라서, `fleurs-en-ko.longest50`
+과 `fleurs-ko-en.longest50` 은 서로 다른 문장들이다 — 두 방향을 같은 문장으로 비교하려면 `first` 를 쓴다.
 
 ```yaml
+# configs/datasets/fleurs-en-ko.first50.yml
 dataset:
-  name: covost2
-  limit: 200
+  name: fleurs/en_us
+  limit: 50
+target: ko
 ```
 
 ### 발표를 통째로 흘리기 (`longform`)
@@ -201,8 +210,7 @@ IWSLT 의 segmentation yaml 과 같은 것이다. 그래서 그룹의 항목이 
 - `wer`·`cer`·`fsl`·`token_emission` 은 발표 전체에서 그대로 나온다. 정렬 시각은 문장
   `offset` 만큼 밀어 발표 시각으로 바꾼다.
 
-**일부만 돌리려면 `limit: N`** 을 쓴다(위 참고). 결과 디렉토리 이름은 그대로라, 일부만 돈
-결과가 전부 돈 결과를 덮어쓴다 — 두 결과는 비교가 안 되므로, 오래 남길 비교에는 쓰지 않는다.
+**일부만 돌리려면 `limit: N`** 을 쓴다. 위에서처럼 설정 파일을 따로 둔다.
 
 ### 소음과 공간 입히기 (`augment`)
 
