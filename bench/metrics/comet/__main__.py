@@ -14,7 +14,9 @@ KEYS = ("comet", "comet_by_pair", "comet_model")
 
 def comet(sentences: list[dict], scores: list[float] | None = None) -> dict[str, float] | None:
     by_pair: dict[str, list[float]] = {}
-    for sentence, value in zip(sentences, scores if scores is not None else sentence_scores(sentences)):
+    for sentence, value in zip(
+        sentences, scores if scores is not None else sentence_scores(sentences)
+    ):
         by_pair.setdefault(sentence["pair"], []).append(value)
     return {pair: mean(values) for pair, values in sorted(by_pair.items())} or None
 

@@ -56,6 +56,7 @@ def write_all(
         },
         "failed_items": [r.get("id") for r in errored + empty],
         "config": cfg.raw,
+        "identity": cfg.identity,
         "pacing": pacing,
         "dataset": dataset.provenance(),
         "components": describe_pipeline(cfg),

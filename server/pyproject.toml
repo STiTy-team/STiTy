@@ -3,17 +3,25 @@ name = "stity-server"
 version = "0.0.0"
 description = "STiTy Server"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
+    "qwen-asr[vllm]",
+    "silero-vad>=6.2",
+    "httpx",
+    "soundfile",
+    "librosa",
     "dependency-injector>=4.49.1",
     "fastapi[standard]>=0.141.1",
-    "numpy>=2.5.3",
+    "numpy",
     "pydantic-settings>=2.15.0",
     "pyfiglet>=1.0.4",
     "python-dotenv>=1.2.3",
     "pyyaml>=6.0.3",
     "rich>=15.0.0",
 ]
+
+[tool.uv.sources]
+qwen-asr = { path = "../Qwen3-ASR", editable = true }
 
 [tool.ruff]
 line-length = 100

@@ -2,86 +2,93 @@
      __DATA__ with the run's events, so this file is the whole of the UI and nothing
      about a run is hard-coded into it.
 
-     Inside the phone the values are the app's own (HomeScreen.tsx: LANG_COLORS, the
-     bubble palette, a system font stack) -- the point of the panel is to show what
-     the device showed, so it does not get a look of its own. Everything outside it
-     is the instrument, and reads as a different object. -->
-<link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+     Inside the phone the bubbles follow DESIGN.md's conversation rules (mine blue,
+     partner grey, language hue only on the avatar) -- the panel shows what the device
+     shows. Everything outside it is the instrument, and reads as a different object. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/static/common.css">
 <script src="/static/common.js"></script>
 <style>
   /* ── frame ───────────────────────────────────────────────────────────── */
-  .wrap { max-width: 1380px; margin: 0 auto; padding: 20px; display: grid; gap: 16px; }
-  .bar {
-    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
-    padding: 14px 18px; display: grid; gap: 12px;
-  }
-  .bar-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
-  /* ── timeline ribbon: every commit, by what triggered it ─────────────── */
-  .ribbon { position: relative; height: 46px; cursor: pointer; user-select: none; }
+  .wrap { max-width: 1380px; margin: 0 auto; padding: 32px 24px 64px; display: grid; gap: 24px; }
+  .head { display: grid; gap: 16px; }
+  .head-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  #run-picker, #item-picker { font-family: var(--mono); font-size: 12px; max-width: 100%; }
+  .title-row { display: flex; gap: 16px 40px; align-items: flex-end; flex-wrap: wrap; }
+  .title-block { display: grid; gap: 8px; min-width: 0; flex: 1 1 420px; }
+  .run-title { font-family: var(--mono); font-size: 22px; font-weight: 600; letter-spacing: -0.01em; word-break: break-all; }
+  .run-facts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .run-facts .note { color: var(--text-3); }
+  .run-meta { display: grid; gap: 2px; }
+
+  /* the item's numbers: the one that matters most is big, the rest are plain */
+  .item-stats { display: flex; gap: 8px 28px; align-items: flex-end; flex-wrap: wrap; }
+  .item-stats .stat-tile.lead .stat-value { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.3; }
+
+  /* ── player: timeline ribbon, then the controls ─────────────────────── */
+  .player { display: grid; gap: 12px; }
+  .ribbon { position: relative; height: 48px; cursor: pointer; user-select: none; }
   .ribbon-track {
     position: absolute; inset: 14px 0 16px; background: var(--sunken);
-    border-radius: 3px; overflow: hidden;
+    border-radius: 4px; overflow: hidden;
   }
   .tick { position: absolute; top: 8px; width: 2px; height: 22px; border-radius: 1px; }
   .tick.lab { top: 2px; height: 28px; }
   .playhead {
-    position: absolute; top: 6px; bottom: 8px; width: 1px; background: var(--ink);
+    position: absolute; top: 6px; bottom: 8px; width: 1.5px; background: var(--text-1);
     pointer-events: none;
   }
   .playhead::after {
     content: ""; position: absolute; top: -4px; left: -3px;
-    width: 7px; height: 7px; border-radius: 2px; background: var(--ink);
-  }
-
-  .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .clock { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
-
-  /* ── the item's data: what the dataset says went into the run ────────── */
-  .data { border-top: 1px solid var(--rule-soft); padding-top: 10px; }
-  .data[open] { display: grid; gap: 8px; }
-  .data:not([open]) { display: block; }
-  .data-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; cursor: pointer; list-style: none; }
-  .data-head::-webkit-details-marker { display: none; }
-  .data-head::before {
-    content: "▸"; font-size: 10px; color: var(--ink-faint); transition: transform 0.12s;
-    display: inline-block;
-  }
-  .data[open] > .data-head::before { transform: rotate(90deg); }
-  .data-head .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
-  .data-scroll { max-height: 260px; overflow: auto; border: 1px solid var(--rule-soft); border-radius: 8px; }
-  .turns { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 12px; }
-  .turns th {
-    position: sticky; top: 0; background: var(--panel); text-align: left; font-weight: 600;
-    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
-    padding: 6px 8px; border-bottom: 1px solid var(--rule);
-  }
-  .turns td { padding: 6px 8px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
-  .turns tr { cursor: pointer; }
-  .turns tr:hover td { background: var(--sunken); }
-  .turns tr.now td { background: var(--accent-soft); }
-  .turns td.r { font-family: var(--mono); font-size: 11px; white-space: nowrap; color: var(--ink-soft); text-align: left; }
-  .turns .lang { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; }
-  .turns .tr-sub { color: var(--ink-faint); margin-top: 2px; }
-  .turns .w.on { background: var(--accent); color: #fff; border-radius: 2px; }
-  .quiet { color: var(--alarm); font-weight: 600; }
-  .data details { font-size: 12px; }
-  .data details summary { cursor: pointer; color: var(--ink-soft); font-size: 11px; }
-  .data details pre {
-    margin: 6px 0 0; padding: 8px 10px; background: var(--sunken); border-radius: 6px;
-    font-family: var(--mono); font-size: 11px; max-height: 240px; overflow: auto; white-space: pre-wrap;
+    width: 8px; height: 8px; border-radius: 999px; background: var(--text-1);
   }
   .turn-band { position: absolute; bottom: 0; height: 4px; opacity: 0.85; }
   .turn-band.quiet-band { opacity: 0.35; }
-  .clock b { color: var(--ink); font-weight: 600; }
+  .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .clock { font-size: 13px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .clock b { color: var(--text-1); font-weight: 600; }
+  #play { min-width: 96px; justify-content: center; }
+
+  /* ── the item's data: what the dataset says went into the run ────────── */
+  .data > summary { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; cursor: pointer; list-style: none; }
+  .data > summary::-webkit-details-marker { display: none; }
+  .data > summary::after {
+    content: "펼치기"; margin-left: auto; font-size: 12px; font-weight: 600; color: var(--text-3);
+  }
+  .data[open] > summary::after { content: "접기"; }
+  .data[open] > summary { margin-bottom: 12px; }
+  .data .facts { color: var(--text-3); }
+  .data-scroll { max-height: 280px; overflow: auto; }
+  .turns { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .turns th {
+    position: sticky; top: 0; background: var(--panel); text-align: left; font-weight: 600;
+    font-size: 12px; color: var(--text-3); padding: 8px 10px; border-bottom: 1px solid var(--line);
+  }
+  .turns th.r { text-align: right; }
+  .turns td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text-1); }
+  .turns tr { cursor: pointer; }
+  .turns tbody tr:hover td { background: var(--sunken); }
+  .turns tr.now td { background: var(--brand-weak); }
+  .turns td.r { text-align: right; white-space: nowrap; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .turns td.who { white-space: nowrap; color: var(--text-2); }
+  .turns .dot { margin-right: 6px; vertical-align: 1px; }
+  .turns .tr-sub { color: var(--text-2); margin-top: 2px; font-size: 12px; }
+  .turns .w { transition: background-color var(--dur-fast) var(--ease); border-radius: 3px; }
+  .turns .w.on { background: var(--brand); color: #FFFFFF; }
+  .quiet { color: var(--text-danger); font-weight: 600; }
+  .raw { margin-top: 12px; }
+  .raw summary { cursor: pointer; color: var(--text-3); font-size: 12px; font-weight: 600; }
+  .raw pre {
+    margin: 8px 0 0; padding: 10px 12px; background: var(--sunken); border-radius: 8px;
+    font-family: var(--mono); font-size: 12px; max-height: 240px; overflow: auto; white-space: pre-wrap; color: var(--text-2);
+  }
 
   /* ── normally one model (phone, instrument side by side); a compare target
      makes it two full mirrored columns, each with its own phone, log stream
      and timing plot, so the two runs read the same way left-to-right ──────── */
   .cols {
-    display: grid; gap: 16px; align-items: start;
+    display: grid; gap: 24px; align-items: start;
     grid-template-columns: 384px minmax(0, 1fr);
     grid-template-areas: "phoneA logs";
   }
@@ -98,251 +105,254 @@
   #phone-b-section { grid-area: phoneB; }
   #logs-section { grid-area: logs; }
   #logs-b-section { grid-area: logsB; }
-  /* Both column heads are one baseline-aligned row, but a <select> is taller
-     than plain eyebrow text -- pin a shared height so a phone with a picker
-     for a head doesn't start lower than the one next to it. */
+  /* Both column heads share a height, so a phone with a picker for a head doesn't
+     start lower than the one next to it. */
   .col-head {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 0 2px;
-    min-height: 32px;
+    display: flex; align-items: center; gap: 8px 12px; margin-bottom: 12px;
+    min-height: 36px; flex-wrap: wrap;
   }
-  .col-head p { margin: 0; font-size: 11px; color: var(--ink-faint); }
-  #compare-caption { color: var(--ink-soft); }
-  .timing-row { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  .col-head p { margin: 0; color: var(--text-3); }
+  #compare-caption { color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .timing-row { display: grid; gap: 24px; grid-template-columns: 1fr; }
   .timing-row.comparing { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
-  /* ── per-item scores, then the run's own config and aggregate metrics ─── */
-  .stats-row { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  /* ── the run's own config and aggregate metrics ─────────────────────── */
+  .stats-row { display: grid; gap: 24px; grid-template-columns: 1fr; }
   .stats-row.comparing { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .readout {
-    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
-    padding: 14px 18px; display: grid; gap: 10px; align-content: start;
-  }
+  .readout { display: grid; gap: 12px; align-content: start; }
+  .readout h2 + p { margin: -8px 0 0; color: var(--text-3); }
+  .readout .section { display: grid; gap: 12px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .readout .section:first-of-type { border-top: 0; padding-top: 0; }
   .code-block {
-    background: var(--sunken); border: 1px solid var(--rule); border-radius: 8px;
-    padding: 10px 12px; margin: 0; overflow: auto; max-height: 280px;
-    font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft);
-    white-space: pre;
+    background: var(--sunken); border-radius: 8px; padding: 10px 12px; margin: 0;
+    overflow: auto; max-height: 280px; font: inherit; font-size: 13px; color: var(--text-1); white-space: pre-wrap;
   }
 
   /* phone */
   .phone {
-    width: 384px; max-width: 100%; height: 720px; background: #1b1b1d;
-    border-radius: 44px; padding: 11px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+    width: 384px; max-width: 100%; height: 720px; background: #191F28;
+    border-radius: 44px; padding: 11px; box-shadow: var(--shadow-3);
   }
   .screen {
-    position: relative; height: 100%; background: #fff; border-radius: 34px;
-    overflow: hidden; display: flex; flex-direction: column;
-    font-family: var(--device); color: #1a1a1a;
+    position: relative; height: 100%; background: #FFFFFF; border-radius: 34px;
+    overflow: hidden; display: flex; flex-direction: column; color: #191F28;
   }
   .notch {
     position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
-    width: 104px; height: 24px; background: #1b1b1d; border-radius: 999px; z-index: 5;
+    width: 104px; height: 24px; background: #191F28; border-radius: 999px; z-index: 5;
   }
   .status {
     height: 42px; flex: 0 0 42px; display: flex; align-items: center;
-    justify-content: space-between; padding: 0 22px; font-size: 11px;
-    font-weight: 600; color: #1a1a1a;
+    justify-content: space-between; padding: 0 22px; font-size: 12px;
+    font-weight: 600; color: #191F28; font-variant-numeric: tabular-nums;
   }
   .appbar {
-    flex: 0 0 auto; padding: 4px 16px 10px; display: flex; align-items: center; gap: 8px;
-    border-bottom: 1px solid #eee;
+    flex: 0 0 auto; padding: 4px 20px 12px; display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #E5E8EB;
   }
   .langpill {
-    display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px;
+    border-radius: 999px; border: 1px solid #E5E8EB; font-size: 13px; font-weight: 600; color: #4E5968;
   }
-  .dotmark { width: 9px; height: 9px; border-radius: 50%; }
-  .arrow { color: #bbb; font-size: 13px; }
-  .feed { flex: 1; overflow-y: auto; padding: 12px 0 4px; scroll-behavior: smooth; }
+  .langpill.mine { background: #F0F3FA; border-color: #F0F3FA; color: #4268BD; }
+  .arrow { color: #B0B8C1; font-size: 13px; }
+  .feed { flex: 1; overflow-y: auto; padding: 16px 0 8px; scroll-behavior: smooth; }
   .feed-empty {
-    height: 100%; display: grid; place-items: center; color: #b8b8b8; font-size: 13px;
+    height: 100%; display: grid; place-items: center; color: #8B95A1; font-size: 15px;
   }
-  /* bubbles: HomeScreen.tsx S.bubbleRow / S.bubble / S.bubbleMain / S.bubbleSub */
+  /* bubbles: DESIGN.md bubble-mine / bubble-peer, 4px corner on the speaker's side */
   .row {
-    display: flex; padding: 5px 16px; gap: 8px; align-items: flex-end;
-    animation: rise 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; padding: 8px 20px 0; gap: 8px; align-items: flex-end;
+    animation: rise var(--dur-base) var(--ease);
   }
   .row.mine { flex-direction: row-reverse; }
-  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
-  @media (prefers-reduced-motion: reduce) { .row { animation: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
   .av {
-    width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center;
-    font-size: 8px; font-weight: 700; flex-shrink: 0;
+    width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center;
+    font-size: 9px; font-weight: 700; flex-shrink: 0; color: #FFFFFF;
   }
-  .bub { max-width: 72%; padding: 10px 14px; border-radius: 18px; }
-  .bub .main { font-size: 15px; font-weight: 600; line-height: 1.4; }
-  .bub .sub { font-size: 11px; margin-top: 3px; }
-  #live .row { opacity: 0.55; animation: none; }
-  .caret {
-    display: inline-block; width: 2px; height: 1em; margin-left: 2px;
-    background: currentColor; vertical-align: -0.12em; animation: blink 1s steps(1) infinite;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
+  .bub { max-width: 72%; padding: 12px; border-radius: 14px; background: #F2F4F6; color: #191F28; }
+  .row.mine .bub { background: #4268BD; color: #FFFFFF; border-bottom-right-radius: 4px; }
+  .row:not(.mine) .bub { border-bottom-left-radius: 4px; }
+  .bub .main { font-size: 15px; font-weight: 400; line-height: 1.5; }
+  .bub .sub { font-size: 13px; line-height: 1.5; margin-top: 4px; color: #4E5968; }
+  .row.mine .bub .sub { color: #FFFFFFD9; }
+  #live .row, #live-cmp .row { animation: none; }
+  #live .bub { background: #F9FAFB; color: #4E5968; }
+  #live .row.mine .bub { background: #F0F3FA; color: #37579F; }
   .pending {
     position: absolute; left: 0; right: 0; bottom: 96px; display: flex; justify-content: center;
     pointer-events: none;
   }
   .pending span {
-    min-width: 58px; text-align: center; padding: 8px 18px; border-radius: 999px;
-    background: rgba(122, 144, 48, 0.1); border: 1px solid rgba(122, 144, 48, 0.24);
-    color: #7a9030; font-size: 18px; line-height: 20px; font-weight: 800; letter-spacing: 2px;
+    padding: 6px 16px; border-radius: 999px; background: #F2F4F6;
+    color: #8B95A1; font-size: 18px; line-height: 20px; font-weight: 800; letter-spacing: 2px;
   }
   .recbar {
-    flex: 0 0 auto; margin: 0 16px 18px; background: rgba(96, 128, 200, 0.07);
-    border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+    flex: 0 0 auto; margin: 0 20px 20px; background: #F2F4F6; border-radius: 16px;
+    padding: 0 16px; height: 56px; display: flex; align-items: center; gap: 10px;
   }
-  .pulse { width: 10px; height: 10px; border-radius: 50%; background: #c8c8c8; flex-shrink: 0; }
-  .pulse.live { background: var(--alarm); animation: beat 1.1s ease-in-out infinite; }
+  .pulse { width: 8px; height: 8px; border-radius: 999px; background: #B0B8C1; flex-shrink: 0; }
+  .pulse.live { background: #7A9030; animation: beat 1.6s ease-in-out infinite; }
   @keyframes beat { 50% { opacity: 0.35; } }
-  .recbar .label { font-size: 13px; font-weight: 600; color: #6080c8; flex: 1; }
-  .recbar .t { font-size: 12px; color: #9aa; font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) { .row { animation: none; } .pulse.live { animation: none; } }
+  .recbar .label { font-size: 15px; font-weight: 600; color: #191F28; flex: 1; }
+  .recbar .label.live { color: #617326; }
+  .recbar .t { font-size: 13px; color: #6B7684; font-variant-numeric: tabular-nums; }
 
   /* instrument */
   .logs {
-    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
-    display: flex; flex-direction: column; height: 742px; overflow: hidden;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    display: flex; flex-direction: column; height: 720px; overflow: hidden;
   }
   .logs-top {
-    padding: 10px 12px; border-bottom: 1px solid var(--rule); display: flex;
+    padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex;
     gap: 8px; align-items: center; flex-wrap: wrap;
   }
   .filters { display: flex; gap: 4px; flex-wrap: wrap; }
   .filters button {
-    background: var(--sunken); border: 1px solid var(--rule); border-radius: 999px;
-    padding: 3px 9px; font-size: 11px; font-family: var(--mono); color: var(--ink-soft);
-    user-select: text;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+    height: 26px; padding: 0 10px; font-size: 11.5px; font-family: var(--mono); color: var(--text-3);
+    user-select: text; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
   }
-  .filters button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+  .filters button[aria-pressed="true"] { background: var(--brand-weak); border-color: transparent; color: var(--text-brand); }
   .find {
-    background: var(--sunken); border: 1px solid var(--rule); border-radius: 7px;
-    padding: 5px 9px; font-size: 12px; font-family: var(--mono); color: var(--ink);
-    min-width: 130px; flex: 1;
+    background: var(--sunken); border: 1.5px solid transparent; border-radius: 12px;
+    height: 36px; padding: 0 12px; font-size: 13px; color: var(--text-1);
+    min-width: 140px; flex: 1;
   }
+  .find:focus { outline: none; border-color: var(--focus); background: var(--panel); }
+  .find::placeholder { color: var(--text-4); }
   .stream { flex: 1; overflow: auto; }
-  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11.5px; }
-  thead th {
-    position: sticky; top: 0; background: var(--sunken); text-align: left;
-    padding: 6px 10px; font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--rule);
-    z-index: 2;
+  .stream table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .stream thead th {
+    position: sticky; top: 0; background: var(--panel); text-align: left;
+    padding: 8px 10px; font-weight: 600; font-size: 12px; color: var(--text-3);
+    border-bottom: 1px solid var(--line); z-index: 2;
   }
-  tbody tr { border-bottom: 1px solid var(--rule-soft); }
-  tbody tr.future { opacity: 0.32; }
-  tbody tr.now { background: var(--accent-soft); }
-  td { padding: 4px 10px; vertical-align: top; }
-  td.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-soft); }
-  td.type { white-space: nowrap; font-weight: 500; }
-  td.fields { color: var(--ink-soft); word-break: break-word; }
-  td.fields b { color: var(--ink); font-weight: 500; }
-  .reason { display: inline-block; padding: 0 5px; border-radius: 3px; color: #fff; font-size: 10px; }
-  .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--ink-faint); padding: 0 2px; }
-  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+  .stream thead th.r { text-align: right; }
+  .stream tbody tr { border-bottom: 1px solid var(--line); }
+  .stream tbody tr.future { opacity: 0.32; }
+  .stream tbody tr.now { background: var(--brand-weak); }
+  .stream td { padding: 6px 10px; vertical-align: top; }
+  .stream td.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--text-3); }
+  .stream td.id { font-family: var(--mono); font-size: 11.5px; color: var(--text-3); white-space: nowrap; }
+  .stream td.type { white-space: nowrap; font-family: var(--mono); font-size: 11.5px; font-weight: 500; color: var(--text-1); }
+  .stream td.fields { color: var(--text-3); word-break: break-word; font-family: var(--mono); font-size: 11.5px; }
+  .stream td.fields b { color: var(--text-1); font-weight: 400; font-family: var(--sans); font-size: 13px; }
+  .reason { display: inline-block; padding: 0 6px; border-radius: 4px; color: #FFFFFF; font-size: 11px; font-weight: 600; }
 
   /* ── layer timing: a row per commit, a lane per thing that took time ──── */
-  .timing {
-    background: var(--panel); border: 1px solid var(--rule); border-radius: 12px;
-    overflow: hidden;
-  }
-  .timing-top {
-    padding: 10px 14px; border-bottom: 1px solid var(--rule);
-    display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;
-  }
-  .timing-top h2 { margin: 0; font-size: 13px; font-weight: 600; }
-  .timing-top p { margin: 0; font-size: 11px; color: var(--ink-faint); }
-  .timing-body { max-height: 440px; overflow: auto; padding: 4px 0 0; }
+  .timing { padding: 0; overflow: hidden; }
+  .timing-top { padding: 20px 24px 12px; display: grid; gap: 8px; }
+  .timing-top .title { display: flex; gap: 8px 12px; align-items: baseline; flex-wrap: wrap; }
+  .timing-top .title span { color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .timing-top p { margin: 0; color: var(--text-3); }
+  .timing-body { max-height: 440px; overflow: auto; padding: 4px 0 8px; }
   .timing-body svg { display: block; }
-  .timing-empty { padding: 26px 14px; font-size: 12px; color: var(--ink-faint); }
-  .tl-grid { stroke: var(--rule-soft); stroke-width: 1; }
-  .tl-grid.major { stroke: var(--rule); }
-  .tl-axis { fill: var(--ink-faint); font-family: var(--mono); font-size: 9px; }
-  .tl-row { fill: var(--ink-soft); font-family: var(--mono); font-size: 10px; }
-  .tl-note { fill: var(--ink-faint); font-family: var(--mono); font-size: 9px; }
-  .tl-fsl { fill: var(--ink); font-family: var(--mono); font-size: 9px; }
+  .timing-empty { padding: 24px; color: var(--text-3); }
+  .tl-grid { stroke: var(--line); stroke-width: 1; opacity: 0.6; }
+  .tl-grid.major { opacity: 1; }
+  .tl-axis { fill: var(--text-3); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .tl-row { fill: var(--text-2); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .tl-note { font-size: 10px; font-family: var(--mono); }
+  .tl-fsl { fill: var(--text-1); font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .tl-band { fill: var(--sunken); }
   .tl-band.alt { fill: transparent; }
-  .tl-mark { fill: var(--panel); stroke: var(--ink); stroke-width: 1.2; }
-  .tl-commit { stroke: var(--ink); stroke-width: 1; }
+  .tl-mark { fill: var(--panel); stroke: var(--text-1); stroke-width: 1.2; }
+  .tl-commit { stroke: var(--text-1); stroke-width: 1; }
+
+  @media (max-width: 700px) {
+    .wrap { padding: 20px 16px 48px; }
+    .panel { padding: 16px; }
+  }
 </style>
 
 <div class="wrap">
-  <header class="bar">
-    <div class="bar-top">
-      <div>
-        <div class="eyebrow">Session replay</div>
-        <h1 id="run-name">—</h1>
-      </div>
-      <a class="btn" href="/" title="all runs, compared per dataset">← Dashboard</a>
+  <header class="head">
+    <div class="head-top">
+      <a class="btn" href="/" title="dataset 별로 모든 run 을 비교해요">← Dashboard</a>
       <select class="btn" id="run-picker" aria-label="Run"></select>
-      <span class="chip" id="run-stamp"></span>
-      <span class="chip" id="run-status"></span>
-      <span class="chip" id="run-shown"></span>
       <select class="btn" id="item-picker" aria-label="Item"></select>
+    </div>
+    <div class="title-row">
+      <div class="title-block">
+        <h1 class="run-title" id="run-name">—</h1>
+        <div class="run-facts">
+          <span class="chip" id="run-status"></span>
+          <span class="num muted" id="run-stamp"></span>
+          <span class="note" id="run-shown"></span>
+        </div>
+        <div class="run-meta" id="run-meta"></div>
+      </div>
+      <div class="item-stats" id="item-stats"></div>
+    </div>
+  </header>
+
+  <section class="panel player">
+    <div class="controls">
+      <button class="btn primary" id="play">▶ 재생</button>
+      <button class="btn" id="restart">↺ 처음부터</button>
+      <button class="btn" id="sound" aria-pressed="true">소리 켜짐</button>
+      <div class="seg-group" id="speeds" aria-label="재생 속도"></div>
+      <audio id="player" preload="auto"></audio>
       <span class="spacer"></span>
       <div class="clock">
-        <b id="clock-now">0.00</b> / <span id="clock-end">0.00</span> s of recording
-        &nbsp;·&nbsp; <span id="clock-item">—</span>
+        <b id="clock-now">0.00</b> / <span id="clock-end">0.00</span>초
+        &nbsp;·&nbsp; <code id="clock-item">—</code>
       </div>
     </div>
-
-    <div class="ribbon" id="ribbon" role="slider" tabindex="0" aria-label="Seek"
+    <div class="ribbon" id="ribbon" role="slider" tabindex="0" aria-label="Playhead"
          aria-valuemin="0" aria-valuenow="0">
       <div class="ribbon-track" id="ribbon-track"></div>
       <div class="playhead" id="playhead" style="left:0"></div>
     </div>
+    <div class="legend" id="legend"></div>
+  </section>
 
-    <div class="controls">
-      <button class="btn primary" id="play">▶ Play</button>
-      <button class="btn" id="restart">↺ Restart</button>
-      <button class="btn" id="sound" aria-pressed="true">♪ Sound</button>
-      <div class="seg-group" id="speeds"></div>
-      <audio id="player" preload="auto"></audio>
-      <span class="spacer"></span>
-      <div class="legend" id="legend"></div>
+  <details class="panel data" id="data" open>
+    <summary>
+      <h2>Data</h2>
+      <span class="facts" id="data-meta">—</span>
+    </summary>
+    <div class="data-scroll">
+      <table class="turns">
+        <thead><tr>
+          <th style="width:130px">language · speaker</th><th>reference</th>
+          <th class="r" style="width:130px">level (peak / rms)</th><th class="r" style="width:120px">time</th>
+        </tr></thead>
+        <tbody id="turn-rows"></tbody>
+      </table>
     </div>
-
-    <details class="data" id="data" open>
-      <summary class="data-head">
-        <span class="eyebrow">Data</span>
-        <span class="meta" id="data-meta">—</span>
-      </summary>
-      <div class="data-scroll">
-        <table class="turns">
-          <thead><tr>
-            <th style="width:120px">time</th><th style="width:150px">lang · speaker</th>
-            <th style="width:120px">level (peak / rms)</th><th>reference</th>
-          </tr></thead>
-          <tbody id="turn-rows"></tbody>
-        </table>
-      </div>
-      <details><summary>audio file · dataset.yml · manifest rows</summary><pre id="data-raw"></pre></details>
-    </details>
-  </header>
+    <details class="raw"><summary>audio file · dataset.yml · manifest rows</summary><pre id="data-raw"></pre></details>
+  </details>
 
   <div class="cols" id="cols">
     <section id="phone-a-section">
       <div class="col-head">
-        <span class="eyebrow">On the phone</span>
-        <p>what the client rendered from <code>final</code></p>
+        <h2>On the phone</h2>
+        <p>client 가 <code>final</code> 로 그린 화면이에요</p>
         <span class="spacer"></span>
-        <select class="btn" id="compare-picker" aria-label="Compare with"></select>
+        <select class="btn" id="compare-picker" aria-label="Compare with run"></select>
       </div>
       <div class="phone">
         <div class="screen">
           <div class="notch"></div>
           <div class="status"><span id="st-time">9:41</span><span>STiTy</span></div>
           <div class="appbar">
-            <div class="langpill"><span class="dotmark" id="pill-src-dot"></span><span id="pill-src">—</span></div>
+            <div class="langpill mine"><span class="dot" id="pill-src-dot"></span><span id="pill-src">—</span></div>
             <span class="arrow">→</span>
-            <div class="langpill"><span class="dotmark" id="pill-tgt-dot"></span><span id="pill-tgt">—</span></div>
+            <div class="langpill"><span class="dot" id="pill-tgt-dot"></span><span id="pill-tgt">—</span></div>
           </div>
           <div class="feed" id="feed">
-            <div id="feed-rows"><div class="feed-empty">Press play</div></div>
+            <div id="feed-rows"><div class="feed-empty">재생을 눌러 주세요</div></div>
             <div id="live" hidden></div>
           </div>
           <div class="pending" id="pending" hidden><span>•••</span></div>
           <div class="recbar">
             <span class="pulse" id="pulse"></span>
-            <span class="label" id="rec-label">Idle</span>
-            <span class="t" id="rec-time">0.0s</span>
+            <span class="label" id="rec-label">대기 중</span>
+            <span class="t" id="rec-time">0.0초</span>
           </div>
         </div>
       </div>
@@ -357,9 +367,9 @@
           <div class="notch"></div>
           <div class="status"><span>9:41</span><span>STiTy</span></div>
           <div class="appbar">
-            <div class="langpill"><span class="dotmark" id="pill-src-dot-cmp"></span><span id="pill-src-cmp">—</span></div>
+            <div class="langpill mine"><span class="dot" id="pill-src-dot-cmp"></span><span id="pill-src-cmp">—</span></div>
             <span class="arrow">→</span>
-            <div class="langpill"><span class="dotmark" id="pill-tgt-dot-cmp"></span><span id="pill-tgt-cmp">—</span></div>
+            <div class="langpill"><span class="dot" id="pill-tgt-dot-cmp"></span><span id="pill-tgt-cmp">—</span></div>
           </div>
           <div class="feed" id="feed-cmp">
             <div id="feed-rows-cmp"><div class="feed-empty">—</div></div>
@@ -371,18 +381,18 @@
 
     <section id="logs-section">
       <div class="col-head">
-        <span class="eyebrow">Not on the phone</span>
-        <p>the recorded stream — every event, at the point in the audio it came from</p>
+        <h2>Event stream</h2>
+        <p>휴대폰에는 안 보이는 모든 event 예요. audio 위치 순서로 나와요.</p>
       </div>
       <div class="logs">
         <div class="logs-top">
           <div class="filters" id="filters"></div>
-          <input class="find" id="find" type="search" placeholder="filter text…" aria-label="Filter events">
+          <input class="find" id="find" type="search" placeholder="글자로 거르기" aria-label="Filter events">
         </div>
         <div class="stream" id="stream">
           <table>
             <thead><tr>
-              <th style="width:62px">audio</th><th style="width:50px">lag</th>
+              <th class="r" style="width:62px">audio</th><th class="r" style="width:56px">lag</th>
               <th style="width:78px">item</th><th style="width:120px">event</th><th>fields</th>
             </tr></thead>
             <tbody id="rows"></tbody>
@@ -393,18 +403,18 @@
 
     <section id="logs-b-section" hidden>
       <div class="col-head">
-        <span class="eyebrow">Not on the phone</span>
-        <p>the recorded stream, for the compared run</p>
+        <h2>Event stream</h2>
+        <p>비교하는 run 의 event 예요</p>
       </div>
       <div class="logs">
         <div class="logs-top">
           <div class="filters" id="filters-cmp"></div>
-          <input class="find" id="find-cmp" type="search" placeholder="filter text…" aria-label="Filter events (compare)">
+          <input class="find" id="find-cmp" type="search" placeholder="글자로 거르기" aria-label="Filter events (compare)">
         </div>
         <div class="stream" id="stream-cmp">
           <table>
             <thead><tr>
-              <th style="width:62px">audio</th><th style="width:50px">lag</th>
+              <th class="r" style="width:62px">audio</th><th class="r" style="width:56px">lag</th>
               <th style="width:78px">item</th><th style="width:120px">event</th><th>fields</th>
             </tr></thead>
             <tbody id="rows-cmp"></tbody>
@@ -415,23 +425,19 @@
   </div>
 
   <div class="timing-row" id="timing-row">
-    <section class="timing" id="timing-a">
+    <section class="panel timing" id="timing-a">
       <div class="timing-top">
-        <span class="eyebrow">Layer timing</span>
-        <h2 id="timing-title">—</h2>
-        <p>one row per commit · x is wall clock since the item's first chunk</p>
-        <span class="spacer"></span>
+        <div class="title"><h2>Layer timing</h2><span id="timing-title">—</span></div>
+        <p>commit 하나가 한 줄이에요. 가로축은 그 item 의 첫 chunk 부터 잰 wall clock 이에요.</p>
         <div class="legend" id="timing-legend"></div>
       </div>
       <div class="timing-body" id="timing-body"></div>
     </section>
 
-    <section class="timing" id="timing-b" hidden>
+    <section class="panel timing" id="timing-b" hidden>
       <div class="timing-top">
-        <span class="eyebrow">Layer timing</span>
-        <h2 id="timing-title-cmp">—</h2>
-        <p>one row per commit · x is wall clock since the item's first chunk</p>
-        <span class="spacer"></span>
+        <div class="title"><h2>Layer timing</h2><span id="timing-title-cmp">—</span></div>
+        <p>commit 하나가 한 줄이에요. 가로축은 그 item 의 첫 chunk 부터 잰 wall clock 이에요.</p>
         <div class="legend" id="timing-legend-cmp"></div>
       </div>
       <div class="timing-body" id="timing-body-cmp"></div>
@@ -439,24 +445,34 @@
   </div>
 
   <div class="stats-row" id="stats-row">
-    <section class="readout" id="readout-a">
-      <div class="col-head"><span class="eyebrow">Item metrics</span><p>scores for the item on screen</p></div>
-      <div class="stat-tiles" id="tiles-a"></div>
-      <div class="col-head"><span class="eyebrow">Reference</span><p>what the item should have produced</p></div>
-      <pre class="code-block" style="white-space: pre-wrap"><code id="ref-a"></code></pre>
-      <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
-      <div class="kv-groups" id="config-a"></div>
-      <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
-      <div class="kv-groups" id="summary-a"></div>
+    <section class="panel readout" id="readout-a">
+      <div class="section">
+        <h2>Reference</h2><p>이 item 이 내야 했던 transcript 와 translation 이에요</p>
+        <pre class="code-block" id="ref-a"></pre>
+      </div>
+      <div class="section">
+        <h2>Pipeline config</h2><p>이 run 이 실제로 쓴 값이에요</p>
+        <div class="kv-groups" id="config-a"></div>
+      </div>
+      <div class="section">
+        <h2>Run summary</h2><p>여기 불러온 item 만이 아니라 run 전체를 모은 값이에요</p>
+        <div class="kv-groups" id="summary-a"></div>
+      </div>
     </section>
 
-    <section class="readout" id="readout-b" hidden>
-      <div class="col-head"><span class="eyebrow">Item metrics</span><p>scores for the item on screen</p></div>
-      <div class="stat-tiles" id="tiles-b"></div>
-      <div class="col-head"><span class="eyebrow">Pipeline config</span><p>resolved values this run actually used</p></div>
-      <div class="kv-groups" id="config-b"></div>
-      <div class="col-head"><span class="eyebrow">Run summary</span><p>aggregate over the whole run, not just what's loaded here</p></div>
-      <div class="kv-groups" id="summary-b"></div>
+    <section class="panel readout" id="readout-b" hidden>
+      <div class="section">
+        <h2>Item metrics</h2><p>비교하는 run 이 이 item 에서 낸 score 예요</p>
+        <div id="tiles-b"></div>
+      </div>
+      <div class="section">
+        <h2>Pipeline config</h2><p>이 run 이 실제로 쓴 값이에요</p>
+        <div class="kv-groups" id="config-b"></div>
+      </div>
+      <div class="section">
+        <h2>Run summary</h2><p>여기 불러온 item 만이 아니라 run 전체를 모은 값이에요</p>
+        <div class="kv-groups" id="summary-b"></div>
+      </div>
     </section>
   </div>
 </div>
@@ -485,19 +501,23 @@ let audioFor = null, pendingTime = null;
 
 // ── header ────────────────────────────────────────────────────────────────
 $("run-name").textContent = DATA.run.name || "replay";
-$("run-stamp").textContent = DATA.run.stamp || "";
+$("run-stamp").textContent = stampText(DATA.run.stamp);
 $("run-stamp").hidden = !DATA.run.stamp;
 const st = $("run-status");
 st.textContent = DATA.run.status || "";
-st.className = "chip " + (DATA.run.status === "ok" ? "ok"
-  : DATA.run.status && DATA.run.status !== "running" ? "bad" : "");
+st.className = "chip" + (DATA.run.status && !["ok", "running"].includes(DATA.run.status) ? " bad" : "");
 if (!DATA.run.status) st.hidden = true;
-$("run-shown").textContent = `${DATA.worst.length}/${DATA.run.n_total} listed`
-  + (DATA.worst.length < DATA.run.n_total ? ` (failures + worst by wer, else bleu, else fsl)` : "");
+$("run-shown").textContent = `item ${DATA.run.n_total}개 중 ${DATA.worst.length}개를 먼저 보여 줘요`
+  + (DATA.worst.length < DATA.run.n_total ? ` (failed item 과 WER, 없으면 BLEU, 없으면 FSL 기준 worst)` : "");
+$("run-meta").innerHTML = ["dataset", "pipeline"].map(kind =>
+  metaLine(kind, (DATA.run.meta || {})[kind])).join("");
 const picker = $("run-picker");
-picker.innerHTML = (DATA.runs || []).map(r =>
-  `<option value="${esc(r.name)}"${r.name === DATA.run.dir ? " selected" : ""}>${esc(r.name)}</option>`
-).join("");
+const runsByDataset = new Map();
+for (const r of DATA.runs || []) runsByDataset.set(r.dataset, [...(runsByDataset.get(r.dataset) || []), r]);
+picker.innerHTML = [...runsByDataset].sort(([a], [b]) => a.localeCompare(b)).map(([dataset, runs]) =>
+  `<optgroup label="${esc(dataset)}">` + runs.map(r =>
+    `<option value="${esc(r.name)}"${r.name === DATA.run.dir ? " selected" : ""}>${esc(r.pipeline)}</option>`
+  ).join("") + `</optgroup>`).join("");
 picker.addEventListener("change", () => {
   location.search = "?run=" + encodeURIComponent(picker.value);
 });
@@ -506,60 +526,71 @@ function setPills(it) {
   const src = it.src_lang || "", tgt = it.target_lang || "";
   $("pill-src").textContent = (src || "?").toUpperCase();
   $("pill-tgt").textContent = (tgt || "?").toUpperCase();
-  $("pill-src-dot").style.background = langColor(src).bubble;
-  $("pill-tgt-dot").style.background = langColor(tgt).bubble;
+  $("pill-src-dot").style.background = langHue(src);
+  $("pill-tgt-dot").style.background = langHue(tgt);
 }
 $("legend").innerHTML = Object.entries(REASONS)
   .map(([r, v]) => `<span><i style="background:var(${v})"></i>${r}</span>`).join("");
 
-// ── per-item score tiles, plus the run's own config and aggregate metrics ──
+// ── per-item scores, plus the run's own config and aggregate metrics ──────
 const METRIC_DISPLAY = {
   wer: {label: "WER", fmt: v => v.toFixed(2)},
   cer: {label: "CER", fmt: v => v.toFixed(2)},
   sentence_bleu: {label: "BLEU", fmt: v => v.toFixed(1)},
-  avg_fsl_sec: {label: "FSL", fmt: v => v.toFixed(2) + "s"},
-  laal_ms: {label: "LAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
-  yaal_ms: {label: "YAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
-  longyaal_ms: {label: "LongYAAL", fmt: v => (v / 1000).toFixed(2) + "s"},
-  token_emission_ms: {label: "Token emission", fmt: v => (v / 1000).toFixed(2) + "s"},
+  avg_fsl_sec: {label: "FSL", fmt: v => v.toFixed(2) + "초"},
+  laal_ms: {label: "LAAL", fmt: v => (v / 1000).toFixed(2) + "초"},
+  yaal_ms: {label: "YAAL", fmt: v => (v / 1000).toFixed(2) + "초"},
+  longyaal_ms: {label: "LongYAAL", fmt: v => (v / 1000).toFixed(2) + "초"},
+  token_emission_ms: {label: "Token emission", fmt: v => (v / 1000).toFixed(2) + "초"},
   n_segments: {label: "Segments", fmt: v => String(v)},
 };
+const statTile = (metrics, k, lead) =>
+  `<div class="stat-tile${lead ? " lead" : ""}"><span class="label">${esc(METRIC_DISPLAY[k].label)}</span>` +
+  `<span class="stat-value">${esc(METRIC_DISPLAY[k].fmt(metrics[k]))}</span></div>`;
 function renderStatTiles(el, metrics) {
   const keys = Object.keys(METRIC_DISPLAY).filter(k => metrics && metrics[k] != null);
   el.innerHTML = keys.length
     ? `<div class="kv-row">` + byGroup(keys).map(([title, ks]) =>
-        groupHtml(title, "", `<div class="stat-tiles">` + ks.map(k =>
-          `<div class="stat-tile"><span class="eyebrow">${esc(METRIC_DISPLAY[k].label)}</span>` +
-          `<span class="stat-value">${esc(METRIC_DISPLAY[k].fmt(metrics[k]))}</span></div>`).join("") +
+        groupHtml(title, "", `<div class="stat-tiles">` + ks.map(k => statTile(metrics, k)).join("") +
           `</div>`)).join("") + `</div>`
-    : `<div class="feed-empty">no per-item metrics for this item</div>`;
+    : `<div class="empty">이 item 에는 per-item metric 이 없어요.</div>`;
+}
+// The header shows at most four of the item's numbers; the one the worst-first list
+// ranks by (WER, else BLEU, else FSL) is the big one.
+const LEAD_KEYS = ["wer", "sentence_bleu", "avg_fsl_sec"];
+const HEADER_KEYS = ["wer", "sentence_bleu", "avg_fsl_sec", "laal_ms", "cer", "n_segments"];
+function renderItemStats(metrics) {
+  const has = k => metrics && metrics[k] != null;
+  const lead = LEAD_KEYS.find(has);
+  const keys = [lead, ...HEADER_KEYS.filter(k => k !== lead && has(k))].filter(Boolean).slice(0, 4);
+  $("item-stats").innerHTML = keys.map(k => statTile(metrics, k, k === lead)).join("");
 }
 function renderReference(it) {
   const lines = [];
   if (it.reference) lines.push(`transcript: ${it.reference}`);
   for (const [lang, text] of Object.entries(it.reference_translations || {}))
     if (text) lines.push(`${lang}${lang === it.target_lang ? " (target)" : ""}: ${text}`);
-  $("ref-a").textContent = lines.length ? lines.join("\n\n") : "(this item has no reference)";
+  $("ref-a").textContent = lines.length ? lines.join("\n\n") : "이 item 에는 reference 가 없어요.";
 }
 // Config: the loose top-level values first, then one group per pipeline component.
 function renderConfig(el, config) {
   if (!config || !Object.keys(config).length) {
-    el.innerHTML = `<div class="feed-empty">(no pipeline config recorded)</div>`; return;
+    el.innerHTML = `<div class="empty">기록된 pipeline config 가 없어요.</div>`; return;
   }
   const {pipeline = {}, ...top} = config;
   const loose = [], groups = [];
   for (const [k, v] of Object.entries(pipeline)) {
     if (v && typeof v === "object" && !Array.isArray(v)) {
       const {name, ...rest} = v;
-      groups.push(groupHtml(k, name || "", tilesHtml(leaves(rest))));
+      groups.push(groupHtml(k, name || "", tilesHtml(leaves(rest), {labels: false})));
     } else loose.push([k === "name" ? "pipeline" : k, v]);
   }
   for (const [k, v] of Object.entries(top)) {
     if (v && typeof v === "object" && !Array.isArray(v))
-      groups.push(groupHtml(k, "", tilesHtml(leaves(v))));
+      groups.push(groupHtml(k, "", tilesHtml(leaves(v), {labels: false})));
     else loose.push([k, v]);
   }
-  el.innerHTML = (loose.length ? groupHtml("run", "", tilesHtml(loose)) : "")
+  el.innerHTML = (loose.length ? groupHtml("run", "", tilesHtml(loose, {labels: false})) : "")
     + `<div class="kv-row">${groups.join("")}</div>`;
 }
 
@@ -567,13 +598,13 @@ function renderConfig(el, config) {
 // inside its kind's group under its own small title.
 function renderSummary(el, metrics) {
   if (!metrics || !Object.keys(metrics).length) {
-    el.innerHTML = `<div class="feed-empty">(no run summary yet)</div>`; return;
+    el.innerHTML = `<div class="empty">run summary 가 아직 없어요.</div>`; return;
   }
   el.innerHTML = `<div class="kv-row">` + byGroup(Object.keys(metrics)).map(([title, ks]) => {
     const flat = ks.filter(k => !(metrics[k] && typeof metrics[k] === "object" && !Array.isArray(metrics[k])));
     const nested = ks.filter(k => !flat.includes(k));
     const body = (flat.length ? tilesHtml(flat.map(k => [k, metrics[k]])) : "") +
-      nested.map(k => `<div class="kv-sub">${esc(labelOf(k))}</div>` +
+      nested.map(k => `<div class="kv-sub">${esc(labelOf(k) || k)}</div>` +
         tilesHtml(leaves(metrics[k]), {parent: k, labels: false})).join("");
     return groupHtml(title, "", body);
   }).join("") + `</div>`;
@@ -583,13 +614,9 @@ function renderReadout(prefix, runInfo) {
   const running = runInfo && runInfo.status === "running";
   const configEl = $(`config-${prefix}`), summaryEl = $(`summary-${prefix}`);
   renderConfig(configEl, runInfo && runInfo.pipeline_config);
-  if (runInfo && runInfo.config_source === "configs")
-    configEl.insertAdjacentHTML("afterbegin", `<div class="feed-empty" style="text-align:left">` +
-      `read from configs/ — the run is still going, so its summary.json (which records the config ` +
-      `it actually used) does not exist yet</div>`);
   renderSummary(summaryEl, runInfo && runInfo.summary_metrics);
   if (running && !Object.keys(runInfo.summary_metrics || {}).length)
-    summaryEl.innerHTML = `<div class="feed-empty">(the run is still going — its summary is written when it finishes)</div>`;
+    summaryEl.innerHTML = `<div class="empty">run 이 아직 도는 중이에요. run summary 는 run 이 끝나면 생겨요.</div>`;
 }
 renderReadout("a", DATA.run);
 
@@ -721,7 +748,7 @@ function loadColumn(col, it) {
     tr.innerHTML =
       `<td class="r">${e.audio.toFixed(2)}</td>` +
       `<td class="r">${lag == null ? "" : (lag >= 0 ? "+" : "") + lag.toFixed(2)}</td>` +
-      `<td class="r">${esc(e.item || "")}</td>` +
+      `<td class="id">${esc(e.item || "")}</td>` +
       `<td class="type">${esc(laneOf(e))}</td>` +
       `<td class="fields">${fieldsHtml(e)}</td>`;
     tr.dataset.type = laneOf(e);
@@ -744,8 +771,8 @@ function loadColumn(col, it) {
   col.timingLegend.innerHTML = col.lanes
     .map(l => `<span><i style="background:${l.color}"></i>${esc(l.name)}</span>`)
     .concat([`<span>◆ commit decided</span>`,
-             `<span><i style="background:var(--ink);width:2px"></i>audio heard at commit</span>`,
-             `<span><i style="background:var(--ink-faint);opacity:.45"></i>silence waited out</span>`])
+             `<span><i style="background:var(--text-1);width:2px"></i>commit 때까지 들은 audio</span>`,
+             `<span><i style="background:var(--text-3);opacity:.45"></i>silence waited out</span>`])
     .join("");
 
   col.cursor = -1;
@@ -763,7 +790,7 @@ function loadItem(it) {
   T = Math.max(it.span, 0.001);
   now = 0; playing = false; lastFrame = null; feedKey = null; liveShown = "";
   audioFor = null; pendingTime = null;
-  $("play").textContent = "▶ Play";
+  $("play").textContent = "▶ 재생";
 
   pendingFinals.clear();
   events.forEach((e, i) => {
@@ -780,16 +807,17 @@ function loadItem(it) {
     tick.className = "tick" + (e.type === "translated" ? " lab" : "");
     tick.style.left = (100 * e.at / T) + "%";
     tick.style.background = e.type === "translated"
-      ? `var(${REASONS[reason] || "--finish"})` : "var(--ink-faint)";
-    tick.title = e.type === "translated" ? `${reason} @ ${e.audio.toFixed(2)}s` : "speech end";
+      ? `var(${REASONS[reason] || "--finish"})` : "var(--text-3)";
+    tick.title = e.type === "translated" ? `commit ${reason} · ${e.audio.toFixed(2)}초` : "speech end";
     track.appendChild(tick);
   }
 
   $("clock-end").textContent = T.toFixed(2);
   itemPicker.value = it.id;
-  renderStatTiles($("tiles-a"), it.metrics);
+  renderItemStats(it.metrics);
   renderReference(it);
   setPills(it);
+  buildComparePicker(it.id);
   if (compareRun) loadCompare(it.id);
   loadData(it);
   render();
@@ -825,37 +853,36 @@ function renderData(d) {
     d.dataset.name || "dataset unknown",
     d.dataset.manifest_sha256 ? "sha " + d.dataset.manifest_sha256.slice(0, 12) : "",
     a && a.sample_rate ? `${a.sample_rate} Hz · ${a.channels} ch · ${a.format}` : "",
-    a && a.file_sec != null ? `file ${a.file_sec.toFixed(2)}s` : "",
-    a && a.augment ? "augmented: " + Object.keys(a.augment).join(" → ") : "",
+    a && a.file_sec != null ? `file ${a.file_sec.toFixed(2)}초` : "",
+    a && a.augment ? "augment: " + Object.keys(a.augment).join(" → ") : "",
     a && a.error ? "audio: " + a.error : "",
-    `${d.turns.length} turn${d.turns.length === 1 ? "" : "s"}`,
-    d.manifest_rows.length ? "" : "no manifest found — turns from the run's own rows",
+    `turn ${d.turns.length}개`,
+    d.manifest_rows.length ? "" : "manifest 가 없어서 run 자신의 row 로 turn 을 채웠어요",
   ].filter(Boolean).join("  ·  ");
 
   dataTurns = d.turns.map(t => {
     const words = d.words.map((w, i) => ({...w, i}))
       .filter(w => w.start >= t.start - 0.05 && w.start < t.end + 0.05);
     const why = [];
-    if (t.peak_dbfs != null && t.peak_dbfs < QUIET_ABS_DBFS) why.push(`peak below ${QUIET_ABS_DBFS} dBFS`);
+    if (t.peak_dbfs != null && t.peak_dbfs < QUIET_ABS_DBFS) why.push(`peak 가 ${QUIET_ABS_DBFS} dBFS 보다 낮아요`);
     if (t.peak_dbfs != null && loudest - t.peak_dbfs >= QUIET_REL_DB)
-      why.push(`${(loudest - t.peak_dbfs).toFixed(0)} dB below the loudest turn`);
+      why.push(`가장 큰 turn 보다 ${(loudest - t.peak_dbfs).toFixed(0)} dB 작아요`);
     return {...t, words, quiet: why.join(", ")};
   });
 
   const tgt = current.target_lang;
   rows.innerHTML = dataTurns.map((t, n) => {
     const level = t.peak_dbfs == null ? "—"
-      : `${t.peak_dbfs.toFixed(1)} / ${t.rms_dbfs.toFixed(1)}` + (t.quiet ? ` <span class="quiet" title="${esc(t.quiet)}">quiet</span>` : "");
+      : (t.quiet ? `<span class="quiet" title="${esc(t.quiet)}">quiet</span> ` : "") + `${t.peak_dbfs.toFixed(1)} / ${t.rms_dbfs.toFixed(1)}`;
     const translation = (t.translations || {})[tgt];
     return `<tr data-n="${n}">` +
-      `<td class="r">${t.start.toFixed(2)}–${t.end.toFixed(2)}s</td>` +
-      `<td><span class="lang" style="background:${langColor(t.src_lang).bubble}"></span>${esc(t.src_lang || "?")}` +
-      `${t.speaker ? ` · <span class="tr-sub">${esc(t.speaker)}</span>` : ""}${t.partial ? " · cut" : ""}</td>` +
-      `<td class="r">${level}</td>` +
+      `<td class="who"><span class="dot" style="background:${langHue(t.src_lang)}"></span>${esc(t.src_lang || "?")}` +
+      `${t.speaker ? ` · ${esc(t.speaker)}` : ""}${t.partial ? " · cut" : ""}</td>` +
       `<td><div>${markWords(t.transcript, t.words)}</div>` +
       (translation && t.src_lang !== tgt ? `<div class="tr-sub">${esc(tgt)}: ${esc(translation)}</div>` : "") +
-      `</td></tr>`;
-  }).join("") || `<tr><td colspan="4" class="r">no turns</td></tr>`;
+      `</td><td class="r">${level}</td>` +
+      `<td class="r">${t.start.toFixed(2)}–${t.end.toFixed(2)}초</td></tr>`;
+  }).join("") || `<tr><td colspan="4" class="empty">turn 이 없어요.</td></tr>`;
   rows.querySelectorAll("tr[data-n]").forEach(tr =>
     tr.addEventListener("click", () => seek(dataTurns[+tr.dataset.n].start)));
 
@@ -865,8 +892,8 @@ function renderData(d) {
     band.className = "turn-band" + (t.quiet ? " quiet-band" : "");
     band.style.left = (100 * t.start / T) + "%";
     band.style.width = (100 * (t.end - t.start) / T) + "%";
-    band.style.background = langColor(t.src_lang).bubble;
-    band.title = `${t.src_lang} ${t.start.toFixed(2)}–${t.end.toFixed(2)}s${t.quiet ? " · quiet: " + t.quiet : ""}`;
+    band.style.background = langHue(t.src_lang);
+    band.title = `${t.src_lang} ${t.start.toFixed(2)}–${t.end.toFixed(2)}초${t.quiet ? " · quiet: " + t.quiet : ""}`;
     track.appendChild(band);
   }
 
@@ -874,7 +901,7 @@ function renderData(d) {
   if (a) raw.push("# audio\n" + JSON.stringify(a, null, 2));
   if (d.dataset.spec) raw.push(`# ${d.dataset.root}/dataset.yml\n` + d.dataset.spec.trim());
   for (const r of d.manifest_rows) raw.push(`# manifest.jsonl:${r.line}\n` + JSON.stringify(r.row, null, 2));
-  $("data-raw").textContent = raw.join("\n\n") || "(nothing recorded)";
+  $("data-raw").textContent = raw.join("\n\n") || "기록된 게 없어요.";
   turnShown = -1; wordShown = null;
 }
 
@@ -891,7 +918,7 @@ $("data").addEventListener("toggle", () => {
 async function loadData(it) {
   const myRequest = ++dataRequest;
   dataFor = null; dataTurns = [];
-  $("data-meta").textContent = "loading…";
+  $("data-meta").textContent = "불러오는 중이에요";
   $("turn-rows").innerHTML = "";
   track.querySelectorAll(".turn-band").forEach(b => b.remove());
   let d = null;
@@ -900,7 +927,7 @@ async function loadData(it) {
     if (res.ok) d = await res.json();
   } catch {}
   if (myRequest !== dataRequest) return;
-  if (!d) { $("data-meta").textContent = "no dataset information for this item"; return; }
+  if (!d) { $("data-meta").textContent = "이 item 의 dataset 정보가 없어요."; return; }
   dataFor = it.id;
   renderData(d);
   renderDataNow();
@@ -931,14 +958,14 @@ const worstIds = new Set(DATA.worst.map(r => r.id));
 const fetchedItems = new Map();  // id -> item, for picks outside the loaded top-k
 
 function lightOptionFor(row) {
-  const wer = row.wer == null ? "" : ` · wer ${row.wer.toFixed(2)}`;
+  const wer = row.wer == null ? "" : ` · WER ${row.wer.toFixed(2)}`;
   return `<option value="${esc(row.id)}">${esc(row.id)}${esc(wer)}</option>`;
 }
 const rest = (DATA.all_items || []).filter(r => !worstIds.has(r.id));
 itemPicker.innerHTML =
-  `<optgroup label="Worst ${DATA.run.top_k}">${DATA.worst.map(lightOptionFor).join("")}</optgroup>`
+  `<optgroup label="failed + worst ${DATA.run.top_k}">${DATA.worst.map(lightOptionFor).join("")}</optgroup>`
   + (rest.length
-      ? `<optgroup label="Rest of the run (${rest.length})">${rest.map(lightOptionFor).join("")}</optgroup>`
+      ? `<optgroup label="rest of the run (${rest.length})">${rest.map(lightOptionFor).join("")}</optgroup>`
       : "");
 
 async function fetchItem(runName, id) {
@@ -976,11 +1003,28 @@ const phoneBHead = $("phone-b-head");
 const pickerHome = document.createComment("compare-picker-home");
 comparePicker.before(pickerHome);
 
-const compareCandidates = (DATA.runs || [])
-  .filter(r => r.dataset_sha && r.dataset_sha === DATA.run.dataset_sha && r.name !== DATA.run.dir);
-comparePicker.innerHTML = `<option value="">— compare with —</option>`
-  + compareCandidates.map(r => `<option value="${esc(r.name)}">${esc(r.name)}</option>`).join("");
-comparePicker.hidden = compareCandidates.length === 0;
+// A compare target is another model on the same datapoint: fed the same data (same
+// dataset, target and augmentation -- clean and cafe share a manifest but not the
+// sound), a different pipeline, and a row for the item on screen.
+const thisRun = (DATA.runs || []).find(r => r.name === DATA.run.dir) || {};
+const sameData = r => r.name !== DATA.run.dir
+  && r.data_key && r.data_key === thisRun.data_key
+  && (!r.dataset_sha || !DATA.run.dataset_sha || r.dataset_sha === DATA.run.dataset_sha)
+  && JSON.stringify(r.pipeline_config) !== JSON.stringify(DATA.run.pipeline_config);
+const compareRuns = (DATA.runs || []).filter(sameData);
+
+function buildComparePicker(itemId) {
+  const candidates = compareRuns.filter(r => (r.item_ids || []).includes(itemId));
+  comparePicker.innerHTML = `<option value="">다른 run 과 비교</option>`
+    + candidates.map(r => `<option value="${esc(r.name)}">${esc(r.name)}</option>`).join("");
+  if (compareRun && !candidates.some(r => r.name === compareRun)) {
+    comparePicker.value = "";
+    comparePicker.dispatchEvent(new Event("change"));
+  } else {
+    comparePicker.value = compareRun || "";
+  }
+  comparePicker.hidden = candidates.length === 0 && !compareRun;
+}
 
 function clearColumn(col) {
   col.tbody.innerHTML = ""; col.rowEls = []; col.cursor = -1;
@@ -992,13 +1036,13 @@ function clearColumn(col) {
 async function loadCompare(itemId) {
   if (!compareRun) return;
   const requestedRun = compareRun, myRequest = ++compareRequest;
-  compareCaption.textContent = "loading…";
+  compareCaption.textContent = "불러오는 중이에요";
   let item = null, statusText;
   try {
     item = await fetchItem(requestedRun, itemId);
-    statusText = item.wer == null ? itemId : `${itemId} · wer ${item.wer.toFixed(2)}`;
+    statusText = item.wer == null ? itemId : `${itemId} · WER ${item.wer.toFixed(2)}`;
   } catch {
-    statusText = `${itemId} not in ${requestedRun}`;
+    statusText = `${requestedRun} 에는 item ${itemId} 가 없어요`;
   }
   // A later switch (item or compare-run) may have landed while this was in flight.
   if (myRequest !== compareRequest) return;
@@ -1025,8 +1069,8 @@ function renderCompare() {
     $("feed-rows-cmp").innerHTML = finals.length
       ? finals.map(e => bubble((e.language || "").toLowerCase(),
                                e.translation || e.original || "",
-                               e.translation ? e.original : "", false)).join("")
-      : `<div class="feed-empty">${compareItem ? "Nothing committed yet" : "—"}</div>`;
+                               e.translation ? e.original : "")).join("")
+      : `<div class="feed-empty">${compareItem ? "아직 commit 된 게 없어요" : "—"}</div>`;
     $("feed-cmp").scrollTop = $("feed-cmp").scrollHeight;
   }
   if (!compareItem || !colB.events.length) return;
@@ -1101,7 +1145,7 @@ function syncAudio(current) {
 $("sound").addEventListener("click", ev => {
   audioOn = !audioOn;
   ev.currentTarget.setAttribute("aria-pressed", String(audioOn));
-  ev.currentTarget.textContent = audioOn ? "♪ Sound" : "♪̸ Muted";
+  ev.currentTarget.textContent = audioOn ? "소리 켜짐" : "소리 꺼짐";
   render();
 });
 
@@ -1159,7 +1203,12 @@ function timingModel(it) {
     return before.wall
       + (after.wall - before.wall) * (audio - before.heard) / heardSpan;
   };
-  return {rows, end, wallAt};
+  // The playhead sweeps the wall axis at playback speed, offset by how late audio usually
+  // reached the pipeline. Following wallAt instead makes it stall on every decode and jump
+  // on the catch-up chunk after it (bench waits for listen() before feeding the next chunk).
+  const lags = chunks.filter(c => c.audio != null).map(c => c.t - c.audio).sort((a, b) => a - b);
+  const feedLag = lags.length ? lags[Math.floor(lags.length / 2)] : 0;
+  return {rows, end, wallAt, feedLag};
 }
 
 function drawTiming(col, it) {
@@ -1169,12 +1218,11 @@ function drawTiming(col, it) {
   const m = timingModel(it);
   col.timingData = m;
   const commits = it.events.filter(e => e.type === "translated").length;
-  col.timingTitle.textContent = `${it.id} · ${it.span.toFixed(1)}s audio · `
-    + `${commits} commit${commits === 1 ? "" : "s"}`;
+  col.timingTitle.textContent = `${it.id} · audio ${it.span.toFixed(1)}초 · commit ${commits}개`;
   if (!m.rows.length) {
-    body.innerHTML = `<div class="timing-empty">Nothing timed in this item — ` +
-      `a run recorded before the parts were timed has no lanes, and an item that ` +
-      `committed nothing has no rows.</div>`;
+    body.innerHTML = `<div class="timing-empty">이 item 에는 잰 시간이 없어요. ` +
+      `부품마다 시간을 재기 전에 돈 run 에는 lane 이 없고, ` +
+      `commit 을 하나도 안 한 item 에는 줄이 없어요.</div>`;
     return;
   }
 
@@ -1188,8 +1236,8 @@ function drawTiming(col, it) {
   const step = TICKS.find(s => m.end / s <= 12) || TICKS.at(-1);
   const out = [`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
     `<defs><pattern id="tl-hatch" width="5" height="5" patternUnits="userSpaceOnUse"`,
-    ` patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--ink-faint)"`,
-    ` opacity="0.14"/><line x1="0" y1="0" x2="0" y2="5" stroke="var(--ink-faint)"`,
+    ` patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--text-3)"`,
+    ` opacity="0.14"/><line x1="0" y1="0" x2="0" y2="5" stroke="var(--text-3)"`,
     ` stroke-width="1.6" opacity="0.5"/></pattern></defs>`];
 
   const axisY = TL.padT + m.rows.length * rowH;
@@ -1203,14 +1251,14 @@ function drawTiming(col, it) {
   m.rows.forEach((row, i) => {
     const y0 = TL.padT + i * rowH;
     const laneY = lane => y0 + TL.label + lane * TL.lane;
-    const label = row.commit ? `seg ${i + 1}` : "tail";
+    const label = row.commit ? `commit ${i + 1}` : "tail";
     out.push(`<rect class="tl-band${i % 2 ? " alt" : ""}" x="${TL.padL}" y="${y0}"`,
       ` width="${plot}" height="${rowH - TL.gap + 2}" rx="3"/>`,
       `<text class="tl-row" x="${TL.padL - 8}" y="${laneY(1) + 6}" text-anchor="end">${esc(label)}</text>`);
 
     for (const chunk of row.chunks) {
       const width = Math.max(0.6, x(chunk.t) - x(chunk.from));
-      const heard = chunk.audio == null ? "" : ` · audio ${chunk.audio.toFixed(2)}s`;
+      const heard = chunk.audio == null ? "" : ` · audio ${chunk.audio.toFixed(2)}초`;
       const shade = (chunk.silence ? SILENT_SHADE : HEARD_SHADE)[chunk.read % 2];
       out.push(`<rect x="${x(chunk.from)}" y="${laneY(0)}" width="${width}" height="${TL.bar}"`,
         ` fill="var(--audio)" opacity="${shade}">`,
@@ -1223,16 +1271,16 @@ function drawTiming(col, it) {
       if (v.t - from <= 0.005) continue;
       out.push(`<rect x="${x(from)}" y="${laneY(0)}" width="${x(v.t) - x(from)}"`,
         ` height="${TL.bar}" fill="url(#tl-hatch)">`,
-        `<title>silence waited out: speech ended at audio ${spoke.toFixed(2)}s,`,
-        ` VAD said so at ${v.t.toFixed(2)}s</title></rect>`);
+        `<title>silence waited out: speech 는 audio ${spoke.toFixed(2)}초에 끝났고,`,
+        ` VAD 는 ${v.t.toFixed(2)}초에 알렸어요</title></rect>`);
     }
     for (const bar of row.spans) {
       const lane = 1 + col.laneOrder.indexOf(laneOf(bar));
       const width = Math.max(0.8, x(bar.t + bar.dur) - x(bar.t));
       out.push(`<rect x="${x(bar.t)}" y="${laneY(lane)}" width="${width}"`,
         ` height="${TL.bar}" rx="1.5" fill="${laneColorFor(col, laneOf(bar))}">`,
-        `<title>${esc(laneOf(bar))} ${bar.dur.toFixed(3)}s`,
-        `${bar.reason ? ` (${esc(bar.reason)})` : ""} @ ${bar.t.toFixed(2)}s</title></rect>`);
+        `<title>${esc(laneOf(bar))} ${bar.dur.toFixed(3)}초`,
+        `${bar.reason ? ` (${esc(bar.reason)})` : ""} · ${bar.t.toFixed(2)}초에 시작</title></rect>`);
     }
     const commit = row.commit;
     if (!commit) return;
@@ -1243,9 +1291,9 @@ function drawTiming(col, it) {
     const markY = during ? laneY(1 + col.laneOrder.indexOf(laneOf(during))) + TL.bar / 2 : top + 4;
     const cx = x(commit.t);
     out.push(`<line class="tl-commit" x1="${heardX}" y1="${top}" x2="${heardX}" y2="${bottom}"`,
-      ` opacity="0.6"><title>audio heard when committed: ${commit.audio.toFixed(2)}s</title></line>`,
+      ` opacity="0.6"><title>commit 때까지 들은 audio: ${commit.audio.toFixed(2)}초</title></line>`,
       `<path class="tl-mark" d="M ${cx} ${markY - 4} l 4 4 l -4 4 l -4 -4 z">`,
-      `<title>committed on ${esc(reason)} at ${commit.t.toFixed(2)}s`,
+      `<title>${commit.t.toFixed(2)}초에 commit (${esc(reason)})`,
       `${commit.original ? ` -- ${esc(commit.original)}` : ""}</title></path>`,
       `<text class="tl-note" x="${x(row.start) + 3}" y="${y0 + 10}"`,
       ` fill="var(${REASONS[reason] || "--finish"})">${esc(reason)}</text>`);
@@ -1256,12 +1304,12 @@ function drawTiming(col, it) {
       const anchor = x(done) + 6;
       const past = anchor > TL.padL + plot - 62;
       out.push(`<text class="tl-fsl" x="${past ? TL.padL + plot : anchor}" y="${y0 + 10}"`,
-        ` text-anchor="${past ? "end" : "start"}">FSL ${fsl.toFixed(2)}s</text>`);
+        ` text-anchor="${past ? "end" : "start"}">FSL ${fsl.toFixed(2)}초</text>`);
     }
   });
 
   out.push(`<line class="tl-now" x1="${TL.padL}" y1="${TL.padT - 4}" x2="${TL.padL}"`,
-    ` y2="${axisY}" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>`);
+    ` y2="${axisY}" stroke="var(--text-1)" stroke-width="1.5" opacity="0.75"/>`);
   out.push("</svg>");
   body.innerHTML = out.join("");
 }
@@ -1269,7 +1317,7 @@ function drawTiming(col, it) {
 function timingPlayhead(col, it) {
   const head = col.timingBody.querySelector(".tl-now");
   if (!head || !col.timingX || !col.timingData) return;
-  const at = col.timingX(col.timingData.wallAt(now));
+  const at = col.timingX(now + col.timingData.feedLag);
   head.setAttribute("x1", at);
   head.setAttribute("x2", at);
   // The row being heard: the first commit that had not yet been decided at `now`.
@@ -1308,20 +1356,14 @@ addEventListener("resize", timingResized);
 
 // ── the phone: rebuilt from whatever is in the past, so seeking is exact ──
 const feed = $("feed"), feedRows = $("feed-rows"), liveEl = $("live");
-function bubble(lang, main, sub, caret) {
-  const src = current.src_lang || "", tgt = current.target_lang || "";
-  const isMine = lang === src, isPeer = lang === tgt;
-  const c = isMine ? {bubble:"#6080C8", avatar:"#9BB4D4", text:"#fff", sub:"rgba(255,255,255,0.65)"}
-          : isPeer ? {bubble:"#f2f2f2", avatar:"#E8E0A0", text:"#1a1a1a", sub:"#aaa"}
-          : {...langColor(lang), text:"#fff", sub:"rgba(255,255,255,0.65)"};
-  return `<div class="row ${isMine ? "mine" : ""}">` +
-    `<div class="av" style="background:${c.avatar};color:${isMine ? "#fff" : "#7A9030"}">${esc(lang.toUpperCase())}</div>` +
-    `<div class="bub" style="background:${c.bubble};` +
-    `border-bottom-${isMine ? "right" : "left"}-radius:4px">` +
-    `<div class="main" style="color:${c.text}">${esc(main)}` +
-    (caret ? `<span class="caret"></span>` : "") + `</div>` +
-    (sub ? `<div class="sub" style="color:${c.sub}">${esc(sub)}</div>` : "") +
-    `</div></div>`;
+// Mine (the source language) is blue on the right, everyone else grey on the left;
+// the language shows only as the avatar's hue.
+function bubble(lang, main, sub) {
+  const isMine = lang === (current.src_lang || "");
+  return `<div class="row${isMine ? " mine" : ""}">` +
+    `<div class="av" style="background:${langHue(lang)}">${esc(lang.toUpperCase())}</div>` +
+    `<div class="bub"><div class="main">${esc(main)}</div>` +
+    (sub ? `<div class="sub">${esc(sub)}</div>` : "") + `</div></div>`;
 }
 function render() {
   const upto = events.findIndex(e => e.at > now);
@@ -1335,8 +1377,8 @@ function render() {
     feedRows.innerHTML = finals.length
       ? finals.map(e => bubble((e.language || "").toLowerCase(),
                                e.translation || e.original || "",
-                               e.translation ? e.original : "", false)).join("")
-      : `<div class="feed-empty">${now > 0 ? "Nothing committed yet" : "Press play"}</div>`;
+                               e.translation ? e.original : "")).join("")
+      : `<div class="feed-empty">${now > 0 ? "아직 commit 된 게 없어요" : "재생을 눌러 주세요"}</div>`;
     feed.scrollTop = feed.scrollHeight;
   }
 
@@ -1351,7 +1393,7 @@ function render() {
     liveShown = liveKey;
     liveEl.hidden = !liveKey;
     liveEl.innerHTML = liveKey
-      ? bubble((live.language || "").toLowerCase(), live.text, "", true) : "";
+      ? bubble((live.language || "").toLowerCase(), live.text, "") : "";
     feed.scrollTop = feed.scrollHeight;
   }
 
@@ -1365,10 +1407,11 @@ function render() {
   const speaking = past.filter(e => e.type === "vad_speech_start" || e.type === "speech").at(-1);
   const hearing = speaking && speaking.type === "vad_speech_start";
   $("pulse").className = "pulse" + (hearing ? " live" : "");
-  $("rec-label").textContent = hearing ? "Listening…" : (playing ? "Paused between utterances" : "Idle");
+  $("rec-label").textContent = hearing ? "듣는 중" : (playing ? "utterance 사이 쉬는 중" : "대기 중");
+  $("rec-label").classList.toggle("live", !!hearing);
   if (colA.timingFor !== current.id) drawTiming(colA, current);
   timingPlayhead(colA, current);
-  $("rec-time").textContent = now.toFixed(1) + "s";
+  $("rec-time").textContent = now.toFixed(1) + "초";
   $("clock-item").textContent = current.id;
   $("clock-now").textContent = now.toFixed(2);
   $("playhead").style.left = (100 * now / T) + "%";
@@ -1391,21 +1434,21 @@ function frame(ts) {
   if (lastFrame != null) now = Math.min(T, now + (ts - lastFrame) / 1000 * speed);
   lastFrame = ts;
   render();
-  if (now >= T) { playing = false; $("play").textContent = "▶ Play"; return; }
+  if (now >= T) { playing = false; $("play").textContent = "▶ 재생"; return; }
   requestAnimationFrame(frame);
 }
 function toggle(on) {
   playing = on == null ? !playing : on;
   if (playing && now >= T) now = 0;
   lastFrame = null;
-  $("play").textContent = playing ? "❙❙ Pause" : "▶ Play";
+  $("play").textContent = playing ? "❙❙ 일시정지" : "▶ 재생";
   if (playing) requestAnimationFrame(frame);
   else render();
 }
 $("play").addEventListener("click", () => toggle());
 $("restart").addEventListener("click", () => { seek(0); toggle(true); });
 $("speeds").innerHTML = [0.5, 1, 2, 4, 20]
-  .map(s => `<button data-s="${s}" aria-pressed="${s === 1}">${s === 20 ? "max" : s + "×"}</button>`).join("");
+  .map(s => `<button data-s="${s}" aria-pressed="${s === 1}">${s === 20 ? "최대" : s + "×"}</button>`).join("");
 $("speeds").addEventListener("click", ev => {
   const b = ev.target.closest("button"); if (!b) return;
   speed = Number(b.dataset.s);
@@ -1431,6 +1474,6 @@ addEventListener("keydown", ev => {
 if (items.length) {
   loadItem(items[0]);
 } else {
-  $("stream").innerHTML = `<div class="timing-empty">This run has no items to replay.</div>`;
+  $("stream").innerHTML = `<div class="timing-empty">이 run 에는 재생할 item 이 없어요.</div>`;
 }
 </script>

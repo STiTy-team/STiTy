@@ -29,11 +29,13 @@ def item_key(dataset: str, item_id: str) -> str:
 def build(cfg: AugmentConfig | None, *, data_root: Path) -> Augmenter:
     if cfg is None:
         return Augmenter([])
-    return Augmenter([
-        kind.create(spec, data_root=data_root)
-        for kind in ORDER
-        if (spec := getattr(cfg, kind.NAME)) is not None
-    ])
+    return Augmenter(
+        [
+            kind.create(spec, data_root=data_root)
+            for kind in ORDER
+            if (spec := getattr(cfg, kind.NAME)) is not None
+        ]
+    )
 
 
 def _rng(*parts: str) -> np.random.Generator:

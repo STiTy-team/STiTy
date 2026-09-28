@@ -129,6 +129,12 @@ class Qwen35Translation(Translator):
             port=address.port or 8100,
             gpu_memory_utilization=self.settings.get("gpu_memory_utilization", 0.25),
             max_model_len=self.settings.get("max_model_len", 4096),
+            # Without these vLLM sizes the engine for 256 sequences and a vision encoder
+            # it never uses, captures 51 CUDA graphs, and outgrows its share of the card
+            # next to the ASR engine (14.35 GiB against 12.2 GiB, OOM at graph capture).
+            limit_mm_per_prompt='{"image":0,"video":0}',
+            max_num_batched_tokens=2048,
+            max_num_seqs=8,
         )
         server = ManagedProcess("qwen3.5-vllm", command, ready=self._server_is_up,
                                 startup_timeout_sec=self.settings.get("startup_timeout_sec", 600.0))

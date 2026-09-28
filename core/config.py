@@ -11,11 +11,13 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from core.errors import ConfigError
 from core.utils.config import ConfigBody, as_component
 from core.utils.paths import get_project_root
+
+META_KEY = "meta"
 
 COMMIT_MODES = {
     "seg":    dict(always_commit=False, enable_dot_commit=False, hide_seg=False),
@@ -46,8 +48,23 @@ def read(path: Path) -> dict:
     return raw
 
 
+class ConfigMeta(ConfigBody):
+    """What a config file says about itself. None of it changes what a run does."""
+
+    version: int = Field(default=1, ge=1)
+    description: str = ""
+    tags: list[str] = []
+
+
+def read_named_with_meta(name: str, kind: str) -> tuple[dict, ConfigMeta]:
+    path = resolve(name, kind)
+    body = read(path)
+    meta = ConfigMeta.parse(body.pop(META_KEY, None) or {}, root=f"{path} {META_KEY}")
+    return body, meta
+
+
 def read_named(name: str, kind: str) -> dict:
-    return read(resolve(name, kind))
+    return read_named_with_meta(name, kind)[0]
 
 
 class ComponentConfig(ConfigBody):

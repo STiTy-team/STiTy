@@ -11,6 +11,7 @@ def main() -> None:
     uvicorn.run(
         "app.main:create_app",
         factory=True,
+        host=server_config.server.host,
         port=server_config.server.port,
         log_config=None,
     )

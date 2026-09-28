@@ -2,26 +2,29 @@
 // distributions from /api/distributions/<run>, fetched when the dataset is shown.
 // State that is worth a link (dataset, metric, sort) lives in the URL hash.
 
-const PALETTE = ["#4c78a8", "#f58518", "#54a24b", "#e45756", "#72b7b2",
-                 "#b279a2", "#eeca3b", "#9d755d", "#ff9da6", "#bab0ac"];
+// DESIGN.md data-lane-*: every run on the dashboard matters equally.
+const PALETTE = ["#4C9A5A", "#D08A2A", "#C0554F", "#7B60C0", "#3F8A9C", "#A0662A", "#6D7FA8", "#8A8F84"];
+const MAX_COLS = 7;
 const SVG_NS = 'xmlns="http://www.w3.org/2000/svg"';
 
 let RUNS = [];                        // every run, as /api/overview returns it
 const dists = new Map();              // run name -> {item key -> stats}
-const state = {corpus: null, dataset: null, metric: null, sort: null, desc: false,
+const state = {dataset: null, metric: null, sort: null, desc: false, base: null, more: false,
                x: null, y: null, points: true, hidden: new Set()};
 
 // ── URL hash: dataset, metric and sort survive a reload and can be shared ──
 function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
-  for (const k of ["dataset", "metric", "sort", "x", "y"]) if (h.get(k)) state[k] = h.get(k);
+  for (const k of ["dataset", "metric", "sort", "x", "y", "base"]) if (h.get(k)) state[k] = h.get(k);
   if (h.get("desc")) state.desc = h.get("desc") === "1";
+  if (h.get("more")) state.more = h.get("more") === "1";
   if (h.get("hide")) state.hidden = new Set(h.get("hide").split(","));
 }
 function writeHash() {
   const h = new URLSearchParams();
-  for (const k of ["dataset", "metric", "sort", "x", "y"]) if (state[k]) h.set(k, state[k]);
+  for (const k of ["dataset", "metric", "sort", "x", "y", "base"]) if (state[k]) h.set(k, state[k]);
   if (state.desc) h.set("desc", "1");
+  if (state.more) h.set("more", "1");
   const hidden = runsOf(state.dataset).filter(r => state.hidden.has(r.name)).map(r => r.name);
   if (hidden.length) h.set("hide", hidden.join(","));
   history.replaceState(null, "", "#" + h.toString());
@@ -51,49 +54,68 @@ const runsOf = key => RUNS.filter(r => r.dataset_key === key)
 // not repaint the rest.
 const shownRuns = () => runsOf(state.dataset).filter(r => !state.hidden.has(r.name));
 const colorOf = new Map();
-function datasetsOf(corpus) {
-  const keys = [...new Set(RUNS.filter(r => r.corpus === corpus).map(r => r.dataset_key))];
-  return keys.sort();
-}
+const datasetsOf = corpus =>
+  [...new Set(RUNS.filter(r => r.corpus === corpus).map(r => r.dataset_key))].sort();
 function describeDataset(key) {
   const runs = runsOf(key);
   const r = runs[0];
   if (!r) return "";
   const shas = new Set(runs.map(x => x.dataset_sha).filter(Boolean));
+  const hashes = new Set(runs.map(x => x.meta.dataset.hash).filter(Boolean));
   const items = new Set(runs.map(x => x.counts.items).filter(n => n != null));
+  const latest = runs.map(x => x.stamp).filter(Boolean).sort().at(-1);
+  const warn = t => `<span class="warn">${esc(t)}</span>`;
   return [
-    `${r.dataset_name || "?"} → ${r.target || "?"}`,
-    r.limit ? `first ${r.limit} items` : "",
-    items.size ? `${[...items].join(" / ")} items` : "",
-    shas.size === 1 ? `manifest ${[...shas][0].slice(0, 12)}` : shas.size > 1 ? "⚠ runs used different manifests" : "",
-    `${runs.length} run${runs.length === 1 ? "" : "s"}`,
-  ].filter(Boolean).join("  ·  ");
+    `<span><code>${esc(r.dataset_name || "?")}</code> → ${esc(r.target || "?")}</span>`,
+    latest ? `<span>last run <span class="num">${esc(stampText(latest))}</span></span>` : "",
+    `<span>run ${runs.length}개</span>`,
+    items.size ? `<span>item <span class="num">${[...items].join(" / ")}</span>개</span>` : "",
+    r.limit ? `<span>${r.pick === "longest" ? "가장 긴" : "앞의"} item ${r.limit}개만</span>` : "",
+    shas.size === 1 ? `<span>manifest <code>${esc([...shas][0].slice(0, 12))}</code></span>` : "",
+    hashes.size > 1 ? warn("run 마다 dataset config 가 달라요") : "",
+    shas.size > 1 ? warn("run 마다 manifest 가 달라요") : "",
+  ].filter(Boolean).join("");
 }
 
 function renderHeader() {
+  // One dropdown: every dataset config, grouped by corpus, with its run count.
   const corpora = [...new Set(RUNS.map(r => r.corpus))].sort();
-  const corpus = $("corpus");
-  corpus.innerHTML = corpora.map(c =>
-    `<option value="${esc(c)}"${c === state.corpus ? " selected" : ""}>${esc(c)}</option>`).join("");
-  $("datasets").innerHTML = datasetsOf(state.corpus).map(k =>
-    `<button data-k="${esc(k)}" aria-pressed="${k === state.dataset}">${esc(k)}` +
-    `<span class="n">${runsOf(k).length}</span></button>`).join("");
-  $("dataset-meta").textContent = describeDataset(state.dataset);
-  renderModelMenu();
+  $("dataset").innerHTML = corpora.map(c => `<optgroup label="${esc(c)}">` +
+    datasetsOf(c).map(k => {
+      const n = runsOf(k).length;
+      return `<option value="${esc(k)}"${k === state.dataset ? " selected" : ""}>` +
+        `${esc(k)} (run ${n}개)</option>`;
+    }).join("") + `</optgroup>`).join("");
   const first = runsOf(state.dataset)[0];
+  $("dataset-about").innerHTML = first ? metaLine("dataset", first.meta.dataset) : "";
+  $("dataset-meta").innerHTML = describeDataset(state.dataset);
+  renderBasePicker();
+  renderModelMenu();
   $("replay-link").href = first ? `/replay?run=${encodeURIComponent(first.name)}` : "/replay";
 }
 function renderModelMenu() {
   const runs = runsOf(state.dataset), shown = shownRuns();
   $("models-label").textContent = shown.length === runs.length
-    ? `Models: all ${runs.length}` : `Models: ${shown.length} of ${runs.length}`;
+    ? `Models: ${runs.length}개 모두` : `Models: ${runs.length}개 중 ${shown.length}개`;
   $("models-menu").innerHTML =
-    `<div class="all"><button data-all="1">Select all</button><button data-all="0">Clear</button></div>` +
+    `<div class="all"><button class="btn" data-all="1">모두 선택</button><button class="btn" data-all="0">모두 해제</button></div>` +
     runs.map(r => `<label><input type="checkbox" data-run="${esc(r.name)}"${state.hidden.has(r.name) ? "" : " checked"}>` +
-      `<span class="swatch" style="background:${colorOf.get(r.name)}"></span>` +
-      `<span>${esc(r.pipeline)}${r.status && r.status !== "ok" ? ` <span class="sub">${esc(r.status)}</span>` : ""}` +
+      `<span class="dot" style="background:${colorOf.get(r.name)}"></span>` +
+      `<span><span class="name">${esc(r.pipeline)}</span>${r.status && r.status !== "ok" ? ` <span class="sub">${esc(r.status)}</span>` : ""}` +
       `<div class="sub">${esc(modelLine(r))}</div></span></label>`).join("");
 }
+// The run every other row's change is measured from; defaults to the first run.
+const baseRun = () => {
+  const runs = shownRuns();
+  return runs.find(r => r.name === state.base) || runs[0] || null;
+};
+function renderBasePicker() {
+  const base = baseRun();
+  $("base").innerHTML = shownRuns().map(r =>
+    `<option value="${esc(r.name)}"${base && r.name === base.name ? " selected" : ""}>${esc(r.pipeline)}</option>`).join("");
+}
+$("base").addEventListener("change", ev => { state.base = ev.target.value; writeHash(); renderBoard(); });
+$("more").addEventListener("click", () => { state.more = !state.more; writeHash(); renderBoard(); });
 $("models-menu").addEventListener("change", ev => {
   const box = ev.target.closest("input[data-run]"); if (!box) return;
   box.checked ? state.hidden.delete(box.dataset.run) : state.hidden.add(box.dataset.run);
@@ -105,7 +127,7 @@ $("models-menu").addEventListener("click", ev => {
   modelsChanged();
 });
 function modelsChanged() {
-  writeHash(); renderModelMenu(); renderBoard(); renderDistributions(); renderScatter();
+  writeHash(); renderModelMenu(); renderBasePicker(); renderBoard(); renderDistributions(); renderScatter();
 }
 // The menu closes on a click anywhere outside it.
 addEventListener("click", ev => {
@@ -113,13 +135,7 @@ addEventListener("click", ev => {
   if (menu.open && !menu.contains(ev.target)) menu.open = false;
 });
 
-$("corpus").addEventListener("change", ev => {
-  state.corpus = ev.target.value;
-  selectDataset(datasetsOf(state.corpus)[0]);
-});
-$("datasets").addEventListener("click", ev => {
-  const b = ev.target.closest("button"); if (b) selectDataset(b.dataset.k);
-});
+$("dataset").addEventListener("change", ev => selectDataset(ev.target.value));
 
 async function selectDataset(key) {
   state.dataset = key;
@@ -130,7 +146,7 @@ async function selectDataset(key) {
   renderHeader();
   renderBoard();
   renderScatter();
-  $("dist-chart").innerHTML = `<div class="empty">loading distributions…</div>`;
+  $("dist-chart").innerHTML = `<div class="empty">distribution 을 불러오는 중이에요</div>`;
   await Promise.all(runs.filter(r => !dists.has(r.name)).map(async r => {
     try {
       const res = await fetch(`/api/distributions/${encodeURIComponent(r.name)}`);
@@ -151,14 +167,25 @@ function modelLine(r) {
 function renderBoard() {
   const runs = shownRuns();
   const board = $("board");
-  if (!runs.length) { board.innerHTML = `<tr><td class="empty">no model selected</td></tr>`; return; }
-  const keys = scoreKeys(runs);
-  const groups = byGroup(keys);
-  const ordered = groups.flatMap(([, ks]) => ks);
-  if (!state.sort || !ordered.includes(state.sort)) {
-    state.sort = ordered.find(k => SCORES[k].better) || null;
+  if (!runs.length) {
+    board.innerHTML = `<tr><td class="empty">고른 model 이 없어요. Models 메뉴에서 하나 이상 골라 주세요.</td></tr>`;
+    $("more").hidden = true;
+    return;
+  }
+  const all = byGroup(scoreKeys(runs)).flatMap(([, ks]) => ks);
+  if (!state.sort || !all.includes(state.sort)) {
+    state.sort = all.find(k => SCORES[k].better) || null;
     state.desc = false;
   }
+  // People compare a handful of numbers at once; the rest wait behind a toggle.
+  const visible = state.more ? all : all.slice(0, MAX_COLS);
+  if (!visible.includes(state.sort) && state.sort) visible.push(state.sort);
+  const groups = byGroup(visible);
+  const ordered = groups.flatMap(([, ks]) => ks);
+  $("more").hidden = all.length <= MAX_COLS;
+  $("more").setAttribute("aria-pressed", String(state.more));
+  $("more").textContent = state.more ? "Metric 줄여 보기" : `Metric 더 보기 (${all.length - MAX_COLS}개)`;
+
   const value = (r, k) => Number.isFinite(r.summary_metrics[k]) ? r.summary_metrics[k] : null;
   const sorted = [...runs].sort((a, b) => {
     if (!state.sort) return 0;
@@ -167,39 +194,50 @@ function renderBoard() {
     const c = compareScores(state.sort, va, vb) || (va - vb);
     return state.desc ? -c : c;
   });
-  const best = {}, span = {};
+  const best = {};
   for (const k of ordered) {
     const vs = runs.map(r => value(r, k)).filter(v => v != null);
-    span[k] = [Math.min(...vs), Math.max(...vs)];
     if (SCORES[k].better && vs.length > 1)
       best[k] = vs.reduce((a, b) => compareScores(k, a, b) <= 0 ? a : b);
   }
-  const arrow = k => SCORES[k].better === "lower" ? "↓" : SCORES[k].better === "higher" ? "↑" : "";
+  const base = baseRun();
+  const delta = (r, k, v) => {
+    if (r === base) return `<span class="delta">baseline</span>`;
+    const b = base && value(base, k);
+    if (v == null || b == null) return `<span class="delta">—</span>`;
+    const d = v - b, shown = formatScore(k, Math.abs(d), {unit: false});
+    if (!/[1-9]/.test(shown)) return `<span class="delta">0</span>`;
+    const c = compareScores(k, v, b);
+    return `<span class="delta${c < 0 ? " up" : c > 0 ? " down" : ""}">${d > 0 ? "+" : "−"}${shown}</span>`;
+  };
+  const arrow = k => SCORES[k].better === "lower" ? " ↓" : SCORES[k].better === "higher" ? " ↑" : "";
   board.innerHTML =
     `<thead><tr class="groups"><th class="run"></th><th></th>` +
     groups.map(([title, ks]) => `<th class="g" colspan="${ks.length}">${esc(title)}</th>`).join("") +
-    `</tr><tr><th class="run">run</th><th>items</th>` +
-    groups.map(([, ks]) => ks.map((k, i) =>
-      `<th class="sortable${i === 0 ? " g" : ""}${k === state.sort ? " sorted" : ""}" data-k="${k}"` +
-      ` title="${esc(SCORES[k].note || "")}${SCORES[k].better ? ` (${SCORES[k].better} is better)` : ""}">` +
-      `${esc(SCORES[k].label)} <span class="dir">${arrow(k)}</span>` +
-      `${k === state.sort ? (state.desc ? " ▴" : " ▾") : ""}</th>`).join("")).join("") +
+    `</tr><tr><th class="run">Run</th><th>Items</th>` +
+    groups.map(([, ks]) => ks.map((k, i) => {
+      const unit = unitOf(k);
+      return `<th class="sortable${i === 0 ? " g" : ""}${k === state.sort ? " sorted" : ""}" data-k="${k}"` +
+        ` title="${esc([SCORES[k].note, BETTER_TEXT[SCORES[k].better]].filter(Boolean).join(" · "))}">` +
+        `${esc(SCORES[k].label)}${unit ? ` <span class="unit">(${unit})</span>` : ""}${arrow(k)}` +
+        `${k === state.sort ? (state.desc ? " ▴" : " ▾") : ""}</th>`;
+    }).join("")).join("") +
     `</tr></thead><tbody>` +
     sorted.map(r => {
       const status = r.status && r.status !== "ok"
-        ? ` <span class="chip ${r.status === "running" ? "" : "bad"}">${esc(r.status)}</span>` : "";
-      return `<tr><td class="run"><span class="swatch" style="background:${colorOf.get(r.name)}"></span>` +
-        `<a href="/replay?run=${encodeURIComponent(r.name)}">${esc(r.pipeline)}</a>${status}` +
-        `<div class="sub">${esc(modelLine(r))}</div></td>` +
-        `<td class="num-cell">${r.counts.items ?? "—"}${r.counts.of ? ` / ${r.counts.of}` : ""}</td>` +
+        ? ` <span class="chip${r.status === "running" ? "" : " bad"}">${esc(r.status)}</span>` : "";
+      return `<tr${r === base ? ` class="base"` : ""}><td class="run"><div class="line">` +
+        `<span class="dot" style="background:${colorOf.get(r.name)}"></span>` +
+        `<a href="/replay?run=${encodeURIComponent(r.name)}" title="config hash ${esc(r.meta.pipeline.hash || "기록 없음")}">` +
+        `${esc(r.pipeline)}</a>${status}${tagChips(r.meta.pipeline)}</div>` +
+        (r.meta.pipeline.description ? `<div class="sub">${esc(r.meta.pipeline.description)}</div>` : "") +
+        `<div class="sub code">${esc(modelLine(r))}</div></td>` +
+        `<td class="n">${r.counts.items ?? "—"}${r.counts.of ? ` / ${r.counts.of}` : ""}</td>` +
         groups.map(([, ks]) => ks.map((k, i) => {
           const v = value(r, k);
-          const [lo, hi] = span[k];
-          const frac = v == null || hi <= 0 ? 0 : Math.max(0.02, v / Math.max(hi, Math.abs(lo)));
           const isBest = v != null && best[k] != null && v === best[k];
-          return `<td class="num-cell${i === 0 ? " g" : ""}${isBest ? " best" : ""}">${formatScore(k, v)}` +
-            (v == null ? "" : `<span class="bar" style="width:calc((100% - 12px) * ${frac.toFixed(3)})"></span>`) +
-            `</td>`;
+          return `<td class="n${i === 0 ? " g" : ""}${isBest ? " best" : ""}"${isBest ? ` title="이 열에서 가장 좋아요"` : ""}>` +
+            `${formatScore(k, v, {unit: false})}${delta(r, k, v)}</td>`;
         }).join("")).join("") + `</tr>`;
     }).join("") + `</tbody>`;
   board.querySelectorAll("th.sortable").forEach(th => th.addEventListener("click", () => {
@@ -219,8 +257,8 @@ function niceTicks(lo, hi, count = 6) {
   if (out[out.length - 1] < hi) out.push(+(out[out.length - 1] + step).toFixed(10));
   return out;
 }
-const tickText = (key, t) => /_(ms|sec)$/.test(key) ? `${+t.toFixed(3)}s`
-  : key === "comet" ? t.toFixed(2) : String(+t.toFixed(3));
+const tickText = (key, t) => key === "comet" ? t.toFixed(2) : String(+t.toFixed(3));
+const axisText = key => `${SCORES[key].label}${unitOf(key) ? ` (${unitOf(key)})` : ""}`;
 
 // ── per-item distribution: one column per run, best on the left ────────────
 function distKeys(runs) {
@@ -233,21 +271,21 @@ function renderDistributions() {
   const picker = $("dist-picker"), chart = $("dist-chart");
   if (!keys.length) {
     picker.innerHTML = ""; $("dist-legend").innerHTML = "";
-    chart.innerHTML = `<div class="empty">${runs.length ? "no per-item scores in these runs" : "no model selected"}</div>`;
+    chart.innerHTML = `<div class="empty">${runs.length ? "이 run 들에는 per-item score 가 없어요." : "고른 model 이 없어요. Models 메뉴에서 하나 이상 골라 주세요."}</div>`;
     return;
   }
   if (!keys.includes(state.metric)) state.metric = keys.find(k => SCORES[k].better) || keys[0];
   picker.innerHTML = byGroup(keys).map(([title, ks]) =>
-    `<div class="grp"><span class="grp-name">${esc(title)}</span>` + ks.map(k =>
+    `<div class="grp"><span class="label">${esc(title)}</span><div class="seg-group">` + ks.map(k =>
       `<button data-k="${k}" aria-pressed="${k === state.metric}">${esc(SCORES[k].label)}</button>`).join("") +
-    `</div>`).join("");
+    `</div></div>`).join("");
   picker.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
     state.metric = b.dataset.k; writeHash(); renderDistributions();
   }));
 
   const key = state.metric, spec = SCORES[key], scale = displayScale(key);
-  $("dist-note").textContent = "every item's score, not just the average — best median on the left" +
-    (spec.note ? ` · ${spec.note}` : "");
+  $("dist-note").textContent = "Mean 하나가 아니라 item 마다의 score 예요. Median 이 좋은 run 이 왼쪽에 와요." +
+    (spec.note ? ` ${spec.note}.` : "");
   $("dist-legend").innerHTML = legendHtml(spec);
   $("dist-points").addEventListener("change", ev => { state.points = ev.target.checked; renderDistributions(); });
 
@@ -266,8 +304,8 @@ function renderDistributions() {
   for (const t of ticks) out.push(
     `<line class="c-grid" x1="${padL}" x2="${W - padR}" y1="${y(t)}" y2="${y(t)}"/>`,
     `<text class="c-axis" x="${padL - 8}" y="${y(t) + 3}" text-anchor="end">${tickText(key, t)}</text>`);
-  const dir = spec.better === "lower" ? " · lower is better" : spec.better === "higher" ? " · higher is better" : "";
-  out.push(`<text class="c-axis" x="14" y="${top + plotH / 2}" text-anchor="middle" transform="rotate(-90 14 ${top + plotH / 2})">${esc(spec.label)}${dir}</text>`);
+  const dir = BETTER_TEXT[spec.better] ? ` · ${BETTER_TEXT[spec.better]}` : "";
+  out.push(`<text class="c-axis" x="14" y="${top + plotH / 2}" text-anchor="middle" transform="rotate(-90 14 ${top + plotH / 2})">${esc(axisText(key))}${dir}</text>`);
   cols.forEach(({run, s}, i) => {
     const cx = padL + colW * (i + 0.5), color = colorOf.get(run.name), half = Math.min(26, colW * 0.28);
     const v = k => y(s[k] * scale);
@@ -289,7 +327,7 @@ function renderDistributions() {
     out.push(tilt
       ? `<text class="c-label" x="${cx}" y="${ly}" text-anchor="end" transform="rotate(-35 ${cx} ${ly})">${esc(clip(run.pipeline, 26))}</text>`
       : `<text class="c-label" x="${cx}" y="${ly}" text-anchor="middle">${esc(clip(run.pipeline, Math.floor(colW / 7)))}</text>` +
-        `<text class="c-sub" x="${cx}" y="${ly + 14}" text-anchor="middle">n=${s.n}</text>`);
+        `<text class="c-sub" x="${cx}" y="${ly + 16}" text-anchor="middle">n=${s.n}</text>`);
     out.push(`<rect x="${cx - colW / 2}" y="${top}" width="${colW}" height="${plotH + labelH}" fill="transparent" data-tip="${esc(
         `${run.pipeline}\n` +
         `n       ${s.n}\nmax     ${formatScore(key, s.max)}\nq3      ${formatScore(key, s.q3)}\n` +
@@ -301,14 +339,14 @@ function renderDistributions() {
   wireTips(chart);
 }
 function legendHtml(spec) {
-  const dir = spec.better === "lower" ? "lower is better" : spec.better === "higher" ? "higher is better" : "no better direction";
+  const dir = BETTER_TEXT[spec.better] || "좋은 방향이 없어요";
   return `<span><svg ${SVG_NS} width="20" height="40"><line class="c-whisker" x1="10" x2="10" y1="2" y2="38"/>` +
     `<line class="c-whisker" x1="5" x2="15" y1="2" y2="2"/><line class="c-whisker" x1="5" x2="15" y1="38" y2="38"/>` +
-    `<rect x="4" y="11" width="12" height="16" fill="var(--ink-faint)" fill-opacity="0.25" stroke="var(--ink-soft)"/>` +
-    `<line class="c-median" x1="2" x2="18" y1="17" y2="17"/></svg> max · 75% · median · 25% · min</span>` +
-    `<span><svg ${SVG_NS} width="12" height="12"><path class="c-mean" d="M 6 1 l 5 5 l -5 5 l -5 -5 z"/></svg> mean</span>` +
-    `<span>number above: median · ${dir}</span>` +
-    `<label><input type="checkbox" id="dist-points"${state.points ? " checked" : ""}> show items</label>`;
+    `<rect x="4" y="11" width="12" height="16" fill="var(--text-3)" fill-opacity="0.25" stroke="var(--text-3)"/>` +
+    `<line class="c-median" x1="2" x2="18" y1="17" y2="17"/></svg>위에서부터 max · q3 · median · q1 · min</span>` +
+    `<span><svg ${SVG_NS} width="12" height="12"><path class="c-mean" d="M 6 1 l 5 5 l -5 5 l -5 -5 z"/></svg>mean</span>` +
+    `<span>기둥 위 숫자는 median · ${dir}</span>` +
+    `<label class="check"><input type="checkbox" id="dist-points"${state.points ? " checked" : ""}>item 점 보기</label>`;
 }
 const clip = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
 
@@ -328,16 +366,16 @@ function renderScatter() {
   if (!xKeys.includes(state.x))
     state.x = ["laal_ms", "yaal_ms", "longyaal_ms", "avg_fsl_sec"].find(k => xKeys.includes(k)) || xKeys[0];
   fill($("scatter-y"), yKeys, state.y); fill($("scatter-x"), xKeys, state.x);
-  if (!state.x || !state.y) { $("scatter-note").textContent = ""; chart.innerHTML = `<div class="empty">these runs have no accuracy and latency scores to plot</div>`; return; }
+  if (!state.x || !state.y) { $("scatter-note").textContent = ""; chart.innerHTML = `<div class="empty">이 run 들에는 찍을 accuracy 와 latency score 가 없어요.</div>`; return; }
 
   const all = runs.map(r => ({run: r, x: r.summary_metrics[state.x], y: r.summary_metrics[state.y]}));
   const pts = all.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
   // Say who is missing and why, rather than drawing fewer dots without a word.
   const left = all.filter(p => !pts.includes(p)).map(p =>
-    `${p.run.pipeline} (${p.run.status === "running" ? "still running — no run summary yet"
-      : `no ${[!Number.isFinite(p.y) && SCORES[state.y].label, !Number.isFinite(p.x) && SCORES[state.x].label].filter(Boolean).join(" or ")}`})`);
-  $("scatter-note").textContent = left.length ? `not plotted: ${left.join(" · ")}` : "";
-  if (!pts.length) { chart.innerHTML = `<div class="empty">no run has both scores</div>`; return; }
+    `${p.run.pipeline} (${p.run.status === "running" ? "아직 도는 중이라 run summary 가 없어요"
+      : `${[!Number.isFinite(p.y) && SCORES[state.y].label, !Number.isFinite(p.x) && SCORES[state.x].label].filter(Boolean).join(", ")} 값이 없어요`})`);
+  $("scatter-note").textContent = left.length ? `빠진 run: ${left.join(" · ")}` : "";
+  if (!pts.length) { chart.innerHTML = `<div class="empty">두 score 를 모두 가진 run 이 없어요.</div>`; return; }
   const sx = displayScale(state.x), sy = displayScale(state.y);
   const xs = pts.map(p => p.x * sx), ys = pts.map(p => p.y * sy);
   const pad = (lo, hi) => hi > lo ? (hi - lo) * 0.12 : Math.abs(hi || 1) * 0.1;
@@ -353,8 +391,8 @@ function renderScatter() {
     `<text class="c-axis" x="${fx(t)}" y="${H - B + 16}" text-anchor="middle">${tickText(state.x, t)}</text>`);
   for (const t of yt) out.push(`<line class="c-grid" x1="${L}" x2="${W - R}" y1="${fy(t)}" y2="${fy(t)}"/>`,
     `<text class="c-axis" x="${L - 8}" y="${fy(t) + 3}" text-anchor="end">${tickText(state.y, t)}</text>`);
-  out.push(`<text class="c-axis" x="${(L + W - R) / 2}" y="${H - 8}" text-anchor="middle">${esc(SCORES[state.x].label)} (${SCORES[state.x].better} is better) →  better</text>`,
-    `<text class="c-axis" x="14" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">${esc(SCORES[state.y].label)} (${SCORES[state.y].better} is better) →  better</text>`);
+  out.push(`<text class="c-axis" x="${(L + W - R) / 2}" y="${H - 8}" text-anchor="middle">${esc(axisText(state.x))} · ${BETTER_TEXT[SCORES[state.x].better]} → 좋은 쪽</text>`,
+    `<text class="c-axis" x="14" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">${esc(axisText(state.y))} · ${BETTER_TEXT[SCORES[state.y].better]} → 좋은 쪽</text>`);
 
   const beats = (a, b) => {
     const cx = compareScores(state.x, a.x, b.x), cy = compareScores(state.y, a.y, b.y);
@@ -362,11 +400,15 @@ function renderScatter() {
   };
   const front = pts.filter(p => !pts.some(q => q !== p && beats(q, p)))
     .sort((a, b) => fx(a.x * sx) - fx(b.x * sx));
-  if (front.length > 1) out.push(`<polyline class="c-frontier" points="${front.map(p => `${fx(p.x * sx)},${fy(p.y * sy)}`).join(" ")}"/>`);
+  if (front.length > 1) {
+    const [a, b] = front.slice(-2).map(p => [fx(p.x * sx), fy(p.y * sy)]);
+    out.push(`<polyline class="c-frontier" points="${front.map(p => `${fx(p.x * sx)},${fy(p.y * sy)}`).join(" ")}"/>`,
+      `<text class="c-axis" x="${(a[0] + b[0]) / 2}" y="${(a[1] + b[1]) / 2 - 8}" text-anchor="middle">Pareto frontier</text>`);
+  }
   for (const p of pts) {
     const cx = fx(p.x * sx), cy = fy(p.y * sy), color = colorOf.get(p.run.name);
     out.push(`<circle cx="${cx}" cy="${cy}" r="6" fill="${color}" stroke="var(--panel)" stroke-width="1.5"` +
-      ` data-tip="${esc(`${p.run.pipeline}\n${SCORES[state.y].label}  ${formatScore(state.y, p.y)}\n${SCORES[state.x].label}  ${formatScore(state.x, p.x)}${front.includes(p) ? "\non the frontier" : ""}`)}"/>`,
+      ` data-tip="${esc(`${p.run.pipeline}\n${SCORES[state.y].label}  ${formatScore(state.y, p.y)}\n${SCORES[state.x].label}  ${formatScore(state.x, p.x)}${front.includes(p) ? "\nPareto frontier 위에 있어요" : ""}`)}"/>`,
       `<text class="c-dot-label" x="${cx + 9}" y="${cy + 4}">${esc(clip(p.run.pipeline, 34))}</text>`);
   }
   out.push("</svg>");
@@ -388,10 +430,9 @@ addEventListener("resize", () => {
   const res = await fetch("/api/overview");
   RUNS = (await res.json()).runs;
   if (!RUNS.length) {
-    document.querySelector(".wrap").innerHTML = `<div class="card empty">no runs in bench/runs yet — make bench CONFIG=… DATASET=…</div>`;
+    document.querySelector(".wrap").innerHTML = `<div class="panel empty">bench/runs 에 run 이 아직 없어요. <code>make bench CONFIG=… DATASET=…</code> 로 하나 돌려 주세요.</div>`;
     return;
   }
   const start = RUNS.find(r => r.dataset_key === state.dataset) || RUNS[0];
-  state.corpus = start.corpus;
   await selectDataset(start.dataset_key);
 })();

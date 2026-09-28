@@ -109,4 +109,7 @@ class ManagedProcess:
 
     def _terminate(self) -> None:
         if self.process is not None and self.process.returncode is None:
-            self.process.terminate()
+            try:
+                self.process.terminate()
+            except ProcessLookupError:
+                pass  # Ctrl-C reached the whole process group; the child is already gone

@@ -5,12 +5,13 @@ import json
 from pathlib import Path
 
 import numpy as np
-from core.errors import DataError
-from core.utils.json import read_json, read_jsonl
-from core.utils.paths import get_project_root
+from core import config as core_config
+from core.errors import ConfigError, DataError
+from core.utils.json import read_jsonl
 
-from .. import config as bench_config
+from .. import registry
 from ..config import get_runs_dir
+from ..registry import read_summary
 
 # Per-item scores the dashboard draws as distributions. `comet` has no per-item
 # value in items.jsonl -- it comes per sentence from comet_scores.jsonl.
@@ -37,69 +38,102 @@ COMET_SCORES = "comet_scores.jsonl"
 
 
 def list_runs() -> list[str]:
-    """Run directory names under the runs directory, most recently finished first."""
+    """Run names (`<dataset ref>/<pipeline ref>`), most recently finished first."""
 
-    def stamp(d: Path) -> float:
-        summary = d / "summary.json"
+    def stamp(name: str) -> float:
+        summary = get_runs_dir() / name / "summary.json"
         return summary.stat().st_mtime if summary.is_file() else 0.0
 
-    dirs = [d for d in get_runs_dir().glob("*") if d.is_dir() and (d / "events.jsonl").is_file()]
-    return [d.name for d in sorted(dirs, key=stamp, reverse=True)]
+    return sorted(registry.run_names(), key=stamp, reverse=True)
 
 
-def read_summary(run_dir: Path) -> dict:
+def run_config(run_dir: Path, summary: dict) -> tuple[dict, str]:
+    """The config the run recorded and where: `summary` once it finished, `events`
+    (its `run_open` line) while it is still going. Never read back from `configs/`,
+    which only says what the files hold now."""
+    seen = registry.recorded(run_dir, summary)
+    return seen["config"], seen["source"] if seen["config"] else ""
+
+
+def _current_meta(kind: str, ref: str) -> dict | None:
+    name, _, version = ref.partition("@v")
     try:
-        return read_json(run_dir / "summary.json")
-    except (OSError, json.JSONDecodeError):
-        return {}
+        _, meta = core_config.read_named_with_meta(name, kind)
+    except ConfigError:
+        return None
+    return meta.model_dump() if meta.version == int(version or 1) else None
 
 
-def pipeline_config(summary: dict) -> dict:
-    """The resolved pipeline config the run actually used.
+def run_meta(run_dir: Path, summary: dict) -> dict:
+    """Per kind: the ref, version and hash the run recorded, with the description and
+    tags the config file has now when it is still at that version -- tags added later
+    (`paper`, say) show on old runs too -- else the ones the run recorded."""
+    identity = registry.recorded(run_dir, summary)["identity"]
+    refs = dict(zip(registry.KINDS, registry.split(registry.run_name(run_dir))))
+    out = {}
+    for kind in registry.KINDS:
+        seen = identity.get(kind) or {"ref": refs[kind]}
+        now = _current_meta(kind, seen["ref"]) or {}
+        out[kind] = {
+            "ref": seen["ref"],
+            "version": seen.get("version") or now.get("version") or 1,
+            "hash": seen.get("hash") or "",
+            "description": now.get("description", seen.get("description") or ""),
+            "tags": now.get("tags", seen.get("tags") or []),
+        }
+    return out
 
-    `summary["config"]["stity"]` already holds every value the run actually used
-    (including ones the source file left to a default) -- that beats reading
-    `configs/pipelines/<name>.yml` back off disk, which only shows what was
-    written and can drift from what the run historically saw.
+
+def data_key(config: dict) -> str:
+    """What a run was fed: the dataset config minus the pipeline.
+
+    Two runs share it only when every item reached the pipeline as the same audio
+    with the same target -- `fleurs_ko-en` and `fleurs_ko-en_cafe` read the same
+    manifest but play different sound, so they must not be compared item by item.
     """
-    return ((summary.get("config") or {}).get("stity")) or {}
+    fed = {k: v for k, v in config.items() if k not in ("name", "stity")}
+    return json.dumps(fed, sort_keys=True) if fed.get("dataset") else ""
 
 
-def run_config(run_name: str, summary: dict) -> tuple[dict, str]:
-    """The run's config and where it came from.
-
-    A finished run recorded it in summary.json (`summary`). A run still going has no
-    summary yet, so its pipeline and dataset configs are read back from `configs/`
-    (`configs`) -- what the files say now, which is what the run started from unless
-    someone edited them since.
-    """
-    if summary.get("config"):
-        return summary["config"], "summary"
-    pipeline, dataset_config = split_name(run_name)
-    if not dataset_config:
-        return {}, ""
-    try:
-        return bench_config.load(pipeline, dataset_config).raw, "configs"
-    except Exception:  # noqa: BLE001 - a missing or broken config file just means no config
-        return {}, ""
+def item_ids(run_dir: Path) -> list[str]:
+    """The ids of the items this run has a row for (a running run: so far)."""
+    path = run_dir / "items.jsonl"
+    if not path.is_file():
+        return []
+    ids = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            head = line[:200]
+            start = head.find('"id": "')
+            if start != -1:
+                start += len('"id": "')
+                ids.append(head[start : head.index('"', start)])
+    return ids
 
 
 def run_catalog() -> list[dict]:
     """Every run with its dataset identity and config, so the client can offer it
     as a compare target without a second round trip once picked.
 
-    `manifest_sha256` is a hash of the dataset's raw manifest.jsonl -- two runs
-    share it only when their item ids are the same set, regardless of pipeline or
-    which target language each was scored against.
+    A compare target must have been fed the same data (`data_key`, and the same
+    `manifest_sha256` when both runs recorded one), run a different pipeline, and
+    have a row for the item on screen (`item_ids`).
     """
     out = []
     for name in list_runs():
-        summary = read_summary(get_runs_dir() / name)
-        config, source = run_config(name, summary)
+        run_dir = get_runs_dir() / name
+        summary = read_summary(run_dir)
+        config, source = run_config(run_dir, summary)
+        dataset, pipeline = registry.split(name)
         out.append(
             {
                 "name": name,
-                "dataset_sha": (summary.get("dataset") or {}).get("manifest_sha256") or "",
+                "dataset": dataset,
+                "pipeline": pipeline,
+                "meta": run_meta(run_dir, summary),
+                "dataset_sha": registry.recorded(run_dir, summary)["manifest_sha256"],
+                "data_key": data_key(config),
+                "item_ids": item_ids(run_dir),
                 "pipeline_config": config.get("stity") or {},
                 "config_source": source,
                 "status": summary.get("status") or ("running" if not summary else ""),
@@ -119,26 +153,6 @@ def resolve_run(requested: str | None) -> str:
     return runs[0]
 
 
-def _dataset_configs() -> list[str]:
-    return sorted(
-        (p.stem for p in (get_project_root() / "configs" / "datasets").glob("*.yml")),
-        key=len,
-        reverse=True,
-    )
-
-
-def split_name(run_name: str, known: list[str] | None = None) -> tuple[str, str]:
-    """`<pipeline>-<dataset config>` back into its two halves.
-
-    Both halves may contain dashes (`asr.qwen-seg-ko+mt.qwen3.5-4b`, `fleurs-ko-en`), so
-    the dataset half is matched against the dataset configs that exist, longest first.
-    """
-    for stem in known if known is not None else _dataset_configs():
-        if run_name.endswith("-" + stem) and len(run_name) > len(stem) + 1:
-            return run_name[: -len(stem) - 1], stem
-    return run_name, ""
-
-
 def _models(summary: dict) -> dict:
     """The model behind each stage, for the leaderboard's second line."""
     components = summary.get("components") or {}
@@ -151,51 +165,28 @@ def _models(summary: dict) -> dict:
     return out
 
 
-def dataset_key(summary: dict, dataset_config: str) -> str:
-    """Runs share a key only when they were scored on the same items and target."""
-    if dataset_config:
-        return dataset_config
-    config = summary.get("config") or {}
-    name = (config.get("dataset") or {}).get("name") or (summary.get("dataset") or {}).get("name")
-    return f"{name or 'unknown'}-{config.get('target') or '?'}"
-
-
-def _run_open(run_dir: Path) -> dict:
-    """The run's first event -- all a run still going (no summary yet) can say about itself."""
-    with open(run_dir / "events.jsonl", encoding="utf-8") as f:
-        for line in f:
-            event = json.loads(line)
-            if event.get("type") == "run_open":
-                return event
-    return {}
-
-
-def run_overview(run_name: str, known: list[str]) -> dict:
+def run_overview(run_name: str) -> dict:
     run_dir = get_runs_dir() / run_name
     summary = read_summary(run_dir)
-    config, source = run_config(run_name, summary)
-    dataset = summary.get("dataset") or {}
-    pipeline, dataset_config = split_name(run_name, known)
-    opened = {} if summary else _run_open(run_dir)
-    ds_name = (
-        (config.get("dataset") or {}).get("name")
-        or dataset.get("name")
-        or opened.get("dataset")
-        or ""
-    )
+    config, source = run_config(run_dir, summary)
+    dataset_ref, pipeline_ref = registry.split(run_name)
+    opened = {} if summary else registry.run_open(run_dir)
+    dataset_config = config.get("dataset") or {}
     counts = summary.get("counts") or {}
     if not summary and (run_dir / "items.jsonl").is_file():
         with open(run_dir / "items.jsonl", encoding="utf-8") as f:
             counts = {"items": sum(1 for line in f if line.strip()), "of": opened.get("n_items")}
     return {
         "name": run_name,
-        "pipeline": pipeline,
-        "dataset_key": dataset_key(summary, dataset_config),
-        "dataset_name": ds_name,
-        "corpus": ds_name.split("/")[0] if ds_name else "unknown",
+        "pipeline": pipeline_ref,
+        "dataset_key": dataset_ref,
+        "dataset_name": dataset_config.get("name") or opened.get("dataset") or "",
+        "corpus": dataset_ref.split("_")[0],
         "target": config.get("target") or "",
-        "limit": (config.get("dataset") or {}).get("limit"),
-        "dataset_sha": dataset.get("manifest_sha256") or "",
+        "limit": dataset_config.get("limit"),
+        "pick": dataset_config.get("pick") or "first",
+        "meta": run_meta(run_dir, summary),
+        "dataset_sha": registry.recorded(run_dir, summary)["manifest_sha256"],
         "stamp": summary.get("stamp") or "",
         "finished_at": summary.get("finished_at") or "",
         "status": summary.get("status") or ("running" if not summary else ""),
@@ -210,8 +201,7 @@ def run_overview(run_name: str, known: list[str]) -> dict:
 
 def overview() -> dict:
     """Everything the dashboard needs up front: every run, tagged with its dataset."""
-    known = _dataset_configs()
-    return {"runs": [run_overview(name, known) for name in list_runs()]}
+    return {"runs": [run_overview(name) for name in list_runs()]}
 
 
 def _stats(values: list[float]) -> dict:

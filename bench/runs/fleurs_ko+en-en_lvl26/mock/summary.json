@@ -1,0 +1,181 @@
+{
+  "name": "fleurs_ko+en-en_lvl26/mock",
+  "stamp": "20260928T012548",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-28T01:25:48.198840+00:00",
+  "finished_at": "2026-09-28T02:23:21.411115+00:00",
+  "metrics": {
+    "wer": 3.4589902258213856,
+    "wer_by_lang": {
+      "en+ko": 3.4245014245014245,
+      "ko+en": 3.4934790271413463
+    },
+    "wer_scored_only": 3.4589902258213856,
+    "cer": 5.447386889170815,
+    "cer_by_lang": {
+      "en+ko": 5.390997150997151,
+      "ko+en": 5.50377662734448
+    },
+    "bleu": 0.0,
+    "bleu_by_pair": {
+      "ko-en": 0.0
+    },
+    "avg_fsl_sec": 0.0010481857764874595,
+    "longyaal_ms": 1202.8007600542692,
+    "longyaal_ca_ms": 1204.2791447356817,
+    "lang_detect_accuracy": 0.5442670537010159,
+    "confusion": {
+      "en->ko": 1570,
+      "ko->ko": 1875
+    },
+    "commit_reasons": {
+      "vad": 0.9892597968069666,
+      "seg": 0.0,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.010740203193033381
+    },
+    "segments_per_item": 78.29545454545455,
+    "comet": 0.26792957159605896,
+    "comet_by_pair": {
+      "ko-en": 0.26792957159605896
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "laal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "laal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "yaal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended",
+    "yaal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended",
+    "token_emission_ms": "no item had both a reference alignment and recorded partials or commits, or no recognized word matched the reference",
+    "token_emission_ca_ms": "no item had both a reference alignment and recorded partials or commits, or no recognized word matched the reference"
+  },
+  "counts": {
+    "items": 44,
+    "sessions": 44,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 3244.48,
+    "wall_sec": 3453.21,
+    "compute_sec": 2.17,
+    "realtime_factor": 0.001
+  },
+  "failed_items": [],
+  "config": {
+    "name": "fleurs_ko+en-en_lvl26/mock",
+    "dataset": {
+      "name": "fleurs/ko_kr+en_us.level-26",
+      "longform": true
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": "mock",
+        "vad": {
+          "name": "mock",
+          "speech_chunks": 5
+        },
+        "correction": "mock",
+        "translation": "mock"
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.1
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/ko_kr+en_us.level-26",
+    "split": "test",
+    "languages": [
+      "ko",
+      "en"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en",
+        "ko"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "conversation of 6 turns (ko, en)",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "mix": {
+      "sources": [
+        "ko_kr",
+        "en_us"
+      ],
+      "turns": 6,
+      "switch": 1.0,
+      "gap": [
+        0.5,
+        1.5
+      ],
+      "cut": 0.0,
+      "seed": 0,
+      "level": -26.0,
+      "cut_turns": 0,
+      "level_held_back_turns": 1
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/ko_kr+en_us.level-26",
+    "manifest_sha256": "dd079afaf21ae0db6a0c8c1f03810b533e43c67e4d612baef04caf7113fb618c",
+    "alignment_sha256": "499d4c70903b43dd291e59d578917b9399ed8064adfdaaca51740c5da1104ec2",
+    "n_aligned": 44,
+    "n_items": 44,
+    "n_sessions": 44
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "mock"
+    },
+    "vad": {
+      "backend": "mock",
+      "speech_chunks": 5
+    },
+    "correction": {
+      "backend": "mock"
+    },
+    "translation": {
+      "backend": "mock"
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "fleurs_ko+en-en_lvl26",
+      "version": 1,
+      "ref": "fleurs_ko+en-en_lvl26",
+      "hash": "957f721fecdb",
+      "description": "Conversations alternating Korean and English FLEURS turns, every turn levelled to -26 dBFS, translated to English",
+      "tags": [
+        "fleurs",
+        "longform",
+        "mixed-language"
+      ]
+    },
+    "pipeline": {
+      "name": "mock",
+      "version": 1,
+      "ref": "mock",
+      "hash": "0f6b0dd4236a",
+      "description": "Mock parts end to end, no model; checks the harness",
+      "tags": [
+        "cascade",
+        "mock"
+      ]
+    }
+  }
+}

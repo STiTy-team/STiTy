@@ -31,7 +31,7 @@ const getServerUrl = () => {
     return `${protocol}://${window.location.host}/asr`;
   }
 
-  return `${RUNPOD_SERVER_URL}${CONVERSATION_PATH}`;
+  return `${process.env.EXPO_PUBLIC_SERVER_URL || RUNPOD_SERVER_URL}${CONVERSATION_PATH}`;
 };
 
 const SERVER_URL = getServerUrl();
