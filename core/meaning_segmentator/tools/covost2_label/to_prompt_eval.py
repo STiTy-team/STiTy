@@ -71,7 +71,9 @@ def main() -> int:
         text, seg = r["src_text"], r["seg_text"]
         by_T = {}
         for T in t_grid:
-            cut, missing = P.truncate(seg, T, spaced, a.min_gap)
+            # 이 라벨은 순위제(`<SEG:1>` 이 최고 확신)로 달린 것이다 — 점수제 기본값으로
+            # 자르면 거꾸로 돈다.
+            cut, missing = P.truncate(seg, T, spaced, a.min_gap, higher_first=False)
             pieces = P.split_segments(cut) or [text]
             by_T[str(T)] = {"seg_text": cut, "k": len(pieces),
                             "missing_boundaries": missing, "pieces_src": pieces}

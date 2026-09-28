@@ -1,0 +1,211 @@
+{
+ "metrics": {
+  "n": 100,
+  "format_pass_rate": 1.0,
+  "format_pass_rate_no_retry": 0.87,
+  "by_T": {
+   "4": {
+    "target_chunk_words": 4,
+    "n": 100,
+    "n_effective": 100,
+    "effective": 0.6158,
+    "adequacy": 0.703,
+    "contradiction": 0.1236,
+    "effective_min": 0.0253,
+    "effective_p10": 0.389,
+    "consistency": 0.6866,
+    "laal_words": 2.7624,
+    "chunks_per_sentence": 5.28,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1962,
+    "effective_ent": 0.5656,
+    "effective_z": null,
+    "n_targets": null
+   },
+   "6": {
+    "target_chunk_words": 6,
+    "n": 100,
+    "n_effective": 98,
+    "effective": 0.6764,
+    "adequacy": 0.7576,
+    "contradiction": 0.1064,
+    "effective_min": 0.004,
+    "effective_p10": 0.4351,
+    "consistency": 0.7718,
+    "laal_words": 4.0619,
+    "chunks_per_sentence": 3.51,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1465,
+    "effective_ent": 0.6463,
+    "effective_z": null,
+    "n_targets": null
+   },
+   "8": {
+    "target_chunk_words": 8,
+    "n": 100,
+    "n_effective": 92,
+    "effective": 0.7353,
+    "adequacy": 0.7919,
+    "contradiction": 0.0672,
+    "effective_min": 0.0792,
+    "effective_p10": 0.5704,
+    "consistency": 0.792,
+    "laal_words": 5.3137,
+    "chunks_per_sentence": 2.67,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1154,
+    "effective_ent": 0.6974,
+    "effective_z": null,
+    "n_targets": null
+   },
+   "12": {
+    "target_chunk_words": 12,
+    "n": 100,
+    "n_effective": 68,
+    "effective": 0.7412,
+    "adequacy": 0.8184,
+    "contradiction": 0.0875,
+    "effective_min": 0.0224,
+    "effective_p10": 0.4686,
+    "consistency": 0.8584,
+    "laal_words": 8.8043,
+    "chunks_per_sentence": 1.77,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1221,
+    "effective_ent": 0.7148,
+    "effective_z": null,
+    "n_targets": null
+   }
+  },
+  "score": 0.6922,
+  "rank_lift": 0.0569,
+  "rank_lift_se": 0.02642,
+  "rank_lift_t": 2.15,
+  "rank_lift_n": 68,
+  "rank_lift_T": 12
+ },
+ "score": 0.6921810665887976,
+ "violations": [
+  {
+   "rule": "text_modified",
+   "detail": "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "Fluke schrieb, dass die Anstrengungen einiger, Frauen, die über die Gesundheit von Frauen sprechen wollten, zu übertönen, nicht erfolgreich waren.",
+   "seg_text": "Fluke schrieb, dass die Anstrengungen einiger Frauen, <SEG:65> die über die Gesundheit von Frauen sprechen <SEG:85> wollten, zu übertönen, <SEG:90> nicht erfolgreich waren.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 3개 — 최소 4개 필요",
+   "text": "Fluke schrieb, dass die Anstrengungen einiger, Frauen, die über die Gesundheit von Frauen sprechen wollten, zu übertönen, nicht erfolgreich waren.",
+   "seg_text": "Fluke schrieb, dass die Anstrengungen einiger Frauen, <SEG:65> die über die Gesundheit von Frauen sprechen <SEG:85> wollten, zu übertönen, <SEG:90> nicht erfolgreich waren.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 3개 — 최소 4개 필요",
+   "text": "Beim Besuch der Klöster müssen Frauen Röcke tragen, die bis über die Knie reichen, und außerdem ihre Schultern bedecken.",
+   "seg_text": "Beim Besuch der Klöster <SEG:75> müssen Frauen Röcke <SEG:70> tragen, die bis über die Knie <SEG:85> reichen, und außerdem ihre Schultern bedecken.",
+   "first_pass": true
+  },
+  {
+   "rule": "text_modified",
+   "detail": "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "Würfelquallen treten in Strandnähe und in der Nähe von Flussmündungen von Oktober bis April nördlich von 1770 auf. Sie können gelegentlich auch außerhalb dieses Zeitraums vorkommen.",
+   "seg_text": "Würfelquallen treten in Strandnähe <SEG:70> und in der Nähe von Flussmündungen <SEG:85> von Oktober bis April <SEG:75> nördlich von 1770 <SEG:65> Sie können gelegentlich <SEG:45> auch außerhalb dieses Zeitraums vorkommen.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 5개 — 최소 6개 필요",
+   "text": "Würfelquallen treten in Strandnähe und in der Nähe von Flussmündungen von Oktober bis April nördlich von 1770 auf. Sie können gelegentlich auch außerhalb dieses Zeitraums vorkommen.",
+   "seg_text": "Würfelquallen treten in Strandnähe <SEG:70> und in der Nähe von Flussmündungen <SEG:85> von Oktober bis April <SEG:75> nördlich von 1770 <SEG:65> Sie können gelegentlich <SEG:45> auch außerhalb dieses Zeitraums vorkommen.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 2개 — 최소 3개 필요",
+   "text": "Ein Minenabwehrschiff der Avenger-Klasse, das Schiff war auf dem Weg nach Puerto Princesa in Palawan.",
+   "seg_text": "Ein Minenabwehrschiff der Avenger-Klasse, <SEG:95> das Schiff war <SEG:70> auf dem Weg nach Puerto Princesa in Palawan.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 4개 — 최소 5개 필요",
+   "text": "Mit den Kommentaren, die live im Fernsehen abgegeben wurden, gaben hochrangige iranische Quellen zum ersten Mal zu, dass die Sanktionen Wirkung zeigen.x",
+   "seg_text": "Mit den Kommentaren, <SEG:70> die live im Fernsehen abgegeben wurden, <SEG:75> gaben hochrangige iranische Quellen <SEG:85> zum ersten Mal <SEG:90> zu, dass die Sanktionen Wirkung zeigen.x",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 4개 — 최소 5개 필요",
+   "text": "Es gibt unterschiedliche Schätzungen darüber, wie viele Menschen Hindi sprechen. Man schätzt, dass Hindi die zweit- bis viertmeist gesprochene Sprache der Welt ist.",
+   "seg_text": "Es gibt unterschiedliche Schätzungen <SEG:60> darüber, wie viele <SEG:30> Menschen Hindi sprechen. <SEG:95> Man schätzt, dass Hindi die zweit- bis viertmeist gesprochene <SEG:75> Sprache der Welt ist.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 2개 — 최소 4개 필요",
+   "text": "Er bestätigte außerdem, dass er an das implizite Recht auf Privatsphäre glaube, auf dem die Entscheidung im Fall Roe beruhe.",
+   "seg_text": "Er bestätigte außerdem, <SEG:85> dass er an das implizite Recht auf Privatsphäre glaube, <SEG:80> auf dem die Entscheidung im Fall Roe beruhe.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 3개 — 최소 4개 필요",
+   "text": "Somit steht am 1. Januar eine Genehmigung für das Hinterland für ein beliebiges Startdatum im Mai zur Verfügung.",
+   "seg_text": "Somit steht am 1. Januar <SEG:90> eine Genehmigung für das <SEG:35> Hinterland für ein <SEG:45> beliebiges Startdatum im Mai zur Verfügung.",
+   "first_pass": true
+  },
+  {
+   "rule": "text_modified",
+   "detail": "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "Kinder mit ADHS haben Schwierigkeiten, sich auf Dinge wie Schularbeiten zu konzentrieren, aber sie können sich auf Dinge konzentrieren, die ihnen Spaß machen, wie etwa Spielen, ihre Lieblingszeichentrickserie zu schauen oder Sätze ohne Zeichensetzung zu schreiben.",
+   "seg_text": "Kindern mit ADHS haben Schwierigkeiten, <SEG:85> sich auf Dinge wie Schularbeiten zu konzentrieren, <SEG:95> aber sie können <SEG:40> sich auf Dinge konzentrieren, <SEG:85> die ihnen Spaß machen, <SEG:80> wie etwa Spielen, <SEG:70> ihre Lieblingszeichentrickserie zu schauen <SEG:75> oder Sätze ohne <SEG:30> Zeichensetzung zu schreiben.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 5개 — 최소 6개 필요",
+   "text": "Gridley oder Stark platzierte einen Pfahl etwa 100 Fuß (30 m) vor dem Zaun und befahl, dass niemand feuern sollte, bevor die regulären Soldaten daran vorbeigelaufen waren.",
+   "seg_text": "Gridley oder Stark <SEG:50> platzierte einen Pfahl <SEG:85> etwa 100 Fuß <SEG:70> (30 m) vor dem Zaun und befahl, <SEG:95> dass niemand feuern sollte, bevor die regulären Soldaten <SEG:30> daran vorbeigelaufen waren.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 8개 — 최소 9개 필요",
+   "text": "Im Kontext der Romantik, ist es die Geographie, die Individuen formte. Mit der Zeit entstanden Bräuche und Kulturen mit Bezug zu dieser Geographie und diese, da sie in Harmonie mit dem Platz der Gesellschaft standen, waren besser als willkürlich oktroyierte Gesetze.",
+   "seg_text": "Im Kontext der Romantik, <SEG:55> ist es die Geographie, <SEG:100> die Individuen formte. <SEG:85> Mit der Zeit entstanden <SEG:75> Bräuche und Kulturen <SEG:70> mit Bezug zu dieser Geographie <SEG:30> und diese, da sie in Harmonie <SEG:35> mit dem Platz der Gesellschaft standen, <SEG:95> waren besser als willkürlich oktroyierte Gesetze.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 6개 — 최소 7개 필요",
+   "text": "Dazu gehören die Niederlande, wo Anna Jochemsen gestern im Super-G den neunten Platz im Stand der Damen belegte, und Finnland mit Katja Saarinen, die im selben Wettbewerb den zehnten Platz belegte.",
+   "seg_text": "Dazu gehören die Niederlande, <SEG:85> wo Anna Jochemsen gestern im Super-G <SEG:60> den neunten Platz <SEG:90> im Stand der Damen <SEG:85> belegte, und Finnland <SEG:75> mit Katja Saarinen, <SEG:95> die im selben Wettbewerb den zehnten Platz belegte.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 3개 — 최소 5개 필요",
+   "text": "Der Gouverneur gab auch bekannt: „Heute haben wir erfahren, dass bei einigen Schulkindern festgestellt wurde, dass sie mit dem Patienten in Kontakt waren.“",
+   "seg_text": "Der Gouverneur gab auch bekannt: <SEG:60> „Heute haben wir <SEG:85> erfahren, dass bei einigen Schulkindern festgestellt wurde, <SEG:95> dass sie mit dem Patienten in Kontakt waren.“",
+   "first_pass": true
+  }
+ ]
+}

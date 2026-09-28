@@ -33,7 +33,8 @@ from ..baselines import coarsen
 from ..baselines import datasets as _ds
 from ..runtime.pipeline import (GoogleTranslator, JsonCache, LocalTranslator,
                        LOCAL_MT_DEFAULT, RemoteMTTranslator, add_translate_args,
-                       parse_translator_id, split_segments, to_lang_code)
+                       parse_translator_id, split_segments, to_lang_code,
+                       unit_count)
 
 from ..paths import REPO_ROOT, RUNS_DIR
 sys.path.insert(0, str(REPO_ROOT))
@@ -380,6 +381,13 @@ def main() -> int:
                     per_piece = list(ex.map(translate_one, pieces_all))
                 hyps = [joiner.join(x for x in pp if x) for pp in per_piece]
                 ks = [len(x) for x in pieces_all]
+                # **실현 평균 조각 크기** — 목표 T 가 아니라 실제로 나온 조각의 어절(문자) 수.
+                # T 는 `round(길이/T)` 로 조각 수를 정하는 노브라 실현값과 0.1~0.9 어긋나고
+                # (de-en test: T=12 에서 11.9, ja-en T=27 에서 27.4), 비교군 정책은 T 가
+                # 아예 없다. 논문 표·그림의 x 축 후보는 이쪽이다. 문장 평균 — 지연 축
+                # `laal_words` 가 문장 평균이라 같은 정의를 쓴다.
+                piece_units = [sum(unit_count(q, spaced) for q in pp) / max(1, len(pp))
+                               for pp in pieces_all]
                 laal = [metrics.laal_words(cond[i]["seg_text"], None, full_trans[j],
                                            spaced, tgt_spaced)
                         for j, i in enumerate(keep)]
@@ -403,6 +411,7 @@ def main() -> int:
                                                M.sentence_bleu_score(h, r, tokenize) or 0.0
                                                for h, r in zip(hyps, refs)), 3)),
                     "k": round(statistics.mean(ks), 2),
+                    "piece_units": round(statistics.mean(piece_units), 2),
                     "laal_words": round(statistics.mean(laal), 2),
                     "laal_ms": (round(statistics.mean(laal_ms_vals), 1)
                                 if laal_ms_vals else None),

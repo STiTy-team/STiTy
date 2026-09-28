@@ -1,0 +1,56 @@
+{
+  "source_language": "German",
+  "word_order": "other (main clauses show V2 word order while subordinate clauses are verb-final/SOV — e.g. main: \"Die ... erklärte ...\"; subordinate: \"dass ... eine Republik werden sollte\").",
+  "register": "formal, edited informational prose (encyclopedic / news / reference-style text).",
+  "fillers_and_hesitations": [
+    "äh",
+    "ähm",
+    "hm",
+    "mhm",
+    "na ja",
+    "also",
+    "tja"
+  ],
+  "discourse_markers": [
+    "dass",
+    "wenn",
+    "da",
+    "als",
+    "auch",
+    "außerdem",
+    "wie",
+    "während",
+    "es gibt",
+    "Ab"
+  ],
+  "clause_boundary_signals": [
+    "dass",
+    "wenn",
+    "weil",
+    "ob",
+    "obwohl",
+    "als (temporal subordinator)",
+    "während (as conjunction)",
+    "relative pronouns: die, der, das, welcher/welche/welches",
+    "und",
+    "oder",
+    "aber",
+    "außerdem",
+    "es gibt"
+  ],
+  "non_boundary_traps": [
+    "die / der / das (definite article vs. relative pronoun ambiguity)",
+    "während (prepositional 'during' + NP)",
+    "als (comparative: 'größer als')",
+    "Ab + DATE/JAHR (temporal PP, e.g. \"Ab 2014\")",
+    "in / auf / mit (prepositions that begin PPs, not clauses)"
+  ],
+  "unstable_prefix_signals": [
+    "die / der / das (may start a relative clause but equally often are articles)",
+    "während (could be conjunction or prepositional 'during')",
+    "als (could be subordinator or comparative particle)",
+    "und (coordination may continue a phrase or start a new clause)",
+    "auch (may be internal modifier or clause-opening link)"
+  ],
+  "notes_for_prompt_writer": "Prefer to wait for clear subordinators or the clause-final verb cluster before emitting a subordinate clause (German subordinate clauses are verb-final). In main clauses the finite verb often appears in second position — an early verb can indicate the clause head and permit an earlier split. Be cautious splitting after ambiguous tokens like die/der/das, während, als or und: they frequently occur both inside noun phrases and at clause starts and therefore can overturn an early segmentation decision."
+}

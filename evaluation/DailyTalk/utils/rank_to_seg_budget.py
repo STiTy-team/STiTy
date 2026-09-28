@@ -50,7 +50,10 @@ def main() -> int:
         rows = []
         for e in v["data"]:
             raw = (e.get("seg_text") or e["text"]).strip()
-            cut, missing = pipeline.truncate(raw, a.T, spaced=True, min_gap=a.min_gap)
+            # DailyTalk 라벨은 순위제(`<SEG:1>` 이 최고 확신)다 — 점수제 기본값으로 자르면
+            # 거꾸로 돈다.
+            cut, missing = pipeline.truncate(raw, a.T, spaced=True, min_gap=a.min_gap,
+                                             higher_first=False)
             missing_total += missing
             plain = to_plain(cut)
             parts = [p for p in plain.split("<SEG>") if p.strip()]

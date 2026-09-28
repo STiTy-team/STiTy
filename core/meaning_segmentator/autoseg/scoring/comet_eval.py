@@ -183,14 +183,15 @@ def write_report(path: Path, report: dict[str, dict], args,
          "  성격이 다르다 (문장 정렬 1:1 은 보장됨). 논문에 실으면 각주 필요.", ""]
     for tgt, data in report.items():
         L += [f"## en→{tgt} (n={data['n']})", "",
-              "| 조건 | k | laal_ms ↓ | BLEU ↑ | chrF2 | COMET ↑ | ret(BLEU) | ret(COMET) | ΔCOMET vs unseg [95% CI] |",
-              "|---|---|---|---|---|---|---|---|---|"]
+              "| 조건 | k | 조각 크기 | laal_ms ↓ | BLEU ↑ | chrF2 | COMET ↑ | ret(BLEU) | ret(COMET) | ΔCOMET vs unseg [95% CI] |",
+              "|---|---|---|---|---|---|---|---|---|---|"]
         for name, c in data["conditions"].items():
             ms = "—" if c.get("laal_ms") is None else f"{c['laal_ms']:.0f}"
             pb = c.get("paired_comet_vs_unseg")
             d = ("—" if pb is None else
                  f"{pb['delta']:+.4f} [{pb['ci95'][0]:+.4f}, {pb['ci95'][1]:+.4f}]")
-            L.append(f"| {name} | {c['k']:.2f} | {ms} | {c['bleu']:.2f} | "
+            pu = "—" if c.get("piece_units") is None else f"{c['piece_units']:.1f}"
+            L.append(f"| {name} | {c['k']:.2f} | {pu} | {ms} | {c['bleu']:.2f} | "
                      f"{c['chrf2']:.2f} | {c['comet']:.4f} | "
                      f"{c.get('retention_bleu', 0):.4f} | "
                      f"{c.get('retention_comet', 0):.4f} | {d} |")

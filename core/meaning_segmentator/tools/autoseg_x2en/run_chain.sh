@@ -53,7 +53,7 @@ run_track() {
       --iterations "$iters" --train 40 --dev 265 --test 100 \
       --patience 5 --budget "$budget" --workers 24 \
       --translate-backend local \
-      --adequacy-backend cometkiwi --consistency-backend nli --adopt-se-mult 0.5 \
+      --adequacy-backend cometkiwi --adopt-se-mult 0.5 \
       "${extra[@]}" >> "$log" 2>&1
   # **rc 를 먼저 받는다.** `exit=$?` 로 쓰면 같은 줄의 `$(date)` 서브셸이 먼저 돌아
   # `$?` 를 date 의 종료코드(0)로 덮어쓴다 — 죽은 트랙이 exit=0 으로 남았다.

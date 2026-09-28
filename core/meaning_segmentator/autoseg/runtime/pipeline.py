@@ -22,13 +22,35 @@ import httpx
 
 from ..infra.gateway import Gateway, load_api_key
 
-# 태그는 **순위를 달고 나온다** — `<SEG:1>` 이 가장 확실한 경계다.
-# 순위가 있어야 사후 절단(Truncator)으로 지연 노브를 돌릴 수 있다: 경계를 빼기만
+# 태그는 **확신 점수를 달고 나온다** — `<SEG:s>`, s 는 0..100, 클수록 안전한 경계다.
+# 점수가 있어야 사후 절단(Truncator)으로 지연 노브를 돌릴 수 있다: 경계를 빼기만
 # 하므로 조각 수가 반드시 줄고, LLM 의 지시 준수에 의존하지 않는다.
 #
-# 순위 없는 `<SEG>` 도 파싱만은 받아준다. 사람이 쓴 비교군 프롬프트와
-# 기계분절 앵커가 그 형태이기 때문이다. 다만 순위가 없으면 절단이 불가능하므로
+# **점수는 절대값이다 — 문장 안 순위가 아니다.** 절단은 점수의 *순서*만 쓰지만
+# (동점은 앞쪽 우선), 절대값은 문장 간에 합칠 수 있어 진단에 쓴다: 점수 구간별
+# 실측 contradiction(보정 곡선, `metrics.priority_audit`)이 "모델이 90점이라 한 자리가
+# 실제로 얼마나 뒤집히나"를 답한다. 순위로는 문장이 다르면 1위끼리도 뜻이 달라
+# 이 표를 만들 수 없었다. de-en test 100문장 실측(2026-09-10): 순위→점수로 바꿔도
+# `rank_lift` +0.105 → +0.087 (오차 안), 점수는 30~95 에 고루 퍼졌고 동점 5%,
+# 구간별 contra 는 80점 미만까지 단조(0.153 → 0.085), 80 이상은 평평.
+#
+# 점수 없는 `<SEG>` 도 파싱만은 받아준다. 사람이 쓴 비교군 프롬프트와
+# 기계분절 앵커가 그 형태이기 때문이다. 다만 점수가 없으면 절단이 불가능하므로
 # 그런 분절은 곡선 위의 **점 하나**로만 평가된다 (설계 v2 §11.1).
+SCORE_MAX = 100
+
+# 순위제 프롬프트(<SEG:1> 이 최고 확신)를 이 코드로 평가하면 절단이 **거꾸로** 돈다.
+# 옛 `[Output Rules]` 의 이 문장이 있으면 그 프롬프트다.
+_LEGACY_RANK_MARK = "Use each number exactly once"
+
+
+def check_tag_convention(prompt: str) -> str | None:
+    """순위제 프롬프트면 사유를 돌려준다. 점수제 프롬프트면 None."""
+    if _LEGACY_RANK_MARK in prompt:
+        return ("순위제 프롬프트 (`<SEG:1>` 이 최고 확신) — 지금 코드는 점수제 "
+                "(`<SEG:s>`, 클수록 확신) 라 절단이 거꾸로 돈다. [Output Rules] 를 "
+                "`agents.output_rules()` 로 다시 만들 것")
+    return None
 SEG = "<SEG>"
 TAG_RE = re.compile(r"<SEG(?::(\d+))?>")
 CONSECUTIVE = re.compile(r"<SEG(?::\d+)?>\s*<SEG(?::\d+)?>")
@@ -39,7 +61,7 @@ def tag(priority: int | None = None) -> str:
 
 
 def priorities(seg_text: str) -> list[int | None]:
-    """등장 순서대로의 순위 목록. 순위 없는 태그는 None."""
+    """등장 순서대로의 확신 점수 목록. 점수 없는 태그는 None."""
     return [int(m.group(1)) if m.group(1) else None
             for m in TAG_RE.finditer(seg_text)]
 
@@ -93,7 +115,7 @@ like [1], [2], .... Treat every sentence completely independently — never let 
 influence the boundaries or ranking of another.
 Output ONE line per input sentence, in the same order, with the SAME [n] prefix, followed by
 a single space and then that sentence with <SEG:k> tags inserted.
-Restart the confidence ranking at <SEG:1> inside EVERY sentence.
+Scores are absolute (0-100) and mean the same degree of safety in every sentence.
 Output nothing else — no blank lines, no commentary.
 """
 
@@ -205,12 +227,14 @@ def segment_batch(
     prompt_hash = JsonCache.key(prompt)
 
     def cache_key(t: str) -> str:
-        # "seg4" 는 **모델 입력이 바뀐 시점** 표시다. 캐시에 들어가는 값은 정규화 *후*
+        # "seg5" 는 **모델 입력이나 캐시값의 뜻이 바뀐 시점** 표시다. 캐시에 들어가는 값은 정규화 *후*
         # 문자열이므로, 정규화 규칙이나 1차 호출의 사용자 메시지가 바뀌면 옛 값과 새 값이
         # 섞인다. 지금까지의 승급:
         #   seg3  정규화 도입
         #   seg4  1차 호출에 **요구 경계 수**를 명시 (`need_fn`). 힌트 없이 만든 결과와
         #         있는 결과는 다른 분포다 — 실측 1차 통과율 0.83 -> 0.94.
+        #   seg5  태그가 순위(1 = 최고)에서 **점수(0..100, 클수록 확신)** 로. 정규화가
+        #         더 이상 번호를 1..N 으로 다시 매기지 않으므로 캐시값의 뜻이 다르다.
         # 캐시는 런 디렉토리마다 따로이므로 새 런에는 영향이 없고, `--resume` 이 옛
         # 디렉토리를 이어갈 때만 의미가 있다.
         # 사고량이 바뀌면 분절도 바뀌므로 키에 넣는다. 안 넣으면 effort=low 런이 medium 으로
@@ -218,7 +242,7 @@ def segment_batch(
         # **모델도 같은 이유로 키에 들어간다.** 없으면 모델을 바꿔 돌린 평가가 이전 모델의
         # 캐시를 그대로 맞아 호출 0 회로 "동일한 결과"를 내놓는다 — 두 모델을 비교하려던
         # 실험이 조용히 같은 분절을 두 번 채점하는 것으로 바뀐다.
-        return JsonCache.key("seg4", prompt_hash, gw.model, reasoning_effort or "-",
+        return JsonCache.key("seg5", prompt_hash, gw.model, reasoning_effort or "-",
                              str(batch_size), t)
 
     def cached(t: str) -> list | None:
@@ -277,7 +301,7 @@ def segment_batch(
                         f"[Re-emit the ORIGINAL text above, character for character, with only "
                         f"<SEG:n> tags inserted. Fix every violation listed above by following "
                         f"the [Output Rules] section of your instructions — it already states "
-                        f"how tags must be numbered and what to do when you cannot find enough "
+                        f"how tags must be scored and what to do when you cannot find enough "
                         f"safe positions. Do not shorten, rewrite, or add anything.]"
                     ),
                     max_tokens=SEG_MAX_TOKENS,
@@ -399,11 +423,12 @@ def _self_check(out: str, spaced: bool, punct: str,
     prios = [int(m.group(1)) if m.group(1) else None for m in tags]
     numbered = [p for p in prios if p is not None]
     if numbered:
-        # 하나라도 번호가 있으면 **전부** 번호가 있어야 하고 1..N 이어야 한다.
+        # 하나라도 점수가 있으면 **전부** 점수가 있어야 하고 0..SCORE_MAX 안이어야 한다.
+        # 정규화는 점수를 **다시 매기지 않는다** — 절대값이 진단에 쓰이므로 그대로 둔다.
         if len(numbered) != len(prios):
-            bad.append(f"번호 있는 태그와 없는 태그가 섞임: {prios}")
-        elif sorted(numbered) != list(range(1, len(numbered) + 1)):
-            bad.append(f"번호가 1..N 이 아님: {sorted(numbered)}")
+            bad.append(f"점수 있는 태그와 없는 태그가 섞임: {prios}")
+        elif any(p > SCORE_MAX for p in numbered):
+            bad.append(f"점수가 {SCORE_MAX} 를 넘음: {sorted(numbered)}")
     for b in bad:
         _note(sink, "self_check_failed", b)
         if b not in _SELF_CHECK_SEEN:
@@ -435,25 +460,21 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
     냈고, 그건 `text_modified` 쪽으로 먼저 잡혔다. 받는 조각을 "가장 가까운 내용 있는" 쪽으로
     바꾼 뒤에야 그 경로가 실제로 닫혔다 — 지금은 `_self_check` 가 계속 지켜본다.
 
-    고치는 것: 번호 조밀화(**확신 순위 보존**), 맨 앞/뒤 태그 삭제, 연속 태그 축약,
+    고치는 것: 점수 상한 절삭(`SCORE_MAX`), 맨 앞/뒤 태그 삭제, 연속 태그 축약,
     태그 직후 구두점 재배치, 태그 좌우 공백.
 
-    **연속 태그는 합치되 번호는 가장 확신한 것을 쓴다.** 사이에 글자가 없으니 두 태그는
-    같은 경계이고, 남는 정보는 위치가 아니라 번호다. 예전에는 뒤엣것을 남겨
-    `<SEG:1> <SEG:4>` 가 4 위로 살아남았다 — 모델이 1등으로 꼽은 자리가 `truncate` 에서
-    먼저 잘리는 경로였다.
+    **점수는 다시 매기지 않는다.** 점수는 절대값이라 문장 간에 합쳐 보정 곡선을 만드는
+    데 쓴다 (`metrics.priority_audit`). 순위제 시절에는 여기서 1..N 으로 조밀화했는데
+    (순위 관계만 보존), 점수제에서 그렇게 하면 절대값이 사라져 점수제로 바꾼 이유가
+    없어진다. 동점·결번은 정상이다 — 절단은 순서만 쓰고 동점은 앞쪽 우선이다.
 
-    **번호는 등장 순서가 아니라 모델이 매긴 순위 관계로 다시 붙인다.** 예전에는
-    좌->우로 1..N 을 붙였는데, 그러면 `<SEG:n>` 이 확신도가 아니라 위치를 뜻하게 되고
-    `truncate()` 가 언제나 **가장 앞쪽** 경계만 남긴다. 설계 §6.1 의 순위 절단이
-    통째로 무효가 되는 경로였다 (실측: gpt-5-mini 8문장 전부 모델은 위치와 다른 순열을
-    냈는데 정규화 후 8/8 이 위치 순서가 됐고, T=6 절단 결과가 7/8 에서 달라졌다.
-    한국어 자연발화는 문장 앞쪽에 군말이 몰려 있어 하필 최악의 경계가 선택된다 —
-    프롬프트가 최하위로 매기라고 명시한 부류다).
+    **연속 태그는 합치되 점수는 가장 확신한 것(최댓값)을 쓴다.** 사이에 글자가 없으니
+    두 태그는 같은 경계이고, 남는 정보는 위치가 아니라 점수다. 예전에는 뒤엣것을 남겨
+    모델이 가장 확신한 자리가 `truncate` 에서 먼저 잘리는 경로였다.
 
-    순위 없는 `<SEG>` 는 **번호를 붙이지 않고 그대로 둔다.** 비교군(사람 프롬프트,
-    기계분절)이 그 형태이고, `truncate()` 는 순위가 없으면 절단하지 않기로 되어 있다
-    (설계 §9.2). 예전처럼 번호를 붙이면 비교군이 절단 대상이 되어 규약이 깨진다.
+    점수 없는 `<SEG>` 는 **점수를 붙이지 않고 그대로 둔다.** 비교군(사람 프롬프트,
+    기계분절)이 그 형태이고, `truncate()` 는 점수가 없으면 절단하지 않기로 되어 있다
+    (설계 §9.2). 점수를 붙이면 비교군이 절단 대상이 되어 규약이 깨진다.
 
     **`min_gap` 을 주면 너무 가까운 태그를 여기서 쳐낸다 — LLM 재시도로 넘기지 않는다.**
 
@@ -474,8 +495,8 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
     (사후에만 걸면 절단이 상위 순위를 건너뛰어 평균 순위 1.92 → 2.98) 이 그대로 달성되고
     LLM 호출만 사라진다.
 
-    고르는 규칙은 `truncate` 와 같다 — 순위 1등부터, 이미 고른 자리·문장 양끝과 min_gap
-    이상 떨어진 것만. 순위가 없으면(비교군) 쳐내지 않는다.
+    고르는 규칙은 `truncate` 와 같다 — 점수 높은 것부터(동점은 앞쪽), 이미 고른 자리·문장
+    양끝과 min_gap 이상 떨어진 것만. 점수가 없으면(비교군) 쳐내지 않는다.
     """
     punct = trailing_punct if trailing_punct is not None else default_trailing_punct(seg_text)
     parts = TAG_RE.split(seg_text.strip())
@@ -548,18 +569,18 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
                 _note(sink, "tag_dropped", f"맨 앞 태그 {tag(raw_prios[i])} 삭제")
     # 맨 뒤에 남은 pending 은 trailing tag 몫 — 물려줄 상대가 없으니 버린다.
 
-    # 2) 살아남은 태그에만 번호를 다시 매긴다 — 원래 번호의 **순위 관계**를 보존한 채
-    #    1..N 으로 조밀화한다. 중복·결번은 등장 순서로 깨고, 번호 없는 태그는 뒤로 민다.
-    #    같은 자리로 합쳐진 태그들은 그중 **가장 확신한 번호**로 대표된다.
+    # 2) 살아남은 태그의 점수를 정한다. 같은 자리로 합쳐진 태그들은 그중 **가장 확신한
+    #    점수(최댓값)** 로 대표되고, 상한을 넘는 값은 SCORE_MAX 로 깎는다.
     def _best(i: int) -> int | None:
-        nums = [x for x in (raw_prios[i], *absorbed.get(i, [])) if x is not None]
-        return min(nums) if nums else None
+        nums = [min(x, SCORE_MAX) for x in (raw_prios[i], *absorbed.get(i, []))
+                if x is not None]
+        return max(nums) if nums else None
 
     vals = [_best(i) for i in survivors]
 
-    # 2.5) 간격 정리 — 너무 가까운 태그를 순위 낮은 쪽부터 버린다.
+    # 2.5) 간격 정리 — 너무 가까운 태그를 점수 낮은 쪽부터 버린다.
     #      `truncate` 와 **같은 규칙**이라 결과가 같고, LLM 재시도가 사라진다.
-    #      순위가 하나도 없으면(비교군) 손대지 않는다 — 절단 자체가 없는 규약이다.
+    #      점수가 하나도 없으면(비교군) 손대지 않는다 — 절단 자체가 없는 규약이다.
     if min_gap > 0 and len(survivors) > 0 and any(v is not None for v in vals):
         wc = [unit_count(c, spaced) for c in chunks]
         pos, acc = [], 0
@@ -567,8 +588,7 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
             acc += w
             pos.append(acc)
         total = acc + wc[-1]
-        order = sorted(range(len(vals)),
-                       key=lambda j: (vals[j] is None, vals[j] if vals[j] is not None else 0, j))
+        order = sorted(range(len(vals)), key=lambda j: _score_order(vals[j], j))
         keep: list[int] = []
         for j in order:
             edges = [0, total] + [pos[t] for t in keep]
@@ -593,22 +613,15 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
                     new_chunks[-1] = (new_chunks[-1] + joiner + chunks[j + 1]).strip()
             chunks, vals, survivors = new_chunks, new_vals, new_survivors
 
-    if all(v is None for v in vals):
-        labels: list[int | None] = [None] * len(vals)          # 비교군 — 그대로 둔다
-    else:
-        order = sorted(range(len(vals)),
-                       key=lambda j: (vals[j] is None, vals[j] if vals[j] is not None else 0, j))
-        labels = [0] * len(vals)
-        for rank, j in enumerate(order, 1):
-            labels[j] = rank
+    labels: list[int | None] = list(vals)      # 점수는 그대로 — 다시 매기지 않는다
 
     if pending:
         _note(sink, "tag_dropped", f"맨 뒤 태그 {len(pending)}개 삭제")
 
-    # 번호가 실제로 바뀌었을 때만 기록한다 — 조밀화는 대부분의 문장에서 무동작이다.
+    # 점수가 실제로 바뀌었을 때만 기록한다 (상한 절삭·연속 태그 병합).
     kept = [raw_prios[i] for i in survivors]
     if labels != kept and any(v is not None for v in vals):
-        _note(sink, "renumbered", f"{kept} -> {labels} (순위 관계 보존)")
+        _note(sink, "score_adjusted", f"{kept} -> {labels} (상한 절삭 또는 병합)")
 
     out = chunks[0]
     for label, nxt in zip(labels, chunks[1:]):
@@ -643,9 +656,9 @@ def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
     프롬프트가 아니라 정규화가 잘못한 것이라 대응이 완전히 다르다.
 
     여기 남은 것은 정규화가 **원리적으로 못 고치는** 것뿐이다: 원문 훼손, 태그 개수 부족,
-    조각 간격 부족, 무번호 태그.
+    조각 간격 부족, 무점수 태그.
 
-    require_priority=False 는 순위 없는 `<SEG>` 를 허용한다. 비교군(사람 프롬프트,
+    require_priority=False 는 점수 없는 `<SEG>` 를 허용한다. 비교군(사람 프롬프트,
     기계분절)을 같은 검증기로 통과시키기 위한 것이며 루프에서는 쓰지 않는다.
     """
     v: list[Violation] = []
@@ -655,12 +668,12 @@ def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
     if strip_tags(s, spaced) != strip_tags(original, spaced):
         v.append(Violation(sent_id, "text_modified",
                            "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)"))
-    # ── 순위 규칙 ──────────────────────────────────────────────────────
-    # 순위가 깨지면 Truncator 가 "상위 k−1개"를 정의할 수 없어 노브 자체가 죽는다.
+    # ── 점수 규칙 ──────────────────────────────────────────────────────
+    # 점수가 없으면 Truncator 가 "상위 k−1개"를 정의할 수 없어 노브 자체가 죽는다.
     #
-    # 남는 검사는 **무번호 태그** 하나뿐이다. 번호 중복·결번은 정규화가 1..N 으로 다시
-    # 매기지만, 전부 무번호인 출력은 비교군(사람 프롬프트·기계분절)일 수 있어 그대로
-    # 두기 때문이다. 루프에서는 순위가 없으면 절단이 불가능하므로 위반이다.
+    # 남는 검사는 **무점수 태그** 하나뿐이다. 동점·결번은 점수제에서 정상이고 상한
+    # 초과는 정규화가 깎지만, 전부 무점수인 출력은 비교군(사람 프롬프트·기계분절)일 수
+    # 있어 그대로 두기 때문이다. 루프에서는 점수가 없으면 절단이 불가능하므로 위반이다.
     #
     # **부분 순위는 기각됐다** — 상위 N 개만 번호를 요구해 사고량을
     # 아끼려 했으나, 정렬 생략은 평가 생략이 아니라 사고가 오히려 +17% 늘었다
@@ -669,7 +682,7 @@ def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
     if require_priority and tags:
         if any(m.group(1) is None for m in tags):
             v.append(Violation(sent_id, "bad_priority_format",
-                               "순위 없는 태그. 모든 태그는 <SEG:n> 형태여야 함"))
+                               "점수 없는 태그. 모든 태그는 <SEG:s> (s = 0..100) 형태여야 함"))
 
     # ── 커버리지 요건 (v2, C 방식) ──────────────────────────────────────
     # 노브는 경계를 **빼기만** 하므로 프롬프트가 안 찍은 경계는 만들어낼 수 없다.
@@ -775,9 +788,22 @@ def coverage_need(text: str, min_t: int, spaced: bool, min_gap: int) -> int:
     return need
 
 
+def _score_order(score: int | None, pos_index: int, higher_first: bool = True):
+    """절단·간격 정리가 공유하는 정렬 키. 점수 높은 것부터, 동점은 **앞쪽 우선**,
+    점수 없는 태그는 맨 뒤. `higher_first=False` 는 옛 순위제 데이터(1 = 최고) 전용."""
+    if score is None:
+        return (1, 0, pos_index)
+    return (0, -score if higher_first else score, pos_index)
+
+
 def truncate(seg_text: str, target_chunk_words: int,
-             spaced: bool = True, min_gap: int = 0) -> tuple[str, int]:
-    """순위 상위 `k−1` 개 경계만 남긴다. 반환 `(절단된 seg_text, missing_boundaries)`.
+             spaced: bool = True, min_gap: int = 0,
+             higher_first: bool = True) -> tuple[str, int]:
+    """점수 상위 `k−1` 개 경계만 남긴다. 반환 `(절단된 seg_text, missing_boundaries)`.
+
+    `higher_first=False` 는 **순위제로 라벨된 옛 데이터**(`<SEG:1>` 이 최고 확신)를 오프라인
+    재절단할 때만 쓴다 — `tools/covost2_label`, `evaluation/DailyTalk` 의 라벨이 그 형태다.
+    루프와 `eval_prompt` 는 항상 기본값이다.
 
     `missing_boundaries` 는 예산이 요구한 경계 중 프롬프트가 못 준 개수다. 프롬프트가 충분히 공격적으로 자르지
     않았다는 신호이며, Critic 이 마킹 밀도를 볼 때 쓴다.
@@ -792,7 +818,7 @@ def truncate(seg_text: str, target_chunk_words: int,
     `min_gap` — 이미 고른 경계(및 문장 양끝)와 이 어절 수 미만이면 건너뛴다.
     **T 는 조각 크기의 평균이지 하한이 아니다.** T=6 인데 문장의 절반(47/100)이 2어절
     이하 조각을 하나 이상 갖고 있었고, 그런 문장은 effective 가 0.728 로 최단 조각이
-    4어절 이상인 문장(0.784)보다 크게 낮았다. 순위만 보고 고르면 1·2위가 붙어 있을 때
+    4어절 이상인 문장(0.784)보다 크게 낮았다. 점수만 보고 고르면 상위 둘이 붙어 있을 때
     1어절 조각이 나온다 — 절단기가 **간격을 안 보기** 때문이다.
 
     en-de test 100문장 오프라인 시뮬 (min_gap 0/2/3/4):
@@ -802,7 +828,7 @@ def truncate(seg_text: str, target_chunk_words: int,
     배제한다. 이득은 contradiction 에서 나온다(0.0724 -> 0.0526) — 다만 조각이 길어지면
     NLI 잡음 바닥도 함께 내려가므로, 실제 조기방출 감소인지 바닥 효과인지는 미분리다.
 
-    **제약을 못 채우면 덜 자른다 — 순위 순 보충을 하지 않는다.** 예전에는 보충했고
+    **제약을 못 채우면 덜 자른다 — 점수 순 보충을 하지 않는다.** 예전에는 보충했고
     "실측 미달 0건" 이라 무해해 보였는데, 그 실측이 en-de 였다. ko-en/run05 를 오프라인
     재절단하면 min_gap=3 에서 보충이 T=2 150/150, T=3 107/150, T=4 11/150, T=6 1/150
     으로 **거의 항상** 발동한다. 보충이 있으면 min_gap 이 선언만 하고 강제를 못 해
@@ -837,11 +863,12 @@ def truncate(seg_text: str, target_chunk_words: int,
     body = strip_tags(seg_text, spaced)
     want = boundaries(body, target_chunk_words, spaced)
     if any(p is None for p in prios):
-        return seg_text, max(0, want - len(tags))      # 순위 없음 — 절단 불가
+        return seg_text, max(0, want - len(tags))      # 점수 없음 — 절단 불가
 
     # `min_gap <= 0` 을 따로 분기하지 않는다 — 거리 조건이 절대 참이 안 되므로 아래
     # 루프가 그대로 `order[:want]` 가 된다 (랜덤 20,000건 검증, 불일치 0).
-    order = sorted(range(len(prios)), key=lambda i: prios[i])
+    # 점수 내림차순, 동점은 앞쪽 우선 (`normalize_tags` 의 간격 정리와 같은 키).
+    order = sorted(range(len(prios)), key=lambda i: _score_order(prios[i], i, higher_first))
     pos, total = tag_positions(seg_text, spaced)
     chosen: list[int] = []
     for i in order:
@@ -851,24 +878,24 @@ def truncate(seg_text: str, target_chunk_words: int,
         if min(abs(pos[i] - e) for e in edges) < min_gap:
             continue
         chosen.append(i)
-    # 못 채우면 덜 자른다 — 순위 순 보충을 하지 않는다
+    # 못 채우면 덜 자른다 — 점수 순 보충을 하지 않는다
     return _rebuild(seg_text, set(chosen), spaced), max(0, want - len(tags))
 
 
 def shuffle_priorities(seg_text: str, rng: random.Random) -> str:
-    """후보 위치는 그대로 두고 **순위 번호만 무작위로 치환한다.**
+    """후보 위치는 그대로 두고 **점수만 자리끼리 무작위로 뒤섞는다.**
 
     `rank_lift` 의 대조군을 만드는 용도다. 같은 후보 집합·같은 `want`·같은 `min_gap` 을
-    통과하므로 `truncate` 가 고르는 **keep 집합만** 달라진다 — 순위가 하는 일(버릴 것과
-    남길 것을 가르기)만 분리해서 잴 수 있다.
+    통과하므로 `truncate` 가 고르는 **keep 집합만** 달라진다 — 점수가 하는 일(버릴 것과
+    남길 것을 가르기)만 분리해서 잴 수 있다. 점수 집합 자체는 보존된다(순열).
 
-    순위가 없는 태그가 하나라도 있으면 그대로 돌려준다 (비교군 프롬프트는 절단 자체가
+    점수가 없는 태그가 하나라도 있으면 그대로 돌려준다 (비교군 프롬프트는 절단 자체가
     없으므로 대조군도 성립하지 않는다).
     """
     prios = priorities(seg_text)
     if not prios or any(p is None for p in prios):
         return seg_text
-    perm = list(range(1, len(prios) + 1))
+    perm = list(prios)
     rng.shuffle(perm)
     it = iter(perm)
     return TAG_RE.sub(lambda _m: tag(next(it)), seg_text)

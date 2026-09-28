@@ -91,7 +91,7 @@ Minimum and Maximum cuda capability supported by this version of PyTorch is (8.0
 |---|---|---|
 | 번역 (목적함수용) | `google/madlad400-3b-mt` | fp16, **greedy** (`num_beams=1`), 마이크로배치 48, 입력 384토큰 절단, 출력 최대 192토큰, 클라이언트 스레드 64, 문맥 미사용 |
 | adequacy (주지표) | `Unbabel/wmt22-cometkiwi-da` | **참조 없는 QE**, `gpus=1`, batch 16, DataLoader `num_workers=0` |
-| contradiction / consistency | `vicgalle/xlm-roberta-large-xnli-anli` | `device=0`, batch 16, `truncation=True, max_length=512` |
+| contradiction | `vicgalle/xlm-roberta-large-xnli-anli` | `device=0`, batch 64, fp16, `truncation=True, max_length=512` |
 | 강제정렬 (전처리) | `Qwen/Qwen3-ForcedAligner-0.6B` | `min_gap` 유도용 단위 종료시각 산출, 80ms 격자 |
 
 세부 규약 셋을 함께 적어야 재현된다.
@@ -141,7 +141,7 @@ Minimum and Maximum cuda capability supported by this version of PyTorch is (8.0
 --iterations 5 --train 40 --dev 265 --test 100
 --patience 5 --workers 24
 --translate-backend local            # google/madlad400-3b-mt
---adequacy-backend cometkiwi --consistency-backend nli --adopt-se-mult 0.5
+--adequacy-backend cometkiwi --adopt-se-mult 0.5
 ```
 
 config 에만 있고 인자로 안 주는 값: `revision_candidates 3`, `v0_candidates 1`,
@@ -163,9 +163,10 @@ ja/zh 의 값이 큰 것은 언어 특성이 아니라 **단위가 다르기 때
 않는다.** 발화속도는 총 길이가 아니라 `speech_ms`(첫 발화 시작 ~ 마지막 발화 끝)로 잰다 —
 FLEURS 녹음은 앞뒤 무음이 1~2초씩 있어 총 길이로 재면 과소평가된다.
 
-검증 타깃은 기본 풀(English, Korean, Japanese, Chinese, Spanish, German)에서 **소스 언어만
-뺀 5개**이고, 목적함수는 타깃별 z-정규화 effective 의 평균이다. `--target-aware` 런
-(`run13ta-*`) 만 타깃이 1개다.
+검증 타깃은 기본 풀(English, Chinese, Japanese, German)에서 **소스 언어만 뺀 3개**이고,
+목적함수는 타깃별 z-정규화 effective 의 평균이다. `--target-aware` 런 (`run13ta-*`) 만
+타깃이 1개다. 아래 표의 런들은 Korean·Spanish 가 포함된 6개 풀(타깃 5개)로 쟀으므로
+`effective_z` 값을 지금 풀로 잰 런과 직접 비교할 수 없다 — 타깃별 원값 곡선은 비교된다.
 
 ## 7. 벽시계 시간과 비용
 
@@ -205,7 +206,7 @@ PYTHONPATH=. .venv-autoseg/bin/python -m core.meaning_segmentator.autoseg.loop \
   --iterations 5 --train 40 --dev 265 --test 100 \
   --patience 5 --budget 25 --workers 24 \
   --translate-backend local \
-  --adequacy-backend cometkiwi --consistency-backend nli --adopt-se-mult 0.5
+  --adequacy-backend cometkiwi --adopt-se-mult 0.5
 ```
 
 사전 요건 둘: `OPENAI_API_KEY`, 그리고 **CometKiwi 는 HF 게이트 모델**이라

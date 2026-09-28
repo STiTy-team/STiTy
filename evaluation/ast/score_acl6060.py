@@ -112,24 +112,44 @@ def load_manifest(path: Path) -> Dict[str, dict]:
     return out
 
 
-def commits_from_row(row: dict) -> List[Commit]:
+DELAY_FIELDS = ("decision_audio_sec", "payload_at_audio_sec")
+
+
+def commits_from_row(row: dict, delay_field: str = "decision_audio_sec") -> List[Commit]:
     """`metric.json` 의 세그먼트 → 커밋. **결정 시점 순서**로 정렬한다.
 
     `segment_id` 는 서버가 매기는 발행 순서라 대체로 시간순이지만, 지연의 근거는
-    `decision_audio_sec` 이므로 그걸 1순위로 둔다(동률이면 segment_id).
+    `delay_field` 이므로 그걸 1순위로 둔다(동률이면 segment_id).
+
+    `delay_field` 로 무엇을 고를 것인가
+    -----------------------------------
+    `decision_audio_sec` 은 `<SEG>` 를 **처음** 감지한 시각인데, 서버가
+    `if key not in self._slot_seg_detected` 로만 기록해 **갱신하지 않는다**. seg 축은
+    커밋 시점 텍스트에 이미 다음 `<SEG>` 가 들어 있는 일이 흔해서(`COMMIT-PENDING`),
+    pop 직후 다음 청크에서 곧바로 새 값이 박힌다. 실측(dev 3언어 3,161쌍): stale 커밋의
+    53~57% 가 `decision[k] == payload[k-1] + 0.2s` 로 **직전 커밋을 낸 직후의 위치**다.
+    그래서 이 값은 세그먼트의 끝이 아니라 **시작**에 가깝고, 그만큼 지연이 통째로 빠진다.
+
+    `payload_at_audio_sec` 은 payload 를 만들 때 서버가 받아 둔 오디오 위치
+    (`float(self.current_time)`)다. 공식 StreamLAAL 이 쓰는 `total_audio_processed` 와
+    같은 뜻이고, gold 문장 끝과 비교하면 중앙 +1.09초로 물리적으로 맞는 자리에 온다
+    (`decision` 은 −2.16초로 문장을 다 듣기 전을 가리킨다).
     """
+    if delay_field not in DELAY_FIELDS:
+        raise ValueError(f"delay_field 는 {DELAY_FIELDS} 중 하나여야 한다: {delay_field!r}")
     segs = [s for s in row["segments"]
-            if s.get("decision_audio_sec") is not None
+            if s.get(delay_field) is not None
             and s.get("recv_elapsed_sec") is not None]
-    segs.sort(key=lambda s: (s["decision_audio_sec"], s["segment_id"] or 0))
+    segs.sort(key=lambda s: (s[delay_field], s["segment_id"] or 0))
     return [Commit(text=(s["translation"] or "").strip(),
-                   ideal_delay=float(s["decision_audio_sec"]),
+                   ideal_delay=float(s[delay_field]),
                    ca_delay=float(s["recv_elapsed_sec"]))
             for s in segs]
 
 
 def score_one(run_dir: Path, manifest: Dict[str, dict], lang: str,
-              null_penalty_sec: float) -> dict:
+              null_penalty_sec: float,
+              delay_field: str = "decision_audio_sec") -> dict:
     unit = LANG_UNIT[lang]
     scorer = StreamLaal(argparse.Namespace(latency_unit=unit))
 
@@ -160,7 +180,7 @@ def score_one(run_dir: Path, manifest: Dict[str, dict], lang: str,
         sentences = item["sentences"]
         refs = build_reference_defs(sentences)
         d = Diagnostics()
-        owd = build_output_with_delays(commits_from_row(row), unit, d)
+        owd = build_output_with_delays(commits_from_row(row, delay_field), unit, d)
         diag_total.n_commits += d.n_commits
         diag_total.n_empty_commits_dropped += d.n_empty_commits_dropped
         diag_total.n_units += d.n_units
@@ -265,6 +285,7 @@ def score_one(run_dir: Path, manifest: Dict[str, dict], lang: str,
         "axis": axis_client or axis_server,
         "lang": lang,
         "latency_unit": unit,
+        "delay_field": delay_field,
         "stream_laal_sec": round(scores.ideal_latency, 4),
         "stream_laal_ca_sec": round(scores.computational_aware_latency, 4),
         "stream_laal_null_penalized_sec": (
@@ -303,11 +324,15 @@ def main() -> int:
     p.add_argument("--results-root", default=str(HERE / "results" / "ACL6060"))
     p.add_argument("--manifest-dir", default=str(HERE / "manifests"))
     p.add_argument("--tag", required=True)
-    p.add_argument("--split", default="dev", choices=["dev", "eval"])
+    p.add_argument("--split", default="dev",
+                   help="dev / eval, 또는 매니페스트가 있는 임의 split(repro110 등)")
     p.add_argument("--axes", nargs="+", default=None)
     p.add_argument("--langs", nargs="+", default=["de", "ja", "zh"])
     p.add_argument("--null-penalty-sec", type=float, default=10.0,
                    help="보조 컬럼에서 null 문장 하나에 물리는 벌점(초). 임의값이므로 함께 보고할 것")
+    p.add_argument("--delay-field", default="decision_audio_sec", choices=list(DELAY_FIELDS),
+                   help="d_i 로 쓸 metric.json 필드. 기본값 decision_audio_sec 은 직전 커밋 "
+                        "직후의 위치를 가리키는 문제가 있다(commits_from_row docstring 참고)")
     p.add_argument("--baseline-out", default=None,
                    help="첫 런 진단을 기준선으로 저장할 경로")
     p.add_argument("--out", default=None)
@@ -324,7 +349,7 @@ def main() -> int:
                 continue
             man = load_manifest(Path(a.manifest_dir) / f"acl6060_{a.split}_en-{lang}.jsonl")
             print(f"── {axis}/{lang}")
-            r = score_one(run_dir, man, lang, a.null_penalty_sec)
+            r = score_one(run_dir, man, lang, a.null_penalty_sec, a.delay_field)
             results.append(r)
             dg = r["diagnostics"]
             print(f"   StreamLAAL {r['stream_laal_sec']:7.3f}s  "
@@ -348,18 +373,22 @@ def main() -> int:
     if not results:
         print("채점할 결과가 없습니다."); return 2
 
-    out = Path(a.out) if a.out else root / f"streamlaal_{a.split}_{a.tag}.json"
+    # 기본 필드가 아니면 파일 이름을 갈라 둔다 — 같은 tag 의 기존 채점을 덮으면
+    # 어느 필드로 낸 값인지 사후에 구분할 수 없다.
+    sfx = "" if a.delay_field == "decision_audio_sec" else "_payload"
+    out = Path(a.out) if a.out else root / f"streamlaal_{a.split}_{a.tag}{sfx}.json"
     reseg = {f"{r['axis']}/{r['lang']}": r.pop("_reseg") for r in results}
     sents = {f"{r['axis']}/{r['lang']}": r.pop("_per_sentence") for r in results}
-    out.write_text(json.dumps({"tag": a.tag, "split": a.split, "results": results},
+    out.write_text(json.dumps({"tag": a.tag, "split": a.split,
+                               "delay_field": a.delay_field, "results": results},
                               ensure_ascii=False, indent=2), encoding="utf-8")
-    (out.parent / f"reseg_{a.split}_{a.tag}.json").write_text(
+    (out.parent / f"reseg_{a.split}_{a.tag}{sfx}.json").write_text(
         json.dumps(reseg, ensure_ascii=False), encoding="utf-8")
     print(f"\n저장: {out}")
-    print(f"      {out.parent / f'reseg_{a.split}_{a.tag}.json'}  (COMET 채점용)")
-    (out.parent / f"laal_sentences_{a.split}_{a.tag}.json").write_text(
+    print(f"      {out.parent / f'reseg_{a.split}_{a.tag}{sfx}.json'}  (COMET 채점용)")
+    (out.parent / f"laal_sentences_{a.split}_{a.tag}{sfx}.json").write_text(
         json.dumps(sents, ensure_ascii=False), encoding="utf-8")
-    print(f"      {out.parent / f'laal_sentences_{a.split}_{a.tag}.json'}  (문장별 LAAL 분포)")
+    print(f"      {out.parent / f'laal_sentences_{a.split}_{a.tag}{sfx}.json'}  (문장별 LAAL 분포)")
 
     if a.baseline_out:
         Path(a.baseline_out).write_text(json.dumps(

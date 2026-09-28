@@ -41,7 +41,7 @@ for spec in "ja-en Japanese fleurs-ja-en 45" "zh-en Chinese fleurs-zh-en 30"; do
       --iterations 5 --train 40 --dev 265 --test 100 \
       --patience 5 --budget "$budget" --workers 24 \
       --translate-backend local \
-      --adequacy-backend cometkiwi --consistency-backend nli --adopt-se-mult 0.5 \
+      --adequacy-backend cometkiwi --adopt-se-mult 0.5 \
       --resume >> "$RUNS/${pair}_run02.log" 2>&1
   rc=$?   # $(date) 서브셸이 $? 를 덮어쓰기 전에 받는다
   echo "[$(date '+%F %T')] $pair --resume exit=$rc" >> $LL

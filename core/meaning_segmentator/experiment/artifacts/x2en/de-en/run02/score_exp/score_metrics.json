@@ -1,0 +1,183 @@
+{
+ "metrics": {
+  "n": 100,
+  "format_pass_rate": 0.99,
+  "format_pass_rate_no_retry": 0.9,
+  "by_T": {
+   "4": {
+    "target_chunk_words": 4,
+    "n": 100,
+    "n_effective": 99,
+    "effective": 0.6255,
+    "adequacy": 0.7125,
+    "contradiction": 0.1234,
+    "effective_min": 0.0049,
+    "effective_p10": 0.3272,
+    "consistency": 0.6747,
+    "laal_words": 2.7622,
+    "chunks_per_sentence": 5.2828,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1831,
+    "effective_ent": 0.5838,
+    "effective_z": null,
+    "n_targets": null
+   },
+   "6": {
+    "target_chunk_words": 6,
+    "n": 100,
+    "n_effective": 97,
+    "effective": 0.6905,
+    "adequacy": 0.7628,
+    "contradiction": 0.0969,
+    "effective_min": 0.0048,
+    "effective_p10": 0.4445,
+    "consistency": 0.6982,
+    "laal_words": 4.1022,
+    "chunks_per_sentence": 3.5051,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1581,
+    "effective_ent": 0.6436,
+    "effective_z": null,
+    "n_targets": null
+   },
+   "8": {
+    "target_chunk_words": 8,
+    "n": 100,
+    "n_effective": 91,
+    "effective": 0.6956,
+    "adequacy": 0.792,
+    "contradiction": 0.1207,
+    "effective_min": 0.0012,
+    "effective_p10": 0.4362,
+    "consistency": 0.7308,
+    "laal_words": 5.4526,
+    "chunks_per_sentence": 2.6667,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1847,
+    "effective_ent": 0.6456,
+    "effective_z": null,
+    "n_targets": null
+   },
+   "12": {
+    "target_chunk_words": 12,
+    "n": 100,
+    "n_effective": 67,
+    "effective": 0.7712,
+    "adequacy": 0.8258,
+    "contradiction": 0.0628,
+    "effective_min": 0.0489,
+    "effective_p10": 0.6799,
+    "consistency": 0.8858,
+    "laal_words": 8.8159,
+    "chunks_per_sentence": 1.7677,
+    "missing_boundaries": 0.0,
+    "rank_contra_spearman": null,
+    "rank_contra_gap": null,
+    "rank_contra_gap_se": null,
+    "rank_contra_gap_n": null,
+    "contradiction_ent": 0.1114,
+    "effective_ent": 0.7315,
+    "effective_z": null,
+    "n_targets": null
+   }
+  },
+  "score": 0.6957,
+  "rank_lift": 0.08707,
+  "rank_lift_se": 0.01844,
+  "rank_lift_t": 4.72,
+  "rank_lift_n": 67,
+  "rank_lift_T": 12
+ },
+ "score": 0.6956979804339498,
+ "violations": [
+  {
+   "id": "de_de_846",
+   "rule": "text_modified",
+   "detail": "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "\"Heutzutage gibt es allerdings etablierte Graffiti-Künstler, Graffiti-Veranstaltungen und „legale\"\" Wände. In diesem Kontext gleichen Graffiti-Gemälde häufiger Kunstwerken als unlesbaren Kritzeleien. \"",
+   "seg_text": "Heutzutage gibt es <SEG:5> allerdings etablierte Graffiti-Künstler, <SEG:2> Graffiti-Veranstaltungen und „legale\"\" Wände. <SEG:1> In diesem Kontext <SEG:3> gleichen Graffiti-Gemälde häufiger Kunstwerken <SEG:4> als unlesbaren Kritzeleien."
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 3개 — 최소 4개 필요",
+   "text": "Fluke schrieb, dass die Anstrengungen einiger, Frauen, die über die Gesundheit von Frauen sprechen wollten, zu übertönen, nicht erfolgreich waren.",
+   "seg_text": "Fluke schrieb, dass die Anstrengungen einiger, Frauen, <SEG:2> die über die Gesundheit von <SEG:3> Frauen sprechen wollten, <SEG:1> zu übertönen, nicht erfolgreich waren.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 4개 — 최소 5개 필요",
+   "text": "Die mallorquinische Küche basiert, wie die in ähnlichen Gebieten des Mittelmeers, auf Brot, Gemüse und Fleisch (insbesondere Schweinefleisch) und verwendet stets Olivenöl.",
+   "seg_text": "Die mallorquinische Küche basiert, <SEG:2> wie die in ähnlichen Gebieten <SEG:4> des Mittelmeers, auf Brot, <SEG:3> Gemüse und Fleisch <SEG:1> (insbesondere Schweinefleisch) und verwendet stets Olivenöl.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 6개 — 최소 7개 필요",
+   "text": "Die vorübergehend amtierende Premierministerin Julia Gillard erklärte während des Wahlkampfes für die Bundeswahl 2010, dass ihrer Meinung nach Australien am Ende der Herrschaft von Königin Elizabeth II eine Republik werden sollte.",
+   "seg_text": "Die vorübergehend amtierende Premierministerin Julia Gillard <SEG:1> erklärte während des Wahlkampfes <SEG:3> für die Bundeswahl 2010, <SEG:2> dass ihrer Meinung nach <SEG:6> Australien am Ende <SEG:4> der Herrschaft von Königin <SEG:5> Elizabeth II eine Republik werden sollte.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 7개 — 최소 8개 필요",
+   "text": "Kinder mit ADHS haben Schwierigkeiten, sich auf Dinge wie Schularbeiten zu konzentrieren, aber sie können sich auf Dinge konzentrieren, die ihnen Spaß machen, wie etwa Spielen, ihre Lieblingszeichentrickserie zu schauen oder Sätze ohne Zeichensetzung zu schreiben.",
+   "seg_text": "Kinder mit ADHS haben <SEG:3> Schwierigkeiten, sich auf Dinge wie Schularbeiten zu konzentrieren, <SEG:1> aber sie können sich auf Dinge konzentrieren, <SEG:2> die ihnen Spaß machen, <SEG:4> wie etwa Spielen, <SEG:5> ihre Lieblingszeichentrickserie zu schauen <SEG:6> oder Sätze ohne <SEG:7> Zeichensetzung zu schreiben.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 5개 — 최소 7개 필요",
+   "text": "Dazu gehören die Niederlande, wo Anna Jochemsen gestern im Super-G den neunten Platz im Stand der Damen belegte, und Finnland mit Katja Saarinen, die im selben Wettbewerb den zehnten Platz belegte.",
+   "seg_text": "Dazu gehören die Niederlande, <SEG:2> wo Anna Jochemsen gestern im Super-G <SEG:5> den neunten Platz <SEG:4> im Stand der Damen belegte, <SEG:1> und Finnland mit Katja <SEG:3> Saarinen, die im selben Wettbewerb den zehnten Platz belegte.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 4개 — 최소 5개 필요",
+   "text": "Der Gouverneur gab auch bekannt: „Heute haben wir erfahren, dass bei einigen Schulkindern festgestellt wurde, dass sie mit dem Patienten in Kontakt waren.“",
+   "seg_text": "Der Gouverneur gab auch bekannt: <SEG:1> „Heute haben wir erfahren, <SEG:2> dass bei einigen Schulkindern <SEG:4> festgestellt wurde, dass sie mit dem Patienten <SEG:3> in Kontakt waren.“",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 4개 — 최소 5개 필요",
+   "text": "Der Ratschlag setzt voraus, dass Reisende nicht stehlen, Hausfriedensbruch begehen, Schwarzmarktaktivitäten nachgehen, betteln oder andere Menschen auf andere Weise zum eigenen Vorteil ausnutzen.",
+   "seg_text": "Der Ratschlag setzt voraus, <SEG:1> dass Reisende nicht stehlen, <SEG:2> Hausfriedensbruch begehen, Schwarzmarktaktivitäten nachgehen, <SEG:3> betteln oder andere Menschen <SEG:4> auf andere Weise zum eigenen Vorteil ausnutzen.",
+   "first_pass": true
+  },
+  {
+   "rule": "text_modified",
+   "detail": "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+   "text": "\"Heutzutage gibt es allerdings etablierte Graffiti-Künstler, Graffiti-Veranstaltungen und „legale\"\" Wände. In diesem Kontext gleichen Graffiti-Gemälde häufiger Kunstwerken als unlesbaren Kritzeleien. \"",
+   "seg_text": "\"Heutzutage gibt allerdings etablierte Graffiti-Künstler, <SEG:2> Graffiti-Veranstaltungen und „legale\"\" Wände. <SEG:1> In diesem Kontext <SEG:3> gleichen Graffiti-Gemälde häufiger Kunstwerken <SEG:4> als unlesbaren Kritzeleien. \"",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 2개 — 최소 3개 필요",
+   "text": "Der größte Teil des Lebens der hebräischen Familie spielte sich unter freiem Himmel ab.",
+   "seg_text": "Der größte Teil des Lebens <SEG:2> der hebräischen Familie <SEG:1> spielte sich unter freiem Himmel ab.",
+   "first_pass": true
+  },
+  {
+   "rule": "too_few_tags",
+   "detail": "경계 5개 — 최소 6개 필요",
+   "text": "Jonny Reid, Beifahrer für das A1GP-Team Neuseeland, hat heute Geschichte geschrieben, als er legal in neuer Rekordzeit über die 48 Jahre alte Auckland Harbour Bridge in Neuseeland gefahren ist.",
+   "seg_text": "Jonny Reid, Beifahrer für das A1GP-Team Neuseeland, <SEG:2> hat heute Geschichte geschrieben, <SEG:1> als er legal in neuer Rekordzeit <SEG:4> über die 48 Jahre <SEG:5> alte Auckland Harbour Bridge <SEG:3> in Neuseeland gefahren ist.",
+   "first_pass": true
+  }
+ ]
+}
