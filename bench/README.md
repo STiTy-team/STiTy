@@ -9,9 +9,10 @@
 
 ```bash
 # 데이터셋은 별도 리포다. 체크아웃한 디렉토리가 곧 STITY_DATA_ROOT 다.
-git clone git@github.com:STiTy-team/datasets.git ~/datasets
-export STITY_DATA_ROOT=~/datasets
-SRC="en_us ko_kr" TGT=ko_kr bash $STITY_DATA_ROOT/fleurs/install.sh   # fleurs/en_us, fleurs/ko_kr
+# .env 에 STITY_DATA_ROOT=<절대 경로> 를 적는다(.env.example 참고). 없으면 이 리포 옆
+# ../datasets 를 쓴다. 한 번만 바꾸려면 make bench ... STITY_DATA_ROOT=<경로>. make env 로 확인한다.
+git clone git@github.com:STiTy-team/datasets.git ../datasets
+SRC="en_us ko_kr" TGT=ko_kr bash ../datasets/fleurs/install.sh   # fleurs/en_us, fleurs/ko_kr
 
 make bench CONFIG=asr.qwen-seg-en+mt.qwen3.5-4b DATASET=fleurs_en-ko  # en→ko
 make bench CONFIG=asr.qwen-seg-ko+mt.qwen3.5-4b DATASET=fleurs_ko-en  # ko→en
