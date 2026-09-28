@@ -178,14 +178,23 @@ def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
     if cfg.longform:
         items = _talks(items)
 
+    items = _pick(items, cfg)
+
     return DatasetSpec(
         name=str(spec.get("name") or cfg.name),
         root=ds_root,
         spec=spec,
         manifest_sha256=_sha256(manifest_path),
         alignment_sha256=alignment_sha256,
-        items=items[: cfg.limit],
+        items=items,
     )
+
+
+def _pick(items: list[Item], cfg: DatasetConfig) -> list[Item]:
+    if cfg.pick == "longest":
+        chosen = {i.id for i in sorted(items, key=lambda i: -i.duration_sec)[: cfg.limit]}
+        return [i for i in items if i.id in chosen]
+    return items[: cfg.limit]
 
 
 def _sha256(path: Path) -> str:
