@@ -4,7 +4,7 @@ from argparse import Namespace
 from pathlib import Path
 
 from core.errors import STiTyError
-from core.utils import cli
+from core.utils import cli, env
 
 from ..config import get_runs_dir
 from .server import PORT, serve
@@ -55,4 +55,5 @@ if __name__ == "__main__":
         prog="python -m bench.replay",
         description="bench 실행들을 비교하는 대시보드와, 녹음된 세션을 다시 재생하는 페이지",
     )
+    env.load()
     raise SystemExit(main(args))

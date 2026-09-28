@@ -25,12 +25,15 @@ the GPU: stop any bench run first.
 
 ```bash
 cd <repo root>
-export CUDA_HOME=/usr/local/cuda PATH=/usr/local/cuda/bin:$PATH  # the translator's vLLM JIT-compiles with nvcc; /usr/bin/nvcc here is too old
 make server PIPELINE=asr.qwen-seg-en+mt.qwen3.5-4b HOST=0.0.0.0  # English speakers
 # or:  make server PIPELINE=asr.qwen-seg-ko+mt.qwen3.5-4b HOST=0.0.0.0  # Korean speakers
 # or:  make server                                                    # mock pipeline, no GPU
 ```
 
+- The translator's vLLM JIT-compiles kernels with nvcc and finds it through `CUDA_HOME`. Set it
+  in `.env` (copy `.env.example`); without one the Makefile falls back to `/usr/local/cuda`. An old
+  `/usr/bin/nvcc` fails with `Unknown option '-generate-dependencies-with-compile'`. `make env`
+  shows what is in use.
 - `PIPELINE` is a file name in `configs/pipelines/`. Without it the server runs `stity.pipeline`
   from `server/configs/application.yml`, which is `mock`. `HOST` defaults to 127.0.0.1, and a
   phone needs `0.0.0.0`. `PORT` defaults to 8765. The Makefile turns these into
