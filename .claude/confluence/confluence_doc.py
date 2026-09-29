@@ -596,6 +596,55 @@ def preview(title: str, folder: str, labels: list[str], fields: dict) -> str:
     return "\n".join(out)
 
 
+def md_slug(text: str) -> str:
+    """VS Code 마크다운 미리보기가 소제목에 다는 앵커. `4.1 문맥 길이별` → `41-문맥-길이별`."""
+    s = re.sub(r"\s+", "-", text.strip().lower())
+    return re.sub(r"[^\w\-]", "", s)
+
+
+def preview_md(title: str, folder: str, labels: list[str], fields: dict,
+               template: ET.Element) -> str:
+    """검토용 전문을 md 파일로 만든다. 에디터의 마크다운 미리보기로 실제 문서처럼 읽힌다.
+
+    항목 순서는 가이드를 따른다. 줄글 항목은 `##`, 그 안의 md 소제목은 한 단계씩 내려
+    Confluence 에 그려지는 모양과 맞춘다. 결론의 `[글](#4.1)` 은 미리보기 안에서도
+    해당 소제목으로 이동하도록 앵커를 바꿔 준다.
+    """
+    rows = set(row_labels(template))
+    order = [n for n in field_labels(template) if n in fields]
+    order += [n for n in fields if n not in order]
+
+    def shift(md: str) -> str:
+        md = re.sub(r"^(#{1,5})\s", lambda m: "#" * (len(m.group(1)) + 2) + " ", md, flags=re.M)
+        # 목록 항목 아래 들여 쓴 줄은 md 에서 앞 줄과 한 문단으로 붙는다. 줄을 끊어 둔다.
+        return re.sub(r"(?m)^(\s*(?:[-*+]|\d+[.)])\s.*\S)\n(\s+\S)", r"\1  \n\2", md)
+
+    slugs = {}
+    for name in order:
+        spec = fields[name]
+        if spec.get("type") == "markdown":
+            for m in re.finditer(r"^#{1,6}\s+(.*)$", str(spec.get("value") or ""), re.M):
+                num = SEC_NUM_RE.match(m.group(1))
+                if num:
+                    slugs[num.group(1).strip(".")] = md_slug(m.group(1))
+
+    def relink(md: str) -> str:
+        return re.sub(r"\]\(#([\d.]+)\)",
+                      lambda m: f"](#{slugs.get(m.group(1).strip('.'), m.group(1))})", md)
+
+    out = [f"# {title}", "", f"폴더: {folder}  ", f"라벨: {', '.join(labels)}", "",
+           "| 항목 | 값 |", "|---|---|"]
+    out += [f"| {n} | {fields[n].get('value') or ''} |" for n in order if n in rows]
+    for name in order:
+        if name in rows:
+            continue
+        value = str(fields[name].get("value") or "")
+        if fields[name].get("type") == "markdown":
+            value = relink(shift(value))
+        out += ["", f"## {name}", "", value]
+    return "\n".join(out) + "\n"
+
+
 def assign_owner(cf: Confluence, page_id: str, fields: dict) -> None:
     """`작성자` 칸의 이름이 Atlassian 계정과 정확히 맞으면 그 사람을 소유자로 만든다.
 
@@ -693,7 +742,11 @@ def main() -> None:
         if make_folder:
             print("참고  : 폴더를 새로 만든다")
         print(preview(title, folder_path, labels, fields))
+        md_path = Path(args.json).with_suffix(".preview.md")
+        md_path.write_text(preview_md(title, folder_path, labels, fields,
+                                      parse_storage(template)), encoding="utf-8")
         print(f"본문  : {len(body)}자, 문서 안 링크 {len(_LINKS)}개 모두 짝이 맞음")
+        print(f"미리보기: {md_path}")
         if args.show_body:
             print(body)
         return
