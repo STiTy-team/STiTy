@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""업무 계획/보고 문서를 Confluence STiTy 스페이스에 만든다.
+"""업무 공유 문서를 Confluence STiTy 스페이스에 만든다.
 
-가이드 문서(업무 계획/보고 작성 가이드)의 표 구조를 그대로 재현한다.
-스킬(.claude/commands/confluence-plan.md, confluence-report.md)이 JSON 을 만들어
-이 스크립트에 넘기는 방식이다. 인증은 .env 의 ATLASSIAN_EMAIL/ATLASSIAN_API_TOKEN.
+가이드 문서(업무 공유 작성 가이드)의 구조를 그대로 재현한다.
+스킬(.claude/commands/confluence-report.md)이 JSON 을 만들어 이 스크립트에 넘기는
+방식이다. 인증은 .env 의 ATLASSIAN_EMAIL/ATLASSIAN_API_TOKEN.
 
-  python .claude/confluence/confluence_doc.py --json payload.json
+  python .claude/confluence/confluence_doc.py --show-format
+  python .claude/confluence/confluence_doc.py --list-folders 5
   python .claude/confluence/confluence_doc.py --json payload.json --dry-run
+  python .claude/confluence/confluence_doc.py --json payload.json
 """
 import argparse
 import html
@@ -14,7 +16,6 @@ import json
 import os
 import re
 import sys
-import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -27,6 +28,8 @@ ROOT = Path(__file__).resolve().parents[2]
 ET.register_namespace("ac", "http://atlassian.com/content")
 ET.register_namespace("ri", "http://atlassian.com/resource/identifier")
 CONFIG = json.loads((Path(__file__).parent / "config.json").read_text(encoding="utf-8"))
+
+KIND_KO = "공유"
 
 
 def load_env() -> tuple[str, str]:
@@ -57,59 +60,39 @@ class Confluence:
             sys.exit(f"Confluence API 실패 {r.status_code}: {r.text[:600]}")
         return r.json() if r.content else {}
 
-    def find_folder(self, title: str, parent_id: str | None = None) -> str | None:
-        """폴더를 찾는다. parent_id 를 주면 그 아래에서만 찾는다.
+    def folders_under(self, parent_id: str) -> list[tuple[str, str]]:
+        """parent_id 바로 아래 폴더들의 (제목, id)."""
+        r = self.client.get(f"{self.base}/rest/api/search", params={
+            "cql": f'space={CONFIG["space_key"]} and type=folder and parent={parent_id}',
+            "limit": 100,
+        })
+        return [(it.get("title", ""), it["content"]["id"])
+                for it in self._check(r).get("results", [])]
 
-        차수 폴더('1차 업무 분담')는 이름이 스페이스에서 유일하므로 전체에서 찾아도
-        된다. 반면 '계획 문서' / '보고 문서' 는 차수마다 같은 이름으로 반복되므로
-        부모를 좁히지 않으면 다른 차수의 폴더를 집는다.
+    def round_folder(self, n: str) -> tuple[str, str] | None:
+        """차수 폴더를 찾는다.
+
+        폴더 이름이 차수마다 다르다 — '1차 업무 분담', '3,4차 업무 분담', '5차 업무 공유'.
+        그래서 이름 앞의 차수 숫자만 보고 고른다. '3,4차' 는 3 과 4 둘 다에 걸린다.
         """
-        for item in self._folders_under(parent_id):
-            if item.get("title") == title:
-                return item["content"]["id"]
+        for title, fid in self.folders_under(CONFIG["docs_folder_id"]):
+            m = re.match(r"^\s*([\d,\s]+)차", title)
+            if m and n in [x.strip() for x in m.group(1).split(",")]:
+                return title, fid
         return None
 
-    def _folders_under(self, parent_id: str | None) -> list[dict]:
-        """폴더 목록. parent_id 를 주면 그 아래만."""
-        cql = f'space={CONFIG["space_key"]} and type=folder'
-        if parent_id:
-            cql += f" and parent={parent_id}"
-        r = self.client.get(f"{self.base}/rest/api/search", params={
-            "cql": cql, "limit": 100,
+    def folder_tree(self, parent_id: str, depth: int = 0) -> list[tuple[int, str, str]]:
+        """(깊이, 제목, id) 를 위에서부터 차례로."""
+        out = []
+        for title, fid in sorted(self.folders_under(parent_id)):
+            out.append((depth, title, fid))
+            out += self.folder_tree(fid, depth + 1)
+        return out
+
+    def create_folder(self, parent_id: str, title: str) -> str:
+        r = self.client.post(f"{self.base}/api/v2/folders", json={
+            "spaceId": CONFIG["space_id"], "title": title, "parentId": parent_id,
         })
-        return self._check(r).get("results", [])
-
-    def resolve_folder(self, parent_id: str, title: str,
-                       aliases: tuple[str, ...] = ()) -> str:
-        """부모 아래에서 폴더를 찾고 없으면 title 로 만든다.
-
-        폴더 제목은 스페이스 전체에서 유일해야 한다. 차수를 이름에 넣은
-        '2차 계획 문서' 는 그 자체로 유일하지만, 예전에 쓰던 '계획 문서' 는
-        차수마다 겹쳐서 '계획 문서_2' 처럼 꼬리가 붙어 있다. aliases 로 옛 이름을
-        넘기면 그것과 꼬리 번호가 붙은 형태까지 찾는다. 이름을 아직 안 바꾼
-        폴더가 남아 있어도 새 폴더를 잘못 만들지 않게 하기 위해서다.
-        """
-        under = self._folders_under(parent_id)
-        for name in (title, *aliases):
-            pat = re.compile(rf"^{re.escape(name)}(_\d+)?$")
-            for item in under:
-                if pat.match(item.get("title", "")):
-                    return item["content"]["id"]
-        return self.create_folder(parent_id, title, unique=True)
-
-    def create_folder(self, parent_id: str, title: str,
-                      unique: bool = False) -> str:
-        """폴더를 만든다. unique 면 제목이 이미 쓰였을 때 꼬리 번호를 붙여 다시 시도한다."""
-        for candidate in ([title] + [f"{title}_{n}" for n in range(2, 21)]
-                          if unique else [title]):
-            r = self.client.post(f"{self.base}/api/v2/folders", json={
-                "spaceId": CONFIG["space_id"], "title": candidate,
-                "parentId": parent_id,
-            })
-            if r.status_code < 400:
-                return r.json()["id"]
-            if "same title" not in r.text:
-                break
         return self._check(r)["id"]
 
     def get_storage(self, page_id: str) -> str:
@@ -190,99 +173,52 @@ def esc(s: str) -> str:
     return html.escape(str(s or ""), quote=True)
 
 
-def page_link(title: str) -> str:
-    """다른 Confluence 페이지를 인라인 카드로 건다."""
-    return (f'<ac:link ac:card-appearance="inline">'
-            f'<ri:page ri:content-title="{esc(title)}" />'
-            f'<ac:link-body>{esc(title)}</ac:link-body></ac:link>')
+# 문서 안 링크. 결론의 각 항목이 업무 내용 정리의 해당 소제목으로 바로 내려가게 한다.
+#
+# 소제목 번호가 곧 앵커다 — `# 1. 배경` 은 sec-1, `## 1.2 한 일` 은 sec-1-2. 결론에서
+# `[텍스트](#1.2)` 로 걸면 그 소제목으로 간다. Confluence 가 소제목에 자동으로 다는
+# 앵커는 제목 문구에서 만들어져 문구가 바뀌면 깨지므로, anchor 매크로를 직접 박는다.
+# 렌더링하는 동안 생긴 앵커와 걸린 링크를 모아 두었다가, 짝이 없는 링크가 있으면 멈춘다.
+_ANCHORS: set[str] = set()
+_LINKS: list[str] = []
+SEC_NUM_RE = re.compile(r"^(\d+(?:\.\d+)*)\.?\s")
 
 
-def jira_macro(key: str) -> str:
-    j = CONFIG["jira"]
-    return ('<ac:structured-macro ac:name="jira" ac:schema-version="1">'
-            f'<ac:parameter ac:name="key">{esc(key)}</ac:parameter>'
-            f'<ac:parameter ac:name="serverId">{j["server_id"]}</ac:parameter>'
-            f'<ac:parameter ac:name="server">{esc(j["server"])}</ac:parameter>'
-            '</ac:structured-macro>')
+def anchor_id(num: str) -> str:
+    return "sec-" + num.strip(".").replace(".", "-")
 
 
-class Jira:
-    """계획의 세분화된 업무를 이슈로 만든다. Confluence 와 같은 토큰을 쓴다."""
-
-    def __init__(self, email: str, token: str):
-        self.base = CONFIG["jira"]["base_url"]
-        self.client = httpx.Client(auth=(email, token), timeout=30.0,
-                                   headers={"Accept": "application/json"})
-
-    def _check(self, r: httpx.Response) -> dict:
-        if r.status_code >= 400:
-            sys.exit(f"Jira API 실패 {r.status_code}: {r.text[:600]}")
-        return r.json() if r.content else {}
-
-    def find_by_summary(self, project: str, summary: str) -> str | None:
-        """같은 요약의 이슈가 이미 있으면 그 키를 준다. 두 번 돌려도 중복이 안 생기게."""
-        jql = f'project="{project}" and summary~"\\"{summary}\\"" order by created desc'
-        r = self.client.get(f"{self.base}/rest/api/3/search/jql",
-                            params={"jql": jql, "maxResults": 5, "fields": "summary"})
-        for issue in self._check(r).get("issues", []):
-            if issue["fields"]["summary"].strip() == summary.strip():
-                return issue["key"]
-        return None
-
-    def assignable(self, project: str) -> list[dict]:
-        r = self.client.get(f"{self.base}/rest/api/3/user/assignable/search",
-                            params={"project": project, "maxResults": 50})
-        return [u for u in self._check(r) if u.get("active")]
-
-    def account_id(self, project: str, who: str) -> str:
-        """사람 이름을 accountId 로 바꾼다.
-
-        표시 이름이 계정 아이디인 사람이 있어 부분 검색은 못 믿는다. 배정 가능한
-        사람 목록에서 정확히 일치하는 이름만 받는다. accountId 를 직접 줘도 된다.
-        """
-        if ":" in who:
-            return who
-        users = self.assignable(project)
-        hits = [u for u in users if u.get("displayName", "").strip() == who.strip()]
-        if len(hits) == 1:
-            return hits[0]["accountId"]
-        names = ", ".join(u.get("displayName", "?") for u in users)
-        if not hits:
-            sys.exit(f"'{who}' 라는 담당자를 찾지 못했다. 배정 가능한 사람: {names}")
-        sys.exit(f"'{who}' 가 여러 명이다. accountId 로 직접 지정할 것: {names}")
-
-    def create(self, project: str, issuetype: str, summary: str, description: str = "",
-               assignee_id: str | None = None) -> str:
-        fields = {
-            "project": {"key": project},
-            "issuetype": {"name": issuetype},
-            "summary": summary,
-        }
-        if assignee_id:
-            fields["assignee"] = {"accountId": assignee_id}
-        if description:
-            fields["description"] = {
-                "type": "doc", "version": 1,
-                "content": [{"type": "paragraph",
-                             "content": [{"type": "text", "text": description}]}],
-            }
-        r = self.client.post(f"{self.base}/rest/api/3/issue", json={"fields": fields})
-        return self._check(r)["key"]
+def anchor_macro(aid: str) -> str:
+    return ('<ac:structured-macro ac:name="anchor" ac:schema-version="1">'
+            f'<ac:parameter ac:name="">{esc(aid)}</ac:parameter></ac:structured-macro>')
 
 
-INLINE_RE = re.compile(r"`[^`]+`|\*\*[^*]+\*\*")
+def link(text: str, target: str) -> str:
+    if target.startswith("#"):
+        aid = anchor_id(target[1:])
+        _LINKS.append(aid)
+        return (f'<ac:link ac:anchor="{esc(aid)}">'
+                f"<ac:link-body>{esc(text)}</ac:link-body></ac:link>")
+    return f'<a href="{esc(target)}">{esc(text)}</a>'
+
+
+INLINE_RE = re.compile(r"`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)\s]+\)")
+LINK_RE = re.compile(r"^\[([^\]]+)\]\(([^)\s]+)\)$")
 LIST_RE = re.compile(r"^(\s*)([-*+]|\d+[.)])\s+(.*)$")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 
 
 def inline(text: str) -> str:
-    """줄 안의 `코드` 와 **굵게** 만 살린다. 나머지는 그대로 escape."""
+    """줄 안의 `코드`, **굵게**, [링크](대상) 만 살린다. 나머지는 그대로 escape."""
     out, pos = [], 0
     for m in INLINE_RE.finditer(text):
         out.append(esc(text[pos:m.start()]))
         tok = m.group(0)
         if tok.startswith("`"):
             out.append(f"<code>{esc(tok[1:-1])}</code>")
+        elif tok.startswith("["):
+            lm = LINK_RE.match(tok)
+            out.append(link(lm.group(1), lm.group(2)))
         else:
             out.append(f"<strong>{esc(tok[2:-2])}</strong>")
         pos = m.end()
@@ -323,20 +259,24 @@ def restore_code_bodies(body: str) -> str:
     return CODE_MARK_RE.sub(sub, body)
 
 
-def build_list(items: list[tuple[int, bool, str]], idx: int, depth: int) -> tuple[str, int]:
-    """(들여쓰기 깊이, 번호목록 여부, 글) 목록을 <ul>/<ol> 로 접는다. 중첩도 살린다."""
+def build_list(items: list[tuple[int, bool, list[str]]], idx: int, depth: int) -> tuple[str, int]:
+    """(들여쓰기 깊이, 번호목록 여부, 문단들) 목록을 <ul>/<ol> 로 접는다. 중첩도 살린다.
+
+    한 항목에 문단이 여럿이면 항목 안에서 줄을 바꿔 잇는다 — 결론의 `1. 링크` 아래
+    들여 쓴 설명 줄이 이 꼴이다.
+    """
     ordered = items[idx][1]
     tag = "ol" if ordered else "ul"
     parts = ['<ol start="1">' if ordered else "<ul>"]
     while idx < len(items):
-        d, o, text = items[idx]
+        d, o, paras = items[idx]
         if d < depth or (d == depth and o != ordered):
             break
         if d > depth:
             sub, idx = build_list(items, idx, d)
             parts[-1] = parts[-1][: -len("</li>")] + sub + "</li>"
             continue
-        parts.append(f"<li><p>{inline(text)}</p></li>")
+        parts.append("<li>" + "".join(f"<p>{inline(t)}</p>" for t in paras) + "</li>")
         idx += 1
     parts.append(f"</{tag}>")
     return "".join(parts), idx
@@ -387,21 +327,28 @@ def take_list(lines: list[str], i: int) -> tuple[str, int]:
     items = []
     while i < len(lines):
         m = LIST_RE.match(lines[i])
-        if not m:
-            break
-        items.append((len(m.group(1)) // 2, m.group(2)[0] not in "-*+", m.group(3).strip()))
-        i += 1
+        if m:
+            items.append((len(m.group(1)) // 2, m.group(2)[0] not in "-*+", [m.group(3).strip()]))
+            i += 1
+            continue
+        # 목록 표식 없이 들여 쓴 줄은 바로 위 항목 안의 다음 문단이다.
+        if items and lines[i].strip() and lines[i][:1] in " 	":
+            items[-1][2].append(lines[i].strip())
+            i += 1
+            continue
+        break
     return build_list(items, 0, items[0][0])[0], i
 
 
-def markdown(text: str, base: int = 3) -> str:
-    """md 로 쓴 업무 내용을 storage 형식으로 바꾼다.
+def markdown(text: str, base: int) -> str:
+    """md 로 쓴 내용을 storage 형식으로 바꾼다.
 
-    소제목(#), 목록(- / 1.), 표(| a | b |), 코드블록(```), 문단, 인라인 `코드`·**굵게**
-    를 지원한다. 링크 문법은 지원하지 않는다 — 링크는 links/pagelink 칸을 쓴다.
+    소제목(#), 목록(- / 1.), 표(| a | b |), 코드블록(```), 문단, 인라인 `코드`·**굵게**·
+    [링크](대상) 를 지원한다. 링크 대상이 `#1.2` 면 번호가 1.2 인 소제목으로 가는 문서 안
+    링크, 그 밖에는 일반 URL 이다.
 
-    표는 머리글 줄 다음에 구분선(`|---|---|`)이 와야 표로 인식한다. 칸 수가 줄마다
-    어긋나면 머리글 기준으로 맞춘다.
+    `#` 은 h(base+1) 로 그린다 — 가이드의 절 제목 바로 아래 단계.
+    번호로 시작하는 소제목(`1.`, `1.2`)에는 그 번호로 앵커를 단다.
     """
     lines = str(text or "").replace("\r\n", "\n").split("\n")
     out: list[str] = []
@@ -422,9 +369,14 @@ def markdown(text: str, base: int = 3) -> str:
         m = HEADING_RE.match(stripped)
         if m:
             flush()
-            # 가이드의 절 제목이 h3 이라 칸 안의 소제목은 그 아래 단계부터 쓴다.
             lv = min(len(m.group(1)) + base, 6)
-            out.append(f"<h{lv}>{inline(m.group(2))}</h{lv}>")
+            num = SEC_NUM_RE.match(m.group(2))
+            mark = ""
+            if num:
+                aid = anchor_id(num.group(1))
+                _ANCHORS.add(aid)
+                mark = anchor_macro(aid)
+            out.append(f"<h{lv}>{mark}{inline(m.group(2))}</h{lv}>")
             i += 1
             continue
         if stripped.startswith("```"):
@@ -454,25 +406,11 @@ def markdown(text: str, base: int = 3) -> str:
     return "".join(out) or "<p />"
 
 
-def cell(value, kind: str, base: int = 3) -> str:
-    """JSON 의 값 하나를 storage 형식 칸 내용으로 바꾼다."""
-    if kind == "list":
-        if not value:
-            return "<p />"
-        return '<ol start="1">' + "".join(
-            f"<li><p>{esc(v)}</p></li>" for v in value) + "</ol>"
-    if kind == "links":
-        if not value:
-            return "<p />"
-        return '<ol start="1">' + "".join(
-            f"<li><p>{page_link(v)}</p></li>" for v in value) + "</ol>"
-    if kind == "pagelink":
-        return f"<p>{page_link(value)}</p>" if value else "<p />"
+def cell(value, kind: str, base: int) -> str:
+    """JSON 의 값 하나를 storage 형식으로 바꾼다."""
     if kind == "markdown":
         return markdown(value, base)
-    if kind == "jira":
-        return f"<p>{jira_macro(value)}</p>" if value else "<p />"
-    return f"<p>{esc(value)}</p>"
+    return f"<p>{inline(str(value or ''))}</p>"
 
 
 def parse_storage(xhtml: str) -> ET.Element:
@@ -485,40 +423,38 @@ def parse_storage(xhtml: str) -> ET.Element:
     return ET.fromstring(wrapper)
 
 
+HEADINGS = ("h1", "h2", "h3", "h4", "h5", "h6")
+
+
+def text_of(el: ET.Element) -> str:
+    return "".join(el.itertext()).strip()
+
+
 def row_labels(root: ET.Element) -> list[str]:
-    """템플릿 표의 왼쪽 항목 이름들을 순서대로 뽑는다."""
+    """표의 왼쪽 항목 이름들을 순서대로 뽑는다."""
     names = []
     for tr in root.iter("tr"):
         th = tr.find("th")
-        if th is not None:
-            name = "".join(th.itertext()).strip()
-            if name:
-                names.append(name)
+        if th is not None and text_of(th):
+            names.append(text_of(th))
     return names
 
 
 def prose_labels(root: ET.Element) -> list[str]:
-    """표 밖의 항목 — h4 소제목 하나가 항목 하나다. 보고 문서의 `요약`·`업무 내용 정리` 처럼
-    칸에 가두지 않고 줄글로 쓰는 항목이 이 꼴이다."""
-    return ["".join(h.itertext()).strip() for h in root.iter("h4")
-            if "".join(h.itertext()).strip()]
+    """표 밖의 항목 — 가이드 본문 맨 윗단의 소제목 하나가 항목 하나다.
+    `한 줄 요약`·`결론`·`업무 내용 정리` 처럼 칸에 가두지 않고 줄글로 쓰는 항목이다."""
+    return [text_of(el) for el in root if el.tag in HEADINGS and text_of(el)]
 
 
 def field_labels(root: ET.Element) -> list[str]:
     return row_labels(root) + prose_labels(root)
 
 
-def headings(root: ET.Element) -> list[str]:
-    return ["".join(h.itertext()).strip()
-            for lv in ("h1", "h2", "h3", "h4") for h in root.iter(lv)]
-
-
-def render(template: str, fields: dict, jira_keys: list[str]) -> tuple[str, list[str]]:
+def render(template: str, fields: dict) -> tuple[str, list[str]]:
     """가이드 본문을 틀로 삼아 값을 끼워 넣는다.
 
-    표의 왼쪽 항목 이름으로 짝을 맞춘다. 값이 없는 칸은 가이드의 예시 문구를 그대로
-    두면 안 되므로 비운다. Jira 매크로는 키만 갈아끼운다.
-    Jira 매크로는 넘겨받은 이슈 키 개수만큼 복제한다.
+    표는 왼쪽 항목 이름으로, 줄글은 소제목 이름으로 짝을 맞춘다. 값이 없는 항목은
+    가이드의 안내 문구를 그대로 두면 안 되므로 비운다.
     반환값의 두 번째는 JSON 에 값이 없어서 비워둔 항목 목록이다.
     """
     root = parse_storage(template)
@@ -526,138 +462,80 @@ def render(template: str, fields: dict, jira_keys: list[str]) -> tuple[str, list
 
     for tr in root.iter("tr"):
         th, td = tr.find("th"), tr.find("td")
-        if th is None or td is None:
+        if th is None or td is None or not text_of(th):
             continue
-        name = "".join(th.itertext()).strip()
-        if not name:
-            continue
-        spec = fields.get(name)
+        spec = fields.get(text_of(th))
         if spec is None:
-            missing.append(name)
+            missing.append(text_of(th))
             filled = "<p />"
         else:
-            filled = cell(spec.get("value"), spec.get("type", "text"))
+            filled = cell(spec.get("value"), spec.get("type", "text"), base=3)
         for child in list(td):
             td.remove(child)
         td.text = None
         for node in parse_storage(filled):
             td.append(node)
 
-    # h4 항목: 소제목 다음부터 다음 소제목(h1~h4) 전까지가 그 항목의 자리다. 가이드의
-    # 안내 문단을 걷어내고 값을 끼운다.
-    children = list(root)
-    i = 0
-    while i < len(children):
-        el = children[i]
-        if el.tag != "h4":
-            i += 1
-            continue
-        name = "".join(el.itertext()).strip()
-        j = i + 1
-        while j < len(children) and children[j].tag not in ("h1", "h2", "h3", "h4"):
+    # 가이드 맨 위, 첫 표나 소제목 앞에 오는 문단은 제목 작성 안내다. 실제 문서에는 뺀다.
+    for el in list(root):
+        if el.tag in HEADINGS or el.tag == "table":
+            break
+        root.remove(el)
+
+    # 줄글 항목: 소제목 다음부터 다음 소제목 전까지가 그 항목의 자리다. 가이드의
+    # 안내 문단을 걷어내고 값을 끼운다. 값 안의 소제목은 항목 소제목보다 한 단계 아래다.
+    sections = [el for el in root if el.tag in HEADINGS and text_of(el)]
+    for el in sections:
+        children = list(root)
+        j = children.index(el) + 1
+        while j < len(children) and children[j].tag not in HEADINGS:
             root.remove(children[j])
             j += 1
+        name = text_of(el)
         spec = fields.get(name)
         if spec is None:
             missing.append(name)
             filled = "<p />"
         else:
-            # 줄글 항목 안의 소제목은 항목 이름과 같은 h4 부터. 한 단계 아래(h5)로 두면
-            # 본문 갈래가 너무 작게 보인다.
-            filled = cell(spec.get("value"), spec.get("type", "text"), base=3)
+            filled = cell(spec.get("value"), spec.get("type", "text"), base=int(el.tag[1]))
         pos = list(root).index(el) + 1
-        inserted = 0
         for node in parse_storage(filled):
             root.insert(pos, node)
             pos += 1
-            inserted += 1
-        children = list(root)
-        # 끼워 넣은 값 안의 소제목(markdown 의 `#`)은 항목이 아니다. 건너뛴다.
-        i = children.index(el) + 1 + inserted
 
     body = "".join(ET.tostring(child, encoding="unicode") for child in root)
     body = re.sub(r"\sxmlns:(ac|ri)=\"[^\"]*\"", "", body)
-
-    # 가이드 맨 위의 제목 작성 안내 문단은 실제 문서에 들어가면 안 된다.
-    first_heading = re.search(r"<h[1-6][ >]", body)
-    if first_heading:
-        body = body[first_heading.start():]
-
-    return restore_code_bodies(expand_jira(body, jira_keys)), missing
+    return restore_code_bodies(body), missing
 
 
 MAX_SEQ = 50
 
-MACRO_RE = re.compile(r'<ac:structured-macro\s+ac:name="jira".*?</ac:structured-macro>', re.S)
-# 매크로를 품고 있는 문단째로 잡는다. 문단 안에서 매크로만 바꾸면 이슈들이
-# 한 줄에 나란히 붙어버려서, 번호 목록으로 갈아끼우려면 문단을 통째로 걷어내야 한다.
-MACRO_PARA_RE = re.compile(
-    r'<p[^>]*>(?:(?!</p>).)*?<ac:structured-macro\s+ac:name="jira".*?</ac:structured-macro>'
-    r'(?:(?!</p>).)*?</p>', re.S)
 
-
-def expand_jira(body: str, keys: list[str]) -> str:
-    """가이드의 Jira 매크로 하나를 이슈 개수만큼 복제해 번호 목록으로 만든다.
-
-    키가 없으면 매크로를 지운다. 가이드의 예시 키(STITY-7)가 그대로 남으면
-    엉뚱한 이슈가 문서에 붙는다.
-    """
-    m = MACRO_RE.search(body)
-    if not m:
-        return body
-
-    target_re = MACRO_PARA_RE if MACRO_PARA_RE.search(body) else MACRO_RE
-    if not keys:
-        return target_re.sub(lambda _: "", body, count=1)
-
-    template = m.group(0)
-    items = []
-    for key in keys:
-        one = re.sub(r'(<ac:parameter ac:name="key">)[^<]*(</ac:parameter>)',
-                     lambda mm: mm.group(1) + esc(key) + mm.group(2), template)
-        one = re.sub(r'ac:(local-id|macro-id)="[^"]*"',
-                     lambda mm: f'ac:{mm.group(1)}="{uuid.uuid4()}"', one)
-        items.append(f"<li><p>{one}</p></li>")
-    listed = '<ol start="1">' + "".join(items) + "</ol>"
-    return target_re.sub(lambda _: listed, body, count=1)
-
-
-def build_title(d: dict, kind_ko: str, seq: int | None) -> str:
-    """제목을 만든다. 같은 태그가 이미 있으면 마지막 태그 옆에 [2], [3] 을 붙인다.
-
-    가이드의 제목 형식이 종류마다 다르다. 보고는 세분화된 업무 하나마다 쓰는 것이라
-    세분화 업무명이 한 칸 더 붙는다.
-    """
+def build_title(d: dict, seq: int | None) -> str:
+    """제목: [n차][세분화 업무명] 공유 문서. 같은 제목이 있으면 [n차][업무명][2] 공유 문서."""
     tail = f"[{seq}]" if seq else ""
-    parts = [f'{d["round"]}차', d["major"], d["minor"]]
-    if d.get("kind") == "report":
-        parts.append(d["task"])
-    return "".join(f"[{p}]" for p in parts) + f"{tail} {kind_ko} 문서"
+    return f'[{d["round"]}차][{d["task"]}]{tail} {KIND_KO} 문서'
 
 
-def resolve_title(cf: "Confluence", d: dict, kind_ko: str, autonumber: bool) -> str:
+def resolve_title(cf: Confluence, d: dict, autonumber: bool) -> str:
     """쓸 수 있는 제목을 고른다.
 
     JSON 에 seq 를 주면 그 번호를 그대로 쓴다. 안 주면 같은 제목이 이미 있는지 보고
-    비어 있는 다음 번호를 찾는다. 번호가 붙는 자리는 소범주 태그 바로 옆이다.
+    비어 있는 다음 번호를 찾는다.
     """
     seq = d.get("seq")
     if seq:
-        return build_title(d, kind_ko, int(seq))
+        return build_title(d, int(seq))
 
-    title = build_title(d, kind_ko, None)
+    title = build_title(d, None)
     if not autonumber or not cf.find_page(title):
         return title
 
     for n in range(2, MAX_SEQ + 1):
-        candidate = build_title(d, kind_ko, n)
+        candidate = build_title(d, n)
         if not cf.find_page(candidate):
             return candidate
-    sys.exit(f"같은 태그의 문서가 {MAX_SEQ} 개를 넘었다. seq 로 직접 번호를 지정할 것.")
-
-
-# 이보다 긴 항목 문구를 요약 없이 이슈 제목으로 쓰면 경고한다.
-SUMMARY_WARN_LEN = 30
+    sys.exit(f"같은 제목의 문서가 {MAX_SEQ} 개를 넘었다. seq 로 직접 번호를 지정할 것.")
 
 
 def slug(s: str) -> str:
@@ -665,81 +543,60 @@ def slug(s: str) -> str:
     return str(s).replace(" ", "")
 
 
-def resolve_jira(spec, fields: dict, major: str, dry_run: bool) -> tuple[list[str], list[str]]:
-    """문서에 붙일 Jira 이슈 키를 정한다.
+def resolve_folder(cf: Confluence, d: dict) -> tuple[str, str, bool]:
+    """문서를 넣을 폴더의 (id, 경로 표시, 새로 만들어야 하는지).
 
-    spec 이 문자열이면 기존 이슈 하나를 그대로 쓴다. 객체면 create_from 이 가리키는
-    항목의 목록 하나하나를 이슈로 만들고, keys 로 준 기존 이슈를 뒤에 덧붙인다.
-    같은 요약의 이슈가 이미 있으면 새로 만들지 않고 재사용한다.
-
-    세분화 항목 문구는 길어서 이슈 제목으로 쓰면 목록에서 읽히지 않는다. 이슈 제목은
-    summary_by_item 의 짧은 요약을 쓰고, 항목 문구 전체는 이슈 설명에 넣는다.
+    folder_id 는 --list-folders 로 본 차수 폴더 트리 안에 있어야 한다. 다른 차수의
+    폴더 id 를 잘못 옮겨 적으면 문서가 엉뚱한 차수에 들어가므로 여기서 막는다.
+    new_folder 를 주면 folder_id 아래에 그 이름으로 폴더를 만들어 넣는다.
     """
-    if not spec:
-        return [], []
-    if isinstance(spec, str):
-        return [spec], []
+    found = cf.round_folder(str(d["round"]))
+    if not found:
+        sys.exit(f'{d["round"]}차 폴더가 없다. --list-folders {d["round"]} 로 확인할 것.')
+    round_title, round_id = found
+    fid = str(d.get("folder_id") or "")
+    if not fid:
+        sys.exit("folder_id 가 필요하다. --list-folders 로 고른 폴더 id 를 넣을 것.")
 
-    keys = list(spec.get("keys", []))
-    source = spec.get("create_from")
-    if not source:
-        return keys, []
+    paths = {round_id: round_title}
+    stack = [round_title]
+    for depth, title, i in cf.folder_tree(round_id):
+        stack = stack[:depth + 1] + [title]
+        paths[i] = " > ".join(stack)
+    if fid not in paths:
+        sys.exit(f"folder_id {fid} 가 '{round_title}' 아래에 없다.")
 
-    items = (fields.get(source) or {}).get("value") or []
-    if not items:
-        sys.exit(f"jira.create_from 이 가리키는 '{source}' 항목에 값이 없다.")
-
-    project = spec.get("project") or CONFIG["jira"]["default_project"]
-    # 대범주와 Jira 업무 유형을 같은 값으로 맞춘다. 아직 그 유형이 프로젝트에 없으면
-    # 이슈 생성이 400 으로 막히므로, 없을 때 쓸 유형을 config 에 따로 둔다.
-    issuetype = (spec.get("issuetype")
-                 or CONFIG["jira"]["type_by_major"].get(major)
-                 or (fields.get("업무 카테고리") or {}).get("value")
-                 or CONFIG["jira"]["fallback_issuetype"])
-    note = spec.get("description", "")
-
-    default_who = spec.get("assignee")
-    by_item = spec.get("assignee_by_item", {})
-    summaries = spec.get("summary_by_item", {})
-    unknown = [k for k in summaries if k not in items]
-    if unknown:
-        sys.exit(f"summary_by_item 의 키가 '{source}' 항목과 맞지 않는다: {unknown}")
-
-    made, new_keys = [], []
-    jira = None if dry_run else Jira(*load_env())
-    cache: dict[str, str] = {}
-    for item in items:
-        who = by_item.get(item, default_who)
-        label = f" -> {who}" if who else " -> (담당자 없음)"
-        summary = (summaries.get(item) or item).strip()
-        if summary == item.strip():
-            shown = item
-            if len(item) > SUMMARY_WARN_LEN:
-                print(f"경고: 이슈 제목이 {len(item)}자다. summary_by_item 으로 줄일 것 — {item}",
-                      file=sys.stderr)
-        else:
-            shown = f"{summary}  ← {item}"
-        description = "\n\n".join(s for s in (item if summary != item.strip() else "", note) if s)
-        if dry_run:
-            made.append(f"[{project}/{issuetype}] {shown}{label}")
-            continue
-        # 요약을 쓰기 전에 항목 문구 그대로 만든 이슈도 찾아야 같은 계획을 다시 돌려도 안 겹친다.
-        existing = (jira.find_by_summary(project, summary)
-                    or (summary != item.strip() and jira.find_by_summary(project, item)))
+    new = (d.get("new_folder") or "").strip()
+    if new:
+        existing = dict(cf.folders_under(fid)).get(new)
         if existing:
-            new_keys.append(existing)
-            made.append(f"{existing}  (이미 있어서 재사용, 담당자는 건드리지 않음) {shown}")
-            continue
-        if who and who not in cache:
-            cache[who] = jira.account_id(project, who)
-        key = jira.create(project, issuetype, summary, description,
-                          cache.get(who) if who else None)  # 유형이 없으면 여기서 멈춘다
-        new_keys.append(key)
-        made.append(f"{key}  (새로 만듦){label} {shown}")
-    return new_keys + keys, made
+            return existing, f"{paths[fid]} > {new}", False
+        return fid, f"{paths[fid]} > {new}", True
+    return fid, paths[fid], False
 
 
-def assign_owner(cf: "Confluence", page_id: str, fields: dict) -> None:
+def check_links() -> None:
+    """결론의 [..](#1.2) 가 가리키는 소제목이 업무 내용 정리에 실제로 있는지 본다."""
+    broken = sorted({a for a in _LINKS if a not in _ANCHORS})
+    if broken:
+        have = ", ".join(sorted(_ANCHORS)) or "(없음)"
+        sys.exit(f"짝이 없는 문서 안 링크: {', '.join(broken)}\n"
+                 f"번호가 붙은 소제목으로 생긴 앵커: {have}")
+
+
+def preview(title: str, folder: str, labels: list[str], fields: dict) -> str:
+    """사람이 읽고 검토할 전문. storage XHTML 대신 JSON 에 쓴 글을 그대로 보인다."""
+    out = [f"제목  : {title}", f"폴더  : {folder}", f"라벨  : {', '.join(labels)}", ""]
+    for name, spec in fields.items():
+        value = str(spec.get("value") or "")
+        if spec.get("type") == "markdown" or "\n" in value:
+            out += [f"=== {name} ===", value, ""]
+        else:
+            out.append(f"{name}: {value}")
+    return "\n".join(out)
+
+
+def assign_owner(cf: Confluence, page_id: str, fields: dict) -> None:
     """`작성자` 칸의 이름이 Atlassian 계정과 정확히 맞으면 그 사람을 소유자로 만든다.
 
     이름이 없거나 둘 이상 맞으면 건드리지 않고 알려만 준다 — 엉뚱한 사람을 소유자로
@@ -762,95 +619,83 @@ def assign_owner(cf: "Confluence", page_id: str, fields: dict) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="업무 계획/보고 문서를 Confluence 에 만든다. 형식은 가이드 문서에서 그때그때 읽는다.")
+        description="업무 공유 문서를 Confluence 에 만든다. 형식은 가이드 문서에서 그때그때 읽는다.")
     ap.add_argument("--json", help="문서 내용을 담은 JSON 파일")
-    ap.add_argument("--show-format", choices=sorted(CONFIG["guide"]),
+    ap.add_argument("--show-format", action="store_true",
                     help="가이드에서 현재 형식(항목 이름)만 읽어 출력. JSON 을 짜기 전에 먼저 볼 것")
-    ap.add_argument("--list-users", action="store_true",
-                    help="Jira 이슈 담당자로 지정할 수 있는 사람 목록을 출력")
-    ap.add_argument("--dry-run", action="store_true", help="올리지 않고 제목·라벨·본문만 출력")
+    ap.add_argument("--list-folders", metavar="N",
+                    help="N차 폴더 아래의 하위 폴더 트리를 id 와 함께 출력")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="올리지 않고 검토용 전문과 본문 크기만 출력")
+    ap.add_argument("--show-body", action="store_true",
+                    help="--dry-run 에서 storage XHTML 본문까지 출력")
     ap.add_argument("--update", action="store_true",
                     help="같은 제목의 문서가 이미 있으면 번호를 붙이지 않고 본문을 갱신한다")
     ap.add_argument("--no-autonumber", action="store_true",
                     help="같은 제목이 있어도 번호를 붙이지 않고 그냥 멈춘다")
     args = ap.parse_args()
 
-    if args.list_users:
-        project = CONFIG["jira"]["default_project"]
-        print(f"{project} 이슈에 배정 가능한 사람 (이 이름을 그대로 assignee 에 쓸 것):")
-        for u in Jira(*load_env()).assignable(project):
-            print(f"  - {u['displayName']}")
-        return
-
     cf = Confluence(*load_env())
 
     if args.show_format:
-        guide_id = CONFIG["guide"][args.show_format]
+        guide_id = CONFIG["guide"]
         root = parse_storage(cf.get_storage(guide_id))
         print(f"가이드 페이지: {guide_id}")
-        print("절 구성 :", " / ".join(headings(root)) or "(없음)")
         print("채워야 하는 항목 (이 이름을 JSON 의 fields 키로 그대로 쓸 것):")
         for name in field_labels(root):
             print(f"  - {name}")
         return
 
+    if args.list_folders:
+        found = cf.round_folder(args.list_folders.strip())
+        if not found:
+            print(f"{args.list_folders}차 폴더가 없다. 차수 폴더 목록 (부모 {CONFIG['docs_folder_id']}):")
+            for title, fid in sorted(cf.folders_under(CONFIG["docs_folder_id"])):
+                print(f"  {title}  ({fid})")
+            return
+        title, fid = found
+        print(f"{title}  ({fid})")
+        for depth, t, i in cf.folder_tree(fid):
+            print(f"{'  ' * (depth + 1)}{t}  ({i})")
+        return
+
     if not args.json:
-        sys.exit("--json 또는 --show-format 중 하나가 필요하다.")
+        sys.exit("--json, --show-format, --list-folders 중 하나가 필요하다.")
 
     d = json.loads(Path(args.json).read_text(encoding="utf-8"))
-    kind = d.get("kind")
-    if kind not in ("plan", "report"):
-        sys.exit('kind 는 "plan" 또는 "report" 여야 한다.')
-    for field in ("round", "major", "minor"):
-        if not d.get(field):
-            sys.exit(f"필수 항목 누락: {field}")
+    for key in ("round", "task"):
+        if not d.get(key):
+            sys.exit(f"필수 항목 누락: {key}  (제목 형식: [n차][세분화 업무명] 공유 문서)")
 
-    kind_ko = "계획" if kind == "plan" else "보고"
-    if kind == "report" and not d.get("task"):
-        sys.exit("보고 문서에는 세분화 업무명(task)이 필요하다.\n"
-                 "가이드 제목 형식: [n차][대범주][소범주][세분화 업무명] 보고 문서")
-    # --update 는 있는 문서를 고치는 것이므로 번호를 붙이면 안 된다. seq 를 준
-    # 경우에는 그 번호의 문서를 고친다.
-    title = resolve_title(cf, d, kind_ko,
-                          autonumber=not (args.no_autonumber or args.update))
-    labels = [kind_ko, f'{d["round"]}차', slug(d["major"]), slug(d["minor"])]
-    # 문서는 두 단계 아래에 들어간다 — 문서 정리 > <n>차 업무 분담 > 계획|보고 문서.
-    # 차수 폴더에 계획과 보고를 섞어 두면 늘어날수록 찾기 어렵다.
-    round_folder = f'{d["round"]}차 업무 분담'
-    # 폴더 제목은 스페이스 전체에서 유일해야 하므로 차수를 이름에 넣는다.
-    # 예전 이름('계획 문서', '계획 문서_2')도 계속 찾을 수 있게 alias 로 넘긴다.
-    kind_folder = f'{d["round"]}차 {kind_ko} 문서'
-    kind_folder_alias = f"{kind_ko} 문서"
-    folder_path = f"{round_folder} > {kind_folder}"
+    # --update 는 있는 문서를 고치는 것이므로 번호를 붙이면 안 된다.
+    title = resolve_title(cf, d, autonumber=not (args.no_autonumber or args.update))
+    labels = [KIND_KO, f'{d["round"]}차']
+    folder_id, folder_path, make_folder = resolve_folder(cf, d)
 
-    template = cf.get_storage(CONFIG["guide"][kind])
+    template = cf.get_storage(CONFIG["guide"])
     fields = d.get("fields", {})
-    jira_keys, planned = resolve_jira(d.get("jira"), fields, d["major"], args.dry_run)
-    if planned:
-        head = "만들 이슈 (dry-run 이라 아직 안 만듦)" if args.dry_run else "만든 이슈"
-        print(f"{head}:")
-        for line in planned:
-            print(f"  {line}")
-    body, missing = render(template, fields, jira_keys)
+    body, missing = render(template, fields)
+    check_links()
 
-    unused = [k for k in d.get("fields", {}) if k not in field_labels(parse_storage(template))]
+    unused = [k for k in fields if k not in field_labels(parse_storage(template))]
     if unused:
         print(f"경고: 가이드에 없는 항목이라 무시됨 — {', '.join(unused)}", file=sys.stderr)
     if missing:
         print(f"경고: 값이 없어 비워둔 항목 — {', '.join(missing)}", file=sys.stderr)
 
     if args.dry_run:
-        base = build_title(d, kind_ko, None)
+        base = build_title(d, None)
         if title != base:
             print(f"참고  : '{base}' 가 이미 있어 번호를 붙였다")
-        print(f"제목  : {title}")
-        existing = cf.find_page(title)
         if args.update:
+            existing = cf.find_page(title)
             print(f"동작  : {'갱신 ' + existing if existing else '없어서 새로 생성'}")
-        print(f"폴더  : {folder_path} (없으면 생성)")
-        print(f"라벨  : {labels}")
-        print(f"본문  : {len(body)}자")
-        print(body)
+        if make_folder:
+            print("참고  : 폴더를 새로 만든다")
+        print(preview(title, folder_path, labels, fields))
+        print(f"본문  : {len(body)}자, 문서 안 링크 {len(_LINKS)}개 모두 짝이 맞음")
+        if args.show_body:
+            print(body)
         return
 
     existing = cf.find_page(title)
@@ -864,15 +709,12 @@ def main() -> None:
         assign_owner(cf, existing, fields)
         print(f"갱신됨: {title}")
         print(f"버전  : {page['version']['number']}")
-        print(f"라벨  : {', '.join(labels)}")
         print(f"주소  : {CONFIG['base_url']}/spaces/{CONFIG['space_key']}"
               f"/pages/{existing}")
         return
 
-    round_id = cf.find_folder(round_folder) or cf.create_folder(
-        CONFIG["docs_folder_id"], round_folder)
-    folder_id = cf.resolve_folder(round_id, kind_folder,
-                                  aliases=(kind_folder_alias,))
+    if make_folder:
+        folder_id = cf.create_folder(folder_id, d["new_folder"].strip())
     page = cf.create_page(folder_id, title, body)
     cf.add_labels(page["id"], labels)
     assign_owner(cf, page["id"], fields)
