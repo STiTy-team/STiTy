@@ -1,0 +1,16 @@
+# T15c Pairwise accuracy on pairs where one planted check flips
+
+1040 rows, 20 instances. Judge = gpt-6-sol. Pairs with identical hypotheses and judge ties are skipped; a metric tie counts 0.5. CIs resample instances.
+
+| tag | n_pairs | comet | doc_comet_w2 | doc_comet_w5 | xcomet | metricx_neg | chrf_pp |
+|---|---|---|---|---|---|---|---|
+| omitted_argument | 2633 | 0.587 | 0.716 | 0.732 | 0.828 | 0.892 | 0.607 |
+| pronoun_coreference | 2491 | 0.692 | 0.647 | 0.665 | 0.676 | 0.778 | 0.677 |
+| gender_reference | 2134 | 0.801 | 0.770 | 0.735 | 0.827 | 0.953 | 0.749 |
+| word_sense | 1494 | 0.977 | 0.907 | 0.946 | 0.940 | 0.910 | 0.864 |
+| entity_consistency | 1354 | 0.942 | 0.936 | 0.934 | 0.990 | 0.921 | 0.877 |
+| lexical_consistency | 1187 | 0.899 | 0.917 | 0.927 | 0.829 | 0.944 | 0.842 |
+| discourse_connective | 1174 | 0.925 | 0.924 | 0.920 | 0.882 | 0.938 | 0.951 |
+| register_politeness | 1111 | 0.731 | 0.719 | 0.681 | 0.784 | 0.581 | 0.732 |
+| fragment_incremental | 1007 | 0.684 | 0.871 | 0.857 | 0.628 | 0.726 | 0.792 |
+| context_trap | 775 | 0.779 | 0.732 | 0.692 | 0.974 | 0.966 | 0.468 |

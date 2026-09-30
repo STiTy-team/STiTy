@@ -1,0 +1,2778 @@
+{
+ "created": "2026-09-26",
+ "judge_audited": {
+  "model": "gpt-6-sol",
+  "judge_version": "dc-judge-2026-09-25.2"
+ },
+ "sampling": {
+  "seed": 20260925,
+  "method": "per instance (20), 4 rounds pick one unique verdict produced by a rotating model; rounds 0-1 = 40-pair manual audit, rounds 2-3 = 40 extra for cross-judge only. Model = sample_model (the model the pair was drawn for). Same algorithm as scripts/judge_crosscheck.py draw_sample."
+ },
+ "manual_vs_gpt6sol_sample": {
+  "n_pairs": 40,
+  "n_checks": 72,
+  "agree": 1.0,
+  "by_tag": {
+   "context_trap": {
+    "n": 8,
+    "agree": 1.0
+   },
+   "discourse_connective": {
+    "n": 6,
+    "agree": 1.0
+   },
+   "entity_consistency": {
+    "n": 6,
+    "agree": 1.0
+   },
+   "fragment_incremental": {
+    "n": 6,
+    "agree": 1.0
+   },
+   "gender_reference": {
+    "n": 10,
+    "agree": 1.0
+   },
+   "lexical_consistency": {
+    "n": 6,
+    "agree": 1.0
+   },
+   "omitted_argument": {
+    "n": 10,
+    "agree": 1.0
+   },
+   "pronoun_coreference": {
+    "n": 8,
+    "agree": 1.0
+   },
+   "register_politeness": {
+    "n": 6,
+    "agree": 1.0
+   },
+   "word_sense": {
+    "n": 6,
+    "agree": 1.0
+   }
+  },
+  "disagreements": [],
+  "labels": [
+   {
+    "key": "9b95b45779bf6e9dba0a3a7f",
+    "instance_id": "c01-t06",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "It’s not just a random thing—she’s wanted them for a long time.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "4d0bfdcfa0678506e1e7527f",
+    "instance_id": "c01-t08",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "Of course I went back to get it.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "omitted_argument",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "8ce00b76a4280f66e8541106",
+    "instance_id": "c01-t12",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "That’s true, but I was still late.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "discourse_connective",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "decd08ad9e259fbbe99a1f86",
+    "instance_id": "c01-t14",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "Oh no. So, was she happy about it?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 2,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "7adb23873270688171e4cce1",
+    "instance_id": "c02-t07",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "Would it be okay if I upload the revised Green Bottle mock-ups this afternoon?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "entity_consistency",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "lexical_consistency",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "a53bfda8b352fe89f83cedb1",
+    "instance_id": "c02-t10",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "The bus leaves from in front of the office at eight.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "fragment_incremental",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "419ec7b35188a1e92c0a6e6b",
+    "instance_id": "c02-t12",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "By the way, are you going too, Team Leader?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "register_politeness",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "0ae5783b366b0d25c5c498f9",
+    "instance_id": "c02-t15",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "Right. By the way, Seoyun, have you had lunch?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "discourse_connective",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "27820d2a2c116aa5610cd80b",
+    "instance_id": "c03-t05",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "The very last one was last month.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "word_sense",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "a6cc55bcece97862f0722bef",
+    "instance_id": "c03-t12",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "My girl ran around and played with the other dogs there all day.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "lexical_consistency",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "word_sense",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "bfd6ace1a22beb6c9e5528bc",
+    "instance_id": "c03-t14",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "Mom, I think she’ll be fine today if she just takes her medicine instead of getting a shot.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "register_politeness",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "88822f8a9c25812106aa9ebd",
+    "instance_id": "c03-t17",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "Human medication can damage the liver.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "fragment_incremental",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "95fad9b2829667a6b4cbe19b",
+    "instance_id": "c04-t05",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "Oh my, is the box of pears okay?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "word_sense",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "ca2b566ce5dfbd69be6bc531",
+    "instance_id": "c04-t08",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "She says she'll come tomorrow morning. She says she hasn't finished her work at the company yet.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "bae5b6f48c7e6bfb7496f116",
+    "instance_id": "c04-t12",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "Well then, don't worry.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "discourse_connective",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "1805b0895af91eb0f6d13935",
+    "instance_id": "c04-t13",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "deepl-quality",
+     "gpt-6-luna"
+    ],
+    "hypothesis": "He always says that, too.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "context_trap",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "63ccd1ebfa0d71e12048e351",
+    "instance_id": "c05-t09",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "Okay. Oh, I just got a text from the professor—he said he can’t make it.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "entity_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "b916ae49155adcc86a25f865",
+    "instance_id": "c05-t12",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "She said she’ll stop by for a bit to bring us some side dishes.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "fragment_incremental",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "b4a2b4c720f1078f45a443c2",
+    "instance_id": "c05-t13",
+    "sample_model": "deepl-quality",
+    "models": [
+     "deepl-quality"
+    ],
+    "hypothesis": "Really? Then let’s order one more “Grandma’s Special” set.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "entity_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "lexical_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "7371445a1609c6a3b82d4789",
+    "instance_id": "c05-t14",
+    "sample_model": "gpt-6-luna",
+    "models": [
+     "gpt-6-luna"
+    ],
+    "hypothesis": "Could you ask your mom what she’d like to eat?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "register_politeness",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "faa28a3931b1b1b02cc96d45",
+    "instance_id": "c01-t06",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "It's not just something like that, it's something they've wanted since the old days.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "d440c3d34ddabe1c12abdec6",
+    "instance_id": "c01-t08",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "gemma3-4b",
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "Of course, I went back.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "omitted_argument",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "3c7cb0e3aac94d68978a2fe6",
+    "instance_id": "c01-t12",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "That's true, but in the end, she was late.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "discourse_connective",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "09fdc65764138370fc9bcfad",
+    "instance_id": "c01-t14",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "Oh, so did he like it?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 2,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "55f2483044d130a5b302ca70",
+    "instance_id": "c02-t07",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Regarding the green bug revision draft, would it be alright if I sent it over this afternoon?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "entity_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "lexical_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "817e0350bcdd67ad9fbdb7b0",
+    "instance_id": "c02-t10",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "It departs from the company at eight o'clock.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "fragment_incremental",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "002d153af2e8e8313f4b371f",
+    "instance_id": "c02-t12",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Is the team leader also going?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "register_politeness",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "38e4d2a272f642d2c40605fd",
+    "instance_id": "c02-t15",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "Right. But, Seo-yoon, have you had lunch?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "discourse_connective",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "582e79b91ebeddcbe4d20149",
+    "instance_id": "c03-t05",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "The last one I got was last month.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "word_sense",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "fadd9fb5e1fe5f60988f35fc",
+    "instance_id": "c03-t12",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "Our daughter played with other kids there all day.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "lexical_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "word_sense",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "ae34a49010c9bb9cdd8f952b",
+    "instance_id": "c03-t14",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Mom, today we won't be giving you a shot, just taking the medicine.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "register_politeness",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "2fd99260516df66b99f2bd6d",
+    "instance_id": "c03-t17",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "Human medicine can damage their livers.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "fragment_incremental",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "omitted_argument",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "0afff1825143a3cab063ee8f",
+    "instance_id": "c04-t05",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Oh my, are you okay with the pie?",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "word_sense",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "3814b31773368cd4651f9de8",
+    "instance_id": "c04-t08",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "She will be here tomorrow morning. Her work at the company isn't finished yet.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "637887f9cc3b73594ec3d984",
+    "instance_id": "c04-t12",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Okay, then. Don't worry.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "discourse_connective",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "9d4aaff18bf68e2a72628b02",
+    "instance_id": "c04-t13",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "She always says that.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "455860d87e4c944b47a1561c",
+    "instance_id": "c05-t09",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Okay. Oh, I just got a text from a professor and they said they couldn't reach me.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "entity_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     },
+     {
+      "index": 1,
+      "tag": "context_trap",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "c37412e9687b431db3680d40",
+    "instance_id": "c05-t12",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "I heard she came by briefly to bring the side dishes.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "fragment_incremental",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "gender_reference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   },
+   {
+    "key": "eca265c05dfbe40ea4549274",
+    "instance_id": "c05-t13",
+    "sample_model": "gemma3-4b",
+    "models": [
+     "gemma3-4b"
+    ],
+    "hypothesis": "Really? Let's order another Grandma's Hands set.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "entity_consistency",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "lexical_consistency",
+      "manual_pass": false,
+      "judge_pass": false
+     }
+    ]
+   },
+   {
+    "key": "d11b81bfd8c17fd93a10c1f8",
+    "instance_id": "c05-t14",
+    "sample_model": "qwen3.5-4b",
+    "models": [
+     "qwen3.5-4b"
+    ],
+    "hypothesis": "Ask your mom what she'd like to receive from your grandmother.",
+    "checks": [
+     {
+      "index": 0,
+      "tag": "register_politeness",
+      "manual_pass": true,
+      "judge_pass": true
+     },
+     {
+      "index": 1,
+      "tag": "pronoun_coreference",
+      "manual_pass": true,
+      "judge_pass": true
+     }
+    ]
+   }
+  ],
+  "note": "Manual labels were written before reading the judge verdicts, applying each check requirement literally."
+ },
+ "focus_register_connective": {
+  "instances": {
+   "c02-t12": {
+    "tag": "register_politeness",
+    "check_index": 0,
+    "requirement": "팀장님 is handled as a respectful way of addressing the listener (English 'you', e.g., 'Are you coming with us too?' / 'Will you be joining us?'), not translated as a title such as 'Team Leader' or 'the team manager'.",
+    "n": 35,
+    "agree": 1.0,
+    "manual_pass": 1,
+    "judge_pass": 1,
+    "verdicts": [
+     {
+      "key": "0805dc17fdb3c57561440ffc",
+      "hypothesis": "Are you going to the workshop too, boss?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": "boss as vocative"
+     },
+     {
+      "key": "8d5372e2ddafd7100e66c08d",
+      "hypothesis": "Are you going to the workshop too, manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "34b8d5f9906d06001795fdb1",
+      "hypothesis": "But are you coming too, Team Leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "8139b04a8a04298b22531666",
+      "hypothesis": "But are you coming too, manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "b87d05fdd8e07c160e83e5ba",
+      "hypothesis": "But do you also go with the team leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "db5c5df42cd8f0bee5181c9a",
+      "hypothesis": "But is the team leader coming along too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "6f4fd73c0dd028a9b65abee3",
+      "hypothesis": "But is the team leader going too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a080551ce93c96f7174aa339",
+      "hypothesis": "But will the manager be joining us?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "53d4d212ae922ae3a4247637",
+      "hypothesis": "But will the team lead be joining as well?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "07ac75c41b88f3c0e6a7bb00",
+      "hypothesis": "But will the team leader go with us?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "c9cd13b6120b0392ec4a9309",
+      "hypothesis": "But will you be going along as well, Team Leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "571a4bef58cf71cfdb4a29f3",
+      "hypothesis": "But will you be joining us as well, Manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "301ab2bd8f07d04944fb685a",
+      "hypothesis": "But will you be joining us as well, Team Leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "642bb0db8211b8077f9712d7",
+      "hypothesis": "But will you be joining us, Manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "ef65a2d02d6790ae72f5ef99",
+      "hypothesis": "But will you be joining us, Team Leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "4f1f633258013ea8190bbf0b",
+      "hypothesis": "But will you be joining us, too, Mr. Manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "c79ad888e709b787dbf97d11",
+      "hypothesis": "But will you be joining us?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "6769abde50f06d46f9e15e4c",
+      "hypothesis": "By the way, are you coming along too, team lead?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "20535fb534a9ad4217a2deb4",
+      "hypothesis": "By the way, are you coming too, Team Leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "dea19818e50e00b273bef354",
+      "hypothesis": "By the way, are you coming too, team lead?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "4283bf657f6341d04d5f6a0f",
+      "hypothesis": "By the way, are you coming too, team leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "419ec7b35188a1e92c0a6e6b",
+      "hypothesis": "By the way, are you going too, Team Leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "69a72a45d84842b916b16172",
+      "hypothesis": "By the way, are you going too, team lead?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "4ea5bc35de8b6e832de3a771",
+      "hypothesis": "By the way, are you going too, team leader?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "d861308e2ad76d6d4da81ff2",
+      "hypothesis": "By the way, is the team lead going too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "ed01731d12653a3bf67d5011",
+      "hypothesis": "By the way, is the team leader going too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a9d4f4d420a4a7d001e20f21",
+      "hypothesis": "Do you want to go together too, manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "34284a4cddbd96794eae3cf9",
+      "hypothesis": "Do you want to go with the team leader too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "5dbb8e843ca5c98e4ddb1a0b",
+      "hypothesis": "Does the team leader come along too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "390469b531f593707f231076",
+      "hypothesis": "Does your manager also want to go?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "002d153af2e8e8313f4b371f",
+      "hypothesis": "Is the team leader also going?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "bea84a57701b1c672352f717",
+      "hypothesis": "Should I go with you too, then, manager?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "98c2db5e2765f0dd2b79bfbd",
+      "hypothesis": "Should the team leader come along too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "f20b2383cf983d9d710e4514",
+      "hypothesis": "Will the manager be joining us too?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "96879d9710cc8976111b7b40",
+      "hypothesis": "Will the team leader also be going?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     }
+    ]
+   },
+   "c03-t14": {
+    "tag": "register_politeness",
+    "check_index": 0,
+    "requirement": "어머님 is rendered as a polite address to the client ('ma'am', or dropped), not 'Mother', 'Mom' or 'your mother'.",
+    "n": 44,
+    "agree": 1.0,
+    "manual_pass": 13,
+    "judge_pass": 13,
+    "verdicts": [
+     {
+      "key": "8a344a4d3c3db7af8989a987",
+      "hypothesis": "Doctor, today we'll just give you the medicine instead of a shot.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a198087cbe8f34d9840baf1f",
+      "hypothesis": "Ma’am, I don’t think she needs a shot today; she should be fine with just medication.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "40acb388c176f389dfe352c6",
+      "hypothesis": "Ma’am, I think she can just take medicine today—no shots needed.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "27c0b272d1bbba351a20a5b1",
+      "hypothesis": "Ma’am, I think she can just take the medicine today; she doesn’t need a shot.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "c65dfb67886db2c9e9b03ef4",
+      "hypothesis": "Ma’am, I think she can skip the shot today and just take the medicine.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "e12ba873788201d2df8c69a4",
+      "hypothesis": "Ma’am, I think she’ll be fine with just medication today—no shots needed.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "89dd01e2f939d291b8d4afde",
+      "hypothesis": "Ma’am, I think you can skip the shot today and just take the medicine.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "7f38fe9093f59893e7d98251",
+      "hypothesis": "Ma’am, it looks like she won’t need a shot today—just taking her medicine should be enough.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "d40b79fc9e085eba75b65aa9",
+      "hypothesis": "Mom, I don't think I'll need a shot today—I think I'll just take my medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "ef5e35c016b7f410881ac04f",
+      "hypothesis": "Mom, I don't think I'll need a shot today—just taking my medicine should be enough.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "f9d8327da5d2f9b5593f3a4f",
+      "hypothesis": "Mom, I don’t think she needs a shot today—just some medicine should do the trick.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "3b5d720286de6f829c3d8515",
+      "hypothesis": "Mom, I don’t think she’ll need a shot today—just her medicine should do the trick.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "c4a9ad1d74a38807a374ca0c",
+      "hypothesis": "Mom, I don’t think you’ll need a shot today—just take your medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "bfd6ace1a22beb6c9e5528bc",
+      "hypothesis": "Mom, I think she’ll be fine today if she just takes her medicine instead of getting a shot.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "da0693c58db4e34384a11915",
+      "hypothesis": "Mom, I think she’ll be fine today without a shot—just taking her medicine should do it.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "bad1b3cabd6afc16c0592266",
+      "hypothesis": "Mom, I think she’ll be fine today—she just needs to take her medicine instead of getting a shot.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "6bf12529b6ffc4d09f0dfd91",
+      "hypothesis": "Mom, I think she’ll be fine today—she just needs to take her medicine; she won’t need a shot.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a99f221f577e70e24bfdfd4b",
+      "hypothesis": "Mom, I think you just need to take the medicine today; the injection doesn't seem necessary.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "9de0902e084a3fe2b9583e34",
+      "hypothesis": "Mom, I think you’ll be fine just taking your medicine today without getting a shot.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "f499ad23519b83197b287f38",
+      "hypothesis": "Mom, I think you’ll be fine just taking your medicine today—no need for a shot.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1dc117cda1425c31889aa757",
+      "hypothesis": "Mom, it looks like she won’t need a shot today—just some medicine should do the trick.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "d6d067ebaead5a6478bf3b97",
+      "hypothesis": "Mom, today we won't be getting a shot, just taking medication instead.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "3f315910b8f9390947529796",
+      "hypothesis": "Mom, today we won't be getting a shot, just taking medication.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "60b3c4dfa7b204de3e9125ff",
+      "hypothesis": "Mom, today we won't be giving her a shot, just giving her some medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "02469005b183b7301243c0be",
+      "hypothesis": "Mom, today we won't be giving you a shot, just taking medication.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "ae34a49010c9bb9cdd8f952b",
+      "hypothesis": "Mom, today we won't be giving you a shot, just taking the medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "f69b5a05d18449d74047ce86",
+      "hypothesis": "Mom, today we won't get a shot, just take medication instead.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "f0397c14c781ff8b95560382",
+      "hypothesis": "Mom, today we won't get a shot, just take the medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "04edfa179796a8f249c10e43",
+      "hypothesis": "Mom, today you don't need a shot, just take the medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1fcd5196f12e3a3366289db5",
+      "hypothesis": "Mom, today you don't need to get a shot, just take the medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "f690c17c2ed203b033fa332d",
+      "hypothesis": "Mom, today you won't get a shot, just medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1d7afd40baa3a6ecd72e8c5d",
+      "hypothesis": "Mom, today you won't get a shot, just take the medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "4baf29c98eb43e9722b02dc8",
+      "hypothesis": "Oh, Grandma, it seems like you don't need the injection today, just the medicine should be enough.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "5c5f5f0f4df4884ff05e88ad",
+      "hypothesis": "Oh, Grandma, it seems she won't be having a procedure today; she'll just need to take her medication.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "9f087f555f5ae36064b5ecc0",
+      "hypothesis": "Oh, Grandma, it seems today you don't need the injection, just the medicine should be enough.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "b36a998019efcede150c1f11",
+      "hypothesis": "Oh, I think she just needs to take medicine today, no shots.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "3376fff5594ba829c3feb6fb",
+      "hypothesis": "Oh, I think she just needs to take the medicine today; she doesn't need the shot.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "6f3f153fac4c4b110de232a9",
+      "hypothesis": "Oh, I think today you just need to take the medicine without getting the shot.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "e6e816f55729e1b2debdfdf6",
+      "hypothesis": "Oh, I think you just need to take the medicine today, not get the shot.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "b5583e6f5cdfedafc6601547",
+      "hypothesis": "Oh, I think you just need to take the medicine today; the shot is not necessary.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "57778a5c9f71a853ac26595b",
+      "hypothesis": "Oh, I think you just need to take the medicine today; you don't need the shot.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "03ab306b3cc6030f5fdf8752",
+      "hypothesis": "Oh, Mom, I don't think I need the shot today; I'll just take the medicine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "ca78597738b9111247cbf6ab",
+      "hypothesis": "Oh, Mom, I think you just need to take the medicine today; you don't need the vaccine.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "ae5be579a05a06189a5f68f8",
+      "hypothesis": "Oh, Mom, it seems we don't need the vaccine today; just taking the medicine should be enough.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     }
+    ]
+   },
+   "c05-t14": {
+    "tag": "register_politeness",
+    "check_index": 0,
+    "requirement": "Address terms fit a girlfriend talking to her boyfriend: 오빠 becomes 'you' (optionally 'babe'), not 'Oppa' or 'my brother'; 어머님 becomes 'your mom', not 'Mother'.",
+    "n": 28,
+    "agree": 1.0,
+    "manual_pass": 7,
+    "judge_pass": 7,
+    "verdicts": [
+     {
+      "key": "b4b40c9114f1fc7c8508cd50",
+      "hypothesis": "Ask Mom what you'd like to give her.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "cc1b1b985523e37d8267ecc4",
+      "hypothesis": "Ask him what Mom wants to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "5e1d64383fc3b443f9c14b72",
+      "hypothesis": "Ask my brother what Grandma wants to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1b03cadc755f98d4ce580727",
+      "hypothesis": "Ask my brother what Mom wants to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "cdfb830a6fe01d2edb2c7b42",
+      "hypothesis": "Ask my brother what mom wants to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "655576ceb9ec883558d90503",
+      "hypothesis": "Ask your brother what Mom wants to eat from Grandma's Hands.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "7cdc9205da13878779e4e75b",
+      "hypothesis": "Ask your brother what mom wants to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a2ec3c84264bad98b54ecda8",
+      "hypothesis": "Ask your mom what she'd like to eat.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "d11b81bfd8c17fd93a10c1f8",
+      "hypothesis": "Ask your mom what she'd like to receive from your grandmother.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "b8924c5f86d4ce4f76c9b518",
+      "hypothesis": "Ask your mom what she'd like to receive.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "abb9137309c740a52e595fff",
+      "hypothesis": "Ask your mom what she’d like to eat.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "65d69e80aaddbed0c58cc1cc",
+      "hypothesis": "Ask your mother what she’d like to eat.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": "your mother vs your mom"
+     },
+     {
+      "key": "1712d3d215c499db708d38e3",
+      "hypothesis": "Ask your older brother what he'd like to bring your grandmother.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "ad2d2629b3833e2b06752876",
+      "hypothesis": "Ask your older brother what he'd like to give your grandma.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "dd7b9bec9ecdcae419dc0a09",
+      "hypothesis": "Ask your older brother what he'd like to give your grandmother.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "af53d47679d8f0f9ac6e527d",
+      "hypothesis": "Ask your older brother what he'd like to give your mother.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1dff95034d5d00a550a3f5d9",
+      "hypothesis": "Ask your older brother what he'd like to order for your grandmother.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "aa968d94cbd04dca7536a8d9",
+      "hypothesis": "Ask your older brother what he'd like to order from Grandma's Hands.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "27611eadf51bd07fbee368e5",
+      "hypothesis": "Can you ask your mom what she’d like to eat?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "06ab283bcb6fc8b078f2302f",
+      "hypothesis": "Could you ask Mom what she'd like to eat?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "8d27f9a723eb20b9761be461",
+      "hypothesis": "Could you ask Mom what she’d like to eat?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a467d5a6e101edf4cde96f5b",
+      "hypothesis": "Could you ask my brother what Grandma wants to eat?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1e0dc0ede1a184bcaef885a8",
+      "hypothesis": "Could you ask my brother what mom would like to eat?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "9dade9f1600f3cdfc3bb2366",
+      "hypothesis": "Could you ask my brother what my mom wants to eat?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "dc514c4f9cd4b110a6af40a6",
+      "hypothesis": "Could you ask your brother what he wants to eat for mom?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "7371445a1609c6a3b82d4789",
+      "hypothesis": "Could you ask your mom what she’d like to eat?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "6a161d5cdf536466fc9f0e2e",
+      "hypothesis": "Oppa, ask your mom what she’d like to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "5f5124ccc83b604f353915db",
+      "hypothesis": "Oppa, ask your mother what she’d like to eat.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     }
+    ]
+   },
+   "c01-t12": {
+    "tag": "discourse_connective",
+    "check_index": 0,
+    "requirement": "그렇기는 한데 is rendered as conceding B's assumption while contradicting it ('You'd think so, but…', 'It should have, but…', 'That was the idea, but…'); a hedged 'Yeah, but I was still late' is also fine. Fails only with an explicit affirmation of B's claim ('That's true, but…', 'You're right, but…') that then contradicts itself.",
+    "n": 20,
+    "agree": 1.0,
+    "manual_pass": 1,
+    "judge_pass": 1,
+    "verdicts": [
+     {
+      "key": "2e5f6b9e8a16f54a2bfcefb9",
+      "hypothesis": "That's true, but I ended up being late anyway.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "0521b348996226cff95d1108",
+      "hypothesis": "That's true, but I ended up being late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "f45a35be280d41c5e1efebcb",
+      "hypothesis": "That's true, but I was late in the end.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "dea959909860bb3e17939252",
+      "hypothesis": "That's true, but I was still late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "2729e0719685ad1e35dd4f44",
+      "hypothesis": "That's true, but in the end, I was late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "1b68535a787017b4d1e00280",
+      "hypothesis": "That's true, but in the end, she was late anyway.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "3c7cb0e3aac94d68978a2fe6",
+      "hypothesis": "That's true, but in the end, she was late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "e9fef9383bec6f14212b3cbc",
+      "hypothesis": "That's true, but in the end, we were late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "90b4ef24ef0c272f90d2de54",
+      "hypothesis": "That's true, but in the end, we were still late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "c978887f546303bff26dd9df",
+      "hypothesis": "That's true, but in the end, we were too late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "90b21dd3668ee1a8a7dfbacd",
+      "hypothesis": "That's true, but we were still late in the end.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "dd63234a0e052eba55e8974c",
+      "hypothesis": "That’s true, but I ended up being late anyway.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "dbd7fa2f1de2f9442b56515b",
+      "hypothesis": "That’s true, but I still ended up being late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "5289449c2df69b64012d3546",
+      "hypothesis": "That’s true, but I was late anyway.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "1d022987dadaaffe1bd25ef2",
+      "hypothesis": "That’s true, but I was late in the end.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "658e1d9667cd2e14739c3a8c",
+      "hypothesis": "That’s true, but I was still late in the end.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "8ce00b76a4280f66e8541106",
+      "hypothesis": "That’s true, but I was still late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "912d36160c070e104ba9c9f0",
+      "hypothesis": "That’s true, but in the end, it was too late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "48c9dd42b6eed7e727e3e567",
+      "hypothesis": "Yeah, but I still ended up being late.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "293c27dbeb9f30ab34100766",
+      "hypothesis": "You're right, but I ended up being late.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     }
+    ]
+   },
+   "c02-t15": {
+    "tag": "discourse_connective",
+    "check_index": 0,
+    "requirement": "근데 marks a topic shift ('By the way', 'Oh, and', 'Anyway') or is simply dropped; fails with a contrastive 'But'.",
+    "n": 24,
+    "agree": 1.0,
+    "manual_pass": 8,
+    "judge_pass": 8,
+    "verdicts": [
+     {
+      "key": "904a0c6170cd142753930a0b",
+      "hypothesis": "Me too. Have you had lunch, Sun-soo?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": "connective dropped but Me too wrong"
+     },
+     {
+      "key": "0b4b8abe3b53890f63c4f3c7",
+      "hypothesis": "Okay, sure. But, Sun-sun, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "22f0fc4cee76a59e8a2b2309",
+      "hypothesis": "Okay, sure. Translation: Yeah. But, Sun-woo, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "93da994fe0858272d9872c79",
+      "hypothesis": "Okay, yes. But, Sun-sun, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "a89a14f46ba7d8739fecd585",
+      "hypothesis": "Okay. By the way, Seo-yoon, have you had lunch yet?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "304d6f2e2868bfd33b8d4731",
+      "hypothesis": "Okay. By the way, Seoyun, have you had lunch?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "e5ee384a0d83a681db62035c",
+      "hypothesis": "Right. But Seoyoon, have you had lunch?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "e564b6557514c057778e6c98",
+      "hypothesis": "Right. But Seoyun, have you had lunch?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "38e4d2a272f642d2c40605fd",
+      "hypothesis": "Right. But, Seo-yoon, have you had lunch?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "be1ea1b25203848d64cc7b26",
+      "hypothesis": "Right. But, Seo-yun, have you had lunch?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "c0ba14d3a80b208ab74a28dc",
+      "hypothesis": "Right. By the way, Seo-yoon, have you had lunch yet?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "0ae5783b366b0d25c5c498f9",
+      "hypothesis": "Right. By the way, Seoyun, have you had lunch?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "cdea58e53bdba586017be64e",
+      "hypothesis": "Yeah. But, Sooyeon, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "18fb975a50f7805179eb53b1",
+      "hypothesis": "Yeah. But, Sun-soo, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "fa759a6c3113dd30f9b25d46",
+      "hypothesis": "Yeah. But, Sun-sun, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "b55d383184c5f4a0faff9290",
+      "hypothesis": "Yeah. By the way, Seoyoon, have you had lunch?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "838c1a170a8e4928dc5f11ff",
+      "hypothesis": "Yeah. By the way, Seoyun, have you had lunch?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "9d67f73d0fb046e21d56b32a",
+      "hypothesis": "Yes, but I haven’t had lunch yet.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "b99b3a8fcd75e3b86920724a",
+      "hypothesis": "Yes, did Seoyeon have lunch yet?",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": "connective dropped"
+     },
+     {
+      "key": "3ddf65edd85936ed990f7f15",
+      "hypothesis": "Yes. But, Sun-soo, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "b1c8d69ea9852a4fba52a59b",
+      "hypothesis": "Yes. But, Sun-sun, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "cee1cd333f4eae9196a953c0",
+      "hypothesis": "Yes. But, Sun-yoon, have you eaten lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "fe9fc1e28ece59587842a476",
+      "hypothesis": "Yes. But, does Seoyeon 씨 have lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "38709ca65104e169f184baab",
+      "hypothesis": "Yes. But, does Seoyeon-ssi have lunch yet?",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": true,
+      "borderline_note": null
+     }
+    ]
+   },
+   "c04-t12": {
+    "tag": "discourse_connective",
+    "check_index": 0,
+    "requirement": "그럼 is rendered as an emphatic yes ('Of course', 'Sure', 'Yeah, definitely'), not 'Then' or 'So'.",
+    "n": 22,
+    "agree": 0.8181818181818182,
+    "manual_pass": 9,
+    "judge_pass": 5,
+    "verdicts": [
+     {
+      "key": "2e81c55ea11424d2c05f19ae",
+      "hypothesis": "Don't worry then.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "7e04b0ef8c37274109fa552c",
+      "hypothesis": "Don't worry, then.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "aac5d80f40cfea55d2adbc97",
+      "hypothesis": "Don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": "yes dropped"
+     },
+     {
+      "key": "2d2a8c9197d1f2531c508b5a",
+      "hypothesis": "Of course, don't worry.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "63f09deafbe328ec99b81964",
+      "hypothesis": "Of course, don’t worry.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "f8beb14dfd6247519ca47e6a",
+      "hypothesis": "Of course. Don't worry.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "08e6c5c541bcc70c9d37cbcf",
+      "hypothesis": "Of course. Don’t worry.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "5b052b332cd6448f062e543c",
+      "hypothesis": "Okay, don't worry.",
+      "manual_pass": true,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": "Okay as yes"
+     },
+     {
+      "key": "cad2039ed4c7f328b16512be",
+      "hypothesis": "Okay, don’t worry.",
+      "manual_pass": true,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": "Okay as yes"
+     },
+     {
+      "key": "d6b9bce6149eda7e5bb3e661",
+      "hypothesis": "Okay, then don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "406d24a08aeb1f63ce8f9d9c",
+      "hypothesis": "Okay, then, don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "637887f9cc3b73594ec3d984",
+      "hypothesis": "Okay, then. Don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "b51726122e408f1c6885c225",
+      "hypothesis": "Okay. Don't worry.",
+      "manual_pass": true,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": "Okay as yes"
+     },
+     {
+      "key": "e9ddd1b0bc9aea30d0193ad6",
+      "hypothesis": "Sure, don't worry.",
+      "manual_pass": true,
+      "judge_pass": true,
+      "relaxed_pass": true,
+      "borderline_note": null
+     },
+     {
+      "key": "f079943ee9cc73bbdeb695cc",
+      "hypothesis": "Then don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "1580a299c0faeb93b542efa3",
+      "hypothesis": "Then don’t worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "4ef7b7211ef5c2f7c03810e9",
+      "hypothesis": "Then, don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "bae5b6f48c7e6bfb7496f116",
+      "hypothesis": "Well then, don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "e6edaf928db13852956529fe",
+      "hypothesis": "Well then, don’t worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     },
+     {
+      "key": "a924267ea7cf57539b5345ae",
+      "hypothesis": "Well, don't worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": "Well, (no yes)"
+     },
+     {
+      "key": "b3834d288d422ae174a44e4f",
+      "hypothesis": "Well, don’t worry.",
+      "manual_pass": false,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": "Well, (no yes)"
+     },
+     {
+      "key": "2be62650ed80157c560b683d",
+      "hypothesis": "Yeah, don't worry.",
+      "manual_pass": true,
+      "judge_pass": false,
+      "relaxed_pass": false,
+      "borderline_note": null
+     }
+    ]
+   }
+  },
+  "pass_rate_by_model_strict_vs_relaxed": {
+   "register_politeness|deepl-quality": {
+    "n": 45,
+    "strict": 0.022,
+    "relaxed": 0.356
+   },
+   "c02-t12|deepl-quality": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 1.0
+   },
+   "register_politeness|qwen3.5-4b": {
+    "n": 45,
+    "strict": 0.222,
+    "relaxed": 0.422
+   },
+   "c02-t12|qwen3.5-4b": {
+    "n": 15,
+    "strict": 0.067,
+    "relaxed": 0.667
+   },
+   "register_politeness|gemma3-4b": {
+    "n": 45,
+    "strict": 0.0,
+    "relaxed": 0.089
+   },
+   "c02-t12|gemma3-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.267
+   },
+   "register_politeness|gpt-6-luna": {
+    "n": 45,
+    "strict": 0.511,
+    "relaxed": 0.911
+   },
+   "c02-t12|gpt-6-luna": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.733
+   },
+   "c03-t14|gemma3-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.0
+   },
+   "c03-t14|gpt-6-luna": {
+    "n": 15,
+    "strict": 1.0,
+    "relaxed": 1.0
+   },
+   "c03-t14|deepl-quality": {
+    "n": 15,
+    "strict": 0.067,
+    "relaxed": 0.067
+   },
+   "c03-t14|qwen3.5-4b": {
+    "n": 15,
+    "strict": 0.467,
+    "relaxed": 0.467
+   },
+   "c05-t14|qwen3.5-4b": {
+    "n": 15,
+    "strict": 0.133,
+    "relaxed": 0.133
+   },
+   "c05-t14|gemma3-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.0
+   },
+   "c05-t14|deepl-quality": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.0
+   },
+   "c05-t14|gpt-6-luna": {
+    "n": 15,
+    "strict": 0.533,
+    "relaxed": 1.0
+   },
+   "discourse_connective|gpt-6-luna": {
+    "n": 45,
+    "strict": 0.622,
+    "relaxed": 0.933
+   },
+   "c01-t12|gpt-6-luna": {
+    "n": 15,
+    "strict": 0.067,
+    "relaxed": 1.0
+   },
+   "discourse_connective|qwen3.5-4b": {
+    "n": 45,
+    "strict": 0.0,
+    "relaxed": 0.667
+   },
+   "c01-t12|qwen3.5-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 1.0
+   },
+   "discourse_connective|gemma3-4b": {
+    "n": 45,
+    "strict": 0.044,
+    "relaxed": 0.644
+   },
+   "c01-t12|gemma3-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 1.0
+   },
+   "discourse_connective|deepl-quality": {
+    "n": 45,
+    "strict": 0.356,
+    "relaxed": 0.689
+   },
+   "c01-t12|deepl-quality": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 1.0
+   },
+   "c02-t15|qwen3.5-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 1.0
+   },
+   "c02-t15|gpt-6-luna": {
+    "n": 15,
+    "strict": 1.0,
+    "relaxed": 1.0
+   },
+   "c02-t15|gemma3-4b": {
+    "n": 15,
+    "strict": 0.133,
+    "relaxed": 0.933
+   },
+   "c02-t15|deepl-quality": {
+    "n": 15,
+    "strict": 1.0,
+    "relaxed": 1.0
+   },
+   "c04-t12|deepl-quality": {
+    "n": 15,
+    "strict": 0.067,
+    "relaxed": 0.067
+   },
+   "c04-t12|gemma3-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.0
+   },
+   "c04-t12|gpt-6-luna": {
+    "n": 15,
+    "strict": 0.8,
+    "relaxed": 0.8
+   },
+   "c04-t12|qwen3.5-4b": {
+    "n": 15,
+    "strict": 0.0,
+    "relaxed": 0.0
+   }
+  },
+  "relaxed_rule": "c01-t12: accept \"That's true/You're right, but\" (literal 그렇기는 한데); c02-t12: accept any rendering addressed to the listener as \"you\" even with a vocative title (Team Leader/Manager/boss); c02-t15: accept \"But\" as topic shift; c05-t14: accept vocative \"Oppa\". c03-t14, c04-t12 unchanged.",
+  "diagnosis": {
+   "c01-t12": "check wording: the check explicitly fails the literal, natural rendering \"That's true, but I was still late\" (Korean 그렇기는 한데 itself concedes). 59/60 main+baseline+s1 rows fail on this wording alone; judge applies it faithfully.",
+   "c02-t15": "check strict: \"But\" as a spoken topic-shift is marginal English; judge follows the check. All Qwen and most Gemma fail only on this.",
+   "c04-t12": "real model error for \"Then/Well then\" (Qwen, Gemma, DeepL). Judge is stricter than the check on \"Okay\"/\"Yeah\" (4 of 22 verdicts I would pass).",
+   "c02-t12": "check strict: vocative \"Team Leader/Manager\" fails even when the question is addressed to \"you\"; only third-person renderings are real errors (also caught by the pronoun check).",
+   "c03-t14": "real error: \"Mom\"/\"Grandma\"/\"Doctor\" for 어머님; judge correct.",
+   "c05-t14": "mostly real (brother/\"my brother\"); vocative \"Oppa\" (gpt-6-luna, 7 of 15 rows) fails only because of wording."
+  }
+ },
+ "cross_judge": {
+  "model": "gemini-3.8-flash",
+  "why": "newest generally-available Gemini model listed by the API on 2026-09-26; Pro-tier 3.x is preview only (gemini-3.1-pro-preview), GA Pro is the older 2.5",
+  "thinking_level": "low (API reported 0 thought tokens)",
+  "prompt": "identical SYSTEM_PROMPT and build_user_prompt imported from judge_context.py; JSON output; temperature 0",
+  "n_pairs": 80,
+  "per_model_pairs": 20,
+  "gpt_vs_gemini_checks": {
+   "n": 144,
+   "agree": 0.9791666666666666,
+   "kappa": 0.9572446555819477,
+   "gpt_pass_rate": 0.5833333333333334,
+   "gemini_pass_rate": 0.5763888888888888,
+   "by_tag": {
+    "context_trap": {
+     "n": 16,
+     "agree": 1.0
+    },
+    "discourse_connective": {
+     "n": 12,
+     "agree": 1.0
+    },
+    "entity_consistency": {
+     "n": 12,
+     "agree": 1.0
+    },
+    "fragment_incremental": {
+     "n": 12,
+     "agree": 0.9166666666666666
+    },
+    "gender_reference": {
+     "n": 20,
+     "agree": 1.0
+    },
+    "lexical_consistency": {
+     "n": 12,
+     "agree": 1.0
+    },
+    "omitted_argument": {
+     "n": 20,
+     "agree": 0.95
+    },
+    "pronoun_coreference": {
+     "n": 16,
+     "agree": 0.9375
+    },
+    "register_politeness": {
+     "n": 12,
+     "agree": 1.0
+    },
+    "word_sense": {
+     "n": 12,
+     "agree": 1.0
+    }
+   },
+   "by_model": {
+    "deepl-quality": {
+     "n": 34,
+     "agree": 0.9411764705882353,
+     "gpt_pass": 0.4117647058823529,
+     "gemini_pass": 0.4117647058823529
+    },
+    "gemma3-4b": {
+     "n": 36,
+     "agree": 1.0,
+     "gpt_pass": 0.3611111111111111,
+     "gemini_pass": 0.3611111111111111
+    },
+    "gpt-6-luna": {
+     "n": 38,
+     "agree": 0.9736842105263158,
+     "gpt_pass": 0.9210526315789473,
+     "gemini_pass": 0.8947368421052632
+    },
+    "qwen3.5-4b": {
+     "n": 36,
+     "agree": 1.0,
+     "gpt_pass": 0.6111111111111112,
+     "gemini_pass": 0.6111111111111112
+    }
+   }
+  },
+  "gpt_vs_gemini_disagreements": [
+   {
+    "key": "9b95b45779bf6e9dba0a3a7f",
+    "instance_id": "c01-t06",
+    "check": 1,
+    "tag": "pronoun_coreference",
+    "gpt": true,
+    "gemini": false,
+    "hypothesis": "It’s not just a random thing—she’s wanted them for a long time.",
+    "gemini_reason": "The first clause translates 거 as singular 'a random thing' instead of resolving to plural socks.",
+    "manual": true
+   },
+   {
+    "key": "88822f8a9c25812106aa9ebd",
+    "instance_id": "c03-t17",
+    "check": 0,
+    "tag": "fragment_incremental",
+    "gpt": true,
+    "gemini": false,
+    "hypothesis": "Human medication can damage the liver.",
+    "gemini_reason": "Does not grammatically connect or continue turn 16's condition ('콩이 같은 소형견은 사람 약 먹으면...').",
+    "manual": true
+   },
+   {
+    "key": "ac24bf68c34626d7b751eeae",
+    "instance_id": "c03-t05",
+    "check": 1,
+    "tag": "omitted_argument",
+    "gpt": false,
+    "gemini": true,
+    "hypothesis": "He got the very last one last month.",
+    "gemini_reason": "Refers to the dog, though with the incorrect gender pronoun 'he'.",
+    "manual": null
+   }
+  ],
+  "manual_vs_gemini_checks": {
+   "n": 72,
+   "agree": 0.9722222222222222,
+   "kappa": 0.9433962264150944
+  },
+  "judge_mean": {
+   "spearman_all": 0.9327638333638274,
+   "gpt_mean": 4.214583333333334,
+   "gemini_mean": 4.21875,
+   "mean_diff_gpt_minus_gemini": -0.004166666666666657
+  },
+  "per_dimension": {
+   "meaning_preservation": {
+    "spearman": 0.8648861098629715,
+    "mean_diff": -0.275
+   },
+   "no_hallucination": {
+    "spearman": 0.7470710182199541,
+    "mean_diff": -0.0625
+   },
+   "contextual_correctness": {
+    "spearman": 0.883696414041961,
+    "mean_diff": 0.0875
+   },
+   "speaker_consistency": {
+    "spearman": 0.926225229361759,
+    "mean_diff": 0.0125
+   },
+   "register_consistency": {
+    "spearman": 0.6579148202895924,
+    "mean_diff": 0.1125
+   },
+   "naturalness": {
+    "spearman": 0.6061874093172217,
+    "mean_diff": 0.1
+   }
+  },
+  "per_model": {
+   "deepl-quality": {
+    "n": 20,
+    "gpt_mean": 4.208333333333333,
+    "gemini_mean": 4.283333333333333,
+    "diff": -0.07499999999999998,
+    "spearman": 0.8332203074561068
+   },
+   "gemma3-4b": {
+    "n": 20,
+    "gpt_mean": 3.65,
+    "gemini_mean": 3.558333333333333,
+    "diff": 0.09166666666666672,
+    "spearman": 0.8726806114361231
+   },
+   "gpt-6-luna": {
+    "n": 20,
+    "gpt_mean": 4.841666666666667,
+    "gemini_mean": 4.866666666666666,
+    "diff": -0.025000000000000088,
+    "spearman": 0.6230270415901136
+   },
+   "qwen3.5-4b": {
+    "n": 20,
+    "gpt_mean": 4.158333333333333,
+    "gemini_mean": 4.166666666666667,
+    "diff": -0.008333333333333281,
+    "spearman": 0.8971444846173212
+   }
+  },
+  "self_preference": {
+   "luna_diff": -0.025000000000000088,
+   "others_diff": 0.0027777777777778195,
+   "luna_minus_others": -0.027777777777777908,
+   "bootstrap95": [
+    -0.14166666666666675,
+    0.09722222222222213
+   ]
+  },
+  "model_rank_gpt": [
+   "gpt-6-luna",
+   "deepl-quality",
+   "qwen3.5-4b",
+   "gemma3-4b"
+  ],
+  "model_rank_gemini": [
+   "gpt-6-luna",
+   "deepl-quality",
+   "qwen3.5-4b",
+   "gemma3-4b"
+  ]
+ },
+ "cost": {
+  "crosscheck_calls": 80,
+  "crosscheck_usd": 0.166755,
+  "price_per_1m": {
+   "input": 0.75,
+   "cached": 0.075,
+   "output": 3.75
+  },
+  "price_source": "ai.google.dev/gemini-api/docs/pricing, read 2026-09-26 (3.8 Flash promotional price through 2026-12-31)",
+  "budget_usd": 3.0
+ }
+}
