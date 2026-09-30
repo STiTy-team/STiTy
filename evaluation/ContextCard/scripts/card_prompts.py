@@ -8,6 +8,8 @@ K2b 용어를 고유명사로만 제한. 추출기는 새 항목만 내고, 합�
     안 나온 것부터 뺀다 (K2 는 일반 단어가 섞이고 강연 중반에 30개가 차서 뒤 이름이 못 들어갔다)
     V2 추출(K2b·K3b)은 바뀐 칸만 낸다 — 요약·상황은 바뀌지 않으면 null, 용어는 새 항목만. 출력 토큰을 줄이려는 것
     (K1~K4 는 매번 카드 전체를 다시 써 추출 한 번에 출력이 약 520토큰이었다)
+K5  효과가 있던 칸을 합친다: 요약(K1) + 고유명사(K2b 방식) + 말투를 포함한 상황(K3). 추출은 V2 방식(바뀐 칸만)에
+    상황의 말투 칸만 다시 허용한다
 K3b 상황에서 말투 칸을 뺀다. 장르·화자·청중만 주고 말투는 번역기가 문장마다 정한다 (K3 은 추출기가 매번
     합니다체로 정해 정답 74% 보다 많은 90% 가 합니다체가 됐다)
 """
@@ -20,8 +22,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "LongContextMT" / "
 from lcmt.prompt import SYSTEM  # noqa: E402
 
 FIELDS = {"K1": ("summary",), "K2": ("terms",), "K3": ("situation",), "K4": ("summary", "terms", "situation"),
-          "K2b": ("terms",), "K3b": ("situation",)}
-V2 = ("K2b", "K3b")
+          "K2b": ("terms",), "K3b": ("situation",), "K5": ("summary", "terms", "situation")}
+V2 = ("K2b", "K3b", "K5")
+WITH_REGISTER = ("K5",)
 MAX_TERMS = 30
 
 NOTES_SYSTEM = SYSTEM + (" Background notes about the talk so far may be given inside <notes>. An assistant wrote "
@@ -56,6 +59,19 @@ EXTRACT_SYSTEM_V2 = (
     "sentences clearly show a different setting, otherwise null. Do not decide the Korean speech level.\n"
     "Output only what changed: null for an unchanged summary or situation, an empty list for no new terms.")
 
+REGISTER_V2 = ("\"situation\": {\"genre\": ..., \"speaker\": ..., \"audience\": ..., \"register\": ...} only if it is "
+               "empty now or the new sentences clearly show a different setting, otherwise null. register is the Korean "
+               "speech level a professional interpreter should use in this setting: one of \"합니다체\", \"해요체\", "
+               "\"반말\".\n")
+
+
+def extract_system_v2(with_register: bool) -> str:
+    if not with_register:
+        return EXTRACT_SYSTEM_V2
+    head, tail = EXTRACT_SYSTEM_V2.split("\"situation\":", 1)
+    return head + REGISTER_V2 + tail.split("\n", 1)[1]
+
+
 EMPTY_CARD = {"summary": "", "terms": [], "situation": {}}
 
 
@@ -79,7 +95,8 @@ def parse_card(raw: str, prev: dict) -> tuple[dict, bool]:
     return card, True
 
 
-def parse_card_v2(raw: str, prev: dict, new_src: list[str], at: int) -> tuple[dict, bool]:
+def parse_card_v2(raw: str, prev: dict, new_src: list[str], at: int,
+                  keep=("genre", "speaker", "audience")) -> tuple[dict, bool]:
     """V2 추출 결과를 합친다. 기존 항목은 그대로 두고(청중이 이미 봤다) 새 고유명사만 더한다. 항목마다 원문에
     마지막으로 나온 문장 번호(last_seen)를 적어 두고, MAX_TERMS 를 넘으면 가장 오래 안 나온 것부터 뺀다."""
     s = raw.strip()
@@ -100,7 +117,7 @@ def parse_card_v2(raw: str, prev: dict, new_src: list[str], at: int) -> tuple[di
     terms = sorted(terms, key=lambda t: -t["last_seen"])[:MAX_TERMS]
     # 바뀐 칸만 온다. null·빈 값이면 이전 값을 그대로 쓴다.
     sit = obj.get("situation") if isinstance(obj.get("situation"), dict) and obj["situation"] else prev["situation"]
-    sit = {k: v for k, v in sit.items() if k in ("genre", "speaker", "audience")}
+    sit = {k: v for k, v in sit.items() if k in keep}
     summary = obj.get("summary")
     summary = summary.strip() if isinstance(summary, str) and summary.strip() else prev["summary"]
     return {"summary": summary, "terms": terms, "situation": sit}, True

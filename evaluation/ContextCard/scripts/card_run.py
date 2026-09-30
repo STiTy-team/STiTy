@@ -23,8 +23,8 @@ HERE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(HERE.parent / "LongContextMT" / "scripts"))
 
-from card_prompts import (EMPTY_CARD, EXTRACT_SYSTEM, EXTRACT_SYSTEM_V2, NOTES_SYSTEM, V2,  # noqa: E402
-                          extract_user, parse_card, parse_card_v2, render, translate_user)
+from card_prompts import (EMPTY_CARD, EXTRACT_SYSTEM, NOTES_SYSTEM, V2, WITH_REGISTER,  # noqa: E402
+                          extract_system_v2, extract_user, parse_card, parse_card_v2, render, translate_user)
 from lcmt.backends import CostLedger, LunaChat  # noqa: E402
 from lcmt.prompt import clean  # noqa: E402
 from run_translate import read_env_key  # noqa: E402
@@ -97,9 +97,11 @@ def main():
                 prev = max(versions, key=lambda v: v[0])[1]
                 rows = [(talk[j]["en"], hyps[j]) for j in range(i + 1 - every, i + 1)]
                 shown = {**prev, "terms": [{"en": t["en"], "ko": t["ko"]} for t in prev["terms"]]}
-                r = luna.translate(EXTRACT_SYSTEM_V2 if cond in V2 else EXTRACT_SYSTEM, extract_user(shown, rows),
+                system = extract_system_v2(cond in WITH_REGISTER) if cond in V2 else EXTRACT_SYSTEM
+                r = luna.translate(system, extract_user(shown, rows),
                                    tag={"model_name": model, "cond": cond, "idx": i, "kind": "extract"})
-                new, ok = (parse_card_v2(r["raw_output"], prev, [en for en, _ in rows], i) if cond in V2
+                keep = ("genre", "speaker", "audience") + (("register",) if cond in WITH_REGISTER else ())
+                new, ok = (parse_card_v2(r["raw_output"], prev, [en for en, _ in rows], i, keep) if cond in V2
                            else parse_card(r["raw_output"], prev))
                 rec = {"at": now(), "cond": cond, "version": len(versions), "made_after": i,
                        "usable_from": i + 1 + lag, "parsed": ok, "card": new, "raw_output": r["raw_output"],
