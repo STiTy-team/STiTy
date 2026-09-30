@@ -1,0 +1,28 @@
+meta:
+  description: ko finetune. Chunk 1.0 s instead of 2.0 s
+  tags:
+  - upgrade-260930
+  - cascade
+  - ko-asr
+  - chunk1.0
+pipeline:
+  name: cascade:v2
+  transcription:
+    name: qwen-seg:v2
+    model: Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged
+    chunk_size_sec: 1.0
+    max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 1
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.3

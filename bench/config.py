@@ -15,7 +15,7 @@ from core.utils.paths import get_project_root
 
 from .augment import AugmentConfig
 
-DATASET_KEYS = {"dataset", "target", "augment"}
+DATASET_KEYS = {"dataset", "target", "augment", "terms"}
 DATA_ROOT_ENV = "STITY_DATA_ROOT"
 NAME_PATTERN = re.compile(r"[a-z0-9][a-z0-9.+-]*(_[a-z0-9][a-z0-9.+-]*)*")
 
@@ -39,6 +39,7 @@ class DatasetConfig(ConfigBody):
     longform: bool = False
     limit: int | None = None
     pick: Literal["first", "longest"] = "first"
+    ids: list[str] | None = None
 
     @classmethod
     def normalize(cls, raw: Any) -> Any:
@@ -92,6 +93,7 @@ class BenchConfig(ConfigBody):
     dataset: DatasetConfig
     target: str
     augment: AugmentConfig | None = None
+    terms: str | None = None
     stity: PipelineConfig
 
     _raw: dict = PrivateAttr(default_factory=dict)
@@ -143,7 +145,7 @@ def load(pipeline: str, dataset: str) -> BenchConfig:
         )
     spec, pipeline_meta = core_config.read_named_with_meta(pipeline, "pipeline")
     ids = {
-        "dataset": identity(dataset, data_meta, data),
+        "dataset": identity(dataset, data_meta, {k: v for k, v in data.items() if k != "terms"}),
         "pipeline": identity(pipeline, pipeline_meta, spec),
     }
     raw = {"name": f"{ids['dataset']['ref']}/{ids['pipeline']['ref']}", **data, "stity": spec}

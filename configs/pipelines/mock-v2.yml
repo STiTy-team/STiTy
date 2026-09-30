@@ -1,0 +1,19 @@
+meta:
+  description: cascade:v2 with mock parts plus the new labeler and filter; checks the v2 wiring without a model
+  tags: [cascade, mock, upgrade-260930]
+pipeline:
+  name: cascade:v2
+  transcription: mock
+  vad:
+    name: mock
+    speech_chunks: 5
+  labeler: script
+  filter:
+    name: commit-rules
+    fillers: true
+    repeats: 2
+  correction: mock
+  translation: mock
+  split_at_vad: true
+commit: seg
+gpu_memory_utilization: 0.1

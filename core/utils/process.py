@@ -62,6 +62,18 @@ def _parent_death_signal() -> Callable[[], None] | None:
 
 _die_with_parent = _parent_death_signal()
 
+_started: list["ManagedProcess"] = []
+
+
+async def stop_all() -> None:
+    """Stop every child this process started and wait for each to exit.
+
+    The atexit hook only sends SIGTERM; a driver that runs jobs back to back calls this
+    so the next job does not find the last one's server still holding the port and GPU.
+    """
+    while _started:
+        await _started.pop().stop()
+
 
 class ManagedProcess:
 
@@ -82,6 +94,7 @@ class ManagedProcess:
                 *self.argv, stdout=log_file, stderr=asyncio.subprocess.STDOUT,
                 preexec_fn=_die_with_parent)
         atexit.register(self._terminate)
+        _started.append(self)
         try:
             await asyncio.wait_for(self._wait_ready(), self.startup_timeout_sec)
         except TimeoutError:

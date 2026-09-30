@@ -1358,6 +1358,15 @@ addEventListener("resize", timingResized);
 const feed = $("feed"), feedRows = $("feed-rows"), liveEl = $("live");
 // Mine (the source language) is blue on the right, everyone else grey on the left;
 // the language shows only as the avatar's hue.
+// Runs recorded before qwen-seg:v2's clean_partials still carry the model's
+// `language <Name>` header in partials (WORKLOG A9); same rule as the mobile app.
+const LANG_HEADER_RE = /\blanguage\s*:?\s*(chinese|english|cantonese|arabic|german|french|spanish|portuguese|indonesian|italian|korean|russian|thai|vietnamese|japanese|turkish|hindi|malay|dutch|swedish|danish|finnish|polish|czech|filipino|none)\b/gi;
+const HEADER_STUB_RE = /(^|[.,!?;:。？！])\s*(?:l|la|lan|lang|langu|langua|languag|language)\s*$/;
+function cleanAsrText(text) {
+  return String(text || "").replace(/<asr_text>|<SEG>/g, " ").replace(LANG_HEADER_RE, " ")
+    .replace(HEADER_STUB_RE, "$1").replace(/\s+/g, " ").trim();
+}
+
 function bubble(lang, main, sub) {
   const isMine = lang === (current.src_lang || "");
   return `<div class="row${isMine ? " mine" : ""}">` +
@@ -1388,12 +1397,13 @@ function render() {
     if (e.type === "translated" || e.type === "item_open") break;
     if (e.type === "partial") { live = e; break; }
   }
-  const liveKey = live && live.text ? live.seq + "|" + live.text : "";
+  const liveText = live ? cleanAsrText(live.text) : "";
+  const liveKey = liveText ? live.seq + "|" + liveText : "";
   if (liveKey !== liveShown) {
     liveShown = liveKey;
     liveEl.hidden = !liveKey;
     liveEl.innerHTML = liveKey
-      ? bubble((live.language || "").toLowerCase(), live.text, "") : "";
+      ? bubble((live.language || "").toLowerCase(), liveText, "") : "";
     feed.scrollTop = feed.scrollHeight;
   }
 

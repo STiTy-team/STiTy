@@ -1,0 +1,37 @@
+meta:
+  description: The hall-reverb items where WORKLOG.md saw repetition loops (A5) plus 12 untouched controls;
+    same augmentation as fleurs_ko-en_hall
+  tags:
+  - fleurs
+  - sentence
+  - reverb
+  - subset
+  - upgrade-260930
+dataset:
+  name: fleurs/ko_kr
+  ids:
+  - ko_1848
+  - ko_1887
+  - ko_1902
+  - ko_1931
+  - ko_1946
+  - ko_1917
+  - ko_1660
+  - ko_1661
+  - ko_1662
+  - ko_1663
+  - ko_1664
+  - ko_1665
+  - ko_1666
+  - ko_1667
+  - ko_1668
+  - ko_1669
+  - ko_1670
+  - ko_1672
+target: en
+augment:
+  room:
+    place: hall
+    level: 1.0
+  volume:
+    min_level_db: -23

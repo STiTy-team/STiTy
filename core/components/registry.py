@@ -98,7 +98,7 @@ class Component:
 
 
 LIFECYCLE = frozenset({"load", "close", "start", "validate"})
-PER_CHUNK = frozenset({"detect", "transcribe"})
+PER_CHUNK = frozenset({"detect", "transcribe", "enhance", "filter", "label"})
 
 
 def _work_methods(cls: type) -> list[str]:

@@ -42,7 +42,31 @@ class MyTranslator(Translator):
 | `translation` | `translators` | `translate(text, target_lang, source_lang, context)` → (번역문, 소스 언어) |
 | `vad` | `detectors` | `detect(audio)` → 끝난 발화 `Speech` 또는 `None` |
 | `correction` | `correctors` | `correct(text, language)` → 고친 텍스트. **`mock` 외에 등록된 백엔드가 아직 없다** |
+| `enhancement` | `enhancers` | `enhance(pcm)` → `Routed(vad, asr)`. VAD 와 ASR 에 줄 오디오를 따로 낸다(원음·정제음·섞음). `spectral` 하나. `cascade:v2` 만 쓴다 |
+| `labeler` | `labelers` | `label(records)` → 언어 라벨을 고친 기록들. `script` 는 커밋의 글자로 언어를 다시 정한다(한 디코딩 창에 한 라벨이라 생기는 오표기, WORKLOG B7). `cascade:v2` 만 쓴다 |
+| `filter` | `filters` | `filter(records)` → 남길 기록들. `commit-rules` 는 필러만 있는 커밋·다른 문자 커밋·반복 커밋·정형 환각 문구를 규칙별 스위치로 버린다. `cascade:v2` 만 쓴다 |
 | `pipeline` | `pipelines` | `start` / `listen(audio)` / `finish`. `REQUIRED`·`OPTIONAL` 로 자기 부품을 선언한다 |
+
+**고친 변형은 `:v2` 로 따로 등록한다.** 기존 백엔드는 프로덕션과 같은 숫자를 재는 기준이라 고치지
+않는다. `qwen-seg:v2`·`qwen3.5:v2`·`silero:v2`·`cascade:v2` 는 v1 을 상속하고, **고친 것마다 설정
+스위치가 하나씩** 있으며 기본은 전부 꺼져 있다 — 다 끄면 v1 과 같은 출력이 나온다(`tests/` 의 대조
+테스트가 이걸 확인한다). 그래서 실험 하나가 스위치 하나만 켜고 다른 것은 움직이지 않는다.
+설정 파일 이름에는 `:` 을 못 쓰므로 `-v2` 로 적는다(`asr.qwen-seg-v2-ko+…`).
+
+- `qwen-seg:v2` — WORKLOG A1~A9·N5~N8 의 수정 스위치(`no_speech_since_vad_reset`, `keep_held_fragment`,
+  `strict_boundary_dedup`, `carry_uncommitted_audio`, `resync_cursor`, `loop_guard`, `carry_on_loop_reset`,
+  `drop_language_lists`, `clean_partials`, `dedup_dot_carry`), `tail_keep_sec`, 그리고 Qwen3-ASR 문맥
+  편향(`bias_glossary`·`bias_recent_commits`)
+- `qwen-la` — 커밋을 `<SEG>` 대신 연속 디코딩 두 번이 합의한 단어까지로 정한다(LocalAgreement-2).
+  문장 끝(`boundary: clause` 면 쉼표도)에서 자르고, 합의된 단어가 `max_pending_words` 를 넘으면 강제로 낸다
+- `qwen3.5:v2` — 용어집(`glossary`), 목표 언어별 문체 지시(`style`), 다른 문자가 섞이면 한 번 더
+  묻기(`leak_retry`), 번역 대신 지시문에 답하면 다시 묻기(`meta_guard`), 문장 중간 조각을 화면의 번역에
+  이어 쓰기(`continuation`)
+- `silero:v2` — 같은 Silero 확률에 `tuner` 가 문턱과 최소 무음을 정한다. `fixed`(v1 과 같다), `ramp`(구간이
+  길어질수록 최소 무음을 줄인다), `adaptive`(화자의 쉼 길이·소음 바닥에서 정한다), `smart-turn`(쉼이
+  시작되면 Smart Turn v3.2 가 말이 끝났는지 본다. `onnxruntime` 필요)
+- `cascade:v2` — `split_at_vad`(VAD 가 끝난 샘플에서 조각을 잘라 앞부분만 끝난 발화에 넣는다), 위의
+  세 부품, 그리고 bench 도 서버와 같은 `TranslationProcessor` 로 번역한다
 
 **백엔드를 등록하는 자리는 파일 그 자체다.** 종류 패키지의 `__init__.py` 는 레지스트리를
 만들고 `discover(__name__)` 를 부를 뿐이고, 그 디렉토리의 모듈을 전부 import 한다 — 새
@@ -108,10 +132,12 @@ class MyTranslator(Translator):
 프로덕션과 같은 숫자를 재려면 이쪽이고, 그 방어가 없을 때의 바닥선을 보려면 `qwen3` 다.
 `dot_commit_confirm`·`dot_commit_stall_chunks`·`rep_dedup` 은 `qwen-seg` 의 설정이다.
 
-**서버와 어긋나면 벤치가 무엇을 재는지 알 수 없다.** 그래서 정답을 적어 두는 대신 양쪽에
-같은 디코딩 대본을 먹여 커밋 목록이 같은지만 보는 대조 테스트를 둔다 —
-`Qwen3-ASR/tests/test_qwen_seg_parity.py`. 서버를 고치면 이 테스트가 `qwen_seg.py` 도 같이
-고치라고 알려 준다.
+**v1 과 v2 는 같은 디코딩 대본으로 대조한다.** `tests/fake_asr.py` 가 Qwen3-ASR 스트리밍 API 를
+흉내 내 적어 둔 디코딩을 그대로 돌려주고, `tests/test_qwen_seg_v2.py` 가 WORKLOG 의 버그마다 v1 에서
+재현되는지, 해당 스위치만 켠 v2 에서 사라지는지, 스위치를 다 끈 v2 가 v1 과 같은지를 본다. 대본의
+`<SEG>` 는 실제 출력처럼 양쪽에 공백을 둔다(` <SEG> `) — 한쪽만 두면 커서 계산이 달라져 없는 버그가
+재현된다. GPU 없이 `uv run --project bench python -m unittest discover -s tests -t .` 로 돈다.
+프로덕션 서버(`streaming_websocket_server.py`)와 `qwen-seg` 를 대조하는 테스트는 아직 없다.
 
 **무음 위 커밋 폐기(`[DROP] rule=no-speech`, 서버에서는 `[SILENCE-DROP]`)는 VAD 구간이 있어야 판정된다.** 서버가 보는 것은
 "커밋 시점이 침묵인가"가 아니라 "이 커밋이 덮는 구간(직전 final 의 끝 ~ 이번 커밋)에 음성이

@@ -1,0 +1,33 @@
+meta:
+  description: 'ko finetune. silero:v2 ramp: min silence 800 -> 300 ms over 8 s, 100 ms after 15 s'
+  tags:
+  - upgrade-260930
+  - cascade
+  - ko-asr
+  - vad-ramp
+pipeline:
+  name: cascade:v2
+  transcription:
+    name: qwen-seg:v2
+    model: Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged
+    chunk_size_sec: 2.0
+    max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 1
+  vad:
+    name: silero:v2
+    min_silence_ms: 800
+    tuner:
+      name: ramp
+      end_ms: 300
+      ramp_sec: 8
+      max_segment_sec: 15
+commit: seg
+gpu_memory_utilization: 0.3

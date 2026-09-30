@@ -1,0 +1,26 @@
+meta:
+  description: ko finetune. qwen-la committing at clause boundaries too
+  tags:
+  - upgrade-260930
+  - cascade
+  - ko-asr
+  - la-clause
+pipeline:
+  name: cascade:v2
+  transcription:
+    name: qwen-la
+    model: Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged
+    chunk_size_sec: 2.0
+    max_new_tokens: 128
+    boundary: clause
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 1
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.3

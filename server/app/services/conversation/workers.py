@@ -9,6 +9,8 @@ from app.models.conversation import Conversation, ConversationEvent, Inbox, Work
 
 log = logging.getLogger(__name__)
 
+SETTLE_POLL_SEC = 0.01
+
 
 class TranscriptionWorker:
     def __init__(
@@ -66,7 +68,7 @@ class TranslationWorker:
 
     async def settle(self) -> None:
         while len(self._inbox) and not self._task.done():
-            await asyncio.sleep(0)
+            await asyncio.sleep(SETTLE_POLL_SEC)
         await self._idle.wait()
 
     async def close(self) -> None:
@@ -85,6 +87,7 @@ class TranslationWorker:
                 await self._translate(event)
         except Exception:
             log.exception("%s translation worker failed for conversation %s", lang, conversation_id)
+            self._conversation.unsubscribe(self._inbox)
         finally:
             self._idle.set()
             await self._processor.close()

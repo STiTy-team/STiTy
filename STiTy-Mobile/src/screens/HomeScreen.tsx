@@ -24,6 +24,7 @@ import { useWebSocketContext } from '../context/WebSocketContext';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { initTtsEngine, ttsSpeak, ttsStop } from '../utils/tts';
 import { setSpeakerphoneOn, releaseAudioMode, isEarphoneConnected } from '../utils/audioRouting';
+import { cleanAsrText } from '../utils/asrText';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface TranscriptionEntry {
@@ -754,7 +755,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = () => {
     // partial 분기는 아래 !text 검사보다 먼저 와야 한다.
     // 빈 text 자체가 "화면을 비우라"는 신호라 여기서 걸러지면 안 된다.
     if (msg.type === 'partial') {
-      const partialText = (msg.text || '').trim();
+      const partialText = cleanAsrText(msg.text || '');
       speechPendingRef.current = false;
       setSpeechPending(false);
       livePartialRef.current = partialText ? { text: partialText, language: langToCode(msg.language || 'auto') } : null;
@@ -763,7 +764,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = () => {
       );
       return;
     }
-    const text = (msg.original || '').trim();
+    const text = cleanAsrText(msg.original || '');
     if (!text || msg.type !== 'final') return;
     // 이 구간은 확정됐다. 서버의 빈 partial 을 기다리지 않고 바로 지운다.
     // 흐리게 떠 있던 말풍선이 있었다면 그 자리를 그대로 이어받는다.

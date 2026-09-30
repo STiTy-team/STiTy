@@ -5,12 +5,14 @@ from pathlib import Path
 
 from core.errors import STiTyError
 from core.utils import audio
-from core.utils import cli, clock, env, logging, stream
+from core.utils import cli, clock, env, logging, process, stream
+from core.utils.glossary import Glossary
 from core.utils.json import JsonlWriter, read_jsonl, write_jsonl
 
 from . import augment, config, registry
 from .metrics.common import transcribed, translated
 from .metrics import score
+from .metrics.diagnostics import diagnostics
 from .metrics.translation import translation_sentences
 from . import dataset as datasets
 from . import report
@@ -76,9 +78,9 @@ async def _stream_item(pipeline, augmenter, item, cfg, languages: list[str]) -> 
             stream.record("chunk", silence=silence)
         await run(pipeline.finish())
     finally:
-        stream.stop_clock()
         stream.audio_position(None)
-    stream.record("item_close")
+        stream.record("item_close")
+        stream.stop_clock()
 
     transcription_output = " ".join(record["original"].strip() for record in transcribed(records))
     return _row(
@@ -100,6 +102,8 @@ def score_item(row: dict, cfg) -> dict:
 
 def score_run(rows, cfg) -> tuple[dict, dict]:
     scores, unavailable = score.score_run(rows, cfg.target)
+    glossary = Glossary.load(cfg.terms) if cfg.terms else None
+    scores.update(diagnostics(rows, cfg.target, glossary))
     unavailable["comet"] = "scored separately by python -m bench.metrics.comet"
     return scores, unavailable
 
@@ -109,8 +113,16 @@ def write_comet_inputs(rows, cfg, path: Path) -> None:
 
 
 async def _run(cfg, dataset, pipeline, augmenter, writer) -> None:
+    try:
+        await pipeline.load()
+        await _run_items(cfg, dataset, pipeline, augmenter, writer)
+    finally:
+        await pipeline.close()
+        await process.stop_all()
+
+
+async def _run_items(cfg, dataset, pipeline, augmenter, writer) -> None:
     current_group = None
-    await pipeline.load()
     for index, item in enumerate(dataset.items, start=1):
         stream.bind(item=item.id, session=item.group)
         if item.group != current_group:
@@ -188,9 +200,11 @@ def main(args: Namespace) -> None:
         status = "degraded"
     except STiTyError as e:
         status, failure = "failed", e
+    except Exception as e:  # noqa: BLE001
+        log.exception("[FAILED] unexpected error; writing the summary of what finished")
+        status, failure = "failed", e
     finally:
         writer.close()
-        asyncio.run(pipeline.close())
     rows = list(read_jsonl(writer.path))
 
     stream.bind(item="", session="")

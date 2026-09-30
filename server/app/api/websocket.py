@@ -84,7 +84,7 @@ class WebSocketConnectionHandler[IncomingMessage](ABC):
         except ValidationError as e:
             field_errors = [error for error in e.errors() if error["loc"]]
             if not field_errors:
-                log.debug("Ignored unknown message: %s", text[:100])
+                log.warning("Ignored malformed or unknown message: %s", text[:100])
                 return None
             raise InvalidMessage(describe_validation_errors(field_errors)) from e
 

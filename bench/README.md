@@ -209,6 +209,14 @@ dataset:
 target: ko
 ```
 
+**정해 둔 항목만 돌리려면 `ids: [...]`** 를 쓴다(`longform` 이면 발표 id). 없는 id 가 있으면 시작 전에
+멈춘다. WORKLOG 에 나온 항목만 골라 한 가지 고친 것을 빨리 보려는 용도다 — 이름의 부분 칸은
+`worklog` 이고, 대조군으로 손대지 않은 항목을 같이 넣는다(`fleurs_en-ko_worklog` 등).
+
+**`terms: <용어집>`** 은 채점에만 쓰인다. `configs/glossaries/<이름>.yml` 을 읽어 `term_recall`·
+`term_translation_recall` 을 더 낸다. 실행이 하는 일은 바꾸지 않으므로 설정 해시에 들어가지 않는다 —
+기존 설정에 붙여도 지난 실행과 비교가 끊기지 않는다.
+
 ### 발표를 통째로 흘리기 (`longform`)
 
 ```yaml
@@ -504,6 +512,24 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 | `commit_reasons` | 사유별 비율. `finish` 비율이 크면 축의 커밋 경로가 안 도는 것이다 |
 | `lang_detect_accuracy`·`confusion` | 언어 판정 정확도와 혼동 행렬. ASR 이 커밋한 전사의 언어를 참조 언어와 비교하고, 모든 항목으로 낸다. 판정 정확도는 참조 언어와 판정 언어를 둘 다 언어 코드로 맞춘 뒤 비교하고, 언어를 내지 않은 세그먼트는 `?` 로 틀린 것으로 센다 |
 
+진단용 숫자(`metrics/diagnostics.py`). 점수를 대신하지 않고, 점수가 가리는 실패를 센다.
+
+| 지표 | 비고 |
+|---|---|
+| `passthrough_share` | 원문이 목표 언어와 다른 글자로 쓰였는데 번역이 원문 그대로인 비율 — 언어 라벨이 틀려 번역을 건너뛴 것(WORKLOG T1·B7). COMET 은 이것을 점수로 준다(M2) |
+| `wrong_script_share` | 번역의 글자 대부분이 목표 언어의 글자가 아닌 비율 |
+| `leak_share` | 번역 글자의 15% 넘게 다른 문자인 비율(한국어 번역 속 한자 등). 한·중·일 목표에서 라틴 문자는 세지 않는다 |
+| `translation_failures` | 번역이 필요했는데 빈 번역이 나온 커밋 수(T2) |
+| `commit_gap_p90_sec`·`commit_gap_max_sec` | 한 항목 안 연속 커밋 사이의 오디오 시간. SEG 정책의 긴 꼬리를 본다 |
+| `speech_segment_p50/p90/max_sec` | VAD 구간 길이(N1). 대화에서는 짧아야 창 하나에 여러 화자가 섞이지 않는다 |
+| `commits_per_min` | 오디오 1분당 커밋 수 = 번역 호출 수 |
+| `term_recall`·`term_translation_recall` | 데이터셋 설정에 `terms` 가 있을 때만. 참조 전사에 나온 용어가 전사에 / 목표 언어 형태가 번역에 들어간 비율 |
+
+**VAD 만 CPU 로 따로 잴 수 있다.** `python -m bench.vad --dataset <데이터셋> --config <파이프라인> [...]`
+는 파이프라인의 `vad`(와 `enhancement`)만 만들어 같은 오디오·같은 200ms 조각으로 흘리고, 구간 길이와
+참조 문장 끝을 얼마나 맞히는지(`turn_end_recall`, `end_precision`)를 낸다. 모델을 올리지 않으므로
+GPU 없이 VAD 설정을 고를 수 있다. 결과는 `bench/vad_runs/` 에 떨어진다(추적하지 않는다).
+
 **COMET 은 별도 환경에서 돈다.** `unbabel-comet` 은 `protobuf<5`·`numpy<2` 를 고정하고 vLLM 0.14 는
 `protobuf>=6.30` 을 요구해서, 한 환경에 둘을 같이 풀 수 있는 버전이 없다. 그래서 `bench/metrics/comet/` 이 자기 uv 환경을 갖고, `make bench` 가
 `python -m bench` 프로세스가 끝난 뒤 그 환경에서 따로 부른다 — ASR 엔진과 번역 서버가 GPU 를 놓은 뒤라야
@@ -564,6 +590,7 @@ config.py     데이터셋 설정을 읽고 파이프라인 설정과 합친다.
 registry.py   runs/<데이터셋>/<파이프라인>/ 목록, 실행이 남긴 설정·identity 읽기, 그리고
               이름이 뜻을 바꾸면 시작 전에 멈추는 검사(check)
 report.py     items.jsonl 행 + 채점 결과 → summary.json
+vad.py        VAD(와 enhancement)만 CPU 로 흘려 구간을 참조 문장과 대조한다 → bench/vad_runs/
 replay/       events.jsonl·items.jsonl·summary.json → :9130 웹 페이지 둘
   runs.py           실행 목록, 데이터셋별 묶기, 설정의 meta, 대시보드가 쓰는 항목별 점수 분포
   session.py        실행 하나의 세션 재생 데이터 (항목·오디오·데이터셋 정보)
@@ -581,6 +608,7 @@ metrics/      items.jsonl 행 → 지표. 모듈 하나가 지표 묶음 하나�
   translation.py    bleu, 그리고 BLEU·COMET 이 함께 쓰는 문장 쌍(translation_sentences)
   latency.py        fsl·laal·yaal·longyaal·token_emission
   asr.py            language_detection·commit_reasons
+  diagnostics.py    passthrough·wrong_script·leak·translation_failures·commit_gap·speech_segment·term_recall
   common.py         여럿이 함께 쓰는 것: translated·per_lang·macro·정규화·재분절
   comet/            COMET. 자기 uv 환경에서 돈다 — __init__.py 가 없는 이유다. 있으면 그 환경에
                     없는 jiwer·omnisteval 을 import 하다 죽는다

@@ -27,6 +27,7 @@
 - 언어는 두 글자 코드로 쓴다 (`ko`, `en`). 데이터 디렉토리의 `ko_kr` 같은 이름은 설정 안에만 둔다.
 - 기본값은 칸을 두지 않는다. 깨끗한 오디오면 조건 칸이 없고, 전부 돌면 부분 칸이 없다.
 - 부품 이름은 코드의 레지스트리 이름 그대로 쓴다 (`qwen-seg`, `qwen3.5`). 그래야 검색된다.
+  단 `:` 은 쓸 수 없으므로 `qwen-seg:v2` 는 `qwen-seg-v2` 로 적는다.
 
 ### 칸에 쓰는 말
 
@@ -39,6 +40,10 @@
 | 조건 | `lvl26` | 턴마다 −26 dBFS 로 맞춘 데이터 (`mix.py --level -26`) |
 | 부분 | `top<N>` | 가장 긴 N개 (`limit: N`, `pick: longest`) |
 | 부분 | `first<N>` | 앞의 N개 (`limit: N`) |
+| 부분 | `worklog` | WORKLOG.md 에 이름이 나온 항목 + 손대지 않은 대조군 (`ids: [...]`) |
+| 조건 | `restaurant+cafe` | 식당 울림 + 카페 소음 (`augment.room.place: restaurant`, `augment.noise.place: cafe`) |
+| 변형 | `off` | v2 부품을 쓰되 고친 것을 모두 끈 것. v1 과 같은 숫자가 나와야 한다 |
+| 변형 | 그 밖 | `experiments/upgrade-260930/make_configs.py` 의 `VARIANTS` 표 — 이름 하나가 바꾼 것 하나다 |
 | 역할 | `asr.` · `mt.` | 음성 인식, 번역 |
 
 ## `meta` 블록
@@ -74,3 +79,15 @@ dataset:
 
 버전을 올리는 대신 새 이름을 지을 때도 있다 — 비교하려는 조건 자체가 새것이면(소음 종류, 부분
 집합) 이름에 칸을 더하는 쪽이 맞다. 같은 조건을 고쳐 다시 재는 것이면 버전이다.
+
+## `glossaries/` — 용어집
+
+이름·용어를 언어마다 적은 목록이다. `qwen-seg:v2` 의 `bias_glossary`(ASR 문맥 편향), `qwen3.5:v2` 의
+`glossary`(번역 프롬프트), 데이터셋 설정의 `terms`(채점: `term_recall`)가 같은 파일을 읽는다.
+
+```yaml
+terms:
+  - {ko: 김태호, en: Kim Tae-ho}
+  - {ko: 을지로, en: Euljiro}
+```
+

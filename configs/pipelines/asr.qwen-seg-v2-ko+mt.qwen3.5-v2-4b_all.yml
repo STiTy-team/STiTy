@@ -1,0 +1,57 @@
+meta:
+  description: 'ko finetune. Every fix expected to help: asrfix + split + label + filter + vad-ramp +
+    mt leak/meta/style'
+  tags:
+  - upgrade-260930
+  - cascade
+  - ko-asr
+  - all
+pipeline:
+  name: cascade:v2
+  transcription:
+    name: qwen-seg:v2
+    model: Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged
+    chunk_size_sec: 2.0
+    max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
+    no_speech_since_vad_reset: true
+    keep_held_fragment: true
+    strict_boundary_dedup: true
+    carry_uncommitted_audio: true
+    resync_cursor: true
+    loop_guard: true
+    carry_on_loop_reset: true
+    drop_language_lists: true
+    clean_partials: true
+    dedup_dot_carry: true
+  translation:
+    name: qwen3.5:v2
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 1
+    leak_retry: true
+    meta_guard: true
+    style:
+      ko: Write natural spoken Korean in polite 해요체, and address seniors with their title (for example
+        부장님) rather than 씨.
+  vad:
+    name: silero:v2
+    min_silence_ms: 800
+    tuner:
+      name: ramp
+      end_ms: 300
+      ramp_sec: 8
+      max_segment_sec: 15
+  split_at_vad: true
+  labeler:
+    name: script
+  filter:
+    name: commit-rules
+    fillers: true
+    foreign_script: true
+    repeats: 2
+commit: seg
+gpu_memory_utilization: 0.3

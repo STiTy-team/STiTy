@@ -41,6 +41,8 @@ describes.
 | `STiTy-Mobile/` | The React Native app ([MOBILE_APP.md](STiTy-Mobile/MOBILE_APP.md)) and the web demo — proxy, language routing, launch order, VRAM budget ([demo-web/CLAUDE.md](STiTy-Mobile/demo-web/CLAUDE.md)) |
 | `evaluation/` | Benchmark harness, ASR and AST tracks — [evaluation/CLAUDE.md](evaluation/CLAUDE.md), full CLI in [TESTING_MANUAL.md](evaluation/TESTING_MANUAL.md) |
 | `models/` | Finetuned weights: `Qwen3-ASR-1.7B-{ko-silence-v4c900,en-silence-c80}-merged/` and `Qwen3-ASR-1.7B-en-dailytalk-seg/` (the eval alias `finetuned(1.0.1)`) |
+| `experiments/upgrade-260930/` | The 2026-09-30 upgrade: opt-in v2 components, what changed and which bench runs verify each change — [REPORT.md](experiments/upgrade-260930/REPORT.md) |
+| `tests/` | CPU tests: v1/v2 parity on scripted decodes (`fake_asr.py`), new components. `uv run --project bench python -m unittest discover -s tests -t .` |
 | [docs/RUNNING_THE_SERVERS.md](docs/RUNNING_THE_SERVERS.md) | Translation flags, sharing one GPU, `--vad-min-silence`, the worktree `PYTHONPATH` trap |
 | [docs/WEBSOCKET_PROTOCOL.md](docs/WEBSOCKET_PROTOCOL.md) | Every message type, `langMap` semantics, `commitReason` values |
 

@@ -34,6 +34,6 @@ the source languages — also replace the pair as the ASR `allowed_languages` se
 so they are not opened). That set is computed per stream slot, so a mid-stream `config` change switches
 translation direction at once but reaches ASR only from the next commit on.
 
-`commitReason`: `seg` (SEG token), `vad` (silence), `dot` (sentence-ending punctuation, needs `--enable-dot-commit`), `always` (every chunk, under `--always-commit`), `timeout`, `finish` (stream ended).
+`commitReason`: `seg` (SEG token), `vad` (silence), `dot` (sentence-ending punctuation, needs `--enable-dot-commit`), `always` (every chunk, under `--always-commit`), `timeout`, `finish` (stream ended). The `qwen-la` transcriber (`server/app` only) adds `agree` (two consecutive decodes agreed up to a sentence end) and `agree-max` (agreed words forced out before a boundary).
 
 The eval server adds timing fields to `final` (`segmentId`, `audioStartSec`, `audioEndSec`, `fsl_sec`, `asr_inference_sec`, …) — benchmarking only, ignored by the app.

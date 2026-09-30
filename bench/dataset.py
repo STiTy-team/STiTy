@@ -191,6 +191,13 @@ def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
 
 
 def _pick(items: list[Item], cfg: DatasetConfig) -> list[Item]:
+    if cfg.ids is not None:
+        known = {i.id for i in items}
+        missing = [i for i in cfg.ids if i not in known]
+        if missing:
+            raise DataError(f"{cfg.name}: ids not in the dataset: {missing}")
+        wanted = set(cfg.ids)
+        items = [i for i in items if i.id in wanted]
     if cfg.pick == "longest":
         chosen = {i.id for i in sorted(items, key=lambda i: -i.duration_sec)[: cfg.limit]}
         return [i for i in items if i.id in chosen]

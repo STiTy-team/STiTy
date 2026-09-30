@@ -1,0 +1,41 @@
+meta:
+  description: en finetune. A6 filter plus the en finetune's canned phrases
+  tags:
+  - upgrade-260930
+  - cascade
+  - en-asr
+  - filter-canned
+pipeline:
+  name: cascade:v2
+  transcription:
+    name: qwen-seg:v2
+    model: Doo12/Qwen3-ASR-1.7B-en-silence-c80-merged
+    chunk_size_sec: 2.0
+    max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 1
+  vad:
+    name: silero
+    min_silence_ms: 800
+  filter:
+    name: commit-rules
+    fillers: true
+    foreign_script: true
+    repeats: 2
+    canned_phrases:
+    - I want to buy a new car.
+    - I'm sorry, sir.
+    - I'm afraid I can't help you.
+    - I'm sorry, sir. I'm afraid I can't help you.
+    - I'm sorry, I'm not sure what you mean.
+    - How may I help you?
+    - I'm afraid we're out of that size.
+commit: seg
+gpu_memory_utilization: 0.3

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import fastapi
 from fastapi import FastAPI
 from pyfiglet import figlet_format
-from core.utils import env, logging
+from core.utils import env, logging, process
 from core.utils.paths import get_project_root
 from app.api.errors import register_exception_handlers
 from app.api.v1.routes import routers as v1_routers
@@ -39,6 +39,7 @@ async def lifespan(app: FastAPI):
 
     log.info("Shutting down STiTy server (pid %d)", os.getpid())
     await app.container.shutdown_resources()
+    await process.stop_all()
     log.info("Stopped STiTy server")
 
 
