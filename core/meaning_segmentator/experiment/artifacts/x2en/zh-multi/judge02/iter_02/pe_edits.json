@@ -1,0 +1,97 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Does translating the two sides separately still add up to the whole sentence? This cohesion check is worst when the cut splits a contiguous multi-character unit (a tight verb–object sequence, a '…的…' modifier, a foreign-script or Romanized name, or a numeral+measure group) or when the following material contains scope-bearing modifiers whose attachment will change meaning; it is milder when the following phrase is an independent adjunct or optional elaboration that can be translated apart, and milder still when the marker falls immediately after such a unit so the unit remains intact.",
+    "_was": "- Does translating the two sides separately still add up to the whole sentence? This cohesion check is worst when the following material contains scope-bearing modifiers whose attachment will change meaning (long 的-modifiers, coverb scope, or complements that resolve prior references); it is mild when the following phrase is an independent adjunct or optional elaboration that can be translated apart and joined without loss."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 166
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12100,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When one candidate splits a tight multi-character unit (verb–object, a '…的…' modifier, foreign name, or numeral+measure) and another candidate immediately follows that unit, prefer the latter marker that keeps the unit intact.",
+    "_was": "- When one marker lies inside a named multiword unit (foreign sequence or numeral+measure) and another marker immediately follows that unit, prefer the latter marker that keeps the unit intact."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": 35
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11969,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "text": "- Does the marker fall immediately before the main lexical verb or an essential clausal complement when the preceding segment contains no predicate? This is most severe when the pre-cut stretch is a nominal or modifier-only fragment (no verb, auxiliary, copula, aspect marker, or other predicate) so that the fragment is unanchored, contradictory, or uninterpretable without the continuation; it is mild when the pre-cut stretch already contains a clear predicate (auxiliary, copula, aspect particle, or main verb) or when the following material is an optional adjunct, parenthetical, or clarifying elaboration that does not complete the clause.",
+    "_was": "- Does the following material complete or leave unresolved a predicate or an argument required to understand the clause so far? This is severe if an essential object, complement, or aspect/voice marker appears only after the cut (so the pre-cut fragment lacks the predicate or patient), and milder if only optional temporal or manner adjuncts follow."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C3",
+    "kind": "change",
+    "chars_change": 295
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12229,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "text": "When one candidate splits a tight multi-character unit (verb–object, a '…的…' modifier, foreign name, or numeral+measure) and another candidate immediately follows that unit, prefer the latter marker that keeps the unit intact."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 229
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12163,
+  "errors": null
+ }
+]

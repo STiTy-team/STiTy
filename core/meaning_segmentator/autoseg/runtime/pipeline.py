@@ -15,7 +15,7 @@ import random
 import re
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -197,6 +197,20 @@ class JsonCache:
             self._dirty += 1
             if self._dirty >= self.flush_every:
                 self._flush_locked()
+
+    def put_many(self, items: dict[str, object]) -> None:
+        """여러 항목을 한 번에 넣는다. flush 판정도 한 번만 한다."""
+        with self._lock:
+            self._data.update(items)
+            self._dirty += len(items)
+            if self._dirty >= self.flush_every:
+                self._flush_locked()
+
+    def drop_many(self, keys) -> None:
+        with self._lock:
+            for k in keys:
+                if self._data.pop(k, None) is not None:
+                    self._dirty += 1
 
     def flush(self) -> None:
         with self._lock:
@@ -390,19 +404,56 @@ def segment_batch(
     # 배치는 **미리 채우기**일 뿐이다. `batch_size <= 1` 이면 pre_map 이 비고, 아래 단건
     # 경로가 전부 직접 부른다 — 그래서 두 경우가 같은 코드다.
     pre_map: dict[str, str] = {}
+    # **배치 응답은 받는 즉시 캐시에 남긴다.** 최종값은 아래 검증 단계에서야 저장되므로,
+    # 배치를 다 받은 뒤 검증 단계에서 죽으면 이미 값을 치른 응답이 메모리와 함께 사라진다.
+    # CoVoST2 de 3,000문장이 배치 500콜($11.3)을 마치고 재시도에서 예산 가드에 걸렸을 때
+    # 캐시에 남은 것은 499문장뿐이었다 — `ex.map` 이 예외를 만나면 대기 중인 작업을 취소한다.
+    # 응답 원문을 별도 키로 두고, 다음 실행은 그것을 `pre` 로 받아 검증부터 이어 간다.
+    pre_keys: list[str] = []
+
+    def pre_key(t: str) -> str:
+        return JsonCache.key("pre", cache_key(t))
+
     if batch_size > 1:
         # 캐시에 있는 것은 배치에서 뺀다 — 캐시 적중분까지 다시 부르면 배치의 의미가 없다.
         todo = [t for t in texts if cached(t) is None]
+        if cache is not None:
+            for t in todo:
+                raw = cache.get(pre_key(t))
+                if raw:
+                    pre_map[t] = raw
+            todo = [t for t in todo if t not in pre_map]
         groups = [todo[i:i + batch_size] for i in range(0, len(todo), batch_size)]
         if groups:
+            err: BaseException | None = None
             with ThreadPoolExecutor(max_workers=workers) as ex:
-                for d in ex.map(call_group, groups):
+                futs = [ex.submit(call_group, g) for g in groups]
+                # 한 묶음이 실패해도 끝난 묶음은 전부 저장한 뒤 예외를 다시 던진다.
+                for f in as_completed(futs):
+                    try:
+                        d = f.result()
+                    except Exception as e:
+                        err = err or e
+                        continue
                     pre_map.update(d)
+                    if cache is not None and d:
+                        cache.put_many({pre_key(t): o for t, o in d.items()})
+            if err is not None:
+                if cache is not None:
+                    cache.flush()
+                raise err
+        pre_keys = [pre_key(t) for t in pre_map]
     # 배치가 안 돌았거나 파싱이 안 된 문장은 pre=None 이라 one() 이 단건으로 부른다
     # — 조용한 누락 방지.
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        results = list(ex.map(lambda t: one(t, pre_map.get(t)), texts))
-    if cache is not None:
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            results = list(ex.map(lambda t: one(t, pre_map.get(t)), texts))
+    finally:
+        if cache is not None:
+            cache.flush()
+    # 끝까지 왔으면 최종값이 전부 저장됐으므로 응답 원문은 지운다 — 남기면 캐시가 두 배로 분다.
+    if cache is not None and pre_keys:
+        cache.drop_many(pre_keys)
         cache.flush()
     return [r[0] for r in results], [r[1] for r in results]
 

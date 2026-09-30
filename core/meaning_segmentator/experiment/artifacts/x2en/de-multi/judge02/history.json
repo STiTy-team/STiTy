@@ -1,0 +1,232 @@
+[
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01249,
+   "lo": -0.021,
+   "hi": -0.00424,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replaced Order Principle O2 to prefer later cuts that preserve noun heads when two markers fall inside the same noun phrase — addresses the primary finding that the prompt splits noun-heavy spans and hurts cohesion."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "was": "- When one marker follows a coordinator that likely links nouns and another foll",
+    "now": "When two markers lie inside the same noun phrase, prefer the later cut that pres"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01392,
+   "lo": -0.02348,
+   "hi": -0.00525,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C1 with a focused negation check: forbid cuts immediately before German negation tokens (nicht/kein/nie) because the prompt currently allows cuts that split an assertion from its negation, producing high contradiction risk."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "was": "- Does what follows the marker overturn or negate the proposition already assert",
+    "now": "- Does the marker occur immediately before a German negation token (nicht/kein/n"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": false,
+  "delta": {
+   "mean": -0.01093,
+   "lo": -0.01936,
+   "hi": -0.0026,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.01093,
+   "lo": -0.01936,
+   "hi": -0.0026,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Add a fallback Order Principle that breaks ties among markers inside the same noun phrase by preferring a cut immediately after the noun head, so the noun and its modifiers stay together — addresses the primary finding (NP-splitting) with a different ordering formulation than the sibling candidate."
+  ],
+  "findings": [
+   "The prompt fails to prefer cuts that preserve whole noun phrases, instead splitting inside noun-heavy spans and hurting cohesion when pieces are translated separately.",
+   "The prompt allows cuts that split off a clause’s assertion from an immediate negation or negative determiner, producing a fragment that alone asserts the opposite of the whole sentence."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "was": "- When one marker is before a comma that opens or closes an embedded clause and ",
+    "now": "When two markers lie inside the same noun phrase, prefer the later cut that pres"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0149,
+    "≤5": -0.0077,
+    "≤7": -0.0112,
+    "≤10": -0.0086,
+    "≤99": -0.0024
+   },
+   "n_worse": 2069,
+   "n_better": 1847,
+   "why": "The new tie-breaker pushed cuts to the position immediately after noun heads when two markers fall inside the same NP, so the model avoided NP-splitting (helping the top-1 choice) but shifted many mid-ranked cut choices later. That change harmed the short-latency bins (≤3, ≤5, ≤7) — where many cuts are kept — by moving sensible comma/clause cuts into the NP and producing worse segmentations overall, yielding a small but significant negative mean.",
+   "lesson": "When adding an NP-head tie-breaker, preserve the earlier comma/embedded-clause cut preferences used by short-latency budgets (don’t let the NP-head fallback override mid-ranked/punctuation-based cuts).",
+   "blamed": [
+    "O3"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00879,
+   "lo": -0.01663,
+   "hi": -0.00075,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace O1 to prefer a punctuation-separated earlier cut inside an NP over a later NP-tail cut, and otherwise prefer the later cut that keeps the NP head with its postmodifiers — addresses the primary intra-NP misordering while preserving punctuation-based short-latency cuts."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "was": "- When one marker falls between a finite verb and its core arguments and another",
+    "now": "When two markers lie inside the same NP, if one is immediately before punctuatio"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.01043,
+   "lo": -0.01901,
+   "hi": -0.00198,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C2 to add a focused check preventing cuts that split a determiner/numeral/pronoun from the noun phrase it determines — addresses the primary finding about NP cohesion."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- Would translating the preceding and following stretches separately fail to com",
+    "now": "- Does the marker separate a determiner, numeral, or determiner-like pronoun fro"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 3,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.0175,
+   "lo": -0.02765,
+   "hi": -0.00752,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Insert a fallback ordering rule into [Order Principles] that prefers punctuation-separated cuts which leave the left side a self-contained clause over other intra-NP cuts, and otherwise prefers cuts that keep the NP head with its postmodifiers — addresses the primary intra-NP misordering while preserving short-latency punctuation cuts."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "was": "- When one marker is before a comma that opens or closes an embedded clause and ",
+    "now": "When two markers lie inside the same NP, if one is immediately before punctuatio"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00615,
+   "lo": -0.01533,
+   "hi": 0.00257,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "gain": {
+   "mean": -0.00615,
+   "lo": -0.01533,
+   "hi": 0.00257,
+   "n": 4580,
+   "n_clusters": 500
+  },
+  "changelog": [
+   "Replace C6 severity to prioritise avoiding splits of determiner/head and required postmodifiers, and to mark markers immediately before punctuation or at the NP tail as milder — addresses the intra-NP ordering bug and the determiner/numeral split check."
+  ],
+  "findings": [
+   "When two candidate cuts fall inside the same NP, the prompt misorders them — it sometimes prefers the later NP-tail cut but should prefer an earlier punctuation-separated cut when that preserves a complete clause.",
+   "The prompt allows cuts that split a determiner/numeral/pronoun from the noun phrase it heads, breaking NP cohesion."
+  ],
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that sh",
+    "now": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that sh"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0041,
+    "≤5": -0.0051,
+    "≤7": -0.015,
+    "≤10": -0.0104,
+    "≤99": -0.001
+   },
+   "n_worse": 1930,
+   "n_better": 1939,
+   "why": "Reweighting C6 made the model more protective of determiner/head and required postmodifier boundaries while at the same time treating markers at NP tails or immediately before punctuation as milder; that moved the top-one/two cut preferences (rank_depth: depth1 down, depth2 up) so some long-latency top cuts improved but many medium-latency cuts (especially ≤7 and ≤5 bins) shifted into intra‑NP positions or split enumerations, producing roughly equal numbers better/worse and a small net drop.",
+   "lesson": "Keep the stronger protection against splitting determiners/heads and required postmodifiers, but do not so aggressively lower severity for markers at NP tails / before punctuation that intra‑NP cuts and enumeration splits become more likely (test effects per latency bin, esp. ≤7).",
+   "blamed": [
+    "C6 «- Does the marker fall inside a nominal enumeration or noun-»"
+   ]
+  }
+ }
+]

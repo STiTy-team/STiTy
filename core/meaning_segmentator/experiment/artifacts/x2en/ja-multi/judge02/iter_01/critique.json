@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt permits cuts that detach a clause's main predicate or sentence-final auxiliary from its arguments, producing fragments that contradict or cannot be interpreted on their own.",
+    "evidence": "ja_jp_658, ja_jp_1034, ja_jp_736 — each shows a candidate cut placed immediately before the clause-final predicate/auxiliary (yielding very high contra), and the offline target moves the cut to keep the predicate attached.",
+    "type_predicate": "Markers that occur immediately before the sentence's clause-final finite verb or copula (the token that closes the main clause — e.g. sentence-final ます／ました／です／だ／する).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before the clause‑final predicate or its auxiliary; keep sentence-final verbs/copia (e.g. ます／ました／です／だ／する) attached to their preceding phrase so the piece contains the completed predicate."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "The prompt fails to prefer keeping quotative/reporting phrases attached to their reporting predicates, so it sometimes ranks cuts that split '…によると'/'…と述べ' above cuts that keep the report intact.",
+    "evidence": "ja_jp_90, ja_jp_1133, ja_jp_1428 — each contains a quotative or reporting phrase (e.g. 「によると」「と述べました」) that the policy split away from its reporting predicate while the target keeps the quotative+reporting verb together.",
+    "type_predicate": "Sentences containing a quotative/reporting expression such as 'によると' or a reporting verb phrase 'と述べ/と発表' where one candidate cut would split the quotative from its reporting predicate and another would keep them together.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～と述べ/発表) and one that leaves the quotative attached to its reporting predicate, prefer the cut that keeps the quotative plus reporting verb together."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "The prompt fails to prefer keeping quotative/reporting phrases attached to their reporting predicates, so it sometimes ranks cuts that split '…によると'/'…と述べ' above cuts that keep the report intact.",
+   "evidence": "ja_jp_90, ja_jp_1133, ja_jp_1428 — each contains a quotative or reporting phrase (e.g. 「によると」「と述べました」) that the policy split away from its reporting predicate while the target keeps the quotative+reporting verb together.",
+   "type_predicate": "Sentences containing a quotative/reporting expression such as 'によると' or a reporting verb phrase 'と述べ/と発表' where one candidate cut would split the quotative from its reporting predicate and another would keep them together.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～と述べ/発表) and one that leaves the quotative attached to its reporting predicate, prefer the cut that keeps the quotative plus reporting verb together.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt permits cuts that detach a clause's main predicate or sentence-final auxiliary from its arguments, producing fragments that contradict or cannot be interpreted on their own.",
+   "evidence": "ja_jp_658, ja_jp_1034, ja_jp_736 — each shows a candidate cut placed immediately before the clause-final predicate/auxiliary (yielding very high contra), and the offline target moves the cut to keep the predicate attached.",
+   "type_predicate": "Markers that occur immediately before the sentence's clause-final finite verb or copula (the token that closes the main clause — e.g. sentence-final ます／ました／です／だ／する).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before the clause‑final predicate or its auxiliary; keep sentence-final verbs/copia (e.g. ます／ました／です／だ／する) attached to their preceding phrase so the piece contains the completed predicate.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

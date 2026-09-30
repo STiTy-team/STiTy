@@ -1,0 +1,306 @@
+{
+ "done": 2,
+ "prompt": "[Role]\nYou are a scoring model for streaming Japanese-to-other-languages translation. For a single source sentence with <SEG:?> at every possible cut, assign every marker a distinct integer 0–100 that ranks how good a cut there is for producing faithful, incremental translations under the Scoring Rules below. Use the Core Principles to decide bands and severity, consult the Order Principles only for the narrow exceptions they name, and follow the Output Rules exactly.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into English, Chinese, German, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.\n- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.\n- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary and carry both jobs: the question in each line decides which band a position goes in, and the severity in the same line — what makes that concern worse, what makes it milder — decides the order of positions inside one band. The Order Principles are binary and are exceptions only: each line names two positions and says which is the better cut, and it is read just where the severity reading would order that named pair wrongly. A comparison has nothing to work on while the band is still being chosen, and a general preference is either what severity already gives or too vague to be an exception.\n- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, order positions by how MILDLY the Core Principles' concerns apply to each — the position whose concerns are the mildest is the better cut of the two. Ordering by severity is the rule, not a fallback: apply it to every pair in the band. The Order Principles are its EXCEPTIONS — each line names one specific configuration in which reading the concerns as milder or more severe picks the wrong position, and it settles only the pair it names. Outside the configurations they name, order by severity. They never move a position into another band. When severity leaves two positions genuinely equal and no Order Principle names them, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.\n\n[Core Principles]\n- Does what follows this marker overturn or contradict the stretch already heard? Severe when an explicit polarity reversal or strong adversative connector begins immediately after the cut; mild when continuation only narrows scope, adds an optional qualifier, or supplies parenthetical detail that does not flip truth.\n- Will translating the two sides separately still assemble into the original whole meaning? Severe when the cut separates verb-final morphology (tense/aspect/politeness) or the predicate from its arguments; mild when it falls between self-contained noun phrases or list items whose relations are recoverable.\n- Does the following material use a conjunctive/continuative verb form that chains the clause rather than ending it? Severe if a continuative verb stem appears and the main predicate likely follows; mild if the continuative clearly belongs to a serial list or parenthetical sequence.\n- Does the marker split an embedded clause boundary formed by a quotative or nominalizer from its reporting predicate or head? Severe when the reporting predicate or main verb that resolves attachment comes after the cut; mild when the embedded clause truly closes and following material merely restates.\n- Does the cut leave the preceding phrase grammatically unresolved because post-positional morphology or modifiers that determine its role attach later? Severe when a case/topic relation or necessary modifier to assign arguments comes after the marker; mild when the phrase is a fully referential NP that can be translated alone.\n- Does the marker bisect a numeric, date, unit, or technical sequence whose interpretation depends on adjacent characters? Severe when it splits a multi-character quantity/unit that determines magnitude or time; mild when it separates items in a long identifier or an enumerated list where context preserves meaning.\n\n[Order Principles]\n- When one marker falls immediately after a conjunctive/continuative verb stem and another falls after the following clause-final finite verb, prefer the latter: keep the clause-final cut because it preserves the predicate, tense/aspect and avoids misattachment.\n- When one marker splits a multi-character numeral or a numeral+unit sequence and another splits between separate list items earlier in the clause, prefer the latter: avoid fragmenting quantitative expressions by cutting between list items instead.\n- When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～と述べ/発表) and one that leaves the quotative attached to its reporting predicate, prefer the cut that keeps the quotative plus reporting verb together.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any characters of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: ス <SEG:?> ウ <SEG:?> ェ <SEG:?> ー <SEG:?> デ <SEG:?> ン <SEG:?> を <SEG:?> は <SEG:?> じ <SEG:?> め <SEG:?> と <SEG:?> す <SEG:?> る <SEG:?> 2 <SEG:?> 8 <SEG:?> カ <SEG:?> 国 <SEG:?> の <SEG:?> 切 <SEG:?> 手 <SEG:?> を <SEG:?> 1 <SEG:?> , <SEG:?> 0 <SEG:?> 0 <SEG:?> 0 <SEG:?> 枚 <SEG:?> 以 <SEG:?> 上 <SEG:?> 制 <SEG:?> 作 <SEG:?> し <SEG:?> た <SEG:?> 。\nOutput: ス <SEG:38> ウ <SEG:22> ェ <SEG:62> ー <SEG:34> デ <SEG:69> ン <SEG:84> を <SEG:81> は <SEG:75> じ <SEG:25> め <SEG:78> と <SEG:72> す <SEG:47> る <SEG:44> 2 <SEG:0> 8 <SEG:59> カ <SEG:56> 国 <SEG:91> の <SEG:50> 切 <SEG:31> 手 <SEG:88> を <SEG:97> 1 <SEG:9> , <SEG:12> 0 <SEG:3> 0 <SEG:19> 0 <SEG:16> 枚 <SEG:6> 以 <SEG:28> 上 <SEG:41> 制 <SEG:66> 作 <SEG:53> し <SEG:100> た <SEG:94> 。\n\nInput: 手 <SEG:?> 工 <SEG:?> 芸 <SEG:?> 品 <SEG:?> は <SEG:?> 、 <SEG:?> 大 <SEG:?> 量 <SEG:?> 生 <SEG:?> 産 <SEG:?> さ <SEG:?> れ <SEG:?> た <SEG:?> 類 <SEG:?> 似 <SEG:?> 品 <SEG:?> よ <SEG:?> り <SEG:?> も <SEG:?> 歴 <SEG:?> 史 <SEG:?> は <SEG:?> 浅 <SEG:?> い <SEG:?> の <SEG:?> で <SEG:?> す <SEG:?> が <SEG:?> 、 <SEG:?> 骨 <SEG:?> 董 <SEG:?> 品 <SEG:?> と <SEG:?> 定 <SEG:?> 義 <SEG:?> さ <SEG:?> れ <SEG:?> る <SEG:?> こ <SEG:?> と <SEG:?> も <SEG:?> あ <SEG:?> り <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: 手 <SEG:95> 工 <SEG:84> 芸 <SEG:91> 品 <SEG:98> は <SEG:82> 、 <SEG:89> 大 <SEG:27> 量 <SEG:5> 生 <SEG:9> 産 <SEG:11> さ <SEG:32> れ <SEG:25> た <SEG:16> 類 <SEG:2> 似 <SEG:18> 品 <SEG:7> よ <SEG:0> り <SEG:48> も <SEG:70> 歴 <SEG:36> 史 <SEG:20> は <SEG:14> 浅 <SEG:80> い <SEG:77> の <SEG:61> で <SEG:68> す <SEG:59> が <SEG:64> 、 <SEG:66> 骨 <SEG:41> 董 <SEG:50> 品 <SEG:39> と <SEG:34> 定 <SEG:23> 義 <SEG:30> さ <SEG:43> れ <SEG:55> る <SEG:45> こ <SEG:52> と <SEG:57> も <SEG:75> あ <SEG:73> り <SEG:86> ま <SEG:100> す <SEG:93> 。\n\nInput: 1 <SEG:?> 0 <SEG:?> 月 <SEG:?> 7 <SEG:?> 日 <SEG:?> 離 <SEG:?> 陸 <SEG:?> 時 <SEG:?> に <SEG:?> エ <SEG:?> ン <SEG:?> ジ <SEG:?> ン <SEG:?> が <SEG:?> 機 <SEG:?> 体 <SEG:?> か <SEG:?> ら <SEG:?> 分 <SEG:?> 離 <SEG:?> し <SEG:?> け <SEG:?> が <SEG:?> 人 <SEG:?> は <SEG:?> 出 <SEG:?> ま <SEG:?> せ <SEG:?> ん <SEG:?> で <SEG:?> し <SEG:?> た <SEG:?> 事 <SEG:?> 故 <SEG:?> 後 <SEG:?> ロ <SEG:?> シ <SEG:?> ア <SEG:?> は <SEG:?> i <SEG:?> l <SEG:?> - <SEG:?> 7 <SEG:?> 6 <SEG:?> を <SEG:?> 一 <SEG:?> 時 <SEG:?> 的 <SEG:?> に <SEG:?> 着 <SEG:?> 陸 <SEG:?> さ <SEG:?> せ <SEG:?> ま <SEG:?> し <SEG:?> た\nOutput: 1 <SEG:15> 0 <SEG:22> 月 <SEG:37> 7 <SEG:74> 日 <SEG:87> 離 <SEG:78> 陸 <SEG:70> 時 <SEG:59> に <SEG:81> エ <SEG:39> ン <SEG:17> ジ <SEG:13> ン <SEG:69> が <SEG:72> 機 <SEG:30> 体 <SEG:50> か <SEG:65> ら <SEG:67> 分 <SEG:91> 離 <SEG:100> し <SEG:98> け <SEG:11> が <SEG:9> 人 <SEG:0> は <SEG:6> 出 <SEG:2> ま <SEG:7> せ <SEG:85> ん <SEG:89> で <SEG:93> し <SEG:80> た <SEG:96> 事 <SEG:57> 故 <SEG:94> 後 <SEG:83> ロ <SEG:43> シ <SEG:56> ア <SEG:63> は <SEG:76> i <SEG:52> l <SEG:31> - <SEG:41> 7 <SEG:4> 6 <SEG:33> を <SEG:54> 一 <SEG:48> 時 <SEG:61> 的 <SEG:35> に <SEG:44> 着 <SEG:28> 陸 <SEG:20> さ <SEG:19> せ <SEG:26> ま <SEG:24> し <SEG:46> た\n\nInput: 約 <SEG:?> 3 <SEG:?> , <SEG:?> 0 <SEG:?> 0 <SEG:?> 0 <SEG:?> 年 <SEG:?> 後 <SEG:?> の <SEG:?> 1 <SEG:?> 6 <SEG:?> 1 <SEG:?> 0 <SEG:?> 年 <SEG:?> 、 <SEG:?> イ <SEG:?> タ <SEG:?> リ <SEG:?> ア <SEG:?> の <SEG:?> 天 <SEG:?> 文 <SEG:?> 学 <SEG:?> 者 <SEG:?> ガ <SEG:?> リ <SEG:?> レ <SEG:?> オ <SEG:?> ・ <SEG:?> ガ <SEG:?> リ <SEG:?> レ <SEG:?> イ <SEG:?> が <SEG:?> 望 <SEG:?> 遠 <SEG:?> 鏡 <SEG:?> を <SEG:?> 使 <SEG:?> っ <SEG:?> て <SEG:?> 観 <SEG:?> 測 <SEG:?> し <SEG:?> 、 <SEG:?> 金 <SEG:?> 星 <SEG:?> に <SEG:?> も <SEG:?> 月 <SEG:?> と <SEG:?> 同 <SEG:?> じ <SEG:?> よ <SEG:?> う <SEG:?> に <SEG:?> 満 <SEG:?> ち <SEG:?> 欠 <SEG:?> け <SEG:?> が <SEG:?> あ <SEG:?> る <SEG:?> こ <SEG:?> と <SEG:?> を <SEG:?> 発 <SEG:?> 見 <SEG:?> し <SEG:?> ま <SEG:?> し <SEG:?> た <SEG:?> 。\nOutput: 約 <SEG:92> 3 <SEG:3> , <SEG:6> 0 <SEG:1> 0 <SEG:4> 0 <SEG:23> 年 <SEG:34> 後 <SEG:99> の <SEG:96> 1 <SEG:0> 6 <SEG:8> 1 <SEG:7> 0 <SEG:80> 年 <SEG:94> 、 <SEG:100> イ <SEG:13> タ <SEG:10> リ <SEG:24> ア <SEG:59> の <SEG:35> 天 <SEG:39> 文 <SEG:56> 学 <SEG:70> 者 <SEG:97> ガ <SEG:72> リ <SEG:62> レ <SEG:75> オ <SEG:86> ・ <SEG:52> ガ <SEG:41> リ <SEG:65> レ <SEG:30> イ <SEG:54> が <SEG:49> 望 <SEG:69> 遠 <SEG:63> 鏡 <SEG:73> を <SEG:68> 使 <SEG:77> っ <SEG:93> て <SEG:83> 観 <SEG:87> 測 <SEG:90> し <SEG:82> 、 <SEG:58> 金 <SEG:21> 星 <SEG:76> に <SEG:85> も <SEG:66> 月 <SEG:17> と <SEG:44> 同 <SEG:37> じ <SEG:25> よ <SEG:32> う <SEG:15> に <SEG:18> 満 <SEG:14> ち <SEG:11> 欠 <SEG:20> け <SEG:31> が <SEG:51> あ <SEG:42> る <SEG:46> こ <SEG:27> と <SEG:38> を <SEG:28> 発 <SEG:55> 見 <SEG:45> し <SEG:61> ま <SEG:48> し <SEG:89> た <SEG:79> 。\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00024,
+    "lo": -0.01196,
+    "hi": 0.01185,
+    "n": 11036,
+    "n_clusters": 440
+   },
+   "changelog": [
+    "Rewrote the severity clause of C4 to make splitting quotative/reporting phrases (e.g. ～によると、～と述べ、～と発表) explicitly more severe, so cuts that separate a quotative from its reporting predicate are penalized. This addresses the primary 'order' finding about keeping quotatives attached by giving the core principle a clearer severity axis."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C4",
+     "kind": "change",
+     "was": "- Does the marker split an embedded clause boundary formed by a quotative or nom",
+     "now": "- Does the marker split an embedded clause boundary formed by a quotative or nom"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": 0.00336,
+    "lo": -0.00731,
+    "hi": 0.01398,
+    "n": 11103,
+    "n_clusters": 441
+   },
+   "changelog": [
+    "Replaced O1 with an explicit ordering that prefers cuts which keep quotative/report phrases (e.g. ～によると, ～と述べ／～と発表) attached to their reporting predicate, to fix the primary finding that the prompt sometimes splits quotatives from their reporting verbs."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O1",
+     "kind": "change",
+     "was": "- When one marker falls immediately after a conjunctive/continuative verb stem a",
+     "now": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00512,
+    "lo": -0.01608,
+    "hi": 0.00686,
+    "n": 11145,
+    "n_clusters": 443
+   },
+   "changelog": [
+    "Replaced C6 with a core check that forbids cutting immediately before the clause-final predicate or auxiliary, so sentence-final verbs/copia remain attached to their arguments (addresses the primary 'check' finding)."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C6",
+     "kind": "change",
+     "was": "- Does the marker bisect a numeric, date, unit, or technical sequence whose inte",
+     "now": "- Does the cut occur immediately before the clause‑final predicate or its finite"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": true,
+   "delta": {
+    "mean": 0.0059,
+    "lo": -0.00519,
+    "hi": 0.01732,
+    "n": 11067,
+    "n_clusters": 440
+   },
+   "gain": {
+    "mean": 0.0059,
+    "lo": -0.00519,
+    "hi": 0.01732,
+    "n": 11067,
+    "n_clusters": 440
+   },
+   "changelog": [
+    "Add an Order Principle that prefers cuts which keep quotative/report phrases (e.g. ～によると, ～と述べ, ～と発表) attached to their reporting predicate, to fix misordering that splits quotatives from their reporting verbs."
+   ],
+   "findings": [
+    "The prompt fails to prefer keeping quotative/reporting phrases attached to their reporting predicates, so it sometimes ranks cuts that split '…によると'/'…と述べ' above cuts that keep the report intact.",
+    "The prompt permits cuts that detach a clause's main predicate or sentence-final auxiliary from its arguments, producing fragments that contradict or cannot be interpreted on their own."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O_end",
+     "kind": "fallback",
+     "was": "",
+     "now": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": 0.0012,
+     "≤5": 0.0055,
+     "≤7": 0.0115,
+     "≤10": 0.0123,
+     "≤99": 0.0098
+    },
+    "n_worse": 5305,
+    "n_better": 5347,
+    "why": "Inserting the Order Principle to keep quotative/report phrases attached shifted many cut decisions to avoid splitting those phrases, moving several top cut positions (big change at rank‑1, gains at ranks 2–4). The effect is a small net improvement concentrated in bins that retain many candidate cuts (≤7–10 pieces), while cases that relied on the original top‑1 cut were slightly harmed.",
+    "lesson": "When adding quotative‑attachment, avoid altering the primary (rank‑1) cut choice that long‑latency budgets depend on; ensure the rule adjusts deeper candidate positions without wholesale replacement of the top cut.",
+    "blamed": [
+     "O_end"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 0,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00953,
+    "lo": -0.02098,
+    "hi": 0.00181,
+    "n": 11146,
+    "n_clusters": 441
+   },
+   "changelog": [
+    "Replace C2 severity to distinguish severity among cuts that leave the same sentence-final inflection unfinished: mark earlier cuts (farther from the finishing inflection) as more severe so the model prefers later cuts."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C2",
+     "kind": "change",
+     "was": "- Will translating the two sides separately still assemble into the original who",
+     "now": "- Will translating the two sides separately still assemble into the original who"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00935,
+    "lo": -0.01918,
+    "hi": 0.00067,
+    "n": 11197,
+    "n_clusters": 443
+   },
+   "changelog": [
+    "Replace O2 to address the primary finding: when several candidate cuts all fall before the same sentence-final inflection, prefer the later (closer-to-the-inflection) cut because it preserves more of the predicate, tense/aspect/negation and reduces misattachment."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O2",
+     "kind": "change",
+     "was": "- When one marker splits a multi-character numeral or a numeral+unit sequence an",
+     "now": "When multiple candidates fall before the same sentence‑final inflection, prefer "
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00562,
+    "lo": -0.01639,
+    "hi": 0.00474,
+    "n": 11117,
+    "n_clusters": 441
+   },
+   "gain": {
+    "mean": -0.00562,
+    "lo": -0.01639,
+    "hi": 0.00474,
+    "n": 11117,
+    "n_clusters": 441
+   },
+   "changelog": [
+    "Add an Order Principle that prefers the later cut when multiple candidates all fall before the same sentence-final inflection, so decisions favour preserving the predicate, tense/aspect/negation and avoid misattachment (addresses the primary finding)."
+   ],
+   "findings": [
+    "When several cuts all fall before the same sentence‑final inflection, the prompt fails to choose which is least harmful: the later cut (closer to the inflection) preserves more of the predicate and is preferable.",
+    "The prompt allows cuts that separate a predicate from its sentence‑final inflection (tense/negation/politeness), producing contradictory or unusable fragments."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O_end",
+     "kind": "fallback",
+     "was": "",
+     "now": "When multiple candidates fall before the same sentence‑final inflection, prefer "
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0018,
+     "≤5": -0.0049,
+     "≤7": -0.0098,
+     "≤10": -0.0111,
+     "≤99": -0.0097
+    },
+    "n_worse": 5620,
+    "n_better": 5133,
+    "why": "The new Order Principle (prefer the later cut among candidates before the same sentence-final inflection) changed which positions are ranked top‑1 versus top‑2/3: rank_depth fell at depth‑1 (−0.419) while improving depths 2–4, so the edit shuffled the very top choice and harmed short budgets and overall H_set (by_bin shows larger drops for longer bins). Concretely, it caused cuts to be placed inside phrases or before punctuation in some sentences (splitting pronouns/particles or detaching punctuation), producing the large negative tail movements.",
+    "lesson": "Constrain the Order Principle so it never chooses cuts that split tokens/close dependents or move the single top choice for short-latency budgets; verify effects separately on top‑1 and long‑budget bins. ",
+    "blamed": [
+     "O_end"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 11985,
+ "total_cost": 56.06205,
+ "provenance": {
+  "- Does what follows this marker overturn or contradict the stretch already heard? Severe when an explicit polarity reversal or strong adversative connector begins immediately after the cut; mild when continuation only narrows scope, adds an optional qualifier, or supplies parenthetical detail that does not flip truth.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Will translating the two sides separately still assemble into the original whole meaning? Severe when the cut separates verb-final morphology (tense/aspect/politeness) or the predicate from its arguments; mild when it falls between self-contained noun phrases or list items whose relations are recoverable.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the following material use a conjunctive/continuative verb form that chains the clause rather than ending it? Severe if a continuative verb stem appears and the main predicate likely follows; mild if the continuative clearly belongs to a serial list or parenthetical sequence.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the marker split an embedded clause boundary formed by a quotative or nominalizer from its reporting predicate or head? Severe when the reporting predicate or main verb that resolves attachment comes after the cut; mild when the embedded clause truly closes and following material merely restates.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the cut leave the preceding phrase grammatically unresolved because post-positional morphology or modifiers that determine its role attach later? Severe when a case/topic relation or necessary modifier to assign arguments comes after the marker; mild when the phrase is a fully referential NP that can be translated alone.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the marker bisect a numeric, date, unit, or technical sequence whose interpretation depends on adjacent characters? Severe when it splits a multi-character quantity/unit that determines magnitude or time; mild when it separates items in a long identifier or an enumerated list where context preserves meaning.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one marker falls immediately after a conjunctive/continuative verb stem and another falls after the following clause-final finite verb, prefer the latter: keep the clause-final cut because it preserves the predicate, tense/aspect and avoids misattachment.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one marker splits a multi-character numeral or a numeral+unit sequence and another splits between separate list items earlier in the clause, prefer the latter: avoid fragmenting quantitative expressions by cutting between list items instead.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～と述べ/発表) and one that leaves the quotative attached to its reporting predicate, prefer the cut that keeps the quotative plus reporting verb together.": {
+   "origin": "iter 1",
+   "adopted_delta": 0.0059,
+   "adopted_ci_lo": -0.0052
+  },
+  "Input: ス <SEG:?> ウ <SEG:?> ェ <SEG:?> ー <SEG:?> デ <SEG:?> ン <SEG:?> を <SEG:?> は <SEG:?> じ <SEG:?> め <SEG:?> と <SEG:?> す <SEG:?> る <SEG:?> 2 <SEG:?> 8 <SEG:?> カ <SEG:?> 国 <SEG:?> の <SEG:?> 切 <SEG:?> 手 <SEG:?> を <SEG:?> 1 <SEG:?> , <SEG:?> 0 <SEG:?> 0 <SEG:?> 0 <SEG:?> 枚 <SEG:?> 以 <SEG:?> 上 <SEG:?> 制 <SEG:?> 作 <SEG:?> し <SEG:?> た <SEG:?> 。\nOutput: ス <SEG:38> ウ <SEG:22> ェ <SEG:62> ー <SEG:34> デ <SEG:69> ン <SEG:84> を <SEG:81> は <SEG:75> じ <SEG:25> め <SEG:78> と <SEG:72> す <SEG:47> る <SEG:44> 2 <SEG:0> 8 <SEG:59> カ <SEG:56> 国 <SEG:91> の <SEG:50> 切 <SEG:31> 手 <SEG:88> を <SEG:97> 1 <SEG:9> , <SEG:12> 0 <SEG:3> 0 <SEG:19> 0 <SEG:16> 枚 <SEG:6> 以 <SEG:28> 上 <SEG:41> 制 <SEG:66> 作 <SEG:53> し <SEG:100> た <SEG:94> 。": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: 手 <SEG:?> 工 <SEG:?> 芸 <SEG:?> 品 <SEG:?> は <SEG:?> 、 <SEG:?> 大 <SEG:?> 量 <SEG:?> 生 <SEG:?> 産 <SEG:?> さ <SEG:?> れ <SEG:?> た <SEG:?> 類 <SEG:?> 似 <SEG:?> 品 <SEG:?> よ <SEG:?> り <SEG:?> も <SEG:?> 歴 <SEG:?> 史 <SEG:?> は <SEG:?> 浅 <SEG:?> い <SEG:?> の <SEG:?> で <SEG:?> す <SEG:?> が <SEG:?> 、 <SEG:?> 骨 <SEG:?> 董 <SEG:?> 品 <SEG:?> と <SEG:?> 定 <SEG:?> 義 <SEG:?> さ <SEG:?> れ <SEG:?> る <SEG:?> こ <SEG:?> と <SEG:?> も <SEG:?> あ <SEG:?> り <SEG:?> ま <SEG:?> す <SEG:?> 。\nOutput: 手 <SEG:95> 工 <SEG:84> 芸 <SEG:91> 品 <SEG:98> は <SEG:82> 、 <SEG:89> 大 <SEG:27> 量 <SEG:5> 生 <SEG:9> 産 <SEG:11> さ <SEG:32> れ <SEG:25> た <SEG:16> 類 <SEG:2> 似 <SEG:18> 品 <SEG:7> よ <SEG:0> り <SEG:48> も <SEG:70> 歴 <SEG:36> 史 <SEG:20> は <SEG:14> 浅 <SEG:80> い <SEG:77> の <SEG:61> で <SEG:68> す <SEG:59> が <SEG:64> 、 <SEG:66> 骨 <SEG:41> 董 <SEG:50> 品 <SEG:39> と <SEG:34> 定 <SEG:23> 義 <SEG:30> さ <SEG:43> れ <SEG:55> る <SEG:45> こ <SEG:52> と <SEG:57> も <SEG:75> あ <SEG:73> り <SEG:86> ま <SEG:100> す <SEG:93> 。": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: 1 <SEG:?> 0 <SEG:?> 月 <SEG:?> 7 <SEG:?> 日 <SEG:?> 離 <SEG:?> 陸 <SEG:?> 時 <SEG:?> に <SEG:?> エ <SEG:?> ン <SEG:?> ジ <SEG:?> ン <SEG:?> が <SEG:?> 機 <SEG:?> 体 <SEG:?> か <SEG:?> ら <SEG:?> 分 <SEG:?> 離 <SEG:?> し <SEG:?> け <SEG:?> が <SEG:?> 人 <SEG:?> は <SEG:?> 出 <SEG:?> ま <SEG:?> せ <SEG:?> ん <SEG:?> で <SEG:?> し <SEG:?> た <SEG:?> 事 <SEG:?> 故 <SEG:?> 後 <SEG:?> ロ <SEG:?> シ <SEG:?> ア <SEG:?> は <SEG:?> i <SEG:?> l <SEG:?> - <SEG:?> 7 <SEG:?> 6 <SEG:?> を <SEG:?> 一 <SEG:?> 時 <SEG:?> 的 <SEG:?> に <SEG:?> 着 <SEG:?> 陸 <SEG:?> さ <SEG:?> せ <SEG:?> ま <SEG:?> し <SEG:?> た\nOutput: 1 <SEG:15> 0 <SEG:22> 月 <SEG:37> 7 <SEG:74> 日 <SEG:87> 離 <SEG:78> 陸 <SEG:70> 時 <SEG:59> に <SEG:81> エ <SEG:39> ン <SEG:17> ジ <SEG:13> ン <SEG:69> が <SEG:72> 機 <SEG:30> 体 <SEG:50> か <SEG:65> ら <SEG:67> 分 <SEG:91> 離 <SEG:100> し <SEG:98> け <SEG:11> が <SEG:9> 人 <SEG:0> は <SEG:6> 出 <SEG:2> ま <SEG:7> せ <SEG:85> ん <SEG:89> で <SEG:93> し <SEG:80> た <SEG:96> 事 <SEG:57> 故 <SEG:94> 後 <SEG:83> ロ <SEG:43> シ <SEG:56> ア <SEG:63> は <SEG:76> i <SEG:52> l <SEG:31> - <SEG:41> 7 <SEG:4> 6 <SEG:33> を <SEG:54> 一 <SEG:48> 時 <SEG:61> 的 <SEG:35> に <SEG:44> 着 <SEG:28> 陸 <SEG:20> さ <SEG:19> せ <SEG:26> ま <SEG:24> し <SEG:46> た": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: 約 <SEG:?> 3 <SEG:?> , <SEG:?> 0 <SEG:?> 0 <SEG:?> 0 <SEG:?> 年 <SEG:?> 後 <SEG:?> の <SEG:?> 1 <SEG:?> 6 <SEG:?> 1 <SEG:?> 0 <SEG:?> 年 <SEG:?> 、 <SEG:?> イ <SEG:?> タ <SEG:?> リ <SEG:?> ア <SEG:?> の <SEG:?> 天 <SEG:?> 文 <SEG:?> 学 <SEG:?> 者 <SEG:?> ガ <SEG:?> リ <SEG:?> レ <SEG:?> オ <SEG:?> ・ <SEG:?> ガ <SEG:?> リ <SEG:?> レ <SEG:?> イ <SEG:?> が <SEG:?> 望 <SEG:?> 遠 <SEG:?> 鏡 <SEG:?> を <SEG:?> 使 <SEG:?> っ <SEG:?> て <SEG:?> 観 <SEG:?> 測 <SEG:?> し <SEG:?> 、 <SEG:?> 金 <SEG:?> 星 <SEG:?> に <SEG:?> も <SEG:?> 月 <SEG:?> と <SEG:?> 同 <SEG:?> じ <SEG:?> よ <SEG:?> う <SEG:?> に <SEG:?> 満 <SEG:?> ち <SEG:?> 欠 <SEG:?> け <SEG:?> が <SEG:?> あ <SEG:?> る <SEG:?> こ <SEG:?> と <SEG:?> を <SEG:?> 発 <SEG:?> 見 <SEG:?> し <SEG:?> ま <SEG:?> し <SEG:?> た <SEG:?> 。\nOutput: 約 <SEG:92> 3 <SEG:3> , <SEG:6> 0 <SEG:1> 0 <SEG:4> 0 <SEG:23> 年 <SEG:34> 後 <SEG:99> の <SEG:96> 1 <SEG:0> 6 <SEG:8> 1 <SEG:7> 0 <SEG:80> 年 <SEG:94> 、 <SEG:100> イ <SEG:13> タ <SEG:10> リ <SEG:24> ア <SEG:59> の <SEG:35> 天 <SEG:39> 文 <SEG:56> 学 <SEG:70> 者 <SEG:97> ガ <SEG:72> リ <SEG:62> レ <SEG:75> オ <SEG:86> ・ <SEG:52> ガ <SEG:41> リ <SEG:65> レ <SEG:30> イ <SEG:54> が <SEG:49> 望 <SEG:69> 遠 <SEG:63> 鏡 <SEG:73> を <SEG:68> 使 <SEG:77> っ <SEG:93> て <SEG:83> 観 <SEG:87> 測 <SEG:90> し <SEG:82> 、 <SEG:58> 金 <SEG:21> 星 <SEG:76> に <SEG:85> も <SEG:66> 月 <SEG:17> と <SEG:44> 同 <SEG:37> じ <SEG:25> よ <SEG:32> う <SEG:15> に <SEG:18> 満 <SEG:14> ち <SEG:11> 欠 <SEG:20> け <SEG:31> が <SEG:51> あ <SEG:42> る <SEG:46> こ <SEG:27> と <SEG:38> を <SEG:28> 発 <SEG:55> 見 <SEG:45> し <SEG:61> ま <SEG:48> し <SEG:89> た <SEG:79> 。": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

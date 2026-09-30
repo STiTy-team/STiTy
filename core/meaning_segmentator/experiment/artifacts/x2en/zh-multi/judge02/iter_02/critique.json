@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt treats cuts before a forthcoming verb or essential complement as acceptable, underestimating how leaving a pre-cut fragment without its predicate makes the fragment contradictory or meaningless.",
+    "evidence": "cmn_hans_cn_324, cmn_hans_cn_223, cmn_hans_cn_543 — each shows the policy kept a cut immediately before the clause's main verb/complement (those single cuts had very high contradiction), and the target moves the cut later so the predicate is not split.",
+    "type_predicate": "Markers that fall immediately before a lexical verb or essential clausal complement when the text before the marker contains no main predicate (i.e., the pre-cut stretch is a nominal/modifier fragment lacking the clause's verb).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before the main verb or an essential complement when the preceding segment contains no predicate; treat such positions as must-not-cut (move cuts later to keep predicate+arguments together)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "The prompt prefers interior splits inside tight multiword units (verb–object, '…的…' modifiers, foreign names, numeral+measure), rather than preferring cuts that keep those units intact.",
+    "evidence": "cmn_hans_cn_372, cmn_hans_cn_1346 — in both, the policy ranks a cut that splits a tight verb‑object or multi‑character unit above a later cut that preserves the unit; the measurement prefers the latter.",
+    "type_predicate": "Sentences in which two candidate markers occur in the same clause and one marker lies inside a contiguous multi-character unit (verb+object, a '…的…' modifier, foreign‑script or Romanized name, or numeral+measure) while the other marker immediately follows that unit.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When one candidate splits a tight multi-character unit (verb–object, a '…的…' modifier, foreign name, or numeral+measure) and another candidate immediately follows that unit, prefer the latter marker that keeps the unit intact."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "The prompt prefers interior splits inside tight multiword units (verb–object, '…的…' modifiers, foreign names, numeral+measure), rather than preferring cuts that keep those units intact.",
+   "evidence": "cmn_hans_cn_372, cmn_hans_cn_1346 — in both, the policy ranks a cut that splits a tight verb‑object or multi‑character unit above a later cut that preserves the unit; the measurement prefers the latter.",
+   "type_predicate": "Sentences in which two candidate markers occur in the same clause and one marker lies inside a contiguous multi-character unit (verb+object, a '…的…' modifier, foreign‑script or Romanized name, or numeral+measure) while the other marker immediately follows that unit.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When one candidate splits a tight multi-character unit (verb–object, a '…的…' modifier, foreign name, or numeral+measure) and another candidate immediately follows that unit, prefer the latter marker that keeps the unit intact.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt treats cuts before a forthcoming verb or essential complement as acceptable, underestimating how leaving a pre-cut fragment without its predicate makes the fragment contradictory or meaningless.",
+   "evidence": "cmn_hans_cn_324, cmn_hans_cn_223, cmn_hans_cn_543 — each shows the policy kept a cut immediately before the clause's main verb/complement (those single cuts had very high contradiction), and the target moves the cut later so the predicate is not split.",
+   "type_predicate": "Markers that fall immediately before a lexical verb or essential clausal complement when the text before the marker contains no main predicate (i.e., the pre-cut stretch is a nominal/modifier fragment lacking the clause's verb).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before the main verb or an essential complement when the preceding segment contains no predicate; treat such positions as must-not-cut (move cuts later to keep predicate+arguments together).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

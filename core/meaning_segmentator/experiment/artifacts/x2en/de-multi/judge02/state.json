@@ -1,0 +1,316 @@
+{
+ "done": 2,
+ "prompt": "[Role]\nYou are a sentence-level segmentation scorer for streaming German→target translation. For each input sentence you must replace every <SEG:?> with a distinct integer 0–100 that ranks how good a cut at that position is, using the Scoring Rules, the Core Principles and the Order Principles below. Read each marker in isolation through the Core Principles (unary questions) and apply the Order Principles only where they name a specific pair.\n\n[Scoring Rules]\ncohesion   the pieces were translated separately into English, Chinese, Japanese, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.\ncontra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.\ntarget = cohesion x (1 - contra)\n- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.\n- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.\n- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary and carry both jobs: the question in each line decides which band a position goes in, and the severity in the same line — what makes that concern worse, what makes it milder — decides the order of positions inside one band. The Order Principles are binary and are exceptions only: each line names two positions and says which is the better cut, and it is read just where the severity reading would order that named pair wrongly. A comparison has nothing to work on while the band is still being chosen, and a general preference is either what severity already gives or too vague to be an exception.\n- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, order positions by how MILDLY the Core Principles' concerns apply to each — the position whose concerns are the mildest is the better cut of the two. Ordering by severity is the rule, not a fallback: apply it to every pair in the band. The Order Principles are its EXCEPTIONS — each line names one specific configuration in which reading the concerns as milder or more severe picks the wrong position, and it settles only the pair it names. Outside the configurations they name, order by severity. They never move a position into another band. When severity leaves two positions genuinely equal and no Order Principle names them, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.\n\n[Core Principles]\n- Does what follows the marker overturn or negate the proposition already asserted? Most severe when an explicit negation or an immediate clause that reverses the claim begins right after the marker (verb position or subordination signals reversal); mild when following text only narrows or adds a non-contradictory qualifier.\n- Would translating the preceding and following stretches separately fail to compose the original sentence's meaning? Most severe when the marker severs a subordinate relation (German V-final embedded clause or its introducer) or essential argument structure; mild when the two sides are independently intelligible apposition or list items.\n- Does the marker separate a finite verb from its core arguments or modifiers so the clause cannot be understood alone? Most severe when it isolates the finite verb from subject, modal, or negation (V2/V-final alternation signals clause membership); mild when the verb and its separable pieces remain packageable or the remainder is optional adjunct.\n- Does what follows probably introduce a subordinate or relative clause that changes which earlier noun or clause it modifies? Most severe when a subordinator/relative-pronoun pattern begins and produces a V-final clause that reassigns attachment; mild when the same surface form plausibly continues as a determiner or internal noun phrase.\n- Is the marker inside a coordination where the continuation may either extend the same constituent or start a new clause? Most severe when the coordination is likely linking full clauses each with finite verbs; mild when it is joining nouns, adjectives, or items in a simple list and the heard stretch remains coherent.\n- Does the marker fall inside a nominal enumeration or noun-heavy phrase that should be translated as one constituent rather than separate predications? Most severe when parallel noun phrases or commas indicate a single complex noun phrase so cutting breaks referent scope; mild when items carry verbs or clear clause signals implying separate predications.\n- Would a cut leave a following prepositional or adjectival modifier detached so its attachment to the previous head is unclear? Most severe when the modifier is obligatory to identify the head's referent (essential complement); mild when the modifier is optional adjunct giving extra detail.\n- Is the marker immediately before or after punctuation that marks clause boundaries and so makes one side self-contained? Most severe when a comma encloses an essential embedded clause and cutting inside it breaks meaning; mild when the marker is at sentence end or after a closing comma that leaves the heard stretch a complete clause.\n\n[Order Principles]\n- When one marker falls between a finite verb and its core arguments and another falls earlier inside the same clause, prefer the later marker that keeps verb and arguments together (retain verb as the clause anchor).\n- When one marker follows a coordinator that likely links nouns and another follows the same coordinator but at a point that starts a full clause with its own finite verb, prefer the latter marker that begins the clause.\n- When one marker is before a comma that opens or closes an embedded clause and another is after that clause's closing comma, prefer the latter marker that preserves the embedded clause intact.\n\n[Output Rules]\n- The input already contains a <SEG:?> marker at every position where a cut is possible.\n  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>\n  becomes for example <SEG:73>. Never output a bare number without the marker. The number is\n  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.\n- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the\n  highest-scoring ones under the current latency budget and nothing else reads the numbers, so\n  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an\n  absolute scale.\n- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier\n  marker wins), which means a tie hands the decision to word order instead of to your judgment.\n  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you\n  would rather cut at and score it higher.\n- A deterministic step guarantees a minimum distance between kept cuts, so you never need to\n  reason about spacing or about how many to keep.\n- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the\n  text. Keep exactly one space on both sides of every marker.\n- Output the text with the filled markers and nothing else. No explanation, label, or commentary.\n\n[Examples]\nInput: Es <SEG:?> gibt <SEG:?> viele <SEG:?> Dinge, <SEG:?> die <SEG:?> Sie <SEG:?> vor <SEG:?> und <SEG:?> während <SEG:?> einer <SEG:?> Reise <SEG:?> berücksichtigen <SEG:?> müssen.\nOutput: Es <SEG:64> gibt <SEG:82> viele <SEG:100> Dinge, <SEG:73> die <SEG:91> Sie <SEG:0> vor <SEG:9> und <SEG:55> während <SEG:27> einer <SEG:18> Reise <SEG:45> berücksichtigen <SEG:36> müssen.\n\nInput: lizenzen <SEG:?> sind <SEG:?> zum <SEG:?> schutz <SEG:?> des <SEG:?> canyons <SEG:?> limitiert <SEG:?> und <SEG:?> sind <SEG:?> ab <SEG:?> dem <SEG:?> monatsersten <SEG:?> vier <SEG:?> monate <SEG:?> vor <SEG:?> dem <SEG:?> startmonat <SEG:?> erhältlich\nOutput: lizenzen <SEG:62> sind <SEG:38> zum <SEG:12> schutz <SEG:25> des <SEG:0> canyons <SEG:75> limitiert <SEG:100> und <SEG:88> sind <SEG:69> ab <SEG:31> dem <SEG:6> monatsersten <SEG:94> vier <SEG:56> monate <SEG:50> vor <SEG:44> dem <SEG:19> startmonat <SEG:81> erhältlich\n\nInput: Die <SEG:?> Straße, <SEG:?> auf <SEG:?> der <SEG:?> sich <SEG:?> der <SEG:?> Unfall <SEG:?> ereignet <SEG:?> hatte, <SEG:?> wurde <SEG:?> vorübergehend <SEG:?> gesperrt, <SEG:?> während <SEG:?> die <SEG:?> Rettungsdienste <SEG:?> den <SEG:?> Fahrer <SEG:?> aus <SEG:?> dem <SEG:?> roten <SEG:?> Audi <SEG:?> TT <SEG:?> befreiten.\nOutput: Die <SEG:67> Straße, <SEG:38> auf <SEG:76> der <SEG:95> sich <SEG:90> der <SEG:43> Unfall <SEG:52> ereignet <SEG:57> hatte, <SEG:71> wurde <SEG:81> vorübergehend <SEG:86> gesperrt, <SEG:100> während <SEG:48> die <SEG:62> Rettungsdienste <SEG:29> den <SEG:24> Fahrer <SEG:5> aus <SEG:33> dem <SEG:19> roten <SEG:14> Audi <SEG:0> TT <SEG:10> befreiten.\n\nInput: frauen <SEG:?> sollten <SEG:?> erkennen <SEG:?> dass <SEG:?> kulturelle <SEG:?> unterschiede <SEG:?> zu <SEG:?> dem <SEG:?> führen <SEG:?> können <SEG:?> was <SEG:?> sie <SEG:?> als <SEG:?> übergriff <SEG:?> betrachten <SEG:?> würden <SEG:?> und <SEG:?> dass <SEG:?> es <SEG:?> nicht <SEG:?> ungewöhnlich <SEG:?> ist <SEG:?> verfolgt <SEG:?> am <SEG:?> arm <SEG:?> gepackt <SEG:?> usw. <SEG:?> zu <SEG:?> werden\nOutput: frauen <SEG:56> sollten <SEG:96> erkennen <SEG:93> dass <SEG:81> kulturelle <SEG:33> unterschiede <SEG:48> zu <SEG:37> dem <SEG:15> führen <SEG:11> können <SEG:41> was <SEG:63> sie <SEG:4> als <SEG:7> übergriff <SEG:59> betrachten <SEG:100> würden <SEG:85> und <SEG:70> dass <SEG:26> es <SEG:30> nicht <SEG:0> ungewöhnlich <SEG:44> ist <SEG:78> verfolgt <SEG:52> am <SEG:19> arm <SEG:22> gepackt <SEG:89> usw. <SEG:74> zu <SEG:67> werden\n\n",
+ "history": [
+  {
+   "iter": 1,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01249,
+    "lo": -0.021,
+    "hi": -0.00424,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replaced Order Principle O2 to prefer later cuts that preserve noun heads when two markers fall inside the same noun phrase — addresses the primary finding that the prompt splits noun-heavy spans and hurts cohesion."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O2",
+     "kind": "change",
+     "was": "- When one marker follows a coordinator that likely links nouns and another foll",
+     "now": "When two markers lie inside the same noun phrase, prefer the later cut that pres"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01392,
+    "lo": -0.02348,
+    "hi": -0.00525,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace C1 with a focused negation check: forbid cuts immediately before German negation tokens (nicht/kein/nie) because the prompt currently allows cuts that split an assertion from its negation, producing high contradiction risk."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C1",
+     "kind": "change",
+     "was": "- Does what follows the marker overturn or negate the proposition already assert",
+     "now": "- Does the marker occur immediately before a German negation token (nicht/kein/n"
+    }
+   ]
+  },
+  {
+   "iter": 1,
+   "adopted": false,
+   "delta": {
+    "mean": -0.01093,
+    "lo": -0.01936,
+    "hi": -0.0026,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": -0.01093,
+    "lo": -0.01936,
+    "hi": -0.0026,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Add a fallback Order Principle that breaks ties among markers inside the same noun phrase by preferring a cut immediately after the noun head, so the noun and its modifiers stay together — addresses the primary finding (NP-splitting) with a different ordering formulation than the sibling candidate."
+   ],
+   "findings": [
+    "The prompt fails to prefer cuts that preserve whole noun phrases, instead splitting inside noun-heavy spans and hurting cohesion when pieces are translated separately.",
+    "The prompt allows cuts that split off a clause’s assertion from an immediate negation or negative determiner, producing a fragment that alone asserts the opposite of the whole sentence."
+   ],
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O3",
+     "kind": "change",
+     "was": "- When one marker is before a comma that opens or closes an embedded clause and ",
+     "now": "When two markers lie inside the same noun phrase, prefer the later cut that pres"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0149,
+     "≤5": -0.0077,
+     "≤7": -0.0112,
+     "≤10": -0.0086,
+     "≤99": -0.0024
+    },
+    "n_worse": 2069,
+    "n_better": 1847,
+    "why": "The new tie-breaker pushed cuts to the position immediately after noun heads when two markers fall inside the same NP, so the model avoided NP-splitting (helping the top-1 choice) but shifted many mid-ranked cut choices later. That change harmed the short-latency bins (≤3, ≤5, ≤7) — where many cuts are kept — by moving sensible comma/clause cuts into the NP and producing worse segmentations overall, yielding a small but significant negative mean.",
+    "lesson": "When adding an NP-head tie-breaker, preserve the earlier comma/embedded-clause cut preferences used by short-latency budgets (don’t let the NP-head fallback override mid-ranked/punctuation-based cuts).",
+    "blamed": [
+     "O3"
+    ]
+   }
+  },
+  {
+   "iter": 2,
+   "candidate": 1,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.00879,
+    "lo": -0.01663,
+    "hi": -0.00075,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace O1 to prefer a punctuation-separated earlier cut inside an NP over a later NP-tail cut, and otherwise prefer the later cut that keeps the NP head with its postmodifiers — addresses the primary intra-NP misordering while preserving punctuation-based short-latency cuts."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "O1",
+     "kind": "change",
+     "was": "- When one marker falls between a finite verb and its core arguments and another",
+     "now": "When two markers lie inside the same NP, if one is immediately before punctuatio"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 2,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.01043,
+    "lo": -0.01901,
+    "hi": -0.00198,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace C2 to add a focused check preventing cuts that split a determiner/numeral/pronoun from the noun phrase it determines — addresses the primary finding about NP cohesion."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C2",
+     "kind": "change",
+     "was": "- Would translating the preceding and following stretches separately fail to com",
+     "now": "- Does the marker separate a determiner, numeral, or determiner-like pronoun fro"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "candidate": 3,
+   "adopted": false,
+   "full_scored": true,
+   "delta": {
+    "mean": -0.0175,
+    "lo": -0.02765,
+    "hi": -0.00752,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Insert a fallback ordering rule into [Order Principles] that prefers punctuation-separated cuts which leave the left side a self-contained clause over other intra-NP cuts, and otherwise prefers cuts that keep the NP head with its postmodifiers — addresses the primary intra-NP misordering while preserving short-latency punctuation cuts."
+   ],
+   "delta_confirm": null,
+   "edits": [
+    {
+     "op": "insert_after",
+     "id": "O3",
+     "kind": "change",
+     "was": "- When one marker is before a comma that opens or closes an embedded clause and ",
+     "now": "When two markers lie inside the same NP, if one is immediately before punctuatio"
+    }
+   ]
+  },
+  {
+   "iter": 2,
+   "adopted": false,
+   "delta": {
+    "mean": -0.00615,
+    "lo": -0.01533,
+    "hi": 0.00257,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "gain": {
+    "mean": -0.00615,
+    "lo": -0.01533,
+    "hi": 0.00257,
+    "n": 4580,
+    "n_clusters": 500
+   },
+   "changelog": [
+    "Replace C6 severity to prioritise avoiding splits of determiner/head and required postmodifiers, and to mark markers immediately before punctuation or at the NP tail as milder — addresses the intra-NP ordering bug and the determiner/numeral split check."
+   ],
+   "findings": [
+    "When two candidate cuts fall inside the same NP, the prompt misorders them — it sometimes prefers the later NP-tail cut but should prefer an earlier punctuation-separated cut when that preserves a complete clause.",
+    "The prompt allows cuts that split a determiner/numeral/pronoun from the noun phrase it heads, breaking NP cohesion."
+   ],
+   "edits": [
+    {
+     "op": "replace",
+     "id": "C6",
+     "kind": "change",
+     "was": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that sh",
+     "now": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that sh"
+    }
+   ],
+   "diagnosis": {
+    "by_bin": {
+     "≤3": -0.0041,
+     "≤5": -0.0051,
+     "≤7": -0.015,
+     "≤10": -0.0104,
+     "≤99": -0.001
+    },
+    "n_worse": 1930,
+    "n_better": 1939,
+    "why": "Reweighting C6 made the model more protective of determiner/head and required postmodifier boundaries while at the same time treating markers at NP tails or immediately before punctuation as milder; that moved the top-one/two cut preferences (rank_depth: depth1 down, depth2 up) so some long-latency top cuts improved but many medium-latency cuts (especially ≤7 and ≤5 bins) shifted into intra‑NP positions or split enumerations, producing roughly equal numbers better/worse and a small net drop.",
+    "lesson": "Keep the stronger protection against splitting determiners/heads and required postmodifiers, but do not so aggressively lower severity for markers at NP tails / before punctuation that intra‑NP cuts and enumeration splits become more likely (test effects per latency bin, esp. ≤7).",
+    "blamed": [
+     "C6 «- Does the marker fall inside a nominal enumeration or noun-»"
+    ]
+   }
+  }
+ ],
+ "checkpoint": null,
+ "v0_len": 10999,
+ "total_cost": 39.731308,
+ "provenance": {
+  "- Does what follows the marker overturn or negate the proposition already asserted? Most severe when an explicit negation or an immediate clause that reverses the claim begins right after the marker (verb position or subordination signals reversal); mild when following text only narrows or adds a non-contradictory qualifier.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Would translating the preceding and following stretches separately fail to compose the original sentence's meaning? Most severe when the marker severs a subordinate relation (German V-final embedded clause or its introducer) or essential argument structure; mild when the two sides are independently intelligible apposition or list items.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the marker separate a finite verb from its core arguments or modifiers so the clause cannot be understood alone? Most severe when it isolates the finite verb from subject, modal, or negation (V2/V-final alternation signals clause membership); mild when the verb and its separable pieces remain packageable or the remainder is optional adjunct.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does what follows probably introduce a subordinate or relative clause that changes which earlier noun or clause it modifies? Most severe when a subordinator/relative-pronoun pattern begins and produces a V-final clause that reassigns attachment; mild when the same surface form plausibly continues as a determiner or internal noun phrase.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is the marker inside a coordination where the continuation may either extend the same constituent or start a new clause? Most severe when the coordination is likely linking full clauses each with finite verbs; mild when it is joining nouns, adjectives, or items in a simple list and the heard stretch remains coherent.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that should be translated as one constituent rather than separate predications? Most severe when parallel noun phrases or commas indicate a single complex noun phrase so cutting breaks referent scope; mild when items carry verbs or clear clause signals implying separate predications.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Would a cut leave a following prepositional or adjectival modifier detached so its attachment to the previous head is unclear? Most severe when the modifier is obligatory to identify the head's referent (essential complement); mild when the modifier is optional adjunct giving extra detail.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- Is the marker immediately before or after punctuation that marks clause boundaries and so makes one side self-contained? Most severe when a comma encloses an essential embedded clause and cutting inside it breaks meaning; mild when the marker is at sentence end or after a closing comma that leaves the heard stretch a complete clause.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one marker falls between a finite verb and its core arguments and another falls earlier inside the same clause, prefer the later marker that keeps verb and arguments together (retain verb as the clause anchor).": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one marker follows a coordinator that likely links nouns and another follows the same coordinator but at a point that starts a full clause with its own finite verb, prefer the latter marker that begins the clause.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "- When one marker is before a comma that opens or closes an embedded clause and another is after that clause's closing comma, prefer the latter marker that preserves the embedded clause intact.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Es <SEG:?> gibt <SEG:?> viele <SEG:?> Dinge, <SEG:?> die <SEG:?> Sie <SEG:?> vor <SEG:?> und <SEG:?> während <SEG:?> einer <SEG:?> Reise <SEG:?> berücksichtigen <SEG:?> müssen.\nOutput: Es <SEG:64> gibt <SEG:82> viele <SEG:100> Dinge, <SEG:73> die <SEG:91> Sie <SEG:0> vor <SEG:9> und <SEG:55> während <SEG:27> einer <SEG:18> Reise <SEG:45> berücksichtigen <SEG:36> müssen.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: lizenzen <SEG:?> sind <SEG:?> zum <SEG:?> schutz <SEG:?> des <SEG:?> canyons <SEG:?> limitiert <SEG:?> und <SEG:?> sind <SEG:?> ab <SEG:?> dem <SEG:?> monatsersten <SEG:?> vier <SEG:?> monate <SEG:?> vor <SEG:?> dem <SEG:?> startmonat <SEG:?> erhältlich\nOutput: lizenzen <SEG:62> sind <SEG:38> zum <SEG:12> schutz <SEG:25> des <SEG:0> canyons <SEG:75> limitiert <SEG:100> und <SEG:88> sind <SEG:69> ab <SEG:31> dem <SEG:6> monatsersten <SEG:94> vier <SEG:56> monate <SEG:50> vor <SEG:44> dem <SEG:19> startmonat <SEG:81> erhältlich": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: Die <SEG:?> Straße, <SEG:?> auf <SEG:?> der <SEG:?> sich <SEG:?> der <SEG:?> Unfall <SEG:?> ereignet <SEG:?> hatte, <SEG:?> wurde <SEG:?> vorübergehend <SEG:?> gesperrt, <SEG:?> während <SEG:?> die <SEG:?> Rettungsdienste <SEG:?> den <SEG:?> Fahrer <SEG:?> aus <SEG:?> dem <SEG:?> roten <SEG:?> Audi <SEG:?> TT <SEG:?> befreiten.\nOutput: Die <SEG:67> Straße, <SEG:38> auf <SEG:76> der <SEG:95> sich <SEG:90> der <SEG:43> Unfall <SEG:52> ereignet <SEG:57> hatte, <SEG:71> wurde <SEG:81> vorübergehend <SEG:86> gesperrt, <SEG:100> während <SEG:48> die <SEG:62> Rettungsdienste <SEG:29> den <SEG:24> Fahrer <SEG:5> aus <SEG:33> dem <SEG:19> roten <SEG:14> Audi <SEG:0> TT <SEG:10> befreiten.": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  },
+  "Input: frauen <SEG:?> sollten <SEG:?> erkennen <SEG:?> dass <SEG:?> kulturelle <SEG:?> unterschiede <SEG:?> zu <SEG:?> dem <SEG:?> führen <SEG:?> können <SEG:?> was <SEG:?> sie <SEG:?> als <SEG:?> übergriff <SEG:?> betrachten <SEG:?> würden <SEG:?> und <SEG:?> dass <SEG:?> es <SEG:?> nicht <SEG:?> ungewöhnlich <SEG:?> ist <SEG:?> verfolgt <SEG:?> am <SEG:?> arm <SEG:?> gepackt <SEG:?> usw. <SEG:?> zu <SEG:?> werden\nOutput: frauen <SEG:56> sollten <SEG:96> erkennen <SEG:93> dass <SEG:81> kulturelle <SEG:33> unterschiede <SEG:48> zu <SEG:37> dem <SEG:15> führen <SEG:11> können <SEG:41> was <SEG:63> sie <SEG:4> als <SEG:7> übergriff <SEG:59> betrachten <SEG:100> würden <SEG:85> und <SEG:70> dass <SEG:26> es <SEG:30> nicht <SEG:0> ungewöhnlich <SEG:44> ist <SEG:78> verfolgt <SEG:52> am <SEG:19> arm <SEG:22> gepackt <SEG:89> usw. <SEG:74> zu <SEG:67> werden": {
+   "origin": "v0",
+   "adopted_delta": null,
+   "adopted_ci_lo": null
+  }
+ }
+}

@@ -186,6 +186,16 @@ _ap.add_argument("--wspace", type=float, default=0.22,
                       "눈금 숫자와 이쪽 패널 오른쪽 끝이 덜 붙는다")
 _ap.add_argument("--panel-width", type=float, default=5.5,
                  help="패널 하나의 폭(인치). 키우면 지연 축이 가로로 펴진다")
+_ap.add_argument("--xticks", nargs="+", default=None, metavar="T1,T2,...",
+                 help="패널마다 x축 눈금을 직접 지정한다 (타깃 순서대로, 쉼표로 구분). "
+                      "패널 간 눈금을 같게 맞출 때 쓴다 — 자동 배치는 구간이 다르면 "
+                      "개수도 달라진다")
+_ap.add_argument("--xtick-nbins", type=int, default=None,
+                 help="x축 눈금 개수 상한. 패널이 좁을 때 눈금 숫자가 겹치는 것을 막는다 "
+                      "(패널마다 같은 값이 적용된다)")
+_ap.add_argument("--panel-height", type=float, default=None,
+                 help="패널 하나의 높이(인치). 기본은 여러 패널 5.9 / 한 패널 6.6. "
+                      "줄이면 세로로 눌린다 — 지면 한 줄에 그림을 얹을 때")
 _ap.add_argument("--no-cite", action="store_true",
                  help="범례에서 인용 표기(`Papi et al., 2023`)를 뺀다. 본문 캡션에 인용이 "
                       "붙는 논문 그림용")
@@ -260,7 +270,7 @@ _FS = (1.0 if len(TARGETS) > 1 else 1.25) * ARGS.font_scale
 fig, axes = plt.subplots(
     1, len(TARGETS), squeeze=False,
     figsize=(ARGS.panel_width * len(TARGETS) if len(TARGETS) > 1 else 9.2,
-             5.9 if len(TARGETS) > 1 else 6.6))
+             ARGS.panel_height or (5.9 if len(TARGETS) > 1 else 6.6)))
 axes = axes[0]
 _SINGLE = len(TARGETS) == 1
 _L = (0.095 if M == "comet" else 0.075) if not _SINGLE else \
@@ -270,7 +280,10 @@ _L *= 1 + 0.5 * (ARGS.font_scale - 1)
 _TOP = 0.90
 # 패널 하나짜리는 폭이 좁아 범례를 2열로 접어야 한다 — 3열이면 긴 라벨(TransLLaMa 인용)이
 # 그림 밖으로 나간다. 그만큼 아래 여백을 더 준다.
+# 범례를 끄면 그 자리를 비워 둘 이유가 없다. 높이를 눌렀을 때 x축 제목만 들어가면 된다.
 _BOTTOM = (0.255 if _SINGLE else 0.235) * (1 + 0.6 * (ARGS.font_scale - 1))
+if ARGS.no_legend:
+    _BOTTOM = 0.16 * (1 + 0.6 * (ARGS.font_scale - 1))
 fig.subplots_adjust(left=_L, right=0.985, top=_TOP,
                     bottom=_BOTTOM, wspace=ARGS.wspace)
 
@@ -479,6 +492,13 @@ for _pi, (ax, tgt) in enumerate(zip(axes, TARGETS)):
                  if xlo - span * 0.02 <= t <= xhi + span * 0.02
                  and not any(a < t < b for a, b, _ in gaps)]
         ax.xaxis.set_major_locator(FixedLocator(ticks))
+    if ARGS.xticks and not gaps:
+        spec = ARGS.xticks[_pi] if _pi < len(ARGS.xticks) else ARGS.xticks[-1]
+        ax.xaxis.set_major_locator(
+            FixedLocator([float(t) for t in spec.split(",") if t.strip()]))
+    elif ARGS.xtick_nbins and not gaps:
+        ax.xaxis.set_major_locator(
+            MaxNLocator(nbins=ARGS.xtick_nbins, steps=[1, 2, 2.5, 5, 10]))
     ax.set_xlim(xlo, xhi)
 
     if gaps:

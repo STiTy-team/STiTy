@@ -1,0 +1,30 @@
+{
+  "source_language": "Japanese",
+  "word_order": "SOV | verbs and predicates consistently appear at the end of clauses (e.g. ～しています, ～しました, ～と言いました) while noun phrases and particles precede them",
+  "register": "edited written informational prose (news reports, encyclopedia-like explanations, travel/advice notices)",
+  "fillers_and_hesitations": [],
+  "discourse_markers": [
+    "resultative/sequence adverbials (その結果)",
+    "summative/explanatory connectors (つまり)",
+    "associative/conjunctive phrase marking simultaneous or correlated events (とともに)",
+    "conditional/contingency frameers (場合)",
+    "purpose/reason linkers (～ために)"
+  ],
+  "clause_boundary_signals": [
+    "sentence-final finite verb morphology (polite/plain/past/present forms such as ～ました, ～です, ～している) which typically closes a clause",
+    "conjunctive/continuative verb forms used for clause chaining (て-form or continuative passive/stem, e.g. 暴露され, ～て) which link clauses rather than end the sentence",
+    "quotative/complementizer particle that delimits an embedded clause before a reporting predicate (と)",
+    "nominalizer + copula constructions that produce clause-final nominalized statements (こと + です/だ)"
+  ],
+  "non_boundary_traps": [
+    "case-marking and topic particles that separate phrases but do not end clause meaning (case/topic particles like を, に, が, は, の)",
+    "verb continuative forms/passive stems (連用形/て-form) that superficially look like clause endings but continue to a following predicate",
+    "lists or enumerative connective phrases that look like terminal breaks but continue the same clause (phrases connecting multiple NPs and professions/titles)"
+  ],
+  "unstable_prefix_signals": [
+    "post-nominal particles and topic markers (は, が, の, に) after which the noun phrase may be continued or reinterpreted by following modifiers or predicates",
+    "conjunctive verb stems/te-forms (～て, passive stem) that can either introduce a separate clause or be followed by the main predicate, so early segmentation after them is ambiguous",
+    "quotative/complementizer particle (と) which can either close an embedded clause or be followed by reporting verbs or further explanation"
+  ],
+  "notes_for_prompt_writer": "This source is Japanese, strongly verb-final: predicates occur at clause ends and carry tense/aspect/politeness. Grammatical relations are signalled by post-positional particles rather than word order. Clause chaining commonly uses verb continuative forms (て-form, passive stems) and quotative 'と' and nominalizer 'こと' create embedded clauses; these forms change interpretation depending on what follows."
+}

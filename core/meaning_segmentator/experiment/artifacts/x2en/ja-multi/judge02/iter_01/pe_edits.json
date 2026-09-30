@@ -1,0 +1,97 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Does the marker split an embedded clause boundary formed by a quotative or nominalizer from its reporting predicate or head? Severe when the reporting predicate or main verb that resolves attachment comes after the cut, or when a quotative or reporting phrase on the source surface (e.g. ～によると、～と述べ、～と発表) is separated from its reporting verb by the marker; mild when the quotative and its reporting verb remain adjacent, the reporting predicate precedes the marker, or the embedded clause truly closes and following material merely restates.",
+    "_was": "- Does the marker split an embedded clause boundary formed by a quotative or nominalizer from its reporting predicate or head? Severe when the reporting predicate or main verb that resolves attachment comes after the cut; mild when the embedded clause truly closes and following material merely restates."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 239
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12224,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "text": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～と述べ/発表) and one that leaves the quotative attached to its reporting predicate, prefer the cut that keeps the quotative plus reporting verb together.",
+    "_was": "- When one marker falls immediately after a conjunctive/continuative verb stem and another falls after the following clause-final finite verb, prefer the latter: keep the clause-final cut because it preserves the predicate, tense/aspect and avoids misattachment."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "chars_change": -32
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11953,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Does the cut occur immediately before the clause‑final predicate or its finite auxiliary so that the preceding piece lacks a complete predicate? Severe when the marker falls directly before the main clause closing verb or copula (surface forms such as ます／ました／です／だ／する or an auxiliary that resolves tense/aspect), or when it separates a necessary auxiliary from its host; mild when the following material is parenthetical, an optional discourse phrase, or a narrowing qualifier so the preceding segment still contains a completed predicate.",
+    "_was": "- Does the marker bisect a numeric, date, unit, or technical sequence whose interpretation depends on adjacent characters? Severe when it splits a multi-character quantity/unit that determines magnitude or time; mild when it separates items in a long identifier or an enumerated list where context preserves meaning."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 224
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12209,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "fallback",
+    "text": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～と述べ/発表) and one that leaves the quotative attached to its reporting predicate, prefer the cut that keeps the quotative plus reporting verb together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "fallback",
+    "chars_change": 231
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12216,
+  "errors": null
+ }
+]

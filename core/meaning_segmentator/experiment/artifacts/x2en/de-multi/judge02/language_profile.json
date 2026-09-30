@@ -1,0 +1,29 @@
+{
+  "source_language": "German",
+  "word_order": "other, with a one-line justification from the sample: main clauses show verb-second order while embedded/relative clauses are verb-final (e.g. 'dunkle energie ist ...' vs 'die permanent auf das universum einwirkt').",
+  "register": "formal written informational/encyclopedic (concise, factual sentences like encyclopedia or newswire prose).",
+  "fillers_and_hesitations": [
+    "none observed (no explicit hesitation particles in the sample)"
+  ],
+  "discourse_markers": [
+    "subordinating conjunctions that introduce embedded clauses (als, damit, wenn, dass)",
+    "coordinating conjunctions that link clauses or list items (und)",
+    "relative-clause introducers / relative pronouns that connect modifiers to nouns (die, der, das)"
+  ],
+  "clause_boundary_signals": [
+    "verb-position alternation (finite verb appears early in main clauses (V2) but at the end of embedded/relative clauses (V-final))",
+    "subordinating conjunctions / complementizers and relative pronouns that introduce embedded clauses",
+    "coordinating conjunctions that join full clauses"
+  ],
+  "non_boundary_traps": [
+    "article/relative-pronoun homonyms (die/der/das) which look like clause starters but may be simple determiners",
+    "nominal enumerations / coordinated noun lists (series of nouns or verbal-nominal gerunds) that resemble multiple clauses but form one nominal constituent",
+    "prepositional noun phrases following nouns (in X, im Y) that can look like clause breaks but are modifiers"
+  ],
+  "unstable_prefix_signals": [
+    "article/relative-pronoun homonyms (das/die/der) — early token can be either determiner or clause introducer, later context decides",
+    "als (comparative vs subordinator) — immediate interpretation can flip once the following phrase appears",
+    "coordinating conjunctions (und) — may indicate a short list or the continuation of a longer coordinated phrase, so earlier unit boundaries remain provisional"
+  ],
+  "notes_for_prompt_writer": "Main clauses typically show verb-second (finite verb early) while embedded and relative clauses are verb-final; many clauses are introduced by subordinating conjunctions or relative pronouns. Definite articles and relative pronouns are formally identical and frequently cause local ambiguity. German sentences in the sample are noun-phrase heavy and use nominal coordination (lists) without verbs, so sequences of nouns and determiners often belong to a single constituent rather than separate clauses."
+}

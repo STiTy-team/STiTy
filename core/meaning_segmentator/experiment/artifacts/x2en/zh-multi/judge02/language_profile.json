@@ -1,0 +1,29 @@
+{
+  "source_language": "Mandarin Chinese (modern written register)",
+  "word_order": "SVO | Subjects precede verbs and verbs precede objects in examples such as “他 获 得 了 苏 联 最 高 荣 誉” (he — obtained — honor).",
+  "register": "formal written/encyclopedic or news-style prose (third-person factual descriptions, named entities, and topical reporting).",
+  "fillers_and_hesitations": [
+    "no clear hesitation particles observed (no explicit filler tokens in the sample)"
+  ],
+  "discourse_markers": [
+    "causal connectives (因为, 因此 / 这 是 因 为) — introduce cause–effect clauses",
+    "concessive/resultive linkers (这 使 得, 因而) — mark result or inference",
+    "conditional markers (如果) — introduce conditional clauses",
+    "adverbial/coverb heads that link clauses (在, 由 于) — begin adverbial/locative/causal phrases"
+  ],
+  "clause_boundary_signals": [
+    "perfective/aspect particle (了) — commonly appears immediately after verb phrases and delimits events",
+    "passive marker (被) — introduces passive clauses and delimits an argument structure",
+    "copular/naming expressions (是, 称为/称之为) — signal predication or apposition between phrases"
+  ],
+  "non_boundary_traps": [
+    "nominal modifier marker (的) — links modifiers to nouns and often appears inside noun phrases rather than ending a clause",
+    "prepositional/coverb heads (在, 与, 和) — start adjuncts or coordinations, not clause-final boundaries",
+    "coordinate conjunctions (和, 与) — join noun/NP sequences and can look like clause joins but often stay inside larger clauses"
+  ],
+  "unstable_prefix_signals": [
+    "prepositional/coverb starters (在, 由/由于) — after these the attachment of the following phrase (scope of the adjunct) can be overturned by later material",
+    "numeral/quantifier + measure groups (约 + numeral + 单位) — these form tight units but their syntactic attachment (modifier vs. complement) can be revised by subsequent context"
+  ],
+  "notes_for_prompt_writer": "This sample is modern written Mandarin: modifiers (including relative clauses) precede the head noun and are frequently marked by 的. Aspect and voice are signalled by particles immediately adjacent to the verb (了, 被), and coverbs/prepositional heads (在, 由于) introduce adverbial material rather than ending clauses. Named entities and foreign-language multiword sequences appear within sentences and should be treated as multi-token units; numeral+measure expressions (e.g. “约 220 公里”) are also tight lexical units."
+}

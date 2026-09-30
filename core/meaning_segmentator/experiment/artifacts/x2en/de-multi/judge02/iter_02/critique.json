@@ -1,0 +1,54 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that split a determiner/numeral/pronoun from the noun phrase it heads, breaking NP cohesion.",
+    "evidence": "de_de_445, de_de_1339, de_de_278, de_de_332 — all show the policy cutting between an initial determiner/quantifier/pronoun and its noun phrase, while the measured target keeps that determiner+NP intact.",
+    "type_predicate": "Positions that separate a sentence-initial determiner, numeral, or pronoun from the immediately following noun phrase it determines (i.e., a split between a determiner/quantifier/pronoun and its head NP).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Avoid cutting between a determiner/numeral/pronoun and the noun phrase it determines; keep the determiner and its NP together."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts fall inside the same NP, the prompt misorders them — it sometimes prefers the later NP-tail cut but should prefer an earlier punctuation-separated cut when that preserves a complete clause.",
+    "evidence": "de_de_357, de_de_191, de_de_729 — each has two intra-NP candidate markers where the correct segmentation prefers the marker that preserves a self-contained clause at punctuation (or else preserves the NP as a unit), but the prompt chose the other order.",
+    "type_predicate": "Sentences containing two candidate markers inside the same noun phrase where one marker is immediately before punctuation (comma or sentence boundary) that would leave the left side a complete clause and the other lies elsewhere inside that NP.",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two markers lie inside the same NP, if one is immediately before punctuation that yields a self-contained left clause prefer that earlier cut; otherwise prefer the later cut that keeps the NP head with its postmodifiers."
+    }
+   }
+  ]
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts fall inside the same NP, the prompt misorders them — it sometimes prefers the later NP-tail cut but should prefer an earlier punctuation-separated cut when that preserves a complete clause.",
+   "evidence": "de_de_357, de_de_191, de_de_729 — each has two intra-NP candidate markers where the correct segmentation prefers the marker that preserves a self-contained clause at punctuation (or else preserves the NP as a unit), but the prompt chose the other order.",
+   "type_predicate": "Sentences containing two candidate markers inside the same noun phrase where one marker is immediately before punctuation (comma or sentence boundary) that would leave the left side a complete clause and the other lies elsewhere inside that NP.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two markers lie inside the same NP, if one is immediately before punctuation that yields a self-contained left clause prefer that earlier cut; otherwise prefer the later cut that keeps the NP head with its postmodifiers.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that split a determiner/numeral/pronoun from the noun phrase it heads, breaking NP cohesion.",
+   "evidence": "de_de_445, de_de_1339, de_de_278, de_de_332 — all show the policy cutting between an initial determiner/quantifier/pronoun and its noun phrase, while the measured target keeps that determiner+NP intact.",
+   "type_predicate": "Positions that separate a sentence-initial determiner, numeral, or pronoun from the immediately following noun phrase it determines (i.e., a split between a determiner/quantifier/pronoun and its head NP).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Avoid cutting between a determiner/numeral/pronoun and the noun phrase it determines; keep the determiner and its NP together.",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

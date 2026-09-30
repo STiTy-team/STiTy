@@ -1,0 +1,56 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that separate a predicate from its sentence‑final inflection (tense/negation/politeness), producing contradictory or unusable fragments.",
+    "evidence": "ja_jp_1071, ja_jp_362, ja_jp_1294, ja_jp_1577, ja_jp_1034, ja_jp_999 — each policy cut left the verb or final auxiliary on the following piece and the measurement shows a high contradiction or fatal loss when that fragment is presented alone.",
+    "type_predicate": "Sentences where the main clause’s completing predicate (the sentence‑final verb or auxiliary sequence that supplies tense/aspect/negation/politeness) occurs later in the sentence than the candidate cut.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut so that a verb stem or clause is left without its sentence‑final inflection; avoid cuts that separate a predicate from its finishing inflection (tense/aspect/negation/politeness)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When several cuts all fall before the same sentence‑final inflection, the prompt fails to choose which is least harmful: the later cut (closer to the inflection) preserves more of the predicate and is preferable.",
+    "evidence": "ja_jp_1034, ja_jp_1071, ja_jp_362, ja_jp_1294 — in each sentence the target kept a later cut (closer to the finishing inflection) while the policy chose an earlier one that left more predicate behind, and the later cut yields much higher H_set.",
+    "type_predicate": "Sentences in which two or more candidate cuts occur inside the same clause immediately before the same sentence‑final predicate inflection (so both would leave the same verb unfinished).",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When multiple candidates fall before the same sentence‑final inflection, prefer the later cut (closer to the inflection) so the emitted piece preserves more of the predicate."
+    }
+   }
+  ],
+  "checks_skipped": "",
+  "orders_skipped": ""
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When several cuts all fall before the same sentence‑final inflection, the prompt fails to choose which is least harmful: the later cut (closer to the inflection) preserves more of the predicate and is preferable.",
+   "evidence": "ja_jp_1034, ja_jp_1071, ja_jp_362, ja_jp_1294 — in each sentence the target kept a later cut (closer to the finishing inflection) while the policy chose an earlier one that left more predicate behind, and the later cut yields much higher H_set.",
+   "type_predicate": "Sentences in which two or more candidate cuts occur inside the same clause immediately before the same sentence‑final predicate inflection (so both would leave the same verb unfinished).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When multiple candidates fall before the same sentence‑final inflection, prefer the later cut (closer to the inflection) so the emitted piece preserves more of the predicate.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that separate a predicate from its sentence‑final inflection (tense/negation/politeness), producing contradictory or unusable fragments.",
+   "evidence": "ja_jp_1071, ja_jp_362, ja_jp_1294, ja_jp_1577, ja_jp_1034, ja_jp_999 — each policy cut left the verb or final auxiliary on the following piece and the measurement shows a high contradiction or fatal loss when that fragment is presented alone.",
+   "type_predicate": "Sentences where the main clause’s completing predicate (the sentence‑final verb or auxiliary sequence that supplies tense/aspect/negation/politeness) occurs later in the sentence than the candidate cut.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut so that a verb stem or clause is left without its sentence‑final inflection; avoid cuts that separate a predicate from its finishing inflection (tense/aspect/negation/politeness).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

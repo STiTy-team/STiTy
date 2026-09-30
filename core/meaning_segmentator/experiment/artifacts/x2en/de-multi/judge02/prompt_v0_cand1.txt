@@ -1,0 +1,58 @@
+[Role]
+You score every <SEG:?> in a single German source sentence for streaming translation by replacing each ? with a distinct integer 0–100. Only the relative order of numbers inside the sentence matters and will be read against the measured target defined in the Scoring Rules section. Use the Core Principles to decide bands and severity, use the Order Principles only for the narrow pairwise exceptions they name, and follow the Scoring Rules and Output Rules exactly.
+
+[Scoring Rules]
+cohesion   the pieces were translated separately into English, Chinese, Japanese, Spanish, joined in order, and a reference-free quality estimator scored how faithfully that joined text renders the WHOLE source sentence.
+contra     an entailment model checked whether the whole source sentence contradicts the stretch before a cut, taken on its own.
+target = cohesion x (1 - contra)
+- Use the target above to judge each marker: cohesion and contra are the two measured components that determine the target. Contra is a graded probability and should influence ranking only through the product; do not convert it into a binary flag or a separate tier that outranks cohesion.
+- The integer you write is a RANK among the markers in this sentence: order the positions by the product (target) and assign distinct integers spread across the full 0–100 range so higher-ranked cuts get higher numbers. Do not attempt to derive scores by explicit arithmetic formulas on the product; instead use the product as your measurement to order positions.
+- The two judgement sections are not interchangeable, and you read them at different moments. The Core Principles are unary and carry both jobs: the question in each line decides which band a position goes in, and the severity in the same line — what makes that concern worse, what makes it milder — decides the order of positions inside one band. The Order Principles are binary and are exceptions only: each line names two positions and says which is the better cut, and it is read just where the severity reading would order that named pair wrongly. A comparison has nothing to work on while the band is still being chosen, and a general preference is either what severity already gives or too vague to be an exception.
+- Work in bands, then order inside each band by repeated selection. First place every position in exactly one of five bands: 90–99 a clean cut, 70–89 acceptable, 40–69 risky, 15–39 bad, 0–14 must not be cut. Choosing the band is what the Core Principles decide. Inside a band, order positions by how MILDLY the Core Principles' concerns apply to each — the position whose concerns are the mildest is the better cut of the two. Ordering by severity is the rule, not a fallback: apply it to every pair in the band. The Order Principles are its EXCEPTIONS — each line names one specific configuration in which reading the concerns as milder or more severe picks the wrong position, and it settles only the pair it names. Outside the configurations they name, order by severity. They never move a position into another band. When severity leaves two positions genuinely equal and no Order Principle names them, compare the two on the target itself and say which is the better cut. Then fill in the numbers band by band, and inside a band do it one position at a time: among the positions of that band you have not numbered yet, choose the one that is the best cut of them, give it the highest number still free in that band's range, drop it from consideration and choose again among the rest. Every position ends up with its own number, the lowest bands included — a cut that deep is still a choice between a worse and a better place, so do not fill the bottom in without comparing.
+
+[Core Principles]
+- Does what follows the marker directly negate or reverse the proposition just heard? The worst cases are an explicit sentential negation or clear contradictory predicate immediately changing truth; milder are contrastive adverbs or narrow contrasts that only shade meaning.
+- Does what follows open a subordinate or relative clause whose predicate is verb-final, so its propositional contribution remains unresolved until the clause-final verb? This is most severe when a subordinating device begins a long verb-final clause far ahead of its verb; milder when the subordinate is very short or the following finite verb appears early (main-clause V2).
+- Does what follows begin a coordinating clause that forms a full finite-V2 clause and thus adds a separate proposition? Worst when the coordinator introduces a parallel clause with its own predicate that changes truth conditions; milder when coordination continues a nominal list or simple modifiers and does not add a new finite predicate.
+- Does what follows tightly attach as an essential modifier to the immediately preceding noun (a relative-clause or complement) so cutting detaches its head? Most damaging when a relative-clause introducer links back to the prior noun and contains critical disambiguating material; milder when the following phrase is an optional descriptive PP or short adjectival phrase.
+- Does what follows resolve an ambiguous determiner/relative-pronoun or subordinator reading that reattaches preceding words into a different structure? The worst is when the continuation reinterprets the earlier span as the start of a clause rather than a DP; milder when it only narrows reference without changing clause boundaries.
+- Does translating the following span on its own lose crucial cross-span coreference or pronoun antecedent needed for cohesion? Worst when a pronoun or demonstrative there is the only explicit link to an antecedent before the marker; milder when the referent is restated or resolved within a few words.
+- Does what follows supply factual scope or modal operators (time, quantity, modality) that change the main assertion? Most severe when the following words are the only place that sets temporal limits, numeric scope, negation or modality that flips the claim; milder when they merely add peripheral qualifiers.
+
+[Order Principles]
+- When one marker lies inside a noun phrase immediately before a relative/embedded-clause introducer and another marker sits the word earlier inside the same noun phrase, prefer the earlier (more internal) marker so the introducer remains attached to the noun rather than orphaned.
+- When one marker is directly before a coordinator that starts a full V2 clause and another marker is after that coordinator but before the clause's finite verb, prefer the later marker (after the coordinator) so the clause head is kept intact with its introducer.
+- When one marker splits a long verb-final subordinate clause well before its final verb and another marker falls shortly after that final verb, prefer the later marker after the verb so the subordinate's predicate is not separated from its subordinate introducer.
+
+[Output Rules]
+- The input already contains a <SEG:?> marker at every position where a cut is possible.
+  Keep every marker and write an integer from 0 to 100 in place of the ?, so that <SEG:?>
+  becomes for example <SEG:73>. Never output a bare number without the marker. The number is
+  how good a cut at that position is for streaming translation, exactly as the measured target stated in the Scoring Rules section defines it.
+- Your numbers are used ONLY to RANK the markers WITHIN THIS SENTENCE. A later step keeps the
+  highest-scoring ones under the current latency budget and nothing else reads the numbers, so
+  they are never compared across sentences. Spend your effort on the ORDER, not on hitting an
+  absolute scale.
+- Give every marker in a sentence a DIFFERENT number. Ties are broken by position (the earlier
+  marker wins), which means a tie hands the decision to word order instead of to your judgment.
+  Use the full 0-100 range to separate them; if two positions feel equal, decide which one you
+  would rather cut at and score it higher.
+- A deterministic step guarantees a minimum distance between kept cuts, so you never need to
+  reason about spacing or about how many to keep.
+- Do NOT add, remove, or move any marker. Do NOT change, correct, or reorder any words of the
+  text. Keep exactly one space on both sides of every marker.
+- Output the text with the filled markers and nothing else. No explanation, label, or commentary.
+
+[Examples]
+Input: Es <SEG:?> gibt <SEG:?> viele <SEG:?> Dinge, <SEG:?> die <SEG:?> Sie <SEG:?> vor <SEG:?> und <SEG:?> während <SEG:?> einer <SEG:?> Reise <SEG:?> berücksichtigen <SEG:?> müssen.
+Output: Es <SEG:64> gibt <SEG:82> viele <SEG:100> Dinge, <SEG:73> die <SEG:91> Sie <SEG:0> vor <SEG:9> und <SEG:55> während <SEG:27> einer <SEG:18> Reise <SEG:45> berücksichtigen <SEG:36> müssen.
+
+Input: lizenzen <SEG:?> sind <SEG:?> zum <SEG:?> schutz <SEG:?> des <SEG:?> canyons <SEG:?> limitiert <SEG:?> und <SEG:?> sind <SEG:?> ab <SEG:?> dem <SEG:?> monatsersten <SEG:?> vier <SEG:?> monate <SEG:?> vor <SEG:?> dem <SEG:?> startmonat <SEG:?> erhältlich
+Output: lizenzen <SEG:62> sind <SEG:38> zum <SEG:12> schutz <SEG:25> des <SEG:0> canyons <SEG:75> limitiert <SEG:100> und <SEG:88> sind <SEG:69> ab <SEG:31> dem <SEG:6> monatsersten <SEG:94> vier <SEG:56> monate <SEG:50> vor <SEG:44> dem <SEG:19> startmonat <SEG:81> erhältlich
+
+Input: Die <SEG:?> Straße, <SEG:?> auf <SEG:?> der <SEG:?> sich <SEG:?> der <SEG:?> Unfall <SEG:?> ereignet <SEG:?> hatte, <SEG:?> wurde <SEG:?> vorübergehend <SEG:?> gesperrt, <SEG:?> während <SEG:?> die <SEG:?> Rettungsdienste <SEG:?> den <SEG:?> Fahrer <SEG:?> aus <SEG:?> dem <SEG:?> roten <SEG:?> Audi <SEG:?> TT <SEG:?> befreiten.
+Output: Die <SEG:67> Straße, <SEG:38> auf <SEG:76> der <SEG:95> sich <SEG:90> der <SEG:43> Unfall <SEG:52> ereignet <SEG:57> hatte, <SEG:71> wurde <SEG:81> vorübergehend <SEG:86> gesperrt, <SEG:100> während <SEG:48> die <SEG:62> Rettungsdienste <SEG:29> den <SEG:24> Fahrer <SEG:5> aus <SEG:33> dem <SEG:19> roten <SEG:14> Audi <SEG:0> TT <SEG:10> befreiten.
+
+Input: frauen <SEG:?> sollten <SEG:?> erkennen <SEG:?> dass <SEG:?> kulturelle <SEG:?> unterschiede <SEG:?> zu <SEG:?> dem <SEG:?> führen <SEG:?> können <SEG:?> was <SEG:?> sie <SEG:?> als <SEG:?> übergriff <SEG:?> betrachten <SEG:?> würden <SEG:?> und <SEG:?> dass <SEG:?> es <SEG:?> nicht <SEG:?> ungewöhnlich <SEG:?> ist <SEG:?> verfolgt <SEG:?> am <SEG:?> arm <SEG:?> gepackt <SEG:?> usw. <SEG:?> zu <SEG:?> werden
+Output: frauen <SEG:56> sollten <SEG:96> erkennen <SEG:93> dass <SEG:81> kulturelle <SEG:33> unterschiede <SEG:48> zu <SEG:37> dem <SEG:15> führen <SEG:11> können <SEG:41> was <SEG:63> sie <SEG:4> als <SEG:7> übergriff <SEG:59> betrachten <SEG:100> würden <SEG:85> und <SEG:70> dass <SEG:26> es <SEG:30> nicht <SEG:0> ungewöhnlich <SEG:44> ist <SEG:78> verfolgt <SEG:52> am <SEG:19> arm <SEG:22> gepackt <SEG:89> usw. <SEG:74> zu <SEG:67> werden
+

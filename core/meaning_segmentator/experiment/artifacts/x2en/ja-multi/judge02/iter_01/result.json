@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": true,
+ "delta": {
+  "mean": 0.0059,
+  "lo": -0.00519,
+  "hi": 0.01732,
+  "n": 11067,
+  "n_clusters": 440
+ },
+ "gain": {
+  "mean": 0.0059,
+  "lo": -0.00519,
+  "hi": 0.01732,
+  "n": 11067,
+  "n_clusters": 440
+ },
+ "changelog": [
+  "Add an Order Principle that prefers cuts which keep quotative/report phrases (e.g. ～によると, ～と述べ, ～と発表) attached to their reporting predicate, to fix misordering that splits quotatives from their reporting verbs."
+ ],
+ "findings": [
+  "The prompt fails to prefer keeping quotative/reporting phrases attached to their reporting predicates, so it sometimes ranks cuts that split '…によると'/'…と述べ' above cuts that keep the report intact.",
+  "The prompt permits cuts that detach a clause's main predicate or sentence-final auxiliary from its arguments, producing fragments that contradict or cannot be interpreted on their own."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "O_end",
+   "kind": "fallback",
+   "was": "",
+   "now": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0012,
+   "≤5": 0.0055,
+   "≤7": 0.0115,
+   "≤10": 0.0123,
+   "≤99": 0.0098
+  },
+  "n_worse": 5305,
+  "n_better": 5347,
+  "why": "Inserting the Order Principle to keep quotative/report phrases attached shifted many cut decisions to avoid splitting those phrases, moving several top cut positions (big change at rank‑1, gains at ranks 2–4). The effect is a small net improvement concentrated in bins that retain many candidate cuts (≤7–10 pieces), while cases that relied on the original top‑1 cut were slightly harmed.",
+  "lesson": "When adding quotative‑attachment, avoid altering the primary (rank‑1) cut choice that long‑latency budgets depend on; ensure the rule adjusts deeper candidate positions without wholesale replacement of the top cut.",
+  "blamed": [
+   "O_end"
+  ]
+ }
+}

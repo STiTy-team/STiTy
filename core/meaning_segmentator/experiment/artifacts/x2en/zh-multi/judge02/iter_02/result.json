@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": true,
+ "delta": {
+  "mean": 0.0069,
+  "lo": -0.00282,
+  "hi": 0.01671,
+  "n": 10167,
+  "n_clusters": 497
+ },
+ "gain": {
+  "mean": 0.0069,
+  "lo": -0.00282,
+  "hi": 0.01671,
+  "n": 10167,
+  "n_clusters": 497
+ },
+ "changelog": [
+  "Adjust C2 severity to punish cuts that split contiguous multi-character units (verb–object, '…的…' modifiers, foreign/Romanized names, numeral+measure), so cohesion ranks cuts inside such units worse than cuts immediately after them — addresses the primary order finding that the prompt preferred interior splits."
+ ],
+ "findings": [
+  "The prompt prefers interior splits inside tight multiword units (verb–object, '…的…' modifiers, foreign names, numeral+measure), rather than preferring cuts that keep those units intact.",
+  "The prompt treats cuts before a forthcoming verb or essential complement as acceptable, underestimating how leaving a pre-cut fragment without its predicate makes the fragment contradictory or meaningless."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C2",
+   "kind": "change",
+   "was": "- Does translating the two sides separately still add up to the whole sentence? ",
+   "now": "- Does translating the two sides separately still add up to the whole sentence? "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": 0.0072,
+   "≤5": 0.007,
+   "≤7": 0.0074,
+   "≤10": 0.0076,
+   "≤99": 0.0052
+  },
+  "n_worse": 4439,
+  "n_better": 4821,
+  "why": "Raising C2’s severity made the scorer avoid interior splits of contiguous multi-character units (e.g. 手机, 赫斯佩罗龙, numeral+measure, ‚…的…‘ modifiers), so the prompt now prefers cuts that keep those units intact and thus improved cohesion mainly for short-piece bins where such splits were common; however it also shifted some top-ranked cuts (notably the top-1 choice and punctuation/quote boundaries), producing a few large degradations where punctuation or quotation marks became isolated or cuts moved earlier into awkward positions.",
+  "lesson": "Preserve multi-character unit integrity but ensure the penalty doesn’t encourage isolating punctuation/quotes or moving the primary cut earlier in ways that break quoted spans or attach punctuation to the wrong piece.",
+  "blamed": [
+   "C2 «- Does translating the two sides separately still add up to »"
+  ]
+ }
+}

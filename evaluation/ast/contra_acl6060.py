@@ -260,6 +260,9 @@ def run_lang(lang: str, tag: str, axes: list[str], edge: int, nli, out_dir: Path
                 continue
             c = st.mean(v[0] for v in vals)
             per_sent[key] = {"contra": round(c, 4),
+                             # H_set 은 문장 안 최댓값을 쓴다 (평균이 아니다) — 한 번의
+                             # 위험한 절단이 문장 전체를 망치므로. hset_acl6060.py 가 읽는다.
+                             "contra_max": round(max(v[0] for v in vals), 4),
                              "contra_raw": round(st.mean(v[4] for v in vals), 4),
                              "one_minus_ent": round(st.mean(v[1] for v in vals), 4),
                              "n_cuts": len(vals)}

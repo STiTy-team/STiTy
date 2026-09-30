@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.0049,
+  "lo": -0.01541,
+  "hi": 0.00526,
+  "n": 10129,
+  "n_clusters": 496
+ },
+ "gain": {
+  "mean": -0.0049,
+  "lo": -0.01541,
+  "hi": 0.00526,
+  "n": 10129,
+  "n_clusters": 496
+ },
+ "changelog": [
+  "Rewrote severity clause of C5 to distinguish splits inside multi-character nominal modifiers (worst) from short/locally-headed modifiers or cuts immediately after the modifier (milder); addresses the primary finding about preferring later cuts that keep modifier+head together."
+ ],
+ "findings": [
+  "When two candidate cuts fall inside the same nominal modifier, the prompt sometimes prefers an earlier internal split; the measured targets prefer the later cut that preserves the modifier+head span.",
+  "The prompt allows cuts that split numerals from their immediately following unit/date/measure, breaking single referents and causing high contradiction/cohesion loss."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C5",
+   "kind": "change",
+   "was": "- Does the following material create attachment ambiguity for a preceding modifi",
+   "now": "- Does the following material create attachment ambiguity for a preceding modifi"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0065,
+   "≤5": -0.0048,
+   "≤7": 0.0024,
+   "≤10": -0.0008,
+   "≤99": -0.01
+  },
+  "n_worse": 4901,
+  "n_better": 4608,
+  "why": "Rewriting C5 changed the model’s severity signal so its top-ranked cuts shifted (rank_depth shows clear gains at depths 1–2) but cuts deeper in the list became less faithful (depths 3–5 drop). Concretely the model began proposing earlier/high-ranked splits that separate punctuation/quotes and sometimes cut inside multi-character nominal modifiers (the worst examples), which produced a small net harm concentrated in long-latency bins even though the very top positions improved.",
+  "lesson": "Keep the severity wording from signaling that internal characters of multi-character nominals are acceptable cut points—preserve modifier+head integrity for deeper-ranked cuts while only adjusting how immediately-post-modifier cuts are scored.",
+  "blamed": [
+   "C5 «- Does the following material create attachment ambiguity fo»"
+  ]
+ }
+}

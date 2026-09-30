@@ -1,0 +1,97 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "text": "- Does the following material create attachment ambiguity for a preceding modifier? This is most severe when the marker falls inside a multi-character nominal modifier — that is, when the cut splits a contiguous modifier away from its head so the pre-cut fragment lacks (or leaves uncertain) the modifier+head referent, creating attachment uncertainty; it is milder when the modifier is short or locally headed (attachment is predictable) or when a nearby later marker sits immediately after the modifier and thus preserves the modifier+head span.",
+    "_was": "- Does the following material create attachment ambiguity for a preceding modifier? This is severe when a long modifier or embedded relative clause could plausibly attach to either side of the marker and change the referent; it is milder when the modifier is short or locally headed so attachment is predictable from surface order."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C5",
+    "kind": "change",
+    "chars_change": 216
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12150,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "text": "When one marker is inside a nominal modifier and another immediately follows that modifier, prefer the latter marker that keeps modifier+head together.",
+    "_was": "- When one marker would separate a nominal modifier from its head and another marker lies earlier inside that modifier, prefer the later marker that keeps modifier+head together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "chars_change": -25
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11909,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "text": "- Does the marker sit between an Arabic numeral (one or more digits) and the immediately following unit/temporal/measure character, splitting a single numeral+unit token? This concern is most severe when the cut separates digits from their unit so the numeric referent (years, dates, counts, measures, scores, percentages) is split and cannot be interpreted from the pre-cut fragment alone; it is milder when the number is written out in words, the unit is clearly parenthetical or optional, or the unit is a separate token later recoverable from the same surface phrase.",
+    "_was": "- Does the cut split a tight lexical unit such as a named multiword expression, foreign-script sequence, or numeral+measure group? Splitting inside one of these units is the worst case because a single referent breaks; it is milder if the marker falls between two independent named elements or after the unit's end."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "chars_change": 256
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12190,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "text": "When one marker is inside a nominal modifier and another immediately follows that modifier, prefer the latter marker that keeps modifier+head together."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 154
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12088,
+  "errors": null
+ }
+]

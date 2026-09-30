@@ -1,0 +1,50 @@
+{
+ "iter": 1,
+ "adopted": false,
+ "delta": {
+  "mean": -0.01093,
+  "lo": -0.01936,
+  "hi": -0.0026,
+  "n": 4580,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.01093,
+  "lo": -0.01936,
+  "hi": -0.0026,
+  "n": 4580,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Add a fallback Order Principle that breaks ties among markers inside the same noun phrase by preferring a cut immediately after the noun head, so the noun and its modifiers stay together — addresses the primary finding (NP-splitting) with a different ordering formulation than the sibling candidate."
+ ],
+ "findings": [
+  "The prompt fails to prefer cuts that preserve whole noun phrases, instead splitting inside noun-heavy spans and hurting cohesion when pieces are translated separately.",
+  "The prompt allows cuts that split off a clause’s assertion from an immediate negation or negative determiner, producing a fragment that alone asserts the opposite of the whole sentence."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "O3",
+   "kind": "change",
+   "was": "- When one marker is before a comma that opens or closes an embedded clause and ",
+   "now": "When two markers lie inside the same noun phrase, prefer the later cut that pres"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0149,
+   "≤5": -0.0077,
+   "≤7": -0.0112,
+   "≤10": -0.0086,
+   "≤99": -0.0024
+  },
+  "n_worse": 2069,
+  "n_better": 1847,
+  "why": "The new tie-breaker pushed cuts to the position immediately after noun heads when two markers fall inside the same NP, so the model avoided NP-splitting (helping the top-1 choice) but shifted many mid-ranked cut choices later. That change harmed the short-latency bins (≤3, ≤5, ≤7) — where many cuts are kept — by moving sensible comma/clause cuts into the NP and producing worse segmentations overall, yielding a small but significant negative mean.",
+  "lesson": "When adding an NP-head tie-breaker, preserve the earlier comma/embedded-clause cut preferences used by short-latency budgets (don’t let the NP-head fallback override mid-ranked/punctuation-based cuts).",
+  "blamed": [
+   "O3"
+  ]
+ }
+}

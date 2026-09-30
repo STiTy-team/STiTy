@@ -1,0 +1,56 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that split off a clause’s assertion from an immediate negation or negative determiner, producing a fragment that alone asserts the opposite of the whole sentence.",
+    "evidence": "['de_de_1339','de_de_1034','de_de_601','de_de_1599','de_de_694'] — each case shows the policy kept a cut immediately before a German negation token (e.g. 'nicht'/'kein') or a span whose immediate continuation negates the earlier claim, producing a high contra.",
+    "type_predicate": "Markers that occur immediately before a German negation token (nicht, kein, nie) or a negative determiner.",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut immediately before a negation token (nicht/kein/nie); mark such positions as forbidden (must-not-cut)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "The prompt fails to prefer cuts that preserve whole noun phrases, instead splitting inside noun-heavy spans and hurting cohesion when pieces are translated separately.",
+    "evidence": "['de_de_1034','de_de_725','de_de_441','de_de_928'] — in each case the better segmentation puts the noun-head together with its modifiers (target moves the cut later to keep the NP intact).",
+    "type_predicate": "Pairs of candidate markers that both fall inside the same contiguous noun phrase (sequence of determiners/adjectives/nouns before a noun head).",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When two markers lie inside the same noun phrase, prefer the later cut that preserves the noun head with its modifiers (do not split the NP)."
+    }
+   }
+  ],
+  "checks_skipped": "",
+  "orders_skipped": ""
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "The prompt fails to prefer cuts that preserve whole noun phrases, instead splitting inside noun-heavy spans and hurting cohesion when pieces are translated separately.",
+   "evidence": "['de_de_1034','de_de_725','de_de_441','de_de_928'] — in each case the better segmentation puts the noun-head together with its modifiers (target moves the cut later to keep the NP intact).",
+   "type_predicate": "Pairs of candidate markers that both fall inside the same contiguous noun phrase (sequence of determiners/adjectives/nouns before a noun head).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When two markers lie inside the same noun phrase, prefer the later cut that preserves the noun head with its modifiers (do not split the NP).",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that split off a clause’s assertion from an immediate negation or negative determiner, producing a fragment that alone asserts the opposite of the whole sentence.",
+   "evidence": "['de_de_1339','de_de_1034','de_de_601','de_de_1599','de_de_694'] — each case shows the policy kept a cut immediately before a German negation token (e.g. 'nicht'/'kein') or a span whose immediate continuation negates the earlier claim, producing a high contra.",
+   "type_predicate": "Markers that occur immediately before a German negation token (nicht, kein, nie) or a negative determiner.",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut immediately before a negation token (nicht/kein/nie); mark such positions as forbidden (must-not-cut).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

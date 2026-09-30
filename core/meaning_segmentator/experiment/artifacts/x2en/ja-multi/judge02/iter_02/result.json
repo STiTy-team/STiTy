@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00562,
+  "lo": -0.01639,
+  "hi": 0.00474,
+  "n": 11117,
+  "n_clusters": 441
+ },
+ "gain": {
+  "mean": -0.00562,
+  "lo": -0.01639,
+  "hi": 0.00474,
+  "n": 11117,
+  "n_clusters": 441
+ },
+ "changelog": [
+  "Add an Order Principle that prefers the later cut when multiple candidates all fall before the same sentence-final inflection, so decisions favour preserving the predicate, tense/aspect/negation and avoid misattachment (addresses the primary finding)."
+ ],
+ "findings": [
+  "When several cuts all fall before the same sentence‑final inflection, the prompt fails to choose which is least harmful: the later cut (closer to the inflection) preserves more of the predicate and is preferable.",
+  "The prompt allows cuts that separate a predicate from its sentence‑final inflection (tense/negation/politeness), producing contradictory or unusable fragments."
+ ],
+ "edits": [
+  {
+   "op": "insert_after",
+   "id": "O_end",
+   "kind": "fallback",
+   "was": "",
+   "now": "When multiple candidates fall before the same sentence‑final inflection, prefer "
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0018,
+   "≤5": -0.0049,
+   "≤7": -0.0098,
+   "≤10": -0.0111,
+   "≤99": -0.0097
+  },
+  "n_worse": 5620,
+  "n_better": 5133,
+  "why": "The new Order Principle (prefer the later cut among candidates before the same sentence-final inflection) changed which positions are ranked top‑1 versus top‑2/3: rank_depth fell at depth‑1 (−0.419) while improving depths 2–4, so the edit shuffled the very top choice and harmed short budgets and overall H_set (by_bin shows larger drops for longer bins). Concretely, it caused cuts to be placed inside phrases or before punctuation in some sentences (splitting pronouns/particles or detaching punctuation), producing the large negative tail movements.",
+  "lesson": "Constrain the Order Principle so it never chooses cuts that split tokens/close dependents or move the single top choice for short-latency budgets; verify effects separately on top‑1 and long‑budget bins. ",
+  "blamed": [
+   "O_end"
+  ]
+ }
+}

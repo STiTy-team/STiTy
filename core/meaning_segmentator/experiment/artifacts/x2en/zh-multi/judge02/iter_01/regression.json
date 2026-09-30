@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.0049,
+  "lo": -0.01541,
+  "hi": 0.00526,
+  "n": 10129,
+  "n_clusters": 496
+ },
+ "by_bin": {
+  "≤3": -0.0065,
+  "≤5": -0.0048,
+  "≤7": 0.0024,
+  "≤10": -0.0008,
+  "≤99": -0.01
+ },
+ "n_worse": 4901,
+ "n_better": 4608,
+ "worst": [
+  {
+   "id": "cmn_hans_cn_264",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.7987,
+   "before": "特派员表示：“我们尚未就原产地规则和关税协定达成一致， ‖ 但我们现有的框架足以满足2020年7月1日开始贸易的需要。 ‖ ”",
+   "after": "特派员表示： ‖ “ ‖ 我们尚未就原产地规则和关税协定达成一致，但我们现有的框架足以满足2020年7月1日开始贸易的需要。”"
+  },
+  {
+   "id": "cmn_hans_cn_399",
+   "k": 4,
+   "bin": "≤99",
+   "delta": -0.7489,
+   "before": "意大利的主要目标是非洲国家。 ‖ 为了夺取这些国家， ‖ 他们需要一个军队基地， ‖ 以 ‖ 便军队可以驶穿地中海，入侵非洲。",
+   "after": "意大利的主要目标是 ‖ 非 ‖ 洲国家。 ‖ 为了夺取这些国家，他们需要一个军队基地，以便军队可以驶穿 ‖ 地中海，入侵非洲。"
+  },
+  {
+   "id": "cmn_hans_cn_1499",
+   "k": 2,
+   "bin": "≤99",
+   "delta": -0.7238,
+   "before": "看守总理朱莉娅·吉拉德在2010年联邦大选竞选期间称， ‖ 她认为在女王伊丽莎白二世退位 ‖ 后，澳大利亚应该成为共和国。",
+   "after": "看守总理朱莉娅·吉拉德在2010年联邦大选竞选期间称，她认为在女王伊丽莎白二世退位后，澳大利亚应该成为共和 ‖ 国 ‖ 。"
+  },
+  {
+   "id": "cmn_hans_cn_264",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7089,
+   "before": "特派员表示：“我们尚未就原产地规则和关税协定达成一致， ‖ 但我们现有的框架足以满足2020年7月1日开始贸易的需要。”",
+   "after": "特派员表示： ‖ “我们尚未就原产地规则和关税协定达成一致，但我们现有的框架足以满足2020年7月1日开始贸易的需要。”"
+  },
+  {
+   "id": "cmn_hans_cn_399",
+   "k": 5,
+   "bin": "≤10",
+   "delta": -0.6962,
+   "before": "意大利的主要目标是非洲国家。 ‖ 为了夺取这些国家， ‖ 他们需要一个军队基地， ‖ 以 ‖ 便 ‖ 军队可以驶穿地中海，入侵非洲。",
+   "after": "意大利的主要目标是 ‖ 非 ‖ 洲国家。 ‖ 为了夺取这些国家，他们需要一个军队基地，以便军队可以驶穿 ‖ 地 ‖ 中海，入侵非洲。"
+  }
+ ],
+ "best": [
+  {
+   "id": "cmn_hans_cn_1192",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7732,
+   "before": "然而，这并不便宜：根据粗略估算，商务舱的票价可能是普通经济舱的4倍， ‖ 头等舱的票价更是11倍之高！",
+   "after": "然而，这并不便宜：根据粗略估算， ‖ 商务舱的票价可能是普通经济舱的4倍，头等舱的票价更是11倍之高！"
+  },
+  {
+   "id": "cmn_hans_cn_717",
+   "k": 1,
+   "bin": "≤99",
+   "delta": 0.7091,
+   "before": "在16世纪西班牙人到来之前智利北部受印加统治而土著阿拉可尼人araucanians ‖ 即马普切人则居住于智利中部和南部",
+   "after": "在 ‖ 16世纪西班牙人到来之前智利北部受印加统治而土著阿拉可尼人araucanians即马普切人则居住于智利中部和南部"
+  },
+  {
+   "id": "cmn_hans_cn_921",
+   "k": 5,
+   "bin": "≤7",
+   "delta": 0.7066,
+   "before": "如果你的手机没有数据连接， ‖ 或者不在服务范围， ‖ 手机的性能可能会受限， ‖ 或者无法使用手 ‖ 机 ‖ 。",
+   "after": "如 ‖ 果你的手机没有数据连接， ‖ 或者不在服务范围 ‖ ， ‖ 手机的性能可能会受限， ‖ 或者无法使用手机。"
+  },
+  {
+   "id": "cmn_hans_cn_921",
+   "k": 6,
+   "bin": "≤7",
+   "delta": 0.6941,
+   "before": "如果你的手机没有数据连接， ‖ 或者不在服务范围， ‖ 手机的性能可能会受限， ‖ 或者无法使用 ‖ 手 ‖ 机 ‖ 。",
+   "after": "如 ‖ 果你的手机没有数据连接， ‖ 或者 ‖ 不在服务范围 ‖ ， ‖ 手机的性能可能会受限， ‖ 或者无法使用手机。"
+  },
+  {
+   "id": "cmn_hans_cn_645",
+   "k": 3,
+   "bin": "≤10",
+   "delta": 0.668,
+   "before": "后现代主义学习方法 ‖ 给人带来绝对的自由。 ‖ 并没有一种学习方法 ‖ 是好的学习方法。",
+   "after": "后现代主义学习方法给人带来绝对的自由。 ‖ 并 ‖ 没有一种学习方法是好 ‖ 的学习方法。"
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 7.707,
+   "2": 4.724,
+   "3": 3.489,
+   "4": 2.877,
+   "5": 2.384,
+   "6": 2.052,
+   "7": 1.851,
+   "8": 1.676,
+   "9": 1.531,
+   "10": 1.441,
+   "11": 1.37,
+   "12": 1.323,
+   "13": 1.273
+  },
+  "revision": {
+   "1": 8.044,
+   "2": 4.884,
+   "3": 3.44,
+   "4": 2.793,
+   "5": 2.304,
+   "6": 2.06,
+   "7": 1.86,
+   "8": 1.654,
+   "9": 1.536,
+   "10": 1.439,
+   "11": 1.383,
+   "12": 1.335,
+   "13": 1.294
+  },
+  "delta": {
+   "1": 0.337,
+   "2": 0.16,
+   "3": -0.049,
+   "4": -0.084,
+   "5": -0.08,
+   "6": 0.008,
+   "7": 0.009,
+   "8": -0.022,
+   "9": 0.005,
+   "10": -0.002,
+   "11": 0.013,
+   "12": 0.012,
+   "13": 0.021
+  }
+ },
+ "why": "Rewriting C5 changed the model’s severity signal so its top-ranked cuts shifted (rank_depth shows clear gains at depths 1–2) but cuts deeper in the list became less faithful (depths 3–5 drop). Concretely the model began proposing earlier/high-ranked splits that separate punctuation/quotes and sometimes cut inside multi-character nominal modifiers (the worst examples), which produced a small net harm concentrated in long-latency bins even though the very top positions improved.",
+ "lesson": "Keep the severity wording from signaling that internal characters of multi-character nominals are acceptable cut points—preserve modifier+head integrity for deeper-ranked cuts while only adjusting how immediately-post-modifier cuts are scored.",
+ "blamed": [
+  "C5 «- Does the following material create attachment ambiguity fo»"
+ ]
+}

@@ -24,6 +24,7 @@ import random
 import re
 import statistics
 import sys
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -211,11 +212,28 @@ def cut_at_threshold(seg_text: str, text: str, th: int, spaced: bool = True) -> 
     return pieces or [text]
 
 
+def attach_punct(pieces: list[str], spaced: bool = True) -> list[str]:
+    """구두점만 있는 조각을 앞 조각에 붙인다.
+
+    점수 라벨은 문말 부호 바로 앞 경계에 거의 항상 높은 점수를 준다. ja judge02 CoVoST2 실측으로
+    임계값 95 에서 문장의 92% 가 "。" 한 글자짜리 조각으로 끝났다. 부호만 따로 내보내는 것은
+    스트리밍에서 아무 정보도 앞당기지 않는데, 번역기는 그 조각을 따로 번역해 가설을 망친다.
+    띄어쓰기 언어는 부호가 어절에 붙어 있어 이런 조각이 거의 안 생긴다."""
+    out: list[str] = []
+    for p in pieces:
+        if out and p and all(unicodedata.category(c).startswith("P") or c.isspace() for c in p):
+            out[-1] = out[-1] + (" " if spaced else "") + p
+        else:
+            out.append(p)
+    return out
+
+
 def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
                      mech_every: int, has_auto: bool = True,
                      no_greedy: bool = False,
                      score_grid: list[int] | None = None,
-                     no_auto_t: bool = False) -> dict[str, list[dict]]:
+                     no_auto_t: bool = False,
+                     punct_attach: bool = False) -> dict[str, list[dict]]:
     """조건 이름 → 문장별 {seg_text, pieces}. pieces 가 1개면 무분절과 같다.
 
     `no_auto_t` 는 **우리 프롬프트의 `auto_T*` 만** 끈다. `t_grid` 는 비교군(punct·alignatt …)의
@@ -245,6 +263,11 @@ def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
             pc = cut_at_threshold(r["seg_text"], r["text"], th, spaced)
             cond.append({"seg_text": " <SEG> ".join(pc), "pieces": pc})
         out[f"auto_S{th}"] = cond
+        if punct_attach:
+            # 원래 조건은 그대로 두고 나란히 낸다 — 붙이기 전후를 같은 번역기로 바로 비교한다.
+            out[f"auto_S{th}_p"] = [
+                {"seg_text": " <SEG> ".join(pc), "pieces": pc}
+                for pc in (attach_punct(c["pieces"], spaced) for c in cond)]
     mech = []
     for r in rows:
         seg = metrics.mechanical_split(r["text"], mech_every, spaced)
@@ -329,6 +352,9 @@ def main() -> int:
                         "많은 문장은 더 잘리고 없는 문장은 덜 잘린다. 임계값을 올리면 무분절로 수렴하니 "
                         "그게 곡선의 끝점이다. 곡선은 임계값이 아니라 실측 LAAL 을 x 로 그릴 것 — "
                         "그래야 T 격자 점들과 같은 축에 놓인다. 예: --score-grid 20 40 60 80")
+    p.add_argument("--punct-attach", action="store_true",
+                   help="`--score-grid` 의 각 임계값마다 구두점만 있는 조각을 앞 조각에 붙인 "
+                        "`auto_S<th>_p` 조건을 더 낸다. 원래 `auto_S<th>` 는 그대로 남는다.")
     p.add_argument("--mech-every", type=int, default=8)
     p.add_argument("--workers", type=int, default=4,
                    help="문장 단위 병렬도. **기본 4 는 gtx 무료 엔드포인트의 rate limit "
@@ -401,7 +427,8 @@ def main() -> int:
 
     conds = build_conditions(rows, args.t_grid, spaced, args.mech_every, has_auto,
                              score_grid=args.score_grid, no_auto_t=args.no_auto_t,
-                             no_greedy=args.no_auto_greedy)
+                             no_greedy=args.no_auto_greedy,
+                             punct_attach=args.punct_attach)
 
     out_dir = run_dir / "bleu"
     out_dir.mkdir(parents=True, exist_ok=True)

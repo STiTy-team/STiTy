@@ -1,0 +1,56 @@
+{
+ "raw": {
+  "checks": [
+   {
+    "diagnosis": "The prompt allows cuts that split numerals from their immediately following unit/date/measure, breaking single referents and causing high contradiction/cohesion loss.",
+    "evidence": "cmn_hans_cn_712, cmn_hans_cn_1129, cmn_hans_cn_1169, cmn_hans_cn_132, cmn_hans_cn_324 — each case shows a marker separating an Arabic numeral from its following unit (years, scores, measures, counts) that the target keeps together.",
+    "type_predicate": "Applies when a marker sits between an Arabic numeral (one or more digits) and the immediately following unit or temporal/measure character (a contiguous numeral+unit token such as a year, date, score, or quantity).",
+    "edit": {
+     "where": "core_principles",
+     "action": "add",
+     "text": "Do not cut between an Arabic numeral and its immediately following unit/temporal character; keep digits and their unit together (years, dates, scores, measures)."
+    }
+   }
+  ],
+  "orders": [
+   {
+    "diagnosis": "When two candidate cuts fall inside the same nominal modifier, the prompt sometimes prefers an earlier internal split; the measured targets prefer the later cut that preserves the modifier+head span.",
+    "evidence": "cmn_hans_cn_712, cmn_hans_cn_324, cmn_hans_cn_1169 — in each sentence the target prefers the later marker that keeps a multi-character modifier attached to its head, while the prompt favored an earlier internal split.",
+    "type_predicate": "Applies when both candidate markers occur within the same multi-character nominal modifier and one marker lies inside that modifier while the other lies immediately after it (so the latter would keep modifier+head together).",
+    "edit": {
+     "where": "order_principles",
+     "action": "add",
+     "text": "When one marker is inside a nominal modifier and another immediately follows that modifier, prefer the latter marker that keeps modifier+head together."
+    }
+   }
+  ],
+  "checks_skipped": "",
+  "orders_skipped": ""
+ },
+ "findings": [
+  {
+   "kind": "order",
+   "diagnosis": "When two candidate cuts fall inside the same nominal modifier, the prompt sometimes prefers an earlier internal split; the measured targets prefer the later cut that preserves the modifier+head span.",
+   "evidence": "cmn_hans_cn_712, cmn_hans_cn_324, cmn_hans_cn_1169 — in each sentence the target prefers the later marker that keeps a multi-character modifier attached to its head, while the prompt favored an earlier internal split.",
+   "type_predicate": "Applies when both candidate markers occur within the same multi-character nominal modifier and one marker lies inside that modifier while the other lies immediately after it (so the latter would keep modifier+head together).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "When one marker is inside a nominal modifier and another immediately follows that modifier, prefer the latter marker that keeps modifier+head together.",
+    "where": "order_principles"
+   }
+  },
+  {
+   "kind": "check",
+   "diagnosis": "The prompt allows cuts that split numerals from their immediately following unit/date/measure, breaking single referents and causing high contradiction/cohesion loss.",
+   "evidence": "cmn_hans_cn_712, cmn_hans_cn_1129, cmn_hans_cn_1169, cmn_hans_cn_132, cmn_hans_cn_324 — each case shows a marker separating an Arabic numeral from its following unit (years, scores, measures, counts) that the target keeps together.",
+   "type_predicate": "Applies when a marker sits between an Arabic numeral (one or more digits) and the immediately following unit or temporal/measure character (a contiguous numeral+unit token such as a year, date, score, or quantity).",
+   "edit": {
+    "action": "add",
+    "target": null,
+    "text": "Do not cut between an Arabic numeral and its immediately following unit/temporal character; keep digits and their unit together (years, dates, scores, measures).",
+    "where": "core_principles"
+   }
+  }
+ ]
+}

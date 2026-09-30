@@ -1,0 +1,105 @@
+[
+ {
+  "candidate": 0,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When two markers lie inside the same noun phrase, prefer the later cut that preserves the noun head with its modifiers (do not split the NP).",
+    "_was": "- When one marker follows a coordinator that likely links nouns and another follows the same coordinator but at a point that starts a full clause with its own finite verb, prefer the latter marker that begins the clause."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": -77
+   }
+  ],
+  "skipped": [],
+  "result_chars": 10922,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "text": "- Does the marker occur immediately before a German negation token (nicht/kein/nie) or a negative determiner that would invert the preceding assertion? Most severe when the negation token immediately follows the marker with no punctuation or intervening clause — the preceding fragment alone would assert the opposite of the full sentence (treat these positions as forbidden / must-not-cut); mild when an intervening parenthetical, adverb, clause boundary, or comma separates the marker and the negation, or when the negation clearly belongs to a different clause.",
+    "_was": "- Does what follows the marker overturn or negate the proposition already asserted? Most severe when an explicit negation or an immediate clause that reverses the claim begins right after the marker (verb position or subordination signals reversal); mild when following text only narrows or adds a non-contradictory qualifier."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C1",
+    "kind": "change",
+    "chars_change": 238
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11237,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "text": "When two markers lie inside the same noun phrase, prefer the later cut that preserves the noun head with its modifiers (do not split the NP)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 144
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11143,
+  "errors": null
+ }
+]

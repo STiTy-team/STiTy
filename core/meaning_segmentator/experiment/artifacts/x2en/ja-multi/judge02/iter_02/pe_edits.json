@@ -1,0 +1,105 @@
+[
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Will translating the two sides separately still assemble into the original whole meaning? Severe when the cut separates verb-final morphology (tense/aspect/negation/politeness) or leaves the clause's predicate unresolved; among cuts that would leave the same sentence-final inflection unfinished, cuts farther from that finishing inflection (earlier in the clause) are the most severe because they withhold more of the predicate. Mild when the preceding fragment is a self-contained referential NP, when the cut falls between recoverable list items, or when the cut falls immediately before the sentence-final inflection (closest to the finishing inflection).",
+    "_was": "- Will translating the two sides separately still assemble into the original whole meaning? Severe when the cut separates verb-final morphology (tense/aspect/politeness) or the predicate from its arguments; mild when it falls between self-contained noun phrases or list items whose relations are recoverable."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 353
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12569,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "text": "When multiple candidates fall before the same sentence‑final inflection, prefer the later cut (closer to the inflection) so the emitted piece preserves more of the predicate.",
+    "_was": "- When one marker splits a multi-character numeral or a numeral+unit sequence and another splits between separate list items earlier in the clause, prefer the latter: avoid fragmenting quantitative expressions by cutting between list items instead."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "chars_change": -72
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12144,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 2,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "fallback",
+    "text": "When multiple candidates fall before the same sentence‑final inflection, prefer the later cut (closer to the inflection) so the emitted piece preserves more of the predicate."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "fallback",
+    "chars_change": 177
+   }
+  ],
+  "skipped": [],
+  "result_chars": 12393,
+  "errors": null
+ }
+]

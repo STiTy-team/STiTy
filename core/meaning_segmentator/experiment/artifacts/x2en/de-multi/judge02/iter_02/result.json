@@ -1,0 +1,50 @@
+{
+ "iter": 2,
+ "adopted": false,
+ "delta": {
+  "mean": -0.00615,
+  "lo": -0.01533,
+  "hi": 0.00257,
+  "n": 4580,
+  "n_clusters": 500
+ },
+ "gain": {
+  "mean": -0.00615,
+  "lo": -0.01533,
+  "hi": 0.00257,
+  "n": 4580,
+  "n_clusters": 500
+ },
+ "changelog": [
+  "Replace C6 severity to prioritise avoiding splits of determiner/head and required postmodifiers, and to mark markers immediately before punctuation or at the NP tail as milder — addresses the intra-NP ordering bug and the determiner/numeral split check."
+ ],
+ "findings": [
+  "When two candidate cuts fall inside the same NP, the prompt misorders them — it sometimes prefers the later NP-tail cut but should prefer an earlier punctuation-separated cut when that preserves a complete clause.",
+  "The prompt allows cuts that split a determiner/numeral/pronoun from the noun phrase it heads, breaking NP cohesion."
+ ],
+ "edits": [
+  {
+   "op": "replace",
+   "id": "C6",
+   "kind": "change",
+   "was": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that sh",
+   "now": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that sh"
+  }
+ ],
+ "diagnosis": {
+  "by_bin": {
+   "≤3": -0.0041,
+   "≤5": -0.0051,
+   "≤7": -0.015,
+   "≤10": -0.0104,
+   "≤99": -0.001
+  },
+  "n_worse": 1930,
+  "n_better": 1939,
+  "why": "Reweighting C6 made the model more protective of determiner/head and required postmodifier boundaries while at the same time treating markers at NP tails or immediately before punctuation as milder; that moved the top-one/two cut preferences (rank_depth: depth1 down, depth2 up) so some long-latency top cuts improved but many medium-latency cuts (especially ≤7 and ≤5 bins) shifted into intra‑NP positions or split enumerations, producing roughly equal numbers better/worse and a small net drop.",
+  "lesson": "Keep the stronger protection against splitting determiners/heads and required postmodifiers, but do not so aggressively lower severity for markers at NP tails / before punctuation that intra‑NP cuts and enumeration splits become more likely (test effects per latency bin, esp. ≤7).",
+  "blamed": [
+   "C6 «- Does the marker fall inside a nominal enumeration or noun-»"
+  ]
+ }
+}

@@ -1,0 +1,232 @@
+[
+ {
+  "iter": 1,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00024,
+   "lo": -0.01196,
+   "hi": 0.01185,
+   "n": 11036,
+   "n_clusters": 440
+  },
+  "changelog": [
+   "Rewrote the severity clause of C4 to make splitting quotative/reporting phrases (e.g. ～によると、～と述べ、～と発表) explicitly more severe, so cuts that separate a quotative from its reporting predicate are penalized. This addresses the primary 'order' finding about keeping quotatives attached by giving the core principle a clearer severity axis."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C4",
+    "kind": "change",
+    "was": "- Does the marker split an embedded clause boundary formed by a quotative or nom",
+    "now": "- Does the marker split an embedded clause boundary formed by a quotative or nom"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": 0.00336,
+   "lo": -0.00731,
+   "hi": 0.01398,
+   "n": 11103,
+   "n_clusters": 441
+  },
+  "changelog": [
+   "Replaced O1 with an explicit ordering that prefers cuts which keep quotative/report phrases (e.g. ～によると, ～と述べ／～と発表) attached to their reporting predicate, to fix the primary finding that the prompt sometimes splits quotatives from their reporting verbs."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "was": "- When one marker falls immediately after a conjunctive/continuative verb stem a",
+    "now": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "candidate": 2,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00512,
+   "lo": -0.01608,
+   "hi": 0.00686,
+   "n": 11145,
+   "n_clusters": 443
+  },
+  "changelog": [
+   "Replaced C6 with a core check that forbids cutting immediately before the clause-final predicate or auxiliary, so sentence-final verbs/copia remain attached to their arguments (addresses the primary 'check' finding)."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "was": "- Does the marker bisect a numeric, date, unit, or technical sequence whose inte",
+    "now": "- Does the cut occur immediately before the clause‑final predicate or its finite"
+   }
+  ]
+ },
+ {
+  "iter": 1,
+  "adopted": true,
+  "delta": {
+   "mean": 0.0059,
+   "lo": -0.00519,
+   "hi": 0.01732,
+   "n": 11067,
+   "n_clusters": 440
+  },
+  "gain": {
+   "mean": 0.0059,
+   "lo": -0.00519,
+   "hi": 0.01732,
+   "n": 11067,
+   "n_clusters": 440
+  },
+  "changelog": [
+   "Add an Order Principle that prefers cuts which keep quotative/report phrases (e.g. ～によると, ～と述べ, ～と発表) attached to their reporting predicate, to fix misordering that splits quotatives from their reporting verbs."
+  ],
+  "findings": [
+   "The prompt fails to prefer keeping quotative/reporting phrases attached to their reporting predicates, so it sometimes ranks cuts that split '…によると'/'…と述べ' above cuts that keep the report intact.",
+   "The prompt permits cuts that detach a clause's main predicate or sentence-final auxiliary from its arguments, producing fragments that contradict or cannot be interpreted on their own."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "fallback",
+    "was": "",
+    "now": "When choosing between a cut that splits a quotative/report phrase (e.g. ～によると, ～"
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": 0.0012,
+    "≤5": 0.0055,
+    "≤7": 0.0115,
+    "≤10": 0.0123,
+    "≤99": 0.0098
+   },
+   "n_worse": 5305,
+   "n_better": 5347,
+   "why": "Inserting the Order Principle to keep quotative/report phrases attached shifted many cut decisions to avoid splitting those phrases, moving several top cut positions (big change at rank‑1, gains at ranks 2–4). The effect is a small net improvement concentrated in bins that retain many candidate cuts (≤7–10 pieces), while cases that relied on the original top‑1 cut were slightly harmed.",
+   "lesson": "When adding quotative‑attachment, avoid altering the primary (rank‑1) cut choice that long‑latency budgets depend on; ensure the rule adjusts deeper candidate positions without wholesale replacement of the top cut.",
+   "blamed": [
+    "O_end"
+   ]
+  }
+ },
+ {
+  "iter": 2,
+  "candidate": 0,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00953,
+   "lo": -0.02098,
+   "hi": 0.00181,
+   "n": 11146,
+   "n_clusters": 441
+  },
+  "changelog": [
+   "Replace C2 severity to distinguish severity among cuts that leave the same sentence-final inflection unfinished: mark earlier cuts (farther from the finishing inflection) as more severe so the model prefers later cuts."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "was": "- Will translating the two sides separately still assemble into the original who",
+    "now": "- Will translating the two sides separately still assemble into the original who"
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "candidate": 1,
+  "adopted": false,
+  "full_scored": true,
+  "delta": {
+   "mean": -0.00935,
+   "lo": -0.01918,
+   "hi": 0.00067,
+   "n": 11197,
+   "n_clusters": 443
+  },
+  "changelog": [
+   "Replace O2 to address the primary finding: when several candidate cuts all fall before the same sentence-final inflection, prefer the later (closer-to-the-inflection) cut because it preserves more of the predicate, tense/aspect/negation and reduces misattachment."
+  ],
+  "delta_confirm": null,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O2",
+    "kind": "change",
+    "was": "- When one marker splits a multi-character numeral or a numeral+unit sequence an",
+    "now": "When multiple candidates fall before the same sentence‑final inflection, prefer "
+   }
+  ]
+ },
+ {
+  "iter": 2,
+  "adopted": false,
+  "delta": {
+   "mean": -0.00562,
+   "lo": -0.01639,
+   "hi": 0.00474,
+   "n": 11117,
+   "n_clusters": 441
+  },
+  "gain": {
+   "mean": -0.00562,
+   "lo": -0.01639,
+   "hi": 0.00474,
+   "n": 11117,
+   "n_clusters": 441
+  },
+  "changelog": [
+   "Add an Order Principle that prefers the later cut when multiple candidates all fall before the same sentence-final inflection, so decisions favour preserving the predicate, tense/aspect/negation and avoid misattachment (addresses the primary finding)."
+  ],
+  "findings": [
+   "When several cuts all fall before the same sentence‑final inflection, the prompt fails to choose which is least harmful: the later cut (closer to the inflection) preserves more of the predicate and is preferable.",
+   "The prompt allows cuts that separate a predicate from its sentence‑final inflection (tense/negation/politeness), producing contradictory or unusable fragments."
+  ],
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O_end",
+    "kind": "fallback",
+    "was": "",
+    "now": "When multiple candidates fall before the same sentence‑final inflection, prefer "
+   }
+  ],
+  "diagnosis": {
+   "by_bin": {
+    "≤3": -0.0018,
+    "≤5": -0.0049,
+    "≤7": -0.0098,
+    "≤10": -0.0111,
+    "≤99": -0.0097
+   },
+   "n_worse": 5620,
+   "n_better": 5133,
+   "why": "The new Order Principle (prefer the later cut among candidates before the same sentence-final inflection) changed which positions are ranked top‑1 versus top‑2/3: rank_depth fell at depth‑1 (−0.419) while improving depths 2–4, so the edit shuffled the very top choice and harmed short budgets and overall H_set (by_bin shows larger drops for longer bins). Concretely, it caused cuts to be placed inside phrases or before punctuation in some sentences (splitting pronouns/particles or detaching punctuation), producing the large negative tail movements.",
+   "lesson": "Constrain the Order Principle so it never chooses cuts that split tokens/close dependents or move the single top choice for short-latency budgets; verify effects separately on top‑1 and long‑budget bins. ",
+   "blamed": [
+    "O_end"
+   ]
+  }
+ }
+]

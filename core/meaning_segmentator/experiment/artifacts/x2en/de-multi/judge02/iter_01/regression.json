@@ -1,0 +1,155 @@
+{
+ "verdict": "reject",
+ "delta": {
+  "mean": -0.01093,
+  "lo": -0.01936,
+  "hi": -0.0026,
+  "n": 4580,
+  "n_clusters": 500
+ },
+ "by_bin": {
+  "≤3": -0.0149,
+  "≤5": -0.0077,
+  "≤7": -0.0112,
+  "≤10": -0.0086,
+  "≤99": -0.0024
+ },
+ "n_worse": 2069,
+ "n_better": 1847,
+ "worst": [
+  {
+   "id": "de_de_1557",
+   "k": 2,
+   "bin": "≤7",
+   "delta": -0.8226,
+   "before": "nach dem erlebnis der schrecken und gräueltaten im ersten weltkrieg ‖ wollten die nationen ‖ eine weitere solche situation in der zukunft vermeiden",
+   "after": "nach dem erlebnis der schrecken und gräueltaten im ersten weltkrieg ‖ wollten die nationen eine weitere solche situation ‖ in der zukunft vermeiden"
+  },
+  {
+   "id": "de_de_119",
+   "k": 4,
+   "bin": "≤5",
+   "delta": -0.8062,
+   "before": "Der Spielverleger ‖ Konami ‖ sagte heute ‖ in einer japanischen Zeitung, ‖ dass sie das Spiel Six Days in Fallujah nicht veröffentlichen werden.",
+   "after": "Der Spielverleger Konami sagte ‖ heute ‖ in einer japanischen Zeitung, ‖ dass sie ‖ das Spiel Six Days in Fallujah nicht veröffentlichen werden."
+  },
+  {
+   "id": "de_de_119",
+   "k": 3,
+   "bin": "≤5",
+   "delta": -0.7883,
+   "before": "Der Spielverleger ‖ Konami sagte heute ‖ in einer japanischen Zeitung, ‖ dass sie das Spiel Six Days in Fallujah nicht veröffentlichen werden.",
+   "after": "Der Spielverleger Konami sagte heute ‖ in einer japanischen Zeitung, ‖ dass sie ‖ das Spiel Six Days in Fallujah nicht veröffentlichen werden."
+  },
+  {
+   "id": "de_de_379",
+   "k": 1,
+   "bin": "≤99",
+   "delta": -0.7857,
+   "before": "Etwa dreitausend Jahre später, im Jahr 1610, ‖ verwendete der italienische Astronom Galileo Galilei ein Teleskop und beobachtete, dass die Venus, genau wie der Mond, Phasen hat.",
+   "after": "Etwa dreitausend Jahre später, im Jahr 1610, verwendete der italienische Astronom Galileo Galilei ein Teleskop und beobachtete, ‖ dass die Venus, genau wie der Mond, Phasen hat."
+  },
+  {
+   "id": "de_de_119",
+   "k": 5,
+   "bin": "≤5",
+   "delta": -0.7412,
+   "before": "Der Spielverleger ‖ Konami ‖ sagte heute ‖ in einer japanischen ‖ Zeitung, ‖ dass sie das Spiel Six Days in Fallujah nicht veröffentlichen werden.",
+   "after": "Der Spielverleger Konami sagte ‖ heute ‖ in einer japanischen Zeitung, ‖ dass sie ‖ das Spiel Six Days in Fallujah ‖ nicht veröffentlichen werden."
+  }
+ ],
+ "best": [
+  {
+   "id": "de_de_190",
+   "k": 3,
+   "bin": "≤5",
+   "delta": 0.6957,
+   "before": "Nach Schätzungen ‖ bewegt sich der Taifun ‖ mit einer Geschwindigkeit von 11 km/h in Richtung ‖ China.",
+   "after": "Nach Schätzungen ‖ bewegt sich der Taifun mit einer Geschwindigkeit ‖ von 11 km/h ‖ in Richtung China."
+  },
+  {
+   "id": "de_de_1284",
+   "k": 6,
+   "bin": "≤3",
+   "delta": 0.6951,
+   "before": "dafür ‖ muss man sich nicht schämen ‖ das ist nichts ‖ anderes als die persönlichen ängste ‖ und ‖ antipathien ‖ die sehr viele menschen haben",
+   "after": "dafür muss man sich nicht schämen ‖ das ist nichts anderes als die persönlichen ängste ‖ und ‖ antipathien ‖ die sehr ‖ viele menschen ‖ haben"
+  },
+  {
+   "id": "de_de_1284",
+   "k": 5,
+   "bin": "≤5",
+   "delta": 0.6687,
+   "before": "dafür ‖ muss man sich nicht schämen ‖ das ist nichts ‖ anderes als die persönlichen ängste ‖ und antipathien ‖ die sehr viele menschen haben",
+   "after": "dafür muss man sich nicht schämen ‖ das ist nichts anderes als die persönlichen ängste ‖ und ‖ antipathien ‖ die sehr ‖ viele menschen haben"
+  },
+  {
+   "id": "de_de_190",
+   "k": 4,
+   "bin": "≤3",
+   "delta": 0.6638,
+   "before": "Nach Schätzungen ‖ bewegt sich der Taifun ‖ mit einer Geschwindigkeit von 11 km/h in ‖ Richtung ‖ China.",
+   "after": "Nach Schätzungen ‖ bewegt sich der Taifun ‖ mit einer Geschwindigkeit ‖ von 11 km/h ‖ in Richtung China."
+  },
+  {
+   "id": "de_de_1040",
+   "k": 2,
+   "bin": "≤7",
+   "delta": 0.6609,
+   "before": "alle höhleneingänge auch die sieben schwestern genannt haben einen durchmesser von mindestens 100 bis 250 metern ‖ 328 bis 820 ‖ fuß",
+   "after": "alle höhleneingänge auch die sieben schwestern genannt haben einen durchmesser von mindestens 100 bis 250 ‖ metern ‖ 328 bis 820 fuß"
+  }
+ ],
+ "rank_depth": {
+  "base": {
+   "1": 6.22,
+   "2": 3.595,
+   "3": 2.487,
+   "4": 1.988,
+   "5": 1.69,
+   "6": 1.504,
+   "7": 1.356,
+   "8": 1.274,
+   "9": 1.215,
+   "10": 1.165,
+   "11": 1.124,
+   "12": 1.095,
+   "13": 1.072
+  },
+  "revision": {
+   "1": 6.488,
+   "2": 3.582,
+   "3": 2.436,
+   "4": 1.983,
+   "5": 1.715,
+   "6": 1.558,
+   "7": 1.397,
+   "8": 1.294,
+   "9": 1.223,
+   "10": 1.176,
+   "11": 1.125,
+   "12": 1.095,
+   "13": 1.073
+  },
+  "delta": {
+   "1": 0.268,
+   "2": -0.013,
+   "3": -0.051,
+   "4": -0.005,
+   "5": 0.025,
+   "6": 0.054,
+   "7": 0.041,
+   "8": 0.02,
+   "9": 0.008,
+   "10": 0.011,
+   "11": 0.001,
+   "12": 0.0,
+   "13": 0.001
+  }
+ },
+ "why": "The new tie-breaker pushed cuts to the position immediately after noun heads when two markers fall inside the same NP, so the model avoided NP-splitting (helping the top-1 choice) but shifted many mid-ranked cut choices later. That change harmed the short-latency bins (≤3, ≤5, ≤7) — where many cuts are kept — by moving sensible comma/clause cuts into the NP and producing worse segmentations overall, yielding a small but significant negative mean.",
+ "lesson": "When adding an NP-head tie-breaker, preserve the earlier comma/embedded-clause cut preferences used by short-latency budgets (don’t let the NP-head fallback override mid-ranked/punctuation-based cuts).",
+ "blamed": [
+  "O3"
+ ]
+}

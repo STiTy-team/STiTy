@@ -1,0 +1,113 @@
+[
+ {
+  "candidate": 0,
+  "edits": [],
+  "deltas": [],
+  "skipped": [
+   {
+    "edit": null,
+    "id": null,
+    "reason": "edits 가 비었다"
+   }
+  ],
+  "result_chars": null,
+  "errors": [
+   "edits 가 비었다"
+  ]
+ },
+ {
+  "candidate": 0,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "text": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that should be translated as one constituent rather than separate predications? Most severe when the marker splits a determiner, numeral, or pronoun from the noun it determines, or when it severs the NP head from required postmodifiers or complements so the left piece loses referent scope; mild when the marker occurs immediately before punctuation (a comma or sentence boundary) that would leave the left side a self-contained clause, or when the marker sits at the NP tail keeping the head together with its postmodifiers.",
+    "_was": "- Does the marker fall inside a nominal enumeration or noun-heavy phrase that should be translated as one constituent rather than separate predications? Most severe when parallel noun phrases or commas indicate a single complex noun phrase so cutting breaks referent scope; mild when items carry verbs or clear clause signals implying separate predications."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C6",
+    "kind": "change",
+    "chars_change": 241
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11240,
+  "errors": null
+ },
+ {
+  "candidate": 1,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "text": "When two markers lie inside the same NP, if one is immediately before punctuation that yields a self-contained left clause prefer that earlier cut; otherwise prefer the later cut that keeps the NP head with its postmodifiers.",
+    "_was": "- When one marker falls between a finite verb and its core arguments and another falls earlier inside the same clause, prefer the later marker that keeps verb and arguments together (retain verb as the clause anchor)."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "O1",
+    "kind": "change",
+    "chars_change": 10
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11009,
+  "errors": null
+ },
+ {
+  "candidate": 2,
+  "edits": [
+   {
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "text": "- Does the marker separate a determiner, numeral, or determiner-like pronoun from the immediately following noun phrase it determines? Most severe when the left token is an obligatory determiner/quantifier/possessive/demonstrative or a cardinal numeral that identifies the NP head (e.g. der/die/das, mein, dieser, zwei) and there is no intervening punctuation or clause boundary; mild when the left token is optional discourse material or when punctuation or a closing clause marker immediately after the marker already yields a self‑contained left phrase.",
+    "_was": "- Would translating the preceding and following stretches separately fail to compose the original sentence's meaning? Most severe when the marker severs a subordinate relation (German V-final embedded clause or its introducer) or essential argument structure; mild when the two sides are independently intelligible apposition or list items."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "replace",
+    "id": "C2",
+    "kind": "change",
+    "chars_change": 216
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11215,
+  "errors": null
+ },
+ {
+  "candidate": 3,
+  "edits": [
+   {
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "text": "When two markers lie inside the same NP, if one is immediately before punctuation that yields a self-contained left clause prefer that earlier cut; otherwise prefer the later cut that keeps the NP head with its postmodifiers."
+   }
+  ],
+  "deltas": [
+   {
+    "edit": 0,
+    "op": "insert_after",
+    "id": "O3",
+    "kind": "change",
+    "chars_change": 228
+   }
+  ],
+  "skipped": [],
+  "result_chars": 11227,
+  "errors": null
+ }
+]
