@@ -1,0 +1,29 @@
+# 맥락 카드 — 비동기로 뽑은 요약·용어·상황을 문맥으로 줄 때 en→ko 번역 품질
+run_id: card-20260930
+talk: ../LongContextMT/data/talk231.jsonl   # Frank Gehry, 398문장, IWSLT17 en-ko train (1.1 과 같은 강연)
+conditions: [K1, K2, K3, K4, K2b, K3b]
+update_every: 8        # 8문장마다 카드를 고친다
+lag: 1                 # 고친 카드는 1문장 늦게 쓰인다 (추출은 번역 경로 밖에서 비동기로 돈다)
+score_from_idx: 9      # 첫 카드가 쓰이기 시작하는 문장. 1.1 과 같은 구간(256~)도 따로 낸다
+
+# 비교군은 새로 번역하지 않고 1.1 의 체인을 가져온다 (같은 번역 문면, 같은 모델)
+baseline_run: ../LongContextMT/results/lcmt-20260930
+baseline_n: [0, 8, 16]
+
+translator: gpt-6-luna
+extractor: gpt-6-luna
+models:
+  gpt-6-luna:
+    kind: openai
+    model: gpt-6-luna
+    reasoning_effort: none
+    temperature: 0
+    key_env: OPENAI_API_KEY_TRANS
+    max_retries: 8
+
+prices:
+  gpt-6-luna: [0.10, 0.01, 0.50]
+budget_usd:
+  total: 1.0
+api_timeout_sec: 60
+env_files: [.env]

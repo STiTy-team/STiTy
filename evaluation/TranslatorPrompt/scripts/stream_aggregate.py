@@ -12,7 +12,8 @@
 미룸        P3 에서 빈 출력으로 다음 조각에 넘긴 비율, 마지막 조각까지 비어 P1 로 다시 부른 수(forced).
 형식 위반    내보낸 조각 번역을 2.4 규칙으로 판정 (앞 조각 번역을 그대로 되풀이한 것도 여기서 잡힌다).
             H 조건은 태그를 벗긴 <out> 으로 판정하고, 태그를 못 읽은 비율은 따로 낸다.
-최종 COMET  내보낸 조각 번역을 이어 붙인 것의 COMET. 옆에 같은 모델이 문장을 통째로 번역한 COMET(2.3 S0)을 둔다.
+최종 품질   내보낸 조각 번역을 이어 붙인 것의 COMET·MetricX·Doc-COMET-w2. 옆에 같은 모델이 문장을 통째로 번역한
+            것(2.3 S0)의 같은 값을 둔다.
 보류        H 조건에서 원문을 남긴 경계 비율, 남긴 어절이 원문 전체 어절에서 차지하는 비율(한 조각씩 늦게 나간 양),
             원문에 없는 말을 남기려 해 버린 수(invalid), 마지막 조각에서도 남겨 번역되지 않은 수(final_hold).
 """
@@ -76,6 +77,10 @@ def sentence_stats(r: dict, full: str, scores: dict) -> dict:
         "viol": viol,
         "comet": scores[key("comet", r["en"], [joined(r), r["ref"]])]["comet"],
         "comet_full": scores[key("comet", r["en"], [full, r["ref"]])]["comet"],
+        "metricx": scores[key("metricx", r["en"], [joined(r), r["ref"]])]["metricx"],
+        "metricx_full": scores[key("metricx", r["en"], [full, r["ref"]])]["metricx"],
+        "doc2": scores[key("doc2", r["idx"], joined(r))]["doc2"],
+        "doc2_full": scores[key("doc2", r["idx"], full)]["doc2"],
         "hold_b": [bool(h) for h in held],
         "held_words": sum(len(h.split()) for h in held),
         "src_words": len(r["en"].split()),
@@ -103,6 +108,8 @@ def main():
         # 문장 단위 값 (짝 비교용). 조각 비율은 문장 안에서 평균한 뒤 문장끼리 평균한다.
         sent = {
             "comet": lambda s: s["comet"],
+            "metricx": lambda s: s["metricx"],
+            "doc2": lambda s: s["doc2"],
             "contra_max": lambda s: s["contra_max"],
             "kiwi_nonfinal": lambda s: s["kiwi_nonfinal"],
             "early15": lambda s: frac(s["early15"]),
@@ -115,6 +122,10 @@ def main():
             e = {"n_sent": len(v),
                  "comet": mean(s["comet"] for s in v.values()),
                  "comet_full": mean(s["comet_full"] for s in v.values()),
+                 "metricx": mean(s["metricx"] for s in v.values()),
+                 "metricx_full": mean(s["metricx_full"] for s in v.values()),
+                 "doc2": mean(s["doc2"] for s in v.values()),
+                 "doc2_full": mean(s["doc2_full"] for s in v.values()),
                  "hold_rate": frac([x for s in v.values() for x in s["hold_b"]]),
                  "held_share": sum(s["held_words"] for s in v.values()) / sum(s["src_words"] for s in v.values()),
                  "hold_invalid": sum(s["hold_invalid"] for s in v.values()),
@@ -153,10 +164,13 @@ def main():
             return f"{e[m + '_delta']:+.{p}f} [{lo:+.{p}f}, {hi:+.{p}f}]{star}"
 
         md += [f"## {mdir.name}", "",
-               "| 조건 | 최종 COMET | Δ (95%) | 통째 번역 COMET | 보류 경계 | 보류 어절 비율 | 태그 실패 | 보류 무효 | 마지막 보류 |",
-               "|---|---|---|---|---|---|---|---|---|"]
+               "| 조건 | 최종 COMET | Δ (95%) | MetricX↓ | Δ (95%) | Doc-COMET-w2 | Δ (95%) | 통째 번역 COMET / MetricX / Doc | "
+               "보류 경계 | 보류 어절 비율 | 태그 실패 | 보류 무효 | 마지막 보류 |",
+               "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
         for c, e in res.items():
-            md.append(f"| {c} | {f(e, 'comet')} | {d(e, 'comet')} | {f(e, 'comet_full')} | {f(e, 'hold_rate')} | "
+            md.append(f"| {c} | {f(e, 'comet')} | {d(e, 'comet')} | {f(e, 'metricx', 2)} | {d(e, 'metricx', 2)} | "
+                      f"{f(e, 'doc2')} | {d(e, 'doc2')} | "
+                      f"{f(e, 'comet_full')} / {f(e, 'metricx_full', 2)} / {f(e, 'doc2_full')} | {f(e, 'hold_rate')} | "
                       f"{f(e, 'held_share')} | {e['parse_fail']} | {e['hold_invalid']} | {e['final_hold']} |")
         md += ["",
                "| 조건 | 문장 | 모순률(문장 최댓값)↓ | Δ (95%) | 경계 평균↓ | 경계>0.5↓ | 충실도 Kiwi | Δ (95%) | "
