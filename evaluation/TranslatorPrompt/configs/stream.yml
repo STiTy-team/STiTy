@@ -1,0 +1,28 @@
+# 2.1 동시통역 프롬프트 — Gehry 강연 398문장을 Qwen3-ASR <SEG> 디코더(θ=0.2)로 자른 조각
+run_id: stream-20260930
+seg: data/talk231_seg_t20.jsonl     # 861조각, 잘린 문장 321
+conditions: [P0, P1, P2, P3]
+# 조건마다 같은 모델의 2.3 S0 전체 문장 번역을 "나중에 문장 전체를 번역한 결과" 로 쓴다 (모순률의 전제)
+full_from: results/qual-20260930/{model}/quality.jsonl
+full_cond: S0
+
+models:
+  qwen3.5-4b-bf16:
+    kind: local
+    model: Qwen/Qwen3.5-4B
+    max_new_tokens: 256
+  gpt-6-luna:
+    kind: openai
+    model: gpt-6-luna
+    reasoning_effort: none
+    temperature: 0
+    key_env: OPENAI_API_KEY_TRANS
+    max_retries: 8
+    workers: 8
+
+prices:
+  gpt-6-luna: [0.10, 0.01, 0.50]
+budget_usd:
+  translation: 1.0
+api_timeout_sec: 60
+env_files: [.env]

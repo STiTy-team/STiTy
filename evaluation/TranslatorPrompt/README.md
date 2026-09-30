@@ -6,7 +6,11 @@
   (잘린 조각, ASR 잡음, 입력 속 지시 등 형식이 깨지기 쉽게 만든 입력). 문맥 N=0 / 16.
 - **2.3 번역 품질**: 사전 정보 없이 쓸 수 있는 문구(S1 역할, S2 말투, S3 상황별 말투 표, S4 일반 예시, S5 조합)가
   품질을 올리는지. TED 398문장 + WMT24 Chat en-ko test 1,982문장. 문맥 없음.
-- **2.1 준비**: Gehry 문장을 Qwen3-ASR `<SEG>` 디코더로 조각낸 것 (`data/talk231_seg_t{20,30}.jsonl`).
+- **2.1 동시통역**: Gehry 문장을 Qwen3-ASR `<SEG>` 디코더로 조각낸 것(`data/talk231_seg_t{20,30}.jsonl`, 실험은 t20)을
+  차례로 번역하고 낸 번역은 고치지 않는다. 조건 P0(조각을 문장처럼)~P3(동시통역 지시, 예시, 빈 출력 허용)마다
+  모순률(xlmr-anli, 전제는 같은 모델의 2.3 S0 문장 전체 번역), 조각 충실도(CometKiwi), 조기 완성률.
+  H1~H3 은 통역사식 부분 보류(뒤 정보가 필요한 원문을 남겼다가 다음 조각과 함께 번역)이고, 조각 번역을 이어 붙인
+  최종 번역의 COMET 을 같이 잰다. H2F 는 H2 기록에서 마지막 호출만 문장 끝맺기 문면으로 다시 한다(`stream_finish.py`).
 
 공유 문서: [5차] 번역기 시스템 프롬프트 형식·품질 실험 (Confluence, 번역 콘텍스트 폴더)
 
@@ -22,6 +26,9 @@
 | `scripts/tp/violations.py` | 형식 위반 판정 규칙 (후처리 전 원시 출력 기준) |
 | `scripts/format_run.py`, `scripts/quality_run.py` | 실행기. 요청마다 결과를 붙이고, 다시 돌리면 끝난 것을 건너뛴다 |
 | `scripts/format_aggregate.py`, `scripts/quality_aggregate.py` | 집계. 저장된 판정 대신 **지금 규칙으로 다시 판정**한다 |
+| `configs/stream.yml`, `scripts/tp/stream_prompts.py` | 2.1 설정과 조건별 문면 |
+| `scripts/stream_run.py`, `stream_score.py`, `stream_aggregate.py` | 2.1 실행·채점·집계. 문장이 끝날 때마다 한 줄씩 붙인다 |
+| `scripts/stream_finish.py` | 2.1 H2F — H2 결과의 마지막 호출만 다시 |
 | `scripts/check_batch_equiv.py` | 로컬 배치 생성이 순차 생성과 같은 출력을 내는지 확인 |
 | `scripts/run_*.sh` | tmux 체인 |
 | `results/fmt-20260930/`, `results/qual-20260930/` | 원시 결과, 호출별 비용(`api_usage.jsonl`), 채점 캐시, 요약(`*_summary.md`) |
@@ -51,6 +58,10 @@ tmux new-session -d -s fmt-post  -c "$PWD" "METRICS_PY=$M bash evaluation/Transl
 tmux new-session -d -s qual-api   -c "$PWD" "bash evaluation/TranslatorPrompt/scripts/run_quality.sh translate gpt-6-luna"
 tmux new-session -d -s qual-local -c "$PWD" "bash evaluation/TranslatorPrompt/scripts/run_quality.sh translate qwen3.5-4b-bf16 --batch 16"
 tmux new-session -d -s qual-post  -c "$PWD" "METRICS_PY=$M bash evaluation/TranslatorPrompt/scripts/run_quality.sh post"
+# 2.1 (전제로 2.3 S0 결과를 읽으므로 그 뒤에)
+tmux new-session -d -s stream-api   -c "$PWD" "bash evaluation/TranslatorPrompt/scripts/run_stream.sh translate gpt-6-luna"
+tmux new-session -d -s stream-local -c "$PWD" "bash evaluation/TranslatorPrompt/scripts/run_stream.sh translate qwen3.5-4b-bf16"
+tmux new-session -d -s stream-post  -c "$PWD" "METRICS_PY=$M bash evaluation/TranslatorPrompt/scripts/run_stream.sh post"
 ```
 
 ## 알아 둘 것
