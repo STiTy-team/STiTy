@@ -44,8 +44,7 @@ finish () {
   say "COMET exit=$?"
   $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
     --run-id covost2/full --targets zh de ja --metric comet \
-    --out tradeoff_covost2_full_comet \
-    --title "CoVoST2 en->X test 15430 (min_gap=1)" >> $LOG 2>&1
+    --out tradeoff_covost2_full_comet >> $LOG 2>&1
   say "그래프 exit=$?"
   rm -f $ST/full_eval.failed
   mark full_eval.done "감시견이 마무리"

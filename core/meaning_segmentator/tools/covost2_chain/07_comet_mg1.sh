@@ -28,10 +28,10 @@ PYCHK
 echo "===== 그래프 $(ts) ====="
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/n3000 --targets de ja zh --metric bleu \
-  --out tradeoff_covost2_mg1 --title "CoVoST2 en->X test 3000 (min_gap=1)" 2>&1 | tail -5
+  --out tradeoff_covost2_mg1 2>&1 | tail -5
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/n3000 --targets de ja zh --metric comet \
-  --out tradeoff_covost2_mg1_comet --title "CoVoST2 en->X test 3000 (min_gap=1)" 2>&1 | tail -5
+  --out tradeoff_covost2_mg1_comet 2>&1 | tail -5
 
 mark comet_mg1.done "ok"
 echo "===== 완료 $(ts) ====="
