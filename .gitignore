@@ -202,6 +202,12 @@ core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu/de.json
 core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu/ja.json
 core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_t6/
 core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_grid4/
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_backup_*/
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_*_only/zh.json
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_*_only/de.json
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/*/bleu_*_only/ja.json
+# 다른 런의 cache/ 를 가리키는 심링크. 위 `**/cache/` 는 끝의 / 때문에 심링크를 못 잡는다
+core/meaning_segmentator/experiment/artifacts/**/cache
 
 # DailyTalk 창 SEG 학습 산출물 (체크포인트 대용량)
 Qwen3-ASR/finetuning/finetuning-out-en-win/

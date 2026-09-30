@@ -58,8 +58,7 @@ echo "  COMET exit=$? $(ts)"; grep "조건 채점" $F/logs/comet_full.log
 echo "===== 그래프 (COMET) $(ts) ====="
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/full --targets zh de ja --metric comet \
-  --out tradeoff_covost2_full_comet \
-  --title "CoVoST2 en->X test 15430 (min_gap=1)" 2>&1 | tail -2
+  --out tradeoff_covost2_full_comet 2>&1 | tail -2
 
 mark full_eval.done "ok"
 echo "===== 평가 완료 $(ts) ====="

@@ -49,10 +49,10 @@ for M in bleu comet; do
   S=""; [ $M = comet ] && S=_comet
   $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
     --run-id covost2/n3000 --targets zh de ja --metric $M \
-    --out tradeoff_covost2_mg1$S --title "CoVoST2 en->X test 3000 (min_gap=1)" 2>&1 | tail -2
+    --out tradeoff_covost2_mg1$S 2>&1 | tail -2
   $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
     --run-id covost2/n3000 --targets zh de ja --metric $M --point-labels all \
-    --out tradeoff_covost2_mg1${S}_alllabels --title "CoVoST2 en->X test 3000 (min_gap=1)" 2>&1 | tail -2
+    --out tradeoff_covost2_mg1${S}_alllabels 2>&1 | tail -2
 done
 
 mark alignatt_native.done "ok"

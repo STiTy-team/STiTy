@@ -45,10 +45,10 @@ echo "  COMET exit=$? $(ts)"; tail -12 $N/comet_finegrid.log
 echo "===== 그래프 $(ts) ====="
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/n3000 --targets de ja zh --metric bleu \
-  --out tradeoff_covost2 --title "CoVoST2 en->X test 3000" 2>&1 | tail -4
+  --out tradeoff_covost2 2>&1 | tail -4
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/n3000 --targets de ja zh --metric comet \
-  --out tradeoff_covost2_comet --title "CoVoST2 en->X test 3000" 2>&1 | tail -4
+  --out tradeoff_covost2_comet 2>&1 | tail -4
 
 mark finegrid.done "ok"
 echo "===== 촘촘 격자 전체 완료 $(ts) ====="

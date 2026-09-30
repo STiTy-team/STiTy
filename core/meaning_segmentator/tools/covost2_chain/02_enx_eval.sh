@@ -32,10 +32,10 @@ echo "  COMET exit=$? $(ts)"; tail -20 $N/comet.log
 echo "===== 그래프 $(ts) ====="
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/n3000 --targets de ja zh --metric bleu \
-  --out tradeoff_covost2 --title "CoVoST2 en->X test 3000" 2>&1 | tail -5
+  --out tradeoff_covost2 2>&1 | tail -5
 $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
   --run-id covost2/n3000 --targets de ja zh --metric comet \
-  --out tradeoff_covost2_comet --title "CoVoST2 en->X test 3000" 2>&1 | tail -5
+  --out tradeoff_covost2_comet 2>&1 | tail -5
 
 mark gpu_free.done "en->X 전체 완료"
 echo "===== en->X 체인 전체 완료 $(ts) ====="

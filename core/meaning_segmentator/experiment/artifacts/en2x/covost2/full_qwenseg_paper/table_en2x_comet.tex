@@ -1,0 +1,43 @@
+% table_en->x.tex — en2x/covost2/full_qwenseg_paper, n=15530, comet
+% 생성: core/meaning_segmentator/tools/covost2_chain/en2x_table.py
+% Requires: \usepackage{booktabs}
+%           \usepackage{graphicx}
+
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.05}
+
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule
+& \multicolumn{3}{c}{EN--ZH}
+& \multicolumn{3}{c}{EN--DE}
+& \multicolumn{3}{c}{EN--JA} \\
+\cmidrule(lr){2-4}
+\cmidrule(lr){5-7}
+\cmidrule(lr){8-10}
+
+Method
+& 1.0\,s & 1.2\,s & 1.4\,s
+& 0.85\,s & 1.1\,s & 1.35\,s
+& 1.25\,s & 1.4\,s & 1.55\,s \\
+\midrule
+
+Full-sentence offline
+& \multicolumn{3}{c}{.837 (2.7\,s)}
+& \multicolumn{3}{c}{.883 (2.7\,s)}
+& \multicolumn{3}{c}{.884 (2.8\,s)} \\
+
+AlignAtt~\cite{papi-2023}
+& .642 & .675 & .704
+& \textbf{.629} & .676 & .718
+& .696 & .717 & .739 \\
+
+Decoder \texttt{SEG} threshold (Ours; stream)
+& \textbf{.679} & \textbf{.712} & \textbf{.739}
+& .629 & \textbf{.683} & \textbf{.730}
+& \textbf{.737} & \textbf{.759} & \textbf{.780} \\
+
+\bottomrule
+\end{tabular}%
+}

@@ -48,7 +48,7 @@ run_one () {   # <run-id suffix> <label> <title>
   echo "== $(ts) $1 comet exit=$?" >> $LOG
   $PY -m core.meaning_segmentator.autoseg.scoring.plot_tradeoff \
     --run-id $rid --targets zh de ja --metric comet \
-    --out tradeoff_covost2_$1_comet --title "$title" --no-header >> $D/logs/plot.log 2>&1
+    --out tradeoff_covost2_$1_comet >> $D/logs/plot.log 2>&1
   echo "== $(ts) $1 plot exit=$?" >> $LOG
   touch $D/eval.done
 }

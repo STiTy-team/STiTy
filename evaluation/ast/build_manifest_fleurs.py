@@ -48,8 +48,11 @@ LANG_CODE = {
 
 
 def read_tsv(path: Path) -> list[list[str]]:
-    with open(path, "r", encoding="utf-8") as f:
-        return [r for r in csv.reader(f, delimiter="\t") if len(r) >= 6]
+    # QUOTE_NONE 이 필수다 - FLEURS 전사에 따옴표가 그대로 들어 있어 기본 파싱은 그걸
+    # 인용 시작으로 읽고 뒤따르는 행들을 한 행으로 합쳐 버린다(build_manifest_fleurs_text.py
+    # 의 같은 코멘트 참고, en_us 실측으로 확인된 버그 - 문장 하나가 2,916어절짜리 덩어리가 됨).
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        return [r for r in csv.reader(f, delimiter="\t", quoting=csv.QUOTE_NONE) if len(r) >= 6]
 
 
 def ensure_audio_dir(root: Path, lang: str, split: str) -> Path:

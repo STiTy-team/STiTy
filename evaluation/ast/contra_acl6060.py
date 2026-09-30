@@ -69,17 +69,17 @@ NLI 는 무해한 미완성에도 0 이 아닌 모순 확률을 준다. **그 �
 문장을 넘나든 커밋을 gold 경계에서 잘라 그 쌍을 추가하면 경계를 많이 가로지르는 축일수록
 평균이 내려간다(실측: static-c6 −0.0364, seg-c1 −0.0057 로 격차가 반 토막).
 
-집계 셋 — B 가 주지표다
------------------------
-    B  문장당 기대위험    Σcontra ÷ **전체 문장**. 무분절 문장이 0 을 기여한다. **주지표**
-    A  경계 평균          절단이 1개 이상인 문장만. "끊을 때 얼마나 위험하게 끊나"
-    C  문장당 위험절단    Σ1[contra > 0.5] ÷ 전체 문장
+집계 — 기본은 문장당 위험이다
+-----------------------------
+    contra                   Σcontra ÷ **전체 문장**. 무분절 문장이 0 을 기여한다. **기본값**
+    contra_cut_mean          절단이 1개 이상인 문장만의 경계 평균. "끊을 때 얼마나 위험하게 끊나"
+    risky_cuts_per_sentence  Σ1[contra > 0.5] ÷ 전체 문장
 
-autoseg 는 A 만 쓴다 — 거기서는 지연이 노브(`target_chunk_words`)로 고정돼 **안 끊는 것이
-공짜**라, 무분절을 0 으로 세면 "경기를 안 뛰어서 만점"이 된다. AST 는 지연이 x축에 있어
-공짜가 아니다(punct-c1 은 무분절의 대가로 StreamLAAL 7.08초를 낸다). 그래서 B 를 주지표로
-두고 A 를 함께 낸다 — B 는 사용자가 겪는 총 노출, A 는 정책의 판단력이다. 실측에서 순위가
-뒤집힌다: punct-c1 은 A 에서 하위지만 B 에서 1위다.
+autoseg 는 경계 평균만 쓴다 — 거기서는 지연이 노브(`target_chunk_words`)로 고정돼 **안 끊는
+것이 공짜**라, 무분절을 0 으로 세면 "경기를 안 뛰어서 만점"이 된다. AST 는 지연이 x축에 있어
+공짜가 아니다(punct-c1 은 무분절의 대가로 StreamLAAL 7.08초를 낸다). 그래서 문장당 위험을
+기본으로 두고 경계 평균을 함께 낸다 — 앞은 사용자가 겪는 총 노출, 뒤는 정책의 판단력이다.
+실측에서 순위가 뒤집힌다: punct-c1 은 경계 평균에서 중위권이지만 문장당 위험에서 1위다.
 """
 
 from __future__ import annotations
@@ -273,12 +273,13 @@ def run_lang(lang: str, tag: str, axes: list[str], edge: int, nli, out_dir: Path
             "n_sentences_no_cut": sum(1 for v in per_sent.values() if v is None),
             "n_cuts": sum(len(r["cuts"]) for r in d["rows"].values()),
             "cut_kinds": kinds,
-            # 주지표 — 무분절 문장을 0 으로 세어 전체 문장으로 나눈다
-            "B_risk_per_sentence": round(sum(B) / len(B), 4),
-            "B_risk_per_sentence_raw": round(sum(B_raw) / len(B_raw), 4),
-            "A_boundary_mean": round(st.mean(A), 4) if A else None,
-            "A_boundary_mean_far": round(st.mean(A_far), 4) if A_far else None,
-            "C_risky_cuts_per_sentence": round(sum(C) / len(C), 4)}
+            # 기본값 — 문장당 위험. 무분절 문장은 0 을 기여한다
+            "contra": round(sum(B) / len(B), 4),
+            "contra_no_floor": round(sum(B_raw) / len(B_raw), 4),
+            # 보조 — 끊은 문장만 본 경계 평균과 위험 절단 수
+            "contra_cut_mean": round(st.mean(A), 4) if A else None,
+            "contra_cut_mean_far": round(st.mean(A_far), 4) if A_far else None,
+            "risky_cuts_per_sentence": round(sum(C) / len(C), 4)}
 
     dst = out_dir / f"contra_eval_{tag}_{lang}.json"
     dst.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
@@ -308,14 +309,13 @@ def main() -> int:
 
     for lg, out in outs.items():
         print(f"\n== {lg} ==  (바닥 {'뺌' if not a.no_floor else '안 뺌'})")
-        print(f"{'축':<10} {'B 문장당 위험':>13} {'B raw':>8} {'A 경계평균':>10} "
-              f"{f'A(끝{a.edge_words}어절 제외)':>16} {'C 위험절단/문장':>15} {'무분절 문장':>11}")
-        for ax in sorted(a.axes, key=lambda x: out["axes"][x]["B_risk_per_sentence"]):
+        print(f"{'축':<10} {'contra':>8} {'바닥 안뺌':>10} {'끊은 문장만':>12} "
+              f"{f'끝{a.edge_words}어절 제외':>14} {'위험절단/문장':>13} {'무분절 문장':>11}")
+        for ax in sorted(a.axes, key=lambda x: out["axes"][x]["contra"]):
             d = out["axes"][ax]
-            print(f"{ax:<10} {d['B_risk_per_sentence']:>13.4f} "
-                  f"{d['B_risk_per_sentence_raw']:>8.4f} {d['A_boundary_mean']:>10.4f} "
-                  f"{d['A_boundary_mean_far']:>16.4f} "
-                  f"{d['C_risky_cuts_per_sentence']:>15.4f} {d['n_sentences_no_cut']:>11}")
+            print(f"{ax:<10} {d['contra']:>8.4f} {d['contra_no_floor']:>10.4f} "
+                  f"{d['contra_cut_mean']:>12.4f} {d['contra_cut_mean_far']:>14.4f} "
+                  f"{d['risky_cuts_per_sentence']:>13.4f} {d['n_sentences_no_cut']:>11}")
     return 0
 
 

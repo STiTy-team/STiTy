@@ -1,0 +1,652 @@
+# CoVoST2 en→de 텍스트 스트리밍 분절 + 조각 번역
+# covost2_full_judge13_iter3.jsonl 에서 8어절 이상 9955문장 중 30개 (seed 20260919)
+# 분절 Qwen3-ASR-1.7B-en-covost2-dailytalk-mix-c200-merged 디코더만 / threshold 0.2 / min_words 2 / feed_seg True / 번역 google/madlad400-3b-mt
+
+━━ [1/30] common_voice_en_19469330 (12어절)
+   원문 : Hansen was born in Victoria, Australia and was educated at Mazenod College.
+   참조 : Hansens Geburtsort war Victoria in Australien und er studierte am Mazenod College.
+    32.2ms  Hansen             p=0.050 █···············
+    23.2ms  was                p=0.018 ················
+    36.6ms  born               p=0.377 ██████··········  ◀ SEG
+          ┗━ 커밋 #1 @3/12어절  "Hansen was born"
+             → Hansen wurde geboren   (번역 116ms)
+    22.8ms  in                 p=0.000 ················
+    27.1ms  Victoria,          p=0.004 ················
+    22.3ms  Australia          p=0.018 ················
+    22.3ms  and                p=0.009 ················
+    22.2ms  was                p=0.002 ················
+    22.2ms  educated           p=0.007 ················
+    22.4ms  at                 p=0.006 ················
+    27.2ms  Mazenod            p=0.002 ················
+    40.7ms  College.           p=0.263 ████············  ◀ SEG
+          ┗━ 커밋 #2 @12/12어절  "in Victoria, Australia and was educated at Mazenod College."
+             → Er wurde in Victoria, Australien geboren und am Mazenod College ausgebildet.   (번역 287ms)
+   조각 번역 이어붙임 : Hansen wurde geboren Er wurde in Victoria, Australien geboren und am Mazenod College ausgebildet.   (문장 BLEU 11.6)
+   문장 통째 번역     : Hansen wurde in Victoria, Australien geboren und studierte am Mazenod College.   (문장 BLEU 33.5)
+
+━━ [2/30] common_voice_en_535193 (9어절)
+   원문 : The cigar burned a hole in the desk top.
+   참조 : Die Zigarre brannte ein Loch durch den Schreibtisch.
+    21.8ms  The                p=0.010 ················
+    21.4ms  cigar              p=0.155 ██··············
+    34.3ms  burned             p=0.398 ██████··········  ◀ SEG
+          ┗━ 커밋 #1 @3/9어절  "The cigar burned"
+             → Die Zigarre brannte   (번역 147ms)
+    41.4ms  a                  p=0.001 ················
+    21.4ms  hole               p=0.014 ················
+    87.1ms  in                 p=0.001 ················
+    21.8ms  the                p=0.002 ················
+    20.9ms  desk               p=0.059 █···············
+    35.3ms  top.               p=0.596 ██████████······  ◀ SEG
+          ┗━ 커밋 #2 @9/9어절  "a hole in the desk top."
+             → Ein Loch in der Tischplatte.   (번역 164ms)
+   조각 번역 이어붙임 : Die Zigarre brannte Ein Loch in der Tischplatte.   (문장 BLEU 20.2)
+   문장 통째 번역     : Die Zigarre verbrannte ein Loch in der Schreibtischplatte.   (문장 BLEU 14.3)
+
+━━ [3/30] common_voice_en_216591 (8어절)
+   원문 : The merchant was silent for a few moments.
+   참조 : Der Kaufmann war für einige Augenblicke still.
+    21.1ms  The                p=0.010 ················
+    20.7ms  merchant           p=0.099 ██··············
+    21.6ms  was                p=0.097 ██··············
+    33.5ms  silent             p=0.253 ████············  ◀ SEG
+          ┗━ 커밋 #1 @4/8어절  "The merchant was silent"
+             → Der Kaufmann schwieg   (번역 153ms)
+    30.5ms  for                p=0.000 ················
+    21.1ms  a                  p=0.000 ················
+    21.4ms  few                p=0.000 ················
+    36.7ms  moments.           p=0.681 ███████████·····  ◀ SEG
+          ┗━ 커밋 #2 @8/8어절  "for a few moments."
+             → Ein paar Augenblicke.   (번역 149ms)
+   조각 번역 이어붙임 : Der Kaufmann schwieg Ein paar Augenblicke.   (문장 BLEU 13.5)
+   문장 통째 번역     : Der Kaufmann schwieg einige Augenblicke.   (문장 BLEU 17.4)
+
+━━ [4/30] common_voice_en_17299813 (10어절)
+   원문 : To calibrate the motion capturing system, please do a T-pose.
+   참조 : Zur Kalibrierung des Motion-Capturing-Systems führen Sie bitte eine T-Pose durch.
+    21.8ms  To                 p=0.005 ················
+    24.1ms  calibrate          p=0.038 █···············
+    20.2ms  the                p=0.015 ················
+    20.9ms  motion             p=0.088 █···············
+    24.0ms  capturing          p=0.072 █···············
+    37.7ms  system,            p=0.495 ████████········  ◀ SEG
+          ┗━ 커밋 #1 @6/10어절  "To calibrate the motion capturing system,"
+             → Um das Motion Capture-System zu kalibrieren,   (번역 206ms)
+    22.3ms  please             p=0.003 ················
+    22.2ms  do                 p=0.005 ················
+    22.7ms  a                  p=0.007 ················
+    25.3ms  T-pose.            p=0.074 █···············
+          ┗━ 커밋 #2(끝) @10/10어절  "please do a T-pose."
+             → Bitte mache eine T-Pose.   (번역 180ms)
+   조각 번역 이어붙임 : Um das Motion Capture-System zu kalibrieren, Bitte mache eine T-Pose.   (문장 BLEU 7.5)
+   문장 통째 번역     : Um das Motion Capture System zu kalibrieren, nehmen Sie bitte eine T-Pose ein.   (문장 BLEU 17.4)
+
+━━ [5/30] common_voice_en_604845 (9어절)
+   원문 : I looked outside the window and saw the basil.
+   참조 : Ich schaute aus dem Fenster und sah das Basilikum.
+    23.6ms  I                  p=0.009 ················
+    21.3ms  looked             p=0.100 ██··············
+    34.3ms  outside            p=0.214 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @3/9어절  "I looked outside"
+             → Ich schaute nach draußen   (번역 135ms)
+    22.0ms  the                p=0.001 ················
+    21.3ms  window             p=0.011 ················
+    21.2ms  and                p=0.002 ················
+    20.3ms  saw                p=0.006 ················
+    20.3ms  the                p=0.002 ················
+    36.3ms  basil.             p=0.255 ████············  ◀ SEG
+          ┗━ 커밋 #2 @9/9어절  "the window and saw the basil."
+             → Ich schaute durchs Fenster und sah das Basilikum.   (번역 244ms)
+   조각 번역 이어붙임 : Ich schaute nach draußen Ich schaute durchs Fenster und sah das Basilikum.   (문장 BLEU 42.8)
+   문장 통째 번역     : Ich schaute aus dem Fenster und sah das Basilikum.   (문장 BLEU 100.0)
+
+━━ [6/30] common_voice_en_19724257 (12어절)
+   원문 : It is an island-level administrative constituency governed by the Hoarafushi Island Council.
+   참조 : Es handelt sich um einen Verwaltungs-Wahlkreis auf Inselebene, der vom Hoarafushi-Inselrat verwaltet wird.
+    21.1ms  It                 p=0.010 ················
+    21.5ms  is                 p=0.043 █···············
+    21.3ms  an                 p=0.034 █···············
+    24.1ms  island-level       p=0.142 ██··············
+    22.0ms  administrative     p=0.062 █···············
+    34.6ms  constituency       p=0.569 █████████·······  ◀ SEG
+          ┗━ 커밋 #1 @6/12어절  "It is an island-level administrative constituency"
+             → Es ist ein Verwaltungswahlkreis auf Insel-Ebene   (번역 223ms)
+    21.6ms  governed           p=0.000 ················
+    21.0ms  by                 p=0.001 ················
+    20.4ms  the                p=0.001 ················
+    27.2ms  Hoarafushi         p=0.000 ················
+    26.7ms  Island             p=0.000 ················
+    30.3ms  Council.           p=0.051 █···············
+          ┗━ 커밋 #2(끝) @12/12어절  "governed by the Hoarafushi Island Council."
+             → Die Insel wird vom Hoarafushi Island Council regiert.   (번역 229ms)
+   조각 번역 이어붙임 : Es ist ein Verwaltungswahlkreis auf Insel-Ebene Die Insel wird vom Hoarafushi Island Council regiert.   (문장 BLEU 3.9)
+   문장 통째 번역     : Die Insel ist ein Wahlkreis auf Inselebene, der vom Hoarafushi Island Council regiert wird.   (문장 BLEU 26.3)
+
+━━ [7/30] common_voice_en_19602020 (13어절)
+   원문 : During one point in his career Spagnolo was scheduled to fight Rocky Marciano.
+   참조 : Spagnolo sollte im Laufe seiner Karriere einmal gegen Rocky Marciano antreten.
+    21.7ms  During             p=0.037 █···············
+    20.9ms  one                p=0.025 ················
+    21.4ms  point              p=0.123 ██··············
+    22.0ms  in                 p=0.015 ················
+    21.9ms  his                p=0.022 ················
+    21.7ms  career             p=0.099 ██··············
+    24.5ms  Spagnolo           p=0.162 ███·············
+    21.2ms  was                p=0.030 ················
+    20.9ms  scheduled          p=0.170 ███·············
+    20.6ms  to                 p=0.057 █···············
+    22.0ms  fight              p=0.169 ███·············
+    20.2ms  Rocky              p=0.076 █···············
+    35.7ms  Marciano.          p=0.487 ████████········  ◀ SEG
+          ┗━ 커밋 #1 @13/13어절  "During one point in his career Spagnolo was scheduled to fight Rocky Marciano."
+             → Spagnolo war zu einem Zeitpunkt seiner Karriere für einen Kampf gegen Rocky Marciano geplant.   (번역 332ms)
+   조각 번역 이어붙임 : Spagnolo war zu einem Zeitpunkt seiner Karriere für einen Kampf gegen Rocky Marciano geplant.   (문장 BLEU 13.4)
+   문장 통째 번역     : Spagnolo war zu einem Zeitpunkt seiner Karriere für einen Kampf gegen Rocky Marciano geplant.   (문장 BLEU 13.4)
+
+━━ [8/30] common_voice_en_19997511 (9어절)
+   원문 : The remix of the single featured producer Kanye West.
+   참조 : Der Remix der Single mit dem Produzenten Kanye West.
+    22.4ms  The                p=0.010 ················
+    21.1ms  remix              p=0.105 ██··············
+    21.0ms  of                 p=0.022 ················
+    21.0ms  the                p=0.002 ················
+    21.2ms  single             p=0.128 ██··············
+    21.0ms  featured           p=0.115 ██··············
+    21.5ms  producer           p=0.075 █···············
+    21.3ms  Kanye              p=0.015 ················
+    36.9ms  West.              p=0.456 ███████·········  ◀ SEG
+          ┗━ 커밋 #1 @9/9어절  "The remix of the single featured producer Kanye West."
+             → Der Remix der Single mit Produzent Kanye West.   (번역 253ms)
+   조각 번역 이어붙임 : Der Remix der Single mit Produzent Kanye West.   (문장 BLEU 53.4)
+   문장 통째 번역     : Der Remix der Single mit Produzent Kanye West.   (문장 BLEU 53.4)
+
+━━ [9/30] common_voice_en_18953677 (12어절)
+   원문 : Local bus routes serve the bus stop located outside the ticket hall.
+   참조 : Örtliche Buslinien halten an der Bushaltestelle vor dem Ticketschalter.
+    20.7ms  Local              p=0.000 ················
+    20.0ms  bus                p=0.020 ················
+    20.1ms  routes             p=0.176 ███·············
+    21.4ms  serve              p=0.096 ██··············
+    20.8ms  the                p=0.057 █···············
+    20.8ms  bus                p=0.002 ················
+    20.8ms  stop               p=0.187 ███·············
+    33.6ms  located            p=0.213 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @8/12어절  "Local bus routes serve the bus stop located"
+             → Lokale Buslinien bedienen die Bushaltestelle in der Nähe.   (번역 241ms)
+    21.5ms  outside            p=0.006 ················
+    21.0ms  the                p=0.000 ················
+    20.9ms  ticket             p=0.000 ················
+    24.0ms  hall.              p=0.103 ██··············
+          ┗━ 커밋 #2(끝) @12/12어절  "outside the ticket hall."
+             → Außerhalb der Kassenhalle.   (번역 190ms)
+   조각 번역 이어붙임 : Lokale Buslinien bedienen die Bushaltestelle in der Nähe. Außerhalb der Kassenhalle.   (문장 BLEU 4.4)
+   문장 통째 번역     : Die Haltestelle der örtlichen Buslinien befindet sich vor der Kassenhalle.   (문장 BLEU 5.3)
+
+━━ [10/30] common_voice_en_556751 (12어절)
+   원문 : Two people holding on to each other in front of a mirror.
+   참조 : Zwei Personen stehen Arm in Arm vor einem Spiegel.
+    21.2ms  Two                p=0.026 ················
+    20.6ms  people             p=0.178 ███·············
+    21.0ms  holding            p=0.045 █···············
+    20.6ms  on                 p=0.039 █···············
+    20.8ms  to                 p=0.036 █···············
+    20.2ms  each               p=0.036 █···············
+   101.5ms  other              p=0.242 ████············  ◀ SEG
+          ┗━ 커밋 #1 @7/12어절  "Two people holding on to each other"
+             → Zwei Leute, die sich gegenseitig festhalten   (번역 205ms)
+    21.4ms  in                 p=0.000 ················
+    21.0ms  front              p=0.000 ················
+    21.5ms  of                 p=0.001 ················
+    22.0ms  a                  p=0.000 ················
+    24.0ms  mirror.            p=0.103 ██··············
+          ┗━ 커밋 #2(끝) @12/12어절  "in front of a mirror."
+             → Vor einem Spiegel.   (번역 139ms)
+   조각 번역 이어붙임 : Zwei Leute, die sich gegenseitig festhalten Vor einem Spiegel.   (문장 BLEU 15.0)
+   문장 통째 번역     : Zwei Menschen, die sich vor einem Spiegel aneinander halten.   (문장 BLEU 15.9)
+
+━━ [11/30] common_voice_en_90269 (14어절)
+   원문 : He suggested that the boy look around the palace and return in two hours.
+   참조 : Er empfahl dem Jungen, sich im Palast umzuschauen und in zwei Stunden zurückzukommen.
+    22.3ms  He                 p=0.018 ················
+    21.1ms  suggested          p=0.156 ███·············
+    20.8ms  that               p=0.095 ██··············
+    22.6ms  the                p=0.075 █···············
+    34.7ms  boy                p=0.378 ██████··········  ◀ SEG
+          ┗━ 커밋 #1 @5/14어절  "He suggested that the boy"
+             → Er schlug vor, dass der Junge   (번역 183ms)
+    21.7ms  look               p=0.018 ················
+    20.7ms  around             p=0.011 ················
+    20.7ms  the                p=0.004 ················
+    20.6ms  palace             p=0.040 █···············
+    20.0ms  and                p=0.007 ················
+    20.3ms  return             p=0.010 ················
+    19.9ms  in                 p=0.012 ················
+    19.7ms  two                p=0.001 ················
+    36.5ms  hours.             p=0.640 ██████████······  ◀ SEG
+          ┗━ 커밋 #2 @14/14어절  "look around the palace and return in two hours."
+             → Schauen Sie sich den Palast an und kommen Sie in zwei Stunden zurück.   (번역 251ms)
+   조각 번역 이어붙임 : Er schlug vor, dass der Junge Schauen Sie sich den Palast an und kommen Sie in zwei Stunden zurück.   (문장 BLEU 8.9)
+   문장 통째 번역     : Er schlug vor, dass der Junge sich im Palast umschauen und in zwei Stunden zurückkehren sollte.   (문장 BLEU 21.3)
+
+━━ [12/30] common_voice_en_580106 (14어절)
+   원문 : Mom took Grandma to the garden center to hear the Latin names of plants.
+   참조 : Mama nahm Oma mit ins Gartenzentrum, um die lateinischen Namen von Pflanzen zu hören.
+    21.1ms  Mom                p=0.068 █···············
+    20.8ms  took               p=0.061 █···············
+    20.7ms  Grandma            p=0.088 █···············
+    20.2ms  to                 p=0.033 █···············
+    20.5ms  the                p=0.080 █···············
+    32.3ms  garden             p=0.394 ██████··········  ◀ SEG
+          ┗━ 커밋 #1 @6/14어절  "Mom took Grandma to the garden"
+             → Mama nahm Oma in den Garten   (번역 158ms)
+    21.4ms  center             p=0.009 ················
+    20.1ms  to                 p=0.002 ················
+    21.0ms  hear               p=0.002 ················
+    20.7ms  the                p=0.006 ················
+    20.8ms  Latin              p=0.009 ················
+    20.6ms  names              p=0.025 ················
+    20.9ms  of                 p=0.019 ················
+    35.5ms  plants.            p=0.646 ██████████······  ◀ SEG
+          ┗━ 커밋 #2 @14/14어절  "center to hear the Latin names of plants."
+             → Mit dem Center können Sie die lateinischen Namen der Pflanzen hören.   (번역 275ms)
+   조각 번역 이어붙임 : Mama nahm Oma in den Garten Mit dem Center können Sie die lateinischen Namen der Pflanzen hören.   (문장 BLEU 15.7)
+   문장 통째 번역     : Mama nahm Oma mit ins Gartencenter, um die lateinischen Namen der Pflanzen zu hören.   (문장 BLEU 61.3)
+
+━━ [13/30] common_voice_en_105289 (10어절)
+   원문 : They met with a bunch of people in the pub.
+   참조 : Sie trafen sich mit einer großen Menschengruppe im Pub.
+    20.8ms  They               p=0.036 █···············
+    32.7ms  met                p=0.216 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @2/10어절  "They met"
+             → Sie trafen sich   (번역 118ms)
+    21.7ms  with               p=0.006 ················
+    20.5ms  a                  p=0.001 ················
+    20.1ms  bunch              p=0.005 ················
+    20.1ms  of                 p=0.005 ················
+    20.0ms  people             p=0.080 █···············
+    19.4ms  in                 p=0.002 ················
+    19.8ms  the                p=0.009 ················
+    34.3ms  pub.               p=0.725 ████████████····  ◀ SEG
+          ┗━ 커밋 #2 @10/10어절  "with a bunch of people in the pub."
+             → Ich war mit einer Gruppe Leute in der Kneipe.   (번역 210ms)
+   조각 번역 이어붙임 : Sie trafen sich Ich war mit einer Gruppe Leute in der Kneipe.   (문장 BLEU 15.1)
+   문장 통째 번역     : Sie trafen sich mit einer Gruppe von Leuten in der Kneipe.   (문장 BLEU 33.2)
+
+━━ [14/30] common_voice_en_1340119 (21어절)
+   원문 : Palm oil is cheap, but workers on illegal plantations get exploited and huge areas of jungle get destroyed for its production.
+   참조 : Palmöl ist günstig, aber die Arbeiter auf den illegalen Plantagen werden ausgenutzt und riesengroße Dschungelgebiete für die Produktion zerstört.
+    26.3ms  Palm               p=0.001 ················
+    21.9ms  oil                p=0.079 █···············
+    21.9ms  is                 p=0.038 █···············
+    38.2ms  cheap,             p=0.430 ███████·········  ◀ SEG
+          ┗━ 커밋 #1 @4/21어절  "Palm oil is cheap,"
+             → Palmöl ist billig,   (번역 128ms)
+    21.8ms  but                p=0.006 ················
+    20.9ms  workers            p=0.004 ················
+    20.7ms  on                 p=0.000 ················
+    20.2ms  illegal            p=0.000 ················
+    24.0ms  plantations        p=0.006 ················
+    20.7ms  get                p=0.003 ················
+    20.2ms  exploited          p=0.013 ················
+    20.2ms  and                p=0.007 ················
+    20.3ms  huge               p=0.007 ················
+    20.5ms  areas              p=0.026 ················
+    21.6ms  of                 p=0.017 ················
+    22.5ms  jungle             p=0.105 ██··············
+    22.5ms  get                p=0.022 ················
+    22.5ms  destroyed          p=0.035 █···············
+    22.3ms  for                p=0.035 █···············
+    22.3ms  its                p=0.040 █···············
+    40.8ms  production.        p=0.314 █████···········  ◀ SEG
+          ┗━ 커밋 #2 @21/21어절  "but workers on illegal plantations get exploited and huge areas of jungle get destroyed for its production."
+             → Aber Arbeiter auf illegalen Plantagen werden ausgebeutet und riesige Dschungelgebiete werden für die Produktion zerstört.   (번역 421ms)
+   조각 번역 이어붙임 : Palmöl ist billig, Aber Arbeiter auf illegalen Plantagen werden ausgebeutet und riesige Dschungelgebiete werden für die Produktion zerstört.   (문장 BLEU 28.7)
+   문장 통째 번역     : Palmöl ist billig, aber die Arbeiter auf illegalen Plantagen werden ausgebeutet und riesige Dschungelgebiete werden für die Produktion zerstört.   (문장 BLEU 43.7)
+
+━━ [15/30] common_voice_en_20010036 (11어절)
+   원문 : Sessions had an uneasy relationship with Thornburgh's successor William P. Barr.
+   참조 : Sessions hatten eine unangenehme Beziehung zu Thornburghs Nachfolger, William P. Barr.
+    21.2ms  Sessions           p=0.015 ················
+    20.0ms  had                p=0.020 ················
+    20.1ms  an                 p=0.027 ················
+    20.0ms  uneasy             p=0.078 █···············
+    32.2ms  relationship       p=0.300 █████···········  ◀ SEG
+          ┗━ 커밋 #1 @5/11어절  "Sessions had an uneasy relationship"
+             → Sessions hatten eine unbequeme Beziehung   (번역 200ms)
+    20.6ms  with               p=0.000 ················
+    22.7ms  Thornburgh's       p=0.000 ················
+    20.0ms  successor          p=0.001 ················
+    19.8ms  William            p=0.011 ················
+    22.9ms  P.                 p=0.064 █···············
+   101.6ms  Barr.              p=0.285 █████···········  ◀ SEG
+          ┗━ 커밋 #2 @11/11어절  "with Thornburgh's successor William P. Barr."
+             → Thornburghs Nachfolger wurde William P. Barr.   (번역 222ms)
+   조각 번역 이어붙임 : Sessions hatten eine unbequeme Beziehung Thornburghs Nachfolger wurde William P. Barr.   (문장 BLEU 40.3)
+   문장 통째 번역     : Sessions hatte ein unbequemes Verhältnis zu Thornburghs Nachfolger William P. Barr.   (문장 BLEU 36.9)
+
+━━ [16/30] common_voice_en_18860884 (13어절)
+   원문 : Here he made useful contacts, including Bob Hope, Betty Grable and Rita Hayworth.
+   참조 : Hier knüpfte er brauchbare Kontakte wie mit Bob Hope, Betty Grable und Rita Hayworth.
+    21.2ms  Here               p=0.069 █···············
+    20.1ms  he                 p=0.034 █···············
+    19.7ms  made               p=0.047 █···············
+    20.7ms  useful             p=0.113 ██··············
+    36.3ms  contacts,          p=0.754 ████████████····  ◀ SEG
+          ┗━ 커밋 #1 @5/13어절  "Here he made useful contacts,"
+             → Hier knüpfte er nützliche Kontakte,   (번역 208ms)
+    22.1ms  including          p=0.001 ················
+    20.9ms  Bob                p=0.000 ················
+    23.7ms  Hope,              p=0.030 ················
+    21.0ms  Betty              p=0.005 ················
+    23.4ms  Grable             p=0.001 ················
+    20.5ms  and                p=0.005 ················
+    21.3ms  Rita               p=0.023 ················
+    24.0ms  Hayworth.          p=0.142 ██··············
+          ┗━ 커밋 #2(끝) @13/13어절  "including Bob Hope, Betty Grable and Rita Hayworth."
+             → Darunter Bob Hope, Betty Grable und Rita Hayworth.   (번역 223ms)
+   조각 번역 이어붙임 : Hier knüpfte er nützliche Kontakte, Darunter Bob Hope, Betty Grable und Rita Hayworth.   (문장 BLEU 61.5)
+   문장 통째 번역     : Hier knüpfte er nützliche Kontakte, darunter Bob Hope, Betty Grable und Rita Hayworth.   (문장 BLEU 61.5)
+
+━━ [17/30] common_voice_en_19773310 (10어절)
+   원문 : The film had a United States Video on Demand release.
+   참조 : Der Film wurde in den Vereinigten Staaten als Video on Demand veröffentlicht.
+    21.0ms  The                p=0.010 ················
+    20.1ms  film               p=0.069 █···············
+    20.7ms  had                p=0.038 █···············
+    20.7ms  a                  p=0.017 ················
+    20.8ms  United             p=0.020 ················
+    20.1ms  States             p=0.126 ██··············
+    20.1ms  Video              p=0.006 ················
+    19.6ms  on                 p=0.032 █···············
+    19.8ms  Demand             p=0.148 ██··············
+    36.0ms  release.           p=0.317 █████···········  ◀ SEG
+          ┗━ 커밋 #1 @10/10어절  "The film had a United States Video on Demand release."
+             → Der Film wurde in den Vereinigten Staaten am 15. März 2010 veröffentlicht.   (번역 355ms)
+   조각 번역 이어붙임 : Der Film wurde in den Vereinigten Staaten am 15. März 2010 veröffentlicht.   (문장 BLEU 47.9)
+   문장 통째 번역     : Der Film wurde in den Vereinigten Staaten am 15. März 2010 veröffentlicht.   (문장 BLEU 47.9)
+
+━━ [18/30] common_voice_en_19624013 (10어절)
+   원문 : The completed chartering contract is known as a charter party.
+   참조 : Der abgeschlossene Chartervertrag ist bekannt als Frachtvertrag.
+    22.1ms  The                p=0.010 ················
+    20.9ms  completed          p=0.030 ················
+    24.2ms  chartering         p=0.109 ██··············
+    33.2ms  contract           p=0.210 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @4/10어절  "The completed chartering contract"
+             → Der ausgefüllte Chartervertrag   (번역 153ms)
+    22.5ms  is                 p=0.005 ················
+    22.4ms  known              p=0.002 ················
+    22.1ms  as                 p=0.007 ················
+    21.5ms  a                  p=0.032 █···············
+    21.4ms  charter            p=0.040 █···············
+    37.8ms  party.             p=0.445 ███████·········  ◀ SEG
+          ┗━ 커밋 #2 @10/10어절  "is known as a charter party."
+             → Eine Charterparty ist eine Party, die auf Charterbasis stattfindet.   (번역 232ms)
+   조각 번역 이어붙임 : Der ausgefüllte Chartervertrag Eine Charterparty ist eine Party, die auf Charterbasis stattfindet.   (문장 BLEU 4.0)
+   문장 통째 번역     : Der abgeschlossene Chartervertrag wird als Charterpartei bezeichnet.   (문장 BLEU 23.4)
+
+━━ [19/30] common_voice_en_19964525 (11어절)
+   원문 : When he returned to Suriname, he worked in the financial system.
+   참조 : Zurück in Suriname, arbeitete er im Finanzsystem.
+    20.8ms  When               p=0.027 ················
+    19.6ms  he                 p=0.032 █···············
+    20.6ms  returned           p=0.117 ██··············
+    20.7ms  to                 p=0.029 ················
+    35.8ms  Suriname,          p=0.499 ████████········  ◀ SEG
+          ┗━ 커밋 #1 @5/11어절  "When he returned to Suriname,"
+             → Als er nach Suriname zurückkehrte,   (번역 162ms)
+    22.0ms  he                 p=0.000 ················
+    21.5ms  worked             p=0.000 ················
+    20.6ms  in                 p=0.001 ················
+    20.4ms  the                p=0.001 ················
+    20.9ms  financial          p=0.000 ················
+    23.7ms  system.            p=0.065 █···············
+          ┗━ 커밋 #2(끝) @11/11어절  "he worked in the financial system."
+             → Er arbeitete im Finanzsystem.   (번역 165ms)
+   조각 번역 이어붙임 : Als er nach Suriname zurückkehrte, Er arbeitete im Finanzsystem.   (문장 BLEU 17.2)
+   문장 통째 번역     : Nach seiner Rückkehr nach Suriname arbeitete er im Finanzwesen.   (문장 BLEU 17.7)
+
+━━ [20/30] common_voice_en_17287702 (18어절)
+   원문 : The ladies and gentlemen I work for would be interested in acquiring your service on a temporary basis.
+   참조 : Die Damen und Herren, für die ich arbeite, würde Ihre Dienste gerne vorübergehend in Anspruch nehmen.
+    21.7ms  The                p=0.010 ················
+    20.4ms  ladies             p=0.142 ██··············
+    20.7ms  and                p=0.034 █···············
+    20.6ms  gentlemen          p=0.143 ██··············
+    21.2ms  I                  p=0.059 █···············
+    21.0ms  work               p=0.069 █···············
+    21.1ms  for                p=0.083 █···············
+    20.7ms  would              p=0.061 █···············
+    20.8ms  be                 p=0.107 ██··············
+    33.4ms  interested         p=0.210 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @10/18어절  "The ladies and gentlemen I work for would be interested"
+             → Die Damen und Herren, für die ich arbeite, wären interessiert   (번역 246ms)
+    21.3ms  in                 p=0.000 ················
+    20.3ms  acquiring          p=0.001 ················
+    21.0ms  your               p=0.001 ················
+    21.1ms  service            p=0.006 ················
+    21.2ms  on                 p=0.001 ················
+    20.9ms  a                  p=0.003 ················
+    21.4ms  temporary          p=0.002 ················
+    37.9ms  basis.             p=0.205 ███·············  ◀ SEG
+          ┗━ 커밋 #2 @18/18어절  "in acquiring your service on a temporary basis."
+             → Wir sind sehr froh, dass wir Ihre Dienstleistung auf vorübergehender Basis erwerben können.   (번역 342ms)
+   조각 번역 이어붙임 : Die Damen und Herren, für die ich arbeite, wären interessiert Wir sind sehr froh, dass wir Ihre Dienstleistung auf vorübergehender Basis erwerben können.   (문장 BLEU 34.6)
+   문장 통째 번역     : Die Damen und Herren, für die ich arbeite, wären daran interessiert, Ihre Dienstleistungen auf vorübergehender Basis zu erwerben.   (문장 BLEU 43.1)
+
+━━ [21/30] common_voice_en_19727918 (11어절)
+   원문 : Thousands of scholars and craftsmen were employed in this massive project.
+   참조 : In diesem großen Projekt waren tausende Gelehrte und Handwerker beschäftigt.
+    23.0ms  Thousands          p=0.024 ················
+    21.5ms  of                 p=0.012 ················
+    21.1ms  scholars           p=0.127 ██··············
+    20.8ms  and                p=0.032 █···············
+    36.8ms  craftsmen          p=0.218 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @5/11어절  "Thousands of scholars and craftsmen"
+             → Tausende von Gelehrten und Handwerkern   (번역 192ms)
+    21.5ms  were               p=0.000 ················
+    20.4ms  employed           p=0.003 ················
+    20.4ms  in                 p=0.000 ················
+    20.2ms  this               p=0.002 ················
+    20.3ms  massive            p=0.002 ················
+    35.3ms  project.           p=0.261 ████············  ◀ SEG
+          ┗━ 커밋 #2 @11/11어절  "were employed in this massive project."
+             → 1000 Mitarbeiter waren in diesem riesigen Projekt beschäftigt.   (번역 284ms)
+   조각 번역 이어붙임 : Tausende von Gelehrten und Handwerkern 1000 Mitarbeiter waren in diesem riesigen Projekt beschäftigt.   (문장 BLEU 7.5)
+   문장 통째 번역     : Tausende von Gelehrten und Handwerkern waren an diesem riesigen Projekt beteiligt.   (문장 BLEU 5.1)
+
+━━ [22/30] common_voice_en_19983288 (9어절)
+   원문 : A park in the town honors his memory today.
+   참조 : Ein Park in der Stadt trägt ihm zu Ehren seinen Namen.
+    21.5ms  A                  p=0.014 ················
+    21.3ms  park               p=0.119 ██··············
+    20.9ms  in                 p=0.018 ················
+    20.8ms  the                p=0.007 ················
+    21.0ms  town               p=0.151 ██··············
+    20.8ms  honors             p=0.102 ██··············
+    20.9ms  his                p=0.071 █···············
+    20.7ms  memory             p=0.166 ███·············
+    36.1ms  today.             p=0.690 ███████████·····  ◀ SEG
+          ┗━ 커밋 #1 @9/9어절  "A park in the town honors his memory today."
+             → Ein Park in der Stadt ehrt heute sein Andenken.   (번역 203ms)
+   조각 번역 이어붙임 : Ein Park in der Stadt ehrt heute sein Andenken.   (문장 BLEU 33.7)
+   문장 통째 번역     : Ein Park in der Stadt ehrt heute sein Andenken.   (문장 BLEU 33.7)
+
+━━ [23/30] common_voice_en_19710254 (13어절)
+   원문 : Furthermore, the Armenian Kingdom of Cilicia became a vassal state of the Mongols.
+   참조 : Zudem wurde das armenische Königreich von Kilikien ein mongolischer Vasallenstaat.
+    23.9ms  Furthermore,       p=0.220 ████············
+    20.0ms  the                p=0.025 ················
+    20.4ms  Armenian           p=0.022 ················
+    20.5ms  Kingdom            p=0.122 ██··············
+    82.2ms  of                 p=0.007 ················
+    24.8ms  Cilicia            p=0.123 ██··············
+    20.9ms  became             p=0.064 █···············
+    20.9ms  a                  p=0.051 █···············
+    35.6ms  vassal             p=0.287 █████···········  ◀ SEG
+          ┗━ 커밋 #1 @9/13어절  "Furthermore, the Armenian Kingdom of Cilicia became a vassal"
+             → Darüber hinaus wurde das armenische Königreich Kilikien ein Vasall   (번역 267ms)
+    21.0ms  state              p=0.006 ················
+    20.8ms  of                 p=0.000 ················
+    20.9ms  the                p=0.001 ················
+    23.3ms  Mongols.           p=0.089 █···············
+          ┗━ 커밋 #2(끝) @13/13어절  "state of the Mongols."
+             → Staat der Mongolen.   (번역 131ms)
+   조각 번역 이어붙임 : Darüber hinaus wurde das armenische Königreich Kilikien ein Vasall Staat der Mongolen.   (문장 BLEU 23.9)
+   문장 통째 번역     : Darüber hinaus wurde das armenische Königreich Kilikien ein Vasallenstaat der Mongolen.   (문장 BLEU 27.1)
+
+━━ [24/30] common_voice_en_19673243 (8어절)
+   원문 : He was educated at the University of Faisalabad.
+   참조 : Er hat an der Universität Faisalabad studiert.
+    21.7ms  He                 p=0.018 ················
+    20.8ms  was                p=0.048 █···············
+    38.3ms  educated           p=0.299 █████···········  ◀ SEG
+          ┗━ 커밋 #1 @3/8어절  "He was educated"
+             → Er war gebildet   (번역 119ms)
+    21.8ms  at                 p=0.000 ················
+    20.6ms  the                p=0.001 ················
+    20.6ms  University         p=0.001 ················
+    20.8ms  of                 p=0.000 ················
+    24.1ms  Faisalabad.        p=0.155 ██··············
+          ┗━ 커밋 #2(끝) @8/8어절  "at the University of Faisalabad."
+             → An der Universität von Faisalabad.   (번역 171ms)
+   조각 번역 이어붙임 : Er war gebildet An der Universität von Faisalabad.   (문장 BLEU 12.0)
+   문장 통째 번역     : Er wurde an der Universität von Faisalabad ausgebildet.   (문장 BLEU 21.1)
+
+━━ [25/30] common_voice_en_19608604 (14어절)
+   원문 : Ted Robinson grew up in Rockville Centre, New York and attended Chaminade High School.
+   참조 : Ted Robinson ist in Rockville Centre, New York aufgewachsen und hat die Chaminade Highschool besucht.
+    20.7ms  Ted                p=0.065 █···············
+    19.6ms  Robinson           p=0.144 ██··············
+    19.9ms  grew               p=0.011 ················
+    19.8ms  up                 p=0.157 ███·············
+    20.1ms  in                 p=0.074 █···············
+    22.9ms  Rockville          p=0.046 █···············
+    35.2ms  Centre,            p=0.508 ████████········  ◀ SEG
+          ┗━ 커밋 #1 @7/14어절  "Ted Robinson grew up in Rockville Centre,"
+             → Ted Robinson wuchs in Rockville Centre auf,   (번역 190ms)
+    21.0ms  New                p=0.000 ················
+    20.5ms  York               p=0.002 ················
+    20.8ms  and                p=0.001 ················
+    20.3ms  attended           p=0.002 ················
+    23.6ms  Chaminade          p=0.001 ················
+    20.9ms  High               p=0.001 ················
+    23.5ms  School.            p=0.182 ███·············
+          ┗━ 커밋 #2(끝) @14/14어절  "New York and attended Chaminade High School."
+             → Er besuchte die Chaminade High School.   (번역 203ms)
+   조각 번역 이어붙임 : Ted Robinson wuchs in Rockville Centre auf, Er besuchte die Chaminade High School.   (문장 BLEU 13.4)
+   문장 통째 번역     : Ted Robinson wuchs in Rockville Centre, New York, auf und besuchte die Chaminade High School.   (문장 BLEU 34.2)
+
+━━ [26/30] common_voice_en_19662755 (14어절)
+   원문 : When the King of Bohemia says, Would she not have made an admirable queen?
+   참조 : Wenn der König von Böhmen sagt: Hätte sie nicht eine bewundernswerte Königin abgegeben?
+    21.8ms  When               p=0.027 ················
+    20.5ms  the                p=0.017 ················
+    20.7ms  King               p=0.082 █···············
+    20.8ms  of                 p=0.038 █···············
+    23.4ms  Bohemia            p=0.108 ██··············
+    36.8ms  says,              p=0.616 ██████████······  ◀ SEG
+          ┗━ 커밋 #1 @6/14어절  "When the King of Bohemia says,"
+             → Wenn der König von Böhmen sagt,   (번역 168ms)
+    21.4ms  Would              p=0.002 ················
+    21.2ms  she                p=0.006 ················
+    20.7ms  not                p=0.002 ················
+    20.0ms  have               p=0.010 ················
+    19.7ms  made               p=0.025 ················
+    19.8ms  an                 p=0.011 ················
+    20.1ms  admirable          p=0.013 ················
+    35.0ms  queen?             p=0.639 ██████████······  ◀ SEG
+          ┗━ 커밋 #2 @14/14어절  "Would she not have made an admirable queen?"
+             → Hätte sie nicht eine bewundernswerte Königin gemacht?   (번역 229ms)
+   조각 번역 이어붙임 : Wenn der König von Böhmen sagt, Hätte sie nicht eine bewundernswerte Königin gemacht?   (문장 BLEU 66.1)
+   문장 통째 번역     : Wenn der König von Böhmen sagt: Hätte sie nicht eine bewundernswerte Königin gemacht?   (문장 BLEU 86.7)
+
+━━ [27/30] common_voice_en_19621275 (13어절)
+   원문 : The series draws extensively on McNab's experiences and knowledge of Special Forces soldiering.
+   참조 : Die Serie stützt sich weitgehend auf McNabs Erfahrungen und aus dem Soldatentum der Spezielleinsatzkräfte erworbene.
+    21.6ms  The                p=0.010 ················
+    21.0ms  series             p=0.046 █···············
+    20.1ms  draws              p=0.029 ················
+    20.7ms  extensively        p=0.147 ██··············
+    20.4ms  on                 p=0.041 █···············
+    23.1ms  McNab's            p=0.034 █···············
+    31.9ms  experiences        p=0.255 ████············  ◀ SEG
+          ┗━ 커밋 #1 @7/13어절  "The series draws extensively on McNab's experiences"
+             → Die Serie basiert weitgehend auf McNabs Erfahrungen   (번역 222ms)
+    21.6ms  and                p=0.001 ················
+    20.5ms  knowledge          p=0.002 ················
+    20.4ms  of                 p=0.002 ················
+    20.5ms  Special            p=0.001 ················
+    20.4ms  Forces             p=0.002 ················
+    23.4ms  soldiering.        p=0.064 █···············
+          ┗━ 커밋 #2(끝) @13/13어절  "and knowledge of Special Forces soldiering."
+             → und Kenntnisse der Spezialeinheiten Soldaten.   (번역 213ms)
+   조각 번역 이어붙임 : Die Serie basiert weitgehend auf McNabs Erfahrungen und Kenntnisse der Spezialeinheiten Soldaten.   (문장 BLEU 28.1)
+   문장 통째 번역     : Die Serie basiert weitgehend auf McNabs Erfahrungen und Wissen über die Soldaten der Spezialeinheiten.   (문장 BLEU 28.2)
+
+━━ [28/30] common_voice_en_19761045 (9어절)
+   원문 : Complications related to extravasation are possible with any medication.
+   참조 : Komplikationen verbunden mit der Patravasation sind möglich mit jedem Medikament.
+    24.8ms  Complications      p=0.103 ██··············
+    21.4ms  related            p=0.020 ················
+    21.2ms  to                 p=0.024 ················
+    24.0ms  extravasation      p=0.103 ██··············
+    21.0ms  are                p=0.154 ██··············
+    34.1ms  possible           p=0.235 ████············  ◀ SEG
+          ┗━ 커밋 #1 @6/9어절  "Complications related to extravasation are possible"
+             → Komplikationen im Zusammenhang mit Extravasation sind möglich   (번역 205ms)
+    21.0ms  with               p=0.001 ················
+    20.5ms  any                p=0.000 ················
+    22.7ms  medication.        p=0.063 █···············
+          ┗━ 커밋 #2(끝) @9/9어절  "with any medication."
+             → Mit jeder Medikamente.   (번역 131ms)
+   조각 번역 이어붙임 : Komplikationen im Zusammenhang mit Extravasation sind möglich Mit jeder Medikamente.   (문장 BLEU 9.4)
+   문장 통째 번역     : Komplikationen im Zusammenhang mit Extravasation sind bei jeder Medikamenteneinnahme möglich.   (문장 BLEU 5.6)
+
+━━ [29/30] common_voice_en_19500536 (13어절)
+   원문 : Clearly, the expansion of Akkad came under the rules of Sargon and Naram-sin.
+   참조 : Offensichtlich fiel die Erweiterung von Akkad unter die Regelung von Sargon und Naram-sin.
+    24.7ms  Clearly,           p=0.211 ███·············
+    20.8ms  the                p=0.024 ················
+    21.1ms  expansion          p=0.048 █···············
+    20.6ms  of                 p=0.017 ················
+    23.6ms  Akkad              p=0.118 ██··············
+    33.3ms  came               p=0.249 ████············  ◀ SEG
+          ┗━ 커밋 #1 @6/13어절  "Clearly, the expansion of Akkad came"
+             → Offensichtlich kam die Expansion von Akkad   (번역 182ms)
+    22.1ms  under              p=0.000 ················
+    21.0ms  the                p=0.001 ················
+    20.7ms  rules              p=0.000 ················
+    20.4ms  of                 p=0.000 ················
+    23.2ms  Sargon             p=0.009 ················
+    20.4ms  and                p=0.002 ················
+    88.4ms  Naram-sin.         p=0.200 ███·············
+          ┗━ 커밋 #2(끝) @13/13어절  "under the rules of Sargon and Naram-sin."
+             → Unter der Herrschaft von Sargon und Naram-Sin.   (번역 213ms)
+   조각 번역 이어붙임 : Offensichtlich kam die Expansion von Akkad Unter der Herrschaft von Sargon und Naram-Sin.   (문장 BLEU 14.9)
+   문장 통째 번역     : Die Ausdehnung Akkads erfolgte eindeutig unter der Herrschaft von Sargon und Naram-Sin.   (문장 BLEU 12.1)
+
+━━ [30/30] common_voice_en_536846 (9어절)
+   원문 : It was papa that sends you flowers every day.
+   참조 : Es war Papa, der dir jeden Tag Blumen schickt.
+    21.1ms  It                 p=0.010 ················
+    21.1ms  was                p=0.051 █···············
+    24.1ms  papa               p=0.122 ██··············
+    20.8ms  that               p=0.117 ██··············
+    33.8ms  sends              p=0.208 ███·············  ◀ SEG
+          ┗━ 커밋 #1 @5/9어절  "It was papa that sends"
+             → Es war Papa, der sendet   (번역 151ms)
+    20.7ms  you                p=0.012 ················
+    20.1ms  flowers            p=0.030 ················
+    19.9ms  every              p=0.002 ················
+    35.8ms  day.               p=0.499 ████████········  ◀ SEG
+          ┗━ 커밋 #2 @9/9어절  "you flowers every day."
+             → Du blühst jeden Tag.   (번역 158ms)
+   조각 번역 이어붙임 : Es war Papa, der sendet Du blühst jeden Tag.   (문장 BLEU 41.7)
+   문장 통째 번역     : Es war Papa, der dir jeden Tag Blumen schickt.   (문장 BLEU 100.0)
+
+━━ 요약
+   문장 30 / 조각 56 (문장당 1.87, 평균 6.3어절)
+   첫 조각이 나온 시점 : 문장의 평균 53% 지점 (통째 번역이면 100%)
+   분절 24.2ms/어절 (중앙 21.2) / 번역 205ms/조각
+   코퍼스 BLEU  조각 이어붙임 24.81  /  문장 통째 37.25  (차 -12.43)
