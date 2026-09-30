@@ -1,0 +1,26 @@
+# 2.3 품질 시스템 프롬프트 — 모든 조건은 사전 정보(상황·도메인) 없이 쓸 수 있어야 한다
+run_id: qual-20260930
+eval: data/quality_eval.jsonl      # ted 398 (en→ko) + wmt24 test 1,982 (en→ko 1,187, ko→en 795)
+conditions: [S0, S1, S2, S3, S4]
+# 문맥 없음(N=0). 1.1 에서 문맥 효과가 보이지 않았고, 프롬프트 효과만 떼어 본다.
+
+models:
+  qwen3.5-4b-bf16:
+    kind: local
+    model: Qwen/Qwen3.5-4B
+    max_new_tokens: 256
+  gpt-6-luna:
+    kind: openai
+    model: gpt-6-luna
+    reasoning_effort: none
+    temperature: 0
+    key_env: OPENAI_API_KEY_TRANS
+    max_retries: 8
+    workers: 4
+
+prices:
+  gpt-6-luna: [0.10, 0.01, 0.50]
+budget_usd:
+  translation: 2.0
+api_timeout_sec: 60
+env_files: [.env]
