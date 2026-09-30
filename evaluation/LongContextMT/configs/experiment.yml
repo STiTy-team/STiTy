@@ -1,0 +1,45 @@
+# LongContextMT — 앞 번역 N개를 문맥으로 줄 때 품질(1.1)과 지연(1.2)
+run_id: lcmt-20260930
+talk: data/talk231.jsonl        # Frank Gehry, 398문장, IWSLT17 en-ko train
+source_language: en
+target_language: ko
+
+# 문맥 = 그 조건에서 모델이 앞 문장들에 낸 번역(한국어)만. 원문·정답 번역·화자 정보는 넣지 않는다.
+n_grid: [0, 1, 2, 4, 8, 16, 32, 64, 128, 256]
+score_from_idx: 256             # 모든 N 에서 문맥이 꽉 찬 문장(257번째~)만 N 끼리 짝지어 비교한다
+seed: 20260930                  # 문장마다 N 조건 순서를 섞는 시드
+
+models:
+  qwen3.5-4b-bf16:
+    kind: local
+    model: Qwen/Qwen3.5-4B
+    dtype: bfloat16
+    max_new_tokens: 256
+  gpt-6-luna:
+    kind: openai
+    model: gpt-6-luna
+    reasoning_effort: none
+    temperature: 0
+    key_env: OPENAI_API_KEY_TRANS
+    max_retries: 8            # 체인 병렬에서 TPM 429 가 나므로 넉넉히
+
+# USD per 1M tokens: [input, cached input, output] (2026-09-25 OpenAI 가격표, DialogueContext 와 같음)
+prices:
+  gpt-6-luna: [0.10, 0.01, 0.50]
+
+budget_usd:
+  translation: 3.0
+
+api_timeout_sec: 60
+
+# 키를 찾을 .env (앞에서부터)
+env_files: [.env]
+
+# 1.2 지연 스윕: 마지막 문장들을 고정하고 문맥 길이만 바꿔 반복 측정한다.
+# 문맥 = n=256 조건 체인이 낸 번역 로그(1.1 결과)를 재사용한다. 마지막 20문장이면 앞 문장이 378개 이상이라
+# N=368 까지 채울 수 있다.
+latency_sweep:
+  n_grid: [0, 8, 16, 32, 48, 64, 96, 128, 160, 192, 224, 256, 320, 368]
+  targets: 20                   # 마지막 20문장 (idx 378~397)
+  repeats: 3
+  context_chain: 256
