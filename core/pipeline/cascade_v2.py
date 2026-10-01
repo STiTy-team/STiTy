@@ -1,6 +1,7 @@
 import dataclasses
 
 from core.components.correction import correctors
+from core.components.enhancement import enhancers
 from core.components.langid import langids
 from core.components.mixer import mixers
 from core.components.registry import Transcribed
@@ -13,6 +14,17 @@ from . import pipelines, stages
 from .base import Pipeline
 
 log = logging.getLogger(__name__)
+
+
+async def enhance_audio(parts: dict, audio: bytes) -> bytes:
+    enhancer = parts.get("enhancement")
+    if enhancer is None:
+        return audio
+    try:
+        return await enhancer.enhance(audio)
+    except Exception as e:  # noqa: BLE001
+        log.warning("[ENHANCE-FAILED] %s", e)
+        return audio
 
 
 async def detect_language(parts: dict, item: Transcribed) -> Transcribed:
@@ -33,7 +45,7 @@ async def detect_language(parts: dict, item: Transcribed) -> Transcribed:
 @pipelines.register("cascade:v2")
 class CascadePipelineV2(Pipeline):
     REQUIRED = (transcribers,)
-    OPTIONAL = (mixers, detectors, correctors, translators, langids)
+    OPTIONAL = (mixers, detectors, correctors, translators, langids, enhancers)
 
     def start(
         self, *, languages: list[str], target_lang: str, own_lang: str | None = None
@@ -44,6 +56,7 @@ class CascadePipelineV2(Pipeline):
         stages.start(self.parts, languages=languages, target_lang=target_lang)
 
     async def listen(self, audio: bytes) -> list:
+        audio = await enhance_audio(self.parts, audio)
         return await self._translated(await stages.hear(self.parts, audio))
 
     async def finish(self) -> list:
