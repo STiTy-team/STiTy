@@ -1,0 +1,20 @@
+meta:
+  description: Nemotron 3.5 ASR Streaming 0.6B (nvidia/nemotron-3.5-asr-streaming-0.6b), model-default lookahead 3 (320 ms), served on :8766 with the dataset language as hint; commits on VAD silence (800 ms) and sentence-final dots in confirmed text, then Qwen3.5-4B translation with no previous-turn context
+  tags: [cascade, remote-stream, nemotron, local-mt, punct, no-context]
+pipeline:
+  name: cascade
+  transcription:
+    name: remote-stream
+    protocol: nemotron
+    url: ws://127.0.0.1:8766
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 0
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: punct
+gpu_memory_utilization: 0.30

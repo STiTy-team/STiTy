@@ -1,0 +1,21 @@
+meta:
+  description: Voxtral Mini 4B Realtime (mistralai/Voxtral-Mini-4B-Realtime-2602) served by vLLM realtime on :8010; takes no language hint; the translator reserves 0.44 of the card instead of 0.52 so both fit (same model, same greedy decoding); commits on VAD silence (800 ms) and sentence-final dots in confirmed text, then Qwen3.5-4B translation with no previous-turn context
+  tags: [cascade, remote-stream, voxtral, local-mt, punct, no-context]
+pipeline:
+  name: cascade
+  transcription:
+    name: remote-stream
+    protocol: voxtral
+    url: ws://127.0.0.1:8010/v1/realtime
+    model: mistralai/Voxtral-Mini-4B-Realtime-2602
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.44
+    context_turns: 0
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: punct
+gpu_memory_utilization: 0.30

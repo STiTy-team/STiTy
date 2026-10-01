@@ -1,0 +1,187 @@
+{
+  "name": "fleurs_ko-en_vol23_first10/asr.nemotron-0.6b+mt.qwen3.5-4b_punct-noctx",
+  "stamp": "20260930T162521",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-30T16:25:21.055400+00:00",
+  "finished_at": "2026-09-30T16:28:43.817604+00:00",
+  "metrics": {
+    "wer": 0.2129032258064516,
+    "wer_by_lang": {
+      "ko": 0.2129032258064516
+    },
+    "wer_scored_only": 0.2129032258064516,
+    "cer": 0.08565310492505353,
+    "cer_by_lang": {
+      "ko": 0.08565310492505353
+    },
+    "bleu": 23.145146501021113,
+    "bleu_by_pair": {
+      "ko-en": 23.145146501021113
+    },
+    "avg_fsl_sec": 0.036658333333333536,
+    "laal_ms": 4578.868610721854,
+    "laal_ca_ms": 4899.940753578996,
+    "yaal_ms": 4578.868610721854,
+    "yaal_ca_ms": 4899.940753578996,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "ko->ko": 12
+    },
+    "commit_reasons": {
+      "vad": 0.08333333333333333,
+      "seg": 0.0,
+      "dot": 0.9166666666666666,
+      "always": 0.0,
+      "finish": 0.0
+    },
+    "segments_per_item": 1.2,
+    "token_emission_ms": 853.1147540983607,
+    "token_emission_p50_ms": 840.0000000000003,
+    "token_emission_p90_ms": 1080.0,
+    "token_emission_ca_ms": 912.8008196721311,
+    "token_emission_ca_p50_ms": 911.05,
+    "token_emission_ca_p90_ms": 1128.5600000000002,
+    "comet": 0.8708464086055756,
+    "comet_by_pair": {
+      "ko-en": 0.8708464086055756
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "longyaal_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "longyaal_ca_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence"
+  },
+  "counts": {
+    "items": 10,
+    "sessions": 10,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 133.32,
+    "wall_sec": 202.76,
+    "compute_sec": 8.29,
+    "realtime_factor": 0.048
+  },
+  "failed_items": [],
+  "config": {
+    "name": "fleurs_ko-en_vol23_first10/asr.nemotron-0.6b+mt.qwen3.5-4b_punct-noctx",
+    "dataset": {
+      "name": "fleurs/ko_kr",
+      "limit": 10
+    },
+    "target": "en",
+    "augment": {
+      "volume": {
+        "min_level_db": -23
+      }
+    },
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "remote-stream",
+          "protocol": "nemotron",
+          "url": "ws://127.0.0.1:8766"
+        },
+        "translation": {
+          "name": "qwen3.5",
+          "url": "http://127.0.0.1:8100/v1",
+          "model": "Qwen/Qwen3.5-4B",
+          "gpu_memory_utilization": 0.52,
+          "context_turns": 0
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "punct",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "fleurs_ko-en_vol23_first10",
+      "version": 1,
+      "ref": "fleurs_ko-en_vol23_first10",
+      "hash": "d17b48267935",
+      "description": "The first 10 FLEURS Korean sentences, translated to English; quiet clips raised to -23 dB RMS; a quick check before the full run",
+      "tags": [
+        "fleurs",
+        "sentence",
+        "clean",
+        "volume",
+        "subset"
+      ]
+    },
+    "pipeline": {
+      "name": "asr.nemotron-0.6b+mt.qwen3.5-4b_punct-noctx",
+      "version": 1,
+      "ref": "asr.nemotron-0.6b+mt.qwen3.5-4b_punct-noctx",
+      "hash": "f2054029f228",
+      "description": "Nemotron 3.5 ASR Streaming 0.6B (nvidia/nemotron-3.5-asr-streaming-0.6b), model-default lookahead 3 (320 ms), served on :8766 with the dataset language as hint; commits on VAD silence (800 ms) and sentence-final dots in confirmed text, then Qwen3.5-4B translation with no previous-turn context",
+      "tags": [
+        "cascade",
+        "remote-stream",
+        "nemotron",
+        "local-mt",
+        "punct",
+        "no-context"
+      ]
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/ko_kr",
+    "split": "test",
+    "languages": [
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "de",
+        "en"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "id",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/ko_kr",
+    "manifest_sha256": "454831e8db23122c75c9b7d6a4c1eaac1e16462501e3f693018ec1e8183dacab",
+    "alignment_sha256": "ab69a3ab9cd8a8660223dabe64698c5a1362bcad91e493d420c87e9cfc75ed55",
+    "n_aligned": 10,
+    "n_items": 10,
+    "n_sessions": 10
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "remote-stream",
+      "protocol": "nemotron",
+      "url": "ws://127.0.0.1:8766"
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "qwen3.5",
+      "url": "http://127.0.0.1:8100/v1",
+      "model": "Qwen/Qwen3.5-4B",
+      "gpu_memory_utilization": 0.52,
+      "context_turns": 0
+    }
+  }
+}

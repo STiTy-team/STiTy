@@ -169,6 +169,29 @@ commit: seg                  # seg | punct | always
 gpu_memory_utilization: 0.30
 ```
 
+**파인튜닝 안 된 기본 모델(`Qwen/Qwen3-ASR-1.7B`)도 `qwen-seg` 부품으로 돌린다.** `qwen3` 부품은
+온점이 다음 조각에서도 남는지 확인하지 않고(`dot_commit_confirm` 이 없다) 겹친 단어도 지우지 않는다.
+기본 모델은 2초 조각마다 문장 중간에도 온점을 찍으므로, `qwen3` 부품에 `commit: punct` 를 주면
+경계 단어가 두 번씩 커밋돼 FLEURS en WER 이 0.45 가 된다(`qwen-seg` 로는 0.043).
+
+**Qwen 이 아닌 스트리밍 ASR 은 `remote-stream` 부품으로 붙인다.** Voxtral·Nemotron·WhisperLiveKit 은
+의존성이 bench 와 맞지 않아 각자 서버로 띄우고, 이 부품이 서버에 오디오를 실시간으로 흘린다. 서버는
+전사만 하고 **커밋은 이 부품이 Qwen 과 같은 규칙으로 정한다** — VAD 무음이면 보인 글을 모두,
+`commit: punct` 면 확정된 글의 문장 끝 온점까지. 서버가 아직 고칠 수 있는 꼬리 글(WLK 의
+`buffer_transcription`, Nemotron 의 `pending`)은 화면과 VAD 커밋에만 쓴다.
+
+```yaml
+  transcription:
+    name: remote-stream
+    protocol: voxtral          # voxtral | nemotron | wlk
+    url: ws://127.0.0.1:8010/v1/realtime
+    model: mistralai/Voxtral-Mini-4B-Realtime-2602   # voxtral 만 필요
+```
+
+서버를 띄우는 법과 백엔드마다의 함정은 [tools/README.md](tools/README.md) 에 있다. 번역까지 모델 하나가
+하는 SeamlessStreaming(speech-to-speech)은 이 파이프라인에 들어가지 않아 [seamless/](seamless/README.md)
+에서 따로 돌리고 bench 의 채점 코드로 잰다.
+
 `configs/datasets/fleurs_en-ko.yml` — 데이터셋 하나와 목표 언어 하나다. 같은 데이터셋을 다른
 목표 언어로 재려면 파일을 하나 더 둔다. 지금 있는 것은 `fleurs_en-ko`(`fleurs/en_us` → ko)와
 `fleurs_ko-en`(`fleurs/ko_kr` → en)이다. 둘은 **같은 270문장**이다 — FLEURS test 에서 영어와

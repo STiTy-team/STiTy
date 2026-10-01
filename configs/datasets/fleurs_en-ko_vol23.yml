@@ -1,0 +1,9 @@
+meta:
+  description: FLEURS English sentences, translated to Korean; quiet clips raised to -23 dB RMS, as in the cafe and hall configs
+  tags: [fleurs, sentence, clean, volume]
+dataset:
+  name: fleurs/en_us
+target: ko
+augment:
+  volume:
+    min_level_db: -23

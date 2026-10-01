@@ -1,0 +1,65 @@
+"""백엔드 WebSocket 서버 진입점.
+
+    python server.py --backend nemotron --right-context 13 --port 8765
+
+엔진은 --backend 로 고른다. 엔진 모듈은 지연 import 한다 - conda env 마다 설치된
+라이브러리가 다르므로, 쓰지 않는 백엔드의 import 가 서버를 죽이면 안 된다.
+"""
+
+from __future__ import annotations
+
+import argparse
+import logging
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from protocol import BackendServer  # noqa: E402
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--backend", choices=["nemotron"], required=True)
+    ap.add_argument("--host", default="0.0.0.0")
+    ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument(
+        "--lang", default="auto", help="auto 권장 - 세 백엔드 조건을 맞추려면 힌트를 주지 않는다"
+    )
+    ap.add_argument(
+        "--right-context",
+        type=int,
+        default=3,
+        help="Nemotron num_lookahead_tokens. 0/3/6/13 = 80ms/320ms/560ms/1.12s. "
+        "**모델 기본값은 3 이다** - config 의 default_num_lookahead_tokens=3, "
+        "supported=[3,0,6,13] 이고 프로세서 streaming_latency_ms 가 320 으로 뜬다. "
+        "13 은 lookahead 를 최대로 준 설정이라 '기본값 비교' 에 쓰면 안 된다.",
+    )
+    ap.add_argument("--log-file")
+    args = ap.parse_args()
+
+    handlers = [logging.StreamHandler()]
+    if args.log_file:
+        Path(args.log_file).parent.mkdir(parents=True, exist_ok=True)
+        handlers.append(logging.FileHandler(args.log_file))
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)s\t%(message)s", level=logging.INFO, handlers=handlers
+    )
+
+    if args.backend == "nemotron":
+        from engine_nemotron import NemotronEngine
+
+        note = f"num_lookahead_tokens={args.right_context}"  # {0:80ms,3:320,6:560,13:1120}
+
+        def factory():
+            return NemotronEngine(right_context=args.right_context, lang=args.lang)
+    else:
+        raise SystemExit(f"unknown backend {args.backend}")
+
+    BackendServer(
+        factory, host=args.host, port=args.port, backend_name=args.backend, config_note=note
+    ).run()
+
+
+if __name__ == "__main__":
+    main()

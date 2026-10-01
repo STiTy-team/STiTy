@@ -1,0 +1,187 @@
+{
+  "name": "fleurs_en-ko_vol23/asr.voxtral-mini-4b+mt.qwen3.5-4b_punct-noctx",
+  "stamp": "20260930T120117",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-30T12:01:17.961221+00:00",
+  "finished_at": "2026-09-30T13:05:30.510850+00:00",
+  "metrics": {
+    "wer": 0.05472467709041468,
+    "wer_by_lang": {
+      "en": 0.05472467709041468
+    },
+    "wer_scored_only": 0.05472467709041468,
+    "cer": 0.024426403106247795,
+    "cer_by_lang": {
+      "en": 0.024426403106247795
+    },
+    "bleu": 22.323842715494006,
+    "bleu_by_pair": {
+      "en-ko": 22.323842715494006
+    },
+    "avg_fsl_sec": 0.0646372654155496,
+    "laal_ms": 6048.427572218685,
+    "laal_ca_ms": 7514.485523247923,
+    "yaal_ms": 4749.265324670263,
+    "yaal_ca_ms": 4913.294604459354,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "en->en": 373
+    },
+    "commit_reasons": {
+      "vad": 0.7479892761394102,
+      "seg": 0.0,
+      "dot": 0.17158176943699732,
+      "always": 0.0,
+      "finish": 0.08042895442359249
+    },
+    "segments_per_item": 1.3917910447761195,
+    "token_emission_ms": 1052.0830648048693,
+    "token_emission_p50_ms": 1039.9999999999998,
+    "token_emission_p90_ms": 1200.0000000000002,
+    "token_emission_ca_ms": 1104.3348012889367,
+    "token_emission_ca_p50_ms": 1073.35,
+    "token_emission_ca_p90_ms": 1278.1499999999996,
+    "comet": 0.859247321068351,
+    "comet_by_pair": {
+      "en-ko": 0.859247321068351
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "longyaal_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "longyaal_ca_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence"
+  },
+  "counts": {
+    "items": 268,
+    "sessions": 268,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 2626.62,
+    "wall_sec": 3852.55,
+    "compute_sec": 303.06,
+    "realtime_factor": 0.082
+  },
+  "failed_items": [],
+  "config": {
+    "name": "fleurs_en-ko_vol23/asr.voxtral-mini-4b+mt.qwen3.5-4b_punct-noctx",
+    "dataset": {
+      "name": "fleurs/en_us"
+    },
+    "target": "ko",
+    "augment": {
+      "volume": {
+        "min_level_db": -23
+      }
+    },
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "remote-stream",
+          "protocol": "voxtral",
+          "url": "ws://127.0.0.1:8010/v1/realtime",
+          "model": "mistralai/Voxtral-Mini-4B-Realtime-2602"
+        },
+        "translation": {
+          "name": "qwen3.5",
+          "url": "http://127.0.0.1:8100/v1",
+          "model": "Qwen/Qwen3.5-4B",
+          "gpu_memory_utilization": 0.44,
+          "context_turns": 0
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "punct",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "fleurs_en-ko_vol23",
+      "version": 1,
+      "ref": "fleurs_en-ko_vol23",
+      "hash": "0f761e19a546",
+      "description": "FLEURS English sentences, translated to Korean; quiet clips raised to -23 dB RMS, as in the cafe and hall configs",
+      "tags": [
+        "fleurs",
+        "sentence",
+        "clean",
+        "volume"
+      ]
+    },
+    "pipeline": {
+      "name": "asr.voxtral-mini-4b+mt.qwen3.5-4b_punct-noctx",
+      "version": 1,
+      "ref": "asr.voxtral-mini-4b+mt.qwen3.5-4b_punct-noctx",
+      "hash": "43225adfc2d1",
+      "description": "Voxtral Mini 4B Realtime (mistralai/Voxtral-Mini-4B-Realtime-2602) served by vLLM realtime on :8010; takes no language hint; the translator reserves 0.44 of the card instead of 0.52 so both fit (same model, same greedy decoding); commits on VAD silence (800 ms) and sentence-final dots in confirmed text, then Qwen3.5-4B translation with no previous-turn context",
+      "tags": [
+        "cascade",
+        "remote-stream",
+        "voxtral",
+        "local-mt",
+        "punct",
+        "no-context"
+      ]
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/en_us",
+    "split": "test",
+    "languages": [
+      "en"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "de",
+        "ko"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "id",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/en_us",
+    "manifest_sha256": "e32e399d9f684efee59d32d244f759e03abd4c4fa177e5ec2568794638c5c9a5",
+    "alignment_sha256": "7f104bd4153c4561dbc9a931a186375e1406adf27d13572a383d0394d0438146",
+    "n_aligned": 268,
+    "n_items": 268,
+    "n_sessions": 268
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "remote-stream",
+      "protocol": "voxtral",
+      "url": "ws://127.0.0.1:8010/v1/realtime",
+      "model": "mistralai/Voxtral-Mini-4B-Realtime-2602"
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "qwen3.5",
+      "url": "http://127.0.0.1:8100/v1",
+      "model": "Qwen/Qwen3.5-4B",
+      "gpu_memory_utilization": 0.44,
+      "context_turns": 0
+    }
+  }
+}

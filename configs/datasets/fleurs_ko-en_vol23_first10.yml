@@ -1,0 +1,10 @@
+meta:
+  description: The first 10 FLEURS Korean sentences, translated to English; quiet clips raised to -23 dB RMS; a quick check before the full run
+  tags: [fleurs, sentence, clean, volume, subset]
+dataset:
+  name: fleurs/ko_kr
+  limit: 10
+target: en
+augment:
+  volume:
+    min_level_db: -23

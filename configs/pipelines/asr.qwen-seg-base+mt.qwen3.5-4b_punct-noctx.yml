@@ -1,0 +1,24 @@
+meta:
+  description: Base Qwen3-ASR-1.7B (not finetuned, emits no SEG) run through the qwen-seg transcriber for its dot-commit confirmation and dedup guards; commits on VAD silence (800 ms) and sentence-final dots; then Qwen3.5-4B translation with no previous-turn context
+  tags: [cascade, qwen-seg, base-asr, local-mt, punct, no-context]
+pipeline:
+  name: cascade
+  transcription:
+    name: qwen-seg
+    model: Qwen/Qwen3-ASR-1.7B
+    chunk_size_sec: 2.0
+    max_new_tokens: 128
+    dot_commit_confirm: true
+    dot_commit_stall_chunks: 1
+    rep_dedup: true
+  translation:
+    name: qwen3.5
+    url: http://127.0.0.1:8100/v1
+    model: Qwen/Qwen3.5-4B
+    gpu_memory_utilization: 0.52
+    context_turns: 0
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: punct
+gpu_memory_utilization: 0.30
