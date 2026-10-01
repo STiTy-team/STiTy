@@ -20,6 +20,14 @@ make replay                                         # 대시보드: 데이터셋
 make replay RUN=fleurs_en-ko/asr.qwen-seg-en+mt.qwen3.5-4b TOPK=20    # 그 실행의 세션 재생으로 바로 연다
 ```
 
+**여러 실행을 차례로 돌리려면** 한 줄에 `파이프라인 데이터셋` 하나씩 적은 텍스트 파일을 넘긴다.
+`#` 줄과 빈 줄은 건너뛴다. 하나가 실패해도 다음 줄로 넘어가고, 끝에 실패한 것만 모아 보여 준다.
+오래 도니 GPU 머신에서 tmux 로 띄운다.
+
+```bash
+tmux new-session -d -s bench -c ~/STiTy "make batch LIST=my_runs.txt 2>&1 | tee my_runs.log"
+```
+
 **bench 는 자기 uv 환경에서 돈다.** [uv](https://docs.astral.sh/uv/) 만 설치돼 있으면 된다 —
 `make` 가 `uv run --project bench` 로 부르고, uv 가 `bench/pyproject.toml`·`bench/uv.lock` 대로
 `bench/.venv` 를 만든다(처음 한 번 수 GB). 저장소 루트의 `.venv` 나 다른 파이썬 환경은 건드리지

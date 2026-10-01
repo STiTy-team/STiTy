@@ -1,4 +1,4 @@
-.PHONY: bench replay server fmt env
+.PHONY: bench bench-batch replay server fmt env
 
 -include .env
 export CUDA_HOME       ?= /usr/local/cuda
@@ -8,6 +8,9 @@ export PATH            := $(CUDA_HOME)/bin:$(PATH)
 bench:
 	uv run --project bench python -m bench --config $(CONFIG) --dataset $(DATASET)
 	uv run --project bench/metrics/comet python -m bench.metrics.comet --run-dir "$$(uv run --project bench python -m bench --config $(CONFIG) --dataset $(DATASET) --print-run-dir)"
+
+bench-batch:
+	bash scripts/bench/batch.sh $(LIST)
 
 replay:
 	uv run --project bench python -m bench.replay $(RUN:%=--run-dir %) $(TOPK:%=--top-k %)
