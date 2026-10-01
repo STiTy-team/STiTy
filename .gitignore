@@ -204,6 +204,9 @@ evaluation/ast/samples/
 # stream are neither small nor comparable line by line, so they stay local.
 bench/runs/*/*/*
 !bench/runs/*/*/summary.json
+# SeamlessStreaming runs outside bench (bench/seamless/). Exported audio, synthesized
+# speech and per-item rows stay local; the scored summaries are copied to results/.
+bench/seamless/work/
 
 # Benchmark datasets live in their own repo (github.com/STiTy-team/datasets),
 # checked out wherever STITY_DATA_ROOT points. Nothing dataset-shaped belongs here.
