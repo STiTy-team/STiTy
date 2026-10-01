@@ -1,9 +1,13 @@
+import re
+
 from core.utils import logging
 
 from . import transcribers
-from .qwen3_seg import MIN_SPEECH_OVERLAP_SEC, Qwen3SegTranscription
+from .qwen3_seg import MIN_SPEECH_OVERLAP_SEC, Qwen3SegTranscription, strip_lang_headers
 
 log = logging.getLogger(__name__)
+
+KO_RISKY_FILLER_RE = re.compile(r"(?:(?:아니|응|그렇지|그거)[,.]?\s*)+[!?…]?")
 
 
 @transcribers.register("qwen-seg:v2")
@@ -45,4 +49,17 @@ class Qwen3SegTranscriptionV2(Qwen3SegTranscription):
                 return False
         log.info("[DROP] rule=no-speech gate=emit reason=%s span=(%.1f~%.1f) text=%r",
                  reason, start, end, original)
+        return True
+
+    def _drop_commit_candidate(self, original: str, reason: str) -> bool:
+        if super()._drop_commit_candidate(original, reason):
+            return True
+        if reason not in ("vad", "finish"):
+            return False
+        stripped = strip_lang_headers(original or "").strip()
+        if not KO_RISKY_FILLER_RE.fullmatch(stripped):
+            return False
+        if not self._is_silence_hallucination(stripped, reason, self._audio_sec()):
+            return False
+        self._log_drop("tail-filler-risky", "candidate", reason, stripped)
         return True
