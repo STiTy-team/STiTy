@@ -46,6 +46,9 @@ LANG_HEADER_INLINE_RE = re.compile(
     r"^\s*language\s+(?:None|[A-Z][A-Za-z]*)\s*(?:<asr_text>)?[.,!?;:]?\s*")
 LANG_HEADER_AFTER_PUNCT_RE = re.compile(
     r"(?<=[.,!?;:])\s+language\s+(?:None|[A-Z][A-Za-z]*)(?=[\s.,!?;:]|$)[.,!?;:]?\s*")
+PARTIAL_HEADER_TAIL_RE = re.compile(
+    r"(?:^|(?<=[.,!?;:]))\s*(?:language(?:\s+(?:None|[A-Z][A-Za-z]*))?"
+    r"|l(?:a(?:n(?:g(?:u(?:a(?:g)?)?)?)?)?)?)\s*$")
 KNOWN_SILENCE_RE = re.compile(
     r"^\s*(?:"
     r"i'?m sorry,? but i can'?t (?:hear|help|understand) you\b.*"
@@ -104,6 +107,10 @@ def strip_lang_headers(text: str) -> str:
     text = LANG_HEADER_INLINE_RE.sub("", text)
     text = LANG_HEADER_AFTER_PUNCT_RE.sub(" ", text)
     return re.sub(r"\s{2,}", " ", text).strip()
+
+
+def strip_partial_headers(text: str) -> str:
+    return PARTIAL_HEADER_TAIL_RE.sub("", strip_lang_headers(text)).strip()
 
 
 def boundary_key(sentence: str) -> str:
@@ -595,7 +602,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
     def _offer_partial(self, *, force: bool = False) -> None:
         if not force and clock.elapsed_since(self._partial_at) < PARTIAL_MIN_INTERVAL_SEC:
             return
-        text = self._uncommitted_display()
+        text = strip_partial_headers(self._uncommitted_display())
         if not text and not force:
             return
         previous = self._partial_text
