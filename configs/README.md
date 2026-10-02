@@ -36,6 +36,7 @@
 | 칸 | 말 | 뜻 |
 |---|---|---|
 | 조건 | `cafe` | 카페 소음 (`augment.noise.place: cafe`) |
+| 조건 | `restaurant` | 식당 울림 (`augment.room.place: restaurant`) |
 | 조건 | `hall` | 공연장 울림 (`augment.room.place: hall`) |
 | 조건 | `lvl26` | 턴마다 −26 dBFS 로 맞춘 데이터 (`mix.py --level -26`) |
 | 부분 | `top<N>` | 가장 긴 N개 (`limit: N`, `pick: longest`) |

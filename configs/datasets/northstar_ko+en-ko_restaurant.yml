@@ -1,0 +1,13 @@
+meta:
+  description: Northstar six-scene en+ko conversation (northstar-260928) in a restaurant room (impulse responses, level 0.5-1.0), each scene streamed whole, translated to Korean; quiet clips raised to -23 dB
+  tags: [northstar, longform, mixed-language, reverb]
+dataset:
+  name: northstar-260928
+  longform: true
+target: ko
+augment:
+  room:
+    place: restaurant
+    level: [0.5, 1.0]
+  volume:
+    min_level_db: -23

@@ -1,0 +1,13 @@
+meta:
+  description: Northstar six-scene en+ko conversation (northstar-260928) with cafe noise (level 0.1-0.5), each scene streamed whole, translated to Korean; quiet clips raised to -23 dB
+  tags: [northstar, longform, mixed-language, noise]
+dataset:
+  name: northstar-260928
+  longform: true
+target: ko
+augment:
+  noise:
+    place: cafe
+    level: [0.1, 0.5]
+  volume:
+    min_level_db: -23
