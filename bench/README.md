@@ -25,7 +25,7 @@ make replay RUN=fleurs_en-ko/asr.qwen-seg-en+mt.qwen3.5-4b TOPK=20    # 그 실�
 오래 도니 GPU 머신에서 tmux 로 띄운다.
 
 ```bash
-tmux new-session -d -s bench -c ~/STiTy "make batch LIST=my_runs.txt 2>&1 | tee my_runs.log"
+tmux new-session -d -s bench -c ~/STiTy "make bench-batch LIST=my_runs.txt 2>&1 | tee my_runs.log"
 ```
 
 **bench 는 자기 uv 환경에서 돈다.** [uv](https://docs.astral.sh/uv/) 만 설치돼 있으면 된다 —

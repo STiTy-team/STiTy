@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -u
 
-list=${1:?usage: make batch LIST=<file with one "pipeline dataset" pair per line>}
+list=${1:?usage: make bench-batch LIST=<file with one "pipeline dataset" pair per line>}
 failed=()
 
-while read -r config dataset _; do
+while read -r config dataset _ || [[ -n ${config:-} ]]; do
   [[ -z ${config:-} || $config == \#* ]] && continue
+  if [[ -z ${dataset:-} ]]; then
+    echo "=== $(date '+%F %T') $config has no dataset, skipped"
+    failed+=("$config × (no dataset)")
+    continue
+  fi
   echo "=== $(date '+%F %T') $config × $dataset"
   if ! make bench CONFIG="$config" DATASET="$dataset" </dev/null; then
     failed+=("$config × $dataset")
