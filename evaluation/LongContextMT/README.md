@@ -23,6 +23,8 @@ N 에 따라 어떻게 바뀌는지 잰다. 원문·정답 번역·화자 정보
 | `scripts/score.py` | 고정 지표 채점 (COMET·XCOMET·CometKiwi·MetricX·chrF++·spBLEU) |
 | `scripts/aggregate.py` | `summary.json`, `summary.md` |
 | `scripts/run_translate.sh`, `run_post.sh` | tmux 체인. 순서는 `logs/markers/*.done` 으로 잡는다 |
+| `scripts/build_ref_sol.py`, `run_ref_sol.sh` | 다시 채점용 정답. gpt-6-sol 이 원문 한 줄에 정답 한 줄이 정확히 대응하게 다시 번역한다 → `data/talk231_ref_sol.jsonl` (idx 240~397) |
+| `scripts/rescore.py`, `aggregate_rescore.py`, `run_rescore_gpu.sh` | 정답 두 벌(IWSLT, sol) × 단위 세 가지(문장, 4문장 묶음, 강연 전체)로 1.1 번역을 다시 채점 → `results/<run_id>/rescore/` |
 | `results/<run_id>/` | 모델별 `translations.jsonl`·`latency_sweep.jsonl`, `api_usage.jsonl`(호출마다 비용), 채점 캐시, 요약 |
 | `logs/gpu_samples.csv` | 로컬 실행 중 GPU 를 같이 쓴 프로세스. 집계가 그 시각의 로컬 지연을 뺀다 |
 
@@ -59,6 +61,27 @@ tmux new-session -d -s lcmt-post  -c "$PWD" "METRICS_PY=<채점 환경>/bin/pyth
 
 새로 돌리려면 `configs/experiment.yml` 의 `run_id` 를 바꾸고 `logs/markers/` 를 비운다.
 `VAR=x tmux new-session …` 처럼 앞에 붙인 환경 변수는 tmux 서버에 넘어가지 않는다. `METRICS_PY` 는 명령 문자열 안에 넣는다.
+
+## 다시 채점 (정답·채점 단위 바꾸기)
+
+IWSLT 정답은 자막 번역이라 의역·누락·이웃 줄로 밀린 내용이 있어, 문장 단위로 채점하면 맞는 번역도 감점된다.
+그래서 정답을 하나 더 만들고(sol) 채점 단위도 넓혀 1.1 번역을 다시 잰다. 번역은 다시 돌리지 않는다.
+
+- **묶음**: idx 256 부터 4문장씩 35개(끝 2문장 버림). Doc-COMET 은 앞 문맥을 512 토큰 안에서 최대로 채우고(14~24문장)
+  점수는 묶음에서만 낸다. 번역 쪽 문맥도 정답 앞 문장을 써서 모든 N 조건의 문맥이 같다. MetricX 는 묶음만 넣는다.
+  4 로 정한 근거: 묶음이 최대 약 210 토큰이라 문맥 자리가 넉넉하고, 묶음 35개로 부트스트랩 구간을 낼 수 있다.
+  8 이면 17개, 16 이면 COMET·MetricX 입력 상한을 넘는다.
+- **강연 전체**: 142문장을 문자열 하나로 이어 chrF++·spBLEU 만 계산한다.
+- sol 정답은 gpt-6-luna 와 같은 회사 모델이라 luna 쪽으로 기울 수 있다. 모델끼리 비교보다 N 에 따른 변화를 보는 데 쓴다.
+
+```bash
+python evaluation/LongContextMT/scripts/build_ref_sol.py            # 정답 (API, 약 $0.2)
+$METRICS_PY -u evaluation/LongContextMT/scripts/rescore.py --stage cpu   # 묶음 정의, chrF++·spBLEU
+$METRICS_PY -u evaluation/LongContextMT/scripts/rescore.py --stage gpu   # COMET·Doc-COMET·MetricX·XCOMET (16GB 이상)
+$METRICS_PY evaluation/LongContextMT/scripts/aggregate_rescore.py
+```
+
+GPU 를 다른 작업과 나눠 쓰는 머신이면 `run_rescore_gpu.sh` 가 GPU 가 비고 3분 뒤에도 비어 있을 때 GPU 단계를 시작한다.
 
 ## 알아 둘 것
 
