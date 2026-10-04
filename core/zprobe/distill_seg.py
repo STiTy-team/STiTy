@@ -3,7 +3,7 @@ For each utterance: policy (SEG model + GRPO adapter, ASR mode with the target c
 transcript with <SEG>; forced aligner -> boundary times; translator (SEG model + translation adapter)
 -> prefix translations per boundary; write SFT rows 'language KO<asr_text>t1 <SEG> t2 ...' (pair en-ko,
 field distill=True). Then train with qwen3_asr_sft.py as in seg9.
-usage: distill_seg.py --policy_adapter out_grpo_ko/adapter_step100 --trans_adapter out_segft9/final --tgt ko --split train --limit 300 --out train_distill_ko.jsonl"""
+usage: distill_seg.py --seg_model <seg> --ids_from train_seg9.jsonl --policy_adapter out_grpo_ko/adapter_step100 --trans_adapter out_segft9/final --tgt ko --split train --limit 300 --out train_distill_ko.jsonl"""
 import argparse, csv, json, os, re, sys, time
 import numpy as np, librosa, torch
 sys.path.insert(0, os.environ.get("PROBE_Z_DIR", os.path.dirname(os.path.abspath(__file__)))); import probe_z as P
@@ -12,10 +12,12 @@ from peft import PeftModel
 ap = argparse.ArgumentParser()
 ap.add_argument("--seg_model", required=True); ap.add_argument("--policy_adapter", required=True); ap.add_argument("--trans_adapter", required=True)
 ap.add_argument("--tgt", default="ko"); ap.add_argument("--split", default="train"); ap.add_argument("--limit", type=int, default=300); ap.add_argument("--out", required=True)
+ap.add_argument("--ids_from", default="", help="jsonl whose segmt rows pick the utterances (same set as the seg9 en-ko rows)")
 a = ap.parse_args(); dev = "cuda"
 P.MODEL = a.seg_model; P.ADAPTER = a.trans_adapter; trans = P.load_model(); ttok = trans.processor.tokenizer
 pol = Qwen3ASRModel.from_pretrained(a.seg_model, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1)
-pol.model = PeftModel.from_pretrained(pol.model, a.policy_adapter).merge_and_unload(); pol.model.eval(); ptok = pol.processor.tokenizer
+if a.policy_adapter != "none": pol.model = PeftModel.from_pretrained(pol.model, a.policy_adapter).merge_and_unload()     # "none" = the SEG model's own segmentation (control)
+pol.model.eval(); ptok = pol.processor.tokenizer
 aligner = Qwen3ForcedAligner.from_pretrained("Qwen/Qwen3-ForcedAligner-0.6B", dtype=torch.bfloat16, device_map="cuda")
 def read_rows(lang):
     d = {}
@@ -23,7 +25,11 @@ def read_rows(lang):
         if len(r) >= 6: d.setdefault(r[0], r)
     return d
 rows_en, rows_t = read_rows("en"), read_rows(a.tgt)
-ids = [u for u in sorted(set(rows_en) & set(rows_t), key=int) if (P.FLEURS / "en_us" / "audio" / a.split / rows_en[u][1]).exists()][: a.limit]
+ids = [u for u in sorted(set(rows_en) & set(rows_t), key=int) if (P.FLEURS / "en_us" / "audio" / a.split / rows_en[u][1]).exists()]
+if a.ids_from:
+    keep = {os.path.basename(json.loads(l)["audio"]) for l in open(a.ids_from, encoding="utf-8") if json.loads(l).get("segmt")}
+    ids = [u for u in ids if rows_en[u][1] in keep]
+ids = ids[: a.limit]
 ctx = f"Segment for {P.LANGS[a.tgt][1]} interpretation."
 def gen(model, tok, wav, lang, prefix="", context=""):
     prompt = model._build_text_prompt(context=context, force_language=lang) + prefix

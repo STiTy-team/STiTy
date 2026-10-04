@@ -29,6 +29,7 @@ P.MODEL = a.seg_model; P.ADAPTER = a.trans_adapter
 trans = P.load_model(); ttok = trans.processor.tokenizer
 # --- policy: SEG model + new LoRA
 pol = Qwen3ASRModel.from_pretrained(a.seg_model, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1)
+type(pol.model).forward = lambda self, **kw: self.thinker(**kw)     # outer model has generate() only; logprobs need the thinker forward
 ptok = pol.processor.tokenizer; seg_id = ptok.convert_tokens_to_ids("<SEG>")
 lcfg = LoraConfig(r=a.lora_r, lora_alpha=2 * a.lora_r, lora_dropout=0.0, target_modules=["q_proj", "k_proj", "v_proj", "o_proj"])
 pol.model = get_peft_model(pol.model, lcfg); pol.model.print_trainable_parameters()
