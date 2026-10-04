@@ -41,17 +41,22 @@
 학습 레시피: SEG 모델 또는 기본 모델 위에 LoRA r=64 q/k/v/o, batch 2 × grad_acc 8, 1 에폭. 소규모(≤5k)는 lr 1e-4,
 FLEURS 전체는 lr 3e-5(1e-4 는 0.4 에폭부터 과적합). batch 4 는 긴 발화에서 OOM.
 
-## 저장소 밖 산출물
+## 저장소 밖 산출물 (`models/zprobe/`, git 무시 대상)
 
-`~/probe_z_2026-10-03/` — 어댑터(`ft_smoke/out_*/final`), 데이터 jsonl, 로그, `four.npz`(4언어 층별 벡터).
-FLEURS train/dev/test 4언어 음성 `~/datasets/fleurs/data/`. 실행 체인 쉘(`*.sh`)은 세션 scratchpad 경로가 박혀 있어
-그대로는 못 씀 — 명령은 LOG.md 와 아래 참고.
+| 경로 | 내용 |
+|---|---|
+| `models/zprobe/adapters/<이름>/` | LoRA 어댑터(peft 형식, `PROBE_ADAPTER=` 로 로드). `smoke`(13쌍 300문장) `B` `C` `D`(최소 쌍 실험) `big2`(FLEURS 전체 lr 3e-5, **번역용 최선**) `big_v1_ckpt600` `segft`·`segft2`(SEG 모델 위, 영어 ASR 만 SEG) `segft5`(+문장 경계 SEG) `segft9`(+en→ko 절 단위 SEG, Hy-MT2) `segft10_banmal`·`segft10_hapnida`(gemma 통역사 라벨, 말투) |
+| `models/zprobe/data/` | 학습·검증 jsonl(음성 절대경로 포함), 평가 출력 jsonl(`ev_*`, `sg_*`, `st_*`, `srA_*`), `four.npz`(4언어 층별 벡터), `neur.npz` |
+| `models/zprobe/logs/` | 학습 로그, analyze·segprobe 표, COMET 점수 |
+
+원본은 `~/probe_z_2026-10-03/` 에도 그대로 있음. FLEURS train/dev/test 4언어 음성은 `~/datasets/fleurs/data/`.
+실행 체인 쉘(`*.sh`)은 세션 scratchpad 경로가 박혀 있어 그대로는 못 씀 — 명령은 LOG.md 와 아래 참고.
 
 ## 이어서 할 일 (2026-10-04 20:00 기준)
 
 - **stage B 대기 중.** 다른 작업의 vLLM 이 GPU 22GB 를 잡고 있어 스모크가 못 떴음. 흐름:
   1. `.venv/bin/python core/zprobe/comet_server.py --port 8777` (tmux)
-  2. 스모크: `PYTHONPATH=Qwen3-ASR python core/zprobe/grpo_seg.py --seg_model models/Qwen3-ASR-1.7B-en-covost2-dailytalk-mix-c200-merged --trans_adapter ~/probe_z_2026-10-03/ft_smoke/out_segft9/final --utts 4 --G 4 --steps 2 --batch_utts 1 --out <out>`
+  2. 스모크: `PYTHONPATH=Qwen3-ASR python core/zprobe/grpo_seg.py --seg_model models/Qwen3-ASR-1.7B-en-covost2-dailytalk-mix-c200-merged --trans_adapter models/zprobe/adapters/segft9 --utts 4 --G 4 --steps 2 --batch_utts 1 --out <out>`
   3. 본 실행: `--tgt ko --utts 200 --G 8 --steps 100 --batch_utts 2 --lam 0.02 --max_seg 6`. 로그 한 줄 = 한 스텝(meanR, meanC, mean_nseg).
      보상 해킹 감시: nseg 가 1 로 수렴하면 λ 낮추거나 `--pen` 올림.
   4. stage C: `distill_seg.py --policy_adapter <out>/adapter_step100 --trans_adapter ... --tgt ko --limit 300` → SFT → `probe_z.py segswap/tagswap` + COMET 로 seg9 와 비교.
