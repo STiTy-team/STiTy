@@ -453,6 +453,9 @@ def parse_args():
                    help="무음 학습 데이터 생성 개수 (0 = 사용 안 함)")
     p.add_argument("--silence_dir", type=str, default="./data/silence_generated",
                    help="생성된 무음 WAV 및 JSONL 저장 경로")
+    p.add_argument("--no_seg", type=int, default=0,
+                   help="1 이면 <SEG> 토큰을 추가하지 않고 임베딩·lm_head 도 얼린다 (LoRA 만 학습).")
+    p.add_argument("--lora_targets", type=str, default="q_proj,k_proj,v_proj,o_proj")
     p.add_argument("--lora_r", type=int, default=128)
     p.add_argument("--lora_alpha", type=int, default=256)
     p.add_argument("--lora_dropout", type=float, default=0.1)
@@ -475,8 +478,8 @@ def main():
     model = asr_wrapper.model
     processor = asr_wrapper.processor
 
-    # <SEG>를 special token으로 등록 (resume 시에도 처리)
-    if "<SEG>" not in processor.tokenizer.get_vocab():
+    # <SEG>를 special token으로 등록 (resume 시에도 처리). --no_seg 면 토큰 추가·임베딩 학습 전부 건너뛴다.
+    if not args_cli.no_seg and "<SEG>" not in processor.tokenizer.get_vocab():
         processor.tokenizer.add_special_tokens({"additional_special_tokens": ["<SEG>"]})
     # vocab 크기 불일치 시 resize (최초 학습 및 resume 모두)
     if model.thinker.get_input_embeddings().weight.shape[0] != len(processor.tokenizer):
@@ -494,7 +497,7 @@ def main():
                 r=args_cli.lora_r,
                 lora_alpha=args_cli.lora_alpha,
                 lora_dropout=args_cli.lora_dropout,
-                target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+                target_modules=args_cli.lora_targets.split(","),
             )
             model = get_peft_model(model, lora_config)
 
@@ -506,13 +509,13 @@ def main():
             return grad * mask
         return _hook
 
-    emb = model.thinker.get_input_embeddings()
-    emb.weight.requires_grad_(True)
-    emb.weight.register_hook(_make_seg_only_hook(seg_id))
-
-    lm_head = model.thinker.get_output_embeddings()
-    lm_head.weight.requires_grad_(True)
-    lm_head.weight.register_hook(_make_seg_only_hook(seg_id))
+    if not args_cli.no_seg:
+        emb = model.thinker.get_input_embeddings()
+        emb.weight.requires_grad_(True)
+        emb.weight.register_hook(_make_seg_only_hook(seg_id))
+        lm_head = model.thinker.get_output_embeddings()
+        lm_head.weight.requires_grad_(True)
+        lm_head.weight.register_hook(_make_seg_only_hook(seg_id))
 
     model.print_trainable_parameters()
 
@@ -628,6 +631,9 @@ def main():
         trainer.train(resume_from_checkpoint=resume_from)
     else:
         trainer.train()
+    # 마지막(또는 load_best 면 최선) 어댑터를 final/ 에 남긴다.
+    if trainer.args.process_index == 0:
+        trainer.save_model(os.path.join(training_args.output_dir, "final"))
 
 
 if __name__ == "__main__":
