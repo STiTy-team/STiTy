@@ -49,7 +49,7 @@ FLEURS 전체는 lr 3e-5(1e-4 는 0.4 에폭부터 과적합). batch 4 는 긴 �
 | `models/zprobe/data/` | 학습·검증 jsonl(음성 절대경로 포함), 평가 출력 jsonl(`ev_*`, `sg_*`, `st_*`, `srA_*`), `four.npz`(4언어 층별 벡터), `neur.npz` |
 | `models/zprobe/logs/` | 학습 로그, analyze·segprobe 표, COMET 점수 |
 
-원본은 `~/probe_z_2026-10-03/` 에도 그대로 있음. FLEURS train/dev/test 4언어 음성은 `~/datasets/fleurs/data/`.
+원본은 `~/probe_z_2026-10-03/` 에도 그대로 있음. **Hugging Face(private)** 에도 올려 둠: `Doo12/stity-zprobe-adapters`(= `models/zprobe/`), `Doo12/Qwen3-ASR-1.7B-en-seg-c200`(= SEG 모델). 받기: `huggingface-cli download Doo12/stity-zprobe-adapters --local-dir models/zprobe` (읽기 토큰 필요). 올리기: `core/zprobe/hf_upload.py` (`.env` 의 `HF_TOKEN_W`). FLEURS train/dev/test 4언어 음성은 `~/datasets/fleurs/data/`.
 실행 체인 쉘(`*.sh`)은 세션 scratchpad 경로가 박혀 있어 그대로는 못 씀 — 명령은 LOG.md 와 아래 참고.
 
 ## 이어서 할 일 (2026-10-04 20:00 기준)
