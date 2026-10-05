@@ -39,6 +39,8 @@ class DatasetConfig(ConfigBody):
     longform: bool = False
     limit: int | None = None
     pick: Literal["first", "longest"] = "first"
+    # Exact items to run, in manifest order -- re-check the ones a change targets.
+    ids: list[str] | None = None
 
     @classmethod
     def normalize(cls, raw: Any) -> Any:

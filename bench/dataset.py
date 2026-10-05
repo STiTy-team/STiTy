@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from core.errors import DataError
+from core.errors import ConfigError, DataError
 from core.utils import langs
 from core.utils.json import read_jsonl
 from core.utils.audio import probe_duration
@@ -191,6 +191,11 @@ def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
 
 
 def _pick(items: list[Item], cfg: DatasetConfig) -> list[Item]:
+    if cfg.ids is not None:
+        missing = set(cfg.ids) - {i.id for i in items}
+        if missing:
+            raise ConfigError(f"ids not in the manifest: {sorted(missing)}")
+        items = [i for i in items if i.id in set(cfg.ids)]
     if cfg.pick == "longest":
         chosen = {i.id for i in sorted(items, key=lambda i: -i.duration_sec)[: cfg.limit]}
         return [i for i in items if i.id in chosen]

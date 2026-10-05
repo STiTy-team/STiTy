@@ -220,6 +220,10 @@ target: ko             # 들린 말을 모두 이 언어로 번역한다
 같은 문장이라도 언어마다 오디오 길이가 달라서 둘은 서로 다른 문장들이다 — 두 방향을 같은 문장으로
 비교하려면 `pick` 을 빼고(앞의 N개) `first50` 같은 이름으로 둔다.
 
+특정 문장만 다시 보려면 `ids: [...]` 에 항목 id 를 적는다. 순서는 manifest 순이고, manifest 에 없는
+id 가 있으면 시작 전에 멈춘다. 지금 있는 것은 `fleurs_en-ko_hallu`·`fleurs_ko-en_hallu`(koen-seg-mix
+실행에서 헛말이 커밋된 문장과 대조군 10개)다.
+
 ```yaml
 # configs/datasets/fleurs_en-ko_top50.yml
 meta:
