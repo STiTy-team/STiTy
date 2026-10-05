@@ -11,6 +11,11 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "unbabel-comet>=2.2.7",
     "setuptools<81",
+    "boto3",
+    "httpx",
+    "gitpython>=3.2.0",
+    "python-dotenv>=1.2.4",
+    "pydantic-settings>=2.15.0",
 ]
 
 [tool.uv]

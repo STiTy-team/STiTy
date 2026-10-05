@@ -8,7 +8,7 @@ from core.utils import audio
 from core.utils import cli, clock, env, logging, stream
 from core.utils.json import JsonlWriter, read_jsonl, write_jsonl
 
-from . import augment, config, registry
+from . import augment, config, notify, registry
 from .metrics.common import transcribed, translated
 from .metrics import score
 from .metrics.translation import translation_sentences
@@ -239,6 +239,9 @@ if __name__ == "__main__":
 
     try:
         main(args)
-    except STiTyError as e:
+    except Exception as e:
+        notify.failure(e, pipeline=args.config, dataset=args.dataset)
+        if not isinstance(e, STiTyError):
+            raise
         log.error("[FAILED] %s", e)
         raise SystemExit(e.exit_code)

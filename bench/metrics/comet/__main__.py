@@ -3,7 +3,8 @@ from argparse import Namespace
 from pathlib import Path
 from statistics import mean
 
-from core.utils import cli
+from bench import notify
+from core.utils import cli, env
 from core.utils.json import read_json, read_jsonl, write_json
 
 COMET_MODEL = "Unbabel/wmt22-comet-da"
@@ -75,6 +76,7 @@ def score(run_dir: Path) -> dict:
 
 def main(args: Namespace) -> int:
     print(json.dumps(score(args.run_dir), ensure_ascii=False))
+    notify.success(read_json(args.run_dir / "summary.json"))
     return 0
 
 
@@ -90,4 +92,10 @@ if __name__ == "__main__":
         prog="python -m bench.metrics.comet",
         description="bench 실행 하나에 COMET 을 채점해 summary.json 에 더한다",
     )
-    raise SystemExit(main(args))
+    env.load()
+    try:
+        raise SystemExit(main(args))
+    except Exception as e:
+        summary_path = args.run_dir / "summary.json"
+        notify.failure(e, summary=read_json(summary_path) if summary_path.exists() else None)
+        raise
