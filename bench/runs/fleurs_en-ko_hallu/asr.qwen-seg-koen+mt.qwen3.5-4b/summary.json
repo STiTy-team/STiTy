@@ -1,0 +1,260 @@
+{
+  "name": "fleurs_en-ko_hallu/asr.qwen-seg-koen+mt.qwen3.5-4b",
+  "stamp": "20261004T102237",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-10-04T10:22:37.963957+00:00",
+  "finished_at": "2026-10-04T10:39:55.895971+00:00",
+  "metrics": {
+    "wer": 0.050314465408805034,
+    "wer_by_lang": {
+      "en": 0.050314465408805034
+    },
+    "wer_scored_only": 0.050314465408805034,
+    "cer": 0.029918525444103113,
+    "cer_by_lang": {
+      "en": 0.029918525444103113
+    },
+    "bleu": 20.072498176103053,
+    "bleu_by_pair": {
+      "en-ko": 20.072498176103053
+    },
+    "avg_fsl_sec": 0.12415714285714287,
+    "laal_ms": 3029.076425457518,
+    "laal_ca_ms": 3629.5613949849517,
+    "yaal_ms": 2987.8130923395943,
+    "yaal_ca_ms": 3229.6405553486115,
+    "lang_detect_accuracy": 1.0,
+    "confusion": {
+      "en->en": 161
+    },
+    "commit_reasons": {
+      "vad": 0.055900621118012424,
+      "seg": 0.9440993788819876,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.0
+    },
+    "segments_per_item": 2.3,
+    "token_emission_ms": 1226.9767441860465,
+    "token_emission_p50_ms": 1040.0,
+    "token_emission_p90_ms": 2080.0,
+    "token_emission_ca_ms": 1380.805980066445,
+    "token_emission_ca_p50_ms": 1166.9999999999998,
+    "token_emission_ca_p90_ms": 2316.1000000000035,
+    "comet": 0.8501631762300219,
+    "comet_by_pair": {
+      "en-ko": 0.8501631762300219
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "longyaal_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence",
+    "longyaal_ca_ms": "the run is not long-form (set longform: true on the dataset), or no talk had a reference translation for every sentence"
+  },
+  "counts": {
+    "items": 70,
+    "sessions": 70,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 668.76,
+    "wall_sec": 1037.93,
+    "compute_sec": 66.22,
+    "realtime_factor": 0.07
+  },
+  "failed_items": [],
+  "config": {
+    "name": "fleurs_en-ko_hallu/asr.qwen-seg-koen+mt.qwen3.5-4b",
+    "dataset": {
+      "name": "fleurs/en_us",
+      "ids": [
+        "en_1660",
+        "en_1661",
+        "en_1665",
+        "en_1666",
+        "en_1678",
+        "en_1685",
+        "en_1686",
+        "en_1707",
+        "en_1719",
+        "en_1720",
+        "en_1722",
+        "en_1725",
+        "en_1739",
+        "en_1740",
+        "en_1749",
+        "en_1754",
+        "en_1755",
+        "en_1764",
+        "en_1765",
+        "en_1771",
+        "en_1784",
+        "en_1800",
+        "en_1809",
+        "en_1813",
+        "en_1815",
+        "en_1821",
+        "en_1826",
+        "en_1829",
+        "en_1830",
+        "en_1831",
+        "en_1847",
+        "en_1851",
+        "en_1858",
+        "en_1878",
+        "en_1879",
+        "en_1888",
+        "en_1894",
+        "en_1896",
+        "en_1897",
+        "en_1899",
+        "en_1911",
+        "en_1913",
+        "en_1916",
+        "en_1920",
+        "en_1922",
+        "en_1927",
+        "en_1935",
+        "en_1949",
+        "en_1957",
+        "en_1960",
+        "en_1961",
+        "en_1962",
+        "en_1963",
+        "en_1965",
+        "en_1966",
+        "en_1968",
+        "en_1973",
+        "en_1978",
+        "en_1996",
+        "en_2009",
+        "en_1675",
+        "en_1759",
+        "en_1776",
+        "en_1808",
+        "en_1818",
+        "en_1827",
+        "en_1863",
+        "en_1870",
+        "en_1990",
+        "en_1999"
+      ]
+    },
+    "target": "ko",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "qwen-seg",
+          "model": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128,
+          "dot_commit_confirm": true,
+          "dot_commit_stall_chunks": 1,
+          "rep_dedup": true
+        },
+        "translation": {
+          "name": "qwen3.5",
+          "url": "http://127.0.0.1:8100/v1",
+          "model": "Qwen/Qwen3.5-4B",
+          "gpu_memory_utilization": 0.52,
+          "context_turns": 1
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "fleurs_en-ko_hallu",
+      "version": 1,
+      "ref": "fleurs_en-ko_hallu",
+      "hash": "a568f55d0a0c",
+      "description": "FLEURS en-ko items where the koen-seg-mix run committed hallucinated filler, plus 10 untouched items as a control",
+      "tags": [
+        "fleurs",
+        "sentence",
+        "clean",
+        "subset",
+        "hallucination"
+      ]
+    },
+    "pipeline": {
+      "name": "asr.qwen-seg-koen+mt.qwen3.5-4b",
+      "version": 1,
+      "ref": "asr.qwen-seg-koen+mt.qwen3.5-4b",
+      "hash": "043ba20a5610",
+      "description": "Korean+English mixed SEG-finetuned Qwen3-ASR (koen-seg-mix) with SEG commits, then Qwen3.5-4B translation with one turn of context",
+      "tags": [
+        "cascade",
+        "qwen-seg",
+        "koen-asr",
+        "local-mt"
+      ]
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/en_us",
+    "split": "test",
+    "languages": [
+      "en"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "de",
+        "ko"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "id",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "root": "/home/mobility/stity-datasets/fleurs/en_us",
+    "manifest_sha256": "e32e399d9f684efee59d32d244f759e03abd4c4fa177e5ec2568794638c5c9a5",
+    "alignment_sha256": "7f104bd4153c4561dbc9a931a186375e1406adf27d13572a383d0394d0438146",
+    "n_aligned": 70,
+    "n_items": 70,
+    "n_sessions": 70
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "qwen-seg",
+      "model_path": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128,
+      "dot_commit_confirm": true,
+      "dot_commit_stall_chunks": 1,
+      "rep_dedup": true,
+      "restrict_languages": true
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "qwen3.5",
+      "url": "http://127.0.0.1:8100/v1",
+      "model": "Qwen/Qwen3.5-4B",
+      "gpu_memory_utilization": 0.52,
+      "context_turns": 1
+    }
+  }
+}
