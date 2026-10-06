@@ -20,7 +20,7 @@ from .session import (
     wav_bytes,
 )
 
-PORT = 9130
+PORT = 29130
 DISTRIBUTIONS_PREFIX = "/api/distributions/"
 REPLAY_API = "/api/replay"
 MAX_BODY = 64 * 1024

@@ -18,7 +18,7 @@ worker 가 자기 시간표 안에서 돌리고, 결과는 S3 에 올라가 팀 
 # 데이터셋은 데이터셋 리포에서 make install NAME=<이름> 으로 먼저 설치한다.
 git clone git@github.com:STiTy-team/datasets.git ../datasets
 
-make bench-manager    # http://localhost:9140 — API 서버(:9130)와 웹사이트를 함께 띄운다. Ctrl-C 로 둘 다 끈다
+make bench-manager    # http://localhost:29140 — API 서버(:29130)와 웹사이트를 함께 띄운다. Ctrl-C 로 둘 다 끈다
 ```
 
 **이 머신에서 직접 돌려도 된다.** `make bench` 는 실행 하나를, `make bench-batch` 는 목록 파일의
@@ -46,8 +46,9 @@ tmux new-session -d -s bench -c ~/STiTy "make bench-batch LIST=my_runs.txt 2>&1 
 
 ## manager 웹사이트
 
-`make bench-manager` 가 둘을 함께 띄운다 — API 서버(`python -m bench.manager.server`, :9130)와
-웹사이트(`bench/manager/`, Vite, :9140). 웹사이트는 `/api` 요청을 API 서버로 넘긴다. 처음에는
+`make bench-manager` 가 둘을 함께 띄운다 — API 서버(`python -m bench.manager.server`, :29130)와
+웹사이트(`bench/manager/`, Vite, :29140). 웹사이트는 `/api` 요청을 API 서버로 넘긴다. 원격 서버에서 띄웠으면
+웹사이트 포트 하나만 넘겨 온다: `ssh -L 29140:localhost:29140 <서버>`. 처음에는
 `npm ci` 로 `bench/manager/node_modules` 를 받는다(Node.js 가 있어야 한다). 왼쪽 사이드바에 페이지가
 넷 있고, 사이드바를 접었는지는 브라우저가 기억한다.
 
@@ -824,14 +825,14 @@ worker/       python -m bench.worker. 자기 uv 환경(pyproject.toml)에서 돈
 notify.py     Discord 메시지: 성공·실패·job 시작·실패·되돌림·머신 가득 참
 report.py     items.jsonl 행 + 채점 결과 → summary.json
 manager/      manager 웹사이트. make bench-manager 가 둘을 함께 띄운다
-  server/           python -m bench.manager.server (:9130). 웹사이트가 부르는 /api 전부
+  server/           python -m bench.manager.server (:29130). 웹사이트가 부르는 /api 전부
     app.py            라우팅: queue·설정·실행 비교 API, /api/replay/(데이터·항목·오디오)
     queue.py          Queue·Configs 페이지의 API: /api/machines/<host>/(jobs·notes·settings), /api/configs/…, /api/runs/pull
                       경로 표 하나로 요청 → machines/·shared_configs 호출 → JSON
     runs.py           실행 목록, 데이터셋별 묶기, 설정의 meta, Compare 가 쓰는 항목별 점수 분포
     session.py        실행 하나의 세션 재생 데이터 (항목·오디오·데이터셋 정보)
     git.py            "Add run" 이 git 에 묻는 것: branch 목록, 최신 commit
-  src/              React + shadcn/ui 화면 (Vite, :9140). pages/ 가 사이드바의 페이지 하나씩
+  src/              React + shadcn/ui 화면 (Vite, :29140). pages/ 가 사이드바의 페이지 하나씩
                     (queue·configs·compare·replay), components/<페이지>/ 가 그 페이지의 조각
 dataset.py    dataset.yml + manifest.jsonl (+ 있으면 alignment.jsonl) 읽기. .status 가 success 가 아니면 거부
 augment/      데이터셋 설정의 augment → 흘리기 전 오디오에 울림·소음·음량을 입힌다

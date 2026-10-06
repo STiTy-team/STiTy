@@ -11,10 +11,10 @@ export default defineConfig({
     },
   },
   server: {
-    port: 9140,
+    port: 29140,
     strictPort: true,
     proxy: {
-      '/api': 'http://127.0.0.1:9130',
+      '/api': 'http://127.0.0.1:29130',
     },
   },
 })
