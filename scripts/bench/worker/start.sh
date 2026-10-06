@@ -10,7 +10,7 @@ INSTALLED_ENV_FILE=$CONFIG_DIR/worker.env
 INSTALLED_CREDENTIALS=$CONFIG_DIR/aws-credentials
 REQUIRED_TOOLS=(uv git make nvidia-smi)
 APT_PACKAGES=(git make curl)
-OLDEST_SYSTEMD=247
+OLDEST_SYSTEMD=231
 FETCH_TIMEOUT_SEC=60
 REQUIRED_VARS=(STITY_S3_BUCKET STITY_DATA_ROOT)
 KEY_VARS=(AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN)
@@ -99,7 +99,7 @@ check_systemd() {
   local version
   version="$(systemctl --version | awk 'NR == 1 { print $2 }')"
   (( ${version%%.*} >= OLDEST_SYSTEMD )) \
-    || fail "systemd $version is too old; the key handling needs $OLDEST_SYSTEMD or newer (Ubuntu 22.04+)"
+    || fail "systemd $version is too old; the key handling needs $OLDEST_SYSTEMD or newer (Ubuntu 18.04+)"
 }
 
 install_packages() {

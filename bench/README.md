@@ -718,7 +718,7 @@ sudo ~/stity-worker/scripts/bench/worker/stop.sh              # 끄고, 등록�
 
 머신에 따로 준비할 것은 셋뿐이다 — NVIDIA 드라이버(`nvidia-smi`), 그 사용자가 암호 없이 `git fetch` 할 수 있는 SSH 키
 (읽기 전용 deploy key 가 좋다), 그리고 queue 에 넣을 데이터셋. `git`·`make`·`curl`(apt)과 `uv` 가 없으면 `start.sh` 가 설치하고,
-`STITY_DATA_ROOT` 폴더가 없으면 만든다. systemd 가 247 보다 오래됐거나 `git fetch` 가 암호를 물으면 아무것도 바꾸지 않고 멈춘다.
+`STITY_DATA_ROOT` 폴더가 없으면 만든다. systemd 가 231 보다 오래됐거나(Ubuntu 18.04 이전) `git fetch` 가 암호를 물으면 아무것도 바꾸지 않고 멈춘다.
 
 `start.sh` 는 AWS 키를 `/etc/stity-worker/aws-credentials` 로, 나머지 설정을 `/etc/stity-worker/worker.env` 로
 root 만 읽게(600) 설치하고, 넘긴 파일에서는 키 줄을 지운다(설정은 남는다). 그리고 스크립트 옆의
@@ -729,12 +729,11 @@ clone 에서 돈다(`--user`·`--repo` 로 바꾼다). 다시 부를 때 넘긴 
 변수, 이미 다른 머신이 쓰는 `STITY_HOST`)로 멈추면 다시 켜지 않는다. 그 밖의 이유로 죽으면 10초 뒤 다시
 켜지고, 부팅할 때도 켜진다. `stop.sh` 는 worker 를 끄고(돌던 job 은 queue 로) unit 과 `/etc/stity-worker/` 를 지운다.
 
-**AWS 키는 환경 변수로 들어가지 않는다.** systemd 의 `LoadCredential` 이 키 파일을 메모리 위의
-`/run/credentials/stity-worker.service/aws` 로 건네고(worker 사용자만 읽을 수 있고, 서비스가 꺼지면 사라진다),
+**AWS 키는 환경 변수로 들어가지 않는다.** 서비스가 켜질 때마다 systemd 가 root 로 키 파일을 메모리 위의
+`/run/stity-worker/aws` 로 복사하고(worker 사용자만 읽을 수 있고, 서비스가 꺼지면 폴더째 사라진다),
 프로세스 환경에는 그 경로(`AWS_SHARED_CREDENTIALS_FILE`)만 있다. boto3 가 그 파일을 읽는다. job 도 S3 에 결과를
 올려야 하므로 같은 파일을 읽을 수 있다 — 그래서 queue 에 올라온 branch 의 코드는 키를 볼 수 있다. 키는
 머신마다 따로 만들고 `bench/aws/iam-policy.json` 만 붙인다. worker 는 clone 의 `.env` 를 읽지 않는다.
-`LoadCredential` 은 systemd 247 이상에 있다(Ubuntu 22.04 부터).
 
 키 관리:
 
