@@ -42,7 +42,7 @@
    `commit` (언제 문장을 확정하나: `seg`·`punct`·`always`), `pipeline.vad` (말 끝 감지, `min_silence_ms`).
    설정에 없는 값은 "기본값" 이라고 쓴다.
 2. **무엇을 먹이나** — `dataset.name`, `target` (번역할 언어), `limit`·`pick` (일부만), `augment` (소음·공간), `longform`.
-3. **결과 폴더** — 아래 명령으로 돌리지 않고 확인한다. 그 폴더에 `summary.json` 이나 `events.jsonl` 이 있으면
+3. **결과 폴더** (이 머신에서 돌릴 때) — 아래 명령으로 돌리지 않고 확인한다. 그 폴더에 `summary.json` 이나 `events.jsonl` 이 있으면
    "다시 돌리면 지난 결과를 덮어씀" 이라고 경고한다.
    ```bash
    uv run --project bench python -m bench --config <파이프라인> --dataset <데이터셋> --print-run-dir
@@ -51,6 +51,7 @@
    오디오 길이의 약 1.4배였다. 오디오 길이는 `$STITY_DATA_ROOT/<dataset.name>/manifest.jsonl` 의 `duration` 합이다
    (`limit` 이 있으면 그만큼만). `make env` 가 `STITY_DATA_ROOT` 를 보여 준다. 모델 로딩 몇 분을 더한다.
 5. **GPU** — 파이프라인의 `gpu_memory_utilization` 과 번역 부품의 `gpu_memory_utilization` (GPU 메모리 중 쓸 몫).
-   `nvidia-smi` 로 지금 남은 메모리를, `tmux ls` 로 이미 도는 실행을 확인해 같이 적는다.
+   이 머신에서 돌리면 `nvidia-smi` 로 지금 남은 메모리를, `tmux ls` 로 이미 도는 실행을 확인해 같이 적는다.
+   머신의 queue 면 그 머신의 queue 에 쌓인 job 수를 적는다.
 6. **비용** — 외부 유료 API 를 부르는 부품이 있으면 적고, `.claude/rules/cost-watch.md` 대로 사용량 기록 수단이
    있는지 확인한다. 없으면 5단계 확인에서 실행을 권하지 않는다. 로컬 모델과 `mock` 은 비용이 없다.

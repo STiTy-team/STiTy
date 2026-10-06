@@ -7,8 +7,10 @@ from core.errors import STiTyError
 from core.utils import audio
 from core.utils import cli, clock, env, logging, stream
 from core.utils.json import JsonlWriter, read_jsonl, write_jsonl
+from core.utils.paths import get_project_root
 
-from . import augment, config, notify, registry
+from . import augment, notify, registry, shared_configs, source, store
+from .settings import BenchSettings
 from .metrics.common import transcribed, translated
 from .metrics import score
 from .metrics.translation import translation_sentences
@@ -135,6 +137,7 @@ RUN_FILES = (
     "summary.json",
     "comet_inputs.jsonl",
     "comet_scores.jsonl",
+    store.SHARED_MARKER,
 )
 
 
@@ -145,7 +148,10 @@ def reset_run_dir(run_dir: Path) -> None:
 
 
 def main(args: Namespace) -> None:
-    cfg = config.load(args.config, args.dataset)
+    settings = BenchSettings.load()
+    cfg = shared_configs.load_for_run(
+        args.config, args.dataset, settings.bucket(), queued_job=settings.stity_job_id is not None
+    )
     if args.print_run_dir:
         print(
             cfg.run_dir.relative_to(Path.cwd())
@@ -153,12 +159,13 @@ def main(args: Namespace) -> None:
             else cfg.run_dir
         )
         return
-    data_root = config.get_data_root()
+    code = {"commit": source.clean_commit(get_project_root())}
+    data_root = settings.stity_data_root
     dataset = datasets.load(cfg.dataset, data_root)
     augmenter = augment.build(cfg.augment, data_root=data_root)
     pipeline = build_pipeline(cfg)
 
-    registry.check(cfg.identity, dataset.manifest_sha256)
+    registry.check(cfg.identity, dataset.manifest_sha256, bucket=settings.bucket())
 
     started = clock.now()
     timer = clock.monotonic()
@@ -177,6 +184,7 @@ def main(args: Namespace) -> None:
         config=cfg.raw,
         identity=cfg.identity,
         manifest_sha256=dataset.manifest_sha256,
+        source=code,
     )
 
     status, failure = "ok", None
@@ -208,6 +216,7 @@ def main(args: Namespace) -> None:
         run_dir=run_dir,
         pacing={"chunk_size_ms": CHUNK_SIZE_MS, "trailing_silence_ms": TRAILING_SILENCE_MS},
         failure=None if failure is None else str(failure),
+        source=code,
     )
     if failure is not None:
         raise failure
@@ -218,11 +227,11 @@ if __name__ == "__main__":
         [
             {
                 "name": "config",
-                "help": "파이프라인 설정 이름 (configs/pipelines/<이름>.yml)",
+                "help": "파이프라인 설정 이름(S3 에서 읽는다) 또는 .yml 파일 경로",
             },
             {
                 "name": "dataset",
-                "help": "데이터셋 설정 이름 (configs/datasets/<이름>.yml)",
+                "help": "데이터셋 설정 이름(S3 에서 읽는다) 또는 .yml 파일 경로",
             },
             {
                 "name": "print-run-dir",

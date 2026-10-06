@@ -148,6 +148,16 @@ def _talks(items: list[Item]) -> list[Item]:
 
 def load(cfg: DatasetConfig, root: Path) -> DatasetSpec:
     ds_root = root / cfg.name
+    status_path = ds_root / ".status"
+    try:
+        status = status_path.read_text(encoding="utf-8").strip()
+    except OSError as e:
+        raise DataError(
+            f"cannot read {status_path} ({e.strerror}); install the dataset first: "
+            f"make install NAME={cfg.name} in {root}"
+        ) from e
+    if status != "success":
+        raise DataError(f"{status_path} says {status!r}, not 'success'; install the dataset again")
     spec = _read_spec(ds_root)
     languages = spec.get("languages") or []
     if not languages:

@@ -9,29 +9,18 @@ from pydantic import PrivateAttr
 from core import config as core_config
 from core.config import ConfigMeta, PipelineConfig
 from core.errors import ConfigError
-from core.utils import env, langs
+from core.utils import langs
 from core.utils.config import ConfigBody, as_component
 from core.utils.paths import get_project_root
 
 from .augment import AugmentConfig
 
 DATASET_KEYS = {"dataset", "target", "augment"}
-DATA_ROOT_ENV = "STITY_DATA_ROOT"
 NAME_PATTERN = re.compile(r"[a-z0-9][a-z0-9.+-]*(_[a-z0-9][a-z0-9.+-]*)*")
 
 
 def get_runs_dir() -> Path:
     return get_project_root() / "bench" / "runs"
-
-
-def get_data_root() -> Path:
-    root = env.path(DATA_ROOT_ENV)
-    if root is None:
-        raise ConfigError(
-            f"{DATA_ROOT_ENV} is not set. Point it at the directory holding the "
-            f"converted datasets, e.g. export {DATA_ROOT_ENV}=~/datasets"
-        )
-    return root
 
 
 class DatasetConfig(ConfigBody):
@@ -79,7 +68,7 @@ def identity(name: str, meta: ConfigMeta, body: dict) -> dict:
     }
 
 
-def _check_name(name: str, kind: str) -> None:
+def check_name(name: str, kind: str) -> None:
     if not NAME_PATTERN.fullmatch(name):
         raise ConfigError(
             f"{kind} config name {name!r} does not follow the naming rule: lowercase "
@@ -126,22 +115,26 @@ def parse(raw: dict) -> BenchConfig:
     return cfg
 
 
-def load(pipeline: str, dataset: str) -> BenchConfig:
-    """One run is one pipeline fed by one dataset, named on the command line.
+def from_text(pipeline: str, pipeline_yaml: str, dataset: str, dataset_yaml: str) -> BenchConfig:
+    check_name(dataset, "dataset")
+    check_name(pipeline, "pipeline")
+    return from_bodies(
+        pipeline,
+        core_config.split_meta(core_config.parse_yaml(pipeline_yaml, pipeline), pipeline),
+        dataset,
+        core_config.split_meta(core_config.parse_yaml(dataset_yaml, dataset), dataset),
+    )
 
-    The run is stored under `<dataset ref>/<pipeline ref>`, where a ref is the config
-    name plus `@vN` once its `meta.version` goes past 1.
-    """
-    _check_name(dataset, "dataset")
-    _check_name(pipeline, "pipeline")
-    data, data_meta = core_config.read_named_with_meta(dataset, "dataset")
-    extra = sorted(set(data) - DATASET_KEYS)
-    if extra:
-        raise ConfigError(
-            f"dataset config {dataset!r}: unknown key(s) {extra} "
-            f"(allowed: {sorted(DATASET_KEYS | {core_config.META_KEY})})"
-        )
-    spec, pipeline_meta = core_config.read_named_with_meta(pipeline, "pipeline")
+
+def from_bodies(
+    pipeline: str,
+    pipeline_with_meta: tuple[dict, ConfigMeta],
+    dataset: str,
+    dataset_with_meta: tuple[dict, ConfigMeta],
+) -> BenchConfig:
+    data, data_meta = dataset_with_meta
+    spec, pipeline_meta = pipeline_with_meta
+    check_dataset_keys(dataset, data)
     ids = {
         "dataset": identity(dataset, data_meta, data),
         "pipeline": identity(pipeline, pipeline_meta, spec),
@@ -151,3 +144,29 @@ def load(pipeline: str, dataset: str) -> BenchConfig:
     cfg._raw = raw
     cfg._identity = ids
     return cfg
+
+
+def check_dataset_keys(name: str, data: dict) -> None:
+    extra = sorted(set(data) - DATASET_KEYS)
+    if extra:
+        raise ConfigError(
+            f"dataset config {name!r}: unknown key(s) {extra} "
+            f"(allowed: {sorted(DATASET_KEYS | {core_config.META_KEY})})"
+        )
+
+
+def check_text(kind: str, name: str, text: str) -> dict:
+    check_name(name, kind)
+    body, meta = core_config.split_meta(core_config.parse_yaml(text, name), name)
+    if kind == "pipeline":
+        core_config.parse_pipeline(body, name=name)
+    else:
+        check_dataset_keys(name, body)
+        DatasetConfig.parse(body.get("dataset"), root=f"dataset config {name!r} dataset")
+        try:
+            _code(str(body.get("target") or ""), field="target")
+        except ValueError as e:
+            raise ConfigError(f"dataset config {name!r}: {e}") from None
+        if body.get("augment") is not None:
+            AugmentConfig.parse(body["augment"], root=f"dataset config {name!r} augment")
+    return identity(name, meta, body)

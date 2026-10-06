@@ -1,4 +1,6 @@
-# 실행 — 스모크 테스트, tmux, 지켜보기
+# 이 머신에서 실행 — 스모크 테스트, tmux, 지켜보기
+
+사용자가 `make bench`·`make bench-batch` 로 이 머신에서 돌리기를 골랐을 때 쓴다. 머신의 queue 는 [queue.md](queue.md).
 
 ## 스모크 테스트
 
@@ -9,7 +11,8 @@
 - 파일이 없으면 원래 데이터셋 설정을 복사하고 `dataset.limit: 5` 를 넣고 `pick` 은 뺀다. `meta.description` 에
   "first 5 items, smoke test" 를 덧붙이고 `meta.tags` 에 `smoke` 를 더한다. 만들었다고 사용자에게 알린다.
 - 파이프라인은 답에 따라 본 실행과 같은 것, 또는 `mock` (모델 없이 bench 자체만 확인).
-- 스모크 테스트는 이 세션에서 바로 돌려도 된다: `make bench CONFIG=<p> DATASET=<d>_first5`.
+- 스모크 테스트는 이 세션에서 바로 돌려도 된다: `make bench CONFIG=<p> DATASET=configs/datasets/<d>_first5.yml`.
+  스모크용 설정은 S3 에 올리지 않으므로 이름이 아니라 파일 경로로 준다.
 
 ## tmux 로 띄우기
 
@@ -74,4 +77,7 @@ ls logs/bench/<tag>.done logs/bench/<tag>.failed   # 끝났는지
 - `metrics` 의 `wer`, `cer`, `bleu`, `comet`(있으면), `laal_ms` (번역이 얼마나 늦게 나오나), `avg_fsl_sec`
 - `counts` 의 `items`, `errored`, `empty_transcription_output`, `realtime_factor` (1 보다 작으면 실시간보다 빠름)
 - 같은 데이터셋에 다른 실행이 있으면 같은 지표를 나란히 보여 준다.
-- 마지막에 `make replay RUN=<데이터셋>/<파이프라인>` 을 알려 준다.
+- 마지막에 manager 에서 볼 주소를 알려 준다 (`make bench-manager` 로 연다):
+  `http://localhost:9140/compare?dataset=<데이터셋>` (같은 데이터셋의 실행 비교),
+  `http://localhost:9140/runs?dataset=<데이터셋>` (그 데이터셋의 실행 목록, 여기서 리플레이를 연다),
+  `http://localhost:9140/replay?run=<데이터셋>/<파이프라인>` (세션 재생). 주소의 `+`·`@` 는 `%2B`·`%40` 으로 바꾼다.

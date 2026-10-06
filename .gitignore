@@ -208,3 +208,8 @@ bench/runs/*/*/*
 # Benchmark datasets live in their own repo (github.com/STiTy-team/datasets),
 # checked out wherever STITY_DATA_ROOT points. Nothing dataset-shaped belongs here.
 /datasets/
+
+# Configs live in S3 (stity/configs/); configs/ holds a local copy kept by make configs-pull / configs-push.
+/configs/pipelines/
+/configs/datasets/
+/configs/.synced.json

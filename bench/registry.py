@@ -6,9 +6,15 @@ import json
 from pathlib import Path
 
 from core.errors import ConfigError
+from core.integrations.s3 import Bucket
+from core.utils import logging
 from core.utils.json import read_json
 
+from . import store
 from .config import get_runs_dir
+from .settings import BenchSettings
+
+log = logging.getLogger(__name__)
 
 KINDS = ("dataset", "pipeline")
 
@@ -68,8 +74,22 @@ def recorded(run_dir: Path, summary: dict | None = None) -> dict:
     }
 
 
-def check(identity: dict, manifest_sha256: str, *, runs: list[str] | None = None) -> None:
+def check(
+    identity: dict,
+    manifest_sha256: str,
+    *,
+    runs: list[str] | None = None,
+    bucket: Bucket | None = None,
+) -> None:
     """Refuse a run whose names already stand for something else in an earlier run."""
+    _raise(_local_problems(identity, manifest_sha256, runs))
+    if bucket is None:
+        log.warning("[REGISTRY-LOCAL] no shared bucket for this run, checked local runs only")
+        return
+    _raise(_shared_problems(identity, manifest_sha256, bucket))
+
+
+def _local_problems(identity: dict, manifest_sha256: str, runs: list[str] | None) -> list[str]:
     problems = []
     for name in run_names() if runs is None else runs:
         seen = recorded(get_runs_dir() / name)
@@ -91,6 +111,39 @@ def check(identity: dict, manifest_sha256: str, *, runs: list[str] | None = None
                     f"the data behind dataset {mine['ref']!r} changed since run {name!r} "
                     f"(manifest {seen['manifest_sha256'][:12]} -> {manifest_sha256[:12]})"
                 )
+    return problems
+
+
+def _shared_problems(identity: dict, manifest_sha256: str, bucket: Bucket) -> list[str]:
+    claim_time = bucket.now().isoformat()
+    problems = []
+    for kind in KINDS:
+        mine = identity[kind]
+        claim = {
+            "ref": mine["ref"],
+            "hash": mine["hash"],
+            "claimed_by": BenchSettings.load().stity_host,
+            "claimed_at": claim_time,
+        }
+        if kind == "dataset":
+            claim["manifest_sha256"] = manifest_sha256
+        standing = store.claim_ref(bucket, kind, claim)
+        claimant = f"{standing['claimed_by']} at {standing['claimed_at']}"
+        if standing["hash"] != mine["hash"]:
+            problems.append(
+                f"{kind} config {mine['ref']!r} was claimed by {claimant} with another content "
+                f"(hash {standing['hash']} -> {mine['hash']})"
+            )
+        standing_manifest = standing.get("manifest_sha256") or ""
+        if kind == "dataset" and standing_manifest != manifest_sha256:
+            problems.append(
+                f"the data behind dataset {mine['ref']!r} differs from what {claimant} claimed "
+                f"(manifest {standing_manifest[:12]} -> {manifest_sha256[:12]})"
+            )
+    return problems
+
+
+def _raise(problems: list[str]) -> None:
     if problems:
         raise ConfigError(
             "a config name must keep meaning the same thing. Bump `meta.version` in the "

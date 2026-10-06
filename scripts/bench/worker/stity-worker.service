@@ -1,0 +1,21 @@
+[Unit]
+Description=STiTy bench queue worker
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=@USER@
+WorkingDirectory=@REPO@
+Environment=PATH=@PATH@
+EnvironmentFile=@CONFIG_DIR@/worker.env
+LoadCredential=aws:@CONFIG_DIR@/aws-credentials
+Environment=AWS_SHARED_CREDENTIALS_FILE=/run/credentials/stity-worker.service/aws
+ExecStart=@UV@ run --project bench/worker python -m bench.worker
+Restart=always
+RestartSec=10
+RestartPreventExitStatus=2
+KillMode=control-group
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target

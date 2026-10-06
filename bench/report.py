@@ -18,6 +18,7 @@ def write_all(
     run_dir: Path,
     pacing: dict,
     failure: str | None = None,
+    source: dict | None = None,
 ) -> Path:
     errored = [r for r in rows if r.get("status") != "ok"]
     empty = [
@@ -40,6 +41,7 @@ def write_all(
         "stamp": clock.stamp(started),
         "status": status if status != "ok" else ("degraded" if errored else "ok"),
         "failure": failure,
+        "source": source,
         "started_at": started.isoformat(),
         "finished_at": finished.isoformat(),
         "metrics": metrics,

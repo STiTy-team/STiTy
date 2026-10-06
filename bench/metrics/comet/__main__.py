@@ -1,9 +1,11 @@
 import json
+import logging
 from argparse import Namespace
 from pathlib import Path
 from statistics import mean
 
-from bench import notify
+from bench import notify, store
+from bench.settings import BenchSettings
 from core.utils import cli, env
 from core.utils.json import read_json, read_jsonl, write_json
 
@@ -11,6 +13,8 @@ COMET_MODEL = "Unbabel/wmt22-comet-da"
 INPUTS = "comet_inputs.jsonl"
 SCORES = "comet_scores.jsonl"
 KEYS = ("comet", "comet_by_pair", "comet_model")
+
+log = logging.getLogger(__name__)
 
 
 def comet(sentences: list[dict], scores: list[float] | None = None) -> dict[str, float] | None:
@@ -76,8 +80,28 @@ def score(run_dir: Path) -> dict:
 
 def main(args: Namespace) -> int:
     print(json.dumps(score(args.run_dir), ensure_ascii=False))
-    notify.success(read_json(args.run_dir / "summary.json"))
+    summary = read_json(args.run_dir / "summary.json")
+    notify.success(summary, run_id=upload(args.run_dir, summary))
     return 0
+
+
+def upload(run_dir: Path, summary: dict) -> str | None:
+    settings = BenchSettings.load()
+    bucket = settings.bucket()
+    if bucket is None:
+        log.warning("[UPLOAD-SKIPPED] S3 not configured, the run stays on this machine")
+        return None
+    already_shared = store.shared_run_id(run_dir)
+    if already_shared:
+        log.warning("[UPLOAD-SKIPPED] already uploaded as %s", already_shared)
+        return already_shared
+    try:
+        run = store.upload_run(bucket, run_dir, settings.stity_host)
+    except Exception as e:
+        log.warning("[UPLOAD-FAILED] the run stays on this machine: %s", e)
+        return None
+    log.info("[UPLOADED] %s", run.folder)
+    return run.run_id
 
 
 if __name__ == "__main__":
@@ -93,6 +117,9 @@ if __name__ == "__main__":
         description="bench 실행 하나에 COMET 을 채점해 summary.json 에 더한다",
     )
     env.load()
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    for name in ("httpx", "httpcore"):
+        logging.getLogger(name).setLevel(logging.WARNING)
     try:
         raise SystemExit(main(args))
     except Exception as e:

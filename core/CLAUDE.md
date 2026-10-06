@@ -11,6 +11,7 @@
 | `config.py` | **파이프라인 설정** — `configs/pipelines/*.yml` 하나를 읽어 부품까지 해석한다. 재는 대상(부품·커밋 정책·`gpu_memory_utilization`)만 적히고 무엇이 오디오를 넣어 주는지는 없으므로, bench 와 서버가 같은 파일을 읽는다. 이름으로 파일을 찾는 `resolve` 도 여기다 — `baseline` → `configs/pipelines/baseline.yml`. 파일 맨 위의 `meta` 블록(버전·설명·태그)은 `read_named_with_meta` 가 떼어 내므로 부품 쪽에는 안 보인다 — 이름 규칙은 [configs/README.md](../configs/README.md). 데이터셋 설정은 그걸 가진 쪽(`bench/config.py`)이 읽는다 |
 | `components/` | 파이프라인이 끼워 쓰는 부품. 종류별 서브패키지 하나, 그 안에 레지스트리 하나, 파일 하나가 백엔드 하나 — `vad/`(`detectors`) · `transcription/`(`transcribers`) · `translation/`(`translators`) · `correction/`(`correctors`). 설정 파일이 이름으로 고른다 |
 | `pipeline/` | 부품을 엮는 쪽. `Pipeline` 과 `cascade`, 그리고 설정을 읽어 조립하는 `validate`·`build`·`describe`. **파이프라인은 부품이 아니다** — `Component` 를 상속하지 않고, 그래서 시간도 안 재진다 |
+| `integrations/` | 바깥 서비스와 말하는 얇은 클라이언트. `discord.py`(웹훅으로 메시지 하나 보내기), `s3.py`(`Bucket` — 조건부 쓰기가 지면 `Conflict`). 환경 변수를 읽지 않는다 — 웹훅 주소·버킷 이름은 쓰는 쪽(bench 의 `settings.py`)이 넘기고, 무엇을 보낼지·어디에 둘지도 쓰는 쪽(`notify.py`·`store.py`)이 정한다 |
 | `meaning_segmentator/utils/` | 의미 분절 연구 스크립트 (GPT `<SEG>` 마킹, 점진적 컨텍스트 번역, COMET 평가) |
 | `meaning_segmentator/autoseg/` | 분절 프롬프트 자동 생성 에이전트 루프. 코드가 하는 일 @meaning_segmentator/autoseg/AUTOSEG_SIMPLIFY.md, 사용법 @meaning_segmentator/autoseg/README.md |
 | ⤷ 근거·기각 기록 | 왜 이 지표 조합인가, 무엇을 검토하고 버렸나, 순위 축 진단, 참조 기반 평가 프로토콜 @meaning_segmentator/autoseg/AUTOSEG_DETAILS.md |
@@ -107,11 +108,6 @@ class MyTranslator(Translator):
 정형문·꼬리 조각 폐기(`[DROP] rule=silence-phrase`·`rule=tail-filler` 처럼 규칙 이름으로 로그에 남는다).
 프로덕션과 같은 숫자를 재려면 이쪽이고, 그 방어가 없을 때의 바닥선을 보려면 `qwen3` 다.
 `dot_commit_confirm`·`dot_commit_stall_chunks`·`rep_dedup` 은 `qwen-seg` 의 설정이다.
-
-**서버와 어긋나면 벤치가 무엇을 재는지 알 수 없다.** 그래서 정답을 적어 두는 대신 양쪽에
-같은 디코딩 대본을 먹여 커밋 목록이 같은지만 보는 대조 테스트를 둔다 —
-`Qwen3-ASR/tests/test_qwen_seg_parity.py`. 서버를 고치면 이 테스트가 `qwen_seg.py` 도 같이
-고치라고 알려 준다.
 
 **무음 위 커밋 폐기(`[DROP] rule=no-speech`, 서버에서는 `[SILENCE-DROP]`)는 VAD 구간이 있어야 판정된다.** 서버가 보는 것은
 "커밋 시점이 침묵인가"가 아니라 "이 커밋이 덮는 구간(직전 final 의 끝 ~ 이번 커밋)에 음성이

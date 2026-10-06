@@ -1,6 +1,7 @@
-# 배치 — `make bench-batch`
+# 이 머신에서 배치 — `make bench-batch`
 
-`scripts/bench/batch.sh` 가 목록 파일을 한 줄씩 읽어 `make bench` 를 차례로 돌린다.
+`scripts/bench/batch.sh` 가 목록 파일을 한 줄씩 읽어 이 머신에서 `make bench` 를 차례로 돌린다. 여러 조합을
+GPU 머신에서 돌리는 기본 길은 머신의 queue 에 조합마다 job 을 넣는 것이다([queue.md](queue.md)).
 
 ## 목록 파일
 

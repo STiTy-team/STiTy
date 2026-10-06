@@ -35,17 +35,24 @@ def resolve(name: str, kind: str) -> Path:
     available = sorted(p.stem for p in directory.glob("*.yml"))
     raise ConfigError(
         f"unknown {kind} config {name!r} "
-        f"(available: {available or 'none'} in {directory})"
+        f"(available: {available or 'none'} in {directory}; "
+        f"`make configs-pull` fetches the shared ones from S3)"
     )
 
 
-def read(path: Path) -> dict:
-    with open(path, encoding="utf-8") as f:
-        raw = yaml.safe_load(f)
+def parse_yaml(text: str, where: object) -> dict:
+    try:
+        raw = yaml.safe_load(text)
+    except yaml.YAMLError as e:
+        raise ConfigError(f"{where} is not valid YAML: {e}") from None
     if not isinstance(raw, dict):
         found = "nothing" if raw is None else type(raw).__name__
-        raise ConfigError(f"{path} must hold a mapping, found {found}")
+        raise ConfigError(f"{where} must hold a mapping, found {found}")
     return raw
+
+
+def read(path: Path) -> dict:
+    return parse_yaml(path.read_text(encoding="utf-8"), path)
 
 
 class ConfigMeta(ConfigBody):
@@ -56,11 +63,15 @@ class ConfigMeta(ConfigBody):
     tags: list[str] = []
 
 
+def split_meta(body: dict, where: object) -> tuple[dict, ConfigMeta]:
+    body = dict(body)
+    meta = ConfigMeta.parse(body.pop(META_KEY, None) or {}, root=f"{where} {META_KEY}")
+    return body, meta
+
+
 def read_named_with_meta(name: str, kind: str) -> tuple[dict, ConfigMeta]:
     path = resolve(name, kind)
-    body = read(path)
-    meta = ConfigMeta.parse(body.pop(META_KEY, None) or {}, root=f"{path} {META_KEY}")
-    return body, meta
+    return split_meta(read(path), path)
 
 
 def read_named(name: str, kind: str) -> dict:

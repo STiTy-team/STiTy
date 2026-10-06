@@ -34,8 +34,11 @@ make server PIPELINE=asr.qwen-seg-en+mt.qwen3.5-4b HOST=0.0.0.0  # English speak
   in `.env` (copy `.env.example`); without one the Makefile falls back to `/usr/local/cuda`. An old
   `/usr/bin/nvcc` fails with `Unknown option '-generate-dependencies-with-compile'`. `make env`
   shows what is in use.
-- `PIPELINE` is a file name in `configs/pipelines/`. Without it the server runs `stity.pipeline`
-  from `server/configs/application.yml`, which is `mock`. `HOST` defaults to 127.0.0.1, and a
+- `PIPELINE` is a file name in `configs/pipelines/`. Configs live in S3: when `STITY_S3_BUCKET` is set,
+  `make server PIPELINE=<name>` first pulls that one config into `configs/` (it never overwrites a
+  local edit), then the server reads the file. Without `PIPELINE` the server runs `stity.pipeline`
+  from `server/configs/application.yml`, which is `mock` (get it once with
+  `make configs-pull ONLY=pipeline/mock`). `HOST` defaults to 127.0.0.1, and a
   phone needs `0.0.0.0`. `PORT` defaults to 8765. The Makefile turns these into
   `STITY_STITY__PIPELINE`, `STITY_SERVER__HOST` and `STITY_SERVER__PORT`. Those variables, or a
   gitignored `server/configs/application.local.yml`, work too.

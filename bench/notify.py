@@ -84,7 +84,6 @@ def job_started(
     *,
     host: str,
     commit: str,
-    estimate_sec: float | None,
     window_ends: datetime,
     timezone: str,
 ) -> None:
@@ -93,7 +92,6 @@ def job_started(
         BenchSettings.load().discord_webhook_url,
         f"▶️ **`{host}` 에서 job을 시작했어요** — pipeline `{job.pipeline}` · dataset `{job.dataset}`\n"
         f"branch `{job.branch}` (`{commit[:10]}`) · job `{job.id}` · {len(job.attempts)}번째 시도 · "
-        f"예상 {korean_duration(estimate_sec)} · "
         f"이 시간대는 {window_ends.astimezone(zone):%m/%d %H:%M} ({zone.key}) 까지\n",
     )
 

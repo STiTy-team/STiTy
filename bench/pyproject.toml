@@ -33,14 +33,12 @@ dependencies = [
     "httpx",
     "gitpython>=3.2.0",
     "pydantic-settings>=2.15.0",
-    "croniter>=6.2.4",
 ]
 
 [dependency-groups]
 test = [
     "pytest",
     "moto[server]>=5.1.22",
-    "playwright",
 ]
 
 [tool.uv]
@@ -48,13 +46,6 @@ package = false
 
 [tool.uv.sources]
 qwen-asr = { path = "../Qwen3-ASR", editable = true }
-
-[tool.pytest.ini_options]
-markers = [
-    "concurrency: many worker processes against a moto server (make test-concurrency)",
-    "e2e: the Queue page in a real browser against a moto server (make test-e2e)",
-]
-addopts = "-m 'not concurrency and not e2e'"
 
 [tool.ruff]
 line-length = 100

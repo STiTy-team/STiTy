@@ -27,6 +27,8 @@ python evaluation/LibriSpeech/servers/test_qwen3_librispeech.py \
   --test-dir evaluation/LibriSpeech/LibriSpeech/test-other --model "baseline(1.0.0)" --scope sample
 
 cd STiTy-Mobile && npm install && npm start                   # mobile app
+
+make bench-manager     # bench experiments: queue runs on GPU machines, configs, compare, replay (:9140)
 ```
 
 ## Where things are
@@ -37,6 +39,7 @@ describes.
 | Path | What, and what to read |
 |---|---|
 | `Qwen3-ASR/` | Vendored upstream ASR (QwenLM/Qwen3-ASR), tracked directly — **not** a submodule. The production WebSocket server is `examples/streaming_websocket_server.py`. [Qwen3-ASR/CLAUDE.md](Qwen3-ASR/CLAUDE.md) |
+| `bench/` | Config-driven benchmark of the same pipeline, no WebSocket. Run experiments from the manager website (`bench/manager/`, `make bench-manager`), which queues them on a GPU machine's worker; `make bench`·`make bench-batch` run on this machine and are allowed but not preferred. [bench/README.md](bench/README.md), naming rules in [configs/README.md](configs/README.md) |
 | `core/` | Translation layer (GPT, local, remote) and segmentation research — [core/CLAUDE.md](core/CLAUDE.md). Which local model to load and how much context it can use: [core/translator/LOCAL_TRANSLATION.md](core/translator/LOCAL_TRANSLATION.md) |
 | `STiTy-Mobile/` | The React Native app ([MOBILE_APP.md](STiTy-Mobile/MOBILE_APP.md)) and the web demo — proxy, language routing, launch order, VRAM budget ([demo-web/CLAUDE.md](STiTy-Mobile/demo-web/CLAUDE.md)) |
 | `evaluation/` | Benchmark harness, ASR and AST tracks — [evaluation/CLAUDE.md](evaluation/CLAUDE.md), full CLI in [TESTING_MANUAL.md](evaluation/TESTING_MANUAL.md) |
