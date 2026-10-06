@@ -1,7 +1,10 @@
-from ..registry import Component
+from ..registry import Component, Transcribed
 
 
 class LanguageDetector(Component):
 
-    async def detect(self, text: str) -> str | None:
+    def hear(self, audio: bytes) -> None:
+        pass
+
+    async def detect(self, item: Transcribed) -> str | None:
         raise NotImplementedError

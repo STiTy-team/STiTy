@@ -80,7 +80,7 @@ class MyTranslator(Translator):
 있으면 시간이 걸린 구간, `tag` 가 레인 이름. **시작한 뒤 끝내지 않을 방법이 없다** —
 데코레이터라 예외로 빠져나가도 막대가 닫힌다.
 
-`load`·`close`·`start` 는 항목 시계 밖이라 안 잰다. `transcribe`·`detect` 는 청크마다
+`load`·`close`·`start` 는 항목 시계 밖이라 안 잰다. `transcribe`·`detect`·`hear` 는 청크마다
 (200ms) 불려서 재면 이벤트 줄기가 그 막대로 덮인다 — 그래서 안 잰다(`registry.PER_CHUNK`).
 그 안에서 시간이 드는 모델 호출은 `decode` 로 따로 잰다. 파이프라인도 안 잰다 — 부품을 엮는
 쪽이고 그 막대는 부품 막대를 전부 덮는다. 메서드보다 잘게 재야 할 때만 `@timing.measure`
