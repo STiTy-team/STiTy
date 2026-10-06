@@ -708,22 +708,23 @@ GPU 마다 하나씩, 그 GPU 의 VRAM 이 찬 만큼 차오른다(90% 를 넘�
 돈다. worker 가 그 worktree 의 `configs/` 에 job 의 설정을 써 넣고 `make bench CONFIG=... DATASET=...` 를 부른다. 로그는 `~/.local/state/stity/jobs/<job id>.log`.
 
 ```bash
-# worker 전용 clone 하나와 파일 두 개를 준비한다.
-#   worker.env      설정. .env.example 의 STITY_S3_*·STITY_HOST·AWS_DEFAULT_REGION 에 더해 STITY_DATA_ROOT(절대 경로)와
-#                   DISCORD_WEBHOOK_URL. 줄마다 KEY=value 만 쓴다(systemd 는 export 를 못 읽는다). AWS 키는 넣지 않는다.
-#   aws.ini         이 머신 전용 IAM 사용자의 키, AWS 표준 형식:
-#                     [default]
-#                     aws_access_key_id = AKIA...
-#                     aws_secret_access_key = ...
-sudo ~/stity-worker/scripts/bench/worker/start.sh --env-file ~/worker.env --aws-credentials ~/aws.ini
-rm ~/worker.env ~/aws.ini                                     # 복사본이 설치됐으니 원본은 지운다
+# worker 전용 clone 하나와 worker.env 하나를 준비한다. 줄마다 KEY=value 만 쓴다(systemd 는 export 를 못 읽는다):
+#   .env.example 의 STITY_S3_*·STITY_HOST·AWS_DEFAULT_REGION, STITY_DATA_ROOT(절대 경로), DISCORD_WEBHOOK_URL,
+#   그리고 이 머신 전용 IAM 사용자의 AWS_ACCESS_KEY_ID·AWS_SECRET_ACCESS_KEY
+sudo ~/stity-worker/scripts/bench/worker/start.sh --env-file ~/worker.env
 journalctl -u stity-worker -f
 sudo ~/stity-worker/scripts/bench/worker/stop.sh              # 끄고, 등록과 설치한 파일을 지운다
 ```
 
-`start.sh` 는 두 파일을 `/etc/stity-worker/` 에 root 만 읽게(600) 복사하고, 스크립트 옆의
+머신에 따로 준비할 것은 셋뿐이다 — NVIDIA 드라이버(`nvidia-smi`), 그 사용자가 암호 없이 `git fetch` 할 수 있는 SSH 키
+(읽기 전용 deploy key 가 좋다), 그리고 queue 에 넣을 데이터셋. `git`·`make`·`curl`(apt)과 `uv` 가 없으면 `start.sh` 가 설치하고,
+`STITY_DATA_ROOT` 폴더가 없으면 만든다. systemd 가 247 보다 오래됐거나 `git fetch` 가 암호를 물으면 아무것도 바꾸지 않고 멈춘다.
+
+`start.sh` 는 AWS 키를 `/etc/stity-worker/aws-credentials` 로, 나머지 설정을 `/etc/stity-worker/worker.env` 로
+root 만 읽게(600) 설치하고, 넘긴 파일에서는 키 줄을 지운다(설정은 남는다). 그리고 스크립트 옆의
 `stity-worker.service` 틀을 채워 systemd 에 등록한 뒤 켠다. sudo 를 부른 사용자로, 스크립트가 들어 있는
-clone 에서 돈다(`--user`·`--repo` 로 바꾼다). 다시 부를 때 빠진 파일은 설치된 것을 그대로 쓴다. 다시 켜므로
+clone 에서 돈다(`--user`·`--repo` 로 바꾼다). 다시 부를 때 넘긴 파일에는 바꿀 것만 있으면 된다 — 그 값이
+설치된 값을 덮고, 나머지는 설치된 것을 그대로 쓴다. `--env-file` 없이 부르면 설치된 그대로 다시 켠다. 다시 켜므로
 돌던 job 은 queue 로 돌아간다. 켠 뒤 15초 동안 살아 있는지 보고, 죽었으면 로그를 보여 주고 실패한다. 설정 오류(빠진
 변수, 이미 다른 머신이 쓰는 `STITY_HOST`)로 멈추면 다시 켜지 않는다. 그 밖의 이유로 죽으면 10초 뒤 다시
 켜지고, 부팅할 때도 켜진다. `stop.sh` 는 worker 를 끄고(돌던 job 은 queue 로) unit 과 `/etc/stity-worker/` 를 지운다.
@@ -739,7 +740,8 @@ clone 에서 돈다(`--user`·`--repo` 로 바꾼다). 다시 부를 때 빠진 
 
 | 하고 싶은 것 | 하는 법 |
 |---|---|
-| 키 바꾸기 | IAM 에서 새 키를 만들고 `sudo .../start.sh --aws-credentials new.ini`, 원본 지우기, 옛 키는 IAM 에서 지운다 |
+| 키 바꾸기 | IAM 에서 새 키를 만들고 `AWS_ACCESS_KEY_ID`·`AWS_SECRET_ACCESS_KEY` 두 줄만 든 파일로 `sudo .../start.sh --env-file keys.env`, 옛 키는 IAM 에서 지운다 |
+| 설정 하나 바꾸기 | 그 줄만 든 파일로 `sudo .../start.sh --env-file one.env` |
 | 한 머신 끊기 | IAM 에서 그 머신 사용자의 키를 비활성화한다 — 바로, 어디서든 막힌다. 파일을 지우는 것만으로는 이미 복사된 키를 막지 못한다 |
 | 머신에서 치우기 | `sudo .../stop.sh` |
 
