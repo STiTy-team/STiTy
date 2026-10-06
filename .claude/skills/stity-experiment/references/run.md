@@ -78,6 +78,6 @@ ls logs/bench/<tag>.done logs/bench/<tag>.failed   # 끝났는지
 - `counts` 의 `items`, `errored`, `empty_transcription_output`, `realtime_factor` (1 보다 작으면 실시간보다 빠름)
 - 같은 데이터셋에 다른 실행이 있으면 같은 지표를 나란히 보여 준다.
 - 마지막에 manager 에서 볼 주소를 알려 준다 (`make bench-manager` 로 연다):
-  `http://localhost:9140/compare?dataset=<데이터셋>` (같은 데이터셋의 실행 비교),
-  `http://localhost:9140/runs?dataset=<데이터셋>` (그 데이터셋의 실행 목록, 여기서 리플레이를 연다),
-  `http://localhost:9140/replay?run=<데이터셋>/<파이프라인>` (세션 재생). 주소의 `+`·`@` 는 `%2B`·`%40` 으로 바꾼다.
+  `http://localhost:29140/compare?dataset=<데이터셋>` (같은 데이터셋의 실행 비교),
+  `http://localhost:29140/runs?dataset=<데이터셋>` (그 데이터셋의 실행 목록, 여기서 리플레이를 연다),
+  `http://localhost:29140/replay?run=<데이터셋>/<파이프라인>` (세션 재생). 주소의 `+`·`@` 는 `%2B`·`%40` 으로 바꾼다.

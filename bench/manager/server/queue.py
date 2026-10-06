@@ -14,7 +14,8 @@ from core.errors import ConfigError
 from ... import config, store
 from ...shared_configs import KINDS, SharedConfigs, refuse_taken_names
 from ...config import get_runs_dir
-from ...machines.machine import Machine, MachineSettings, all_machines
+from ...machines.machine import Machine, MachineSettings, StillConnected, all_machines
+from ...machines.queue import IllegalTransition
 from . import cache, run_list
 from .git import GitError, Repo
 
@@ -203,6 +204,21 @@ class QueueApi:
         job = machine.queue.cancel(job_id, worker_alive=worker_alive)
         return {"removed": job is None, "job": job and job.model_dump(mode="json")}
 
+    def run_now(self, host: str, job_id: str) -> dict:
+        try:
+            return self.machine(host).queue.run_now(job_id).model_dump(mode="json")
+        except IllegalTransition as e:
+            raise BadRequest(str(e)) from None
+
+    def remove_machine(self, host: str) -> dict:
+        machine = self.machine(host)
+        try:
+            machine.remove(self.bucket.now())
+        except StillConnected as e:
+            raise BadRequest(str(e)) from None
+        self.known_machines.pop(host, None)
+        return {"removed": host}
+
     def save_notes(self, host: str, body: dict) -> dict:
         machine = self.machine(host)
         text = str(body.get("notes", ""))
@@ -256,6 +272,8 @@ class QueueApi:
             (r"/api/reload", lambda: {}),
             (r"/api/machines/([^/]+)/jobs", lambda host: self.submit(host, body)),
             (rf"{job}/cancel", self.cancel),
+            (rf"{job}/run-now", self.run_now),
+            (r"/api/machines/([^/]+)/remove", self.remove_machine),
             (r"/api/machines/([^/]+)/notes", lambda host: self.save_notes(host, body)),
             (r"/api/machines/([^/]+)/settings", lambda host: self.save_settings(host, body)),
             (r"/api/runs/pull", lambda: self.pull(body)),

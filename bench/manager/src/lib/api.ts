@@ -16,6 +16,7 @@ export type Job = {
   dataset: string
   submitted_at: string
   state: JobState
+  run_now: boolean
   attempts: Attempt[]
 }
 
@@ -213,5 +214,8 @@ export const api = {
     post<{ notes: string; etag: string }>(`/api/machines/${encodeURIComponent(host)}/notes`, { notes, etag }),
   cancelJob: (host: string, jobId: string) =>
     post(`/api/machines/${encodeURIComponent(host)}/jobs/${encodeURIComponent(jobId)}/cancel`, {}),
+  runNow: (host: string, jobId: string) =>
+    post<Job>(`/api/machines/${encodeURIComponent(host)}/jobs/${encodeURIComponent(jobId)}/run-now`, {}),
+  removeMachine: (host: string) => post<{ removed: string }>(`/api/machines/${encodeURIComponent(host)}/remove`, {}),
   pullRun: (run: RunLocation) => post<{ run: string }>("/api/runs/pull", run),
 }

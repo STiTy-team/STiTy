@@ -2,6 +2,7 @@ import { ChevronRightIcon } from "lucide-react"
 import { Fragment, useState, type ReactNode } from "react"
 
 import { CancelJobButton } from "@/components/queue/cancel-job-button"
+import { RunNowButton } from "@/components/queue/run-now-button"
 import { StatusPill, type Tone } from "@/components/queue/status-pill"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -77,7 +78,7 @@ export function JobTable({ machine }: { machine: Machine }) {
             <TableHead>실행</TableHead>
             <TableHead className="w-48">브랜치</TableHead>
             <TableHead className="w-36">시간</TableHead>
-            <TableHead className="w-28" />
+            <TableHead className="w-52" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -92,15 +93,22 @@ export function JobTable({ machine }: { machine: Machine }) {
                     <ExpandButton open={expanded} onToggle={() => setOpen(expanded ? null : job.id)} />
                   </TableCell>
                   <TableCell>
-                    <StatusPill tone={STATE_TONE[job.state]}>{STATE_LABEL[job.state]}</StatusPill>
+                    {job.state === "queued" && job.run_now ? (
+                      <StatusPill tone="running">바로 실행 대기</StatusPill>
+                    ) : (
+                      <StatusPill tone={STATE_TONE[job.state]}>{STATE_LABEL[job.state]}</StatusPill>
+                    )}
                   </TableCell>
                   <TableCell>
                     <RunCell pipeline={job.pipeline} dataset={job.dataset} />
                   </TableCell>
                   <TableCell className="truncate font-mono text-xs">{job.branch}</TableCell>
                   <TableCell title={time.exact}>{time.text}</TableCell>
-                  <TableCell className="pr-3 text-right">
-                    <CancelJobButton host={machine.host} job={job} />
+                  <TableCell className="pr-3">
+                    <div className="flex justify-end gap-2">
+                      {job.state === "queued" && !job.run_now && <RunNowButton machine={machine} job={job} />}
+                      <CancelJobButton host={machine.host} job={job} />
+                    </div>
                   </TableCell>
                 </TableRow>
                 {expanded && (
@@ -113,6 +121,7 @@ export function JobTable({ machine }: { machine: Machine }) {
                           ["제출", formatDateTime(job.submitted_at)],
                           ["시작", formatDateTime(startedAt(job))],
                           ["시도 횟수", `${job.attempts.length}회`],
+                          ["시간표", job.run_now ? "무시하고 바로 실행" : "따름"],
                         ]}
                       />
                     </TableCell>

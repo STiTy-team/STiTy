@@ -28,7 +28,7 @@ python evaluation/LibriSpeech/servers/test_qwen3_librispeech.py \
 
 cd STiTy-Mobile && npm install && npm start                   # mobile app
 
-make bench-manager     # bench experiments: queue runs on GPU machines, configs, compare, replay (:9140)
+make bench-manager     # bench experiments: queue runs on GPU machines, configs, compare, replay (:29140)
 ```
 
 ## Where things are

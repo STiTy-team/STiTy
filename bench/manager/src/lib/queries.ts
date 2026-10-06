@@ -56,6 +56,22 @@ export function useCancelJob(host: string) {
   })
 }
 
+export function useRunNow(host: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (jobId: string) => api.runNow(host, jobId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.machines }),
+  })
+}
+
+export function useRemoveMachine() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (host: string) => api.removeMachine(host),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.machines }),
+  })
+}
+
 export function useCheckConfig(kind: ConfigKind, name: string, yaml: string) {
   return useQuery({
     queryKey: ["config-check", kind, name, yaml],

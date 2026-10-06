@@ -108,17 +108,17 @@ class Worker:
         now = self.clock.now()
         settings = self.machine.settings().settings
         window = timetable.current_window(settings, now)
-        waiting_state = self._waiting_state(settings, window, now)
+        waiting_state = self._waiting_state(settings, now)
         if waiting_state:
             self._write_health(waiting_state, settings=settings)
             return
-        claimed = self._claim_next(now)
+        claimed = self._claim_next(now, in_window=window is not None)
         if claimed is None:
-            self._write_health("idle", settings=settings)
+            self._write_health("idle" if window else "outside_window", settings=settings)
             return
         self.run_job(claimed, window, settings)
 
-    def run_job(self, claimed: ClaimedJob, window: Window, settings: MachineSettings) -> None:
+    def run_job(self, claimed: ClaimedJob, window: Window | None, settings: MachineSettings) -> None:
         job = claimed.job
         try:
             cwd, commit = checkout.worktree_for(self.config.repo, self.config.worktree, job)
@@ -134,7 +134,7 @@ class Worker:
             job,
             host=self.config.host,
             commit=commit,
-            window_ends=window.end,
+            window_ends=None if job.run_now or window is None else window.end,
             timezone=settings.timezone,
         )
         self._write_health("running", job, settings=settings)
@@ -162,7 +162,7 @@ class Worker:
                 return Ending(EndReason.EXITED, exit_code)
             if self.stopping.is_set():
                 return Ending(EndReason.WORKER_STOPPING)
-            if window is None or self.clock.now() >= window.end:
+            if not claimed.job.run_now and (window is None or self.clock.now() >= window.end):
                 return Ending(EndReason.WINDOW_END)
             if time.monotonic() < next_check_in:
                 self.stopping.wait(WATCH_STEP_SEC)
@@ -233,23 +233,21 @@ class Worker:
         log.warning("[MACHINE-FULL] backoff level %d, %ds", self.backoff_level, delay_sec)
         return delay_sec
 
-    def _waiting_state(
-        self, settings: MachineSettings, window: Window | None, now: datetime
-    ) -> str | None:
+    def _waiting_state(self, settings: MachineSettings, now: datetime) -> str | None:
         if settings.paused:
             return "paused"
         if self.backoff_until and self.backoff_until > now:
             return "backoff"
-        if window is None:
-            return "outside_window"
         return None
 
-    def _claim_next(self, now: datetime) -> ClaimedJob | None:
-        oldest = next((queued for queued in self.machine.queue.jobs() if queued.job.state == "queued"), None)
-        if oldest is None:
+    def _claim_next(self, now: datetime, *, in_window: bool) -> ClaimedJob | None:
+        waiting = [queued for queued in self.machine.queue.jobs() if queued.job.state == "queued"]
+        urgent = next((queued for queued in waiting if queued.job.run_now), None)
+        picked = urgent or (waiting[0] if waiting and in_window else None)
+        if picked is None:
             return None
         try:
-            started = self.machine.queue.start(oldest, now)
+            started = self.machine.queue.start(picked, now)
         except (Conflict, IllegalTransition):
             return None
         job = started.job

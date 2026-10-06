@@ -35,6 +35,7 @@ class Job(BaseModel):
     dataset_yaml: str
     submitted_at: datetime
     state: JobState = "queued"
+    run_now: bool = False
     attempts: list[Attempt] = Field(default_factory=list)
 
 
@@ -237,6 +238,13 @@ class Queue:
             return self.save(cancelling, queued.etag).job
 
         return self.change_until_saved(job_id, cancel_once)
+
+    def run_now(self, job_id: str) -> Job | None:
+        def run_now_once(queued: QueuedJob) -> Job:
+            require(queued.job, "queued")
+            return self.save(queued.job.model_copy(update={"run_now": True}), queued.etag).job
+
+        return self.change_until_saved(job_id, run_now_once)
 
     def stop(self, job_id: str) -> Job | None:
         def stop_once(queued: QueuedJob) -> Job:

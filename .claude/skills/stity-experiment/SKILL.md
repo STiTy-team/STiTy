@@ -49,9 +49,9 @@ description: Run a STiTy bench experiment end to end — pick or write pipeline/
 
 ## 6·7단계 — 실행하고 보고한다
 
-- **머신의 queue** 면 job id, 넣은 머신, 그 머신의 Queue 탭 주소 `http://localhost:9140/queue/<머신>` 을 알려 주고 끝낸다.
+- **머신의 queue** 면 job id, 넣은 머신, 그 머신의 Queue 탭 주소 `http://localhost:29140/queue/<머신>` 을 알려 주고 끝낸다.
   manager 가 떠 있지 않으면 `make bench-manager` 로 연다고 덧붙인다. 결과는 끝나면 S3 에 올라가고, Runs 페이지
-  `http://localhost:9140/runs` 의 "리플레이" (또는 그 탭 기록의 "리플레이 열기") 로 연다.
+  `http://localhost:29140/runs` 의 "리플레이" (또는 그 탭 기록의 "리플레이 열기") 로 연다.
 - 이 머신에서 스모크 테스트를 골랐으면 먼저 돌리고, 실패하면 본 실행을 시작하지 않고 원인을 보고한다.
 - **지켜봄** 이면 로그를 따라가며 진행(`[ITEM] i/n`)과 오류를 알린다.
 - **넘김** 이면 tmux 붙는 명령, 로그 경로, 끝났는지 알 수 있는 표시 파일을 알려 주고 끝낸다.

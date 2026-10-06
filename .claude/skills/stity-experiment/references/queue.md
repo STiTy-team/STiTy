@@ -1,7 +1,7 @@
 # 머신의 queue 에 넣기
 
 GPU 머신마다 queue 가 하나다. 그 머신의 worker 가 자기 시간표 안에서 자기 queue 의 job 을 `make bench` 로 돌린다. 결과는 S3 에 올라가고
-manager 의 Queue 페이지(`make bench-manager` → http://localhost:9140/queue/<머신>)에서 보인다. 구조는
+manager 의 Queue 페이지(`make bench-manager` → http://localhost:29140/queue/<머신>)에서 보인다. 구조는
 [bench/README.md](../../../../bench/README.md) "여럿이 함께 쓰기".
 
 ## 넣기 전에
@@ -22,10 +22,10 @@ job 은 머신 하나에 들어간다. `/api/machines` 의 `machines[]` 에서 `
 ## 넣기
 
 사람은 Queue 페이지의 그 머신 탭에서 "Add run" 으로 넣는다. 에이전트는 같은 검사를 거치는 API 를 부른다 —
-`make bench-manager` 가 떠 있어야 한다(:9130 이 API 서버):
+`make bench-manager` 가 떠 있어야 한다(:29130 이 API 서버):
 
 ```bash
-python3 - <<'PY' | curl -s -XPOST localhost:9130/api/machines/<머신>/jobs -d @-
+python3 - <<'PY' | curl -s -XPOST localhost:29130/api/machines/<머신>/jobs -H 'Content-Type: application/json' -d @-
 import json, pathlib
 print(json.dumps({
     "branch": "<branch>",
@@ -52,5 +52,5 @@ print(queue.submit(branch='<branch>',
 
 ## 보고
 
-job id, 넣은 머신, 그 머신이 연결되어 있는지, 그리고 그 머신 탭 주소 `http://localhost:9140/queue/<머신>` 을
-알린다. 끝나면 Runs 페이지(`http://localhost:9140/runs`)의 "리플레이" 나 그 탭 기록의 "리플레이 열기" 로 결과를 받아 연다.
+job id, 넣은 머신, 그 머신이 연결되어 있는지, 그리고 그 머신 탭 주소 `http://localhost:29140/queue/<머신>` 을
+알린다. 끝나면 Runs 페이지(`http://localhost:29140/runs`)의 "리플레이" 나 그 탭 기록의 "리플레이 열기" 로 결과를 받아 연다.

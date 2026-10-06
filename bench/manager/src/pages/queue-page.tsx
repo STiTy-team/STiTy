@@ -1,4 +1,4 @@
-import { CalendarClockIcon, EllipsisIcon, PencilIcon, TriangleAlertIcon } from "lucide-react"
+import { CalendarClockIcon, EllipsisIcon, PencilIcon, Trash2Icon, TriangleAlertIcon } from "lucide-react"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
 
@@ -6,6 +6,7 @@ import { Notice, PageBody, PageHeader } from "@/components/page-header"
 import { AddRunDialog } from "@/components/queue/add-run-dialog"
 import { EditNotesDialog } from "@/components/queue/edit-notes-dialog"
 import { HistoryTable } from "@/components/queue/history-table"
+import { RemoveMachineDialog } from "@/components/queue/remove-machine-dialog"
 import { JobTable } from "@/components/queue/job-table"
 import { GpuBars, MachineDot } from "@/components/queue/machine-gpu"
 import { StatusPill } from "@/components/queue/status-pill"
@@ -22,8 +23,8 @@ const SHORT_NOTES = 110
 
 function MachineMenu({ machine }: { machine: Machine }) {
   const [menu, setMenu] = useState(false)
-  const [dialog, setDialog] = useState<"notes" | "timetable" | null>(null)
-  const pick = (next: "notes" | "timetable") => {
+  const [dialog, setDialog] = useState<"notes" | "timetable" | "remove" | null>(null)
+  const pick = (next: "notes" | "timetable" | "remove") => {
     setMenu(false)
     setDialog(next)
   }
@@ -44,10 +45,15 @@ function MachineMenu({ machine }: { machine: Machine }) {
             <CalendarClockIcon />
             작업 시간표 수정
           </Button>
+          <Button variant="ghost" className="justify-start text-destructive hover:text-destructive" onClick={() => pick("remove")}>
+            <Trash2Icon />
+            머신 삭제
+          </Button>
         </PopoverContent>
       </Popover>
       <EditNotesDialog machine={machine} open={dialog === "notes"} onOpenChange={(open) => setDialog(open ? "notes" : null)} />
       <EditTimetableDialog machine={machine} open={dialog === "timetable"} onOpenChange={(open) => setDialog(open ? "timetable" : null)} />
+      <RemoveMachineDialog machine={machine} open={dialog === "remove"} onOpenChange={(open) => setDialog(open ? "remove" : null)} />
     </>
   )
 }
@@ -113,7 +119,7 @@ function MachineTab({ machine }: { machine: Machine }) {
       <section className="flex flex-col gap-3">
         <div className="flex items-baseline gap-2">
           <h3 className="text-base font-semibold">대기열</h3>
-          {machine.jobs.length > 1 && <span className="text-sm text-muted-foreground">위에서부터 하나씩 실행돼요</span>}
+          {machine.jobs.length > 1 && <span className="text-sm text-muted-foreground">위에서부터 하나씩 실행돼요. 바로 실행으로 정한 작업이 먼저예요</span>}
         </div>
         <JobTable machine={machine} />
       </section>
