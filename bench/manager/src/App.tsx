@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ComparePage } from "@/pages/compare-page"
 import { ConfigsPage } from "@/pages/configs-page"
+import { DatasetsPage } from "@/pages/datasets-page"
 import { QueuePage } from "@/pages/queue-page"
 import { ReplayPage } from "@/pages/replay-page"
 import { RunsPage } from "@/pages/runs-page"
@@ -25,6 +26,7 @@ export default function App() {
               <Route path="/configs/:kind?" element={<ConfigsPage />} />
               <Route path="/compare" element={<ComparePage />} />
               <Route path="/replay" element={<ReplayPage />} />
+              <Route path="/datasets/:tab?" element={<DatasetsPage />} />
             </Routes>
           </main>
         </SidebarInset>

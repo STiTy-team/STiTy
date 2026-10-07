@@ -23,6 +23,17 @@ export function formatDuration(totalSec: number | null): string {
   return `${Math.floor(sec / DAY)}일 ${Math.floor((sec % DAY) / HOUR)}시간`
 }
 
+/** mm:ss (h:mm:ss past an hour), for a running clock and tabular item durations
+ * where the unit is obvious from context and doesn't need spelling out. */
+export function formatClock(totalSec: number | null): string {
+  if (totalSec == null || !Number.isFinite(totalSec)) return "—"
+  const sec = Math.round(totalSec)
+  const h = Math.floor(sec / HOUR)
+  const m = Math.floor((sec % HOUR) / MINUTE)
+  const s = String(sec % MINUTE).padStart(2, "0")
+  return h ? `${h}:${String(m).padStart(2, "0")}:${s}` : `${m}:${s}`
+}
+
 export function secondsBetween(fromIso: string | null, toIso: string | null = null): number | null {
   if (!fromIso) return null
   const to = toIso ? new Date(toIso).getTime() : Date.now()

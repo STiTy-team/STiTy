@@ -1,4 +1,4 @@
-import { ChartColumnIcon, FileCogIcon, HistoryIcon, ListOrderedIcon } from "lucide-react";
+import { ChartColumnIcon, DatabaseIcon, FileCogIcon, HistoryIcon, ListOrderedIcon } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
 import stityLogo from "@/assets/stity-logo.png";
@@ -19,6 +19,7 @@ const PAGES = [
   { path: "/configs", label: "Configs", icon: FileCogIcon },
   { path: "/compare", label: "Compare", icon: ChartColumnIcon },
   { path: "/runs", label: "Runs", icon: HistoryIcon, also: ["/replay"] },
+  { path: "/datasets", label: "Datasets", icon: DatabaseIcon },
 ];
 
 export function AppSidebar() {

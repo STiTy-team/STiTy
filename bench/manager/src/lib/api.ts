@@ -167,6 +167,23 @@ export async function get<T>(path: string): Promise<T> {
   return body
 }
 
+/** POSTs a JSON-free request (query params carry the payload) and reads back raw JSON,
+ * same convention as {@link get}. Used by the replay- and datasets-style endpoints,
+ * which answer with the resource itself rather than the `{ok,data}` envelope `post` expects. */
+export async function postFor<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, { method: "POST", ...init })
+  const body = await readJson(response)
+  if (!response.ok) throw new Error(body.error ?? `HTTP ${response.status}`)
+  return body
+}
+
+export async function del<T>(path: string): Promise<T> {
+  const response = await fetch(path, { method: "DELETE" })
+  const body = await readJson(response)
+  if (!response.ok) throw new Error(body.error ?? `HTTP ${response.status}`)
+  return body
+}
+
 export class ApiError extends Error {
   readonly status: number
 
