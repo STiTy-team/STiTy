@@ -823,5 +823,26 @@ cut_probe.py (linear O/X on hidden states at each word end, trained on per-cut C
 the label is too noisy; the position prior alone is nearly as good as the SEG model.
 Known label defect: some pieces end in a wrong closed ending ("하나어요") from the 해요체 conversion.
 
-Next (running, chains/stream_commit.sh): stream_commit.py lets segconn2 decide commits by its own <SEG> on audio
-growing in 0.5 s steps (agree1 = commit at once, agree2 = same piece at two consecutive steps).
+### True streaming: the adapter decides its own commits (2026-10-15)
+stream_commit.py: audio grows in 0.5 s steps (first decode at 1.0 s); segconn2 translates audio[0:t] with the
+committed pieces forced as "p <SEG> "; text before a new <SEG> is committed. agree1 = commit at once, agree2 = the same
+piece at two consecutive steps. en-ko 270 sentences, chain chains/stream_commit.sh, report
+models/zprobe/logs/stream_commit_report.md.
+
+| run | COMET | − segconn2 offline (0.883) | pieces / sentence | first commit (s) | char commit time / duration |
+|---|---|---|---|---|---|
+| SEG-model units +0.3 s (su03_segconn2) | 0.875 | −0.008 | 1.97 | 5.56 | 0.84 |
+| own <SEG>, agree1 | 0.830 | −0.053 [−0.062, −0.044] | 2.39 | 1.24 | 0.94 |
+| own <SEG>, agree2 | 0.868 | −0.015 [−0.020, −0.010] | 2.03 | 3.92 | 0.90 |
+
+agree2 − su03 = −0.007 [−0.013, −0.002]. agree1 commits one or two words at the first step ("그는", "나는",
+"1990년에 설립된" — the last two invented) and then holds the rest to the end of the audio: 223 non-final pieces
+shorter than 6 characters (agree2: 51). Cause (presumed): every partial-audio training row was cut exactly at a piece
+end and ended in <SEG>, so the model never saw "audio stops inside a piece -> wait".
+
+segconn3 (prepared, not trained): build_connective.py build --wait adds one row per utterance whose audio stops
+inside a piece (uniform between previous end + 0.3 s and piece end − 0.5 s, at least 1.0 s), target = finished pieces
+only (empty for the first piece). --wait_single 0.25 keeps one-piece utterances (empty target) from dominating:
+5,933 wait rows vs 3,522 partial rows, 27,297 rows total (the first build without it had 14,131 wait rows, 12,435
+of them empty). Chain chains/segconn3.sh (SFT retries after an OOM caused by another job on the GPU, then offline,
+su03 and stream_commit agree1/agree2). Stopped before training because the GPU stayed occupied.

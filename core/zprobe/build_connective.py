@@ -348,6 +348,7 @@ def build(a):
         kiwi = {r["id"]: r["comet"] for r in rs}
     os.makedirs(a.wav_dir, exist_ok=True)
     out_rows, used, skip = [], 0, {"fail": 0, "kiwi": 0}
+    rng = random.Random(1)
     for r in map(json.loads, open(a.pieces, encoding="utf-8")):
         if r["fail"]:
             skip["fail"] += 1; continue
@@ -365,6 +366,20 @@ def build(a):
                 out_rows.append({"audio": cut, "text": f"language Korean<asr_text>{text}{' <SEG>' if a.seg_full else '<SEG>'}", "pair": "en-ko"})
             else:
                 out_rows.append({"audio": r["audio"], "text": f"language Korean<asr_text>{text}", "pair": "en-ko"})
+        keep = rng.random() < a.wait_single or len(ps) > 1
+        if a.wait and keep:
+            i = rng.randrange(len(ps))
+            lo, hi = max(1.0, (ends[i - 1] if i else 0.0) + 0.3), ends[i] - 0.5
+            if hi - lo >= 0.2:
+                t = rng.uniform(lo, hi)
+                wav, sr = sf.read(r["audio"], dtype="float32")
+                cut = os.path.abspath(os.path.join(a.wav_dir, f"{r['id']}_w{i}.wav"))
+                if not os.path.exists(cut):
+                    sf.write(cut, wav[: int(t * sr)], sr, subtype="PCM_16")
+                done = "".join(p + " <SEG> " for p in ps[:i]).rstrip()
+                out_rows.append({"audio": cut, "text": f"language Korean<asr_text>{done}", "pair": "en-ko", "wait": True})
+    partial = sum(r["text"].endswith("<SEG>") and not r.get("wait") for r in out_rows)
+    nwait = sum(bool(r.pop("wait", False)) for r in out_rows)
     base = [json.loads(l) for l in open(a.base, encoding="utf-8")]
     base = [{"audio": b["audio"], "text": b["text"], "pair": b["pair"]} for b in base if b["pair"] != "en-ko"]
     allr = base + out_rows
@@ -372,8 +387,7 @@ def build(a):
     with open(a.out, "w", encoding="utf-8") as f:
         for r in allr:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    partial = sum(r["text"].endswith("<SEG>") for r in out_rows)
-    print(f"utterances used {used}, skipped {skip}; new en-ko rows {len(out_rows)} ({partial} partial); "
+    print(f"utterances used {used}, skipped {skip}; new en-ko rows {len(out_rows)} ({partial} partial, {nwait} wait); "
           f"base rows kept {len(base)}; total {len(allr)}")
 
 
@@ -387,5 +401,10 @@ if __name__ == "__main__":
     ap.add_argument("--base"); ap.add_argument("--wav_dir")
     ap.add_argument("--seg_full", action="store_true", help="put <SEG> between pieces in every row, so the model also sees text "
                     "continuing after a <SEG> (full-audio rows) and learns to stop or continue from how much audio it has")
+    ap.add_argument("--wait", action="store_true", help="add one row per utterance whose audio stops inside a piece; the target "
+                    "is only the pieces already finished (empty for the first piece), so the model learns to wait instead of "
+                    "committing a piece it has not heard to the end")
+    ap.add_argument("--wait_single", type=float, default=1.0, help="share of one-piece utterances that get a wait row (their "
+                    "target is empty); utterances with several pieces always get one")
     a = ap.parse_args()
     {"manifest": manifest, "units": units, "hyref": hyref, "pieces": pieces, "build": build}[a.mode](a)
