@@ -5,8 +5,13 @@
   — 조건별로 시간대를 몰아 돌리면 GPU 를 같이 쓰는 다른 작업이 특정 N 의 지연에만 섞인다.
 - 결과는 호출마다 translations.jsonl 에 바로 붙인다. 다시 돌리면 끝난 (N, idx) 를 건너뛰고
   체인을 파일에서 복원해 이어 간다.
+- ``--context src_tgt`` 는 문맥에 앞 문장의 영어 원문을 번역과 쌍으로 넣는다. 결과는 ``<run_id>-src_tgt``
+  에 따로 쌓인다. ``--n-grid`` 로 N 조건을 고를 수 있다. N=0 도 system 문면이 문맥 형태마다
+  한 구절 다르므로, 비교 기준선은 같은 형태로 따로 돌린다.
 
     PYTHONPATH=$PWD python -u evaluation/LongContextMT/scripts/run_translate.py --model gpt-6-luna
+    PYTHONPATH=$PWD python -u evaluation/LongContextMT/scripts/run_translate.py --model qwen3.5-4b-bf16 \
+        --context src_tgt --n-grid 1 2 4 16
 """
 import argparse
 import os
@@ -20,7 +25,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lcmt.backends import CostLedger, LocalBf16, LunaChat  # noqa: E402
-from lcmt.prompt import SYSTEM, clean, user_message  # noqa: E402
+from lcmt.prompt import CONTEXT_MODES, SYSTEMS, clean, user_message  # noqa: E402
 from dctx.ledger import append, now, read_rows  # noqa: E402
 
 HERE = Path(__file__).resolve().parents[1]
@@ -62,16 +67,21 @@ def main():
                     help="API 전용. N 체인을 동시에 돌린다")
     ap.add_argument("--workers", type=int, default=4,
                     help="--parallel-chains 동시 체인 수. 10 이면 TPM 20만 한도에 걸렸다(429)")
+    ap.add_argument("--context", choices=CONTEXT_MODES, default="tgt",
+                    help="문맥 형태. tgt = 앞 번역만, src_tgt = 앞 원문과 번역을 쌍으로")
+    ap.add_argument("--n-grid", type=int, nargs="+", default=None, help="N 조건 (기본: 설정 파일의 n_grid)")
     args = ap.parse_args()
 
     cfg = load_config()
-    run_dir = HERE / "results" / (args.run_id or cfg["run_id"])
+    default_run = cfg["run_id"] if args.context == "tgt" else f"{cfg['run_id']}-{args.context}"
+    run_dir = HERE / "results" / (args.run_id or default_run)
+    system = SYSTEMS[args.context]
     out_dir = run_dir / args.model
     out_path = out_dir / "translations.jsonl"
     talk = read_rows(HERE / cfg["talk"])
     if args.limit:
         talk = talk[:args.limit]
-    grid = list(cfg["n_grid"])
+    grid = list(args.n_grid or cfg["n_grid"])
 
     done = {}
     for r in read_rows(out_path):
@@ -90,20 +100,23 @@ def main():
     print(f"[{args.model}] {len(done)} done, {todo} to go", flush=True)
     if todo and isinstance(backend, LocalBf16):
         for _ in range(WARMUP):
-            backend.translate(SYSTEM, user_message(talk[0]["en"], []))
+            backend.translate(system, user_message(talk[0]["en"], []))
 
     def translate_one(row, n):
         i = row["idx"]
         if ledger and ledger.over_budget():
             raise SystemExit(f"budget ${ledger.budget} reached — stopping")
-        prev = [chains[n][j] for j in range(max(0, i - n), i)] if n else []
+        span = range(max(0, i - n), i) if n else range(0)
+        prev = [chains[n][j] for j in span]
+        prev_src = [talk[j]["en"] for j in span]
         tag = {"model_name": args.model, "n": n, "idx": i}
-        res = backend.translate(SYSTEM, user_message(row["en"], prev), tag=tag)
+        res = backend.translate(system, user_message(row["en"], prev, prev_src, args.context), tag=tag)
         hyp = clean(res["raw_output"])
         chains[n][i] = hyp
         append(out_path, {
-            "at": now(), "model": args.model, "n": n, "idx": i, "context_sentences": len(prev),
-            "context_chars": sum(len(p) for p in prev), "src": row["en"], "ref": row["ko"],
+            "at": now(), "model": args.model, "context_mode": args.context, "n": n, "idx": i,
+            "context_sentences": len(prev),
+            "context_chars": sum(map(len, prev)) + (sum(map(len, prev_src)) if args.context == "src_tgt" else 0), "src": row["en"], "ref": row["ko"],
             "hyp": hyp, "multi_line": "\n" in hyp, "parallel_chains": args.parallel_chains, **res})
 
     started = time.time()
