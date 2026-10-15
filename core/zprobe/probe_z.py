@@ -424,6 +424,7 @@ def tagswap(args):
     for i, uid in enumerate(ids):
         r = rs[uid]
         wav, _ = librosa.load(str(FLEURS / LANGS[src][0] / "audio" / "test" / r[1]), sr=16000)
+        t1 = time.perf_counter()
         prompt = m._build_text_prompt(context=ctx, force_language=LANGS[tgt][1])
         inputs = m.processor(text=[prompt], audio=[wav], return_tensors="pt", padding=True)
         inputs = inputs.to(dev).to(torch.bfloat16)
@@ -431,8 +432,11 @@ def tagswap(args):
             o = m.model.generate(**inputs, max_new_tokens=128)
         seq = o.sequences if hasattr(o, "sequences") else o
         hyp = tok.decode(seq[0, inputs["input_ids"].shape[1]:], skip_special_tokens=True).strip()
+        torch.cuda.synchronize()
+        ms = round((time.perf_counter() - t1) * 1000, 1)
         sc = script_of(hyp)
-        rec = {"id": uid, "hyp": hyp, "script": sc, "ref_tgt": rt[uid][2].strip(), "ref_src": r[2].strip()}
+        rec = {"id": uid, "hyp": hyp, "script": sc, "ref_tgt": rt[uid][2].strip(), "ref_src": r[2].strip(),
+               "ms": ms}
         out.write(json.dumps(rec, ensure_ascii=False) + "\n"); out.flush()
         hyps.append(hyp); refs_t.append(rec["ref_tgt"]); refs_s.append(rec["ref_src"]); scripts.append(sc)
         if (i + 1) % 20 == 0:

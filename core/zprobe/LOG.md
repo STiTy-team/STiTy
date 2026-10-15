@@ -771,3 +771,57 @@ Adapters: models/zprobe/adapters/segft9_mix, models/zprobe/grpo/ko_mix/adapter_s
 models/zprobe/grpo/sft_distill_komix/final, models/zprobe/grpo/sft_distill_koctl/final.
 Data: train_seg9_mix / train_distill_komix(_rows) / train_distill_koctl(_rows). Logs: models/zprobe/logs/
 {grpo_ko_mix.log, distill_komix.log, distill_koctl.log, eval_*.log, comet_three_way*.md}.
+
+## 2026-10-12 ~ 10-15: translation adapter vs local MT (Hy-MT2), and commit-and-continue in streaming
+
+### Adapter vs ASR -> Hy-MT2 cascade (offline)
+FLEURS test, en/ko/ja/zh 12 directions, 3556 sentences (ids = models/zprobe/data/ev_big2_<pair>.jsonl).
+Base Qwen3-ASR-1.7B transcript -> tencent/Hy-MT2-1.8B (bf16, cascade_hy.py) COMET 0.878 vs big2 adapter 0.861,
+Δ −0.017 [−0.019, −0.015]; the cascade wins every direction, zh-en ties. Holdout pairs are worst for the adapter
+(ja-ko −0.063, zh-ko −0.027). Latency median: cascade ~625 ms vs adapter 240-380 ms. segft9_mix (SEG base) is
+the same 0.861 with <SEG> stripped (comet_eval.py --strip_seg). Table: models/zprobe/logs/hy_vs_adapter.md,
+hy_vs_segadapter.md; chains hy_vs_adapter.sh, hy_vs_segadapter.sh.
+
+Things tried to close the gap, none did:
+
+| try | result vs reference arm |
+|---|---|
+| LoRA on MLP too (segft9_mix_mlp, chains/segmlp.sh) | −0.002 overall, ja-ko −0.017 |
+| distillation, +32k CoVoST2 clips labelled by Hy-MT2 (bigcv, build_distill_cv.py, chains/distill_cv.sh) | +0.000 FLEURS; CoVoST2 test +0.004 but still −0.013 vs cascade |
+| lr 1e-4, r128 qkvo+MLP (bigcv2) | −0.009 FLEURS, eval loss up |
+| zero-shot transcribe-then-translate (cot_zeroshot.py) | −0.001, latency becomes cascade-like (~590 ms) |
+
+gap_breakdown.py: the worst 10% of sentences carry 77% of the gap, 79% of those are wrong content words
+(lens_trans.py: right English concept is top-3 at L22-26, the last layers pick the wrong Korean syllable).
+
+### Streaming: where commit-and-continue loses quality
+stream_sim.py (re-translate each prefix): translation is far less stable than ASR (stable@50% 0.12-0.18 vs 0.42).
+seg_units.py: koen-seg-mix SEG positions projected onto the gold transcript (1.01 inner cuts/sentence), each unit
+translated once and never revised -> −0.013 to −0.016 vs whole sentence for both Hy and the adapter. Unit
+translations came out as closed sentences with periods.
+
+cut_search.py (every cut position, gold-timed audio, unit 1 forced as prefix, continue on full audio) split
+"where the cut is" from "how the model continues": loss was spread across all positions and the continuation was
+often empty at late cuts.
+
+Connective-ending pieces (build_connective.py, chains/connective.sh): SEG units -> Hy-MT2 whole translation ->
+Qwen3-8B splits it into pieces ending in connective endings -> kiwipiepy converts to 해요체 -> rule and
+noun-leak checks; 14,242 utterances, Korean target only.
+- segconn (pieces without <SEG> in the full row): learned open endings, but the continuation stayed empty at late
+  cuts (24-50%), commit loss −0.026.
+- segconn2 (build --seg_full: every row "p1 <SEG> p2 ...", the committed prefix is forced as "p <SEG> "):
+
+| | segconn | segconn2 |
+|---|---|---|
+| offline en-ko | 0.886 | 0.883 |
+| commit at SEG units (+0.3 s) − own offline | −0.026 | **−0.008** [−0.012, −0.004] |
+| empty continuation, cut at 60-80% / 80-100% | 19% / 48% | 2% / 19% |
+| every-cut search (120 sents): SEG cut / random / worst | | −0.006 / −0.018 / −0.093 |
+
+Report: models/zprobe/logs/segconn2_report.md, chain chains/segconn2.sh. en-ja / en-zh offline unchanged.
+cut_probe.py (linear O/X on hidden states at each word end, trained on per-cut COMET loss) failed: ≈ random cut,
+the label is too noisy; the position prior alone is nearly as good as the SEG model.
+Known label defect: some pieces end in a wrong closed ending ("하나어요") from the 해요체 conversion.
+
+Next (running, chains/stream_commit.sh): stream_commit.py lets segconn2 decide commits by its own <SEG> on audio
+growing in 0.5 s steps (agree1 = commit at once, agree2 = same piece at two consecutive steps).
