@@ -846,3 +846,49 @@ only (empty for the first piece). --wait_single 0.25 keeps one-piece utterances 
 5,933 wait rows vs 3,522 partial rows, 27,297 rows total (the first build without it had 14,131 wait rows, 12,435
 of them empty). Chain chains/segconn3.sh (SFT retries after an OOM caused by another job on the GPU, then offline,
 su03 and stream_commit agree1/agree2). Stopped before training because the GPU stayed occupied.
+
+### segconn3: wait rows trained (2026-10-19, skkai machine)
+Data from HF `Doo12/stity-zprobe-adapters` (train_segconn3.jsonl, archives/*.tar, audio paths rewritten from
+/home/mobility). Train env: conda `stity` (peft + qwen_asr); COMET: `.venv`. Chain `chains/segconn3.sh` now takes
+`PY`/`CPY` from the environment and skips the stream_commit wait when its outputs exist. Report
+models/zprobe/logs/segconn3_report.md.
+
+| | segconn2 | segconn3 |
+|---|---|---|
+| offline en-ko | 0.883 | 0.876 (−0.007 [−0.015, −0.000]) |
+| agree1 COMET / first commit | 0.830 / 1.24 s | 0.840 / 4.20 s (+0.009, n.s.) |
+| agree2 COMET / first commit | 0.868 / 3.92 s | 0.868 / 6.62 s (±0.000) |
+| SEG units +0.3 s | 0.875 | 0.844 |
+| non-final pieces < 6 chars (agree1) | 223 | 19 |
+| translation stops on a connective ending (agree1 / agree2 / su03) | 3 / 2 / 1 | 38 / 13 / 25 |
+
+The wait rows removed the premature one-word commits but made commits later at the same absolute quality, and added
+a new failure: the full-audio decode ends right after the committed prefix ("…유래했으며,"). Presumed cause: 1,689 wait
+rows end in "p1 <SEG>" with more audio after it, i.e. "stop after a committed piece" is taught directly.
+
+### n-best upper bound (segconn2, en-ko 270, offline)
+nbest.py (greedy + beam 8 + 8 samples, ~16 unique candidates/sentence), nbest_score.py (COMET-DA, CometKiwi, chrF++,
+MBR). Report models/zprobe/logs/nbest_segconn2_report.md.
+
+| selection | COMET | Δ vs greedy | Δ chrF++ |
+|---|---|---|---|
+| greedy | 0.883 | | |
+| beam 8 top-1 | 0.890 | +0.008 [+0.004, +0.011] | +1.0 |
+| CometKiwi rerank | 0.898 | +0.015 | +0.5 |
+| MBR (COMET-DA) | 0.900 | +0.017 | +0.9 |
+| oracle (COMET) | 0.909 | +0.026 | +3.0 |
+| oracle chosen by chrF++ | 0.894 | +0.011 | +7.1 |
+
+The model already produces better candidates than greedy picks (oracle +0.094 on the worst 10%). Kiwi/MBR gains are
+partly COMET-family selection bias (small chrF++ gain); beam top-1 is the clean one. Latency on transformers, full
+audio: greedy 407 ms, beam 4 527 ms, beam 8 588 ms (median).
+
+### Beam search on vLLM (pending)
+The production server's `SamplingParams(use_beam_search=True)` no longer exists in vLLM, so `--beam-size` silently falls
+back to greedy. vLLM 0.14 keeps beam search only as a client loop (serving_engine.beam_search: one max_tokens=1 round
+per token, audio re-sent). vllm_beam.py reproduces that loop on the merged model (models/zprobe/merged/segconn2,
+LoRA folded in); stream_commit.py got `--beams`. chains/beam_check.sh runs vLLM greedy vs beam 4, then streaming
+agree2 with beam 4 on transformers, then COMET -> models/zprobe/logs/beam_check_report.md. Not run yet (GPU held by
+another project).
+Side finding: the base checkpoint stores a `thinker.lm_head.weight` that differs from `embed_tokens` (max |Δ| 0.0085),
+but config ties them, so transformers loads embed_tokens as the output layer and the stored lm_head is never used.

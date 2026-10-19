@@ -10,7 +10,7 @@ Output rows match seg_units.py adapter ({id, hyp, units_tgt, commit, dur, ref_sr
 --strip_seg and seg_units.py score work on them unchanged.
 
 usage: PROBE_MODEL=<koen-seg-mix> PROBE_ADAPTER=models/zprobe/adapters/segconn2 PYTHONPATH=Qwen3-ASR \
-         python core/zprobe/stream_commit.py --ids ev_big2_en-ko.jsonl --tgt ko --out X.jsonl [--step 0.5] [--agree 2]"""
+         python core/zprobe/stream_commit.py --ids ev_big2_en-ko.jsonl --tgt ko --out X.jsonl [--step 0.5] [--agree 2] [--beams 4]"""
 import argparse, json, re, sys, time
 from pathlib import Path
 
@@ -31,7 +31,8 @@ def main(a):
         prefix = "".join(p + " <SEG> " for p in pieces)
         inputs = m.processor(text=[base + prefix], audio=[wav], return_tensors="pt", padding=True).to(dev).to(torch.bfloat16)
         with torch.no_grad():
-            o = m.model.generate(**inputs, max_new_tokens=120, no_repeat_ngram_size=a.no_repeat or None)
+            o = m.model.generate(**inputs, max_new_tokens=120, no_repeat_ngram_size=a.no_repeat or None,
+                                 num_beams=a.beams, do_sample=False)
         seq = o.sequences if hasattr(o, "sequences") else o
         return continuation(tok, inputs["input_ids"][0], seq[0])
 
@@ -78,4 +79,5 @@ if __name__ == "__main__":
     ap.add_argument("--first", type=float, default=1.0, help="first decode at this much audio (s)")
     ap.add_argument("--agree", type=int, default=1, help="2: commit only when the same piece comes out at two consecutive steps")
     ap.add_argument("--no_repeat", type=int, default=4); ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--beams", type=int, default=1, help="beam width per decode (1 = greedy)")
     main(ap.parse_args())

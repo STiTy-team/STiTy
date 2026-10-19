@@ -1,9 +1,9 @@
 #!/bin/bash
 # segconn2 + "wait" rows (build --wait): audio stops inside a piece, target = finished pieces only, so the adapter learns
 # not to commit a piece it has not heard to the end. Then the same true-streaming test as stream_commit.sh.
-#   tmux new-session -d -s segconn3 -c /home/mobility/STiTy "bash core/zprobe/chains/segconn3.sh > core/zprobe/chains/segconn3.log 2>&1"
-cd /home/mobility/STiTy
-PY=.venv/bin/python; CPY=.venv-tpm/bin/python
+#   tmux new-session -d -s segconn3 -c <repo> "bash core/zprobe/chains/segconn3.sh > core/zprobe/chains/segconn3.log 2>&1"
+cd "$(dirname "$0")/../../.."
+PY=${PY:-.venv/bin/python}; CPY=${CPY:-.venv/bin/python}  # PY: peft + qwen_asr, CPY: comet
 BASE=models/Qwen3-ASR-1.7B-koen-seg-mix-merged
 D=models/zprobe/data; K=$D/connective; H=$D/hy; U=$D/segunits; A=models/zprobe/adapters; LOG=models/zprobe/logs; OUT=models/zprobe/grpo
 NAME=segconn3
@@ -13,8 +13,8 @@ export PYTHONPATH=Qwen3-ASR
 mark "1 build"
 [ -f $D/train_$NAME.jsonl ] || $PY core/zprobe/build_connective.py build --seg_full --wait --wait_single 0.25 --pieces $K/pieces.jsonl --base $D/train_seg9_mix.jsonl \
   --out $D/train_$NAME.jsonl --wav_dir $K/cuts
-mark "2 wait for stream_commit chain"
-until grep -q CHAIN_DONE core/zprobe/chains/stream_commit.log; do sleep 60; done
+mark "2 wait for stream_commit chain (skipped when its outputs are already there)"
+[ -f $H/scores/sc_agree2_en-ko.jsonl ] || until grep -q CHAIN_DONE core/zprobe/chains/stream_commit.log 2>/dev/null; do sleep 60; done
 mark "3 SFT"
 if [ ! -d $A/$NAME ]; then
   # another project on this GPU can take the memory while the dataset map runs on CPU; retry after an OOM
