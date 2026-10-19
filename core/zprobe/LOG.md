@@ -892,3 +892,25 @@ agree2 with beam 4 on transformers, then COMET -> models/zprobe/logs/beam_check_
 another project).
 Side finding: the base checkpoint stores a `thinker.lm_head.weight` that differs from `embed_tokens` (max |Δ| 0.0085),
 but config ties them, so transformers loads embed_tokens as the output layer and the stored lm_head is never used.
+
+### Beam search check (2026-10-19, chains/beam_check.sh + chains/beam_check_side.sh, mobility machine)
+segconn2, en-ko 270, report models/zprobe/logs/beam_check_report.md. beam_check_side.sh exists because this machine
+lacked models/zprobe/data/nbest/ (the vLLM smoke could not write its output) and the n-best file; it reran the vLLM steps
+and nbest.py --samples 0.
+
+| run | COMET | vs greedy | latency per sentence (median / p90) |
+|---|---|---|---|
+| transformers greedy | 0.883 | | |
+| transformers beam 8 | 0.890 | +0.008 [+0.004, +0.011] | |
+| vLLM greedy (merged model) | 0.884 | +0.001 vs transformers greedy [−0.001, +0.003] | 322 / 464 ms |
+| vLLM beam 4 | 0.891 | +0.007 [+0.003, +0.010] | 996 / 1450 ms |
+| streaming agree2, greedy | 0.868 | | first commit 3.92 s, char commit time 0.90 |
+| streaming agree2, beam 4 | 0.878 | +0.011 [+0.005, +0.016] | first commit 3.80 s, char commit time 0.93 |
+
+- vLLM greedy matches transformers, so the tokenizer "incorrect regex pattern" warning and the dropped lm_head do not show
+  in the score. Beam 4 changes the text in 202/270 sentences.
+- vLLM beam costs about 3x per decode. The streaming simulation decodes every 0.5 s of audio (~19 decodes per sentence)
+  and does not model compute falling behind the audio, so a beam-4 decode near 1 s per call would not keep real time
+  without batching or fewer decodes.
+- Streaming agree2 with beam 4 (0.878) is level with commit at SEG-model units (su03, 0.875) and recovers most of the
+  greedy streaming loss.
