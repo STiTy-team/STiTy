@@ -61,8 +61,9 @@ ADAPTER = os.environ.get("PROBE_ADAPTER", "")
 def load_model():
     import torch
     from qwen_asr import Qwen3ASRModel
+    extra = {"attn_implementation": os.environ["PROBE_ATTN"]} if os.environ.get("PROBE_ATTN") else {}
     m = Qwen3ASRModel.from_pretrained(MODEL, dtype=torch.bfloat16, device_map="cuda",
-                                      max_inference_batch_size=1)
+                                      max_inference_batch_size=1, **extra)
     if ADAPTER:
         from peft import PeftModel
         pm = PeftModel.from_pretrained(m.model, ADAPTER)

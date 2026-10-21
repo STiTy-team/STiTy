@@ -914,3 +914,50 @@ and nbest.py --samples 0.
   without batching or fewer decodes.
 - Streaming agree2 with beam 4 (0.878) is level with commit at SEG-model units (su03, 0.875) and recovers most of the
   greedy streaming loss.
+
+### bench FLEURS table entries (2026-10-20, stream_bench.py + stream_bench_score.py, chains/stream_bench.sh)
+segconn2 as direct speech translation on bench's fleurs_en-ko_vol23 audio (exported with bench/seamless/export_items.py),
+fed at wall-clock speed, own <SEG> with agree 2, scored with bench's YAAL/COMET code like SeamlessStreaming. Results in
+/home/mobility/zprobe_bench/runs/. Added as two rows (with a footnote) to Confluence page 24346683, version 14.
+
+| run (en-ko) | COMET | YAAL CA ms (all sentences) | LAAL CA ms | pieces / item |
+|---|---|---|---|---|
+| bench Qwen3 base + Qwen3.5-4B (summary.json) | 0.874 | 4993 | 7644 | 1.32 |
+| segconn2 greedy | 0.873 | 3047 | 4640 | 2.04 |
+| segconn2 beam 4 | 0.881 | 2915 | 4589 | 2.04 |
+
+- Beam's lower YAAL is a metric effect, not real: on the 245 sentences both scored, beam is +41 ms later (median), each
+  decode takes 0.43 vs 0.34 s, and 72-74% of the characters come after the audio ends, which YAAL counts as one token.
+  Beam 4 on transformers stays under the 0.5 s step, so it decodes as often as greedy (18.6 vs 18.9 per sentence).
+- Partial (uncommitted) outputs are not usable as token streaming (scratchpad partial_vs_commit.py on sc_agree2_en-ko):
+  only 45% of uncommitted characters survive, showing every partial would retract 2.85x the final length, and an oracle
+  that knew the stable prefix would show text at 0.763 of the duration instead of 0.883.
+
+### segconn2 on Chinese/Japanese speech -> Korean (chains/zhja_ko.sh, report logs/zhja_ko_report.md)
+Offline: zh-ko 0.858 (+0.008 vs big2, −0.020 vs ASR->Hy), ja-ko 0.817 (+0.011, −0.052). Streaming (raw FLEURS audio, real
+time, agree 2): zh-ko beam 4 0.854 (YAAL CA 3817, 2.01 pieces), ja-ko beam 4 0.818 (4604, 1.70 pieces, YAAL only on
+158/249 sentences). The connective-piece commits learned from English speech carry over to Chinese speech.
+
+### segconnx: English-target pieces added (build_connective_en.py, chains/segconnx.sh, report logs/segconnx_report.md)
+Labels: FLEURS train ko/ja/zh speech with the gold English as reference; Qwen3-8B picks the cuts (no SEG model for ja/zh)
+and writes open English pieces; resplit() re-cuts the source by letters so dropped punctuation does not fail rows; leak
+check compares two Hy-MT2 translations (prefix vs whole sentence) so synonyms of the reference do not count. 2,974/4,091
+sentences kept, 15,100 rows, merged into segconn2's data (one adapter, both targets). SFT failed twice (exit 1, 134; cause
+not checked) and finished on the third try.
+
+| | segconnx | vs segconn2 | vs ASR->Hy |
+|---|---|---|---|
+| offline ko-en / ja-en / zh-en | 0.852 / 0.832 / 0.856 | −0.004 / +0.004 / +0.001 (n.s.) | −0.018 / −0.018 / −0.003 |
+| offline en-ko / zh-ko / ja-ko | 0.880 / 0.859 / 0.817 | −0.003 / +0.001 / +0.000 (n.s.) | |
+| streaming ko-en beam 4 (bench audio) | 0.830, YAAL CA 2821, LAAL CA 4536, 1.99 pieces | segconn2: 0.840, 1.53 pieces, YAAL on 141/268 only | bench cascade 0.863, YAAL 5782, LAAL 6234 |
+| streaming ja-en / zh-en beam 4 | 0.808 / 0.844, 2.0 pieces | | |
+| streaming en-ko beam 4 | 0.886, YAAL CA 3068, LAAL CA 4872 | | |
+
+English-target streaming loses more than Korean-target streaming (ko-en 0.852 -> 0.830; en-ko keeps its offline score).
+Greedy has much higher LAAL than beam on X->en (ko-en 6281 vs 4536): greedy more often commits nothing until the end.
+
+### Next (running, waits for the GPU): prefix-to-prefix labels and AlignAtt
+chains/prefix.sh: build_prefix.py asks Qwen3-8B (vLLM) for a simultaneous-interpretation translation in source order,
+phrase by phrase, an addition per phrase (may be empty); rows audio[0:t] -> additions so far, no <SEG>; adapter prefix1;
+stream_bench.py --mode prefix appends every decode's text at once (token streaming, never revised).
+chains/alignatt.sh (after prefix.sh): stream_bench.py --mode alignatt on segconnx, no retraining.
