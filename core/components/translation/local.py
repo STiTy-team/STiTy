@@ -11,7 +11,7 @@ DEFAULT_MODEL = "google/madlad400-3b-mt"
 
 @translators.register('local')
 class LocalTranslation(Translator):
-    SETTINGS = {"model": ("model", str), "device": ("device", str)}
+    SETTINGS = {"model": ("model", str), "device": ("device", str), "quant": ("quant", str)}
 
     translator = None
     calls = 0
@@ -20,14 +20,16 @@ class LocalTranslation(Translator):
     async def load(self) -> None:
         self.model = self.settings.get("model", DEFAULT_MODEL)
         self.device = self.settings.get("device")
-        cache_key = ("local-translator", self.model, self.device)
+        self.quant = self.settings.get("quant")
+        cache_key = ("local-translator", self.model, self.device, self.quant)
         log.info("[LOAD] translation model %s", self.model)
         self.translator = await cache.load(cache_key, self._build_translator)
 
     async def _build_translator(self):
         from core.translator.local_translator import make_translator
 
-        translator = make_translator(model_name=self.model, device=self.device)
+        extra = {} if self.quant is None else {"quant": self.quant}
+        translator = make_translator(model_name=self.model, device=self.device, **extra)
         translator.load()
         return translator
 

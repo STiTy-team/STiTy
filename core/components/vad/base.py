@@ -6,6 +6,7 @@ __all__ = ["Detector", "Speech"]
 class Detector(Component):
 
     spans: list
+    voiced_until: float | None = None
 
     def start(self, **_) -> None:
         self.spans = []

@@ -22,6 +22,8 @@ SEG_RE = re.compile(SEG_TAG)
 PARTIAL_MIN_INTERVAL_SEC = 0.12
 KEEP_AFTER_SPEECH_SEC = 0.1
 RETRY_LEAD_PAD_SEC = 0.2
+PREROLL_SEC = 1.0
+GATE_MIN_VOICE_SEC = 0.1
 MAX_AUDIO_ACCUM_SEC = 90.0
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
@@ -316,6 +318,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._accum_before_chunk = 0
         self._buffered_before_chunk = 0
         self._utterance_open = False
+        self._preroll: list = []
         self._reset_slot()
         log.info("[TRANSCRIBE-START] commit=%s hide_seg=%s dot_confirm=%s",
                  self.cfg.stity.commit.mode, self.hide_seg, self.dot_commit_confirm)
@@ -395,11 +398,37 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot = self.slot
         self._accum_before_chunk = slot["state"].audio_accum.shape[0]
         self._buffered_before_chunk = slot["state"].buffer.shape[0] + chunk.size
-        if not slot["real_audio"] and not np.any(chunk):
-            return self._drain()
+        if not slot["real_audio"]:
+            if self._last_final_text and self._no_voice_since(chunk.size):
+                self._buffered_before_chunk -= chunk.size
+                self._hold_preroll(chunk)
+                return self._drain()
+            if not np.any(chunk):
+                return self._drain()
+            if self._preroll:
+                chunk = self._take_preroll(chunk)
+                slot["audio_anchor_sec"] = ((self._fed_samples - chunk.size)
+                                            / audio_mod.SAMPLING_RATE)
         slot["real_audio"] = True
         await self._stream_chunk(chunk)
         return self._drain()
+
+    def _no_voice_since(self, chunk_samples: int) -> bool:
+        voiced_until = None if self.vad is None else getattr(self.vad, "voiced_until", None)
+        if voiced_until is None:
+            return False
+        chunk_start = (self._fed_samples - chunk_samples) / audio_mod.SAMPLING_RATE
+        return voiced_until <= chunk_start + GATE_MIN_VOICE_SEC
+
+    def _hold_preroll(self, chunk: np.ndarray) -> None:
+        self._preroll.append(chunk)
+        keep = int(PREROLL_SEC * audio_mod.SAMPLING_RATE)
+        while sum(c.size for c in self._preroll) - self._preroll[0].size >= keep:
+            self._preroll.pop(0)
+
+    def _take_preroll(self, chunk: np.ndarray) -> np.ndarray:
+        held, self._preroll = self._preroll, []
+        return np.concatenate([*held, chunk]) if held else chunk
 
     async def _stream_chunk(self, chunk: np.ndarray) -> None:
         slot = self.slot

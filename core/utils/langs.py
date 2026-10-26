@@ -92,9 +92,10 @@ def laal_unit(code: str) -> str:
 # language -- unlike the Latin alphabet, which English, Spanish, German, ... all share.
 # ("Alphabet" here is shorthand for "set of letters a language is written with" --
 # Japanese and Chinese are not alphabets in the strict sense, but kana and Han
-# characters are exactly as identifying as Hangul is for Korean.) `detect_by_alphabet`
-# can never return a Latin-alphabet language because of this: there is no pattern for
-# one to match.
+# characters are exactly as identifying as Hangul is for Korean.) `en` matches any
+# Latin letter, so it only identifies English when the caller has narrowed `langs` to
+# languages where English is the only Latin-script one (e.g. `("ko", "en")`); it is
+# left out of the default for that reason.
 ALPHABET_LANGS: tuple[str, ...] = ("ko", "ja", "zh")
 ALPHABET_THRESHOLD = 0.6
 
@@ -102,6 +103,7 @@ _ALPHABETS: dict[str, re.Pattern] = {
     "ko": re.compile(r"[가-힣]"),
     "ja": re.compile(r"[぀-ヿ]"),
     "zh": re.compile(r"[一-鿿]"),
+    "en": re.compile(r"[A-Za-z]"),
 }
 
 

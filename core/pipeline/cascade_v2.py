@@ -32,7 +32,7 @@ async def detect_language(parts: dict, item: Transcribed) -> Transcribed:
     if detector is None:
         return item
     try:
-        detected = await detector.detect(item.original)
+        detected = await detector.detect(item)
     except Exception as e:  # noqa: BLE001
         log.warning("[LANGID-FAILED] %s", e)
         return item
