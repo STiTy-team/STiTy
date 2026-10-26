@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils"
 const ALL = "__all"
 const LOCAL_HOST = "__local"
 const PAGE = 50
-const METRIC_COLUMNS = ["wer", "bleu", "comet", "laal_ms"]
+const METRIC_COLUMNS = ["wer", "bleu", "comet", "laal_ms", "gpu_peak_mib"]
 const STATUSES = ["ok", "failed", "running"] as const
 const NEWEST_FIRST = new Set(["stamp", "items", "wall_sec"])
 

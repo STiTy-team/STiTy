@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = "==3.12.*"
 resolution-markers = [
     "sys_platform == 'win32'",
@@ -3424,7 +3424,9 @@ dependencies = [
     { name = "jiwer" },
     { name = "librosa" },
     { name = "numpy" },
+    { name = "nvidia-ml-py" },
     { name = "omnisteval" },
+    { name = "psutil" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
@@ -3452,7 +3454,9 @@ requires-dist = [
     { name = "jiwer" },
     { name = "librosa" },
     { name = "numpy" },
+    { name = "nvidia-ml-py" },
     { name = "omnisteval" },
+    { name = "psutil" },
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.15.0" },
     { name = "python-dotenv" },

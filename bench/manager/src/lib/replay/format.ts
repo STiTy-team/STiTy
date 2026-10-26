@@ -57,6 +57,7 @@ const METRIC_GROUPS: [string, (key: string) => boolean][] = [
   ["Translation latency", (k) => /(laal|yaal)/.test(k)],
   ["Language detection", (k) => /^(lang_detect|confusion)/.test(k)],
   ["Segmentation", (k) => /(segment|commit_reasons)/.test(k)],
+  ["GPU", (k) => /^gpu_/.test(k)],
 ]
 
 export const groupOf = (key: string) => METRIC_GROUPS.find(([, test]) => test(key))?.[0] ?? OTHER_GROUP
@@ -96,8 +97,14 @@ const METRIC_LABELS: Record<string, string> = {
   comet_by_pair: "COMET by pair",
   wer_scored_only: "WER (scored only)",
   comet_model: "COMET model",
+  gpu_peak_mib: "GPU peak",
+  gpu_mean_mib: "GPU mean",
+  gpu_util_mean: "GPU util (mean)",
+  gpu_other_peak_mib: "Other processes peak",
+  gpu_by_process_mib: "GPU peak by process",
 }
-const PERCENT_KEYS = new Set(["lang_detect_accuracy", "commit_reasons"])
+const PERCENT_KEYS = new Set(["lang_detect_accuracy", "commit_reasons", "gpu_util_mean"])
+const MIB_KEYS = new Set(["gpu_by_process_mib"])
 
 export function labelOf(key: string): string | null {
   const bare = key.replace(/_(ms|sec)$/, "")
@@ -116,6 +123,7 @@ export function formatValue(key: string, v: unknown, parent?: string): string {
   if (typeof v !== "number") return String(v)
   if (/_ms$/.test(key)) return seconds(v / 1000)
   if (/_sec$/.test(key)) return seconds(v)
+  if (/_mib$/.test(key) || (parent && MIB_KEYS.has(parent))) return `${(v / 1024).toFixed(2)} GiB`
   if (PERCENT_KEYS.has(key) || (parent && PERCENT_KEYS.has(parent))) return `${(100 * v).toFixed(1)}%`
   if (/^bleu/.test(key) || /^bleu/.test(parent ?? "")) return v.toFixed(1)
   if (Number.isInteger(v)) return v.toLocaleString("en-US")

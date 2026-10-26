@@ -452,9 +452,10 @@ runs/fleurs_en-ko/asr.qwen-seg-en+mt.qwen3.5-4b/
   events.jsonl                      이벤트 전부. 리플레이가 읽는 것이다
   comet_inputs.jsonl                COMET 이 채점할 문장 쌍
   comet_scores.jsonl                그 문장마다의 COMET 점수 (같은 순서). 대시보드의 분포 그림이 읽는다
+  gpu.jsonl                         1초마다의 GPU 메모리·사용률 표본. append (죽어도 남는다)
 ```
 
-실행이 시작할 때 위 다섯 파일을 먼저 지운다(`reset_run_dir`). 스트림은 append 로 열리므로(중간에 죽어도
+실행이 시작할 때 위 여섯 파일을 먼저 지운다(`reset_run_dir`). 스트림은 append 로 열리므로(중간에 죽어도
 거기까지 채점된다) 안 지우면 지난 실행 뒤에 이어 붙어 두 실행이 한 기록으로 섞인다.
 
 **설정은 여기 복사되지 않는다.** 입력은 S3 와 그 사본인 `configs/` 에 있고 여기는 산출물만 둔다. 무엇을
@@ -583,6 +584,9 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 | `token_emission_ms` | 단어가 실제로 발화된 끝 시각부터 화면에 **바뀌지 않고 남은** 채로 처음 나타난 시각까지. 참조와 맞게 인식된 단어만 센다. `audio` 시계 기준이고, 벽시계 기준은 `token_emission_ca_ms`. 둘 다 평균·`_p50_ms`·`_p90_ms`. 발화 시각은 데이터셋의 `alignment.jsonl` 에서 온다 — 아래 참고 |
 | `commit_reasons` | 사유별 비율. `finish` 비율이 크면 축의 커밋 경로가 안 도는 것이다 |
 | `lang_detect_accuracy`·`confusion` | 언어 판정 정확도와 혼동 행렬. ASR 이 커밋한 전사의 언어를 참조 언어와 비교하고, 모든 항목으로 낸다. 판정 정확도는 참조 언어와 판정 언어를 둘 다 언어 코드로 맞춘 뒤 비교하고, 언어를 내지 않은 세그먼트는 `?` 로 틀린 것으로 센다 |
+| `gpu_peak_mib`·`gpu_mean_mib` | 이 실행이 잡은 GPU 메모리의 최댓값·평균(MiB). `gpu_usage.py` 가 실행 내내 1초마다 NVML 에 물어, **이 프로세스와 그 자식들**(vLLM 엔진, 번역 서버)의 메모리만 더한다. 모델 로딩 전부터 재므로 로딩 때 치솟는 값도 들어간다. vLLM 은 `gpu_memory_utilization` 만큼 미리 잡으므로 이 값은 실제로 필요한 양이 아니라 그 설정을 주로 보여 준다. 프로세스 이름별 최댓값은 `gpu_by_process_mib`, 표본 전체는 `gpu.jsonl` |
+| `gpu_util_mean` | 이 실행의 프로세스들이 GPU 연산 장치를 쓴 비율의 평균. 드라이버의 프로세스별 사용률 표본이라 대략값이다. 드라이버가 내주지 않으면 비운다 |
+| `gpu_other_peak_mib` | 같은 GPU 에 있던 **다른** 프로세스의 메모리 최댓값. 0 이 아니면 GPU 를 나눠 쓴 실행이라 지연·사용률 수치가 흔들렸을 수 있다. 메모리 값 자체는 프로세스별로 나뉘므로 영향받지 않는다 |
 
 **COMET 은 별도 환경에서 돈다.** `unbabel-comet` 은 `protobuf<5`·`numpy<2` 를 고정하고 vLLM 0.14 는
 `protobuf>=6.30` 을 요구해서, 한 환경에 둘을 같이 풀 수 있는 버전이 없다. 그래서 `bench/metrics/comet/` 이 자기 uv 환경을 갖고, `make bench` 가
@@ -805,6 +809,9 @@ config.py     데이터셋 설정을 읽고 파이프라인 설정과 합친다.
 registry.py   runs/<데이터셋>/<파이프라인>/ 목록, 실행이 남긴 설정·identity 읽기, 그리고
               이름이 뜻을 바꾸면 시작 전에 멈추는 검사(check) — S3 가 있으면 모든 머신과 맞춘다
 store.py      실행 올리기·목록·내려받기, 설정 이름 찜(refs/). S3 접근은 core/integrations/s3.py
+gpu_usage.py  실행 중 GPU 메모리·사용률 표본 뜨기(GpuSampler). 이 실행의 프로세스와 나머지를 나눈다.
+              따로 된 자식 프로세스로 돌아서, GPU 가 없거나 NVML 이 죽거나 멈춰도 실행은 그대로 끝나고
+              GPU 지표만 `unavailable` 에 이유와 함께 빠진다
 settings.py   bench 가 읽는 환경 변수 전부(BenchSettings). 시작할 때 load() 로 검사한다
 shared_configs.py  S3 의 설정(configs/) 읽기·저장·검사, make configs-pull·push·list
 machines/     GPU 머신 하나와 그 queue. worker 와 manager 가 함께 쓴다

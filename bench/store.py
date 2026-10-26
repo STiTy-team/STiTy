@@ -9,7 +9,14 @@ from .settings import BenchSettings
 
 SHARED_MARKER = ".remote"
 SUMMARY = "summary.json"
-DATA_FILES = ("items.jsonl", "events.jsonl", "comet_inputs.jsonl", "comet_scores.jsonl")
+GPU_TIMELINE = "gpu.jsonl"
+DATA_FILES = (
+    "items.jsonl",
+    "events.jsonl",
+    "comet_inputs.jsonl",
+    "comet_scores.jsonl",
+    GPU_TIMELINE,
+)
 
 
 @dataclass(frozen=True)

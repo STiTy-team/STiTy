@@ -19,14 +19,21 @@ export const SCORES: Record<string, Score> = {
   longyaal_ca_ms: { label: "LongYAAL CA", better: "lower", item: "longyaal_ca_ms" },
   lang_detect_accuracy: { label: "Lang detect", better: "higher" },
   segments_per_item: { label: "Segments / item", better: null, item: "n_segments" },
+  gpu_peak_mib: { label: "GPU peak", better: "lower", note: "이 실행의 프로세스들이 동시에 잡은 GPU 메모리의 최댓값이에요" },
+  gpu_mean_mib: { label: "GPU mean", better: "lower" },
+  gpu_util_mean: { label: "GPU util", better: null },
+  gpu_other_peak_mib: { label: "Other GPU peak", better: null, note: "0이 아니면 다른 프로세스가 GPU를 같이 썼어요 — 지연·사용률 수치가 흔들렸을 수 있어요" },
 }
 
 export const BETTER_TEXT: Record<string, string> = { lower: "낮을수록 좋음", higher: "높을수록 좋음" }
 
-export const unitOf = (key: string) => (/_(ms|sec)$/.test(key) ? "s" : key === "lang_detect_accuracy" ? "%" : "")
+const PERCENT_SCORES = new Set(["lang_detect_accuracy", "gpu_util_mean"])
+
+export const unitOf = (key: string) =>
+  /_(ms|sec)$/.test(key) ? "s" : /_mib$/.test(key) ? "GiB" : PERCENT_SCORES.has(key) ? "%" : ""
 
 /** A per-item value in the unit the table shows (milliseconds read as seconds). */
-export const displayScale = (key: string) => (/_ms$/.test(key) ? 0.001 : 1)
+export const displayScale = (key: string) => (/_ms$/.test(key) ? 0.001 : /_mib$/.test(key) ? 1 / 1024 : 1)
 
 export const axisText = (key: string) => `${SCORES[key].label}${unitOf(key) ? ` (${unitOf(key)})` : ""}`
 
@@ -35,7 +42,8 @@ export function formatScore(key: string, v: number | null | undefined, { unit = 
   const u = unit ? unitOf(key) : ""
   if (/_ms$/.test(key)) return (v / 1000).toFixed(2) + u
   if (/_sec$/.test(key)) return v.toFixed(2) + u
-  if (key === "lang_detect_accuracy") return (100 * v).toFixed(1) + u
+  if (/_mib$/.test(key)) return (v / 1024).toFixed(2) + u
+  if (PERCENT_SCORES.has(key)) return (100 * v).toFixed(1) + u
   if (/bleu/.test(key)) return v.toFixed(1)
   if (key === "comet") return v.toFixed(3)
   if (/segment/.test(key)) return v.toFixed(1)

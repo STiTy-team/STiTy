@@ -10,6 +10,7 @@ from core.utils.json import JsonlWriter, read_jsonl, write_jsonl
 from core.utils.paths import get_project_root
 
 from . import augment, notify, registry, shared_configs, source, store
+from .gpu_usage import GpuSampler
 from .settings import BenchSettings
 from .metrics.common import transcribed, translated
 from .metrics import score
@@ -100,10 +101,11 @@ def score_item(row: dict, cfg) -> dict:
     return row
 
 
-def score_run(rows, cfg) -> tuple[dict, dict]:
+def score_run(rows, cfg, gpu: GpuSampler) -> tuple[dict, dict]:
     scores, unavailable = score.score_run(rows, cfg.target)
     unavailable["comet"] = "scored separately by python -m bench.metrics.comet"
-    return scores, unavailable
+    gpu_scores, gpu_unavailable = gpu.scores()
+    return {**scores, **gpu_scores}, {**unavailable, **gpu_unavailable}
 
 
 def write_comet_inputs(rows, cfg, path: Path) -> None:
@@ -137,6 +139,7 @@ RUN_FILES = (
     "summary.json",
     "comet_inputs.jsonl",
     "comet_scores.jsonl",
+    store.GPU_TIMELINE,
     store.SHARED_MARKER,
 )
 
@@ -189,6 +192,7 @@ def main(args: Namespace) -> None:
 
     status, failure = "ok", None
     writer = JsonlWriter(run_dir / "items.jsonl")
+    gpu = GpuSampler(run_dir / store.GPU_TIMELINE).start()
     try:
         asyncio.run(_run(cfg, dataset, pipeline, augmenter, writer))
     except KeyboardInterrupt:
@@ -198,6 +202,7 @@ def main(args: Namespace) -> None:
         status, failure = "failed", e
     finally:
         writer.close()
+        gpu.stop()
         asyncio.run(pipeline.close())
     rows = list(read_jsonl(writer.path))
 
@@ -208,7 +213,7 @@ def main(args: Namespace) -> None:
     report.write_all(
         cfg=cfg,
         dataset=dataset,
-        scores=score_run(rows, cfg),
+        scores=score_run(rows, cfg, gpu),
         rows=rows,
         status=status,
         started=started,
