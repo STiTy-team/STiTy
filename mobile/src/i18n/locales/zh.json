@@ -1,0 +1,374 @@
+{
+  "common": {
+    "cancel": "取消",
+    "back": "返回",
+    "ok": "好",
+    "close": "关闭",
+    "retry": "重试",
+    "save": "保存"
+  },
+  "languages": {
+    "ko": "韩语",
+    "ja": "日语",
+    "zh": "中文",
+    "es": "西班牙语",
+    "en": "英语"
+  },
+  "home": {
+    "languagesTitle": "对话语言",
+    "languagesHint": "点按某种语言即可设为我的语言。此手机会以我的语言显示翻译。",
+    "myLanguage": "我的",
+    "addLanguage": "添加语言",
+    "removeLanguage": "移除{{language}}",
+    "outputTitle": "收听翻译",
+    "start": "开始对话",
+    "save": "保存到记录",
+    "saveHint": "服务器会在翻译时保存文字记录，不保留音频。",
+    "saveLocked": "从下一次对话开始生效。",
+    "signInToSave": "登录以保存对话",
+    "saveGuestHint": "无需账号即可翻译。登录后会保存每次对话的文字记录。"
+  },
+  "outputModes": {
+    "speaker": "扬声器",
+    "earphone": "耳机",
+    "both": "两者",
+    "speakerHint": "所有翻译都通过手机扬声器播放。",
+    "earphoneHint": "只在耳机中播放对方发言的翻译。",
+    "bothHint": "给我的翻译在耳机中播放，给对方的在扬声器中播放。"
+  },
+  "languagePicker": {
+    "title": "添加语言",
+    "comingSoon": "即将推出"
+  },
+  "server": {
+    "connecting": "正在连接服务器…",
+    "unreachable": "无法连接服务器，正在重试。",
+    "full": "服务器已满，有空位时即可开始。",
+    "freed": "有空位了，现在可以开始。"
+  },
+  "conversation": {
+    "listening": "正在聆听",
+    "paused": "已暂停",
+    "demo": "演示",
+    "connecting": "连接中…",
+    "emptyTitle": "请开始说话",
+    "emptyHint": "用任一对话语言说话即可。",
+    "me": "我",
+    "transcribing": "正在转写",
+    "pause": "暂停",
+    "resume": "继续",
+    "retry": "重试",
+    "sound": "声音",
+    "muted": "已静音",
+    "settings": "对话设置",
+    "end": "结束对话",
+    "endConfirmTitle": "要结束对话吗？",
+    "endConfirmMessage": "此页面上的对话内容将被清除。",
+    "endConfirmAction": "结束",
+    "events": {
+      "outputMode": "收听翻译：{{mode}}",
+      "muted": "翻译语音已关闭",
+      "unmuted": "翻译语音已开启",
+      "myLanguage": "我的语言：{{language}}",
+      "languageAdded": "已添加语言：{{language}}",
+      "languageRemoved": "已移除语言：{{language}}"
+    },
+    "saving": "正在保存",
+    "endConfirmSaved": "文字记录已保存到“记录”中。",
+    "holdToTalk": "按住说话",
+    "holdHint": "仅在按住按钮时发送音频。",
+    "holdPrompt": "按住按钮并说话",
+    "talking": "正在聆听…松开即发送"
+  },
+  "conversationSettings": {
+    "running": "对话仍在进行",
+    "paused": "对话已暂停",
+    "speak": "朗读翻译",
+    "speakHint": "关闭后只显示字幕。"
+  },
+  "addOns": {
+    "title": "附加功能",
+    "holdToTalk": "按住说话",
+    "holdToTalkHint": "仅在按住按钮时发送声音，适合嘈杂的地方。",
+    "largeText": "大字",
+    "largeTextHint": "每次只显示一句话，尽量铺满屏幕。",
+    "vibrate": "翻译到达时振动",
+    "vibrateHint": "对方的话翻译成你的语言时短促振动。"
+  },
+  "present": {
+    "start": "演示模式",
+    "hint": "手机转为横屏，只用大字显示最近的几句话。可将屏幕镜像到电视或投影仪。",
+    "showControls": "显示控制按钮",
+    "exit": "退出"
+  },
+  "errors": {
+    "title": "错误",
+    "sameLanguage": "我的语言和对方语言必须不同。",
+    "serverUnreachable": "连接失败",
+    "connectionLost": "与服务器的连接已断开。",
+    "microphoneDenied": "实时翻译需要麦克风权限，请在设置中允许。",
+    "microphoneUnavailable": "麦克风不可用，可能正被视频通话等其他应用占用。"
+  },
+  "settings": {
+    "display": "显示",
+    "language": "应用语言",
+    "languageHint": "对话语言在主屏幕上单独设置。",
+    "systemLanguage": "系统语言",
+    "theme": "主题",
+    "themes": {
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    },
+    "general": "通用",
+    "about": "关于 STiTy",
+    "legal": "法律信息",
+    "privacy": "隐私政策",
+    "privacySubtitle": "我们如何处理您的语音与数据",
+    "terms": "服务条款",
+    "termsSubtitle": "使用规则与限制",
+    "disclaimer": "⚠ STiTy 提供 AI 生成的翻译，不保证准确性。请勿用于医疗、法律或紧急通信。",
+    "version": "v{{version}}"
+  },
+  "about": {
+    "copyright": "© 2026 STiTy. 保留所有权利。"
+  },
+  "privacy": {
+    "updated": "最后更新：2026年5月17日",
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "1. 语音数据"
+      },
+      {
+        "type": "paragraph",
+        "text": "STiTy 仅在会话期间通过设备麦克风录制您的语音。音频将流式传输至翻译服务器，并实时转录和翻译。"
+      },
+      {
+        "type": "heading",
+        "text": "2. 存储数据"
+      },
+      {
+        "type": "bullet",
+        "text": "音频录音在会话结束后<bold>不会被存储</bold>。"
+      },
+      {
+        "type": "bullet",
+        "text": "翻译后的文字记录仅保存在您的设备上。"
+      },
+      {
+        "type": "bullet",
+        "text": "我们记录匿名化的会话元数据（时长、所用语言）以改善服务质量。"
+      },
+      {
+        "type": "heading",
+        "text": "3. 第三方服务"
+      },
+      {
+        "type": "paragraph",
+        "text": "我们使用以下第三方来处理音频："
+      },
+      {
+        "type": "bullet",
+        "text": "Google Cloud 语音转文字"
+      },
+      {
+        "type": "bullet",
+        "text": "OpenAI / Anthropic 翻译 API"
+      },
+      {
+        "type": "paragraph",
+        "text": "这些第三方的隐私政策适用于其所处理的数据。"
+      },
+      {
+        "type": "heading",
+        "text": "4. 您的权利"
+      },
+      {
+        "type": "paragraph",
+        "text": "您可随时通过 设置 → 删除我的数据 删除与您设备绑定的所有数据。如需帮助，请联系 privacy@stity.app。"
+      },
+      {
+        "type": "heading",
+        "text": "5. 儿童"
+      },
+      {
+        "type": "paragraph",
+        "text": "STiTy 不面向 13 岁以下用户。"
+      }
+    ]
+  },
+  "terms": {
+    "updated": "最后更新：2026年5月17日",
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "1. 服务说明"
+      },
+      {
+        "type": "paragraph",
+        "text": "STiTy 是一款实时语音翻译工具。翻译质量取决于音频清晰度、语言对及 AI 模型性能。"
+      },
+      {
+        "type": "heading",
+        "text": "2. 不作保证"
+      },
+      {
+        "type": "paragraph",
+        "text": "翻译由系统自动生成，可能存在不准确之处。请勿将 STiTy 用于医疗、法律、金融或紧急通信。"
+      },
+      {
+        "type": "heading",
+        "text": "3. 合规使用"
+      },
+      {
+        "type": "bullet",
+        "text": "未经他人同意，请勿录制他人。"
+      },
+      {
+        "type": "bullet",
+        "text": "请勿利用 STiTy 骚扰、诽谤或欺骗他人。"
+      },
+      {
+        "type": "bullet",
+        "text": "请勿尝试对服务进行逆向工程。"
+      },
+      {
+        "type": "heading",
+        "text": "4. 终止服务"
+      },
+      {
+        "type": "paragraph",
+        "text": "违反政策时，我们可随时暂停您的访问权限。"
+      }
+    ]
+  },
+  "tabs": {
+    "translate": "翻译",
+    "records": "记录",
+    "profile": "我的"
+  },
+  "ended": {
+    "saved": "已保存到记录",
+    "open": "打开",
+    "guestPrompt": "登录后，之后的对话都会被保存。",
+    "signIn": "登录",
+    "dismiss": "关闭"
+  },
+  "records": {
+    "searchPlaceholder": "搜索标题和内容",
+    "loading": "正在加载记录",
+    "today": "今天",
+    "yesterday": "昨天",
+    "untitled": "未命名对话",
+    "underMinute": "不到 1 分钟",
+    "minutes_other": "{{count}} 分钟",
+    "hoursMinutes": "{{hours}} 小时 {{minutes}} 分钟",
+    "emptyTitle": "还没有对话",
+    "emptyHint": "登录状态下进行的对话会显示在这里。",
+    "noResults": "没有匹配的结果",
+    "loadFailed": "无法加载记录",
+    "guestTitle": "登录以保存对话",
+    "guestHint": "无需账号即可翻译。登录后会保存每次对话的文字记录，方便日后查看。",
+    "signIn": "登录",
+    "unavailableTitle": "记录功能暂不可用",
+    "unavailableHint": "此服务器暂不保存对话。"
+  },
+  "viewer": {
+    "loading": "正在加载对话",
+    "loadFailed": "无法打开此对话",
+    "notFound": "此对话已被删除",
+    "me": "我",
+    "views": {
+      "mine": "我的语言",
+      "original": "原文",
+      "bilingual": "双语"
+    },
+    "textSmaller": "缩小文字",
+    "textLarger": "放大文字",
+    "summary": "摘要",
+    "summaryPending": "正在生成摘要，请稍后再来查看。",
+    "summaryUnavailable": "此对话没有摘要。",
+    "keyPoints": "要点",
+    "decisions": "决定",
+    "actionItems": "待办事项",
+    "chapters": "章节",
+    "glossary": "术语表",
+    "search": "搜索此对话",
+    "searchPlaceholder": "搜索此对话",
+    "matches": "{{current}}/{{total}}",
+    "noMatches": "无匹配结果",
+    "previousMatch": "上一个结果",
+    "nextMatch": "下一个结果",
+    "closeSearch": "关闭搜索",
+    "more": "更多操作",
+    "rename": "重命名",
+    "renameTitle": "重命名对话",
+    "renameFailed": "无法重命名",
+    "share": "以文本分享",
+    "copy": "复制",
+    "copied": "已复制",
+    "delete": "删除",
+    "deleteConfirmTitle": "要删除此对话吗？",
+    "deleteConfirmMessage": "它将从记录中永久删除。",
+    "deleteFailed": "无法删除",
+    "textSize": "文字大小"
+  },
+  "signIn": {
+    "title": "保存你的对话",
+    "subtitle": "登录后可保存每次对话的文字记录，之后在任何手机上都能再次查看。",
+    "apple": "通过 Apple 继续",
+    "google": "通过 Google 继续",
+    "email": "通过邮箱继续",
+    "emailTitle": "使用邮箱登录",
+    "emailLabel": "邮箱",
+    "emailPlaceholder": "you@example.com",
+    "sendCode": "发送验证码",
+    "codeTitle": "输入验证码",
+    "codeSent": "我们已向 {{email}} 发送 6 位验证码。",
+    "codeLabel": "6 位验证码",
+    "verify": "登录",
+    "guestNote": "无需账号也能继续翻译。",
+    "errors": {
+      "invalid": "好像不太对，请检查后重试。",
+      "offline": "你已离线，请检查网络连接后重试。",
+      "server": "我们这边出了点问题，请重试。",
+      "unauthorized": "登录被拒绝，请重试。",
+      "notFound": "此服务器暂不支持登录。"
+    }
+  },
+  "apiErrors": {
+    "offline": "你已离线，请检查网络连接。",
+    "unauthorized": "你已退出登录，请重新登录。",
+    "notFound": "内容已不存在。",
+    "server": "我们这边出了点问题，请重试。",
+    "invalid": "服务器返回了应用无法识别的内容。"
+  },
+  "profile": {
+    "signIn": "登录",
+    "guestTitle": "你正以访客身份使用 STiTy",
+    "guestHint": "登录后可保存对话，换了新手机也能接着用。",
+    "section": "个人资料",
+    "displayName": "显示名称",
+    "myLanguage": "我的语言",
+    "keepRecords": "记录保留时长",
+    "retention": {
+      "30d": "30 天",
+      "1y": "1 年",
+      "forever": "直到我删除"
+    },
+    "retentionHint": "超过此期限的记录会从服务器上删除。",
+    "saveFailed": "无法保存此更改",
+    "account": "账号",
+    "signOut": "退出登录",
+    "deleteAccount": "删除账号",
+    "deleteHint": "删除账号后，所有已保存的对话也会被删除。",
+    "deleteConfirmTitle": "要删除你的账号吗？",
+    "deleteConfirmMessage": "你的账号和所有已保存的对话都将被删除，且无法恢复。",
+    "deleteConfirmAction": "删除账号",
+    "deletedTitle": "账号已删除",
+    "deletedMessage": "你的账号、记录以及此手机上的 STiTy 数据都已清除。",
+    "deleteFailed": "无法删除账号",
+    "deleteFailedMessage": "没有删除任何内容。请检查网络连接后重试。"
+  }
+}
