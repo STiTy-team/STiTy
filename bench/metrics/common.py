@@ -35,9 +35,20 @@ def src_code(row: dict) -> str:
 def per_lang(score, rows: list[dict]) -> dict[str, float] | None:
     groups: dict[str, list[dict]] = {}
     for row in rows:
-        groups.setdefault(src_code(row), []).append(row)
+        groups.setdefault(lang_group(row), []).append(row)
     scores = {lang: score(group) for lang, group in sorted(groups.items())}
     return {lang: value for lang, value in scores.items() if value is not None} or None
+
+
+def lang_group(row: dict) -> str:
+    # A mixed-language talk is named by the order its languages first appear, so `ko+en` and
+    # `en+ko` are the same conversation pair. Scored apart, a lone talk that opens in the other
+    # language would weigh as much as every other talk together.
+    return "+".join(sorted(src_codes(row)))
+
+
+def src_codes(row: dict) -> list[str]:
+    return [langs.norm_code(code) or code for code in row["src_lang"].split("+")]
 
 
 def macro(scores: dict[str, float] | None) -> float | None:
