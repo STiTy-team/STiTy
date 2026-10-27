@@ -427,7 +427,7 @@ bench 는 `parse_args` 를 부르지 않고 위 표로만 푼다. 해석된 값�
 WER·언어 판정에는 쓴다.
 
 **언어가 섞인 대화를 `longform: true` 로 흘리면** 발표 하나의 원문 언어가 `ko+en` 처럼 적히고
-(WER 도 그 이름으로 묶인다), 문장마다의 언어는 `reference_segmentation` 에 남는다. 번역 지표는
+(WER·CER 은 이 이름을 언어 순서와 상관없이 한 묶음으로 센다 — 아래 `wer_by_lang`), 문장마다의 언어는 `reference_segmentation` 에 남는다. 번역 지표는
 재분절한 **뒤에** 목표 언어로 된 문장을 뺀다 — 먼저 빼면 그대로 넘긴 말이 옆 문장에 붙는다. 언어
 판정은 커밋마다 그 커밋이 덮는 오디오와 가장 많이 겹치는 문장의 언어와 비교한다.
 
@@ -570,8 +570,8 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 
 | 지표 | 비고 |
 |---|---|
-| `wer` | 주 숫자. `jiwer` 가 센다. 빈 가설을 전체 삭제로 센다. 채점 전에 참조와 가설 모두 Whisper 정규화(`whisper-normalizer`)를 거친다 — 영어는 숫자·축약형·철자까지 맞추는 영어 정규화(`twenty-five`→`25`, `don't`→`do not`), 나머지 언어는 소문자화와 문장부호·기호·괄호 속 이벤트 제거만 한다. 태국어·힌디어 모음 부호는 남긴다 |
-| `wer_by_lang` | 원문 언어(데이터셋의 `src_lang`)별 `wer`. `wer` 은 이 값들의 단순 평균이다 — 언어마다 "단어" 크기가 달라서 단어 수를 합쳐 세면 항목이 많은 언어가 숫자를 좌우한다. 언어가 하나면 `wer` 과 같다. 모델이 판정한 언어가 아니라 참조 언어로 묶는다 — 언어를 잘못 판정한 항목도 제 언어의 오류로 남는다 |
+| `wer` | 주 숫자. `jiwer` 가 센다. 빈 가설을 전체 삭제로 센다. 채점 전에 참조와 가설 모두 Whisper 정규화(`whisper-normalizer`)를 거친다 — 영어는 숫자·축약형·철자까지 맞추는 영어 정규화(`twenty-five`→`25`, `don't`→`do not`), 나머지 언어는 소문자화와 문장부호·기호·괄호 속 이벤트 제거만 한다. 태국어·힌디어 모음 부호는 남긴다. 한국어가 든 항목은 그 전에 숫자 표기를 아라비아 숫자로 맞춘다(`metrics/numbers.py` — `이십 년`·`20년` → `20 년`, `18만 7천 500` → `187500`). 참조는 수사를 한글로, 모델은 숫자로 쓰는 일이 많아서다 |
+| `wer_by_lang` | 원문 언어(데이터셋의 `src_lang`)별 `wer`. `wer` 은 이 값들의 단순 평균이다 — 언어마다 "단어" 크기가 달라서 단어 수를 합쳐 세면 항목이 많은 언어가 숫자를 좌우한다. 언어가 하나면 `wer` 과 같다. 모델이 판정한 언어가 아니라 참조 언어로 묶는다 — 언어를 잘못 판정한 항목도 제 언어의 오류로 남는다. 언어가 섞인 항목(`ko+en`·`en+ko`)은 이름 속 언어 순서가 첫 문장의 언어일 뿐이라 같은 언어 짝끼리 한 묶음(`en+ko`)으로 센다 — 따로 세면 다른 언어로 시작하는 항목 하나가 나머지 전부와 같은 무게를 갖는다 |
 | `wer_scored_only` | 옛 숫자(빈 가설 제외). 대조용. `wer` 과 같은 방식으로 언어별 평균이다 |
 | `cer` | 문자 오류 합 / 참조 문자 합. `jiwer` 가 센다. `wer` 과 같은 정규화 뒤 공백을 지우고 센다 — 한국어 띄어쓰기는 참조마다 달라서 오류로 치지 않는다 |
 | `cer_by_lang` | 원문 언어별 `cer`. `cer` 은 이 값들의 단순 평균이다 |
@@ -850,6 +850,7 @@ augment/      데이터셋 설정의 augment → 흘리기 전 오디오에 울�
 metrics/      items.jsonl 행 → 지표. 모듈 하나가 지표 묶음 하나다
   score.py          score_row(항목별)·score_run(실행 전체)이 아래를 모두 부른다
   transcription.py  wer·cer
+  numbers.py        한국어가 든 항목의 숫자 표기 맞추기(이십 년 → 20 년)
   translation.py    bleu, 그리고 BLEU·COMET 이 함께 쓰는 문장 쌍(translation_sentences)
   latency.py        fsl·laal·yaal·longyaal·token_emission
   asr.py            language_detection·commit_reasons
