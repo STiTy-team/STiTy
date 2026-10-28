@@ -4,6 +4,7 @@ import { useNavigate } from "react-router"
 
 import { FailureLogDialog } from "@/components/queue/failure-log-dialog"
 import { Details, ExpandButton, RunCell } from "@/components/queue/job-table"
+import { RetryJobButton } from "@/components/queue/retry-job-button"
 import { StatusPill, type Tone } from "@/components/queue/status-pill"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -85,7 +86,7 @@ export function HistoryTable({ machine }: { machine: Machine }) {
         <p className="text-sm text-muted-foreground">이 결과의 작업이 없어요.</p>
       ) : (
         <div className="rounded-xl border">
-          <Table className="min-w-[44rem] table-fixed">
+          <Table className="min-w-[52rem] table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-12" />
@@ -93,7 +94,7 @@ export function HistoryTable({ machine }: { machine: Machine }) {
                 <TableHead>실행</TableHead>
                 <TableHead className="w-28">끝남</TableHead>
                 <TableHead className="w-28">걸린 시간</TableHead>
-                <TableHead className="w-36" />
+                <TableHead className="w-72" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,12 +122,15 @@ export function HistoryTable({ machine }: { machine: Machine }) {
                       </TableCell>
                       <TableCell title={formatDateTime(finished.ended_at)}>{timeAgo(finished.ended_at)}</TableCell>
                       <TableCell>{formatDuration(tookSec(finished))}</TableCell>
-                      <TableCell className="pr-3 text-right">
-                        {finished.run ? (
-                          <OpenReplayButton run={finished.run} />
-                        ) : finished.error ? (
-                          <FailureLogDialog finished={finished} host={machine.host} />
-                        ) : null}
+                      <TableCell className="pr-3">
+                        <div className="flex items-start justify-end gap-2">
+                          {finished.run ? (
+                            <OpenReplayButton run={finished.run} />
+                          ) : finished.error ? (
+                            <FailureLogDialog finished={finished} host={machine.host} />
+                          ) : null}
+                          <RetryJobButton host={machine.host} job={job} />
+                        </div>
                       </TableCell>
                     </TableRow>
                     {expanded && (

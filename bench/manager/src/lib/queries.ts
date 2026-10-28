@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import { api, type ConfigKind, type ConfigMetaEdit, type Configs, type NewRun } from "@/lib/api"
+import { api, type ConfigKind, type ConfigMetaEdit, type Configs, type Job, type NewRun } from "@/lib/api"
 
 export const REFRESH_MS = 30_000
 
@@ -44,6 +44,14 @@ export function useAddRun(host: string) {
   return useMutation({
     mutationFn: ({ run, configs }: { run: NewRun; configs: Configs }) =>
       api.addRun(host, run, configs),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.machines }),
+  })
+}
+
+export function useRetryJob(host: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (job: Job) => api.retryJob(host, job),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.machines }),
   })
 }

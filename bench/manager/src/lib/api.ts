@@ -13,7 +13,9 @@ export type Job = {
   id: string
   branch: string
   pipeline: string
+  pipeline_yaml: string
   dataset: string
+  dataset_yaml: string
   submitted_at: string
   state: JobState
   run_now: boolean
@@ -215,6 +217,12 @@ export const api = {
       branch: run.branch,
       pipeline: { name: run.pipeline, yaml: configs.pipeline[run.pipeline].yaml },
       dataset: { name: run.dataset, yaml: configs.dataset[run.dataset].yaml },
+    }),
+  retryJob: (host: string, job: Job) =>
+    post<Job>(`/api/machines/${encodeURIComponent(host)}/jobs`, {
+      branch: job.branch,
+      pipeline: { name: job.pipeline, yaml: job.pipeline_yaml },
+      dataset: { name: job.dataset, yaml: job.dataset_yaml },
     }),
   checkConfig: (kind: ConfigKind, name: string, yaml: string) =>
     post<ConfigCheck>("/api/configs/check", { kind, name, yaml }),
