@@ -1,0 +1,15 @@
+meta:
+  description: Direct prefix adapter trained on labels v4 (sentence pairs joined by <SEG>), the model's own <SEG> as the sentence-done reset point, 14 s cap kept as a backstop
+  tags: [direct, zprobe, prefix, v4, seg-reset]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix4_full
+    step_sec: 0.5
+    seg_reset: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

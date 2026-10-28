@@ -1,0 +1,16 @@
+meta:
+  description: Labels-v7 prefix adapter (v6 composition on gpt-6-luna relabeled en->ko adds, extra mid-phrase cut rows), seg reset, dual decode
+  tags: [direct, zprobe, prefix, v7, seg-reset, dual]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix7_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

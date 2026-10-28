@@ -1,0 +1,249 @@
+{
+  "name": "northstar_ko+en-ko/asr.qwen-seg-koen+mt.qwen3.5-4b",
+  "stamp": "20261027T141948",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-10-27T14:19:48.325588+00:00",
+  "finished_at": "2026-10-27T14:19:52.666977+00:00",
+  "metrics": {
+    "wer": 0.23004599879802134,
+    "wer_by_lang": {
+      "en+ko": 0.21524663677130046,
+      "ko+en": 0.24484536082474226
+    },
+    "wer_scored_only": 0.23004599879802134,
+    "cer": 0.12966105469535288,
+    "cer_by_lang": {
+      "en+ko": 0.12772133526850507,
+      "ko+en": 0.13160077412220073
+    },
+    "bleu": 7.540989506393799,
+    "bleu_by_pair": {
+      "en-ko": 7.540989506393799
+    },
+    "avg_fsl_sec": 0.13641342756183722,
+    "longyaal_ms": 2729.820834161758,
+    "longyaal_ca_ms": 2994.8620032825465,
+    "lang_detect_accuracy": 0.7491166077738516,
+    "confusion": {
+      "en->?": 2,
+      "en->en": 78,
+      "en->ko": 30,
+      "ko->?": 2,
+      "ko->en": 37,
+      "ko->ko": 134
+    },
+    "commit_reasons": {
+      "vad": 0.08833922261484099,
+      "seg": 0.911660777385159,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.0
+    },
+    "segments_per_item": 47.166666666666664,
+    "token_emission_ms": 1152.5273722627737,
+    "token_emission_p50_ms": 1034.9999999999966,
+    "token_emission_p90_ms": 2119.999999999998,
+    "token_emission_ca_ms": 1326.086131386861,
+    "token_emission_ca_p50_ms": 1207.9999999999914,
+    "token_emission_ca_p90_ms": 2335.449999999998,
+    "comet": 0.654238537264367,
+    "comet_by_pair": {
+      "en-ko": 0.654238537264367
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "laal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "laal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "yaal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended",
+    "yaal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended"
+  },
+  "counts": {
+    "items": 6,
+    "sessions": 6,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 699.13,
+    "wall_sec": 0.0,
+    "compute_sec": 63.8,
+    "realtime_factor": 0.088
+  },
+  "failed_items": [],
+  "config": {
+    "name": "northstar_ko+en-ko/asr.qwen-seg-koen+mt.qwen3.5-4b",
+    "dataset": {
+      "name": "northstar-260928",
+      "longform": true
+    },
+    "target": "ko",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "qwen-seg",
+          "model": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128,
+          "dot_commit_confirm": true,
+          "dot_commit_stall_chunks": 1,
+          "rep_dedup": true
+        },
+        "translation": {
+          "name": "qwen3.5",
+          "url": "http://127.0.0.1:8100/v1",
+          "model": "Qwen/Qwen3.5-4B",
+          "gpu_memory_utilization": 0.52,
+          "context_turns": 1
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "northstar_ko+en-ko",
+      "version": 1,
+      "ref": "northstar_ko+en-ko",
+      "hash": "f4bc486f15ba",
+      "description": "The northstar business-dinner script (5 actors, Korean and English), each scene streamed whole, translated to Korean",
+      "tags": [
+        "northstar",
+        "longform",
+        "conversation",
+        "mixed-language"
+      ]
+    },
+    "pipeline": {
+      "name": "asr.qwen-seg-koen+mt.qwen3.5-4b",
+      "version": 1,
+      "ref": "asr.qwen-seg-koen+mt.qwen3.5-4b",
+      "hash": "043ba20a5610",
+      "description": "Korean+English mixed SEG-finetuned Qwen3-ASR (koen-seg-mix) with SEG commits, then Qwen3.5-4B translation with one turn of context",
+      "tags": [
+        "cascade",
+        "qwen-seg",
+        "koen-asr",
+        "local-mt"
+      ]
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "northstar-260928",
+    "split": "test",
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en",
+        "ko"
+      ]
+    },
+    "primary_metric": "cer",
+    "group_rule": "scene (one recording of the six-scene script, 5 speakers, en+ko)",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "speakers": {
+      "A": {
+        "name": "Mike Donovan",
+        "lang": "en",
+        "voice": "male, General American"
+      },
+      "B": {
+        "name": "Emma Whitfield",
+        "lang": "en",
+        "voice": "female, Southern British"
+      },
+      "C": {
+        "name": "김태호 부장",
+        "lang": "ko",
+        "voice": "male, Seoul / Gyeongsang"
+      },
+      "D": {
+        "name": "박지은 과장",
+        "lang": "ko",
+        "voice": "female, Seoul"
+      },
+      "E": {
+        "name": "이준서 대리",
+        "lang": "ko",
+        "voice": "male, Seoul, low volume"
+      }
+    },
+    "scenes": {
+      "scene1": {
+        "title": "Scene 1 — Arrival & ordering (0:00–1:20)",
+        "recording": "20260928_221247.m4a"
+      },
+      "scene2": {
+        "title": "Scene 2 — Meeting recap: dates, numbers & budget (1:20–3:50)",
+        "recording": "20260928_221627.m4a"
+      },
+      "scene3": {
+        "title": "Scene 3 — Food, etiquette & the toast (3:50–5:40)",
+        "recording": "20260928_221959.m4a"
+      },
+      "scene4": {
+        "title": "Scene 4 — The phone call & side talk (5:40–6:50)",
+        "recording": "20260928_222200.m4a"
+      },
+      "scene5": {
+        "title": "Scene 5 — Baseball, dialect, weekend plans & jokes (6:50–8:50)",
+        "recording": "20260928_222328.m4a"
+      },
+      "scene6": {
+        "title": "Scene 6 — Contacts, the bill & goodbyes (8:50–10:00)",
+        "recording": "20260928_222605.m4a"
+      }
+    },
+    "root": "/home/mobility/stity-datasets/northstar-260928",
+    "manifest_sha256": "a5ea19ac0af9bf57ba86ee008712d3c99d98fb4add892153d5e281c40d667451",
+    "alignment_sha256": "e82857981d60a697e4cde285b44c52df8ee89b287de2f563af6754dc24666550",
+    "n_aligned": 6,
+    "n_items": 6,
+    "n_sessions": 6
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "qwen-seg",
+      "model_path": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128,
+      "dot_commit_confirm": true,
+      "dot_commit_stall_chunks": 1,
+      "rep_dedup": true,
+      "restrict_languages": true
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "qwen3.5",
+      "url": "http://127.0.0.1:8100/v1",
+      "model": "Qwen/Qwen3.5-4B",
+      "gpu_memory_utilization": 0.52,
+      "context_turns": 1
+    }
+  }
+}

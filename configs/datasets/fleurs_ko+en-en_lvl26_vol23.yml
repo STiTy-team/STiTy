@@ -1,0 +1,10 @@
+meta:
+  description: Conversations alternating Korean and English FLEURS turns, every turn levelled to -26 dBFS, translated to English; quiet clips raised to -23 dB RMS, as in the vol23 configs
+  tags: [volume, fleurs, longform, mixed-language]
+dataset:
+  name: fleurs/ko_kr+en_us.level-26
+  longform: true
+target: en
+augment:
+  volume:
+    min_level_db: -23

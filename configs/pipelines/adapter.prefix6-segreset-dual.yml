@@ -1,0 +1,16 @@
+meta:
+  description: Labels-v6 prefix adapter (v5 plus full FLEURS Korean train - ko verbatim, ko->en gold, <SEG> pairs), seg reset, dual decode
+  tags: [direct, zprobe, prefix, v6, seg-reset, dual]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix6_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

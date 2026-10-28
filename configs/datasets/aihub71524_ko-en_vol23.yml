@@ -1,0 +1,9 @@
+meta:
+  description: AI Hub 71524 Korean read sentences, 1 h of Validation pairs whose English script line is also there, translated to English; quiet clips raised to -23 dB RMS, as in the FLEURS vol23 configs
+  tags: [volume, aihub, sentence, read]
+dataset:
+  name: aihub71524/ko_kr
+target: en
+augment:
+  volume:
+    min_level_db: -23

@@ -1,0 +1,16 @@
+meta:
+  description: Labels-v5 prefix adapter (verbatim passthrough + <SEG> pairs + more x->en pairs), seg reset, dual decode logging the other-language stream for WER/CER
+  tags: [direct, zprobe, prefix, v5, seg-reset, dual]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix5_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

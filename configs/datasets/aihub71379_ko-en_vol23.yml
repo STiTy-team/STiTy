@@ -1,0 +1,9 @@
+meta:
+  description: AI Hub 71379 Korean broadcast speech (예능/오락 and 인터뷰), 1 h of Validation by whole episodes, translated to English; quiet clips raised to -23 dB RMS, as in the FLEURS vol23 configs
+  tags: [volume, aihub, broadcast, conversational]
+dataset:
+  name: aihub71379/ko_kr
+target: en
+augment:
+  volume:
+    min_level_db: -23

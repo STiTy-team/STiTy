@@ -1,0 +1,14 @@
+meta:
+  description: Direct speech-to-translation prefix adapter (prefix2 + GRPO, merged), append-only streaming with a final flush
+  tags: [direct, zprobe, prefix, grpo]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix2_grpo_full
+    step_sec: 0.5
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

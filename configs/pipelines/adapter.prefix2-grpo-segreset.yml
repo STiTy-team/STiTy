@@ -1,0 +1,15 @@
+meta:
+  description: Direct prefix adapter with the model's own <SEG> as the sentence-done reset point (prefix restarts there, audio keeps a 1 s tail), 14 s cap kept as a backstop
+  tags: [direct, zprobe, prefix, grpo, seg-reset]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix2_grpo_full
+    step_sec: 0.5
+    seg_reset: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

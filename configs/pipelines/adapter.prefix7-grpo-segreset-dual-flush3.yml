@@ -1,0 +1,17 @@
+meta:
+  description: prefix7 plus 400 GRPO steps (reward v2 on COMET/latency/omission), seg reset, dual decode, stall flush
+  tags: [direct, zprobe, prefix, v7, grpo, seg-reset, dual, stall-flush]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix7_grpo_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+    stall_flush_sec: 3.0
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

@@ -1,0 +1,18 @@
+meta:
+  description: adapter.prefix7-segreset-dual-flush3 plus word-hold (commit only up to the last space, so mid-word fragments are never shown)
+  tags: [direct, zprobe, prefix, v7, seg-reset, dual, stall-flush, word-hold]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix7_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+    stall_flush_sec: 3.0
+    word_hold: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

@@ -1,0 +1,233 @@
+{
+  "name": "northstar_ko+en-en/adapter.prefix5-segreset-dual-flush3",
+  "stamp": "20261027T140514",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-10-27T14:05:14.202015+00:00",
+  "finished_at": "2026-10-27T14:17:49.003470+00:00",
+  "metrics": {
+    "wer": 1.0970501130075598,
+    "wer_by_lang": {
+      "en+ko": 0.973404255319149,
+      "ko+en": 1.2206959706959708
+    },
+    "wer_scored_only": 1.0970501130075598,
+    "cer": 1.2139383773620163,
+    "cer_by_lang": {
+      "en+ko": 1.0514096185737978,
+      "ko+en": 1.3764671361502347
+    },
+    "bleu": 9.432978140660907,
+    "bleu_by_pair": {
+      "ko-en": 9.432978140660907
+    },
+    "avg_fsl_sec": 0.11860765027322391,
+    "longyaal_ms": 1165.9127132405383,
+    "longyaal_ca_ms": 1310.9558857934587,
+    "lang_detect_accuracy": 0.44672131147540983,
+    "confusion": {
+      "en->en": 327,
+      "ko->en": 405
+    },
+    "commit_reasons": {
+      "vad": 0.017759562841530054,
+      "seg": 0.0273224043715847,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.00819672131147541,
+      "prefix": 0.9439890710382514,
+      "cap": 0.00273224043715847
+    },
+    "segments_per_item": 122.0,
+    "token_emission_ms": 350.88582677165294,
+    "token_emission_p50_ms": 269.999999999996,
+    "token_emission_p90_ms": 679.9999999999926,
+    "token_emission_ca_ms": 456.45531496062944,
+    "token_emission_ca_p50_ms": 355.9000000000001,
+    "token_emission_ca_p90_ms": 802.4699999999982,
+    "comet": 0.6600905992090702,
+    "comet_by_pair": {
+      "ko-en": 0.6600905992090702
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "laal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "laal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "yaal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended",
+    "yaal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended"
+  },
+  "counts": {
+    "items": 6,
+    "sessions": 6,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 699.13,
+    "wall_sec": 754.8,
+    "compute_sec": 92.4,
+    "realtime_factor": 0.128
+  },
+  "failed_items": [],
+  "config": {
+    "name": "northstar_ko+en-en/adapter.prefix5-segreset-dual-flush3",
+    "dataset": {
+      "name": "northstar-260928",
+      "longform": true
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "zprobe-prefix",
+          "model": "/home/mobility/STiTy/models/zprobe/merged/prefix5_full",
+          "step_sec": 0.5,
+          "seg_reset": true,
+          "dual": true,
+          "stall_flush_sec": 3.0
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "northstar_ko+en-en",
+      "version": 1,
+      "ref": "northstar_ko+en-en",
+      "hash": "ab8680023fe9",
+      "description": "The northstar business-dinner script (5 actors, Korean and English), each scene streamed whole, translated to English",
+      "tags": [
+        "northstar",
+        "longform",
+        "conversation",
+        "mixed-language"
+      ]
+    },
+    "pipeline": {
+      "name": "adapter.prefix5-segreset-dual-flush3",
+      "version": 1,
+      "ref": "adapter.prefix5-segreset-dual-flush3",
+      "hash": "0f0602cc0e5d",
+      "description": "adapter.prefix5-segreset-dual plus a forced emission after 3 s without one (stall flush), to win back the latency the verbatim rows re-taught the model to spend waiting",
+      "tags": [
+        "direct",
+        "zprobe",
+        "prefix",
+        "v5",
+        "seg-reset",
+        "dual",
+        "stall-flush"
+      ]
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "northstar-260928",
+    "split": "test",
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en",
+        "ko"
+      ]
+    },
+    "primary_metric": "cer",
+    "group_rule": "scene (one recording of the six-scene script, 5 speakers, en+ko)",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "speakers": {
+      "A": {
+        "name": "Mike Donovan",
+        "lang": "en",
+        "voice": "male, General American"
+      },
+      "B": {
+        "name": "Emma Whitfield",
+        "lang": "en",
+        "voice": "female, Southern British"
+      },
+      "C": {
+        "name": "김태호 부장",
+        "lang": "ko",
+        "voice": "male, Seoul / Gyeongsang"
+      },
+      "D": {
+        "name": "박지은 과장",
+        "lang": "ko",
+        "voice": "female, Seoul"
+      },
+      "E": {
+        "name": "이준서 대리",
+        "lang": "ko",
+        "voice": "male, Seoul, low volume"
+      }
+    },
+    "scenes": {
+      "scene1": {
+        "title": "Scene 1 — Arrival & ordering (0:00–1:20)",
+        "recording": "20260928_221247.m4a"
+      },
+      "scene2": {
+        "title": "Scene 2 — Meeting recap: dates, numbers & budget (1:20–3:50)",
+        "recording": "20260928_221627.m4a"
+      },
+      "scene3": {
+        "title": "Scene 3 — Food, etiquette & the toast (3:50–5:40)",
+        "recording": "20260928_221959.m4a"
+      },
+      "scene4": {
+        "title": "Scene 4 — The phone call & side talk (5:40–6:50)",
+        "recording": "20260928_222200.m4a"
+      },
+      "scene5": {
+        "title": "Scene 5 — Baseball, dialect, weekend plans & jokes (6:50–8:50)",
+        "recording": "20260928_222328.m4a"
+      },
+      "scene6": {
+        "title": "Scene 6 — Contacts, the bill & goodbyes (8:50–10:00)",
+        "recording": "20260928_222605.m4a"
+      }
+    },
+    "root": "/home/mobility/stity-datasets/northstar-260928",
+    "manifest_sha256": "6568f7dd90009f90f1585edcf351ede073e3edb3581dbd19bd6dc69ee4b8427a",
+    "alignment_sha256": "22cc0aecd6f01239f04068dfa536f633c918037c877b5c94737de9f6f3538de3",
+    "n_aligned": 6,
+    "n_items": 6,
+    "n_sessions": 6
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "zprobe-prefix",
+      "model_path": "/home/mobility/STiTy/models/zprobe/merged/prefix5_full",
+      "step_sec": 0.5,
+      "seg_reset": true,
+      "dual": true,
+      "stall_flush_sec": 3.0
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    }
+  }
+}

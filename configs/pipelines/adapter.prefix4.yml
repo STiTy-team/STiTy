@@ -1,0 +1,14 @@
+meta:
+  description: Direct prefix adapter trained on labels v4, append-only with final flush and the 14 s cap, no seg reset (ablation for adapter.prefix4-segreset)
+  tags: [direct, zprobe, prefix, v4]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix4_full
+    step_sec: 0.5
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

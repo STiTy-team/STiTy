@@ -1,0 +1,17 @@
+meta:
+  description: adapter.prefix5-segreset-dual plus a forced emission after 3 s without one (stall flush), to win back the latency the verbatim rows re-taught the model to spend waiting
+  tags: [direct, zprobe, prefix, v5, seg-reset, dual, stall-flush]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix5_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+    stall_flush_sec: 3.0
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

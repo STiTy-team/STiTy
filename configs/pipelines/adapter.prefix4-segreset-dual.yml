@@ -1,0 +1,16 @@
+meta:
+  description: adapter.prefix4-segreset with a second same-batch decode whose header forces the other language, logged for per-utterance WER/CER (source language stream = transcription)
+  tags: [direct, zprobe, prefix, v4, seg-reset, dual]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix4_full
+    step_sec: 0.5
+    seg_reset: true
+    dual: true
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30

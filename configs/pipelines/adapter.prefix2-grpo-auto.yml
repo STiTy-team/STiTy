@@ -1,0 +1,15 @@
+meta:
+  description: Direct speech-to-translation prefix adapter with the target chosen by the model per utterance (its own language header), crossing each speaker's language like a built-in router
+  tags: [direct, zprobe, prefix, grpo, auto-target]
+pipeline:
+  name: cascade
+  transcription:
+    name: zprobe-prefix
+    model: /home/mobility/STiTy/models/zprobe/merged/prefix2_grpo_full
+    step_sec: 0.5
+    target_mode: auto
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30
