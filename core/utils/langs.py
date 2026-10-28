@@ -99,12 +99,18 @@ def laal_unit(code: str) -> str:
 ALPHABET_LANGS: tuple[str, ...] = ("ko", "ja", "zh")
 ALPHABET_THRESHOLD = 0.6
 
+_HANGUL = re.compile(r"[가-힣]")
+
 _ALPHABETS: dict[str, re.Pattern] = {
-    "ko": re.compile(r"[가-힣]"),
+    "ko": _HANGUL,
     "ja": re.compile(r"[぀-ヿ]"),
     "zh": re.compile(r"[一-鿿]"),
     "en": re.compile(r"[A-Za-z]"),
 }
+
+
+def has_hangul(text: str) -> bool:
+    return _HANGUL.search(text) is not None
 
 
 def alphabet_ratio(text: str, lang: str) -> float:
