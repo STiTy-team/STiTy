@@ -21,24 +21,21 @@ import re
 
 from whisper_normalizer.english import EnglishNumberNormalizer
 
-SINO = {"일": 1, "이": 2, "삼": 3, "사": 4, "오": 5, "육": 6, "칠": 7, "팔": 8, "구": 9}
-SMALL = {"십": 10, "백": 100, "천": 1000}
-BIG = {"만": 10**4, "억": 10**8}
-NUM_CH = "일이삼사오육칠팔구십백천만억"
-NATIVE_ALONE = {
-    "하나": 1, "둘": 2, "셋": 3, "넷": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9,
-}  # fmt: skip
-NATIVE_PRE = {
-    "한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9,
-    "열": 10,
-}  # fmt: skip
+from core.utils.langs import has_hangul
+from core.utils.numerics import (
+    AMOUNT,
+    SINO_CHARS,
+    amount_to_int,
+    native_determiner_to_int,
+    native_to_int,
+    sino_to_int,
+)
+
 UNITS = (
     "퍼센트", "인분", "시간", "년", "명", "시", "분", "원", "병", "개", "잔", "살", "번", "층",
     "월", "일", "초", "달", "마리", "등",
 )  # fmt: skip
 SINGLE_OK = ("년", "명", "퍼센트", "인분", "병", "원", "층")
-AMOUNT = re.compile(r"(?:\d+\s*(?:억|만|천|백)\s*)+\d*")
-HANGUL = re.compile(r"[가-힣]")
 _english_numbers = EnglishNumberNormalizer()
 
 
@@ -65,59 +62,32 @@ def normalize_numbers(text: str) -> str:
 
 
 def _percent(text: str, at: int) -> str:
-    return " 퍼센트" if HANGUL.search(text[max(0, at - 12) : at + 12]) else " percent"
-
-
-def _sino_value(numeral: str) -> int | None:
-    total, section, current = 0, 0, 0
-    previous_digit = False
-    for ch in numeral:
-        if ch in SINO:
-            if previous_digit:
-                return None
-            current, previous_digit = SINO[ch], True
-            continue
-        previous_digit = False
-        if ch in SMALL:
-            section += (current or 1) * SMALL[ch]
-            current = 0
-        elif ch in BIG:
-            total += (section + current or 1) * BIG[ch]
-            section, current = 0, 0
-        else:
-            return None
-    return total + section + current
+    return " 퍼센트" if has_hangul(text[max(0, at - 12) : at + 12]) else " percent"
 
 
 def _korean_token(token: str, following: str) -> str:
-    m = re.fullmatch(f"([{NUM_CH}]+)({'|'.join(UNITS)})?(.*)", token)
+    m = re.fullmatch(f"([{SINO_CHARS}]+)({'|'.join(UNITS)})?(.*)", token)
     if m:
         numeral, unit, rest = m.groups()
         unit = unit or ""
         single_ok = unit in SINGLE_OK or (not unit and following.startswith(SINGLE_OK))
         before_unit = bool(unit) or following.startswith(UNITS)
-        value = _sino_value(numeral)
+        value = sino_to_int(numeral)
         if value is not None and (
             (len(numeral) >= 2 and before_unit) or len(numeral) >= 3 or single_ok
         ):
             return f"{value} {unit}{rest}".strip()
-    if token in NATIVE_ALONE:
-        return str(NATIVE_ALONE[token])
-    if token in NATIVE_PRE and following.startswith(UNITS):
-        return str(NATIVE_PRE[token])
+    native = native_to_int(token)
+    if native is not None and token != "열":
+        return str(native)
+    determiner = native_determiner_to_int(token)
+    if determiner is not None and following.startswith(UNITS):
+        return str(determiner)
     return token
 
 
 def _amount(m: re.Match) -> str:
-    total, section = 0, 0
-    for number, unit in re.findall(r"(\d+)\s*(억|만|천|백)", m.group(0)):
-        if unit in BIG:
-            total += (section + int(number)) * BIG[unit]
-            section = 0
-        else:
-            section += int(number) * SMALL[unit]
-    tail = re.search(r"(?:억|만|천|백)\s*(\d+)$", m.group(0))
-    return f"{total + section + (int(tail.group(1)) if tail else 0)} "
+    return f"{amount_to_int(m.group(0))} "
 
 
 def _english(m: re.Match) -> str:
