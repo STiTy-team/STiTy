@@ -209,3 +209,13 @@ bench/runs/*/*
 # Benchmark datasets live in their own repo (github.com/STiTy-team/datasets),
 # checked out wherever STITY_DATA_ROOT points. Nothing dataset-shaped belongs here.
 /datasets/
+# Presentation decks and proposal drafts (binary, local only)
+/assets/slides/
+
+# en2x CoVoST2 분절 조건별 채점 산출물 (full_* 하나가 60~450MB, bleu*/*.json 이 대부분).
+# 위 CoVoST2 규칙과 같은 방침으로 결과 요약(*.md)만 추적한다. 기준선 full/ 은 이 규칙에 걸리지 않는다.
+core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_*/**
+!core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_*/**/
+!core/meaning_segmentator/experiment/artifacts/en2x/covost2/full_*/**/*.md
+# autoseg_en2x 체인 진행 마커
+core/meaning_segmentator/tools/autoseg_en2x/*/*.done
