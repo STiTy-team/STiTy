@@ -29,6 +29,8 @@ const finalSchema = z.object({
   original: z.string().default(''),
   translation: z.string().default(''),
   language: z.string().default(''),
+  /** Present when the server fans one segment out to several targets (one final per target). */
+  targetLang: z.string().optional(),
   start: z.string().optional(),
   end: z.string().optional(),
   commitReason: z.string().optional(),

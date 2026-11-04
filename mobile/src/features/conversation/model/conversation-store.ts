@@ -81,6 +81,21 @@ export const conversationActions = {
     return id;
   },
 
+  /** A later final for the same segment (another target language) joins its bubble. */
+  appendTranslation: (id: string, translation: string): void =>
+    set(({ entries }) => ({
+      entries: entries.map((entry) =>
+        entry.id !== id
+          ? entry
+          : {
+              ...entry,
+              translation: entry.translation
+                ? `${entry.translation}\n${translation}`
+                : translation,
+            },
+      ),
+    })),
+
   recordChange: (change: SettingChange) => {
     nextEventId += 1;
     const id = `event-${nextEventId}`;

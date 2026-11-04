@@ -117,6 +117,8 @@ export class ConversationController {
   private inBackground = false;
   private startedAt: number | null = null;
   private firstTranslationTracked = false;
+  /** The newest committed segment, so extra finals for other targets join its bubble. */
+  private lastFinal: { segment: string; entryId: string } | null = null;
 
   constructor(private readonly deps: ConversationDependencies) {
     this.microphone = deps.createMicrophone({
@@ -339,6 +341,7 @@ export class ConversationController {
     if (this.startedAt !== null) return;
     this.startedAt = Date.now();
     this.firstTranslationTracked = false;
+    this.lastFinal = null;
     if (!this.isDemo) this.deps.track({ name: 'session_started' });
   }
 
@@ -405,7 +408,12 @@ export class ConversationController {
 
     const language = normalizeLanguageCode(message.language || 'auto');
     const translation = message.translation.trim();
-    actions.commit(language, text, translation);
+    const segment = `${message.start ?? ''}|${message.end ?? ''}|${language}|${text}`;
+    if (this.lastFinal && this.lastFinal.segment === segment) {
+      if (translation) actions.appendTranslation(this.lastFinal.entryId, translation);
+      return;
+    }
+    this.lastFinal = { segment, entryId: actions.commit(language, text, translation) };
     if (!translation) return;
 
     if (!this.firstTranslationTracked && this.startedAt !== null && !this.isDemo) {
