@@ -3,6 +3,10 @@
 Goal: find whether the frozen Qwen3-ASR-1.7B holds a language-neutral representation of what
 was said, and at which layer (encoder output vs LLM middle layers). Spike — throwaway code.
 
+> This log records each run as it happened. Many scripts it names (the `chains/*.sh` runners and the
+> stage 0-C experiment scripts) are no longer in the working tree, and the rest moved into `labels/`,
+> `train/`, `eval/`, `hybrid/`; `git log --all -- core/zprobe/<name>` finds the old ones.
+
 Everything lives in this directory:
 
 - `probe_z.py` — extract / analyze / gen subcommands. Hooks on `audio_tower.ln_post`

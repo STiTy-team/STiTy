@@ -100,8 +100,14 @@ def resolve_audio(path: str, base_dir: str) -> str:
 
 
 def load_audio(path: str, sr: int = 16000):
-    wav, _ = librosa.load(path, sr=sr, mono=True)
-    return wav
+    # "file.wav#end=3.42" reads only the first 3.42 s, so prefix rows need no cut copies of the audio on disk;
+    # "a.wav#end=3.42|b.wav#end=1.2" concatenates parts, so multi-sentence rows need no joined copies either
+    parts = []
+    for p in path.split("|"):
+        p, _, frag = p.partition("#end=")
+        wav, _ = librosa.load(p, sr=sr, mono=True, duration=float(frag) if frag else None)
+        parts.append(wav)
+    return parts[0] if len(parts) == 1 else np.concatenate(parts)
 
 
 def generate_silence_dataset(n_samples: int, output_dir: str, sr: int = 16000, prompt: str = "") -> str:

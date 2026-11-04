@@ -69,6 +69,8 @@ def load_model():
         pm = PeftModel.from_pretrained(m.model, ADAPTER)
         m.model = pm.merge_and_unload()
         print(f"[adapter] merged {ADAPTER}", flush=True)
+    if os.environ.get("PROBE_ATTN"):  # the sub-models keep their own attention setting; switch all of them
+        m.model.set_attn_implementation(os.environ["PROBE_ATTN"])
     m.model.eval()
     return m
 
