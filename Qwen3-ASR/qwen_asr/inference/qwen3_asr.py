@@ -18,10 +18,16 @@ from typing import Any, Dict, List, Optional, Union
 
 import asyncio
 import logging
+import os
 import time
 
 logger = logging.getLogger(__name__)
 import uuid
+
+# `<SEG>` 는 단일 토큰이다(측정: en-silence-c80 토크나이저에서 id 151705). logprob 진단이
+# 위치마다 이 id 하나만 조회하면 되는 이유다. 다른 가중치로 바꿀 때는 확인할 것 —
+# 토크나이저에 `<SEG>` 가 추가 토큰으로 들어가 있어야 하고, 없으면 진단이 조용히 빈다.
+_SEG_TOKEN_ID = 151705
 
 import numpy as np
 import torch
@@ -310,7 +316,16 @@ class Qwen3ASRModel:
         llm = AsyncLLMEngine.from_engine_args(engine_args)
 
         processor = Qwen3ASRProcessor.from_pretrained(model, fix_mistral_regex=True)
-        sampling_params = SamplingParams(**({"temperature": 0.0, "max_tokens": max_new_tokens, "skip_special_tokens": False}))  # DEBUG: special token 출력용
+        _sp_kwargs = {"temperature": 0.0, "max_tokens": max_new_tokens,
+                      "skip_special_tokens": False}  # DEBUG: special token 출력용
+        # `<SEG>` 후보의 확률을 관측하기 위한 진단 스위치. `SEG_LOGPROB_TOPK=20` 처럼 켠다.
+        # 목적: 커밋 공백(가뭄)이 "경계가 없다"인지 "임계 아래 후보만 있다"인지 가리는 것.
+        # 전자면 학습으로만 고칠 수 있고, 후자면 임계를 낮춰 지연과 교환할 수 있다.
+        # 기본은 꺼져 있고, 켜면 위치마다 top-K 로그확률을 받으므로 디코딩이 조금 무거워진다.
+        _seg_topk = os.environ.get("SEG_LOGPROB_TOPK")
+        if _seg_topk:
+            _sp_kwargs["logprobs"] = int(_seg_topk)
+        sampling_params = SamplingParams(**_sp_kwargs)
 
         forced_aligner_model = None
         if forced_aligner is not None:
@@ -841,6 +856,8 @@ class Qwen3ASRModel:
             final = None
             prev_seg_count = 0
             prev_dot_count = 0
+            # 이 청크에서 `<SEG>` 가 top-K 안에 든 위치들. (순위, 로그확률, 채택토큰 로그확률)
+            _seg_lp_hits: list = []
             state._decode_start_perf = time.perf_counter()
             _hallucination_aborted = False
             async for out in self.model.generate(inp, sp, request_id=request_id, lora_request=lora_request):
@@ -886,6 +903,28 @@ class Qwen3ASRModel:
                 state.hallucination_detected = True
                 break
             state._last_chunk_new_tokens = len(final.outputs[0].token_ids)
+            # `<SEG>` 후보 관측. 채택된 토큰의 로그확률과 나란히 남긴다 — `<SEG>` 의 절대
+            # 로그확률만 보면 "이 위치에서 모델이 얼마나 확신이 없었나"와 구분되지 않는다.
+            if os.environ.get("SEG_LOGPROB_TOPK") and getattr(final.outputs[0], "logprobs", None):
+                for _pos, _lp in enumerate(final.outputs[0].logprobs or []):
+                    if not _lp:
+                        continue
+                    _cand = _lp.get(_SEG_TOKEN_ID)
+                    if _cand is None:
+                        continue
+                    _top = max((v.logprob for v in _lp.values()), default=float("-inf"))
+                    _seg_lp_hits.append((_pos, getattr(_cand, "rank", -1),
+                                         round(_cand.logprob, 3), round(_top, 3)))
+                if _seg_lp_hits:
+                    _best = max(_seg_lp_hits, key=lambda x: x[2])
+                    logger.info(
+                        "[SEG-LOGPROB] chunk=%s 후보 %d곳 / %d토큰  최고: 위치 %d 순위 %d "
+                        "logp %.3f (채택 %.3f, 차이 %.3f)",
+                        state.chunk_id, len(_seg_lp_hits), len(final.outputs[0].token_ids),
+                        _best[0], _best[1], _best[2], _best[3], _best[3] - _best[2])
+                else:
+                    logger.info("[SEG-LOGPROB] chunk=%s 후보 없음 / %d토큰",
+                                state.chunk_id, len(final.outputs[0].token_ids))
             gen_text = final.outputs[0].text
             if prefix:
                 prev_ids = self.processor.tokenizer.encode(state._raw_decoded)

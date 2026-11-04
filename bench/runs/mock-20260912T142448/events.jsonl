@@ -1,0 +1,120 @@
+{"t": null, "type": "run_open", "name": "mock", "dataset": "mockset", "n_items": 5, "n_sessions": 2, "started_at": "2026-09-12T14:24:48.339299+00:00"}
+{"t": null, "type": "model_loaded", "backend": "mock"}
+{"t": null, "type": "session_open", "session": "talk-a", "item": "utt-1", "group": "talk-a"}
+{"t": 0.0, "type": "item_open", "session": "talk-a", "item": "utt-1", "audio_sec": 1.6, "src_lang": "en", "target_lang": "ko", "trailing_silence_ms": 600, "started_at": "2026-09-12T14:24:48.399333+00:00"}
+{"t": 0.252, "type": "vad_speech_start", "audio": 0.2, "session": "talk-a", "item": "utt-1", "at": 0.0}
+{"t": 0.2531, "type": "chunk", "audio": 0.2, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 0.4521, "type": "chunk", "audio": 0.4, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 0.6526, "type": "chunk", "audio": 0.6, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 0.8522, "type": "chunk", "audio": 0.8, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 1.0525, "type": "chunk", "audio": 1.0, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 1.2525, "type": "chunk", "audio": 1.2, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 1.4527, "type": "chunk", "audio": 1.4, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 1.6521, "type": "chunk", "audio": 1.6, "session": "talk-a", "item": "utt-1", "silence": false}
+{"t": 1.8523, "type": "chunk", "audio": 1.8, "session": "talk-a", "item": "utt-1", "silence": true}
+{"t": 2.0524, "type": "vad_speech_end", "audio": 2.0, "session": "talk-a", "item": "utt-1", "at": 1.6, "started_at": 0.0}
+{"t": 2.1036, "type": "transcribed", "audio": 2.0, "session": "talk-a", "item": "utt-1", "original": "the weather is", "language": "en", "commit_reason": "vad", "decision_audio_sec": 2.0, "recv_elapsed_sec": 2.1029}
+{"t": 2.1849, "type": "final", "audio": 2.0, "session": "talk-a", "item": "utt-1", "original": "the weather is", "language": "en", "commit_reason": "vad", "decision_audio_sec": 2.0, "recv_elapsed_sec": 2.1029, "translation": "[ko] the weather is", "target_lang": "ko"}
+{"t": 2.1861, "type": "chunk", "audio": 2.0, "session": "talk-a", "item": "utt-1", "silence": true}
+{"t": 2.2516, "type": "chunk", "audio": 2.2, "session": "talk-a", "item": "utt-1", "silence": true}
+{"t": null, "type": "item_close", "session": "talk-a", "item": "utt-1", "n_finals": 1, "empty_hypothesis": false}
+{"t": null, "type": "log", "level": "INFO", "logger": "bench", "msg": "[1/5] utt-1 wer=0.400 segments=1", "item": "utt-1"}
+{"t": 0.0, "type": "item_open", "session": "talk-a", "item": "utt-2", "audio_sec": 4.0, "src_lang": "en", "target_lang": "ko", "trailing_silence_ms": 600, "started_at": "2026-09-12T14:24:50.734923+00:00"}
+{"t": 0.2513, "type": "vad_speech_start", "audio": 0.2, "session": "talk-a", "item": "utt-2", "at": 0.0}
+{"t": 0.2525, "type": "chunk", "audio": 0.2, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 0.4512, "type": "chunk", "audio": 0.4, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 0.6515, "type": "chunk", "audio": 0.6, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 0.8515, "type": "chunk", "audio": 0.8, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 1.0514, "type": "chunk", "audio": 1.0, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 1.2511, "type": "chunk", "audio": 1.2, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 1.4513, "type": "chunk", "audio": 1.4, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 1.6512, "type": "chunk", "audio": 1.6, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 1.8522, "type": "vad_speech_end", "audio": 1.8, "session": "talk-a", "item": "utt-2", "at": 1.4, "started_at": 0.0}
+{"t": 1.9037, "type": "transcribed", "audio": 1.8, "session": "talk-a", "item": "utt-2", "original": "the weather", "language": "en", "commit_reason": "vad", "decision_audio_sec": 1.8, "recv_elapsed_sec": 1.9035}
+{"t": 1.9853, "type": "final", "audio": 1.8, "session": "talk-a", "item": "utt-2", "original": "the weather", "language": "en", "commit_reason": "vad", "decision_audio_sec": 1.8, "recv_elapsed_sec": 1.9035, "translation": "[ko] the weather", "target_lang": "ko"}
+{"t": 1.9862, "type": "chunk", "audio": 1.8, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 2.0518, "type": "chunk", "audio": 2.0, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 2.2519, "type": "chunk", "audio": 2.2, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 2.4519, "type": "chunk", "audio": 2.4, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 2.6518, "type": "vad_speech_start", "audio": 2.6, "session": "talk-a", "item": "utt-2", "at": 2.4}
+{"t": 2.6527, "type": "chunk", "audio": 2.6, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 2.8515, "type": "chunk", "audio": 2.8, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 3.0515, "type": "chunk", "audio": 3.0, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 3.2516, "type": "chunk", "audio": 3.2, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 3.4516, "type": "chunk", "audio": 3.4, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 3.6518, "type": "chunk", "audio": 3.6, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 3.8521, "type": "chunk", "audio": 3.8, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 4.0521, "type": "transcribed", "audio": 4.0, "session": "talk-a", "item": "utt-2", "original": "the weather is", "language": "en", "commit_reason": "seg", "decision_audio_sec": 4.0, "recv_elapsed_sec": 4.0518}
+{"t": 4.1338, "type": "final", "audio": 4.0, "session": "talk-a", "item": "utt-2", "original": "the weather is", "language": "en", "commit_reason": "seg", "decision_audio_sec": 4.0, "recv_elapsed_sec": 4.0518, "translation": "[ko] the weather is", "target_lang": "ko"}
+{"t": 4.1351, "type": "chunk", "audio": 4.0, "session": "talk-a", "item": "utt-2", "silence": false}
+{"t": 4.2517, "type": "chunk", "audio": 4.2, "session": "talk-a", "item": "utt-2", "silence": true}
+{"t": 4.4518, "type": "vad_speech_end", "audio": 4.4, "session": "talk-a", "item": "utt-2", "at": 4.0, "started_at": 2.4}
+{"t": 4.5032, "type": "chunk", "audio": 4.4, "session": "talk-a", "item": "utt-2", "silence": true}
+{"t": 4.6519, "type": "chunk", "audio": 4.6, "session": "talk-a", "item": "utt-2", "silence": true}
+{"t": null, "type": "item_close", "session": "talk-a", "item": "utt-2", "n_finals": 2, "empty_hypothesis": false}
+{"t": null, "type": "log", "level": "INFO", "logger": "bench", "msg": "[2/5] utt-2 wer=0.778 segments=2", "item": "utt-2"}
+{"t": null, "type": "session_open", "session": "talk-b", "item": "utt-3", "group": "talk-b"}
+{"t": 0.0, "type": "item_open", "session": "talk-b", "item": "utt-3", "audio_sec": 2.0, "src_lang": "en", "target_lang": "ko", "trailing_silence_ms": 600, "started_at": "2026-09-12T14:24:55.442786+00:00"}
+{"t": 0.2519, "type": "vad_speech_start", "audio": 0.2, "session": "talk-b", "item": "utt-3", "at": 0.0}
+{"t": 0.253, "type": "chunk", "audio": 0.2, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 0.453, "type": "chunk", "audio": 0.4, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 0.6523, "type": "chunk", "audio": 0.6, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 0.8526, "type": "chunk", "audio": 0.8, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 1.0527, "type": "chunk", "audio": 1.0, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 1.2517, "type": "chunk", "audio": 1.2, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 1.4522, "type": "chunk", "audio": 1.4, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 1.6525, "type": "chunk", "audio": 1.6, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 1.8526, "type": "chunk", "audio": 1.8, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 2.0519, "type": "chunk", "audio": 2.0, "session": "talk-b", "item": "utt-3", "silence": false}
+{"t": 2.2521, "type": "transcribed", "audio": 2.2, "session": "talk-b", "item": "utt-3", "original": "the weather is", "language": "en", "commit_reason": "seg", "decision_audio_sec": 2.2, "recv_elapsed_sec": 2.2514}
+{"t": 2.3338, "type": "final", "audio": 2.2, "session": "talk-b", "item": "utt-3", "original": "the weather is", "language": "en", "commit_reason": "seg", "decision_audio_sec": 2.2, "recv_elapsed_sec": 2.2514, "translation": "[ko] the weather is", "target_lang": "ko"}
+{"t": 2.3349, "type": "chunk", "audio": 2.2, "session": "talk-b", "item": "utt-3", "silence": true}
+{"t": 2.4527, "type": "vad_speech_end", "audio": 2.4, "session": "talk-b", "item": "utt-3", "at": 2.0, "started_at": 0.0}
+{"t": 2.5043, "type": "chunk", "audio": 2.4, "session": "talk-b", "item": "utt-3", "silence": true}
+{"t": 2.6525, "type": "chunk", "audio": 2.6, "session": "talk-b", "item": "utt-3", "silence": true}
+{"t": null, "type": "item_close", "session": "talk-b", "item": "utt-3", "n_finals": 1, "empty_hypothesis": false}
+{"t": null, "type": "log", "level": "INFO", "logger": "bench", "msg": "[3/5] utt-3 wer=1.000 segments=1", "item": "utt-3"}
+{"t": 0.0, "type": "item_open", "session": "talk-b", "item": "utt-4", "audio_sec": 3.7, "src_lang": "en", "target_lang": "ko", "trailing_silence_ms": 600, "started_at": "2026-09-12T14:24:58.151325+00:00"}
+{"t": 0.2521, "type": "vad_speech_start", "audio": 0.2, "session": "talk-b", "item": "utt-4", "at": 0.0}
+{"t": 0.2532, "type": "chunk", "audio": 0.2, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 0.4519, "type": "chunk", "audio": 0.4, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 0.6528, "type": "chunk", "audio": 0.6, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 0.853, "type": "chunk", "audio": 0.8, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 1.0522, "type": "chunk", "audio": 1.0, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 1.253, "type": "chunk", "audio": 1.2, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 1.4522, "type": "chunk", "audio": 1.4, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 1.6525, "type": "vad_speech_end", "audio": 1.6, "session": "talk-b", "item": "utt-4", "at": 1.2, "started_at": 0.0}
+{"t": 1.704, "type": "transcribed", "audio": 1.6, "session": "talk-b", "item": "utt-4", "original": "the weather", "language": "en", "commit_reason": "vad", "decision_audio_sec": 1.6, "recv_elapsed_sec": 1.703}
+{"t": 1.7853, "type": "final", "audio": 1.6, "session": "talk-b", "item": "utt-4", "original": "the weather", "language": "en", "commit_reason": "vad", "decision_audio_sec": 1.6, "recv_elapsed_sec": 1.703, "translation": "[ko] the weather", "target_lang": "ko"}
+{"t": 1.786, "type": "chunk", "audio": 1.6, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 1.8523, "type": "chunk", "audio": 1.8, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 2.0522, "type": "chunk", "audio": 2.0, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 2.2521, "type": "chunk", "audio": 2.2, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 2.4522, "type": "chunk", "audio": 2.4, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 2.6525, "type": "vad_speech_start", "audio": 2.6, "session": "talk-b", "item": "utt-4", "at": 2.4}
+{"t": 2.6536, "type": "chunk", "audio": 2.6, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 2.8525, "type": "chunk", "audio": 2.8, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 3.0525, "type": "chunk", "audio": 3.0, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 3.2529, "type": "chunk", "audio": 3.2, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 3.4521, "type": "chunk", "audio": 3.4, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 3.6519, "type": "chunk", "audio": 3.6, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 3.7518, "type": "transcribed", "audio": 3.7, "session": "talk-b", "item": "utt-4", "original": "the weather", "language": "en", "commit_reason": "seg", "decision_audio_sec": 3.7, "recv_elapsed_sec": 3.7508}
+{"t": 3.8326, "type": "final", "audio": 3.7, "session": "talk-b", "item": "utt-4", "original": "the weather", "language": "en", "commit_reason": "seg", "decision_audio_sec": 3.7, "recv_elapsed_sec": 3.7508, "translation": "[ko] the weather", "target_lang": "ko"}
+{"t": 3.8338, "type": "chunk", "audio": 3.7, "session": "talk-b", "item": "utt-4", "silence": false}
+{"t": 3.9536, "type": "chunk", "audio": 3.9, "session": "talk-b", "item": "utt-4", "silence": true}
+{"t": 4.1529, "type": "vad_speech_end", "audio": 4.1, "session": "talk-b", "item": "utt-4", "at": 3.7, "started_at": 2.4}
+{"t": 4.2042, "type": "chunk", "audio": 4.1, "session": "talk-b", "item": "utt-4", "silence": true}
+{"t": 4.3528, "type": "chunk", "audio": 4.3, "session": "talk-b", "item": "utt-4", "silence": true}
+{"t": null, "type": "item_close", "session": "talk-b", "item": "utt-4", "n_finals": 2, "empty_hypothesis": false}
+{"t": null, "type": "log", "level": "INFO", "logger": "bench", "msg": "[4/5] utt-4 wer=0.667 segments=2", "item": "utt-4"}
+{"t": 0.0, "type": "item_open", "session": "talk-b", "item": "utt-5", "audio_sec": 0.8, "src_lang": "en", "target_lang": "ko", "trailing_silence_ms": 600, "started_at": "2026-09-12T14:25:02.559236+00:00"}
+{"t": 0.2519, "type": "chunk", "audio": 0.2, "session": "talk-b", "item": "utt-5", "silence": false}
+{"t": 0.4522, "type": "chunk", "audio": 0.4, "session": "talk-b", "item": "utt-5", "silence": false}
+{"t": 0.652, "type": "chunk", "audio": 0.6, "session": "talk-b", "item": "utt-5", "silence": false}
+{"t": 0.8526, "type": "chunk", "audio": 0.8, "session": "talk-b", "item": "utt-5", "silence": false}
+{"t": 1.0522, "type": "chunk", "audio": 1.0, "session": "talk-b", "item": "utt-5", "silence": true}
+{"t": 1.2527, "type": "chunk", "audio": 1.2, "session": "talk-b", "item": "utt-5", "silence": true}
+{"t": 1.4524, "type": "chunk", "audio": 1.4, "session": "talk-b", "item": "utt-5", "silence": true}
+{"t": null, "type": "item_close", "session": "talk-b", "item": "utt-5", "n_finals": 0, "empty_hypothesis": true}
+{"t": null, "type": "log", "level": "INFO", "logger": "bench", "msg": "[5/5] utt-5 wer=- segments=0", "item": "utt-5"}
+{"t": null, "type": "run_close", "n_rows": 5, "status": "ok"}

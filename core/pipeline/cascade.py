@@ -1,0 +1,91 @@
+from core.components.correction import correctors
+from core.components.mixer import mixers
+from core.components.registry import Transcribed
+from core.components.transcription import transcribers
+from core.components.translation import translators
+from core.components.vad import detectors
+from core.utils import langs, logging
+from core.utils.audio import MultiChannelAudio
+
+from . import pipelines, stages
+from .base import Pipeline, Processor, RunsPer, Stage
+
+log = logging.getLogger(__name__)
+
+
+class SpeechProcessor(Processor):
+    async def process(self, audio: MultiChannelAudio) -> list:
+        return await stages.listen(self.parts, audio)
+
+    async def finish(self) -> list:
+        return await stages.finish(self.parts)
+
+
+class TranslationProcessor(Processor):
+    def start(self, *, languages: list[str], target_lang: str = "") -> None:
+        super().start(languages=languages, target_lang=target_lang)
+        self.target_lang = target_lang
+        self.languages = set(languages)
+        self.said_so_far: list[str] = []
+
+    def accepts(self, item) -> bool:
+        return isinstance(item, Transcribed)
+
+    async def process(self, item: Transcribed) -> list:
+        allowed = not self.languages or item.language in self.languages
+        try:
+            translated = await stages.translate(
+                self.parts, item, target_lang=self.target_lang,
+                context=list(self.said_so_far), allowed=allowed)
+        except Exception:
+            log.exception("[TRANSLATE-FAILED] to %s", self.target_lang)
+            translated = stages.untranslated(item, self.target_lang)
+        self._remember(translated.original)
+        return [translated]
+
+    def skip(self, item: Transcribed) -> None:
+        self._remember(item.original)
+
+    def _remember(self, original: str) -> None:
+        if original:
+            self.said_so_far.append(original)
+
+
+@pipelines.register("cascade")
+class CascadePipeline(Pipeline):
+    REQUIRED = (transcribers,)
+    OPTIONAL = (mixers, detectors, correctors, translators)
+    STAGES = (
+        Stage(parts=("mixer", "vad", "transcription"), runs_per=RunsPer.ROOM,
+              processor=SpeechProcessor),
+        Stage(parts=("correction", "translation"), runs_per=RunsPer.TARGET_LANG,
+              processor=TranslationProcessor),
+    )
+
+    def start(self, *, languages: list[str], target_lang: str,
+              own_lang: str | None = None) -> None:
+        self.target_lang = target_lang
+        self.own_lang = own_lang
+        self.said_so_far: list[str] = []
+        super().start(languages=languages, target_lang=target_lang)
+
+    async def listen(self, audio: bytes) -> list:
+        return await self._translated(await stages.hear(self.parts, audio))
+
+    async def finish(self) -> list:
+        return await self._translated(await stages.finish(self.parts))
+
+    async def _translated(self, produced: list) -> list:
+        out = []
+        for item in produced:
+            out.append(item)
+            if not isinstance(item, Transcribed):
+                continue
+            target = langs.pick_target(
+                item.language, lang=self.own_lang or "", target_lang=self.target_lang)
+            translated = await stages.translate(
+                self.parts, item, target_lang=target, context=list(self.said_so_far))
+            if translated.original:
+                self.said_so_far.append(translated.original)
+            out.append(translated)
+        return out

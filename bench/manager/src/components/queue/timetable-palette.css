@@ -1,0 +1,43 @@
+:root {
+  --fc-monarch-primary: var(--primary);
+  --fc-monarch-primary-foreground: var(--primary-foreground);
+  --fc-monarch-primary-over: color-mix(in oklch, var(--primary) 90%, var(--background));
+  --fc-monarch-primary-down: color-mix(in oklch, var(--primary) 80%, var(--background));
+
+  --fc-monarch-secondary: var(--secondary);
+  --fc-monarch-secondary-foreground: var(--secondary-foreground);
+  --fc-monarch-secondary-over: color-mix(in oklch, var(--secondary) 90%, var(--foreground));
+  --fc-monarch-secondary-down: color-mix(in oklch, var(--secondary) 80%, var(--foreground));
+
+  --fc-monarch-tertiary: var(--accent);
+  --fc-monarch-tertiary-foreground: var(--accent-foreground);
+  --fc-monarch-tertiary-over: color-mix(in oklch, var(--accent) 90%, var(--foreground));
+  --fc-monarch-tertiary-down: color-mix(in oklch, var(--accent) 80%, var(--foreground));
+
+  --fc-monarch-event: color-mix(in oklch, var(--primary) 14%, var(--background));
+  --fc-monarch-event-contrast: var(--foreground);
+  --fc-monarch-highlight: color-mix(in oklch, var(--primary) 12%, transparent);
+  --fc-monarch-now: var(--destructive);
+
+  --fc-monarch-selected: var(--primary);
+  --fc-monarch-selected-foreground: var(--primary-foreground);
+  --fc-monarch-selected-over: color-mix(in oklch, var(--primary) 90%, var(--background));
+  --fc-monarch-selected-down: color-mix(in oklch, var(--primary) 80%, var(--background));
+  --fc-monarch-outline: var(--ring);
+
+  --fc-monarch-popover: var(--popover);
+
+  --fc-monarch-background: var(--background);
+  --fc-monarch-faint: color-mix(in oklch, var(--muted-foreground) 10%, transparent);
+  --fc-monarch-muted: color-mix(in oklch, var(--muted-foreground) 15%, transparent);
+  --fc-monarch-strong: color-mix(in oklch, var(--muted-foreground) 30%, transparent);
+  --fc-monarch-stronger: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+  --fc-monarch-strongest: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
+
+  --fc-monarch-foreground: var(--foreground);
+  --fc-monarch-faint-foreground: color-mix(in oklch, var(--muted-foreground) 50%, var(--background));
+  --fc-monarch-muted-foreground: var(--muted-foreground);
+
+  --fc-monarch-border: var(--border);
+  --fc-monarch-strong-border: color-mix(in oklch, var(--border) 70%, var(--foreground));
+}

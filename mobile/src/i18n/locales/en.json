@@ -1,0 +1,375 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "ok": "OK",
+    "close": "Close",
+    "retry": "Try again",
+    "save": "Save"
+  },
+  "languages": {
+    "ko": "Korean",
+    "ja": "Japanese",
+    "zh": "Chinese",
+    "es": "Spanish",
+    "en": "English"
+  },
+  "home": {
+    "languagesTitle": "Conversation languages",
+    "languagesHint": "Tap a language to make it yours. This phone shows translations in your language.",
+    "myLanguage": "Mine",
+    "addLanguage": "Add language",
+    "removeLanguage": "Remove {{language}}",
+    "outputTitle": "Hear translations",
+    "start": "Start conversation",
+    "save": "Save to Records",
+    "saveHint": "The server keeps the transcript as it translates. No audio is kept.",
+    "saveLocked": "Applies from the next conversation.",
+    "signInToSave": "Sign in to save conversations",
+    "saveGuestHint": "Translation works without an account. Signing in keeps a transcript of each conversation."
+  },
+  "outputModes": {
+    "speaker": "Speaker",
+    "earphone": "Earphone",
+    "both": "Both",
+    "speakerHint": "Every translation plays from the phone speaker.",
+    "earphoneHint": "Only the other side's translations play, in your earphone.",
+    "bothHint": "Translations for you play in your earphone; theirs play from the speaker."
+  },
+  "languagePicker": {
+    "title": "Add language",
+    "comingSoon": "Coming soon"
+  },
+  "server": {
+    "connecting": "Connecting to the server…",
+    "unreachable": "Can't reach the server. Still retrying.",
+    "full": "The server is full. You can start when a spot opens.",
+    "freed": "A spot just opened. You can start now."
+  },
+  "conversation": {
+    "listening": "Listening",
+    "paused": "Paused",
+    "demo": "Demo",
+    "connecting": "Connecting…",
+    "emptyTitle": "Start speaking",
+    "emptyHint": "Speak in any of the conversation languages.",
+    "me": "Me",
+    "transcribing": "Transcribing",
+    "pause": "Pause",
+    "resume": "Resume",
+    "retry": "Try again",
+    "sound": "Sound",
+    "muted": "Muted",
+    "settings": "Conversation settings",
+    "end": "End conversation",
+    "endConfirmTitle": "End this conversation?",
+    "endConfirmMessage": "The transcript on this screen will be cleared.",
+    "endConfirmAction": "End",
+    "events": {
+      "outputMode": "Hear translations: {{mode}}",
+      "muted": "Translation audio off",
+      "unmuted": "Translation audio on",
+      "myLanguage": "My language: {{language}}",
+      "languageAdded": "Language added: {{language}}",
+      "languageRemoved": "Language removed: {{language}}"
+    },
+    "saving": "Saving",
+    "endConfirmSaved": "The transcript is saved in Records.",
+    "holdToTalk": "Hold to talk",
+    "holdHint": "Audio is sent only while you hold the button.",
+    "holdPrompt": "Hold the button and speak",
+    "talking": "Listening… release to send"
+  },
+  "conversationSettings": {
+    "running": "The conversation is still running",
+    "paused": "The conversation is paused",
+    "speak": "Read translations aloud",
+    "speakHint": "Turn off to see subtitles only."
+  },
+  "addOns": {
+    "title": "Add-ons",
+    "holdToTalk": "Hold to talk",
+    "holdToTalkHint": "The mic sends audio only while you hold the button. Good for loud places.",
+    "largeText": "Large text",
+    "largeTextHint": "Shows one sentence at a time, as big as the screen allows.",
+    "vibrate": "Vibrate on translation",
+    "vibrateHint": "A short buzz when the other side’s words arrive in your language."
+  },
+  "present": {
+    "start": "Present",
+    "hint": "Turns the phone sideways and shows only the latest sentences in large text. Mirror the screen to a TV or projector.",
+    "showControls": "Show controls",
+    "exit": "Exit"
+  },
+  "errors": {
+    "title": "Error",
+    "sameLanguage": "My language and peer language must be different.",
+    "serverUnreachable": "Connection failed",
+    "connectionLost": "The connection to the server was lost.",
+    "microphoneDenied": "Microphone access is needed for live translation. Allow it in Settings.",
+    "microphoneUnavailable": "The microphone is unavailable. Another app, such as a video call, may be using it."
+  },
+  "settings": {
+    "display": "Display",
+    "language": "App language",
+    "languageHint": "Conversation languages are set separately on the home screen.",
+    "systemLanguage": "System language",
+    "theme": "Theme",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "general": "General",
+    "about": "About STiTy",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "privacySubtitle": "How we handle your voice & data",
+    "terms": "Terms of Service",
+    "termsSubtitle": "Rules and limits of use",
+    "disclaimer": "⚠ STiTy provides AI-generated translations and does not guarantee accuracy. Do not rely on it for medical, legal, or emergency communication.",
+    "version": "v{{version}}"
+  },
+  "about": {
+    "copyright": "© 2026 STiTy. All rights reserved."
+  },
+  "privacy": {
+    "updated": "Last updated: May 17, 2026",
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "1. Voice data"
+      },
+      {
+        "type": "paragraph",
+        "text": "STiTy records your voice through the device microphone only while a session is active. Audio is streamed to our translation servers, transcribed, and translated in real time."
+      },
+      {
+        "type": "heading",
+        "text": "2. What we store"
+      },
+      {
+        "type": "bullet",
+        "text": "Audio recordings are <bold>not stored</bold> after the session ends."
+      },
+      {
+        "type": "bullet",
+        "text": "Translated text transcripts are kept on your device only."
+      },
+      {
+        "type": "bullet",
+        "text": "We log anonymized session metadata (duration, languages used) for service quality."
+      },
+      {
+        "type": "heading",
+        "text": "3. Third-party services"
+      },
+      {
+        "type": "paragraph",
+        "text": "We use the following third parties to process audio:"
+      },
+      {
+        "type": "bullet",
+        "text": "Google Cloud Speech-to-Text"
+      },
+      {
+        "type": "bullet",
+        "text": "OpenAI / Anthropic translation APIs"
+      },
+      {
+        "type": "paragraph",
+        "text": "Their privacy policies apply to data they process."
+      },
+      {
+        "type": "heading",
+        "text": "4. Your rights"
+      },
+      {
+        "type": "paragraph",
+        "text": "You can delete all data tied to your device at any time via Settings → Delete my data. Contact privacy@stity.app for any request."
+      },
+      {
+        "type": "heading",
+        "text": "5. Children"
+      },
+      {
+        "type": "paragraph",
+        "text": "STiTy is not intended for users under 13."
+      }
+    ]
+  },
+  "terms": {
+    "updated": "Last updated: May 17, 2026",
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "1. Service description"
+      },
+      {
+        "type": "paragraph",
+        "text": "STiTy is a real-time speech translation tool. Translation quality depends on audio clarity, language pair, and AI model performance."
+      },
+      {
+        "type": "heading",
+        "text": "2. No guarantee"
+      },
+      {
+        "type": "paragraph",
+        "text": "Translations are produced automatically and may be inaccurate. Do not rely on STiTy for medical, legal, financial, or emergency communication."
+      },
+      {
+        "type": "heading",
+        "text": "3. Acceptable use"
+      },
+      {
+        "type": "bullet",
+        "text": "Do not record people without their consent."
+      },
+      {
+        "type": "bullet",
+        "text": "Do not use STiTy to harass, defame, or deceive others."
+      },
+      {
+        "type": "bullet",
+        "text": "Do not attempt to reverse-engineer the service."
+      },
+      {
+        "type": "heading",
+        "text": "4. Termination"
+      },
+      {
+        "type": "paragraph",
+        "text": "We may suspend access at any time for policy violations."
+      }
+    ]
+  },
+  "tabs": {
+    "translate": "Translate",
+    "records": "Records",
+    "profile": "Profile"
+  },
+  "ended": {
+    "saved": "Saved to Records",
+    "open": "Open",
+    "guestPrompt": "Sign in so your next conversations are saved.",
+    "signIn": "Sign in",
+    "dismiss": "Dismiss"
+  },
+  "records": {
+    "searchPlaceholder": "Search titles and text",
+    "loading": "Loading records",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "untitled": "Untitled conversation",
+    "underMinute": "Under 1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "emptyTitle": "No conversations yet",
+    "emptyHint": "Conversations you have while signed in show up here.",
+    "noResults": "Nothing matches",
+    "loadFailed": "Couldn't load records",
+    "guestTitle": "Sign in to save conversations",
+    "guestHint": "Translation works without an account. Signing in keeps a transcript of each conversation to read later.",
+    "signIn": "Sign in",
+    "unavailableTitle": "Records aren't available yet",
+    "unavailableHint": "This server doesn't save conversations yet."
+  },
+  "viewer": {
+    "loading": "Loading the conversation",
+    "loadFailed": "Couldn't open this conversation",
+    "notFound": "This conversation was deleted",
+    "me": "Me",
+    "views": {
+      "mine": "My language",
+      "original": "Original",
+      "bilingual": "Both"
+    },
+    "textSmaller": "Smaller text",
+    "textLarger": "Larger text",
+    "summary": "Summary",
+    "summaryPending": "The summary is being written. Check back in a minute.",
+    "summaryUnavailable": "No summary for this conversation.",
+    "keyPoints": "Key points",
+    "decisions": "Decisions",
+    "actionItems": "Action items",
+    "chapters": "Chapters",
+    "glossary": "Glossary",
+    "search": "Search this conversation",
+    "searchPlaceholder": "Search this conversation",
+    "matches": "{{current}} of {{total}}",
+    "noMatches": "No matches",
+    "previousMatch": "Previous match",
+    "nextMatch": "Next match",
+    "closeSearch": "Close search",
+    "more": "More actions",
+    "rename": "Rename",
+    "renameTitle": "Rename conversation",
+    "renameFailed": "Couldn't rename it",
+    "share": "Share as text",
+    "copy": "Copy",
+    "copied": "Copied",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete this conversation?",
+    "deleteConfirmMessage": "It's removed from Records for good.",
+    "deleteFailed": "Couldn't delete it",
+    "textSize": "Text size"
+  },
+  "signIn": {
+    "title": "Save your conversations",
+    "subtitle": "Sign in to keep a transcript of every conversation and read it again later, on any phone.",
+    "apple": "Continue with Apple",
+    "google": "Continue with Google",
+    "email": "Continue with email",
+    "emailTitle": "Sign in with email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "sendCode": "Send code",
+    "codeTitle": "Enter the code",
+    "codeSent": "We sent a 6-digit code to {{email}}.",
+    "codeLabel": "6-digit code",
+    "verify": "Sign in",
+    "guestNote": "You can keep translating without an account.",
+    "errors": {
+      "invalid": "That doesn't look right. Check it and try again.",
+      "offline": "You're offline. Check your connection and try again.",
+      "server": "Something went wrong on our side. Try again.",
+      "unauthorized": "Sign-in was refused. Try again.",
+      "notFound": "Sign-in isn't available on this server yet."
+    }
+  },
+  "apiErrors": {
+    "offline": "You're offline. Check your connection.",
+    "unauthorized": "You were signed out. Sign in again.",
+    "notFound": "It isn't there any more.",
+    "server": "Something went wrong on our side. Try again.",
+    "invalid": "The server sent something the app didn't expect."
+  },
+  "profile": {
+    "signIn": "Sign in",
+    "guestTitle": "You're using STiTy as a guest",
+    "guestHint": "Sign in to save conversations and pick up where you left off on a new phone.",
+    "section": "Profile",
+    "displayName": "Display name",
+    "myLanguage": "My language",
+    "keepRecords": "Keep records for",
+    "retention": {
+      "30d": "30 days",
+      "1y": "1 year",
+      "forever": "Until I delete them"
+    },
+    "retentionHint": "Records older than this are deleted on the server.",
+    "saveFailed": "Couldn't save that change",
+    "account": "Account",
+    "signOut": "Sign out",
+    "deleteAccount": "Delete account",
+    "deleteHint": "Deleting your account also deletes every saved conversation.",
+    "deleteConfirmTitle": "Delete your account?",
+    "deleteConfirmMessage": "Your account and every saved conversation are deleted. This can't be undone.",
+    "deleteConfirmAction": "Delete account",
+    "deletedTitle": "Account deleted",
+    "deletedMessage": "Your account, your records and STiTy's data on this phone are gone.",
+    "deleteFailed": "Couldn't delete your account",
+    "deleteFailedMessage": "Nothing was deleted. Check your connection and try again."
+  }
+}

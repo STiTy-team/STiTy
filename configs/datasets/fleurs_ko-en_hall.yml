@@ -1,0 +1,12 @@
+meta:
+  description: FLEURS Korean sentences in a concert hall (Arvedi Auditorium IRs); quiet clips raised to -23 dB
+  tags: [fleurs, sentence, reverb]
+dataset:
+  name: fleurs/ko_kr
+target: en
+augment:
+  room:
+    place: hall
+    level: 1.0
+  volume:
+    min_level_db: -23

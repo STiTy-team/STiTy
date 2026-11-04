@@ -79,8 +79,12 @@ class TranslateHTTPError(RuntimeError):
 
 @dataclass
 class _Config:
-    backend: str = "gtx"       # "gtx"(무료 위젯) | "v2"(Cloud Translation Basic) | "local"(MADLAD)
+    # "gtx"(무료 위젯) | "v2"(Cloud Translation Basic) | "local"(이 프로세스에 MADLAD 적재)
+    # | "remote"(local_translation_server.py 를 HTTP 로 호출)
+    backend: str = "gtx"
     api_key: Optional[str] = None
+    # remote 백엔드가 부를 주소. local_translation_server.py 의 기본 포트는 8770 이다.
+    remote_url: Optional[str] = None
     local_model: str = "google/madlad400-3b-mt"
     local_device: str = "cuda"
     local_batch: int = 16      # 한 번에 GPU 로 보내는 최대 문장 수
@@ -430,6 +434,37 @@ async def _call_local(session, text: str, target_lang: str, timeout) -> tuple[st
     return (out or "").strip(), ""
 
 
+async def _call_remote(session, text: str, target_lang: str, timeout) -> tuple[str, str]:
+    """번역 모델을 **다른 프로세스**에 두고 HTTP 로 부른다.
+
+    왜 필요한가: `local` 은 이 프로세스에 MADLAD 를 올린다(fp16 약 7.2GiB). 카드 하나에서
+    ASR 서버를 둘 띄우면 번역 모델도 두 벌이 되어 24GiB 에 안 들어간다 — 실측
+    (2026-09-13): util 0.25 인 서버가 vLLM 6.1GiB + MADLAD 7.6GiB = 13.7GiB 를 잡아
+    두 번째 서버가 `Free memory ... is less than desired GPU memory utilization` 으로
+    기동에 실패했다. 모델을 한 프로세스에만 올려 두고 나머지는 이 백엔드로 부른다.
+
+        python STiTy-Mobile/demo-web/local_translation_server.py --port 8770 \
+            --model google/madlad400-3b-mt
+        ... streaming_websocket_server_ast.py --trans-backend remote \
+            --trans-remote-url http://127.0.0.1:8770
+
+    배칭은 **서버 쪽 일이다.** 여기서 모으면 HTTP 왕복이 배치 대기에 더해져 지연만 늘고,
+    서버가 이미 여러 연결의 요청을 동시에 받으므로 모을 이유가 없다.
+
+    `context` 는 보내지 않는다 — MADLAD·NLLB 는 문장 단위 모델이라 문맥을 이어붙이면
+    번역이 망가진다(local_translation_server.py 의 docstring 에 실측이 있다).
+    """
+    if not _CFG.remote_url:
+        raise RuntimeError("backend='remote' 인데 --trans-remote-url 이 없습니다.")
+    url = _CFG.remote_url.rstrip("/") + "/translate"
+    payload = {"text": text, "target": target_lang, "source": "en"}
+    async with session.post(url, json=payload, timeout=timeout) as resp:
+        if resp.status != 200:
+            raise TranslateHTTPError(resp.status)
+        data = await resp.json()
+    return (data.get("translation") or "").strip(), (data.get("source") or "")
+
+
 async def _guarded_translate(session, text: str, target_lang: str) -> tuple[str, str]:
     """재시도 + 계측을 붙인 번역. 원본 `google_translate_async` 와 같은 시그니처/반환형."""
     import aiohttp
@@ -442,7 +477,8 @@ async def _guarded_translate(session, text: str, target_lang: str) -> tuple[str,
     with _STATS._lock:
         _STATS.commits += 1
     timeout = aiohttp.ClientTimeout(total=_CFG.timeout)
-    call = {"v2": _call_v2, "local": _call_local}.get(_CFG.backend, _call_gtx)
+    call = {"v2": _call_v2, "local": _call_local,
+            "remote": _call_remote}.get(_CFG.backend, _call_gtx)
 
     last_exc: Optional[BaseException] = None
     for attempt in range(1, _CFG.retries + 1):
@@ -512,6 +548,11 @@ def install(base_module, **opts) -> None:
     if _CFG.backend == "v2" and not _CFG.api_key:
         raise RuntimeError(
             "backend='v2' 인데 API 키가 없습니다. .env 의 GOOGLE_TRANSLATE_API_KEY 를 확인하세요."
+        )
+    if _CFG.backend == "remote" and not _CFG.remote_url:
+        raise RuntimeError(
+            "backend='remote' 인데 --trans-remote-url 이 없습니다. "
+            "local_translation_server.py 를 띄운 주소를 주세요(예: http://127.0.0.1:8770)."
         )
     logger.info(
         "[TRANS-GUARD] 설치됨 — 백엔드 %s / 재시도 %d회 / 타임아웃 %.1fs / "

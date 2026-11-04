@@ -1,0 +1,210 @@
+{
+  "name": "fleurs_ko+en-en_lvl26/asr.qwen-seg-ko+mt.qwen3.5-4b",
+  "stamp": "20260927T232328",
+  "status": "ok",
+  "failure": null,
+  "started_at": "2026-09-27T23:23:28.150780+00:00",
+  "finished_at": "2026-09-28T00:23:57.980547+00:00",
+  "metrics": {
+    "wer": 0.12456102560085641,
+    "wer_by_lang": {
+      "en+ko": 0.12962962962962962,
+      "ko+en": 0.11949242157208319
+    },
+    "wer_scored_only": 0.12456102560085641,
+    "cer": 0.07681687824435851,
+    "cer_by_lang": {
+      "en+ko": 0.08353276353276354,
+      "ko+en": 0.0701009929559535
+    },
+    "bleu": 21.78068887788201,
+    "bleu_by_pair": {
+      "ko-en": 21.78068887788201
+    },
+    "avg_fsl_sec": 0.1856312883435583,
+    "longyaal_ms": 3724.1432799177505,
+    "longyaal_ca_ms": 4156.929861061019,
+    "lang_detect_accuracy": 0.9406952965235174,
+    "confusion": {
+      "en->en": 205,
+      "en->ko": 25,
+      "ko->en": 4,
+      "ko->ko": 255
+    },
+    "commit_reasons": {
+      "vad": 0.3292433537832311,
+      "seg": 0.6707566462167689,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.0
+    },
+    "segments_per_item": 11.113636363636363,
+    "token_emission_ms": 1370.688243064729,
+    "token_emission_p50_ms": 1082.9999999999984,
+    "token_emission_p90_ms": 2981.5999999999995,
+    "token_emission_ca_ms": 1543.1924042272126,
+    "token_emission_ca_p50_ms": 1250.5500000000013,
+    "token_emission_ca_p90_ms": 3194.089999999989,
+    "comet": 0.8324786566875197,
+    "comet_by_pair": {
+      "ko-en": 0.8324786566875197
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "laal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "laal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "yaal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended",
+    "yaal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended"
+  },
+  "counts": {
+    "items": 44,
+    "sessions": 44,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 3244.48,
+    "wall_sec": 3629.83,
+    "compute_sec": 323.07,
+    "realtime_factor": 0.094
+  },
+  "failed_items": [],
+  "config": {
+    "name": "fleurs_ko+en-en_lvl26/asr.qwen-seg-ko+mt.qwen3.5-4b",
+    "dataset": {
+      "name": "fleurs/ko_kr+en_us.level-26",
+      "longform": true
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade",
+        "transcription": {
+          "name": "qwen-seg",
+          "model": "Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128,
+          "dot_commit_confirm": true,
+          "dot_commit_stall_chunks": 1,
+          "rep_dedup": true
+        },
+        "translation": {
+          "name": "qwen3.5",
+          "url": "http://127.0.0.1:8100/v1",
+          "model": "Qwen/Qwen3.5-4B",
+          "gpu_memory_utilization": 0.52,
+          "context_turns": 1
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "fleurs/ko_kr+en_us.level-26",
+    "split": "test",
+    "languages": [
+      "ko",
+      "en"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en",
+        "ko"
+      ]
+    },
+    "primary_metric": "wer",
+    "group_rule": "conversation of 6 turns (ko, en)",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "mix": {
+      "sources": [
+        "ko_kr",
+        "en_us"
+      ],
+      "turns": 6,
+      "switch": 1.0,
+      "gap": [
+        0.5,
+        1.5
+      ],
+      "cut": 0.0,
+      "seed": 0,
+      "level": -26.0,
+      "cut_turns": 0,
+      "level_held_back_turns": 1
+    },
+    "root": "/home/skkai/STiTy-team/datasets/fleurs/ko_kr+en_us.level-26",
+    "manifest_sha256": "dd079afaf21ae0db6a0c8c1f03810b533e43c67e4d612baef04caf7113fb618c",
+    "alignment_sha256": "499d4c70903b43dd291e59d578917b9399ed8064adfdaaca51740c5da1104ec2",
+    "n_aligned": 44,
+    "n_items": 44,
+    "n_sessions": 44
+  },
+  "components": {
+    "pipeline": "cascade",
+    "transcription": {
+      "backend": "qwen-seg",
+      "model_path": "Doo12/Qwen3-ASR-1.7B-ko-silence-v4c900-merged",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128,
+      "dot_commit_confirm": true,
+      "dot_commit_stall_chunks": 1,
+      "rep_dedup": true,
+      "restrict_languages": true
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "qwen3.5",
+      "url": "http://127.0.0.1:8100/v1",
+      "model": "Qwen/Qwen3.5-4B",
+      "gpu_memory_utilization": 0.52,
+      "context_turns": 1
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "fleurs_ko+en-en_lvl26",
+      "version": 1,
+      "ref": "fleurs_ko+en-en_lvl26",
+      "hash": "957f721fecdb",
+      "description": "Conversations alternating Korean and English FLEURS turns, every turn levelled to -26 dBFS, translated to English",
+      "tags": [
+        "fleurs",
+        "longform",
+        "mixed-language"
+      ]
+    },
+    "pipeline": {
+      "name": "asr.qwen-seg-ko+mt.qwen3.5-4b",
+      "version": 1,
+      "ref": "asr.qwen-seg-ko+mt.qwen3.5-4b",
+      "hash": "044cda5525d0",
+      "description": "Korean-finetuned Qwen3-ASR with SEG commits, then Qwen3.5-4B translation with one turn of context",
+      "tags": [
+        "cascade",
+        "qwen-seg",
+        "ko-asr",
+        "local-mt"
+      ]
+    }
+  }
+}

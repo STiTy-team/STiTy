@@ -18,6 +18,10 @@
 #   TRANS_BACKEND  기본 local — MADLAD-400-3B(greedy)를 같은 GPU 에 올린다 —
 #                  **번역 품질이 달라 v2 로 낸 결과와 같은 표에 올리면 안 된다**
 #   MODEL          기본 models/Qwen3-ASR-1.7B-en-dailytalk-seg — 다른 합친 모델 경로로 바꿀 수 있다
+#   PORT           기본 8765. 카드 하나에서 두 런을 동시에 돌릴 때 갈라 준다
+#   EXTRA_SERVER_ARGS  서버에 그대로 넘길 인자. 번역기를 공유할 때
+#                  `--local-translation-url http://127.0.0.1:8770` 을 준다 —
+#                  ASR 서버마다 MADLAD(7.2GiB)를 복제하면 24GiB 에 둘이 안 들어간다
 #   GPU_MEM        vLLM gpu_memory_utilization. local 번역기(6.75GB)와 나눠 쓰려면 0.65
 #   AST_CAP_FREEZE / AST_AUDIO_END_AT_COMMIT   서버 수정 스위치(환경 그대로 상속된다)
 # 종료는 반드시 stop_server.sh 로 한다(pkill 은 vLLM EngineCore 를 남긴다).
@@ -27,7 +31,9 @@ set -u
 REPO="${REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 PY="$REPO/.venv/bin/python"
 STOP="$REPO/evaluation/LibriSpeech/paper_result/ASR/scripts/stop_server.sh"
-PORT=8765
+# 카드 하나에서 두 런을 동시에 돌릴 때는 포트를 갈라야 한다. 번역기는 한 프로세스로
+# 올려 두고 두 서버가 --local-translation-url 로 같이 쓴다(EXTRA_SERVER_ARGS).
+PORT="${PORT:-8765}"
 # **GPU 점유 상한.** vLLM 기본 0.8 은 24GB 카드에서 19.2GB 를 선점한다 — 1.7B 모델이
 # 실제로 쓰는 양이 아니라 "남는 걸 다 잡아두는" 설계다. 2026-08-28 00:21 에 이것 때문에
 # 같은 카드에서 돌던 autoseg 루프(CometKiwi+NLI, 4.1GB)가 CUDA OOM 으로 죽었다
@@ -90,6 +96,7 @@ run_axis() {
       --ast-hide-seg \
       --trans-backend "$TRANS_BACKEND" \
       --trans-stats-out "$LOGDIR/${label}_trans_stats.json" \
+      ${EXTRA_SERVER_ARGS:-} \
       "${server_args[@]}" > "$slog" 2>&1 &
   local spid=$!
 
