@@ -313,12 +313,15 @@ def take_table(lines: list[str], i: int) -> tuple[str, int]:
     def pad(cells):
         return (cells + [""] * ncol)[:ncol]   # 칸 수가 어긋나도 표가 깨지지 않게 맞춘다
 
+    def cell_html(c):
+        return "<br/>".join(inline(part.strip()) for part in c.split("<br>"))
+
     parts = ['<table data-layout="default"><tbody><tr>']
-    parts += [f"<th><p>{inline(c)}</p></th>" for c in pad(header)]
+    parts += [f"<th><p>{cell_html(c)}</p></th>" for c in pad(header)]
     parts.append("</tr>")
     for r in rows:
         parts.append("<tr>" + "".join(
-            f"<td><p>{inline(c)}</p></td>" for c in pad(r)) + "</tr>")
+            f"<td><p>{cell_html(c)}</p></td>" for c in pad(r)) + "</tr>")
     parts.append("</tbody></table>")
     return "".join(parts), i
 
