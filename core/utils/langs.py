@@ -50,37 +50,49 @@ def norm_code(value: str) -> str:
     return NAME_TO_CODE.get(v.lower(), "")
 
 
-def parse_map(raw: object) -> dict[str, str]:
-    """`{"ko": "en", "ja": "ko"}`: where each detected language is translated to.
+def parse_map(raw: object) -> dict[str, tuple[str, ...]]:
+    """`{"ko": "en", "ja": ["ko", "en"]}`: where each detected language is translated to.
 
-    Unknown codes and entries that point at themselves are dropped, so what comes back
-    only ever names a real direction.
+    A value may be one code or a list of them; either way the entry becomes the tuple
+    of that source's targets, in the order given. Unknown codes are dropped. An entry
+    that points at itself (or an empty list) keeps its key with no targets: the source
+    stays a language the ASR listens for, and its segments go out transcribed only.
     """
     if not isinstance(raw, dict):
         return {}
-    out: dict[str, str] = {}
+    out: dict[str, tuple[str, ...]] = {}
     for source, target in raw.items():
-        src, dst = norm_code(source), norm_code(target)
-        if src and dst and src != dst:
-            out[src] = dst
+        src = norm_code(source)
+        raw_targets = target if isinstance(target, (list, tuple)) else [target]
+        codes = [norm_code(t) for t in raw_targets]
+        targets = tuple(dict.fromkeys(dst for dst in codes if dst and dst != src))
+        if src and (targets or src in codes or not raw_targets):
+            out[src] = targets
     return out
 
 
-def pick_target(detected: str, *, lang: str = "", target_lang: str = "",
-                lang_map: dict[str, str] | None = None) -> str:
-    """The language a segment spoken in `detected` is translated into.
+def pick_targets(detected: str, *, lang: str = "", target_lang: str = "",
+                 lang_map: dict[str, tuple[str, ...]] | None = None) -> tuple[str, ...]:
+    """The languages a segment spoken in `detected` is translated into.
 
-    `lang_map` wins. Otherwise it is the pair rule between a speaker of `lang` and a
-    listener of `target_lang`: the speaker's own language goes to the listener, and
-    anything else comes back to the speaker. An unknown `detected` goes to the
-    listener. `""` means there is nowhere to translate to.
+    `lang_map` wins, and is the only way to more than one target. Otherwise it is the
+    pair rule between a speaker of `lang` and a listener of `target_lang`: the speaker's
+    own language goes to the listener, and anything else comes back to the speaker. An
+    unknown `detected` goes to the listener. `()` means there is nowhere to translate to.
     """
     code = norm_code(detected)
     if lang_map and code in lang_map:
         return lang_map[code]
     if not lang or not code or code == lang:
-        return target_lang
-    return lang
+        return (target_lang,) if target_lang else ()
+    return (lang,)
+
+
+def pick_target(detected: str, *, lang: str = "", target_lang: str = "",
+                lang_map: dict[str, tuple[str, ...]] | None = None) -> str:
+    """`pick_targets`' first answer, for callers that translate each segment once."""
+    targets = pick_targets(detected, lang=lang, target_lang=target_lang, lang_map=lang_map)
+    return targets[0] if targets else ""
 
 
 def laal_unit(code: str) -> str:

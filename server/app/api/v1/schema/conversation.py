@@ -74,14 +74,14 @@ class ConversationConfigMessage(Message):
     type: Literal["config_ok"] = "config_ok"
     lang: str
     target_lang: str
-    lang_map: dict[str, str]
+    lang_map: dict[str, list[str]]
 
     @classmethod
     def of(cls, participant: Participant) -> Self:
         return cls(
             lang=participant.lang or "auto",
             target_lang=participant.target_lang,
-            lang_map=participant.lang_map,
+            lang_map={source: list(targets) for source, targets in participant.lang_map.items()},
         )
 
 
@@ -107,6 +107,7 @@ class FinalMessage(Message):
     original: str
     translation: str
     language: str
+    target_lang: str
     commit_reason: str
 
     @classmethod
@@ -117,5 +118,6 @@ class FinalMessage(Message):
             original=transcript.original,
             translation=transcript.translation,
             language=transcript.language,
+            target_lang=transcript.target_lang,
             commit_reason=transcript.commit_reason,
         )

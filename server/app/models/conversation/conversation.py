@@ -67,7 +67,7 @@ class Conversation:
         return sorted(self.reads - set(self.translation_workers))
 
     def wants_translation(self, spoken: str, into: str) -> bool:
-        return any(p.target_for(spoken) == into for p in self.participants.values())
+        return any(into in p.targets_for(spoken) for p in self.participants.values())
 
     def add(self, participant: Participant) -> None:
         self.participants[participant.id] = participant

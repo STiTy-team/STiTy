@@ -15,7 +15,7 @@ class Participant:
     expects_translations: bool = True
     lang: str = ""
     target_lang: str = ""
-    lang_map: dict[str, str] = field(default_factory=dict)
+    lang_map: dict[str, tuple[str, ...]] = field(default_factory=dict)
     channel: str | None = None
     delivery: "Delivery" = field(init=False)
 
@@ -45,10 +45,11 @@ class Participant:
 
     @property
     def reads(self) -> set[str]:
-        return {code for code in (self.lang, self.target_lang, *self.lang_map.values()) if code}
+        mapped = (code for targets in self.lang_map.values() for code in targets)
+        return {code for code in (self.lang, self.target_lang, *mapped) if code}
 
-    def target_for(self, language: str) -> str:
-        return langs.pick_target(
+    def targets_for(self, language: str) -> tuple[str, ...]:
+        return langs.pick_targets(
             language, lang=self.lang, target_lang=self.target_lang, lang_map=self.lang_map
         )
 
@@ -56,13 +57,11 @@ class Participant:
 class Delivery:
     def __init__(self, participant: Participant):
         self._participant = participant
-        self._order: deque[int] = deque()
-        self._awaited_translations: dict[int, str] = {}
-        self._ready: dict[int, ConversationEvent] = {}
+        self._queues: dict[str, deque[int]] = {}
+        self._ready: dict[str, dict[int, ConversationEvent]] = {}
 
     def reset(self) -> None:
-        self._order.clear()
-        self._awaited_translations.clear()
+        self._queues.clear()
         self._ready.clear()
 
     def accept(self, item: object) -> list:
@@ -72,25 +71,33 @@ class Delivery:
         if isinstance(record, Partial):
             return [PartialTranscript.of(item)]
         if isinstance(record, Transcribed):
-            self._order.append(number)
-            target = self._participant.target_for(record.language)
-            if self._participant.expects_translations and target:
-                self._awaited_translations[number] = target
+            targets = (
+                self._participant.targets_for(record.language)
+                if self._participant.expects_translations
+                else ()
+            )
+            if targets:
+                for target in targets:
+                    self._enqueue(target, number)
             else:
-                self._ready[number] = item
+                self._enqueue("", number)
+                self._ready[""][number] = item
             return self._flush()
-        if isinstance(record, Translated) and self._awaited_translations.get(number) == (
-            record.target_lang
-        ):
-            del self._awaited_translations[number]
-            self._ready[number] = item
+        if isinstance(record, Translated) and number in self._queues.get(record.target_lang, ()):
+            self._ready[record.target_lang][number] = item
             return self._flush()
         return []
 
+    def _enqueue(self, target: str, number: int) -> None:
+        self._queues.setdefault(target, deque()).append(number)
+        self._ready.setdefault(target, {})
+
     def _flush(self) -> list:
         out = []
-        while self._order and self._order[0] in self._ready:
-            event = self._ready.pop(self._order.popleft())
-            if event.record.original.strip():
-                out.append(FinalOutput.of(event))
+        for target, queue in self._queues.items():
+            ready = self._ready[target]
+            while queue and queue[0] in ready:
+                event = ready.pop(queue.popleft())
+                if event.record.original.strip():
+                    out.append(FinalOutput.of(event))
         return out

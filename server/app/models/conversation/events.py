@@ -65,6 +65,7 @@ class FinalOutput:
     original: str
     translation: str
     language: str
+    target_lang: str
     commit_reason: str
 
     @classmethod
@@ -76,6 +77,7 @@ class FinalOutput:
             original=record.original,
             translation=getattr(record, "translation", ""),
             language=record.language,
+            target_lang=getattr(record, "target_lang", ""),
             commit_reason=record.commit_reason,
         )
 
