@@ -159,7 +159,7 @@ class ZprobePrefixTranscription(Transcriber):
 
     def _emit(self, added: dict[str, str], reason: str) -> list:
         out = []
-        emitted = False
+        driver_emitted = False
         for target in self._targets:
             text = added.get(target, "")
             if self._latin_blocked(target, text):
@@ -169,7 +169,8 @@ class ZprobePrefixTranscription(Transcriber):
             shown = re.sub(r"\s+", " ", shown)
             if not shown:
                 continue
-            emitted = True
+            if target == self._targets[0]:
+                driver_emitted = True
             elapsed = round(timing.elapsed() or 0.0, 4)
             out.append(Translated(
                 original=shown,
@@ -181,7 +182,7 @@ class ZprobePrefixTranscription(Transcriber):
                 committed_elapsed_sec=elapsed,
                 translated_elapsed_sec=elapsed,
             ))
-        if emitted:
+        if driver_emitted:
             self._last_emit_samples = self._wav.shape[0]
         return out
 

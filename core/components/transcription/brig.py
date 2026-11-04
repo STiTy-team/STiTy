@@ -7,8 +7,8 @@ from ..registry import Folded, Speech, Transcribed, Translated
 from .base import Transcriber
 
 
-@transcribers.register("hybrid")
-class HybridTranscription(Transcriber):
+@transcribers.register("brig")
+class BrigTranscription(Transcriber):
 
     SETTINGS = {
         "asr": ("asr", dict),
@@ -23,7 +23,7 @@ class HybridTranscription(Transcriber):
             sub = dict(out.get(key) or {})
             name = sub.pop("name", None)
             if not name:
-                raise ValueError(f"transcription hybrid needs `{key}` with a `name`")
+                raise ValueError(f"transcription brig needs `{key}` with a `name`")
             out[key] = {"name": name,
                         "kwargs": transcribers.get(name).validate(sub, kind=f"{kind}.{key}")}
         return out

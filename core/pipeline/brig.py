@@ -7,8 +7,8 @@ from .base import Pipeline, RunsPer, Stage
 from .cascade import SpeechProcessor
 
 
-@pipelines.register("hybrid")
-class HybridPipeline(Pipeline):
+@pipelines.register("brig")
+class BrigPipeline(Pipeline):
     REQUIRED = (transcribers,)
     OPTIONAL = (mixers, detectors)
     STAGES = (
