@@ -3,12 +3,12 @@ import re
 from sacrebleu.metrics import BLEU
 
 from .common import (
+    displayed,
     macro,
     resegmented,
     sentence_lang,
     src_code,
     succeeded,
-    translated,
     translating,
 )
 
@@ -80,6 +80,6 @@ def _clean(text: str) -> str:
 def _translation(row: dict, target: str) -> str:
     return " ".join(
         s["translation"]
-        for s in translated(row["records"])
+        for s in displayed(row["records"])
         if s.get("translation") and (s.get("target_lang") or target) == target
     )

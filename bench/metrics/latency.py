@@ -7,7 +7,7 @@ from omnisteval.scoring import LAALScorer
 
 from core.utils import langs
 
-from .common import resegmented, translated, translating, units
+from .common import displayed, resegmented, translated, translating, units
 
 
 ALIGNER_STEP_SEC = 0.08
@@ -72,7 +72,7 @@ def _latency_inputs(rows: list[dict], target: str) -> list[Instance]:
             continue
 
         emitted, emitted_ca = [], []
-        for s in translated(row["records"]):
+        for s in displayed(row["records"]):
             if (s.get("target_lang") or target) != target:
                 continue
             words = (s.get("translation") or "").split()

@@ -67,6 +67,18 @@ class Translated(Record):
     translated_elapsed_sec: float | None = None
 
 
+@dataclass(frozen=True)
+class Folded(Record):
+
+    original: str
+    translation: str
+    language: str
+    target_lang: str
+    commit_reason: str
+    decision_audio_sec: float
+    committed_elapsed_sec: float
+
+
 class Component:
 
     SETTINGS: dict[str, tuple[str, Callable]] = {}

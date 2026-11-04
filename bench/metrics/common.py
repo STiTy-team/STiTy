@@ -24,6 +24,29 @@ def translated(records: list[dict]) -> list[dict]:
     return [record for record in records if record["type"] == "translated"]
 
 
+def displayed(records: list[dict]) -> list[dict]:
+    folds = {
+        (record["target_lang"], record["decision_audio_sec"], record["original"]):
+            record["translation"]
+        for record in records
+        if record["type"] == "folded"
+    }
+    if not folds:
+        return translated(records)
+    out = []
+    for record in translated(records):
+        text = record.get("translation") or ""
+        key = (record.get("target_lang") or "", record.get("decision_audio_sec"), text)
+        while key in folds:
+            text = folds[key]
+            key = (key[0], key[1], text)
+        if not text.strip():
+            continue
+        out.append(record if text == record.get("translation")
+                   else {**record, "original": text, "translation": text})
+    return out
+
+
 def translating(rows: list[dict], target: str) -> list[dict]:
     return [row for row in rows if src_code(row) != target and not row.get("partial")]
 
@@ -89,7 +112,7 @@ def resegmented(row: dict, target: str) -> list[tuple[dict, Instance]]:
         reference_words += [Word(unit, emission_cu=offset_ms, seq_id=index) for unit in units]
 
     hypothesis_words = []
-    for s in translated(row["records"]):
+    for s in displayed(row["records"]):
         if s.get("decision_audio_sec") is None or (s.get("target_lang") or target) != target:
             continue
         text = s.get("translation") or ""
