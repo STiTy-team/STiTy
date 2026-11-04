@@ -55,7 +55,7 @@ def load_kspon(path: Path | None = None) -> list[Sentence]:
 
     실제 자발 발화 ASR 전사. 각 항목이 이미 하나의 발화 단위다. 구두점이 없는 항목이 많은 것이 정상이며,
     그것이 바로 실시간 분절이 풀어야 하는 조건이다."""
-    path = path or (REPO_ROOT / "evaluation" / "KsponSpeech" / "transcribe" / "eval_clean_1000.json")
+    path = path or (REPO_ROOT / "core" / "meaning_segmentator" / "data" / "KsponSpeech" / "transcribe" / "eval_clean_1000.json")
     return _load_json_entries(path, text_field="text", id_field="file")
 
 
@@ -69,13 +69,13 @@ def load_kspon_train(path: Path | None = None) -> list[Sentence]:
 
     같은 코퍼스의 학습 분할 전사이고 id·텍스트 모두 유니크 실측 확인. autoseg 는
     ASR 을 평가하지 않으므로 학습 분할 사용이 오염을 만들지 않는다."""
-    path = path or (REPO_ROOT / "evaluation" / "KsponSpeech" / "transcribe" / "train.json")
+    path = path or (REPO_ROOT / "core" / "meaning_segmentator" / "data" / "KsponSpeech" / "transcribe" / "train.json")
     return _load_json_entries(path, text_field="text", id_field="file")
 
 
 def _load_ast_manifest(path: Path, text_field: str = "src_text",
                       id_field: str = "utt_id") -> list[Sentence]:
-    """`evaluation/ast/manifests/*.jsonl` — AST 평가 트랙의 공용 매니페스트.
+    """`core/meaning_segmentator/data/manifests/*.jsonl` — AST 평가 트랙의 공용 매니페스트.
 
     한 줄이 한 발화이고 오디오 경로·정답 번역까지 들고 있으나, autoseg 는 **소스
     텍스트만** 쓴다. 정답 번역(`tgt_text`)은 일부러 안 읽는다 — 목적함수가 참조 없는
@@ -383,7 +383,7 @@ def stratified_order(items: list, seed: int, text_of=lambda x: x.text,
 
     구두점 판정은 유니코드 범주로 한다 — 문자 목록을 박으면 층화가 언어 종속이 된다.
 
-    `evaluation/ast/build_manifest_fleurs_text.py` 가 이 함수를 그대로 쓴다. 예전에는
+    `core/meaning_segmentator/tools/manifests/build_manifest_fleurs_text.py` 가 이 함수를 그대로 쓴다. 예전에는
     같은 규칙이 양쪽에 복사돼 있었다. **2026-08-24 이전에 만든 매니페스트는 고정
     경계(25/40)로 정렬된 것이라 재생성하면 순서가 달라진다.**
     """

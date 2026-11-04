@@ -80,9 +80,9 @@ def parse_trn(trn_path: Path, min_words: int, count: int) -> list[dict]:
 
 def main():
     parser = argparse.ArgumentParser(description=".trn → eval_clean.json 변환")
-    _trn_dir = Path(__file__).resolve().parent.parent.parent.parent / "evaluation" / "KsponSpeech" / "transcribe"
+    _trn_dir = Path(__file__).resolve().parent.parent / "data" / "KsponSpeech" / "transcribe"
     parser.add_argument("--input",     type=str,   required=True,
-                        help=".trn 파일명 (evaluation/KsponSpeech/transcribe/ 기준, 예: eval_clean.trn)")
+                        help=".trn 파일명 (core/meaning_segmentator/data/KsponSpeech/transcribe/ 기준, 예: eval_clean.trn)")
     parser.add_argument("--output",    type=str,   default=None,
                         help="출력 JSON 경로 (기본: 입력 파일명.json)")
     parser.add_argument("--min-words", type=int,   default=5,

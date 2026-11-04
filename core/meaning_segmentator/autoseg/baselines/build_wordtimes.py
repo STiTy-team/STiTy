@@ -1,6 +1,6 @@
 """clean500 소스 문장의 **어절 종료 시각**을 강제정렬로 뽑아 저장한다.
 
-산출: `evaluation/ast/manifests/fleurs_nway_en_<tag>_wordtimes.json`
+산출: `core/meaning_segmentator/data/manifests/fleurs_nway_en_<tag>_wordtimes.json`
       {talk_id: {"wav":…, "dur_ms":…, "word_end_ms":[…]}}
 
 `bleu_eval` 이 이 값으로 조각 경계 시각을 잡아 ms LAAL 을 낸다 — 발화 내 균일 발화속도

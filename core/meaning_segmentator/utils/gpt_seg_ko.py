@@ -506,15 +506,15 @@ def mark_segmentation(client, text: str, model: str, provider: str = "openai", m
 
 
 def main():
-    _base = Path(__file__).resolve().parent.parent.parent.parent / "evaluation" / "KsponSpeech"
+    _base = Path(__file__).resolve().parent.parent / "data" / "KsponSpeech"
     _transcribe_dir = _base / "transcribe"
     _results_dir    = _base / "results"
 
     parser = argparse.ArgumentParser(description="GPT 기반 의미 분절 마킹")
     parser.add_argument("--input",   type=str, required=True,
-                        help="입력 JSON 파일명 (evaluation/KsponSpeech/transcribe/ 기준, 예: eval_clean.json)")
+                        help="입력 JSON 파일명 (core/meaning_segmentator/data/KsponSpeech/transcribe/ 기준, 예: eval_clean.json)")
     parser.add_argument("--output",  type=str, default=None,
-                        help="출력 JSON 파일명 (기본: 입력 파일명에 _seg 추가, evaluation/KsponSpeech/results/ 저장)")
+                        help="출력 JSON 파일명 (기본: 입력 파일명에 _seg 추가, core/meaning_segmentator/data/KsponSpeech/results/ 저장)")
     parser.add_argument("--provider", type=str, default="openai", choices=["openai", "claude", "ollama"],
                         help="사용할 API 제공자 (openai, claude, ollama)")
     parser.add_argument("--model",   type=str, default=None,

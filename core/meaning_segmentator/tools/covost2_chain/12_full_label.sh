@@ -7,7 +7,7 @@
 . core/meaning_segmentator/tools/covost2_chain/common.sh
 F=$R/full
 PROMPT=core/meaning_segmentator/experiment/artifacts/en-multi/run13/best_prompt_mg1.txt
-MAN=evaluation/ast/manifests/covost2_en-de_full.jsonl
+MAN=core/meaning_segmentator/data/manifests/covost2_en-de_full.jsonl
 GRID="2 3 4 5 6 7 8 10 12"
 mkdir -p $F/labels $F/logs $F/cache
 

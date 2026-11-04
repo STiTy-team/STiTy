@@ -109,7 +109,7 @@ def main():
     p.add_argument("--base_model", type=str, default="Qwen/Qwen3-ASR-1.7B")
     p.add_argument("--language", type=str, default="English",
                    help="전사 언어 (예: English, Korean)")
-    EVAL_ROOT = os.path.abspath(os.path.join(REPO_ROOT, "evaluation/KsponSpeech"))
+    EVAL_ROOT = os.path.abspath(os.path.join(REPO_ROOT, "core/meaning_segmentator/data/KsponSpeech"))
     p.add_argument("--eval_json", type=str,
                    default=os.path.join(EVAL_ROOT, "transcribe/eval_clean.json"))
     p.add_argument("--audio_dir", type=str,

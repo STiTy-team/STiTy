@@ -39,7 +39,7 @@ from ..runtime.pipeline import (GoogleTranslator, JsonCache, LocalTranslator,
 from ..paths import REPO_ROOT, RUNS_DIR
 sys.path.insert(0, str(REPO_ROOT))
 
-from evaluation.ast import metrics_ast as M  # noqa: E402
+from . import metrics_ast as M  # noqa: E402
 
 # gtx 타깃 코드는 파이프라인 규칙을 따르고(zh → zh-CN), 토크나이저는 sacrebleu 규칙을 따른다.
 # **`en` 이 여기 있어야 한다** — X→en 트랙(de/ja/zh→en)의 타깃이 영어인데 빠져 있어서

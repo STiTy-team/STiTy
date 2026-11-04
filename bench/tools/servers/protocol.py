@@ -1,10 +1,10 @@
 """STiTy 평가 WebSocket 프로토콜의 백엔드 중립 구현.
 
-`evaluation/harness/stream.py` 가 기대하는 계약만 담는다. ASR 엔진은 주입받는다 —
+bench 의 `remote-stream` 전사 부품(`core/components/transcription/remote_stream.py`)이 기대하는 계약만 담는다. ASR 엔진은 주입받는다 —
 이 파일은 vllm/transformers/nemo 중 무엇도 import 하지 않는다. 그래야 백엔드마다
 다른 conda env 에서 같은 서버를 띄울 수 있다.
 
-하네스가 실제로 쓰는 계약(harness/stream.py 기준):
+그 부품이 실제로 쓰는 계약:
 
   연결          → 서버가 {"type":"hello"}
   {"type":"start", lang, targetLang}  → 서버가 {"type":"ready"}

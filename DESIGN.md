@@ -315,12 +315,10 @@ rounded corners, flat surfaces, thin 1px borders, and short, mechanical motion.
 We take TDS's look and its rules for copy. We do not take Toss's finance
 features or screens.
 
-There are three surfaces, and they share one system:
+There are two surfaces, and they share one system:
 
-- **Mobile app** (`STiTy-Mobile/`): the product. Light theme only. Everything in
+- **Mobile app** (`mobile/`): the product. Light theme only. Everything in
   this file applies to it first.
-- **Demo stage** (`demo-web/partial_demo/web/show.html`): captions on a
-  projector for an audience. It uses the same tokens at a larger type size.
 - **Bench** (`bench/replay/static/`): an internal dashboard for comparing
   pipelines. It is denser, adds the data colours and has a dark theme. It is
   still Toss-calm: no uppercase labels and no heavy colour.
@@ -391,8 +389,6 @@ the stack falls back by script:
   of setting every number in monospace.
 - **Monospace** ({typography.mono}, IBM Plex Mono) is reserved for things that
   really are code: run IDs, config keys, file paths and model names on bench.
-- **Demo stage** captions use {typography.display}, scaled to the projector.
-  Weight and colour rules don't change.
 
 ## Layout
 
@@ -662,13 +658,9 @@ STiTy.
 
 ## Known Gaps
 
-- The code doesn't use these tokens yet. `HomeScreen.tsx` repeats hex values
-  inline, and `show.html` has its own `LANG_COLORS` with different values. Both
-  need to move onto this file's tokens.
+- The mobile app's code doesn't use these tokens yet.
 - `lang-th` and `lang-en` are close in hue. They are hard to tell apart when
   Thai and English are in the same room.
 - The language hues are marks, not text. Several of them fall below 4.5:1 on
   white and must not be used for text.
-- Some current layouts break the rules in Layout and Screens. The app's header
-  centres the logo (`headerLogoWrap` in `HomeScreen.tsx`). The demo stage's
-  caption lanes need checking against the teleprompter rule.
+- Current layouts have not been checked against the rules in Layout and Screens.

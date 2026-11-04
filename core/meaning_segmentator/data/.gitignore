@@ -1,0 +1,6 @@
+# manifest 는 리포 밖 데이터셋의 절대경로를 담으므로 커밋하지 않는다
+manifests/*.jsonl
+
+# KsponSpeech 원본 전사(train.trn)와 SEG 라벨링 결과는 저장소에 담지 않는다 (results/ 23MB)
+KsponSpeech/transcribe/train.trn
+KsponSpeech/results/

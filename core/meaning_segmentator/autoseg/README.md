@@ -374,11 +374,11 @@ experiment/artifacts/{pair_id}/{run_id}/
 
 ## 새 언어 추가
 
-**코드를 안 고치는 것이 기본이다.** `evaluation/ast/manifests/*.jsonl` 형식이면
+**코드를 안 고치는 것이 기본이다.** `core/meaning_segmentator/data/manifests/*.jsonl` 형식이면
 경로를 그대로 넘긴다 — 프롬프트도 로더도 손대지 않는다.
 
 ```bash
---dataset evaluation/ast/manifests/fleurs_en-fr_test.jsonl
+--dataset core/meaning_segmentator/data/manifests/fleurs_en-fr_test.jsonl
 ```
 
 자주 쓸 이름은 `runtime/data.py` 의 `MANIFESTS` 에 한 줄로 등록한다.

@@ -13,7 +13,7 @@ echo "  살아있는지 보려면: ls -l /proc/\$(pgrep -f label_covost2|head -1
 $PY -u core/meaning_segmentator/tools/covost2_label/label_covost2.py \
   --provider openai --model gpt-5-mini \
   --prompt core/meaning_segmentator/experiment/artifacts/zh-en/run02/best_prompt_covost2_mg5.txt \
-  --manifest evaluation/ast/manifests/covost2_zh-en_n3000.jsonl \
+  --manifest core/meaning_segmentator/data/manifests/covost2_zh-en_n3000.jsonl \
   --out $O/labels/covost2_zh-en_n3000_run02.jsonl \
   --cache $O/cache/segment_run02.json \
   --min-gap 5 --t-floor 7 --batch-size 6 --workers 12 \

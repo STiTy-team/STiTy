@@ -89,7 +89,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompt", required=True)
     ap.add_argument("--manifest",
-                    default="evaluation/ast/manifests/covost2_en-de_full.jsonl")
+                    default="core/meaning_segmentator/data/manifests/covost2_en-de_full.jsonl")
     ap.add_argument("--out", required=True, help="라벨 jsonl (레포 안 경로 권장)")
     ap.add_argument("--cache", required=True)
     ap.add_argument("--model", default="gpt-5-mini")

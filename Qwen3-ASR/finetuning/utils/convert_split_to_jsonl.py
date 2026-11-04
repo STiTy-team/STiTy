@@ -4,14 +4,14 @@ split_train2.json → 파인튜닝용 JSONL 변환 스크립트.
 Usage:
     # KSponSpeech
     python convert_split_to_jsonl.py \
-        --split_json  ../../evaluation/KsponSpeech/transcribe/split_train2.json \
+        --split_json  ../../core/meaning_segmentator/data/KsponSpeech/transcribe/split_train2.json \
         --audio_dir   ../data/KSponSpeech/split_audio \
         --language    Korean \
         --output      ../data/KSponSpeech/split_train.jsonl
 
     # DailyTalk
     python convert_split_to_jsonl.py \
-        --split_json  ../../evaluation/DailyTalk/transcribe/split_train2.json \
+        --split_json  ../../core/meaning_segmentator/data/DailyTalk/transcribe/split_train2.json \
         --audio_dir   ../data/DailyTalk/split_audio \
         --language    English \
         --output      ../data/DailyTalk/split_train.jsonl

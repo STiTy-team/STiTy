@@ -73,35 +73,17 @@ PYTHONPATH=server uv run --project server python server/scripts/client.py \
 `--lang` is the language of the loaded model (`en` or `ko`). Pass the server's log to check that
 each stage ran once. It prints PASS/FAIL per check and exits non-zero on a failure.
 
-**Mobile app.** The server address is hard-coded as `RUNPOD_SERVER_URL` in
-`STiTy-Mobile/src/context/WebSocketContext.tsx`. Set it to `ws://<this machine's LAN IP>:8765`.
-The app appends `/api/v1/ws` itself. Then run `npm start` in `STiTy-Mobile/`. The phone must
-reach that IP (same Wi-Fi, no client isolation). The app sends no `conversationId`, so each phone
-gets its own conversation.
-
-**Web demo** (`STiTy-Mobile/demo-web/partial_demo/`). Run its proxy in plain relay mode with
-every route pointing at this server:
-
-```bash
-S=ws://127.0.0.1:8765/api/v1/ws
-uv run --project server python STiTy-Mobile/demo-web/partial_demo/demo_proxy.py 8080 \
-  --route en=$S,ko=$S --default $S
-```
-
-Open `http://localhost:8080/show.html?src=en&tgt=ko&layout=tag&pick=ko` and press the microphone. To use a
-recorded clip instead, put a 16 kHz mono wav at `web/partial_test_en.wav` (gitignored) and open
-`?auto=en`. This server sends one `translation` per client, the one for its `targetLang`. The
-page's lane layouts (the default) draw one lane per language and expect the old proxy's
-multi-target `translations`, so the lanes of languages nobody translated into stay empty. Use
-`layout=tag&pick=<target>`: one column with the translation large and the original under it. Leave out the proxy's `--dual`, `--lid*`,
-`--translate-url` and `--targets` flags: they drive the old per-language ASR servers.
+**Mobile app** (`mobile/`). Set `EXPO_PUBLIC_SERVER_URL=ws://<this machine's LAN IP>:8765` in
+`mobile/.env` (no path — the app appends `/api/v1/ws`), then follow
+[mobile/README.md](../mobile/README.md) to start it. The phone must reach that IP (same Wi-Fi, no
+client isolation).
 
 ## Demo script (5 minutes)
 
 1. Start the English server (above) in tmux. Wait for `Application startup complete`, then check
    `curl localhost:8765/api/v1/healthz`.
-2. **One speaker.** Open the web demo with `?src=en&tgt=ko&layout=tag&pick=ko` and speak English. Grey
-   partials appear while you talk. Each sentence then commits and turns into Korean about half a
+2. **One speaker.** Open the mobile app pointed at this server, set English → Korean and speak
+   English. Partials appear while you talk. Each sentence then commits and turns into Korean about half a
    second after you stop. The scripted client measured a median of 0.4 s from the end of the
    audio to the final.
 3. **A shared conversation.** Run `server/scripts/client.py --cases join` (with the flags above) in a second terminal.

@@ -9,12 +9,12 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file_
 
 PRESETS = {
     "Korean": {
-        "input":     "evaluation/KsponSpeech/results/eval_clean_1000_seg.json",
+        "input":     "core/meaning_segmentator/data/KsponSpeech/results/eval_clean_1000_seg.json",
         "audio_dir": "Qwen3-ASR/finetuning/data/KSponSpeech/audio",
         "output":    "Qwen3-ASR/finetuning/data/KSponSpeech/test.jsonl",
     },
     "English": {
-        "input":     "evaluation/DailyTalk/results/eval_dailytalk_1008_seg_en.json",
+        "input":     "core/meaning_segmentator/data/DailyTalk/results/eval_dailytalk_1008_seg_en.json",
         "audio_dir": "Qwen3-ASR/finetuning/data/DailyTalk/audio",
         "output":    "Qwen3-ASR/finetuning/data/DailyTalk/test.jsonl",
     },

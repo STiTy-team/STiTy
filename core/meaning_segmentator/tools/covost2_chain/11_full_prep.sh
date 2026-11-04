@@ -6,12 +6,12 @@
 # en->{de,ja,zh} 는 **같은 영어 클립 15,531개를 공유**한다. wav 캐시는 config 을 안 타고
 # `en_test/` 하나이므로 세 매니페스트가 같은 파일을 가리킨다 (build_manifest 헤더 참조).
 . core/meaning_segmentator/tools/covost2_chain/common.sh
-M=evaluation/ast/manifests
+M=core/meaning_segmentator/data/manifests
 TAG=full
 
 build_man () {   # <config> <출력 타깃 이름>
   echo "===== 매니페스트 $1 $(ts) ====="
-  "$REPO/.venv/bin/python" -u evaluation/ast/build_manifest_covost2.py \
+  "$REPO/.venv/bin/python" -u core/meaning_segmentator/tools/manifests/build_manifest_covost2.py \
     --covost-root ~/datasets/covost2 --config $1 --split test --mode single \
     --audio-cache ~/datasets/covost2_single \
     --out $M/covost2_en-$2_$TAG.jsonl 2>&1 | tail -6

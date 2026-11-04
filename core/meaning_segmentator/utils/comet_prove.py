@@ -74,7 +74,7 @@ def ref_field_name(field: str) -> str:
 
 def main():
     parser = argparse.ArgumentParser(description="seg 번역 vs 전체 번역 COMET 평가")
-    _kspon_dir = Path(__file__).parents[3] / "evaluation" / "KsponSpeech"
+    _kspon_dir = Path(__file__).parents[1] / "data" / "KsponSpeech"
     results_dir = _kspon_dir / "results"
     finetuned_results_dir = _kspon_dir / "finetuned_results"
     parser.add_argument("--input",     type=str, required=True,

@@ -7,8 +7,7 @@ uvicorn and pydantic-settings all use for the same job.
 
 Read through these rather than binding a module-level constant. A constant is
 evaluated at import, before the program has done anything, so a value set afterwards
-is invisible -- which is what makes `GOOGLE_TRANSLATE_API_KEY` stale in
-streaming_websocket_server.py:439.
+is invisible.
 
 Which variables exist is not declared here. Only the two API keys are read by more
 than one program; everything else means something to exactly one of them, so each

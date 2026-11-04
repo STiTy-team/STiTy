@@ -59,7 +59,7 @@ Conv2D 3단계 (각 stride 2) → **8x 다운샘플링** → 100 mel frames → 
 ### 실제 레이턴시 하한
 
 `n_window_infer`는 인코더 **내부** attention 창이고, 인코더가 호출되는 주기는 별도다.
-현재 서버(`streaming_websocket_server.py`)는 `chunk_size_sec = 2.0`초마다 인코더를 호출한다.
+당시 서버(`streaming_websocket_server.py`, 지금은 main 에 없다)는 `chunk_size_sec = 2.0`초마다 인코더를 호출한다.
 
 ```
 2초 오디오 (200 mel frames → 26 encoder frames) → 인코더 호출

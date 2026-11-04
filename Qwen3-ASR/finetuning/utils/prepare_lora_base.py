@@ -4,7 +4,7 @@ vLLM LoRA용 베이스 모델 준비.
 베이스 모델에 <SEG> 토큰을 추가하고, EN/KO 체크포인트의
 seg_embedding.pt를 평균내어 embedding table에 주입한 뒤 저장.
 
-이렇게 만든 베이스 모델을 streaming_websocket_server.py의 --model로 사용.
+이렇게 만든 베이스 모델을 파이프라인 설정의 ASR `model:` 경로로 쓴다.
 
 Usage:
     python prepare_lora_base.py \\
@@ -154,7 +154,7 @@ def prepare(base_model: str, seg_en: str, seg_ko: str, output: str) -> None:
         print(f"  SEG embedding 주입 완료 (token_id={seg_id})")
 
     print(f"\n완료: {output}")
-    print("이 경로를 streaming_websocket_server.py의 --model 인자로 사용하세요.")
+    print("이 경로를 파이프라인 설정의 ASR model: 에 쓰세요.")
 
 
 def main():

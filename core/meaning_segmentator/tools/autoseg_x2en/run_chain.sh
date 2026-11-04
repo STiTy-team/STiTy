@@ -3,7 +3,7 @@
 #
 # 설정은 en-multi/run13 을 그대로 복제한다 (experiment/README.md 의 "공통 설정").
 # --min-gap / --t-grid / --t-floor 는 **일부러 안 준다** — 강제정렬 산출물
-# (evaluation/ast/manifests/*_unittimes.json)에서 언어마다 유도된다.
+# (core/meaning_segmentator/data/manifests/*_unittimes.json)에서 언어마다 유도된다.
 #
 # 재개는 자동이다: runs/<pair>/run02/history.json 이 있으면 --resume 을 붙인다.
 # --fresh 는 어디에도 안 쓴다 (rmtree 라 캐시가 날아간다).

@@ -11,7 +11,7 @@ label () {  # <이름> <limit인자> <budget>
   NAME=$1; LIM=$2; BUD=$3
   $PY -u core/meaning_segmentator/tools/covost2_label/label_covost2.py \
     --provider openai --model gpt-5-mini --prompt $PROMPT \
-    --manifest evaluation/ast/manifests/covost2_en-de_n3000.jsonl \
+    --manifest core/meaning_segmentator/data/manifests/covost2_en-de_n3000.jsonl \
     --out $N/labels/$NAME.jsonl --cache $N/cache/$NAME.cache.json \
     --min-gap 2 --t-floor 3 --batch-size 6 --workers 12 $LIM \
     --max-tokens 24000 --timeout 420 --budget $BUD --cache-every 1 \

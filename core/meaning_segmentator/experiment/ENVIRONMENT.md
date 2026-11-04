@@ -110,7 +110,7 @@ Minimum and Maximum cuda capability supported by this version of PyTorch is (8.0
 
 | 항목 | 값 |
 |---|---|
-| 출처 | FLEURS n-way 병렬 매니페스트 (`evaluation/ast/manifests/fleurs_nway_*_loop405.jsonl`) |
+| 출처 | FLEURS n-way 병렬 매니페스트 (`core/meaning_segmentator/data/manifests/fleurs_nway_*_loop405.jsonl`) |
 | 규모 | 매니페스트 전량 **405문장** = train 40 / dev 265 / test 100 |
 | 분할 seed | `20260806` (전 트랙 동일) |
 | 소스 특성 (en) | 백과·뉴스체 편집 산문, 문말 부호 비율 0.9934, 공백비율 0.159 (n=305 실측) |

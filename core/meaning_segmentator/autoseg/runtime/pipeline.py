@@ -802,7 +802,7 @@ def truncate(seg_text: str, target_chunk_words: int,
     """점수 상위 `k−1` 개 경계만 남긴다. 반환 `(절단된 seg_text, missing_boundaries)`.
 
     `higher_first=False` 는 **순위제로 라벨된 옛 데이터**(`<SEG:1>` 이 최고 확신)를 오프라인
-    재절단할 때만 쓴다 — `tools/covost2_label`, `evaluation/DailyTalk` 의 라벨이 그 형태다.
+    재절단할 때만 쓴다 — `tools/covost2_label`, `data/DailyTalk` 의 라벨이 그 형태다.
     루프와 `eval_prompt` 는 항상 기본값이다.
 
     `missing_boundaries` 는 예산이 요구한 경계 중 프롬프트가 못 준 개수다. 프롬프트가 충분히 공격적으로 자르지
@@ -937,14 +937,12 @@ def _rebuild(seg_text: str, keep: set[int], spaced: bool) -> str:
 # `max_tokens` 3벌, 번역기 선택 플래그 2개. 되살릴 일이 생기면 이 커밋을 보면 된다.
 #
 # 판단 근거는 "안 쓰니까"만이 아니다 — 목적함수가 **운영에 옮겨 붙는지**를 재는 것이라
-# 운영이 쓰는 번역기로 재야 한다. 운영 서버는 Google 이다
-# (`Qwen3-ASR/examples/streaming_websocket_server.py`).
+# 운영이 쓰는 번역기로 재야 한다.
 
 
 # ── Google Translate 번역기 ─────────────────────────────────────────────────
 
-# 운영 서버(`streaming_websocket_server.py`)의 기본 번역 경로가 이것이다. LLM 번역기로
-# 잰 점수가 운영에 옮겨 붙는지 확인하려면 같은 번역기로 재야 한다.
+# 무료 gtx 엔드포인트와 공식 v2 API 두 경로가 있다.
 #
 # LLM 번역기와 두 가지가 근본적으로 다르다.
 #   1. 시스템 프롬프트가 없다. "조각을 완성하지 말 것", "앞 번역은 확정" 같은 지시를

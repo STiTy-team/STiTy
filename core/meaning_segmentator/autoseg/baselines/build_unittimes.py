@@ -8,7 +8,7 @@
 저장 필드명은 `word_end_ms` 그대로 둔다 — 소비자(`laal_ms`)가 그 이름을 쓰고, 값의
 의미는 "단위 i 까지 발화가 끝난 시각"으로 동일하다.
 
-산출: evaluation/ast/manifests/fleurs_nway_{lang}_multi2en_loop240_unittimes.json
+산출: core/meaning_segmentator/data/manifests/fleurs_nway_{lang}_multi2en_loop240_unittimes.json
       {utt_id: {"wav":…, "dur_ms":…, "speech_ms":…, "word_end_ms":[…]}}
 
 `speech_ms` 는 첫 span 시작 ~ 마지막 span 끝이다. FLEURS 녹음은 앞뒤 무음이 1~2초씩

@@ -51,11 +51,11 @@
 - `chore` — 설정 파일, .gitignore, 패키지, CI 등
 
 **scope 선택 기준** (변경된 영역에 따라):
-- `asr` — Qwen3-ASR, streaming_websocket_server
-- `fsl` — evaluation FSL 서버 및 테스트
-- `eval` — 평가 스크립트, metric, context scoring
-- `core` — core/ 모듈 (corrector, translator 등)
-- `mobile` — STiTy-Mobile
+- `asr` — Qwen3-ASR
+- `bench` — bench/, configs/
+- `server` — server/
+- `core` — core/ 모듈 (components, translator, 분절 연구 등)
+- `mobile` — mobile/
 - `config` — 설정 파일, .gitignore, .mcp.json, CLAUDE.md
 - scope가 여러 개면 가장 대표적인 것 하나만 사용
 

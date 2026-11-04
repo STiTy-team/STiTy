@@ -1,9 +1,8 @@
 # Local translation — model choice and context depth
 
-Which model `--local-translation` / `local_translation_server.py` should load, and how many previous
-turns to hand it. Every number here is measured; the code is
-[local_translator.py](local_translator.py). The flags that switch these paths on are listed in the
-repository-wide [CLAUDE.md](../../CLAUDE.md).
+Which model the `local` translation component (`model:` in a pipeline file) should load, and how many
+previous turns to hand it. Every number here is measured; the code is
+[local_translator.py](local_translator.py).
 
 ## Which local translator
 

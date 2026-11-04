@@ -10,7 +10,7 @@ PCM 위치 모드:
 
 Usage:
   python pcm_to_wav.py --input orig_final.json \
-    --data-dir ../../evaluation/KsponSpeech/data --mode folder \
+    --data-dir ../../core/meaning_segmentator/data/KsponSpeech/data --mode folder \
     --output-dir ../data/KSponSpeech/audio
 """
 import argparse

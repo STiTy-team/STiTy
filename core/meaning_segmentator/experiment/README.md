@@ -43,7 +43,7 @@ experiment/
 
 `--min-gap` / `--t-grid` / `--t-floor` 는 **인자로 안 준다.** `MIN_GAP_MS(1200) × 코퍼스
 발화속도`로 언어마다 유도되고, 그 속도는 강제정렬 산출물
-(`evaluation/ast/manifests/*_unittimes.json`)에서 실측으로 온다. run13 의 config 에 찍힌
+(`core/meaning_segmentator/data/manifests/*_unittimes.json`)에서 실측으로 온다. run13 의 config 에 찍힌
 `min_gap: 3` 도 인자가 아니라 유도 결과다 (`loop.py` 가 `args.min_gap` 에 되쓴다).
 
 **run14 부터 분할이 다르다** (`tools/autoseg_en2x/run14.sh`): `--train 30 --train-pool 90

@@ -4,15 +4,12 @@ upstream(QwenLM/Qwen3-ASR) 코드를 STiTy 리포가 **직접 추적**한다. gi
 
 ## STiTy 통합 진입점
 
-- **프로덕션 서버**: `examples/streaming_websocket_server.py` — 모바일 앱이 연결하는 WebSocket 서버
-- **평가 서버**: `evaluation/LibriSpeech/servers/streaming_websocket_server_fsl.py`가 이 파일을 래핑하고,
-  실제로 띄우는 것은 그것을 다시 상속한 `evaluation/streaming_websocket_server_ast.py` 다
+- **추론 엔진**: `qwen_asr/` — `core/components/transcription/` 의 `qwen3`·`qwen-seg` 부품이 이것을 불러 쓴다
 - **파인튜닝**: `finetuning/qwen3_asr_sft.py` (SFT) + `finetuning/utils/` (병합). 병합된 가중치는 여기 두지 않고 리포 루트 `models/`에 있다 — `models/Qwen3-ASR-1.7B-{en,ko}-silence-*-merged` 와 `models/Qwen3-ASR-1.7B-en-dailytalk-seg`.
-  평가 스크립트의 `finetuned` 별칭은 `models/Qwen3-ASR-1.7B-en-dailytalk-seg` 로 매핑된다. 다른 가중치를 쓰려면 서버에 `--model models/...` 실제 경로를 직접 넘길 것.
 
 ## upstream 동기화 규칙
 
-- 여기 있는 파일에는 STiTy 쪽 수정이 섞여 있다(예: `examples/streaming_websocket_server.py`). upstream을 통째로 덮어쓰면 날아간다.
+- 여기 있는 파일에는 STiTy 쪽 수정이 섞여 있다(예: `qwen_asr/inference/`, `finetuning/qwen3_asr_sft.py`). upstream을 통째로 덮어쓰면 날아간다.
 - 자동 동기화 명령은 없다. 필요한 파일만 골라 가져와 수동 병합할 것.
 
 ## 설치
@@ -29,27 +26,14 @@ pip install -e "./Qwen3-ASR[vllm]"     # vLLM 포함
 | `qwen_asr/core/` | 모델 백엔드 (transformers/vllm) |
 | `qwen_asr/inference/` | ASR 추론 엔진 |
 | `qwen_asr/cli/` | CLI 진입점 (qwen-asr-serve 등) |
-| `examples/` | 프로덕션 서버 및 사용 예제 |
+| `examples/` | upstream 사용 예제 |
 | `finetuning/` | SFT 스크립트 및 병합 유틸리티 |
 
-## 주의사항
+## 테스트
 
-`examples/streaming_websocket_server.py` 수정 시 모든 평가 벤치마크가 영향받는다. 변경 후 반드시 LibriSpeech sample 벤치마크 한 번 이상 실행할 것.
-
-그 전에 `tests/` 의 단위 테스트 둘을 먼저 돌린다. 모델도 GPU도 필요 없고 1.2초면
-끝나는데, 벤치마크가 몇 분을 태우고 나서야 알려줄 회귀를 그 자리에서 잡는다.
+`tests/test_dot_commit_boundary.py` — 마지막 문장의 마침표를 경계로 잡되 소수점·약어는 제외하는
+판정(`41268ba`)을 붙잡아 둔 회귀 테스트다. 모델도 GPU도 필요 없다.
 
 ```bash
 PYTHONPATH=$PWD/Qwen3-ASR python Qwen3-ASR/tests/test_dot_commit_boundary.py
-PYTHONPATH=$PWD/Qwen3-ASR python Qwen3-ASR/tests/test_final_residual_commit.py
 ```
-
-둘 다 고쳐 놓은 버그를 붙잡아 둔 회귀 테스트다 — 마지막 문장의 마침표를 경계로 잡되
-소수점·약어는 제외하는 판정(`41268ba`), 스트림 종료 시 잔여 커밋이 flush 로 새던 두
-경로(`e1564a3`). `test_final_residual_commit.py` 는 모델을 띄우지 않으려고 핸들러를
-`object.__new__` 로 만들어 필요한 속성만 채우므로, 커밋 경로가 새 속성을 참조하기
-시작하면 AttributeError 로 먼저 깨진다.
-
-`tests/test_streaming_architecture.py` 는 성격이 다르다. 실제로 뜬 서버에 붙는 통합
-테스트이고(`QWEN3_TEST_AUTO_SERVER=1` 로 직접 띄우게 할 수도 있다), start/ready/finish
-흐름을 검사한다.

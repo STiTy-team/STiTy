@@ -12,7 +12,7 @@ arm () {
   timeout 900 $PY -u core/meaning_segmentator/tools/covost2_label/label_covost2.py \
     --provider openai --model gpt-5-mini \
     --prompt core/meaning_segmentator/experiment/artifacts/zh-en/run02/best_prompt_covost2_mg5.txt \
-    --manifest evaluation/ast/manifests/covost2_zh-en_n3000.jsonl \
+    --manifest core/meaning_segmentator/data/manifests/covost2_zh-en_n3000.jsonl \
     --out $O/$NAME.jsonl --cache $O/$NAME.cache.json \
     --min-gap 5 --t-floor 7 --batch-size 6 --workers $W --limit 150 \
     --max-tokens 24000 --timeout 420 --budget 2.0 --cache-every 1 \

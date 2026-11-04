@@ -19,9 +19,9 @@ from scipy.io import wavfile
 
 BASE = Path(__file__).resolve().parents[1]          # finetuning/
 STITY = BASE.parents[1]                              # STiTy/
-R = STITY / "evaluation/KsponSpeech/results"
-T = STITY / "evaluation/KsponSpeech/transcribe"
-DATA = STITY / "evaluation/KsponSpeech/data"
+R = STITY / "core/meaning_segmentator/data/KsponSpeech/results"
+T = STITY / "core/meaning_segmentator/data/KsponSpeech/transcribe"
+DATA = STITY / "core/meaning_segmentator/data/KsponSpeech/data"
 KEVAL = STITY.parent / "KsponSpeech data/KsponSpeech_eval.zip"
 AUDIO = BASE / "data/KSponSpeech/audio"
 EVALAUDIO = BASE / "data/KSponSpeech/eval_audio"

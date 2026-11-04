@@ -239,7 +239,7 @@ en-de test 100문장 쌍체 비교:
 높으면 참조 정합의 우연이다. 분절은 소스 측 연산이라 타깃 여러 개가 **같은 분절을
 공유**하고, 순위 태그 덕에 T 격자를 늘려도 분절 비용은 불변이다.
 
-**BLEU 산출 규약** — `evaluation/ast/metrics_ast.py` 의 `corpus_bleu_score()`.
+**BLEU 산출 규약** — `core/meaning_segmentator/autoseg/scoring/metrics_ast.py` 의 `corpus_bleu_score()`.
 토크나이저는 de `13a`, zh `zh`, ja `ja-mecab` 이고 **signature 를 결과에 반드시 남긴다**
 (`ja-mecab` 은 `pip install "sacrebleu[ja]"` 필요. 미설치 시 `char` 폴백이라 표에
 `[fallback:char]` 명시 — 타 논문과 비교 불가). 보조 지표는 chrF2, 유의성은 `paired_bootstrap()`

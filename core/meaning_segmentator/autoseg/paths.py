@@ -23,4 +23,4 @@ REPO_ROOT = PKG_DIR.parents[2]                            # .../<repo>
 RUNS_DIR = SEGMENTATOR_DIR / "experiment" / "artifacts"
 
 # 평가용 매니페스트 (FLEURS n-way, CoVoST2).
-MANIFEST_DIR = REPO_ROOT / "evaluation" / "ast" / "manifests"
+MANIFEST_DIR = REPO_ROOT / "core" / "meaning_segmentator" / "data" / "manifests"

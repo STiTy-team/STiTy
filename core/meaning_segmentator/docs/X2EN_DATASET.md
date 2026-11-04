@@ -3,7 +3,7 @@
 `en2x` 트랙(영어 소스, 다국어 타깃)의 반대 방향. **소스 언어를 바꿔도 에이전트 루프가
 작동하는가**를 검증하기 위한 데이터이고, 이 문서는 데이터 구축까지만 다룬다.
 
-- 빌더: [evaluation/ast/build_manifest_fleurs_text.py](../../../evaluation/ast/build_manifest_fleurs_text.py)
+- 빌더: [core/meaning_segmentator/tools/manifests/build_manifest_fleurs_text.py](../tools/manifests/build_manifest_fleurs_text.py)
 - 로더: `autoseg/runtime/data.py` 의 `fleurs-{de,ja,zh}-en`
 - 오염 방지 규율: [../autoseg/AUTOSEG_DETAILS.md](../autoseg/AUTOSEG_DETAILS.md) '데이터셋 역할 분리'
 
@@ -11,7 +11,7 @@
 
 ## 1. 무엇을 뗐나
 
-en 기준 층화 정렬(`evaluation/ast/manifests/fleurs_nway_en_clean500_order.json`, 1,405문장)을
+en 기준 층화 정렬(`core/meaning_segmentator/data/manifests/fleurs_nway_en_clean500_order.json`, 1,405문장)을
 **재사용해서** 구간을 잘랐다. 정렬을 다시 계산하지 않는 것이 조건이다 — 소스 언어별로 층화하면
 언어마다 다른 문장이 뽑혀 **언어 간 차이와 문장 차이가 섞인다.**
 
@@ -25,7 +25,7 @@ en 기준 층화 정렬(`evaluation/ast/manifests/fleurs_nway_en_clean500_order.
 교차 검증 결과 **각 구간이 서로도, 프롬프트 생성분 240 과도 교집합 0**이다.
 FLEURS `test` 스플릿은 애초에 제외돼 있다(오디오 보유 분할 = 파인튜닝 모델 평가용 봉인, 설계 §8.5 ④).
 
-산출 파일 (`evaluation/ast/manifests/`):
+산출 파일 (`core/meaning_segmentator/data/manifests/`):
 
 ```
 fleurs_nway_{de,ja,zh}-en_multi2en_loop240.jsonl    각 240행  (구, 보존)
@@ -200,18 +200,18 @@ ja 16/32) — 두 점이 실제로 다른 작동점(k=3 / k=2)을 잰다.
 ## 4. 재현
 
 ```bash
-ORD=evaluation/ast/manifests/fleurs_nway_en_clean500_order.json
+ORD=core/meaning_segmentator/data/manifests/fleurs_nway_en_clean500_order.json
 for src in de_de ja_jp cmn_hans_cn; do
   for spec in "500 240 multi2en_loop240" "740 500 multi2en_eval500" "1240 165 multi2en_tail165"; do
     set -- $spec
-    python evaluation/ast/build_manifest_fleurs_text.py \
+    python core/meaning_segmentator/tools/manifests/build_manifest_fleurs_text.py \
       --src $src --tgts en_us --order-from $ORD --skip $1 --n $2 --tag $3
   done
   # loop405 = loop240 + tail165 (구간이 이어져 있지 않아 이어붙인다)
   for pair in de-en ja-en zh-en; do
-    cat evaluation/ast/manifests/fleurs_nway_${pair}_multi2en_loop240.jsonl \
-        evaluation/ast/manifests/fleurs_nway_${pair}_multi2en_tail165.jsonl \
-        > evaluation/ast/manifests/fleurs_nway_${pair}_multi2en_loop405.jsonl
+    cat core/meaning_segmentator/data/manifests/fleurs_nway_${pair}_multi2en_loop240.jsonl \
+        core/meaning_segmentator/data/manifests/fleurs_nway_${pair}_multi2en_tail165.jsonl \
+        > core/meaning_segmentator/data/manifests/fleurs_nway_${pair}_multi2en_loop405.jsonl
   done
 done
 ```
