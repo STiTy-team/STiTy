@@ -1,0 +1,1020 @@
+{
+  "gpt-6-luna": {
+    "F0@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8488288916385354,
+        "comet": 0.8503799016900997,
+        "metricx": 2.6262142166270683,
+        "chrfpp": 24.3949285530865
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.022222222222222223,
+        "by_type": {
+          "not_korean": 1,
+          "answered_or_obeyed": 1,
+          "prompt_leak": 1,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.8236484749449624
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.2,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F0@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8434937729607874,
+        "comet": 0.8506760713293324,
+        "metricx": 2.621243848741504,
+        "chrfpp": 25.82247609157347
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.044444444444444446,
+        "by_type": {
+          "not_korean": 2,
+          "answered_or_obeyed": 2,
+          "length_anomaly": 1,
+          "json_in_plain": 1,
+          "context_echo_fuzzy": 1,
+          "context_echo": 1
+        },
+        "kiwi": 0.8067443102598191
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.4,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F1@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8492855820524033,
+        "comet": 0.8506945585785199,
+        "comet_delta_vs_F0": 0.00031465688842025833,
+        "comet_delta_ci95": [
+          -0.0031905198217037334,
+          0.003773050841374613
+        ],
+        "metricx": 2.555283691135034,
+        "metricx_delta_vs_F0": -0.07093052549203437,
+        "metricx_delta_ci95": [
+          -0.15130808187564412,
+          0.002151426901320117
+        ],
+        "chrfpp": 25.30130763941872,
+        "chrfpp_delta_vs_F0": 0.9063790863322185,
+        "chrfpp_delta_ci95": [
+          0.35130228973082567,
+          1.5281912431738451
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.011111111111111112,
+        "by_type": {
+          "prompt_leak": 1,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.8264448251989153
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.1,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F1@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8448616195863216,
+        "comet": 0.8526892360281105,
+        "comet_delta_vs_F0": 0.0020131646987780853,
+        "comet_delta_ci95": [
+          -0.0005757157227501798,
+          0.005115447032391725
+        ],
+        "metricx": 2.5517948056248265,
+        "metricx_delta_vs_F0": -0.06944904311667735,
+        "metricx_delta_ci95": [
+          -0.15374929836047954,
+          0.0068847617162531944
+        ],
+        "chrfpp": 26.37523906292539,
+        "chrfpp_delta_vs_F0": 0.5527629713519219,
+        "chrfpp_delta_ci95": [
+          -0.00980734658307101,
+          1.138698323149557
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.03333333333333333,
+        "by_type": {
+          "prompt_leak": 2,
+          "json_in_plain": 1,
+          "context_echo_fuzzy": 1
+        },
+        "kiwi": 0.8236029250754251
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.3,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F2@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8483891214557628,
+        "comet": 0.8507433830194138,
+        "comet_delta_vs_F0": 0.0003634813293140737,
+        "comet_delta_ci95": [
+          -0.0030935906135856205,
+          0.003858715220911419
+        ],
+        "metricx": 2.6115107259586754,
+        "metricx_delta_vs_F0": -0.01470349066839296,
+        "metricx_delta_ci95": [
+          -0.09486549849804472,
+          0.07278946519422172
+        ],
+        "chrfpp": 25.743458275949298,
+        "chrfpp_delta_vs_F0": 1.3485297228627966,
+        "chrfpp_delta_ci95": [
+          0.5342817984467333,
+          2.271134720144522
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.03333333333333333,
+        "by_type": {
+          "prompt_leak": 3,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.8261110891898473
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.3,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F2@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8458574062316262,
+        "comet": 0.8511761984034399,
+        "comet_delta_vs_F0": 0.0005001270741074529,
+        "comet_delta_ci95": [
+          -0.001789845638538725,
+          0.002950732357537926
+        ],
+        "metricx": 2.5394374215835005,
+        "metricx_delta_vs_F0": -0.08180642715800347,
+        "metricx_delta_ci95": [
+          -0.14456380514343778,
+          -0.018812250664186236
+        ],
+        "chrfpp": 26.19785485724615,
+        "chrfpp_delta_vs_F0": 0.3753787656726799,
+        "chrfpp_delta_ci95": [
+          -0.2344167256044835,
+          0.9745744348016637
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.03333333333333333,
+        "by_type": {
+          "prompt_leak": 2,
+          "json_in_plain": 1,
+          "context_echo_fuzzy": 1
+        },
+        "kiwi": 0.8154257767730289
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.3,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F3@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8488660254071106,
+        "comet": 0.8507310822231686,
+        "comet_delta_vs_F0": 0.000351180533068863,
+        "comet_delta_ci95": [
+          -0.0028142732891006084,
+          0.003748121872619169
+        ],
+        "metricx": 2.5957893020000737,
+        "metricx_delta_vs_F0": -0.030424914626994325,
+        "metricx_delta_ci95": [
+          -0.10355491412981371,
+          0.0455752540866484
+        ],
+        "chrfpp": 24.759257497560228,
+        "chrfpp_delta_vs_F0": 0.3643289444737252,
+        "chrfpp_delta_ci95": [
+          -0.39622621655007423,
+          1.1112763024255048
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8328880939218734
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.0,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F3@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8433813333661113,
+        "comet": 0.8513715074739264,
+        "comet_delta_vs_F0": 0.000695436144593972,
+        "comet_delta_ci95": [
+          -0.002075067267346023,
+          0.003555300697010366
+        ],
+        "metricx": 2.648317745437462,
+        "metricx_delta_vs_F0": 0.02707389669595801,
+        "metricx_delta_ci95": [
+          -0.059563632661373773,
+          0.12019914658225361
+        ],
+        "chrfpp": 25.844362840587387,
+        "chrfpp_delta_vs_F0": 0.02188674901391698,
+        "chrfpp_delta_ci95": [
+          -0.8775222920522197,
+          0.8198292219769825
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8349509497483572
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.0,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F4@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.0,
+        "by_type": {},
+        "kiwi": 0.8490158343434933,
+        "comet": 0.8526188905664425,
+        "comet_delta_vs_F0": 0.0022389888763427734,
+        "comet_delta_ci95": [
+          -0.0005213623520117909,
+          0.005108152427265991
+        ],
+        "metricx": 2.5965445943401386,
+        "metricx_delta_vs_F0": -0.029669622286929556,
+        "metricx_delta_ci95": [
+          -0.11251353262806657,
+          0.04913489131172698
+        ],
+        "chrfpp": 25.100561224988574,
+        "chrfpp_delta_vs_F0": 0.7056326719020752,
+        "chrfpp_delta_ci95": [
+          0.10044268916447638,
+          1.322623356598074
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.022222222222222223,
+        "by_type": {
+          "prompt_leak": 2
+        },
+        "kiwi": 0.8236628714534971
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.2,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F4@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.5603015075376885,
+        "by_type": {
+          "json_fail": 223
+        },
+        "kiwi": 0.845231619462296,
+        "comet": 0.8531302159006272,
+        "comet_delta_vs_F0": 0.0024541445712947365,
+        "comet_delta_ci95": [
+          -0.00022433690689316945,
+          0.005436745271011813
+        ],
+        "metricx": 2.5382343360115236,
+        "metricx_delta_vs_F0": -0.08300951272998024,
+        "metricx_delta_ci95": [
+          -0.15605278324391975,
+          -0.012340917060123616
+        ],
+        "chrfpp": 26.677214814565588,
+        "chrfpp_delta_vs_F0": 0.854738722992118,
+        "chrfpp_delta_ci95": [
+          0.05027673760661603,
+          1.6038411974997109
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.25555555555555554,
+        "by_type": {
+          "json_fail": 19,
+          "json_extra": 1,
+          "prompt_leak": 1,
+          "context_echo": 2
+        },
+        "kiwi": 0.8089078260792626
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.25,
+        "fragment": 0.45,
+        "instruction_injection": 0.3,
+        "mixed_language": 0.3333333333333333,
+        "numbers_urls": 0.375,
+        "quoted_dialogue": 0.16666666666666666,
+        "very_short": 0.0
+      }
+    }
+  },
+  "qwen3.5-4b-bf16": {
+    "F0@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.017587939698492462,
+        "by_type": {
+          "foreign_script": 6,
+          "truncated": 1,
+          "repetition": 1,
+          "length_anomaly": 1,
+          "not_korean": 1
+        },
+        "kiwi": 0.8231583699658888,
+        "comet": 0.8228136014998259,
+        "metricx": 3.3796974337383654,
+        "chrfpp": 24.306896645236556
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.03333333333333333,
+        "by_type": {
+          "not_korean": 2,
+          "answered_or_obeyed": 1,
+          "foreign_script": 1,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.8045978032880359
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.3,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F0@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.02763819095477387,
+        "by_type": {
+          "foreign_script": 9,
+          "truncated": 1,
+          "repetition": 1,
+          "length_anomaly": 1,
+          "context_echo_fuzzy": 1
+        },
+        "kiwi": 0.8225819662437966,
+        "comet": 0.8285197193299106,
+        "metricx": 3.3229434247451586,
+        "chrfpp": 25.290246227967653
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.1111111111111111,
+        "by_type": {
+          "context_echo_fuzzy": 3,
+          "not_korean": 4,
+          "length_anomaly": 3,
+          "answered_or_obeyed": 2,
+          "multi_line": 3,
+          "foreign_script": 3,
+          "context_echo": 2,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.7756894287135866
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.05,
+        "fragment": 0.05,
+        "instruction_injection": 0.7,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.16666666666666666,
+        "very_short": 0.0
+      }
+    },
+    "F1@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.022613065326633167,
+        "by_type": {
+          "foreign_script": 9
+        },
+        "kiwi": 0.824586992063115,
+        "comet": 0.8228413625877706,
+        "comet_delta_vs_F0": 2.7761087944759196e-05,
+        "comet_delta_ci95": [
+          -0.0048906370323507035,
+          0.005458295869467845
+        ],
+        "metricx": 3.3889855795479074,
+        "metricx_delta_vs_F0": 0.009288145809541995,
+        "metricx_delta_ci95": [
+          -0.11511319447027978,
+          0.13467885562260845
+        ],
+        "chrfpp": 24.388266147765727,
+        "chrfpp_delta_vs_F0": 0.0813695025291719,
+        "chrfpp_delta_ci95": [
+          -0.5207081871421124,
+          0.7059752515116984
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.011111111111111112,
+        "by_type": {
+          "not_korean": 1,
+          "answered_or_obeyed": 1
+        },
+        "kiwi": 0.8060224132405387
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.1,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F1@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.02512562814070352,
+        "by_type": {
+          "foreign_script": 8,
+          "context_echo": 1,
+          "context_echo_fuzzy": 1
+        },
+        "kiwi": 0.8229548564957614,
+        "comet": 0.8287129852939491,
+        "comet_delta_vs_F0": 0.000193265964038408,
+        "comet_delta_ci95": [
+          -0.0036962228504257588,
+          0.004556663895971212
+        ],
+        "metricx": 3.3512716441691373,
+        "metricx_delta_vs_F0": 0.028328219423978472,
+        "metricx_delta_ci95": [
+          -0.12110468251022262,
+          0.18773612413723864
+        ],
+        "chrfpp": 25.638998789903702,
+        "chrfpp_delta_vs_F0": 0.348752561936048,
+        "chrfpp_delta_ci95": [
+          -0.10681687909465712,
+          0.8186045419221539
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.08888888888888889,
+        "by_type": {
+          "context_echo_fuzzy": 1,
+          "context_echo": 2,
+          "not_korean": 4,
+          "answered_or_obeyed": 2,
+          "length_anomaly": 2,
+          "multi_line": 1,
+          "foreign_script": 2,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.7791468842162026
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.05,
+        "instruction_injection": 0.7,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F1_rp@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.022613065326633167,
+        "by_type": {
+          "foreign_script": 9,
+          "not_korean": 1
+        },
+        "kiwi": 0.8260901437782163,
+        "comet": 0.8229319688363291,
+        "comet_delta_vs_F0": 0.00011836733650322535,
+        "comet_delta_ci95": [
+          -0.004585949095649335,
+          0.005441988982147907
+        ],
+        "metricx": 3.3267874361891017,
+        "metricx_delta_vs_F0": -0.052909997549263676,
+        "metricx_delta_ci95": [
+          -0.17537606066682532,
+          0.07294778019451915
+        ],
+        "chrfpp": 24.036723536326566,
+        "chrfpp_delta_vs_F0": -0.27017310890998913,
+        "chrfpp_delta_ci95": [
+          -0.8399883575077962,
+          0.27244034351619556
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.022222222222222223,
+        "by_type": {
+          "not_korean": 1,
+          "answered_or_obeyed": 1,
+          "foreign_script": 1
+        },
+        "kiwi": 0.8049748675690757
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.1,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.125,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F1_rp@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.02512562814070352,
+        "by_type": {
+          "foreign_script": 8,
+          "context_echo_fuzzy": 1,
+          "not_korean": 1
+        },
+        "kiwi": 0.8254145083565209,
+        "comet": 0.8290278151556475,
+        "comet_delta_vs_F0": 0.0005080958257368462,
+        "comet_delta_ci95": [
+          -0.004768661742833392,
+          0.005944453666557619
+        ],
+        "metricx": 3.2388737386504385,
+        "metricx_delta_vs_F0": -0.08406968609472017,
+        "metricx_delta_ci95": [
+          -0.2352507923865438,
+          0.07513655946781887
+        ],
+        "chrfpp": 25.295048642736756,
+        "chrfpp_delta_vs_F0": 0.00480241476909947,
+        "chrfpp_delta_ci95": [
+          -0.6173259408855302,
+          0.6373324896452552
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.1,
+        "by_type": {
+          "context_echo_fuzzy": 1,
+          "context_echo": 2,
+          "not_korean": 4,
+          "answered_or_obeyed": 2,
+          "length_anomaly": 2,
+          "multi_line": 1,
+          "foreign_script": 3,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.7779654933346642
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.05,
+        "instruction_injection": 0.7,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.16666666666666666,
+        "very_short": 0.0
+      }
+    },
+    "F2@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.022613065326633167,
+        "by_type": {
+          "foreign_script": 8,
+          "truncated": 1,
+          "repetition": 1,
+          "length_anomaly": 1,
+          "not_korean": 1
+        },
+        "kiwi": 0.8199315300988193,
+        "comet": 0.8186450998986786,
+        "comet_delta_vs_F0": -0.004168501601147292,
+        "comet_delta_ci95": [
+          -0.009209866874182045,
+          0.0007927192365703871
+        ],
+        "metricx": 3.4456432233119956,
+        "metricx_delta_vs_F0": 0.0659457895736299,
+        "metricx_delta_ci95": [
+          -0.07017180570705452,
+          0.20122709565201596
+        ],
+        "chrfpp": 24.816481144415224,
+        "chrfpp_delta_vs_F0": 0.5095844991786712,
+        "chrfpp_delta_ci95": [
+          -0.18155883161291267,
+          1.247919784824357
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.022222222222222223,
+        "by_type": {
+          "not_korean": 2,
+          "answered_or_obeyed": 1,
+          "foreign_script": 1
+        },
+        "kiwi": 0.7958084344863892
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.2,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F2@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.022613065326633167,
+        "by_type": {
+          "foreign_script": 8,
+          "context_echo_fuzzy": 1
+        },
+        "kiwi": 0.8196331911051093,
+        "comet": 0.82646861155728,
+        "comet_delta_vs_F0": -0.002051107772630663,
+        "comet_delta_ci95": [
+          -0.005780052674475626,
+          0.0019524856727925976
+        ],
+        "metricx": 3.3905495694843144,
+        "metricx_delta_vs_F0": 0.0676061447391558,
+        "metricx_delta_ci95": [
+          -0.07305700725047433,
+          0.20557020518498206
+        ],
+        "chrfpp": 25.677603259217026,
+        "chrfpp_delta_vs_F0": 0.38735703124937265,
+        "chrfpp_delta_ci95": [
+          -0.09698429655611897,
+          0.9384375407158786
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.05555555555555555,
+        "by_type": {
+          "context_echo": 1,
+          "not_korean": 4,
+          "answered_or_obeyed": 2,
+          "length_anomaly": 1,
+          "foreign_script": 1,
+          "json_in_plain": 1
+        },
+        "kiwi": 0.7853326605425941
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.0,
+        "instruction_injection": 0.5,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F3@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.02512562814070352,
+        "by_type": {
+          "foreign_script": 9,
+          "quoted": 1
+        },
+        "kiwi": 0.8222225219310828,
+        "comet": 0.8219579619977941,
+        "comet_delta_vs_F0": -0.0008556395020317193,
+        "comet_delta_ci95": [
+          -0.006258515107571779,
+          0.005154805866318133
+        ],
+        "metricx": 3.478396043186099,
+        "metricx_delta_vs_F0": 0.09869860944773384,
+        "metricx_delta_ci95": [
+          -0.03557580806801667,
+          0.23420928464500448
+        ],
+        "chrfpp": 24.256299844905985,
+        "chrfpp_delta_vs_F0": -0.05059680033056717,
+        "chrfpp_delta_ci95": [
+          -0.7998080645283949,
+          0.7571115129695276
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.011111111111111112,
+        "by_type": {
+          "foreign_script": 1
+        },
+        "kiwi": 0.8050260765684976
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.05,
+        "instruction_injection": 0.0,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F3@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.02512562814070352,
+        "by_type": {
+          "foreign_script": 8,
+          "context_echo_fuzzy": 2
+        },
+        "kiwi": 0.8204744867044478,
+        "comet": 0.8257984730915807,
+        "comet_delta_vs_F0": -0.002721246238329902,
+        "comet_delta_ci95": [
+          -0.007158147330260157,
+          0.0023952364622048996
+        ],
+        "metricx": 3.4123556160054465,
+        "metricx_delta_vs_F0": 0.08941219126028781,
+        "metricx_delta_ci95": [
+          -0.04494851441520393,
+          0.224478431743331
+        ],
+        "chrfpp": 25.024168179259483,
+        "chrfpp_delta_vs_F0": -0.26607804870817225,
+        "chrfpp_delta_ci95": [
+          -0.8493895151454596,
+          0.3070458403207693
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.022222222222222223,
+        "by_type": {
+          "foreign_script": 1,
+          "prompt_leak": 1
+        },
+        "kiwi": 0.8030111213525136
+      },
+      "stress_by_category": {
+        "address_translator": 0.0,
+        "asr_noise": 0.0,
+        "fragment": 0.05,
+        "instruction_injection": 0.1,
+        "mixed_language": 0.0,
+        "numbers_urls": 0.0,
+        "quoted_dialogue": 0.0,
+        "very_short": 0.0
+      }
+    },
+    "F4@N0": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.5125628140703518,
+        "by_type": {
+          "json_fail": 199,
+          "foreign_script": 7,
+          "quoted": 1,
+          "not_korean": 1
+        },
+        "kiwi": 0.8224109560251236,
+        "comet": 0.8205084695887925,
+        "comet_delta_vs_F0": -0.002305131911033362,
+        "comet_delta_ci95": [
+          -0.007522312091223559,
+          0.0031382389853348083
+        ],
+        "metricx": 3.4106976939505667,
+        "metricx_delta_vs_F0": 0.03100026021220127,
+        "metricx_delta_ci95": [
+          -0.11019262783790952,
+          0.1760493346569526
+        ],
+        "chrfpp": 24.299222333388133,
+        "chrfpp_delta_vs_F0": -0.007674311848422559,
+        "chrfpp_delta_ci95": [
+          -0.7224110018562414,
+          0.7207893763054789
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.4,
+        "by_type": {
+          "json_fail": 36
+        },
+        "kiwi": 0.8138110127713946
+      },
+      "stress_by_category": {
+        "address_translator": 0.2,
+        "asr_noise": 0.45,
+        "fragment": 0.4,
+        "instruction_injection": 0.2,
+        "mixed_language": 0.3333333333333333,
+        "numbers_urls": 0.625,
+        "quoted_dialogue": 0.6666666666666666,
+        "very_short": 0.4
+      }
+    },
+    "F4@N16": {
+      "talk": {
+        "rows": 398,
+        "violation_rate": 0.6331658291457286,
+        "by_type": {
+          "json_fail": 247,
+          "foreign_script": 9,
+          "quoted": 35,
+          "not_korean": 1
+        },
+        "kiwi": 0.8224346815191921,
+        "comet": 0.8287981133065631,
+        "comet_delta_vs_F0": 0.0002783939766524425,
+        "comet_delta_ci95": [
+          -0.004411240843073208,
+          0.005378596522101205
+        ],
+        "metricx": 3.4134816195787723,
+        "metricx_delta_vs_F0": 0.09053819483361351,
+        "metricx_delta_ci95": [
+          -0.04866353104162456,
+          0.22238780844526077
+        ],
+        "chrfpp": 25.247445263088572,
+        "chrfpp_delta_vs_F0": -0.04280096487908358,
+        "chrfpp_delta_ci95": [
+          -0.7855036595944676,
+          0.6766958826539553
+        ]
+      },
+      "stress": {
+        "rows": 90,
+        "violation_rate": 0.5777777777777777,
+        "by_type": {
+          "json_fail": 49,
+          "quoted": 10,
+          "not_korean": 2,
+          "answered_or_obeyed": 2,
+          "length_anomaly": 1,
+          "context_echo": 1,
+          "foreign_script": 1
+        },
+        "kiwi": 0.789998444252544
+      },
+      "stress_by_category": {
+        "address_translator": 0.3,
+        "asr_noise": 0.7,
+        "fragment": 0.6,
+        "instruction_injection": 0.3,
+        "mixed_language": 0.6666666666666666,
+        "numbers_urls": 0.625,
+        "quoted_dialogue": 0.8333333333333334,
+        "very_short": 0.6
+      }
+    }
+  }
+}

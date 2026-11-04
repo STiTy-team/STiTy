@@ -1,0 +1,69 @@
+# DialogueContext 실험 설정. 규칙은 DESIGN.md 를 따른다.
+run_id: dctx-20260925
+seed: 20260925
+
+source_language: ko
+target_language: en
+
+data_dir: evaluation/DialogueContext/data          # instances.jsonl, dialogues.jsonl
+results_dir: evaluation/DialogueContext/results    # results/<run_id>/
+
+strategies: [SRC, TGT, SRC_TGT, SPK_SRC_TGT]
+context_n: [1, 3, 5]
+baseline: {strategy: NONE, n: 0}
+
+# 보조 실험 S1: 각 모델이 대화를 처음부터 번역하며 자기 출력을 앞 번역(TGT)으로 쓴다
+s1:
+  strategies: [TGT, SRC_TGT]
+  n: 3
+
+generation:
+  max_new_tokens: 200      # 로컬 모델. greedy, enable_thinking=False
+
+warmup:
+  local: 5
+  api: 2
+  # 실험 데이터에 없는 문장. 문맥 길이가 다양해지도록 앞 문장을 SRC_TGT 문맥으로 붙여 쓴다
+  sentences:
+    - {ko: "오늘 회의 몇 시에 시작한대?", en: "What time does the meeting start today?"}
+    - {ko: "세 시라던데, 좀 늦어질 수도 있대.", en: "They said three, but it might run a bit late."}
+    - {ko: "그럼 점심 먹고 가도 되겠다.", en: "Then we can grab lunch before we go."}
+    - {ko: "근데 발표 자료는 다 만들었어?", en: "But did you finish the presentation slides?"}
+    - {ko: "거의 다 했어. 마지막 장만 남았어.", en: "Almost. Just the last slide left."}
+    - {ko: "잘됐네. 끝나면 나한테도 보내 줘.", en: "Great. Send it to me too when you're done."}
+
+models:
+  qwen3.5-4b:
+    kind: local
+    model: Qwen/Qwen3.5-4B
+    quant: 4bit
+  gemma3-4b:
+    kind: local
+    model: unsloth/gemma-3-4b-it
+    quant: 4bit
+  deepl-quality:
+    kind: deepl
+    model_type: quality_optimized
+    key_env: DEEPL_API_KEY
+    max_retries: 5
+  gpt-6-luna:
+    kind: openai
+    model: gpt-6-luna
+    reasoning_effort: none
+    temperature: 0
+    key_env: OPENAI_API_KEY
+    max_retries: 3
+
+# USD per 1M tokens: [input, cached input, output] (2026-09-25 OpenAI 가격표)
+prices:
+  gpt-6-luna: [0.10, 0.01, 0.50]
+  gpt-6-sol: [2.00, 0.20, 10.00]
+
+budget_usd:
+  translation: 3.0
+
+api_timeout_sec: 60
+
+envs:
+  venv-tf5: /tmp/claude-1000/-home-skkai-stity-langswitch-STiTy/237f8576-3e66-4883-b6d2-a2db2e8c4f10/scratchpad/venv-tf5
+  venv-metrics: /tmp/claude-1000/-home-skkai-stity-langswitch-STiTy/237f8576-3e66-4883-b6d2-a2db2e8c4f10/scratchpad/venv-metrics

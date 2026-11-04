@@ -1,0 +1,36 @@
+# 2.4 출력 형식 — 조건별 형식 위반률과 그 대가(품질)
+run_id: fmt-20260930
+talk: ../LongContextMT/data/talk231.jsonl      # 일반 문장 398개 (정답 있음)
+stress: data/stress.jsonl                      # 스트레스 90개 (정답 없음)
+
+conditions: [F0, F1, F2, F3, F4]
+# 로컬 전용 디코딩 조건: 1.1 에서 본 반복 루프(8건)를 막는지. 프롬프트는 F1.
+local_extra:
+  F1_rp: {prompt: F1, gen_kwargs: {repetition_penalty: 1.05}}
+
+# 문맥: 0 이거나, LongContextMT 1.1 의 같은 모델 N=16 체인 번역 로그에서 바로 앞 16문장.
+# 스트레스 항목은 원래 문장 위치(origin_idx)가 있으면 그 앞, 없으면 시드로 고른 위치의 앞 16문장.
+context_n: [0, 16]
+context_source: ../LongContextMT/results/lcmt-20260930
+seed: 20260930
+
+models:
+  qwen3.5-4b-bf16:
+    kind: local
+    model: Qwen/Qwen3.5-4B
+    max_new_tokens: 256
+  gpt-6-luna:
+    kind: openai
+    model: gpt-6-luna
+    reasoning_effort: none
+    temperature: 0
+    key_env: OPENAI_API_KEY_TRANS
+    max_retries: 8
+    workers: 4                                 # 문장끼리 독립이라 병렬. TPM 20만 한도 안쪽
+
+prices:
+  gpt-6-luna: [0.10, 0.01, 0.50]
+budget_usd:
+  translation: 2.0
+api_timeout_sec: 60
+env_files: [.env]

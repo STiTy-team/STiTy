@@ -1,0 +1,70 @@
+# T13 quality gain over NONE per 100 extra input tokens
+
+Gain = mean over instances (strategy cell) minus NONE; extra = mean input size minus NONE's. DeepL uses context characters (DeepL does not bill context). Point estimates only; see T7 for the CIs of the gains.
+
+| model | strategy | n | size_unit | extra_size | judge_gain | judge_gain_per_100 | check_pass_gain | check_pass_gain_per_100 |
+|---|---|---|---|---|---|---|---|---|
+| deepl-quality | SRC | pooled | context chars | 76.800 | 0.622 | 0.810 | 0.408 | 0.532 |
+| deepl-quality | SRC | 1 | context chars | 24.450 | 0.433 | 1.772 | 0.283 | 1.159 |
+| deepl-quality | SRC | 3 | context chars | 76.400 | 0.625 | 0.818 | 0.433 | 0.567 |
+| deepl-quality | SRC | 5 | context chars | 129.550 | 0.808 | 0.624 | 0.508 | 0.392 |
+| deepl-quality | TGT | pooled | context chars | 152.733 | 0.522 | 0.342 | 0.339 | 0.222 |
+| deepl-quality | TGT | 1 | context chars | 48.650 | 0.333 | 0.685 | 0.200 | 0.411 |
+| deepl-quality | TGT | 3 | context chars | 152.200 | 0.475 | 0.312 | 0.333 | 0.219 |
+| deepl-quality | TGT | 5 | context chars | 257.350 | 0.758 | 0.295 | 0.483 | 0.188 |
+| deepl-quality | SRC_TGT | pooled | context chars | 230.533 | 0.539 | 0.234 | 0.364 | 0.158 |
+| deepl-quality | SRC_TGT | 1 | context chars | 74.100 | 0.308 | 0.416 | 0.200 | 0.270 |
+| deepl-quality | SRC_TGT | 3 | context chars | 229.600 | 0.583 | 0.254 | 0.408 | 0.178 |
+| deepl-quality | SRC_TGT | 5 | context chars | 387.900 | 0.725 | 0.187 | 0.483 | 0.125 |
+| deepl-quality | SPK_SRC_TGT | pooled | context chars | 266.533 | 0.453 | 0.170 | 0.297 | 0.112 |
+| deepl-quality | SPK_SRC_TGT | 1 | context chars | 86.100 | 0.308 | 0.358 | 0.175 | 0.203 |
+| deepl-quality | SPK_SRC_TGT | 3 | context chars | 265.600 | 0.483 | 0.182 | 0.333 | 0.126 |
+| deepl-quality | SPK_SRC_TGT | 5 | context chars | 447.900 | 0.567 | 0.127 | 0.383 | 0.086 |
+| gemma3-4b | SRC | pooled | input tokens | 42.217 | 0.128 | 0.303 | 0.131 | 0.309 |
+| gemma3-4b | SRC | 1 | input tokens | 11.250 | 0.142 | 1.259 | 0.075 | 0.667 |
+| gemma3-4b | SRC | 3 | input tokens | 41.900 | 0.075 | 0.179 | 0.133 | 0.318 |
+| gemma3-4b | SRC | 5 | input tokens | 73.500 | 0.167 | 0.227 | 0.183 | 0.249 |
+| gemma3-4b | TGT | pooled | input tokens | 45.033 | 0.225 | 0.500 | 0.206 | 0.456 |
+| gemma3-4b | TGT | 1 | input tokens | 11.950 | 0.092 | 0.767 | 0.100 | 0.837 |
+| gemma3-4b | TGT | 3 | input tokens | 45.000 | 0.125 | 0.278 | 0.183 | 0.407 |
+| gemma3-4b | TGT | 5 | input tokens | 78.150 | 0.458 | 0.586 | 0.333 | 0.427 |
+| gemma3-4b | SRC_TGT | pooled | input tokens | 91.250 | 0.225 | 0.247 | 0.281 | 0.307 |
+| gemma3-4b | SRC_TGT | 1 | input tokens | 27.200 | 0.008 | 0.031 | 0.175 | 0.643 |
+| gemma3-4b | SRC_TGT | 3 | input tokens | 90.900 | 0.225 | 0.248 | 0.233 | 0.257 |
+| gemma3-4b | SRC_TGT | 5 | input tokens | 155.650 | 0.442 | 0.284 | 0.433 | 0.278 |
+| gemma3-4b | SPK_SRC_TGT | pooled | input tokens | 113.250 | 0.358 | 0.316 | 0.289 | 0.255 |
+| gemma3-4b | SPK_SRC_TGT | 1 | input tokens | 37.200 | 0.225 | 0.605 | 0.200 | 0.538 |
+| gemma3-4b | SPK_SRC_TGT | 3 | input tokens | 112.900 | 0.283 | 0.251 | 0.233 | 0.207 |
+| gemma3-4b | SPK_SRC_TGT | 5 | input tokens | 189.650 | 0.567 | 0.299 | 0.433 | 0.228 |
+| gpt-6-luna | SRC | pooled | input tokens | 45.667 | 0.567 | 1.241 | 0.364 | 0.797 |
+| gpt-6-luna | SRC | 1 | input tokens | 13.300 | 0.308 | 2.318 | 0.200 | 1.504 |
+| gpt-6-luna | SRC | 3 | input tokens | 45.500 | 0.625 | 1.374 | 0.383 | 0.842 |
+| gpt-6-luna | SRC | 5 | input tokens | 78.200 | 0.767 | 0.980 | 0.508 | 0.650 |
+| gpt-6-luna | TGT | pooled | input tokens | 40.217 | 0.594 | 1.478 | 0.414 | 1.029 |
+| gpt-6-luna | TGT | 1 | input tokens | 11.050 | 0.283 | 2.564 | 0.225 | 2.036 |
+| gpt-6-luna | TGT | 3 | input tokens | 40.200 | 0.675 | 1.679 | 0.458 | 1.140 |
+| gpt-6-luna | TGT | 5 | input tokens | 69.400 | 0.825 | 1.189 | 0.558 | 0.805 |
+| gpt-6-luna | SRC_TGT | pooled | input tokens | 88.883 | 0.647 | 0.728 | 0.447 | 0.503 |
+| gpt-6-luna | SRC_TGT | 1 | input tokens | 27.350 | 0.333 | 1.219 | 0.225 | 0.823 |
+| gpt-6-luna | SRC_TGT | 3 | input tokens | 88.700 | 0.708 | 0.799 | 0.483 | 0.545 |
+| gpt-6-luna | SRC_TGT | 5 | input tokens | 150.600 | 0.900 | 0.598 | 0.633 | 0.421 |
+| gpt-6-luna | SPK_SRC_TGT | pooled | input tokens | 107.883 | 0.656 | 0.608 | 0.472 | 0.438 |
+| gpt-6-luna | SPK_SRC_TGT | 1 | input tokens | 36.350 | 0.308 | 0.848 | 0.225 | 0.619 |
+| gpt-6-luna | SPK_SRC_TGT | 3 | input tokens | 107.700 | 0.717 | 0.665 | 0.508 | 0.472 |
+| gpt-6-luna | SPK_SRC_TGT | 5 | input tokens | 179.600 | 0.942 | 0.524 | 0.683 | 0.380 |
+| qwen3.5-4b | SRC | pooled | input tokens | 41.200 | 0.339 | 0.823 | 0.308 | 0.748 |
+| qwen3.5-4b | SRC | 1 | input tokens | 10.900 | 0.167 | 1.529 | 0.217 | 1.988 |
+| qwen3.5-4b | SRC | 3 | input tokens | 41.000 | 0.408 | 0.996 | 0.317 | 0.772 |
+| qwen3.5-4b | SRC | 5 | input tokens | 71.700 | 0.442 | 0.616 | 0.392 | 0.546 |
+| qwen3.5-4b | TGT | pooled | input tokens | 43.483 | 0.311 | 0.715 | 0.231 | 0.530 |
+| qwen3.5-4b | TGT | 1 | input tokens | 11.450 | 0.142 | 1.237 | 0.133 | 1.164 |
+| qwen3.5-4b | TGT | 3 | input tokens | 43.450 | 0.308 | 0.710 | 0.217 | 0.499 |
+| qwen3.5-4b | TGT | 5 | input tokens | 75.550 | 0.483 | 0.640 | 0.342 | 0.452 |
+| qwen3.5-4b | SRC_TGT | pooled | input tokens | 88.683 | 0.425 | 0.479 | 0.314 | 0.354 |
+| qwen3.5-4b | SRC_TGT | 1 | input tokens | 26.350 | 0.208 | 0.791 | 0.158 | 0.601 |
+| qwen3.5-4b | SRC_TGT | 3 | input tokens | 88.450 | 0.492 | 0.556 | 0.367 | 0.415 |
+| qwen3.5-4b | SRC_TGT | 5 | input tokens | 151.250 | 0.575 | 0.380 | 0.417 | 0.275 |
+| qwen3.5-4b | SPK_SRC_TGT | pooled | input tokens | 110.683 | 0.422 | 0.381 | 0.339 | 0.306 |
+| qwen3.5-4b | SPK_SRC_TGT | 1 | input tokens | 36.350 | 0.108 | 0.298 | 0.158 | 0.436 |
+| qwen3.5-4b | SPK_SRC_TGT | 3 | input tokens | 110.450 | 0.417 | 0.377 | 0.367 | 0.332 |
+| qwen3.5-4b | SPK_SRC_TGT | 5 | input tokens | 185.250 | 0.742 | 0.400 | 0.492 | 0.265 |
