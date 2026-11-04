@@ -1,6 +1,6 @@
 """Upload zprobe adapters/data/logs and the SEG model to the Hugging Face Hub (private repos).
 Needs a WRITE token: `huggingface-cli login` or HF_TOKEN=... in the environment.
-usage: python core/zprobe/train/hf_upload.py [--user Doo12] [--public] [--only zprobe]
+usage: python core/research/zprobe/train/hf_upload.py [--user Doo12] [--public] [--only zprobe]
 Trainer checkpoints (optimizer states), smoke runs and the stopped dailytalk-mix GRPO run are not uploaded."""
 import argparse, os
 from huggingface_hub import HfApi

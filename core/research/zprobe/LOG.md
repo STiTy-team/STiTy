@@ -5,7 +5,8 @@ was said, and at which layer (encoder output vs LLM middle layers). Spike — th
 
 > This log records each run as it happened. Many scripts it names (the `chains/*.sh` runners and the
 > stage 0-C experiment scripts) are no longer in the working tree, and the rest moved into `labels/`,
-> `train/`, `eval/`, `hybrid/`; `git log --all -- core/zprobe/<name>` finds the old ones.
+> `train/`, `eval/`, `hybrid/`. The directory itself was core/zprobe/ before it moved under core/research/;
+> `git log --all -- core/zprobe/<name>` finds the old scripts.
 
 Everything lives in this directory:
 

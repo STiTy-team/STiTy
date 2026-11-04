@@ -2,7 +2,7 @@
 per-utterance wavs and write zprobe-style exports: ns-ko-en (72 Korean utterances) and ns-en-ko (48 English ones).
 The scenes are 16 kHz mono already, so rows are plain [offset, offset+duration] slices.
 
-usage: python core/zprobe/eval/ns_export.py  (idempotent; --force rewrites)"""
+usage: python core/research/zprobe/eval/ns_export.py  (idempotent; --force rewrites)"""
 import argparse, json, os
 
 import soundfile as sf

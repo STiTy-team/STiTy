@@ -5,7 +5,7 @@ rerun unchanged - build_prefix.py build -> build_prefix4 -> build_prefix5 -> bui
 construction stays the original code's. The extra mid rows (audio cut inside a phrase, text up to the last
 completed addition) sharpen "EOS only at word boundaries" against the mid-eojeol commits seen on northstar.
 
-usage: python core/zprobe/labels/build_prefix7.py --relabel models/zprobe/data/relabel/full_enko.jsonl"""
+usage: python core/research/zprobe/labels/build_prefix7.py --relabel models/zprobe/data/relabel/full_enko.jsonl"""
 import argparse, json, os, random, subprocess, sys
 
 ap = argparse.ArgumentParser()
@@ -38,7 +38,7 @@ def run(*cmd):
     subprocess.run([sys.executable, *cmd], check=True)
 
 
-run("core/zprobe/labels/build_prefix.py", "build", "--aligned", f"{V7}/aligned.jsonl",
+run("core/research/zprobe/labels/build_prefix.py", "build", "--aligned", f"{V7}/aligned.jsonl",
     "--base", f"{D}/train_seg9_mix.jsonl", "--wav_dir", f"{V7}/cuts", "--out", f"{V7}/train_v3.jsonl")
 
 rng = random.Random(7)
@@ -59,11 +59,11 @@ with open(f"{V7}/train_v3.jsonl", "a", encoding="utf-8") as f:
             extra += 1
 print(f"extra mid rows: {extra}", flush=True)
 
-run("core/zprobe/labels/build_prefix4.py", "--aligned", f"{V7}/aligned.jsonl",
+run("core/research/zprobe/labels/build_prefix4.py", "--aligned", f"{V7}/aligned.jsonl",
     "--base", f"{V7}/train_v3.jsonl", "--out", f"{V7}/train_v4.jsonl")
-run("core/zprobe/labels/build_prefix5.py", "--aligned", f"{V7}/aligned.jsonl",
+run("core/research/zprobe/labels/build_prefix5.py", "--aligned", f"{V7}/aligned.jsonl",
     "--base", f"{V7}/train_v4.jsonl", "--out", f"{V7}/train_v5.jsonl")
-run("core/zprobe/labels/build_prefix6.py", "--base", f"{V7}/train_v5.jsonl", "--out", f"{D}/train_prefix7.jsonl")
+run("core/research/zprobe/labels/build_prefix6.py", "--base", f"{V7}/train_v5.jsonl", "--out", f"{D}/train_prefix7.jsonl")
 for t in ("train_v3", "train_v4", "train_v5"):
     os.remove(f"{V7}/{t}.jsonl")
 print("BUILD_PREFIX7_DONE", flush=True)

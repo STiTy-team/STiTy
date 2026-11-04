@@ -16,12 +16,12 @@ align    : Qwen3-ForcedAligner times the end of each chunk on every recording of
 build    : training rows in the segconn2 format (--seg_full): partial audio [0, end_i] -> "p1 <SEG> .. pi <SEG>", full
            audio -> "p1 <SEG> .. pn", tag "language English"; base rows from --base minus their X->en rows for these sources.
 
-usage: python core/zprobe/labels/build_connective_en.py manifest --out M.jsonl
-       python core/zprobe/labels/build_connective_en.py pieces --manifest M.jsonl --out P.jsonl
-       PYTHONPATH=. python core/zprobe/labels/build_connective_en.py hyprefix --pieces P.jsonl --out P_hy.jsonl
-       python core/zprobe/labels/build_connective_en.py pieces --manifest M.jsonl --hy P_hy.jsonl --out P2.jsonl   (leak check + retry)
-       PYTHONPATH=Qwen3-ASR python core/zprobe/labels/build_connective_en.py align --manifest M.jsonl --pieces P2.jsonl --out A.jsonl
-       python core/zprobe/labels/build_connective_en.py build --aligned A.jsonl --base train_segconn2.jsonl --wav_dir DIR --out T.jsonl"""
+usage: python core/research/zprobe/labels/build_connective_en.py manifest --out M.jsonl
+       python core/research/zprobe/labels/build_connective_en.py pieces --manifest M.jsonl --out P.jsonl
+       PYTHONPATH=. python core/research/zprobe/labels/build_connective_en.py hyprefix --pieces P.jsonl --out P_hy.jsonl
+       python core/research/zprobe/labels/build_connective_en.py pieces --manifest M.jsonl --hy P_hy.jsonl --out P2.jsonl   (leak check + retry)
+       PYTHONPATH=Qwen3-ASR python core/research/zprobe/labels/build_connective_en.py align --manifest M.jsonl --pieces P2.jsonl --out A.jsonl
+       python core/research/zprobe/labels/build_connective_en.py build --aligned A.jsonl --base train_segconn2.jsonl --wav_dir DIR --out T.jsonl"""
 import argparse, csv, json, os, random, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

@@ -15,9 +15,9 @@ hangul-cer  hangul-only CER of the ko passthrough - the transcription-content ya
 dual-wer and hangul-cer bin emissions to reference sentences by decision time (decision_audio_sec - lag landing inside
 the sentence, open-ended until the next sentence starts).
 
-usage: python3 core/zprobe/eval/ns_score.py counts [--runs-root R] [--show] <cfg> [<cfg> ...]
-       (bench venv) python core/zprobe/eval/ns_score.py dual-wer --run-dir <R>/adapter.prefix4-segreset-dual --target ko
-       (bench venv) python core/zprobe/eval/ns_score.py hangul-cer --cascade asr.qwen-seg-koen+mt.qwen3.5-4b <cfg> [<cfg> ...]
+usage: python3 core/research/zprobe/eval/ns_score.py counts [--runs-root R] [--show] <cfg> [<cfg> ...]
+       (bench venv) python core/research/zprobe/eval/ns_score.py dual-wer --run-dir <R>/adapter.prefix4-segreset-dual --target ko
+       (bench venv) python core/research/zprobe/eval/ns_score.py hangul-cer --cascade asr.qwen-seg-koen+mt.qwen3.5-4b <cfg> [<cfg> ...]
 
 The secondary-stream COMET (ns_secondary_score.py) stays separate: it imports bench and runs from STiTy-bench."""
 import argparse, json, os, re

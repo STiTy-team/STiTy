@@ -15,10 +15,10 @@ commits, as it would on a live server.
 
 Each commit records the audio fed so far (fed_sec, computation-unaware) and the wall time it was ready (wall_sec,
 computation-aware), the same two clocks bench/seamless/seamless_score.py uses. Output rows follow that script's s2s.jsonl:
-{utt_id, ok, text, segments: [[text, fed_sec, wall_sec], ...]}. Score with core/zprobe/eval/stream_bench_score.py.
+{utt_id, ok, text, segments: [[text, fed_sec, wall_sec], ...]}. Score with core/research/zprobe/eval/stream_bench_score.py.
 
 usage: PROBE_MODEL=<koen-seg-mix> PROBE_ADAPTER=models/zprobe/adapters/segconn2 PYTHONPATH=Qwen3-ASR \
-         python core/zprobe/eval/stream_bench.py --manifest <export>/manifest.jsonl --tgt ko --agree 2 [--beams 4] --out X.jsonl"""
+         python core/research/zprobe/eval/stream_bench.py --manifest <export>/manifest.jsonl --tgt ko --agree 2 [--beams 4] --out X.jsonl"""
 import argparse, json, os, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -16,17 +16,17 @@ ending or particle and the joined pieces read as one 해요체 sentence.
                full audio   -> "language Korean<asr_text>p1 .. p_n"
              The en-ko rows of the base training file are dropped (their references mix registers); other rows stay.
 
-usage: python core/zprobe/labels/build_connective.py manifest --fleurs --covost N --out M.jsonl
-       PROBE_MODEL=<seg model> PYTHONPATH=Qwen3-ASR python core/zprobe/labels/build_connective.py units --manifest M.jsonl --out U.jsonl
-       PYTHONPATH=. python core/zprobe/labels/build_connective.py hyref --units U.jsonl --out H.jsonl
-       PYTHONPATH=. python core/zprobe/labels/build_connective.py pieces --units H.jsonl --out P.jsonl [--limit N]
-       python core/zprobe/labels/build_connective.py build --pieces P.jsonl --kiwi K.jsonl --base train.jsonl --out T.jsonl --wav_dir DIR"""
+usage: python core/research/zprobe/labels/build_connective.py manifest --fleurs --covost N --out M.jsonl
+       PROBE_MODEL=<seg model> PYTHONPATH=Qwen3-ASR python core/research/zprobe/labels/build_connective.py units --manifest M.jsonl --out U.jsonl
+       PYTHONPATH=. python core/research/zprobe/labels/build_connective.py hyref --units U.jsonl --out H.jsonl
+       PYTHONPATH=. python core/research/zprobe/labels/build_connective.py pieces --units H.jsonl --out P.jsonl [--limit N]
+       python core/research/zprobe/labels/build_connective.py build --pieces P.jsonl --kiwi K.jsonl --base train.jsonl --out T.jsonl --wav_dir DIR"""
 import argparse, csv, json, os, random, re, sys, time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 FLEURS_EN = Path(os.path.expanduser("~/datasets/fleurs/data/en_us"))
 FINAL_END = re.compile(r"(다|요|죠|까|니다|습니다|세요|어요|아요|에요|예요)\s*$")
 PUNCT_END = re.compile(r"[.!?。！？]\s*$")

@@ -9,7 +9,7 @@ keep listening" signal as the translation stream.
 (3) Extra rotations of x->en concat pairs — ko-en has only 646 aligned rows; new pairings multiply the
 concat data without any new alignment or LLM cost.
 
-usage: python core/zprobe/labels/build_prefix5.py --out models/zprobe/data/train_prefix5.jsonl"""
+usage: python core/research/zprobe/labels/build_prefix5.py --out models/zprobe/data/train_prefix5.jsonl"""
 import argparse, json, random, re
 
 NAME = {"en": "English", "ko": "Korean", "ja": "Japanese", "zh": "Chinese"}

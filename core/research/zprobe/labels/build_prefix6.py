@@ -9,7 +9,7 @@ Adds, all full-audio rows (streaming shape comes from the v5 prefix/cut rows):
   ko-ko <SEG> pairs    A_transcript <SEG> [B_transcript]   (boundary row cuts B at 0.8 s)
   ko-en <SEG> pairs    A_gold_en <SEG> [B_gold_en]
 
-usage: python core/zprobe/labels/build_prefix6.py --out models/zprobe/data/train_prefix6.jsonl"""
+usage: python core/research/zprobe/labels/build_prefix6.py --out models/zprobe/data/train_prefix6.jsonl"""
 import argparse, csv, json, os, random
 
 ap = argparse.ArgumentParser()

@@ -12,7 +12,7 @@ prints the running total, and --budget aborts past the cap. Validation (len(adds
 sentence-final ending before the last addition, final addition ends in haeyo style) retries once with the
 reason; a row that fails twice is left out and keeps its old adds downstream.
 
-usage: .venv/bin/python core/zprobe/labels/relabel_adds.py --select gold --limit 50 --out models/zprobe/data/relabel/pilot.jsonl"""
+usage: .venv/bin/python core/research/zprobe/labels/relabel_adds.py --select gold --limit 50 --out models/zprobe/data/relabel/pilot.jsonl"""
 import argparse, csv, json, os, re, sys, threading, time
 from concurrent.futures import ThreadPoolExecutor
 

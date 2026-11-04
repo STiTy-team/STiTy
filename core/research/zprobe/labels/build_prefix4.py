@@ -9,7 +9,7 @@ Two rows per pair, over audio A_full + B[0:t] (a third mid-B row pushed the feat
   boundary  t = mid of B's first phrase   -> A_translation + " <SEG>"            (emit the marker, then wait)
   full      t = B's end                   -> A + " <SEG> " + B_translation
 
-usage: python core/zprobe/labels/build_prefix4.py --aligned models/zprobe/data/prefix3/aligned.jsonl \
+usage: python core/research/zprobe/labels/build_prefix4.py --aligned models/zprobe/data/prefix3/aligned.jsonl \
            --base models/zprobe/data/train_prefix3.jsonl --out models/zprobe/data/train_prefix4.jsonl"""
 import argparse, json, random
 

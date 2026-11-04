@@ -2,7 +2,7 @@
 adapter such as grpo_prefix.py's). The base's non-weight files (tokenizer, processor, chat template) are copied over;
 a missing thinker.lm_head.weight in the saved file is expected (the config ties it to the embeddings).
 
-usage: PYTHONPATH=Qwen3-ASR python core/zprobe/train/merge_adapter.py --base <model dir> --adapter <adapter dir> --out <dir>"""
+usage: PYTHONPATH=Qwen3-ASR python core/research/zprobe/train/merge_adapter.py --base <model dir> --adapter <adapter dir> --out <dir>"""
 import argparse, os, shutil
 
 import torch

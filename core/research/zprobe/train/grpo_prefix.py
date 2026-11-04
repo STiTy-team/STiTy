@@ -16,7 +16,7 @@ Loss: GRPO advantage (R - mean_G) / (std_G + eps) times the mean log-probability
 (EOS included: stopping is the decision to wait), + beta * KL to the reference on the same tokens.
 COMET comes from comet_server.py (start it with the COMET env). Smoke: --utts 4 --G 2 --steps 2.
 
-usage: PYTHONPATH=Qwen3-ASR python core/zprobe/train/grpo_prefix.py --policy_model models/zprobe/merged/prefix1 --out DIR"""
+usage: PYTHONPATH=Qwen3-ASR python core/research/zprobe/train/grpo_prefix.py --policy_model models/zprobe/merged/prefix1 --out DIR"""
 import argparse, csv, json, os, random, re, sys, time
 
 import numpy as np, requests, soundfile as sf, torch

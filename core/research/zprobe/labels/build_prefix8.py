@@ -14,7 +14,7 @@ the distribution - and the aligned recordings end exactly at the last utterance 
 so the tail is appended via the loader's "|" concatenation with one shared quiet-noise wav. Label = the full
 cumulative text: speech plus silence means say everything and nothing more.
 
-usage: .venv/bin/python core/zprobe/labels/build_prefix8.py --kspon-root /home/mobility/stity-datasets/ksponspeech/data/train01"""
+usage: .venv/bin/python core/research/zprobe/labels/build_prefix8.py --kspon-root /home/mobility/stity-datasets/ksponspeech/data/train01"""
 import argparse, json, os, random, re
 
 import numpy as np

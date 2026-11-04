@@ -12,7 +12,7 @@ import librosa
 SR = 16000
 NS = "/home/mobility/stity-datasets/northstar-260928"
 RUN = "/home/mobility/STiTy-bench/bench/runs/northstar_ko+en-ko@v2/asr.qwen-seg-koen+mt.qwen3.5-4b"
-OUT = "/home/mobility/STiTy/core/zprobe/lid/lid_timeline.json"
+OUT = "/home/mobility/STiTy/core/research/zprobe/lid/lid_timeline.json"
 
 
 def script_verdict(text):

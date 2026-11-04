@@ -12,15 +12,15 @@ adapter   : translation adapter (PROBE_ADAPTER) on audio[0:end_i] with the commi
 score     : COMET-DA of the joined units vs the FLEURS reference is done by comet_eval.py; this prints the latency side:
             units per sentence, first commit (s), and commit time per target character as a fraction of the duration.
 
-usage: PROBE_MODEL=<seg model> PYTHONPATH=Qwen3-ASR python core/zprobe/seg_units.py label --ids A.jsonl [B.jsonl ...] --out units.jsonl
-       PYTHONPATH=. python core/zprobe/seg_units.py hy --units units.jsonl --ids ev_big2_en-ko.jsonl --tgt ko --out X.jsonl
-       PROBE_ADAPTER=... PYTHONPATH=Qwen3-ASR python core/zprobe/seg_units.py adapter --units units.jsonl --ids ... --tgt ko --out Y.jsonl
-       python core/zprobe/seg_units.py score --files label=X.jsonl ..."""
+usage: PROBE_MODEL=<seg model> PYTHONPATH=Qwen3-ASR python core/research/zprobe/seg_units.py label --ids A.jsonl [B.jsonl ...] --out units.jsonl
+       PYTHONPATH=. python core/research/zprobe/seg_units.py hy --units units.jsonl --ids ev_big2_en-ko.jsonl --tgt ko --out X.jsonl
+       PROBE_ADAPTER=... PYTHONPATH=Qwen3-ASR python core/research/zprobe/seg_units.py adapter --units units.jsonl --ids ... --tgt ko --out Y.jsonl
+       python core/research/zprobe/seg_units.py score --files label=X.jsonl ..."""
 import argparse, difflib, json, re, sys, time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 NOSPACE = {"ja", "zh"}
 
 
