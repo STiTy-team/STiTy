@@ -20,9 +20,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from core.utils import clock, env
 from core.utils.json import read_jsonl, write_jsonl
 
-from bench import config, report
+from bench import report, shared_configs
+from bench.settings import BenchSettings
 from bench import dataset as datasets
-from bench.__main__ import score_item, score_run, write_comet_inputs
+from bench.__main__ import score_item, write_comet_inputs
+from bench.metrics import score
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--pipeline", required=True)
@@ -31,9 +33,10 @@ ap.add_argument("--dst-dataset", required=True)
 a = ap.parse_args()
 
 env.load()
-src_cfg = config.load(a.pipeline, a.src_dataset)
-dst_cfg = config.load(a.pipeline, a.dst_dataset)
-spec = datasets.load(dst_cfg.dataset, config.get_data_root())
+src_cfg = shared_configs.load_for_run(a.pipeline, a.src_dataset, None, queued_job=False)
+dst_cfg = shared_configs.load_for_run(a.pipeline, a.dst_dataset, None, queued_job=False)
+settings = BenchSettings()
+spec = datasets.load(dst_cfg.dataset, settings.stity_data_root)
 fresh = {it.id: asdict(it) for it in spec.items}
 
 REF_FIELDS = ("src_lang", "group", "speaker", "offset", "partial",
@@ -49,7 +52,9 @@ run_dir.mkdir(parents=True, exist_ok=True)
 write_jsonl(run_dir / "items.jsonl", rows)
 shutil.copy(src_cfg.run_dir / "events.jsonl", run_dir / "events.jsonl")
 write_comet_inputs(rows, dst_cfg, run_dir / "comet_inputs.jsonl")
-report.write_all(cfg=dst_cfg, dataset=spec, scores=score_run(rows, dst_cfg), rows=rows, status="ok",
+scores, unavailable = score.score_run(rows, dst_cfg.target)
+unavailable["comet"] = "scored separately by python -m bench.metrics.comet"
+report.write_all(cfg=dst_cfg, dataset=spec, scores=(scores, unavailable), rows=rows, status="ok",
                  started=clock.now(), wall_sec=0.0, run_dir=run_dir,
                  pacing={"chunk_size_ms": 200, "trailing_silence_ms": 4000})
 print(f"rescored {src_cfg.run_dir} -> {run_dir} ({len(rows)} items)")
