@@ -12,6 +12,7 @@ from app.api.v1.schema.conversation import (
     ConversationConfigMessage,
     FinalMessage,
     FinishMessage,
+    FoldMessage,
     HelloMessage,
     Message,
     PartialMessage,
@@ -26,6 +27,7 @@ from app.containers import Container
 from app.models.conversation import (
     ConversationSettingsChanged,
     FinalOutput,
+    FoldOutput,
     JoinedConversation,
     PartialTranscript,
 )
@@ -89,6 +91,8 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
                     yield PartialMessage.of(event)
                 case FinalOutput():
                     yield FinalMessage.of(event)
+                case FoldOutput():
+                    yield FoldMessage.of(event)
 
     async def handle_message(self, message: ClientMessage | bytes) -> None:
         match message:

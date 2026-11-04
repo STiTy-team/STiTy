@@ -5,7 +5,7 @@ from pydantic.alias_generators import to_camel
 
 from core.utils import clock
 
-from app.models.conversation import FinalOutput, Participant, PartialTranscript
+from app.models.conversation import FinalOutput, FoldOutput, Participant, PartialTranscript
 
 
 ConversationId = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_-]+$", max_length=64)]
@@ -102,6 +102,7 @@ class PartialMessage(Message):
 
 class FinalMessage(Message):
     type: Literal["final"] = "final"
+    segment_id: int
     start: str
     end: str
     original: str
@@ -113,6 +114,7 @@ class FinalMessage(Message):
     @classmethod
     def of(cls, transcript: FinalOutput) -> Self:
         return cls(
+            segment_id=transcript.segment,
             start=clock.format_duration(transcript.started_at),
             end=clock.format_duration(transcript.ended_at),
             original=transcript.original,
@@ -120,4 +122,21 @@ class FinalMessage(Message):
             language=transcript.language,
             target_lang=transcript.target_lang,
             commit_reason=transcript.commit_reason,
+        )
+
+
+class FoldMessage(Message):
+    type: Literal["fold"] = "fold"
+    segment_id: int
+    target_lang: str
+    original: str
+    replacement: str
+
+    @classmethod
+    def of(cls, fold: "FoldOutput") -> Self:
+        return cls(
+            segment_id=fold.segment,
+            target_lang=fold.target_lang,
+            original=fold.original,
+            replacement=fold.replacement,
         )

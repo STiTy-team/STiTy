@@ -1,4 +1,4 @@
-import type { CapacityMessage, FinalMessage, PartialMessage, StartMessage } from './protocol';
+import type { CapacityMessage, FinalMessage, FoldMessage, PartialMessage, StartMessage } from './protocol';
 import { WebSocketConnection } from './websocket-connection';
 
 const OPEN_TIMEOUT_MS = 15_000;
@@ -8,6 +8,8 @@ const CLOSE_GRACE_MS = 2_000;
 export type AsrSessionHandlers = {
   onPartial: (message: PartialMessage) => void;
   onFinal: (message: FinalMessage) => void;
+  /** A brig server retracts a committed final: shrink it to `replacement`, or drop it when empty. */
+  onFold?: (message: FoldMessage) => void;
   onCapacity: (message: CapacityMessage) => void;
   /** The server or network closed the session; not called after close(). */
   onLost: () => void;
@@ -72,6 +74,9 @@ export class AsrSession {
               return;
             case 'final':
               this.handlers.onFinal(message);
+              return;
+            case 'fold':
+              this.handlers.onFold?.(message);
               return;
             case 'capacity':
               this.handlers.onCapacity(message);

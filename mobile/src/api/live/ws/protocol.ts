@@ -39,6 +39,15 @@ const finalSchema = z.object({
   speaker: z.string().optional(),
 });
 
+const foldSchema = z.object({
+  type: z.literal('fold'),
+  segmentId: z.union([z.string(), z.number()]).transform(String),
+  targetLang: z.string().default(''),
+  original: z.string().default(''),
+  /** What remains of the folded final; empty means the line disappears. */
+  replacement: z.string().default(''),
+});
+
 const capacitySchema = z.object({
   type: z.literal('capacity'),
   active: z.number(),
@@ -57,6 +66,7 @@ const serverMessageSchema = z.discriminatedUnion('type', [
   readySchema,
   partialSchema,
   finalSchema,
+  foldSchema,
   capacitySchema,
   errorSchema,
 ]);
@@ -64,6 +74,7 @@ const serverMessageSchema = z.discriminatedUnion('type', [
 export type ServerMessage = z.infer<typeof serverMessageSchema>;
 export type PartialMessage = z.infer<typeof partialSchema>;
 export type FinalMessage = z.infer<typeof finalSchema>;
+export type FoldMessage = z.infer<typeof foldSchema>;
 export type CapacityMessage = z.infer<typeof capacitySchema>;
 export type ErrorMessage = z.infer<typeof errorSchema>;
 

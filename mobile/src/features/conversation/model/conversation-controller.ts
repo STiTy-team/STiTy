@@ -4,6 +4,7 @@ import {
   SessionOpenError,
   type CapacityMessage,
   type FinalMessage,
+  type FoldMessage,
   type LiveOpenOptions,
   type LiveSession,
   type PartialMessage,
@@ -119,6 +120,8 @@ export class ConversationController {
   private firstTranslationTracked = false;
   /** The newest committed segment, so extra finals for other targets join its bubble. */
   private lastFinal: { segment: string; entryId: string } | null = null;
+  /** Server segment id -> transcript entry, so a brig `fold` can edit the line it retracts. */
+  private segmentEntries = new Map<string, string>();
 
   constructor(private readonly deps: ConversationDependencies) {
     this.microphone = deps.createMicrophone({
@@ -321,6 +324,8 @@ export class ConversationController {
           onPartial: (message) => current() && this.handlePartial(message),
           onFinal: (message) =>
             (current() || this.draining === generation) && this.handleFinal(message),
+          onFold: (message) =>
+            (current() || this.draining === generation) && this.handleFold(message),
           onCapacity: (message) => current() && this.handleCapacity(message),
           onLost: () => current() && this.handleConnectionLost(),
           onComplete: () => current() && this.handleComplete(),
@@ -342,6 +347,7 @@ export class ConversationController {
     this.startedAt = Date.now();
     this.firstTranslationTracked = false;
     this.lastFinal = null;
+    this.segmentEntries.clear();
     if (!this.isDemo) this.deps.track({ name: 'session_started' });
   }
 
@@ -414,6 +420,11 @@ export class ConversationController {
       return;
     }
     this.lastFinal = { segment, entryId: actions.commit(language, text, translation) };
+    if (message.segmentId) this.segmentEntries.set(message.segmentId, this.lastFinal.entryId);
+    if (this.segmentEntries.size > 200) {
+      const oldest = this.segmentEntries.keys().next().value;
+      if (oldest !== undefined) this.segmentEntries.delete(oldest);
+    }
     if (!translation) return;
 
     if (!this.firstTranslationTracked && this.startedAt !== null && !this.isDemo) {
@@ -425,6 +436,20 @@ export class ConversationController {
       this.deps.feedback.translationArrived();
     }
     this.speak(language, translation);
+  }
+
+  /** A brig fold edits exactly one committed line; empty replacement removes it. */
+  private handleFold(message: FoldMessage): void {
+    const entryId = this.segmentEntries.get(message.segmentId);
+    if (!entryId) return;
+    const replacement = message.replacement.trim();
+    if (replacement) {
+      actions.rewriteEntry(entryId, replacement, replacement);
+    } else {
+      actions.removeEntry(entryId);
+      this.segmentEntries.delete(message.segmentId);
+      if (this.lastFinal?.entryId === entryId) this.lastFinal = null;
+    }
   }
 
   private handleCapacity({ active, max }: CapacityMessage): void {

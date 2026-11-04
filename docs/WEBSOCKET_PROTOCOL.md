@@ -24,7 +24,8 @@ The contract between the conversation server (`server/`, message models in
 | `ready` | `message` | Streaming initialized |
 | `config_ok` | `lang`, `targetLang`, `langMap` | Echo of the applied `config` |
 | `partial` | `text`, `language`, `seq` | Uncommitted text so far; the next `partial` or `final` replaces it |
-| `final` | `start`, `end`, `original`, `translation`, `language`, `targetLang`, `commitReason` | Committed segment, one per requested target |
+| `final` | `segmentId`, `start`, `end`, `original`, `translation`, `language`, `targetLang`, `commitReason` | Committed segment, one per requested target |
+| `fold` | `segmentId`, `targetLang`, `original`, `replacement` | A brig pipeline retracts a duplicate: the `final` with that `segmentId` shrinks to `replacement`, or disappears when `replacement` is empty |
 
 `langMap` maps a **detected** language code to its translation target or target**s**
 (`{"ko":"en","ja":"ko"}`, or `{"ko":["en","ja"],"en":["ko"]}` to fan one source out to several).
@@ -42,6 +43,12 @@ ordered **within each target**: a segment's `ja` final never waits for its `en` 
 two targets may interleave but each reads in commit order. `config_ok` echoes `langMap` with list
 values (`{"ko":["en"]}`) even when the client sent plain strings. A `final` that was never
 translated (nowhere to translate to) has an empty `translation` and `targetLang`.
+
+The `brig` pipeline (one ASR for the transcription pane, one direct-translation adapter for every
+target) sends its translation streams as self-contained `final`s — no transcribed/translated pairing —
+and may later send `fold` for a `final` whose text turned out to be a verbatim duplicate of the
+transcript (the transcript usually lands about a second after the adapter). The client edits that
+one committed line and nothing else; the same text stays visible as the transcription-pane `final`.
 
 `commitReason`: `seg` (SEG token), `vad` (silence), `dot` (sentence-ending punctuation), `always` (every chunk), `finish` (stream ended) — the pipeline's commit triggers decide which appear.
 

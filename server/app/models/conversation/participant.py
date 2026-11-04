@@ -1,10 +1,15 @@
 from collections import deque
 from dataclasses import dataclass, field
 
-from core.components.registry import Partial, Transcribed, Translated
+from core.components.registry import Folded, Partial, Transcribed, Translated
 from core.utils import langs
 
-from app.models.conversation.events import ConversationEvent, FinalOutput, PartialTranscript
+from app.models.conversation.events import (
+    ConversationEvent,
+    FinalOutput,
+    FoldOutput,
+    PartialTranscript,
+)
 from app.models.conversation.feed import Inbox
 
 
@@ -83,9 +88,19 @@ class Delivery:
                 self._enqueue("", number)
                 self._ready[""][number] = item
             return self._flush()
-        if isinstance(record, Translated) and number in self._queues.get(record.target_lang, ()):
-            self._ready[record.target_lang][number] = item
-            return self._flush()
+        if isinstance(record, Folded):
+            if record.target_lang in self._participant.reads:
+                return [FoldOutput.of(item)]
+            return []
+        if isinstance(record, Translated):
+            if number in self._queues.get(record.target_lang, ()):
+                self._ready[record.target_lang][number] = item
+                return self._flush()
+            if not self._participant.expects_translations \
+                    and record.target_lang in self._participant.reads:
+                self._enqueue(record.target_lang, number)
+                self._ready[record.target_lang][number] = item
+                return self._flush()
         return []
 
     def _enqueue(self, target: str, number: int) -> None:
