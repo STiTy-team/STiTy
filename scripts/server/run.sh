@@ -27,6 +27,7 @@ if [[ -n $host ]]; then export STITY_SERVER__HOST=$host; fi
 if [[ -n $port ]]; then export STITY_SERVER__PORT=$port; fi
 
 if [[ $stage == dev ]]; then
+  export STITY_RECORDING__ENABLED=${STITY_RECORDING__ENABLED:-true}
   trap 'kill 0' EXIT
   bash scripts/server/tunnel.sh "${port:-8765}" &
 fi

@@ -31,6 +31,11 @@ class ServerSettings(BaseModel):
     cors: CorsSettings = CorsSettings()
 
 
+class RecordingSettings(BaseModel):
+    enabled: bool = False
+    dir: Path = get_project_root() / "server" / "logs" / "recordings"
+
+
 class StitySettings(BaseModel):
     pipeline: str
 
@@ -39,6 +44,7 @@ class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="STITY_", env_nested_delimiter="__")
 
     server: ServerSettings = ServerSettings()
+    recording: RecordingSettings = RecordingSettings()
     stity: StitySettings
 
     @classmethod
@@ -69,6 +75,8 @@ class AppSettings(BaseSettings):
 
 class ServerConfig(ConfigBody):
     server: ServerSettings
+    recording: RecordingSettings
+    pipeline_name: str
     stity: PipelineConfig
 
 
@@ -77,6 +85,8 @@ def load_config() -> ServerConfig:
     return ServerConfig.parse(
         {
             "server": settings.server.model_dump(),
+            "recording": settings.recording.model_dump(),
+            "pipeline_name": settings.stity.pipeline,
             "stity": core_config.load_pipeline(settings.stity.pipeline),
         },
         root="server config",

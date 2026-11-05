@@ -36,6 +36,7 @@ from app.services.conversation import (
     ConversationService,
     ConversationSession,
 )
+from app.services.recording import RecordingService, SessionRecording
 from app.config import ServerConfig
 
 log = logging.getLogger(__name__)
@@ -49,11 +50,13 @@ async def conversation(
     websocket: WebSocket,
     service: ConversationService = Depends(Provide[Container.conversation_service]),
     config: ServerConfig = Depends(Provide[Container.server_config]),
+    recorder: RecordingService = Depends(Provide[Container.recording_service]),
 ):
     await ConversationWebSocketConnectionHandler(
         websocket,
         service,
         config,
+        recorder,
     ).run()
 
 
@@ -63,11 +66,21 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
         websocket: WebSocket,
         service: ConversationService,
         config: ServerConfig,
+        recorder: RecordingService,
     ):
         super().__init__(websocket, client_message)
         self.service = service
         self.config = config
+        self.recorder = recorder
         self.session: ConversationSession
+        self.recording: SessionRecording | None = None
+
+    async def run(self) -> None:
+        try:
+            await super().run()
+        finally:
+            if self.recording:
+                self.recording.close()
 
     async def handle_connect(self) -> None:
         self.session = self.service.open_session()
@@ -77,8 +90,15 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
             f"{client.host}:{client.port}" if client else "unknown",
             self.session.participant.id,
         )
+        self.recording = self.recorder.open(self.session.participant.id)
 
     async def produce_message(self) -> AsyncIterator[Message]:
+        async for message in self._messages():
+            if self.recording:
+                self.recording.message("out", message.encode())
+            yield message
+
+    async def _messages(self) -> AsyncIterator[Message]:
         yield HelloMessage(server_config=describe(self.config))
 
         async for event in self.session.events():
@@ -95,6 +115,7 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
                     yield FoldMessage.of(event)
 
     async def handle_message(self, message: ClientMessage | bytes) -> None:
+        self._record(message)
         match message:
             case PingMessage():
                 pass
@@ -112,6 +133,14 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
 
     async def handle_disconnect(self) -> None:
         await self.session.leave()
+
+    def _record(self, message: ClientMessage | bytes) -> None:
+        if self.recording is None or isinstance(message, PingMessage):
+            return
+        if isinstance(message, bytes):
+            self.recording.audio(message)
+        else:
+            self.recording.message("in", message.encode())
 
     async def _configure(self, message: ConfigMessage) -> None:
         try:
