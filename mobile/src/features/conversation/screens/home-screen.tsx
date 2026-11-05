@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/button';
 import { Logo } from '@/components/logo';
+import { features } from '@/config/features';
 import { EndedBanner } from '@/features/conversation/components/ended-banner';
 import { LanguageList } from '@/features/conversation/components/language-list';
 import { OutputModeControl } from '@/features/conversation/components/output-mode-control';
@@ -32,7 +33,7 @@ export const HomeScreen = () => {
         <EndedBanner />
         <ServerNotice />
         <LanguageList />
-        <OutputModeControl />
+        {features.speech && <OutputModeControl />}
         <SaveToggle />
       </ScrollView>
 

@@ -52,6 +52,30 @@ Each variant gets its own app id (`.dev`, `.preview` suffixes), name and URL sch
 `stity-preview`, `stity`), so all three can be installed side by side. Cleartext `ws://` and `http://` are allowed only in the development
 variant.
 
+### Feature switches (`configs/application.yml`)
+
+Features that a platform can't run well are switched per platform in `configs/application.yml`,
+the way the server uses `server/configs/application.yml`:
+
+```yaml
+features:
+  speech:
+    ios: true
+    android: true
+    web: false
+```
+
+| Feature  | Off means                                                                                                                                     |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `speech` | Translations aren't read aloud; the sound and output-mode controls are hidden. Off on web: Safari's `speechSynthesis` silences the microphone |
+
+`app.config.ts` reads the file at build time and puts it in `extra.features`. The schema and the
+per-platform choice live in `src/config/feature-switches.ts`; the app reads the result as
+`features.speech` from `src/config/features.ts`. A test loads the real app config and checks the file
+against the schema, so a typo fails `pnpm check` instead of the app. `app.config.ts` runs in Node and
+is typechecked on its own with `tsconfig.node.json`. Metro caches the config, so restart with
+`npx expo start -c` after editing it.
+
 ### Changing the server in a development build
 
 A development build can switch servers without a rebuild. Either way the app signs out (a session
@@ -75,6 +99,7 @@ with and show no Developer section.
 
 ```
 app.config.ts            Expo config: variants, permissions, plugins
+configs/application.yml  Feature switches per platform
 eas.json                 EAS build profiles (development / preview / production)
 modules/stity-audio/     Local native module — mic capture, audio routing, speech (Kotlin + Swift)
 src/
@@ -98,7 +123,7 @@ src/
 ├── domain/              Core vocabulary: languages, output modes
 ├── i18n/                i18next setup and one JSON file per UI language
 ├── theme/               Light and dark colors, spacing, Pretendard type scale — styles via makeStyles
-├── config/              Validated environment and app info
+├── config/              Validated environment, app info and feature switches
 └── lib/                 Small pure helpers
 ```
 

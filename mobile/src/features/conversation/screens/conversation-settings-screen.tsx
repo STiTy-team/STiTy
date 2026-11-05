@@ -8,6 +8,7 @@ import { goBack, goHome } from '@/components/go-back';
 import { IconButton } from '@/components/icon-button';
 import { ListRow, ListSection } from '@/components/list';
 import { appInfo } from '@/config/app-info';
+import { features } from '@/config/features';
 import { ScreenHeader } from '@/components/screen-header';
 import { LanguageList } from '@/features/conversation/components/language-list';
 import { OutputModeControl } from '@/features/conversation/components/output-mode-control';
@@ -72,16 +73,20 @@ export const ConversationSettingsScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <LanguageList />
-        <OutputModeControl />
-        <ListSection footer={t('conversationSettings.speakHint')}>
-          <ListRow title={t('conversationSettings.speak')}>
-            {toggle(
-              !muted,
-              (on) => useConversationPreferences.getState().setMuted(!on),
-              t('conversationSettings.speak'),
-            )}
-          </ListRow>
-        </ListSection>
+        {features.speech && (
+          <>
+            <OutputModeControl />
+            <ListSection footer={t('conversationSettings.speakHint')}>
+              <ListRow title={t('conversationSettings.speak')}>
+                {toggle(
+                  !muted,
+                  (on) => useConversationPreferences.getState().setMuted(!on),
+                  t('conversationSettings.speak'),
+                )}
+              </ListRow>
+            </ListSection>
+          </>
+        )}
         <ListSection title={t('addOns.title')}>
           {ADD_ONS.map((addOn) => (
             <ListRow key={addOn} title={t(`addOns.${addOn}`)} subtitle={t(`addOns.${addOn}Hint`)}>

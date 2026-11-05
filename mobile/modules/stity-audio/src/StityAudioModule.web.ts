@@ -43,6 +43,9 @@ class StityCapture extends AudioWorkletProcessor {
 registerProcessor('stity-capture', StityCapture);
 `;
 
+const SPEECH_MS_PER_CHAR = 120;
+const SPEECH_GRACE_MS = 5000;
+
 const DENIED: PermissionResponse = { status: 'denied', granted: false, canAskAgain: false };
 
 const toBase64 = (buffer: ArrayBuffer): string => {
@@ -72,15 +75,44 @@ const voiceFor = (languageTag: string): SpeechSynthesisVoice | undefined => {
 
 type Capture = { stream: MediaStream; context: AudioContext; node: AudioWorkletNode };
 
+type Speech = {
+  utterance: SpeechSynthesisUtterance;
+  started: boolean;
+  timer: ReturnType<typeof setTimeout>;
+};
+
+const unlockSpeechOnFirstTap = () => {
+  if (typeof document === 'undefined' || typeof speechSynthesis === 'undefined') return;
+  const unlock = () => {
+    speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+    document.removeEventListener('touchend', unlock, true);
+    document.removeEventListener('click', unlock, true);
+  };
+  document.addEventListener('touchend', unlock, true);
+  document.addEventListener('click', unlock, true);
+};
+
 /**
  * The browser version: microphone through getUserMedia and an AudioWorklet, speech through
  * speechSynthesis. Browsers choose the output device themselves, so routing is a no-op, and the
  * microphone needs a secure origin (https or localhost). Browser echo cancellation doesn't cover
- * speechSynthesis, so capture sends silence while a translation is spoken instead of hearing it.
+ * speechSynthesis, so capture sends silence while a translation is audibly playing (from `onstart`
+ * on) instead of hearing it. An utterance that never settles is failed after a length-based
+ * deadline, so a browser that loses speech events can't silence the microphone or stall the queue.
  */
 class StityAudioModule extends NativeModule<StityAudioEvents> {
   private capture: Capture | null = null;
-  private utterances = new Map<string, SpeechSynthesisUtterance>();
+  private utterances = new Map<string, Speech>();
+
+  constructor() {
+    super();
+    unlockSpeechOnFirstTap();
+  }
+
+  private get speaking(): boolean {
+    for (const speech of this.utterances.values()) if (speech.started) return true;
+    return false;
+  }
 
   async getMicrophonePermissionAsync(): Promise<PermissionResponse> {
     if (!navigator.mediaDevices?.getUserMedia) return DENIED;
@@ -126,7 +158,7 @@ class StityAudioModule extends NativeModule<StityAudioEvents> {
         processorOptions: { targetRate: sampleRate, chunkSamples },
       });
       node.port.onmessage = ({ data }: MessageEvent<ArrayBuffer>) => {
-        if (this.utterances.size > 0) new Int16Array(data).fill(0);
+        if (this.speaking) new Int16Array(data).fill(0);
         this.emit('onAudioChunk', { data: toBase64(data) });
       };
       context.createMediaStreamSource(stream).connect(node);
@@ -135,6 +167,11 @@ class StityAudioModule extends NativeModule<StityAudioEvents> {
         this.stopCapture();
         this.emit('onCaptureError', { message: 'The microphone was disconnected' });
       });
+      context.onstatechange = () => {
+        if (this.capture?.context !== context) return;
+        if (context.state !== 'running' && context.state !== 'closed')
+          void context.resume().catch(() => {});
+      };
       await context.resume();
       this.capture = { stream, context, node };
     } catch (error) {
@@ -149,6 +186,7 @@ class StityAudioModule extends NativeModule<StityAudioEvents> {
     const { stream, context, node } = this.capture;
     this.capture = null;
     node.port.onmessage = null;
+    context.onstatechange = null;
     node.disconnect();
     stream.getTracks().forEach((track) => track.stop());
     void context.close();
@@ -177,22 +215,35 @@ class StityAudioModule extends NativeModule<StityAudioEvents> {
     if (voice) utterance.voice = voice;
     utterance.rate = rate;
     const settle = (event: 'finished' | SpeechSynthesisErrorCode) => {
-      if (!this.utterances.delete(utteranceId)) return;
+      const speech = this.utterances.get(utteranceId);
+      if (speech?.utterance !== utterance) return;
+      clearTimeout(speech.timer);
+      this.utterances.delete(utteranceId);
       if (event === 'finished') this.emit('onSpeechFinished', { utteranceId });
       else {
         const reason = event === 'canceled' || event === 'interrupted' ? 'cancelled' : 'error';
         this.emit('onSpeechFailed', { utteranceId, reason });
       }
     };
+    utterance.onstart = () => {
+      const speech = this.utterances.get(utteranceId);
+      if (speech?.utterance === utterance) speech.started = true;
+    };
     utterance.onend = () => settle('finished');
     utterance.onerror = ({ error }) => settle(error);
+    const deadline = (text.length * SPEECH_MS_PER_CHAR) / rate + SPEECH_GRACE_MS;
+    const timer = setTimeout(() => {
+      speechSynthesis.cancel();
+      settle('synthesis-failed');
+    }, deadline);
     // Kept referenced until it settles: some browsers drop events of a collected utterance.
-    this.utterances.set(utteranceId, utterance);
+    this.utterances.set(utteranceId, { utterance, started: false, timer });
     speechSynthesis.speak(utterance);
   }
 
   stopSpeaking(): void {
     const pending = [...this.utterances.keys()];
+    this.utterances.forEach(({ timer }) => clearTimeout(timer));
     this.utterances.clear();
     if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
     pending.forEach((utteranceId) =>

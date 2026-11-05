@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 
 import { getApi, getIntroLive } from '@/api';
+import { features } from '@/config/features';
 import { audioOutput } from '@/services/audio/audio-output';
 import { Microphone } from '@/services/audio/microphone';
 import { haptics } from '@/services/haptics';
@@ -13,8 +14,12 @@ import { ConversationController } from './model/conversation-controller';
 import { canStart } from './model/conversation-machine';
 import { sessionPreferences, useConversationPreferences } from './model/conversation-preferences';
 import { useConversationStore } from './model/conversation-store';
+import type { SpeechPort } from './model/ports';
 
 export { useConversationPreferences };
+
+/** Stands in for the speech player where `features.speech` is off: translations stay on screen. */
+const noSpeech: SpeechPort = { enqueue: () => {}, stop: () => {} };
 
 let controller: ConversationController | null = null;
 
@@ -28,7 +33,7 @@ export const getConversationController = (): ConversationController =>
       sessionPreferences(usePreferencesStore.getState(), useConversationPreferences.getState()),
     onCapacity: (capacity) => useServerStore.getState().setCapacity(capacity),
     createMicrophone: (options) => new Microphone(options),
-    createSpeechPlayer: (onSpoken) => new SpeechPlayer(onSpoken),
+    createSpeechPlayer: (onSpoken) => (features.speech ? new SpeechPlayer(onSpoken) : noSpeech),
     track,
     feedback: haptics,
   }));

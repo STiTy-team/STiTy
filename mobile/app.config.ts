@@ -1,4 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import type { ConfigContext, ExpoConfig } from 'expo/config';
+import { parse } from 'yaml';
 
 type AppVariant = 'development' | 'preview' | 'production';
 
@@ -20,8 +24,9 @@ const EAS_PROJECT_ID = 'ed856a8e-782a-4b00-92dc-024fddd15d17';
 const MICROPHONE_USAGE =
   'STiTy uses the microphone to transcribe and translate your conversation in real time.';
 
-export default ({ config }: ConfigContext): ExpoConfig => {
+export default ({ config, projectRoot }: ConfigContext): ExpoConfig => {
   const variant = VARIANTS[VARIANT];
+  const application = parse(readFileSync(join(projectRoot, 'configs', 'application.yml'), 'utf8'));
   const appId = `${BASE_ID}${variant.idSuffix}`;
 
   return {
@@ -98,6 +103,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     extra: {
       appVariant: VARIANT,
+      features: application.features,
       eas: { projectId: EAS_PROJECT_ID },
     },
   };

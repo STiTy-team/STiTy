@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { features } from '@/config/features';
 import { OUTPUT_MODES, type OutputMode } from '@/domain/output-modes';
 import { getConversationController } from '@/features/conversation/conversation-runtime';
 import { isConnecting } from '@/features/conversation/model/conversation-machine';
@@ -73,6 +74,8 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
             style: styles.micIdle,
           };
 
+  const sideSpacer = <View style={styles.side} />;
+
   return (
     <View
       style={
@@ -81,14 +84,18 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           : [styles.bar, { paddingBottom: Math.max(bottom, spacing.lg) + spacing.sm }]
       }
     >
-      <SideButton
-        scheme={scheme}
-        icon={muted ? 'volume-mute-outline' : 'volume-high-outline'}
-        caption={muted ? t('conversation.muted') : t('conversation.sound')}
-        accessibilityRole="switch"
-        checked={!muted}
-        onPress={press(() => setMuted(!muted))}
-      />
+      {features.speech ? (
+        <SideButton
+          scheme={scheme}
+          icon={muted ? 'volume-mute-outline' : 'volume-high-outline'}
+          caption={muted ? t('conversation.muted') : t('conversation.sound')}
+          accessibilityRole="switch"
+          checked={!muted}
+          onPress={press(() => setMuted(!muted))}
+        />
+      ) : (
+        sideSpacer
+      )}
 
       {holdToTalk && recording ? (
         <View style={styles.holdColumn}>
@@ -144,7 +151,7 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           caption={t('present.exit')}
           onPress={present.onExit}
         />
-      ) : (
+      ) : features.speech ? (
         <SideButton
           icon={OUTPUT_ICONS[outputMode]}
           caption={t(`outputModes.${outputMode}`)}
@@ -152,6 +159,8 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           accessibilityHint={t(`outputModes.${nextOutput}`)}
           onPress={press(() => setOutputMode(nextOutput))}
         />
+      ) : (
+        sideSpacer
       )}
     </View>
   );
