@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { ComparePage } from "@/pages/compare-page"
 import { ConfigsPage } from "@/pages/configs-page"
 import { DatasetsPage } from "@/pages/datasets-page"
+import { LogsPage } from "@/pages/logs-page"
 import { QueuePage } from "@/pages/queue-page"
 import { ReplayPage } from "@/pages/replay-page"
 import { RunsPage } from "@/pages/runs-page"
@@ -27,6 +28,7 @@ export default function App() {
               <Route path="/compare" element={<ComparePage />} />
               <Route path="/replay" element={<ReplayPage />} />
               <Route path="/datasets/:tab?" element={<DatasetsPage />} />
+              <Route path="/logs" element={<LogsPage />} />
             </Routes>
           </main>
         </SidebarInset>

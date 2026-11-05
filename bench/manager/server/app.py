@@ -1,4 +1,4 @@
-"""The manager's API: the queue, configs, run overviews and session replay data and audio."""
+"""The manager's API: the queue, configs, run overviews, session replay data and audio, and server logs."""
 
 import json
 import urllib.parse
@@ -8,7 +8,7 @@ from core.errors import STiTyError
 
 from ...config import get_runs_dir
 from ...settings import BenchSettings
-from . import dataset_manager, runs
+from . import dataset_manager, recordings, runs
 from .dataset_manager import DatasetError
 from .queue import QueueApi
 from .session import (
@@ -25,6 +25,7 @@ PORT = 29130
 DISTRIBUTIONS_PREFIX = "/api/distributions/"
 REPLAY_API = "/api/replay"
 DATASETS_API = "/api/datasets"
+LOGS_API = "/api/logs"
 MAX_BODY = 64 * 1024
 
 
@@ -126,6 +127,9 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
             if path.startswith(DATASETS_API):
                 self._datasets_api("DELETE", path[len(DATASETS_API) :], qs, None)
                 return
+            if path.startswith(LOGS_API):
+                self._logs_api("DELETE", path[len(LOGS_API) :], qs)
+                return
             self.send_error(404, "no such endpoint")
 
         def _send_media(self, payload: bytes, content_type: str) -> None:
@@ -192,6 +196,25 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
                 self._json({"error": f"{run_name} has no item {item_id!r}"}, 404)
                 return
             self._json(found)
+
+        def _logs_api(self, method: str, rest: str, qs: dict) -> None:
+            recording_id = (qs.get("id") or [""])[0]
+            try:
+                if method == "GET" and rest == "":
+                    return self._json(recordings.list_recordings())
+                if method == "GET" and rest == "/replay":
+                    return self._json(recordings.replay(recording_id))
+                if method == "GET" and rest == "/audio":
+                    return self._send_media(recordings.audio_bytes(recording_id), "audio/wav")
+                if method == "DELETE" and rest == "":
+                    return self._json(recordings.delete(recording_id))
+            except recordings.RecordingError as e:
+                self._json({"error": e.message}, e.code)
+                return
+            except (OSError, STiTyError, ValueError) as e:
+                self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+                return
+            self.send_error(404, "no such endpoint")
 
         def _datasets_api(self, method: str, rest: str, qs: dict, body: bytes | None) -> None:
             one = {k: v[0] for k, v in qs.items()}
@@ -265,6 +288,10 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
 
             if path.startswith(DATASETS_API):
                 self._datasets_api("GET", path[len(DATASETS_API) :], qs, None)
+                return
+
+            if path.startswith(LOGS_API):
+                self._logs_api("GET", path[len(LOGS_API) :], qs)
                 return
 
             if path == "/api/overview":
