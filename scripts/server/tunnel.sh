@@ -5,6 +5,7 @@ set -euo pipefail
 
 port="${1:-8765}"
 web="${STITY_WEB_URL:-https://stity-mobile-preview.expo.app}"
+qr_file="$(cd "$(dirname "$0")/../.." && pwd)/qr"
 
 if ! command -v cloudflared >/dev/null; then
   echo "cloudflared not found: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/" >&2
@@ -29,10 +30,12 @@ done
 
 server="wss://${origin#https://}"
 link="${web%/}/dev-server?url=${server}"
-echo
-uvx --quiet --from 'qrcode==8.*' qr --ascii "$link"
-echo "[tunnel] Scan with a phone camera to open the web app on this server: ${link}"
-echo "[tunnel] Or enter it in Profile → Developer → Server: ${server}"
-echo
+{
+  echo
+  uvx --quiet --from 'qrcode==8.*' qr --ascii "$link"
+  echo "[tunnel] Scan with a phone camera to open the web app on this server: ${link}"
+  echo "[tunnel] Or enter it in Profile → Developer → Server: ${server}"
+  echo
+} | tee "$qr_file"
 
 wait "$tunnel_pid"
