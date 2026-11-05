@@ -160,13 +160,14 @@ def make_preprocess_fn_with_features(processor, sampling_rate=16000):
     """map() 단계에서 오디오 로딩 + mel spectrogram 추출까지 완료해 캐싱."""
     def _preprocess(ex: Dict[str, Any]) -> Dict[str, Any]:
         prompt = ex.get("prompt", "")
+        cond = ex.get("cond") or ""
         target = ex["text"]
         eos = processor.tokenizer.eos_token or ""
 
         prefix_msgs = build_prefix_messages(prompt, None)
         prefix_text = processor.apply_chat_template(
             [prefix_msgs], add_generation_prompt=True, tokenize=False
-        )[0]
+        )[0] + cond
         full_text = prefix_text + target + eos
 
         wav = load_audio(ex["audio"], sr=sampling_rate)
