@@ -41,7 +41,9 @@ def _row(dataset: str, pipeline: str, summary: dict) -> dict:
         "pipeline_tags": list(pipeline_meta.get("tags") or []),
         "dataset_description": dataset_meta.get("description") or "",
         "dataset_tags": list(dataset_meta.get("tags") or []),
-        "metrics": {k: v for k, v in (summary.get("metrics") or {}).items() if isinstance(v, (int, float))},
+        "metrics": {
+            k: v for k, v in (summary.get("metrics") or {}).items() if isinstance(v, (int, float))
+        },
     }
 
 
@@ -88,7 +90,9 @@ def all_runs(bucket: Bucket | None) -> dict:
     """Newest first. A shared run pulled to this computer is listed once, as the shared
     run, with `local_name` set; a local run with no shared copy is listed with no `run_id`."""
     local = runs.list_runs() if get_runs_dir().is_dir() else []
-    pulled = {name: run_id for name in local if (run_id := store.shared_run_id(get_runs_dir() / name))}
+    pulled = {
+        name: run_id for name in local if (run_id := store.shared_run_id(get_runs_dir() / name))
+    }
     rows, matched = _remote_rows(bucket, pulled) if bucket is not None else ([], set())
     rows += _local_rows([name for name in local if name not in matched])
     rows.sort(key=lambda row: row["stamp"], reverse=True)

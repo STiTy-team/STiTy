@@ -1,7 +1,14 @@
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { ApiError, type Machine } from "@/lib/api"
 import { useSaveNotes } from "@/lib/queries"
@@ -42,7 +49,15 @@ function NotesForm({ machine, onDone }: { machine: Machine; onDone: () => void }
   )
 }
 
-export function EditNotesDialog({ machine, open, onOpenChange }: { machine: Machine; open: boolean; onOpenChange: (open: boolean) => void }) {
+export function EditNotesDialog({
+  machine,
+  open,
+  onOpenChange,
+}: {
+  machine: Machine
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">

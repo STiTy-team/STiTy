@@ -1,4 +1,5 @@
 """AmberNet (NeMo langid_ambernet) — lid_bench.py 와 같은 180클립·창."""
+
 import time, glob
 import numpy as np
 import torch
@@ -11,6 +12,7 @@ ROOT = "/home/mobility/stity-datasets/fleurs/data"
 N_PER_LANG = 60
 
 from silero_vad import load_silero_vad, get_speech_timestamps
+
 vad = load_silero_vad()
 
 clips = []
@@ -45,6 +47,9 @@ for w in WINDOWS:
         lg = logits[0].float()
         pick = max(pick_ids, key=lambda c: lg[pick_ids[c]].item())
         hits.append(pick == code)
-    print(f"ambernet  w={w:>3}s  acc={np.mean(hits):.3f}  n={len(hits)}  "
-          f"infer={np.median(times)*1000:.0f}ms  vram={vram:.0f}MiB", flush=True)
+    print(
+        f"ambernet  w={w:>3}s  acc={np.mean(hits):.3f}  n={len(hits)}  "
+        f"infer={np.median(times) * 1000:.0f}ms  vram={vram:.0f}MiB",
+        flush=True,
+    )
 print("LID_AMBERNET_DONE", flush=True)

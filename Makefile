@@ -33,7 +33,9 @@ bench-worker:
 	uv run $(patsubst %,--env-file %,$(wildcard .env)) --project bench/worker python -m bench.worker
 
 fmt:
-	uvx ruff@0.16.9 format bench server
+	uvx ruff@0.16.9 format .
+	cd mobile && npx --yes prettier@3.9.10 --write .
+	cd bench/manager && npx --yes prettier@3.9.10 --write src
 
 env:
 	@echo CUDA_HOME=$(CUDA_HOME)

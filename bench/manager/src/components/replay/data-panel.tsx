@@ -9,7 +9,15 @@ import type { ItemData } from "@/lib/replay/types"
 import { cn } from "@/lib/utils"
 
 /** Alignment words are pieces of the transcript (Korean ones can be sub-word), so find each in order. */
-function MarkedWords({ text, words, activeWord }: { text: string; words: QuietTurn["words"]; activeWord: number | null }) {
+function MarkedWords({
+  text,
+  words,
+  activeWord,
+}: {
+  text: string
+  words: QuietTurn["words"]
+  activeWord: number | null
+}) {
   const out = []
   const lower = text.toLowerCase()
   let at = 0
@@ -18,7 +26,10 @@ function MarkedWords({ text, words, activeWord }: { text: string; words: QuietTu
     if (k < 0) continue
     out.push(text.slice(at, k))
     out.push(
-      <span key={w.i} className={cn("rounded-sm transition-colors", w.i === activeWord && "bg-primary text-primary-foreground")}>
+      <span
+        key={w.i}
+        className={cn("rounded-sm transition-colors", w.i === activeWord && "bg-primary text-primary-foreground")}
+      >
         {text.slice(k, k + w.word.length)}
       </span>,
     )
@@ -109,13 +120,20 @@ export function DataPanel({
                   onClick={() => seek(turn.start)}
                 >
                   <TableCell className="align-top whitespace-nowrap text-muted-foreground">
-                    <span className="mr-1.5 inline-block size-2 rounded-full" style={{ background: langHue(turn.src_lang) }} />
+                    <span
+                      className="mr-1.5 inline-block size-2 rounded-full"
+                      style={{ background: langHue(turn.src_lang) }}
+                    />
                     {turn.src_lang || "?"}
                     {turn.speaker && ` · ${turn.speaker}`}
                     {turn.partial && " · 잘림"}
                   </TableCell>
                   <TableCell className="align-top whitespace-normal">
-                    <MarkedWords text={turn.transcript} words={turn.words} activeWord={n === active ? activeWord : null} />
+                    <MarkedWords
+                      text={turn.transcript}
+                      words={turn.words}
+                      activeWord={n === active ? activeWord : null}
+                    />
                     {translation && turn.src_lang !== targetLang && (
                       <div className="mt-0.5 text-xs text-muted-foreground">
                         {targetLang}: {translation}

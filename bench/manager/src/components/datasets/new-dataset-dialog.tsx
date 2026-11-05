@@ -2,7 +2,15 @@ import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCreateDataset } from "@/lib/datasets/queries"
@@ -14,7 +22,11 @@ function NewDatasetForm({ onDone }: { onDone: (name: string) => void }) {
   const [languages, setLanguages] = useState("")
   const create = useCreateDataset()
   const trimmed = name.trim()
-  const problem = !trimmed ? null : !NAME_PATTERN.test(trimmed) ? "이름은 영문·숫자·_·- 만, 64자 이내로 써 주세요." : null
+  const problem = !trimmed
+    ? null
+    : !NAME_PATTERN.test(trimmed)
+      ? "이름은 영문·숫자·_·- 만, 64자 이내로 써 주세요."
+      : null
 
   const save = () => {
     if (!trimmed || problem) return
@@ -40,7 +52,9 @@ function NewDatasetForm({ onDone }: { onDone: (name: string) => void }) {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="dataset-langs">언어 <span className="text-muted-foreground">쉼표로 여러 개</span></Label>
+          <Label htmlFor="dataset-langs">
+            언어 <span className="text-muted-foreground">쉼표로 여러 개</span>
+          </Label>
           <Input
             id="dataset-langs"
             value={languages}

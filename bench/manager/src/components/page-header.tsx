@@ -59,7 +59,11 @@ function ReloadButton() {
 }
 
 export function PageBody({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 py-6 md:px-6", className)}>{children}</div>
+  return (
+    <div className={cn("mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 py-6 md:px-6", className)}>
+      {children}
+    </div>
+  )
 }
 
 export function Notice({ children }: { children: ReactNode }) {

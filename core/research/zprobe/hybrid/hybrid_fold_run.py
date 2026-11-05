@@ -5,6 +5,7 @@ a run folds only with >= 2 matches and >= 4 normalized chars, an emptied commit 
 
 usage: (STiTy-bench, bench venv) STITY_DATA_ROOT=... PYTHONPATH=.:bench python .../hybrid_fold_run.py \
          --pipeline hybrid.koen+grpoceren-dedup07 --dataset northstar_ko+en-ko"""
+
 import argparse, copy, re, shutil
 from dataclasses import asdict
 
@@ -13,7 +14,13 @@ from core.utils.json import read_jsonl, write_jsonl
 
 from bench import config, report
 from bench import dataset as datasets
-from bench.__main__ import CHUNK_SIZE_MS, TRAILING_SILENCE_MS, score_item, score_run, write_comet_inputs
+from bench.__main__ import (
+    CHUNK_SIZE_MS,
+    TRAILING_SILENCE_MS,
+    score_item,
+    score_run,
+    write_comet_inputs,
+)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--pipeline", required=True)
@@ -49,7 +56,8 @@ def region_fold(item, t, text):
     out, i = [], 0
     while i < len(toks):
         if not keep[i]:
-            out.append(toks[i]); i += 1
+            out.append(toks[i])
+            i += 1
             continue
         j = i
         while j < len(toks) and keep[j]:
@@ -70,8 +78,9 @@ for row in read_jsonl(src_dir / "items.jsonl"):
         if r.get("type") != "translated":
             recs.append(r)
             continue
-        new = region_fold(row["id"], float(r.get("decision_audio_sec") or 0.0),
-                          r.get("translation") or "")
+        new = region_fold(
+            row["id"], float(r.get("decision_audio_sec") or 0.0), r.get("translation") or ""
+        )
         if not norm(new):
             dropped += 1
             continue
@@ -87,7 +96,15 @@ run_dir.mkdir(parents=True, exist_ok=True)
 write_jsonl(run_dir / "items.jsonl", rows)
 shutil.copy(src_dir / "events.jsonl", run_dir / "events.jsonl")
 write_comet_inputs(rows, cfg, run_dir / "comet_inputs.jsonl")
-report.write_all(cfg=cfg, dataset=spec, scores=score_run(rows, cfg), rows=rows, status="ok",
-                 started=clock.now(), wall_sec=0.0, run_dir=run_dir,
-                 pacing={"chunk_size_ms": CHUNK_SIZE_MS, "trailing_silence_ms": TRAILING_SILENCE_MS})
+report.write_all(
+    cfg=cfg,
+    dataset=spec,
+    scores=score_run(rows, cfg),
+    rows=rows,
+    status="ok",
+    started=clock.now(),
+    wall_sec=0.0,
+    run_dir=run_dir,
+    pacing={"chunk_size_ms": CHUNK_SIZE_MS, "trailing_silence_ms": TRAILING_SILENCE_MS},
+)
 print(f"region-folded {src_dir} -> {run_dir} (dropped {dropped}, trimmed {trimmed})")

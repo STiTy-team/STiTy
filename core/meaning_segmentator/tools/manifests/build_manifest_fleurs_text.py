@@ -41,8 +41,14 @@ sys.path.insert(0, str(_REPO_ROOT))
 from core.meaning_segmentator.autoseg.runtime import data as autoseg_data  # noqa: E402
 
 LANG_CODE = {
-    "en_us": "en", "de_de": "de", "ko_kr": "ko", "ja_jp": "ja",
-    "cmn_hans_cn": "zh", "es_419": "es", "fr_fr": "fr", "ru_ru": "ru",
+    "en_us": "en",
+    "de_de": "de",
+    "ko_kr": "ko",
+    "ja_jp": "ja",
+    "cmn_hans_cn": "zh",
+    "es_419": "es",
+    "fr_fr": "fr",
+    "ru_ru": "ru",
 }
 
 
@@ -92,26 +98,45 @@ def stratified_order(items: list[tuple[str, str]], seed: int) -> list[tuple[str,
     양쪽에 복사돼 있어 한쪽만 고치면 조용히 갈라졌다."""
     return autoseg_data.stratified_order(items, seed, text_of=lambda x: x[1])
 
+
 def main() -> int:
     p = argparse.ArgumentParser(description="FLEURS n-way 텍스트 manifest (오디오 불필요)")
     p.add_argument("--fleurs-root", default="~/datasets/fleurs")
     p.add_argument("--src", default="en_us")
     p.add_argument("--tgts", nargs="+", default=["de_de", "ja_jp", "cmn_hans_cn"])
-    p.add_argument("--splits", nargs="+", default=["train", "dev"],
-                   help="쓸 FLEURS 스플릿. 기본은 test 제외 (모델 평가용 봉인)")
-    p.add_argument("--exclude-run", default=None,
-                   help="이 autoseg 런이 쓴 문장을 제외 (프롬프트 최적화 데이터)")
+    p.add_argument(
+        "--splits",
+        nargs="+",
+        default=["train", "dev"],
+        help="쓸 FLEURS 스플릿. 기본은 test 제외 (모델 평가용 봉인)",
+    )
+    p.add_argument(
+        "--exclude-run",
+        default=None,
+        help="이 autoseg 런이 쓴 문장을 제외 (프롬프트 최적화 데이터)",
+    )
     p.add_argument("--min-chars", type=int, default=25)
-    p.add_argument("--max-words", type=int, default=60,
-                   help="이보다 긴 행은 문장이 아니라 파싱 잔해일 가능성이 높다")
+    p.add_argument(
+        "--max-words",
+        type=int,
+        default=60,
+        help="이보다 긴 행은 문장이 아니라 파싱 잔해일 가능성이 높다",
+    )
     p.add_argument("--n", type=int, default=500)
-    p.add_argument("--order-from", default=None,
-                   help="기존 *_order.json 의 정렬을 그대로 재사용한다. 층화를 다시 계산하지 "
-                        "않으므로 소스 언어를 바꿔도 **같은 문장 집합**이 나온다 — 방향이 "
-                        "다른 트랙끼리 내용을 맞추려면 이것을 쓸 것")
-    p.add_argument("--skip", type=int, default=0,
-                   help="정렬에서 앞 N 개를 건너뛰고 그 다음 --n 개를 취한다. 이미 소진한 "
-                        "구간과 겹치지 않는 새 셋을 떼는 용도")
+    p.add_argument(
+        "--order-from",
+        default=None,
+        help="기존 *_order.json 의 정렬을 그대로 재사용한다. 층화를 다시 계산하지 "
+        "않으므로 소스 언어를 바꿔도 **같은 문장 집합**이 나온다 — 방향이 "
+        "다른 트랙끼리 내용을 맞추려면 이것을 쓸 것",
+    )
+    p.add_argument(
+        "--skip",
+        type=int,
+        default=0,
+        help="정렬에서 앞 N 개를 건너뛰고 그 다음 --n 개를 취한다. 이미 소진한 "
+        "구간과 겹치지 않는 새 셋을 떼는 용도",
+    )
     p.add_argument("--seed", type=int, default=20260806)
     p.add_argument("--out-dir", default="core/meaning_segmentator/data/manifests")
     p.add_argument("--tag", default="clean500")
@@ -141,17 +166,24 @@ def main() -> int:
         missing = [i for i in ref_ids if i not in src or i not in inter]
         if missing:
             print(f"정렬에 있으나 {args.src}/교집합에 없는 문장 {len(missing)}건 — 건너뜀")
-        order = [(sid, src[sid][0]) for sid in ref_ids
-                 if sid in src and sid in inter and sid not in excluded]
+        order = [
+            (sid, src[sid][0])
+            for sid in ref_ids
+            if sid in src and sid in inter and sid not in excluded
+        ]
         print(f"정렬 재사용: {args.order_from} ({len(saved['order'])}) → 사용 가능 {len(order)}")
     else:
-        pool = [(sid, src[sid][0]) for sid in inter
-                if sid not in excluded and len(src[sid][0]) >= args.min_chars
-                and len(src[sid][0].split()) <= args.max_words]
+        pool = [
+            (sid, src[sid][0])
+            for sid in inter
+            if sid not in excluded
+            and len(src[sid][0]) >= args.min_chars
+            and len(src[sid][0].split()) <= args.max_words
+        ]
         print(f"모집단: {len(pool)} (min_chars={args.min_chars})")
         order = stratified_order(pool, args.seed)
 
-    chosen = order[args.skip: args.skip + args.n]
+    chosen = order[args.skip : args.skip + args.n]
     if len(chosen) < args.n:
         print(f"문장 부족: skip={args.skip} 이후 {len(chosen)} < {args.n}", file=sys.stderr)
         return 1
@@ -164,39 +196,68 @@ def main() -> int:
         path = out_dir / f"fleurs_nway_{src_code}-{tcode}_{args.tag}.jsonl"
         with path.open("w", encoding="utf-8") as f:
             for sid, text in chosen:
-                f.write(json.dumps({
-                    "utt_id": f"{args.src}_{sid}",
-                    "src_lang": src_code, "tgt_lang": tcode,
-                    "src_text": text, "tgt_text": langs[tgt][sid][0],
-                    "talk_id": sid, "fleurs_split": src[sid][1],
-                }, ensure_ascii=False) + "\n")
+                f.write(
+                    json.dumps(
+                        {
+                            "utt_id": f"{args.src}_{sid}",
+                            "src_lang": src_code,
+                            "tgt_lang": tcode,
+                            "src_text": text,
+                            "tgt_text": langs[tgt][sid][0],
+                            "talk_id": sid,
+                            "fleurs_split": src[sid][1],
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
         print(f"  wrote {path} ({len(chosen)}행)")
 
-    (out_dir / f"fleurs_nway_{src_code}_{args.tag}_order.json").write_text(json.dumps({
-        "seed": args.seed, "splits": args.splits, "min_chars": args.min_chars,
-        "n_taken": args.n, "n_pool": len(order), "skip": args.skip,
-        "order_from": args.order_from, "exclude_run": args.exclude_run,
-        "order": [{"id": f"{args.src}_{sid}", "text": t} for sid, t in order],
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    (out_dir / f"fleurs_nway_{src_code}_{args.tag}_order.json").write_text(
+        json.dumps(
+            {
+                "seed": args.seed,
+                "splits": args.splits,
+                "min_chars": args.min_chars,
+                "n_taken": args.n,
+                "n_pool": len(order),
+                "skip": args.skip,
+                "order_from": args.order_from,
+                "exclude_run": args.exclude_run,
+                "order": [{"id": f"{args.src}_{sid}", "text": t} for sid, t in order],
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     print(f"  wrote order.json (전체 {len(order)} — 확장 시 앞 {args.n} 은 그대로)")
 
     # autoseg 런 디렉토리에 그대로 깔 수 있는 형식도 같이 낸다.
-    (out_dir / f"fleurs_nway_{src_code}_{args.tag}_split.json").write_text(json.dumps(
-        [{"id": f"{args.src}_{sid}", "text": t} for sid, t in chosen],
-        ensure_ascii=False, indent=2), encoding="utf-8")
+    (out_dir / f"fleurs_nway_{src_code}_{args.tag}_split.json").write_text(
+        json.dumps(
+            [{"id": f"{args.src}_{sid}", "text": t} for sid, t in chosen],
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     measured = autoseg_data.measure_profile([t for _, t in chosen])
     spaced = measured["uses_spaces_between_words"]
     # **`T` 와 `min_gap` 의 단위가 여기서 갈린다** (`pipeline.unit_count`): 띄어쓰기가 있으면
     # 어절, 없으면 문자다. 같은 T 를 다른 언어에 그대로 쓰면 조각 길이가 전혀 달라진다.
-    units = sorted((len(t.split()) if spaced else len(t.replace(" ", "")))
-                   for _, t in chosen)
+    units = sorted((len(t.split()) if spaced else len(t.replace(" ", ""))) for _, t in chosen)
     mid = units[len(units) // 2]
-    print(f"  측정 프로파일: 공백비율 {measured['space_ratio']} "
-          f"(spaced={spaced}), 문말 부호 {measured['trailing_punctuation']}")
-    print(f"  소스 단위({'어절' if spaced else '문자'}): 중앙 {mid}, "
-          f"평균 {sum(units) / len(units):.1f}, p10 {units[len(units) // 10]}, "
-          f"p90 {units[len(units) * 9 // 10]}")
+    print(
+        f"  측정 프로파일: 공백비율 {measured['space_ratio']} "
+        f"(spaced={spaced}), 문말 부호 {measured['trailing_punctuation']}"
+    )
+    print(
+        f"  소스 단위({'어절' if spaced else '문자'}): 중앙 {mid}, "
+        f"평균 {sum(units) / len(units):.1f}, p10 {units[len(units) // 10]}, "
+        f"p90 {units[len(units) * 9 // 10]}"
+    )
     return 0
 
 

@@ -52,13 +52,20 @@ export function BrowsePanel({ ds }: { ds: string }) {
           <p className="text-sm text-destructive">항목을 불러오지 못했어요: {items.error.message}</p>
         ) : rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            {q ? "찾는 항목이 없어요." : "이 데이터셋에는 manifest.jsonl이 없어요. convert.py를 돌리거나, 녹음 탭에서 바로 녹음하면 만들어져요."}
+            {q
+              ? "찾는 항목이 없어요."
+              : "이 데이터셋에는 manifest.jsonl이 없어요. convert.py를 돌리거나, 녹음 탭에서 바로 녹음하면 만들어져요."}
           </p>
         ) : (
           <>
             <div className="rounded-xl border">
               {rows.map((item) => (
-                <ItemRow key={item.id} item={item} selected={item.id === openItem} onOpen={() => setOpenItem(item.id)} />
+                <ItemRow
+                  key={item.id}
+                  item={item}
+                  selected={item.id === openItem}
+                  onOpen={() => setOpenItem(item.id)}
+                />
               ))}
             </div>
             {items.hasNextPage && (

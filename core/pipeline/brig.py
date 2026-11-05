@@ -12,8 +12,11 @@ class BrigPipeline(Pipeline):
     REQUIRED = (transcribers,)
     OPTIONAL = (mixers, detectors)
     STAGES = (
-        Stage(parts=("mixer", "vad", "transcription"), runs_per=RunsPer.ROOM,
-              processor=SpeechProcessor),
+        Stage(
+            parts=("mixer", "vad", "transcription"),
+            runs_per=RunsPer.ROOM,
+            processor=SpeechProcessor,
+        ),
     )
 
     async def listen(self, audio: bytes) -> list:

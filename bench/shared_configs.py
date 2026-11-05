@@ -42,6 +42,7 @@ def split_key(key_in_bucket: str) -> tuple[str, str] | None:
 
 def with_meta(text: str, meta: dict) -> str:
     """The config text with its top-level `meta:` block replaced; every other line stays as written."""
+
     def line(k: str, v: object) -> str:
         style = {"allow_unicode": True, "width": float("inf")}
         if isinstance(v, list):
@@ -83,7 +84,9 @@ class SharedConfigs:
 
     def names(self) -> list[tuple[str, str, str]]:
         found = []
-        newest_first = sorted(self.bucket.modified(FOLDER).items(), key=lambda kv: kv[1], reverse=True)
+        newest_first = sorted(
+            self.bucket.modified(FOLDER).items(), key=lambda kv: kv[1], reverse=True
+        )
         for key_in_bucket, modified_at in newest_first:
             kind_and_name = split_key(key_in_bucket)
             if kind_and_name:
@@ -210,7 +213,9 @@ def pull_one(local: LocalCopy, kind: str, name: str, remote: SharedConfig) -> No
     elif not local.edited(kind, name, remote.text):
         print(f"unpushed {kind} {name}: edited here; push it to share")
     else:
-        print(f"kept     {kind} {name}: edited here and in S3; push it, or delete the file and pull")
+        print(
+            f"kept     {kind} {name}: edited here and in S3; push it, or delete the file and pull"
+        )
 
 
 def is_file_path(ref: str) -> bool:
@@ -239,7 +244,11 @@ def config_text(kind: str, ref: str, shared: SharedConfigs | None) -> tuple[str,
     mine = LocalCopy(get_project_root() / "configs").read(kind, ref)
     if mine is not None and mine != remote.text:
         log.warning(
-            "[CONFIG] %s %s differs from configs/%ss/%s.yml; running the S3 one", kind, ref, kind, ref
+            "[CONFIG] %s %s differs from configs/%ss/%s.yml; running the S3 one",
+            kind,
+            ref,
+            kind,
+            ref,
         )
     return ref, remote.text
 

@@ -51,6 +51,7 @@ from transformers import AutoConfig
 # Encoder frame length
 # ---------------------------------------------------------------------------
 
+
 def mel_to_encoder_frames(mel_len: int) -> int:
     r = mel_len % 100
     if r == 0:
@@ -63,6 +64,7 @@ def mel_to_encoder_frames(mel_len: int) -> int:
 # ---------------------------------------------------------------------------
 # Audio loading
 # ---------------------------------------------------------------------------
+
 
 def load_audio_16k(path: str, start: float = 0.0, end: float | None = None) -> np.ndarray:
     sr, data = wavfile.read(path)
@@ -89,6 +91,7 @@ def load_audio_16k(path: str, start: float = 0.0, end: float | None = None) -> n
 # Label
 # ---------------------------------------------------------------------------
 
+
 def make_uniform_label(n_frames: int, seg_frame: int) -> torch.Tensor:
     """[0, seg_frame) 구간에 1/seg_frame 균등 분배. sum(label)=1."""
     label = torch.zeros(n_frames)
@@ -113,29 +116,31 @@ def make_spike_label(n_frames: int, seg_frame: int, sigma: float = 2.0) -> torch
 # Model
 # ---------------------------------------------------------------------------
 
+
 class CIFWeightPredictor(nn.Module):
     """encoder output (T, 2048) → Conv1d → weight (T,).
     qty_head 없음: 항상 n_segs=1이므로 Σw→1 만 학습."""
+
     def __init__(self, d_model: int = 2048, hidden: int = 128, kernel_size: int = 7):
         super().__init__()
         self.proj = nn.Linear(d_model, hidden)
-        self.conv = nn.Conv1d(hidden, hidden, kernel_size=kernel_size,
-                              padding=kernel_size // 2)
-        self.out  = nn.Linear(hidden, 1)
-        self.act  = nn.GELU()
+        self.conv = nn.Conv1d(hidden, hidden, kernel_size=kernel_size, padding=kernel_size // 2)
+        self.out = nn.Linear(hidden, 1)
+        self.act = nn.GELU()
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, encoder_output: torch.Tensor) -> torch.Tensor:
-        x = self.act(self.proj(encoder_output))         # (T, hidden)
-        x = x.T.unsqueeze(0)                            # (1, hidden, T)
-        x = self.act(self.conv(x)).squeeze(0).T         # (T, hidden)
-        return self.sigmoid(self.out(x)).squeeze(-1)    # (T,)
+        x = self.act(self.proj(encoder_output))  # (T, hidden)
+        x = x.T.unsqueeze(0)  # (1, hidden, T)
+        x = self.act(self.conv(x)).squeeze(0).T  # (T, hidden)
+        return self.sigmoid(self.out(x)).squeeze(-1)  # (T,)
 
 
 class CIFMelPredictor(nn.Module):
     """mel mode: 3× Conv1d stride-2 (8x downsample) directly on mel → (T_enc,).
     인코더 없이 acoustic 피처만으로 SEG 경계를 예측. context-independent (local conv only).
     temporal resolution이 encoder mode와 동일하게 맞춰짐."""
+
     def __init__(self, n_mel: int = 128, hidden: int = 256):
         super().__init__()
         self.convs = nn.Sequential(
@@ -146,18 +151,19 @@ class CIFMelPredictor(nn.Module):
             nn.Conv1d(hidden, hidden, kernel_size=3, stride=2, padding=1),
             nn.GELU(),
         )
-        self.linear  = nn.Linear(hidden, 1)
+        self.linear = nn.Linear(hidden, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, mel: torch.Tensor) -> torch.Tensor:
         # mel: (n_mel, T_mel)
-        x = self.convs(mel.unsqueeze(0)).squeeze(0)         # (hidden, T_enc)
-        return self.sigmoid(self.linear(x.T)).squeeze(-1)   # (T_enc,)
+        x = self.convs(mel.unsqueeze(0)).squeeze(0)  # (hidden, T_enc)
+        return self.sigmoid(self.linear(x.T)).squeeze(-1)  # (T_enc,)
 
 
 # ---------------------------------------------------------------------------
 # Loss
 # ---------------------------------------------------------------------------
+
 
 def cif_loss(
     weights: torch.Tensor,
@@ -175,13 +181,19 @@ def cif_loss(
 # Dataset
 # ---------------------------------------------------------------------------
 
+
 class OneSegDataset(Dataset):
-    def __init__(self, jsonl_path: str, feature_extractor: WhisperFeatureExtractor,
-                 label_type: str = "uniform", label_sigma: float = 2.0):
+    def __init__(
+        self,
+        jsonl_path: str,
+        feature_extractor: WhisperFeatureExtractor,
+        label_type: str = "uniform",
+        label_sigma: float = 2.0,
+    ):
         with open(jsonl_path) as f:
             self.records = [json.loads(l) for l in f if l.strip()]
         self.fe = feature_extractor
-        self.label_type  = label_type
+        self.label_type = label_type
         self.label_sigma = label_sigma
 
     def __len__(self):
@@ -190,19 +202,18 @@ class OneSegDataset(Dataset):
     def __getitem__(self, idx: int):
         rec = self.records[idx]
         start = rec.get("start", 0.0)
-        end   = rec.get("end")
+        end = rec.get("end")
         audio = load_audio_16k(rec["audio"], start=start, end=end)
 
-        out = self.fe(audio, sampling_rate=16000, return_tensors="pt",
-                      return_attention_mask=True)
-        mel     = out["input_features"].squeeze(0)
+        out = self.fe(audio, sampling_rate=16000, return_tensors="pt", return_attention_mask=True)
+        mel = out["input_features"].squeeze(0)
         mel_len = int(out["attention_mask"].squeeze(0).sum().item())
-        mel     = mel[:, :mel_len]
+        mel = mel[:, :mel_len]
 
         n_enc = mel_to_encoder_frames(mel_len)
-        dur   = len(audio) / 16000.0
+        dur = len(audio) / 16000.0
 
-        seg_t     = rec["seg_t"]
+        seg_t = rec["seg_t"]
         seg_frame = min(max(round(seg_t * n_enc / dur), 0), n_enc - 1)
 
         if self.label_type == "spike":
@@ -222,10 +233,13 @@ def collate_fn(batch):
 # Encoder loading
 # ---------------------------------------------------------------------------
 
+
 def load_encoder(model_path: str, device: str, dtype: torch.dtype):
     AutoConfig.register("qwen3_asr", Qwen3ASRConfig)
     model = Qwen3ASRForConditionalGeneration.from_pretrained(
-        model_path, dtype=dtype, device_map=device,
+        model_path,
+        dtype=dtype,
+        device_map=device,
     )
     encoder = model.thinker.audio_tower
     encoder.eval()
@@ -239,6 +253,7 @@ def load_encoder(model_path: str, device: str, dtype: torch.dtype):
 # ---------------------------------------------------------------------------
 # Forward
 # ---------------------------------------------------------------------------
+
 
 def _forward(encoder, predictor, mel, mel_len, device, dtype) -> torch.Tensor:
     if encoder is not None:
@@ -257,44 +272,57 @@ def _forward(encoder, predictor, mel, mel_len, device, dtype) -> torch.Tensor:
 # Training loop
 # ---------------------------------------------------------------------------
 
+
 def train(args):
     device = torch.device(args.device)
-    dtype  = torch.bfloat16
+    dtype = torch.bfloat16
 
     if args.ckpt_dir is None:
         # <repo>/core/research/cif/checkpoints/<mode>/one_seg
-        args.ckpt_dir = str(Path(__file__).resolve().parents[2] / "checkpoints" / args.mode / "one_seg")
+        args.ckpt_dir = str(
+            Path(__file__).resolve().parents[2] / "checkpoints" / args.mode / "one_seg"
+        )
 
     if args.mode == "encoder":
         print(f"Loading encoder from {args.model} …")
-        encoder   = load_encoder(args.model, args.device, dtype)
-        predictor = CIFWeightPredictor(d_model=2048, hidden=args.hidden,
-                                       kernel_size=args.kernel_size).to(device)
+        encoder = load_encoder(args.model, args.device, dtype)
+        predictor = CIFWeightPredictor(
+            d_model=2048, hidden=args.hidden, kernel_size=args.kernel_size
+        ).to(device)
     else:
-        encoder   = None
+        encoder = None
         predictor = CIFMelPredictor(n_mel=128, hidden=args.mel_hidden).to(device)
     print(f"  mode={args.mode}  predictor params: {sum(p.numel() for p in predictor.parameters())}")
 
     optimizer = torch.optim.Adam(predictor.parameters(), lr=args.lr)
 
     feature_extractor = WhisperFeatureExtractor(
-        feature_size=128, sampling_rate=16000, hop_length=160,
-        chunk_length=30, n_fft=400, padding_value=0.0, return_attention_mask=True,
+        feature_size=128,
+        sampling_rate=16000,
+        hop_length=160,
+        chunk_length=30,
+        n_fft=400,
+        padding_value=0.0,
+        return_attention_mask=True,
     )
 
     label_kwargs = dict(label_type=args.label_type, label_sigma=args.label_sigma)
-    print(f"  label={args.label_type}" +
-          (f"  sigma={args.label_sigma}f" if args.label_type == "spike" else ""))
+    print(
+        f"  label={args.label_type}"
+        + (f"  sigma={args.label_sigma}f" if args.label_type == "spike" else "")
+    )
 
     train_dataset = OneSegDataset(args.train_data, feature_extractor, **label_kwargs)
-    train_loader  = DataLoader(train_dataset, batch_size=1, shuffle=True,
-                               collate_fn=collate_fn, num_workers=0)
+    train_loader = DataLoader(
+        train_dataset, batch_size=1, shuffle=True, collate_fn=collate_fn, num_workers=0
+    )
 
     val_loader = None
     if args.val_data and Path(args.val_data).exists():
         val_dataset = OneSegDataset(args.val_data, feature_extractor, **label_kwargs)
-        val_loader  = DataLoader(val_dataset, batch_size=1, shuffle=False,
-                                 collate_fn=collate_fn, num_workers=0)
+        val_loader = DataLoader(
+            val_dataset, batch_size=1, shuffle=False, collate_fn=collate_fn, num_workers=0
+        )
         print(f"  train={len(train_dataset)}  val={len(val_dataset)}")
     else:
         print(f"  train={len(train_dataset)}  (val 없음)")
@@ -307,8 +335,8 @@ def train(args):
     print(f"  로그: {log_path}")
 
     best_val_loss = float("inf")
-    global_step   = 0
-    start_epoch   = 1
+    global_step = 0
+    start_epoch = 1
 
     if args.resume:
         ckpt = torch.load(args.resume, map_location=device)
@@ -317,14 +345,13 @@ def train(args):
             print(f"  [resume] new params: {missing}")
         if "optimizer" in ckpt:
             optimizer.load_state_dict(ckpt["optimizer"])
-        start_epoch   = ckpt.get("epoch", 0) + 1
+        start_epoch = ckpt.get("epoch", 0) + 1
         best_val_loss = ckpt.get("val_loss") or float("inf")
-        global_step   = ckpt.get("global_step", 0)
+        global_step = ckpt.get("global_step", 0)
         print(f"  resumed epoch {start_epoch - 1}, best_val={best_val_loss:.4f}")
 
     epoch_bar = tqdm(range(start_epoch, args.epochs + 1), desc="Epoch", unit="ep")
     for epoch in epoch_bar:
-
         # ── train ──
         predictor.train()
         ep_loss = ep_qty = ep_bnd = 0.0
@@ -333,45 +360,49 @@ def train(args):
         last_gnorm = 0.0
         optimizer.zero_grad()
 
-        train_bar = tqdm(train_loader, desc=f"  Train {epoch}/{args.epochs}",
-                         leave=False, unit="sample")
+        train_bar = tqdm(
+            train_loader, desc=f"  Train {epoch}/{args.epochs}", leave=False, unit="sample"
+        )
         for step, (mel, mel_len, labels) in enumerate(train_bar):
-            mel    = mel.to(device=device, dtype=dtype)
+            mel = mel.to(device=device, dtype=dtype)
             labels = labels.to(device=device, dtype=torch.float32)
 
             weights = _forward(encoder, predictor, mel, mel_len, device, dtype)
 
             T = weights.shape[0]
             if labels.shape[0] != T:
-                labels = labels[:T] if labels.shape[0] > T else \
-                    torch.cat([labels, torch.zeros(T - labels.shape[0], device=device)])
+                labels = (
+                    labels[:T]
+                    if labels.shape[0] > T
+                    else torch.cat([labels, torch.zeros(T - labels.shape[0], device=device)])
+                )
 
             loss, qty, bnd = cif_loss(weights, labels, args.lambda_qty, args.lambda_bnd)
             (loss / args.accum_steps).backward()
 
             ep_loss += loss.item()
-            ep_qty  += qty
-            ep_bnd  += bnd
+            ep_qty += qty
+            ep_bnd += bnd
             n_samples += 1
 
             if (step + 1) % args.accum_steps == 0:
                 last_gnorm = nn.utils.clip_grad_norm_(predictor.parameters(), float("inf")).item()
                 ep_gnorm += last_gnorm
-                n_steps  += 1
+                n_steps += 1
                 optimizer.step()
                 optimizer.zero_grad()
                 global_step += 1
 
             train_bar.set_postfix(
-                loss=f"{ep_loss/n_samples:.4f}",
-                qty=f"{ep_qty/n_samples:.4f}",
-                bnd=f"{ep_bnd/n_samples:.4f}",
+                loss=f"{ep_loss / n_samples:.4f}",
+                qty=f"{ep_qty / n_samples:.4f}",
+                bnd=f"{ep_bnd / n_samples:.4f}",
                 gnorm=f"{last_gnorm:.3f}",
             )
 
         last_gnorm = nn.utils.clip_grad_norm_(predictor.parameters(), float("inf")).item()
         ep_gnorm += last_gnorm
-        n_steps  += 1
+        n_steps += 1
         optimizer.step()
         optimizer.zero_grad()
 
@@ -382,29 +413,35 @@ def train(args):
         if val_loader is not None:
             predictor.eval()
             with torch.no_grad():
-                val_bar = tqdm(val_loader, desc=f"  Val   {epoch}/{args.epochs}",
-                               leave=False, unit="sample")
+                val_bar = tqdm(
+                    val_loader, desc=f"  Val   {epoch}/{args.epochs}", leave=False, unit="sample"
+                )
                 for mel, mel_len, labels in val_bar:
-                    mel    = mel.to(device=device, dtype=dtype)
+                    mel = mel.to(device=device, dtype=dtype)
                     labels = labels.to(device=device, dtype=torch.float32)
 
                     weights = _forward(encoder, predictor, mel, mel_len, device, dtype)
 
                     T = weights.shape[0]
                     if labels.shape[0] != T:
-                        labels = labels[:T] if labels.shape[0] > T else \
-                            torch.cat([labels, torch.zeros(T - labels.shape[0], device=device)])
+                        labels = (
+                            labels[:T]
+                            if labels.shape[0] > T
+                            else torch.cat(
+                                [labels, torch.zeros(T - labels.shape[0], device=device)]
+                            )
+                        )
 
                     _, qty, bnd = cif_loss(weights, labels, args.lambda_qty, args.lambda_bnd)
-                    val_qty  += qty
-                    val_bnd  += bnd
+                    val_qty += qty
+                    val_bnd += bnd
                     val_loss += args.lambda_qty * qty + args.lambda_bnd * bnd
 
-            n_val     = len(val_loader)
+            n_val = len(val_loader)
             val_loss /= n_val
-            val_qty  /= n_val
-            val_bnd  /= n_val
-            val_tag   = f"  val={val_loss:.4f} (qty={val_qty:.4f} bnd={val_bnd:.4f})"
+            val_qty /= n_val
+            val_bnd /= n_val
+            val_tag = f"  val={val_loss:.4f} (qty={val_qty:.4f} bnd={val_bnd:.4f})"
         else:
             val_tag = ""
 
@@ -412,20 +449,21 @@ def train(args):
         epoch_bar.write(
             f"Epoch {epoch}/{args.epochs}  "
             f"train={train_loss:.4f} "
-            f"(qty={ep_qty/n_samples:.4f} bnd={ep_bnd/n_samples:.4f})  "
+            f"(qty={ep_qty / n_samples:.4f} bnd={ep_bnd / n_samples:.4f})  "
             f"gnorm={avg_gnorm:.3f}"
             f"{val_tag}"
         )
 
         log_entry = {
-            "epoch": epoch, "global_step": global_step,
+            "epoch": epoch,
+            "global_step": global_step,
             "train_loss": train_loss,
             "train_qty": ep_qty / n_samples,
             "train_bnd": ep_bnd / n_samples,
             "gnorm": avg_gnorm,
             "val_loss": val_loss if val_loader else None,
-            "val_qty":  val_qty  if val_loader else None,
-            "val_bnd":  val_bnd  if val_loader else None,
+            "val_qty": val_qty if val_loader else None,
+            "val_bnd": val_bnd if val_loader else None,
         }
         log_file.write(json.dumps(log_entry) + "\n")
         log_file.flush()
@@ -433,20 +471,23 @@ def train(args):
         monitor = val_loss if val_loader is not None else train_loss
 
         def _save_ckpt(path):
-            torch.save({
-                "epoch": epoch,
-                "global_step": global_step,
-                "mode": args.mode,
-                "hidden": args.hidden,
-                "mel_hidden": args.mel_hidden,
-                "kernel_size": args.kernel_size,
-                "label_type": args.label_type,
-                "label_sigma": args.label_sigma,
-                "state_dict": predictor.state_dict(),
-                "optimizer": optimizer.state_dict(),
-                "train_loss": train_loss,
-                "val_loss": val_loss,
-            }, path)
+            torch.save(
+                {
+                    "epoch": epoch,
+                    "global_step": global_step,
+                    "mode": args.mode,
+                    "hidden": args.hidden,
+                    "mel_hidden": args.mel_hidden,
+                    "kernel_size": args.kernel_size,
+                    "label_type": args.label_type,
+                    "label_sigma": args.label_sigma,
+                    "state_dict": predictor.state_dict(),
+                    "optimizer": optimizer.state_dict(),
+                    "train_loss": train_loss,
+                    "val_loss": val_loss,
+                },
+                path,
+            )
 
         if monitor < best_val_loss:
             best_val_loss = monitor
@@ -463,31 +504,40 @@ def train(args):
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     _data = Path(__file__).resolve().parent / "one_seg_data"
     parser = argparse.ArgumentParser(description="CIF one-seg 학습")
     parser.add_argument("--train-data", default=str(_data / "train.jsonl"))
-    parser.add_argument("--val-data",   default=str(_data / "val.jsonl"))
-    parser.add_argument("--model",      default="Qwen/Qwen3-ASR-1.7B")
-    parser.add_argument("--mode",        choices=["encoder", "mel"], default="encoder")
-    parser.add_argument("--hidden",     type=int,   default=128)
-    parser.add_argument("--mel-hidden", type=int,   default=256)
-    parser.add_argument("--kernel-size",type=int,   default=7)
-    parser.add_argument("--epochs",     type=int,   default=40)
-    parser.add_argument("--lr",         type=float, default=1e-3)
+    parser.add_argument("--val-data", default=str(_data / "val.jsonl"))
+    parser.add_argument("--model", default="Qwen/Qwen3-ASR-1.7B")
+    parser.add_argument("--mode", choices=["encoder", "mel"], default="encoder")
+    parser.add_argument("--hidden", type=int, default=128)
+    parser.add_argument("--mel-hidden", type=int, default=256)
+    parser.add_argument("--kernel-size", type=int, default=7)
+    parser.add_argument("--epochs", type=int, default=40)
+    parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--lambda-qty", type=float, default=1.0)
     parser.add_argument("--lambda-bnd", type=float, default=1.0)
-    parser.add_argument("--label-type", choices=["uniform", "spike"], default="uniform",
-                        help="spike: mel mode에 적합. uniform: encoder mode에 적합.")
-    parser.add_argument("--label-sigma",type=float, default=2.0,
-                        help="spike label의 Gaussian sigma (encoder frame 단위, 1f≈80ms)")
-    parser.add_argument("--accum-steps",type=int,   default=1)
-    parser.add_argument("--save-every", type=int,   default=10)
-    parser.add_argument("--ckpt-dir",   default=None,
-                        help="저장 경로. 미지정 시 checkpoints/{mode}/one_seg")
-    parser.add_argument("--resume",     default=None)
-    parser.add_argument("--device",
-                        default="cuda:0" if torch.cuda.is_available() else "cpu")
+    parser.add_argument(
+        "--label-type",
+        choices=["uniform", "spike"],
+        default="uniform",
+        help="spike: mel mode에 적합. uniform: encoder mode에 적합.",
+    )
+    parser.add_argument(
+        "--label-sigma",
+        type=float,
+        default=2.0,
+        help="spike label의 Gaussian sigma (encoder frame 단위, 1f≈80ms)",
+    )
+    parser.add_argument("--accum-steps", type=int, default=1)
+    parser.add_argument("--save-every", type=int, default=10)
+    parser.add_argument(
+        "--ckpt-dir", default=None, help="저장 경로. 미지정 시 checkpoints/{mode}/one_seg"
+    )
+    parser.add_argument("--resume", default=None)
+    parser.add_argument("--device", default="cuda:0" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
     train(args)
 

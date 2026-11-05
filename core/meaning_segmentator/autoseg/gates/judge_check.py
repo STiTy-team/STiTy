@@ -47,8 +47,15 @@ def run_variant(judge: agents.Judge, case: dict, variant: dict, repeats: int) ->
     out = []
     for _ in range(repeats):
         try:
-            out.append(judge.judge(case["src"], case["full_translation"],
-                                   pieces_src, variant["pieces_tgt"], boundary))
+            out.append(
+                judge.judge(
+                    case["src"],
+                    case["full_translation"],
+                    pieces_src,
+                    variant["pieces_tgt"],
+                    boundary,
+                )
+            )
         except Exception as e:
             out.append({"verdict": "error", "conflict": str(e)[:200]})
     return out
@@ -68,14 +75,21 @@ def check_nli(cases: list[dict]) -> tuple[list[dict], int, int]:
     통과 조건: 모든 케이스에서 `min(premature 확률) > max(safe 확률)`.
     """
     from ..runtime import metrics
+
     b = metrics.make_contradiction_backend()
     rows = []
     for c in cases:
         for name, v in c["variants"].items():
             bd = v.get("boundary", c.get("boundary", 0))
-            rows.append({"id": c["id"], "variant": name, "expect": v["expect"],
-                         "premise": c["full_translation"],
-                         "hypothesis": " ".join(v["pieces_tgt"][: bd + 1])})
+            rows.append(
+                {
+                    "id": c["id"],
+                    "variant": name,
+                    "expect": v["expect"],
+                    "premise": c["full_translation"],
+                    "hypothesis": " ".join(v["pieces_tgt"][: bd + 1]),
+                }
+            )
     scores = b.score([r["premise"] for r in rows], [r["hypothesis"] for r in rows])
     for r, s in zip(rows, scores):
         r["contradiction"] = round(float(s), 4)
@@ -94,8 +108,7 @@ def check_nli(cases: list[dict]) -> tuple[list[dict], int, int]:
     return rows, viol, tot
 
 
-def build_report(results: list[dict], model: str, repeats: int,
-                 nli: tuple | None = None) -> str:
+def build_report(results: list[dict], model: str, repeats: int, nli: tuple | None = None) -> str:
     n_mis = sum(1 for r in results if not r["accurate"])
     n_unstable = sum(1 for r in results if not r["stable"])
     n_label_flicker = sum(1 for r in results if not r["label_stable"])
@@ -118,7 +131,7 @@ def build_report(results: list[dict], model: str, repeats: int,
         "없으므로 그 축을 관문 조건으로 두면 과잉 명세다. `라벨정확`·`라벨고정` 열에 진단으로만 남긴다.",
         "",
         "판정 기준선은 `benign_*` 이다. 조기 방출 자체가 아니라 **뒤가 반박하는지**를",
-        "구별하는지 보는 것이다. 이 행이 없으면 \"무조건 premature\" 라고 답하는 판정자가",
+        '구별하는지 보는 것이다. 이 행이 없으면 "무조건 premature" 라고 답하는 판정자가',
         "관문을 통과하고, 루프는 모든 경계를 문제로 보며 보수화한다.",
         "",
         "## 결과",
@@ -131,13 +144,17 @@ def build_report(results: list[dict], model: str, repeats: int,
             f"| {r['id']} | {r['variant']} | {r['expect']} | {r['verdict']} | "
             f"{r['counts']} | {'O' if r['accurate'] else '**X**'} | "
             f"{'O' if r['stable'] else '**X**'} | "
-            f"{'O' if r['label_accurate'] else '-'} | {'O' if r['label_stable'] else '-'} |")
+            f"{'O' if r['label_accurate'] else '-'} | {'O' if r['label_stable'] else '-'} |"
+        )
     verdict = "**통과**" if (n_mis == 0 and n_unstable == 0) else "**탈락**"
     lines += [
         "",
         f"오분류 {n_mis}건 / 불안정 {n_unstable}건 → {verdict}"
-        + (f"  (세부 라벨: 불일치 {n_label_mis}건 / 흔들림 {n_label_flicker}건 — 판정에 반영 안 함)"
-           if (n_label_flicker or n_label_mis) else ""),
+        + (
+            f"  (세부 라벨: 불일치 {n_label_mis}건 / 흔들림 {n_label_flicker}건 — 판정에 반영 안 함)"
+            if (n_label_flicker or n_label_mis)
+            else ""
+        ),
         "",
     ]
     if n_mis:
@@ -146,7 +163,8 @@ def build_report(results: list[dict], model: str, repeats: int,
     if nli:
         rows, viol, tot, backend = nli
         lines += [
-            "---", "",
+            "---",
+            "",
             "# NLI contradiction 백엔드 검사",
             "",
             f"- 백엔드: `{backend}`",
@@ -162,14 +180,17 @@ def build_report(results: list[dict], model: str, repeats: int,
             "|---|---|---|---|",
         ]
         for r in rows:
-            lines.append(f"| {r['id']} | {r['variant']} | {r['expect']} | "
-                         f"{r['contradiction']:.4f} |")
-        lines += ["", f"순위 위반 {viol}/{tot} → "
-                  + ("**통과**" if viol == 0 else "**탈락**"), ""]
+            lines.append(
+                f"| {r['id']} | {r['variant']} | {r['expect']} | {r['contradiction']:.4f} |"
+            )
+        lines += ["", f"순위 위반 {viol}/{tot} → " + ("**통과**" if viol == 0 else "**탈락**"), ""]
         if viol:
-            lines += ["탈락이면 NLI 체크포인트 교체를 검토한다 (`metrics.NLI_MODEL`). "
-                      "전부 떨어지면 조기 방출을 목적함수에서 검출할 수단이 없으므로, "
-                      "판정자 결과를 채택 게이트의 비악화 조건으로 쓰는 방어책으로 후퇴한다.", ""]
+            lines += [
+                "탈락이면 NLI 체크포인트 교체를 검토한다 (`metrics.NLI_MODEL`). "
+                "전부 떨어지면 조기 방출을 목적함수에서 검출할 수단이 없으므로, "
+                "판정자 결과를 채택 게이트의 비악화 조건으로 쓰는 방어책으로 후퇴한다.",
+                "",
+            ]
     return "\n".join(lines)
 
 
@@ -178,48 +199,63 @@ def main() -> int:
     p.add_argument("--model", default="gpt-5-mini")
     # 관문은 루프가 실제로 쓰는 설정으로 돌아야 한다. 루프의 판정자는
     # --agent-reasoning-effort(기본 medium)로 도므로 여기 기본값도 같게 둔다.
-    p.add_argument("--reasoning-effort", default="medium",
-                   choices=["minimal", "low", "medium", "high", "none"])
+    p.add_argument(
+        "--reasoning-effort", default="medium", choices=["minimal", "low", "medium", "high", "none"]
+    )
     p.add_argument("--repeats", type=int, default=3, help="안정성 확인용 반복 횟수")
     p.add_argument("--budget", type=float, default=1.0)
     gateway.add_provider_args(p)
     p.add_argument("--cases", default=str(CASES_PATH))
     p.add_argument("--out", default=None, help="리포트 경로 (기본 runs/judge_validity/report.md)")
-    p.add_argument("--skip-judge", action="store_true",
-                   help="LLM 판정자 검사를 건너뛰고 NLI 만 검사 (API 호출 0)")
+    p.add_argument(
+        "--skip-judge",
+        action="store_true",
+        help="LLM 판정자 검사를 건너뛰고 NLI 만 검사 (API 호출 0)",
+    )
     p.add_argument("--skip-nli", action="store_true", help="NLI 검사를 건너뛴다")
     args = p.parse_args()
 
     cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))["cases"]
-    gw = Gateway.from_args(args, model=args.model, budget=args.budget,
-                           reasoning_effort=(None if args.reasoning_effort == "none"
-                                             else args.reasoning_effort))
+    gw = Gateway.from_args(
+        args,
+        model=args.model,
+        budget=args.budget,
+        reasoning_effort=(None if args.reasoning_effort == "none" else args.reasoning_effort),
+    )
     judge = agents.Judge(gw)
 
     results: list[dict] = []
     try:
-        for case in ([] if args.skip_judge else cases):
+        for case in [] if args.skip_judge else cases:
             for name, variant in case["variants"].items():
                 runs = run_variant(judge, case, variant, args.repeats)
                 verdicts = [r.get("verdict", "error") for r in runs]
                 counts = Counter(verdicts)
                 majority = counts.most_common(1)[0][0]
-                results.append({
-                    "id": case["id"], "variant": name, "expect": variant["expect"],
-                    "verdict": majority, "counts": dict(counts),
-                    # 정확도·안정성 모두 safe / not-safe 축에서 본다.
-                    # premature 와 mistranslated 를 소비하는 곳이 없다 — 둘 다 "이 경계를
-                    # 표시하고 cause·shift 를 Critic 에 넘긴다"로 같은 행동을 부르고,
-                    # 판정자는 점수를 내지 않는다. 쓰이지 않는 구별을 관문 조건으로
-                    # 두면 과잉 명세다. 세부 라벨은 진단으로만 보고한다.
-                    "accurate": is_safe(majority) == is_safe(variant["expect"]),
-                    "label_accurate": majority == variant["expect"],
-                    "stable": len({is_safe(v) for v in verdicts}) == 1,
-                    "label_stable": len(counts) == 1,
-                    "runs": runs,
-                })
-                print(f"[{case['id']}/{name}] expect={variant['expect']} "
-                      f"got={majority} {dict(counts)}", flush=True)
+                results.append(
+                    {
+                        "id": case["id"],
+                        "variant": name,
+                        "expect": variant["expect"],
+                        "verdict": majority,
+                        "counts": dict(counts),
+                        # 정확도·안정성 모두 safe / not-safe 축에서 본다.
+                        # premature 와 mistranslated 를 소비하는 곳이 없다 — 둘 다 "이 경계를
+                        # 표시하고 cause·shift 를 Critic 에 넘긴다"로 같은 행동을 부르고,
+                        # 판정자는 점수를 내지 않는다. 쓰이지 않는 구별을 관문 조건으로
+                        # 두면 과잉 명세다. 세부 라벨은 진단으로만 보고한다.
+                        "accurate": is_safe(majority) == is_safe(variant["expect"]),
+                        "label_accurate": majority == variant["expect"],
+                        "stable": len({is_safe(v) for v in verdicts}) == 1,
+                        "label_stable": len(counts) == 1,
+                        "runs": runs,
+                    }
+                )
+                print(
+                    f"[{case['id']}/{name}] expect={variant['expect']} "
+                    f"got={majority} {dict(counts)}",
+                    flush=True,
+                )
     finally:
         gw.close()
 
@@ -236,10 +272,10 @@ def main() -> int:
     out_dir = Path(args.out).parent if args.out else (RUNS_DIR / "judge_validity")
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = Path(args.out) if args.out else (out_dir / "report.md")
-    out_path.write_text(build_report(results, args.model, args.repeats, nli),
-                        encoding="utf-8")
+    out_path.write_text(build_report(results, args.model, args.repeats, nli), encoding="utf-8")
     (out_dir / "raw.json").write_text(
-        json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+        json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     failed = [r for r in results if not r["accurate"] or not r["stable"]]
     nli_failed = bool(nli and nli[1])

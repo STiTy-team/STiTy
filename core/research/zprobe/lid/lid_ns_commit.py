@@ -7,6 +7,7 @@ bench 의 lang_detect_accuracy 와 같은 틀(커밋마다 [직전 결정 시각
   3) 그래도 없으면 같은 장면의 직전 커밋 결정 유지 (첫 커밋이면 음향 argmax 그대로)
 보고: 기준선(모델 자가보고) 대비 정확도·혼동, 어느 단이 판정했는지 분포.
 """
+
 import ast, json, re, unicodedata
 from collections import Counter
 import numpy as np
@@ -21,7 +22,9 @@ spans = {}
 for line in open(f"{NS}/manifest.jsonl"):
     it = json.loads(line)
     scene = it["audio"].split("/")[-1].removesuffix(".wav")
-    spans.setdefault(scene, []).append((it["offset"], it["offset"] + it["duration"], it["src_lang"]))
+    spans.setdefault(scene, []).append(
+        (it["offset"], it["offset"] + it["duration"], it["src_lang"])
+    )
 
 
 def truth_of(scene, a, b):
@@ -52,9 +55,13 @@ def script_verdict(text):
 
 
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
 proc = WhisperProcessor.from_pretrained("openai/whisper-small")
-wmodel = WhisperForConditionalGeneration.from_pretrained(
-    "openai/whisper-small", dtype=torch.float16).to("cuda").eval()
+wmodel = (
+    WhisperForConditionalGeneration.from_pretrained("openai/whisper-small", dtype=torch.float16)
+    .to("cuda")
+    .eval()
+)
 tok = proc.tokenizer
 allowed = {c: tok.convert_tokens_to_ids(f"<|{c}|>") for c in ("ko", "en")}
 sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
@@ -65,12 +72,18 @@ def acoustic(scene, a, b):
     if scene not in wavs:
         wavs[scene], _ = librosa.load(f"{NS}/audio/{scene}.wav", sr=SR, mono=True)
     a = max(a, b - 4.0)
-    seg = wavs[scene][int(a * SR): int(b * SR)]
+    seg = wavs[scene][int(a * SR) : int(b * SR)]
     if len(seg) < int(0.3 * SR):
         return None
-    feats = proc(seg, sampling_rate=SR, return_tensors="pt").input_features.to("cuda", torch.float16)
+    feats = proc(seg, sampling_rate=SR, return_tensors="pt").input_features.to(
+        "cuda", torch.float16
+    )
     with torch.no_grad():
-        logits = wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda")).logits[0, -1].float()
+        logits = (
+            wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda"))
+            .logits[0, -1]
+            .float()
+        )
     return max(allowed, key=lambda c: logits[allowed[c]].item())
 
 
@@ -101,9 +114,17 @@ for row in rows:
             v = "?"
         new_pairs.append((truth, v))
         if truth != v:
-            errors.append((scene, heard_from, heard_to, truth, v,
-                           ("text" if script_verdict(c.get("original") or "") else "ac/carry"),
-                           (c.get("original") or "")[:60]))
+            errors.append(
+                (
+                    scene,
+                    heard_from,
+                    heard_to,
+                    truth,
+                    v,
+                    ("text" if script_verdict(c.get("original") or "") else "ac/carry"),
+                    (c.get("original") or "")[:60],
+                )
+            )
         prev = v if v != "?" else prev
         heard_from = heard_to
 

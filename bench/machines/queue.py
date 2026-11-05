@@ -214,7 +214,10 @@ class Queue:
             last = attempts[-1]
             ended_at = max(now, last.started_at)
             ran_sec = round((ended_at - last.started_at).total_seconds(), 1)
-            attempts = [*attempts[:-1], last.model_copy(update={"ended_at": ended_at, "ran_sec": ran_sec})]
+            attempts = [
+                *attempts[:-1],
+                last.model_copy(update={"ended_at": ended_at, "ran_sec": ran_sec}),
+            ]
         finished = Finished(
             job=job.model_copy(update={"attempts": attempts}),
             outcome=outcome,
@@ -300,4 +303,3 @@ class Queue:
                 return change(queued)
             except Conflict:
                 continue
-

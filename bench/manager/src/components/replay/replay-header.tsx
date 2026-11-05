@@ -13,7 +13,15 @@ import { cn } from "@/lib/utils"
 
 const itemLabel = (row: ItemRow) => (row.wer == null ? row.id : `${row.id} · WER ${row.wer.toFixed(2)}`)
 
-function ItemPicker({ data, value, onChange }: { data: ReplayPayload; value: string; onChange: (item: string) => void }) {
+function ItemPicker({
+  data,
+  value,
+  onChange,
+}: {
+  data: ReplayPayload
+  value: string
+  onChange: (item: string) => void
+}) {
   const [open, setOpen] = useState(false)
   const worstIds = new Set(data.worst.map((row) => row.id))
   const rest = data.all_items.filter((row) => !worstIds.has(row.id))
@@ -28,7 +36,13 @@ function ItemPicker({ data, value, onChange }: { data: ReplayPayload; value: str
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} aria-label="항목" className="max-w-full font-mono text-xs">
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          aria-label="항목"
+          className="max-w-full font-mono text-xs"
+        >
           <span className="truncate">{value}</span>
           <ChevronsUpDownIcon className="opacity-50" />
         </Button>
@@ -87,7 +101,12 @@ export function ItemStats({ metrics }: { metrics?: ItemMetrics }) {
   return (
     <div className="flex flex-wrap items-end gap-x-8 gap-y-2">
       {keys.map((k) => (
-        <StatTile key={k} label={ITEM_METRICS[k].label} value={ITEM_METRICS[k].format(metrics![k]!)} lead={k === lead} />
+        <StatTile
+          key={k}
+          label={ITEM_METRICS[k].label}
+          value={ITEM_METRICS[k].format(metrics![k]!)}
+          lead={k === lead}
+        />
       ))}
     </div>
   )
@@ -150,7 +169,13 @@ export function ReplayControls({
           <ChevronLeftIcon />
         </Button>
         <ItemPicker data={data} value={itemId} onChange={onItem} />
-        <Button variant="outline" size="icon" aria-label="다음 항목" disabled={at < 0 || at >= order.length - 1} onClick={() => step(1)}>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="다음 항목"
+          disabled={at < 0 || at >= order.length - 1}
+          onClick={() => step(1)}
+        >
           <ChevronRightIcon />
         </Button>
       </div>

@@ -57,8 +57,10 @@ def main() -> int:
         n = len(json.loads(seg.read_text(encoding="utf-8")))
         rate = (total / n) if n else 0.0
         print(f"\n  분절 캐시 {n}건 → 기록 기준 문장당 ${rate:.5f}")
-        print("  **캐시 건수가 기록된 분절 수보다 많으면 그 차이는 스냅샷을 못 남긴 "
-              "(크래시한) 실행이 쓴 돈이다.**")
+        print(
+            "  **캐시 건수가 기록된 분절 수보다 많으면 그 차이는 스냅샷을 못 남긴 "
+            "(크래시한) 실행이 쓴 돈이다.**"
+        )
     if args.budget is not None and total > args.budget:
         print(f"\n[초과] ${total:.4f} > 예산 ${args.budget:.4f}", file=sys.stderr)
         return 2

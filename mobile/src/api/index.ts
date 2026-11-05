@@ -66,7 +66,12 @@ export { onUnauthorized } from '@/api/session-events';
 export { setMockFailure } from '@/api/mock/runtime';
 export { SessionOpenError } from '@/api/live/ws/asr-session';
 export { AUDIO_FORMAT } from '@/api/live/ws/protocol';
-export type { CapacityMessage, FinalMessage, FoldMessage, PartialMessage } from '@/api/live/ws/protocol';
+export type {
+  CapacityMessage,
+  FinalMessage,
+  FoldMessage,
+  PartialMessage,
+} from '@/api/live/ws/protocol';
 export type { AsrSessionHandlers, SessionLanguages } from '@/api/live/ws/asr-session';
 export type { ServerSnapshot, ServerStatus } from '@/api/live/ws/server-monitor';
 export type * from '@/api/types';

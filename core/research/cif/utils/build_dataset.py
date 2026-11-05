@@ -65,7 +65,7 @@ def parse_seg_and_clean(raw_text: str) -> Tuple[str, List[int]]:
     """
     asr_marker = "<asr_text>"
     if asr_marker in raw_text:
-        raw_text = raw_text[raw_text.index(asr_marker) + len(asr_marker):]
+        raw_text = raw_text[raw_text.index(asr_marker) + len(asr_marker) :]
 
     # SEG 바로 앞 단어의 인덱스를 추적
     # "Hello world <SEG> how are you <SEG>" → word 1("world")과 word 4("you") 뒤
@@ -150,7 +150,7 @@ def build(
 
     with open(out_path, "w") as out_f:
         for batch_start in range(0, len(records), batch_size):
-            batch = records[batch_start: batch_start + batch_size]
+            batch = records[batch_start : batch_start + batch_size]
 
             audios, clean_texts, seg_positions_batch, durations = [], [], [], []
             for rec in batch:
@@ -209,15 +209,15 @@ def build(
 def main():
     parser = argparse.ArgumentParser(description="DailyTalk → CIF 학습 데이터셋 생성")
     parser.add_argument(
-        "--input", default=str(
+        "--input",
+        default=str(
             Path(__file__).resolve().parents[3]
             / "Qwen3-ASR/finetuning/data/DailyTalk/train_and_val.jsonl"
         ),
     )
     parser.add_argument(
-        "--output", default=str(
-            Path(__file__).resolve().parents[1] / "data" / "dailytalk_10000.jsonl"
-        ),
+        "--output",
+        default=str(Path(__file__).resolve().parents[1] / "data" / "dailytalk_10000.jsonl"),
     )
     parser.add_argument("--model", default=FORCED_ALIGNER_MODEL)
     parser.add_argument("--batch-size", type=int, default=8)

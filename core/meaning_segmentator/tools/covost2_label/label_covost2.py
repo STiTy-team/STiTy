@@ -7,6 +7,7 @@
 3모델 비교 결과를 통째로 잃었다 (2026-08-31). 중간 결과를 볼 수 있도록 캐시 저장
 임계치도 낮춘다.
 """
+
 from __future__ import annotations
 
 import argparse, json, re, sys, threading, time
@@ -88,15 +89,23 @@ class LiveCache(P.JsonCache):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompt", required=True)
-    ap.add_argument("--manifest",
-                    default="core/meaning_segmentator/data/manifests/covost2_en-de_full.jsonl")
+    ap.add_argument(
+        "--manifest", default="core/meaning_segmentator/data/manifests/covost2_en-de_full.jsonl"
+    )
     ap.add_argument("--out", required=True, help="라벨 jsonl (레포 안 경로 권장)")
     ap.add_argument("--cache", required=True)
     ap.add_argument("--model", default="gpt-5-mini")
-    ap.add_argument("--allow-prompt-mismatch", action="store_true",
-                    help="프롬프트 문면의 숫자와 --min-gap/--t-floor 가 달라도 강행")
-    ap.add_argument("--spaced", default=None, choices=["yes", "no"],
-                    help="소스가 띄어쓰기 언어인가. 기본은 매니페스트의 src_lang 으로 판정")
+    ap.add_argument(
+        "--allow-prompt-mismatch",
+        action="store_true",
+        help="프롬프트 문면의 숫자와 --min-gap/--t-floor 가 달라도 강행",
+    )
+    ap.add_argument(
+        "--spaced",
+        default=None,
+        choices=["yes", "no"],
+        help="소스가 띄어쓰기 언어인가. 기본은 매니페스트의 src_lang 으로 판정",
+    )
     ap.add_argument("--min-gap", type=int, default=3)
     ap.add_argument("--t-floor", type=int, default=4)
     ap.add_argument("--batch-size", type=int, default=6)
@@ -104,8 +113,12 @@ def main() -> int:
     ap.add_argument("--budget", type=float, default=100000.0)
     ap.add_argument("--seg-reasoning-effort", default=None)
     ap.add_argument("--limit", type=int, default=None)
-    ap.add_argument("--cache-every", type=int, default=1,
-                    help="캐시 저장 주기(건). 1이면 매 건 저장 — 중간 결과를 즉시 본다")
+    ap.add_argument(
+        "--cache-every",
+        type=int,
+        default=1,
+        help="캐시 저장 주기(건). 1이면 매 건 저장 — 중간 결과를 즉시 본다",
+    )
     # **분절 출력 상한.** 기본 SEG_MAX_TOKENS 는 32768 인데 그 값은 thinking 모델의
     # 사고 토큰까지 감당하려고 잡힌 것이다. 비사고 모델에는 과하고(폭주한 콜 하나가
     # 3.1 tok/s 로 2.9시간을 먹는다), 사고 모델에는 이 값이 필요하다.
@@ -129,8 +142,11 @@ def main() -> int:
     if a.spaced is None:
         codes = {(r.get("src_lang") or "").split("-")[0].lower() for r in rows}
         if len(codes) != 1:
-            print(f"매니페스트에 소스 언어가 섞여 있습니다: {sorted(codes)}. "
-                  f"--spaced 로 직접 지정하세요", file=sys.stderr)
+            print(
+                f"매니페스트에 소스 언어가 섞여 있습니다: {sorted(codes)}. "
+                f"--spaced 로 직접 지정하세요",
+                file=sys.stderr,
+            )
             return 2
         SPACED = target_is_spaced(codes.pop())
     else:
@@ -138,8 +154,11 @@ def main() -> int:
     if a.limit:
         rows = rows[: a.limit]
     src_codes = sorted({(r.get("src_lang") or "?") for r in rows})
-    print(f"[label] 소스 {src_codes} / spaced={SPACED} / min_gap={a.min_gap} "
-          f"t_floor={a.t_floor} / n={len(rows)}", flush=True)
+    print(
+        f"[label] 소스 {src_codes} / spaced={SPACED} / min_gap={a.min_gap} "
+        f"t_floor={a.t_floor} / n={len(rows)}",
+        flush=True,
+    )
     for r in rows:
         r["src_text_raw"] = r["src_text"]
         r["src_text"] = unwrap(r["src_text"])
@@ -160,12 +179,15 @@ def main() -> int:
     if p_gap is not None and p_gap != a.min_gap:
         bad.append(f"간격: 문면 {p_gap} vs --min-gap {a.min_gap}")
     if bad:
-        msg = ("프롬프트 문면의 숫자와 인자가 다릅니다 — " + " / ".join(bad)
-               + f"\n  프롬프트: {a.prompt}"
-               + "\n  프롬프트의 [Output Rules] 를 인자에 맞춰 다시 만들거나 "
-                 "(core.meaning_segmentator.autoseg.runtime.agents.output_rules), "
-                 "인자를 문면에 맞추세요."
-                 "\n  의도한 불일치라면 --allow-prompt-mismatch 를 주세요.")
+        msg = (
+            "프롬프트 문면의 숫자와 인자가 다릅니다 — "
+            + " / ".join(bad)
+            + f"\n  프롬프트: {a.prompt}"
+            + "\n  프롬프트의 [Output Rules] 를 인자에 맞춰 다시 만들거나 "
+            "(core.meaning_segmentator.autoseg.runtime.agents.output_rules), "
+            "인자를 문면에 맞추세요."
+            "\n  의도한 불일치라면 --allow-prompt-mismatch 를 주세요."
+        )
         if not a.allow_prompt_mismatch:
             print(msg, file=sys.stderr)
             return 2
@@ -187,9 +209,12 @@ def main() -> int:
         def loop():
             while not stop.wait(every):
                 u = gw.usage.snapshot()
-                print(f"[label] 진행 calls={u['calls']} "
-                      f"completion={u['completion_tokens']} "
-                      f"누적 비용 ${u['cost']:.4f}", flush=True)
+                print(
+                    f"[label] 진행 calls={u['calls']} "
+                    f"completion={u['completion_tokens']} "
+                    f"누적 비용 ${u['cost']:.4f}",
+                    flush=True,
+                )
 
         threading.Thread(target=loop, daemon=True).start()
         return stop
@@ -201,10 +226,18 @@ def main() -> int:
     t0 = time.time()
     ticker = cost_ticker(gw)
     outs, ok = P.segment_batch(
-        gw, prompt, texts, cache=cache, workers=a.workers,
-        validate_fn=validate_fn, normalize_fn=normalize_fn,
-        reasoning_effort=a.seg_reasoning_effort, batch_size=a.batch_size,
-        first_pass_sink=first, need_fn=need_fn)
+        gw,
+        prompt,
+        texts,
+        cache=cache,
+        workers=a.workers,
+        validate_fn=validate_fn,
+        normalize_fn=normalize_fn,
+        reasoning_effort=a.seg_reasoning_effort,
+        batch_size=a.batch_size,
+        first_pass_sink=first,
+        need_fn=need_fn,
+    )
     ticker.set()
     dt = time.time() - t0
 
@@ -215,12 +248,17 @@ def main() -> int:
         pres = strip_seg(o, SPACED) == strip_seg(r["src_text"], SPACED)
         n_pres += pres
         n_ok += not viol
-        out_rows.append({**r, "seg_text": o,
-                         "n_boundaries": len(SEG.findall(o)),
-                         "required": need_fn(r["src_text"]),
-                         "first_pass_ok": bool(first_ok),
-                         "text_preserved": pres,
-                         "violations": [getattr(v, "rule", str(v)) for v in viol]})
+        out_rows.append(
+            {
+                **r,
+                "seg_text": o,
+                "n_boundaries": len(SEG.findall(o)),
+                "required": need_fn(r["src_text"]),
+                "first_pass_ok": bool(first_ok),
+                "text_preserved": pres,
+                "violations": [getattr(v, "rule", str(v)) for v in viol],
+            }
+        )
     out_path = Path(a.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as f:
@@ -231,18 +269,29 @@ def main() -> int:
     nb = [r["n_boundaries"] for r in out_rows]
     rq = [r["required"] for r in out_rows]
     n = len(out_rows)
-    print(json.dumps({
-        "model": a.model, "prompt": a.prompt, "n": n, "wall_sec": round(dt, 1),
-        "format_pass": round(n_ok / n, 3),
-        "first_pass": round(sum(ok) / len(ok), 3),
-        "text_preserved": round(n_pres / n, 3),
-        "mean_boundaries": round(sum(nb) / n, 2),
-        "mean_required": round(sum(rq) / n, 2),
-        "coverage_met": round(sum(1 for r in out_rows
-                                  if r["n_boundaries"] >= r["required"]) / n, 3),
-        "calls": u["calls"], "completion_tokens": u["completion_tokens"],
-        "cost": round(u["cost"], 4),
-    }, ensure_ascii=False, indent=1))
+    print(
+        json.dumps(
+            {
+                "model": a.model,
+                "prompt": a.prompt,
+                "n": n,
+                "wall_sec": round(dt, 1),
+                "format_pass": round(n_ok / n, 3),
+                "first_pass": round(sum(ok) / len(ok), 3),
+                "text_preserved": round(n_pres / n, 3),
+                "mean_boundaries": round(sum(nb) / n, 2),
+                "mean_required": round(sum(rq) / n, 2),
+                "coverage_met": round(
+                    sum(1 for r in out_rows if r["n_boundaries"] >= r["required"]) / n, 3
+                ),
+                "calls": u["calls"],
+                "completion_tokens": u["completion_tokens"],
+                "cost": round(u["cost"], 4),
+            },
+            ensure_ascii=False,
+            indent=1,
+        )
+    )
     print("LABELDONE")
     return 0
 

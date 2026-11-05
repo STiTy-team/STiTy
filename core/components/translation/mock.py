@@ -15,8 +15,12 @@ def _not_negative(value) -> float:
 class MockTranslator(Translator):
     SETTINGS = {"delay_sec": ("delay_sec", _not_negative)}
 
-    async def translate(self, text: str, target_lang: str,
-                        source_lang: str | None = None,
-                        context: list[str] | None = None) -> tuple[str, str]:
+    async def translate(
+        self,
+        text: str,
+        target_lang: str,
+        source_lang: str | None = None,
+        context: list[str] | None = None,
+    ) -> tuple[str, str]:
         await asyncio.sleep(self.settings.get("delay_sec", 0.0))
         return f"[{target_lang}] {text}", source_lang or ""

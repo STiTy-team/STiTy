@@ -17,6 +17,7 @@ switch, and any short-commit containment rule collides with conversational echo
 region fold keeps COMET within 0.005 of the unfolded stream while whole-commit
 folding cost 0.014-0.025.
 """
+
 import re
 
 _NORM = re.compile(r"[^0-9a-z가-힣]")
@@ -39,7 +40,8 @@ def window_text(transcript: list[tuple[float, str]], at_sec: float) -> str:
     what has actually arrived, so causality is theirs to enforce.
     """
     return "".join(
-        text for sec, text in transcript
+        text
+        for sec, text in transcript
         if at_sec - MATCH_WINDOW_BACK_SEC <= sec <= at_sec + MATCH_WINDOW_AHEAD_SEC
     )
 

@@ -8,6 +8,7 @@ live run on the other dataset.
 
 usage: (repo root) uv run --project bench python scripts/brig_rescore.py \
          --pipeline brig.koen+grpoceren --src-dataset northstar_ko+en-ko --dst-dataset northstar_ko+en-en"""
+
 import argparse
 import copy
 import shutil
@@ -39,8 +40,17 @@ settings = BenchSettings()
 spec = datasets.load(dst_cfg.dataset, settings.stity_data_root)
 fresh = {it.id: asdict(it) for it in spec.items}
 
-REF_FIELDS = ("src_lang", "group", "speaker", "offset", "partial",
-              "reference", "reference_translations", "reference_alignment", "reference_segmentation")
+REF_FIELDS = (
+    "src_lang",
+    "group",
+    "speaker",
+    "offset",
+    "partial",
+    "reference",
+    "reference_translations",
+    "reference_alignment",
+    "reference_segmentation",
+)
 rows = []
 for row in read_jsonl(src_cfg.run_dir / "items.jsonl"):
     row = copy.deepcopy(row)
@@ -54,7 +64,15 @@ shutil.copy(src_cfg.run_dir / "events.jsonl", run_dir / "events.jsonl")
 write_comet_inputs(rows, dst_cfg, run_dir / "comet_inputs.jsonl")
 scores, unavailable = score.score_run(rows, dst_cfg.target)
 unavailable["comet"] = "scored separately by python -m bench.metrics.comet"
-report.write_all(cfg=dst_cfg, dataset=spec, scores=(scores, unavailable), rows=rows, status="ok",
-                 started=clock.now(), wall_sec=0.0, run_dir=run_dir,
-                 pacing={"chunk_size_ms": 200, "trailing_silence_ms": 4000})
+report.write_all(
+    cfg=dst_cfg,
+    dataset=spec,
+    scores=(scores, unavailable),
+    rows=rows,
+    status="ok",
+    started=clock.now(),
+    wall_sec=0.0,
+    run_dir=run_dir,
+    pacing={"chunk_size_ms": 200, "trailing_silence_ms": 4000},
+)
 print(f"rescored {src_cfg.run_dir} -> {run_dir} ({len(rows)} items)")

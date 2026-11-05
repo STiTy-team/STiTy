@@ -17,33 +17,33 @@ from pathlib import Path
 
 
 # 단순 노이즈 태그: b/ o/ l/ n/ u/ (단독 토큰)
-_NOISE_TAG = re.compile(r'\b[bolnu]/\s*')
+_NOISE_TAG = re.compile(r"\b[bolnu]/\s*")
 
 # 이중 표기: (표기1)/(표기2)
 #   - 표기2가 *로 끝나면 (잘린 형태) → 표기1 채택
 #   - 그 외 → 표기2 채택 (한글 정규 표기)
-_DUAL_NOTATION = re.compile(r'\(([^)]+)\)/\(([^)]*)\)')
+_DUAL_NOTATION = re.compile(r"\(([^)]+)\)/\(([^)]*)\)")
 
 # 한국어 어절 뒤 /: 슬래시만 제거, 어절 자체는 유지  예) 그/ → 그, 어/ → 어
-_KOREAN_SLASH = re.compile(r'([가-힣]+)/')
+_KOREAN_SLASH = re.compile(r"([가-힣]+)/")
 
 # 구두점(.,?!;:)을 제외한 나머지 특수기호 제거
-_SYMBOLS = re.compile(r'[^\uAC00-\uD7A3a-zA-Z0-9\s.,?!;:]')
+_SYMBOLS = re.compile(r"[^\uAC00-\uD7A3a-zA-Z0-9\s.,?!;:]")
 
 
 def _replace_dual(m: re.Match) -> str:
     first, second = m.group(1), m.group(2)
     # second가 *로 끝나면 잘린 형태 → first(완전한 말) 선택
-    return first if second.endswith('*') else second
+    return first if second.endswith("*") else second
 
 
 def normalize(text: str) -> str:
     text = _DUAL_NOTATION.sub(_replace_dual, text)  # (A)/(B) → 규칙에 따라 선택
-    text = _NOISE_TAG.sub('', text)                 # b/ o/ l/ n/ u/ 제거
-    text = _KOREAN_SLASH.sub(r'\1', text)           # 한글어절/ → 슬래시만 제거
-    text = re.sub(r'\+', '', text)                  # + (음 연장 기호) 제거
-    text = _SYMBOLS.sub('', text)                   # 구두점 외 특수기호 제거
-    text = re.sub(r'\s+', ' ', text).strip()        # 공백 정리
+    text = _NOISE_TAG.sub("", text)  # b/ o/ l/ n/ u/ 제거
+    text = _KOREAN_SLASH.sub(r"\1", text)  # 한글어절/ → 슬래시만 제거
+    text = re.sub(r"\+", "", text)  # + (음 연장 기호) 제거
+    text = _SYMBOLS.sub("", text)  # 구두점 외 특수기호 제거
+    text = re.sub(r"\s+", " ", text).strip()  # 공백 정리
     return text
 
 
@@ -57,10 +57,10 @@ def parse_trn(trn_path: Path, min_words: int, count: int) -> list[dict]:
     with trn_path.open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-            if not line or ' :: ' not in line:
+            if not line or " :: " not in line:
                 continue
 
-            path_part, raw_text = line.split(' :: ', 1)
+            path_part, raw_text = line.split(" :: ", 1)
             file_name = Path(path_part).stem  # 확장자 없는 파일명
 
             text = normalize(raw_text)
@@ -81,14 +81,17 @@ def parse_trn(trn_path: Path, min_words: int, count: int) -> list[dict]:
 def main():
     parser = argparse.ArgumentParser(description=".trn → eval_clean.json 변환")
     _trn_dir = Path(__file__).resolve().parent.parent / "data" / "KsponSpeech" / "transcribe"
-    parser.add_argument("--input",     type=str,   required=True,
-                        help=".trn 파일명 (core/meaning_segmentator/data/KsponSpeech/transcribe/ 기준, 예: eval_clean.trn)")
-    parser.add_argument("--output",    type=str,   default=None,
-                        help="출력 JSON 경로 (기본: 입력 파일명.json)")
-    parser.add_argument("--min-words", type=int,   default=5,
-                        help="포함할 최소 어절 수 (기본: 5)")
-    parser.add_argument("--count",     type=int,   default=0,
-                        help="수집할 최대 문장 수 (기본: 0 = 전체)")
+    parser.add_argument(
+        "--input",
+        type=str,
+        required=True,
+        help=".trn 파일명 (core/meaning_segmentator/data/KsponSpeech/transcribe/ 기준, 예: eval_clean.trn)",
+    )
+    parser.add_argument(
+        "--output", type=str, default=None, help="출력 JSON 경로 (기본: 입력 파일명.json)"
+    )
+    parser.add_argument("--min-words", type=int, default=5, help="포함할 최소 어절 수 (기본: 5)")
+    parser.add_argument("--count", type=int, default=0, help="수집할 최대 문장 수 (기본: 0 = 전체)")
     args = parser.parse_args()
 
     input_path = _trn_dir / args.input
@@ -102,7 +105,9 @@ def main():
         output_path = input_path.with_suffix(".json")
 
     print(f"파싱 중: {input_path}")
-    print(f"  최소 어절: {args.min_words}  |  최대 수집: {args.count if args.count > 0 else '전체'}")
+    print(
+        f"  최소 어절: {args.min_words}  |  최대 수집: {args.count if args.count > 0 else '전체'}"
+    )
 
     entries = parse_trn(input_path, min_words=args.min_words, count=args.count)
 

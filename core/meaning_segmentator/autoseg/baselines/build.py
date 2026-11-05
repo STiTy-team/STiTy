@@ -19,16 +19,23 @@ import time
 from pathlib import Path
 
 from ..paths import REPO_ROOT, RUNS_DIR
+
 sys.path.insert(0, str(REPO_ROOT))
 
 from core.meaning_segmentator.autoseg.baselines import (  # noqa: E402
-    alignatt, causal_align, mu_prefix, punct, syntax_sasst)
+    alignatt,
+    causal_align,
+    mu_prefix,
+    punct,
+    syntax_sasst,
+)
 
 SPACED = {"de": True, "es": True, "ja": False, "zh": False, "ko": True}
 
 
-def load_rows(run_dir: Path, label: str, split: str,
-              dataset: str = "fleurs", tag: str = "", tgt: str = "de") -> list[dict]:
+def load_rows(
+    run_dir: Path, label: str, split: str, dataset: str = "fleurs", tag: str = "", tgt: str = "de"
+) -> list[dict]:
     """평가 문장 목록.
 
     `prompt_eval/<label>_<split>.json`(제안 정책 산출)이 있으면 **그 순서를 그대로** 따른다 —
@@ -45,8 +52,7 @@ def load_rows(run_dir: Path, label: str, split: str,
     from core.meaning_segmentator.autoseg.baselines import datasets as _ds
 
     print(f"  ({ev_path.name} 없음 — 매니페스트에서 문장을 읽는다)")
-    return [{"id": k, "text": e.src}
-            for k, e in _ds.get(dataset).entries(tag, tgt).items()]
+    return [{"id": k, "text": e.src} for k, e in _ds.get(dataset).entries(tag, tgt).items()]
 
 
 def load_refs(tag: str, tgt: str, dataset: str = "fleurs") -> dict[str, str]:
@@ -88,13 +94,14 @@ def load_partial(path: Path) -> list[dict]:
         if line:
             try:
                 out.append(json.loads(line))
-            except json.JSONDecodeError:      # 죽는 순간 잘린 마지막 줄
+            except json.JSONDecodeError:  # 죽는 순간 잘린 마지막 줄
                 pass
     return out
 
 
-def run_policy(policy: str, rows: list[dict], tgt: str, args,
-               ckpt: "Checkpoint | None" = None) -> list[dict]:
+def run_policy(
+    policy: str, rows: list[dict], tgt: str, args, ckpt: "Checkpoint | None" = None
+) -> list[dict]:
     out: list[dict] = []
     t0 = time.time()
 
@@ -133,8 +140,7 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
             if (i + 1) % 25 == 0:
                 el = time.time() - t0
                 eta = el / (i + 1) * (len(rows) - i - 1)
-                print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m",
-                      flush=True)
+                print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m", flush=True)
     elif policy == "syntax":
         seg = syntax_sasst.SyntaxSegmenter(max_chunk=args.max_chunk)
         for r in rows:
@@ -143,31 +149,35 @@ def run_policy(policy: str, rows: list[dict], tgt: str, args,
     elif policy == "alignatt":
         from core.meaning_segmentator.autoseg.baselines.nmt import Nmt
 
-        nmt = Nmt(src="en", tgt=tgt, device=args.device,
-                  attentions=True, attn_layer=args.attn_layer)
+        nmt = Nmt(
+            src="en", tgt=tgt, device=args.device, attentions=True, attn_layer=args.attn_layer
+        )
         for i, r in enumerate(rows):
             add({**r, "pieces": alignatt.segment(nmt, r["text"], args.f)})
             if (i + 1) % 25 == 0:
                 el = time.time() - t0
                 eta = el / (i + 1) * (len(rows) - i - 1)
-                print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m",
-                      flush=True)
+                print(f"  [{tgt}] {i + 1}/{len(rows)}  {el:.0f}s  ETA {eta / 60:.1f}m", flush=True)
     else:
         raise SystemExit(f"unknown policy: {policy}")
 
     ks = [len(r["pieces"]) for r in out]
-    print(f"  [{tgt}] {policy}: 평균 조각수 {sum(ks) / len(ks):.2f}, "
-          f"무분절 문장 {sum(1 for k in ks if k == 1)}/{len(ks)}, "
-          f"{time.time() - t0:.0f}s")
+    print(
+        f"  [{tgt}] {policy}: 평균 조각수 {sum(ks) / len(ks):.2f}, "
+        f"무분절 문장 {sum(1 for k in ks if k == 1)}/{len(ks)}, "
+        f"{time.time() - t0:.0f}s"
+    )
     return out
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description="Table 1a 비교군 라벨 생성")
     p.add_argument("--run-id", required=True)
-    p.add_argument("--policy", required=True,
-                   choices=["punct", "causal_align", "mu_prefix",
-                            "syntax", "alignatt"])
+    p.add_argument(
+        "--policy",
+        required=True,
+        choices=["punct", "causal_align", "mu_prefix", "syntax", "alignatt"],
+    )
     p.add_argument("--targets", nargs="+", default=["de", "ja"])
     p.add_argument("--label", default="auto_best")
     p.add_argument("--split", default="test")
@@ -179,18 +189,25 @@ def main() -> int:
     p.add_argument("--attn-layer", type=int, default=5, help="AlignAtt 정렬 층")
     p.add_argument("--max-chunk", type=int, default=7, help="SASST 최대 청크 어절")
     p.add_argument("--limit", type=int, default=0, help="스모크용 앞 N 문장")
-    p.add_argument("--resume", action="store_true",
-                   help="`<out>.partial.jsonl` 을 읽어 **이미 끝난 문장은 건너뛴다.** "
-                        "CUDA 오류로 죽은 뒤 이어 돌릴 때 쓴다")
-    p.add_argument("--out-name", default=None,
-                   help="산출 파일 stem (기본: 정책 이름). 같은 정책을 노브만 바꿔 "
-                        "여러 벌 만들 때 쓴다 — 예: --policy alignatt --f 4 "
-                        "--out-name alignatt_f4. `bleu_eval --baselines` 가 이 이름을 읽는다")
+    p.add_argument(
+        "--resume",
+        action="store_true",
+        help="`<out>.partial.jsonl` 을 읽어 **이미 끝난 문장은 건너뛴다.** "
+        "CUDA 오류로 죽은 뒤 이어 돌릴 때 쓴다",
+    )
+    p.add_argument(
+        "--out-name",
+        default=None,
+        help="산출 파일 stem (기본: 정책 이름). 같은 정책을 노브만 바꿔 "
+        "여러 벌 만들 때 쓴다 — 예: --policy alignatt --f 4 "
+        "--out-name alignatt_f4. `bleu_eval --baselines` 가 이 이름을 읽는다",
+    )
     args = p.parse_args()
 
     run_dir = RUNS_DIR / args.run_id
-    rows = load_rows(run_dir, args.label, args.split,
-                     args.dataset, args.manifest_tag, args.targets[0])
+    rows = load_rows(
+        run_dir, args.label, args.split, args.dataset, args.manifest_tag, args.targets[0]
+    )
     if args.limit:
         rows = rows[: args.limit]
     out_dir = run_dir / "baselines"
@@ -205,11 +222,13 @@ def main() -> int:
 
         done = load_partial(part) if args.resume else []
         if not args.resume and part.exists():
-            part.unlink()                      # 이어 돌리는 게 아니면 이전 잔해를 지운다
+            part.unlink()  # 이어 돌리는 게 아니면 이전 잔해를 지운다
         done_ids = {r["id"] for r in done}
         todo = [r for r in rows if r["id"] not in done_ids]
-        print(f"[{args.policy}] en→{tgt}, {len(rows)}문장"
-              + (f" (이어서: 완료 {len(done)}, 남은 {len(todo)})" if done else ""))
+        print(
+            f"[{args.policy}] en→{tgt}, {len(rows)}문장"
+            + (f" (이어서: 완료 {len(done)}, 남은 {len(todo)})" if done else "")
+        )
 
         ckpt = Checkpoint(part)
         try:
@@ -220,13 +239,23 @@ def main() -> int:
         # 원래 순서로 되돌린다 — 소비자(`bleu_eval`)는 id 로 찾지만 산출물은 읽는 사람도 본다.
         order = {r["id"]: i for i, r in enumerate(rows)}
         res = sorted(done + res, key=lambda r: order.get(r["id"], 1 << 30))
-        path.write_text(json.dumps(
-            {"policy": args.policy, "tgt": tgt, "split": args.split,
-             "n_cands": args.n_cands if args.policy == "mu_prefix" else None,
-             "f": args.f if args.policy == "alignatt" else None,
-             "attn_layer": args.attn_layer if args.policy == "alignatt" else None,
-             "rows": res}, ensure_ascii=False, indent=2), encoding="utf-8")
-        part.unlink(missing_ok=True)       # 최종본이 나왔으니 진행분은 버린다
+        path.write_text(
+            json.dumps(
+                {
+                    "policy": args.policy,
+                    "tgt": tgt,
+                    "split": args.split,
+                    "n_cands": args.n_cands if args.policy == "mu_prefix" else None,
+                    "f": args.f if args.policy == "alignatt" else None,
+                    "attn_layer": args.attn_layer if args.policy == "alignatt" else None,
+                    "rows": res,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        part.unlink(missing_ok=True)  # 최종본이 나왔으니 진행분은 버린다
         print(f"  → {path} ({len(res)}행)")
     return 0
 

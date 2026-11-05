@@ -14,6 +14,7 @@ up in the parent: between fork and exec the child only calls an already-resolved
 function, because loading a library there can deadlock on a lock another thread held. Its output goes to a log file
 whose path is in every startup error.
 """
+
 import asyncio
 import atexit
 import ctypes
@@ -64,9 +65,15 @@ _die_with_parent = _parent_death_signal()
 
 
 class ManagedProcess:
-
-    def __init__(self, name: str, argv: list[str], *, ready: Callable[[], Awaitable[bool]],
-                 startup_timeout_sec: float = 600.0, poll_sec: float = 2.0):
+    def __init__(
+        self,
+        name: str,
+        argv: list[str],
+        *,
+        ready: Callable[[], Awaitable[bool]],
+        startup_timeout_sec: float = 600.0,
+        poll_sec: float = 2.0,
+    ):
         self.name = name
         self.argv = argv
         self.ready = ready
@@ -76,25 +83,32 @@ class ManagedProcess:
         self.process: asyncio.subprocess.Process | None = None
 
     async def start(self) -> None:
-        log.info("[PROCESS] starting %s: %s (log: %s)", self.name, " ".join(self.argv), self.log_path)
+        log.info(
+            "[PROCESS] starting %s: %s (log: %s)", self.name, " ".join(self.argv), self.log_path
+        )
         with open(self.log_path, "ab") as log_file:
             self.process = await asyncio.create_subprocess_exec(
-                *self.argv, stdout=log_file, stderr=asyncio.subprocess.STDOUT,
-                preexec_fn=_die_with_parent)
+                *self.argv,
+                stdout=log_file,
+                stderr=asyncio.subprocess.STDOUT,
+                preexec_fn=_die_with_parent,
+            )
         atexit.register(self._terminate)
         try:
             await asyncio.wait_for(self._wait_ready(), self.startup_timeout_sec)
         except TimeoutError:
             await self.stop()
-            raise ProcessError(f"{self.name} was not ready within {self.startup_timeout_sec}s; "
-                               f"see {self.log_path}") from None
+            raise ProcessError(
+                f"{self.name} was not ready within {self.startup_timeout_sec}s; see {self.log_path}"
+            ) from None
         log.info("[PROCESS] %s ready (pid %d)", self.name, self.process.pid)
 
     async def _wait_ready(self) -> None:
         while not await self.ready():
             if self.process.returncode is not None:
-                raise ProcessError(f"{self.name} exited with code {self.process.returncode}; "
-                                   f"see {self.log_path}")
+                raise ProcessError(
+                    f"{self.name} exited with code {self.process.returncode}; see {self.log_path}"
+                )
             await asyncio.sleep(self.poll_sec)
 
     async def stop(self, timeout_sec: float = 15.0) -> None:

@@ -20,6 +20,7 @@ import time
 import torch
 
 from ..paths import REPO_ROOT
+
 sys.path.insert(0, str(REPO_ROOT))
 
 from core.meaning_segmentator.autoseg.baselines import datasets as _ds  # noqa: E402
@@ -77,35 +78,41 @@ def main() -> int:
     from qwen_asr.inference.qwen3_forced_aligner import Qwen3ForcedAligner
 
     jobs = _ds.alignment_jobs(args.dataset, args.tag, args.ref_tgt, args.limit)
-    al = Qwen3ForcedAligner.from_pretrained(ALIGNER, device_map="cuda:0",
-                                            dtype=torch.bfloat16)
+    al = Qwen3ForcedAligner.from_pretrained(ALIGNER, device_map="cuda:0", dtype=torch.bfloat16)
 
     out: dict[str, dict] = {}
     fails: list[str] = []
     t0 = time.time()
     for i in range(0, len(jobs), args.batch):
-        chunk = jobs[i: i + args.batch]
+        chunk = jobs[i : i + args.batch]
         try:
-            res = al.align(audio=[str(c[2]) for c in chunk],
-                           text=[c[1] for c in chunk],
-                           language=["English"] * len(chunk))
-        except Exception as exc:                       # noqa: BLE001
+            res = al.align(
+                audio=[str(c[2]) for c in chunk],
+                text=[c[1] for c in chunk],
+                language=["English"] * len(chunk),
+            )
+        except Exception as exc:  # noqa: BLE001
             fails += [f"{c[0]}:{type(exc).__name__}" for c in chunk]
             continue
         for c, r in zip(chunk, res):
             key, text, wav, dur_ms = c
             try:
                 ends = to_word_ends(list(r), text, dur_ms / 1000)
-            except Exception as exc:                   # noqa: BLE001
+            except Exception as exc:  # noqa: BLE001
                 fails.append(f"{key}:{type(exc).__name__}")
                 continue
-            out[key] = {"wav": wav.name, "dur_ms": dur_ms,
-                        "word_end_ms": [round(e * 1000, 1) for e in ends]}
+            out[key] = {
+                "wav": wav.name,
+                "dur_ms": dur_ms,
+                "word_end_ms": [round(e * 1000, 1) for e in ends],
+            }
         done = i + len(chunk)
         if done % 80 == 0 or done >= len(jobs):
             el = time.time() - t0
-            print(f"  {done}/{len(jobs)}  {el:.0f}s  "
-                  f"ETA {el / done * (len(jobs) - done) / 60:.1f}m", flush=True)
+            print(
+                f"  {done}/{len(jobs)}  {el:.0f}s  ETA {el / done * (len(jobs) - done) / 60:.1f}m",
+                flush=True,
+            )
 
     dest = _ds.get(args.dataset).wordtimes_path(args.tag, "qwen")
     dest.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")

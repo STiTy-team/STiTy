@@ -45,15 +45,31 @@ function MachineMenu({ machine }: { machine: Machine }) {
             <CalendarClockIcon />
             작업 시간표 수정
           </Button>
-          <Button variant="ghost" className="justify-start text-destructive hover:text-destructive" onClick={() => pick("remove")}>
+          <Button
+            variant="ghost"
+            className="justify-start text-destructive hover:text-destructive"
+            onClick={() => pick("remove")}
+          >
             <Trash2Icon />
             머신 삭제
           </Button>
         </PopoverContent>
       </Popover>
-      <EditNotesDialog machine={machine} open={dialog === "notes"} onOpenChange={(open) => setDialog(open ? "notes" : null)} />
-      <EditTimetableDialog machine={machine} open={dialog === "timetable"} onOpenChange={(open) => setDialog(open ? "timetable" : null)} />
-      <RemoveMachineDialog machine={machine} open={dialog === "remove"} onOpenChange={(open) => setDialog(open ? "remove" : null)} />
+      <EditNotesDialog
+        machine={machine}
+        open={dialog === "notes"}
+        onOpenChange={(open) => setDialog(open ? "notes" : null)}
+      />
+      <EditTimetableDialog
+        machine={machine}
+        open={dialog === "timetable"}
+        onOpenChange={(open) => setDialog(open ? "timetable" : null)}
+      />
+      <RemoveMachineDialog
+        machine={machine}
+        open={dialog === "remove"}
+        onOpenChange={(open) => setDialog(open ? "remove" : null)}
+      />
     </>
   )
 }
@@ -65,7 +81,11 @@ function Notes({ text }: { text: string }) {
     <div className="flex max-w-3xl items-start gap-2 text-sm text-foreground/80">
       <p className={cn("min-w-0 whitespace-pre-wrap", long && !more && "line-clamp-1")}>{text}</p>
       {long && (
-        <button type="button" className="shrink-0 font-medium text-primary hover:underline" onClick={() => setMore(!more)}>
+        <button
+          type="button"
+          className="shrink-0 font-medium text-primary hover:underline"
+          onClick={() => setMore(!more)}
+        >
           {more ? "접기" : "더 보기"}
         </button>
       )}
@@ -101,7 +121,11 @@ function MachineTab({ machine }: { machine: Machine }) {
               </span>
             )}
           </div>
-          {notes ? <Notes text={notes} /> : <p className="text-sm text-muted-foreground">설명이 아직 없어요. ⋯ 메뉴에서 추가할 수 있어요.</p>}
+          {notes ? (
+            <Notes text={notes} />
+          ) : (
+            <p className="text-sm text-muted-foreground">설명이 아직 없어요. ⋯ 메뉴에서 추가할 수 있어요.</p>
+          )}
         </div>
         <div className="flex shrink-0 gap-2">
           <AddRunDialog host={machine.host} />
@@ -110,7 +134,10 @@ function MachineTab({ machine }: { machine: Machine }) {
       </section>
 
       {noTimetable && (
-        <div role="alert" className="flex items-center gap-2 rounded-lg border border-status-failed/30 bg-status-failed-soft px-4 py-3 text-sm text-status-failed">
+        <div
+          role="alert"
+          className="flex items-center gap-2 rounded-lg border border-status-failed/30 bg-status-failed-soft px-4 py-3 text-sm text-status-failed"
+        >
           <TriangleAlertIcon className="size-4 shrink-0" />
           작업 시간표가 비어 있어서 이 머신은 작업을 시작하지 않아요. ⋯ 메뉴에서 시간표를 정해 주세요.
         </div>
@@ -119,7 +146,11 @@ function MachineTab({ machine }: { machine: Machine }) {
       <section className="flex flex-col gap-3">
         <div className="flex items-baseline gap-2">
           <h3 className="text-base font-semibold">대기열</h3>
-          {machine.jobs.length > 1 && <span className="text-sm text-muted-foreground">위에서부터 하나씩 실행돼요. 바로 실행으로 정한 작업이 먼저예요</span>}
+          {machine.jobs.length > 1 && (
+            <span className="text-sm text-muted-foreground">
+              위에서부터 하나씩 실행돼요. 바로 실행으로 정한 작업이 먼저예요
+            </span>
+          )}
         </div>
         <JobTable machine={machine} />
       </section>
@@ -143,7 +174,8 @@ export function QueuePage() {
     if (!machines.data.configured) return <Notice>{machines.data.message}</Notice>
 
     const list = machines.data.machines
-    if (!list.length) return <Notice>머신이 아직 없어요. scripts/bench/worker/start.sh로 worker를 띄우면 여기에 나타나요.</Notice>
+    if (!list.length)
+      return <Notice>머신이 아직 없어요. scripts/bench/worker/start.sh로 worker를 띄우면 여기에 나타나요.</Notice>
     const active = list.find((machine) => machine.host === host) ?? list.find((machine) => machine.connected) ?? list[0]
 
     return (
@@ -153,7 +185,9 @@ export function QueuePage() {
             <TabsTrigger key={machine.host} value={machine.host} className="h-8 px-3 font-mono">
               <MachineDot machine={machine} />
               {machine.host}
-              {machine.jobs.length > 0 && <span className="font-sans text-xs text-muted-foreground tabular-nums">{machine.jobs.length}</span>}
+              {machine.jobs.length > 0 && (
+                <span className="font-sans text-xs text-muted-foreground tabular-nums">{machine.jobs.length}</span>
+              )}
             </TabsTrigger>
           ))}
         </TabsList>

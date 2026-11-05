@@ -33,11 +33,11 @@ FRAGMENT_MAX_WORDS = 3
 SHORT_TAIL_MAX_WORDS = 5
 MIN_SPEECH_OVERLAP_SEC = 0.05
 
-PUNCT = '.,!?;:。？！'
+PUNCT = ".,!?;:。？！"
 QUOTE_COLON_RE = re.compile("[\"“”'‘’：:]+")
-PUNCT_CLASS_RE = re.compile(r'[.,!?;:。？！、，]')
-TRAILING_PUNCT_RE = re.compile(r'[.,!?;:。？！]+$')
-DROP_PUNCT_SPACE_RE = re.compile(r'[.,!?;:。？！\s]+')
+PUNCT_CLASS_RE = re.compile(r"[.,!?;:。？！、，]")
+TRAILING_PUNCT_RE = re.compile(r"[.,!?;:。？！]+$")
+DROP_PUNCT_SPACE_RE = re.compile(r"[.,!?;:。？！\s]+")
 FRAGMENT_TAIL_RE = re.compile(r"[,;、，]\s*$")
 WORD_CHAR_RE = re.compile(r"[^\W_]")
 LONE_COMMA_WORD_RE = re.compile(r"\S+,")
@@ -45,12 +45,15 @@ LONE_COMMA_WORD_RE = re.compile(r"\S+,")
 HEADER_ONLY_RE = re.compile(r"^\s*language\s+[A-Z][A-Za-z]*\s*[.!?]?\s*$")
 SEG_HEADER_TAIL_RE = re.compile(r"<SEG>\s*language(?:\s+[A-Za-z]*)?[.,!?]?\s*$")
 LANG_HEADER_INLINE_RE = re.compile(
-    r"^\s*language\s+(?:None|[A-Z][A-Za-z]*)\s*(?:<asr_text>)?[.,!?;:]?\s*")
+    r"^\s*language\s+(?:None|[A-Z][A-Za-z]*)\s*(?:<asr_text>)?[.,!?;:]?\s*"
+)
 LANG_HEADER_AFTER_PUNCT_RE = re.compile(
-    r"(?<=[.,!?;:])\s+language\s+(?:None|[A-Z][A-Za-z]*)(?=[\s.,!?;:]|$)[.,!?;:]?\s*")
+    r"(?<=[.,!?;:])\s+language\s+(?:None|[A-Z][A-Za-z]*)(?=[\s.,!?;:]|$)[.,!?;:]?\s*"
+)
 PARTIAL_HEADER_TAIL_RE = re.compile(
     r"(?:^|(?<=[.,!?;:]))\s*(?:language(?:\s+(?:None|[A-Z][A-Za-z]*))?"
-    r"|l(?:a(?:n(?:g(?:u(?:a(?:g)?)?)?)?)?)?)\s*$")
+    r"|l(?:a(?:n(?:g(?:u(?:a(?:g)?)?)?)?)?)?)\s*$"
+)
 KNOWN_SILENCE_RE = re.compile(
     r"^\s*(?:"
     r"i'?m sorry,? but i can'?t (?:hear|help|understand) you\b.*"
@@ -72,7 +75,7 @@ def _boundary():
 
 
 def squeeze(text: str) -> str:
-    return re.sub(r'\s+', ' ', text).strip()
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def display_of(raw: str) -> str:
@@ -87,7 +90,7 @@ def cut_repeats(text: str, max_repeat: int = 4) -> str:
         while j < len(tokens) and tokens[j] == tokens[i]:
             j += 1
         if j - i >= max_repeat:
-            return ' '.join(tokens[:i]).strip()
+            return " ".join(tokens[:i]).strip()
         i = j
     return text
 
@@ -97,9 +100,9 @@ def strip_asr_text(text: str) -> str:
         result = text
     else:
         first, rest = text.split("<asr_text>", 1)
-        if re.match(r'^\s*language\s+\w', first, re.IGNORECASE):
+        if re.match(r"^\s*language\s+\w", first, re.IGNORECASE):
             text = rest
-        result = re.sub(r'\s*<asr_text>\s*', ' ', text).strip()
+        result = re.sub(r"\s*<asr_text>\s*", " ", text).strip()
     return cut_repeats(result)
 
 
@@ -116,24 +119,23 @@ def strip_partial_headers(text: str) -> str:
 
 
 def boundary_key(sentence: str) -> str:
-    return re.sub(r'[.,!?;:。？！、，\'"“”‘’\s]+', '', sentence.replace(SEG_TAG, "")).lower()
+    return re.sub(r'[.,!?;:。？！、，\'"“”‘’\s]+', "", sentence.replace(SEG_TAG, "")).lower()
 
 
 def fuzzy_key(text: str) -> str:
-    return ' '.join(re.sub(r"[^a-z' ]", ' ', text.lower()).split())
+    return " ".join(re.sub(r"[^a-z' ]", " ", text.lower()).split())
 
 
 def asr_key(text: str) -> str:
-    return ' '.join(text.split()).rstrip(PUNCT).strip().lower()
+    return " ".join(text.split()).rstrip(PUNCT).strip().lower()
 
 
 def bare_word(word: str) -> str:
-    return TRAILING_PUNCT_RE.sub('', word).lower()
+    return TRAILING_PUNCT_RE.sub("", word).lower()
 
 
 def is_short_fragment(text: str) -> bool:
-    return (bool(FRAGMENT_TAIL_RE.search(text))
-            and len(text.split()) <= FRAGMENT_MAX_WORDS)
+    return bool(FRAGMENT_TAIL_RE.search(text)) and len(text.split()) <= FRAGMENT_MAX_WORDS
 
 
 def tail_overlaps(previous: str, sentence: str) -> bool:
@@ -141,29 +143,29 @@ def tail_overlaps(previous: str, sentence: str) -> bool:
     new_words = [bare_word(w) for w in sentence.split()]
     if not previous_words or not 1 <= len(new_words) <= SHORT_TAIL_MAX_WORDS:
         return False
-    tail = previous_words[-len(new_words):]
-    hits = sum(1 for a, b in zip(tail, new_words)
-               if a and b and (a == b or a.endswith(b) or b.endswith(a)))
+    tail = previous_words[-len(new_words) :]
+    hits = sum(
+        1 for a, b in zip(tail, new_words) if a and b and (a == b or a.endswith(b) or b.endswith(a))
+    )
     return hits >= max(1, (len(new_words) + 1) // 2)
 
 
-def committed_cursor(text: str, committed_display: str,
-                     committed_seg_count: int = 0) -> int:
+def committed_cursor(text: str, committed_display: str, committed_seg_count: int = 0) -> int:
     seg_len = len(SEG_TAG)
     text_no_seg = display_of(text)
 
     def walk(target_len: int, skip_re=None, advance_punct: bool = False) -> int:
         pos, shown, after_space = 0, 0, False
         while pos < len(text) and shown < target_len:
-            if text[pos:pos + seg_len] == SEG_TAG:
+            if text[pos : pos + seg_len] == SEG_TAG:
                 pos += seg_len
                 after_space = True
-            elif text[pos] == ' ' and after_space:
+            elif text[pos] == " " and after_space:
                 pos += 1
             elif skip_re and skip_re.match(text[pos]):
                 pos += 1
             else:
-                after_space = (text[pos] == ' ')
+                after_space = text[pos] == " "
                 shown += 1
                 pos += 1
         if advance_punct and pos < len(text) and text[pos] in PUNCT:
@@ -171,13 +173,17 @@ def committed_cursor(text: str, committed_display: str,
         return pos
 
     if committed_display:
-        flatten = lambda s: PUNCT_CLASS_RE.sub('.', s)
+        flatten = lambda s: PUNCT_CLASS_RE.sub(".", s)
         candidates = [
             (committed_display, text_no_seg, False, None),
             (flatten(committed_display), flatten(text_no_seg), False, None),
             (committed_display.rstrip(PUNCT), text_no_seg, True, None),
-            (QUOTE_COLON_RE.sub('', committed_display),
-             QUOTE_COLON_RE.sub('', text_no_seg), False, QUOTE_COLON_RE),
+            (
+                QUOTE_COLON_RE.sub("", committed_display),
+                QUOTE_COLON_RE.sub("", text_no_seg),
+                False,
+                QUOTE_COLON_RE,
+            ),
         ]
         candidates += [
             (committed_norm.lower(), text_norm.lower(), advance_punct, skip_re)
@@ -211,8 +217,9 @@ def committed_cursor(text: str, committed_display: str,
     return -1
 
 
-def uncommitted_from(current_text: str, committed_display: str,
-                     committed_seg_count: int = 0) -> str:
+def uncommitted_from(
+    current_text: str, committed_display: str, committed_seg_count: int = 0
+) -> str:
     pos = committed_cursor(current_text, committed_display, committed_seg_count)
     if pos != -1:
         return current_text[pos:]
@@ -236,14 +243,14 @@ def collapse_repetition(text: str, max_repeats: int = REP_DEDUP_MAX_REPEATS) -> 
         out, dropped, i = [], 0, 0
         while i < len(units):
             for n in range(min(max_period, (len(units) - i) // (max_repeats + 1)), 0, -1):
-                base = keys[i:i + n]
+                base = keys[i : i + n]
                 if not any(base):
                     continue
                 j = i + n
-                while keys[j:j + n] == base:
+                while keys[j : j + n] == base:
                     j += n
                 if (j - i) // n > max_repeats:
-                    out.extend(units[i:i + n * max_repeats])
+                    out.extend(units[i : i + n * max_repeats])
                     dropped += (j - i) // n - max_repeats
                     i = j
                     break
@@ -258,7 +265,8 @@ def collapse_repetition(text: str, max_repeats: int = REP_DEDUP_MAX_REPEATS) -> 
 
     words = result.split()
     kept_words, dropped_words = fold(
-        words, [re.sub(r'[^\w]+', '', w).lower() for w in words], max_period=8)
+        words, [re.sub(r"[^\w]+", "", w).lower() for w in words], max_period=8
+    )
     if dropped_words:
         dropped += dropped_words
         result = " ".join(kept_words)
@@ -269,7 +277,7 @@ def collapse_repetition(text: str, max_repeats: int = REP_DEDUP_MAX_REPEATS) -> 
     return result
 
 
-@transcribers.register('qwen-seg')
+@transcribers.register("qwen-seg")
 class Qwen3SegTranscription(Qwen3Transcription):
     SETTINGS = {
         **Qwen3Transcription.SETTINGS,
@@ -320,8 +328,12 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._utterance_open = False
         self._preroll: list = []
         self._reset_slot()
-        log.info("[TRANSCRIBE-START] commit=%s hide_seg=%s dot_confirm=%s",
-                 self.cfg.stity.commit.mode, self.hide_seg, self.dot_commit_confirm)
+        log.info(
+            "[TRANSCRIBE-START] commit=%s hide_seg=%s dot_confirm=%s",
+            self.cfg.stity.commit.mode,
+            self.hide_seg,
+            self.dot_commit_confirm,
+        )
 
     def _drain(self) -> list:
         out, self._out = self._out, []
@@ -361,8 +373,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         return getattr(self, "_fed_samples", 0) / audio_mod.SAMPLING_RATE
 
     def _next_boundary(self, text: str):
-        pattern = (_boundary().DOT_COMMIT_BOUNDARY_RE if self.enable_dot_commit
-                   else SEG_RE)
+        pattern = _boundary().DOT_COMMIT_BOUNDARY_RE if self.enable_dot_commit else SEG_RE
         start = 0
         while True:
             match = pattern.search(text, start)
@@ -377,10 +388,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
             match = _boundary().DOT_COMMIT_BOUNDARY_RE.search(remaining)
             if not match:
                 return tuple(keys)
-            key = boundary_key(remaining[:match.end()])
+            key = boundary_key(remaining[: match.end()])
             if key:
                 keys.append(key)
-            remaining = remaining[match.end():]
+            remaining = remaining[match.end() :]
 
     def _count_tokens(self, text: str) -> int:
         if not text.strip():
@@ -407,8 +418,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 return self._drain()
             if self._preroll:
                 chunk = self._take_preroll(chunk)
-                slot["audio_anchor_sec"] = ((self._fed_samples - chunk.size)
-                                            / audio_mod.SAMPLING_RATE)
+                slot["audio_anchor_sec"] = (
+                    self._fed_samples - chunk.size
+                ) / audio_mod.SAMPLING_RATE
         slot["real_audio"] = True
         await self._stream_chunk(chunk)
         return self._drain()
@@ -451,7 +463,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
             self._offer_partial()
 
         await self._decode_stream(
-            chunk, slot["state"],
+            chunk,
+            slot["state"],
             on_seg=on_seg,
             on_dot=on_dot if self.enable_dot_commit and not self.always_commit else None,
             on_partial=on_partial,
@@ -469,8 +482,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
 
         snapshot = await self._process_updates(chunk_end=True)
-        await self._reshape_slot(committed_before, previous_uncommitted, accum_before,
-                                 snapshot)
+        await self._reshape_slot(committed_before, previous_uncommitted, accum_before, snapshot)
         self._offer_partial(force=True)
 
     async def _recover_from_hallucination(self) -> None:
@@ -478,8 +490,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         state.hallucination_detected = False
         if not (state.text or "").strip() and getattr(state, "_last_nonempty_text", ""):
             state.text = state._last_nonempty_text
-        log.info("[SLOT-RESET] cause=repetition-loop text=%r",
-                 strip_asr_text((state.text or "").strip()))
+        log.info(
+            "[SLOT-RESET] cause=repetition-loop text=%r", strip_asr_text((state.text or "").strip())
+        )
         await self._flush_uncommitted(reason="vad")
         self._reset_slot()
         self._offer_partial(force=True)
@@ -508,34 +521,46 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot["seg_logged"] = count
         self._open_utterance()
         uncommitted = uncommitted_from(
-            current, slot["committed_display"], slot["committed_seg_count"])
+            current, slot["committed_display"], slot["committed_seg_count"]
+        )
         cut = uncommitted.rfind(SEG_TAG)
-        log.info("[SEG-TOKEN] text=%r",
-                 display_of(uncommitted if cut == -1 else uncommitted[:cut]))
+        log.info("[SEG-TOKEN] text=%r", display_of(uncommitted if cut == -1 else uncommitted[:cut]))
 
-    async def _reshape_slot(self, committed_before: str, previous_uncommitted: str,
-                            accum_before: int, snapshot: str | None) -> None:
+    async def _reshape_slot(
+        self,
+        committed_before: str,
+        previous_uncommitted: str,
+        accum_before: int,
+        snapshot: str | None,
+    ) -> None:
         slot = self.slot
         committed = slot["committed_display"]
         any_commit = committed != committed_before
         decoded = strip_asr_text((slot["state"].text or "").strip())
         header_tail = bool(SEG_HEADER_TAIL_RE.search(decoded))
-        chunk_samples = int(round(float(self.settings.get("chunk_size_sec", 2.0))
-                                  * audio_mod.SAMPLING_RATE))
+        chunk_samples = int(
+            round(float(self.settings.get("chunk_size_sec", 2.0)) * audio_mod.SAMPLING_RATE)
+        )
         if any_commit:
             slot["seg_chunk_accum"] = accum_before
 
         if not any_commit and header_tail:
             accum = slot["state"].audio_accum
             since = slot.get("seg_chunk_accum")
-            if (since is None or since >= accum.shape[0]
-                    or accum.shape[0] - since > 3 * chunk_samples):
+            if (
+                since is None
+                or since >= accum.shape[0]
+                or accum.shape[0] - since > 3 * chunk_samples
+            ):
                 since = max(0, accum.shape[0] - chunk_samples)
             carry = accum[since:].copy()
             self._restart_with_audio(carry, committed, header_reset=True)
-            log.info("[SLOT-RESET] cause=dangling-lang-header carry_sec=%.2f tail=%r "
-                     "slot_committed=%r", carry.shape[0] / audio_mod.SAMPLING_RATE,
-                     decoded[-40:], committed)
+            log.info(
+                "[SLOT-RESET] cause=dangling-lang-header carry_sec=%.2f tail=%r slot_committed=%r",
+                carry.shape[0] / audio_mod.SAMPLING_RATE,
+                decoded[-40:],
+                committed,
+            )
             self._offer_partial(force=True)
             return
 
@@ -557,8 +582,14 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 last_text=seed_text,
             )
             self.slot["state"].unfixed_token_num = 0
-            log.info("[SLOT-RESET] cause=audio-limit audio_sec=%.1f limit_sec=%s seed=%r "
-                     "slot_committed=%r", audio_sec, MAX_AUDIO_ACCUM_SEC, seed_text, committed)
+            log.info(
+                "[SLOT-RESET] cause=audio-limit audio_sec=%.1f limit_sec=%s seed=%r "
+                "slot_committed=%r",
+                audio_sec,
+                MAX_AUDIO_ACCUM_SEC,
+                seed_text,
+                committed,
+            )
             return
 
         if ends_with_seg or not remaining.strip():
@@ -567,16 +598,23 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 carry_samples = min(max(carry_samples, chunk_samples), accum.shape[0])
             carry = accum[-carry_samples:].copy() if carry_samples > 0 else None
             self._restart_with_audio(carry, committed, header_reset=header_tail)
-            cause = ("dangling-lang-header" if header_tail
-                     else "seg" if decoded.endswith(SEG_TAG) else "all-committed")
-            log.info("[SLOT-RESET] cause=%s carry_sec=%.2f slot_committed=%r", cause,
-                     0.0 if carry is None else carry.shape[0] / audio_mod.SAMPLING_RATE,
-                     committed)
+            cause = (
+                "dangling-lang-header"
+                if header_tail
+                else "seg"
+                if decoded.endswith(SEG_TAG)
+                else "all-committed"
+            )
+            log.info(
+                "[SLOT-RESET] cause=%s carry_sec=%.2f slot_committed=%r",
+                cause,
+                0.0 if carry is None else carry.shape[0] / audio_mod.SAMPLING_RATE,
+                committed,
+            )
             return
 
         if self._period_stayed_in_place(previous_uncommitted, committed_before, committed):
-            carry = (accum[-chunk_samples:] if accum.shape[0] >= chunk_samples
-                     else accum.copy())
+            carry = accum[-chunk_samples:] if accum.shape[0] >= chunk_samples else accum.copy()
             carry_lang = slot["last_text_lang"]
             carry_boundaries = slot.get("prev_boundary_sentences", ())
             self._restart_with_audio(carry, committed, dot_switch=True)
@@ -585,11 +623,20 @@ class Qwen3SegTranscription(Qwen3Transcription):
             if carry_boundaries:
                 self.slot["prev_boundary_sentences"] = carry_boundaries
                 self.slot["prev_boundary_accum"] = -1
-            log.info("[SLOT-RESET] cause=dot carry_sec=%.2f slot_committed=%r",
-                     carry.shape[0] / audio_mod.SAMPLING_RATE, committed)
+            log.info(
+                "[SLOT-RESET] cause=dot carry_sec=%.2f slot_committed=%r",
+                carry.shape[0] / audio_mod.SAMPLING_RATE,
+                committed,
+            )
 
-    def _restart_with_audio(self, carry: np.ndarray | None, last_committed: str, *,
-                            header_reset: bool = False, dot_switch: bool = False) -> None:
+    def _restart_with_audio(
+        self,
+        carry: np.ndarray | None,
+        last_committed: str,
+        *,
+        header_reset: bool = False,
+        dot_switch: bool = False,
+    ) -> None:
         self._reset_slot()
         slot = self.slot
         if carry is not None:
@@ -606,27 +653,31 @@ class Qwen3SegTranscription(Qwen3Transcription):
             slot["header_reset_last_committed"] = last_committed
 
     @staticmethod
-    def _period_stayed_in_place(previous_uncommitted: str, committed_before: str,
-                                committed_after: str) -> bool:
+    def _period_stayed_in_place(
+        previous_uncommitted: str, committed_before: str, committed_after: str
+    ) -> bool:
         previous = previous_uncommitted.strip()
-        if not previous or not re.search(r'[.?!。？！]$', previous):
+        if not previous or not re.search(r"[.?!。？！]$", previous):
             return False
-        newly = committed_after[len(committed_before):]
-        core = re.sub(r'\s+', '', previous.rstrip('.?!。？！'))
-        return bool(core and re.match(re.escape(core) + r'[.?!。？！]',
-                                      re.sub(r'\s+', '', newly)))
+        newly = committed_after[len(committed_before) :]
+        core = re.sub(r"\s+", "", previous.rstrip(".?!。？！"))
+        return bool(core and re.match(re.escape(core) + r"[.?!。？！]", re.sub(r"\s+", "", newly)))
 
     def _forced_reset_seed(self, remaining: str) -> str:
         committed = self.slot["committed_display"]
-        sentences = [s for s in re.split(r'(?<=[。？！?!])', committed) if s.strip()]
+        sentences = [s for s in re.split(r"(?<=[。？！?!])", committed) if s.strip()]
         return "".join(sentences[-MAX_SEED_COMMITTED_SENTENCES:]) + remaining
 
     def _uncommitted_display(self, text_snapshot: str | None = None) -> str:
         slot = self.slot
-        current = (text_snapshot if text_snapshot is not None
-                   else strip_asr_text((slot["state"].text or "").strip()))
-        return display_of(uncommitted_from(
-            current, slot["committed_display"], slot["committed_seg_count"]))
+        current = (
+            text_snapshot
+            if text_snapshot is not None
+            else strip_asr_text((slot["state"].text or "").strip())
+        )
+        return display_of(
+            uncommitted_from(current, slot["committed_display"], slot["committed_seg_count"])
+        )
 
     def _offer_partial(self, *, force: bool = False) -> None:
         if not force and clock.elapsed_since(self._partial_at) < PARTIAL_MIN_INTERVAL_SEC:
@@ -643,10 +694,13 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._partial_text = text
         self._partial_at = clock.monotonic()
         self._partial_seq += 1
-        self._out.append(Partial(
-            text=text,
-            language=langs.norm_code(self.slot["last_text_lang"]),
-            seq=self._partial_seq))
+        self._out.append(
+            Partial(
+                text=text,
+                language=langs.norm_code(self.slot["last_text_lang"]),
+                seq=self._partial_seq,
+            )
+        )
 
     def _clear_partial(self) -> None:
         if self._partial_text == "":
@@ -657,30 +711,45 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._out.append(Partial(text="", language="", seq=self._partial_seq))
 
     def _language(self) -> str:
-        return langs.norm_code(self.slot["state"].language
-                               or self.slot["last_text_lang"] or "")
+        return langs.norm_code(self.slot["state"].language or self.slot["last_text_lang"] or "")
 
-    def _find_duplicate(self, sentence: str, *, stage: str,
-                        trigger: str | None = None,
-                        batch_last: str | None = None,
-                        batch_repeat: int = 0) -> tuple[str, str] | None:
+    def _find_duplicate(
+        self,
+        sentence: str,
+        *,
+        stage: str,
+        trigger: str | None = None,
+        batch_last: str | None = None,
+        batch_repeat: int = 0,
+    ) -> tuple[str, str] | None:
         slot = self.slot
         applies = lambda name: stage in self.GUARD_STAGES[name]
         if not sentence:
             return None
 
-        if (applies("rep-dedup") and self.rep_dedup and batch_last is not None
-                and sentence == batch_last and batch_repeat >= REP_DEDUP_MAX_REPEATS):
+        if (
+            applies("rep-dedup")
+            and self.rep_dedup
+            and batch_last is not None
+            and sentence == batch_last
+            and batch_repeat >= REP_DEDUP_MAX_REPEATS
+        ):
             return "rep-dedup", batch_last
 
-        if (applies("seg-boundary-dedup") and "seg_reset_last_committed" in slot
-                and not self.always_commit):
+        if (
+            applies("seg-boundary-dedup")
+            and "seg_reset_last_committed" in slot
+            and not self.always_commit
+        ):
             previous = slot.pop("seg_reset_last_committed")
             words = sentence.split()
             first_word = bare_word(words[0]) if words else ""
             last_word = bare_word(previous.split()[-1]) if previous.split() else ""
-            if first_word and last_word and (first_word == last_word
-                                             or last_word.endswith(first_word)):
+            if (
+                first_word
+                and last_word
+                and (first_word == last_word or last_word.endswith(first_word))
+            ):
                 return "seg-boundary-dedup", previous
             if tail_overlaps(previous, sentence):
                 return "seg-boundary-dedup", previous
@@ -694,21 +763,24 @@ class Qwen3SegTranscription(Qwen3Transcription):
             previous = slot.get("dot_switch_prev_committed", "")
             if previous and (trigger == "dot" or stage == "flush"):
                 slot.pop("dot_switch_prev_committed", None)
-                drop = lambda s: DROP_PUNCT_SPACE_RE.sub('', s)
+                drop = lambda s: DROP_PUNCT_SPACE_RE.sub("", s)
                 if drop(previous).endswith(drop(sentence)):
                     return "dot-suffix-dedup", previous
 
         if applies("committed-suffix-dedup") and not self.always_commit:
             bare = strip_lang_headers(sentence)
             if bare and len(bare.split()) >= 2:
-                key = DROP_PUNCT_SPACE_RE.sub('', bare).lower()
-                for previous in (slot["committed_display"],
-                                 slot.get("dot_switch_prev_committed", ""),
-                                 slot.get("seg_reset_last_committed", ""),
-                                 slot.get("header_reset_last_committed", ""),
-                                 self._last_final_text):
+                key = DROP_PUNCT_SPACE_RE.sub("", bare).lower()
+                for previous in (
+                    slot["committed_display"],
+                    slot.get("dot_switch_prev_committed", ""),
+                    slot.get("seg_reset_last_committed", ""),
+                    slot.get("header_reset_last_committed", ""),
+                    self._last_final_text,
+                ):
                     stripped = DROP_PUNCT_SPACE_RE.sub(
-                        '', strip_lang_headers(previous or "")).lower()
+                        "", strip_lang_headers(previous or "")
+                    ).lower()
                     if key and stripped and stripped.endswith(key):
                         return "committed-suffix-dedup", previous
 
@@ -740,16 +812,19 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if self.always_commit or not sentence:
             return sentence
         words = sentence.split()
-        normalized = [re.sub(r"[^a-z']", '', w.lower()) for w in words]
+        normalized = [re.sub(r"[^a-z']", "", w.lower()) for w in words]
         for previous in self.slot["committed_by_fuzzy_key"]:
             previous_words = previous.split()
             if not previous_words or len(normalized) <= len(previous_words):
                 continue
-            head = ' '.join(normalized[:len(previous_words)])
+            head = " ".join(normalized[: len(previous_words)])
             if difflib.SequenceMatcher(None, head, previous).ratio() >= FUZZY_DEDUP_RATIO:
-                kept = ' '.join(words[len(previous_words):]).lstrip(' ,.;:!?')
-                log.info("[DEDUP-TRIM] rule=committed-prefix removed=%r kept=%r",
-                         ' '.join(words[:len(previous_words)]), kept)
+                kept = " ".join(words[len(previous_words) :]).lstrip(" ,.;:!?")
+                log.info(
+                    "[DEDUP-TRIM] rule=committed-prefix removed=%r kept=%r",
+                    " ".join(words[: len(previous_words)]),
+                    kept,
+                )
                 return kept
         return sentence
 
@@ -774,9 +849,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
             batch_last = shown
         return "".join(kept).strip()
 
-    async def _process_updates(self, force_reason: str | None = None,
-                               chunk_end: bool = False,
-                               final: bool = False) -> str | None:
+    async def _process_updates(
+        self, force_reason: str | None = None, chunk_end: bool = False, final: bool = False
+    ) -> str | None:
         slot = self.slot
         state = slot["state"]
         current_text = strip_asr_text((state.text or "").strip())
@@ -790,7 +865,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot["last_text_lang"] = current_lang
 
         uncommitted = uncommitted_from(
-            current_text, slot["committed_display"], slot["committed_seg_count"])
+            current_text, slot["committed_display"], slot["committed_seg_count"]
+        )
         extracted = self._extract_sentences(uncommitted, chunk_end=chunk_end, final=final)
         if not extracted:
             return None
@@ -800,17 +876,17 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if not committed_items:
             return None
 
-        committed_items = self._merge_comma_fragments(
-            committed_items, closing=bool(force_reason))
-        committed_items = [(text, trigger) for text, trigger in committed_items
-                           if not self._drop_commit_candidate(
-                               text, force_reason or trigger)]
+        committed_items = self._merge_comma_fragments(committed_items, closing=bool(force_reason))
+        committed_items = [
+            (text, trigger)
+            for text, trigger in committed_items
+            if not self._drop_commit_candidate(text, force_reason or trigger)
+        ]
         for sentence, trigger in committed_items:
             self._emit_final(sentence, force_reason or trigger)
         return strip_asr_text(latest_text)
 
-    def _extract_sentences(self, uncommitted: str, *, chunk_end: bool,
-                           final: bool) -> list:
+    def _extract_sentences(self, uncommitted: str, *, chunk_end: bool, final: bool) -> list:
         slot = self.slot
         state = slot["state"]
         extracted: list = []
@@ -828,8 +904,11 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 tokens = self._count_tokens(uncommitted)
                 committed_len = len(slot["committed_display"])
                 same_base = committed_len == slot.get("stall_committed_len")
-                if (same_base and tokens == slot.get("stall_tokens")
-                        and accum > slot.get("stall_accum", -1)):
+                if (
+                    same_base
+                    and tokens == slot.get("stall_tokens")
+                    and accum > slot.get("stall_accum", -1)
+                ):
                     slot["stall_count"] = slot.get("stall_count", 0) + 1
                 else:
                     slot["stall_count"] = 0
@@ -844,8 +923,12 @@ class Qwen3SegTranscription(Qwen3Transcription):
             if not shown:
                 return
             duplicate = self._find_duplicate(
-                shown, stage="extract", trigger=trigger,
-                batch_last=batch_last, batch_repeat=batch_repeat)
+                shown,
+                stage="extract",
+                trigger=trigger,
+                batch_last=batch_last,
+                batch_repeat=batch_repeat,
+            )
             if duplicate:
                 self._log_duplicate(duplicate, shown)
                 extracted.append((sentence, trigger, False))
@@ -873,16 +956,24 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 break
 
             trigger = "seg" if SEG_TAG in match.group() else "dot"
-            sentence = remaining[:match.end()].strip()
-            after = remaining[match.end():]
+            sentence = remaining[: match.end()].strip()
+            after = remaining[match.end() :]
 
             if trigger == "dot" and self.dot_commit_confirm:
-                accum = (int(state.audio_accum.shape[0])
-                         if state.audio_accum is not None else 0)
-                if self._confirm_dot(sentence, after, accum, chunk_end=chunk_end,
-                                     final=final, stalled=stalled,
-                                     previous_boundaries=previous_boundaries,
-                                     previous_accum=previous_accum) is False:
+                accum = int(state.audio_accum.shape[0]) if state.audio_accum is not None else 0
+                if (
+                    self._confirm_dot(
+                        sentence,
+                        after,
+                        accum,
+                        chunk_end=chunk_end,
+                        final=final,
+                        stalled=stalled,
+                        previous_boundaries=previous_boundaries,
+                        previous_accum=previous_accum,
+                    )
+                    is False
+                ):
                     if chunk_end and slot.get("pending_dot_text") != sentence:
                         log.info("[DOT-PENDING] text=%r after=%r", sentence, after.strip())
                         slot["pending_dot_text"] = sentence
@@ -894,17 +985,25 @@ class Qwen3SegTranscription(Qwen3Transcription):
 
         return extracted
 
-    def _confirm_dot(self, sentence: str, after: str, accum: int, *, chunk_end: bool,
-                     final: bool, stalled: bool, previous_boundaries: tuple,
-                     previous_accum: int) -> bool:
+    def _confirm_dot(
+        self,
+        sentence: str,
+        after: str,
+        accum: int,
+        *,
+        chunk_end: bool,
+        final: bool,
+        stalled: bool,
+        previous_boundaries: tuple,
+        previous_accum: int,
+    ) -> bool:
         slot = self.slot
         state = slot["state"]
         tail_tokens = self._count_tokens(after)
         rule = None
         if tail_tokens > state.unfixed_token_num:
             rule = "context"
-        elif (chunk_end and boundary_key(sentence) in previous_boundaries
-              and accum > previous_accum):
+        elif chunk_end and boundary_key(sentence) in previous_boundaries and accum > previous_accum:
             rule = "agreement"
         elif final:
             rule = "end"
@@ -918,8 +1017,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         log.info("[DOT-CONFIRM] rule=%s text=%r after=%r", rule, sentence, after.strip())
         return True
 
-    def _advance_cursor(self, latest_text: str, extracted: list,
-                        force_reason: str | None) -> list:
+    def _advance_cursor(self, latest_text: str, extracted: list, force_reason: str | None) -> list:
         slot = self.slot
         committed_items: list = []
         consumed_seg, consumed_any = 0, False
@@ -954,8 +1052,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 self._remember_committed(committed_items)
             return committed_items
 
-        cursor = committed_cursor(latest_text, slot["committed_display"],
-                                  slot["committed_seg_count"])
+        cursor = committed_cursor(
+            latest_text, slot["committed_display"], slot["committed_seg_count"]
+        )
         if cursor == -1:
             cursor, found = 0, 0
             while found < slot["committed_seg_count"]:
@@ -972,7 +1071,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
             if not emit:
                 stripped = tail.lstrip()
                 while stripped.startswith(SEG_TAG):
-                    stripped = stripped[len(SEG_TAG):].lstrip()
+                    stripped = stripped[len(SEG_TAG) :].lstrip()
                 if stripped.startswith(sentence_raw):
                     cursor += len(tail) - len(stripped) + len(sentence_raw)
                     tail = latest_text[cursor:]
@@ -984,7 +1083,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 continue
             stripped = tail.lstrip()
             while stripped.startswith(SEG_TAG):
-                stripped = stripped[len(SEG_TAG):].lstrip()
+                stripped = stripped[len(SEG_TAG) :].lstrip()
             if not stripped.startswith(sentence_raw):
                 break
             cursor += len(tail) - len(stripped) + len(sentence_raw)
@@ -993,8 +1092,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if committed_items or consumed_any:
             slot["committed_display"] = display_of(latest_text[:cursor])
             slot["committed_seg_count"] += (
-                sum(1 for _, trigger in committed_items if trigger == "seg")
-                + consumed_seg)
+                sum(1 for _, trigger in committed_items if trigger == "seg") + consumed_seg
+            )
             self._remember_committed(committed_items)
         return committed_items
 
@@ -1052,14 +1151,12 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return True
         if reason in ("vad", "finish"):
             stripped = text.strip()
-            if (LONE_COMMA_WORD_RE.fullmatch(stripped)
-                    or KO_TAIL_FILLER_RE.fullmatch(stripped)):
+            if LONE_COMMA_WORD_RE.fullmatch(stripped) or KO_TAIL_FILLER_RE.fullmatch(stripped):
                 self._log_drop("tail-filler", "candidate", reason, text)
                 return True
         return False
 
-    def _is_silence_hallucination(self, original: str, reason: str,
-                                  audio_end_sec: float) -> bool:
+    def _is_silence_hallucination(self, original: str, reason: str, audio_end_sec: float) -> bool:
         spans = None if self.vad is None else self.vad.spans
         if not original.strip() or not spans:
             return False
@@ -1068,12 +1165,16 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return False
         now = self._audio_sec()
         for span_start, span_end in spans:
-            overlap = (min(end, now if span_end is None else span_end)
-                       - max(start, span_start))
+            overlap = min(end, now if span_end is None else span_end) - max(start, span_start)
             if overlap > MIN_SPEECH_OVERLAP_SEC:
                 return False
-        log.info("[DROP] rule=no-speech gate=emit reason=%s span=(%.1f~%.1f) text=%r",
-                 reason, start, end, original)
+        log.info(
+            "[DROP] rule=no-speech gate=emit reason=%s span=(%.1f~%.1f) text=%r",
+            reason,
+            start,
+            end,
+            original,
+        )
         return True
 
     def _emit_final(self, original: str, reason: str) -> None:
@@ -1100,13 +1201,15 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
         self._last_final_end_sec = audio_end_sec
         self._last_final_text = original
-        self._out.append(Transcribed(
-            original=original,
-            language=self._language(),
-            commit_reason=reason,
-            decision_audio_sec=round(audio_end_sec, 3),
-            committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
-        ))
+        self._out.append(
+            Transcribed(
+                original=original,
+                language=self._language(),
+                commit_reason=reason,
+                decision_audio_sec=round(audio_end_sec, 3),
+                committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+            )
+        )
         log.debug("[COMMIT] reason=%s text=%r", reason, original)
 
     async def _flush_uncommitted(self, reason: str) -> None:
@@ -1115,8 +1218,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot.pop("pending_dot_accum", None)
         state = slot["state"]
         current_text = strip_asr_text((state.text or "").strip())
-        text = display_of(uncommitted_from(
-            current_text, slot["committed_display"], slot["committed_seg_count"]))
+        text = display_of(
+            uncommitted_from(current_text, slot["committed_display"], slot["committed_seg_count"])
+        )
         text = collapse_repetition(text)
         if text:
             self._open_utterance()
@@ -1140,10 +1244,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 match = _boundary().DOT_COMMIT_BOUNDARY_RE.search(remaining)
                 if not match:
                     break
-                head = remaining[:match.end()].strip()
+                head = remaining[: match.end()].strip()
                 if head:
                     split.append(head)
-                remaining = remaining[match.end():]
+                remaining = remaining[match.end() :]
             if remaining.strip():
                 split.append(remaining.strip())
             if len(split) > 1:
@@ -1160,11 +1264,11 @@ class Qwen3SegTranscription(Qwen3Transcription):
         previous = self.slot.pop("dot_switch_prev_committed", "")
         if not (previous and text):
             return text
-        sentences = re.split(r'(?<=[.!?。！？])\s+', previous.strip())
+        sentences = re.split(r"(?<=[.!?。！？])\s+", previous.strip())
         last = sentences[-1].strip() if sentences else ""
         if not last:
             return text
-        drop = lambda s: DROP_PUNCT_SPACE_RE.sub('', s)
+        drop = lambda s: DROP_PUNCT_SPACE_RE.sub("", s)
         if not drop(text).startswith(drop(last)):
             return text
         skip, counted = 0, 0
@@ -1174,18 +1278,19 @@ class Qwen3SegTranscription(Qwen3Transcription):
             skip += 1
             if not DROP_PUNCT_SPACE_RE.match(char):
                 counted += 1
-        while skip < len(text) and text[skip] in PUNCT + ' ':
+        while skip < len(text) and text[skip] in PUNCT + " ":
             skip += 1
         stripped = text[skip:].strip()
-        log.info("[DEDUP-TRIM] rule=dot-suffix removed=%r kept=%r",
-                 text[:skip].strip(), stripped)
+        log.info("[DEDUP-TRIM] rule=dot-suffix removed=%r kept=%r", text[:skip].strip(), stripped)
         return stripped
 
     def _trim_tail_silence(self, speech: Speech | None) -> None:
         if speech is None:
             return
-        cut = int(max(0.0, speech.silence_waited_out_sec - KEEP_AFTER_SPEECH_SEC)
-                  * audio_mod.SAMPLING_RATE)
+        cut = int(
+            max(0.0, speech.silence_waited_out_sec - KEEP_AFTER_SPEECH_SEC)
+            * audio_mod.SAMPLING_RATE
+        )
         if cut <= 0:
             return
         state = self.slot["state"]
@@ -1199,8 +1304,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if cut > from_buffer:
             state.audio_accum = accum[: accum.shape[0] - (cut - from_buffer)]
         self.slot["tail_trim_samples"] += cut
-        log.debug("[AUDIO-TRIM] cause=tail-silence removed_sec=%.2f",
-                  cut / audio_mod.SAMPLING_RATE)
+        log.debug("[AUDIO-TRIM] cause=tail-silence removed_sec=%.2f", cut / audio_mod.SAMPLING_RATE)
 
     async def _retry_short_utterance(self, speech: Speech) -> None:
         slot = self.slot
@@ -1208,12 +1312,18 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if audio is None or audio.shape[0] == 0:
             return
         anchor_samples = int(slot["audio_anchor_sec"] * audio_mod.SAMPLING_RATE)
-        start = int((speech.started_at - RETRY_LEAD_PAD_SEC)
-                    * audio_mod.SAMPLING_RATE) - anchor_samples
+        start = (
+            int((speech.started_at - RETRY_LEAD_PAD_SEC) * audio_mod.SAMPLING_RATE) - anchor_samples
+        )
         start = max(0, start)
-        tail_cut = max(0, int(max(0.0, speech.silence_waited_out_sec
-                                  - KEEP_AFTER_SPEECH_SEC) * audio_mod.SAMPLING_RATE)
-                       - slot["tail_trim_samples"])
+        tail_cut = max(
+            0,
+            int(
+                max(0.0, speech.silence_waited_out_sec - KEEP_AFTER_SPEECH_SEC)
+                * audio_mod.SAMPLING_RATE
+            )
+            - slot["tail_trim_samples"],
+        )
         end = audio.shape[0] - tail_cut
         if end <= start:
             return
@@ -1230,11 +1340,11 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot = self.slot
         before = (slot["state"].text or "").strip()
         uncommitted_before = uncommitted_from(
-            before, slot["committed_display"], slot["committed_seg_count"])
+            before, slot["committed_display"], slot["committed_seg_count"]
+        )
         await self._process_updates(force_reason=reason)
         state = self.slot["state"]
-        short_utterance = (self._accum_before_chunk == 0
-                           and self._buffered_before_chunk > 0)
+        short_utterance = self._accum_before_chunk == 0 and self._buffered_before_chunk > 0
         if before or state.buffer.shape[0] > 0 or short_utterance:
             self._trim_tail_silence(speech)
             await self._decode(state)
@@ -1243,11 +1353,13 @@ class Qwen3SegTranscription(Qwen3Transcription):
         state = self.slot["state"]
         after = (state.text or "").strip()
         uncommitted_after = uncommitted_from(
-            after, self.slot["committed_display"], self.slot["committed_seg_count"])
+            after, self.slot["committed_display"], self.slot["committed_seg_count"]
+        )
         # The tail re-decode sometimes stops right after a fresh `language English` header;
         # that has no words either, and taking it would drop what the partial already showed.
-        if (not strip_lang_headers(display_of(uncommitted_after))
-                and strip_lang_headers(display_of(uncommitted_before))):
+        if not strip_lang_headers(display_of(uncommitted_after)) and strip_lang_headers(
+            display_of(uncommitted_before)
+        ):
             state.text = before
         await self._flush_uncommitted(reason=reason)
         self._reset_slot()
@@ -1255,8 +1367,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._close_utterance(reason)
         return self._drain()
 
-    async def finish(self, reason: str = "finish",
-                     speech: Speech | None = None) -> list:
+    async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         self._trim_tail_silence(speech)
         await self._decode(self.slot["state"])
         await self._process_updates(chunk_end=True, final=True)

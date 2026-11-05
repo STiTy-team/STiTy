@@ -13,17 +13,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Branches, ConfigKind, Configs } from "@/lib/api"
 import { KIND_LABEL } from "@/lib/configs"
 import { useAddRun, useBranches, useConfigs } from "@/lib/queries"
-
 
 function defaultBranch(branches: Branches | undefined) {
   const names = branches?.branches.map((branch) => branch.name) ?? []
@@ -69,7 +62,9 @@ function ConfigPicker({
             YAML 보기
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <pre className="mt-2 max-h-64 overflow-auto rounded-md border bg-muted/40 p-3 font-mono text-xs">{chosen.yaml}</pre>
+            <pre className="mt-2 max-h-64 overflow-auto rounded-md border bg-muted/40 p-3 font-mono text-xs">
+              {chosen.yaml}
+            </pre>
           </CollapsibleContent>
         </Collapsible>
       )}
@@ -138,9 +133,7 @@ export function AddRunDialog({ host }: { host: string }) {
               ))}
             </SelectContent>
           </Select>
-          <p className="text-sm text-muted-foreground">
-            실행이 시작될 때 origin에 있는 이 브랜치의 최신 커밋을 써요.
-          </p>
+          <p className="text-sm text-muted-foreground">실행이 시작될 때 origin에 있는 이 브랜치의 최신 커밋을 써요.</p>
         </div>
         {(loadError || addRun.error) && (
           <p className="text-sm text-destructive">{(addRun.error ?? loadError)?.message}</p>

@@ -56,13 +56,13 @@ def tokenize_tgt(text: str, tgt: str) -> list[str]:
 
 
 class CausalAligner:
-    def __init__(self, model: str = "bert", device: str = "cuda",
-                 matching: str = "itermax"):
+    def __init__(self, model: str = "bert", device: str = "cuda", matching: str = "itermax"):
         from simalign import SentenceAligner
 
         self.matching = matching
-        self.aligner = SentenceAligner(model=model, token_type="bpe",
-                                       matching_methods="i", device=device)
+        self.aligner = SentenceAligner(
+            model=model, token_type="bpe", matching_methods="i", device=device
+        )
 
     def boundaries(self, src_toks: list[str], tgt_toks: list[str]) -> list[int]:
         """1-기반 소스 절단 위치(그 위치까지 포함해 조각을 끊는다)."""

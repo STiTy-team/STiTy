@@ -21,7 +21,7 @@ export function DatasetsPage() {
 
   const tab = TABS.find((t) => t === tabParam) ?? "browse"
   const datasets = list.data?.datasets ?? []
-  const ds = datasets.some((d) => d.name === search.get("ds")) ? search.get("ds") : datasets[0]?.name ?? null
+  const ds = datasets.some((d) => d.name === search.get("ds")) ? search.get("ds") : (datasets[0]?.name ?? null)
 
   const setDs = (name: string) => setSearch((prev) => ({ ...Object.fromEntries(prev), ds: name }), { replace: true })
 

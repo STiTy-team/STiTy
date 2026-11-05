@@ -47,9 +47,7 @@ class CascadePipelineV2(Pipeline):
     REQUIRED = (transcribers,)
     OPTIONAL = (mixers, detectors, correctors, translators, langids, enhancers)
 
-    def start(
-        self, *, languages: list[str], target_lang: str, own_lang: str | None = None
-    ) -> None:
+    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None) -> None:
         self.target_lang = target_lang
         self.own_lang = own_lang
         self.said_so_far: list[str] = []

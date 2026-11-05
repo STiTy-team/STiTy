@@ -11,14 +11,18 @@ Two rows per pair, over audio A_full + B[0:t] (a third mid-B row pushed the feat
 
 usage: python core/research/zprobe/labels/build_prefix4.py --aligned models/zprobe/data/prefix3/aligned.jsonl \
            --base models/zprobe/data/train_prefix3.jsonl --out models/zprobe/data/train_prefix4.jsonl"""
+
 import argparse, json, random
 
 NAME = {"ko": "Korean", "en": "English"}
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--aligned", default="models/zprobe/data/prefix3/aligned.jsonl")
-ap.add_argument("--base", default="models/zprobe/data/train_prefix3.jsonl",
-                help="existing rows to keep (single-sentence prefix behavior must not be forgotten)")
+ap.add_argument(
+    "--base",
+    default="models/zprobe/data/train_prefix3.jsonl",
+    help="existing rows to keep (single-sentence prefix behavior must not be forgotten)",
+)
 ap.add_argument("--out", default="models/zprobe/data/train_prefix4.jsonl")
 ap.add_argument("--max_dur", type=float, default=18.0)
 ap.add_argument("--seed", type=int, default=0)
@@ -34,8 +38,11 @@ def clip(r, t):
     return f"{r['audio']}#end={t:.3f}" if t < r["dur"] - 0.05 else r["audio"]
 
 
-rows = [json.loads(l) for l in open(a.aligned, encoding="utf-8")
-        if (x := json.loads(l)) and x["adds"] and x["ends"] and text_of(x["adds"])]
+rows = [
+    json.loads(l)
+    for l in open(a.aligned, encoding="utf-8")
+    if (x := json.loads(l)) and x["adds"] and x["ends"] and text_of(x["adds"])
+]
 by_dir = {}
 for r in rows:
     by_dir.setdefault((r["lang"], r["tgt"]), []).append(r)
@@ -52,11 +59,17 @@ for key, group in sorted(by_dir.items()):
         a_txt = text_of(A["adds"])
 
         t_b = max(0.3, B["ends"][0] * 0.5)
-        out.append({"audio": f"{A['audio']}|{clip(B, t_b)}",
-                    "text": f"{head}{a_txt} <SEG>", "pair": pair})
+        out.append(
+            {"audio": f"{A['audio']}|{clip(B, t_b)}", "text": f"{head}{a_txt} <SEG>", "pair": pair}
+        )
 
-        out.append({"audio": f"{A['audio']}|{B['audio']}",
-                    "text": f"{head}{a_txt} <SEG> {text_of(B['adds'])}", "pair": pair})
+        out.append(
+            {
+                "audio": f"{A['audio']}|{B['audio']}",
+                "text": f"{head}{a_txt} <SEG> {text_of(B['adds'])}",
+                "pair": pair,
+            }
+        )
 
 base = [l.rstrip("\n") for l in open(a.base, encoding="utf-8")] if a.base else []
 with open(a.out, "w", encoding="utf-8") as f:

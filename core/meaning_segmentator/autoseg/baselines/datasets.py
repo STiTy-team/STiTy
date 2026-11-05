@@ -21,12 +21,11 @@ from pathlib import Path
 from ..paths import MANIFEST_DIR
 
 
-
 @dataclass
 class Entry:
     src: str
     ref: str
-    key: str                 # 길이·타임스탬프 조회 키
+    key: str  # 길이·타임스탬프 조회 키
     dur_ms: float | None
     wav: Path | None
     split: str | None = None
@@ -93,8 +92,9 @@ class Fleurs(DatasetSpec):
                     name, n, split = recs[len(recs) // 2]
                     dur = statistics.median(r[1] for r in recs) / 16000 * 1000
                     wav = self.base / "audio" / split / name
-                out[e["utt_id"]] = Entry(e["src_text"], e["tgt_text"],
-                                         tid, dur, wav, e.get("fleurs_split"))
+                out[e["utt_id"]] = Entry(
+                    e["src_text"], e["tgt_text"], tid, dur, wav, e.get("fleurs_split")
+                )
         return out
 
 
@@ -120,8 +120,13 @@ class CoVoST2(DatasetSpec):
             for line in f:
                 e = json.loads(line)
                 out[e["utt_id"]] = Entry(
-                    e["src_text"], e["tgt_text"], e["utt_id"],
-                    float(e["duration"]) * 1000, Path(e["wav"]), None)
+                    e["src_text"],
+                    e["tgt_text"],
+                    e["utt_id"],
+                    float(e["duration"]) * 1000,
+                    Path(e["wav"]),
+                    None,
+                )
         return out
 
 
@@ -134,8 +139,9 @@ def get(name: str, **kw) -> DatasetSpec:
     return _REGISTRY[name](**kw)
 
 
-def alignment_jobs(dataset: str, tag: str, tgt: str,
-                   limit: int = 0) -> list[tuple[str, str, Path, float]]:
+def alignment_jobs(
+    dataset: str, tag: str, tgt: str, limit: int = 0
+) -> list[tuple[str, str, Path, float]]:
     """강제정렬에 넣을 (조회키, 소스문장, wav 경로, 길이ms) 목록.
 
     두 정렬기 스크립트가 공유한다 — 같은 녹음·같은 텍스트를 써야 차이가 정렬기에서만 난다.

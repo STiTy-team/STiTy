@@ -50,9 +50,8 @@ export const configRef = (name: string, version: number) => (version === 1 ? nam
 
 /** Where the Compare page shows this config's runs: its dataset, or for a pipeline the dataset it last ran on. */
 export function compareLink(kind: ConfigKind, ref: string, runs: RunOverview[]) {
-  if (kind === "dataset") return runs.some((r) => r.dataset_key === ref) ? `/compare?${new URLSearchParams({ dataset: ref })}` : null
-  const latest = runs
-    .filter((r) => r.pipeline === ref)
-    .sort((a, b) => b.stamp.localeCompare(a.stamp))[0]
+  if (kind === "dataset")
+    return runs.some((r) => r.dataset_key === ref) ? `/compare?${new URLSearchParams({ dataset: ref })}` : null
+  const latest = runs.filter((r) => r.pipeline === ref).sort((a, b) => b.stamp.localeCompare(a.stamp))[0]
   return latest ? `/compare?${new URLSearchParams({ dataset: latest.dataset_key, base: latest.name })}` : null
 }

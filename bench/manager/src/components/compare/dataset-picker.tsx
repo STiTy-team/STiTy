@@ -24,7 +24,15 @@ function datasetRows(runs: RunOverview[]): DatasetRow[] {
 }
 
 /** Searchable, always opens downward; each dataset shows how many runs it has and when it last ran. */
-export function DatasetPicker({ runs, value, onChange }: { runs: RunOverview[]; value: string; onChange: (key: string) => void }) {
+export function DatasetPicker({
+  runs,
+  value,
+  onChange,
+}: {
+  runs: RunOverview[]
+  value: string
+  onChange: (key: string) => void
+}) {
   const [open, setOpen] = useState(false)
   const rows = datasetRows(runs)
   const corpora = [...new Set(rows.map((row) => row.corpus))].sort()
@@ -35,12 +43,23 @@ export function DatasetPicker({ runs, value, onChange }: { runs: RunOverview[]; 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} aria-label="데이터셋" className="max-w-full min-w-64 justify-between font-mono text-xs">
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          aria-label="데이터셋"
+          className="max-w-full min-w-64 justify-between font-mono text-xs"
+        >
           <span className="truncate">{value}</span>
           <ChevronsUpDownIcon className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent side="bottom" align="start" avoidCollisions={false} className="w-[30rem] max-w-[calc(100vw-2rem)] p-0">
+      <PopoverContent
+        side="bottom"
+        align="start"
+        avoidCollisions={false}
+        className="w-[30rem] max-w-[calc(100vw-2rem)] p-0"
+      >
         <Command>
           <CommandInput placeholder="데이터셋 찾기…" />
           <CommandList className="max-h-[min(24rem,60vh)]">
@@ -55,7 +74,10 @@ export function DatasetPicker({ runs, value, onChange }: { runs: RunOverview[]; 
                       <span className="min-w-0 flex-1 truncate font-mono text-xs" title={row.key}>
                         {row.key}
                       </span>
-                      <span className="shrink-0 text-xs text-muted-foreground tabular-nums" title={formatDateTime(row.latest)}>
+                      <span
+                        className="shrink-0 text-xs text-muted-foreground tabular-nums"
+                        title={formatDateTime(row.latest)}
+                      >
                         실행 {row.runs}개 · {timeAgo(row.latest)}
                       </span>
                     </CommandItem>

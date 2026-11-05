@@ -6,7 +6,6 @@ from .base import LanguageDetector, Transcribed
 
 @langids.register("alphabet")
 class AlphabetLanguageDetector(LanguageDetector):
-
     SETTINGS = {"threshold": ("threshold", float), "langs": ("langs", tuple)}
 
     async def detect(self, item: Transcribed) -> str | None:

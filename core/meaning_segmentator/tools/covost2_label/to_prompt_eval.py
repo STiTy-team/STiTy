@@ -21,6 +21,7 @@
         --run-id covost2/n3000 --label auto_run13 \
         --min-gap 3 --t-grid 4 6 8 12
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,10 +41,15 @@ def main() -> int:
     ap.add_argument("--label", required=True, help="산출 파일 이름에 쓸 라벨")
     ap.add_argument("--split", default="test")
     ap.add_argument("--t-grid", type=int, nargs="+", default=[4, 6, 8, 12])
-    ap.add_argument("--min-gap", type=int, required=True,
-                    help="라벨링에 쓴 값과 **같아야 한다** — 다르면 절단 규칙이 갈린다")
-    ap.add_argument("--spaced", default=None, choices=["yes", "no"],
-                    help="기본은 라벨의 src_lang 으로 판정")
+    ap.add_argument(
+        "--min-gap",
+        type=int,
+        required=True,
+        help="라벨링에 쓴 값과 **같아야 한다** — 다르면 절단 규칙이 갈린다",
+    )
+    ap.add_argument(
+        "--spaced", default=None, choices=["yes", "no"], help="기본은 라벨의 src_lang 으로 판정"
+    )
     ap.add_argument("--prompt-file", default=None, help="기록용 (채점에는 안 쓰임)")
     a = ap.parse_args()
 
@@ -56,8 +62,10 @@ def main() -> int:
     if a.spaced is None:
         codes = {(r.get("src_lang") or "").split("-")[0].lower() for r in rows_in}
         if len(codes) != 1:
-            print(f"소스 언어가 섞여 있습니다: {sorted(codes)}. --spaced 로 지정하세요",
-                  file=sys.stderr)
+            print(
+                f"소스 언어가 섞여 있습니다: {sorted(codes)}. --spaced 로 지정하세요",
+                file=sys.stderr,
+            )
             return 2
         spaced = target_is_spaced(codes.pop())
     else:
@@ -75,31 +83,58 @@ def main() -> int:
             # 자르면 거꾸로 돈다.
             cut, missing = P.truncate(seg, T, spaced, a.min_gap, higher_first=False)
             pieces = P.split_segments(cut) or [text]
-            by_T[str(T)] = {"seg_text": cut, "k": len(pieces),
-                            "missing_boundaries": missing, "pieces_src": pieces}
-        rows_out.append({"id": r["utt_id"], "text": text, "seg_text": seg,
-                         "valid": None, "full_trans": None, "by_T": by_T})
+            by_T[str(T)] = {
+                "seg_text": cut,
+                "k": len(pieces),
+                "missing_boundaries": missing,
+                "pieces_src": pieces,
+            }
+        rows_out.append(
+            {
+                "id": r["utt_id"],
+                "text": text,
+                "seg_text": seg,
+                "valid": None,
+                "full_trans": None,
+                "by_T": by_T,
+            }
+        )
 
-    out_dir = (Path(__file__).resolve().parents[2] / "core" / "meaning_segmentator"
-               / "runs" / a.run_id / "prompt_eval")
+    out_dir = (
+        Path(__file__).resolve().parents[2]
+        / "core"
+        / "meaning_segmentator"
+        / "runs"
+        / a.run_id
+        / "prompt_eval"
+    )
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{a.label}_{a.split}.json"
-    out_path.write_text(json.dumps({
-        "prompt_file": a.prompt_file,
-        "source": f"to_prompt_eval.py <- {a.labels}",
-        "split": a.split,
-        "t_grid": t_grid,
-        "min_gap": a.min_gap,
-        "src_spaced": spaced,
-        "rows": rows_out,
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path.write_text(
+        json.dumps(
+            {
+                "prompt_file": a.prompt_file,
+                "source": f"to_prompt_eval.py <- {a.labels}",
+                "split": a.split,
+                "t_grid": t_grid,
+                "min_gap": a.min_gap,
+                "src_spaced": spaced,
+                "rows": rows_out,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     ks = [r["by_T"][str(t_grid[0])]["k"] for r in rows_out]
     miss = sum(r["by_T"][str(t_grid[0])]["missing_boundaries"] for r in rows_out)
     print(f"{len(rows_out)}문장 -> {out_path}")
     print(f"  소스 띄어쓰기={spaced}  min_gap={a.min_gap}  격자={t_grid}")
-    print(f"  T={t_grid[0]} 에서 평균 조각수 {sum(ks)/len(ks):.2f}, "
-          f"무분절 {sum(1 for k in ks if k == 1)}/{len(ks)}, 예산 미달 경계 {miss}개")
+    print(
+        f"  T={t_grid[0]} 에서 평균 조각수 {sum(ks) / len(ks):.2f}, "
+        f"무분절 {sum(1 for k in ks if k == 1)}/{len(ks)}, 예산 미달 경계 {miss}개"
+    )
     return 0
 
 

@@ -1,8 +1,9 @@
 import argparse
 
 
-def parse(arguments: list[dict], *, prog: str,
-          description: str | None = None) -> argparse.Namespace:
+def parse(
+    arguments: list[dict], *, prog: str, description: str | None = None
+) -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog=prog, description=description)
     for spec in arguments:
         options = dict(spec)

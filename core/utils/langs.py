@@ -5,6 +5,7 @@ a supported set and have to reject what falls outside it. The open-ended case --
 accepting whatever target language someone typed -- is autoseg's `to_lang_code`,
 which uses `langcodes` for exactly that reason (35a8108).
 """
+
 import re
 
 CODE_TO_NAME = {
@@ -71,8 +72,13 @@ def parse_map(raw: object) -> dict[str, tuple[str, ...]]:
     return out
 
 
-def pick_targets(detected: str, *, lang: str = "", target_lang: str = "",
-                 lang_map: dict[str, tuple[str, ...]] | None = None) -> tuple[str, ...]:
+def pick_targets(
+    detected: str,
+    *,
+    lang: str = "",
+    target_lang: str = "",
+    lang_map: dict[str, tuple[str, ...]] | None = None,
+) -> tuple[str, ...]:
     """The languages a segment spoken in `detected` is translated into.
 
     `lang_map` wins, and is the only way to more than one target. Otherwise it is the
@@ -88,8 +94,13 @@ def pick_targets(detected: str, *, lang: str = "", target_lang: str = "",
     return (lang,)
 
 
-def pick_target(detected: str, *, lang: str = "", target_lang: str = "",
-                lang_map: dict[str, tuple[str, ...]] | None = None) -> str:
+def pick_target(
+    detected: str,
+    *,
+    lang: str = "",
+    target_lang: str = "",
+    lang_map: dict[str, tuple[str, ...]] | None = None,
+) -> str:
     """`pick_targets`' first answer, for callers that translate each segment once."""
     targets = pick_targets(detected, lang=lang, target_lang=target_lang, lang_map=lang_map)
     return targets[0] if targets else ""
@@ -136,8 +147,9 @@ def alphabet_ratio(text: str, lang: str) -> float:
     return sum(1 for c in letters if pattern.match(c)) / len(letters)
 
 
-def detect_by_alphabet(text: str, *, langs: tuple[str, ...] = ALPHABET_LANGS,
-                       threshold: float = ALPHABET_THRESHOLD) -> str | None:
+def detect_by_alphabet(
+    text: str, *, langs: tuple[str, ...] = ALPHABET_LANGS, threshold: float = ALPHABET_THRESHOLD
+) -> str | None:
     """The language `text` is written in, judged by its letters alone.
 
     `langs` is checked in order, and each letter counts toward the first language in

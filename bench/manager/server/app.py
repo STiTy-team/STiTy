@@ -199,7 +199,9 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
                 if method == "GET" and rest == "":
                     return self._json(dm.list_datasets())
                 if method == "POST" and rest == "":
-                    return self._json(dm.create_dataset(one.get("name", ""), one.get("languages", "")), 201)
+                    return self._json(
+                        dm.create_dataset(one.get("name", ""), one.get("languages", "")), 201
+                    )
 
                 if rest == "/record" and method == "POST":
                     dataset = dm.pick(one.get("ds", ""))
@@ -217,7 +219,9 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
                 dataset = dm.pick(one.get("ds", ""))
                 item_id = one.get("id", "")
                 if method == "GET" and rest == "/shape":
-                    return self._json({"name": one.get("ds"), "path": str(dataset), **dm.shape(dataset)})
+                    return self._json(
+                        {"name": one.get("ds"), "path": str(dataset), **dm.shape(dataset)}
+                    )
                 if method == "GET" and rest == "/items":
                     return self._json(
                         dm.items(
@@ -280,7 +284,10 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
     ThreadingHTTPServer.allow_reuse_address = True
     with ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
         n = len(runs.list_runs()) if get_runs_dir().is_dir() else 0
-        print(f"manager API on http://127.0.0.1:{port}/api  ({n} run{'s' if n != 1 else ''})", flush=True)
+        print(
+            f"manager API on http://127.0.0.1:{port}/api  ({n} run{'s' if n != 1 else ''})",
+            flush=True,
+        )
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

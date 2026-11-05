@@ -4,7 +4,6 @@ __all__ = ["Transcriber", "Partial", "Speech", "Transcribed"]
 
 
 class Transcriber(Component):
-
     def start(self, languages: list[str] | None = None, **_) -> None:
         pass
 
@@ -14,6 +13,5 @@ class Transcriber(Component):
     async def flush(self, reason: str, speech: Speech | None = None) -> list:
         raise NotImplementedError
 
-    async def finish(self, reason: str = "finish",
-                     speech: Speech | None = None) -> list:
+    async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         raise NotImplementedError

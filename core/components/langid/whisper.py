@@ -22,7 +22,6 @@ PEAK = 0.5
 
 
 class WhisperScorer:
-
     def __init__(self, model_name: str, device: str | None):
         import torch
         from transformers import WhisperForConditionalGeneration, WhisperProcessor
@@ -38,8 +37,11 @@ class WhisperScorer:
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         dtype = torch.float16 if self.device.startswith("cuda") else torch.float32
         self.processor = WhisperProcessor.from_pretrained(model_name)
-        self.model = WhisperForConditionalGeneration.from_pretrained(
-            model_name, dtype=dtype).to(self.device).eval()
+        self.model = (
+            WhisperForConditionalGeneration.from_pretrained(model_name, dtype=dtype)
+            .to(self.device)
+            .eval()
+        )
         tok = self.processor.tokenizer
         self.tokenizer = tok
         self.sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
@@ -47,14 +49,16 @@ class WhisperScorer:
         self.notimestamps = tok.convert_tokens_to_ids("<|notimestamps|>")
         self.eot = tok.convert_tokens_to_ids("<|endoftext|>")
         self.languages = {
-            t.strip("<|>") for t in tok.additional_special_tokens
+            t.strip("<|>")
+            for t in tok.additional_special_tokens
             if len(t) == 6 and t.startswith("<|") and t.endswith("|>")
         }
         self.vad = load_silero_vad()
         self.lock = threading.Lock()
 
-    def judge(self, audio: np.ndarray, langs: tuple[str, ...],
-              max_sec: float) -> dict[str, float] | None:
+    def judge(
+        self, audio: np.ndarray, langs: tuple[str, ...], max_sec: float
+    ) -> dict[str, float] | None:
         with self.lock:
             speech = self._speech(audio)
             if len(speech) < SR * MIN_SPEECH_SEC:
@@ -67,7 +71,7 @@ class WhisperScorer:
         spans = get_speech_timestamps(self.torch.from_numpy(audio), self.vad, sampling_rate=SR)
         if not spans:
             return audio[:0]
-        return audio[spans[0]["start"]:spans[-1]["end"]]
+        return audio[spans[0]["start"] : spans[-1]["end"]]
 
     def _score(self, audio: np.ndarray, langs: tuple[str, ...]) -> dict[str, float]:
         torch = self.torch
@@ -75,19 +79,24 @@ class WhisperScorer:
         if peak > 1e-4:
             audio = audio / peak * PEAK
         feats = self.processor.feature_extractor(
-            audio, sampling_rate=SR, return_tensors="pt").input_features
+            audio, sampling_rate=SR, return_tensors="pt"
+        ).input_features
         feats = feats.to(self.device, self.model.dtype)
         scores = {}
         with torch.inference_mode():
             encoded = self.model.model.encoder(feats)
             for lang in langs:
                 lang_id = self.tokenizer.convert_tokens_to_ids(f"<|{lang}|>")
-                dec = torch.tensor([[self.sot, lang_id, self.transcribe, self.notimestamps]],
-                                   device=self.device)
+                dec = torch.tensor(
+                    [[self.sot, lang_id, self.transcribe, self.notimestamps]], device=self.device
+                )
                 total, n = 0.0, 0
                 for _ in range(MAX_TOKENS):
-                    logits = self.model(encoder_outputs=encoded,
-                                        decoder_input_ids=dec).logits[0, -1].float()
+                    logits = (
+                        self.model(encoder_outputs=encoded, decoder_input_ids=dec)
+                        .logits[0, -1]
+                        .float()
+                    )
                     logp = torch.log_softmax(logits, -1)
                     nxt = int(torch.argmax(logp))
                     if nxt == self.eot:
@@ -103,7 +112,6 @@ class WhisperScorer:
 
 @langids.register("whisper")
 class WhisperLanguageDetector(LanguageDetector):
-
     SETTINGS = {
         "model": ("model", str),
         "device": ("device", str),
@@ -120,7 +128,8 @@ class WhisperLanguageDetector(LanguageDetector):
         log.info("[LOAD] language id model %s", model)
         self.scorer = await cache.load(
             ("whisper-langid", model, device),
-            lambda: asyncio.to_thread(WhisperScorer, model, device))
+            lambda: asyncio.to_thread(WhisperScorer, model, device),
+        )
 
     def start(self, *, languages: list[str] | None = None, **_) -> None:
         wanted = self.settings.get("langs") or tuple(languages or ())
@@ -145,7 +154,8 @@ class WhisperLanguageDetector(LanguageDetector):
         if len(self.langs) < 2:
             return None
         scores = await asyncio.to_thread(
-            self.scorer.judge, span, self.langs, self.settings.get("max_sec", 6.0))
+            self.scorer.judge, span, self.langs, self.settings.get("max_sec", 6.0)
+        )
         if not scores:
             return None
         best, second = sorted(scores, key=scores.get, reverse=True)[:2]

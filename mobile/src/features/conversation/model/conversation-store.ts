@@ -84,9 +84,7 @@ export const conversationActions = {
   /** A brig fold shrinks a committed bubble to what the transcript does not already carry. */
   rewriteEntry: (id: string, text: string, translation: string): void =>
     set(({ entries }) => ({
-      entries: entries.map((entry) =>
-        entry.id === id ? { ...entry, text, translation } : entry,
-      ),
+      entries: entries.map((entry) => (entry.id === id ? { ...entry, text, translation } : entry)),
     })),
 
   /** A brig fold with nothing left removes the bubble; the transcription pane still shows it. */
@@ -101,9 +99,7 @@ export const conversationActions = {
           ? entry
           : {
               ...entry,
-              translation: entry.translation
-                ? `${entry.translation}\n${translation}`
-                : translation,
+              translation: entry.translation ? `${entry.translation}\n${translation}` : translation,
             },
       ),
     })),

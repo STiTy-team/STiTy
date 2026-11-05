@@ -57,4 +57,3 @@ def window_info(settings: MachineSettings, at: datetime) -> WindowInfo:
         return WindowInfo(open=True, ends_at=current.end)
     upcoming = next_window(settings, at)
     return WindowInfo(open=False, next_opens_at=upcoming.start if upcoming else None)
-

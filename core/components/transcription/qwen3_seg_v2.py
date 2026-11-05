@@ -12,7 +12,6 @@ KO_RISKY_FILLER_RE = re.compile(r"(?:(?:아니|응|그렇지|그거)[,.]?\s*)+[!
 
 @transcribers.register("qwen-seg:v2")
 class Qwen3SegTranscriptionV2(Qwen3SegTranscription):
-
     SETTINGS = {
         **Qwen3SegTranscription.SETTINGS,
         "silence_window_grace_sec": ("silence_window_grace_sec", float),
@@ -31,8 +30,7 @@ class Qwen3SegTranscriptionV2(Qwen3SegTranscription):
             return float(grace)
         return float(self.settings.get("chunk_size_sec") or 2.0)
 
-    def _is_silence_hallucination(self, original: str, reason: str,
-                                  audio_end_sec: float) -> bool:
+    def _is_silence_hallucination(self, original: str, reason: str, audio_end_sec: float) -> bool:
         spans = None if self.vad is None else self.vad.spans
         if not original.strip() or not spans:
             return False
@@ -43,12 +41,16 @@ class Qwen3SegTranscriptionV2(Qwen3SegTranscription):
             return False
         now = self._audio_sec()
         for span_start, span_end in spans:
-            overlap = (min(end, now if span_end is None else span_end)
-                       - max(start, span_start))
+            overlap = min(end, now if span_end is None else span_end) - max(start, span_start)
             if overlap > MIN_SPEECH_OVERLAP_SEC:
                 return False
-        log.info("[DROP] rule=no-speech gate=emit reason=%s span=(%.1f~%.1f) text=%r",
-                 reason, start, end, original)
+        log.info(
+            "[DROP] rule=no-speech gate=emit reason=%s span=(%.1f~%.1f) text=%r",
+            reason,
+            start,
+            end,
+            original,
+        )
         return True
 
     def _drop_commit_candidate(self, original: str, reason: str) -> bool:

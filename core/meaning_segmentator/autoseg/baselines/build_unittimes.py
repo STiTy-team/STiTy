@@ -16,6 +16,7 @@
 
     .venv/bin/python -m core.meaning_segmentator.autoseg.baselines.build_unittimes --lang ja
 """
+
 from __future__ import annotations
 
 import argparse
@@ -101,7 +102,7 @@ def to_unit_ends(items, text: str, dur_s: float, spaced: bool) -> tuple[list[flo
         for w in units:
             j = text.index(w, pos)
             pos = j + len(w)
-            bounds.append(pos)            # 이 단위가 끝나는 원문 문자 위치
+            bounds.append(pos)  # 이 단위가 끝나는 원문 문자 위치
     else:
         # 공백을 뺀 글자 하나가 단위 하나. 원문 위치 -> 단위 인덱스 표를 만든다.
         bounds = [i + 1 for i, ch in enumerate(text) if not ch.isspace()]
@@ -127,7 +128,7 @@ def to_unit_ends(items, text: str, dur_s: float, spaced: bool) -> tuple[list[flo
                 ends[i] = max(ends[i], float(it.end_time))
                 break
 
-    run = 0.0                              # 빈 칸은 앞 값으로 채운다 (단조)
+    run = 0.0  # 빈 칸은 앞 값으로 채운다 (단조)
     for i, e in enumerate(ends):
         run = max(run, e)
         ends[i] = run
@@ -138,8 +139,9 @@ def to_unit_ends(items, text: str, dur_s: float, spaced: bool) -> tuple[list[flo
 def main() -> int:
     p = argparse.ArgumentParser(description="비영어 소스 강제정렬 단위 타임스탬프")
     p.add_argument("--lang", required=True, choices=sorted(LANGS))
-    p.add_argument("--manifest", default=None,
-                   help="기본: fleurs_nway_{lang}-en_multi2en_loop240.jsonl")
+    p.add_argument(
+        "--manifest", default=None, help="기본: fleurs_nway_{lang}-en_multi2en_loop240.jsonl"
+    )
     p.add_argument("--out", default=None)
     p.add_argument("--batch", type=int, default=8)
     p.add_argument("--limit", type=int, default=0)
@@ -147,8 +149,9 @@ def main() -> int:
 
     langdir, langname, spaced = LANGS[args.lang]
     base = Path.home() / "datasets" / "fleurs" / "data" / langdir
-    man = Path(args.manifest or (MANIFEST_DIR
-               / f"fleurs_nway_{args.lang}-en_multi2en_loop240.jsonl"))
+    man = Path(
+        args.manifest or (MANIFEST_DIR / f"fleurs_nway_{args.lang}-en_multi2en_loop240.jsonl")
+    )
     dest = Path(args.out or (man.with_name(man.stem + "_unittimes.json")))
 
     tsv = {s: load_tsv(base, s) for s in ("train", "dev", "test")}
@@ -170,7 +173,7 @@ def main() -> int:
         if not cands:
             missing += 1
             continue
-        fn, ns = sorted(cands, key=lambda x: x[1])[len(cands) // 2]   # 길이 중앙값 녹음
+        fn, ns = sorted(cands, key=lambda x: x[1])[len(cands) // 2]  # 길이 중앙값 녹음
         wav = base / "audio" / split / fn
         if not wav.exists():
             missing += 1
@@ -181,36 +184,42 @@ def main() -> int:
     if not jobs:
         return 2
 
-    al = Qwen3ForcedAligner.from_pretrained(ALIGNER, device_map="cuda:0",
-                                            dtype=torch.bfloat16)
+    al = Qwen3ForcedAligner.from_pretrained(ALIGNER, device_map="cuda:0", dtype=torch.bfloat16)
     out: dict[str, dict] = {}
     fails: list[str] = []
     t0 = time.time()
     for i in range(0, len(jobs), args.batch):
-        chunk = jobs[i: i + args.batch]
+        chunk = jobs[i : i + args.batch]
         try:
-            res = al.align(audio=[str(c[2]) for c in chunk],
-                           text=[c[1] for c in chunk],
-                           language=[langname] * len(chunk))
-        except Exception as exc:                       # noqa: BLE001
+            res = al.align(
+                audio=[str(c[2]) for c in chunk],
+                text=[c[1] for c in chunk],
+                language=[langname] * len(chunk),
+            )
+        except Exception as exc:  # noqa: BLE001
             fails += [f"{c[0]}:{type(exc).__name__}" for c in chunk]
             continue
         for c, r in zip(chunk, res):
             key, text, wav, dur_ms = c
             try:
                 ends, f0, f1 = to_unit_ends(list(r), text, dur_ms / 1000, spaced)
-            except Exception as exc:                   # noqa: BLE001
+            except Exception as exc:  # noqa: BLE001
                 fails.append(f"{key}:{type(exc).__name__}")
                 continue
-            out[key] = {"wav": wav.name, "dur_ms": round(dur_ms, 1),
-                        "speech_ms": round((f1 - f0) * 1000, 1),
-                        "ipu_ms": to_ipu_ms(list(r)),
-                        "word_end_ms": [round(e * 1000, 1) for e in ends]}
+            out[key] = {
+                "wav": wav.name,
+                "dur_ms": round(dur_ms, 1),
+                "speech_ms": round((f1 - f0) * 1000, 1),
+                "ipu_ms": to_ipu_ms(list(r)),
+                "word_end_ms": [round(e * 1000, 1) for e in ends],
+            }
         done = i + len(chunk)
         if done % 40 == 0 or done >= len(jobs):
             el = time.time() - t0
-            print(f"  {done}/{len(jobs)}  {el:.0f}s  "
-                  f"ETA {el / done * (len(jobs) - done) / 60:.1f}m", flush=True)
+            print(
+                f"  {done}/{len(jobs)}  {el:.0f}s  ETA {el / done * (len(jobs) - done) / 60:.1f}m",
+                flush=True,
+            )
 
     dest.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     print(f"[{args.lang}] 성공 {len(out)}/{len(jobs)}, 실패 {len(fails)} -> {dest}")
@@ -221,4 +230,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     from qwen_asr.inference.qwen3_forced_aligner import Qwen3ForcedAligner
+
     raise SystemExit(main())

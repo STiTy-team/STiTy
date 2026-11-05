@@ -71,8 +71,9 @@ def split_units(text: str, tgt_spaced: bool = True) -> list[str]:
     return list(re.sub(r"\s+", "", text or ""))
 
 
-def measure_floor(fulls: list[str], backend, max_prefixes_per_sentence: int = 20,
-                  tgt_spaced: bool = True) -> dict:
+def measure_floor(
+    fulls: list[str], backend, max_prefixes_per_sentence: int = 20, tgt_spaced: bool = True
+) -> dict:
     """full 번역의 prefix 를 hypothesis 로 넣은 contradiction 확률 분포.
 
     prefix 는 1..(n−1) 토큰 전부다 (마지막 = 문장 전체는 identity 라 제외). 토큰 단위는
@@ -102,10 +103,12 @@ def measure_floor(fulls: list[str], backend, max_prefixes_per_sentence: int = 20
         if not vals:
             return {"n": 0, "mean": None, "p50": None, "p90": None}
         v = sorted(vals)
-        return {"n": len(v),
-                "mean": round(sum(v) / len(v), 4),
-                "p50": round(v[len(v) // 2], 4),
-                "p90": round(v[min(len(v) - 1, int(0.9 * (len(v) - 1)))], 4)}
+        return {
+            "n": len(v),
+            "mean": round(sum(v) / len(v), 4),
+            "p50": round(v[len(v) // 2], 4),
+            "p90": round(v[min(len(v) - 1, int(0.9 * (len(v) - 1)))], 4),
+        }
 
     return {
         "backend": backend.name,
@@ -124,8 +127,7 @@ def floor_lookup(floor: dict, hyp_units: int) -> float:
     `hyp_units` 는 **바닥을 잰 것과 같은 단위**여야 한다 — `floor["tgt_spaced"]` 가
     그 단위를 알려주므로 호출부는 그것을 보고 세면 된다. 옛 파일에는 이 키가 없으므로
     어절로 간주한다 (그때는 어절 전용이었다)."""
-    b = floor["by_length_bucket"].get(
-        bucket_of(hyp_units, floor.get("tgt_spaced", True))) or {}
+    b = floor["by_length_bucket"].get(bucket_of(hyp_units, floor.get("tgt_spaced", True))) or {}
     if b.get("mean") is not None:
         return b["mean"]
     return floor["overall"]["mean"] or 0.0
@@ -150,7 +152,7 @@ def recheck_ranks(rows: list[dict], T: int, floor: dict) -> dict:
         d = (r.get("by_T") or {}).get(key)
         if not d:
             continue
-        ranks = [-int(m) for m in tag_re.findall(d.get("seg_text") or "")]   # −점수
+        ranks = [-int(m) for m in tag_re.findall(d.get("seg_text") or "")]  # −점수
         contras = (d.get("pieces_contra") or [])[:-1]
         pieces_tgt = d.get("pieces_tgt") or []
         if len(ranks) != len(contras) or not ranks:
@@ -181,11 +183,11 @@ def recheck_ranks(rows: list[dict], T: int, floor: dict) -> dict:
     sp_cor, n_cor = mean_spearman(cor_pairs)
     return {
         "T": T,
-        "spearman_raw": sp_raw, "spearman_corrected": sp_cor, "n_sentences": n_cor,
-        "by_rank_raw": {k: round(sum(v) / len(v), 4)
-                        for k, v in sorted(by_rank_raw.items())},
-        "by_rank_corrected": {k: round(sum(v) / len(v), 4)
-                              for k, v in sorted(by_rank_cor.items())},
+        "spearman_raw": sp_raw,
+        "spearman_corrected": sp_cor,
+        "n_sentences": n_cor,
+        "by_rank_raw": {k: round(sum(v) / len(v), 4) for k, v in sorted(by_rank_raw.items())},
+        "by_rank_corrected": {k: round(sum(v) / len(v), 4) for k, v in sorted(by_rank_cor.items())},
     }
 
 
@@ -193,14 +195,17 @@ def main() -> int:
     p = argparse.ArgumentParser(description="contradiction 잡음 바닥 측정")
     p.add_argument("--run-id", required=True, help="runs/ 이하 경로 (예: ko-en/run03)")
     p.add_argument("--split", default="test", choices=["train", "dev", "test"])
-    p.add_argument("--recheck-t", type=int, default=None,
-                   help="이 T 의 경계 contradiction 을 바닥 보정해 순위 정렬도 재계산")
+    p.add_argument(
+        "--recheck-t",
+        type=int,
+        default=None,
+        help="이 T 의 경계 contradiction 을 바닥 보정해 순위 정렬도 재계산",
+    )
     p.add_argument("--max-prefixes", type=int, default=20)
     args = p.parse_args()
 
     run_dir = RUNS_DIR / args.run_id
-    rows_path = run_dir / (f"{args.split}_rows.json" if args.split == "test"
-                           else None)
+    rows_path = run_dir / (f"{args.split}_rows.json" if args.split == "test" else None)
     if args.split != "test":
         # train/dev 는 이터레이션별 파일 — 마지막 이터레이션 것을 쓴다
         iters = sorted(run_dir.glob(f"iter_*/{args.split}_rows.json"))
@@ -219,12 +224,15 @@ def main() -> int:
     fulls = [r.get("full_trans") or "" for r in rows if r.get("full_trans")]
     print(f"[floor] {len(fulls)}문장, 백엔드 {backend.name}", flush=True)
 
-    floor = measure_floor(fulls, backend, args.max_prefixes,
-                          tgt_spaced=bool(cfg.get("tgt_spaced", True)))
+    floor = measure_floor(
+        fulls, backend, args.max_prefixes, tgt_spaced=bool(cfg.get("tgt_spaced", True))
+    )
     out_path = run_dir / f"noise_floor_{args.split}.json"
 
-    print(f"\n전체: n={floor['n_prefixes']} mean={floor['overall']['mean']} "
-          f"p50={floor['overall']['p50']} p90={floor['overall']['p90']}")
+    print(
+        f"\n전체: n={floor['n_prefixes']} mean={floor['overall']['mean']} "
+        f"p50={floor['overall']['p50']} p90={floor['overall']['p90']}"
+    )
     print(f"\n길이({floor['unit']})  n     mean    p50     p90")
     for b, s in floor["by_length_bucket"].items():
         if s["n"]:
@@ -234,14 +242,15 @@ def main() -> int:
     if args.recheck_t is not None:
         rc = recheck_ranks(rows, args.recheck_t, floor)
         result["rank_recheck"] = rc
-        print(f"\n[순위 재검 T={rc['T']}] Spearman 보정 전 {rc['spearman_raw']} "
-              f"→ 보정 후 {rc['spearman_corrected']} (n={rc['n_sentences']})")
+        print(
+            f"\n[순위 재검 T={rc['T']}] Spearman 보정 전 {rc['spearman_raw']} "
+            f"→ 보정 후 {rc['spearman_corrected']} (n={rc['n_sentences']})"
+        )
         print("rank  raw    corrected")
         for k in rc["by_rank_raw"]:
             print(f"{k:>4} {rc['by_rank_raw'][k]:>6} {rc['by_rank_corrected'].get(k):>9}")
 
-    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2),
-                        encoding="utf-8")
+    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\n[done] {out_path}")
     return 0
 

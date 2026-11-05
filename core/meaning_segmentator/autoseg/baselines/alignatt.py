@@ -28,17 +28,17 @@ def segment(nmt, text: str, f: int = 2) -> list[str]:
     pieces: list[str] = []
     forced: list[int] = []
     k = 0
-    for t in range(1, n):                     # t = 지금까지 읽은 어절 수
+    for t in range(1, n):  # t = 지금까지 읽은 어절 수
         emitted = nmt.emit_with_alignment(" ".join(words[:t]), forced or None)
         commit: list[int] = []
         for tok_id, w in emitted:
-            if w >= t - f:                    # 최근 f 어절에 붙어 있다 → 아직 못 낸다
+            if w >= t - f:  # 최근 f 어절에 붙어 있다 → 아직 못 낸다
                 break
             commit.append(tok_id)
         if commit:
             forced = forced + commit
             pieces.append(" ".join(words[k:t]))
             k = t
-    if k < n:                                 # 소스를 다 읽은 뒤 남은 꼬리
+    if k < n:  # 소스를 다 읽은 뒤 남은 꼬리
         pieces.append(" ".join(words[k:]))
     return pieces or [text.strip()]

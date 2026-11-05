@@ -7,6 +7,7 @@ read the same file and each brings its own other half.
 Configs are addressed by name. `configs/pipelines/baseline.yml` is `baseline`, and
 a name that is not there reports the ones that are.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -20,8 +21,8 @@ from core.utils.paths import get_project_root
 META_KEY = "meta"
 
 COMMIT_MODES = {
-    "seg":    dict(always_commit=False, enable_dot_commit=False, hide_seg=False),
-    "punct":  dict(always_commit=False, enable_dot_commit=True, hide_seg=True),
+    "seg": dict(always_commit=False, enable_dot_commit=False, hide_seg=False),
+    "punct": dict(always_commit=False, enable_dot_commit=True, hide_seg=True),
     "always": dict(always_commit=True, enable_dot_commit=False, hide_seg=True),
 }
 
@@ -79,7 +80,6 @@ def read_named(name: str, kind: str) -> dict:
 
 
 class ComponentConfig(ConfigBody):
-
     name: str
     options: dict = {}
 
@@ -105,8 +105,7 @@ class CommitConfig(ConfigBody):
         if mode not in COMMIT_MODES:
             raise ValueError(f"unknown mode {mode!r} (available: {sorted(COMMIT_MODES)})")
         table = COMMIT_MODES[mode]
-        return dict(mode=mode, **{**table,
-                                  "hide_seg": raw.get("hide_seg", table["hide_seg"])})
+        return dict(mode=mode, **{**table, "hide_seg": raw.get("hide_seg", table["hide_seg"])})
 
 
 class PipelineConfig(ConfigBody):
@@ -130,9 +129,11 @@ class PipelineConfig(ConfigBody):
                 "default (0.8) means 'reserve everything spare', which has killed a "
                 "co-tenant job on this machine. Use 0.5 when sharing the card."
             )
-        return dict(pipeline={"name": name, "options": options},
-                    commit=raw.get("commit"),
-                    gpu_memory_utilization=raw["gpu_memory_utilization"])
+        return dict(
+            pipeline={"name": name, "options": options},
+            commit=raw.get("commit"),
+            gpu_memory_utilization=raw["gpu_memory_utilization"],
+        )
 
     @model_validator(mode="after")
     def resolve_parts(self) -> "PipelineConfig":

@@ -24,23 +24,33 @@ from ..runtime import data, metrics
 from ..infra import gateway
 from ..infra.gateway import Gateway
 from ..loop import _cell, evaluate, target_is_spaced
-from ..runtime.pipeline import (add_translate_args, parse_translator_id, GoogleTranslator,
-                       JsonCache, to_lang_code)
+from ..runtime.pipeline import (
+    add_translate_args,
+    parse_translator_id,
+    GoogleTranslator,
+    JsonCache,
+    to_lang_code,
+)
 from ..paths import RUNS_DIR
-
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description="프롬프트 1개를 루프와 동일 지표로 평가")
     p.add_argument("--prompt", required=True, help="평가할 프롬프트 파일")
-    p.add_argument("--run-id", required=True,
-                   help="기준 런 경로 (runs/ 이하). 데이터 분할·프로파일·캐시·백엔드를 재사용한다")
+    p.add_argument(
+        "--run-id",
+        required=True,
+        help="기준 런 경로 (runs/ 이하). 데이터 분할·프로파일·캐시·백엔드를 재사용한다",
+    )
     p.add_argument("--split", default="test", choices=["train", "dev", "test"])
     p.add_argument("--label", default=None, help="결과 파일 이름에 쓸 라벨")
-    p.add_argument("--tgt-lang", default=None,
-                   help="타깃 언어를 기준 런과 다르게 잡는다 (다언어 런의 타깃별 표를 "
-                        "뽑을 때). 캐시는 loop 과 같은 translate_{code}.json 을 쓰므로 "
-                        "그 런이 이미 번역했다면 gtx 재호출이 없다")
+    p.add_argument(
+        "--tgt-lang",
+        default=None,
+        help="타깃 언어를 기준 런과 다르게 잡는다 (다언어 런의 타깃별 표를 "
+        "뽑을 때). 캐시는 loop 과 같은 translate_{code}.json 을 쓰므로 "
+        "그 런이 이미 번역했다면 gtx 재호출이 없다",
+    )
     p.add_argument("--min-gap", type=int, default=None, help="미지정 시 기준 런에서 상속")
     p.add_argument("--model", default="gpt-5-mini")
     gateway.add_provider_args(p)
@@ -57,23 +67,39 @@ def main() -> int:
     # 사고 토큰을 아낀다 (AUTOSEG_DETAILS.md '순위 축 진단').
     # 한 콜에 넣는 문장 수. 분절 사고 토큰이 비용의 90% 라 가장 큰 레버다
     # (실측 24문장: b=1 5,237 → b=3 2,994 → b=6 1,680 사고/문장).
-    p.add_argument("--batch-size", type=int, default=1,
-                   help="한 분절 호출에 넣을 문장 수. 1 = 종전 동작")
-    p.add_argument("--t-floor", type=int, default=None,
-                   help="후보 마킹 하한 기준 T. 미지정 시 min(t_grid)")
-    p.add_argument("--seg-reasoning-effort", default=None,
-                   choices=["minimal", "low", "medium", "high", "none"],
-                   help="미지정 시 기준 런에서 상속")
+    p.add_argument(
+        "--batch-size", type=int, default=1, help="한 분절 호출에 넣을 문장 수. 1 = 종전 동작"
+    )
+    p.add_argument(
+        "--t-floor", type=int, default=None, help="후보 마킹 하한 기준 T. 미지정 시 min(t_grid)"
+    )
+    p.add_argument(
+        "--seg-reasoning-effort",
+        default=None,
+        choices=["minimal", "low", "medium", "high", "none"],
+        help="미지정 시 기준 런에서 상속",
+    )
     p.add_argument("--budget", type=float, default=5.0)
     p.add_argument("--workers", type=int, default=8)
-    p.add_argument("--t-grid", type=int, nargs="+", default=None,
-                   help="미지정 시 기준 런의 final_t_grid 를 그대로 쓴다")
-    p.add_argument("--no-priority", action="store_true",
-                   help="순위 태그를 요구하지 않는다. 사람이 쓴 비교군 프롬프트용")
+    p.add_argument(
+        "--t-grid",
+        type=int,
+        nargs="+",
+        default=None,
+        help="미지정 시 기준 런의 final_t_grid 를 그대로 쓴다",
+    )
+    p.add_argument(
+        "--no-priority",
+        action="store_true",
+        help="순위 태그를 요구하지 않는다. 사람이 쓴 비교군 프롬프트용",
+    )
     p.add_argument("--adequacy-backend", default=None, help="미지정 시 기준 런에서 상속")
-    p.add_argument("--no-contradiction", action="store_true",
-                   help="NLI 조기 방출 검출을 끈다. 기본은 기준 런 설정 상속 — "
-                        "루프와 다른 자로 재면 비교가 무의미하다")
+    p.add_argument(
+        "--no-contradiction",
+        action="store_true",
+        help="NLI 조기 방출 검출을 끈다. 기본은 기준 런 설정 상속 — "
+        "루프와 다른 자로 재면 비교가 무의미하다",
+    )
     p.add_argument("--comet-batch-size", type=int, default=64)
     args = p.parse_args()
 
@@ -92,14 +118,18 @@ def main() -> int:
     if mp.exists():
         measured = json.loads(mp.read_text(encoding="utf-8"))
     else:
-        fit = (data.read_split(run_dir / "data" / "train.json")
-               + data.read_split(run_dir / "data" / "dev.json"))
+        fit = data.read_split(run_dir / "data" / "train.json") + data.read_split(
+            run_dir / "data" / "dev.json"
+        )
         measured = data.measure_profile([x.text for x in fit])
     spaced, trailing_punct = data.profile_settings(measured)
 
     tgt_name = args.tgt_lang or cfg.get("tgt_lang", "English")
-    tgt_spaced = (target_is_spaced(tgt_name) if args.tgt_lang
-                  else bool(cfg.get("tgt_spaced", target_is_spaced(tgt_name))))
+    tgt_spaced = (
+        target_is_spaced(tgt_name)
+        if args.tgt_lang
+        else bool(cfg.get("tgt_spaced", target_is_spaced(tgt_name)))
+    )
     t_grid = sorted(set(args.t_grid or cfg.get("final_t_grid") or cfg.get("t_grid") or [3, 6]))
 
     sentences = data.read_split(run_dir / "data" / f"{args.split}.json")
@@ -113,83 +143,124 @@ def main() -> int:
     # **번역기와 백엔드는 기준 런에서 상속한다.** 다른 조합으로 재면 같은 축이 아니다.
     # 옛 런은 `translator_id` 가 없거나 `llm:...` 일 수 있다. 번역기가 Google 하나뿐이라
     # 어느 쪽이든 Google 로 읽는다 — 다만 그 런의 캐시는 LLM 번역이라 재사용되지 않는다.
-    backend, code, ctx = parse_translator_id(cfg.get("translator_id") or "",
-                                             to_lang_code(tgt_name))
-    if args.tgt_lang:                       # 타깃을 바꿔 재는 경우 코드도 따라간다
+    backend, code, ctx = parse_translator_id(cfg.get("translator_id") or "", to_lang_code(tgt_name))
+    if args.tgt_lang:  # 타깃을 바꿔 재는 경우 코드도 따라간다
         code = to_lang_code(tgt_name)
     # 다언어 런은 타깃별 캐시 파일을 쓴다. 옛 런의 단일 translate.json 도 계속 읽는다.
     cf = run_dir / "cache" / f"translate_{code}.json"
     if not cf.exists() and (run_dir / "cache" / "translate.json").exists():
         cf = run_dir / "cache" / "translate.json"
     tr_cache = JsonCache(cf)
-    translator = GoogleTranslator.from_args(args, tgt_code=code, cache=tr_cache,
-                                            workers=min(args.workers, 4),
-                                            use_context=ctx, backend=backend)
-    tr_id = (f"google:{translator.backend}:{code}:ctx={ctx}")
+    translator = GoogleTranslator.from_args(
+        args,
+        tgt_code=code,
+        cache=tr_cache,
+        workers=min(args.workers, 4),
+        use_context=ctx,
+        backend=backend,
+    )
+    tr_id = f"google:{translator.backend}:{code}:ctx={ctx}"
 
     adequacy = metrics.make_adequacy_backend(
         args.adequacy_backend or cfg.get("adequacy_backend", "cometkiwi"),
-        batch_size=args.comet_batch_size)
+        batch_size=args.comet_batch_size,
+    )
     # 조기 방출 NLI 도 기준 런에서 상속한다 — 루프의 effective 와 같은 자로 재야
     # 비교군 표에 나란히 놓을 수 있다.
-    contradiction = (None if (args.no_contradiction or cfg.get("no_contradiction"))
-                     else metrics.make_contradiction_backend())
+    contradiction = (
+        None
+        if (args.no_contradiction or cfg.get("no_contradiction"))
+        else metrics.make_contradiction_backend()
+    )
 
     seg_effort = args.seg_reasoning_effort or cfg.get("seg_reasoning_effort", "low")
     if seg_effort == "none":
         seg_effort = None
 
     try:
-        rows, m, viol = evaluate(gw, translator, prompt, sentences, spaced, seg_cache,
-                                 args.workers, adequacy, t_grid,
-                                 trailing_punct, tgt_spaced=tgt_spaced,
-                                 require_priority=not args.no_priority,
-                                 contradiction=contradiction,
-                                 reasoning_effort=seg_effort,
-                                 # `density`·`candidate_t` 는 **옛 config 의 키 이름**이다.
-                                 # 지금 이름은 `t_floor` 하나이고, 기존 런을 다시 재려면
-                                 # 그 런이 저장한 이름으로 읽어야 한다.
-                                 coverage_t=(args.t_floor or cfg.get("t_floor") or cfg.get("density")
-                                             or cfg.get("candidate_t")
-                                             or min(t_grid)),
-                                 batch_size=args.batch_size,
-                                 min_gap=(args.min_gap if args.min_gap is not None
-                                          else int(cfg.get("min_gap", 0))),
-                                 skip_translation_below=float(
-                                     cfg.get("skip_translation_below", 0.95)))
+        rows, m, viol = evaluate(
+            gw,
+            translator,
+            prompt,
+            sentences,
+            spaced,
+            seg_cache,
+            args.workers,
+            adequacy,
+            t_grid,
+            trailing_punct,
+            tgt_spaced=tgt_spaced,
+            require_priority=not args.no_priority,
+            contradiction=contradiction,
+            reasoning_effort=seg_effort,
+            # `density`·`candidate_t` 는 **옛 config 의 키 이름**이다.
+            # 지금 이름은 `t_floor` 하나이고, 기존 런을 다시 재려면
+            # 그 런이 저장한 이름으로 읽어야 한다.
+            coverage_t=(
+                args.t_floor
+                or cfg.get("t_floor")
+                or cfg.get("density")
+                or cfg.get("candidate_t")
+                or min(t_grid)
+            ),
+            batch_size=args.batch_size,
+            min_gap=(args.min_gap if args.min_gap is not None else int(cfg.get("min_gap", 0))),
+            skip_translation_below=float(cfg.get("skip_translation_below", 0.95)),
+        )
         out_dir = run_dir / "prompt_eval"
         out_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / f"{label}_{args.split}.json").write_text(json.dumps({
-            "prompt_file": str(args.prompt),
-            "split": args.split,
-            "t_grid": t_grid,
-            "tgt_lang": tgt_name,
-            "min_gap": (args.min_gap if args.min_gap is not None
-                        else int(cfg.get("min_gap", 0))),
-            "t_floor": (args.t_floor or cfg.get("t_floor") or cfg.get("density")
-                        or cfg.get("candidate_t") or min(t_grid)),
-            "batch_size": args.batch_size,
-            "require_priority": not args.no_priority,
-            "tag_convention": "score",       # <SEG:s>, s = 0..100, 클수록 확신
-            "adequacy_backend": adequacy.name,
-            "contradiction_backend": (None if contradiction is None else contradiction.name),
-            "translator": tr_id,
-            "metrics": m.to_dict(),
-            "violations": viol,
-            "rows": rows,
-            "usage": gw.usage.snapshot(),
-        }, ensure_ascii=False, indent=2), encoding="utf-8")
+        (out_dir / f"{label}_{args.split}.json").write_text(
+            json.dumps(
+                {
+                    "prompt_file": str(args.prompt),
+                    "split": args.split,
+                    "t_grid": t_grid,
+                    "tgt_lang": tgt_name,
+                    "min_gap": (
+                        args.min_gap if args.min_gap is not None else int(cfg.get("min_gap", 0))
+                    ),
+                    "t_floor": (
+                        args.t_floor
+                        or cfg.get("t_floor")
+                        or cfg.get("density")
+                        or cfg.get("candidate_t")
+                        or min(t_grid)
+                    ),
+                    "batch_size": args.batch_size,
+                    "require_priority": not args.no_priority,
+                    "tag_convention": "score",  # <SEG:s>, s = 0..100, 클수록 확신
+                    "adequacy_backend": adequacy.name,
+                    "contradiction_backend": (
+                        None if contradiction is None else contradiction.name
+                    ),
+                    "translator": tr_id,
+                    "metrics": m.to_dict(),
+                    "violations": viol,
+                    "rows": rows,
+                    "usage": gw.usage.snapshot(),
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
 
-        print(f"[{label} / {args.split}] n={m.n} 타깃={tgt_name} "
-          f"adequacy={adequacy.name} 번역기={tr_id}")
-        print(f"  포맷 통과율 {m.format_pass_rate:.4f} (재시도 없이 "
-              f"{m.format_pass_rate_no_retry:.4f}), 위반 {len(viol)}건")
+        print(
+            f"[{label} / {args.split}] n={m.n} 타깃={tgt_name} "
+            f"adequacy={adequacy.name} 번역기={tr_id}"
+        )
+        print(
+            f"  포맷 통과율 {m.format_pass_rate:.4f} (재시도 없이 "
+            f"{m.format_pass_rate_no_retry:.4f}), 위반 {len(viol)}건"
+        )
         for k in sorted(m.by_T, key=int):
             s = m.by_T[k]
-            print(f"  T={k:<3} laal {s.laal_words:6.2f}  effective {_cell(s.effective, '.4f')}  "
-                  f"adequacy {s.adequacy:.4f}  contradiction {_cell(s.contradiction, '.4f')}  "
-                  f"k {s.chunks_per_sentence:.2f}  "
-                  f"부족경계 {s.missing_boundaries:.2f}")
+            print(
+                f"  T={k:<3} laal {s.laal_words:6.2f}  effective {_cell(s.effective, '.4f')}  "
+                f"adequacy {s.adequacy:.4f}  contradiction {_cell(s.contradiction, '.4f')}  "
+                f"k {s.chunks_per_sentence:.2f}  "
+                f"부족경계 {s.missing_boundaries:.2f}"
+            )
         print(f"  score {metrics.score(m):.4f}  비용 {gw.usage.snapshot()['cost']:.4f}")
         return 0
     finally:

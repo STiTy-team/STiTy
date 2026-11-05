@@ -35,8 +35,12 @@ class TranslationProcessor(Processor):
         allowed = not self.languages or item.language in self.languages
         try:
             translated = await stages.translate(
-                self.parts, item, target_lang=self.target_lang,
-                context=list(self.said_so_far), allowed=allowed)
+                self.parts,
+                item,
+                target_lang=self.target_lang,
+                context=list(self.said_so_far),
+                allowed=allowed,
+            )
         except Exception:
             log.exception("[TRANSLATE-FAILED] to %s", self.target_lang)
             translated = stages.untranslated(item, self.target_lang)
@@ -56,14 +60,19 @@ class CascadePipeline(Pipeline):
     REQUIRED = (transcribers,)
     OPTIONAL = (mixers, detectors, correctors, translators)
     STAGES = (
-        Stage(parts=("mixer", "vad", "transcription"), runs_per=RunsPer.ROOM,
-              processor=SpeechProcessor),
-        Stage(parts=("correction", "translation"), runs_per=RunsPer.TARGET_LANG,
-              processor=TranslationProcessor),
+        Stage(
+            parts=("mixer", "vad", "transcription"),
+            runs_per=RunsPer.ROOM,
+            processor=SpeechProcessor,
+        ),
+        Stage(
+            parts=("correction", "translation"),
+            runs_per=RunsPer.TARGET_LANG,
+            processor=TranslationProcessor,
+        ),
     )
 
-    def start(self, *, languages: list[str], target_lang: str,
-              own_lang: str | None = None) -> None:
+    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None) -> None:
         self.target_lang = target_lang
         self.own_lang = own_lang
         self.said_so_far: list[str] = []
@@ -82,9 +91,11 @@ class CascadePipeline(Pipeline):
             if not isinstance(item, Transcribed):
                 continue
             target = langs.pick_target(
-                item.language, lang=self.own_lang or "", target_lang=self.target_lang)
+                item.language, lang=self.own_lang or "", target_lang=self.target_lang
+            )
             translated = await stages.translate(
-                self.parts, item, target_lang=target, context=list(self.said_so_far))
+                self.parts, item, target_lang=target, context=list(self.said_so_far)
+            )
             if translated.original:
                 self.said_so_far.append(translated.original)
             out.append(translated)

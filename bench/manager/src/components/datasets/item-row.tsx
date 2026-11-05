@@ -29,15 +29,17 @@ export function ItemRow({ item, selected, onOpen }: { item: ItemRowData; selecte
             {item.src_lang}
           </Badge>
         )}
-        {item.speaker && <Badge variant="secondary" className="shrink-0 text-[11px]">{item.speaker}</Badge>}
+        {item.speaker && (
+          <Badge variant="secondary" className="shrink-0 text-[11px]">
+            {item.speaker}
+          </Badge>
+        )}
         {item.speakers != null && item.speakers > 0 && (
           <Badge variant="secondary" className="shrink-0 text-[11px]">
             화자 {item.speakers}
           </Badge>
         )}
-        {item.group !== item.id && (
-          <span className="shrink-0 text-xs text-muted-foreground">group {item.group}</span>
-        )}
+        {item.group !== item.id && <span className="shrink-0 text-xs text-muted-foreground">group {item.group}</span>}
         {item.offset != null && <span className="shrink-0 text-xs text-muted-foreground">+{item.offset}s</span>}
         {item.partial && (
           <Badge variant="outline" className="shrink-0 text-[11px] text-destructive">

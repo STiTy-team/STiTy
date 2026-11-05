@@ -349,7 +349,9 @@ def _finalize_item(
     played_past_the_clip = [e.get("audio") or 0.0 for e in events]
     item["duration"] = max([item["duration"]] + played_past_the_clip)
     if item_id in clips:
-        item["audio_url"] = f"{AUDIO_API}?{urllib.parse.urlencode({'run': run_name, 'item': item_id})}"
+        item["audio_url"] = (
+            f"{AUDIO_API}?{urllib.parse.urlencode({'run': run_name, 'item': item_id})}"
+        )
     return item
 
 
@@ -443,4 +445,3 @@ def payload(run_dir: Path, *, top_k: int = DEFAULT_TOP_K) -> dict:
         "all_items": [{"id": r["id"], "wer": r.get("wer")} for r in rows.values()],
         "runs": catalog,
     }
-

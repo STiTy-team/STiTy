@@ -9,7 +9,12 @@ export const SCORES: Record<string, Score> = {
   avg_fsl_sec: { label: "FSL", better: "lower", item: "avg_fsl_sec" },
   token_emission_ms: { label: "Token emission", better: "lower", item: "token_emission_ms" },
   token_emission_ca_ms: { label: "Token emission CA", better: "lower", item: "token_emission_ca_ms" },
-  bleu: { label: "BLEU", better: "higher", item: "sentence_bleu", note: "표는 corpus BLEU, 차트는 항목별 sentence BLEU예요" },
+  bleu: {
+    label: "BLEU",
+    better: "higher",
+    item: "sentence_bleu",
+    note: "표는 corpus BLEU, 차트는 항목별 sentence BLEU예요",
+  },
   comet: { label: "COMET", better: "higher", item: "comet", note: "차트의 점 하나가 문장 하나예요" },
   laal_ms: { label: "LAAL", better: "lower", item: "laal_ms" },
   laal_ca_ms: { label: "LAAL CA", better: "lower", item: "laal_ca_ms" },
@@ -19,10 +24,18 @@ export const SCORES: Record<string, Score> = {
   longyaal_ca_ms: { label: "LongYAAL CA", better: "lower", item: "longyaal_ca_ms" },
   lang_detect_accuracy: { label: "Lang detect", better: "higher" },
   segments_per_item: { label: "Segments / item", better: null, item: "n_segments" },
-  gpu_peak_mib: { label: "GPU peak", better: "lower", note: "이 실행의 프로세스들이 동시에 잡은 GPU 메모리의 최댓값이에요" },
+  gpu_peak_mib: {
+    label: "GPU peak",
+    better: "lower",
+    note: "이 실행의 프로세스들이 동시에 잡은 GPU 메모리의 최댓값이에요",
+  },
   gpu_mean_mib: { label: "GPU mean", better: "lower" },
   gpu_util_mean: { label: "GPU util", better: null },
-  gpu_other_peak_mib: { label: "Other GPU peak", better: null, note: "0이 아니면 다른 프로세스가 GPU를 같이 썼어요 — 지연·사용률 수치가 흔들렸을 수 있어요" },
+  gpu_other_peak_mib: {
+    label: "Other GPU peak",
+    better: null,
+    note: "0이 아니면 다른 프로세스가 GPU를 같이 썼어요 — 지연·사용률 수치가 흔들렸을 수 있어요",
+  },
 }
 
 export const BETTER_TEXT: Record<string, string> = { lower: "낮을수록 좋음", higher: "높을수록 좋음" }

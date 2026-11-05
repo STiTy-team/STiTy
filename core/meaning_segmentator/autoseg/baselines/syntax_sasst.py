@@ -60,19 +60,19 @@ class SyntaxSegmenter:
         end_of = lambda t: t.idx + len(t.text)
 
         chars: set[int] = set()
-        for ch in doc.noun_chunks:                       # NP
+        for ch in doc.noun_chunks:  # NP
             chars.add(end_of(ch[-1]))
         for t in doc:
-            if t.dep_ == "prep":                          # PP
+            if t.dep_ == "prep":  # PP
                 chars.add(max(end_of(x) for x in t.subtree))
             # VP (조작화 — 위 주석). 조동사·부정·불변화사는 **헤드 동사의 동사구에
             # 속하므로** 스스로 VP 를 열지 않는다. 안 빼면 `can | contain` 으로 갈린다.
             if t.pos_ in ("VERB", "AUX") and t.dep_ not in _VERB_GROUP:
                 grp = [t] + [c for c in t.children if c.dep_ in _VERB_GROUP]
                 chars.add(max(end_of(x) for x in grp))
-            if t.is_punct:                                # 구두점
+            if t.is_punct:  # 구두점
                 chars.add(end_of(t))
-            if t.dep_ in ("nsubj", "nsubjpass"):          # 의존 전이 nsubj → VERB
+            if t.dep_ in ("nsubj", "nsubjpass"):  # 의존 전이 nsubj → VERB
                 chars.add(max(end_of(x) for x in t.subtree))
 
         cuts = set()

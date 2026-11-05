@@ -51,7 +51,9 @@ class SegmentTimeline:
             SegmentId(self._conversation_id, number), record, started_at, heard_to
         )
 
-    def _stamp_stream(self, record: Translated | Folded, heard_to: float) -> ConversationEvent | None:
+    def _stamp_stream(
+        self, record: Translated | Folded, heard_to: float
+    ) -> ConversationEvent | None:
         key = (record.target_lang, record.decision_audio_sec, record.original)
         if isinstance(record, Folded):
             number = self._translated_segments.pop(key, None)

@@ -1,4 +1,10 @@
-import type { CapacityMessage, FinalMessage, FoldMessage, PartialMessage, StartMessage } from './protocol';
+import type {
+  CapacityMessage,
+  FinalMessage,
+  FoldMessage,
+  PartialMessage,
+  StartMessage,
+} from './protocol';
 import { WebSocketConnection } from './websocket-connection';
 
 const OPEN_TIMEOUT_MS = 15_000;

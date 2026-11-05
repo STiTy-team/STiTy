@@ -10,7 +10,17 @@ export function Empty({ children }: { children: ReactNode }) {
   return <p className="py-2 text-sm text-muted-foreground">{children}</p>
 }
 
-export function StatTile({ label, value, code, lead }: { label: string; value: string; code?: boolean; lead?: boolean }) {
+export function StatTile({
+  label,
+  value,
+  code,
+  lead,
+}: {
+  label: string
+  value: string
+  code?: boolean
+  lead?: boolean
+}) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <span className={cn("text-xs text-muted-foreground", code && "font-mono")}>{label}</span>
@@ -58,7 +68,17 @@ function KvGroup({ title, sub, children }: { title: string; sub?: string; childr
   )
 }
 
-function FoldGroup({ title, sub, defaultOpen, children }: { title: string; sub?: string; defaultOpen: boolean; children: ReactNode }) {
+function FoldGroup({
+  title,
+  sub,
+  defaultOpen,
+  children,
+}: {
+  title: string
+  sub?: string
+  defaultOpen: boolean
+  children: ReactNode
+}) {
   return (
     <Collapsible defaultOpen={defaultOpen} className="group/fold border-t first:border-t-0">
       <CollapsibleTrigger className="flex w-full items-center gap-2 py-3 text-left text-sm font-semibold hover:text-foreground/80">

@@ -77,34 +77,40 @@ def main():
     _kspon_dir = Path(__file__).parents[1] / "data" / "KsponSpeech"
     results_dir = _kspon_dir / "results"
     finetuned_results_dir = _kspon_dir / "finetuned_results"
-    parser.add_argument("--input",     type=str, required=True,
-                        help="결과 디렉토리 내 파일명 (예: eval_clean_seg.json)")
-    parser.add_argument("--input-dir", type=str, default=None,
-                        help="입력 파일 디렉토리")
-    parser.add_argument("--field",     type=str, default="gdt_seg_trans",
-                        help="COMET hypothesis로 사용할 번역 필드 (기본: gdt_seg_trans)")
-    parser.add_argument("--model",     type=str, default="Unbabel/wmt22-comet-da",
-                        help="COMET 모델명")
-    parser.add_argument("--delay",     type=float, default=0.2,
-                        help="번역 요청 간 딜레이(초)")
-    parser.add_argument("--no-resume", dest="resume", action="store_false",
-                        help="이미 번역된 항목도 재처리")
-    parser.add_argument("--gpus",     type=int, default=0,
-                        help="COMET 추론에 사용할 GPU 수 (기본: 0, CPU 사용)")
+    parser.add_argument(
+        "--input", type=str, required=True, help="결과 디렉토리 내 파일명 (예: eval_clean_seg.json)"
+    )
+    parser.add_argument("--input-dir", type=str, default=None, help="입력 파일 디렉토리")
+    parser.add_argument(
+        "--field",
+        type=str,
+        default="gdt_seg_trans",
+        help="COMET hypothesis로 사용할 번역 필드 (기본: gdt_seg_trans)",
+    )
+    parser.add_argument("--model", type=str, default="Unbabel/wmt22-comet-da", help="COMET 모델명")
+    parser.add_argument("--delay", type=float, default=0.2, help="번역 요청 간 딜레이(초)")
+    parser.add_argument(
+        "--no-resume", dest="resume", action="store_false", help="이미 번역된 항목도 재처리"
+    )
+    parser.add_argument(
+        "--gpus", type=int, default=0, help="COMET 추론에 사용할 GPU 수 (기본: 0, CPU 사용)"
+    )
     parser.set_defaults(resume=True)
     args = parser.parse_args()
 
     if args.input_dir is None:
-        args.input_dir = str(finetuned_results_dir if args.field == "finetuned_seg_trans" else results_dir)
+        args.input_dir = str(
+            finetuned_results_dir if args.field == "finetuned_seg_trans" else results_dir
+        )
 
-    hyp_field   = args.field                  # e.g. gdt_seg_trans
-    ref_field   = ref_field_name(hyp_field)   # e.g. gdt_full_trans
-    score_field = score_field_name(hyp_field) # e.g. gdt_comet_score
-    stat_pfx    = field_prefix(hyp_field)     # e.g. gdt
+    hyp_field = args.field  # e.g. gdt_seg_trans
+    ref_field = ref_field_name(hyp_field)  # e.g. gdt_full_trans
+    score_field = score_field_name(hyp_field)  # e.g. gdt_comet_score
+    stat_pfx = field_prefix(hyp_field)  # e.g. gdt
 
-    input_path  = Path(args.input_dir) / args.input
+    input_path = Path(args.input_dir) / args.input
     output_path = input_path
-    raw  = json.loads(input_path.read_text(encoding="utf-8"))
+    raw = json.loads(input_path.read_text(encoding="utf-8"))
 
     # 구조 감지: KsponSpeech {"data": [...]} vs DailyTalk {"0": {"data": [...]}, ...}
     is_dailytalk = "data" not in raw
@@ -127,26 +133,32 @@ def main():
                 grouped[entry_group[e["file"]]]["data"].append(e)
             if stats:
                 grouped = {"stats": stats} | grouped
-            output_path.write_text(json.dumps(grouped, ensure_ascii=False, indent=2), encoding="utf-8")
+            output_path.write_text(
+                json.dumps(grouped, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
         else:
-            raw_out = {"stats": raw.get("stats", {})} | {k: v for k, v in raw.items() if k != "stats"}
-            output_path.write_text(json.dumps(raw_out, ensure_ascii=False, indent=2), encoding="utf-8")
+            raw_out = {"stats": raw.get("stats", {})} | {
+                k: v for k, v in raw.items() if k != "stats"
+            }
+            output_path.write_text(
+                json.dumps(raw_out, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
 
     # ── 1. Google Translate 번역 ─────────────────────────────────────────────
     if hyp_field == "gdt_seg_trans":
         for i, entry in enumerate(data):
             has_full = bool(entry.get("gdt_full_trans"))
-            has_seg  = bool(entry.get("gdt_seg_trans"))
+            has_seg = bool(entry.get("gdt_seg_trans"))
 
             if args.resume and has_full and has_seg:
-                print(f"[{i+1}/{len(data)}] 건너뜀: {entry['file']}")
+                print(f"[{i + 1}/{len(data)}] 건너뜀: {entry['file']}")
                 continue
 
             if not entry.get("seg_text"):
-                print(f"[{i+1}/{len(data)}] seg_text 없음, 스킵: {entry['file']}")
+                print(f"[{i + 1}/{len(data)}] seg_text 없음, 스킵: {entry['file']}")
                 continue
 
-            print(f"[{i+1}/{len(data)}] {entry['file']}")
+            print(f"[{i + 1}/{len(data)}] {entry['file']}")
 
             if not (args.resume and has_full):
                 entry["gdt_full_trans"] = translate(entry["text"])
@@ -164,23 +176,23 @@ def main():
 
     elif hyp_field == "finetuned_seg_trans":
         for i, entry in enumerate(data):
-            has_full      = bool(entry.get("finetuned_full_trans"))
+            has_full = bool(entry.get("finetuned_full_trans"))
             has_finetuned = bool(entry.get("finetuned_seg_trans"))
 
             if args.resume and has_full and has_finetuned:
-                print(f"[{i+1}/{len(data)}] 건너뜀: {entry['file']}")
+                print(f"[{i + 1}/{len(data)}] 건너뜀: {entry['file']}")
                 continue
 
             if not entry.get("finetuned_text"):
-                print(f"[{i+1}/{len(data)}] finetuned_text 없음, 스킵: {entry['file']}")
+                print(f"[{i + 1}/{len(data)}] finetuned_text 없음, 스킵: {entry['file']}")
                 continue
 
-            print(f"[{i+1}/{len(data)}] {entry['file']}")
+            print(f"[{i + 1}/{len(data)}] {entry['file']}")
 
             if not (args.resume and has_full):
                 # gdt_full_trans 재사용, 없으면 새로 번역
-                entry["finetuned_full_trans"] = (
-                    entry.get("gdt_full_trans") or translate(entry["text"])
+                entry["finetuned_full_trans"] = entry.get("gdt_full_trans") or translate(
+                    entry["text"]
                 )
                 print(f"  full_trans: {entry['finetuned_full_trans']}")
                 if args.delay > 0 and not entry.get("gdt_full_trans"):
@@ -200,7 +212,7 @@ def main():
     model = load_from_checkpoint(model_path)
 
     require_seg = hyp_field not in ("finetuned_seg_trans",)
-    comet_data    = []
+    comet_data = []
     comet_entries = []
     skipped = 0
     for entry in data:
@@ -209,11 +221,13 @@ def main():
         if require_seg and "<SEG>" not in entry.get("seg_text", ""):
             skipped += 1
             continue
-        comet_data.append({
-            "src": entry["text"],
-            "mt":  entry[hyp_field],
-            "ref": entry[ref_field],
-        })
+        comet_data.append(
+            {
+                "src": entry["text"],
+                "mt": entry[hyp_field],
+                "ref": entry[ref_field],
+            }
+        )
         comet_entries.append(entry)
     if require_seg:
         print(f"  분절 없는 항목 제외: {skipped}개")
@@ -232,12 +246,16 @@ def main():
 
     # stats: 기존 stats 유지하면서 해당 field 통계만 덮어씀
     all_scores = [e[score_field] for e in data if score_field in e]
-    stats = raw.get("stats", {"total_files": len(data)}) if not is_dailytalk else {"total_files": len(data)}
+    stats = (
+        raw.get("stats", {"total_files": len(data)})
+        if not is_dailytalk
+        else {"total_files": len(data)}
+    )
     stats["total_files"] = len(data)
     stats[f"{stat_pfx}_comet_evaluated"] = len(all_scores)
-    stats[f"{stat_pfx}_comet_max"]       = round(max(all_scores), 4)
-    stats[f"{stat_pfx}_comet_min"]       = round(min(all_scores), 4)
-    stats[f"{stat_pfx}_comet_avg"]       = round(sum(all_scores) / len(all_scores), 4)
+    stats[f"{stat_pfx}_comet_max"] = round(max(all_scores), 4)
+    stats[f"{stat_pfx}_comet_min"] = round(min(all_scores), 4)
+    stats[f"{stat_pfx}_comet_avg"] = round(sum(all_scores) / len(all_scores), 4)
     if not is_dailytalk:
         raw["stats"] = stats
     save_raw(stats=stats)

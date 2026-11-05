@@ -18,6 +18,7 @@ import sys
 import time
 
 from ..paths import REPO_ROOT
+
 sys.path.insert(0, str(REPO_ROOT))
 
 from core.meaning_segmentator.autoseg.baselines import datasets as _ds  # noqa: E402
@@ -42,18 +43,24 @@ def main() -> int:
     for i, (key, text, wav, dur_ms) in enumerate(jobs):
         try:
             ends = al.word_end_times(wav, text)
-        except Exception as exc:                       # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             fails.append(f"{key}:{type(exc).__name__}")
             continue
         if ends is None:
             fails.append(f"{key}:align")
             continue
-        out[key] = {"wav": wav.name, "dur_ms": dur_ms,
-                    "word_end_ms": [round(e * 1000, 1) for e in ends]}
+        out[key] = {
+            "wav": wav.name,
+            "dur_ms": dur_ms,
+            "word_end_ms": [round(e * 1000, 1) for e in ends],
+        }
         if (i + 1) % 50 == 0:
             el = time.time() - t0
-            print(f"  {i + 1}/{len(jobs)}  {el:.0f}s  "
-                  f"ETA {el / (i + 1) * (len(jobs) - i - 1) / 60:.1f}m", flush=True)
+            print(
+                f"  {i + 1}/{len(jobs)}  {el:.0f}s  "
+                f"ETA {el / (i + 1) * (len(jobs) - i - 1) / 60:.1f}m",
+                flush=True,
+            )
 
     dest = _ds.get(args.dataset).wordtimes_path(args.tag, "ctc")
     dest.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")

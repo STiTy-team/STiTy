@@ -61,15 +61,21 @@ class Qwen35Translation(Translator):
         self.context_turns = self.settings.get("context_turns", 1)
         self.max_tokens = self.settings.get("max_tokens", 256)
         self.client = httpx.AsyncClient(timeout=self.settings.get("timeout_sec", 10.0))
-        await cache.load(("qwen3.5-server", self.url, self.model), self._start_server_unless_running)
+        await cache.load(
+            ("qwen3.5-server", self.url, self.model), self._start_server_unless_running
+        )
         log.info("[LOAD] qwen3.5 translation %s at %s", self.model, self.url)
 
     async def close(self) -> None:
         await self.client.aclose()
 
-    async def translate(self, text: str, target_lang: str,
-                        source_lang: str | None = None,
-                        context: list[str] | None = None) -> tuple[str, str]:
+    async def translate(
+        self,
+        text: str,
+        target_lang: str,
+        source_lang: str | None = None,
+        context: list[str] | None = None,
+    ) -> tuple[str, str]:
         if not text.strip() or not target_lang:
             return "", ""
         if source_lang == target_lang:
@@ -82,33 +88,38 @@ class Qwen35Translation(Translator):
             return "", ""
         return without_reasoning(reply), source_lang or ""
 
-    def _prompt(self, text: str, target_lang: str, source_lang: str | None,
-                context: list[str]) -> list[dict]:
+    def _prompt(
+        self, text: str, target_lang: str, source_lang: str | None, context: list[str]
+    ) -> list[dict]:
         source, target = language_name(source_lang), language_name(target_lang)
         earlier_turns = self._turns_to_show(text, context)
         if earlier_turns:
             listed = "\n".join(f"- {turn}" for turn in earlier_turns)
-            request = (f"Earlier turns of the conversation, oldest first (context only; do NOT "
-                       f"translate these):\n{listed}\n\n"
-                       f"Translate ONLY the line below, which is in {source}, into {target}.\n\n{text}")
+            request = (
+                f"Earlier turns of the conversation, oldest first (context only; do NOT "
+                f"translate these):\n{listed}\n\n"
+                f"Translate ONLY the line below, which is in {source}, into {target}.\n\n{text}"
+            )
         else:
             request = f"Translate the following {source} sentence into {target}.\n\n{text}"
-        return [{"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": request}]
+        return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": request}]
 
     def _turns_to_show(self, text: str, context: list[str]) -> list[str]:
         if not self.context_turns or not ends_a_sentence(text):
             return []
-        return context[-self.context_turns:]
+        return context[-self.context_turns :]
 
     async def _chat(self, messages: list[dict]) -> str:
-        response = await self.client.post(f"{self.url}/chat/completions", json={
-            "model": self.model,
-            "messages": messages,
-            "max_tokens": self.max_tokens,
-            "temperature": 0.0,
-            "chat_template_kwargs": {"enable_thinking": False},
-        })
+        response = await self.client.post(
+            f"{self.url}/chat/completions",
+            json={
+                "model": self.model,
+                "messages": messages,
+                "max_tokens": self.max_tokens,
+                "temperature": 0.0,
+                "chat_template_kwargs": {"enable_thinking": False},
+            },
+        )
         response.raise_for_status()
         return response.json()["choices"][0]["message"]["content"] or ""
 
@@ -124,7 +135,10 @@ class Qwen35Translation(Translator):
     async def _start_server(self) -> None:
         address = urlparse(self.url)
         command = uv_command(
-            VLLM_PROJECT, "vllm", "serve", self.model,
+            VLLM_PROJECT,
+            "vllm",
+            "serve",
+            self.model,
             host=address.hostname or "127.0.0.1",
             port=address.port or 8100,
             gpu_memory_utilization=self.settings.get("gpu_memory_utilization", 0.25),
@@ -136,8 +150,12 @@ class Qwen35Translation(Translator):
             max_num_batched_tokens=2048,
             max_num_seqs=8,
         )
-        server = ManagedProcess("qwen3.5-vllm", command, ready=self._server_is_up,
-                                startup_timeout_sec=self.settings.get("startup_timeout_sec", 600.0))
+        server = ManagedProcess(
+            "qwen3.5-vllm",
+            command,
+            ready=self._server_is_up,
+            startup_timeout_sec=self.settings.get("startup_timeout_sec", 600.0),
+        )
         await server.start()
 
     async def _server_is_up(self) -> bool:

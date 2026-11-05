@@ -13,6 +13,7 @@
 
 bench venv 로, cwd=STiTy-bench 에서 실행.
 """
+
 import argparse, copy, json, os, sys
 from pathlib import Path
 
@@ -35,7 +36,9 @@ spans = {}
 for line in open(f"{NS}/manifest.jsonl"):
     it = json.loads(line)
     scene = it["audio"].split("/")[-1].removesuffix(".wav")
-    spans.setdefault(scene, []).append((it["offset"], it["offset"] + it["duration"], it["src_lang"]))
+    spans.setdefault(scene, []).append(
+        (it["offset"], it["offset"] + it["duration"], it["src_lang"])
+    )
 
 
 def truth_of(scene, lo, hi):
@@ -60,8 +63,9 @@ def verdict_at(scene, t, kind):
 
 rows = [json.loads(l) for l in open(Path(a.run_dir) / "items.jsonl")]
 
-conds = [("none", 0.0)] + [(c, lag) for lag in (float(x) for x in a.lags.split(","))
-                           for c in ("ac", "twostage", "oracle")]
+conds = [("none", 0.0)] + [
+    (c, lag) for lag in (float(x) for x in a.lags.split(",")) for c in ("ac", "twostage", "oracle")
+]
 for cond, lag in conds:
     crows = copy.deepcopy(rows)
     kept = dropped = default_kept = 0
@@ -100,11 +104,25 @@ for cond, lag in conds:
     with open(out / "comet_inputs.jsonl", "w") as f:
         for s in sentences:
             f.write(json.dumps(s, ensure_ascii=False) + "\n")
-    json.dump({"metrics": {"longyaal_ms": ly, "longyaal_ca_ms": lyca,
-                           "kept": kept, "dropped": dropped, "default_kept": default_kept,
-                           "empty_mt": empty, "n_sentences": sum(1 for s in sentences if s["src"])},
-               "unavailable": {}},
-              open(out / "summary.json", "w"), indent=1)
-    print(f"{a.target}-{tag}: longyaal={ly and round(ly)} ca={lyca and round(lyca)} "
-          f"kept={kept} dropped={dropped} default={default_kept} empty_mt={empty}", flush=True)
+    json.dump(
+        {
+            "metrics": {
+                "longyaal_ms": ly,
+                "longyaal_ca_ms": lyca,
+                "kept": kept,
+                "dropped": dropped,
+                "default_kept": default_kept,
+                "empty_mt": empty,
+                "n_sentences": sum(1 for s in sentences if s["src"]),
+            },
+            "unavailable": {},
+        },
+        open(out / "summary.json", "w"),
+        indent=1,
+    )
+    print(
+        f"{a.target}-{tag}: longyaal={ly and round(ly)} ca={lyca and round(lyca)} "
+        f"kept={kept} dropped={dropped} default={default_kept} empty_mt={empty}",
+        flush=True,
+    )
 print("ROUTE_SIM_DONE", flush=True)

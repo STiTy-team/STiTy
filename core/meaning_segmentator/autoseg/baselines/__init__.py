@@ -13,7 +13,6 @@
 """
 
 
-
 def coarsen(pieces: list[str], target_chunk: int, spaced: bool = True) -> list[str]:
     """정책이 낸 경계 중 일부만 남겨 목표 조각 크기 `T` 에 맞춘다.
 
@@ -50,15 +49,16 @@ def coarsen(pieces: list[str], target_chunk: int, spaced: bool = True) -> list[s
     chosen: list[int] = []
     for i in range(1, k):
         ideal = total * i / k
-        best = min((j for j in range(len(cum)) if j not in chosen),
-                   key=lambda j: (abs(cum[j] - ideal), j))
+        best = min(
+            (j for j in range(len(cum)) if j not in chosen), key=lambda j: (abs(cum[j] - ideal), j)
+        )
         chosen.append(best)
     chosen.sort()
 
     out, start = [], 0
     joiner = " " if spaced else ""
     for j in chosen:
-        out.append(joiner.join(pieces[start:j + 1]))
+        out.append(joiner.join(pieces[start : j + 1]))
         start = j + 1
     out.append(joiner.join(pieces[start:]))
     return [x for x in out if x.strip()] or list(pieces)

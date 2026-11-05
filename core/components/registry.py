@@ -22,7 +22,6 @@ def discover(package: str) -> None:
 
 @dataclass(frozen=True)
 class Record:
-
     @property
     def type(self) -> str:
         return type(self).__name__.lower()
@@ -30,7 +29,6 @@ class Record:
 
 @dataclass(frozen=True)
 class Speech(Record):
-
     started_at: float
     ended_at: float
     silence_waited_out_sec: float
@@ -38,7 +36,6 @@ class Speech(Record):
 
 @dataclass(frozen=True)
 class Partial(Record):
-
     text: str
     language: str
     seq: int
@@ -46,7 +43,6 @@ class Partial(Record):
 
 @dataclass(frozen=True)
 class Transcribed(Record):
-
     original: str
     language: str
     commit_reason: str
@@ -56,7 +52,6 @@ class Transcribed(Record):
 
 @dataclass(frozen=True)
 class Translated(Record):
-
     original: str
     translation: str
     language: str
@@ -69,7 +64,6 @@ class Translated(Record):
 
 @dataclass(frozen=True)
 class Folded(Record):
-
     original: str
     translation: str
     language: str
@@ -80,7 +74,6 @@ class Folded(Record):
 
 
 class Component:
-
     SETTINGS: dict[str, tuple[str, Callable]] = {}
 
     def __init__(self, settings: dict, *, cfg):
@@ -95,9 +88,11 @@ class Component:
                 f"pipeline.{kind}: {cls.NAME!r} has no setting(s) {unknown} "
                 f"(it accepts: {sorted(cls.SETTINGS) or 'nothing'})"
             )
-        return {stored: read(options[key])
-                for key, (stored, read) in cls.SETTINGS.items()
-                if options.get(key) is not None}
+        return {
+            stored: read(options[key])
+            for key, (stored, read) in cls.SETTINGS.items()
+            if options.get(key) is not None
+        }
 
     async def load(self) -> None:
         pass
@@ -116,14 +111,17 @@ PER_CHUNK = frozenset({"detect", "hear", "transcribe"})
 def _work_methods(cls: type) -> list[str]:
     for base in cls.__mro__:
         if Component in base.__bases__:
-            return [name for name, value in vars(base).items()
-                    if not name.startswith("_") and name not in LIFECYCLE | PER_CHUNK
-                    and inspect.isfunction(value)]
+            return [
+                name
+                for name, value in vars(base).items()
+                if not name.startswith("_")
+                and name not in LIFECYCLE | PER_CHUNK
+                and inspect.isfunction(value)
+            ]
     return []
 
 
 class Registry:
-
     def __init__(self, kind: str):
         self.kind = kind
         self._entries: dict[str, type] = {}
@@ -146,8 +144,7 @@ class Registry:
     def get(self, name: str) -> type:
         if name not in self._entries:
             raise ConfigError(
-                f"unknown {self.kind}: {name!r} "
-                f"(available: {self.names() or 'none registered'})"
+                f"unknown {self.kind}: {name!r} (available: {self.names() or 'none registered'})"
             )
         return self._entries[name]
 

@@ -8,22 +8,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { api, type Machine, type WeeklyBlock } from "@/lib/api"
 import { queryKeys } from "@/lib/queries"
-import {
-  REFERENCE_WEEK_START,
-  blockRange,
-  normalizeBlocks,
-  rangeToBlocks,
-  sameBlocks,
-} from "@/lib/timetable"
+import { REFERENCE_WEEK_START, blockRange, normalizeBlocks, rangeToBlocks, sameBlocks } from "@/lib/timetable"
 
 import "./timetable-palette.css"
 
@@ -119,7 +107,15 @@ function TimetableEditor({ machine, onSaved }: { machine: Machine; onSaved: () =
   )
 }
 
-export function EditTimetableDialog({ machine, open, onOpenChange }: { machine: Machine; open: boolean; onOpenChange: (open: boolean) => void }) {
+export function EditTimetableDialog({
+  machine,
+  open,
+  onOpenChange,
+}: {
+  machine: Machine
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-6xl">

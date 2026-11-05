@@ -41,7 +41,7 @@ class Aligner:
             up = re.sub(r"[^A-Z']", "", w.upper())
             if not up:
                 continue
-            if ids:                                   # 어절 사이 구분자
+            if ids:  # 어절 사이 구분자
                 ids.append(self.vocab["|"])
                 owner.append(wi)
             for ch in up:
@@ -66,17 +66,24 @@ class Aligner:
             stay = dp
             prev = torch.cat([torch.tensor([NEG], device=dp.device), dp[:-1]])
             # 같은 라벨 반복이거나 blank 면 두 칸 건너뛰기 금지
-            skip = torch.cat([torch.tensor([NEG, NEG], device=dp.device), dp[:-2]]) \
-                if S > 2 else torch.full((S,), NEG, device=dp.device)
+            skip = (
+                torch.cat([torch.tensor([NEG, NEG], device=dp.device), dp[:-2]])
+                if S > 2
+                else torch.full((S,), NEG, device=dp.device)
+            )
             if S > 2:
                 bad = torch.tensor(
-                    [True, True] + [ext[i] == self.blank or ext[i] == ext[i - 2]
-                                    for i in range(2, S)], device=dp.device)
+                    [True, True]
+                    + [ext[i] == self.blank or ext[i] == ext[i - 2] for i in range(2, S)],
+                    device=dp.device,
+                )
                 skip = skip.masked_fill(bad, NEG)
             best = torch.stack([stay, prev, skip])
             idx = best.argmax(0)
-            dp = best.gather(0, idx.unsqueeze(0)).squeeze(0) + \
-                logprob[t, torch.tensor(ext, device=dp.device)]
+            dp = (
+                best.gather(0, idx.unsqueeze(0)).squeeze(0)
+                + logprob[t, torch.tensor(ext, device=dp.device)]
+            )
             back[t] = idx.to(torch.int8)
         s = int(torch.argmax(dp[-2:]).item()) + (S - 2)
         path = [0] * T
@@ -102,14 +109,14 @@ class Aligner:
         x = self.proc(data, sampling_rate=sr, return_tensors="pt").input_values.to(self.device)
         logits = self.model(x).logits[0].float()
         logprob = torch.log_softmax(logits, dim=-1)
-        if logprob.shape[0] < len(labels):            # 프레임보다 라벨이 많으면 불가
+        if logprob.shape[0] < len(labels):  # 프레임보다 라벨이 많으면 불가
             return None
         path = self._align(logprob, labels)
 
         frame_dur = dur / logprob.shape[0]
         ends = [0.0] * len(words)
         for t, s in enumerate(path):
-            if s % 2 == 1:                            # 실제 라벨 (blank 아님)
+            if s % 2 == 1:  # 실제 라벨 (blank 아님)
                 ends[owner[(s - 1) // 2]] = (t + 1) * frame_dur
         # 비어 있는 어절(전부 기호 등)은 앞 값을 물려받고, 단조 증가를 강제한다.
         run = 0.0

@@ -96,8 +96,10 @@ class Delivery:
             if number in self._queues.get(record.target_lang, ()):
                 self._ready[record.target_lang][number] = item
                 return self._flush()
-            if not self._participant.expects_translations \
-                    and record.target_lang in self._participant.reads:
+            if (
+                not self._participant.expects_translations
+                and record.target_lang in self._participant.reads
+            ):
                 self._enqueue(record.target_lang, number)
                 self._ready[record.target_lang][number] = item
                 return self._flush()

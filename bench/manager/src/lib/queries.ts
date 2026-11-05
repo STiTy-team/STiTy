@@ -42,8 +42,7 @@ export function useBranches(enabled = true) {
 export function useAddRun(host: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ run, configs }: { run: NewRun; configs: Configs }) =>
-      api.addRun(host, run, configs),
+    mutationFn: ({ run, configs }: { run: NewRun; configs: Configs }) => api.addRun(host, run, configs),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.machines }),
   })
 }

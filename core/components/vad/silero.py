@@ -14,7 +14,6 @@ SILERO_WINDOW_SAMPLES_AT_16K = 512
 
 
 class _ProbTap:
-
     def __init__(self, model):
         self.model = model
         self.prob = 0.0
@@ -28,7 +27,7 @@ class _ProbTap:
         return getattr(self.model, name)
 
 
-@detectors.register('silero')
+@detectors.register("silero")
 class SileroVad(Detector):
     SETTINGS = {
         "min_silence_ms": ("min_silence_ms", int),
@@ -39,9 +38,11 @@ class SileroVad(Detector):
 
     async def load(self) -> None:
         self.model_bytes = await cache.load("silero-vad", self._build_weights)
-        log.info("[LOAD] silero VAD min_silence=%dms threshold=%.2f",
-                 self.settings.get("min_silence_ms", 800),
-                 self.settings.get("threshold", 0.5))
+        log.info(
+            "[LOAD] silero VAD min_silence=%dms threshold=%.2f",
+            self.settings.get("min_silence_ms", 800),
+            self.settings.get("threshold", 0.5),
+        )
 
     async def _build_weights(self) -> bytes:
         import io
@@ -92,18 +93,22 @@ class SileroVad(Detector):
         try:
             offset = 0
             while offset + SILERO_WINDOW_SAMPLES_AT_16K <= self.buffer.size:
-                window = self.buffer[offset:offset + SILERO_WINDOW_SAMPLES_AT_16K]
+                window = self.buffer[offset : offset + SILERO_WINDOW_SAMPLES_AT_16K]
                 mark = self.iterator(torch.from_numpy(window), return_seconds=False)
-                at = ((self.consumed + offset + SILERO_WINDOW_SAMPLES_AT_16K)
-                      / audio_mod.SAMPLING_RATE)
+                at = (
+                    self.consumed + offset + SILERO_WINDOW_SAMPLES_AT_16K
+                ) / audio_mod.SAMPLING_RATE
                 if mark is not None:
                     if "start" in mark:
                         self.speech_started = max(0.0, at)
                         self.spans.append([mark["start"] / audio_mod.SAMPLING_RATE, None])
                     if "end" in mark:
                         silence = float(self.settings.get("min_silence_ms", 800)) / 1000
-                        ended = Speech(started_at=self.speech_started,
-                                       ended_at=max(0.0, at), silence_waited_out_sec=silence)
+                        ended = Speech(
+                            started_at=self.speech_started,
+                            ended_at=max(0.0, at),
+                            silence_waited_out_sec=silence,
+                        )
                         if self.spans and self.spans[-1][1] is None:
                             self.spans[-1][1] = mark["end"] / audio_mod.SAMPLING_RATE
                 if self.iterator.model.prob >= self.iterator.threshold:
@@ -117,4 +122,3 @@ class SileroVad(Detector):
             self.spans = []
             self.voiced_until = None
         return ended
-
