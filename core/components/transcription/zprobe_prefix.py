@@ -12,6 +12,7 @@ from .qwen3 import resolve_model
 
 EOS_TOKENS = (151645, 151643)
 SPECIAL = re.compile(r"<\|[^<>|]+\|>")
+WAIT = "<WAIT>"
 REPEAT_TEMPLATE = r"((.{1,12}?))(?:\2){%d,}"
 SENTENCE_HEAD = re.compile(r"^.*?[.!?…](?=\s|$)", re.S)
 
@@ -46,6 +47,7 @@ class ZprobePrefixTranscription(Transcriber):
         "flush_needs_speech": ("flush_needs_speech", bool),
         "repeat_cap": ("repeat_cap", int),
         "latin_commit_guard": ("latin_commit_guard", bool),
+        "wait_token": ("wait_token", bool),
     }
 
     model = None
@@ -208,7 +210,7 @@ class ZprobePrefixTranscription(Transcriber):
                                               int(self.settings.get("flush_max_new", 0) or 10**9))
                                           if flush else int(self.settings.get("max_new_tokens", 120))),
                 no_repeat_ngram_size=None if flush else (no_repeat or None),
-                min_new_tokens=(None if allow_eos
+                min_new_tokens=(None if allow_eos or self.settings.get("wait_token")
                                 else (int(self.settings.get("flush_min_new", 2)) or None)) if flush else None,
                 do_sample=False, pad_token_id=self._tok.eos_token_id)
         seq = o.sequences if hasattr(o, "sequences") else o
@@ -223,6 +225,12 @@ class ZprobePrefixTranscription(Transcriber):
                 new = new[:-1]
                 txt = _continuation(self._tok, ids, torch.cat([ids, new]))
             txt = SPECIAL.sub("", txt)
+            if self.settings.get("wait_token"):
+                txt = txt.replace(WAIT, "")
+                for k in range(len(WAIT) - 1, 0, -1):
+                    if txt.endswith(WAIT[:k]):
+                        txt = txt[:-k]
+                        break
             cap = int(self.settings.get("repeat_cap", 0) or 0)
             if cap:
                 txt = re.sub(REPEAT_TEMPLATE % cap, lambda m: m.group(1) * cap, txt, flags=re.S)
