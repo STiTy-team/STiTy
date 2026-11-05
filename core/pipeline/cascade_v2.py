@@ -9,9 +9,11 @@ from core.components.transcription import transcribers
 from core.components.translation import translators
 from core.components.vad import detectors
 from core.utils import langs, logging
+from core.utils.audio import MultiChannelAudio
 
 from . import pipelines, stages
-from .base import Pipeline
+from .base import Pipeline, Processor, RunsPer, Stage
+from .cascade import TranslationProcessor
 
 log = logging.getLogger(__name__)
 
@@ -42,10 +44,38 @@ async def detect_language(parts: dict, item: Transcribed) -> Transcribed:
     return dataclasses.replace(item, language=detected)
 
 
+async def identified(parts: dict, produced: list) -> list:
+    return [
+        await detect_language(parts, item) if isinstance(item, Transcribed) else item
+        for item in produced
+    ]
+
+
+class SpeechProcessor(Processor):
+    async def process(self, audio: MultiChannelAudio) -> list:
+        pcm = await enhance_audio(self.parts, self.parts["mixer"].mix(audio))
+        return await identified(self.parts, await stages.hear(self.parts, pcm))
+
+    async def finish(self) -> list:
+        return await identified(self.parts, await stages.finish(self.parts))
+
+
 @pipelines.register("cascade:v2")
 class CascadePipelineV2(Pipeline):
     REQUIRED = (transcribers,)
     OPTIONAL = (mixers, detectors, correctors, translators, langids, enhancers)
+    STAGES = (
+        Stage(
+            parts=("mixer", "enhancement", "vad", "transcription", "langid"),
+            runs_per=RunsPer.ROOM,
+            processor=SpeechProcessor,
+        ),
+        Stage(
+            parts=("correction", "translation"),
+            runs_per=RunsPer.TARGET_LANG,
+            processor=TranslationProcessor,
+        ),
+    )
 
     def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None) -> None:
         self.target_lang = target_lang
