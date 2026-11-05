@@ -21,30 +21,55 @@ Expo Go cannot run this app: microphone capture and audio routing live in a loca
 (`modules/stity-audio`), so the app always runs as a development build. Any change under
 `modules/` or `assets/fonts/` needs a rebuild; JavaScript changes reload instantly.
 
+`pnpm web` runs the same app in a browser, with microphone and speech from the browser (see
+[modules/stity-audio](modules/stity-audio/README.md)). It needs no build or install, so it works on
+an iPhone, but it can't choose earphone or speaker. The microphone only works on `https` or
+`localhost`, so a phone has to open it through a tunnel such as `pnpm start --tunnel`.
+
 | Command                                           | What it does                                                      |
 | ------------------------------------------------- | ----------------------------------------------------------------- |
 | `pnpm check`                                      | lint + typecheck + format check + tests — run before every commit |
 | `pnpm test`                                       | Jest unit tests (`*.test.ts` next to the code)                    |
+| `pnpm web`                                        | The app in a browser, served by Metro                             |
 | `pnpm run doctor`                                 | `expo-doctor`: dependency and config health                       |
 | `pnpm build:dev` / `build:preview` / `build:prod` | EAS cloud builds                                                  |
 
 ## Configuration
 
-| Variable                 | Default                              | Meaning                                                                                                                               |
-| ------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `EXPO_PUBLIC_SERVER_URL` | RunPod proxy in development only     | WebSocket origin (`wss://`; `ws://` in development only), no path — the app appends `/api/v1/ws`. Required for preview and production |
-| `EXPO_PUBLIC_API_URL`    | the WebSocket host over `http(s)`    | REST origin for accounts and records — the app appends `/api/v1`                                                                      |
-| `EXPO_PUBLIC_API_MOCKS`  | everything but `live` (none in prod) | API areas answered by mock data: a comma list, `all` or `none` — see [API layer](#api-layer-mock-or-live)                             |
-| `APP_VARIANT`            | `development`                        | `development` · `preview` · `production` — set by the EAS profile                                                                     |
-| `APP_ID`                 | `com.anonymous.stitymobile`          | Bundle id and Android package. Production builds refuse the placeholder                                                               |
+| Variable                 | Default                                   | Meaning                                                                                                                               |
+| ------------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `EXPO_PUBLIC_SERVER_URL` | `ws://localhost:8765` in development only | WebSocket origin (`wss://`; `ws://` in development only), no path — the app appends `/api/v1/ws`. Required for preview and production |
+| `EXPO_PUBLIC_API_URL`    | the WebSocket host over `http(s)`         | REST origin for accounts and records — the app appends `/api/v1`                                                                      |
+| `EXPO_PUBLIC_API_MOCKS`  | everything but `live` (none in prod)      | API areas answered by mock data: a comma list, `all` or `none` — see [API layer](#api-layer-mock-or-live)                             |
+| `APP_VARIANT`            | `development`                             | `development` · `preview` · `production` — set by the EAS profile                                                                     |
+| `APP_ID`                 | `com.anonymous.stitymobile`               | Bundle id and Android package. Production builds refuse the placeholder                                                               |
 
 Values are validated at startup in `src/config/env.ts`; a malformed URL, a URL with a path,
 cleartext in a release build, an unknown API area or a mock in production fails fast. For EAS builds, set them per environment with `eas env:create`
 instead of committing them.
 
-Each variant gets its own app id (`.dev`, `.preview` suffixes) and name, so all three can be
-installed side by side. Cleartext `ws://` and `http://` are allowed only in the development
+Each variant gets its own app id (`.dev`, `.preview` suffixes), name and URL scheme (`stity-dev`,
+`stity-preview`, `stity`), so all three can be installed side by side. Cleartext `ws://` and `http://` are allowed only in the development
 variant.
+
+### Changing the server in a development build
+
+A development build can switch servers without a rebuild. Either way the app signs out (a session
+belongs to the server that issued it), saves the address in secure storage, ignores
+`EXPO_PUBLIC_API_URL`, and restarts on the new server:
+
+- **Scan** the QR code `make server` prints when it opens a Cloudflare tunnel
+  ([server/README.md](../server/README.md#connect-a-client)). It opens the hosted web app at
+  `/dev-server?url=wss://…`, which `src/app/dev-server.tsx` handles (a development build answers
+  the same path as `stity-dev://dev-server?url=…`). Anyone can send such a link, so the app shows
+  the address and asks before it connects.
+- **Type** it in Profile → Developer → Server. `https://host` and a bare host are taken as
+  `wss://host`. _Use the build's server_ forgets it.
+
+`src/config/server-override.ts` holds the saved address and `changeServer` in
+`features/account/account-runtime.ts` switches; `resolveEnv` uses the address only in the
+development variant, so preview and production builds always talk to the server they were built
+with and show no Developer section.
 
 ## Project structure
 
@@ -193,6 +218,18 @@ vendor is plugged in with `setTelemetrySink`.
 | Both     | Peer → my earphone; me → the loudspeaker for the peer               |
 
 The mode defaults to Earphone when a headset is connected at launch.
+
+## Web hosting
+
+Every push to `main` that touches `mobile/` exports the web build and deploys it to EAS Hosting as
+the production alias (`.github/workflows/deploy-web.yml`, which needs the `EXPO_TOKEN` secret). It
+is a development build: it starts on `ws://localhost:8765`, takes its server from Profile →
+Developer or a `/dev-server?url=…` link, and answers everything but `live` from mocks. By hand:
+
+```bash
+npx expo export --platform web
+npx eas-cli deploy          # a preview URL; add --prod to move the production alias
+```
 
 ## Releasing
 

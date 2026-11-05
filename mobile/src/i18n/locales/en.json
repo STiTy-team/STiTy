@@ -130,6 +130,23 @@
     "disclaimer": "⚠ STiTy provides AI-generated translations and does not guarantee accuracy. Do not rely on it for medical, legal, or emergency communication.",
     "version": "v{{version}}"
   },
+  "developer": {
+    "section": "Developer",
+    "server": "Server",
+    "serverHint": "A wss:// or https:// address with no path, such as the one under the QR code the server prints.",
+    "connect": "Connect",
+    "resetServer": "Use the build's server",
+    "invalidServer": "Not a server address",
+    "invalidServerHint": "Enter an origin like wss://example.trycloudflare.com, without a path.",
+    "linkFailed": "This link doesn't hold a server address.",
+    "switchTitle": "Connect to another server?",
+    "switchMessage": "Your microphone audio will go to {{server}}. You'll be signed out, and the app restarts. Connect only to a server you trust.",
+    "source": {
+      "app": "Set in the app. The app restarts when you change it.",
+      "build": "From EXPO_PUBLIC_SERVER_URL. Scan the server's QR code or tap Server to change it.",
+      "fallback": "No server set, so the app looks on localhost. Scan the server's QR code or tap Server to set one."
+    }
+  },
   "about": {
     "copyright": "© 2026 STiTy. All rights reserved."
   },

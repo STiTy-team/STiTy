@@ -1,4 +1,7 @@
+import { reloadAppAsync } from 'expo';
+
 import { apiMocks, getApi, onUnauthorized, type SignInMethod, type User } from '@/api';
+import { serverOverride } from '@/config/server-override';
 import { createLogger } from '@/lib/logger';
 import { useConversationPreferences } from '@/features/conversation/conversation-runtime';
 import { useReadingPreferences } from '@/features/records/records-runtime';
@@ -44,6 +47,26 @@ export const signOut = async () => {
     .auth.signOut()
     .catch((error: unknown) => log.warn('sign-out failed', error));
   clearSession();
+};
+
+/** How long a server change waits for the old server to hear the sign-out before restarting. */
+const SIGN_OUT_GRACE_MS = 2_000;
+
+/**
+ * Development builds only: restarts the app on another server, or on the build's own with null.
+ * A session belongs to the server that issued it, so it ends first and its tokens never reach the
+ * new one; the local tokens are cleared before the old server is told, so the wait is only a grace.
+ */
+export const changeServer = async (url: string | null): Promise<void> => {
+  let grace: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    signOut(),
+    new Promise((resolve) => (grace = setTimeout(resolve, SIGN_OUT_GRACE_MS))),
+  ]);
+  clearTimeout(grace);
+  if (url) serverOverride.write(url);
+  else await serverOverride.clear();
+  await reloadAppAsync('Server changed');
 };
 
 /** Deletes the account and its records on the server, then everything STiTy keeps on the phone. */
