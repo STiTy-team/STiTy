@@ -27,6 +27,7 @@ type FakeSession = LiveSession & {
   isOpen: boolean;
   close: jest.Mock<Promise<void>, []>;
   configure: jest.Mock;
+  setRecording: jest.Mock;
   sendAudio: jest.Mock;
   logSpeech: jest.Mock;
 };
@@ -39,6 +40,7 @@ const fakeSession = (conversationId: string | null): FakeSession => {
       session.isOpen = false;
     }),
     configure: jest.fn(),
+    setRecording: jest.fn(),
     sendAudio: jest.fn(),
     logSpeech: jest.fn(),
   };
@@ -94,6 +96,7 @@ const setup = (overrides: Overrides = {}) => {
     holdToTalk: false,
     vibrate: false,
     saveRequested: true,
+    serverRecording: false,
     ...overrides.preferences,
   };
 
@@ -285,6 +288,23 @@ describe('ConversationController', () => {
     controller.applyLanguages();
 
     expect(session().configure).toHaveBeenCalledWith({ lang: 'ja', targetLang: 'ko' });
+  });
+
+  it('asks the server to record from the start when server recording is on', async () => {
+    const { controller, openSession } = setup({ preferences: { serverRecording: true } });
+    await controller.start();
+
+    expect(openSession).toHaveBeenCalledWith(expect.objectContaining({ recording: true }));
+  });
+
+  it('switches server recording on the running session', async () => {
+    const { controller, session, preferences } = setup();
+    await controller.start();
+
+    preferences.serverRecording = true;
+    controller.applyServerRecording();
+
+    expect(session().setRecording).toHaveBeenCalledWith(true);
   });
 
   it('ends: closes the socket, restores audio, clears the transcript, resumes monitoring', async () => {

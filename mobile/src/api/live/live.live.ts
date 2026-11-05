@@ -12,12 +12,13 @@ export const createLiveSession = (serverUrl: string, auth: AuthApi): LiveApi => 
 
   return {
     monitor: () => (monitor ??= new ServerMonitor(url)),
-    async open({ languages, save, conversationId, handlers }) {
+    async open({ languages, save, conversationId, recording, handlers }) {
       const token = save ? await auth.accessToken() : null;
       const session = new AsrSession(url, handlers);
       const ready = await session.open({
         ...languages,
         clientVersion: appInfo.version,
+        recording,
         ...(token
           ? { token, save: true, conversationId: conversationId ?? undefined }
           : { save: false }),
@@ -29,6 +30,7 @@ export const createLiveSession = (serverUrl: string, auth: AuthApi): LiveApi => 
         },
         sendAudio: (pcm) => session.sendAudio(pcm),
         configure: (next) => session.configure(next),
+        setRecording: (next) => session.setRecording(next),
         logSpeech: (entry) => session.logSpeech(entry),
         close: () => session.close(),
       };

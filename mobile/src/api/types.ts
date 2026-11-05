@@ -72,6 +72,8 @@ export type LiveOpenOptions = {
   save: boolean;
   /** Set when resuming, so the server appends to the same record. */
   conversationId: string | null;
+  /** Ask the server to save this phone's audio and messages for debugging; it may refuse. */
+  recording: boolean;
   handlers: AsrSessionHandlers;
 };
 
@@ -81,6 +83,7 @@ export type LiveSession = {
   readonly isOpen: boolean;
   sendAudio(pcm: ArrayBuffer): void;
   configure(languages: SessionLanguages): void;
+  setRecording(recording: boolean): void;
   logSpeech(entry: { text: string; lang: string; start: string; end: string }): void;
   /**
    * Sends `stop` and waits for the server to flush its last `final` and close, or for a short

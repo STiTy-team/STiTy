@@ -63,6 +63,7 @@ const createScriptedLive = ({ script, timing, mocked }: ScriptedOptions): LiveAp
         },
         sendAudio: () => {},
         configure: () => {},
+        setRecording: () => {},
         logSpeech: () => {},
         close: async () => {
           open = false;

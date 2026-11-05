@@ -242,6 +242,11 @@ export class ConversationController {
     this.session?.configure({ lang: myLanguage, targetLang: peerLanguage });
   }
 
+  applyServerRecording(): void {
+    if (!isInConversation(this.phase) || this.isDemo) return;
+    this.session?.setRecording(this.deps.preferences().serverRecording);
+  }
+
   applyMuted(muted: boolean): void {
     if (muted) this.speech.stop();
   }
@@ -311,7 +316,7 @@ export class ConversationController {
   private async connectAndCapture(attempt: Attempt): Promise<void> {
     const demo = this.isDemo;
     if (!this.session?.isOpen) {
-      const { myLanguage, peerLanguage, saveRequested } = this.deps.preferences();
+      const { myLanguage, peerLanguage, saveRequested, serverRecording } = this.deps.preferences();
       const { conversationId } = useConversationStore.getState();
       const generation = ++this.generation;
       const current = () => generation === this.generation;
@@ -320,6 +325,7 @@ export class ConversationController {
         languages: { lang: myLanguage, targetLang: peerLanguage },
         save: !demo && saveRequested,
         conversationId,
+        recording: !demo && serverRecording,
         handlers: {
           onPartial: (message) => current() && this.handlePartial(message),
           onFinal: (message) =>

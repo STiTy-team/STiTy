@@ -100,6 +100,7 @@ export const withMockRecording = (live: LiveApi): LiveApi => ({
       },
       sendAudio: (pcm) => session.sendAudio(pcm),
       configure: (languages) => session.configure(languages),
+      setRecording: (recording) => session.setRecording(recording),
       logSpeech: (entry) => session.logSpeech(entry),
       close: async () => {
         await session.close();

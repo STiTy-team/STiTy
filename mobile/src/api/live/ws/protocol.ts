@@ -101,11 +101,13 @@ export type StartMessage = {
   save?: boolean;
   conversationId?: string;
   clientVersion?: string;
+  /** Development builds: ask the server to save this phone's audio and messages for debugging. */
+  recording?: boolean;
 };
 
 export type ClientMessage =
   | StartMessage
-  | { type: 'config'; lang: string; targetLang: string }
+  | { type: 'config'; lang?: string; targetLang?: string; recording?: boolean }
   | { type: 'stop' }
   | { type: 'ping' }
   | { type: 'tts_log'; text: string; lang: string; start: string; end: string };

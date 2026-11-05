@@ -90,7 +90,6 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
             f"{client.host}:{client.port}" if client else "unknown",
             self.session.participant.id,
         )
-        self.recording = self.recorder.open(self.session.participant.id)
 
     async def produce_message(self) -> AsyncIterator[Message]:
         async for message in self._messages():
@@ -104,9 +103,15 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
         async for event in self.session.events():
             match event:
                 case JoinedConversation():
-                    yield ReadyMessage(conversation_id=event.conversation_id)
+                    yield ReadyMessage(
+                        conversation_id=event.conversation_id,
+                        recording=self.recording is not None,
+                    )
                 case ConversationSettingsChanged():
-                    yield ConversationConfigMessage.of(self.session.participant)
+                    yield ConversationConfigMessage.of(
+                        self.session.participant,
+                        recording=self.recording is not None,
+                    )
                 case PartialTranscript():
                     yield PartialMessage.of(event)
                 case FinalOutput():
@@ -115,6 +120,8 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
                     yield FoldMessage.of(event)
 
     async def handle_message(self, message: ClientMessage | bytes) -> None:
+        if isinstance(message, StartMessage | ConfigMessage) and message.recording is not None:
+            self._set_recording(message.recording)
         self._record(message)
         match message:
             case PingMessage():
@@ -133,6 +140,13 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
 
     async def handle_disconnect(self) -> None:
         await self.session.leave()
+
+    def _set_recording(self, on: bool) -> None:
+        if on and self.recording is None:
+            self.recording = self.recorder.open(self.session.participant.id)
+        elif not on and self.recording is not None:
+            self.recording.close()
+            self.recording = None
 
     def _record(self, message: ClientMessage | bytes) -> None:
         if self.recording is None or isinstance(message, PingMessage):

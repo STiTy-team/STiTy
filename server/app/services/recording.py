@@ -8,6 +8,8 @@ from core.utils import logging
 from core.utils.audio import SAMPLING_RATE
 from core.utils.json import dumps, write_json
 
+from core.pipeline import describe
+
 from app.config import ServerConfig
 
 log = logging.getLogger(__name__)
@@ -64,19 +66,24 @@ class RecordingService:
     def __init__(self, config: ServerConfig):
         self._settings = config.recording
         self._pipeline = config.pipeline_name
+        self._server_config = describe(config)
 
     def open(self, participant_id: str) -> SessionRecording | None:
-        if not self._settings.enabled:
+        if not self._settings.allowed:
+            log.info("Refused to record participant %s: recording is not allowed", participant_id)
             return None
         now = datetime.now()
         directory = (
-            self._settings.dir / now.strftime("%Y-%m-%d") / f"{now:%H%M%S}-{participant_id}"
+            self._settings.dir
+            / now.strftime("%Y-%m-%d")
+            / f"{now:%H%M%S}.{now.microsecond // 1000:03d}-{participant_id}"
         )
         recording = SessionRecording(
             directory,
             {
                 "participantId": participant_id,
                 "pipeline": self._pipeline,
+                "serverConfig": self._server_config,
                 "sampleRate": SAMPLING_RATE,
                 "startedAt": now.isoformat(timespec="seconds"),
             },

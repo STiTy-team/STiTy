@@ -68,16 +68,19 @@ Run it in tmux so it outlives your terminal (`.claude/rules/long-jobs-in-tmux.md
 
 ## Recordings
 
-Every connection is saved to `server/logs/recordings/<date>/<time>-<participant id>/` when
-`STITY_RECORDING__ENABLED=true`. `scripts/server/run.sh` turns it on for `STAGE=dev` unless the
-variable is already set; otherwise it is off. `STITY_RECORDING__DIR` moves the folder.
-`server/logs/` is gitignored.
+A client asks for recording with `recording: true` in `start` or `config` (the mobile app's
+Developer → Record on server switch in conversation settings, development builds only), and can turn
+it off again mid-conversation. The server records only when `STITY_RECORDING__ALLOWED=true`;
+`scripts/server/run.sh` sets it for `STAGE=dev` unless it is already set, otherwise requests are
+refused and `ready`/`config_ok` answer `recording: false`. Each time recording turns on it writes a
+new folder, `server/logs/recordings/<date>/<time>-<participant id>/`. `STITY_RECORDING__DIR` moves
+the folder. `server/logs/` is gitignored.
 
 | File | What |
 |---|---|
-| `audio.wav` | Every PCM frame the client sent, 16 kHz mono s16le |
+| `audio.wav` | Every PCM frame the client sent while recording, 16 kHz mono s16le |
 | `events.jsonl` | Every JSON message in both directions except `ping`: `{"t", "audioSeconds", "direction": "in"\|"out", "message"}`. `t` is seconds since the connection opened, `audioSeconds` how much audio had arrived by then |
-| `meta.json` | Participant id, pipeline file name, start time; end time and audio length are added when the connection closes |
+| `meta.json` | Participant id, pipeline file name, the `serverConfig` the client got in `hello`, start time; end time and audio length are added when recording stops |
 
 The conversation id is in the `ready` message. Replaying `audio.wav` against another pipeline and
 comparing its finals with the `out` messages here is the intended test use.

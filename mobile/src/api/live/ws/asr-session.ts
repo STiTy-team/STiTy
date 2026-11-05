@@ -118,6 +118,11 @@ export class AsrSession {
     this.connection?.send({ type: 'config', lang, targetLang });
   }
 
+  /** Starts or stops the server's debug recording of the running stream. */
+  setRecording(recording: boolean): void {
+    this.connection?.send({ type: 'config', recording });
+  }
+
   sendAudio(pcm: ArrayBuffer): void {
     this.connection?.sendBinary(pcm);
   }

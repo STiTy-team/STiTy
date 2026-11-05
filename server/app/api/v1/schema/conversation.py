@@ -29,6 +29,7 @@ class StartMessage(LanguageMessage):
     lang: str = "auto"
     target_lang: str = ""
     lang_map: dict | None = None
+    recording: bool = False
 
 
 class ConfigMessage(LanguageMessage):
@@ -36,6 +37,7 @@ class ConfigMessage(LanguageMessage):
     lang: str | None = None
     target_lang: str | None = None
     lang_map: dict | None = None
+    recording: bool | None = None
 
 
 class FinishMessage(Message):
@@ -68,6 +70,7 @@ class ReadyMessage(Message):
     type: Literal["ready"] = "ready"
     message: str = "Ready to receive audio"
     conversation_id: ConversationId
+    recording: bool
 
 
 class ConversationConfigMessage(Message):
@@ -75,13 +78,15 @@ class ConversationConfigMessage(Message):
     lang: str
     target_lang: str
     lang_map: dict[str, list[str]]
+    recording: bool
 
     @classmethod
-    def of(cls, participant: Participant) -> Self:
+    def of(cls, participant: Participant, recording: bool) -> Self:
         return cls(
             lang=participant.lang or "auto",
             target_lang=participant.target_lang,
             lang_map={source: list(targets) for source, targets in participant.lang_map.items()},
+            recording=recording,
         )
 
 

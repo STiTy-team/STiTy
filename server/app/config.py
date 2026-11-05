@@ -32,7 +32,7 @@ class ServerSettings(BaseModel):
 
 
 class RecordingSettings(BaseModel):
-    enabled: bool = False
+    allowed: bool = False
     dir: Path = get_project_root() / "server" / "logs" / "recordings"
 
 

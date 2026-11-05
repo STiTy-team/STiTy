@@ -7,6 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { goBack, goHome } from '@/components/go-back';
 import { IconButton } from '@/components/icon-button';
 import { ListRow, ListSection } from '@/components/list';
+import { appInfo } from '@/config/app-info';
 import { ScreenHeader } from '@/components/screen-header';
 import { LanguageList } from '@/features/conversation/components/language-list';
 import { OutputModeControl } from '@/features/conversation/components/output-mode-control';
@@ -30,6 +31,7 @@ export const ConversationSettingsScreen = () => {
   const endConversation = useEndConversation();
   const phase = useConversationStore((state) => state.phase);
   const muted = useConversationPreferences((state) => state.muted);
+  const serverRecording = useConversationPreferences((state) => state.serverRecording);
   const addOns = useConversationPreferences(
     useShallow((state): AddOns => ({
       holdToTalk: state.holdToTalk,
@@ -91,6 +93,20 @@ export const ConversationSettingsScreen = () => {
             </ListRow>
           ))}
         </ListSection>
+        {appInfo.variant === 'development' && (
+          <ListSection title={t('developer.section')}>
+            <ListRow
+              title={t('developer.serverRecording')}
+              subtitle={t('developer.serverRecordingHint')}
+            >
+              {toggle(
+                serverRecording,
+                (on) => useConversationPreferences.getState().setServerRecording(on),
+                t('developer.serverRecording'),
+              )}
+            </ListRow>
+          </ListSection>
+        )}
         <ListSection footer={t('present.hint')}>
           <ListRow title={t('present.start')} chevron onPress={() => router.replace('/present')} />
         </ListSection>
