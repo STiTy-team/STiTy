@@ -5,11 +5,13 @@ set -euo pipefail
 
 port="${1:-8765}"
 web="${STITY_WEB_URL:-https://stity-mobile-preview.expo.app}"
-qr_file="$(cd "$(dirname "$0")/../.." && pwd)/qr"
+root="$(cd "$(dirname "$0")/../.." && pwd)"
+qr_file="$root/qr"
+export PATH="$PATH:$root/.bin"
 
 if ! command -v cloudflared >/dev/null; then
-  echo "cloudflared not found: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/" >&2
-  exit 1
+  echo "[tunnel] cloudflared not found, downloading it into .bin/"
+  bash "$root/scripts/server/install-cloudflared.sh"
 fi
 
 log="$(mktemp -t stity-tunnel.XXXXXX)"
