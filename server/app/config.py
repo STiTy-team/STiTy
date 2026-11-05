@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic import BaseModel
 from pydantic_settings import (
     BaseSettings,
@@ -16,9 +18,17 @@ BASE_FILE = CONFIG_DIR / "application.yml"
 LOCAL_OVERLAY = CONFIG_DIR / "application.local.yml"
 
 
+class CorsSettings(BaseModel):
+    allow_origins: list[str] = ["http://localhost:8081"]
+    allow_origin_regex: str | None = None
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
+
+
 class ServerSettings(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8765
+    cors: CorsSettings = CorsSettings()
 
 
 class StitySettings(BaseModel):
