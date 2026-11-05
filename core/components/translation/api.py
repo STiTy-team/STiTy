@@ -56,8 +56,11 @@ class ApiTranslation(Translator):
         log.info("[LOAD] api translation %s at %s", self.model, self.url)
 
     async def close(self) -> None:
-        await self.client.aclose()
         log.info("[USAGE] calls=%d failed=%d cost_usd=%.4f", self.calls, self.failed, self.cost_usd)
+        try:
+            await self.client.aclose()
+        except RuntimeError:
+            pass
 
     async def translate(self, text: str, target_lang: str,
                         source_lang: str | None = None,
