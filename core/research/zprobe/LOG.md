@@ -966,3 +966,152 @@ chains/prefix.sh: build_prefix.py asks Qwen3-8B (vLLM) for a simultaneous-interp
 phrase by phrase, an addition per phrase (may be empty); rows audio[0:t] -> additions so far, no <SEG>; adapter prefix1;
 stream_bench.py --mode prefix appends every decode's text at once (token streaming, never revised).
 chains/alignatt.sh (after prefix.sh): stream_bench.py --mode alignatt on segconnx, no retraining.
+
+## 2026-11-05 ~ 11-06: label redesign against the web hallucination (WAIT -> delta -> lag-sampled delta), fused-LID slot resets, api-MT cascade baseline
+
+Driver: grpoceren in the web deployment emits memorized FLEURS news sentences over noisy silence.
+Mechanism (confirmed on web logs + a purpose-built torture set): faint speech-shaped noise keeps a
+silero span open -> 3s no-emission stall forces a flush -> `flush_min_new=2` forces >=2 tokens ->
+the model, trained only on rows that end with text, has no legal "nothing to say" and emits from
+memory. Root cause is the supervision: every training row ends, so EOS doubles as "sentence looks
+complete" (wrong mid-utterance) and "nothing to emit" (right). The fix has to be the label, not a
+decode guard.
+
+**Torture set** (`/home/mobility/stity-datasets/torture-261105/`): northstar scene1/2 with 8 spans
+x 6s of 80ms frame-shuffled faint speech (3-12% amplitude) inserted. Gaussian noise does not
+reproduce (silero rejects it all); shuffled speech opens 8/8 spans. Metric: `gap` = finals committed
+inside the inserted spans (no real content there, so any text is invented), split by stream - `asr`
+(qwen-seg's own transcription hallucination, adapter-independent, 14 on every model) vs adapter
+ko/en. Baseline grpoceren: adapter gap 36, memorized sentences present. Driver/builder:
+session scratchpad torture_{build,drive}.py.
+
+### v9w: literal <WAIT> terminal on every row - rejected (absorbing state)
+
+Every row ends in literal `<WAIT>` (boundary rows `<SEG><WAIT>`); decoder strips it and treats
+WAIT-only steps as no-emission; no new vocab so the prefix8b LoRA recipe is unchanged (commit
+77228910, builder build_prefix9w.py). Two findings:
+
+- **load_best trap**: val_big_local (en-en dictation) does not measure this task - eval_loss
+  bottomed at step 400/6332 and rose monotonically after, so `--load_best` merged a 6%-trained
+  adapter (ko 0.593). All later runs use `--load_best 0` and merge the last checkpoint.
+- ck6332: memorized-sentence hallucination 0 (design goal reached) but WAIT became absorbing on
+  speech - 80k text rows oversupervised "after text, wait": utterances die after one fragment,
+  2/48 reference segments swallowed whole, vad commit share 0.026 -> 0.004, northstar ko
+  0.748 -> 0.680 / en 0.663 -> 0.598, en latency 1421 -> 1770. Torture gap 45 = asr 14 + adapter 31
+  (vs 36): scrambled speech is out of training distribution, so the noise axis barely moved.
+
+### v9d: delta labels - the row is (audio, committed cond, this step's increment)
+
+Train/inference form finally matches: a row is (audio[0:t], cond = header + committed text, target =
+only what this step adds, possibly empty). qwen3_asr_sft.py gained a `cond` field appended to the
+chat-template prefix so the collator's prefix mask covers it (500-row token-boundary check: 0
+mismatches). An empty delta = immediate EOS = legal no-emission, supervised directly over mid-phrase
+cuts and silence tails - no WAIT token, no wait_token decode flag, no stall_flush, no min_new.
+Corpus 98,336 rows (commit 9a8b47cc, build_prefix9d.py): boundary deltas 29,990 / empty-addition
+boundaries 7,045 / mid-phrase empties 10,903 / silence tails 3,846 / <SEG> boundaries 5,451 +
+41,101 carried v8b rows (plain fulls, kspon, verbatim, concat SEG pairs); 60,205 single-audio cut
+rows and old silence rows dropped. Empty deltas ~22% of the corpus - capped deliberately after the
+v9w lesson.
+
+Northstar: ko 0.728 / 2578ms, en 0.650 / 2029ms - quality -0.022 both directions and latency
++600ms vs grpoceren, commit_reasons prefix 0.923. Torture adapter gap 16 (36 -> 16), memorized 1.
+So the hallucination axis halved but the model went conservative.
+
+**Where the -0.022 lives**: output/reference length ratio median 0.951 (grpoceren) -> 0.794, empty
+segments 1 -> 3, win/loss 20/20 symmetric - the mean drop is entirely an omission tail, not diffuse
+degradation. A controlled probe on the three dead segments (same audio, cond clean) kills both easy
+hypotheses: with the trailing silence attached the model emits everything (3/3), trimmed/mid-cut it
+waits - and the control model behaves identically, and a 0.5s-step streaming replay also emits 3/3.
+The live kills are in the events: (a) segs 10/35 - the ko head slid into English passthrough
+mid-slot ("와우 지은 you're such a lifesaver") and the dedup router folded it against the en
+verbatim stream, net ko output empty; (b) seg 42 - an empty decode inside the slot
+(UTTERANCE-RETRY). Both only reproduce with a polluted cond (previous commits + carry in the slot):
+the off-policy cond gap (train cond = gold cumulative, inference cond = own emissions) that v8b
+always had, amplified because delta training makes the model lean on cond much harder.
+
+### v9x: noise rows - rejected (silence collapse), but the axis works
+
+5,046 rows synthesized from training recordings (time-reversed + 3-utterance babble, peak 3-12%,
+generator deliberately different from the eval set's frame shuffle) labelled empty (commit
+5377fa93). Northstar ko 0.455 / en 0.542, 14/48 segments empty, length ratio 0.283: reversed/babble
+audio is spectrally too close to real speech, so "speech-shaped -> silence" generalized onto real
+speech - the v9w disease through the noise route. Torture adapter gap did fall further (16 -> 10),
+so the material works on its target; the lesson is separability (or a few hundred rows, not 5k).
+Noise-side mitigation is being taken by the denoising team; the training line drops noise rows.
+Ops note: the first attempt died on ENOSPC - each SFT run leaves a ~70G HF datasets preprocessing
+cache; clear ~/.cache/huggingface/datasets/json between runs.
+
+### GRPO on v9d (grpo_prefix.py, grpoceren recipe, policy = prefix9d_full)
+
+Arm A = the grpoceren recipe unchanged (400 steps, bilingual 25% transcription share): ko
+0.730/2765, en 0.638/1964. Arm B = `--lam 0.1` (latency penalty doubled) `--sil_frac 0.25` (25% of
+rollouts get a 2s silence tail so kappa punishes emission past real audio - the latency pressure
+cannot pay for itself over silence): ko 0.738/2461, en 0.646/1892. **B beats A on every axis**;
+both cut the torture adapter gap to 12. But doubling the latency penalty recovered only ~120 of the
++600ms: the conservatism is baked by SFT, not an operating point GRPO can move.
+
+### Fused acoustic LID + slot resets (commit 439f21aa)
+
+The live path had no LID at all (the router is pure text folding). Post-hoc 2-stage LID (script
+ratio -> whisper-small) on the 283 commit windows of the 9d run: 0.883, 33 errors - 19 from the
+text stage (window straddles a switch, or the transcriber itself wrote the wrong language: English
+transliterated into Hangul defeats any script ratio with full confidence), 11 acoustic (mostly
+interjections), 23/33 within 2s of a true switch. Candidates on identical windows: whisper 0.910
+overall / 0.762 short-commit; phonotactics (wav2vec2-lv-60-espeak-cv-ft phone CTC decoded through
+vocab.json - the tokenizer's phonemizer backend is bypassed - scored by naive Bayes over FLEURS-
+fitted phone unigrams, build_phone_profiles.py) 0.876 / 0.912 - exactly complementary; MMS-LID-126
+0.890 / 0.667 rejected. **Fusion (short window -> phonotactics, else whisper, no text stage): 0.922
+overall, 0.901 near switches**; when the two judges agree they are right 0.975 of the time, so the
+irreversible action (slot reset) requires agreement. Hysteresis sim: k=1 detects 69/72 switches
+(14 false, 3.0s median delay); k>=2 is too slow for the ~3s window before the first polluted commit.
+
+`zprobe_prefix` gained `lid_slot_reset`: every decode step judges the trailing 2.5s window; an
+agreed language switch commits the pending head (`commitReason: lid`) and resets the slot keeping a
+1.5s audio tail - cond cannot carry the previous language into the next utterance. Gating the model
+on LID (run-only-when-judged) was considered and rejected: a wrong verdict would delete content
+outright, the judgment delay would tax every commit, and in the dual-head design both heads must
+run regardless; dedup likewise stays (proof-based deletion - a wrong LID verdict can never eat
+content, a wrong gate would).
+
+Northstar A/B: no regression anywhere, lid commits 0.3-0.8%. 9d+lid ko 0.736 / en 0.651 (empty
+segs 3 -> 1); ceren+lid ko 0.749 / en 0.667, en latency 1421 -> **1360** - a free win on the
+production model. **grpoB+lid: ko 0.764** / 2520, en 0.647 / 1758, torture adapter gap **11**,
+memorized 0 - the 9d family passes the ko gate (0.750) and beats ceren+lid ko; remaining deficit
+en -0.020 and +500ms latency.
+
+### v10 (in flight): lag-sampled deltas - catch-up is supervised
+
+v9d taught exactly two behaviours: at a phrase end with an up-to-date cond, emit that phrase;
+anywhere else, silence. Live decoding at 0.5s cadence is almost always one phrase behind, and that
+state (backlog pending, audio mid-next-phrase) matches only the "wait" rows - so the model defers
+(+600ms) and fragments at VAD close, where `flush_sentence_cut` (a fence against min_new-era flush
+run-ons that v9d-family models no longer need) additionally clips legitimate multi-sentence backlog.
+v10 (commit 26d35de4, build_prefix10.py): emission rows sample a lag L in {1,2} - cond stops L
+phrases short of what the audio supports, target = the joined backlog - cut at phrase ends AND
+mid-phrase; silence tails come in both forms (cond complete -> empty; cond behind -> emit the
+remainder). Empty deltas fall out of the sampling (20% of delta rows, was 30%). 113,281 rows:
+boundary 29,990 / boundary_empty 7,045 / catchup_mid 12,803 / catchup_end 7,492 / wait_mid 5,553 /
+sil_end 2,174 / sil_catchup 1,672 / seg 5,451 + 41,101 carried. Bench pending: v10+lid and a
+flush_sentence_cut-off variant, then GRPO-B on top if it holds.
+
+### api-MT cascade baseline (gpt-6-luna over the Letsur gateway)
+
+asr.qwen-seg-koen+mt.gpt-6-luna (api translation part, reasoning_effort low, 1 context turn),
+northstar: ko 0.700 / LongYAAL 2548 / CA 5917, en 0.725 / 2611 / 5517. The en ceiling (0.725) is
+far above every local arm (best 0.667) - the gap is translation quality into English, not ASR;
+ko 0.700 is below even 9d. CA latency ~5.5-5.9s (API round trips) is 2.5-3.5x the adapter path,
+so this is a quality reference line, not a deployment candidate.
+
+Scoreboard (northstar, +lid where marked; gap = torture adapter stream):
+
+| arm | ko COMET/LongYAAL | en COMET/LongYAAL | gap | memorized |
+|---|---|---|---|---|
+| grpoceren (prod) | 0.748 / 1970 | 0.663 / 1421 | 36 | yes |
+| ceren+lid | 0.749 / 1990 | 0.667 / 1360 | ~36 | yes |
+| v9w ck6332 | 0.680 / 2060 | 0.598 / 1770 | 31 | 0 |
+| v9d | 0.728 / 2578 | 0.650 / 2029 | 16 | 1 |
+| v9d+lid | 0.736 / 2881 | 0.651 / 1902 | 16 | 1 |
+| v9x | 0.455 / 3053 | 0.542 / 4080 | 10 | 0 |
+| grpoB | 0.738 / 2461 | 0.646 / 1892 | 12 | 0 |
+| **grpoB+lid** | **0.764 / 2520** | 0.647 / 1758 | **11** | **0** |
+| gpt-6-luna cascade | 0.700 / 2548 | 0.725 / 2611 | - | - |
