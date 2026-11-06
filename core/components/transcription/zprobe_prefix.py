@@ -3,12 +3,16 @@ import re
 from core.utils import audio as audio_mod
 from core.utils import cache
 from core.utils import langs
+from core.utils import lid
+from core.utils import logging
 from core.utils import timing
 
 from . import transcribers
 from ..registry import Speech, Translated
 from .base import Transcriber
 from .qwen3 import resolve_model
+
+log = logging.getLogger(__name__)
 
 EOS_TOKENS = (151645, 151643)
 SPECIAL = re.compile(r"<\|[^<>|]+\|>")
@@ -48,6 +52,10 @@ class ZprobePrefixTranscription(Transcriber):
         "repeat_cap": ("repeat_cap", int),
         "latin_commit_guard": ("latin_commit_guard", bool),
         "wait_token": ("wait_token", bool),
+        "lid_slot_reset": ("lid_slot_reset", bool),
+        "lid_profiles": ("lid_profiles", str),
+        "lid_window_sec": ("lid_window_sec", float),
+        "lid_keep_sec": ("lid_keep_sec", float),
     }
 
     model = None
@@ -61,6 +69,11 @@ class ZprobePrefixTranscription(Transcriber):
 
     async def load(self) -> None:
         self.model = await cache.load(("zprobe-prefix", self.settings["model_path"]), self._build_model)
+        self._lid = None
+        if self.settings.get("lid_slot_reset"):
+            profiles = self.settings.get("lid_profiles", "models/zprobe/data/lid_phone_profiles.json")
+            self._lid = await cache.load(("fused-lid", profiles),
+                                         lambda: lid.FusedLid.build(profiles))
 
     async def _build_model(self):
         import torch
@@ -96,6 +109,7 @@ class ZprobePrefixTranscription(Transcriber):
         self._raw = {t: "" for t in self._targets}
         self._decoded_samples = 0
         self._last_emit_samples = 0
+        self._slot_lang = None
 
     def _in_speech(self) -> bool:
         spans = getattr(self._vad, "spans", None)
@@ -121,6 +135,24 @@ class ZprobePrefixTranscription(Transcriber):
         first = int(float(self.settings.get("first_sec", 1.0)) * audio_mod.SAMPLING_RATE)
         if self._wav.shape[0] < first or self._wav.shape[0] - self._decoded_samples < step:
             return []
+        if self._lid is not None and self._in_speech():
+            window = int(float(self.settings.get("lid_window_sec", 2.5)) * audio_mod.SAMPLING_RATE)
+            verdict, agree = self._lid.verdict(self._wav[-window:])
+            if verdict and agree and self._slot_lang is None:
+                self._slot_lang = verdict
+            elif verdict and agree and verdict != self._slot_lang:
+                prev = self._slot_lang
+                self._slot_lang = verdict
+                if any(self._raw.values()):
+                    out = self._emit(self._decode(final=False), "lid")
+                    keep = int(float(self.settings.get("lid_keep_sec", 1.5)) * audio_mod.SAMPLING_RATE)
+                    tail = self._wav[-keep:] if keep else self._wav[:0]
+                    self._reset_utterance()
+                    self._wav = tail
+                    self._slot_lang = verdict
+                    log.info("[SLOT-RESET] cause=lid from=%s to=%s keep_sec=%.1f",
+                             prev, verdict, keep / audio_mod.SAMPLING_RATE)
+                    return out
         stall = float(self.settings.get("stall_flush_sec", 0) or 0)
         force = bool(stall) and (self._wav.shape[0] - self._last_emit_samples
                                  >= int(stall * audio_mod.SAMPLING_RATE))
