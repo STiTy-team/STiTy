@@ -130,6 +130,25 @@
     "disclaimer": "⚠ STiTy는 AI 번역을 제공하며 정확성을 보장하지 않습니다. 의료, 법률, 응급 상황에는 사용하지 마세요.",
     "version": "v{{version}}"
   },
+  "developer": {
+    "section": "개발자",
+    "serverRecording": "서버에 녹음",
+    "serverRecordingHint": "디버깅을 위해 서버가 이 휴대폰의 오디오와 모든 메시지를 저장해요. 녹음을 허용한 서버에서만 저장돼요.",
+    "server": "서버",
+    "serverHint": "경로 없이 wss:// 또는 https:// 주소를 입력해 주세요. 서버가 출력한 QR 코드 아래의 주소를 쓰면 돼요.",
+    "connect": "연결",
+    "resetServer": "빌드 기본 서버 사용",
+    "invalidServer": "서버 주소가 아니에요",
+    "invalidServerHint": "wss://example.trycloudflare.com 처럼 경로 없는 주소를 입력해 주세요.",
+    "linkFailed": "이 링크에는 서버 주소가 없어요.",
+    "switchTitle": "다른 서버에 연결할까요?",
+    "switchMessage": "마이크 오디오가 {{server}} 서버로 전송돼요. 로그아웃되고 앱이 다시 시작돼요. 신뢰할 수 있는 서버에만 연결해 주세요.",
+    "source": {
+      "app": "앱에서 설정했어요. 변경하면 앱이 다시 시작돼요.",
+      "build": "EXPO_PUBLIC_SERVER_URL 값을 사용해요. 바꾸려면 서버의 QR 코드를 스캔하거나 서버를 탭해 주세요.",
+      "fallback": "설정된 서버가 없어서 localhost에서 찾아요. 서버의 QR 코드를 스캔하거나 서버를 탭해 설정해 주세요."
+    }
+  },
   "about": {
     "copyright": "© 2026 STiTy. All rights reserved."
   },

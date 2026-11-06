@@ -130,6 +130,25 @@
     "disclaimer": "⚠ STiTy fournit des traductions générées par IA et n'en garantit pas l'exactitude. Ne l'utilisez pas pour des communications médicales, juridiques ou d'urgence.",
     "version": "v{{version}}"
   },
+  "developer": {
+    "section": "Développeur",
+    "serverRecording": "Enregistrer sur le serveur",
+    "serverRecordingHint": "Le serveur enregistre l'audio de ce téléphone et tous les messages pour le débogage. Seuls les serveurs qui l'autorisent enregistrent.",
+    "server": "Serveur",
+    "serverHint": "Une adresse wss:// ou https:// sans chemin, comme celle sous le code QR affiché par le serveur.",
+    "connect": "Se connecter",
+    "resetServer": "Utiliser le serveur du build",
+    "invalidServer": "Adresse de serveur non valide",
+    "invalidServerHint": "Saisissez une origine comme wss://example.trycloudflare.com, sans chemin.",
+    "linkFailed": "Ce lien ne contient pas d'adresse de serveur.",
+    "switchTitle": "Se connecter à un autre serveur ?",
+    "switchMessage": "L'audio de votre micro sera envoyé à {{server}}. Vous serez déconnecté et l'app redémarrera. Connectez-vous uniquement à un serveur de confiance.",
+    "source": {
+      "app": "Défini dans l'app. L'app redémarre quand vous le modifiez.",
+      "build": "Provient de EXPO_PUBLIC_SERVER_URL. Scannez le code QR du serveur ou touchez Serveur pour le modifier.",
+      "fallback": "Aucun serveur défini : l'app cherche donc sur localhost. Scannez le code QR du serveur ou touchez Serveur pour en définir un."
+    }
+  },
   "about": {
     "copyright": "© 2026 STiTy. Tous droits réservés."
   },

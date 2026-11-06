@@ -130,6 +130,25 @@
     "disclaimer": "⚠ STiTyはAI翻訳を提供しており、正確性を保証しません。医療・法律・緊急時の通信には使用しないでください。",
     "version": "v{{version}}"
   },
+  "developer": {
+    "section": "開発者",
+    "serverRecording": "サーバーに録音",
+    "serverRecordingHint": "デバッグのため、サーバーがこのスマートフォンの音声とすべてのメッセージを保存します。録音を許可したサーバーでのみ保存されます。",
+    "server": "サーバー",
+    "serverHint": "パスのない wss:// または https:// のアドレスを入力してください。サーバーが表示する QR コードの下にあるアドレスなどです。",
+    "connect": "接続",
+    "resetServer": "ビルドのサーバーを使う",
+    "invalidServer": "サーバーのアドレスではありません",
+    "invalidServerHint": "wss://example.trycloudflare.com のように、パスなしで入力してください。",
+    "linkFailed": "このリンクにはサーバーのアドレスが含まれていません。",
+    "switchTitle": "別のサーバーに接続しますか？",
+    "switchMessage": "マイクの音声が {{server}} に送信されます。ログアウトされ、アプリが再起動します。信頼できるサーバーにのみ接続してください。",
+    "source": {
+      "app": "アプリで設定しました。変更するとアプリが再起動します。",
+      "build": "EXPO_PUBLIC_SERVER_URL の値です。変更するには、サーバーの QR コードをスキャンするか、「サーバー」をタップしてください。",
+      "fallback": "サーバーが未設定のため、localhost を探します。サーバーの QR コードをスキャンするか、「サーバー」をタップして設定してください。"
+    }
+  },
   "about": {
     "copyright": "© 2026 STiTy. All rights reserved."
   },

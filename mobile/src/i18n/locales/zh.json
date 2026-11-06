@@ -130,6 +130,25 @@
     "disclaimer": "⚠ STiTy 提供 AI 生成的翻译，不保证准确性。请勿用于医疗、法律或紧急通信。",
     "version": "v{{version}}"
   },
+  "developer": {
+    "section": "开发者",
+    "serverRecording": "在服务器上录音",
+    "serverRecordingHint": "为便于调试，服务器会保存此手机的音频和所有消息。只有允许录音的服务器才会录音。",
+    "server": "服务器",
+    "serverHint": "输入不含路径的 wss:// 或 https:// 地址，例如服务器打印的二维码下方的地址。",
+    "connect": "连接",
+    "resetServer": "使用构建内置的服务器",
+    "invalidServer": "不是服务器地址",
+    "invalidServerHint": "请输入类似 wss://example.trycloudflare.com 的地址，不要包含路径。",
+    "linkFailed": "此链接不包含服务器地址。",
+    "switchTitle": "要连接到其他服务器吗？",
+    "switchMessage": "你的麦克风音频将发送到 {{server}}。你将被退出登录，应用会重新启动。请只连接你信任的服务器。",
+    "source": {
+      "app": "已在应用中设置。更改后应用会重新启动。",
+      "build": "来自 EXPO_PUBLIC_SERVER_URL。要更改，请扫描服务器的二维码或点按“服务器”。",
+      "fallback": "未设置服务器，因此应用会查找 localhost。请扫描服务器的二维码或点按“服务器”进行设置。"
+    }
+  },
   "about": {
     "copyright": "© 2026 STiTy. 保留所有权利。"
   },

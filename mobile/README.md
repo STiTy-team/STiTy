@@ -190,8 +190,8 @@ settings, kept in `conversation-preferences.ts`; the controller reads them per c
 translation. **Present mode** (`/present`) shows the same conversation in landscape for a
 mirrored TV or projector. It runs on top of the live screen, so the session never restarts; while
 it shows, hold to talk is ignored. Its controls are the live screen's `SessionControls` on a dark
-floating bar, so it connects, retries and resumes the same way, and they stay up while not
-recording. **The intro** (Profile → About) is a scripted session: `getIntroLive()` replays
+floating bar, so it connects, retries and resumes the same way. A tap on the screen shows or hides
+them; they come up by themselves whenever recording stops. **The intro** (Profile → About) is a scripted session: `getIntroLive()` replays
 `INTRO_SCRIPT` through the same `open()` as a real conversation, with no server or microphone, and
 pauses at its end; resuming plays it again. The mocked `live` area uses the same script player. Turning sideways needs `expo-screen-orientation`, so the native app
 allows rotation and the JavaScript side locks portrait at launch.
