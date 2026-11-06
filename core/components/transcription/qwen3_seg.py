@@ -23,7 +23,6 @@ PARTIAL_MIN_INTERVAL_SEC = 0.12
 KEEP_AFTER_SPEECH_SEC = 0.1
 RETRY_LEAD_PAD_SEC = 0.2
 PREROLL_SEC = 1.0
-GATE_MIN_VOICE_SEC = 0.1
 MAX_AUDIO_ACCUM_SEC = 90.0
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
@@ -430,7 +429,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if voiced_until is None:
             return False
         chunk_start = (self._fed_samples - chunk_samples) / audio_mod.SAMPLING_RATE
-        return voiced_until <= chunk_start + GATE_MIN_VOICE_SEC
+        return voiced_until <= chunk_start
 
     def _hold_preroll(self, chunk: np.ndarray) -> None:
         self._preroll.append(chunk)
