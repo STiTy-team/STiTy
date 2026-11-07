@@ -428,6 +428,8 @@ def parse_args():
 
     # DataLoader
     p.add_argument("--num_workers", type=int, default=8)
+    p.add_argument("--preproc_workers", type=int, default=1,
+                   help="num_proc for the offline preprocessing map; falls back to single-process if the closure fails to pickle")
     p.add_argument("--pin_memory", type=int, default=1)
     p.add_argument("--persistent_workers", type=int, default=1)
     p.add_argument("--prefetch_factor", type=int, default=4)
@@ -545,10 +547,14 @@ def main():
                 lambda ex, b=_base: {"audio": resolve_audio(ex["audio"], b)}
             )
 
-    ds = raw_ds.map(
-        make_preprocess_fn_with_features(processor, sampling_rate=args_cli.sr),
-        remove_columns=raw_ds["train"].column_names,
-    )
+    _pre_fn = make_preprocess_fn_with_features(processor, sampling_rate=args_cli.sr)
+    _pre_cols = raw_ds["train"].column_names
+    try:
+        ds = raw_ds.map(_pre_fn, remove_columns=_pre_cols,
+                        num_proc=args_cli.preproc_workers if args_cli.preproc_workers > 1 else None)
+    except Exception as _e:  # noqa: BLE001
+        print(f"[preproc] num_proc={args_cli.preproc_workers} failed ({_e}); single-process fallback", flush=True)
+        ds = raw_ds.map(_pre_fn, remove_columns=_pre_cols)
 
     if args_cli.silence_samples > 0:
         default_prompt = raw_ds["train"][0].get("prompt", "") if len(raw_ds["train"]) > 0 else ""
