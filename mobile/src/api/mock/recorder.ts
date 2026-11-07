@@ -97,12 +97,16 @@ export const withMockRecording = (live: LiveApi): LiveApi => ({
     return {
       conversationId,
       roomCode: session.roomCode,
+      participantId: session.participantId,
       get isOpen() {
         return session.isOpen;
       },
       sendAudio: (pcm) => session.sendAudio(pcm),
       configure: (languages) => session.configure(languages),
       setRecording: (recording) => session.setRecording(recording),
+      setMic: (participantId, canSpeak) => session.setMic(participantId, canSpeak),
+      setAllMics: (canSpeak) => session.setAllMics(canSpeak),
+      removeParticipant: (participantId) => session.removeParticipant(participantId),
       logSpeech: (entry) => session.logSpeech(entry),
       close: async () => {
         await session.close();

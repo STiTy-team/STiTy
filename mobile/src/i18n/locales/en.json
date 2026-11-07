@@ -86,10 +86,14 @@
     "talking": "Listening… release to send",
     "room": "Room {{code}}",
     "invite": "Invite",
-    "inviteHint": "Share this code so others can join with Join room. Translations won't be read aloud for the rest of this conversation, because every phone is listening.",
+    "inviteHint": "Scan this QR code or share the code to join. Translations won't be read aloud for the rest of this conversation, because every phone is listening.",
     "share": "Share",
     "copyLink": "Copy link",
-    "linkCopied": "Copied"
+    "linkCopied": "Copied",
+    "inviteQr": "QR code to join this room",
+    "roomPeople": "{{count}} people",
+    "micOff": "Mic off",
+    "micOffNotice": "The host turned your mic off. You can still follow the conversation."
   },
   "conversationSettings": {
     "running": "The conversation is still running",
@@ -119,7 +123,9 @@
     "connectionLost": "The connection to the server was lost.",
     "microphoneDenied": "Microphone access is needed for live translation. Allow it in Settings.",
     "microphoneUnavailable": "The microphone is unavailable. Another app, such as a video call, may be using it.",
-    "roomNotFound": "No open room has that code. Check it and try again."
+    "roomNotFound": "No open room has that code. Check it and try again.",
+    "removedFromRoom": "You were removed from this room.",
+    "roomEnded": "The host left, so this room has closed."
   },
   "settings": {
     "display": "Display",
@@ -402,5 +408,20 @@
     "deletedMessage": "Your account, your records and STiTy's data on this phone are gone.",
     "deleteFailed": "Couldn't delete your account",
     "deleteFailedMessage": "Nothing was deleted. Check your connection and try again."
+  },
+  "room": {
+    "title": "People in this room",
+    "participant": "Participant {{number}}",
+    "host": "Host",
+    "you": "You",
+    "micOn": "Mic on",
+    "micOff": "Mic off",
+    "allMicsOn": "Turn all mics on",
+    "allMicsOff": "Turn all mics off",
+    "remove": "Remove {{name}}",
+    "removeTitle": "Remove {{name}}?",
+    "removeMessage": "They leave this conversation right away.",
+    "removeAction": "Remove",
+    "hostHint": "You're the host. When you leave, this room closes for everyone."
   }
 }

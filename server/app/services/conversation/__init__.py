@@ -8,10 +8,14 @@ from app.services.conversation.errors import (
     ConversationError,
     ConversationNotFound,
     ConversationNotStarted,
+    NotRoomHost,
     ParticipantTooSlow,
+    RemovedFromRoom,
+    RoomEnded,
     ServerShutdown,
 )
 from app.services.conversation.session import ConversationSession
+from app.services.recording import RecordingService
 
 __all__ = [
     "AudioFailed",
@@ -21,14 +25,19 @@ __all__ = [
     "ConversationNotStarted",
     "ConversationService",
     "ConversationSession",
+    "NotRoomHost",
     "ParticipantTooSlow",
+    "RemovedFromRoom",
+    "RoomEnded",
     "ServerShutdown",
     "init_conversation_service",
 ]
 
 
-async def init_conversation_service(config: ServerConfig) -> AsyncIterator[ConversationService]:
-    service = ConversationService(config)
+async def init_conversation_service(
+    config: ServerConfig, recorder: RecordingService
+) -> AsyncIterator[ConversationService]:
+    service = ConversationService(config, recorder)
     await service.load_models()
     yield service
     await service.close_all()

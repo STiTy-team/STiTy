@@ -22,6 +22,10 @@ class Participant:
     target_lang: str = ""
     lang_map: dict[str, tuple[str, ...]] = field(default_factory=dict)
     channel: str | None = None
+    number: int = 0
+    can_speak: bool = True
+    recording: bool = False
+    device: dict | None = None
     delivery: "Delivery" = field(init=False)
 
     def __post_init__(self) -> None:

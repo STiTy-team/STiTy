@@ -1,3 +1,4 @@
+from collections.abc import Awaitable
 from typing import AsyncIterator
 
 from dependency_injector.wiring import Provide, inject
@@ -19,6 +20,10 @@ from app.api.v1.schema.conversation import (
     PartialMessage,
     PingMessage,
     ReadyMessage,
+    RemoveParticipantMessage,
+    RoomMessage,
+    SetAllMicsMessage,
+    SetMicMessage,
     StartMessage,
     StopMessage,
     client_message,
@@ -31,6 +36,7 @@ from app.models.conversation import (
     FoldOutput,
     JoinedConversation,
     PartialTranscript,
+    RoomChanged,
 )
 from app.services.conversation import (
     ConversationError,
@@ -115,8 +121,11 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
                 case JoinedConversation():
                     yield ReadyMessage(
                         conversation_id=event.conversation_id,
+                        participant_id=self.session.participant.id,
                         recording=self.recording is not None,
                     )
+                case RoomChanged():
+                    yield RoomMessage.of(event)
                 case ConversationSettingsChanged():
                     yield ConversationConfigMessage.of(
                         self.session.participant,
@@ -130,6 +139,8 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
                     yield FoldMessage.of(event)
 
     async def handle_message(self, message: ClientMessage | bytes) -> None:
+        if isinstance(message, StartMessage):
+            self.session.set_device(message.device)
         if isinstance(message, StartMessage | ConfigMessage) and message.recording is not None:
             self._set_recording(message.recording)
         self._record(message)
@@ -141,9 +152,24 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
                     message.conversation_id, must_exist=message.join, **message.languages()
                 )
             case ConfigMessage():
-                await self._configure(message)
+                await self._refusable(
+                    self.session.configure(**message.languages()), "config change"
+                )
             case bytes():
                 await self.session.audio(message)
+            case SetMicMessage():
+                await self._refusable(
+                    self.session.set_can_speak(message.participant_id, message.can_speak),
+                    "host action",
+                )
+            case SetAllMicsMessage():
+                await self._refusable(
+                    self.session.set_everyone_can_speak(message.can_speak), "host action"
+                )
+            case RemoveParticipantMessage():
+                await self._refusable(
+                    self.session.remove_participant(message.participant_id), "host action"
+                )
             case FinishMessage():
                 await self.session.finish()
             case StopMessage():
@@ -155,10 +181,12 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
 
     def _set_recording(self, on: bool) -> None:
         if on and self.recording is None:
-            self.recording = self.recorder.open(self.session.participant.id)
+            participant = self.session.participant
+            self.recording = self.recorder.open(participant.id, participant.device)
         elif not on and self.recording is not None:
             self.recording.close()
             self.recording = None
+        self.session.set_recording(self.recording is not None)
 
     def _record(self, message: ClientMessage | bytes) -> None:
         if self.recording is None or isinstance(message, PingMessage):
@@ -168,8 +196,8 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
         else:
             self.recording.message("in", message.encode())
 
-    async def _configure(self, message: ConfigMessage) -> None:
+    async def _refusable(self, action: Awaitable[None], what: str) -> None:
         try:
-            await self.session.configure(**message.languages())
+            await action
         except ConversationError as e:
-            log.warning("Refused config change (%s): %s", e.code, e)
+            log.warning("Refused %s (%s): %s", what, e.code, e)

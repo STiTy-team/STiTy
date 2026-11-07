@@ -12,6 +12,11 @@ Clients speak the mobile app's WebSocket protocol on `/api/v1/ws`
   into each language some client in the conversation reads. Every client that wants that
   language gets the same result.
 - A client that never sends audio is a listener. It gets the same partials and finals.
+- **The first client is the host.** Every client gets a `room` message listing who is in the
+  conversation and who may speak. The host can turn one client's mic off or on, turn every mic off
+  or on, and remove a client. The server drops audio from a client whose mic is off. There is one
+  host and no handover: when the host's connection ends, the conversation closes for everyone with
+  4410 `room_ended`.
 
 One server holds one model, as in production. The English and Korean finetunes are two pipelines,
 and a client picks its language by picking the server.
@@ -80,7 +85,12 @@ Each time recording turns on it writes a new folder,
 |---|---|
 | `audio.wav` | Every PCM frame the client sent while recording, 16 kHz mono s16le |
 | `events.jsonl` | Every JSON message in both directions except `ping`: `{"t", "audioSeconds", "direction": "in"\|"out", "message"}`. `t` is seconds since the connection opened, `audioSeconds` how much audio had arrived by then |
-| `meta.json` | Participant id, pipeline file name, the `serverConfig` the client got in `hello`, start time; end time and audio length are added when recording stops |
+| `meta.json` | Participant id, the `device` from `start`, pipeline file name, the `serverConfig` the client got in `hello`, start time; end time and audio length are added when recording stops |
+
+While any client records, the transcription worker also writes the whole room to a sibling
+`<time>-room-<conversation id>/` folder: `tracks/<participant id>.wav` for each client, padded with
+silence so every track lines up with `mix.wav` and the others, and `room.json` with each
+participant's number and device. A room whose mics all went off gets a new folder when audio returns.
 
 The conversation id is in the `ready` message. Replaying `audio.wav` against another pipeline and
 comparing its finals with the `out` messages here is the intended test use.

@@ -2,6 +2,7 @@ import type { RecordSummary, Retention, TranscriptDocument } from '@/domain/reco
 import type { Room } from '@/domain/rooms';
 
 import type { AsrSessionHandlers, SessionLanguages, StartOptions } from '@/api/live/ws/asr-session';
+import type { DeviceInfo } from '@/api/live/ws/protocol';
 import type { ServerMonitor } from '@/api/live/ws/server-monitor';
 
 export type FeatureFlags = {
@@ -77,6 +78,7 @@ export type LiveOpenOptions = {
   room: Room | null;
   /** Ask the server to save this phone's audio and messages for debugging; it may refuse. */
   recording: boolean;
+  device: DeviceInfo;
   handlers: AsrSessionHandlers;
 };
 
@@ -85,10 +87,16 @@ export type LiveSession = {
   conversationId: string | null;
   /** The code others can join with, from the same `ready`; null when the session is recorded. */
   roomCode: string | null;
+  /** Who this phone is in the room's roster. */
+  participantId: string | null;
   readonly isOpen: boolean;
   sendAudio(pcm: ArrayBuffer): void;
   configure(languages: SessionLanguages): void;
   setRecording(recording: boolean): void;
+  /** Host only; the server ignores these from anyone else. */
+  setMic(participantId: string, canSpeak: boolean): void;
+  setAllMics(canSpeak: boolean): void;
+  removeParticipant(participantId: string): void;
   logSpeech(entry: { text: string; lang: string; start: string; end: string }): void;
   /**
    * Sends `stop` and waits for the server to flush its last `final` and close, or for a short

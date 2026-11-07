@@ -16,4 +16,5 @@ class Container(containers.DeclarativeContainer):
     conversation_service = providers.Resource(
         init_conversation_service,
         config=server_config,
+        recorder=recording_service,
     )

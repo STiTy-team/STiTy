@@ -60,12 +60,16 @@ const createScriptedLive = ({ script, timing, mocked }: ScriptedOptions): LiveAp
       const session: LiveSession = {
         conversationId: null,
         roomCode: null,
+        participantId: null,
         get isOpen() {
           return open;
         },
         sendAudio: () => {},
         configure: () => {},
         setRecording: () => {},
+        setMic: () => {},
+        setAllMics: () => {},
+        removeParticipant: () => {},
         logSpeech: () => {},
         close: async () => {
           open = false;

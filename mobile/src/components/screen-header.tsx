@@ -3,28 +3,30 @@ import { Text, View } from 'react-native';
 
 import { makeStyles, spacing, typography } from '@/theme';
 
+const SIDE_WIDTH = 52;
+
 type Props = {
   title: string;
   subtitle?: ReactNode;
   left?: ReactNode;
   right?: ReactNode;
-  /** Room for more than one action per side; both sides match so the title stays centered. */
-  sideWidth?: number;
+  /** Room for several actions on the right; the title then sits slightly left of center. */
+  rightWidth?: number;
 };
 
 /** Centered title with one action slot on each side; empty slots keep the title centered. */
-export const ScreenHeader = ({ title, subtitle, left, right, sideWidth = 52 }: Props) => {
+export const ScreenHeader = ({ title, subtitle, left, right, rightWidth = SIDE_WIDTH }: Props) => {
   const styles = useStyles();
   return (
     <View style={styles.header}>
-      <View style={[styles.side, { width: sideWidth }]}>{left}</View>
+      <View style={[styles.side, { width: SIDE_WIDTH }]}>{left}</View>
       <View style={styles.center}>
         <Text style={styles.title} numberOfLines={1} accessibilityRole="header">
           {title}
         </Text>
         {subtitle}
       </View>
-      <View style={[styles.side, styles.right, { width: sideWidth }]}>{right}</View>
+      <View style={[styles.side, styles.right, { width: rightWidth }]}>{right}</View>
     </View>
   );
 };

@@ -4,6 +4,7 @@ import { getApi, getIntroLive } from '@/api';
 import { features } from '@/config/features';
 import { joinRoom, type Room } from '@/domain/rooms';
 import { audioOutput } from '@/services/audio/audio-output';
+import { deviceInfo } from '@/services/device-info';
 import { Microphone } from '@/services/audio/microphone';
 import { haptics } from '@/services/haptics';
 import { SpeechPlayer } from '@/services/speech/speech-player';
@@ -33,6 +34,7 @@ export const getConversationController = (): ConversationController =>
     output: audioOutput,
     preferences: () =>
       sessionPreferences(usePreferencesStore.getState(), useConversationPreferences.getState()),
+    device: deviceInfo,
     onCapacity: (capacity) => useServerStore.getState().setCapacity(capacity),
     createMicrophone: (options) => new Microphone(options),
     createSpeechPlayer: (onSpoken) => (features.speech ? new SpeechPlayer(onSpoken) : noSpeech),

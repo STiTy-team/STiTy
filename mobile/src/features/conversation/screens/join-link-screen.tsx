@@ -1,5 +1,4 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,8 +8,7 @@ import { ScreenHeader } from '@/components/screen-header';
 import { LoadingView, StateView } from '@/components/state-view';
 import { isRoomCode, normalizeRoomCode } from '@/domain/rooms';
 import { LanguageList } from '@/features/conversation/components/language-list';
-import { joinConversation } from '@/features/conversation/conversation-runtime';
-import type { ConversationErrorCode } from '@/features/conversation/model/conversation-error';
+import { useJoinRoom } from '@/features/conversation/hooks/use-join-room';
 import { useServerLink } from '@/features/settings/hooks/use-server-link';
 import { makeStyles, spacing, typography } from '@/theme';
 
@@ -23,8 +21,7 @@ export const JoinLinkScreen = () => {
   const styles = useStyles();
   const { room, server } = useLocalSearchParams<{ room?: string; server?: string }>();
   const { pending, target } = useServerLink(server);
-  const [checking, setChecking] = useState(false);
-  const [error, setError] = useState<ConversationErrorCode | null>(null);
+  const { checking, error, join } = useJoinRoom({ replace: true });
   const code = normalizeRoomCode(room ?? '');
   const goHome = () => router.replace('/');
 
@@ -39,14 +36,6 @@ export const JoinLinkScreen = () => {
     );
   }
 
-  const join = async () => {
-    setChecking(true);
-    setError(null);
-    const failure = await joinConversation(code, { replace: true });
-    setChecking(false);
-    setError(failure);
-  };
-
   return (
     <SafeAreaView style={styles.screen}>
       <ScreenHeader title={t('conversation.room', { code })} />
@@ -60,7 +49,7 @@ export const JoinLinkScreen = () => {
             {t(`errors.${error}`)}
           </Text>
         )}
-        <PrimaryButton label={t('home.join')} loading={checking} onPress={() => void join()} />
+        <PrimaryButton label={t('home.join')} loading={checking} onPress={() => void join(code)} />
         <PrimaryButton label={t('common.cancel')} variant="secondary" onPress={goHome} />
       </View>
     </SafeAreaView>

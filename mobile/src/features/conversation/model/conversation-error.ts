@@ -3,6 +3,8 @@ export type ConversationErrorCode =
   | 'serverUnreachable'
   | 'connectionLost'
   | 'roomNotFound'
+  | 'removedFromRoom'
+  | 'roomEnded'
   | 'microphoneDenied'
   | 'microphoneUnavailable';
 

@@ -86,10 +86,14 @@
     "talking": "Đang nghe… thả ra để gửi",
     "room": "Phòng {{code}}",
     "invite": "Mời",
-    "inviteHint": "Chia sẻ mã này để người khác tham gia bằng Vào phòng. Bản dịch sẽ không được đọc to cho đến khi cuộc trò chuyện này kết thúc vì mọi điện thoại đều đang nghe.",
+    "inviteHint": "Quét mã QR này hoặc chia sẻ mã để tham gia. Bản dịch sẽ không được đọc to cho đến khi cuộc trò chuyện này kết thúc vì mọi điện thoại đều đang nghe.",
     "share": "Chia sẻ",
     "copyLink": "Sao chép liên kết",
-    "linkCopied": "Đã sao chép"
+    "linkCopied": "Đã sao chép",
+    "inviteQr": "Mã QR để vào phòng này",
+    "roomPeople": "{{count}} người",
+    "micOff": "Tắt micrô",
+    "micOffNotice": "Chủ phòng đã tắt micrô của bạn. Bạn vẫn có thể theo dõi cuộc trò chuyện."
   },
   "conversationSettings": {
     "running": "Hội thoại vẫn đang tiếp tục",
@@ -119,7 +123,9 @@
     "connectionLost": "Mất kết nối với máy chủ.",
     "microphoneDenied": "Dịch trực tiếp cần quyền truy cập micrô. Hãy cho phép trong Cài đặt.",
     "microphoneUnavailable": "Micrô không khả dụng. Có thể ứng dụng khác như cuộc gọi video đang sử dụng.",
-    "roomNotFound": "Không có phòng nào đang mở với mã đó. Hãy kiểm tra rồi thử lại."
+    "roomNotFound": "Không có phòng nào đang mở với mã đó. Hãy kiểm tra rồi thử lại.",
+    "removedFromRoom": "Bạn đã bị đưa ra khỏi phòng này.",
+    "roomEnded": "Chủ phòng đã rời đi nên phòng đã đóng."
   },
   "settings": {
     "display": "Hiển thị",
@@ -401,5 +407,20 @@
     "deletedMessage": "Tài khoản, lịch sử và dữ liệu STiTy trên điện thoại này đã bị xóa.",
     "deleteFailed": "Không xóa được tài khoản",
     "deleteFailedMessage": "Chưa có gì bị xóa. Hãy kiểm tra kết nối và thử lại."
+  },
+  "room": {
+    "title": "Những người trong phòng",
+    "participant": "Người tham gia {{number}}",
+    "host": "Chủ phòng",
+    "you": "Bạn",
+    "micOn": "Bật micrô",
+    "micOff": "Tắt micrô",
+    "allMicsOn": "Bật tất cả micrô",
+    "allMicsOff": "Tắt tất cả micrô",
+    "remove": "Đưa {{name}} ra",
+    "removeTitle": "Đưa {{name}} ra?",
+    "removeMessage": "Người này sẽ rời cuộc trò chuyện ngay.",
+    "removeAction": "Đưa ra",
+    "hostHint": "Bạn là chủ phòng. Khi bạn rời đi, phòng sẽ đóng với mọi người."
   }
 }

@@ -5,9 +5,12 @@ import { Platform, Share, Text, View } from 'react-native';
 
 import { BottomSheet } from '@/components/bottom-sheet';
 import { PrimaryButton } from '@/components/button';
+import { QrCode } from '@/components/qr-code';
 import { useConversationStore } from '@/features/conversation/model/conversation-store';
 import { roomLink } from '@/features/conversation/room-link';
 import { makeStyles, spacing, typography } from '@/theme';
+
+const QR_SIZE = 200;
 
 const canShare = Platform.OS !== 'web' || typeof navigator.share === 'function';
 
@@ -35,6 +38,11 @@ export const InviteSheet = ({ visible, onClose }: Props) => {
   return (
     <BottomSheet visible={visible} title={t('conversation.invite')} onClose={close}>
       <View style={styles.body}>
+        {link !== '' && (
+          <View style={styles.qr}>
+            <QrCode value={link} size={QR_SIZE} label={t('conversation.inviteQr')} />
+          </View>
+        )}
         <Text style={styles.code} selectable accessibilityLabel={t('home.roomCode')}>
           {code}
         </Text>
@@ -69,8 +77,9 @@ export const InviteSheet = ({ visible, onClose }: Props) => {
 
 const useStyles = makeStyles((colors) => ({
   body: { gap: spacing.md, paddingHorizontal: spacing.lg },
+  qr: { alignItems: 'center' },
   code: {
-    ...typography.display,
+    ...typography.title,
     color: colors.text,
     letterSpacing: 4,
     textAlign: 'center',

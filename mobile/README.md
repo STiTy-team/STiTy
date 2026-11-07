@@ -238,7 +238,7 @@ vendor is plugged in with `setTelemetrySink`.
 ## Rooms
 
 The server gives every unsaved conversation a short room code in `ready`. Invite in the conversation
-header shows it with a link to share, and Join room on the home screen enters it on other phones.
+header shows it with a QR code and a link to share, and Join room on the home screen enters it on other phones.
 The sheet asks `GET /api/v1/rooms/{code}`
 on the conversation server first, and stays open with an error unless the room is open, so a bad code
 never reaches the conversation screen. That request goes to the WebSocket's host over `http(s)`, not
@@ -250,6 +250,12 @@ Inviting or joining makes the conversation shared until it ends. The server mixe
 microphone into one stream, so a shared conversation has no speaker labels: lines show the language
 rather than "Me". Translations aren't spoken, because every phone is listening. A room closes when
 the last phone leaves.
+
+The first phone is the host (방장). Everyone sees who is in the room in conversation settings
+(`room-section.tsx`), and the host can turn each mic on or off, turn all mics on or off, and remove
+someone. The server enforces this; the phone only reflects it, showing a notice and "Mic off" in
+place of Listening. There is one host and no handover: when the host's connection ends, including
+when the app goes to the background, the room closes for everyone.
 
 A saved conversation has no code to share, because its `conversationId` is the id of its record, so
 Invite is hidden while saving.

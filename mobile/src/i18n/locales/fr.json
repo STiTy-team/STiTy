@@ -86,10 +86,14 @@
     "talking": "À l'écoute… relâchez pour envoyer",
     "room": "Salon {{code}}",
     "invite": "Inviter",
-    "inviteHint": "Partagez ce code pour que d’autres puissent rejoindre le salon. Les traductions ne seront plus lues à voix haute jusqu’à la fin de cette conversation, car tous les téléphones écoutent.",
+    "inviteHint": "Scannez ce QR code ou partagez le code pour rejoindre le salon. Les traductions ne seront plus lues à voix haute jusqu’à la fin de cette conversation, car tous les téléphones écoutent.",
     "share": "Partager",
     "copyLink": "Copier le lien",
-    "linkCopied": "Copié"
+    "linkCopied": "Copié",
+    "inviteQr": "QR code pour rejoindre ce salon",
+    "roomPeople": "{{count}} personnes",
+    "micOff": "Micro coupé",
+    "micOffNotice": "L’hôte a coupé votre micro. Vous pouvez continuer à suivre la conversation."
   },
   "conversationSettings": {
     "running": "La conversation continue",
@@ -119,7 +123,9 @@
     "connectionLost": "La connexion au serveur a été perdue.",
     "microphoneDenied": "La traduction en direct nécessite l'accès au micro. Autorisez-le dans les Réglages.",
     "microphoneUnavailable": "Le micro est indisponible. Une autre app, comme un appel vidéo, l'utilise peut-être.",
-    "roomNotFound": "Aucun salon ouvert ne correspond à ce code. Vérifiez-le et réessayez."
+    "roomNotFound": "Aucun salon ouvert ne correspond à ce code. Vérifiez-le et réessayez.",
+    "removedFromRoom": "Vous avez été retiré de ce salon.",
+    "roomEnded": "L’hôte est parti, le salon est fermé."
   },
   "settings": {
     "display": "Affichage",
@@ -402,5 +408,20 @@
     "deletedMessage": "Votre compte, votre historique et les données STiTy de ce téléphone ont été effacés.",
     "deleteFailed": "Impossible de supprimer votre compte",
     "deleteFailedMessage": "Rien n'a été supprimé. Vérifiez votre connexion et réessayez."
+  },
+  "room": {
+    "title": "Personnes dans ce salon",
+    "participant": "Participant {{number}}",
+    "host": "Hôte",
+    "you": "Vous",
+    "micOn": "Micro activé",
+    "micOff": "Micro coupé",
+    "allMicsOn": "Activer tous les micros",
+    "allMicsOff": "Couper tous les micros",
+    "remove": "Retirer {{name}}",
+    "removeTitle": "Retirer {{name}} ?",
+    "removeMessage": "Cette personne quitte la conversation immédiatement.",
+    "removeAction": "Retirer",
+    "hostHint": "Vous êtes l’hôte. Quand vous partez, le salon ferme pour tout le monde."
   }
 }

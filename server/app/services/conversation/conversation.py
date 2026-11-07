@@ -14,9 +14,13 @@ from app.services.conversation.errors import (
     ConversationClosed,
     ConversationError,
     ConversationNotFound,
+    NotRoomHost,
+    RemovedFromRoom,
+    RoomEnded,
     ServerShutdown,
 )
 from app.services.conversation.session import ConversationSession
+from app.services.recording import RecordingService
 from app.services.conversation.workers import (
     TranscriptionWorker,
     TranslationWorker,
@@ -30,8 +34,9 @@ ROOM_CODE_LENGTH = 6
 
 
 class ConversationService:
-    def __init__(self, config: ServerConfig):
+    def __init__(self, config: ServerConfig, recorder: RecordingService | None = None):
         self.config = config
+        self._recorder = recorder
         stages = stages_of(config)
         self._transcription_stage = next(s for s in stages if s.runs_per == RunsPer.ROOM)
         self._translation_stage = next(
@@ -56,9 +61,8 @@ class ConversationService:
         )
         return ConversationSession(self, participant)
 
-    def ensure_open(self, conversation_id: str) -> None:
-        conversation = self.conversations.get(conversation_id)
-        if conversation is None or not conversation.is_open:
+    def ensure_open(self, conversation_id: str | None) -> None:
+        if self._find_open(conversation_id) is None:
             raise ConversationNotFound(f"{conversation_id} does not exist")
 
     async def join(
@@ -94,11 +98,43 @@ class ConversationService:
         async with conversation.lock:
             if participant.id not in conversation.participants:
                 return
+            host_left = conversation.is_host(participant)
             workers = conversation.remove(participant)
         await close_workers(workers)
         log.info("Participant %s left conversation %s", participant.id, conversation.id)
         if not conversation.participants:
             await self.close(conversation)
+        elif host_left:
+            await self.close(conversation, RoomEnded("the host left"))
+
+    async def set_can_speak(
+        self, conversation: Conversation, host: Participant, participant_id: str, can_speak: bool
+    ) -> None:
+        async with conversation.lock:
+            self._ensure_host(conversation, host)
+            participant = conversation.participants.get(participant_id)
+            if participant is None:
+                return
+            worker = conversation.set_can_speak(participant, can_speak)
+        await close_workers([worker])
+
+    async def set_everyone_can_speak(
+        self, conversation: Conversation, host: Participant, can_speak: bool
+    ) -> None:
+        async with conversation.lock:
+            self._ensure_host(conversation, host)
+            workers = conversation.set_everyone_can_speak(can_speak)
+        await close_workers(workers)
+
+    async def remove_participant(
+        self, conversation: Conversation, host: Participant, participant_id: str
+    ) -> None:
+        async with conversation.lock:
+            self._ensure_host(conversation, host)
+            participant = conversation.participants.get(participant_id)
+            if participant is None or participant is host:
+                return
+            conversation.dismiss(participant, RemovedFromRoom("removed by the host"))
 
     async def close(
         self, conversation: Conversation, error: ConversationError | None = None
@@ -122,7 +158,8 @@ class ConversationService:
 
     async def open_channel(self, conversation: Conversation, participant: Participant) -> None:
         async with conversation.lock:
-            if participant.channel is not None or not conversation.is_open:
+            allowed = conversation.is_open and participant.can_speak
+            if participant.channel is not None or not allowed:
                 return
             if conversation.transcription_worker is None:
                 conversation.audio = ConversationAudio()
@@ -132,8 +169,9 @@ class ConversationService:
                     on_fail=lambda: self._spawn(
                         self.close(conversation, AudioFailed("audio pipeline failed"))
                     ),
+                    room_recorder=self._recorder.for_room(conversation) if self._recorder else None,
                 )
-            conversation.open_channel(participant, str(uuid.uuid4()))
+            conversation.open_channel(participant)
 
     async def sync_translation_workers(self, conversation: Conversation) -> list[Worker]:
         if self._translation_stage is not None:
@@ -146,15 +184,23 @@ class ConversationService:
         return conversation.detach_unused_translation_workers()
 
     def _get_conversation(self, conversation_id: str | None, *, must_exist: bool) -> Conversation:
-        existing = self.conversations.get(conversation_id) if conversation_id else None
-        if existing is not None and existing.is_open:
-            return existing
         if must_exist:
-            raise ConversationNotFound(f"{conversation_id} does not exist")
+            self.ensure_open(conversation_id)
+        existing = self._find_open(conversation_id)
+        if existing is not None:
+            return existing
         conversation = Conversation(id=conversation_id or self._new_room_code())
         self.conversations[conversation.id] = conversation
         log.info("Opened conversation %s", conversation.id)
         return conversation
+
+    def _find_open(self, conversation_id: str | None) -> Conversation | None:
+        conversation = self.conversations.get(conversation_id) if conversation_id else None
+        return conversation if conversation is not None and conversation.is_open else None
+
+    def _ensure_host(self, conversation: Conversation, participant: Participant) -> None:
+        if not conversation.is_host(participant):
+            raise NotRoomHost(f"{participant.id} is not the host of {conversation.id}")
 
     def _new_room_code(self) -> str:
         while True:

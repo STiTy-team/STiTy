@@ -27,13 +27,14 @@ export const createLiveSession = (
         throw error;
       }
     },
-    async open({ languages, save, conversationId, room, recording, handlers }) {
+    async open({ languages, save, conversationId, room, recording, device, handlers }) {
       const token = save ? await auth.accessToken() : null;
       const session = new AsrSession(url, handlers);
       const ready = await session.open({
         ...languages,
         clientVersion: appInfo.version,
         recording,
+        device,
         ...(token
           ? { token, save: true, conversationId: conversationId ?? undefined }
           : { save: false, ...(room?.code && { conversationId: room.code, join: room.joining }) }),
@@ -41,12 +42,16 @@ export const createLiveSession = (
       const live: LiveSession = {
         conversationId: token ? ready.conversationId : null,
         roomCode: token ? null : ready.conversationId,
+        participantId: ready.participantId,
         get isOpen() {
           return session.isOpen;
         },
         sendAudio: (pcm) => session.sendAudio(pcm),
         configure: (next) => session.configure(next),
         setRecording: (next) => session.setRecording(next),
+        setMic: (participantId, canSpeak) => session.setMic(participantId, canSpeak),
+        setAllMics: (canSpeak) => session.setAllMics(canSpeak),
+        removeParticipant: (participantId) => session.removeParticipant(participantId),
         logSpeech: (entry) => session.logSpeech(entry),
         close: () => session.close(),
       };

@@ -6,8 +6,7 @@ import { BottomSheet } from '@/components/bottom-sheet';
 import { PrimaryButton } from '@/components/button';
 import { TextField } from '@/components/text-field';
 import { isRoomCode, normalizeRoomCode, ROOM_CODE_LENGTH } from '@/domain/rooms';
-import { joinConversation } from '@/features/conversation/conversation-runtime';
-import type { ConversationErrorCode } from '@/features/conversation/model/conversation-error';
+import { useJoinRoom } from '@/features/conversation/hooks/use-join-room';
 import { makeStyles, spacing, typography } from '@/theme';
 
 type Props = {
@@ -19,27 +18,20 @@ export const JoinRoomSheet = ({ visible, onClose }: Props) => {
   const { t } = useTranslation();
   const styles = useStyles();
   const [code, setCode] = useState('');
-  const [checking, setChecking] = useState(false);
-  const [error, setError] = useState<ConversationErrorCode | null>(null);
+  const { checking, error, join, clearError } = useJoinRoom();
 
   const close = () => {
     if (checking) return;
     setCode('');
-    setError(null);
+    clearError();
     onClose();
   };
-  const join = async () => {
+  const submit = async () => {
     if (!isRoomCode(code) || checking) return;
-    setChecking(true);
-    setError(null);
-    const failure = await joinConversation(code);
-    setChecking(false);
-    if (failure) {
-      setError(failure);
-      return;
+    if (await join(code)) {
+      setCode('');
+      onClose();
     }
-    setCode('');
-    onClose();
   };
 
   return (
@@ -51,9 +43,9 @@ export const JoinRoomSheet = ({ visible, onClose }: Props) => {
           value={code}
           onChangeText={(text) => {
             setCode(normalizeRoomCode(text));
-            setError(null);
+            clearError();
           }}
-          onSubmitEditing={() => void join()}
+          onSubmitEditing={() => void submit()}
           placeholder={t('home.roomCode')}
           autoCapitalize="characters"
           autoCorrect={false}
@@ -69,7 +61,7 @@ export const JoinRoomSheet = ({ visible, onClose }: Props) => {
           label={t('home.join')}
           disabled={!isRoomCode(code)}
           loading={checking}
-          onPress={() => void join()}
+          onPress={() => void submit()}
         />
       </View>
     </BottomSheet>

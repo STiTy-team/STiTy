@@ -12,6 +12,11 @@ export const ROOM_CODE_LENGTH = 6;
  */
 export type Room = { code: string | null; joining: boolean; shared: boolean };
 
+export type RoomParticipant = { id: string; number: number; canSpeak: boolean };
+
+/** Who is in the room, from the server. There is one host; the room ends when they leave. */
+export type Roster = { hostId: string | null; participants: RoomParticipant[] };
+
 export const newRoom = (): Room => ({ code: null, joining: false, shared: false });
 
 export const joinRoom = (code: string): Room => ({ code, joining: true, shared: true });

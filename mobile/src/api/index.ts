@@ -19,8 +19,7 @@ import { env } from '@/config/env';
 /** Builds the API from the mode map: each area answers from its live or its mock adapter. */
 const createApi = (modes: ApiModes): Api => {
   const http = createHttpClient(env.apiUrl, tokenStore);
-  // Rooms live on the conversation server, which `EXPO_PUBLIC_API_URL` may not point at.
-  const conversationServer = createHttpClient(env.serverUrl.replace(/^ws/, 'http'), tokenStore);
+  const conversationServer = createHttpClient(env.conversationApiUrl, tokenStore);
   const pick = <T>(area: keyof ApiModes, live: () => T, mock: () => T): T =>
     modes[area] === 'mock' ? mock() : live();
 
@@ -70,6 +69,8 @@ export { SessionOpenError, SessionRefusedError } from '@/api/live/ws/asr-session
 export { AUDIO_FORMAT } from '@/api/live/ws/protocol';
 export type {
   CapacityMessage,
+  DeviceInfo,
+  RoomMessage,
   FinalMessage,
   FoldMessage,
   PartialMessage,

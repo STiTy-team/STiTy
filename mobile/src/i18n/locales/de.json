@@ -86,10 +86,14 @@
     "talking": "Hört zu… zum Senden loslassen",
     "room": "Raum {{code}}",
     "invite": "Einladen",
-    "inviteHint": "Teile diesen Code, damit andere über „Raum beitreten“ teilnehmen können. Übersetzungen werden bis zum Ende dieses Gesprächs nicht vorgelesen, weil alle Telefone mithören.",
+    "inviteHint": "Scanne diesen QR-Code oder teile den Code, um beizutreten. Übersetzungen werden bis zum Ende dieses Gesprächs nicht vorgelesen, weil alle Telefone mithören.",
     "share": "Teilen",
     "copyLink": "Link kopieren",
-    "linkCopied": "Kopiert"
+    "linkCopied": "Kopiert",
+    "inviteQr": "QR-Code zum Beitreten",
+    "roomPeople": "{{count}} Personen",
+    "micOff": "Mikro aus",
+    "micOffNotice": "Die Raumleitung hat dein Mikro ausgeschaltet. Du kannst dem Gespräch weiter folgen."
   },
   "conversationSettings": {
     "running": "Das Gespräch läuft weiter",
@@ -119,7 +123,9 @@
     "connectionLost": "Die Verbindung zum Server wurde unterbrochen.",
     "microphoneDenied": "Für die Live-Übersetzung wird Mikrofonzugriff benötigt. Erlaube ihn in den Einstellungen.",
     "microphoneUnavailable": "Das Mikrofon ist nicht verfügbar. Möglicherweise nutzt eine andere App, etwa ein Videoanruf, es.",
-    "roomNotFound": "Kein offener Raum hat diesen Code. Prüfe ihn und versuche es erneut."
+    "roomNotFound": "Kein offener Raum hat diesen Code. Prüfe ihn und versuche es erneut.",
+    "removedFromRoom": "Du wurdest aus diesem Raum entfernt.",
+    "roomEnded": "Die Raumleitung ist gegangen, daher wurde der Raum geschlossen."
   },
   "settings": {
     "display": "Anzeige",
@@ -402,5 +408,20 @@
     "deletedMessage": "Dein Konto, dein Verlauf und die STiTy-Daten auf diesem Handy sind gelöscht.",
     "deleteFailed": "Konto konnte nicht gelöscht werden",
     "deleteFailedMessage": "Es wurde nichts gelöscht. Prüfe deine Verbindung und versuche es erneut."
+  },
+  "room": {
+    "title": "Personen in diesem Raum",
+    "participant": "Teilnehmer {{number}}",
+    "host": "Raumleitung",
+    "you": "Du",
+    "micOn": "Mikro an",
+    "micOff": "Mikro aus",
+    "allMicsOn": "Alle Mikros einschalten",
+    "allMicsOff": "Alle Mikros ausschalten",
+    "remove": "{{name}} entfernen",
+    "removeTitle": "{{name}} entfernen?",
+    "removeMessage": "Die Person verlässt das Gespräch sofort.",
+    "removeAction": "Entfernen",
+    "hostHint": "Du leitest diesen Raum. Wenn du gehst, wird er für alle geschlossen."
   }
 }

@@ -86,10 +86,14 @@
     "talking": "듣는 중… 손을 떼면 보내요",
     "room": "방 {{code}}",
     "invite": "초대",
-    "inviteHint": "이 코드를 알려 주면 다른 사람이 방 참여로 들어올 수 있어요. 모든 휴대폰이 듣고 있어서 이 대화가 끝날 때까지 번역을 소리 내어 읽지 않아요.",
+    "inviteHint": "QR 코드를 스캔하거나 코드를 알려 주면 참여할 수 있어요. 모든 휴대폰이 듣고 있어서 이 대화가 끝날 때까지 번역을 소리 내어 읽지 않아요.",
     "share": "공유",
     "copyLink": "링크 복사",
-    "linkCopied": "복사됨"
+    "linkCopied": "복사됨",
+    "inviteQr": "이 방에 참여하는 QR 코드",
+    "roomPeople": "{{count}}명",
+    "micOff": "마이크 꺼짐",
+    "micOffNotice": "방장이 마이크를 껐어요. 대화는 계속 볼 수 있어요."
   },
   "conversationSettings": {
     "running": "대화는 계속 이어지고 있어요",
@@ -119,7 +123,9 @@
     "connectionLost": "서버와의 연결이 끊어졌습니다.",
     "microphoneDenied": "실시간 번역에는 마이크 권한이 필요합니다. 설정에서 허용해 주세요.",
     "microphoneUnavailable": "마이크를 사용할 수 없습니다. 화상 통화 등 다른 앱이 사용 중일 수 있습니다.",
-    "roomNotFound": "해당 코드로 열린 방이 없습니다. 코드를 확인해 주세요."
+    "roomNotFound": "해당 코드로 열린 방이 없습니다. 코드를 확인해 주세요.",
+    "removedFromRoom": "이 방에서 내보내졌습니다.",
+    "roomEnded": "방장이 나가서 방이 닫혔습니다."
   },
   "settings": {
     "display": "화면",
@@ -401,5 +407,20 @@
     "deletedMessage": "계정, 기록, 이 휴대폰의 STiTy 데이터가 모두 삭제됐어요.",
     "deleteFailed": "계정을 삭제하지 못했어요",
     "deleteFailedMessage": "아무것도 삭제되지 않았어요. 연결을 확인하고 다시 시도해 주세요."
+  },
+  "room": {
+    "title": "이 방의 참여자",
+    "participant": "참여자 {{number}}",
+    "host": "방장",
+    "you": "나",
+    "micOn": "마이크 켜짐",
+    "micOff": "마이크 꺼짐",
+    "allMicsOn": "모든 마이크 켜기",
+    "allMicsOff": "모든 마이크 끄기",
+    "remove": "{{name}} 내보내기",
+    "removeTitle": "{{name}} 내보낼까요?",
+    "removeMessage": "이 대화에서 바로 나가게 돼요.",
+    "removeAction": "내보내기",
+    "hostHint": "내가 방장이에요. 내가 나가면 모두의 방이 닫혀요."
   }
 }

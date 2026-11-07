@@ -86,10 +86,14 @@
     "talking": "聞き取り中… 離すと送信",
     "room": "ルーム {{code}}",
     "invite": "招待",
-    "inviteHint": "このコードを共有すると、他の人が「ルームに参加」から参加できます。全員のスマートフォンが音声を聞いているため、この会話が終わるまで翻訳は読み上げられません。",
+    "inviteHint": "このQRコードをスキャンするか、コードを共有すると参加できます。全員のスマートフォンが音声を聞いているため、この会話が終わるまで翻訳は読み上げられません。",
     "share": "共有",
     "copyLink": "リンクをコピー",
-    "linkCopied": "コピーしました"
+    "linkCopied": "コピーしました",
+    "inviteQr": "このルームに参加するQRコード",
+    "roomPeople": "{{count}}人",
+    "micOff": "マイクオフ",
+    "micOffNotice": "ホストがあなたのマイクをオフにしました。会話は引き続き確認できます。"
   },
   "conversationSettings": {
     "running": "会話は続いています",
@@ -119,7 +123,9 @@
     "connectionLost": "サーバーとの接続が切れました。",
     "microphoneDenied": "リアルタイム翻訳にはマイクへのアクセスが必要です。設定で許可してください。",
     "microphoneUnavailable": "マイクを使用できません。ビデオ通話など他のアプリが使用中の可能性があります。",
-    "roomNotFound": "このコードの開いているルームはありません。コードを確認してください。"
+    "roomNotFound": "このコードの開いているルームはありません。コードを確認してください。",
+    "removedFromRoom": "このルームから退出させられました。",
+    "roomEnded": "ホストが退出したため、ルームは閉じられました。"
   },
   "settings": {
     "display": "表示",
@@ -401,5 +407,20 @@
     "deletedMessage": "アカウント、記録、このスマホのSTiTyのデータは削除されました。",
     "deleteFailed": "アカウントを削除できませんでした",
     "deleteFailedMessage": "何も削除されていません。接続を確認してもう一度お試しください。"
+  },
+  "room": {
+    "title": "このルームの参加者",
+    "participant": "参加者 {{number}}",
+    "host": "ホスト",
+    "you": "自分",
+    "micOn": "マイクオン",
+    "micOff": "マイクオフ",
+    "allMicsOn": "すべてのマイクをオン",
+    "allMicsOff": "すべてのマイクをオフ",
+    "remove": "{{name}}を退出させる",
+    "removeTitle": "{{name}}を退出させますか？",
+    "removeMessage": "この会話からすぐに退出します。",
+    "removeAction": "退出させる",
+    "hostHint": "あなたがホストです。退出するとルームは全員に対して閉じられます。"
   }
 }

@@ -55,10 +55,11 @@ export const resolveEnv = (
     throw new Error(`EXPO_PUBLIC_SERVER_URL must be set for ${variant} builds.`);
   }
   const serverUrl = origin('EXPO_PUBLIC_SERVER_URL', configured);
+  const conversationApiUrl = serverUrl.replace(/^ws/, 'http');
   // A server set in the app serves its own REST API; the build's API URL belongs to another one.
   const apiUrl = origin(
     'EXPO_PUBLIC_API_URL',
-    (!fromApp && parsed.EXPO_PUBLIC_API_URL) || serverUrl.replace(/^ws/, 'http'),
+    (!fromApp && parsed.EXPO_PUBLIC_API_URL) || conversationApiUrl,
   );
   requireTls('EXPO_PUBLIC_SERVER_URL', serverUrl, variant);
   requireTls('EXPO_PUBLIC_API_URL', apiUrl, variant);
@@ -68,6 +69,8 @@ export const resolveEnv = (
     serverUrl,
     /** REST origin; the same host as the WebSocket unless set. */
     apiUrl,
+    /** REST origin of the conversation server, which `apiUrl` may not point at. */
+    conversationApiUrl,
     serverSource: source,
     apiModes: resolveApiModes(parsed.EXPO_PUBLIC_API_MOCKS, variant),
   } as const;

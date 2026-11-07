@@ -86,10 +86,14 @@
     "talking": "Escuchando… suelta para enviar",
     "room": "Sala {{code}}",
     "invite": "Invitar",
-    "inviteHint": "Comparte este código para que otros entren con Unirse a sala. Las traducciones no se leerán en voz alta durante el resto de la conversación, porque todos los teléfonos están escuchando.",
+    "inviteHint": "Escanea este código QR o comparte el código para unirse. Las traducciones no se leerán en voz alta durante el resto de la conversación, porque todos los teléfonos están escuchando.",
     "share": "Compartir",
     "copyLink": "Copiar enlace",
-    "linkCopied": "Copiado"
+    "linkCopied": "Copiado",
+    "inviteQr": "Código QR para unirse a esta sala",
+    "roomPeople": "{{count}} personas",
+    "micOff": "Micrófono apagado",
+    "micOffNotice": "El anfitrión apagó tu micrófono. Puedes seguir la conversación."
   },
   "conversationSettings": {
     "running": "La conversación sigue en curso",
@@ -119,7 +123,9 @@
     "connectionLost": "Se perdió la conexión con el servidor.",
     "microphoneDenied": "La traducción en vivo necesita acceso al micrófono. Actívalo en Ajustes.",
     "microphoneUnavailable": "El micrófono no está disponible. Puede que otra app, como una videollamada, lo esté usando.",
-    "roomNotFound": "No hay ninguna sala abierta con ese código. Compruébalo e inténtalo de nuevo."
+    "roomNotFound": "No hay ninguna sala abierta con ese código. Compruébalo e inténtalo de nuevo.",
+    "removedFromRoom": "Te han sacado de esta sala.",
+    "roomEnded": "El anfitrión se fue y la sala se ha cerrado."
   },
   "settings": {
     "display": "Pantalla",
@@ -402,5 +408,20 @@
     "deletedMessage": "Tu cuenta, tus registros y los datos de STiTy en este teléfono se han borrado.",
     "deleteFailed": "No se pudo eliminar tu cuenta",
     "deleteFailedMessage": "No se eliminó nada. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "room": {
+    "title": "Personas en esta sala",
+    "participant": "Participante {{number}}",
+    "host": "Anfitrión",
+    "you": "Tú",
+    "micOn": "Micrófono encendido",
+    "micOff": "Micrófono apagado",
+    "allMicsOn": "Encender todos los micrófonos",
+    "allMicsOff": "Apagar todos los micrófonos",
+    "remove": "Sacar a {{name}}",
+    "removeTitle": "¿Sacar a {{name}}?",
+    "removeMessage": "Saldrá de esta conversación de inmediato.",
+    "removeAction": "Sacar",
+    "hostHint": "Eres el anfitrión. Cuando salgas, la sala se cerrará para todos."
   }
 }
