@@ -41,6 +41,8 @@ ap.add_argument("--nli", default="", help="NLI model for a contradiction penalty
 ap.add_argument("--rho", type=float, default=0.2, help="weight of P(contradiction | ref, output)")
 ap.add_argument("--sil_frac", type=float, default=0.0, help="fraction of utterances rolled out with a silence tail appended - the state where the news hallucinations fire, which plain rollouts never visit")
 ap.add_argument("--sil_sec", type=float, default=2.0); ap.add_argument("--kappa", type=float, default=0.5, help="penalty weight on the share of output characters emitted after the real audio ended")
+ap.add_argument("--noise_frac", type=float, default=0.0, help="fraction of utterances rolled out with a speech-shaped noise tail (a crop from --noise_dir) - the VAD-open state where the torture-set gap emissions fire; a gaussian silence tail never visits it. Drawn before --sil_frac from the same roll")
+ap.add_argument("--noise_dir", default="models/zprobe/data/noise9x")
 ap.add_argument("--kspon_utts", type=int, default=0, help="conversational ko-ko rollouts from the KsponSpeech training jsonl - the register where the passthrough substitutions happen, which FLEURS read speech never visits")
 ap.add_argument("--koko_cap", type=int, default=-1, help="cap on the FLEURS ko-ko utterances AFTER the even per-pair split (-1 = no cap). The transcription-reward share of the pool is the knob the CER/COMET trade rides on; --pairs splits evenly so this is the only way below one share per pair")
 ap.add_argument("--kspon_jsonl", default="Qwen3-ASR/finetuning/data/KSponSpeech/train_and_val.jsonl")
@@ -184,6 +186,23 @@ def offline(u, wav):
     return re.sub(r"\s+", " ", tok.decode(ids).replace("<SEG>", "")).strip()
 
 
+noise_wavs = []
+if a.noise_frac > 0:
+    import glob
+    noise_wavs = sorted(glob.glob(os.path.join(a.noise_dir, "*.wav")))
+    assert noise_wavs, f"--noise_frac > 0 but no wavs in {a.noise_dir}"
+
+
+def noise_tail(n):
+    y, _ = sf.read(random.choice(noise_wavs), dtype="float32")
+    if y.ndim > 1:
+        y = y.mean(1)
+    if len(y) < n:
+        y = np.tile(y, n // len(y) + 1)
+    off = random.randrange(len(y) - n + 1)
+    return y[off:off + n]
+
+
 log = open(os.path.join(a.out, "train.log"), "a"); t0 = time.time(); hard = []
 for step in range(1, a.steps + 1):
     opt.zero_grad(); stats = []
@@ -191,7 +210,10 @@ for step in range(1, a.steps + 1):
     for u in random.sample(hard, nh) + random.sample(pool, a.batch_utts - nh):
         wav, _ = sf.read(u["wav"], dtype="float32")
         dur_real = len(wav) / 16000
-        if random.random() < a.sil_frac:
+        tail_roll = random.random()
+        if tail_roll < a.noise_frac:
+            wav = np.concatenate([wav, noise_tail(int(a.sil_sec * 16000))])
+        elif tail_roll < a.noise_frac + a.sil_frac:
             wav = np.concatenate([wav, np.random.default_rng(step).normal(0.0, 0.0015, int(a.sil_sec * 16000)).astype(np.float32)])
         pol.model.eval()
         outs = [rollout(u, wav, dur_real) for _ in range(a.G)]
