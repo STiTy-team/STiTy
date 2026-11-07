@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import type { Room } from '@/domain/rooms';
+
 import type { ConversationErrorCode } from './conversation-error';
 import type { ConversationPhase } from './conversation-machine';
 import type { FeedEvent, LivePartial, SettingChange, TranscriptEntry } from './transcript';
@@ -20,6 +22,8 @@ type ConversationState = {
   recordingSince: number | null;
   /** The record the server writes for this conversation; kept across pauses and resumes. */
   conversationId: string | null;
+  /** The room behind this conversation; kept across pauses and resumes. */
+  room: Room | null;
   /** Hold-to-talk is held down. */
   talking: boolean;
 };
@@ -35,10 +39,16 @@ const INITIAL_STATE: ConversationState = {
   recordedMs: 0,
   recordingSince: null,
   conversationId: null,
+  room: null,
   talking: false,
 };
 
 export const useConversationStore = create<ConversationState>()(() => INITIAL_STATE);
+
+export const selectInRoom = (state: ConversationState) => state.room?.shared === true;
+
+export const selectCanInvite = (state: ConversationState) =>
+  state.room?.code != null && state.conversationId === null;
 
 let nextEntryId = 0;
 let nextEventId = 0;
@@ -63,6 +73,7 @@ export const conversationActions = {
   setDemo: (demo: boolean) => set({ demo }),
   fail: (error: ConversationErrorCode | null) => set({ error }),
   setConversationId: (conversationId: string | null) => set({ conversationId }),
+  setRoom: (room: Room | null) => set({ room }),
   setTalking: (talking: boolean) => set({ talking }),
   markSpeechPending: () => set({ speechPending: true }),
   clearLive: () => set({ partial: null, speechPending: false }),

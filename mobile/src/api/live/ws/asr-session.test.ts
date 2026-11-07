@@ -30,9 +30,9 @@ class FakeWebSocket {
     this.receive({ type: 'hello' });
   }
 
-  serverClose() {
+  serverClose(code = 1000, reason = '') {
     this.readyState = 3;
-    this.onclose?.({ code: 1000, reason: '' });
+    this.onclose?.({ code, reason });
   }
 
   sentTypes() {
@@ -117,6 +117,23 @@ describe('opening a session', () => {
     expect(error).toBeInstanceOf(SessionRefusedError);
     expect(error).toMatchObject({ message: 'No free slot', code: 'capacity' });
     expect(socket().close).toHaveBeenCalled();
+  });
+
+  it('rejects with the server reason when it closes the socket to refuse the session', async () => {
+    const session = new AsrSession('wss://asr.test/api/v1/ws', handlers());
+    const opened = session.open({
+      lang: 'ko',
+      targetLang: 'en',
+      conversationId: 'ABC234',
+      join: true,
+    });
+    socket().accept();
+
+    socket().serverClose(4404, 'conversation_not_found');
+
+    const error = await opened.catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(SessionRefusedError);
+    expect(error).toMatchObject({ code: 'conversation_not_found' });
   });
 
   it('rejects when closed before the server is ready', async () => {

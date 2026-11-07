@@ -1,13 +1,8 @@
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { showDialog } from '@/components/dialog';
 import { LoadingView, StateView } from '@/components/state-view';
-import { appInfo } from '@/config/app-info';
-import { env } from '@/config/env';
-import { normalizeServerUrl } from '@/config/server-override';
-import { changeServer } from '@/features/account/account-runtime';
+import { useServerLink } from '@/features/settings/hooks/use-server-link';
 
 /**
  * Opened by the QR code `scripts/server/tunnel.sh` prints: stity-dev://dev-server?url=…, or the
@@ -18,25 +13,7 @@ import { changeServer } from '@/features/account/account-runtime';
 export const DevServerLinkScreen = () => {
   const { t } = useTranslation();
   const { url } = useLocalSearchParams<{ url?: string }>();
-  const allowed = appInfo.variant === 'development';
-  const target = normalizeServerUrl(url ?? '');
-  const pending = allowed && target !== null && target !== env.serverUrl;
-  const asked = useRef(false);
-
-  useEffect(() => {
-    if (!pending || !target || asked.current) return;
-    asked.current = true;
-    void (async () => {
-      const confirmed = await showDialog({
-        title: t('developer.switchTitle'),
-        message: t('developer.switchMessage', { server: target }),
-        confirmLabel: t('developer.connect'),
-        cancelLabel: t('common.cancel'),
-      });
-      if (confirmed) await changeServer(target);
-      else router.replace('/');
-    })();
-  }, [pending, target, t]);
+  const { allowed, target, pending } = useServerLink(url);
 
   if (!allowed || (target && !pending)) return <Redirect href="/" />;
   if (!target) {

@@ -3,7 +3,10 @@ import { Text, View } from 'react-native';
 
 import { formatElapsed, useElapsedSeconds } from '@/features/conversation/hooks/use-elapsed';
 import { isConnecting } from '@/features/conversation/model/conversation-machine';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { makeStyles, typography } from '@/theme';
 
 /**
@@ -16,6 +19,8 @@ export const SessionStatusLine = ({ prefix }: { prefix?: string }) => {
   const phase = useConversationStore((state) => state.phase);
   const demo = useConversationStore((state) => state.demo);
   const saving = useConversationStore((state) => state.conversationId !== null);
+  const room = useConversationStore((state) => state.room);
+  const inRoom = useConversationStore(selectInRoom);
   const seconds = useElapsedSeconds();
 
   if (isConnecting(phase)) return <Text style={styles.text}>{t('conversation.connecting')}</Text>;
@@ -32,6 +37,9 @@ export const SessionStatusLine = ({ prefix }: { prefix?: string }) => {
             : t(recording ? 'conversation.listening' : 'conversation.paused'))}{' '}
         <Text style={styles.time}>{formatElapsed(seconds)}</Text>
         {saving && <Text style={styles.saving}> · {t('conversation.saving')}</Text>}
+        {room && inRoom && (
+          <Text style={styles.saving}> · {t('conversation.room', { code: room.code })}</Text>
+        )}
       </Text>
     </View>
   );

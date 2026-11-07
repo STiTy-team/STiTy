@@ -20,7 +20,10 @@ import {
   useConversationPreferences,
   type AddOns,
 } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { makeStyles, radius, spacing, typography, useColors } from '@/theme';
 
 /** Settings of the running conversation. Every change applies at once; nothing pauses. */
@@ -31,6 +34,7 @@ export const ConversationSettingsScreen = () => {
   const { bottom } = useSafeAreaInsets();
   const endConversation = useEndConversation();
   const phase = useConversationStore((state) => state.phase);
+  const inRoom = useConversationStore(selectInRoom);
   const muted = useConversationPreferences((state) => state.muted);
   const serverRecording = useConversationPreferences((state) => state.serverRecording);
   const addOns = useConversationPreferences(
@@ -73,7 +77,7 @@ export const ConversationSettingsScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <LanguageList />
-        {features.speech && (
+        {features.speech && !inRoom && (
           <>
             <OutputModeControl />
             <ListSection footer={t('conversationSettings.speakHint')}>

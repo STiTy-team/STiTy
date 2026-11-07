@@ -68,6 +68,7 @@ const finishRecording = (id: string) =>
  */
 export const withMockRecording = (live: LiveApi): LiveApi => ({
   monitor: live.monitor,
+  isRoomOpen: live.isRoomOpen,
   async open(options) {
     const conversationId = await startRecording(options);
     const session = await live
@@ -95,6 +96,7 @@ export const withMockRecording = (live: LiveApi): LiveApi => ({
       });
     return {
       conversationId,
+      roomCode: session.roomCode,
       get isOpen() {
         return session.isOpen;
       },

@@ -100,6 +100,8 @@ export type StartMessage = {
   token?: string;
   save?: boolean;
   conversationId?: string;
+  /** The server refuses a `conversationId` that isn't open instead of opening it. */
+  join?: boolean;
   clientVersion?: string;
   /** Development builds: ask the server to save this phone's audio and messages for debugging. */
   recording?: boolean;

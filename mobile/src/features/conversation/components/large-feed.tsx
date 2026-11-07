@@ -3,7 +3,10 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { languageName } from '@/features/conversation/language-name';
 import { useConversationPreferences } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { usePreferencesStore } from '@/stores/preferences-store';
 import { makeStyles, spacing, typography } from '@/theme';
 
@@ -18,6 +21,7 @@ export const LargeFeed = () => {
   const partial = useConversationStore((state) => state.partial);
   const talking = useConversationStore((state) => state.talking);
   const myLanguage = usePreferencesStore((state) => state.myLanguage);
+  const inRoom = useConversationStore(selectInRoom);
   const holdToTalk = useConversationPreferences((state) => state.holdToTalk);
 
   if (partial) {
@@ -53,7 +57,9 @@ export const LargeFeed = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.stage} accessibilityLiveRegion="polite">
-      <Text style={styles.who}>{mine ? t('conversation.me') : languageName(t, last.language)}</Text>
+      <Text style={styles.who}>
+        {mine && !inRoom ? t('conversation.me') : languageName(t, last.language)}
+      </Text>
       <Text style={styles.headline}>{headline}</Text>
       {!!secondary && <Text style={styles.secondary}>{secondary}</Text>}
     </ScrollView>

@@ -69,7 +69,7 @@ const useStyles = makeStyles((colors) => ({
   },
   secondary: { backgroundColor: colors.surface },
   contrast: { backgroundColor: colors.text },
-  label: { ...typography.button },
+  label: { ...typography.button, flexShrink: 1, textAlign: 'center' },
   disabled: { opacity: 0.4 },
   pressed: { opacity: 0.85 },
 }));

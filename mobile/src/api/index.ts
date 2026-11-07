@@ -19,6 +19,8 @@ import { env } from '@/config/env';
 /** Builds the API from the mode map: each area answers from its live or its mock adapter. */
 const createApi = (modes: ApiModes): Api => {
   const http = createHttpClient(env.apiUrl, tokenStore);
+  // Rooms live on the conversation server, which `EXPO_PUBLIC_API_URL` may not point at.
+  const conversationServer = createHttpClient(env.serverUrl.replace(/^ws/, 'http'), tokenStore);
   const pick = <T>(area: keyof ApiModes, live: () => T, mock: () => T): T =>
     modes[area] === 'mock' ? mock() : live();
 
@@ -30,8 +32,8 @@ const createApi = (modes: ApiModes): Api => {
     modes.live === 'mock'
       ? withMockRecording(createMockLive())
       : modes.conversations === 'mock'
-        ? withMockRecording(createLiveSession(env.serverUrl, auth))
-        : createLiveSession(env.serverUrl, auth);
+        ? withMockRecording(createLiveSession(env.serverUrl, auth, conversationServer))
+        : createLiveSession(env.serverUrl, auth, conversationServer);
 
   return {
     capabilities: pick('capabilities', () => createLiveCapabilities(http), createMockCapabilities),
@@ -64,7 +66,7 @@ export const apiMocks = {
 export { ApiError, apiErrorKind, type ApiErrorKind } from '@/api/errors';
 export { onUnauthorized } from '@/api/session-events';
 export { setMockFailure } from '@/api/mock/runtime';
-export { SessionOpenError } from '@/api/live/ws/asr-session';
+export { SessionOpenError, SessionRefusedError } from '@/api/live/ws/asr-session';
 export { AUDIO_FORMAT } from '@/api/live/ws/protocol';
 export type {
   CapacityMessage,

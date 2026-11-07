@@ -2,6 +2,7 @@ import {
   ApiError,
   AUDIO_FORMAT,
   SessionOpenError,
+  SessionRefusedError,
   type CapacityMessage,
   type FinalMessage,
   type FoldMessage,
@@ -11,6 +12,7 @@ import {
 } from '@/api';
 import { normalizeLanguageCode } from '@/domain/languages';
 import type { OutputMode } from '@/domain/output-modes';
+import { newRoom, type Room } from '@/domain/rooms';
 import { createLogger } from '@/lib/logger';
 import { MicrophonePermissionError } from '@/services/audio/microphone';
 import { hasSpeechEnergy } from '@/services/audio/speech-energy';
@@ -28,6 +30,7 @@ import {
 } from './conversation-machine';
 import {
   conversationActions as actions,
+  selectInRoom,
   useConversationStore,
   usePresentingStore,
 } from './conversation-store';
@@ -139,12 +142,16 @@ export class ConversationController {
     );
   }
 
-  /** `demo` plays the scripted introduction through the same session flow. */
-  async start({ demo = false }: { demo?: boolean } = {}): Promise<void> {
+  /**
+   * `demo` plays the scripted introduction through the same session flow. `room` joins someone
+   * else's conversation; otherwise a retry keeps its room and a new start gets one to invite to.
+   */
+  async start({ demo = false, room }: { demo?: boolean; room?: Room } = {}): Promise<void> {
     if (!canStart(this.phase)) return;
     this.transition('start');
     actions.fail(null);
     actions.setDemo(demo);
+    actions.setRoom(demo ? null : (room ?? useConversationStore.getState().room ?? newRoom()));
 
     const { myLanguage, peerLanguage } = this.deps.preferences();
     if (!demo && myLanguage === peerLanguage) {
@@ -227,6 +234,14 @@ export class ConversationController {
     if (this.phase !== 'recording') return;
     actions.setTalking(talking);
     if (talking) this.speech.stop();
+  }
+
+  /** Inviting turns this conversation into a room; it stays one until it ends. */
+  invite(): void {
+    const { room } = useConversationStore.getState();
+    if (!room || room.shared) return;
+    actions.setRoom({ ...room, shared: true });
+    this.speech.stop();
   }
 
   applyOutputMode(mode: OutputMode): void {
@@ -317,14 +332,15 @@ export class ConversationController {
     const demo = this.isDemo;
     if (!this.session?.isOpen) {
       const { myLanguage, peerLanguage, saveRequested, serverRecording } = this.deps.preferences();
-      const { conversationId } = useConversationStore.getState();
+      const { conversationId, room } = useConversationStore.getState();
       const generation = ++this.generation;
       const current = () => generation === this.generation;
       const open = demo ? this.deps.openIntro : this.deps.openSession;
       const session = await open({
         languages: { lang: myLanguage, targetLang: peerLanguage },
-        save: !demo && saveRequested,
+        save: !demo && saveRequested && !room?.shared,
         conversationId,
+        room,
         recording: !demo && serverRecording,
         handlers: {
           onPartial: (message) => current() && this.handlePartial(message),
@@ -341,6 +357,9 @@ export class ConversationController {
       attempt.check();
       this.session = session;
       actions.setConversationId(session.conversationId ?? conversationId);
+      if (room) {
+        actions.setRoom({ ...room, code: session.roomCode ?? room.code, joining: false });
+      }
     }
     if (demo) return;
     await this.microphone.start();
@@ -481,15 +500,21 @@ export class ConversationController {
 
   private speak(detected: string, translation: string): void {
     const { muted, outputMode, ...pair } = this.deps.preferences();
-    if (muted || this.phase !== 'recording') return;
+    // Every phone in a room is listening, so one speaking aloud would be transcribed again.
+    if (muted || this.phase !== 'recording' || selectInRoom(useConversationStore.getState())) {
+      return;
+    }
     const plan = planPlayback(detected, pair, outputMode);
     if (plan) this.speech.enqueue({ text: translation, ...plan });
   }
 }
 
+const ROOM_NOT_FOUND = 'conversation_not_found';
+
 const errorCode = (error: unknown): ConversationErrorCode => {
   if (error instanceof ConversationError) return error.code;
   if (error instanceof MicrophonePermissionError) return 'microphoneDenied';
+  if (error instanceof SessionRefusedError && error.code === ROOM_NOT_FOUND) return 'roomNotFound';
   if (error instanceof SessionOpenError) return 'serverUnreachable';
   if (error instanceof ApiError) return 'serverUnreachable';
   log.error('unexpected conversation error', error);

@@ -24,6 +24,8 @@ type Props = {
   text: string;
   translation: string;
   mine: boolean;
+  /** False in a room: its mics are mixed, so my language doesn't mean I said it. */
+  speakerKnown: boolean;
   entrance: ItemEntrance;
 };
 
@@ -36,6 +38,7 @@ export const TranscriptItem = memo(function TranscriptItem({
   text,
   translation,
   mine,
+  speakerKnown,
   entrance,
 }: Props) {
   const { t } = useTranslation();
@@ -57,13 +60,14 @@ export const TranscriptItem = memo(function TranscriptItem({
   const headline = mine ? text : translation || text;
   const secondary = mine ? translation : translation ? text : '';
   const code = language.toUpperCase();
+  const me = mine && speakerKnown;
 
   return (
-    <Animated.View style={[styles.item, mine && styles.mine, animated]}>
+    <Animated.View style={[styles.item, me && styles.mine, animated]}>
       <View style={styles.who}>
-        <View style={[styles.avatar, mine && styles.avatarMine]}>
-          <Text style={[styles.avatarText, mine && styles.avatarTextMine]}>
-            {mine ? t('conversation.me') : code}
+        <View style={[styles.avatar, me && styles.avatarMine]}>
+          <Text style={[styles.avatarText, me && styles.avatarTextMine]}>
+            {me ? t('conversation.me') : code}
           </Text>
         </View>
         <Text style={styles.whoText} numberOfLines={1}>

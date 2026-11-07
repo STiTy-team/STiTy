@@ -10,6 +10,8 @@ import { WebSocketConnection } from './websocket-connection';
 const OPEN_TIMEOUT_MS = 15_000;
 /** How long close() waits for the server's closing `final` after `stop`. */
 const CLOSE_GRACE_MS = 2_000;
+/** The server closes with 4000 + an HTTP status and puts its error code in the reason. */
+const SERVER_REFUSAL_CLOSE_CODE = 4_000;
 
 export type AsrSessionHandlers = {
   onPartial: (message: PartialMessage) => void;
@@ -29,7 +31,7 @@ export type StartOptions = Omit<StartMessage, 'type' | 'translate'>;
 
 export class SessionOpenError extends Error {}
 
-/** The server answered the handshake with an `error` message. */
+/** The server answered the handshake with an `error` message, or closed with its reason. */
 export class SessionRefusedError extends SessionOpenError {
   constructor(
     message: string,
@@ -94,13 +96,15 @@ export class AsrSession {
               return;
           }
         },
-        onClose: () => {
+        onClose: ({ code, reason }) => {
           if (this.connection !== connection) {
             settle(new SessionOpenError('Session closed before it was ready'));
             return;
           }
           this.connection = null;
           if (settled) this.handlers.onLost();
+          else if (code >= SERVER_REFUSAL_CLOSE_CODE)
+            settle(new SessionRefusedError(reason, reason));
           else settle(new SessionOpenError('Connection closed before the session was ready'));
         },
       });

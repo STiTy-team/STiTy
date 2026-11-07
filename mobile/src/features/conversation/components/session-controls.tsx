@@ -9,7 +9,10 @@ import { OUTPUT_MODES, type OutputMode } from '@/domain/output-modes';
 import { getConversationController } from '@/features/conversation/conversation-runtime';
 import { isConnecting } from '@/features/conversation/model/conversation-machine';
 import { useConversationPreferences } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { haptics } from '@/services/haptics';
 import { makeStyles, spacing, typography, useColors, type ColorScheme } from '@/theme';
 
@@ -42,6 +45,8 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
   const controller = getConversationController();
   const phase = useConversationStore((state) => state.phase);
   const talking = useConversationStore((state) => state.talking);
+  const inRoom = useConversationStore(selectInRoom);
+  const speaks = features.speech && !inRoom;
   const muted = useConversationPreferences((state) => state.muted);
   const outputMode = useConversationPreferences((state) => state.outputMode);
   const { setMuted, setOutputMode } = useConversationPreferences.getState();
@@ -84,7 +89,7 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           : [styles.bar, { paddingBottom: Math.max(bottom, spacing.lg) + spacing.sm }]
       }
     >
-      {features.speech ? (
+      {speaks ? (
         <SideButton
           scheme={scheme}
           icon={muted ? 'volume-mute-outline' : 'volume-high-outline'}
@@ -151,7 +156,7 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           caption={t('present.exit')}
           onPress={present.onExit}
         />
-      ) : features.speech ? (
+      ) : speaks ? (
         <SideButton
           icon={OUTPUT_ICONS[outputMode]}
           caption={t(`outputModes.${outputMode}`)}

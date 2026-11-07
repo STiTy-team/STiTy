@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import type { ConfigContext, ExpoConfig } from 'expo/config';
@@ -21,8 +21,18 @@ if (VARIANT === 'production' && BASE_ID === PLACEHOLDER_ID) {
   throw new Error('Set APP_ID to the real bundle id before building for production.');
 }
 const EAS_PROJECT_ID = 'ed856a8e-782a-4b00-92dc-024fddd15d17';
+const HOSTED_WEB_URL = 'https://stity-mobile-preview.expo.app';
 const MICROPHONE_USAGE =
   'STiTy uses the microphone to transcribe and translate your conversation in real time.';
+
+/** The address `scripts/server/tunnel.sh` links to: the environment, then the repository's .env. */
+const webUrl = (projectRoot: string): string => {
+  const repositoryEnv = join(projectRoot, '..', '.env');
+  const saved = existsSync(repositoryEnv)
+    ? readFileSync(repositoryEnv, 'utf8').match(/^STITY_WEB_URL=(.+)$/m)?.[1]
+    : undefined;
+  return (process.env.STITY_WEB_URL ?? saved ?? HOSTED_WEB_URL).trim().replace(/\/+$/, '');
+};
 
 export default ({ config, projectRoot }: ConfigContext): ExpoConfig => {
   const variant = VARIANTS[VARIANT];
@@ -104,6 +114,7 @@ export default ({ config, projectRoot }: ConfigContext): ExpoConfig => {
     extra: {
       appVariant: VARIANT,
       features: application.features,
+      webUrl: webUrl(projectRoot),
       eas: { projectId: EAS_PROJECT_ID },
     },
   };

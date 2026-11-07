@@ -9,6 +9,7 @@ import { goBack } from '@/components/go-back';
 import { IconButton } from '@/components/icon-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { ErrorBanner } from '@/features/conversation/components/error-banner';
+import { InviteSheet } from '@/features/conversation/components/invite-sheet';
 import { LargeFeed } from '@/features/conversation/components/large-feed';
 import { SessionControls } from '@/features/conversation/components/session-controls';
 import { SessionStatusLine } from '@/features/conversation/components/session-status';
@@ -18,11 +19,15 @@ import { useEndConversation } from '@/features/conversation/hooks/use-end-conver
 import { languageName } from '@/features/conversation/language-name';
 import { isInConversation } from '@/features/conversation/model/conversation-machine';
 import { useConversationPreferences } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectCanInvite,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { usePreferencesStore } from '@/stores/preferences-store';
 import { makeStyles } from '@/theme';
 
 const KEEP_AWAKE_TAG = 'conversation';
+const HEADER_SIDE_WIDTH = 92;
 
 /** A demo has nothing to lose, so only a real conversation asks before closing. */
 const hasConversation = () => {
@@ -42,6 +47,8 @@ export const ConversationScreen = () => {
   const languages = usePreferencesStore((state) => state.languages);
   const largeText = useConversationPreferences((state) => state.largeText);
   const holdToTalk = useConversationPreferences((state) => state.holdToTalk);
+  const canInvite = useConversationStore(selectCanInvite);
+  const [inviting, setInviting] = useState(false);
 
   // Start normally opens this screen with the session already starting; a direct visit starts it.
   useEffect(() => {
@@ -78,7 +85,22 @@ export const ConversationScreen = () => {
       <ScreenHeader
         title={title}
         subtitle={<SessionStatusLine />}
-        left={<IconButton icon="chevron-back" label={t('common.back')} onPress={goBack} />}
+        sideWidth={HEADER_SIDE_WIDTH}
+        left={
+          <View style={styles.actions}>
+            <IconButton icon="chevron-back" label={t('common.back')} onPress={goBack} />
+            {canInvite && (
+              <IconButton
+                icon="person-add-outline"
+                label={t('conversation.invite')}
+                onPress={() => {
+                  controller.invite();
+                  setInviting(true);
+                }}
+              />
+            )}
+          </View>
+        }
         right={
           <View style={styles.actions}>
             <IconButton
@@ -97,6 +119,7 @@ export const ConversationScreen = () => {
       {large ? <LargeFeed /> : <TranscriptFeed />}
       {error && <ErrorBanner code={error} />}
       <SessionControls holdToTalk={hold} />
+      <InviteSheet visible={inviting} onClose={() => setInviting(false)} />
     </SafeAreaView>
   );
 };

@@ -36,13 +36,14 @@ an iPhone, but it can't choose earphone or speaker. The microphone only works on
 
 ## Configuration
 
-| Variable                 | Default                                   | Meaning                                                                                                                               |
-| ------------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `EXPO_PUBLIC_SERVER_URL` | `ws://localhost:8765` in development only | WebSocket origin (`wss://`; `ws://` in development only), no path — the app appends `/api/v1/ws`. Required for preview and production |
-| `EXPO_PUBLIC_API_URL`    | the WebSocket host over `http(s)`         | REST origin for accounts and records — the app appends `/api/v1`                                                                      |
-| `EXPO_PUBLIC_API_MOCKS`  | everything but `live` (none in prod)      | API areas answered by mock data: a comma list, `all` or `none` — see [API layer](#api-layer-mock-or-live)                             |
-| `APP_VARIANT`            | `development`                             | `development` · `preview` · `production` — set by the EAS profile                                                                     |
-| `APP_ID`                 | `com.anonymous.stitymobile`               | Bundle id and Android package. Production builds refuse the placeholder                                                               |
+| Variable                 | Default                                   | Meaning                                                                                                                                                                                       |
+| ------------------------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EXPO_PUBLIC_SERVER_URL` | `ws://localhost:8765` in development only | WebSocket origin (`wss://`; `ws://` in development only), no path — the app appends `/api/v1/ws`. Required for preview and production                                                         |
+| `EXPO_PUBLIC_API_URL`    | the WebSocket host over `http(s)`         | REST origin for accounts and records — the app appends `/api/v1`                                                                                                                              |
+| `EXPO_PUBLIC_API_MOCKS`  | everything but `live` (none in prod)      | API areas answered by mock data: a comma list, `all` or `none` — see [API layer](#api-layer-mock-or-live)                                                                                     |
+| `STITY_WEB_URL`          | the hosted preview web app                | Where a phone's invite links open. Read at build time from the environment, then the repository's `.env`; EAS cloud builds don't upload that file, so set it in `eas.json` to change it there |
+| `APP_VARIANT`            | `development`                             | `development` · `preview` · `production` — set by the EAS profile                                                                                                                             |
+| `APP_ID`                 | `com.anonymous.stitymobile`               | Bundle id and Android package. Production builds refuse the placeholder                                                                                                                       |
 
 Values are validated at startup in `src/config/env.ts`; a malformed URL, a URL with a path,
 cleartext in a release build, an unknown API area or a mock in production fails fast. For EAS builds, set them per environment with `eas env:create`
@@ -233,6 +234,30 @@ typed `Api` from `getApi()`; `EXPO_PUBLIC_API_MOCKS` decides per area whether th
 `session_started`, `first_translation_shown` (ms), `session_ended` (duration),
 `session_error` (code) and `record_opened`. They go to the device log until a crash and analytics
 vendor is plugged in with `setTelemetrySink`.
+
+## Rooms
+
+The server gives every unsaved conversation a short room code in `ready`. Invite in the conversation
+header shows it with a link to share, and Join room on the home screen enters it on other phones.
+The sheet asks `GET /api/v1/rooms/{code}`
+on the conversation server first, and stays open with an error unless the room is open, so a bad code
+never reaches the conversation screen. That request goes to the WebSocket's host over `http(s)`, not
+`EXPO_PUBLIC_API_URL`. The code is then sent as `conversationId` in `start` with `join: true`, so a
+room that closed in between is still refused (close code 4404, shown as `errors.roomNotFound`). The
+code lives in `room` in the conversation store and is used again on resume.
+
+Inviting or joining makes the conversation shared until it ends. The server mixes every phone's
+microphone into one stream, so a shared conversation has no speaker labels: lines show the language
+rather than "Me". Translations aren't spoken, because every phone is listening. A room closes when
+the last phone leaves.
+
+A saved conversation has no code to share, because its `conversationId` is the id of its record, so
+Invite is hidden while saving.
+
+The link is `/join?room=<code>` on the web app, or on `STITY_WEB_URL` when shared from a phone. `src/app/join.tsx` shows the room and the languages and joins on a tap, so a link alone never
+starts the microphone. A phone with a server set in the app adds `&server=<url>`, and a development
+build asks before it switches to that server. The installed app opens `stity://join?room=<code>`;
+opening the `https` link in the app would need universal links.
 
 ## Output modes
 

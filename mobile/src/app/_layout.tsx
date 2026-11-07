@@ -58,6 +58,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="conversation" options={{ gestureEnabled: false }} />
         <Stack.Screen name="conversation-settings" />
+        <Stack.Screen name="join" />
         <Stack.Screen
           name="present"
           options={{ gestureEnabled: false, animation: 'fade', orientation: 'landscape' }}

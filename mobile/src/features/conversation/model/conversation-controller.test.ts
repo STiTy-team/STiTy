@@ -1,8 +1,19 @@
-import type { AsrSessionHandlers, LiveOpenOptions, LiveSession } from '@/api';
+import {
+  SessionRefusedError,
+  type AsrSessionHandlers,
+  type LiveOpenOptions,
+  type LiveSession,
+} from '@/api';
+import { joinRoom } from '@/domain/rooms';
 import { MicrophonePermissionError } from '@/services/audio/microphone';
 
 import { ConversationController } from './conversation-controller';
-import { conversationActions, setPresenting, useConversationStore } from './conversation-store';
+import {
+  conversationActions,
+  selectCanInvite,
+  setPresenting,
+  useConversationStore,
+} from './conversation-store';
 import type {
   AudioOutputPort,
   MicrophonePort,
@@ -23,6 +34,8 @@ const deferred = <T = void>() => {
   return { promise, resolve, reject };
 };
 
+const SERVER_CODE = 'SRV234';
+
 type FakeSession = LiveSession & {
   isOpen: boolean;
   close: jest.Mock<Promise<void>, []>;
@@ -32,9 +45,10 @@ type FakeSession = LiveSession & {
   logSpeech: jest.Mock;
 };
 
-const fakeSession = (conversationId: string | null): FakeSession => {
+const fakeSession = (conversationId: string | null, roomCode: string | null): FakeSession => {
   const session: FakeSession = {
     conversationId,
+    roomCode: conversationId ? null : roomCode,
     isOpen: true,
     close: jest.fn(async () => {
       session.isOpen = false;
@@ -64,6 +78,7 @@ const setup = (overrides: Overrides = {}) => {
     handlers.push(options.handlers);
     const session = fakeSession(
       options.save ? (options.conversationId ?? overrides.conversationId ?? null) : null,
+      options.room?.code ?? SERVER_CODE,
     );
     sessions.push(session);
     return session;
@@ -142,6 +157,110 @@ beforeEach(() => {
   conversationActions.reset();
   conversationActions.setPhase('idle');
   setPresenting(false);
+});
+
+describe('rooms', () => {
+  it('joins by code without saving, and opens the same room again on resume', async () => {
+    const { controller, openSession, session } = setup();
+    await controller.start({ room: joinRoom('ABC234') });
+
+    expect(openSession.mock.calls[0]![0]).toMatchObject({
+      room: { code: 'ABC234', joining: true },
+      save: false,
+    });
+
+    session().isOpen = false;
+    controller.pause();
+    await controller.resume();
+
+    expect(openSession.mock.calls[1]![0]).toMatchObject({
+      room: { code: 'ABC234', joining: false },
+    });
+  });
+
+  it('never speaks translations aloud in a room', async () => {
+    const { controller, handlers, speech } = setup();
+    await controller.start();
+    controller.invite();
+
+    handlers().onFinal({ type: 'final', original: 'hi', translation: '안녕', language: 'en' });
+
+    expect(useConversationStore.getState().entries).toHaveLength(1);
+    expect(speech.enqueue).not.toHaveBeenCalled();
+  });
+
+  it('reports a code the server refuses, and retries in the same room', async () => {
+    const { controller, openSession } = setup();
+    openSession.mockRejectedValueOnce(
+      new SessionRefusedError('conversation_not_found', 'conversation_not_found'),
+    );
+    await controller.start({ room: joinRoom('ABC234') });
+
+    expect(useConversationStore.getState().error).toBe('roomNotFound');
+
+    await controller.start();
+
+    expect(openSession.mock.calls[1]![0]).toMatchObject({ room: { code: 'ABC234' } });
+  });
+
+  it('forgets the room when the conversation ends', async () => {
+    const { controller } = setup();
+    await controller.start();
+
+    controller.end();
+
+    expect(useConversationStore.getState().room).toBeNull();
+  });
+
+  it('keeps the code the server issues, unshared and spoken until inviting', async () => {
+    const { controller, openSession, handlers, speech } = setup({
+      preferences: { saveRequested: false },
+    });
+    await controller.start();
+
+    expect(openSession.mock.calls[0]![0]).toMatchObject({
+      room: { code: null, joining: false, shared: false },
+      save: false,
+    });
+    expect(useConversationStore.getState().room?.code).toBe(SERVER_CODE);
+    expect(selectCanInvite(useConversationStore.getState())).toBe(true);
+
+    handlers().onFinal({ type: 'final', original: 'hi', translation: '안녕', language: 'en' });
+    expect(speech.enqueue).toHaveBeenCalledTimes(1);
+    speech.stop.mockClear();
+
+    controller.invite();
+
+    expect(useConversationStore.getState().room?.shared).toBe(true);
+    expect(speech.stop).toHaveBeenCalled();
+  });
+
+  it('has nothing to invite with while saving', async () => {
+    const { controller } = setup({ conversationId: 'record-1' });
+    await controller.start();
+
+    expect(useConversationStore.getState().room?.code).toBeNull();
+    expect(selectCanInvite(useConversationStore.getState())).toBe(false);
+  });
+
+  it('stops saving a resumed session once it has been shared', async () => {
+    const { controller, openSession, session } = setup({ preferences: { saveRequested: false } });
+    await controller.start();
+    controller.invite();
+
+    session().isOpen = false;
+    controller.pause();
+    await controller.resume();
+
+    expect(openSession.mock.calls[1]![0]).toMatchObject({ save: false });
+  });
+
+  it('has no room in a demo', async () => {
+    const { controller } = setup();
+    await controller.start({ demo: true });
+
+    expect(useConversationStore.getState().room).toBeNull();
+  });
 });
 
 describe('ConversationController', () => {
@@ -346,7 +465,7 @@ describe('ConversationController', () => {
       const starting = controller.start();
       await flush();
       controller.end();
-      const late = fakeSession(null);
+      const late = fakeSession(null, null);
       opened.resolve(late);
       await starting;
 
