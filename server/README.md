@@ -70,11 +70,11 @@ Run it in tmux so it outlives your terminal (`.claude/rules/long-jobs-in-tmux.md
 
 A client asks for recording with `recording: true` in `start` or `config` (the mobile app's
 Developer → Record on server switch in conversation settings, development builds only), and can turn
-it off again mid-conversation. The server records only when `STITY_RECORDING__ALLOWED=true`;
-`scripts/server/run.sh` sets it for `STAGE=dev` unless it is already set, otherwise requests are
-refused and `ready`/`config_ok` answer `recording: false`. Each time recording turns on it writes a
-new folder, `server/logs/recordings/<date>/<time>-<participant id>/`. `STITY_RECORDING__DIR` moves
-the folder. `server/logs/` is gitignored.
+it off again mid-conversation. The server records only when `STITY_RECORDING__ALLOWED=true`, which
+is off by default; otherwise requests are refused and `ready`/`config_ok` answer `recording: false`.
+Each time recording turns on it writes a new folder,
+`server/logs/recordings/<date>/<time>-<participant id>/`. `STITY_RECORDING__DIR` moves the folder.
+`server/logs/` is gitignored.
 
 | File | What |
 |---|---|
@@ -127,8 +127,11 @@ server they were built with — see [mobile/README.md](../mobile/README.md#confi
 
 ## What is not there yet
 
-- No HTTP API for conversations: a conversation exists while at least one client is in it, and
-  the id is whatever the first client sends in `start` (or a new UUID).
+- No HTTP API to create or list conversations. `GET /api/v1/rooms/{code}` only answers whether one
+  is open: 204, or 404 `conversation_not_found`. A conversation exists while at least one client is
+  in it. A client that sends no `conversationId` gets a new short code in `ready`; one that sends an
+  id it was given opens or rejoins it. With `join: true`, an id that isn't open is refused with close
+  code 4404.
 - No join tickets. Anyone who knows an id can join it.
 - No backlog: a client that joins late gets only the finals committed after it joined.
 - One `targetLang` per client.

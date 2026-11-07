@@ -10,6 +10,11 @@ class ConversationNotStarted(ConversationError):
     status_code = 409
 
 
+class ConversationNotFound(ConversationError):
+    code = "conversation_not_found"
+    status_code = 404
+
+
 class ConversationClosed(ConversationError):
     code = "conversation_closed"
     status_code = 410

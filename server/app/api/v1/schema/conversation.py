@@ -26,6 +26,7 @@ class LanguageMessage(Message):
 class StartMessage(LanguageMessage):
     type: Literal["start"]
     conversation_id: ConversationId | None = None
+    join: bool = False
     lang: str = "auto"
     target_lang: str = ""
     lang_map: dict | None = None

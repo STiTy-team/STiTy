@@ -1,4 +1,5 @@
 import asyncio
+import secrets
 import uuid
 from collections.abc import Awaitable
 
@@ -12,6 +13,7 @@ from app.services.conversation.errors import (
     AudioFailed,
     ConversationClosed,
     ConversationError,
+    ConversationNotFound,
     ServerShutdown,
 )
 from app.services.conversation.session import ConversationSession
@@ -22,6 +24,9 @@ from app.services.conversation.workers import (
 )
 
 log = logging.getLogger(__name__)
+
+ROOM_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+ROOM_CODE_LENGTH = 6
 
 
 class ConversationService:
@@ -51,8 +56,19 @@ class ConversationService:
         )
         return ConversationSession(self, participant)
 
-    async def join(self, participant: Participant, conversation_id: str | None) -> Conversation:
-        conversation = self._get_conversation(conversation_id)
+    def ensure_open(self, conversation_id: str) -> None:
+        conversation = self.conversations.get(conversation_id)
+        if conversation is None or not conversation.is_open:
+            raise ConversationNotFound(f"{conversation_id} does not exist")
+
+    async def join(
+        self,
+        participant: Participant,
+        conversation_id: str | None,
+        *,
+        must_exist: bool = False,
+    ) -> Conversation:
+        conversation = self._get_conversation(conversation_id, must_exist=must_exist)
         try:
             async with conversation.lock:
                 if not conversation.is_open:
@@ -129,14 +145,22 @@ class ConversationService:
                 )
         return conversation.detach_unused_translation_workers()
 
-    def _get_conversation(self, conversation_id: str | None) -> Conversation:
+    def _get_conversation(self, conversation_id: str | None, *, must_exist: bool) -> Conversation:
         existing = self.conversations.get(conversation_id) if conversation_id else None
         if existing is not None and existing.is_open:
             return existing
-        conversation = Conversation(id=conversation_id or str(uuid.uuid4()))
+        if must_exist:
+            raise ConversationNotFound(f"{conversation_id} does not exist")
+        conversation = Conversation(id=conversation_id or self._new_room_code())
         self.conversations[conversation.id] = conversation
         log.info("Opened conversation %s", conversation.id)
         return conversation
+
+    def _new_room_code(self) -> str:
+        while True:
+            code = "".join(secrets.choice(ROOM_CODE_ALPHABET) for _ in range(ROOM_CODE_LENGTH))
+            if code not in self.conversations:
+                return code
 
     def _spawn(self, work: Awaitable[None]) -> None:
         task = asyncio.ensure_future(work)

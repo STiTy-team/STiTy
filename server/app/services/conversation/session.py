@@ -19,6 +19,7 @@ class ConversationSession:
         self,
         conversation_id: str | None,
         *,
+        must_exist: bool = False,
         lang: str,
         target_lang: str,
         lang_map: object | None,
@@ -27,7 +28,9 @@ class ConversationSession:
             await self.configure(lang=lang, target_lang=target_lang, lang_map=lang_map)
             return
         self.participant.set_languages(lang, target_lang, lang_map)
-        self.conversation = await self._service.join(self.participant, conversation_id)
+        self.conversation = await self._service.join(
+            self.participant, conversation_id, must_exist=must_exist
+        )
 
     async def configure(
         self,

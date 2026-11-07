@@ -10,6 +10,7 @@ from app.api.v1.schema.conversation import (
     ClientMessage,
     ConfigMessage,
     ConversationConfigMessage,
+    ConversationId,
     FinalMessage,
     FinishMessage,
     FoldMessage,
@@ -58,6 +59,15 @@ async def conversation(
         config,
         recorder,
     ).run()
+
+
+@router.get("/rooms/{room_code}", status_code=204)
+@inject
+async def room(
+    room_code: ConversationId,
+    service: ConversationService = Depends(Provide[Container.conversation_service]),
+) -> None:
+    service.ensure_open(room_code)
 
 
 class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMessage]):
@@ -127,7 +137,9 @@ class ConversationWebSocketConnectionHandler(WebSocketConnectionHandler[ClientMe
             case PingMessage():
                 pass
             case StartMessage():
-                await self.session.start(message.conversation_id, **message.languages())
+                await self.session.start(
+                    message.conversation_id, must_exist=message.join, **message.languages()
+                )
             case ConfigMessage():
                 await self._configure(message)
             case bytes():
