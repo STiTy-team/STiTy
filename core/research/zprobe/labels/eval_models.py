@@ -122,10 +122,15 @@ else:
                f"Translate it as a simultaneous interpreter: write the {LANGNAME[tgt]} addition said "
                f"after each phrase.\n{RULES[tgt]}\n"
                f'Answer with JSON only: {{"adds": ["...", ...]}} with exactly {len(row["chunks"])} items.')
+        def parse(o):
+            i = o.index("{")
+            return json.JSONDecoder().raw_decode(o[i:])[0]["adds"]
+
         try:
-            o = call(model, msg)
-            m = re.search(r"\{.*\}", o, re.S)
-            adds = json.loads(m.group(0))["adds"]
+            try:
+                adds = parse(call(model, msg))
+            except Exception:  # noqa: BLE001  (parse noise is the harness's problem, not the model's first shot)
+                adds = parse(call(model, msg + "\nOutput the JSON object and NOTHING else."))
             why = check(row, adds)
             emit({"model": model, "sid": row["sid"], "lang": row["lang"], "tgt": tgt,
                   "adds": adds if isinstance(adds, list) else None, "fail": why})
