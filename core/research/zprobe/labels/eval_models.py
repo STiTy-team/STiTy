@@ -58,8 +58,12 @@ def call(model, msg):
     kw = {"reasoning_effort": a.reasoning} if not model.startswith(("gpt-4", "gpt-5-mini")) else {}
     resp = client.chat.completions.create(model=model, messages=[{"role": "user", "content": msg}], **kw)
     u = resp.usage
-    pin, pout = PRICE.get(model, FALLBACK)
-    cost = u.prompt_tokens / 1e6 * pin + u.completion_tokens / 1e6 * pout
+    ec = (resp.model_extra or {}).get("estimated_cost") or {}
+    try:
+        cost = float(ec.get("amount"))
+    except (TypeError, ValueError):
+        pin, pout = PRICE.get(model, FALLBACK)
+        cost = u.prompt_tokens / 1e6 * pin + u.completion_tokens / 1e6 * pout
     with lock:
         spent[model] = spent.get(model, 0.0) + cost
         usage.write(json.dumps({"model": model, "in": u.prompt_tokens, "out": u.completion_tokens,
