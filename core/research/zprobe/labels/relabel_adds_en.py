@@ -109,8 +109,12 @@ def ask(row, note=""):
         model=a.model, reasoning_effort=a.reasoning,
         messages=[{"role": "user", "content": msg}])
     u = resp.usage
-    pin, pout = PRICE.get(a.model, (0.25, 2.00))
-    cost = u.prompt_tokens / 1e6 * pin + u.completion_tokens / 1e6 * pout
+    ec = (resp.model_extra or {}).get("estimated_cost") or {}
+    try:
+        cost = float(ec.get("amount"))
+    except (TypeError, ValueError):
+        pin, pout = PRICE.get(a.model, (0.25, 2.00))
+        cost = u.prompt_tokens / 1e6 * pin + u.completion_tokens / 1e6 * pout
     with lock:
         global spent
         spent += cost
