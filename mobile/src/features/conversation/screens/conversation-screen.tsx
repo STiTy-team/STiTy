@@ -9,6 +9,8 @@ import { goBack } from '@/components/go-back';
 import { IconButton } from '@/components/icon-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { ErrorBanner } from '@/features/conversation/components/error-banner';
+import { InviteSheet } from '@/features/conversation/components/invite-sheet';
+import { MicOffNotice } from '@/features/conversation/components/mic-off-notice';
 import { LargeFeed } from '@/features/conversation/components/large-feed';
 import { SessionControls } from '@/features/conversation/components/session-controls';
 import { SessionStatusLine } from '@/features/conversation/components/session-status';
@@ -18,11 +20,16 @@ import { useEndConversation } from '@/features/conversation/hooks/use-end-conver
 import { languageName } from '@/features/conversation/language-name';
 import { isInConversation } from '@/features/conversation/model/conversation-machine';
 import { useConversationPreferences } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectCanInvite,
+  selectMicOff,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { usePreferencesStore } from '@/stores/preferences-store';
 import { makeStyles } from '@/theme';
 
 const KEEP_AWAKE_TAG = 'conversation';
+const HEADER_RIGHT_WIDTH = 132;
 
 /** A demo has nothing to lose, so only a real conversation asks before closing. */
 const hasConversation = () => {
@@ -42,6 +49,9 @@ export const ConversationScreen = () => {
   const languages = usePreferencesStore((state) => state.languages);
   const largeText = useConversationPreferences((state) => state.largeText);
   const holdToTalk = useConversationPreferences((state) => state.holdToTalk);
+  const canInvite = useConversationStore(selectCanInvite);
+  const micOff = useConversationStore(selectMicOff);
+  const [inviting, setInviting] = useState(false);
 
   // Start normally opens this screen with the session already starting; a direct visit starts it.
   useEffect(() => {
@@ -78,6 +88,7 @@ export const ConversationScreen = () => {
       <ScreenHeader
         title={title}
         subtitle={<SessionStatusLine />}
+        rightWidth={HEADER_RIGHT_WIDTH}
         left={<IconButton icon="chevron-back" label={t('common.back')} onPress={goBack} />}
         right={
           <View style={styles.actions}>
@@ -86,6 +97,16 @@ export const ConversationScreen = () => {
               label={t('present.start')}
               onPress={() => router.push('/present')}
             />
+            {canInvite && (
+              <IconButton
+                icon="person-add-outline"
+                label={t('conversation.invite')}
+                onPress={() => {
+                  controller.invite();
+                  setInviting(true);
+                }}
+              />
+            )}
             <IconButton
               icon="options-outline"
               label={t('conversation.settings')}
@@ -95,8 +116,10 @@ export const ConversationScreen = () => {
         }
       />
       {large ? <LargeFeed /> : <TranscriptFeed />}
+      {micOff && <MicOffNotice />}
       {error && <ErrorBanner code={error} />}
       <SessionControls holdToTalk={hold} />
+      <InviteSheet visible={inviting} onClose={() => setInviting(false)} />
     </SafeAreaView>
   );
 };

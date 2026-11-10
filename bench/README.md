@@ -50,7 +50,7 @@ tmux new-session -d -s bench -c ~/STiTy "make bench-batch LIST=my_runs.txt 2>&1 
 웹사이트(`bench/manager/`, Vite, :29140). 웹사이트는 `/api` 요청을 API 서버로 넘긴다. 원격 서버에서 띄웠으면
 웹사이트 포트 하나만 넘겨 온다: `ssh -L 29140:localhost:29140 <서버>`. 처음에는
 `npm ci` 로 `bench/manager/node_modules` 를 받는다(Node.js 가 있어야 한다). 왼쪽 사이드바에 페이지가
-넷 있고, 사이드바를 접었는지는 브라우저가 기억한다.
+여섯 있고, 사이드바를 접었는지는 브라우저가 기억한다.
 
 | 페이지 | 하는 일 | 자세한 것 |
 |---|---|---|
@@ -58,6 +58,7 @@ tmux new-session -d -s bench -c ~/STiTy "make bench-batch LIST=my_runs.txt 2>&1 
 | **Configs** | S3 의 설정 목록(Pipeline·Dataset 탭), 새로 만들기, 이름·`meta` 고치기 | [설정](#설정) |
 | **Compare** | 데이터셋 하나를 골라 그 데이터셋으로 돈 실행들을 비교 | 아래 |
 | **Runs** | 모든 머신의 실행을 한 표에 모아 찾고 거르고, 하나를 골라 Replay 로 연다 | 아래 |
+| **Logs** | 이 머신에서 대화 서버가 남긴 녹음(`server/logs/recordings/`)을 보고, 다시 재생하고, 지운다 | 아래 |
 
 Replay(실행 하나의 항목 하나를 휴대폰 화면·이벤트·타이밍으로 다시 재생)는 사이드바에 따로 없고, Runs 에서
 실행을 골라 연다. Compare 와 Replay 는 이 머신의 `bench/runs/` 를 읽는다. 다른 머신에서 돈 실행은 Runs 의
@@ -105,6 +106,16 @@ Replay(실행 하나의 항목 하나를 휴대폰 화면·이벤트·타이밍�
 
 표 위의 **실행** 메뉴로 그 데이터셋의 실행을 골라 뺄 수 있다(기본은 전부). 표와 두 그림이 모두
 따른다. 고른 데이터셋·모델·지표·정렬은 주소의 `?` 뒤에 남아 새로 고쳐도 유지되고 링크로 건넬 수 있다.
+
+### Logs
+
+**`/logs` 는 이 머신의 대화 서버 녹음이다.** manager 는 고정 위치 `server/logs/recordings/` 만 읽는다 —
+서버를 `STITY_RECORDING__DIR` 로 다른 곳에 쓰게 하면 여기 안 보인다. 녹음은 S3 로 올라가지 않으므로
+서버와 manager 를 같은 머신에서 띄워야 한다. 줄을 누르면 Replay 와 같은 휴대폰 화면·이벤트 흐름으로
+다시 재생한다. 세션의 목표 언어(`start` 의 `targetLang`)로 온 `final` 만 휴대폰에 그리고, 다른 목표 언어의
+`final` 은 이벤트 흐름에만 보인다. 정답 문장이 없으니 지표·타이밍 탭은 없다. 지우기는 되돌릴 수 없고,
+아직 쓰는 중인 녹음(`meta.json` 에 끝 시각이 없고 5분 안에 파일이 바뀐 것)은 지울 수 없다. 서버가 죽어
+끝 시각 없이 남은 녹음은 "중단됨" 으로 보이고 지울 수 있다.
 
 ### Replay
 
@@ -860,14 +871,15 @@ notify.py     Discord 메시지: 성공·실패·job 시작·실패·되돌림·
 report.py     items.jsonl 행 + 채점 결과 → summary.json
 manager/      manager 웹사이트. make bench-manager 가 둘을 함께 띄운다
   server/           python -m bench.manager.server (:29130). 웹사이트가 부르는 /api 전부
-    app.py            라우팅: queue·설정·실행 비교 API, /api/replay/(데이터·항목·오디오)
+    app.py            라우팅: queue·설정·실행 비교 API, /api/replay/(데이터·항목·오디오), /api/logs/
     queue.py          Queue·Configs 페이지의 API: /api/machines/<host>/(jobs·notes·settings), /api/configs/…, /api/runs/pull
                       경로 표 하나로 요청 → machines/·shared_configs 호출 → JSON
     runs.py           실행 목록, 데이터셋별 묶기, 설정의 meta, Compare 가 쓰는 항목별 점수 분포
     session.py        실행 하나의 세션 재생 데이터 (항목·오디오·데이터셋 정보)
+    recordings.py     Logs 페이지: 서버 녹음 목록·재생 데이터·오디오·삭제 (server/logs/recordings/)
     git.py            "Add run" 이 git 에 묻는 것: branch 목록, 최신 commit
   src/              React + shadcn/ui 화면 (Vite, :29140). pages/ 가 사이드바의 페이지 하나씩
-                    (queue·configs·compare·replay), components/<페이지>/ 가 그 페이지의 조각
+                    (queue·configs·compare·replay·logs), components/<페이지>/ 가 그 페이지의 조각
 dataset.py    dataset.yml + manifest.jsonl (+ 있으면 alignment.jsonl) 읽기. .status 가 success 가 아니면 거부
 augment/      데이터셋 설정의 augment → 흘리기 전 오디오에 울림·소음·음량을 입힌다
   config.py         설정 모양. 숫자는 모두 Range([low, high])

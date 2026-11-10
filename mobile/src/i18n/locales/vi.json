@@ -26,7 +26,12 @@
     "saveHint": "Máy chủ lưu bản ghi trong lúc dịch. Không lưu âm thanh.",
     "saveLocked": "Áp dụng từ cuộc hội thoại tiếp theo.",
     "signInToSave": "Đăng nhập để lưu hội thoại",
-    "saveGuestHint": "Bạn có thể dịch mà không cần tài khoản. Khi đăng nhập, bản ghi của mỗi cuộc hội thoại sẽ được lưu."
+    "saveGuestHint": "Bạn có thể dịch mà không cần tài khoản. Khi đăng nhập, bản ghi của mỗi cuộc hội thoại sẽ được lưu.",
+    "joinRoom": "Vào phòng",
+    "joinRoomHint": "Nhập mã từ người đã mời bạn. Micrô của mọi người sẽ gộp thành một cuộc trò chuyện.",
+    "roomCode": "Mã phòng",
+    "join": "Vào",
+    "joinLinkHint": "Kiểm tra ngôn ngữ rồi vào phòng."
   },
   "outputModes": {
     "speaker": "Loa",
@@ -78,7 +83,17 @@
     "holdToTalk": "Giữ để nói",
     "holdHint": "Âm thanh chỉ được gửi khi bạn giữ nút.",
     "holdPrompt": "Giữ nút và nói",
-    "talking": "Đang nghe… thả ra để gửi"
+    "talking": "Đang nghe… thả ra để gửi",
+    "room": "Phòng {{code}}",
+    "invite": "Mời",
+    "inviteHint": "Quét mã QR này hoặc chia sẻ mã để tham gia. Bản dịch sẽ không được đọc to cho đến khi cuộc trò chuyện này kết thúc vì mọi điện thoại đều đang nghe.",
+    "share": "Chia sẻ",
+    "copyLink": "Sao chép liên kết",
+    "linkCopied": "Đã sao chép",
+    "inviteQr": "Mã QR để vào phòng này",
+    "roomPeople": "{{count}} người",
+    "micOff": "Tắt micrô",
+    "micOffNotice": "Chủ phòng đã tắt micrô của bạn. Bạn vẫn có thể theo dõi cuộc trò chuyện."
   },
   "conversationSettings": {
     "running": "Hội thoại vẫn đang tiếp tục",
@@ -107,7 +122,10 @@
     "serverUnreachable": "Kết nối thất bại",
     "connectionLost": "Mất kết nối với máy chủ.",
     "microphoneDenied": "Dịch trực tiếp cần quyền truy cập micrô. Hãy cho phép trong Cài đặt.",
-    "microphoneUnavailable": "Micrô không khả dụng. Có thể ứng dụng khác như cuộc gọi video đang sử dụng."
+    "microphoneUnavailable": "Micrô không khả dụng. Có thể ứng dụng khác như cuộc gọi video đang sử dụng.",
+    "roomNotFound": "Không có phòng nào đang mở với mã đó. Hãy kiểm tra rồi thử lại.",
+    "removedFromRoom": "Bạn đã bị đưa ra khỏi phòng này.",
+    "roomEnded": "Chủ phòng đã rời đi nên phòng đã đóng."
   },
   "settings": {
     "display": "Hiển thị",
@@ -129,6 +147,25 @@
     "termsSubtitle": "Quy tắc và giới hạn sử dụng",
     "disclaimer": "⚠ STiTy cung cấp bản dịch do AI tạo ra và không đảm bảo độ chính xác. Không sử dụng cho thông tin liên lạc y tế, pháp lý hoặc khẩn cấp.",
     "version": "v{{version}}"
+  },
+  "developer": {
+    "section": "Nhà phát triển",
+    "serverRecording": "Ghi âm trên máy chủ",
+    "serverRecordingHint": "Máy chủ lưu âm thanh của điện thoại này và mọi tin nhắn để gỡ lỗi. Chỉ những máy chủ cho phép mới ghi âm.",
+    "server": "Máy chủ",
+    "serverHint": "Địa chỉ wss:// hoặc https:// không có đường dẫn, chẳng hạn địa chỉ bên dưới mã QR mà máy chủ in ra.",
+    "connect": "Kết nối",
+    "resetServer": "Dùng máy chủ của bản dựng",
+    "invalidServer": "Không phải địa chỉ máy chủ",
+    "invalidServerHint": "Nhập origin như wss://example.trycloudflare.com, không có đường dẫn.",
+    "linkFailed": "Liên kết này không chứa địa chỉ máy chủ.",
+    "switchTitle": "Kết nối với máy chủ khác?",
+    "switchMessage": "Âm thanh micrô của bạn sẽ được gửi đến {{server}}. Bạn sẽ bị đăng xuất và ứng dụng sẽ khởi động lại. Chỉ kết nối với máy chủ bạn tin cậy.",
+    "source": {
+      "app": "Đã đặt trong ứng dụng. Ứng dụng sẽ khởi động lại khi bạn thay đổi.",
+      "build": "Lấy từ EXPO_PUBLIC_SERVER_URL. Quét mã QR của máy chủ hoặc nhấn Máy chủ để thay đổi.",
+      "fallback": "Chưa đặt máy chủ nên ứng dụng tìm trên localhost. Quét mã QR của máy chủ hoặc nhấn Máy chủ để đặt."
+    }
   },
   "about": {
     "copyright": "© 2026 STiTy. Bảo lưu mọi quyền."
@@ -370,5 +407,20 @@
     "deletedMessage": "Tài khoản, lịch sử và dữ liệu STiTy trên điện thoại này đã bị xóa.",
     "deleteFailed": "Không xóa được tài khoản",
     "deleteFailedMessage": "Chưa có gì bị xóa. Hãy kiểm tra kết nối và thử lại."
+  },
+  "room": {
+    "title": "Những người trong phòng",
+    "participant": "Người tham gia {{number}}",
+    "host": "Chủ phòng",
+    "you": "Bạn",
+    "micOn": "Bật micrô",
+    "micOff": "Tắt micrô",
+    "allMicsOn": "Bật tất cả micrô",
+    "allMicsOff": "Tắt tất cả micrô",
+    "remove": "Đưa {{name}} ra",
+    "removeTitle": "Đưa {{name}} ra?",
+    "removeMessage": "Người này sẽ rời cuộc trò chuyện ngay.",
+    "removeAction": "Đưa ra",
+    "hostHint": "Bạn là chủ phòng. Khi bạn rời đi, phòng sẽ đóng với mọi người."
   }
 }

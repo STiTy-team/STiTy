@@ -1,4 +1,4 @@
-"""The manager's API: the queue, configs, run overviews and session replay data and audio."""
+"""The manager's API: the queue, configs, run overviews, session replay data and audio, and server logs."""
 
 import json
 import urllib.parse
@@ -8,7 +8,7 @@ from core.errors import STiTyError
 
 from ...config import get_runs_dir
 from ...settings import BenchSettings
-from . import dataset_manager, runs
+from . import dataset_manager, recordings, runs
 from .dataset_manager import DatasetError
 from .queue import QueueApi
 from .session import (
@@ -25,6 +25,7 @@ PORT = 29130
 DISTRIBUTIONS_PREFIX = "/api/distributions/"
 REPLAY_API = "/api/replay"
 DATASETS_API = "/api/datasets"
+LOGS_API = "/api/logs"
 MAX_BODY = 64 * 1024
 
 
@@ -126,6 +127,9 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
             if path.startswith(DATASETS_API):
                 self._datasets_api("DELETE", path[len(DATASETS_API) :], qs, None)
                 return
+            if path.startswith(LOGS_API):
+                self._logs_api("DELETE", path[len(LOGS_API) :], qs)
+                return
             self.send_error(404, "no such endpoint")
 
         def _send_media(self, payload: bytes, content_type: str) -> None:
@@ -193,13 +197,34 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
                 return
             self._json(found)
 
+        def _logs_api(self, method: str, rest: str, qs: dict) -> None:
+            recording_id = (qs.get("id") or [""])[0]
+            try:
+                if method == "GET" and rest == "":
+                    return self._json(recordings.list_recordings())
+                if method == "GET" and rest == "/replay":
+                    return self._json(recordings.replay(recording_id))
+                if method == "GET" and rest == "/audio":
+                    return self._send_media(recordings.audio_bytes(recording_id), "audio/wav")
+                if method == "DELETE" and rest == "":
+                    return self._json(recordings.delete(recording_id))
+            except recordings.RecordingError as e:
+                self._json({"error": e.message}, e.code)
+                return
+            except (OSError, STiTyError, ValueError) as e:
+                self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+                return
+            self.send_error(404, "no such endpoint")
+
         def _datasets_api(self, method: str, rest: str, qs: dict, body: bytes | None) -> None:
             one = {k: v[0] for k, v in qs.items()}
             try:
                 if method == "GET" and rest == "":
                     return self._json(dm.list_datasets())
                 if method == "POST" and rest == "":
-                    return self._json(dm.create_dataset(one.get("name", ""), one.get("languages", "")), 201)
+                    return self._json(
+                        dm.create_dataset(one.get("name", ""), one.get("languages", "")), 201
+                    )
 
                 if rest == "/record" and method == "POST":
                     dataset = dm.pick(one.get("ds", ""))
@@ -217,7 +242,9 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
                 dataset = dm.pick(one.get("ds", ""))
                 item_id = one.get("id", "")
                 if method == "GET" and rest == "/shape":
-                    return self._json({"name": one.get("ds"), "path": str(dataset), **dm.shape(dataset)})
+                    return self._json(
+                        {"name": one.get("ds"), "path": str(dataset), **dm.shape(dataset)}
+                    )
                 if method == "GET" and rest == "/items":
                     return self._json(
                         dm.items(
@@ -263,6 +290,10 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
                 self._datasets_api("GET", path[len(DATASETS_API) :], qs, None)
                 return
 
+            if path.startswith(LOGS_API):
+                self._logs_api("GET", path[len(LOGS_API) :], qs)
+                return
+
             if path == "/api/overview":
                 self._json(runs.overview())
                 return
@@ -280,7 +311,10 @@ def serve(*, port: int = PORT, top_k: int = DEFAULT_TOP_K) -> int:
     ThreadingHTTPServer.allow_reuse_address = True
     with ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
         n = len(runs.list_runs()) if get_runs_dir().is_dir() else 0
-        print(f"manager API on http://127.0.0.1:{port}/api  ({n} run{'s' if n != 1 else ''})", flush=True)
+        print(
+            f"manager API on http://127.0.0.1:{port}/api  ({n} run{'s' if n != 1 else ''})",
+            flush=True,
+        )
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

@@ -17,6 +17,7 @@ LLM 호출 0. 로컬 MT + NLI + CometKiwi 만 돈다. 번역 캐시는 런의 �
     PYTHONPATH=. python -m core.meaning_segmentator.autoseg.gates.oracle_label \
         --run-id en2x/en-multi/run14 --split dev --llm-iter 3
 """
+
 from __future__ import annotations
 
 import argparse
@@ -28,14 +29,25 @@ import time
 from pathlib import Path
 
 from ..runtime import metrics
-from ..runtime.pipeline import (JsonCache, LocalTranslator, TAG_RE, to_lang_code,
-                                truncate, unit_count)
-from ..loop import (DEFAULT_TARGET_POOL, load_contra_floor, resolve_targets, score_split,
-                    target_is_spaced)
+from ..runtime.pipeline import (
+    JsonCache,
+    LocalTranslator,
+    TAG_RE,
+    to_lang_code,
+    truncate,
+    unit_count,
+)
+from ..loop import (
+    DEFAULT_TARGET_POOL,
+    load_contra_floor,
+    resolve_targets,
+    score_split,
+    target_is_spaced,
+)
 from . import noise_floor
 from ..paths import RUNS_DIR
 
-SCALE = 10000          # truncate 는 정수 점수만 읽는다. 0..1 라벨을 이 배수로 올린다
+SCALE = 10000  # truncate 는 정수 점수만 읽는다. 0..1 라벨을 이 배수로 올린다
 
 
 def log(msg: str) -> None:
@@ -79,12 +91,17 @@ def spearman(a: list[float], b: list[float]) -> float | None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--run-id", required=True, help="예: en2x/en-multi/run14")
     ap.add_argument("--split", default="dev")
-    ap.add_argument("--llm-iter", type=int, default=None,
-                    help="LLM 비교군으로 쓸 이터레이션 (기본: history 의 채택본)")
+    ap.add_argument(
+        "--llm-iter",
+        type=int,
+        default=None,
+        help="LLM 비교군으로 쓸 이터레이션 (기본: history 의 채택본)",
+    )
     ap.add_argument("--t-grid", type=int, nargs="*", default=None)
     ap.add_argument("--min-gap", type=int, default=None)
     ap.add_argument("--targets", nargs="*", default=None)
@@ -99,8 +116,9 @@ def main() -> int:
     spaced = bool(measured.get("uses_spaces_between_words", True))
     min_gap = cfg["min_gap"] if args.min_gap is None else args.min_gap
     t_grid = args.t_grid or cfg.get("final_t_grid") or cfg["t_grid"]
-    targets = args.targets or resolve_targets(cfg.get("tgt_langs") or DEFAULT_TARGET_POOL,
-                                              cfg["src_lang"])
+    targets = args.targets or resolve_targets(
+        cfg.get("tgt_langs") or DEFAULT_TARGET_POOL, cfg["src_lang"]
+    )
     sents = json.loads((run_dir / "data" / f"{args.split}.json").read_text(encoding="utf-8"))
     if args.n:
         sents = sents[: args.n]
@@ -109,34 +127,45 @@ def main() -> int:
         hist = json.loads((run_dir / "history.json").read_text(encoding="utf-8"))
         adopted = [h["version"] for h in hist if h.get("adopted")]
         args.llm_iter = adopted[-1] if adopted else 0
-    llm_rows = {r["id"]: r for r in json.loads(
-        (run_dir / f"iter_{args.llm_iter:02d}" / f"{args.split}_rows.json")
-        .read_text(encoding="utf-8"))}
+    llm_rows = {
+        r["id"]: r
+        for r in json.loads(
+            (run_dir / f"iter_{args.llm_iter:02d}" / f"{args.split}_rows.json").read_text(
+                encoding="utf-8"
+            )
+        )
+    }
     # 비교는 LLM 행이 유효한 문장에서만 — 정책 전부가 같은 문장 집합을 본다.
     sents = [s for s in sents if s["id"] in llm_rows and llm_rows[s["id"]].get("valid")]
     ids = [s["id"] for s in sents]
     texts = [s["text"] for s in sents]
     units = [_units(t, spaced) for t in texts]
-    log(f"{args.run_id} {args.split}: 문장 {len(sents)} / 타깃 {targets} / T {t_grid} / "
-        f"min_gap {min_gap} / spaced {spaced} / LLM iter {args.llm_iter}")
+    log(
+        f"{args.run_id} {args.split}: 문장 {len(sents)} / 타깃 {targets} / T {t_grid} / "
+        f"min_gap {min_gap} / spaced {spaced} / LLM iter {args.llm_iter}"
+    )
 
-    adequacy = metrics.make_adequacy_backend(cfg.get("adequacy_backend", "cometkiwi"),
-                                             batch_size=cfg.get("comet_batch_size", 64))
+    adequacy = metrics.make_adequacy_backend(
+        cfg.get("adequacy_backend", "cometkiwi"), batch_size=cfg.get("comet_batch_size", 64)
+    )
     contradiction = metrics.make_contradiction_backend()
 
     # ── 1. 라벨 ─────────────────────────────────────────────────────────
     translators: dict[str, LocalTranslator] = {}
     fulls: dict[str, list[str]] = {}
-    labels: dict[str, list[dict]] = {}          # tgt -> 문장별 {키: [j=1..n-1]}
+    labels: dict[str, list[dict]] = {}  # tgt -> 문장별 {키: [j=1..n-1]}
     label_path = run_dir / f"oracle_labels_{args.split}.json"
-    cached_labels = (json.loads(label_path.read_text(encoding="utf-8"))
-                     if label_path.exists() else {})
+    cached_labels = (
+        json.loads(label_path.read_text(encoding="utf-8")) if label_path.exists() else {}
+    )
     for tgt in targets:
         code = to_lang_code(tgt)
         tsp = target_is_spaced(tgt)
-        tr = LocalTranslator(tgt_code=code,
-                             cache=JsonCache(run_dir / "cache" / f"translate_{code}.json"),
-                             model_id=cfg.get("local_mt_model", "google/madlad400-3b-mt"))
+        tr = LocalTranslator(
+            tgt_code=code,
+            cache=JsonCache(run_dir / "cache" / f"translate_{code}.json"),
+            model_id=cfg.get("local_mt_model", "google/madlad400-3b-mt"),
+        )
         translators[tgt] = tr
         t0 = time.time()
         full = tr.full(texts)
@@ -162,10 +191,24 @@ def main() -> int:
         floor_fn = None
         if not args.no_floor:
             floor_fn = load_contra_floor(
-                run_dir, [{"full_trans": f} for f in full], contradiction,
-                filename=f"contra_floor_{code}.json", tgt_spaced=tsp)
-        per = [{"id": ids[i], "contra": [], "ent": [], "contra_floor": [],
-                "adq_l": [], "adq_r": [], "hyp_units": []} for i in range(len(texts))]
+                run_dir,
+                [{"full_trans": f} for f in full],
+                contradiction,
+                filename=f"contra_floor_{code}.json",
+                tgt_spaced=tsp,
+            )
+        per = [
+            {
+                "id": ids[i],
+                "contra": [],
+                "ent": [],
+                "contra_floor": [],
+                "adq_l": [],
+                "adq_r": [],
+                "hyp_units": [],
+            }
+            for i in range(len(texts))
+        ]
         for k, i in enumerate(owner):
             hl = len(noise_floor.split_units(pre_tr[k], tsp))
             c0 = floor_fn(hl) if floor_fn else 0.0
@@ -199,23 +242,38 @@ def main() -> int:
     policies["contra_floor"] = all_pos(lambda i, j, n: 1 - mean_over_targets("contra_floor", i, j))
     policies["ent"] = all_pos(lambda i, j, n: 1 - mean_over_targets("ent", i, j))
     policies["contra_adqL"] = all_pos(
-        lambda i, j, n: (1 - mean_over_targets("contra", i, j)) * mean_over_targets("adq_l", i, j))
+        lambda i, j, n: (1 - mean_over_targets("contra", i, j)) * mean_over_targets("adq_l", i, j)
+    )
     policies["contra_adqLR"] = all_pos(
-        lambda i, j, n: (1 - mean_over_targets("contra", i, j))
-        * (mean_over_targets("adq_l", i, j) + mean_over_targets("adq_r", i, j)) / 2)
+        lambda i, j, n: (
+            (1 - mean_over_targets("contra", i, j))
+            * (mean_over_targets("adq_l", i, j) + mean_over_targets("adq_r", i, j))
+            / 2
+        )
+    )
+
     # NLI 세 확률은 합이 1 이라 contra 와 entail 을 같이 쓰는 것은 **neutral 을 얼마나
     # 벌하느냐**의 선택이다. `ent` 키는 1 − entail 로 저장돼 있다.
     def _adq_lr(i, j):
         return (mean_over_targets("adq_l", i, j) + mean_over_targets("adq_r", i, j)) / 2
 
     policies["ent_adqLR"] = all_pos(
-        lambda i, j, n: (1 - mean_over_targets("ent", i, j)) * _adq_lr(i, j))
+        lambda i, j, n: (1 - mean_over_targets("ent", i, j)) * _adq_lr(i, j)
+    )
     policies["contra_ent_adqLR"] = all_pos(
-        lambda i, j, n: (1 - mean_over_targets("contra", i, j))
-        * (1 - mean_over_targets("ent", i, j)) * _adq_lr(i, j))
+        lambda i, j, n: (
+            (1 - mean_over_targets("contra", i, j))
+            * (1 - mean_over_targets("ent", i, j))
+            * _adq_lr(i, j)
+        )
+    )
     policies["margin_adqLR"] = all_pos(
-        lambda i, j, n: (2 - mean_over_targets("contra", i, j)
-                         - mean_over_targets("ent", i, j)) / 2 * _adq_lr(i, j))
+        lambda i, j, n: (
+            (2 - mean_over_targets("contra", i, j) - mean_over_targets("ent", i, j))
+            / 2
+            * _adq_lr(i, j)
+        )
+    )
     policies["first"] = all_pos(lambda i, j, n: 1 - j / n)
     policies["random"] = all_pos(lambda i, j, n: rng.random())
     # LLM 비교군 — 같은 후보 위치에 (a) LLM 점수 (b) 오라클 라벨 (c) 앞쪽 우선
@@ -224,8 +282,9 @@ def main() -> int:
         pos = llm_positions(llm_rows[ids[i]]["seg_text"], spaced)
         pos = {j: s for j, s in pos.items() if 1 <= j < len(u)}
         llm_seg.append(build_seg(u, {j: s / 100 for j, s in pos.items()}, spaced))
-        llm_or.append(build_seg(u, {j: 1 - mean_over_targets("contra_floor", i, j)
-                                    for j in pos}, spaced))
+        llm_or.append(
+            build_seg(u, {j: 1 - mean_over_targets("contra_floor", i, j) for j in pos}, spaced)
+        )
         llm_first.append(build_seg(u, {j: 1 - j / len(u) for j in pos}, spaced))
     policies["llm"] = llm_seg
     policies["llm_pos_oracle"] = llm_or
@@ -241,8 +300,16 @@ def main() -> int:
             laal = None
             k = None
             for tgt in targets:
-                sp = score_split(cuts, texts, fulls[tgt], translators[tgt], adequacy,
-                                 spaced, target_is_spaced(tgt), contradiction)
+                sp = score_split(
+                    cuts,
+                    texts,
+                    fulls[tgt],
+                    translators[tgt],
+                    adequacy,
+                    spaced,
+                    target_is_spaced(tgt),
+                    contradiction,
+                )
                 per_t_eff[tgt] = sp.effective
                 laal, k = sp.laal_words, sp.k
             eff = []
@@ -257,12 +324,16 @@ def main() -> int:
                 "n": len(ok),
                 "laal": round(st.mean(laal), 3),
                 "k": round(st.mean(k), 3),
-                "by_tgt": {t: round(st.mean([x for x in per_t_eff[t] if x is not None]), 4)
-                           for t in targets},
+                "by_tgt": {
+                    t: round(st.mean([x for x in per_t_eff[t] if x is not None]), 4)
+                    for t in targets
+                },
             }
-            log(f"{name:15s} T={T:<3d} eff={results[name][str(T)]['mean']} "
+            log(
+                f"{name:15s} T={T:<3d} eff={results[name][str(T)]['mean']} "
                 f"p10={results[name][str(T)]['p10']} laal={results[name][str(T)]['laal']} "
-                f"k={results[name][str(T)]['k']}")
+                f"k={results[name][str(T)]['k']}"
+            )
 
     # ── 4. 쌍체 Δ (대 llm) ─────────────────────────────────────────────
     def paired(a: list, b: list) -> tuple[float, float, int]:
@@ -271,21 +342,30 @@ def main() -> int:
             return 0.0, 0.0, len(d)
         return st.mean(d), st.stdev(d) / len(d) ** 0.5, len(d)
 
-    table = ["| 정책 | " + " | ".join(f"T={T}" for T in t_grid) + " | 격자 평균 |",
-             "|---|" + "---|" * (len(t_grid) + 1)]
+    table = [
+        "| 정책 | " + " | ".join(f"T={T}" for T in t_grid) + " | 격자 평균 |",
+        "|---|" + "---|" * (len(t_grid) + 1),
+    ]
     summary: dict[str, dict] = {}
     for name in policies:
         cells, means = [], []
         for T in t_grid:
             r = results[name][str(T)]
             m, se, n = paired(r["effective"], results["llm"][str(T)]["effective"])
-            cells.append(f"{r['mean']:.4f} ({m:+.4f}±{se:.4f})" if name != "llm"
-                         else f"{r['mean']:.4f}")
+            cells.append(
+                f"{r['mean']:.4f} ({m:+.4f}±{se:.4f})" if name != "llm" else f"{r['mean']:.4f}"
+            )
             means.append(r["mean"])
             summary.setdefault(name, {})[str(T)] = {
-                "mean": r["mean"], "p10": r["p10"], "laal": r["laal"], "k": r["k"],
-                "delta_vs_llm": round(m, 4), "se": round(se, 4), "n": n,
-                "by_tgt": r["by_tgt"]}
+                "mean": r["mean"],
+                "p10": r["p10"],
+                "laal": r["laal"],
+                "k": r["k"],
+                "delta_vs_llm": round(m, 4),
+                "se": round(se, 4),
+                "n": n,
+                "by_tgt": r["by_tgt"],
+            }
         table.append(f"| {name} | " + " | ".join(cells) + f" | {st.mean(means):.4f} |")
 
     # ── 5. 라벨 대 LLM 점수 정렬도 (LLM 후보 위치에서) ────────────────────
@@ -301,22 +381,37 @@ def main() -> int:
             w = spearman(s, l)
             if w is not None:
                 within.append(w)
-    align = {"pooled_spearman": spearman(pooled_s, pooled_l),
-             "within_sentence_mean": round(st.mean(within), 4) if within else None,
-             "n_boundaries": len(pooled_s), "n_sentences_within": len(within)}
+    align = {
+        "pooled_spearman": spearman(pooled_s, pooled_l),
+        "within_sentence_mean": round(st.mean(within), 4) if within else None,
+        "n_boundaries": len(pooled_s),
+        "n_sentences_within": len(within),
+    }
 
-    out = {"run_id": args.run_id, "split": args.split, "llm_iter": args.llm_iter,
-           "targets": targets, "t_grid": t_grid, "min_gap": min_gap, "n": len(texts),
-           "summary": summary, "llm_score_vs_label": align,
-           "note": ("effective = 정책별 절단 뒤 score_split (조각 독립 번역, 누적 NLI, "
-                    "타깃 원값 평균). 괄호는 llm 대비 쌍체 Δ±se.")}
+    out = {
+        "run_id": args.run_id,
+        "split": args.split,
+        "llm_iter": args.llm_iter,
+        "targets": targets,
+        "t_grid": t_grid,
+        "min_gap": min_gap,
+        "n": len(texts),
+        "summary": summary,
+        "llm_score_vs_label": align,
+        "note": (
+            "effective = 정책별 절단 뒤 score_split (조각 독립 번역, 누적 NLI, "
+            "타깃 원값 평균). 괄호는 llm 대비 쌍체 Δ±se."
+        ),
+    }
     out_path = run_dir / f"oracle_{args.split}.json"
     out_path.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     md = "\n".join(table)
     (run_dir / f"oracle_{args.split}.md").write_text(
         f"# 오라클 라벨 실험 — {args.run_id} {args.split} (n={len(texts)}, LLM iter {args.llm_iter})\n\n"
         f"{md}\n\n괄호: llm 대비 쌍체 Δ±se. LLM 점수 대 라벨(contra_floor) 정렬도: "
-        f"{json.dumps(align)}\n", encoding="utf-8")
+        f"{json.dumps(align)}\n",
+        encoding="utf-8",
+    )
     print("\n" + md)
     print("\nLLM 점수 대 라벨 정렬도:", json.dumps(align))
     log(f"저장 {out_path.name}, oracle_{args.split}.md")

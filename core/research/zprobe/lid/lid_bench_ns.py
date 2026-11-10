@@ -5,6 +5,7 @@
 판정은 {ko,en} 제한 argmax — 프로덕션 라우팅과 같은 조건.
 모델: voxlingua107-ecapa / whisper-small(현행) / whisper-medium.
 """
+
 import json, time
 import numpy as np
 import torch
@@ -15,6 +16,7 @@ WINDOWS = [0.3, 0.5, 0.7, 1.0, 1.5, 2.0]
 NS = "/home/mobility/stity-datasets/northstar-260928"
 
 from silero_vad import load_silero_vad, get_speech_timestamps
+
 vad = load_silero_vad()
 
 scenes = {}
@@ -36,7 +38,7 @@ for line in open(f"{NS}/manifest.jsonl"):
         continue
     clips.append((it["src_lang"], it["id"], seg[start:]))
 n_ko = sum(1 for c, _, _ in clips if c == "ko")
-print(f"clips: {len(clips)} (ko {n_ko} / en {len(clips)-n_ko})", flush=True)
+print(f"clips: {len(clips)} (ko {n_ko} / en {len(clips) - n_ko})", flush=True)
 
 
 def run(name, predict):
@@ -53,18 +55,26 @@ def run(name, predict):
             if pick != code:
                 wrong.append(uid)
         acc = np.mean(res["ko"] + res["en"])
-        print(f"{name}  w={w:>3}s  acc={acc:.3f}  ko={np.mean(res['ko']):.3f}  en={np.mean(res['en']):.3f}  "
-              f"infer={np.median(times)*1000:.0f}ms  wrong={','.join(wrong[:8])}{'...' if len(wrong) > 8 else ''}",
-              flush=True)
+        print(
+            f"{name}  w={w:>3}s  acc={acc:.3f}  ko={np.mean(res['ko']):.3f}  en={np.mean(res['en']):.3f}  "
+            f"infer={np.median(times) * 1000:.0f}ms  wrong={','.join(wrong[:8])}{'...' if len(wrong) > 8 else ''}",
+            flush=True,
+        )
 
 
 def bench_ecapa():
     from speechbrain.inference.classifiers import EncoderClassifier
-    m = EncoderClassifier.from_hparams(source="speechbrain/lang-id-voxlingua107-ecapa",
-                                       run_opts={"device": "cuda"})
-    labels = [m.hparams.label_encoder.ind2lab[i] for i in range(len(m.hparams.label_encoder.ind2lab))]
-    pick_ids = {c: next(i for i, lab in enumerate(labels) if lab == c or lab.startswith(c + ":"))
-                for c in ("ko", "en")}
+
+    m = EncoderClassifier.from_hparams(
+        source="speechbrain/lang-id-voxlingua107-ecapa", run_opts={"device": "cuda"}
+    )
+    labels = [
+        m.hparams.label_encoder.ind2lab[i] for i in range(len(m.hparams.label_encoder.ind2lab))
+    ]
+    pick_ids = {
+        c: next(i for i, lab in enumerate(labels) if lab == c or lab.startswith(c + ":"))
+        for c in ("ko", "en")
+    }
 
     def predict(seg):
         with torch.no_grad():
@@ -79,14 +89,19 @@ def bench_ecapa():
 
 def bench_whisper(name, tag):
     from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
     proc = WhisperProcessor.from_pretrained(name)
-    model = WhisperForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to("cuda").eval()
+    model = (
+        WhisperForConditionalGeneration.from_pretrained(name, dtype=torch.float16).to("cuda").eval()
+    )
     tok = proc.tokenizer
     allowed = {c: tok.convert_tokens_to_ids(f"<|{c}|>") for c in ("ko", "en")}
     sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
 
     def predict(seg):
-        feats = proc(seg, sampling_rate=SR, return_tensors="pt").input_features.to("cuda", torch.float16)
+        feats = proc(seg, sampling_rate=SR, return_tensors="pt").input_features.to(
+            "cuda", torch.float16
+        )
         dec = torch.tensor([[sot]], device="cuda")
         with torch.no_grad():
             logits = model(feats, decoder_input_ids=dec).logits[0, -1].float()
@@ -97,9 +112,11 @@ def bench_whisper(name, tag):
     torch.cuda.empty_cache()
 
 
-for fn in [bench_ecapa,
-           lambda: bench_whisper("openai/whisper-small", "whisper-small"),
-           lambda: bench_whisper("openai/whisper-medium", "whisper-medium")]:
+for fn in [
+    bench_ecapa,
+    lambda: bench_whisper("openai/whisper-small", "whisper-small"),
+    lambda: bench_whisper("openai/whisper-medium", "whisper-medium"),
+]:
     try:
         fn()
     except Exception as e:

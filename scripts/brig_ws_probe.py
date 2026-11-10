@@ -7,6 +7,7 @@ exact contract the mobile app relies on.
 
 usage: (server running on :8765) uv run --project server python scripts/brig_ws_probe.py \
          [--wav .../scene1.wav] [--url ws://127.0.0.1:8765/api/v1/ws]"""
+
 import argparse
 import asyncio
 import json
@@ -33,10 +34,15 @@ async def main():
     async with websockets.connect(a.url, max_size=None) as ws:
         hello = json.loads(await ws.recv())
         assert hello["type"] == "hello", hello
-        await ws.send(json.dumps({
-            "type": "start", "lang": "auto",
-            "langMap": {"ko": ["en"], "en": ["ko"]},
-        }))
+        await ws.send(
+            json.dumps(
+                {
+                    "type": "start",
+                    "lang": "auto",
+                    "langMap": {"ko": ["en"], "en": ["ko"]},
+                }
+            )
+        )
 
         async def reader():
             async for raw in ws:
@@ -56,7 +62,7 @@ async def main():
         t0 = time.perf_counter()
         reading = asyncio.create_task(reader())
         for i in range(0, len(pcm), chunk):
-            await ws.send(pcm[i:i + chunk])
+            await ws.send(pcm[i : i + chunk])
             target = t0 + (i + chunk) / 2 / 16000
             delay = target - time.perf_counter()
             if delay > 0:
@@ -71,18 +77,24 @@ async def main():
 
     by_target = {}
     for _, m in finals:
-        by_target[m.get("targetLang") or "(전사)"] = by_target.get(m.get("targetLang") or "(전사)", 0) + 1
+        by_target[m.get("targetLang") or "(전사)"] = (
+            by_target.get(m.get("targetLang") or "(전사)", 0) + 1
+        )
     final_ids = {m.get("segmentId") for _, m in finals}
     matched = sum(1 for _, m in folds if m.get("segmentId") in final_ids)
-    print(f"\n오디오 {duration:.0f}s, final {len(finals)}개 {by_target}, fold {len(folds)}개 "
-          f"(segmentId 가 final 과 맞는 것 {matched}/{len(folds)})")
+    print(
+        f"\n오디오 {duration:.0f}s, final {len(finals)}개 {by_target}, fold {len(folds)}개 "
+        f"(segmentId 가 final 과 맞는 것 {matched}/{len(folds)})"
+    )
     print("\n처음 10줄:")
     for t, m in finals[:10]:
         tag = m.get("targetLang") or m.get("language") or "?"
         print(f"  {t:6.2f}s [{tag:>4}] #{m.get('segmentId')} {m['translation'] or m['original']}")
     print("\nfold 표본:")
     for t, m in folds[:6]:
-        print(f"  {t:6.2f}s [{m['targetLang']}] #{m['segmentId']} '{m['original'][:30]}' -> '{m['replacement'][:30]}'")
+        print(
+            f"  {t:6.2f}s [{m['targetLang']}] #{m['segmentId']} '{m['original'][:30]}' -> '{m['replacement'][:30]}'"
+        )
     if others:
         print("\n기타:", [(t, m["type"]) for t, m in others[:5]])
     print("PROBE_DONE")

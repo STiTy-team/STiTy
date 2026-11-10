@@ -37,6 +37,7 @@ _WS = re.compile(r"\s+")
 
 # ── chrF ─────────────────────────────────────────────────────────────────
 
+
 def _char_ngrams(s: str, n: int) -> Counter:
     s = _WS.sub("", s)
     return Counter(s[i : i + n] for i in range(len(s) - n + 1))
@@ -61,11 +62,12 @@ def chrf(hyp: str, ref: str, max_n: int = 6, beta: float = 2.0) -> float:
     r = sum(recalls) / len(recalls)
     if p == 0 and r == 0:
         return 0.0
-    b2 = beta ** 2
+    b2 = beta**2
     return (1 + b2) * p * r / (b2 * p + r)
 
 
 # ── COMET 계열 공통 로더 ─────────────────────────────────────────────────
+
 
 class _CometBase:
     """COMET 계열 공통 로더. 모델 로드는 **프로세스당 1회**다."""
@@ -80,6 +82,7 @@ class _CometBase:
         if self._model is None:
             import logging
             from comet import download_model, load_from_checkpoint
+
             logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
             self._model = load_from_checkpoint(download_model(self.model_name))
             self._model.eval()
@@ -92,6 +95,7 @@ class _CometBase:
         self._model = None
         import gc
         import torch
+
         gc.collect()
         torch.cuda.empty_cache()
 
@@ -99,8 +103,9 @@ class _CometBase:
         # num_workers=0 — DataLoader 워커를 안 띄우고 메인 프로세스에서 돈다.
         # 워커를 쓰면 "DataLoader worker exited unexpectedly" 로 런이 통째로 죽는다
         # (2026-09-02 mg1 COMET, BLEU 는 다 끝난 뒤라 16분을 날렸다).
-        out = self.load().predict(batch, batch_size=self.batch_size, gpus=self.gpus,
-                                  progress_bar=False, num_workers=0)
+        out = self.load().predict(
+            batch, batch_size=self.batch_size, gpus=self.gpus, progress_bar=False, num_workers=0
+        )
         return [float(s) for s in out.scores]
 
 
@@ -110,7 +115,7 @@ class _CometBase:
 # 분절이 감점된다 (ko→en 은 SOV→SVO 라 크게 걸린다). 문헌의 해법(단조 번역 모델,
 # 타깃 재배열)은 우리가 "그 절차 없이 된다"고 주장하는 대상이라 쓸 수 없다.
 QE_CHECKPOINTS = {
-    "cometkiwi": "Unbabel/wmt22-cometkiwi-da",      # HF 게이트 모델. 라이선스 동의 필요
+    "cometkiwi": "Unbabel/wmt22-cometkiwi-da",  # HF 게이트 모델. 라이선스 동의 필요
     "cometkiwi-xl": "Unbabel/wmt23-cometkiwi-da-xl",
 }
 
@@ -125,8 +130,13 @@ class AdequacyBackend:
 
 
 class CometKiwiBackend(_CometBase, AdequacyBackend):
-    def __init__(self, model_name: str = "Unbabel/wmt22-cometkiwi-da",
-                 batch_size: int = 16, gpus: int = 1, name: str = "cometkiwi"):
+    def __init__(
+        self,
+        model_name: str = "Unbabel/wmt22-cometkiwi-da",
+        batch_size: int = 16,
+        gpus: int = 1,
+        name: str = "cometkiwi",
+    ):
         _CometBase.__init__(self, model_name, batch_size, gpus)
         self.name = name
 
@@ -209,8 +219,9 @@ class _NliBase:
 
     _PIPES: dict = {}
 
-    def __init__(self, model_name: str = NLI_MODEL,
-                 batch_size: int = 16, device: int = 0, name: str = ""):
+    def __init__(
+        self, model_name: str = NLI_MODEL, batch_size: int = 16, device: int = 0, name: str = ""
+    ):
         self.model_name = model_name
         self.batch_size = batch_size
         self.device = device
@@ -222,25 +233,33 @@ class _NliBase:
             key = (self.model_name, self.device)
             if key not in _NliBase._PIPES:
                 from transformers import pipeline
+
                 # **truncation 을 반드시 켠다.** xlm-roberta 의 위치 임베딩은 514 라
                 # 긴 문장(어절 40+)에서 premise+hypothesis 가 그 한계를 넘으면
                 # 조용한 오차가 아니라 RuntimeError 로 런이 죽는다 (clean500 실측:
                 # 875 토큰). 잘린 뒤쪽은 어차피 모델이 못 보던 구간이다.
                 import torch
-                dtype = torch.float16 if (self.device is not None and self.device >= 0
-                                          and torch.cuda.is_available()) else None
+
+                dtype = (
+                    torch.float16
+                    if (self.device is not None and self.device >= 0 and torch.cuda.is_available())
+                    else None
+                )
                 _NliBase._PIPES[key] = pipeline(
-                    "text-classification", model=self.model_name,
-                    device=self.device, top_k=None,
-                    truncation=True, max_length=512,
-                    **({"torch_dtype": dtype} if dtype is not None else {}))
+                    "text-classification",
+                    model=self.model_name,
+                    device=self.device,
+                    top_k=None,
+                    truncation=True,
+                    max_length=512,
+                    **({"torch_dtype": dtype} if dtype is not None else {}),
+                )
             self._pipe = _NliBase._PIPES[key]
         return self._pipe
 
     @staticmethod
     def _prob(scores: list[dict], prefix: str) -> float:
-        return next((s["score"] for s in scores
-                     if s["label"].lower().startswith(prefix)), 0.0)
+        return next((s["score"] for s in scores if s["label"].lower().startswith(prefix)), 0.0)
 
 
 class ContradictionBackend(_NliBase):
@@ -252,8 +271,13 @@ class ContradictionBackend(_NliBase):
     argmax 라벨이 아니라 **contradiction 확률**을 쓴다. 라벨이 `neutral` 로 어긋나도
     확률 순위는 유지되므로(실측) 임계값 없이 연속 점수로 쓸 수 있다."""
 
-    def __init__(self, model_name: str = NLI_MODEL,
-                 batch_size: int = 16, device: int = 0, name: str = "xlmr-anli"):
+    def __init__(
+        self,
+        model_name: str = NLI_MODEL,
+        batch_size: int = 16,
+        device: int = 0,
+        name: str = "xlmr-anli",
+    ):
         super().__init__(model_name, batch_size, device, name)
         # (premise, hypothesis) -> (contradiction, 1 − entailment). 결정론적 모델이라
         # 같은 쌍은 같은 값이다. 같은 문장의 앞쪽 누적 방출은 T 가 달라도, 순위 셔플
@@ -263,8 +287,9 @@ class ContradictionBackend(_NliBase):
     def score(self, premises: list[str], hypotheses: list[str]) -> list[float]:
         return self.score_dual(premises, hypotheses)[0]
 
-    def score_dual(self, premises: list[str],
-                   hypotheses: list[str]) -> tuple[list[float], list[float]]:
+    def score_dual(
+        self, premises: list[str], hypotheses: list[str]
+    ) -> tuple[list[float], list[float]]:
         """`(contradiction, 1 − entailment)` 를 **한 번의 호출로** 둘 다 낸다.
 
         NLI 는 세 라벨 확률을 한꺼번에 주므로 두 척도를 같이 재는 데 **추가 비용이 0** 이다.
@@ -299,8 +324,9 @@ class ContradictionBackend(_NliBase):
         if not uniq:
             return contra, one_minus_ent
         keys = list(uniq)
-        res = self.load()([{"text": p, "text_pair": h} for p, h in keys],
-                          batch_size=self.batch_size)
+        res = self.load()(
+            [{"text": p, "text_pair": h} for p, h in keys], batch_size=self.batch_size
+        )
         for key, scores in zip(keys, res):
             val = (self._prob(scores, "contr"), 1.0 - self._prob(scores, "entail"))
             self._memo[key] = val
@@ -333,8 +359,14 @@ def effective_of(adequacy: float, contradiction: float) -> float:
 
 # ── 지연 — LAAL ──────────────────────────────────────────────────────────
 
-def laal_words(seg_text: str, seg_pieces: list[str] | None, full_translation: str,
-               spaced: bool = True, tgt_spaced: bool = True) -> float:
+
+def laal_words(
+    seg_text: str,
+    seg_pieces: list[str] | None,
+    full_translation: str,
+    spaced: bool = True,
+    tgt_spaced: bool = True,
+) -> float:
     """Length-Adaptive Average Lagging. 소스 **어절**(비띄어쓰기 언어면 문자) 단위.
 
         laal = (1/τ) · Σ_{i=1..τ} ( d_i − d*_i )
@@ -377,7 +409,7 @@ def laal_words(seg_text: str, seg_pieces: list[str] | None, full_translation: st
 
     m = [max(1, unit_count(p, tgt_spaced)) for p in (seg_pieces or [])]
     if len(m) != len(c):
-        m = [max(1, x) for x in c]          # 조각 수가 안 맞으면 소스 비중으로 대체
+        m = [max(1, x) for x in c]  # 조각 수가 안 맞으면 소스 비중으로 대체
     Yref = unit_count(full_translation or "", tgt_spaced) or sum(m)
     gamma = X / max(sum(m), Yref)
 
@@ -391,6 +423,7 @@ def laal_words(seg_text: str, seg_pieces: list[str] | None, full_translation: st
 
 
 # ── 집계 ─────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class SplitMetrics:
@@ -406,7 +439,7 @@ class SplitMetrics:
 
     target_chunk_words: int
     n: int
-    n_effective: int           # 경계가 있어 effective 가 정의된 문장 수 (k≥2)
+    n_effective: int  # 경계가 있어 effective 가 정의된 문장 수 (k≥2)
     effective: float | None
     adequacy: float
     contradiction: float | None
@@ -415,7 +448,7 @@ class SplitMetrics:
     laal_words: float
     chunks_per_sentence: float
     missing_boundaries: float
-    rank_contra_spearman: float | None = None      # 순위 vs 실측 contra 정렬도. 양수=정렬
+    rank_contra_spearman: float | None = None  # 순위 vs 실측 contra 정렬도. 양수=정렬
     # 순위 하위 절반 − 상위 절반의 경계 contradiction 차. 양수=정렬, 0 이하=순위 무정보.
     # focus="priority" 판정이 쓰는 값 (`rank_contra_gap`).
     # **se 를 함께 싣는다.** 점추정을 0 과 비교하면 heavy-tail 잡음(관측 범위 −0.03~+0.03)
@@ -446,8 +479,7 @@ class SplitMetrics:
     n_targets: int | None = None
 
     def to_dict(self) -> dict:
-        return {k: (round(v, 4) if isinstance(v, float) else v)
-                for k, v in asdict(self).items()}
+        return {k: (round(v, 4) if isinstance(v, float) else v) for k, v in asdict(self).items()}
 
 
 @dataclass
@@ -555,14 +587,20 @@ def aggregate_split(
     )
 
 
-def aggregate(n: int, valid_flags: list[bool], first_pass_flags: list[bool] | None,
-              by_T: dict[str, SplitMetrics]) -> Metrics:
+def aggregate(
+    n: int,
+    valid_flags: list[bool],
+    first_pass_flags: list[bool] | None,
+    by_T: dict[str, SplitMetrics],
+) -> Metrics:
     return Metrics(
         n=n,
         format_pass_rate=(sum(valid_flags) / n) if n else 0.0,
         format_pass_rate_no_retry=(
-            (sum(first_pass_flags) / n) if (first_pass_flags and n)
-            else ((sum(valid_flags) / n) if n else 0.0)),
+            (sum(first_pass_flags) / n)
+            if (first_pass_flags and n)
+            else ((sum(valid_flags) / n) if n else 0.0)
+        ),
         by_T=by_T,
     )
 
@@ -584,68 +622,118 @@ def aggregate(n: int, valid_flags: list[bool], first_pass_flags: list[bool] | No
 GLOSSARY: dict[str, tuple[str, bool]] = {
     # key: (설명, 프롬프트로 움직일 수 있는가)
     "n": ("sentences scored", False),
-    "score": ("THE OBJECTIVE. Mean of `effective` over the T grid. This is the single "
-              "number the loop maximises — everything else is diagnosis.", True),
-    "format_pass_rate": ("fraction of sentences with no rule violation after one repair "
-                         "retry. What still fails here is mostly the model rewriting the "
-                         "source text, which more prompt wording does not fix.", False),
-    "format_pass_rate_no_retry": ("same, before the repair retry. A low value costs money "
-                                  "(one extra LLM call per sentence) but does not lower "
-                                  "the score.", False),
-    "rank_lift": ("how much `effective` DROPS when the confidence numbers are randomly "
-                  "shuffled while the boundary positions stay the same. It isolates what "
-                  "the RANKING does. Large positive = the ranking already works, refine it "
-                  "only if the cases show mis-ranked boundaries. Near zero = the ranking "
-                  "carries no information, so rewriting [Priority Rules] will not help and "
-                  "the problem is WHERE boundaries are marked.", True),
-    "rank_lift_t": ("`rank_lift` divided by its standard error. Read the sign and the "
-                    "magnitude together — below ~1 the lift is not distinguishable from "
-                    "noise.", False),
+    "score": (
+        "THE OBJECTIVE. Mean of `effective` over the T grid. This is the single "
+        "number the loop maximises — everything else is diagnosis.",
+        True,
+    ),
+    "format_pass_rate": (
+        "fraction of sentences with no rule violation after one repair "
+        "retry. What still fails here is mostly the model rewriting the "
+        "source text, which more prompt wording does not fix.",
+        False,
+    ),
+    "format_pass_rate_no_retry": (
+        "same, before the repair retry. A low value costs money "
+        "(one extra LLM call per sentence) but does not lower "
+        "the score.",
+        False,
+    ),
+    "rank_lift": (
+        "how much `effective` DROPS when the confidence numbers are randomly "
+        "shuffled while the boundary positions stay the same. It isolates what "
+        "the RANKING does. Large positive = the ranking already works, refine it "
+        "only if the cases show mis-ranked boundaries. Near zero = the ranking "
+        "carries no information, so rewriting [Priority Rules] will not help and "
+        "the problem is WHERE boundaries are marked.",
+        True,
+    ),
+    "rank_lift_t": (
+        "`rank_lift` divided by its standard error. Read the sign and the "
+        "magnitude together — below ~1 the lift is not distinguishable from "
+        "noise.",
+        False,
+    ),
     "rank_lift_se": ("standard error of `rank_lift`.", False),
     "rank_lift_n": ("sentences that contributed to `rank_lift`.", False),
     "rank_lift_T": ("the T at which `rank_lift` was measured.", False),
-    "by_T": ("results keyed by target piece size T. A LARGE key means few pieces, so only "
-             "the TOP-RANKED boundaries survive; a SMALL key means many pieces, so "
-             "lower-ranked boundaries survive too.", False),
+    "by_T": (
+        "results keyed by target piece size T. A LARGE key means few pieces, so only "
+        "the TOP-RANKED boundaries survive; a SMALL key means many pieces, so "
+        "lower-ranked boundaries survive too.",
+        False,
+    ),
     "target_chunk_words": ("the T of this row.", False),
-    "effective": ("adequacy x (1 - contradiction). The per-T objective. Undefined (null) "
-                  "for sentences with no boundary — those are excluded, not scored zero.",
-                  True),
-    "adequacy": ("translation quality of each piece against ITS OWN source, with no "
-                 "reference translation — word order differences from an offline "
-                 "translation do not lower it. Weighted by piece length.", True),
-    "contradiction": ("at each boundary, how much the text emitted SO FAR contradicts the "
-                      "whole-sentence translation. Averaged over the (k-1) boundaries. "
-                      "This is what a boundary placed too early costs.", True),
-    "effective_p10": ("the 10th percentile of `effective`. Read it next to the mean — the "
-                      "mean is pulled by a few bad sentences, so a mean that rises while "
-                      "p10 falls is luck, not improvement.", False),
+    "effective": (
+        "adequacy x (1 - contradiction). The per-T objective. Undefined (null) "
+        "for sentences with no boundary — those are excluded, not scored zero.",
+        True,
+    ),
+    "adequacy": (
+        "translation quality of each piece against ITS OWN source, with no "
+        "reference translation — word order differences from an offline "
+        "translation do not lower it. Weighted by piece length.",
+        True,
+    ),
+    "contradiction": (
+        "at each boundary, how much the text emitted SO FAR contradicts the "
+        "whole-sentence translation. Averaged over the (k-1) boundaries. "
+        "This is what a boundary placed too early costs.",
+        True,
+    ),
+    "effective_p10": (
+        "the 10th percentile of `effective`. Read it next to the mean — the "
+        "mean is pulled by a few bad sentences, so a mean that rises while "
+        "p10 falls is luck, not improvement.",
+        False,
+    ),
     "effective_min": ("the worst sentence.", False),
-    "n_effective": ("sentences where `effective` is defined (they had at least one "
-                    "boundary).", False),
-    "laal_words": ("lag in source words, lower is faster. It is SET BY THE LATENCY BUDGET "
-                   "(T), not by the prompt. Do not try to move it.", False),
-    "chunks_per_sentence": ("mean pieces per sentence. Also set by T — the truncator cuts "
-                            "to the budget whenever enough boundaries were marked. "
-                            "**Telling the model to segment less does NOT reduce this**; it "
-                            "only changes WHICH boundaries survive.", False),
-    "missing_boundaries": ("how many boundaries the budget asked for that the prompt never "
-                           "marked. Above zero means the knob cannot reach that T.", True),
-    "rank_contra_spearman": ("rank correlation between assigned confidence and measured "
-                             "contradiction. Superseded by `rank_lift`; reported only.",
-                             False),
-    "rank_contra_gap": ("bottom-half minus top-half boundary contradiction. Superseded by "
-                        "`rank_lift`; its length-noise correction is currently under "
-                        "review, so do not act on its sign.", False),
+    "n_effective": (
+        "sentences where `effective` is defined (they had at least one boundary).",
+        False,
+    ),
+    "laal_words": (
+        "lag in source words, lower is faster. It is SET BY THE LATENCY BUDGET "
+        "(T), not by the prompt. Do not try to move it.",
+        False,
+    ),
+    "chunks_per_sentence": (
+        "mean pieces per sentence. Also set by T — the truncator cuts "
+        "to the budget whenever enough boundaries were marked. "
+        "**Telling the model to segment less does NOT reduce this**; it "
+        "only changes WHICH boundaries survive.",
+        False,
+    ),
+    "missing_boundaries": (
+        "how many boundaries the budget asked for that the prompt never "
+        "marked. Above zero means the knob cannot reach that T.",
+        True,
+    ),
+    "rank_contra_spearman": (
+        "rank correlation between assigned confidence and measured "
+        "contradiction. Superseded by `rank_lift`; reported only.",
+        False,
+    ),
+    "rank_contra_gap": (
+        "bottom-half minus top-half boundary contradiction. Superseded by "
+        "`rank_lift`; its length-noise correction is currently under "
+        "review, so do not act on its sign.",
+        False,
+    ),
     "rank_contra_gap_se": ("standard error of `rank_contra_gap`.", False),
     "rank_contra_gap_n": ("sentences behind `rank_contra_gap`.", False),
-    "effective_ent": ("`effective` recomputed with 1 - entailment instead of contradiction. "
-                      "REPORTED ONLY, being trialled — the objective still uses "
-                      "`effective`.", False),
-    "contradiction_ent": ("`contradiction` measured as 1 - entailment. Reported only.",
-                          False),
-    "effective_z": ("multi-target only: `effective` z-normalised per target then averaged. "
-                    "Used for the adoption test; `effective` is the reported value.", False),
+    "effective_ent": (
+        "`effective` recomputed with 1 - entailment instead of contradiction. "
+        "REPORTED ONLY, being trialled — the objective still uses "
+        "`effective`.",
+        False,
+    ),
+    "contradiction_ent": ("`contradiction` measured as 1 - entailment. Reported only.", False),
+    "effective_z": (
+        "multi-target only: `effective` z-normalised per target then averaged. "
+        "Used for the adoption test; `effective` is the reported value.",
+        False,
+    ),
     "n_targets": ("multi-target only: how many target languages were averaged.", False),
 }
 
@@ -697,6 +785,7 @@ def score(m: Metrics) -> float:
 
 def _spearman(xs: list[float], ys: list[float]) -> float | None:
     """동순위 평균 처리한 Spearman. 분산 0 이면 None."""
+
     def rankify(v):
         order = sorted(range(len(v)), key=lambda i: v[i])
         rr = [0.0] * len(v)
@@ -710,6 +799,7 @@ def _spearman(xs: list[float], ys: list[float]) -> float | None:
                 rr[order[k]] = avg
             i = j + 1
         return rr
+
     rx, ry = rankify(xs), rankify(ys)
     mx, my = sum(rx) / len(rx), sum(ry) / len(ry)
     num = sum((a - mx) * (b - my) for a, b in zip(rx, ry))
@@ -725,7 +815,9 @@ def _confidence_order(seg_text: str) -> list[int]:
     return [-int(m.group(1)) for m in TAG_RE.finditer(seg_text or "") if m.group(1)]
 
 
-def rank_contra_spearman(rows: list[dict], T: int, min_boundaries: int = 3) -> tuple[float | None, int]:
+def rank_contra_spearman(
+    rows: list[dict], T: int, min_boundaries: int = 3
+) -> tuple[float | None, int]:
     """모델이 단 점수(<SEG:s>) vs 실측 경계 contradiction 의 문장 내 Spearman 평균.
 
     **양수 = 정렬됨** (점수가 낮을수록 = 확신 낮을수록 실측 위험이 큼). 계산은 −점수로
@@ -762,8 +854,9 @@ def rank_contra_spearman(rows: list[dict], T: int, min_boundaries: int = 3) -> t
     return (sum(cors) / len(cors) if cors else None), len(cors)
 
 
-def _floor_corrected(d: dict, contras: list[float], floor_fn,
-                     tgt_spaced: bool = True) -> list[float]:
+def _floor_corrected(
+    d: dict, contras: list[float], floor_fn, tgt_spaced: bool = True
+) -> list[float]:
     """경계별 contradiction 에서 길이 잡음 바닥 c0(hypothesis 길이)를 뺀다.
 
     경계 j 의 hypothesis 는 조각 번역 1..j+1 을 이어붙인 것이므로 길이가 j 와 함께
@@ -787,8 +880,9 @@ def _floor_corrected(d: dict, contras: list[float], floor_fn,
     return out
 
 
-def rank_contra_gap(rows: list[dict], T: int, min_boundaries: int = 2,
-                    floor_fn=None, tgt_spaced: bool = True) -> tuple[float | None, int]:
+def rank_contra_gap(
+    rows: list[dict], T: int, min_boundaries: int = 2, floor_fn=None, tgt_spaced: bool = True
+) -> tuple[float | None, int]:
     """점수 **하위 절반 − 상위 절반**의 경계 contradiction 평균 차. 문장 평균.
 
     `rank_contra_spearman` 과 같은 축을 다른 통계량으로 잰다. Spearman 은 순위 상관만
@@ -827,8 +921,9 @@ def rank_contra_gap(rows: list[dict], T: int, min_boundaries: int = 2,
     return (sum(gaps) / len(gaps) if gaps else None), len(gaps)
 
 
-def rank_contra_gaps(rows: list[dict], T: int, min_boundaries: int = 2,
-                     floor_fn=None, tgt_spaced: bool = True) -> list[float]:
+def rank_contra_gaps(
+    rows: list[dict], T: int, min_boundaries: int = 2, floor_fn=None, tgt_spaced: bool = True
+) -> list[float]:
     """`rank_contra_gap` 의 **문장별** 값. 평균 내기 전 분포가 필요할 때 쓴다."""
     key = str(T)
     gaps: list[float] = []
@@ -841,16 +936,17 @@ def rank_contra_gaps(rows: list[dict], T: int, min_boundaries: int = 2,
         if len(ranks) != len(contras) or len(ranks) < min_boundaries:
             continue
         vals = _floor_corrected(d, [float(x) for x in contras], floor_fn, tgt_spaced)
-        order = sorted(range(len(ranks)), key=lambda i: (ranks[i], i))   # 점수 내림차순
+        order = sorted(range(len(ranks)), key=lambda i: (ranks[i], i))  # 점수 내림차순
         half = len(order) // 2
-        top = [vals[i] for i in order[:half]]                 # 확신 높음 (점수 큼)
-        bottom = [vals[i] for i in order[len(order) - half:]]  # 확신 낮음
+        top = [vals[i] for i in order[:half]]  # 확신 높음 (점수 큼)
+        bottom = [vals[i] for i in order[len(order) - half :]]  # 확신 낮음
         gaps.append(sum(bottom) / len(bottom) - sum(top) / len(top))
     return gaps
 
 
-def priority_audit(rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = True,
-                   min_n: int = 8) -> list[dict]:
+def priority_audit(
+    rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = True, min_n: int = 8
+) -> list[dict]:
     """모델 점수가 **무엇을 과신하는가** 를 특징별로, 그리고 **점수 구간별 실측 위험**
     (보정 곡선)을 낸다.
 
@@ -875,13 +971,12 @@ def priority_audit(rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = T
     `(이 특징 평균 점수 − 전체 평균 점수) / 100 × contra 비` 로, 양수가 클수록 과신이다.
     """
     key = str(T)
-    recs: list[tuple[str, float, float]] = []      # (특징, 점수, contra)
+    recs: list[tuple[str, float, float]] = []  # (특징, 점수, contra)
     for r in rows:
         d = (r.get("by_T") or {}).get(key)
         if not d:
             continue
-        scores = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "")
-                  if m.group(1)]
+        scores = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "") if m.group(1)]
         contras = (d.get("pieces_contra") or [])[:-1]
         src = d.get("pieces_src") or []
         if len(scores) != len(contras) or len(scores) < 3 or len(src) - 1 != len(contras):
@@ -902,10 +997,15 @@ def priority_audit(rows: list[dict], T: int, floor_fn=None, tgt_spaced: bool = T
             continue
         sc = sum(x[1] for x in g) / len(g)
         c = sum(x[2] for x in g) / len(g)
-        out.append({"feature": feat, "n": len(g),
-                    "mean_score": round(sc, 1),
-                    "contradiction": round(c, 4),
-                    "over_trust": round((sc - base_score) / 100.0 * (c / base_con), 4)})
+        out.append(
+            {
+                "feature": feat,
+                "n": len(g),
+                "mean_score": round(sc, 1),
+                "contradiction": round(c, 4),
+                "over_trust": round((sc - base_score) / 100.0 * (c / base_con), 4),
+            }
+        )
     return sorted(out, key=lambda d: -d["over_trust"])
 
 
@@ -918,15 +1018,18 @@ def boundary_features(d: dict, j: int, n: int) -> list[str]:
     src = d.get("pieces_src") or []
     scores = [int(m.group(1)) for m in TAG_RE.finditer(d.get("seg_text") or "") if m.group(1)]
     tail = (src[j] or "").rstrip()[-1:] if j < len(src) else ""
-    out = [f"뒤 구두점 {tail!r}" if tail and not tail.isalnum() else "구두점 없음",
-           f"상대위치 {int(j / max(1, n) * 3)}/3"]
+    out = [
+        f"뒤 구두점 {tail!r}" if tail and not tail.isalnum() else "구두점 없음",
+        f"상대위치 {int(j / max(1, n) * 3)}/3",
+    ]
     if j < len(scores):
         out.append(score_band(scores[j]))
     return out
 
 
-def attach_judge_rates(audit: list[dict], rows: list[dict], judgements: list[dict] | None,
-                       T: int, min_judged: int = 3) -> list[dict]:
+def attach_judge_rates(
+    audit: list[dict], rows: list[dict], judgements: list[dict] | None, T: int, min_judged: int = 3
+) -> list[dict]:
     """감사 항목에 **판정자가 본 결과**를 붙인다 — 특징별 `safe_rate` 등.
 
     판정 대상은 모순 확률 상위 경계뿐이다. 거기서 `safe` 는 "NLI 가 울렸는데 뒤집힌 게
@@ -972,8 +1075,9 @@ def score_band(score: int) -> str:
     return "score 0-49"
 
 
-def paired_delta(new_rows: list[dict], best_rows: list[dict],
-                 t_grid: list[int], key: str = "effective") -> dict:
+def paired_delta(
+    new_rows: list[dict], best_rows: list[dict], t_grid: list[int], key: str = "effective"
+) -> dict:
     """이전 best 대비 **문장별** effective 차이. 채택 판정이 이걸로 이뤄진다.
 
     절대 평균 비교는 문장 난이도 분산에 묻힌다 — run01 dev 실측에서 문장별 sd 0.0496,
@@ -1016,12 +1120,21 @@ def paired_delta(new_rows: list[dict], best_rows: list[dict],
         se = (var / len(deltas)) ** 0.5
     else:
         se = 0.0
-    return {"mean_delta": round(mean_d, 5), "se_delta": round(se, 5),
-            "n_pairs": len(deltas), "n_changed": changed}
+    return {
+        "mean_delta": round(mean_d, 5),
+        "se_delta": round(se, 5),
+        "n_pairs": len(deltas),
+        "n_changed": changed,
+    }
 
 
-def regressions(new_rows: list[dict], best_rows: list[dict], t_grid: list[int],
-                key: str = "effective", top_n: int = 5) -> list[dict]:
+def regressions(
+    new_rows: list[dict],
+    best_rows: list[dict],
+    t_grid: list[int],
+    key: str = "effective",
+    top_n: int = 5,
+) -> list[dict]:
     """거부된 개정이 **가장 크게 떨어뜨린 문장**들. 거부 부검의 입력.
 
     `paired_delta` 는 정확히 같은 차이를 문장별로 계산해 놓고 평균과 오차만 남기고
@@ -1056,20 +1169,26 @@ def regressions(new_rows: list[dict], best_rows: list[dict], t_grid: list[int],
         if not seen or worst is None:
             continue
         mean_d = total / seen
-        if mean_d >= 0:                     # 나빠진 문장만 부검한다
+        if mean_d >= 0:  # 나빠진 문장만 부검한다
             continue
         T, gap, a, c = worst
-        out.append({
-            "id": r["id"], "text": r.get("text"),
-            "delta": round(mean_d, 5),
-            "budget_T": T, "delta_at_T": round(gap, 5),
-            "before_seg": c.get("seg_text"), "after_seg": a.get("seg_text"),
-            "before_contradiction": c.get("pieces_contra"),
-            "after_contradiction": a.get("pieces_contra"),
-            "before_adequacy": c.get("adequacy"), "after_adequacy": a.get("adequacy"),
-            "before_missing_boundaries": c.get("missing_boundaries"),
-            "after_missing_boundaries": a.get("missing_boundaries"),
-        })
+        out.append(
+            {
+                "id": r["id"],
+                "text": r.get("text"),
+                "delta": round(mean_d, 5),
+                "budget_T": T,
+                "delta_at_T": round(gap, 5),
+                "before_seg": c.get("seg_text"),
+                "after_seg": a.get("seg_text"),
+                "before_contradiction": c.get("pieces_contra"),
+                "after_contradiction": a.get("pieces_contra"),
+                "before_adequacy": c.get("adequacy"),
+                "after_adequacy": a.get("adequacy"),
+                "before_missing_boundaries": c.get("missing_boundaries"),
+                "after_missing_boundaries": a.get("missing_boundaries"),
+            }
+        )
     return sorted(out, key=lambda d: d["delta"])[:top_n]
 
 
@@ -1090,8 +1209,12 @@ def rank_lift(real: list[float | None], shuffled: list[float | None]) -> dict:
     mean_d = sum(d) / len(d)
     var = sum((x - mean_d) ** 2 for x in d) / len(d)
     se = (var / len(d)) ** 0.5
-    return {"lift": round(mean_d, 5), "se": round(se, 5),
-            "t": round(mean_d / se, 2) if se else None, "n": len(d)}
+    return {
+        "lift": round(mean_d, 5),
+        "se": round(se, 5),
+        "t": round(mean_d / se, 2) if se else None,
+        "n": len(d),
+    }
 
 
 def mechanical_split(text: str, every: int, spaced: bool) -> str:

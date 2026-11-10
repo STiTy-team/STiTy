@@ -26,12 +26,11 @@ def _continuation(tok, input_ids, seq) -> str:
     pre = tok.decode(input_ids[start:], skip_special_tokens=False)
     full = tok.decode(seq[start:], skip_special_tokens=False)
     full = full.replace("<|im_end|>", "").replace("<|endoftext|>", "")
-    return full[len(pre):]
+    return full[len(pre) :]
 
 
 @transcribers.register("zprobe-prefix")
 class ZprobePrefixTranscription(Transcriber):
-
     SETTINGS = {
         "model": ("model_path", resolve_model),
         "targets": ("targets", list),
@@ -56,32 +55,45 @@ class ZprobePrefixTranscription(Transcriber):
     def validate(cls, options: dict, *, kind: str = "transcription") -> dict:
         out = super().validate(options, kind=kind)
         if not out.get("model_path"):
-            raise ValueError("transcription zprobe-prefix needs `model` (a merged checkpoint directory)")
+            raise ValueError(
+                "transcription zprobe-prefix needs `model` (a merged checkpoint directory)"
+            )
         return out
 
     async def load(self) -> None:
-        self.model = await cache.load(("zprobe-prefix", self.settings["model_path"]), self._build_model)
+        self.model = await cache.load(
+            ("zprobe-prefix", self.settings["model_path"]), self._build_model
+        )
         self._lid = None
         if self.settings.get("lid_slot_reset"):
-            profiles = self.settings.get("lid_profiles", "models/zprobe/data/lid_phone_profiles.json")
-            self._lid = await cache.load(("fused-lid", profiles),
-                                         lambda: lid.FusedLid.build(profiles))
+            profiles = self.settings.get(
+                "lid_profiles", "models/zprobe/data/lid_phone_profiles.json"
+            )
+            self._lid = await cache.load(
+                ("fused-lid", profiles), lambda: lid.FusedLid.build(profiles)
+            )
 
     async def _build_model(self):
         import torch
         from qwen_asr import Qwen3ASRModel
 
         return Qwen3ASRModel.from_pretrained(
-            self.settings["model_path"], dtype=torch.bfloat16, device_map="cuda",
-            max_inference_batch_size=1)
+            self.settings["model_path"],
+            dtype=torch.bfloat16,
+            device_map="cuda",
+            max_inference_batch_size=1,
+        )
 
-    def start(self, languages: list[str] | None = None, *, target_lang: str = "",
-              vad=None, **_) -> None:
+    def start(
+        self, languages: list[str] | None = None, *, target_lang: str = "", vad=None, **_
+    ) -> None:
         import numpy as np
 
         self._vad = vad
         self._np = np
-        wanted = [langs.norm_code(t) for t in (self.settings.get("targets") or []) if langs.norm_code(t)]
+        wanted = [
+            langs.norm_code(t) for t in (self.settings.get("targets") or []) if langs.norm_code(t)
+        ]
         primary = langs.norm_code(target_lang or "")
         self._targets = wanted or [code for code in (primary,) if code]
         if not self._targets:
@@ -131,18 +143,27 @@ class ZprobePrefixTranscription(Transcriber):
                 self._slot_lang = verdict
                 if any(self._raw.values()):
                     out = self._emit(self._decode(final=False), "lid")
-                    keep = int(float(self.settings.get("lid_keep_sec", 1.5)) * audio_mod.SAMPLING_RATE)
+                    keep = int(
+                        float(self.settings.get("lid_keep_sec", 1.5)) * audio_mod.SAMPLING_RATE
+                    )
                     tail = self._wav[-keep:] if keep else self._wav[:0]
                     self._reset_utterance()
                     self._wav = tail
                     self._slot_lang = verdict
-                    log.info("[SLOT-RESET] cause=lid from=%s to=%s keep_sec=%.1f",
-                             prev, verdict, keep / audio_mod.SAMPLING_RATE)
+                    log.info(
+                        "[SLOT-RESET] cause=lid from=%s to=%s keep_sec=%.1f",
+                        prev,
+                        verdict,
+                        keep / audio_mod.SAMPLING_RATE,
+                    )
                     return out
         added = self._decode(final=False)
         driver = added[self._targets[0]]
-        if self.settings.get("seg_reset") and "<SEG>" in driver \
-                and (self._raw[self._targets[0]] or driver.split("<SEG>")[0].strip()):
+        if (
+            self.settings.get("seg_reset")
+            and "<SEG>" in driver
+            and (self._raw[self._targets[0]] or driver.split("<SEG>")[0].strip())
+        ):
             head = {t: text.split("<SEG>")[0] for t, text in added.items()}
             out = self._emit(head, "seg")
             keep = int(float(self.settings.get("seg_keep_sec", 1.0)) * audio_mod.SAMPLING_RATE)
@@ -157,8 +178,7 @@ class ZprobePrefixTranscription(Transcriber):
         self._reset_utterance()
         return out
 
-    async def finish(self, reason: str = "finish",
-                     speech: Speech | None = None) -> list:
+    async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         if speech is not None:
             cut = int(max(0.0, speech.silence_waited_out_sec - 0.1) * audio_mod.SAMPLING_RATE)
             if 0 < cut < self._wav.shape[0]:
@@ -185,16 +205,18 @@ class ZprobePrefixTranscription(Transcriber):
             if not shown:
                 continue
             elapsed = round(timing.elapsed() or 0.0, 4)
-            out.append(Translated(
-                original=shown,
-                translation=shown,
-                language="",
-                target_lang=target,
-                commit_reason=reason,
-                decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
-                committed_elapsed_sec=elapsed,
-                translated_elapsed_sec=elapsed,
-            ))
+            out.append(
+                Translated(
+                    original=shown,
+                    translation=shown,
+                    language="",
+                    target_lang=target,
+                    commit_reason=reason,
+                    decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
+                    committed_elapsed_sec=elapsed,
+                    translated_elapsed_sec=elapsed,
+                )
+            )
         return out
 
     @timing.measure("decode")
@@ -204,15 +226,22 @@ class ZprobePrefixTranscription(Transcriber):
         self._decoded_samples = self._wav.shape[0]
         no_repeat = int(self.settings.get("no_repeat", 4))
         texts = [self._bases[t] + self._raw[t] for t in self._targets]
-        inputs = self.model.processor(
-            text=texts, audio=[self._wav] * len(texts),
-            return_tensors="pt", padding=True).to(self._dev).to(torch.bfloat16)
+        inputs = (
+            self.model.processor(
+                text=texts, audio=[self._wav] * len(texts), return_tensors="pt", padding=True
+            )
+            .to(self._dev)
+            .to(torch.bfloat16)
+        )
         prompt_len = inputs["input_ids"].shape[1]
         with torch.no_grad():
             o = self.model.model.generate(
-                **inputs, max_new_tokens=int(self.settings.get("max_new_tokens", 120)),
+                **inputs,
+                max_new_tokens=int(self.settings.get("max_new_tokens", 120)),
                 no_repeat_ngram_size=None if final else (no_repeat or None),
-                do_sample=False, pad_token_id=self._tok.eos_token_id)
+                do_sample=False,
+                pad_token_id=self._tok.eos_token_id,
+            )
         seq = o.sequences if hasattr(o, "sequences") else o
         outs = {}
         for i, target in enumerate(self._targets):

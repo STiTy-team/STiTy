@@ -18,6 +18,7 @@ both. `format_errors` puts the two together.
 The blocks, and the rules inside them, belong to whatever is being configured. This
 module is only the machinery.
 """
+
 from pathlib import Path
 from typing import Any, TypeVar, get_args
 
@@ -115,8 +116,9 @@ class ConfigBody(BaseModel):
         `__func__` because comparing classmethods directly compares freshly bound
         objects, which are never identical even when nothing was overridden.
         """
-        return (cls.expand.__func__ is not ConfigBody.expand.__func__
-                or cls.wire_keys() != set(cls.model_fields))
+        return cls.expand.__func__ is not ConfigBody.expand.__func__ or cls.wire_keys() != set(
+            cls.model_fields
+        )
 
     @classmethod
     def parse(cls: type[B], raw: Any, *, root: str = "config root") -> B:
@@ -159,8 +161,9 @@ def body_type(annotation: Any) -> type["ConfigBody"] | None:
     return None
 
 
-def format_errors(exc: ValidationError, *, model: type[ConfigBody] | None = None,
-                  root: str = "config root") -> str:
+def format_errors(
+    exc: ValidationError, *, model: type[ConfigBody] | None = None, root: str = "config root"
+) -> str:
     """One line per problem, each prefixed with where it was found.
 
     Unknown keys are grouped by the block they appeared in, so one mistyped block
@@ -191,5 +194,4 @@ def format_errors(exc: ValidationError, *, model: type[ConfigBody] | None = None
     seen = list(dict.fromkeys(lines))
     if len(seen) == 1:
         return seen[0]
-    return (f"{len(seen)} problems in the config:\n"
-            + "\n".join(f"  - {line}" for line in seen))
+    return f"{len(seen)} problems in the config:\n" + "\n".join(f"  - {line}" for line in seen)

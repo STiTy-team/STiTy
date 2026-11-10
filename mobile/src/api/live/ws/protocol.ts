@@ -15,6 +15,14 @@ const readySchema = z.object({
   message: z.string().optional(),
   /** The record the server is writing for this session; null or absent when not recorded. */
   conversationId: z.string().nullable().default(null),
+  /** Who this phone is in `room` messages. */
+  participantId: z.string().nullable().default(null),
+});
+
+const roomSchema = z.object({
+  type: z.literal('room'),
+  hostId: z.string().nullable(),
+  participants: z.array(z.object({ id: z.string(), number: z.number(), canSpeak: z.boolean() })),
 });
 
 const partialSchema = z.object({
@@ -68,6 +76,7 @@ const serverMessageSchema = z.discriminatedUnion('type', [
   finalSchema,
   foldSchema,
   capacitySchema,
+  roomSchema,
   errorSchema,
 ]);
 
@@ -76,6 +85,7 @@ export type PartialMessage = z.infer<typeof partialSchema>;
 export type FinalMessage = z.infer<typeof finalSchema>;
 export type FoldMessage = z.infer<typeof foldSchema>;
 export type CapacityMessage = z.infer<typeof capacitySchema>;
+export type RoomMessage = z.infer<typeof roomSchema>;
 export type ErrorMessage = z.infer<typeof errorSchema>;
 
 /** Returns null for binary frames, malformed JSON and message types the app does not use. */
@@ -91,6 +101,13 @@ export const parseServerMessage = (data: unknown): ServerMessage | null => {
   return result.success ? result.data : null;
 };
 
+export type DeviceInfo = {
+  platform: string;
+  version?: string;
+  model?: string;
+  headset?: boolean;
+};
+
 /** Fields after `translate` are optional additions; servers that don't know them ignore them. */
 export type StartMessage = {
   type: 'start';
@@ -100,14 +117,23 @@ export type StartMessage = {
   token?: string;
   save?: boolean;
   conversationId?: string;
+  /** The server refuses a `conversationId` that isn't open instead of opening it. */
+  join?: boolean;
   clientVersion?: string;
+  /** Kept with server recordings, to tell later which phone a track came from. */
+  device?: DeviceInfo;
+  /** Development builds: ask the server to save this phone's audio and messages for debugging. */
+  recording?: boolean;
 };
 
 export type ClientMessage =
   | StartMessage
-  | { type: 'config'; lang: string; targetLang: string }
+  | { type: 'config'; lang?: string; targetLang?: string; recording?: boolean }
   | { type: 'stop' }
   | { type: 'ping' }
+  | { type: 'set_mic'; participantId: string; canSpeak: boolean }
+  | { type: 'set_all_mics'; canSpeak: boolean }
+  | { type: 'remove_participant'; participantId: string }
   | { type: 'tts_log'; text: string; lang: string; start: string; end: string };
 
 export const encodeClientMessage = (message: ClientMessage): string => JSON.stringify(message);

@@ -16,7 +16,8 @@ export function useDistributions(runs: string[]) {
   return useQueries({
     queries: runs.map((run) => ({
       queryKey: ["distributions", run],
-      queryFn: () => get<Distributions>(`/api/distributions/${encodeURIComponent(run)}`).catch((): Distributions => ({})),
+      queryFn: () =>
+        get<Distributions>(`/api/distributions/${encodeURIComponent(run)}`).catch((): Distributions => ({})),
     })),
     combine: (results) => ({
       pending: results.some((r) => r.isPending),

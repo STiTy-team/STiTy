@@ -7,7 +7,9 @@ export function useWidth<T extends HTMLElement = HTMLDivElement>() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const observer = new ResizeObserver(() => setWidth((prev) => (Math.abs(el.clientWidth - prev) >= 3 ? el.clientWidth : prev)))
+    const observer = new ResizeObserver(() =>
+      setWidth((prev) => (Math.abs(el.clientWidth - prev) >= 3 ? el.clientWidth : prev)),
+    )
     observer.observe(el)
     return () => observer.disconnect()
   }, [])

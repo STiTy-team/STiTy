@@ -11,9 +11,9 @@ from __future__ import annotations
 from pathlib import Path
 
 # 이 파일은 `<repo>/core/meaning_segmentator/autoseg/paths.py` 다.
-PKG_DIR = Path(__file__).resolve().parent                 # .../autoseg
-SEGMENTATOR_DIR = PKG_DIR.parent                          # .../core/meaning_segmentator
-REPO_ROOT = PKG_DIR.parents[2]                            # .../<repo>
+PKG_DIR = Path(__file__).resolve().parent  # .../autoseg
+SEGMENTATOR_DIR = PKG_DIR.parent  # .../core/meaning_segmentator
+REPO_ROOT = PKG_DIR.parents[2]  # .../<repo>
 
 # 루프·평가 산출물이 쌓이는 곳. autoseg 밖(형제 디렉토리)이다.
 #

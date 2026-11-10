@@ -13,6 +13,7 @@ Which variables exist is not declared here. Only the two API keys are read by mo
 than one program; everything else means something to exactly one of them, so each
 names its own.
 """
+
 import os
 from pathlib import Path
 

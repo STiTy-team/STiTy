@@ -6,13 +6,16 @@ construction stays the original code's. The extra mid rows (audio cut inside a p
 completed addition) sharpen "EOS only at word boundaries" against the mid-eojeol commits seen on northstar.
 
 usage: python core/research/zprobe/labels/build_prefix7.py --relabel models/zprobe/data/relabel/full_enko.jsonl"""
+
 import argparse, json, os, random, subprocess, sys
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--relabel", default="models/zprobe/data/relabel/full_enko.jsonl")
 ap.add_argument("--aligned", default="models/zprobe/data/prefix3/aligned.jsonl")
 ap.add_argument("--data", default="models/zprobe/data")
-ap.add_argument("--extra_mids", type=int, default=2, help="extra mid-phrase rows per en->ko recording")
+ap.add_argument(
+    "--extra_mids", type=int, default=2, help="extra mid-phrase rows per en->ko recording"
+)
 a = ap.parse_args()
 D = a.data
 V7 = f"{D}/prefix7"
@@ -38,8 +41,18 @@ def run(*cmd):
     subprocess.run([sys.executable, *cmd], check=True)
 
 
-run("core/research/zprobe/labels/build_prefix.py", "build", "--aligned", f"{V7}/aligned.jsonl",
-    "--base", f"{D}/train_seg9_mix.jsonl", "--wav_dir", f"{V7}/cuts", "--out", f"{V7}/train_v3.jsonl")
+run(
+    "core/research/zprobe/labels/build_prefix.py",
+    "build",
+    "--aligned",
+    f"{V7}/aligned.jsonl",
+    "--base",
+    f"{D}/train_seg9_mix.jsonl",
+    "--wav_dir",
+    f"{V7}/cuts",
+    "--out",
+    f"{V7}/train_v3.jsonl",
+)
 
 rng = random.Random(7)
 extra = 0
@@ -53,17 +66,45 @@ with open(f"{V7}/train_v3.jsonl", "a", encoding="utf-8") as f:
         spans = [(j, (ends[j - 1] if j else 0.0) + 0.15, ends[j] - 0.15) for j in range(len(adds))]
         spans = [(j, lo, hi) for j, lo, hi in spans if hi - lo >= 0.3 and hi >= 0.8]
         for j, lo, hi in rng.sample(spans, min(a.extra_mids, len(spans))):
-            f.write(json.dumps({"audio": f"{os.path.abspath(r['audio'])}#end={rng.uniform(max(lo, 0.6), hi):.3f}",
-                                "text": f"language Korean<asr_text>" + (cum[j - 1] if j else ""),
-                                "pair": "en-ko"}, ensure_ascii=False) + "\n")
+            f.write(
+                json.dumps(
+                    {
+                        "audio": f"{os.path.abspath(r['audio'])}#end={rng.uniform(max(lo, 0.6), hi):.3f}",
+                        "text": f"language Korean<asr_text>" + (cum[j - 1] if j else ""),
+                        "pair": "en-ko",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
             extra += 1
 print(f"extra mid rows: {extra}", flush=True)
 
-run("core/research/zprobe/labels/build_prefix4.py", "--aligned", f"{V7}/aligned.jsonl",
-    "--base", f"{V7}/train_v3.jsonl", "--out", f"{V7}/train_v4.jsonl")
-run("core/research/zprobe/labels/build_prefix5.py", "--aligned", f"{V7}/aligned.jsonl",
-    "--base", f"{V7}/train_v4.jsonl", "--out", f"{V7}/train_v5.jsonl")
-run("core/research/zprobe/labels/build_prefix6.py", "--base", f"{V7}/train_v5.jsonl", "--out", f"{D}/train_prefix7.jsonl")
+run(
+    "core/research/zprobe/labels/build_prefix4.py",
+    "--aligned",
+    f"{V7}/aligned.jsonl",
+    "--base",
+    f"{V7}/train_v3.jsonl",
+    "--out",
+    f"{V7}/train_v4.jsonl",
+)
+run(
+    "core/research/zprobe/labels/build_prefix5.py",
+    "--aligned",
+    f"{V7}/aligned.jsonl",
+    "--base",
+    f"{V7}/train_v4.jsonl",
+    "--out",
+    f"{V7}/train_v5.jsonl",
+)
+run(
+    "core/research/zprobe/labels/build_prefix6.py",
+    "--base",
+    f"{V7}/train_v5.jsonl",
+    "--out",
+    f"{D}/train_prefix7.jsonl",
+)
 for t in ("train_v3", "train_v4", "train_v5"):
     os.remove(f"{V7}/{t}.jsonl")
 print("BUILD_PREFIX7_DONE", flush=True)

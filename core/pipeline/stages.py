@@ -8,8 +8,9 @@ log = logging.getLogger(__name__)
 def start(parts: dict[str, Component], *, languages: list[str], target_lang: str = "") -> None:
     detector = parts.get("vad")
     for part in parts.values():
-        part.start(languages=languages, target_lang=target_lang,
-                   vad=None if part is detector else detector)
+        part.start(
+            languages=languages, target_lang=target_lang, vad=None if part is detector else detector
+        )
 
 
 async def close(parts: dict[str, Component]) -> None:
@@ -38,8 +39,14 @@ async def finish(parts: dict[str, Component]) -> list:
     return await parts["transcription"].finish()
 
 
-async def translate(parts: dict[str, Component], item: Transcribed, *, target_lang: str,
-                    context: list[str], allowed: bool = True) -> Translated:
+async def translate(
+    parts: dict[str, Component],
+    item: Transcribed,
+    *,
+    target_lang: str,
+    context: list[str],
+    allowed: bool = True,
+) -> Translated:
     corrector, translator = parts.get("correction"), parts.get("translation")
     original = item.original
     if corrector is not None:
@@ -50,7 +57,8 @@ async def translate(parts: dict[str, Component], item: Transcribed, *, target_la
         translation = original
     elif translator is not None and allowed:
         translation, detected = await translator.translate(
-            original, target_lang, item.language or None, context=context)
+            original, target_lang, item.language or None, context=context
+        )
 
     return Translated(
         original=original,

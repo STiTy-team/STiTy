@@ -2,7 +2,6 @@ from ..registry import Component, Transcribed
 
 
 class LanguageDetector(Component):
-
     def hear(self, audio: bytes) -> None:
         pass
 

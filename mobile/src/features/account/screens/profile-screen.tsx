@@ -11,9 +11,11 @@ import { OptionSheet } from '@/components/option-sheet';
 import { SegmentedControl } from '@/components/segmented-control';
 import { TabHeader } from '@/components/tab-header';
 import { appInfo } from '@/config/app-info';
+import { env } from '@/config/env';
+import { normalizeServerUrl } from '@/config/server-override';
 import { SUPPORTED_LANGUAGES } from '@/domain/languages';
 import { RETENTION_OPTIONS, type Retention } from '@/domain/records';
-import { deleteAccount, signOut } from '@/features/account/account-runtime';
+import { changeServer, deleteAccount, signOut } from '@/features/account/account-runtime';
 import { useLoadProfileOnMount, useProfileStore } from '@/features/account/model/profile-store';
 import {
   getConversationController,
@@ -41,6 +43,7 @@ export const ProfileScreen = () => {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {signedIn ? <SignedInProfile /> : accounts ? <GuestCard /> : null}
         <AppSettings />
+        {appInfo.variant === 'development' && <DeveloperSettings />}
         {signedIn && <AccountActions />}
         <AboutFooter />
       </ScrollView>
@@ -222,6 +225,48 @@ const AppSettings = () => {
         />
       </ListSection>
     </>
+  );
+};
+
+/** Development builds only: which server the app talks to, typed in or set by scanning its QR code. */
+const DeveloperSettings = () => {
+  const { t } = useTranslation();
+
+  const editServer = async () => {
+    const next = await showPrompt({
+      title: t('developer.server'),
+      message: t('developer.serverHint'),
+      value: env.serverUrl,
+      placeholder: 'wss://example.trycloudflare.com',
+      confirmLabel: t('developer.connect'),
+      cancelLabel: t('common.cancel'),
+    });
+    if (!next) return;
+    const url = normalizeServerUrl(next);
+    if (!url) {
+      await showDialog({
+        title: t('developer.invalidServer'),
+        message: t('developer.invalidServerHint'),
+        confirmLabel: t('common.ok'),
+      });
+      return;
+    }
+    if (url !== env.serverUrl) await changeServer(url);
+  };
+
+  return (
+    <ListSection title={t('developer.section')} footer={t(`developer.source.${env.serverSource}`)}>
+      <ListRow title={t('developer.server')} chevron onPress={() => void editServer()}>
+        <ListValue>{env.serverUrl.replace(/^wss?:\/\//, '')}</ListValue>
+      </ListRow>
+      {env.serverSource === 'app' && (
+        <ListRow
+          title={t('developer.resetServer')}
+          tone="action"
+          onPress={() => void changeServer(null)}
+        />
+      )}
+    </ListSection>
   );
 };
 

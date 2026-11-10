@@ -10,6 +10,7 @@ Adds, all full-audio rows (streaming shape comes from the v5 prefix/cut rows):
   ko-en <SEG> pairs    A_gold_en <SEG> [B_gold_en]
 
 usage: python core/research/zprobe/labels/build_prefix6.py --out models/zprobe/data/train_prefix6.jsonl"""
+
 import argparse, csv, json, os, random
 
 ap = argparse.ArgumentParser()
@@ -39,12 +40,18 @@ for r in tsv(os.path.join(ko_dir, "train.tsv")):
     if not os.path.exists(wav):
         continue
     import soundfile as sf
+
     dur = sf.info(wav).duration
-    recs.append({"sid": r[0], "audio": wav, "ko": r[2].strip(), "en": en_text.get(r[0], ""), "dur": dur})
+    recs.append(
+        {"sid": r[0], "audio": wav, "ko": r[2].strip(), "en": en_text.get(r[0], ""), "dur": dur}
+    )
 
 base_rows = [l.rstrip("\n") for l in open(a.base, encoding="utf-8")]
-seen_verbatim = {json.loads(l)["audio"] for l in base_rows
-                 if (x := json.loads(l))["pair"] == "ko-ko" and "|" not in x["audio"] and "#" not in x["audio"]}
+seen_verbatim = {
+    json.loads(l)["audio"]
+    for l in base_rows
+    if (x := json.loads(l))["pair"] == "ko-ko" and "|" not in x["audio"] and "#" not in x["audio"]
+}
 
 out, counts = [], {}
 
@@ -73,10 +80,22 @@ for kind, head, key in (("pair_koko", KO, "ko"), ("pair_koen", EN, "en")):
     for A, B in zip(g[::2], g[1::2]):
         if A["dur"] + B["dur"] > a.max_dur:
             continue
-        add(kind, {"audio": f"{A['audio']}|{clip(B, a.b_cut_sec)}",
-                   "text": f"{head}{A[key]} <SEG>", "pair": f"ko-{key}"})
-        add(kind, {"audio": f"{A['audio']}|{B['audio']}",
-                   "text": f"{head}{A[key]} <SEG> {B[key]}", "pair": f"ko-{key}"})
+        add(
+            kind,
+            {
+                "audio": f"{A['audio']}|{clip(B, a.b_cut_sec)}",
+                "text": f"{head}{A[key]} <SEG>",
+                "pair": f"ko-{key}",
+            },
+        )
+        add(
+            kind,
+            {
+                "audio": f"{A['audio']}|{B['audio']}",
+                "text": f"{head}{A[key]} <SEG> {B[key]}",
+                "pair": f"ko-{key}",
+            },
+        )
 
 with open(a.out, "w", encoding="utf-8") as f:
     for l in base_rows:

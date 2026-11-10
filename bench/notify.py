@@ -129,8 +129,7 @@ def job_failed(job: Job, *, host: str, error: str) -> None:
     discord.send(
         BenchSettings.load().discord_webhook_url,
         f"❌ **`{host}` 에서 job이 실패했어요** — pipeline `{job.pipeline}` · dataset `{job.dataset}`\n"
-        f"job `{job.id}` · queue에서 뺐어요. 고친 뒤 다시 넣어 주세요\n\n"
-        + error_block(error),
+        f"job `{job.id}` · queue에서 뺐어요. 고친 뒤 다시 넣어 주세요\n\n" + error_block(error),
     )
 
 

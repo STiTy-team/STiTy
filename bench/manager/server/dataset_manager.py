@@ -84,7 +84,11 @@ def _contract(root: Path) -> ModuleType:
 
 
 def _plain_dirs(path: Path) -> list[Path]:
-    return sorted(d for d in path.iterdir() if d.is_dir() and not d.name.startswith(".") and d.name not in SKIP)
+    return sorted(
+        d
+        for d in path.iterdir()
+        if d.is_dir() and not d.name.startswith(".") and d.name not in SKIP
+    )
 
 
 def _is_dataset(path: Path) -> bool:
@@ -123,11 +127,13 @@ def write_spec_raw(dataset: Path, spec: dict) -> None:
     """Rewrite dataset.yml from a loaded spec, keeping the contract's key order."""
     import yaml
 
-    (dataset / "dataset.yml").write_text(yaml.safe_dump(spec, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    (dataset / "dataset.yml").write_text(
+        yaml.safe_dump(spec, allow_unicode=True, sort_keys=False), encoding="utf-8"
+    )
 
 
 def parse_langs(raw: str) -> list[str]:
-    """"ko, en de" -> ["ko", "en", "de"], order kept, duplicates dropped."""
+    """ "ko, en de" -> ["ko", "en", "de"], order kept, duplicates dropped."""
     out = []
     for lang in re.split(r"[,\s]+", raw.strip()):
         if not lang:
@@ -142,7 +148,9 @@ def parse_langs(raw: str) -> list[str]:
 def read_jsonl(path: Path) -> list[dict]:
     if not path.is_file():
         return []
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 def read_manifest(dataset: Path) -> list[dict]:
@@ -329,9 +337,15 @@ class DatasetManager:
             if (text or "").strip()
         )
 
-        transcripts = {r.get("id"): (r.get("reference") or {}).get("transcript") or "" for r in rows}
+        transcripts = {
+            r.get("id"): (r.get("reference") or {}).get("transcript") or "" for r in rows
+        }
         orphan = sum(1 for i in aligned if i not in transcripts)
-        stale = sum(1 for i, a in aligned.items() if i in transcripts and a.get("transcript") != transcripts[i])
+        stale = sum(
+            1
+            for i, a in aligned.items()
+            if i in transcripts and a.get("transcript") != transcripts[i]
+        )
 
         groups = [r.get("group", r.get("id")) for r in rows]
         return {
@@ -339,7 +353,9 @@ class DatasetManager:
             "files": {
                 "manifest": manifest.is_file(),
                 "manifest_bytes": manifest.stat().st_size if manifest.is_file() else 0,
-                "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest() if manifest.is_file() else None,
+                "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest()
+                if manifest.is_file()
+                else None,
                 "alignment": (dataset / contract.ALIGNMENT_NAME).is_file(),
                 "readme": (dataset / "README.md").is_file(),
                 "convert": (dataset / "convert.py").is_file(),
@@ -402,7 +418,11 @@ class DatasetManager:
             }
         aligned = contract._read_alignment(dataset / contract.ALIGNMENT_NAME).get(row["id"])
         if aligned:
-            aligned = {**aligned, "stale": aligned.get("transcript") != (row.get("reference") or {}).get("transcript")}
+            aligned = {
+                **aligned,
+                "stale": aligned.get("transcript")
+                != (row.get("reference") or {}).get("transcript"),
+            }
         return {"line": i + 1, "row": row, "audio": audio, "alignment": aligned}
 
     def audio_bytes(self, dataset: Path, item_id: str) -> bytes:

@@ -87,8 +87,7 @@ export type Machine = {
 }
 
 export type MachinesReply =
-  | { configured: false; message: string }
-  | { configured: true; now: string; machines: Machine[] }
+  { configured: false; message: string } | { configured: true; now: string; machines: Machine[] }
 
 export type ConfigFile = {
   yaml: string

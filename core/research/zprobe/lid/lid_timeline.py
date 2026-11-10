@@ -5,6 +5,7 @@
   two = 2단 (커밋 텍스트 한글/라틴 비율 확정 우선, 비확정이면 ac, 그래도 없으면 직전 유지)
 산출: lid_timeline.json  {scene: [[t, ac, two], ...]}  (t = decision_audio_sec 오름차순)
 """
+
 import json, re, unicodedata
 import torch
 import librosa
@@ -34,9 +35,13 @@ def script_verdict(text):
 
 
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
 proc = WhisperProcessor.from_pretrained("openai/whisper-small")
-wmodel = WhisperForConditionalGeneration.from_pretrained(
-    "openai/whisper-small", dtype=torch.float16).to("cuda").eval()
+wmodel = (
+    WhisperForConditionalGeneration.from_pretrained("openai/whisper-small", dtype=torch.float16)
+    .to("cuda")
+    .eval()
+)
 tok = proc.tokenizer
 allowed = {c: tok.convert_tokens_to_ids(f"<|{c}|>") for c in ("ko", "en")}
 sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
@@ -47,12 +52,18 @@ def acoustic(scene, a, b):
     if scene not in wavs:
         wavs[scene], _ = librosa.load(f"{NS}/audio/{scene}.wav", sr=SR, mono=True)
     a = max(a, b - 4.0)
-    seg = wavs[scene][int(a * SR): int(b * SR)]
+    seg = wavs[scene][int(a * SR) : int(b * SR)]
     if len(seg) < int(0.3 * SR):
         return None
-    feats = proc(seg, sampling_rate=SR, return_tensors="pt").input_features.to("cuda", torch.float16)
+    feats = proc(seg, sampling_rate=SR, return_tensors="pt").input_features.to(
+        "cuda", torch.float16
+    )
     with torch.no_grad():
-        logits = wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda")).logits[0, -1].float()
+        logits = (
+            wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda"))
+            .logits[0, -1]
+            .float()
+        )
     return max(allowed, key=lambda c: logits[allowed[c]].item())
 
 

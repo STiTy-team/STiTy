@@ -1,6 +1,17 @@
 import { useChartTip } from "@/components/compare/chart-tip"
 import { useWidth } from "@/hooks/use-width"
-import { axisText, BETTER_TEXT, clip, compareScores, displayScale, formatScore, metric, niceTicks, SCORES, tickText } from "@/lib/compare/scores"
+import {
+  axisText,
+  BETTER_TEXT,
+  clip,
+  compareScores,
+  displayScale,
+  formatScore,
+  metric,
+  niceTicks,
+  SCORES,
+  tickText,
+} from "@/lib/compare/scores"
 import type { RunOverview } from "@/lib/compare/types"
 
 const H = 380
@@ -20,7 +31,17 @@ function paddedTicks(values: number[], count: number) {
 }
 
 /** Accuracy against latency from the run summaries; better is always up and to the right. */
-export function ScatterChart({ runs, xKey, yKey, colors }: { runs: RunOverview[]; xKey: string; yKey: string; colors: Map<string, string> }) {
+export function ScatterChart({
+  runs,
+  xKey,
+  yKey,
+  colors,
+}: {
+  runs: RunOverview[]
+  xKey: string
+  yKey: string
+  colors: Map<string, string>
+}) {
   const [box, measured] = useWidth()
   const [tip, bindTip] = useChartTip()
 
@@ -75,7 +96,12 @@ export function ScatterChart({ runs, xKey, yKey, colors }: { runs: RunOverview[]
         {xt.map((t) => (
           <g key={`x${t}`}>
             <line x1={fx(t)} x2={fx(t)} y1={T} y2={H - B} className="stroke-border" />
-            <text x={fx(t)} y={H - B + 16} textAnchor="middle" className="fill-muted-foreground text-[11px] tabular-nums">
+            <text
+              x={fx(t)}
+              y={H - B + 16}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[11px] tabular-nums"
+            >
               {tickText(xKey, t)}
             </text>
           </g>
@@ -91,7 +117,13 @@ export function ScatterChart({ runs, xKey, yKey, colors }: { runs: RunOverview[]
         <text x={(L + W - R) / 2} y={H - 8} textAnchor="middle" className="fill-muted-foreground text-[11px]">
           {axisText(xKey)} · {BETTER_TEXT[SCORES[xKey].better!]} · 오른쪽이 좋음
         </text>
-        <text x={14} y={midY} textAnchor="middle" transform={`rotate(-90 14 ${midY})`} className="fill-muted-foreground text-[11px]">
+        <text
+          x={14}
+          y={midY}
+          textAnchor="middle"
+          transform={`rotate(-90 14 ${midY})`}
+          className="fill-muted-foreground text-[11px]"
+        >
           {axisText(yKey)} · {BETTER_TEXT[SCORES[yKey].better!]} · 위쪽이 좋음
         </text>
         {front.length > 1 && (
@@ -103,7 +135,12 @@ export function ScatterChart({ runs, xKey, yKey, colors }: { runs: RunOverview[]
               strokeDasharray="5 4"
               className="stroke-muted-foreground"
             />
-            <text x={(px(fa) + px(fb)) / 2} y={(py(fa) + py(fb)) / 2 - 8} textAnchor="middle" className="fill-muted-foreground text-[11px]">
+            <text
+              x={(px(fa) + px(fb)) / 2}
+              y={(py(fa) + py(fb)) / 2 - 8}
+              textAnchor="middle"
+              className="fill-muted-foreground text-[11px]"
+            >
               파레토 경계
             </text>
           </>

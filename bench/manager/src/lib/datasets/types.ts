@@ -137,9 +137,7 @@ export type VerifyResult = {
   report: string
 }
 
-export type RecordResult =
-  | { discarded: true; duration: number }
-  | (ItemRow & { discarded?: false })
+export type RecordResult = { discarded: true; duration: number } | (ItemRow & { discarded?: false })
 
 export type NewDataset = {
   name: string

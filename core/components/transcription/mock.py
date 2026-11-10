@@ -8,7 +8,6 @@ from .base import Transcriber
 
 @transcribers.register("mock")
 class MockTranscriber(Transcriber):
-
     def start(self, languages: list[str] | None = None, **_) -> None:
         self.language = (languages or ["en"])[0]
         self.words: list[str] = []
@@ -29,11 +28,16 @@ class MockTranscriber(Transcriber):
         original = " ".join(self.words)
         self.words = []
         self.seq += 1
-        return [Transcribed(original=original, language=self.language,
-                            commit_reason=reason,
-                            decision_audio_sec=round(self.heard_samples / audio_mod.SAMPLING_RATE, 3),
-                            committed_elapsed_sec=round(timing.elapsed() or 0.0, 4)),
-                Partial(text="", language="", seq=self.seq)]
+        return [
+            Transcribed(
+                original=original,
+                language=self.language,
+                commit_reason=reason,
+                decision_audio_sec=round(self.heard_samples / audio_mod.SAMPLING_RATE, 3),
+                committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+            ),
+            Partial(text="", language="", seq=self.seq),
+        ]
 
     async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         return await self.flush(reason, speech)

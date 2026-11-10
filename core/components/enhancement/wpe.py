@@ -17,7 +17,6 @@ MIN_RMS = 1e-6
 
 @enhancers.register("wpe")
 class WpeEnhancer(Enhancer):
-
     SETTINGS = {
         "dereverb": ("dereverb", bool),
         "taps": ("taps", int),
@@ -63,7 +62,7 @@ class WpeEnhancer(Enhancer):
         if out.shape[0] < samples.shape[0]:
             out = np.pad(out, (0, samples.shape[0] - out.shape[0]))
         else:
-            out = out[:samples.shape[0]]
+            out = out[: samples.shape[0]]
         return out.astype(np.float32)
 
     def _normalize_loudness(self, samples: np.ndarray) -> np.ndarray:

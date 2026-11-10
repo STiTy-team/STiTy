@@ -68,4 +68,3 @@ class Repo:
             return self.repo.commit(f"origin/{branch}")
         except UNKNOWN_REVISION as e:
             raise GitError(f"branch {branch!r} is not on origin; push it first") from e
-

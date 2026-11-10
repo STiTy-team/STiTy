@@ -10,6 +10,7 @@ lid_text_correct/full 과 달리 발화 경계를 매니페스트(오라클)가 
 진실: 매니페스트 발화 스팬과의 겹침 최대 언어. 두 언어 겹침이 각각 1초 이상이면 mixed 로 따로 센다.
 보고: 발화 수·정확도(건수/길이가중)·뒤집기 옳/그름·확정 시점·오답 목록·mixed 상세.
 """
+
 import asyncio, json, re, time, unicodedata
 import numpy as np
 import torch
@@ -21,19 +22,22 @@ KOEN = "models/Qwen3-ASR-1.7B-koen-seg-mix-merged"
 TEXT_GRID = [1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 7.0]
 
 from silero_vad import load_silero_vad, get_speech_timestamps
+
 vad = load_silero_vad()
 
 truth_spans = {}
 for line in open(f"{NS}/manifest.jsonl"):
     it = json.loads(line)
     truth_spans.setdefault(it["audio"], []).append(
-        (it["offset"], it["offset"] + it["duration"], it["src_lang"], it["id"]))
+        (it["offset"], it["offset"] + it["duration"], it["src_lang"], it["id"])
+    )
 
 utts = []
 for audio, spans in sorted(truth_spans.items()):
     wav, _ = librosa.load(f"{NS}/{audio}", sr=SR, mono=True)
-    ts = get_speech_timestamps(torch.from_numpy(wav), vad, sampling_rate=SR,
-                               min_silence_duration_ms=800)
+    ts = get_speech_timestamps(
+        torch.from_numpy(wav), vad, sampling_rate=SR, min_silence_duration_ms=800
+    )
     for seg in ts:
         s, e = seg["start"] / SR, seg["end"] / SR
         if e - s < 0.3:
@@ -47,22 +51,40 @@ for audio, spans in sorted(truth_spans.items()):
             continue
         truth = max(ov, key=ov.get)
         mixed = len([l for l, d in ov.items() if d >= 1.0]) > 1
-        utts.append({"scene": audio, "s": s, "e": e, "wav": wav[seg["start"]:seg["end"]],
-                     "truth": truth, "mixed": mixed, "ov": ov})
+        utts.append(
+            {
+                "scene": audio,
+                "s": s,
+                "e": e,
+                "wav": wav[seg["start"] : seg["end"]],
+                "truth": truth,
+                "mixed": mixed,
+                "ov": ov,
+            }
+        )
 print(f"VAD utterances: {len(utts)} (mixed: {sum(u['mixed'] for u in utts)})", flush=True)
 
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
 proc = WhisperProcessor.from_pretrained("openai/whisper-small")
-wmodel = WhisperForConditionalGeneration.from_pretrained(
-    "openai/whisper-small", dtype=torch.float16).to("cuda").eval()
+wmodel = (
+    WhisperForConditionalGeneration.from_pretrained("openai/whisper-small", dtype=torch.float16)
+    .to("cuda")
+    .eval()
+)
 tok = proc.tokenizer
 allowed = {c: tok.convert_tokens_to_ids(f"<|{c}|>") for c in ("ko", "en")}
 sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
 for u in utts:
-    feats = proc(u["wav"][: SR], sampling_rate=SR,
-                 return_tensors="pt").input_features.to("cuda", torch.float16)
+    feats = proc(u["wav"][:SR], sampling_rate=SR, return_tensors="pt").input_features.to(
+        "cuda", torch.float16
+    )
     with torch.no_grad():
-        logits = wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda")).logits[0, -1].float()
+        logits = (
+            wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda"))
+            .logits[0, -1]
+            .float()
+        )
     u["acoustic"] = max(allowed, key=lambda c: logits[allowed[c]].item())
 del wmodel
 torch.cuda.empty_cache()
@@ -89,8 +111,10 @@ def script_verdict(text):
 
 
 from qwen_asr import Qwen3ASRModel
-asr = Qwen3ASRModel.from_pretrained(KOEN, dtype=torch.bfloat16, device_map="cuda:0",
-                                    max_inference_batch_size=32, max_new_tokens=96)
+
+asr = Qwen3ASRModel.from_pretrained(
+    KOEN, dtype=torch.bfloat16, device_map="cuda:0", max_inference_batch_size=32, max_new_tokens=96
+)
 
 for u in utts:
     u["text_v"] = {}
@@ -134,17 +158,25 @@ dur = np.array([len(u["wav"]) / SR for u in utts])
 wacc = float(np.sum(dur * [u["final"] == u["truth"] for u in utts]) / dur.sum())
 pure = [u for u in utts if not u["mixed"]]
 pacc = np.mean([u["final"] == u["truth"] for u in pure])
-print(f"\nfinal acc={acc:.3f} ({n} utts)  duration-weighted={wacc:.3f}  "
-      f"pure-only={pacc:.3f} ({len(pure)})", flush=True)
+print(
+    f"\nfinal acc={acc:.3f} ({n} utts)  duration-weighted={wacc:.3f}  "
+    f"pure-only={pacc:.3f} ({len(pure)})",
+    flush=True,
+)
 print(f"flips good/bad={good}/{bad}", flush=True)
 if settle:
-    print(f"옳은 확정: {len(settle)}/{n}, 중앙값 {np.median(settle):.1f}s, "
-          f"p90 {np.percentile(settle, 90):.1f}s", flush=True)
+    print(
+        f"옳은 확정: {len(settle)}/{n}, 중앙값 {np.median(settle):.1f}s, "
+        f"p90 {np.percentile(settle, 90):.1f}s",
+        flush=True,
+    )
 print("오답:", flush=True)
 for u in errors:
-    print(f"  {u['scene']} [{u['s']:.1f}-{u['e']:.1f}] truth={u['truth']} "
-          f"음향={u['acoustic']} final={u['final']} mixed={u['mixed']} ov={ {k: round(v,1) for k,v in u['ov'].items()} }",
-          flush=True)
+    print(
+        f"  {u['scene']} [{u['s']:.1f}-{u['e']:.1f}] truth={u['truth']} "
+        f"음향={u['acoustic']} final={u['final']} mixed={u['mixed']} ov={ {k: round(v, 1) for k, v in u['ov'].items()} }",
+        flush=True,
+    )
 mixed_utts = [u for u in utts if u["mixed"]]
 if mixed_utts:
     macc = np.mean([u["final"] == u["truth"] for u in mixed_utts])

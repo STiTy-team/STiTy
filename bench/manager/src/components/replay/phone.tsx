@@ -8,7 +8,19 @@ import { cn } from "@/lib/utils"
 // grey, language hue only on the avatar) -- the panel shows what the device shows, so its
 // colors are the app's own and do not follow this page's theme.
 
-function Bubble({ lang, main, sub, mine, live }: { lang: string; main: string; sub?: string; mine: boolean; live?: boolean }) {
+function Bubble({
+  lang,
+  main,
+  sub,
+  mine,
+  live,
+}: {
+  lang: string
+  main: string
+  sub?: string
+  mine: boolean
+  live?: boolean
+}) {
   return (
     <div
       className={cn(
@@ -27,11 +39,19 @@ function Bubble({ lang, main, sub, mine, live }: { lang: string; main: string; s
         className={cn(
           "max-w-[72%] rounded-[14px] p-3",
           mine ? "rounded-br-[4px]" : "rounded-bl-[4px]",
-          live ? (mine ? "bg-[#F0F3FA] text-[#37579F]" : "bg-[#F9FAFB] text-[#4E5968]") : mine ? "bg-[#4268BD] text-white" : "bg-[#F2F4F6] text-[#191F28]",
+          live
+            ? mine
+              ? "bg-[#F0F3FA] text-[#37579F]"
+              : "bg-[#F9FAFB] text-[#4E5968]"
+            : mine
+              ? "bg-[#4268BD] text-white"
+              : "bg-[#F2F4F6] text-[#191F28]",
         )}
       >
         <div className="text-[15px] leading-normal">{main}</div>
-        {sub && <div className={cn("mt-1 text-[13px] leading-normal", mine ? "text-white/85" : "text-[#4E5968]")}>{sub}</div>}
+        {sub && (
+          <div className={cn("mt-1 text-[13px] leading-normal", mine ? "text-white/85" : "text-[#4E5968]")}>{sub}</div>
+        )}
       </div>
     </div>
   )
@@ -122,7 +142,9 @@ export function Phone({
           ) : (
             <div className="grid h-full place-items-center text-[15px] text-[#8B95A1]">{empty}</div>
           )}
-          {liveText && live && <Bubble lang={lowerLang(live)} mine={lowerLang(live) === srcLang} main={liveText} live />}
+          {liveText && live && (
+            <Bubble lang={lowerLang(live)} mine={lowerLang(live) === srcLang} main={liveText} live />
+          )}
         </div>
         {instrumented && (
           <>
@@ -134,7 +156,9 @@ export function Phone({
               </div>
             )}
             <div className="mx-5 mb-5 flex h-14 shrink-0 items-center gap-2.5 rounded-2xl bg-[#F2F4F6] px-4">
-              <span className={cn("size-2 shrink-0 rounded-full bg-[#B0B8C1]", hearing && "animate-pulse bg-[#7A9030]")} />
+              <span
+                className={cn("size-2 shrink-0 rounded-full bg-[#B0B8C1]", hearing && "animate-pulse bg-[#7A9030]")}
+              />
               <span className={cn("flex-1 text-[15px] font-semibold", hearing && "text-[#617326]")}>
                 {hearing ? "Listening" : playing ? "Pause between utterances" : "Idle"}
               </span>

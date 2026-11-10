@@ -96,7 +96,9 @@ class _Nvml:
 
         pynvml.nvmlInit()
         self.nvml = pynvml
-        self.devices = [pynvml.nvmlDeviceGetHandleByIndex(i) for i in range(pynvml.nvmlDeviceGetCount())]
+        self.devices = [
+            pynvml.nvmlDeviceGetHandleByIndex(i) for i in range(pynvml.nvmlDeviceGetCount())
+        ]
         self._util_seen = [0] * len(self.devices)
 
     def processes(self, device) -> dict[int, float]:
@@ -116,7 +118,9 @@ class _Nvml:
 
     def util(self, index: int, pids: set[int]) -> float | None:
         try:
-            samples = self.nvml.nvmlDeviceGetProcessUtilization(self.devices[index], self._util_seen[index])
+            samples = self.nvml.nvmlDeviceGetProcessUtilization(
+                self.devices[index], self._util_seen[index]
+            )
         except self.nvml.NVMLError:
             return None
         if samples:
@@ -155,7 +159,13 @@ def _sample(nvml: _Nvml, root_pid: int, started: float) -> dict:
         if device_ours and (util := nvml.util(index, set(ours))) is not None:
             utils.append(util)
         memory = nvml.nvml.nvmlDeviceGetMemoryInfo(device)
-        devices.append({"index": index, "used_mib": round(memory.used / MIB), "total_mib": round(memory.total / MIB)})
+        devices.append(
+            {
+                "index": index,
+                "used_mib": round(memory.used / MIB),
+                "total_mib": round(memory.total / MIB),
+            }
+        )
     return {
         "t": round(time.monotonic() - started, 1),
         "ours_mib": round(ours_mib),

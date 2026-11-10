@@ -22,11 +22,9 @@ from pathlib import Path
 from ..paths import MANIFEST_DIR, RUNS_DIR
 
 
-
 def load_manifest(tag: str, tgt: str) -> dict[str, tuple[str, str]]:
     """utt_id → (소스 원문, 참조 번역). bleu_eval.load_manifest 와 같은 파일을 읽는다."""
-    path = (MANIFEST_DIR
-            / f"fleurs_nway_en-{tgt}_{tag}.jsonl")
+    path = MANIFEST_DIR / f"fleurs_nway_en-{tgt}_{tag}.jsonl"
     out = {}
     with path.open(encoding="utf-8") as f:
         for line in f:
@@ -35,8 +33,7 @@ def load_manifest(tag: str, tgt: str) -> dict[str, tuple[str, str]]:
     return out
 
 
-def paired_bootstrap(a: list[float], b: list[float], iters: int,
-                     seed: int = 12345) -> dict:
+def paired_bootstrap(a: list[float], b: list[float], iters: int, seed: int = 12345) -> dict:
     """조건 a − 조건 b 의 평균 차이와 95% CI. 세그먼트 점수만 재표집하므로 비용이 없다."""
     n = len(a)
     rng = random.Random(seed)
@@ -49,8 +46,7 @@ def paired_bootstrap(a: list[float], b: list[float], iters: int,
     boots.sort()
     lo = boots[int(0.025 * iters)]
     hi = boots[int(0.975 * iters) - 1]
-    return {"delta": round(delta, 4), "ci95": [round(lo, 4), round(hi, 4)],
-            "n_boot": iters}
+    return {"delta": round(delta, 4), "ci95": [round(lo, 4), round(hi, 4)], "n_boot": iters}
 
 
 def main() -> int:
@@ -64,21 +60,30 @@ def main() -> int:
     p.add_argument("--batch-size", type=int, default=64)
     p.add_argument("--gpus", type=int, default=1)
     p.add_argument("--bootstrap", type=int, default=1000)
-    p.add_argument("--pair-tol-ms", type=float, default=80.0,
-                   help="실측 지연이 이만큼 이내로 겹치는 쌍만 맞대결로 인정한다")
-    p.add_argument("--report-only", action="store_true",
-                   help="이미 채점된 json 으로 표만 다시 만든다 (GPU 불필요)")
+    p.add_argument(
+        "--pair-tol-ms",
+        type=float,
+        default=80.0,
+        help="실측 지연이 이만큼 이내로 겹치는 쌍만 맞대결로 인정한다",
+    )
+    p.add_argument(
+        "--report-only",
+        action="store_true",
+        help="이미 채점된 json 으로 표만 다시 만든다 (GPU 불필요)",
+    )
     args = p.parse_args()
 
     run_dir = RUNS_DIR / args.run_id
     bleu_dir = run_dir / "bleu"
-    ev = json.loads((run_dir / "prompt_eval" / f"{args.label}_{args.split}.json"
-                     ).read_text(encoding="utf-8"))
+    ev = json.loads(
+        (run_dir / "prompt_eval" / f"{args.label}_{args.split}.json").read_text(encoding="utf-8")
+    )
     ids_all = [r["id"] for r in ev["rows"]]
 
     model = None
     if not args.report_only:
         from comet import download_model, load_from_checkpoint
+
         model = load_from_checkpoint(download_model(args.model))
         print(f"모델 {args.model}")
 
@@ -98,7 +103,8 @@ def main() -> int:
         if args.report_only:
             report[tgt] = data
             seg_all[tgt] = json.loads(
-                (bleu_dir / f"comet_seg_{tgt}.json").read_text(encoding="utf-8"))
+                (bleu_dir / f"comet_seg_{tgt}.json").read_text(encoding="utf-8")
+            )
             continue
 
         # 같은 (문장, 번역) 쌍은 조건이 달라도 한 번만 채점한다.
@@ -113,11 +119,12 @@ def main() -> int:
                     uniq[key] = len(rows)
                     rows.append({"src": srcs[j], "mt": h, "ref": refs[j]})
         total = sum(len(c["hyps"]) for c in conds.values())
-        print(f"[{tgt}] 조건 {len(conds)}개 × {len(ids)}문장 = {total}세그먼트 "
-              f"→ 중복 제거 후 {len(rows)}건 채점")
+        print(
+            f"[{tgt}] 조건 {len(conds)}개 × {len(ids)}문장 = {total}세그먼트 "
+            f"→ 중복 제거 후 {len(rows)}건 채점"
+        )
 
-        out = model.predict(rows, batch_size=args.batch_size, gpus=args.gpus,
-                            progress_bar=True)
+        out = model.predict(rows, batch_size=args.batch_size, gpus=args.gpus, progress_bar=True)
         scores = list(out.scores)
 
         seg: dict[str, list[float]] = {}
@@ -131,16 +138,21 @@ def main() -> int:
                 cell["retention_comet"] = round(cell["comet"] / base["comet"], 4)
             if name != "unsegmented" and base:
                 cell["paired_comet_vs_unseg"] = paired_bootstrap(
-                    seg[name], seg["unsegmented"], args.bootstrap)
-            print(f"[{tgt}] {name:18s} COMET {cell['comet']:.4f}  "
-                  f"ret {cell.get('retention_comet', float('nan')):.4f}")
+                    seg[name], seg["unsegmented"], args.bootstrap
+                )
+            print(
+                f"[{tgt}] {name:18s} COMET {cell['comet']:.4f}  "
+                f"ret {cell.get('retention_comet', float('nan')):.4f}"
+            )
 
         data["comet_model"] = args.model
         (bleu_dir / f"{tgt}.json").write_text(
-            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         (bleu_dir / f"comet_seg_{tgt}.json").write_text(
-            json.dumps({k: [round(x, 5) for x in v] for k, v in seg.items()},
-                       ensure_ascii=False), encoding="utf-8")
+            json.dumps({k: [round(x, 5) for x in v] for k, v in seg.items()}, ensure_ascii=False),
+            encoding="utf-8",
+        )
         report[tgt] = data
         seg_all[tgt] = seg
 
@@ -172,37 +184,56 @@ def matched_pairs(conds: dict, tol_ms: float) -> list[tuple[str, str, float]]:
     return out
 
 
-def write_report(path: Path, report: dict[str, dict], args,
-                 seg_all: dict[str, dict[str, list[float]]]) -> None:
-    L = [f"# 분절 조건별 COMET — {args.run_id}", "",
-         f"- 지표: `{args.model}` (참조 기반, gold FLEURS n-way 참조)",
-         "- 번역은 `bleu_eval` 산출을 **그대로 재사용** — 재번역·API 비용 없음",
-         "- BLEU 는 언어 간 절대 비교가 불가하지만 COMET 은 다국어 인코더 하나를 쓰므로",
-         "  절대값 비교가 상대적으로 가능하다. 다만 언어쌍별 편향이 남으므로 retention 도 같이 본다.",
-         "- 조각 번역을 이어붙인 문자열을 gold 문장과 맞대므로, COMET 이 학습한 단일 문장과는",
-         "  성격이 다르다 (문장 정렬 1:1 은 보장됨). 논문에 실으면 각주 필요.", ""]
+def write_report(
+    path: Path, report: dict[str, dict], args, seg_all: dict[str, dict[str, list[float]]]
+) -> None:
+    L = [
+        f"# 분절 조건별 COMET — {args.run_id}",
+        "",
+        f"- 지표: `{args.model}` (참조 기반, gold FLEURS n-way 참조)",
+        "- 번역은 `bleu_eval` 산출을 **그대로 재사용** — 재번역·API 비용 없음",
+        "- BLEU 는 언어 간 절대 비교가 불가하지만 COMET 은 다국어 인코더 하나를 쓰므로",
+        "  절대값 비교가 상대적으로 가능하다. 다만 언어쌍별 편향이 남으므로 retention 도 같이 본다.",
+        "- 조각 번역을 이어붙인 문자열을 gold 문장과 맞대므로, COMET 이 학습한 단일 문장과는",
+        "  성격이 다르다 (문장 정렬 1:1 은 보장됨). 논문에 실으면 각주 필요.",
+        "",
+    ]
     for tgt, data in report.items():
-        L += [f"## en→{tgt} (n={data['n']})", "",
-              "| 조건 | k | 조각 크기 | laal_ms ↓ | BLEU ↑ | chrF2 | COMET ↑ | ret(BLEU) | ret(COMET) | ΔCOMET vs unseg [95% CI] |",
-              "|---|---|---|---|---|---|---|---|---|---|"]
+        L += [
+            f"## en→{tgt} (n={data['n']})",
+            "",
+            "| 조건 | k | 조각 크기 | laal_ms ↓ | BLEU ↑ | chrF2 | COMET ↑ | ret(BLEU) | ret(COMET) | ΔCOMET vs unseg [95% CI] |",
+            "|---|---|---|---|---|---|---|---|---|---|",
+        ]
         for name, c in data["conditions"].items():
             ms = "—" if c.get("laal_ms") is None else f"{c['laal_ms']:.0f}"
             pb = c.get("paired_comet_vs_unseg")
-            d = ("—" if pb is None else
-                 f"{pb['delta']:+.4f} [{pb['ci95'][0]:+.4f}, {pb['ci95'][1]:+.4f}]")
+            d = (
+                "—"
+                if pb is None
+                else f"{pb['delta']:+.4f} [{pb['ci95'][0]:+.4f}, {pb['ci95'][1]:+.4f}]"
+            )
             pu = "—" if c.get("piece_units") is None else f"{c['piece_units']:.1f}"
-            L.append(f"| {name} | {c['k']:.2f} | {pu} | {ms} | {c['bleu']:.2f} | "
-                     f"{c['chrf2']:.2f} | {c['comet']:.4f} | "
-                     f"{c.get('retention_bleu', 0):.4f} | "
-                     f"{c.get('retention_comet', 0):.4f} | {d} |")
+            L.append(
+                f"| {name} | {c['k']:.2f} | {pu} | {ms} | {c['bleu']:.2f} | "
+                f"{c['chrf2']:.2f} | {c['comet']:.4f} | "
+                f"{c.get('retention_bleu', 0):.4f} | "
+                f"{c.get('retention_comet', 0):.4f} | {d} |"
+            )
         L.append("")
 
     names = [n for n in report[list(report)[0]]["conditions"]]
     tgts = list(report)
-    L += ["## 언어 간 안정성", "",
-          "| 조건 | " + " | ".join(f"{t} COMET" for t in tgts) + " | "
-          + " | ".join(f"{t} ret" for t in tgts) + " | COMET 폭 | ret 폭 |",
-          "|---" * (1 + 2 * len(tgts) + 2) + "|"]
+    L += [
+        "## 언어 간 안정성",
+        "",
+        "| 조건 | "
+        + " | ".join(f"{t} COMET" for t in tgts)
+        + " | "
+        + " | ".join(f"{t} ret" for t in tgts)
+        + " | COMET 폭 | ret 폭 |",
+        "|---" * (1 + 2 * len(tgts) + 2) + "|",
+    ]
     for name in names:
         cells, rets = [], []
         for t in tgts:
@@ -217,26 +248,51 @@ def write_report(path: Path, report: dict[str, dict], args,
         # 언어가 하나뿐인 조건에 "폭 0" 을 찍으면 가장 안정적인 것처럼 보인다 — 비운다.
         w = f"{max(got) - min(got):.4f}" if len(got) > 1 else "—"
         wr = f"{max(gotr) - min(gotr):.4f}" if len(gotr) > 1 else "—"
-        L.append(f"| {name} | " + " | ".join(f(x) for x in cells) + " | "
-                 + " | ".join(f(x) for x in rets) + " | " + w + " | " + wr + " |")
+        L.append(
+            f"| {name} | "
+            + " | ".join(f(x) for x in cells)
+            + " | "
+            + " | ".join(f(x) for x in rets)
+            + " | "
+            + w
+            + " | "
+            + wr
+            + " |"
+        )
     auto = [n for n in names if n.startswith("auto_T")]
     if auto and len(tgts) > 1:
-        L += ["", "## 지표별 retention 폭 (max−min) — 낮을수록 언어 간 안정",
-              "", "| 지표 | " + " | ".join(auto) + " |", "|---" * (1 + len(auto)) + "|"]
-        for key, lab in (("retention_bleu", "BLEU"), ("retention_chrf2", "chrF2"),
-                         ("retention_comet", "COMET")):
+        L += [
+            "",
+            "## 지표별 retention 폭 (max−min) — 낮을수록 언어 간 안정",
+            "",
+            "| 지표 | " + " | ".join(auto) + " |",
+            "|---" * (1 + len(auto)) + "|",
+        ]
+        for key, lab in (
+            ("retention_bleu", "BLEU"),
+            ("retention_chrf2", "chrF2"),
+            ("retention_comet", "COMET"),
+        ):
             vals = []
             for n in auto:
-                xs = [report[t]["conditions"][n].get(key) for t in tgts
-                      if n in report[t]["conditions"]]
+                xs = [
+                    report[t]["conditions"][n].get(key)
+                    for t in tgts
+                    if n in report[t]["conditions"]
+                ]
                 xs = [x for x in xs if x is not None]
                 vals.append(f"{max(xs) - min(xs):.4f}" if len(xs) > 1 else "—")
             L.append(f"| {lab} | " + " | ".join(vals) + " |")
-    L += ["", f"## 지연이 {args.pair_tol_ms:.0f}ms 이내로 겹치는 맞대결 (COMET)", "",
-          "같은 `T` 는 같은 지연이 **아니다**. 등간격 선택은 정의상 지연을 덜 쓰므로 T 를 맞춘",
-          "비교는 지연 차이를 품질 차이로 오독한다. 실측 `laal_ms` 가 겹치는 쌍만 싣는다.", "",
-          "| 타깃 | 대조 | 지연차(ms) | ΔCOMET [95% CI] | |",
-          "|---|---|---|---|---|"]
+    L += [
+        "",
+        f"## 지연이 {args.pair_tol_ms:.0f}ms 이내로 겹치는 맞대결 (COMET)",
+        "",
+        "같은 `T` 는 같은 지연이 **아니다**. 등간격 선택은 정의상 지연을 덜 쓰므로 T 를 맞춘",
+        "비교는 지연 차이를 품질 차이로 오독한다. 실측 `laal_ms` 가 겹치는 쌍만 싣는다.",
+        "",
+        "| 타깃 | 대조 | 지연차(ms) | ΔCOMET [95% CI] | |",
+        "|---|---|---|---|---|",
+    ]
     for t in tgts:
         segs = seg_all.get(t)
         if not segs:
@@ -245,8 +301,10 @@ def write_report(path: Path, report: dict[str, dict], args,
             r = paired_bootstrap(segs[a], segs[b], args.bootstrap)
             lo, hi = r["ci95"]
             mark = "n.s." if lo < 0 < hi else "**"
-            L.append(f"| {t} | {a} vs {b} | {dms:+.0f} | "
-                     f"{r['delta']:+.4f} [{lo:+.4f}, {hi:+.4f}] | {mark} |")
+            L.append(
+                f"| {t} | {a} vs {b} | {dms:+.0f} | "
+                f"{r['delta']:+.4f} [{lo:+.4f}, {hi:+.4f}] | {mark} |"
+            )
     path.write_text("\n".join(L) + "\n", encoding="utf-8")
 
 

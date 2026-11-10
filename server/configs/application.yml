@@ -1,5 +1,9 @@
 server:
   port: 8765
+  cors:
+    allow_origins:
+      - http://localhost:8081
+    allow_origin_regex: ^https://stity-mobile-preview(--[a-z0-9-]+)?\.expo\.app$
 
 stity:
   pipeline: mock

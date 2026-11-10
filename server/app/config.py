@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic import BaseModel
 from pydantic_settings import (
     BaseSettings,
@@ -16,9 +18,22 @@ BASE_FILE = CONFIG_DIR / "application.yml"
 LOCAL_OVERLAY = CONFIG_DIR / "application.local.yml"
 
 
+class CorsSettings(BaseModel):
+    allow_origins: list[str] = ["http://localhost:8081"]
+    allow_origin_regex: str | None = None
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
+
+
 class ServerSettings(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8765
+    cors: CorsSettings = CorsSettings()
+
+
+class RecordingSettings(BaseModel):
+    allowed: bool = False
+    dir: Path = get_project_root() / "server" / "logs" / "recordings"
 
 
 class StitySettings(BaseModel):
@@ -29,6 +44,7 @@ class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="STITY_", env_nested_delimiter="__")
 
     server: ServerSettings = ServerSettings()
+    recording: RecordingSettings = RecordingSettings()
     stity: StitySettings
 
     @classmethod
@@ -59,6 +75,8 @@ class AppSettings(BaseSettings):
 
 class ServerConfig(ConfigBody):
     server: ServerSettings
+    recording: RecordingSettings
+    pipeline_name: str
     stity: PipelineConfig
 
 
@@ -67,6 +85,8 @@ def load_config() -> ServerConfig:
     return ServerConfig.parse(
         {
             "server": settings.server.model_dump(),
+            "recording": settings.recording.model_dump(),
+            "pipeline_name": settings.stity.pipeline,
             "stity": core_config.load_pipeline(settings.stity.pipeline),
         },
         root="server config",

@@ -36,12 +36,14 @@ export function RecorderPanel({ ds }: { ds: string }) {
   const [openItem, setOpenItem] = useState<string | null>(null)
 
   const declared = shape.data?.spec.languages ?? []
-  const effectiveSrcLang = declared.includes(srcLang) ? srcLang : declared[0] ?? ""
+  const effectiveSrcLang = declared.includes(srcLang) ? srcLang : (declared[0] ?? "")
 
   const { status, error, elapsed, toggle } = useRecorder(async (pcm) => {
     const meta: RecordMeta = { prefix, speakers, srcLang: effectiveSrcLang, speaker }
     const saved = await record.mutateAsync({ pcm, meta })
-    setSavedNote("discarded" in saved && saved.discarded ? `너무 짧아 버렸어요 (${saved.duration}초)` : `저장됐어요 · ${saved.id}`)
+    setSavedNote(
+      "discarded" in saved && saved.discarded ? `너무 짧아 버렸어요 (${saved.duration}초)` : `저장됐어요 · ${saved.id}`,
+    )
   })
 
   useEffect(() => {
@@ -83,8 +85,20 @@ export function RecorderPanel({ ds }: { ds: string }) {
           disabled={status === "arming" || status === "saving"}
           onClick={toggle}
         >
-          {status === "recording" ? <SquareIcon /> : status === "idle" || status === "error" ? <MicIcon /> : <CircleIcon />}
-          {status === "recording" ? "정지" : status === "armed" ? "녹음 시작" : status === "idle" || status === "error" ? "마이크 켜기" : "…"}
+          {status === "recording" ? (
+            <SquareIcon />
+          ) : status === "idle" || status === "error" ? (
+            <MicIcon />
+          ) : (
+            <CircleIcon />
+          )}
+          {status === "recording"
+            ? "정지"
+            : status === "armed"
+              ? "녹음 시작"
+              : status === "idle" || status === "error"
+                ? "마이크 켜기"
+                : "…"}
         </Button>
         <p className="text-center text-xs text-muted-foreground">
           <kbd className="rounded border px-1 py-0.5 font-mono">Space</kbd> 로도 시작 / 정지
@@ -108,7 +122,15 @@ export function RecorderPanel({ ds }: { ds: string }) {
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rec-lang">src_lang</Label>
-            <Input id="rec-lang" value={effectiveSrcLang} maxLength={16} placeholder="en" list="rec-lang-options" autoComplete="off" onChange={(e) => setSrcLang(e.target.value)} />
+            <Input
+              id="rec-lang"
+              value={effectiveSrcLang}
+              maxLength={16}
+              placeholder="en"
+              list="rec-lang-options"
+              autoComplete="off"
+              onChange={(e) => setSrcLang(e.target.value)}
+            />
             <datalist id="rec-lang-options">
               {declared.map((lang) => (
                 <option key={lang} value={lang} />
@@ -117,23 +139,34 @@ export function RecorderPanel({ ds }: { ds: string }) {
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rec-speaker">speaker</Label>
-            <Input id="rec-speaker" value={speaker} maxLength={64} placeholder="비워 둬도 돼요" onChange={(e) => setSpeaker(e.target.value)} />
+            <Input
+              id="rec-speaker"
+              value={speaker}
+              maxLength={64}
+              placeholder="비워 둬도 돼요"
+              onChange={(e) => setSpeaker(e.target.value)}
+            />
           </div>
         </div>
 
         {savedNote && <p className="text-xs text-muted-foreground">{savedNote}</p>}
 
         <p className="text-xs text-muted-foreground">
-          브라우저 DSP (에코 제거 · 잡음 억제 · 자동 게인) 는 항상 꺼진 채로 녹음해요. 잡음 억제기는 겹친 두 번째 목소리를 잡음으로
-          보고 지우도록 학습돼 있어서, 겹침 데이터셋이 담으려는 것을 정확히 망가뜨려요. 녹음은 16 kHz mono s16le wav로{" "}
-          <code className="font-mono">data/sessions/</code>에 떨어지고 <code className="font-mono">manifest.jsonl</code>에 행이
-          붙어요.
+          브라우저 DSP (에코 제거 · 잡음 억제 · 자동 게인) 는 항상 꺼진 채로 녹음해요. 잡음 억제기는 겹친 두 번째
+          목소리를 잡음으로 보고 지우도록 학습돼 있어서, 겹침 데이터셋이 담으려는 것을 정확히 망가뜨려요. 녹음은 16 kHz
+          mono s16le wav로 <code className="font-mono">data/sessions/</code>에 떨어지고{" "}
+          <code className="font-mono">manifest.jsonl</code>에 행이 붙어요.
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <h3 className="text-sm font-medium">
-          최근 항목 {total > 0 && <span className="text-muted-foreground">전체 {total} 중 마지막 {Math.min(RECENT, total)}</span>}
+          최근 항목{" "}
+          {total > 0 && (
+            <span className="text-muted-foreground">
+              전체 {total} 중 마지막 {Math.min(RECENT, total)}
+            </span>
+          )}
         </h3>
         {items.isPending ? (
           <Skeleton className="h-64 w-full" />

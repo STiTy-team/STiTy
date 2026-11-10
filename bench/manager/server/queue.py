@@ -142,7 +142,11 @@ class QueueApi:
         }
 
     def check_config(self, body: dict) -> dict:
-        kind, name, text = str(body.get("kind", "")), str(body.get("name", "")), str(body.get("yaml", ""))
+        kind, name, text = (
+            str(body.get("kind", "")),
+            str(body.get("name", "")),
+            str(body.get("yaml", "")),
+        )
         if kind not in KINDS:
             raise BadRequest(f"unknown config kind {kind!r}")
         try:
@@ -282,7 +286,10 @@ class QueueApi:
                 r"/api/configs/([^/]+)/([^/]+)/meta",
                 lambda kind, name: self.edit_config_meta(kind, name, body),
             ),
-            (r"/api/configs/([^/]+)/([^/]+)", lambda kind, name: self.save_config(kind, name, body)),
+            (
+                r"/api/configs/([^/]+)/([^/]+)",
+                lambda kind, name: self.save_config(kind, name, body),
+            ),
         ]
 
     def handle_get(self, path: str) -> tuple[int, object] | None:

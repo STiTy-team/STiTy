@@ -4,11 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { features } from '@/config/features';
 import { OUTPUT_MODES, type OutputMode } from '@/domain/output-modes';
 import { getConversationController } from '@/features/conversation/conversation-runtime';
 import { isConnecting } from '@/features/conversation/model/conversation-machine';
 import { useConversationPreferences } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { haptics } from '@/services/haptics';
 import { makeStyles, spacing, typography, useColors, type ColorScheme } from '@/theme';
 
@@ -41,6 +45,8 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
   const controller = getConversationController();
   const phase = useConversationStore((state) => state.phase);
   const talking = useConversationStore((state) => state.talking);
+  const inRoom = useConversationStore(selectInRoom);
+  const speaks = features.speech && !inRoom;
   const muted = useConversationPreferences((state) => state.muted);
   const outputMode = useConversationPreferences((state) => state.outputMode);
   const { setMuted, setOutputMode } = useConversationPreferences.getState();
@@ -73,6 +79,8 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
             style: styles.micIdle,
           };
 
+  const sideSpacer = <View style={styles.side} />;
+
   return (
     <View
       style={
@@ -81,14 +89,18 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           : [styles.bar, { paddingBottom: Math.max(bottom, spacing.lg) + spacing.sm }]
       }
     >
-      <SideButton
-        scheme={scheme}
-        icon={muted ? 'volume-mute-outline' : 'volume-high-outline'}
-        caption={muted ? t('conversation.muted') : t('conversation.sound')}
-        accessibilityRole="switch"
-        checked={!muted}
-        onPress={press(() => setMuted(!muted))}
-      />
+      {speaks ? (
+        <SideButton
+          scheme={scheme}
+          icon={muted ? 'volume-mute-outline' : 'volume-high-outline'}
+          caption={muted ? t('conversation.muted') : t('conversation.sound')}
+          accessibilityRole="switch"
+          checked={!muted}
+          onPress={press(() => setMuted(!muted))}
+        />
+      ) : (
+        sideSpacer
+      )}
 
       {holdToTalk && recording ? (
         <View style={styles.holdColumn}>
@@ -144,7 +156,7 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           caption={t('present.exit')}
           onPress={present.onExit}
         />
-      ) : (
+      ) : speaks ? (
         <SideButton
           icon={OUTPUT_ICONS[outputMode]}
           caption={t(`outputModes.${outputMode}`)}
@@ -152,6 +164,8 @@ export const SessionControls = ({ holdToTalk = false, present, onInteract }: Pro
           accessibilityHint={t(`outputModes.${nextOutput}`)}
           onPress={press(() => setOutputMode(nextOutput))}
         />
+      ) : (
+        sideSpacer
       )}
     </View>
   );

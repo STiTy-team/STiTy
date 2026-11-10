@@ -27,6 +27,14 @@ Thumbs.db
 *.arrow
 *.parquet
 
+server/logs/
+
+# QR code and URL of the current dev tunnel (scripts/server/tunnel.sh)
+/qr
+
+# Tools downloaded by scripts/server/install-cloudflared.sh
+/.bin/
+
 # Evaluation temp results
 **/results_tmp/
 

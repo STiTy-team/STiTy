@@ -63,9 +63,12 @@ def detect_by_kpeak(weights_np: np.ndarray, k: int, min_distance: int = 3) -> np
 def load_encoder_with_lora(model_path: str, lora_dir: str, device: str, dtype: torch.dtype):
     from qwen_asr.core.transformers_backend import Qwen3ASRConfig, Qwen3ASRForConditionalGeneration
     from transformers import AutoConfig
+
     AutoConfig.register("qwen3_asr", Qwen3ASRConfig)
     model = Qwen3ASRForConditionalGeneration.from_pretrained(
-        model_path, dtype=dtype, device_map=device,
+        model_path,
+        dtype=dtype,
+        device_map=device,
     )
     encoder = model.thinker.audio_tower
     for p in encoder.parameters():
@@ -113,8 +116,13 @@ def evaluate(args):
     predictor.eval()
 
     feature_extractor = WhisperFeatureExtractor(
-        feature_size=128, sampling_rate=16000, hop_length=160,
-        chunk_length=30, n_fft=400, padding_value=0.0, return_attention_mask=True,
+        feature_size=128,
+        sampling_rate=16000,
+        hop_length=160,
+        chunk_length=30,
+        n_fft=400,
+        padding_value=0.0,
+        return_attention_mask=True,
     )
 
     with open(args.test_data) as f:
@@ -143,8 +151,9 @@ def evaluate(args):
             audio = load_audio_16k(rec["audio"])
             dur = len(audio) / 16000.0
 
-            out = feature_extractor(audio, sampling_rate=16000,
-                                    return_tensors="pt", return_attention_mask=True)
+            out = feature_extractor(
+                audio, sampling_rate=16000, return_tensors="pt", return_attention_mask=True
+            )
             mel = out["input_features"].squeeze(0)
             mel_len = int(out["attention_mask"].squeeze(0).sum().item())
             mel = mel[:, :mel_len]
@@ -162,11 +171,14 @@ def evaluate(args):
 
             T = weights.shape[0]
             if labels.shape[0] != T:
-                labels = labels[:T] if labels.shape[0] > T else \
-                    torch.cat([labels, torch.zeros(T - labels.shape[0], device=device)])
+                labels = (
+                    labels[:T]
+                    if labels.shape[0] > T
+                    else torch.cat([labels, torch.zeros(T - labels.shape[0], device=device)])
+                )
 
-            qty  = (weights.sum() - n_segs) ** 2
-            bnd  = nn.functional.mse_loss(weights, labels)
+            qty = (weights.sum() - n_segs) ** 2
+            bnd = nn.functional.mse_loss(weights, labels)
             loss = args.lambda_qty * qty + args.lambda_bnd * bnd
             if qty_pred is not None:
                 loss = loss + args.lambda_count * (qty_pred - float(n_segs)) ** 2
@@ -184,30 +196,30 @@ def evaluate(args):
             kpeak_frames = detect_by_kpeak(weights_np_arr, kpeak_k, args.peak_min_dist)
             kpeak_pred = len(kpeak_frames)
 
-            total_loss    += loss.item()
-            qty_loss_sum  += qty.item()
-            bnd_loss_sum  += bnd.item()
-            count_acc     += int(n_pred == n_segs)
+            total_loss += loss.item()
+            qty_loss_sum += qty.item()
+            bnd_loss_sum += bnd.item()
+            count_acc += int(n_pred == n_segs)
             count_mae_sum += abs(n_pred - n_segs)
             if qty_head_pred is not None:
-                qty_head_acc  += int(qty_head_pred == n_segs)
-                qty_head_mae  += abs(qty_head_pred - n_segs)
+                qty_head_acc += int(qty_head_pred == n_segs)
+                qty_head_mae += abs(qty_head_pred - n_segs)
             kpeak_count_acc += int(kpeak_pred == n_segs)
-            kpeak_mae_sum   += abs(kpeak_pred - n_segs)
+            kpeak_mae_sum += abs(kpeak_pred - n_segs)
             # 위치 오차: count 맞았을 때만 (정렬 후 프레임 단위 MAE)
             if kpeak_pred == n_segs and n_segs > 0:
                 pos_err = float(np.mean(np.abs(kpeak_frames - np.sort(seg_frames))))
                 kpeak_pos_mae_sum += pos_err
                 kpeak_pos_n += 1
-            n_valid       += 1
+            n_valid += 1
 
             # n_segs 별 오차 기록
             by_nsegs.setdefault(n_segs, []).append(abs(n_pred - n_segs))
             by_nsegs_kpeak.setdefault(n_segs, []).append(abs(kpeak_pred - n_segs))
 
             bar.set_postfix(
-                loss=f"{total_loss/n_valid:.4f}",
-                acc=f"{count_acc/n_valid:.3f}",
+                loss=f"{total_loss / n_valid:.4f}",
+                acc=f"{count_acc / n_valid:.3f}",
             )
 
         except Exception as e:
@@ -217,40 +229,46 @@ def evaluate(args):
         print("유효한 샘플 없음")
         return
 
-    kpeak_pos_str = (f"{kpeak_pos_mae_sum/kpeak_pos_n:.2f}"
-                     if kpeak_pos_n > 0 else "N/A")
+    kpeak_pos_str = f"{kpeak_pos_mae_sum / kpeak_pos_n:.2f}" if kpeak_pos_n > 0 else "N/A"
 
-    print(f"\n{'='*56}")
+    print(f"\n{'=' * 56}")
     print(f"  samples        : {n_valid}")
-    print(f"  total_loss     : {total_loss/n_valid:.4f}")
-    print(f"  qty_loss       : {qty_loss_sum/n_valid:.4f}  (Σw - n_segs)²")
-    print(f"  bnd_loss       : {bnd_loss_sum/n_valid:.4f}  MSE(w, label)")
-    print(f"{'─'*56}")
-    print(f"  count_acc [CIF]    : {count_acc/n_valid:.3f}  ({count_acc}/{n_valid})")
-    print(f"  count_mae [CIF]    : {count_mae_sum/n_valid:.3f}")
-    print(f"  count_acc [head]   : {qty_head_acc/n_valid:.3f}  ({qty_head_acc}/{n_valid})")
-    print(f"  count_mae [head]   : {qty_head_mae/n_valid:.3f}")
-    print(f"  count_acc [kpeak]  : {kpeak_count_acc/n_valid:.3f}  ({kpeak_count_acc}/{n_valid})")
-    print(f"  count_mae [kpeak]  : {kpeak_mae_sum/n_valid:.3f}")
-    print(f"  pos_mae   [kpeak]  : {kpeak_pos_str}  (count 일치 샘플 {kpeak_pos_n}개, 단위: enc frames)")
-    print(f"{'='*56}")
+    print(f"  total_loss     : {total_loss / n_valid:.4f}")
+    print(f"  qty_loss       : {qty_loss_sum / n_valid:.4f}  (Σw - n_segs)²")
+    print(f"  bnd_loss       : {bnd_loss_sum / n_valid:.4f}  MSE(w, label)")
+    print(f"{'─' * 56}")
+    print(f"  count_acc [CIF]    : {count_acc / n_valid:.3f}  ({count_acc}/{n_valid})")
+    print(f"  count_mae [CIF]    : {count_mae_sum / n_valid:.3f}")
+    print(f"  count_acc [head]   : {qty_head_acc / n_valid:.3f}  ({qty_head_acc}/{n_valid})")
+    print(f"  count_mae [head]   : {qty_head_mae / n_valid:.3f}")
+    print(f"  count_acc [kpeak]  : {kpeak_count_acc / n_valid:.3f}  ({kpeak_count_acc}/{n_valid})")
+    print(f"  count_mae [kpeak]  : {kpeak_mae_sum / n_valid:.3f}")
+    print(
+        f"  pos_mae   [kpeak]  : {kpeak_pos_str}  (count 일치 샘플 {kpeak_pos_n}개, 단위: enc frames)"
+    )
+    print(f"{'=' * 56}")
 
     print("\n[ n_segs별 count_acc  /  CIF vs kpeak ]")
     for k in sorted(by_nsegs):
-        errs_cif   = by_nsegs[k]
+        errs_cif = by_nsegs[k]
         errs_kpeak = by_nsegs_kpeak.get(k, [])
-        acc_cif   = sum(e == 0 for e in errs_cif) / len(errs_cif)
-        acc_kpeak = sum(e == 0 for e in errs_kpeak) / len(errs_kpeak) if errs_kpeak else float("nan")
-        print(f"  n_segs={k}  n={len(errs_cif):4d}"
-              f"  cif={acc_cif:.3f}(mae={np.mean(errs_cif):.2f})"
-              f"  kpeak={acc_kpeak:.3f}(mae={np.mean(errs_kpeak):.2f})")
+        acc_cif = sum(e == 0 for e in errs_cif) / len(errs_cif)
+        acc_kpeak = (
+            sum(e == 0 for e in errs_kpeak) / len(errs_kpeak) if errs_kpeak else float("nan")
+        )
+        print(
+            f"  n_segs={k}  n={len(errs_cif):4d}"
+            f"  cif={acc_cif:.3f}(mae={np.mean(errs_cif):.2f})"
+            f"  kpeak={acc_kpeak:.3f}(mae={np.mean(errs_kpeak):.2f})"
+        )
 
 
 def main():
     parser = argparse.ArgumentParser(description="CIF 테스트셋 평가")
     parser.add_argument("--ckpt", required=True)
-    parser.add_argument("--test-data",
-                        default=str(Path(__file__).resolve().parent / "data" / "test.jsonl"))
+    parser.add_argument(
+        "--test-data", default=str(Path(__file__).resolve().parent / "data" / "test.jsonl")
+    )
     parser.add_argument("--mode", choices=["encoder", "mel"], default="encoder")
     parser.add_argument("--model", default="Qwen/Qwen3-ASR-1.7B")
     parser.add_argument("--mel-hidden", type=int, default=256)
@@ -258,8 +276,12 @@ def main():
     parser.add_argument("--lambda-qty", type=float, default=1.0)
     parser.add_argument("--lambda-bnd", type=float, default=1.0)
     parser.add_argument("--lambda-count", type=float, default=1.0)
-    parser.add_argument("--peak-min-dist", type=int, default=3,
-                        help="k-peak 검출 시 인접 극대점 최소 간격 (encoder frames)")
+    parser.add_argument(
+        "--peak-min-dist",
+        type=int,
+        default=3,
+        help="k-peak 검출 시 인접 극대점 최소 간격 (encoder frames)",
+    )
     args = parser.parse_args()
     evaluate(args)
 

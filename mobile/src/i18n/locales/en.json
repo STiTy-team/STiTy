@@ -26,7 +26,12 @@
     "saveHint": "The server keeps the transcript as it translates. No audio is kept.",
     "saveLocked": "Applies from the next conversation.",
     "signInToSave": "Sign in to save conversations",
-    "saveGuestHint": "Translation works without an account. Signing in keeps a transcript of each conversation."
+    "saveGuestHint": "Translation works without an account. Signing in keeps a transcript of each conversation.",
+    "joinRoom": "Join room",
+    "joinRoomHint": "Enter the code from the person who invited you. Everyone's mic goes into one conversation.",
+    "roomCode": "Room code",
+    "join": "Join",
+    "joinLinkHint": "Check your languages, then join."
   },
   "outputModes": {
     "speaker": "Speaker",
@@ -78,7 +83,17 @@
     "holdToTalk": "Hold to talk",
     "holdHint": "Audio is sent only while you hold the button.",
     "holdPrompt": "Hold the button and speak",
-    "talking": "Listening… release to send"
+    "talking": "Listening… release to send",
+    "room": "Room {{code}}",
+    "invite": "Invite",
+    "inviteHint": "Scan this QR code or share the code to join. Translations won't be read aloud for the rest of this conversation, because every phone is listening.",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "linkCopied": "Copied",
+    "inviteQr": "QR code to join this room",
+    "roomPeople": "{{count}} people",
+    "micOff": "Mic off",
+    "micOffNotice": "The host turned your mic off. You can still follow the conversation."
   },
   "conversationSettings": {
     "running": "The conversation is still running",
@@ -107,7 +122,10 @@
     "serverUnreachable": "Connection failed",
     "connectionLost": "The connection to the server was lost.",
     "microphoneDenied": "Microphone access is needed for live translation. Allow it in Settings.",
-    "microphoneUnavailable": "The microphone is unavailable. Another app, such as a video call, may be using it."
+    "microphoneUnavailable": "The microphone is unavailable. Another app, such as a video call, may be using it.",
+    "roomNotFound": "No open room has that code. Check it and try again.",
+    "removedFromRoom": "You were removed from this room.",
+    "roomEnded": "The host left, so this room has closed."
   },
   "settings": {
     "display": "Display",
@@ -129,6 +147,25 @@
     "termsSubtitle": "Rules and limits of use",
     "disclaimer": "⚠ STiTy provides AI-generated translations and does not guarantee accuracy. Do not rely on it for medical, legal, or emergency communication.",
     "version": "v{{version}}"
+  },
+  "developer": {
+    "section": "Developer",
+    "serverRecording": "Record on server",
+    "serverRecordingHint": "The server saves this phone's audio and every message for debugging. Only servers that allow it record.",
+    "server": "Server",
+    "serverHint": "A wss:// or https:// address with no path, such as the one under the QR code the server prints.",
+    "connect": "Connect",
+    "resetServer": "Use the build's server",
+    "invalidServer": "Not a server address",
+    "invalidServerHint": "Enter an origin like wss://example.trycloudflare.com, without a path.",
+    "linkFailed": "This link doesn't hold a server address.",
+    "switchTitle": "Connect to another server?",
+    "switchMessage": "Your microphone audio will go to {{server}}. You'll be signed out, and the app restarts. Connect only to a server you trust.",
+    "source": {
+      "app": "Set in the app. The app restarts when you change it.",
+      "build": "From EXPO_PUBLIC_SERVER_URL. Scan the server's QR code or tap Server to change it.",
+      "fallback": "No server set, so the app looks on localhost. Scan the server's QR code or tap Server to set one."
+    }
   },
   "about": {
     "copyright": "© 2026 STiTy. All rights reserved."
@@ -371,5 +408,20 @@
     "deletedMessage": "Your account, your records and STiTy's data on this phone are gone.",
     "deleteFailed": "Couldn't delete your account",
     "deleteFailedMessage": "Nothing was deleted. Check your connection and try again."
+  },
+  "room": {
+    "title": "People in this room",
+    "participant": "Participant {{number}}",
+    "host": "Host",
+    "you": "You",
+    "micOn": "Mic on",
+    "micOff": "Mic off",
+    "allMicsOn": "Turn all mics on",
+    "allMicsOff": "Turn all mics off",
+    "remove": "Remove {{name}}",
+    "removeTitle": "Remove {{name}}?",
+    "removeMessage": "They leave this conversation right away.",
+    "removeAction": "Remove",
+    "hostHint": "You're the host. When you leave, this room closes for everyone."
   }
 }

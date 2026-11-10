@@ -10,6 +10,7 @@ from app.models.conversation.events import (
     ConversationEvent,
     ConversationSettingsChanged,
     JoinedConversation,
+    RoomChanged,
     SegmentTimeline,
 )
 from app.models.conversation.feed import Feed, Inbox
@@ -38,6 +39,9 @@ class Conversation:
     transcription_worker: Worker | None = None
     translation_workers: dict[str, SettlingWorker] = field(default_factory=dict)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    host_id: str | None = None
+    new_participants_can_speak: bool = True
+    _joined: int = field(default=0, init=False, repr=False)
     _timeline: SegmentTimeline = field(init=False, repr=False)
     _feed: Feed = field(default_factory=Feed, init=False, repr=False)
     _translation_feeds: dict[str, Feed] = field(default_factory=dict, init=False, repr=False)
@@ -63,6 +67,10 @@ class Conversation:
         return [p.channel for p in self.participants.values() if p.channel is not None]
 
     @property
+    def wants_recording(self) -> bool:
+        return any(p.recording for p in self.participants.values())
+
+    @property
     def missing_translation_langs(self) -> list[str]:
         return sorted(self.reads - set(self.translation_workers))
 
@@ -70,16 +78,46 @@ class Conversation:
         return any(into in p.targets_for(spoken) for p in self.participants.values())
 
     def add(self, participant: Participant) -> None:
+        self._joined += 1
+        participant.number = self._joined
+        participant.can_speak = self.new_participants_can_speak
         self.participants[participant.id] = participant
+        self.host_id = self.host_id or participant.id
         self.subscribe(participant.inbox, participant.reads)
         participant.inbox.put(JoinedConversation(self.id))
+        self._publish_room()
 
     def remove(self, participant: Participant) -> list[Worker | None]:
         del self.participants[participant.id]
         worker = self.close_channel(participant)
         self.unsubscribe(participant.inbox)
         participant.inbox.end()
+        self._publish_room()
         return [worker, *self.detach_unused_translation_workers()]
+
+    def is_host(self, participant: Participant) -> bool:
+        return self.host_id == participant.id
+
+    def set_can_speak(self, participant: Participant, can_speak: bool) -> Worker | None:
+        participant.can_speak = can_speak
+        worker = None if can_speak else self.close_channel(participant)
+        self._publish_room()
+        return worker
+
+    def set_everyone_can_speak(self, can_speak: bool) -> list[Worker | None]:
+        self.new_participants_can_speak = can_speak
+        workers = []
+        for participant in self.participants.values():
+            participant.can_speak = can_speak
+            if not can_speak:
+                workers.append(self.close_channel(participant))
+        self._publish_room()
+        return workers
+
+    def _publish_room(self) -> None:
+        room = RoomChanged.of(self.host_id, self.participants.values())
+        for participant in self.participants.values():
+            participant.inbox.put(room)
 
     def change_languages(
         self,
@@ -94,9 +132,9 @@ class Conversation:
         self.subscribe(participant.inbox, participant.reads)
         participant.inbox.put(ConversationSettingsChanged())
 
-    def open_channel(self, participant: Participant, channel: str) -> None:
-        participant.channel = channel
-        self.audio.open_channel(channel)
+    def open_channel(self, participant: Participant) -> None:
+        participant.channel = participant.id
+        self.audio.open_channel(participant.id)
 
     def push_audio(self, participant: Participant, pcm: bytes) -> None:
         if participant.channel is not None and self.audio is not None:
@@ -151,9 +189,12 @@ class Conversation:
         self.translation_workers.clear()
         return workers
 
+    def dismiss(self, participant: Participant, error: Exception) -> None:
+        participant.inbox.put(Closed(error))
+
     def dismiss_participants(self, error: Exception | None) -> None:
         for participant in self.participants.values():
             if error is not None:
-                participant.inbox.put(Closed(error))
+                self.dismiss(participant, error)
             participant.inbox.end()
         self.participants.clear()

@@ -7,7 +7,7 @@ import numpy as np
 from core.utils import clock
 from core.utils.audio import SAMPLING_RATE, MultiChannelAudio, from_pcm_bytes
 
-CHUNK_MS = 100
+CHUNK_MS = 200
 MAX_WAIT_MS = 200
 
 

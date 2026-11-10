@@ -299,7 +299,7 @@ discriminability[d] = |mean_pos[d] - mean_neg[d]| / pooled_std[d]
 
 **추론 방식**:
 ```python
-proba = clf.predict_proba(features)[:, 1]   # per-frame P(SEG)
+proba = clf.predict_proba(features)[:, 1]  # per-frame P(SEG)
 peaks, _ = find_peaks(proba, height=peak_thr, distance=3)
 # peaks → 예측 SEG 경계
 ```

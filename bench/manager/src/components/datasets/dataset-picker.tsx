@@ -30,12 +30,23 @@ export function DatasetPicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} aria-label="데이터셋" className="max-w-full min-w-56 justify-between font-mono text-xs">
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          aria-label="데이터셋"
+          className="max-w-full min-w-56 justify-between font-mono text-xs"
+        >
           <span className="truncate">{value ?? "데이터셋 없음"}</span>
           <ChevronsUpDownIcon className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent side="bottom" align="start" avoidCollisions={false} className="w-[28rem] max-w-[calc(100vw-2rem)] p-0">
+      <PopoverContent
+        side="bottom"
+        align="start"
+        avoidCollisions={false}
+        className="w-[28rem] max-w-[calc(100vw-2rem)] p-0"
+      >
         <Command>
           <CommandInput placeholder="데이터셋 찾기…" />
           <CommandList className="max-h-[min(24rem,60vh)]">

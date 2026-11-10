@@ -127,3 +127,25 @@ export function scrollWithin(box: HTMLElement | null, el: Element | null | undef
   if (r.top >= b.top && r.bottom <= b.bottom) return
   box.scrollTop += r.top - b.top - (box.clientHeight - r.height) * 0.6
 }
+
+export function useSpaceToToggle(toggle: () => void) {
+  const latest = useRef(toggle)
+  useEffect(() => {
+    latest.current = toggle
+  })
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.code !== "Space") return
+      if (
+        (ev.target as Element).closest(
+          "input, textarea, button, [role=combobox], [role=option], [role=tab], [contenteditable]",
+        )
+      )
+        return
+      ev.preventDefault()
+      latest.current()
+    }
+    addEventListener("keydown", onKey)
+    return () => removeEventListener("keydown", onKey)
+  }, [])
+}

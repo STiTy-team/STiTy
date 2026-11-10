@@ -22,7 +22,12 @@ function Delta({ run, base, scoreKey }: { run: RunOverview; base: RunOverview | 
   if (!/[1-9]/.test(shown)) return <span className="block text-xs text-muted-foreground">0</span>
   const c = compareScores(scoreKey, v, b)
   return (
-    <span className={cn("block text-xs font-medium", c < 0 ? "text-emerald-600" : c > 0 ? "text-destructive" : "text-muted-foreground")}>
+    <span
+      className={cn(
+        "block text-xs font-medium",
+        c < 0 ? "text-emerald-600" : c > 0 ? "text-destructive" : "text-muted-foreground",
+      )}
+    >
       {v > b ? "+" : "−"}
       {shown}
     </span>
@@ -34,7 +39,12 @@ function RunInfo({ run }: { run: RunOverview }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="size-7 text-muted-foreground" aria-label={`${run.pipeline} 정보`}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="size-7 text-muted-foreground"
+          aria-label={`${run.pipeline} 정보`}
+        >
           <InfoIcon />
         </Button>
       </PopoverTrigger>
@@ -135,7 +145,10 @@ export function RunBoard({
             <TableCell className="align-top whitespace-normal">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="size-2 shrink-0 rounded-full" style={{ background: colors.get(run.name) }} />
-                <Link to={`/replay?run=${encodeURIComponent(run.name)}`} className="font-mono text-[13px] font-semibold hover:underline">
+                <Link
+                  to={`/replay?run=${encodeURIComponent(run.name)}`}
+                  className="font-mono text-[13px] font-semibold hover:underline"
+                >
                   {run.pipeline}
                 </Link>
                 {run.status && run.status !== "ok" && (
@@ -156,7 +169,11 @@ export function RunBoard({
                   <TableCell
                     key={k}
                     title={isBest ? "이 열에서 가장 좋은 값" : undefined}
-                    className={cn("text-right align-top tabular-nums", i === 0 && "pl-6", isBest ? "font-bold" : "font-medium")}
+                    className={cn(
+                      "text-right align-top tabular-nums",
+                      i === 0 && "pl-6",
+                      isBest ? "font-bold" : "font-medium",
+                    )}
                   >
                     {formatScore(k, v, { unit: false })}
                     {showDelta && <Delta run={run} base={base} scoreKey={k} />}

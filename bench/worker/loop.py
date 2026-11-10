@@ -118,7 +118,9 @@ class Worker:
             return
         self.run_job(claimed, window, settings)
 
-    def run_job(self, claimed: ClaimedJob, window: Window | None, settings: MachineSettings) -> None:
+    def run_job(
+        self, claimed: ClaimedJob, window: Window | None, settings: MachineSettings
+    ) -> None:
         job = claimed.job
         try:
             cwd, commit = checkout.worktree_for(self.config.repo, self.config.worktree, job)
@@ -287,8 +289,7 @@ class Worker:
             last_error=self.last_error,
         )
         heartbeat_due = (
-            self.health_written_at is None
-            or now - self.health_written_at >= HEALTH_HEARTBEAT
+            self.health_written_at is None or now - self.health_written_at >= HEALTH_HEARTBEAT
         )
         if shown == self.health_shown and not heartbeat_due:
             return

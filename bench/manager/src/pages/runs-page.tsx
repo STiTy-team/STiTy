@@ -60,10 +60,23 @@ function compareRuns(a: RunRow, b: RunRow, key: SortKey, desc: boolean) {
   return desc ? -order : order
 }
 
-function FilterSelect({ label, value, options, onChange }: { label: string; value: string; options: [string, string][]; onChange: (v: string) => void }) {
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string
+  value: string
+  options: [string, string][]
+  onChange: (v: string) => void
+}) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger aria-label={label} className={cn("max-w-64 min-w-36", value !== ALL && "border-primary/50 bg-accent")}>
+      <SelectTrigger
+        aria-label={label}
+        className={cn("max-w-64 min-w-36", value !== ALL && "border-primary/50 bg-accent")}
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -78,14 +91,29 @@ function FilterSelect({ label, value, options, onChange }: { label: string; valu
   )
 }
 
-function SortHead({ id, sort, onSort, className, children }: { id: SortKey; sort: { key: SortKey; desc: boolean }; onSort: (key: SortKey) => void; className?: string; children: ReactNode }) {
+function SortHead({
+  id,
+  sort,
+  onSort,
+  className,
+  children,
+}: {
+  id: SortKey
+  sort: { key: SortKey; desc: boolean }
+  onSort: (key: SortKey) => void
+  className?: string
+  children: ReactNode
+}) {
   const active = sort.key === id
   return (
     <TableHead className={className} aria-sort={active ? (sort.desc ? "descending" : "ascending") : undefined}>
       <button
         type="button"
         onClick={() => onSort(id)}
-        className={cn("inline-flex items-center gap-1 hover:text-foreground", active ? "text-foreground" : "text-muted-foreground")}
+        className={cn(
+          "inline-flex items-center gap-1 hover:text-foreground",
+          active ? "text-foreground" : "text-muted-foreground",
+        )}
       >
         {children}
         {active && (sort.desc ? <ArrowDownIcon className="size-3" /> : <ArrowUpIcon className="size-3" />)}
@@ -113,11 +141,17 @@ function OpenButton({ run }: { run: RunRow }) {
         size="sm"
         onClick={() => open.mutate()}
         disabled={open.isPending}
-        title={run.local_name ? "이 컴퓨터에 있어요" : "S3에서 내려받은 뒤 열어요. 같은 파이프라인 × 데이터셋의 로컬 사본은 이걸로 바뀌어요."}
+        title={
+          run.local_name
+            ? "이 컴퓨터에 있어요"
+            : "S3에서 내려받은 뒤 열어요. 같은 파이프라인 × 데이터셋의 로컬 사본은 이걸로 바뀌어요."
+        }
       >
         {open.isPending ? "내려받는 중…" : "리플레이"}
       </Button>
-      {open.error && <span className="max-w-64 text-right text-xs whitespace-normal text-destructive">{open.error.message}</span>}
+      {open.error && (
+        <span className="max-w-64 text-right text-xs whitespace-normal text-destructive">{open.error.message}</span>
+      )}
     </div>
   )
 }
@@ -170,7 +204,11 @@ function RunDetails({ run }: { run: RunRow }) {
           </div>
         </div>
       )}
-      {run.failure && <p className="ml-10 rounded-md bg-status-failed-soft px-3 py-2 font-mono text-xs break-all text-status-failed">{run.failure}</p>}
+      {run.failure && (
+        <p className="ml-10 rounded-md bg-status-failed-soft px-3 py-2 font-mono text-xs break-all text-status-failed">
+          {run.failure}
+        </p>
+      )}
     </div>
   )
 }
@@ -230,7 +268,8 @@ export function RunsPage() {
       return (
         <Notice>
           실행 목록을 불러오지 못했어요: {runs.error.message}
-          {runs.error.message === "HTTP 404" && " API 서버가 이 페이지보다 오래된 버전이에요. make bench-manager 를 다시 띄워 주세요."}
+          {runs.error.message === "HTTP 404" &&
+            " API 서버가 이 페이지보다 오래된 버전이에요. make bench-manager 를 다시 띄워 주세요."}
         </Notice>
       )
     if (!all.length) return <Notice>실행이 아직 없어요. Queue에서 머신에 실행을 추가해 보세요.</Notice>
@@ -247,12 +286,25 @@ export function RunsPage() {
               aria-label="실행 찾기"
               className="max-w-sm min-w-60 flex-1"
             />
-            <FilterSelect label="데이터셋" value={dataset} options={unique(all.map((r) => r.dataset)).map((d) => [d, d])} onChange={(v) => update({ dataset: v })} />
-            <FilterSelect label="파이프라인" value={pipeline} options={unique(all.map((r) => r.pipeline)).map((p) => [p, p])} onChange={(v) => update({ pipeline: v })} />
+            <FilterSelect
+              label="데이터셋"
+              value={dataset}
+              options={unique(all.map((r) => r.dataset)).map((d) => [d, d])}
+              onChange={(v) => update({ dataset: v })}
+            />
+            <FilterSelect
+              label="파이프라인"
+              value={pipeline}
+              options={unique(all.map((r) => r.pipeline)).map((p) => [p, p])}
+              onChange={(v) => update({ pipeline: v })}
+            />
             <FilterSelect
               label="머신"
               value={host}
-              options={[...unique(all.map((r) => r.host)).map((h): [string, string] => [h, h]), ...(all.some((r) => r.host == null) ? [[LOCAL_HOST, "이 컴퓨터"] as [string, string]] : [])]}
+              options={[
+                ...unique(all.map((r) => r.host)).map((h): [string, string] => [h, h]),
+                ...(all.some((r) => r.host == null) ? [[LOCAL_HOST, "이 컴퓨터"] as [string, string]] : []),
+              ]}
               onChange={(v) => update({ host: v })}
             />
           </div>
@@ -329,9 +381,15 @@ export function RunsPage() {
                         <TableCell title={`${run.pipeline}\n${run.dataset}`}>
                           <RunCell pipeline={run.pipeline} dataset={run.dataset} />
                         </TableCell>
-                        <TableCell className={cn("truncate font-mono text-xs", !run.host && "font-sans text-muted-foreground")}>{run.host ?? "이 컴퓨터"}</TableCell>
+                        <TableCell
+                          className={cn("truncate font-mono text-xs", !run.host && "font-sans text-muted-foreground")}
+                        >
+                          {run.host ?? "이 컴퓨터"}
+                        </TableCell>
                         <TableCell>
-                          <StatusPill tone={STATUS_TONE[run.status] ?? "queued"}>{STATUS_LABEL[run.status] ?? (run.status || "—")}</StatusPill>
+                          <StatusPill tone={STATUS_TONE[run.status] ?? "queued"}>
+                            {STATUS_LABEL[run.status] ?? (run.status || "—")}
+                          </StatusPill>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">{run.items ?? "—"}</TableCell>
                         <TableCell className="tabular-nums">{formatDuration(run.wall_sec)}</TableCell>

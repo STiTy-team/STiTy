@@ -38,12 +38,35 @@ from typing import Iterable, Optional, Sequence
 # 반드시 metric.json 에 기록한다.
 _NONSPEECH_WORDS = (
     # 영어
-    "laughter", "laughs", "applause", "cheers", "cheering", "music", "singing",
-    "video", "audio", "recording", "silence", "sighs", "beat", "sniffs",
-    "laughter and applause", "clapping", "boos", "gasps",
+    "laughter",
+    "laughs",
+    "applause",
+    "cheers",
+    "cheering",
+    "music",
+    "singing",
+    "video",
+    "audio",
+    "recording",
+    "silence",
+    "sighs",
+    "beat",
+    "sniffs",
+    "laughter and applause",
+    "clapping",
+    "boos",
+    "gasps",
     # 독일어 (MuST-C en-de 참조측)
-    "gelächter", "lachen", "applaus", "beifall", "musik", "gesang", "jubel",
-    "stille", "seufzt", "klatschen",
+    "gelächter",
+    "lachen",
+    "applaus",
+    "beifall",
+    "musik",
+    "gesang",
+    "jubel",
+    "stille",
+    "seufzt",
+    "klatschen",
 )
 _NONSPEECH_RE = re.compile(
     r"[\(\[]\s*(?:" + "|".join(re.escape(w) for w in _NONSPEECH_WORDS) + r")\s*[\)\]]",
@@ -65,6 +88,7 @@ def strip_nonspeech(text: str) -> str:
 
 # ── 단위 세기 ────────────────────────────────────────────────────────────────
 
+
 def count_units(text: str, unit: str = "word") -> int:
     """LAAL의 |Y| 를 센다.
 
@@ -82,9 +106,7 @@ def count_units(text: str, unit: str = "word") -> int:
     raise ValueError(f"unknown unit: {unit!r} (word|char)")
 
 
-def expand_delays(
-    segments: Sequence[tuple[str, float]], unit: str = "word"
-) -> list[float]:
+def expand_delays(segments: Sequence[tuple[str, float]], unit: str = "word") -> list[float]:
     """[(번역문, 지연ms)] → 타깃 단위별 지연 리스트.
 
     세그먼트 안의 모든 단위는 같은 지연을 갖는다. 빈 번역은 단위 0개라 자동으로 빠진다.
@@ -99,6 +121,7 @@ def expand_delays(
 
 
 # ── LAAL ─────────────────────────────────────────────────────────────────────
+
 
 def compute_laal(
     delays_ms: Sequence[float],
@@ -147,9 +170,19 @@ def laal_for_utterance(
 # sacrebleu 토크나이저 기본값. 다른 토크나이저로 낸 점수는 서로 비교 불가이므로
 # 결과에 반드시 signature 를 남긴다.
 DEFAULT_TOKENIZE = {
-    "de": "13a", "en": "13a", "es": "13a", "fr": "13a", "it": "13a",
-    "nl": "13a", "pt": "13a", "ro": "13a", "ru": "13a", "cs": "13a",
-    "zh": "zh", "ja": "ja-mecab", "ko": "ko-mecab",
+    "de": "13a",
+    "en": "13a",
+    "es": "13a",
+    "fr": "13a",
+    "it": "13a",
+    "nl": "13a",
+    "pt": "13a",
+    "ro": "13a",
+    "ru": "13a",
+    "cs": "13a",
+    "zh": "zh",
+    "ja": "ja-mecab",
+    "ko": "ko-mecab",
 }
 
 
@@ -198,9 +231,7 @@ def corpus_bleu_score(
     return score.score, str(metric.get_signature())
 
 
-def sentence_bleu_score(
-    hypothesis: str, reference: str, tokenize: str = "13a"
-) -> Optional[float]:
+def sentence_bleu_score(hypothesis: str, reference: str, tokenize: str = "13a") -> Optional[float]:
     """세그먼트/발화 단위 BLEU. 주지표는 corpus BLEU 이고 이건 보조다 —
     짧은 문장에서 값이 크게 튄다."""
     try:
@@ -217,6 +248,7 @@ def sentence_bleu_score(
 
 
 # ── 집계 ─────────────────────────────────────────────────────────────────────
+
 
 def mean_or_none(values: Iterable[Optional[float]]) -> Optional[float]:
     vals = [v for v in values if v is not None]

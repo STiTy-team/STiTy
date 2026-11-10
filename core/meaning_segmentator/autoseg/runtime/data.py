@@ -14,7 +14,6 @@ from pathlib import Path
 from ..paths import MANIFEST_DIR, REPO_ROOT
 
 
-
 @dataclass
 class Sentence:
     id: str
@@ -26,7 +25,10 @@ class Sentence:
 
 # ── 로더 ─────────────────────────────────────────────────────────────────
 
-def _load_json_entries(path: Path, text_field: str = "text", id_field: str = "file") -> list[Sentence]:
+
+def _load_json_entries(
+    path: Path, text_field: str = "text", id_field: str = "file"
+) -> list[Sentence]:
     """평가 데이터셋 JSON 두 구조를 모두 흡수.
 
     KsponSpeech:  {"data": [...]}
@@ -55,7 +57,15 @@ def load_kspon(path: Path | None = None) -> list[Sentence]:
 
     실제 자발 발화 ASR 전사. 각 항목이 이미 하나의 발화 단위다. 구두점이 없는 항목이 많은 것이 정상이며,
     그것이 바로 실시간 분절이 풀어야 하는 조건이다."""
-    path = path or (REPO_ROOT / "core" / "meaning_segmentator" / "data" / "KsponSpeech" / "transcribe" / "eval_clean_1000.json")
+    path = path or (
+        REPO_ROOT
+        / "core"
+        / "meaning_segmentator"
+        / "data"
+        / "KsponSpeech"
+        / "transcribe"
+        / "eval_clean_1000.json"
+    )
     return _load_json_entries(path, text_field="text", id_field="file")
 
 
@@ -69,12 +79,21 @@ def load_kspon_train(path: Path | None = None) -> list[Sentence]:
 
     같은 코퍼스의 학습 분할 전사이고 id·텍스트 모두 유니크 실측 확인. autoseg 는
     ASR 을 평가하지 않으므로 학습 분할 사용이 오염을 만들지 않는다."""
-    path = path or (REPO_ROOT / "core" / "meaning_segmentator" / "data" / "KsponSpeech" / "transcribe" / "train.json")
+    path = path or (
+        REPO_ROOT
+        / "core"
+        / "meaning_segmentator"
+        / "data"
+        / "KsponSpeech"
+        / "transcribe"
+        / "train.json"
+    )
     return _load_json_entries(path, text_field="text", id_field="file")
 
 
-def _load_ast_manifest(path: Path, text_field: str = "src_text",
-                      id_field: str = "utt_id") -> list[Sentence]:
+def _load_ast_manifest(
+    path: Path, text_field: str = "src_text", id_field: str = "utt_id"
+) -> list[Sentence]:
     """`core/meaning_segmentator/data/manifests/*.jsonl` — AST 평가 트랙의 공용 매니페스트.
 
     한 줄이 한 발화이고 오디오 경로·정답 번역까지 들고 있으나, autoseg 는 **소스
@@ -173,8 +192,8 @@ MANIFESTS = {
 
 # 파일 포맷이 고유한 것만 로더 함수로 남는다. 나머지는 위 MANIFESTS.
 LOADERS = {
-    "kspon": load_kspon,               # ko. eval_clean_1000
-    "kspon-train": load_kspon_train,   # ko. 같은 코퍼스, 꼬리가 2배 길다
+    "kspon": load_kspon,  # ko. eval_clean_1000
+    "kspon-train": load_kspon_train,  # ko. 같은 코퍼스, 꼬리가 2배 길다
 }
 DATASETS = sorted(LOADERS) + sorted(MANIFESTS)
 
@@ -193,13 +212,15 @@ def load(dataset: str) -> list[Sentence]:
         return LOADERS[dataset]()
     q = _manifest_path(dataset)
     if q is None:
-        raise ValueError(f"모르는 데이터셋: {dataset!r}. "
-                         f"등록된 이름 {DATASETS} 이거나 .jsonl 경로여야 한다")
+        raise ValueError(
+            f"모르는 데이터셋: {dataset!r}. 등록된 이름 {DATASETS} 이거나 .jsonl 경로여야 한다"
+        )
     return _load_ast_manifest(q)
 
 
-def units_per_sec(dataset: str, sentences: list[Sentence],
-                  spaced: bool) -> tuple[float | None, str]:
+def units_per_sec(
+    dataset: str, sentences: list[Sentence], spaced: bool
+) -> tuple[float | None, str]:
     """코퍼스 발화 속도 (단위/초). 반환 `(값, 출처)`.
 
     **발화 구간으로 잰다** — `speech_ms` 는 첫 span 시작부터 마지막 span 끝까지다.
@@ -300,10 +321,8 @@ def measure_profile(texts: list[str], min_count: int = 2, attach_ratio: float = 
     # (중앙 1), 조각 예산과 `min_gap` 이 통째로 무의미해진다. 중앙값이면 de 0.135 / en 0.159
     # vs ja 0.000 / zh 0.000 으로 양쪽 여유가 6배 이상이다. 규칙은 여전히 언어 무관이다.
     per_sentence = sorted(t.count(" ") / len(t) for t in texts if t)
-    space_ratio_median = (per_sentence[len(per_sentence) // 2]
-                          if per_sentence else 0.0)
-    space_sentence_ratio = (sum(1 for t in texts if " " in t) / len(texts)
-                            if texts else 0.0)
+    space_ratio_median = per_sentence[len(per_sentence) // 2] if per_sentence else 0.0
+    space_sentence_ratio = sum(1 for t in texts if " " in t) / len(texts) if texts else 0.0
 
     attached: dict[str, int] = {}
     seen: dict[str, int] = {}
@@ -324,7 +343,8 @@ def measure_profile(texts: list[str], min_count: int = 2, attach_ratio: float = 
             n_punct_final += 1
 
     trailing = sorted(
-        c for c, n in seen.items()
+        c
+        for c, n in seen.items()
         if n >= min_count
         and unicodedata.category(c) not in _SHAPE_OPENING
         and attached.get(c, 0) / n >= attach_ratio
@@ -355,8 +375,10 @@ def profile_settings(measured: dict) -> tuple[bool, str | None]:
     LLM 이 이 두 필드를 내놓을 이유도 없다 — 코퍼스에서 직접 세는 값이다.
     (Profiler 프롬프트에서 필드를 빼는 것은 prompt_v0 를 바꾸므로 별도 판단.)
     """
-    return (bool(measured["uses_spaces_between_words"]),
-            "".join(sorted(measured["trailing_punctuation"])) or None)
+    return (
+        bool(measured["uses_spaces_between_words"]),
+        "".join(sorted(measured["trailing_punctuation"])) or None,
+    )
 
 
 # ── 분할 ─────────────────────────────────────────────────────────────────
@@ -367,8 +389,9 @@ def profile_settings(measured: dict) -> tuple[bool, str | None]:
 DEFAULT_SEED = 20260806
 
 
-def stratified_order(items: list, seed: int, text_of=lambda x: x.text,
-                     limit: int | None = None) -> list:
+def stratified_order(
+    items: list, seed: int, text_of=lambda x: x.text, limit: int | None = None
+) -> list:
     """길이 3분위 × 구두점 유무로 층을 만들고 라운드로빈으로 섞는다.
 
     분할이 성격에 치우치지 않게 하는 장치다. 그냥 앞에서부터 자르면 test 에 짧은
@@ -411,7 +434,9 @@ def stratified_order(items: list, seed: int, text_of=lambda x: x.text,
         for k in keys:
             i = idx[k]
             if i < len(strata[k]):
-                order.append(strata[k][i]); idx[k] = i + 1; progressed = True
+                order.append(strata[k][i])
+                idx[k] = i + 1
+                progressed = True
         if not progressed:
             break
     return order
@@ -439,9 +464,7 @@ def split_data(
     """
     pool = list(sentences)
     if len(pool) < n_train + n_dev + n_test:
-        raise ValueError(
-            f"문장 부족: 사용 가능 {len(pool)}개 < 요청 {n_train + n_dev + n_test}개"
-        )
+        raise ValueError(f"문장 부족: 사용 가능 {len(pool)}개 < 요청 {n_train + n_dev + n_test}개")
 
     order = stratified_order(pool, seed, limit=n_train + n_dev + n_test)
 

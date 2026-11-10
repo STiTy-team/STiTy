@@ -2,6 +2,9 @@ export type ConversationErrorCode =
   | 'sameLanguage'
   | 'serverUnreachable'
   | 'connectionLost'
+  | 'roomNotFound'
+  | 'removedFromRoom'
+  | 'roomEnded'
   | 'microphoneDenied'
   | 'microphoneUnavailable';
 

@@ -14,7 +14,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useDistributions, useOverview } from "@/lib/compare/queries"
@@ -43,7 +51,17 @@ function Help({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function KeySelect({ label, keys, value, onChange }: { label: string; keys: string[]; value: string; onChange: (key: string) => void }) {
+function KeySelect({
+  label,
+  keys,
+  value,
+  onChange,
+}: {
+  label: string
+  keys: string[]
+  value: string
+  onChange: (key: string) => void
+}) {
   return (
     <div className="flex items-center gap-2">
       <Label className="text-muted-foreground">{label}</Label>
@@ -63,7 +81,15 @@ function KeySelect({ label, keys, value, onChange }: { label: string; keys: stri
   )
 }
 
-function GroupedKeySelect({ keys, value, onChange }: { keys: string[]; value: string; onChange: (key: string) => void }) {
+function GroupedKeySelect({
+  keys,
+  value,
+  onChange,
+}: {
+  keys: string[]
+  value: string
+  onChange: (key: string) => void
+}) {
   return (
     <div className="flex items-center gap-2">
       <Label className="text-muted-foreground">지표</Label>
@@ -131,7 +157,10 @@ function DatasetWarnings({ runs }: { runs: RunOverview[] }) {
   ].filter(Boolean)
   if (!warnings.length) return null
   return (
-    <div role="alert" className="flex items-start gap-2 rounded-lg border border-status-failed/30 bg-status-failed-soft px-4 py-3 text-sm text-status-failed">
+    <div
+      role="alert"
+      className="flex items-start gap-2 rounded-lg border border-status-failed/30 bg-status-failed-soft px-4 py-3 text-sm text-status-failed"
+    >
       <TriangleAlertIcon className="mt-0.5 size-4 shrink-0" />
       <div className="flex flex-col gap-0.5">
         {warnings.map((text) => (
@@ -148,7 +177,9 @@ export function ComparePage() {
   const [points, setPoints] = useState(true)
   const all = useMemo(() => overview.data?.runs ?? [], [overview.data])
 
-  const dataset = all.some((r) => r.dataset_key === params.get("dataset")) ? params.get("dataset")! : (all[0]?.dataset_key ?? null)
+  const dataset = all.some((r) => r.dataset_key === params.get("dataset"))
+    ? params.get("dataset")!
+    : (all[0]?.dataset_key ?? null)
   const runs = useMemo(
     () => all.filter((r) => r.dataset_key === dataset).sort((a, b) => a.pipeline.localeCompare(b.pipeline)),
     [all, dataset],
@@ -177,7 +208,8 @@ export function ComparePage() {
     if (!all.length || !dataset)
       return (
         <Notice>
-          bench/runs에 실행이 아직 없어요. Queue에서 실행을 추가하거나 <code>make bench CONFIG=… DATASET=…</code>로 돌려 주세요.
+          bench/runs에 실행이 아직 없어요. Queue에서 실행을 추가하거나 <code>make bench CONFIG=… DATASET=…</code>로 돌려
+          주세요.
         </Notice>
       )
 
@@ -197,7 +229,9 @@ export function ComparePage() {
       update(key === sort.key ? { sort: key, desc: sort.desc ? null : "1" } : { sort: key, desc: null })
     const showDelta = !single && params.get("diff") !== "0"
 
-    const distKeys = Object.keys(SCORES).filter((k) => SCORES[k].item && shown.some((r) => dists.byRun.get(r.name)?.[SCORES[k].item!]))
+    const distKeys = Object.keys(SCORES).filter(
+      (k) => SCORES[k].item && shown.some((r) => dists.byRun.get(r.name)?.[SCORES[k].item!]),
+    )
     const distKey = distKeys.includes(params.get("metric") ?? "")
       ? params.get("metric")!
       : (distKeys.find((k) => SCORES[k].better) ?? distKeys[0])
@@ -205,7 +239,9 @@ export function ComparePage() {
     const ranked = scoreKeys(shown).filter((k) => SCORES[k].better)
     const yKeys = ranked.filter((k) => ACCURACY_GROUPS.has(groupOf(k)))
     const xKeys = ranked.filter((k) => LATENCY_GROUPS.has(groupOf(k)))
-    const yKey = yKeys.includes(params.get("y") ?? "") ? params.get("y")! : (["comet", "bleu", "wer"].find((k) => yKeys.includes(k)) ?? yKeys[0])
+    const yKey = yKeys.includes(params.get("y") ?? "")
+      ? params.get("y")!
+      : (["comet", "bleu", "wer"].find((k) => yKeys.includes(k)) ?? yKeys[0])
     const xKey = xKeys.includes(params.get("x") ?? "")
       ? params.get("x")!
       : (["laal_ms", "yaal_ms", "longyaal_ms", "avg_fsl_sec"].find((k) => xKeys.includes(k)) ?? xKeys[0])
@@ -225,7 +261,12 @@ export function ComparePage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <ModelMenu runs={runs} hidden={hidden} colors={colors} onChange={(next) => update({ hide: [...next].join(",") })} />
+              <ModelMenu
+                runs={runs}
+                hidden={hidden}
+                colors={colors}
+                onChange={(next) => update({ hide: [...next].join(",") })}
+              />
               {!single && (
                 <>
                   <div className="flex items-center gap-2">
@@ -244,7 +285,10 @@ export function ComparePage() {
                     </Select>
                   </div>
                   <Label className="font-normal">
-                    <Checkbox checked={showDelta} onCheckedChange={(on) => update({ diff: on === true ? null : "0" })} />
+                    <Checkbox
+                      checked={showDelta}
+                      onCheckedChange={(on) => update({ diff: on === true ? null : "0" })}
+                    />
                     기준과의 차이
                   </Label>
                 </>
@@ -257,7 +301,15 @@ export function ComparePage() {
               )}
             </div>
             {shown.length ? (
-              <RunBoard runs={shown} keys={boardKeys} base={base} sort={sort} colors={colors} showDelta={showDelta} onSort={onSort} />
+              <RunBoard
+                runs={shown}
+                keys={boardKeys}
+                base={base}
+                sort={sort}
+                colors={colors}
+                showDelta={showDelta}
+                onSort={onSort}
+              />
             ) : (
               noneChosen
             )}
@@ -282,7 +334,8 @@ export function ComparePage() {
                   <Help label="분포 차트 읽는 법">
                     <p>평균 하나가 아니라 항목마다의 점수를 보여줘요. 중앙값이 더 좋은 실행이 왼쪽에 와요.</p>
                     <p className="text-muted-foreground">
-                      상자는 가운데 절반(q1–q3), 굵은 선은 중앙값, 수염은 최소·최대, ◇는 평균이에요. 기둥 위 숫자는 중앙값이에요.
+                      상자는 가운데 절반(q1–q3), 굵은 선은 중앙값, 수염은 최소·최대, ◇는 평균이에요. 기둥 위 숫자는
+                      중앙값이에요.
                     </p>
                     <p className="text-muted-foreground">
                       {SCORES[distKey].better ? BETTER_TEXT[SCORES[distKey].better!] : "방향 없음"}
@@ -297,7 +350,9 @@ export function ComparePage() {
                   <KeySelect label="지연" keys={xKeys} value={xKey} onChange={(k) => update({ x: k })} />
                   <Help label="산점도 읽는 법">
                     <p>실행 요약값으로 그려요. 두 축 모두 위쪽, 오른쪽이 좋아요.</p>
-                    <p className="text-muted-foreground">점선은 파레토 경계예요. 두 축 모두에서 다른 실행에 지지 않는 실행들을 이어요.</p>
+                    <p className="text-muted-foreground">
+                      점선은 파레토 경계예요. 두 축 모두에서 다른 실행에 지지 않는 실행들을 이어요.
+                    </p>
                   </Help>
                 </>
               )}
@@ -311,7 +366,13 @@ export function ComparePage() {
                 ) : !distKey ? (
                   <Notice>이 실행들에는 항목별 점수가 없어요.</Notice>
                 ) : (
-                  <DistributionChart runs={shown} scoreKey={distKey} dists={dists.byRun} colors={colors} points={points} />
+                  <DistributionChart
+                    runs={shown}
+                    scoreKey={distKey}
+                    dists={dists.byRun}
+                    colors={colors}
+                    points={points}
+                  />
                 )}
               </TabsContent>
               <TabsContent value="scatter" className="flex flex-col gap-3">
@@ -345,7 +406,11 @@ export function ComparePage() {
       <PageBody>
         {dataset && (
           <div className="flex flex-wrap items-center gap-2">
-            <DatasetPicker runs={all} value={dataset} onChange={(key) => update({ dataset: key, base: null, hide: null })} />
+            <DatasetPicker
+              runs={all}
+              value={dataset}
+              onChange={(key) => update({ dataset: key, base: null, hide: null })}
+            />
             <span className="text-sm text-muted-foreground tabular-nums">
               실행 {runs.length}개{latest && ` · 마지막 ${stampText(latest)}`}
             </span>

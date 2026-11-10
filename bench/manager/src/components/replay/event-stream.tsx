@@ -19,7 +19,8 @@ const EXTRA_COLUMNS = { lag: "지연 (lag)", item: "항목 (item)" } as const
 type ExtraColumn = keyof typeof EXTRA_COLUMNS
 
 const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(3))
-const fieldText = (v: unknown) => (typeof v === "number" ? fmt(v) : typeof v === "object" ? JSON.stringify(v) : String(v))
+const fieldText = (v: unknown) =>
+  typeof v === "number" ? fmt(v) : typeof v === "object" ? JSON.stringify(v) : String(v)
 
 /** Fields every event carries with the same value; shown once above the table instead of on every row. */
 function sharedFields(events: PlayedEvent[]): [string, string][] {
@@ -40,7 +41,11 @@ function Fields({ event, shared }: { event: PlayedEvent; shared: Set<string> }) 
     if (v == null || v === "") continue
     out.push(
       k === "commit_reason" ? (
-        <span key={k} className="inline-block rounded px-1.5 text-[11px] font-semibold text-white" style={{ background: reasonColor(String(v)) }}>
+        <span
+          key={k}
+          className="inline-block rounded px-1.5 text-[11px] font-semibold text-white"
+          style={{ background: reasonColor(String(v)) }}
+        >
           {String(v)}
         </span>
       ) : (
@@ -77,15 +82,25 @@ const EventRow = memo(function EventRow({
     <tr
       data-event={index}
       onClick={() => onSeek(event.at)}
-      className={cn("cursor-pointer border-b hover:bg-muted/50", state === "future" && "opacity-30", state === "now" && "bg-accent")}
+      className={cn(
+        "cursor-pointer border-b hover:bg-muted/50",
+        state === "future" && "opacity-30",
+        state === "now" && "bg-accent",
+      )}
     >
-      <td className="px-2.5 py-1.5 text-right align-top text-muted-foreground tabular-nums">{event.audio.toFixed(2)}</td>
+      <td className="px-2.5 py-1.5 text-right align-top text-muted-foreground tabular-nums">
+        {event.audio.toFixed(2)}
+      </td>
       {columns.has("lag") && (
         <td className="px-2.5 py-1.5 text-right align-top text-muted-foreground tabular-nums">
           {lag == null ? "" : `${lag >= 0 ? "+" : ""}${lag.toFixed(2)}`}
         </td>
       )}
-      {columns.has("item") && <td className="px-2.5 py-1.5 align-top font-mono whitespace-nowrap text-muted-foreground">{event.item ?? ""}</td>}
+      {columns.has("item") && (
+        <td className="px-2.5 py-1.5 align-top font-mono whitespace-nowrap text-muted-foreground">
+          {event.item ?? ""}
+        </td>
+      )}
       <td className="px-2.5 py-1.5 align-top font-mono font-medium whitespace-nowrap">{laneOf(event)}</td>
       <td className="px-2.5 py-1.5 align-top font-mono break-words text-muted-foreground">
         <Fields event={event} shared={shared} />
@@ -96,7 +111,15 @@ const EventRow = memo(function EventRow({
 
 const searchText = (e: PlayedEvent) => `${laneOf(e)} ${e.item ?? ""} ${JSON.stringify(e)}`.toLowerCase()
 
-function CheckList<T extends string>({ items, checked, onFlip }: { items: [T, string][]; checked: (key: T) => boolean; onFlip: (key: T) => void }) {
+function CheckList<T extends string>({
+  items,
+  checked,
+  onFlip,
+}: {
+  items: [T, string][]
+  checked: (key: T) => boolean
+  onFlip: (key: T) => void
+}) {
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-1">
       {items.map(([key, label]) => (
@@ -152,12 +175,14 @@ export function EventStream({ events, playback }: { events: PlayedEvent[]; playb
     [events, shown, edge, sharedKeys, columns, seek],
   )
 
-  const flip = <T,>(set: (fn: (prev: Set<T>) => Set<T>) => void) => (key: T) =>
-    set((prev) => {
-      const next = new Set(prev)
-      if (!next.delete(key)) next.add(key)
-      return next
-    })
+  const flip =
+    <T,>(set: (fn: (prev: Set<T>) => Set<T>) => void) =>
+    (key: T) =>
+      set((prev) => {
+        const next = new Set(prev)
+        if (!next.delete(key)) next.add(key)
+        return next
+      })
   const visibleTypes = types.filter((type) => !hidden.has(type)).length
 
   return (
@@ -179,7 +204,11 @@ export function EventStream({ events, playback }: { events: PlayedEvent[]; playb
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="flex w-72 flex-col gap-2">
-            <CheckList items={types.map((type) => [type, type])} checked={(type) => !hidden.has(type)} onFlip={flip(setHidden)} />
+            <CheckList
+              items={types.map((type) => [type, type])}
+              checked={(type) => !hidden.has(type)}
+              onFlip={flip(setHidden)}
+            />
           </PopoverContent>
         </Popover>
         <Popover>

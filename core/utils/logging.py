@@ -8,12 +8,19 @@ The tag is lifted out into a field of its own on the way to the stream, so it ca
 filtered on without anyone parsing prose. Numbers that get plotted or scored do not
 belong in the sentence -- those are data, and data is returned, not logged.
 """
+
 import logging
 import re
+
 # re-exported so `from core.utils import logging` is a superset of the parts of the
 # standard module app code touches, and nothing has to import both.
 from logging import (  # noqa: F401
-    CRITICAL, DEBUG, ERROR, INFO, WARNING, getLogger,
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    WARNING,
+    getLogger,
 )
 
 from rich.console import Console
@@ -53,7 +60,7 @@ LEVEL_WIDTH = len("CRITICAL:")
 
 def split_tag(message: str) -> tuple[str, str]:
     found = TAG.match(message)
-    return ("", message) if found is None else (found.group(1), message[found.end():])
+    return ("", message) if found is None else (found.group(1), message[found.end() :])
 
 
 class RecordHandler(logging.Handler):
@@ -70,7 +77,6 @@ class RecordHandler(logging.Handler):
 
 
 class ConsoleHandler(logging.Handler):
-
     def __init__(self, console: Console | None = None):
         super().__init__()
         self.console = console or Console(stderr=True)
@@ -82,9 +88,11 @@ class ConsoleHandler(logging.Handler):
         at = stream.elapsed()
         stamp = f"[dim]{at:.3f}s[/] " if at is not None else ""
         head = f"[cyan]{escape(tag)}[/] " if tag else ""
-        self.console.print(f"[{style}]{record.levelname}[/]:{padding} "
-                           f"{stamp}{head}{escape(message)}",
-                           highlight=False, soft_wrap=True)
+        self.console.print(
+            f"[{style}]{record.levelname}[/]:{padding} {stamp}{head}{escape(message)}",
+            highlight=False,
+            soft_wrap=True,
+        )
 
 
 def _level(value) -> int:

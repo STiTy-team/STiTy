@@ -91,7 +91,9 @@ class JobProcess:
 
     def uploaded_run(self) -> RemoteRun | None:
         with open(self.log_path, encoding="utf-8", errors="replace") as log:
-            runs = [RemoteRun(*match.groups()) for line in log if (match := UPLOADED_LINE.search(line))]
+            runs = [
+                RemoteRun(*match.groups()) for line in log if (match := UPLOADED_LINE.search(line))
+            ]
         return runs[-1] if runs else None
 
 

@@ -28,8 +28,12 @@ const startedAt = (job: Job) => (job.state === "queued" ? null : (job.attempts.a
 
 function timeText(job: Job) {
   const started = startedAt(job)
-  if (started) return { text: `실행 ${formatDuration(secondsBetween(started))}`, exact: `${formatDateTime(started)} 시작` }
-  return { text: `대기 ${formatDuration(secondsBetween(job.submitted_at))}`, exact: `${formatDateTime(job.submitted_at)} 제출` }
+  if (started)
+    return { text: `실행 ${formatDuration(secondsBetween(started))}`, exact: `${formatDateTime(started)} 시작` }
+  return {
+    text: `대기 ${formatDuration(secondsBetween(job.submitted_at))}`,
+    exact: `${formatDateTime(job.submitted_at)} 제출`,
+  }
 }
 
 export function RunCell({ pipeline, dataset, children }: { pipeline: string; dataset: string; children?: ReactNode }) {
@@ -44,7 +48,13 @@ export function RunCell({ pipeline, dataset, children }: { pipeline: string; dat
 
 export function ExpandButton({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   return (
-    <Button variant="ghost" size="icon-sm" aria-expanded={open} aria-label={open ? "자세히 닫기" : "자세히 보기"} onClick={onToggle}>
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      aria-expanded={open}
+      aria-label={open ? "자세히 닫기" : "자세히 보기"}
+      onClick={onToggle}
+    >
       <ChevronRightIcon className={cn("transition-transform", open && "rotate-90")} />
     </Button>
   )
@@ -66,7 +76,11 @@ export function Details({ facts }: { facts: [string, ReactNode][] }) {
 export function JobTable({ machine }: { machine: Machine }) {
   const [open, setOpen] = useState<string | null>(null)
   if (!machine.jobs.length) {
-    return <p className="rounded-xl border border-dashed px-4 py-5 text-sm text-muted-foreground">대기 중인 작업이 없어요.</p>
+    return (
+      <p className="rounded-xl border border-dashed px-4 py-5 text-sm text-muted-foreground">
+        대기 중인 작업이 없어요.
+      </p>
+    )
   }
   return (
     <div className="rounded-xl border">

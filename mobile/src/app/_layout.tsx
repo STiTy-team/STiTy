@@ -17,6 +17,7 @@ import { useReadingPreferences } from '@/features/records/records-runtime';
 import { usePreferencesStore } from '@/stores/preferences-store';
 import { useHydrated } from '@/stores/use-hydrated';
 import { fonts, useColors, useColorSchemeName } from '@/theme';
+import { useWebScrollbarTheme } from '@/theme/use-web-scrollbar-theme';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -43,6 +44,7 @@ export default function RootLayout() {
   const hideSplash = useCallback(() => void SplashScreen.hideAsync(), []);
   useStartup();
   useDisplayPreferences();
+  useWebScrollbarTheme();
   useConversationLifecycle();
 
   if ((!fontsLoaded && !fontError) || !hydrated) return null;
@@ -56,6 +58,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="conversation" options={{ gestureEnabled: false }} />
         <Stack.Screen name="conversation-settings" />
+        <Stack.Screen name="join" />
         <Stack.Screen
           name="present"
           options={{ gestureEnabled: false, animation: 'fade', orientation: 'landscape' }}

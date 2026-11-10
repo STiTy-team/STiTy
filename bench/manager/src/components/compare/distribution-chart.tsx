@@ -2,7 +2,17 @@ import type { ReactNode } from "react"
 
 import { useChartTip } from "@/components/compare/chart-tip"
 import { useWidth } from "@/hooks/use-width"
-import { axisText, BETTER_TEXT, clip, compareScores, displayScale, formatScore, niceTicks, SCORES, tickText } from "@/lib/compare/scores"
+import {
+  axisText,
+  BETTER_TEXT,
+  clip,
+  compareScores,
+  displayScale,
+  formatScore,
+  niceTicks,
+  SCORES,
+  tickText,
+} from "@/lib/compare/scores"
 import type { Distributions, RunOverview } from "@/lib/compare/types"
 
 const PAD_L = 64
@@ -19,7 +29,9 @@ function statsText(run: RunOverview, key: string, s: Distributions[string]) {
     ["q1", s.q1],
     ["min", s.min],
   ]
-  return [run.pipeline, `n       ${s.n}`, ...rows.map(([name, v]) => `${name.padEnd(8)}${formatScore(key, v)}`)].join("\n")
+  return [run.pipeline, `n       ${s.n}`, ...rows.map(([name, v]) => `${name.padEnd(8)}${formatScore(key, v)}`)].join(
+    "\n",
+  )
 }
 
 /** One column per run, best median on the left: box, whiskers, mean diamond and optional item dots. */
@@ -79,8 +91,22 @@ export function DistributionChart({
           ))}
         <line x1={cx} x2={cx} y1={v("max")} y2={v("q3")} className="stroke-muted-foreground" strokeWidth={1.2} />
         <line x1={cx} x2={cx} y1={v("q1")} y2={v("min")} className="stroke-muted-foreground" strokeWidth={1.2} />
-        <line x1={cx - half / 2} x2={cx + half / 2} y1={v("max")} y2={v("max")} className="stroke-muted-foreground" strokeWidth={1.2} />
-        <line x1={cx - half / 2} x2={cx + half / 2} y1={v("min")} y2={v("min")} className="stroke-muted-foreground" strokeWidth={1.2} />
+        <line
+          x1={cx - half / 2}
+          x2={cx + half / 2}
+          y1={v("max")}
+          y2={v("max")}
+          className="stroke-muted-foreground"
+          strokeWidth={1.2}
+        />
+        <line
+          x1={cx - half / 2}
+          x2={cx + half / 2}
+          y1={v("min")}
+          y2={v("min")}
+          className="stroke-muted-foreground"
+          strokeWidth={1.2}
+        />
         <rect
           x={cx - half}
           y={v("q3")}
@@ -92,13 +118,35 @@ export function DistributionChart({
           stroke={color}
           strokeWidth={1.4}
         />
-        <line x1={cx - half - 2} x2={cx + half + 2} y1={v("median")} y2={v("median")} className="stroke-foreground" strokeWidth={2.4} />
-        <path d={`M ${cx} ${v("mean") - 5} l 5 5 l -5 5 l -5 -5 z`} className="fill-card stroke-foreground" strokeWidth={1.3} />
-        <text x={cx} y={v("max") - 7} textAnchor="middle" className="fill-muted-foreground text-[11px] font-medium tabular-nums">
+        <line
+          x1={cx - half - 2}
+          x2={cx + half + 2}
+          y1={v("median")}
+          y2={v("median")}
+          className="stroke-foreground"
+          strokeWidth={2.4}
+        />
+        <path
+          d={`M ${cx} ${v("mean") - 5} l 5 5 l -5 5 l -5 -5 z`}
+          className="fill-card stroke-foreground"
+          strokeWidth={1.3}
+        />
+        <text
+          x={cx}
+          y={v("max") - 7}
+          textAnchor="middle"
+          className="fill-muted-foreground text-[11px] font-medium tabular-nums"
+        >
           {formatScore(scoreKey, s.median)}
         </text>
         {tilt ? (
-          <text x={cx} y={ly} textAnchor="end" transform={`rotate(-35 ${cx} ${ly})`} className="fill-foreground font-mono text-xs">
+          <text
+            x={cx}
+            y={ly}
+            textAnchor="end"
+            transform={`rotate(-35 ${cx} ${ly})`}
+            className="fill-foreground font-mono text-xs"
+          >
             {clip(run.pipeline, 26)}
           </text>
         ) : (
@@ -129,7 +177,12 @@ export function DistributionChart({
         {ticks.map((t) => (
           <g key={t}>
             <line x1={PAD_L} x2={W - PAD_R} y1={y(t)} y2={y(t)} className="stroke-border" />
-            <text x={PAD_L - 8} y={y(t) + 3} textAnchor="end" className="fill-muted-foreground text-[11px] tabular-nums">
+            <text
+              x={PAD_L - 8}
+              y={y(t) + 3}
+              textAnchor="end"
+              className="fill-muted-foreground text-[11px] tabular-nums"
+            >
               {tickText(scoreKey, t)}
             </text>
           </g>

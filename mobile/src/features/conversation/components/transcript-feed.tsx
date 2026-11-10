@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View, type ListRenderItem } from 'react-native';
 
 import { useTypewriter } from '@/features/conversation/hooks/use-typewriter';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { buildFeed, type FeedItem } from '@/features/conversation/model/feed';
 import { usePreferencesStore } from '@/stores/preferences-store';
 import { makeStyles, spacing, typography } from '@/theme';
@@ -20,6 +23,7 @@ export const TranscriptFeed = () => {
   const partial = useConversationStore((state) => state.partial);
   const speechPending = useConversationStore((state) => state.speechPending);
   const myLanguage = usePreferencesStore((state) => state.myLanguage);
+  const inRoom = useConversationStore(selectInRoom);
   const { shown } = useTypewriter(partial?.text ?? '');
 
   const items = useMemo(() => buildFeed(entries, events), [entries, events]);
@@ -33,6 +37,7 @@ export const TranscriptFeed = () => {
         text={item.entry.text}
         translation={item.entry.translation}
         mine={item.entry.language === myLanguage}
+        speakerKnown={!inRoom}
         entrance={item.entry.fromPartial ? 'firm' : 'appear'}
       />
     );
@@ -43,6 +48,7 @@ export const TranscriptFeed = () => {
       text={shown}
       translation=""
       mine={partial.language === myLanguage}
+      speakerKnown={!inRoom}
       entrance="partial"
     />
   ) : speechPending ? (

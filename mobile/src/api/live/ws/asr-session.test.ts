@@ -30,9 +30,9 @@ class FakeWebSocket {
     this.receive({ type: 'hello' });
   }
 
-  serverClose() {
+  serverClose(code = 1000, reason = '') {
     this.readyState = 3;
-    this.onclose?.({ code: 1000, reason: '' });
+    this.onclose?.({ code, reason });
   }
 
   sentTypes() {
@@ -45,6 +45,7 @@ const socket = () => FakeWebSocket.instances[FakeWebSocket.instances.length - 1]
 const handlers = () => ({
   onPartial: jest.fn(),
   onFinal: jest.fn(),
+  onRoom: jest.fn(),
   onCapacity: jest.fn(),
   onLost: jest.fn(),
 });
@@ -106,6 +107,27 @@ describe('closing a session', () => {
 });
 
 describe('opening a session', () => {
+  it('still reads a final that carries sources', async () => {
+    const { on, ws } = await openSession();
+    ws.receive({
+      type: 'final',
+      original: 'hi',
+      sources: [{ participantId: 'p1', share: 0.9 }],
+    });
+    expect(on.onFinal).toHaveBeenCalledWith(expect.objectContaining({ original: 'hi' }));
+  });
+
+  it('sends the device with start', async () => {
+    const session = new AsrSession('wss://asr.test/api/v1/ws', handlers());
+    void session.open({ lang: 'ko', targetLang: 'en', device: { platform: 'android' } });
+    socket().accept();
+    socket().receive({ type: 'hello' });
+
+    const start = JSON.parse(socket().send.mock.calls.at(-1)![0] as string);
+    expect(start.device).toEqual({ platform: 'android' });
+    void session.close();
+  });
+
   it('rejects at once with the server reason when it answers start with an error', async () => {
     const session = new AsrSession('wss://asr.test/api/v1/ws', handlers());
     const opened = session.open({ lang: 'ko', targetLang: 'en' });
@@ -117,6 +139,23 @@ describe('opening a session', () => {
     expect(error).toBeInstanceOf(SessionRefusedError);
     expect(error).toMatchObject({ message: 'No free slot', code: 'capacity' });
     expect(socket().close).toHaveBeenCalled();
+  });
+
+  it('rejects with the server reason when it closes the socket to refuse the session', async () => {
+    const session = new AsrSession('wss://asr.test/api/v1/ws', handlers());
+    const opened = session.open({
+      lang: 'ko',
+      targetLang: 'en',
+      conversationId: 'ABC234',
+      join: true,
+    });
+    socket().accept();
+
+    socket().serverClose(4404, 'conversation_not_found');
+
+    const error = await opened.catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(SessionRefusedError);
+    expect(error).toMatchObject({ code: 'conversation_not_found' });
   });
 
   it('rejects when closed before the server is ready', async () => {

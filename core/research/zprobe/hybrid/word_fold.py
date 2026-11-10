@@ -14,6 +14,7 @@ head, which the transcript does not contain. Kept records keep their timing.
 
 usage: (bench venv, cwd STiTy-bench) python word_fold.py --run-dir <ko run> --target ko --outdir <dir>
 """
+
 import argparse, json, os, re, sys
 from pathlib import Path
 
@@ -25,7 +26,9 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--run-dir", required=True)
 ap.add_argument("--target", required=True)
 ap.add_argument("--outdir", required=True)
-ap.add_argument("--gap", type=int, default=1, help="non-matching tokens this long a run may swallow")
+ap.add_argument(
+    "--gap", type=int, default=1, help="non-matching tokens this long a run may swallow"
+)
 a = ap.parse_args()
 
 
@@ -41,7 +44,7 @@ for line in open(Path(a.run_dir) / "events.jsonl"):
 
 
 def trigrams(s):
-    return {s[i:i + 3] for i in range(len(s) - 2)}
+    return {s[i : i + 3] for i in range(len(s) - 2)}
 
 
 def contained(x, window):
@@ -58,13 +61,14 @@ def fold_text(scene, t, text):
     tokens = text.split()
     hit = [len(norm(tok)) >= 2 and norm(tok) in window for tok in tokens]
     keep = list(hit)
-    for i in range(len(tokens)):          # close gaps: a lone miss between hits joins the run
+    for i in range(len(tokens)):  # close gaps: a lone miss between hits joins the run
         if not keep[i] and 0 < i < len(tokens) - 1 and hit[i - 1] and hit[i + 1]:
             keep[i] = True
     out, folded, i = [], 0, 0
     while i < len(tokens):
         if not keep[i]:
-            out.append(tokens[i]); i += 1
+            out.append(tokens[i])
+            i += 1
             continue
         j = i
         while j < len(tokens) and keep[j]:
@@ -114,11 +118,25 @@ out.mkdir(parents=True, exist_ok=True)
 with open(out / "comet_inputs.jsonl", "w") as f:
     for s in sentences:
         f.write(json.dumps(s, ensure_ascii=False) + "\n")
-json.dump({"metrics": {"longyaal_ms": ly, "longyaal_ca_ms": lyca, "kept": kept, "dropped": dropped,
-                       "trimmed": trimmed, "empty_mt": empty,
-                       "n_sentences": sum(1 for s in sentences if s["src"])},
-           "unavailable": {}},
-          open(out / "summary.json", "w"), indent=1)
-print(f"{a.target}-wordfold: longyaal={ly and round(ly)} ca={lyca and round(lyca)} kept={kept} "
-      f"dropped={dropped} trimmed={trimmed} empty_mt={empty}", flush=True)
+json.dump(
+    {
+        "metrics": {
+            "longyaal_ms": ly,
+            "longyaal_ca_ms": lyca,
+            "kept": kept,
+            "dropped": dropped,
+            "trimmed": trimmed,
+            "empty_mt": empty,
+            "n_sentences": sum(1 for s in sentences if s["src"]),
+        },
+        "unavailable": {},
+    },
+    open(out / "summary.json", "w"),
+    indent=1,
+)
+print(
+    f"{a.target}-wordfold: longyaal={ly and round(ly)} ca={lyca and round(lyca)} kept={kept} "
+    f"dropped={dropped} trimmed={trimmed} empty_mt={empty}",
+    flush=True,
+)
 print("WORD_FOLD_DONE", flush=True)

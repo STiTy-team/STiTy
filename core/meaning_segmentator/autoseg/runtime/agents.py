@@ -31,9 +31,9 @@ from ..infra.gateway import Gateway
 # 추론 모델에서 사고 길이가 흔들리면 그대로 절단됐다 — 관문에서 ko-en-p02 가 3회 모두
 # verdict='error' 를 냈는데도 safe/not-safe 이진 판정에 error 가 안 잡혀 **통과로
 # 찍혔다.** 모델을 바꿀 때 이 값들을 먼저 확인할 것.
-JUDGE_MAX_TOKENS = 16000        # 산출물은 작은 JSON 하나. 사실상 전부 사고 몫
-PROFILER_MAX_TOKENS = 16000     # 언어 프로파일 JSON
-PROMPT_MAX_TOKENS = 32000       # prompt_v0 생성·Critic·PE·Compressor — 출력 자체가 길다
+JUDGE_MAX_TOKENS = 16000  # 산출물은 작은 JSON 하나. 사실상 전부 사고 몫
+PROFILER_MAX_TOKENS = 16000  # 언어 프로파일 JSON
+PROMPT_MAX_TOKENS = 32000  # prompt_v0 생성·Critic·PE·Compressor — 출력 자체가 길다
 
 # ── 프롬프트 골격 ──────────────────────────────────────────────────────────────
 # 골격은 고정한다. Prompt Engineer는 섹션 '내용'만 바꾼다 — 구조를 흔들면 루프가
@@ -66,26 +66,34 @@ _PRIORITY_RULE = (
     "  in every sentence. Scores are NOT positions — <SEG:100> may appear anywhere.\n"
 )
 
-OUTPUT_RULES_SPACED = """[Output Rules]
+OUTPUT_RULES_SPACED = (
+    """[Output Rules]
 - Insert <SEG:s> tags only. Do NOT change, correct, or paraphrase the original text in any way.
-""" + _PRIORITY_RULE + """- No tag at the very start or the very end of the text.
+"""
+    + _PRIORITY_RULE
+    + """- No tag at the very start or the very end of the text.
 - Never place two tags consecutively.
 - Punctuation must stay attached to the text before it — never immediately after a tag.
 - Always place exactly one space on both sides of every tag.
 - If no segmentation is needed, output the original text unchanged.
 - Output the tagged text and nothing else. No explanation, label, or commentary."""
+)
 
-OUTPUT_RULES_UNSPACED = """[Output Rules]
+OUTPUT_RULES_UNSPACED = (
+    """[Output Rules]
 - Insert <SEG:s> tags only. Do NOT change, correct, or paraphrase the original text in any way.
 - The source script does not use spaces between words. Do NOT add, remove, or move any
   character of the original text — the only thing you add is the tag itself.
-""" + _PRIORITY_RULE + """- No tag at the very start or the very end of the text.
+"""
+    + _PRIORITY_RULE
+    + """- No tag at the very start or the very end of the text.
 - Never place two tags consecutively.
 - Punctuation must stay attached to the text before it — never immediately after a tag.
 - Always place exactly one space on both sides of every tag. These two spaces are the
   only whitespace you may introduce.
 - If no segmentation is needed, output the original text unchanged.
 - Output the tagged text and nothing else. No explanation, label, or commentary."""
+)
 
 
 _COVERAGE_RULE = (
@@ -116,11 +124,12 @@ _GAP_RULE = (
 def output_rules(spaced: bool, min_t: int = 3, min_gap: int = 0) -> str:
     unit = "words" if spaced else "characters"
     base = OUTPUT_RULES_SPACED if spaced else OUTPUT_RULES_UNSPACED
-    rules = _COVERAGE_RULE.format(min_t=min_t, unit=unit, example_len=min_t * 6,
-                                  example_n=5)
+    rules = _COVERAGE_RULE.format(min_t=min_t, unit=unit, example_len=min_t * 6, example_n=5)
     if min_gap > 0:
         rules += _GAP_RULE.format(gap=min_gap, unit=unit)
-    return base.replace("- If no segmentation is needed,", rules + "- If no segmentation is needed,")
+    return base.replace(
+        "- If no segmentation is needed,", rules + "- If no segmentation is needed,"
+    )
 
 
 # 타깃 언어명·문법 근거 검출. 프롬프트는 소스에만 종속돼야 한다 — 지시만으로는 안 지켜졌다
@@ -130,21 +139,45 @@ def output_rules(spaced: bool, min_t: int = 3, min_gap: int = 0) -> str:
 # 의 타깃이 English 인데 종전 목록에 빠져 있어서 그 런들에서는 언어명 검사가 구조적으로
 # 아무것도 못 잡았다.
 _TARGET_LANG_WORDS = (
-    "english", "german", "korean", "japanese", "chinese", "spanish", "french",
-    "italian", "portuguese", "russian", "arabic", "hindi", "vietnamese", "thai",
-    "dutch", "polish", "turkish", "deutsch",
+    "english",
+    "german",
+    "korean",
+    "japanese",
+    "chinese",
+    "spanish",
+    "french",
+    "italian",
+    "portuguese",
+    "russian",
+    "arabic",
+    "hindi",
+    "vietnamese",
+    "thai",
+    "dutch",
+    "polish",
+    "turkish",
+    "deutsch",
 )
 
 # 타깃 문법 근거로 쓰이는 표현. 이것만으로는 판정하지 않는다 — 아래 참조.
 _TARGET_GRAMMAR_WORDS = (
-    "case/gender", "case assignment", "case marking", "grammatical gender",
-    "verb-final", "declension", "noun class", "agreement", "word order",
-    "inflection", "inflected",
+    "case/gender",
+    "case assignment",
+    "case marking",
+    "grammatical gender",
+    "verb-final",
+    "declension",
+    "noun class",
+    "agreement",
+    "word order",
+    "inflection",
+    "inflected",
 )
 
 
-def check_target_agnostic(prompt: str, src_lang: str | None = None,
-                          targets: list[str] | None = None) -> list[str]:
+def check_target_agnostic(
+    prompt: str, src_lang: str | None = None, targets: list[str] | None = None
+) -> list[str]:
     """프롬프트가 특정 타깃 언어의 **문법에 근거한 규칙**을 담고 있으면 사유를 돌려준다.
 
     판정은 **연언**이다 — 같은 문장 안에 (a) 타깃 언어명과 (b) 문법 표현이 함께 있을 때만
@@ -206,9 +239,16 @@ def prompt_diff(old: str, new: str, context: int = 2) -> str:
     이므로 `+`/`-` 가 그 자리를 직접 가리킨다. 두 벌을 통으로 주면 모델이 그 대조를
     다시 해야 하고, 실패하면 base 쪽 줄을 범인으로 지목한다.
     """
-    return "\n".join(difflib.unified_diff(
-        old.splitlines(), new.splitlines(),
-        fromfile="base", tofile="revised", lineterm="", n=context))
+    return "\n".join(
+        difflib.unified_diff(
+            old.splitlines(),
+            new.splitlines(),
+            fromfile="base",
+            tofile="revised",
+            lineterm="",
+            n=context,
+        )
+    )
 
 
 def changed_sections(old: str, new: str) -> list[str]:
@@ -272,11 +312,14 @@ def check_skeleton(prompt: str) -> list[str]:
 # 인자가 `None` 이면 **모든 지시문이 종전과 바이트 단위로 같다** — 기존 런의 재현성이
 # 이 모드 추가로 흔들리면 안 된다.
 
+
 def _run_time_caveat(tgt: str) -> str:
-    return (f"The segmenter still sees ONLY the source sentence at run time — never a "
-            f"{tgt} translation. Every rule must therefore be decidable from a source "
-            f"surface form; {tgt} supplies the REASON a position is risky and how to RANK "
-            f"it, never something to look at.")
+    return (
+        f"The segmenter still sees ONLY the source sentence at run time — never a "
+        f"{tgt} translation. Every rule must therefore be decidable from a source "
+        f"surface form; {tgt} supplies the REASON a position is risky and how to RANK "
+        f"it, never something to look at."
+    )
 
 
 _WRITER_POLICY_AGNOSTIC = """HARD CONSTRAINT — the prompt must be TARGET-LANGUAGE-AGNOSTIC.
@@ -291,19 +334,20 @@ is not."""
 def _writer_policy(tgt: str | None) -> str:
     if not tgt:
         return _WRITER_POLICY_AGNOSTIC
-    return (f"THIS PROMPT SERVES ONE LANGUAGE PAIR — source -> {tgt}.\n"
-            f"You MAY name {tgt} and MAY justify a rule with its grammar (case, gender, "
-            f"articles, verb placement, agreement) wherever that is what actually makes a "
-            f"boundary risky. State what {tgt} forces: \"once this is emitted, {tgt} word "
-            f"order can no longer place the verb\".\n"
-            # **오라클 조건.** 기본 경로의 "언어 지식은 측정으로만" 원칙을 이 분기에서만
-            # 명시적으로 해제한다. 해제를 적어 두지 않으면 작성기가 다타깃 지시문 쪽으로
-            # 스스로 물러나 타깃 근거를 회피한다 — 그러면 비교군이 성립하지 않는다.
-            f"You are given a `target_language_profile` in the language profile. Draw on it "
-            f"and on everything else you know about {tgt} FREELY; you are not restricted to "
-            f"what was observed in the source sample. Target-side grammatical knowledge is "
-            f"the intended basis for the rules here.\n"
-            + _run_time_caveat(tgt))
+    return (
+        f"THIS PROMPT SERVES ONE LANGUAGE PAIR — source -> {tgt}.\n"
+        f"You MAY name {tgt} and MAY justify a rule with its grammar (case, gender, "
+        f"articles, verb placement, agreement) wherever that is what actually makes a "
+        f'boundary risky. State what {tgt} forces: "once this is emitted, {tgt} word '
+        f'order can no longer place the verb".\n'
+        # **오라클 조건.** 기본 경로의 "언어 지식은 측정으로만" 원칙을 이 분기에서만
+        # 명시적으로 해제한다. 해제를 적어 두지 않으면 작성기가 다타깃 지시문 쪽으로
+        # 스스로 물러나 타깃 근거를 회피한다 — 그러면 비교군이 성립하지 않는다.
+        f"You are given a `target_language_profile` in the language profile. Draw on it "
+        f"and on everything else you know about {tgt} FREELY; you are not restricted to "
+        f"what was observed in the source sample. Target-side grammatical knowledge is "
+        f"the intended basis for the rules here.\n" + _run_time_caveat(tgt)
+    )
 
 
 _ENGINEER_RULE_AGNOSTIC = """   **Never name a target language or justify a rule with its grammar** (case, gender,
@@ -318,10 +362,11 @@ def _engineer_rule(tgt: str | None) -> str:
         return _ENGINEER_RULE_AGNOSTIC
     # 주변이 번호 목록이라 폭을 맞춰 접는다 — 규칙 6 만 한 줄로 길면 모델이 목록의
     # 한 항목이 아니라 다른 종류의 텍스트로 읽을 여지가 생긴다.
-    body = (f"This prompt serves ONE language pair — source -> {tgt}. You MAY name {tgt} "
-            f"and MAY justify a rule with its grammar (case, gender, articles, verb "
-            f"placement, agreement) when that is what makes a boundary risky. "
-            + _run_time_caveat(tgt))
+    body = (
+        f"This prompt serves ONE language pair — source -> {tgt}. You MAY name {tgt} "
+        f"and MAY justify a rule with its grammar (case, gender, articles, verb "
+        f"placement, agreement) when that is what makes a boundary risky. " + _run_time_caveat(tgt)
+    )
     return textwrap.fill(body, width=95, initial_indent="   ", subsequent_indent="   ")
 
 
@@ -333,19 +378,21 @@ def profiler_system(tgt: str | None) -> str:
         f"This profile serves ONE language pair: the source language in the sample -> "
         f"{tgt}. Report the source-side facts below as usual, but you MAY use what you know "
         f"about {tgt} to decide which prefixes are unsafe, and you SHOULD state "
-        f"\"unstable_prefix_signals\" in terms of what {tgt} would be forced to revise once "
+        f'"unstable_prefix_signals" in terms of what {tgt} would be forced to revise once '
         f"the rest of the sentence arrives.\n"
         f"Add ONE extra key to the JSON specified below, after the keys listed there:\n"
-        f"  \"target_transfer_hazards\": [\"source surface forms whose rendering into {tgt}\n"
+        f'  "target_transfer_hazards": ["source surface forms whose rendering into {tgt}\n'
         f"                              is not settled until later material arrives — each\n"
         f"                              stated so it can be recognised in the SOURCE text\n"
-        f"                              alone\"]\n"
+        f'                              alone"]\n'
         f"A hazard that cannot be spotted in the source is useless: {tgt} is never visible "
-        f"at run time.")
+        f"at run time."
+    )
     anchor = "translation.\n\nDo NOT report anything that can be COUNTED"
     assert PROFILER_SYSTEM.count(anchor) == 1
     return PROFILER_SYSTEM.replace(
-        anchor, f"translation.\n\n{note}\n\nDo NOT report anything that can be COUNTED")
+        anchor, f"translation.\n\n{note}\n\nDo NOT report anything that can be COUNTED"
+    )
 
 
 # ── 타깃 언어 프로파일 (--target-aware 전용) ─────────────────────────────
@@ -366,19 +413,21 @@ def target_profiler_system(tgt: str, paired: bool = False) -> str:
         f"The system emits a source sentence in pieces. Once a piece is translated into "
         f"{tgt} and shown to a listener, it CANNOT be taken back. Your job is to say what "
         f"about {tgt} makes an early commitment dangerous.\n\n"
-        + (f"You are shown REAL source->{tgt} sentence pairs below. Ground every statement "
-           f"in what those pairs actually show; cite the pair number where you can. You may "
-           f"also draw on what you know about {tgt}, but measured evidence wins.\n\n"
-           if paired else
-           f"This is an ORACLE profile: you may draw freely on everything you know about "
-           f"{tgt} grammar. You are NOT limited to what is observable in a source sample.\n\n")
+        + (
+            f"You are shown REAL source->{tgt} sentence pairs below. Ground every statement "
+            f"in what those pairs actually show; cite the pair number where you can. You may "
+            f"also draw on what you know about {tgt}, but measured evidence wins.\n\n"
+            if paired
+            else f"This is an ORACLE profile: you may draw freely on everything you know about "
+            f"{tgt} grammar. You are NOT limited to what is observable in a source sample.\n\n"
+        )
         + f"Return ONLY a JSON object with exactly these keys:\n"
         f'  "target_language": "{tgt}"\n'
         f'  "word_order": "basic constituent order, and where it is rigid vs free"\n'
         f'  "verb_placement": "where the verb lands, and what that forces a translator to '
         f'defer"\n'
         f'  "late_commitment_forced_by": ["phenomena that cannot be rendered until later '
-        f'source material arrives (agreement, case, gender, classifiers, honorifics, '
+        f"source material arrives (agreement, case, gender, classifiers, honorifics, "
         f'negation scope, separable particles, ...)"]\n'
         f'  "reordering_vs_source": "how far {tgt} order typically departs from the source '
         f'order, and which constituents move"\n'
@@ -422,6 +471,7 @@ Return ONLY a JSON object with exactly these keys:
 }
 No prose outside the JSON."""
 
+
 def measured_facts(measured: dict | None) -> str:
     """실측 프로파일을 프롬프트 작성기·PE 가 읽을 문단으로. 없으면 빈 문자열.
 
@@ -445,11 +495,16 @@ def measured_facts(measured: dict | None) -> str:
     # 옛 런의 `measured_profile.json` 에는 `unit` 이 없다(뒤에 추가된 필드). 이어 돌릴 때
     # 죽지 않도록 `uses_spaces_between_words` 에서 되살린다 — 같은 규칙으로 정해지는 값이다.
     is_spaced = bool(measured.get("uses_spaces_between_words"))
-    unit = ("whitespace-separated words"
-            if measured.get("unit", "word" if is_spaced else "char") == "word"
-            else "characters")
-    spaced = ("This language DOES separate words with spaces." if is_spaced else
-              "This language does NOT put spaces between words.")
+    unit = (
+        "whitespace-separated words"
+        if measured.get("unit", "word" if is_spaced else "char") == "word"
+        else "characters"
+    )
+    spaced = (
+        "This language DOES separate words with spaces."
+        if is_spaced
+        else "This language does NOT put spaces between words."
+    )
     trailing = measured.get("trailing_punctuation") or []
     rate = measured.get("punctuation_final_rate")
     if rate is None:
@@ -457,11 +512,15 @@ def measured_facts(measured: dict | None) -> str:
     elif rate >= 0.9:
         punct_line = f"Almost every sentence ends in punctuation ({rate:.0%})."
     elif rate >= 0.1:
-        punct_line = (f"Only {rate:.0%} of sentences end in punctuation — most utterances "
-                      f"simply stop. Rules that depend on punctuation will not fire.")
+        punct_line = (
+            f"Only {rate:.0%} of sentences end in punctuation — most utterances "
+            f"simply stop. Rules that depend on punctuation will not fire."
+        )
     else:
-        punct_line = (f"Sentences essentially never end in punctuation ({rate:.0%}). "
-                      f"Do not write rules that rely on it.")
+        punct_line = (
+            f"Sentences essentially never end in punctuation ({rate:.0%}). "
+            f"Do not write rules that rely on it."
+        )
     lines = [
         "Measured facts about this corpus (counted directly from the text, not estimated — "
         "these override anything the profile implies):",
@@ -473,7 +532,8 @@ def measured_facts(measured: dict | None) -> str:
         lines.append(
             "- These characters attach to the text BEFORE them and must never start a new "
             f"segment: {' '.join(trailing)}. This list is exhaustive for this corpus — do "
-            "not add characters to it from general knowledge of the language.")
+            "not add characters to it from general knowledge of the language."
+        )
     else:
         lines.append("- No punctuation attaches to the preceding text in this corpus.")
     return "\n".join(lines)
@@ -549,8 +609,12 @@ Return ONLY the prompt text. No commentary, no code fences."""
 class Profiler:
     gw: Gateway
 
-    def profile(self, samples: list[str], target_language: str | None = None,
-                target_pairs: list[tuple[str, str]] | None = None) -> dict:
+    def profile(
+        self,
+        samples: list[str],
+        target_language: str | None = None,
+        target_pairs: list[tuple[str, str]] | None = None,
+    ) -> dict:
         """소스 언어를 프로파일한다. `target_language` 는 **`--target-aware` 에서만** 쓴다.
 
         기본(`None`)에서 안 쓰는 이유: 분절은 소스 쪽 문제라는 것이 설계 전제인데, 타깃
@@ -561,16 +625,20 @@ class Profiler:
         """
         tgt = target_language
         user = (
-            (f"The segmentation prompt you are profiling for serves {tgt} ONLY. Describe "
-             f"properties of the SOURCE text; where {tgt} is what makes a prefix unsafe, "
-             f"say so.\n\n" if tgt else
-             "The segmentation prompt you are profiling for must work for ANY target "
-             "language. Describe only properties of the SOURCE text.\n\n")
+            (
+                f"The segmentation prompt you are profiling for serves {tgt} ONLY. Describe "
+                f"properties of the SOURCE text; where {tgt} is what makes a prefix unsafe, "
+                f"say so.\n\n"
+                if tgt
+                else "The segmentation prompt you are profiling for must work for ANY target "
+                "language. Describe only properties of the SOURCE text.\n\n"
+            )
             + f"Source sentences ({len(samples)} samples):\n"
-            + "\n".join(f"{i+1}. {s}" for i, s in enumerate(samples))
+            + "\n".join(f"{i + 1}. {s}" for i, s in enumerate(samples))
         )
-        prof = self.gw.chat_json(profiler_system(tgt), user,
-                                 max_tokens=PROFILER_MAX_TOKENS, purpose="profiler")
+        prof = self.gw.chat_json(
+            profiler_system(tgt), user, max_tokens=PROFILER_MAX_TOKENS, purpose="profiler"
+        )
         # 타깃 인지 모드에서만 타깃 언어 자체를 한 번 더 프로파일해 **키 하나로** 붙인다.
         # 하류(작성기·Critic·PE)는 프로파일 dict 을 통째로 JSON 직렬화해 넘기므로
         # 배선을 더 건드릴 필요가 없고, 기본 경로에는 이 키가 생기지 않는다.
@@ -578,8 +646,9 @@ class Profiler:
             prof["target_language_profile"] = self.target_profile(tgt, target_pairs)
         return prof
 
-    def target_profile(self, target_language: str,
-                       pairs: list[tuple[str, str]] | None = None) -> dict:
+    def target_profile(
+        self, target_language: str, pairs: list[tuple[str, str]] | None = None
+    ) -> dict:
         """타깃 언어 프로파일. **`--target-aware` 에서만 호출된다.**
 
         `pairs` 는 `(소스, 정답 번역)` 짝이다. 주면 **측정 기반**, 없으면 모델 사전
@@ -592,22 +661,37 @@ class Profiler:
         paired = bool(pairs)
         if paired:
             body = "\n\n".join(
-                f"{i+1}. SOURCE: {src}\n   {target_language.upper()}: {tgt}"
-                for i, (src, tgt) in enumerate(pairs))
-            user = (f"Real source -> {target_language} pairs ({len(pairs)}):\n\n{body}\n\n"
-                    f"Profile {target_language} as described, grounded in these pairs.")
+                f"{i + 1}. SOURCE: {src}\n   {target_language.upper()}: {tgt}"
+                for i, (src, tgt) in enumerate(pairs)
+            )
+            user = (
+                f"Real source -> {target_language} pairs ({len(pairs)}):\n\n{body}\n\n"
+                f"Profile {target_language} as described, grounded in these pairs."
+            )
         else:
             user = f"Profile {target_language} as described."
         prof = self.gw.chat_json(
-            target_profiler_system(target_language, paired), user,
-            max_tokens=PROFILER_MAX_TOKENS, purpose="target_profiler")
-        prof["evidence"] = (f"measured: {len(pairs)} parallel pairs (train split)"
-                            if paired else "model prior knowledge (no target sample)")
+            target_profiler_system(target_language, paired),
+            user,
+            max_tokens=PROFILER_MAX_TOKENS,
+            purpose="target_profiler",
+        )
+        prof["evidence"] = (
+            f"measured: {len(pairs)} parallel pairs (train split)"
+            if paired
+            else "model prior knowledge (no target sample)"
+        )
         return prof
 
-    def initial_prompt(self, profile: dict, target_language: str | None, spaced: bool,
-                       min_t: int = 3, min_gap: int = 0,
-                       measured: dict | None = None) -> str:
+    def initial_prompt(
+        self,
+        profile: dict,
+        target_language: str | None,
+        spaced: bool,
+        min_t: int = 3,
+        min_gap: int = 0,
+        measured: dict | None = None,
+    ) -> str:
         """`target_language` 는 **`--target-aware` 에서만** 쓴다 (Profiler.profile 참조).
 
         `measured` 는 실측 프로파일이다. 종전에는 작성기가 구두점 목록을 LLM 프로파일
@@ -617,28 +701,30 @@ class Profiler:
         # run03 에서 지침 N/3 vs 요건 N/2 불일치가 1차 통과율을 깎았다 (재시도로 복구되나
         # 프롬프트 품질 신호인 1차 통과율이 오염된다). 시스템 프롬프트에 JSON 중괄호가
         # 많아 .format 은 못 쓰고 표적 치환만 한다.
-        sys_p = (PROMPT_WRITER_SYSTEM.replace("N/{min_t}", f"N/{min_t}")
-                 .replace("__TARGET_POLICY__", _writer_policy(target_language)))
+        sys_p = PROMPT_WRITER_SYSTEM.replace("N/{min_t}", f"N/{min_t}").replace(
+            "__TARGET_POLICY__", _writer_policy(target_language)
+        )
         facts = measured_facts(measured)
         user = (
             f"Language profile:\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
             + (facts + "\n\n" if facts else "")
-            + (f"The prompt is used for source -> {target_language} ONLY. Naming "
-               f"{target_language} and citing its grammar is allowed, and is the right "
-               f"move wherever that is the real reason a boundary is risky. It must still "
-               f"be applicable to the source text alone at run time.\n\n"
-               if target_language else
-               "The prompt must be TARGET-LANGUAGE-AGNOSTIC. It will be reused for many "
-               "different target languages without modification, so it may not name one, "
-               "nor lean on one's grammar (no case, gender, article, or word-order "
-               "arguments that belong to a specific target).\n\n")
+            + (
+                f"The prompt is used for source -> {target_language} ONLY. Naming "
+                f"{target_language} and citing its grammar is allowed, and is the right "
+                f"move wherever that is the real reason a boundary is risky. It must still "
+                f"be applicable to the source text alone at run time.\n\n"
+                if target_language
+                else "The prompt must be TARGET-LANGUAGE-AGNOSTIC. It will be reused for many "
+                "different target languages without modification, so it may not name one, "
+                "nor lean on one's grammar (no case, gender, article, or word-order "
+                "arguments that belong to a specific target).\n\n"
+            )
             + f"Copy this [Output Rules] section verbatim into the prompt:\n\n{output_rules(spaced, min_t, min_gap)}"
         )
         # thinking 모델은 사고 토큰이 max_tokens 에 같이 잡힌다 (SEG_MAX_TOKENS 와 같은
         # 문제). 6000 에서는 사고가 예산을 먹고 프롬프트 꼬리 섹션이 잘렸다 — run04 에서
         # 재시도까지 연속으로 [Examples — Do NOT Segment] 가 누락된 채 통과할 뻔했다.
-        return self.gw.chat(sys_p, user, max_tokens=PROMPT_MAX_TOKENS,
-                            purpose="prompt_v0")
+        return self.gw.chat(sys_p, user, max_tokens=PROMPT_MAX_TOKENS, purpose="prompt_v0")
 
 
 # ── A7 Judge — 경계별 조기 방출 판정 ──────────────────────────────────────────────
@@ -664,26 +750,20 @@ class Profiler:
 # 라벨 자체가 이 문제의 **실패 분류 체계**이므로 세 프롬프트가 같은 정의를 봐야 한다.
 # 여기서 렌더링해 판정자·Critic·PE 에 함께 실린다.
 CAUSES: dict[str, str] = {
-    "polarity not yet settled":
-        "the emission committed to affirmative or negative before the negation, a "
-        "concessive, or a question marker arrived. The reader now believes the opposite "
-        "of what the sentence says.",
-    "wrong participant":
-        "the emission attached the action to the wrong agent, patient or possessor. The "
-        "constituent that would have disambiguated came after the cut.",
-    "modifier scope":
-        "a modifier was emitted attached to the wrong head, or with the wrong reach — a "
-        "relative clause, a quantifier, a negation or an adverbial that in fact governs "
-        "material on the other side of the cut.",
-    "head not yet arrived":
-        "the piece ended before the word it depends on. The translator had to guess a "
-        "head noun, a main predicate, or a case role, and guessed wrong.",
-    "referent lost":
-        "a pronoun, an ellipsis, or a bare noun was emitted while what it refers to was "
-        "still ahead, so the reader resolved it to the wrong thing.",
-    "other":
-        "a real contradiction that none of the labels above describes. Say what it was in "
-        "\"conflict\".",
+    "polarity not yet settled": "the emission committed to affirmative or negative before the negation, a "
+    "concessive, or a question marker arrived. The reader now believes the opposite "
+    "of what the sentence says.",
+    "wrong participant": "the emission attached the action to the wrong agent, patient or possessor. The "
+    "constituent that would have disambiguated came after the cut.",
+    "modifier scope": "a modifier was emitted attached to the wrong head, or with the wrong reach — a "
+    "relative clause, a quantifier, a negation or an adverbial that in fact governs "
+    "material on the other side of the cut.",
+    "head not yet arrived": "the piece ended before the word it depends on. The translator had to guess a "
+    "head noun, a main predicate, or a case role, and guessed wrong.",
+    "referent lost": "a pronoun, an ellipsis, or a bare noun was emitted while what it refers to was "
+    "still ahead, so the reader resolved it to the wrong thing.",
+    "other": "a real contradiction that none of the labels above describes. Say what it was in "
+    '"conflict".',
 }
 
 
@@ -746,8 +826,14 @@ Never quote more than 40 characters of source text. Keep every field short."""
 class Judge:
     gw: Gateway
 
-    def judge(self, src_sentence: str, oracle: str, pieces_src: list[str],
-              pieces_tgt: list[str], boundary: int) -> dict:
+    def judge(
+        self,
+        src_sentence: str,
+        oracle: str,
+        pieces_src: list[str],
+        pieces_tgt: list[str],
+        boundary: int,
+    ) -> dict:
         """경계 `boundary` (0-based, 조각 boundary 와 boundary+1 사이) 를 판정한다.
 
         hypothesis 를 **누적**으로 넘기는 이유: 조각 하나만 보면 중립인데 앞 조각과
@@ -758,14 +844,15 @@ class Judge:
             f"Full source sentence:\n{src_sentence}\n\n"
             f"Oracle (whole-sentence translation):\n{oracle}\n\n"
             f"Emitted so far (what the user has seen at this moment):\n"
-            + "\n".join(f"[{i+1}] {s}  ->  {t}"
-                        for i, (s, t) in enumerate(zip(pieces_src[:upto], pieces_tgt[:upto])))
+            + "\n".join(
+                f"[{i + 1}] {s}  ->  {t}"
+                for i, (s, t) in enumerate(zip(pieces_src[:upto], pieces_tgt[:upto]))
+            )
             + f"\n\nHypothesis (concatenated): {' '.join(pieces_tgt[:upto]).strip()}\n"
             f"The piece just added: {pieces_src[boundary]}  ->  {pieces_tgt[boundary]}\n"
             f"Source still unseen: {' '.join(pieces_src[upto:])}"
         )
-        return self.gw.chat_json(JUDGE_SYSTEM, user, max_tokens=JUDGE_MAX_TOKENS,
-                                 purpose="judge")
+        return self.gw.chat_json(JUDGE_SYSTEM, user, max_tokens=JUDGE_MAX_TOKENS, purpose="judge")
 
 
 def max_contra(row: dict, T: int) -> float | None:
@@ -810,8 +897,9 @@ def _interleave(a: list[dict], b: list[dict]):
             yield b[i]
 
 
-def judge_top_contra(judge: Judge, rows: list[dict], T: int,
-                     max_boundaries: int = 8, workers: int = 8) -> list[dict]:
+def judge_top_contra(
+    judge: Judge, rows: list[dict], T: int, max_boundaries: int = 8, workers: int = 8
+) -> list[dict]:
     """**모순이 가장 크게 잡힌 경계**만 판정한다. 점수는 내지 않는다 — 설명만 낸다.
 
     종전에는 문장 8개를 뽑아 그 안의 **모든** 경계를 판정하고, 결과로 `premature_rate`
@@ -855,12 +943,18 @@ def judge_top_contra(judge: Judge, rows: list[dict], T: int,
         contra, r, b = item
         d = r["by_T"][str(T)]
         try:
-            v = judge.judge(r["text"], r.get("full_trans") or "",
-                            d["pieces_src"], d["pieces_tgt"], b)
-        except Exception as e:                      # 판정 실패로 루프를 죽이지 않는다
+            v = judge.judge(
+                r["text"], r.get("full_trans") or "", d["pieces_src"], d["pieces_tgt"], b
+            )
+        except Exception as e:  # 판정 실패로 루프를 죽이지 않는다
             v = {"verdict": "error", "conflict": str(e)[:200]}
-        return {"id": r["id"], "boundary": b, "contradiction": round(contra, 4),
-                "seg_text": d["seg_text"], **v}
+        return {
+            "id": r["id"],
+            "boundary": b,
+            "contradiction": round(contra, 4),
+            "seg_text": d["seg_text"],
+            **v,
+        }
 
     if not picked:
         return []
@@ -1076,22 +1170,30 @@ Keep it short. Do not quote more than 40 characters of any source sentence."""
 class Critic:
     gw: Gateway
 
-    def review(self, cases: list[dict], metrics: dict, violations: list[dict],
-               avoid: str | None = None,
-               priority_audit: list[dict] | None = None,
-               judgements: list[dict] | None = None,
-               target_language: str | None = None,
-               coverage: dict | None = None,
-               rejected: list[dict] | None = None,
-               prompt: str | None = None) -> dict:
+    def review(
+        self,
+        cases: list[dict],
+        metrics: dict,
+        violations: list[dict],
+        avoid: str | None = None,
+        priority_audit: list[dict] | None = None,
+        judgements: list[dict] | None = None,
+        target_language: str | None = None,
+        coverage: dict | None = None,
+        rejected: list[dict] | None = None,
+        prompt: str | None = None,
+    ) -> dict:
         user = (
             # 타깃 인지 모드에서만 붙는다. 기본에서는 Critic 이 타깃을 모르는 편이 낫다 —
             # 알면 한 언어의 문법으로 규칙을 제안하고 그게 PE 를 거쳐 프롬프트에 남는다.
-            (f"This prompt serves ONE language pair: source -> {target_language}. The "
-             f"pieces below were translated into {target_language}. A proposed rule MAY "
-             f"cite {target_language} grammar as the REASON, but must state the condition "
-             f"in SOURCE surface forms — the segmenter never sees a translation.\n\n"
-             if target_language else "")
+            (
+                f"This prompt serves ONE language pair: source -> {target_language}. The "
+                f"pieces below were translated into {target_language}. A proposed rule MAY "
+                f"cite {target_language} grammar as the REASON, but must state the condition "
+                f"in SOURCE surface forms — the segmenter never sees a translation.\n\n"
+                if target_language
+                else ""
+            )
             + f"Current metrics: {json.dumps(metrics, ensure_ascii=False)}\n\n"
             # **설명은 `metrics.GLOSSARY` 에서 생성한다.** 종전에는 여기 손으로 쓴 문단이
             # 있었고 실려 가는 지표 31개 중 7개만 설명돼 있었다 — 목적함수 `effective`
@@ -1126,7 +1228,8 @@ class Critic:
                 "early commit — do NOT write a prohibition or a demotion for that feature on "
                 "the strength of its contradiction alone. A high `mistranslated_rate` is a "
                 "translation-quality problem, not a boundary problem.\n"
-                + json.dumps(priority_audit, ensure_ascii=False, indent=2))
+                + json.dumps(priority_audit, ensure_ascii=False, indent=2)
+            )
         # 판정 분포 — **사례로 못 간 판정까지 반영한다.** 사례는 10개뿐이라 거기서
         # 원인 분포를 읽으면 표본이 라벨 5개 수준으로 떨어진다 (`cause_summary` 참조).
         cs = cause_summary(judgements)
@@ -1137,7 +1240,8 @@ class Critic:
                 "asking WHICH failure dominates. Still not a corpus rate: these are the "
                 "worst-scoring boundaries by measured contradiction, so `safe` here means "
                 "the measurement fired and a reader disagreed.\n"
-                + json.dumps(cs, ensure_ascii=False, indent=2))
+                + json.dumps(cs, ensure_ascii=False, indent=2)
+            )
         # 커버리지 보고 — **비평의 방향을 여는 유일한 증거다.** 지시문은 "조각 수는 노브가
         # 정하므로 too_few 는 진단 대상이 아니다" 라고 못 박고 있는데, 그 전제는 후보가
         # 예산보다 많을 때만 성립한다. run12 는 dev 265문장 중 264건이 `too_few_tags`
@@ -1150,11 +1254,14 @@ class Critic:
                 "`missing` is how many boundaries the budget asked for that were never marked, "
                 "at the TIGHTEST budget in the grid (the one that needs the most boundaries).\n"
                 + json.dumps(coverage, ensure_ascii=False, indent=2)
-                + ("\n\nCOVERAGE IS BROKEN. Adding another prohibition here lowers the score "
-                   "mechanically — the budget already cannot be met. Diagnose coverage first."
-                   if coverage.get("broken") else
-                   "\n\nCoverage holds: more candidates are marked than the tightest budget "
-                   "needs, so piece count is not a failure you can diagnose."))
+                + (
+                    "\n\nCOVERAGE IS BROKEN. Adding another prohibition here lowers the score "
+                    "mechanically — the budget already cannot be met. Diagnose coverage first."
+                    if coverage.get("broken")
+                    else "\n\nCoverage holds: more candidates are marked than the tightest budget "
+                    "needs, so piece count is not a failure you can diagnose."
+                )
+            )
         # 거부 이력 — 같은 프롬프트에 대해 이미 시도해 측정으로 부정된 방향.
         if rejected:
             user += (
@@ -1165,8 +1272,8 @@ class Critic:
                 "that is HOW it lost, and it is the part worth avoiding. A `mechanism` of "
                 "`not_explained_by_diff` means the loss was not attributable to the change, so "
                 "that axis is NOT exhausted and may be tried again in another form. "
-                "Do not propose these again.\n"
-                + json.dumps(rejected, ensure_ascii=False, indent=2))
+                "Do not propose these again.\n" + json.dumps(rejected, ensure_ascii=False, indent=2)
+            )
         # 진단 대상 프롬프트 원문 — **줄 단위 귀책의 유일한 근거다.** 종전에는 인자에
         # 없었다. 그래서 Critic 은 음식만 먹고 레시피를 못 본 상태였고, "[Priority Rules]
         # 3번째 줄이 쉼표를 과신한다" 같은 말이 원리적으로 불가능했다. 결과로 이미
@@ -1185,19 +1292,30 @@ class Critic:
                 "your `proposed_rule` is not already stated in other words.\n"
                 "<prompt_under_review>\n"
                 + prompt.replace("</prompt_under_review>", "")
-                + "\n</prompt_under_review>")
-        out = self.gw.chat_json(CRITIC_SYSTEM, user, max_tokens=PROMPT_MAX_TOKENS,
-                                purpose="critic")
-        out["aggregate"] = summarize_critique(out.get("cases") or [], metrics,
-                                              out.get("summary"), avoid, priority_audit,
-                                              judgements, coverage)
+                + "\n</prompt_under_review>"
+            )
+        out = self.gw.chat_json(CRITIC_SYSTEM, user, max_tokens=PROMPT_MAX_TOKENS, purpose="critic")
+        out["aggregate"] = summarize_critique(
+            out.get("cases") or [],
+            metrics,
+            out.get("summary"),
+            avoid,
+            priority_audit,
+            judgements,
+            coverage,
+        )
         return out
 
-    def diagnose_regression(self, base_prompt: str, revised_prompt: str,
-                            regressions: list[dict], changelog: str | None = None,
-                            sections_changed: str | list[str] | None = None,
-                            delta: dict | None = None,
-                            target_language: str | None = None) -> dict:
+    def diagnose_regression(
+        self,
+        base_prompt: str,
+        revised_prompt: str,
+        regressions: list[dict],
+        changelog: str | None = None,
+        sections_changed: str | list[str] | None = None,
+        delta: dict | None = None,
+        target_language: str | None = None,
+    ) -> dict:
         """거부된 개정의 부검 — **어디서 어떻게 졌나**.
 
         `review` 와 대상이 다르다. `review` 는 항상 현재 best 를 보고 (loop 의
@@ -1213,26 +1331,31 @@ class Critic:
         if not diff.strip():
             return {}
         user = (
-            (f"This prompt serves source -> {target_language} only.\n\n"
-             if target_language else "")
+            (f"This prompt serves source -> {target_language} only.\n\n" if target_language else "")
             + "What the revision said it was doing (its own summary — it may be wrong):\n"
             + f"{changelog or '(none recorded)'}\n\n"
             + f"Sections it touched (measured by diff, not self-reported): "
-              f"{json.dumps(sections_changed or [], ensure_ascii=False)}\n\n"
-            + (f"Measured result on held-out data: {json.dumps(delta, ensure_ascii=False)} "
-               f"— `mean_delta` is the paired change in the objective, negative meaning "
-               f"worse; `n_changed` is how many sentences were segmented differently at "
-               f"all.\n\n" if delta else "")
+            f"{json.dumps(sections_changed or [], ensure_ascii=False)}\n\n"
+            + (
+                f"Measured result on held-out data: {json.dumps(delta, ensure_ascii=False)} "
+                f"— `mean_delta` is the paired change in the objective, negative meaning "
+                f"worse; `n_changed` is how many sentences were segmented differently at "
+                f"all.\n\n"
+                if delta
+                else ""
+            )
             + "REGRESSIONS — the sentences that fell the most, at the budget T where each "
-              "fell hardest:\n"
+            "fell hardest:\n"
             + json.dumps(regressions, ensure_ascii=False, indent=2)
             + "\n\n=== BASE PROMPT (still in use) ===\n<base_prompt>\n"
             + base_prompt.replace("</base_prompt>", "")
             + "\n</base_prompt>\n\n=== WHAT THE REVISION CHANGED ===\n<revision_diff>\n"
             + diff.replace("</revision_diff>", "")
-            + "\n</revision_diff>")
-        return self.gw.chat_json(REGRESSION_SYSTEM, user, max_tokens=PROMPT_MAX_TOKENS,
-                                 purpose="critic_regression")
+            + "\n</revision_diff>"
+        )
+        return self.gw.chat_json(
+            REGRESSION_SYSTEM, user, max_tokens=PROMPT_MAX_TOKENS, purpose="critic_regression"
+        )
 
 
 # 임계값은 **잠정값**이다. 실측 전에 확정하면 v1 의 `q_weight`·`ratio` 처럼 근거 없는
@@ -1251,74 +1374,78 @@ class Critic:
 # 상수 1.0 은 종전 `RANK_GAP_SE_MULT` 를 그대로 옮긴 것이라 새로 생긴 임의 상수가 아니다.
 
 
-def summarize_critique(cases: list[dict], metrics: dict, summary: str | None,
-                       avoid: str | None = None,
-                       priority_audit: list[dict] | None = None,
-                       judgements: list[dict] | None = None,
-                       coverage: dict | None = None) -> dict:
+def summarize_critique(
+    cases: list[dict],
+    metrics: dict,
+    summary: str | None,
+    avoid: str | None = None,
+    priority_audit: list[dict] | None = None,
+    judgements: list[dict] | None = None,
+    coverage: dict | None = None,
+) -> dict:
     """집계는 세는 일이지 판단이 아니다 — LLM 에 맡기면 누락되거나 틀린다.
 
-**`focus` 는 없앴다** — 아래 본문 주석 참고. 남은 것은 세는 일(오류 유형 카운트)과
-    고착 방지 힌트뿐이고, 방향 판단은 Critic 이 지표의 뜻을 보고 한다.
+    **`focus` 는 없앴다** — 아래 본문 주석 참고. 남은 것은 세는 일(오류 유형 카운트)과
+        고착 방지 힌트뿐이고, 방향 판단은 Critic 이 지표의 뜻을 보고 한다.
 
-    **`dominant_error` 는 사례 개수에서 실측 비율로 옮겼다.** 종전에는 `cases` 의
-    `error_type` 을 세어 최다를 골랐는데, 그 표본은 **일부러 최악만 고른 것**이라
-    비율이 아니다. 지시문이 같은 메시지에서 정확히 그걸 금지하고 있었다:
+        **`dominant_error` 는 사례 개수에서 실측 비율로 옮겼다.** 종전에는 `cases` 의
+        `error_type` 을 세어 최다를 골랐는데, 그 표본은 **일부러 최악만 고른 것**이라
+        비율이 아니다. 지시문이 같은 메시지에서 정확히 그걸 금지하고 있었다:
 
-        "Because the sample is the worst boundaries, do NOT read the mix of verdicts
-         as a rate. ... Count nothing here — read WHY."
+            "Because the sample is the worst boundaries, do NOT read the mix of verdicts
+             as a rate. ... Count nothing here — read WHY."
 
-    그런데 이 함수가 바로 그 사례를 세어 `dominant_error` 라는 이름으로 `aggregate` 에
-    실었고, `aggregate` 는 `critique` 안에 담겨 PE 에게 통째로 넘어간다. run12 iter_02
-    실측이 그 어긋남을 그대로 보여준다:
+        그런데 이 함수가 바로 그 사례를 세어 `dominant_error` 라는 이름으로 `aggregate` 에
+        실었고, `aggregate` 는 `critique` 안에 담겨 PE 에게 통째로 넘어간다. run12 iter_02
+        실측이 그 어긋남을 그대로 보여준다:
 
-        dominant_error      placement 11/11 = 100%   (사례 11건 — 최악만 골라낸 것)
-        judge_distribution  premature 31 / mistranslated 7 / **safe 7** (판정 45건)
-        커버리지            부족 문장 260/265 = 98.1% (전 문장)
+            dominant_error      placement 11/11 = 100%   (사례 11건 — 최악만 골라낸 것)
+            judge_distribution  premature 31 / mistranslated 7 / **safe 7** (판정 45건)
+            커버리지            부족 문장 260/265 = 98.1% (전 문장)
 
-    "placement 100%" 는 프롬프트가 placement 를 다 틀린다는 뜻이 아니라 **placement
-    사례만 골라 보냈다**는 뜻이다. `cause_summary` 가 따로 있는 이유가 이것이고
-    (docstring: "사례 10개로는 어떤 실패가 지배적인가를 못 읽는다"), 이 함수만 그 원칙
-    밖에 있었다.
+        "placement 100%" 는 프롬프트가 placement 를 다 틀린다는 뜻이 아니라 **placement
+        사례만 골라 보냈다**는 뜻이다. `cause_summary` 가 따로 있는 이유가 이것이고
+        (docstring: "사례 10개로는 어떤 실패가 지배적인가를 못 읽는다"), 이 함수만 그 원칙
+        밖에 있었다.
 
-    **그래서 `dominant_error` 는 코퍼스 비율이 뒷받침할 때만 값을 갖는다.** 지금 그런
-    축은 커버리지 하나뿐이다:
+        **그래서 `dominant_error` 는 코퍼스 비율이 뒷받침할 때만 값을 갖는다.** 지금 그런
+        축은 커버리지 하나뿐이다:
 
-      coverage   `missing_boundaries > 0` 인 문장 비율. 전 문장이 분모라 진짜 비율이고,
-                 `truncate` 가 min_gap 몫을 빼고 세므로 **프롬프트가 고칠 수 있는 부족분**
-                 만 들어간다 (GLOSSARY movable=True).
-      format     `format_pass_rate` 는 GLOSSARY 가 movable=False 로 표시한다 — "남는
-                 실패는 대부분 모델이 원문을 고쳐 쓰는 것이고 문구로 안 고쳐진다".
-                 프롬프트의 몫이 아니므로 축이 될 수 없다.
-      placement  판정 경계는 **모순 상위 10%** 라 코퍼스 비율이 아니다 (지시문도
-                 "Still not a corpus rate" 라고 단서를 단다). 비율로 승격할 근거가 없다.
-      priority   `rank_lift` 는 값이 커도 "순위가 이미 잘 돈다"는 뜻이라 지배 실패를
-                 가리키지 않는다. 어느 방향으로도 축을 못 고른다.
+          coverage   `missing_boundaries > 0` 인 문장 비율. 전 문장이 분모라 진짜 비율이고,
+                     `truncate` 가 min_gap 몫을 빼고 세므로 **프롬프트가 고칠 수 있는 부족분**
+                     만 들어간다 (GLOSSARY movable=True).
+          format     `format_pass_rate` 는 GLOSSARY 가 movable=False 로 표시한다 — "남는
+                     실패는 대부분 모델이 원문을 고쳐 쓰는 것이고 문구로 안 고쳐진다".
+                     프롬프트의 몫이 아니므로 축이 될 수 없다.
+          placement  판정 경계는 **모순 상위 10%** 라 코퍼스 비율이 아니다 (지시문도
+                     "Still not a corpus rate" 라고 단서를 단다). 비율로 승격할 근거가 없다.
+          priority   `rank_lift` 는 값이 커도 "순위가 이미 잘 돈다"는 뜻이라 지배 실패를
+                     가리키지 않는다. 어느 방향으로도 축을 못 고른다.
 
-    커버리지가 성립하면 `dominant_error` 는 `None` 이다 — "비율로는 지배 실패를 못
-    가린다, 사례와 `judge_distribution` 을 읽어라"가 정직한 답이고, 그게 원래 설계다.
-    사례 라벨 카운트는 `case_label_counts` 로 남기되 이름과 `of` 로 표본임을 밝힌다.
+        커버리지가 성립하면 `dominant_error` 는 `None` 이다 — "비율로는 지배 실패를 못
+        가린다, 사례와 `judge_distribution` 을 읽어라"가 정직한 답이고, 그게 원래 설계다.
+        사례 라벨 카운트는 `case_label_counts` 로 남기되 이름과 `of` 로 표본임을 밝힌다.
 
-    사례 카운트로 방향을 정하면 안 된다는 원칙은 그대로다: Critic 에게는 망가진 사례를
-    골라 보내므로 특정 유형이 항상 다수가 되고, 방향이 영구히 거기 고정된다
-    (v1 실측: direction 5회 고착, 분절률 0.72 -> 0.38). 종전 주석은 여기서 "그래서
-    `dominant_error` 는 참고용으로만 싣는다" 로 끝났는데, **참고용이 아니었다** —
-    `aggregate` 가 `critique` 안에 담겨 PE 의 사용자 메시지로 통째로 직렬화된다
-    (`PromptEngineer.revise`). 지시문이 이름으로 지목해 쓰는 것은 `stuck_hint` 와
-    `judge_distribution` 뿐이고 `dominant_error` 는 계약에 없이 딸려 갔다. 위에서
-    비율 기반으로 옮긴 이유가 이것이다.
+        사례 카운트로 방향을 정하면 안 된다는 원칙은 그대로다: Critic 에게는 망가진 사례를
+        골라 보내므로 특정 유형이 항상 다수가 되고, 방향이 영구히 거기 고정된다
+        (v1 실측: direction 5회 고착, 분절률 0.72 -> 0.38). 종전 주석은 여기서 "그래서
+        `dominant_error` 는 참고용으로만 싣는다" 로 끝났는데, **참고용이 아니었다** —
+        `aggregate` 가 `critique` 안에 담겨 PE 의 사용자 메시지로 통째로 직렬화된다
+        (`PromptEngineer.revise`). 지시문이 이름으로 지목해 쓰는 것은 `stuck_hint` 와
+        `judge_distribution` 뿐이고 `dominant_error` 는 계약에 없이 딸려 갔다. 위에서
+        비율 기반으로 옮긴 이유가 이것이다.
 
-    v1 의 "더/덜 잘라라" 방향이 사라진 자리가 크다. 조각 수는 **후보가 예산보다 많을
-    때만** 노브가 정하므로, 그 조건이 성립하면 과소분절·과분절이라는 실패가 없고 남는
-    것은 위치와 순위뿐이다. 깨지면 커버리지가 다시 실패 유형이 된다 (`coverage`).
+        v1 의 "더/덜 잘라라" 방향이 사라진 자리가 크다. 조각 수는 **후보가 예산보다 많을
+        때만** 노브가 정하므로, 그 조건이 성립하면 과소분절·과분절이라는 실패가 없고 남는
+        것은 위치와 순위뿐이다. 깨지면 커버리지가 다시 실패 유형이 된다 (`coverage`).
 
-    **순위 축은 순위를 망가뜨려 잰다** (`rank_lift`). 종전에 쓰던 `rank_contra_gap` 은
-    **절단 후 살아남은 경계들끼리의 순서**만 보는데, 순위가 실제로 하는 일은 keep-vs-discard
-    다 — 폐기된 경계는 렌더링이 없어 contra 값 자체가 없으므로 원리적으로 안 보인다
-    (en-de run04 T=6 실측: 후보 15.4개 중 생존 2.7개, **결정의 82% 가 지표 밖**).
-    실측에서 두 값은 어긋났다: 순위를 섞으면 effective 가 0.024~0.061 떨어지는데
-    (20/20 셔플 완승, 순열 p=0.048) `rank_contra_gap` 은 en-de 에서 오히려 무작위보다
-    낮게 나왔다. 근거: `AUTOSEG_DETAILS.md` '순위 축 진단'.
+        **순위 축은 순위를 망가뜨려 잰다** (`rank_lift`). 종전에 쓰던 `rank_contra_gap` 은
+        **절단 후 살아남은 경계들끼리의 순서**만 보는데, 순위가 실제로 하는 일은 keep-vs-discard
+        다 — 폐기된 경계는 렌더링이 없어 contra 값 자체가 없으므로 원리적으로 안 보인다
+        (en-de run04 T=6 실측: 후보 15.4개 중 생존 2.7개, **결정의 82% 가 지표 밖**).
+        실측에서 두 값은 어긋났다: 순위를 섞으면 effective 가 0.024~0.061 떨어지는데
+        (20/20 셔플 완승, 순열 p=0.048) `rank_contra_gap` 은 en-de 에서 오히려 무작위보다
+        낮게 나왔다. 근거: `AUTOSEG_DETAILS.md` '순위 축 진단'.
     """
     counts: dict[str, int] = {}
     for c in cases:
@@ -1361,9 +1488,11 @@ def summarize_critique(cases: list[dict], metrics: dict, summary: str | None,
     # 잡았다 (라벨이 달라도 같은 섹션을 고쳤다).
     stuck = ""
     if avoid:
-        stuck = (f"직전 개정이 {avoid} 를 고쳤는데 채택에 실패했다. "
-                 f"같은 섹션을 같은 방식으로 다시 고치지 말 것 — 다른 섹션을 보거나 "
-                 f"같은 섹션이라도 반대 방향(금지 추가가 아니라 완화)을 검토할 것")
+        stuck = (
+            f"직전 개정이 {avoid} 를 고쳤는데 채택에 실패했다. "
+            f"같은 섹션을 같은 방식으로 다시 고치지 말 것 — 다른 섹션을 보거나 "
+            f"같은 섹션이라도 반대 방향(금지 추가가 아니라 완화)을 검토할 것"
+        )
 
     # 실측 비율 — **분모를 값과 함께 싣는다.** 비율만 주면 표본 크기가 안 보이고,
     # 무엇에 대한 비율인지 안 적으면 지금 고친 그 오독이 그대로 재발한다
@@ -1375,33 +1504,41 @@ def summarize_critique(cases: list[dict], metrics: dict, summary: str | None,
             "of_n": coverage.get("sentences"),
             "rate": coverage.get("fraction_missing"),
             "of": "all sentences scored — a true corpus rate",
-            "meaning": ("sentences where the tightest budget asked for boundaries the "
-                        "prompt never marked, so pieces are missing outright"),
+            "meaning": (
+                "sentences where the tightest budget asked for boundaries the "
+                "prompt never marked, so pieces are missing outright"
+            ),
         }
     jd = cause_summary(judgements)
     if jd:
-        _prem = (jd["verdicts"].get("premature", 0) + jd["verdicts"].get("mistranslated", 0))
+        _prem = jd["verdicts"].get("premature", 0) + jd["verdicts"].get("mistranslated", 0)
         rates["premature_among_judged"] = {
             "n": _prem,
             "of_n": jd["n_boundaries_judged"],
             "rate": round(_prem / jd["n_boundaries_judged"], 3),
-            "of": ("boundaries judged this iteration, selected as the WORST by measured "
-                   "contradiction — NOT a corpus rate, do not compare it against `coverage`"),
+            "of": (
+                "boundaries judged this iteration, selected as the WORST by measured "
+                "contradiction — NOT a corpus rate, do not compare it against `coverage`"
+            ),
         }
 
     dominant, basis = None, None
     if coverage and coverage.get("broken"):
         dominant = "coverage"
-        basis = (f"{coverage.get('sentences_missing_boundaries')}/"
-                 f"{coverage.get('sentences')} sentences "
-                 f"({coverage.get('fraction_missing')}) could not be given the boundaries the "
-                 f"tightest budget asked for. This is a corpus rate, and the shortfall is the "
-                 f"part the prompt can fix. Fix coverage before anything else — while it holds, "
-                 f"every added prohibition lowers the score mechanically.")
+        basis = (
+            f"{coverage.get('sentences_missing_boundaries')}/"
+            f"{coverage.get('sentences')} sentences "
+            f"({coverage.get('fraction_missing')}) could not be given the boundaries the "
+            f"tightest budget asked for. This is a corpus rate, and the shortfall is the "
+            f"part the prompt can fix. Fix coverage before anything else — while it holds, "
+            f"every added prohibition lowers the score mechanically."
+        )
     elif rates:
-        basis = ("No corpus rate identifies a dominant failure. Read the cases and "
-                 "`judge_distribution` for WHICH mechanism to fix — do not infer a rate from "
-                 "`case_label_counts`, those cases were selected for being the worst.")
+        basis = (
+            "No corpus rate identifies a dominant failure. Read the cases and "
+            "`judge_distribution` for WHICH mechanism to fix — do not infer a rate from "
+            "`case_label_counts`, those cases were selected for being the worst."
+        )
 
     return {
         "dominant_error": dominant,
@@ -1409,8 +1546,11 @@ def summarize_critique(cases: list[dict], metrics: dict, summary: str | None,
         "measured_rates": rates,
         # **사례 라벨 카운트는 비율이 아니다.** 종전 `error_counts` 를 개명한 것이고,
         # `dominant_error` 는 더 이상 이 값에서 나오지 않는다.
-        "case_label_counts": {"counts": counts, "of_n": len(cases),
-                              "of": "the selected worst cases — NOT a rate"},
+        "case_label_counts": {
+            "counts": counts,
+            "of_n": len(cases),
+            "of": "the selected worst cases — NOT a rate",
+        },
         "stuck_hint": stuck,
         "priority_audit": (priority_audit or [])[:6],
         "judge_distribution": cause_summary(judgements),
@@ -1447,14 +1587,22 @@ def cause_summary(judgements: list[dict] | None) -> dict | None:
         "n_boundaries_judged": len(js),
         "verdicts": dict(sorted(verdicts.items(), key=lambda kv: -kv[1])),
         "n_with_cause": n_lab,
-        "causes": {k: {"n": v, "share": round(v / n_lab, 3)}
-                   for k, v in sorted(causes.items(), key=lambda kv: -kv[1])},
+        "causes": {
+            k: {"n": v, "share": round(v / n_lab, 3)}
+            for k, v in sorted(causes.items(), key=lambda kv: -kv[1])
+        },
     }
 
 
-def select_cases(rows: list[dict], main_T: int, judgements: list[dict] | None = None,
-                 n_worst: int = 5, n_invalid: int = 5, n_short: int = 3,
-                 n_flagged: int = 10) -> list[dict]:
+def select_cases(
+    rows: list[dict],
+    main_T: int,
+    judgements: list[dict] | None = None,
+    n_worst: int = 5,
+    n_invalid: int = 5,
+    n_short: int = 3,
+    n_flagged: int = 10,
+) -> list[dict]:
     """비평 대상 선정 — 전량이 아니라 정보량이 있는 것만.
 
     v1 은 "COMET 하위 N개 문장"이었다. v2 는 **조기 방출로 판정된 경계**를 우선한다 —
@@ -1468,7 +1616,7 @@ def select_cases(rows: list[dict], main_T: int, judgements: list[dict] | None = 
     key = str(main_T)
     by_id = {r["id"]: r for r in rows}
     judged: dict[str, list[dict]] = {}
-    for j in (judgements or []):
+    for j in judgements or []:
         judged.setdefault(j["id"], []).append(j)
 
     invalid = [r for r in rows if not r["valid"]][:n_invalid]
@@ -1476,10 +1624,13 @@ def select_cases(rows: list[dict], main_T: int, judgements: list[dict] | None = 
     # 경계의 10% 로 올리면 케이스 목록이 같이 부풀어 Critic 프롬프트를 삼킨다.
     # 모순이 큰 것부터 자른다 — 판정 대상 자체가 모순 상위이므로 순서가 이미 그 축이다.
     flagged = sorted(
-        (by_id[i] for i, js in judged.items()
-         if i in by_id and any(j.get("verdict") in ("premature", "mistranslated")
-                               for j in js)),
-        key=lambda r: -(max_contra(r, main_T) or 0.0))[:n_flagged]
+        (
+            by_id[i]
+            for i, js in judged.items()
+            if i in by_id and any(j.get("verdict") in ("premature", "mistranslated") for j in js)
+        ),
+        key=lambda r: -(max_contra(r, main_T) or 0.0),
+    )[:n_flagged]
     valid = [r for r in rows if r["valid"] and r.get("by_T", {}).get(key)]
     worst = rank_by_failure(valid, main_T, n_worst)
     # **경계 부족 쿼터는 `valid` 에서 뽑으면 안 된다.** 경계가 모자라면 검증기가
@@ -1487,8 +1638,9 @@ def select_cases(rows: list[dict], main_T: int, judgements: list[dict] | None = 
     # 원리적으로 거의 없다. run12 는 dev 265문장 중 264건이 경계 부족이었는데 이 쿼터가
     # 0건을 골랐다 — 남은 사례가 전부 `placement` 라 비평이 한 방향으로 고정됐다.
     # 전체 행에서 뽑고, 부족이 만연하면 쿼터도 함께 키운다 (그때는 그게 지배 실패다).
-    _short_pool = [r for r in rows
-                   if (r.get("by_T", {}).get(key) or {}).get("missing_boundaries", 0) > 0]
+    _short_pool = [
+        r for r in rows if (r.get("by_T", {}).get(key) or {}).get("missing_boundaries", 0) > 0
+    ]
     # 0.5 는 `loop.COVERAGE_BROKEN_FRAC` 과 같은 값이어야 한다 (거기서 import 하면
     # loop -> agents 단방향 의존이 순환이 된다). 한쪽을 바꾸면 다른 쪽도 바꿀 것.
     _coverage_broken = len(_short_pool) > 0.5 * max(1, len(rows))
@@ -1498,47 +1650,69 @@ def select_cases(rows: list[dict], main_T: int, judgements: list[dict] | None = 
         # 다른 쪽 편향으로 바꾸는 것뿐이다. 사례는 예시를 보여주는 자리이고, 얼마나
         # 만연한지는 커버리지 보고(비율)가 말한다.
         n_short = max(n_short, n_worst)
-    short = sorted(_short_pool,
-                   key=lambda r: -r["by_T"][key]["missing_boundaries"])[:n_short]
+    short = sorted(_short_pool, key=lambda r: -r["by_T"][key]["missing_boundaries"])[:n_short]
 
     # 커버리지가 깨진 이터레이션에서는 부족 사례를 **앞으로** 놓는다. 뒤에 두면 중복
     # 제거로 밀려나 목록에서 사라진다 (아래 dedup 은 먼저 온 행을 남긴다).
-    _order = (invalid + short + flagged + worst if _coverage_broken
-              else invalid + flagged + worst + short)
+    _order = (
+        invalid + short + flagged + worst if _coverage_broken else invalid + flagged + worst + short
+    )
     picked, seen = [], set()
     for r in _order:
         if r["id"] in seen:
             continue
         seen.add(r["id"])
         adequacy_by_T = {t: d.get("adequacy") for t, d in (r.get("by_T") or {}).items()}
-        picked.append({
-            "id": r["id"], "text": r["text"], "seg_text": r["seg_text"],
-            "valid": r["valid"], "full_trans": r.get("full_trans"),
-            "segmentation_at_main_budget": (r.get("by_T", {}).get(key) or {}).get("seg_text"),
-            "pieces_tgt": (r.get("by_T", {}).get(key) or {}).get("pieces_tgt"),
-            "adequacy_by_T": adequacy_by_T,
-            "contradiction_after_each_piece":
-                (r.get("by_T", {}).get(key) or {}).get("pieces_contra"),
-            "judgements": [{k: v for k, v in j.items() if k != "seg_text"}
-                           for j in judged.get(r["id"], [])],
-            # **이유는 배타형이 아니라 누적형이다.** 종전 `if/elif` 사슬은 한 행에
-            # 하나만 남겼는데, 커버리지가 깨진 이터레이션에서는 거의 모든 행이 경계
-            # 부족이면서 동시에 조기 방출로 판정된 행이기도 하다. 하나만 남기면 어느
-            # 쪽으로 순서를 잡든 반대쪽 증거가 라벨에서 사라지고, 비평이 그 한 방향으로
-            # 고정된다 (run12: 사례 11/11 이 `placement`). 둘 다 적는다.
-            "selected_because": "; ".join(x for x in (
-                ("the prompt did not provide enough boundaries for the budget"
-                 if (r.get("by_T", {}).get(key) or {}).get("missing_boundaries", 0) > 0
-                 else None),
-                ("format violation" if not r["valid"] else None),
-                ("a boundary was judged premature or mistranslated"
-                 if r["id"] in judged and any(
-                     j.get("verdict") in ("premature", "mistranslated")
-                     for j in judged[r["id"]]) else None),
-                ("a boundary was strongly contradicted by the rest of the sentence"
-                 if (max_contra(r, main_T) or 0.0) >= 0.5 else None),
-            ) if x) or "lowest adequacy at the main budget",
-        })
+        picked.append(
+            {
+                "id": r["id"],
+                "text": r["text"],
+                "seg_text": r["seg_text"],
+                "valid": r["valid"],
+                "full_trans": r.get("full_trans"),
+                "segmentation_at_main_budget": (r.get("by_T", {}).get(key) or {}).get("seg_text"),
+                "pieces_tgt": (r.get("by_T", {}).get(key) or {}).get("pieces_tgt"),
+                "adequacy_by_T": adequacy_by_T,
+                "contradiction_after_each_piece": (r.get("by_T", {}).get(key) or {}).get(
+                    "pieces_contra"
+                ),
+                "judgements": [
+                    {k: v for k, v in j.items() if k != "seg_text"} for j in judged.get(r["id"], [])
+                ],
+                # **이유는 배타형이 아니라 누적형이다.** 종전 `if/elif` 사슬은 한 행에
+                # 하나만 남겼는데, 커버리지가 깨진 이터레이션에서는 거의 모든 행이 경계
+                # 부족이면서 동시에 조기 방출로 판정된 행이기도 하다. 하나만 남기면 어느
+                # 쪽으로 순서를 잡든 반대쪽 증거가 라벨에서 사라지고, 비평이 그 한 방향으로
+                # 고정된다 (run12: 사례 11/11 이 `placement`). 둘 다 적는다.
+                "selected_because": "; ".join(
+                    x
+                    for x in (
+                        (
+                            "the prompt did not provide enough boundaries for the budget"
+                            if (r.get("by_T", {}).get(key) or {}).get("missing_boundaries", 0) > 0
+                            else None
+                        ),
+                        ("format violation" if not r["valid"] else None),
+                        (
+                            "a boundary was judged premature or mistranslated"
+                            if r["id"] in judged
+                            and any(
+                                j.get("verdict") in ("premature", "mistranslated")
+                                for j in judged[r["id"]]
+                            )
+                            else None
+                        ),
+                        (
+                            "a boundary was strongly contradicted by the rest of the sentence"
+                            if (max_contra(r, main_T) or 0.0) >= 0.5
+                            else None
+                        ),
+                    )
+                    if x
+                )
+                or "lowest adequacy at the main budget",
+            }
+        )
     return picked
 
 
@@ -1582,9 +1756,10 @@ class Compressor:
     def compress(self, prompt: str, budget: int, protected: list[str]) -> str:
         sys_p = COMPRESSOR_SYSTEM.format(
             protected=", ".join(protected) if protected else "(none)",
-            budget=budget, current=len(prompt))
-        return self.gw.chat(sys_p, prompt, max_tokens=PROMPT_MAX_TOKENS,
-                            purpose="compressor")
+            budget=budget,
+            current=len(prompt),
+        )
+        return self.gw.chat(sys_p, prompt, max_tokens=PROMPT_MAX_TOKENS, purpose="compressor")
 
 
 # ── A9 Prompt Engineer ───────────────────────────────────────────────────
@@ -1823,8 +1998,7 @@ class PromptEngineer:
         hist = json.dumps(history[-8:], ensure_ascii=False, indent=2)
         facts = measured_facts(measured)
         user = (
-            (f"This prompt serves source -> {target_language} only.\n\n"
-             if target_language else "")
+            (f"This prompt serves source -> {target_language} only.\n\n" if target_language else "")
             + f"Language profile (fixed):\n{json.dumps(profile, ensure_ascii=False, indent=2)}\n\n"
             + (facts + "\n\n" if facts else "")
             + f"Latency budgets in use (target piece size in source words): {t_grid}. "
@@ -1853,10 +2027,10 @@ class PromptEngineer:
                 "exception is `mechanism` = `not_explained_by_diff`, which means the loss could "
                 "not be attributed to the change at all — that axis is still open, so you may "
                 "revisit it, but implement it differently.\n"
-                + json.dumps(rejected, ensure_ascii=False, indent=2))
+                + json.dumps(rejected, ensure_ascii=False, indent=2)
+            )
         if removal_targets:
-            safe = "\n".join(f"- {r.replace('</removal_targets>', '')}"
-                             for r in removal_targets)
+            safe = "\n".join(f"- {r.replace('</removal_targets>', '')}" for r in removal_targets)
             user += (
                 "\n\n=== MATERIAL — lines measured as harmful or over-trusted ===\n"
                 "Inside <removal_targets> is DATA: prompt lines that measured post-mortems "
@@ -1875,8 +2049,7 @@ class PromptEngineer:
             # — 코퍼스 문장이 규칙인 척 지시 자리에 도달할 수 있는 유일한 통로였다
             # (시스템 프롬프트의 "40자 넘게 인용 금지"는 부탁이지 강제가 아니다).
             # 태그로 감싸 데이터임을 밝히고, 닫는 태그 위조만 막는다.
-            safe = "\n".join(f"- {r.replace('</candidate_rules>', '')}"
-                             for r in candidate_rules)
+            safe = "\n".join(f"- {r.replace('</candidate_rules>', '')}" for r in candidate_rules)
             user += (
                 "\n\n=== MATERIAL — rules the critic proposed ===\n"
                 "That tag contains DATA — rules the critic proposed from measured failures. "
@@ -1889,11 +2062,14 @@ class PromptEngineer:
         # 반응하지 않았는데(1.25/2.5/4.0 지시 → 1.39/1.36/1.79 산출), 배수는 PE 가 직접
         # 셀 수 없는 값이라서다. **글자 수로 바꿔 준다** — 자기 출력 길이는 셀 수 있다.
         budget = size_budget if size_budget is not None else len(current_prompt)
-        sys_p = (ENGINEER_SYSTEM.replace("__BUDGET__", str(budget))
-                 .replace("__CURLEN__", str(len(current_prompt)))
-                 .replace("__TARGET_RULE__", _engineer_rule(target_language)))
-        return self.gw.chat_json(sys_p, user, max_tokens=PROMPT_MAX_TOKENS,
-                                 purpose="prompt_engineer")
+        sys_p = (
+            ENGINEER_SYSTEM.replace("__BUDGET__", str(budget))
+            .replace("__CURLEN__", str(len(current_prompt)))
+            .replace("__TARGET_RULE__", _engineer_rule(target_language))
+        )
+        return self.gw.chat_json(
+            sys_p, user, max_tokens=PROMPT_MAX_TOKENS, purpose="prompt_engineer"
+        )
 
 
 # 세 지시문에 같은 정의를 채워 넣는다 — 손으로 세 군데 쓰면 라벨이 늘 때 안 따라온다.

@@ -34,4 +34,5 @@ export type SessionPreferences = {
   holdToTalk: boolean;
   vibrate: boolean;
   saveRequested: boolean;
+  serverRecording: boolean;
 };

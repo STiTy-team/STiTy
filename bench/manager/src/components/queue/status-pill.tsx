@@ -13,7 +13,12 @@ const TONE: Record<Tone, string> = {
 
 export function StatusPill({ tone, dot, children }: { tone: Tone; dot?: boolean; children: ReactNode }) {
   return (
-    <span className={cn("inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium whitespace-nowrap", TONE[tone])}>
+    <span
+      className={cn(
+        "inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium whitespace-nowrap",
+        TONE[tone],
+      )}
+    >
       {dot && <span className="size-1.5 rounded-full bg-current" />}
       {children}
     </span>

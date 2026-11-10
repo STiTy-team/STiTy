@@ -3,8 +3,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { get } from "@/lib/api"
 import type { ItemData, ReplayItem, ReplayPayload } from "@/lib/replay/types"
 
-const params = (run: string, item?: string) =>
-  new URLSearchParams(item == null ? { run } : { run, item }).toString()
+const params = (run: string, item?: string) => new URLSearchParams(item == null ? { run } : { run, item }).toString()
 
 export const replayUrls = {
   run: (run: string | null) => `/api/replay${run ? `?${params(run)}` : ""}`,

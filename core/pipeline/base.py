@@ -85,8 +85,7 @@ class Pipeline:
     async def close(self) -> None:
         await stages.close(self.parts)
 
-    def start(self, *, languages: list[str], target_lang: str,
-              own_lang: str | None = None) -> None:
+    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None) -> None:
         stages.start(self.parts, languages=languages, target_lang=target_lang)
 
     async def listen(self, audio: bytes) -> list:

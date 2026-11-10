@@ -1,16 +1,20 @@
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Switch, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 
 import { goBack, goHome } from '@/components/go-back';
 import { IconButton } from '@/components/icon-button';
 import { ListRow, ListSection } from '@/components/list';
+import { ToggleSwitch } from '@/components/toggle-switch';
+import { appInfo } from '@/config/app-info';
+import { features } from '@/config/features';
 import { ScreenHeader } from '@/components/screen-header';
 import { LanguageList } from '@/features/conversation/components/language-list';
 import { OutputModeControl } from '@/features/conversation/components/output-mode-control';
 import { SessionStatusLine } from '@/features/conversation/components/session-status';
+import { RoomSection } from '@/features/conversation/components/room-section';
 import { useEndConversation } from '@/features/conversation/hooks/use-end-conversation';
 import { isInConversation } from '@/features/conversation/model/conversation-machine';
 import {
@@ -18,18 +22,22 @@ import {
   useConversationPreferences,
   type AddOns,
 } from '@/features/conversation/model/conversation-preferences';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
-import { makeStyles, radius, spacing, typography, useColors } from '@/theme';
+import {
+  selectInRoom,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
+import { makeStyles, radius, spacing, typography } from '@/theme';
 
 /** Settings of the running conversation. Every change applies at once; nothing pauses. */
 export const ConversationSettingsScreen = () => {
   const { t } = useTranslation();
   const styles = useStyles();
-  const colors = useColors();
   const { bottom } = useSafeAreaInsets();
   const endConversation = useEndConversation();
   const phase = useConversationStore((state) => state.phase);
+  const inRoom = useConversationStore(selectInRoom);
   const muted = useConversationPreferences((state) => state.muted);
+  const serverRecording = useConversationPreferences((state) => state.serverRecording);
   const addOns = useConversationPreferences(
     useShallow((state): AddOns => ({
       holdToTalk: state.holdToTalk,
@@ -38,13 +46,7 @@ export const ConversationSettingsScreen = () => {
     })),
   );
   const toggle = (value: boolean, onChange: (on: boolean) => void, label: string) => (
-    <Switch
-      value={value}
-      onValueChange={onChange}
-      trackColor={{ true: colors.accent, false: colors.surfaceStrong }}
-      thumbColor="#FFFFFF"
-      accessibilityLabel={label}
-    />
+    <ToggleSwitch value={value} onValueChange={onChange} accessibilityLabel={label} />
   );
 
   return (
@@ -69,17 +71,22 @@ export const ConversationSettingsScreen = () => {
         contentContainerStyle={[styles.content, { paddingBottom: bottom + spacing.xxl }]}
         showsVerticalScrollIndicator={false}
       >
+        <RoomSection />
         <LanguageList />
-        <OutputModeControl />
-        <ListSection footer={t('conversationSettings.speakHint')}>
-          <ListRow title={t('conversationSettings.speak')}>
-            {toggle(
-              !muted,
-              (on) => useConversationPreferences.getState().setMuted(!on),
-              t('conversationSettings.speak'),
-            )}
-          </ListRow>
-        </ListSection>
+        {features.speech && !inRoom && (
+          <>
+            <OutputModeControl />
+            <ListSection footer={t('conversationSettings.speakHint')}>
+              <ListRow title={t('conversationSettings.speak')}>
+                {toggle(
+                  !muted,
+                  (on) => useConversationPreferences.getState().setMuted(!on),
+                  t('conversationSettings.speak'),
+                )}
+              </ListRow>
+            </ListSection>
+          </>
+        )}
         <ListSection title={t('addOns.title')}>
           {ADD_ONS.map((addOn) => (
             <ListRow key={addOn} title={t(`addOns.${addOn}`)} subtitle={t(`addOns.${addOn}Hint`)}>
@@ -91,6 +98,20 @@ export const ConversationSettingsScreen = () => {
             </ListRow>
           ))}
         </ListSection>
+        {appInfo.variant === 'development' && (
+          <ListSection title={t('developer.section')}>
+            <ListRow
+              title={t('developer.serverRecording')}
+              subtitle={t('developer.serverRecordingHint')}
+            >
+              {toggle(
+                serverRecording,
+                (on) => useConversationPreferences.getState().setServerRecording(on),
+                t('developer.serverRecording'),
+              )}
+            </ListRow>
+          </ListSection>
+        )}
         <ListSection footer={t('present.hint')}>
           <ListRow title={t('present.start')} chevron onPress={() => router.replace('/present')} />
         </ListSection>

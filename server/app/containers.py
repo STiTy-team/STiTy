@@ -3,6 +3,7 @@ from dependency_injector import containers, providers
 from app.config import load_config
 from app.services.conversation import init_conversation_service
 from app.services.health import HealthService
+from app.services.recording import RecordingService
 
 
 class Container(containers.DeclarativeContainer):
@@ -10,8 +11,10 @@ class Container(containers.DeclarativeContainer):
 
     server_config = providers.Singleton(load_config)
     health_service = providers.Singleton(HealthService, config=server_config)
+    recording_service = providers.Singleton(RecordingService, config=server_config)
 
     conversation_service = providers.Resource(
         init_conversation_service,
         config=server_config,
+        recorder=recording_service,
     )

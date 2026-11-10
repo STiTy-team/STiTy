@@ -7,6 +7,7 @@ from app.models.conversation.events import (
     FoldOutput,
     JoinedConversation,
     PartialTranscript,
+    RoomChanged,
     is_partial,
 )
 from app.models.conversation.feed import Inbox, Overflow
@@ -24,6 +25,7 @@ __all__ = [
     "Overflow",
     "PartialTranscript",
     "Participant",
+    "RoomChanged",
     "Worker",
     "is_partial",
 ]
