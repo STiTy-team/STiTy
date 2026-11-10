@@ -3,6 +3,7 @@
 모델마다 try/except — 하나가 깨져도 나머지는 돈다. 판정은 whisper 벤치와 같은
 규칙: 모델의 전체 라벨 위 확률에서 {ko,en,es} 에 해당하는 라벨만 보고 argmax.
 """
+
 import time, glob
 import numpy as np
 import torch
@@ -15,6 +16,7 @@ ROOT = "/home/mobility/stity-datasets/fleurs/data"
 N_PER_LANG = 60
 
 from silero_vad import load_silero_vad, get_speech_timestamps
+
 vad = load_silero_vad()
 
 clips = []
@@ -40,15 +42,23 @@ def run(name, predict, vram_fn=lambda: torch.cuda.memory_allocated() / 2**20):
             pick = predict(seg)
             times.append(time.perf_counter() - t0)
             hits.append(pick == code)
-        print(f"{name}  w={w:>3}s  acc={np.mean(hits):.3f}  n={len(hits)}  "
-              f"infer={np.median(times)*1000:.0f}ms  vram={vram_fn():.0f}MiB", flush=True)
+        print(
+            f"{name}  w={w:>3}s  acc={np.mean(hits):.3f}  n={len(hits)}  "
+            f"infer={np.median(times) * 1000:.0f}ms  vram={vram_fn():.0f}MiB",
+            flush=True,
+        )
 
 
 def bench_mms256():
     from transformers import AutoFeatureExtractor, Wav2Vec2ForSequenceClassification
+
     name = "facebook/mms-lid-256"
     fe = AutoFeatureExtractor.from_pretrained(name)
-    m = Wav2Vec2ForSequenceClassification.from_pretrained(name, dtype=torch.float16).to("cuda").eval()
+    m = (
+        Wav2Vec2ForSequenceClassification.from_pretrained(name, dtype=torch.float16)
+        .to("cuda")
+        .eval()
+    )
     idx = {c: i for i, c in m.config.id2label.items()}
     pick_ids = {"ko": idx["kor"], "en": idx["eng"], "es": idx["spa"]}
 
@@ -65,12 +75,20 @@ def bench_mms256():
 
 def bench_speechbrain(src, tag, names):
     from speechbrain.inference.classifiers import EncoderClassifier
+
     m = EncoderClassifier.from_hparams(source=src, run_opts={"device": "cuda"})
-    labels = [m.hparams.label_encoder.ind2lab[i] for i in range(len(m.hparams.label_encoder.ind2lab))]
+    labels = [
+        m.hparams.label_encoder.ind2lab[i] for i in range(len(m.hparams.label_encoder.ind2lab))
+    ]
     pick_ids = {}
     for c, name in names.items():
         for i, lab in enumerate(labels):
-            if lab == c or lab.startswith(c + ":") or lab.startswith(c + " ") or name.lower() in lab.lower():
+            if (
+                lab == c
+                or lab.startswith(c + ":")
+                or lab.startswith(c + " ")
+                or name.lower() in lab.lower()
+            ):
                 pick_ids[c] = i
                 break
     assert len(pick_ids) == 3, f"{tag} labels missing: {pick_ids} from {labels[:12]}"
@@ -88,9 +106,14 @@ def bench_speechbrain(src, tag, names):
 
 def bench_silero():
     model, lang_dict, lang_group_dict, utils = torch.hub.load(
-        "snakers4/silero-vad", "silero_lang_detector_95", onnx=False, trust_repo=True)
+        "snakers4/silero-vad", "silero_lang_detector_95", onnx=False, trust_repo=True
+    )
     get_language_and_group = utils[0] if isinstance(utils, (list, tuple)) else utils
-    names = {i: lang_dict[str(i)] for i in range(len(lang_dict))} if isinstance(lang_dict, dict) else dict(enumerate(lang_dict))
+    names = (
+        {i: lang_dict[str(i)] for i in range(len(lang_dict))}
+        if isinstance(lang_dict, dict)
+        else dict(enumerate(lang_dict))
+    )
     pick_ids = {}
     for i, n in names.items():
         low = str(n).lower()
@@ -108,12 +131,20 @@ def bench_silero():
     run("silero-lang95(cpu)", predict, vram_fn=lambda: 0.0)
 
 
-for fn in [bench_mms256,
-           lambda: bench_speechbrain("speechbrain/lang-id-voxlingua107-ecapa", "voxlingua107-ecapa",
-                                     {"ko": "Korean", "en": "English", "es": "Spanish"}),
-           lambda: bench_speechbrain("speechbrain/lang-id-commonlanguage_ecapa", "commonlanguage-ecapa",
-                                     {"ko": "Korean", "en": "English", "es": "Spanish"}),
-           bench_silero]:
+for fn in [
+    bench_mms256,
+    lambda: bench_speechbrain(
+        "speechbrain/lang-id-voxlingua107-ecapa",
+        "voxlingua107-ecapa",
+        {"ko": "Korean", "en": "English", "es": "Spanish"},
+    ),
+    lambda: bench_speechbrain(
+        "speechbrain/lang-id-commonlanguage_ecapa",
+        "commonlanguage-ecapa",
+        {"ko": "Korean", "en": "English", "es": "Spanish"},
+    ),
+    bench_silero,
+]:
     try:
         fn()
     except Exception as e:

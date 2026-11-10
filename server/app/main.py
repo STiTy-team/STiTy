@@ -3,6 +3,7 @@ import platform
 from contextlib import asynccontextmanager
 import fastapi
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pyfiglet import figlet_format
 from core.utils import env, logging
 from core.utils.paths import get_project_root
@@ -50,6 +51,8 @@ def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
     app.container = Container()
 
+    cors = app.container.server_config().server.cors
+    app.add_middleware(CORSMiddleware, **cors.model_dump())
     register_exception_handlers(app)
     app.include_router(v1_routers, prefix="/api/v1")
 

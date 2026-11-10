@@ -52,15 +52,26 @@ def evaluate_backend(backend, cases: list[dict]) -> dict:
             if label in NON_SEVERE:
                 continue
             if s >= v[BENIGN]:
-                violations.append({"case": cid, "severe": label,
-                                   "severe_score": s, "benign_score": v[BENIGN],
-                                   "margin": round(s - v[BENIGN], 4)})
+                violations.append(
+                    {
+                        "case": cid,
+                        "severe": label,
+                        "severe_score": s,
+                        "benign_score": v[BENIGN],
+                        "margin": round(s - v[BENIGN], 4),
+                    }
+                )
 
-    n_checks = sum(len([l for l in v if l not in NON_SEVERE])
-                   for v in per_case.values() if BENIGN in v)
-    return {"backend": backend.name, "per_case": per_case,
-            "violations": violations, "n_ordering_checks": n_checks,
-            "passed": not violations}
+    n_checks = sum(
+        len([l for l in v if l not in NON_SEVERE]) for v in per_case.values() if BENIGN in v
+    )
+    return {
+        "backend": backend.name,
+        "per_case": per_case,
+        "violations": violations,
+        "n_ordering_checks": n_checks,
+        "passed": not violations,
+    }
 
 
 def render(result: dict, cases: list[dict]) -> str:
@@ -76,17 +87,22 @@ def render(result: dict, cases: list[dict]) -> str:
         "",
     ]
     if result["violations"]:
-        lines += ["## 위반", "",
-                  "| 케이스 | 오류 유형 | 오류 점수 | benign | 차이 |", "|---|---|---|---|---|"]
+        lines += [
+            "## 위반",
+            "",
+            "| 케이스 | 오류 유형 | 오류 점수 | benign | 차이 |",
+            "|---|---|---|---|---|",
+        ]
         for v in result["violations"]:
-            lines.append(f"| {v['case']} | {v['severe']} | {v['severe_score']} | "
-                         f"{v['benign_score']} | +{v['margin']} |")
+            lines.append(
+                f"| {v['case']} | {v['severe']} | {v['severe_score']} | "
+                f"{v['benign_score']} | +{v['margin']} |"
+            )
         lines.append("")
     lines += ["## 케이스별 원점수", ""]
     for case in cases:
         v = result["per_case"][case["id"]]
-        lines += [f"### {case['id']} — `{case['src']}`", "",
-                  "| 변이 | 점수 |", "|---|---|"]
+        lines += [f"### {case['id']} — `{case['src']}`", "", "| 변이 | 점수 |", "|---|---|"]
         for label, s in v.items():
             mark = "**" if label not in NON_SEVERE else ""
             lines.append(f"| {mark}{label}{mark} | {s:.4f} |")
@@ -96,8 +112,7 @@ def render(result: dict, cases: list[dict]) -> str:
 
 def main() -> int:
     p = argparse.ArgumentParser(description="adequacy 백엔드 조각 입력 타당도 검사")
-    p.add_argument("--backend", default="cometkiwi",
-                   choices=sorted(metrics.QE_CHECKPOINTS))
+    p.add_argument("--backend", default="cometkiwi", choices=sorted(metrics.QE_CHECKPOINTS))
     p.add_argument("--cases", default=str(_HERE / "adequacy_cases.json"))
     p.add_argument("--batch-size", type=int, default=8)
     p.add_argument("--out", default=None)
@@ -114,13 +129,16 @@ def main() -> int:
     report = render(result, cases)
     (out_dir / "adequacy_report.md").write_text(report, encoding="utf-8")
     (out_dir / "adequacy_scores.json").write_text(
-        json.dumps({"cases": args.cases, "result": result},
-                   ensure_ascii=False, indent=2), encoding="utf-8")
+        json.dumps({"cases": args.cases, "result": result}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
     print("\n" + report)
     print(f"[done] {out_dir}")
     if not result["passed"]:
-        print("\n[경고] adequacy 백엔드가 조각 관문에서 탈락 — 이 백엔드로 루프를 돌리지 말 것",
-              file=sys.stderr)
+        print(
+            "\n[경고] adequacy 백엔드가 조각 관문에서 탈락 — 이 백엔드로 루프를 돌리지 말 것",
+            file=sys.stderr,
+        )
     return 0
 
 

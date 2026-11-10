@@ -3,7 +3,10 @@ import { Text, View } from 'react-native';
 
 import { formatElapsed, useElapsedSeconds } from '@/features/conversation/hooks/use-elapsed';
 import { isConnecting } from '@/features/conversation/model/conversation-machine';
-import { useConversationStore } from '@/features/conversation/model/conversation-store';
+import {
+  selectMicOff,
+  useConversationStore,
+} from '@/features/conversation/model/conversation-store';
 import { makeStyles, typography } from '@/theme';
 
 /**
@@ -16,6 +19,8 @@ export const SessionStatusLine = ({ prefix }: { prefix?: string }) => {
   const phase = useConversationStore((state) => state.phase);
   const demo = useConversationStore((state) => state.demo);
   const saving = useConversationStore((state) => state.conversationId !== null);
+  const micOff = useConversationStore(selectMicOff);
+  const people = useConversationStore((state) => state.roster?.participants.length ?? 0);
   const seconds = useElapsedSeconds();
 
   if (isConnecting(phase)) return <Text style={styles.text}>{t('conversation.connecting')}</Text>;
@@ -24,14 +29,23 @@ export const SessionStatusLine = ({ prefix }: { prefix?: string }) => {
   const recording = phase === 'recording';
   return (
     <View style={styles.row} accessibilityLiveRegion="polite">
-      {recording && <View style={styles.dot} />}
+      {recording && !micOff && <View style={styles.dot} />}
       <Text style={styles.text} numberOfLines={1}>
         {prefix ??
           (demo
             ? t('conversation.demo')
-            : t(recording ? 'conversation.listening' : 'conversation.paused'))}{' '}
+            : t(
+                !recording
+                  ? 'conversation.paused'
+                  : micOff
+                    ? 'conversation.micOff'
+                    : 'conversation.listening',
+              ))}{' '}
         <Text style={styles.time}>{formatElapsed(seconds)}</Text>
         {saving && <Text style={styles.saving}> · {t('conversation.saving')}</Text>}
+        {people > 1 && (
+          <Text style={styles.saving}> · {t('conversation.roomPeople', { count: people })}</Text>
+        )}
       </Text>
     </View>
   );

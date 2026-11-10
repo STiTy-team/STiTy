@@ -1,6 +1,8 @@
 import type { RecordSummary, Retention, TranscriptDocument } from '@/domain/records';
+import type { Room } from '@/domain/rooms';
 
 import type { AsrSessionHandlers, SessionLanguages, StartOptions } from '@/api/live/ws/asr-session';
+import type { DeviceInfo } from '@/api/live/ws/protocol';
 import type { ServerMonitor } from '@/api/live/ws/server-monitor';
 
 export type FeatureFlags = {
@@ -72,15 +74,29 @@ export type LiveOpenOptions = {
   save: boolean;
   /** Set when resuming, so the server appends to the same record. */
   conversationId: string | null;
+  /** The code to open or join under, unless this session is saved; null for a demo. */
+  room: Room | null;
+  /** Ask the server to save this phone's audio and messages for debugging; it may refuse. */
+  recording: boolean;
+  device: DeviceInfo;
   handlers: AsrSessionHandlers;
 };
 
 export type LiveSession = {
   /** Set by the server's `ready` when the session is recorded; null for guests or "don't save". */
   conversationId: string | null;
+  /** The code others can join with, from the same `ready`; null when the session is recorded. */
+  roomCode: string | null;
+  /** Who this phone is in the room's roster. */
+  participantId: string | null;
   readonly isOpen: boolean;
   sendAudio(pcm: ArrayBuffer): void;
   configure(languages: SessionLanguages): void;
+  setRecording(recording: boolean): void;
+  /** Host only; the server ignores these from anyone else. */
+  setMic(participantId: string, canSpeak: boolean): void;
+  setAllMics(canSpeak: boolean): void;
+  removeParticipant(participantId: string): void;
   logSpeech(entry: { text: string; lang: string; start: string; end: string }): void;
   /**
    * Sends `stop` and waits for the server to flush its last `final` and close, or for a short
@@ -92,6 +108,8 @@ export type LiveSession = {
 export type LiveApi = {
   monitor(): LiveMonitor;
   open(options: LiveOpenOptions): Promise<LiveSession>;
+  /** Asks the conversation server before any screen opens; throws when it can't be reached. */
+  isRoomOpen(code: string): Promise<boolean>;
 };
 
 export type Api = {

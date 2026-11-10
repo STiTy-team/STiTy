@@ -19,6 +19,7 @@ import { env } from '@/config/env';
 /** Builds the API from the mode map: each area answers from its live or its mock adapter. */
 const createApi = (modes: ApiModes): Api => {
   const http = createHttpClient(env.apiUrl, tokenStore);
+  const conversationServer = createHttpClient(env.conversationApiUrl, tokenStore);
   const pick = <T>(area: keyof ApiModes, live: () => T, mock: () => T): T =>
     modes[area] === 'mock' ? mock() : live();
 
@@ -30,8 +31,8 @@ const createApi = (modes: ApiModes): Api => {
     modes.live === 'mock'
       ? withMockRecording(createMockLive())
       : modes.conversations === 'mock'
-        ? withMockRecording(createLiveSession(env.serverUrl, auth))
-        : createLiveSession(env.serverUrl, auth);
+        ? withMockRecording(createLiveSession(env.serverUrl, auth, conversationServer))
+        : createLiveSession(env.serverUrl, auth, conversationServer);
 
   return {
     capabilities: pick('capabilities', () => createLiveCapabilities(http), createMockCapabilities),
@@ -64,9 +65,16 @@ export const apiMocks = {
 export { ApiError, apiErrorKind, type ApiErrorKind } from '@/api/errors';
 export { onUnauthorized } from '@/api/session-events';
 export { setMockFailure } from '@/api/mock/runtime';
-export { SessionOpenError } from '@/api/live/ws/asr-session';
+export { SessionOpenError, SessionRefusedError } from '@/api/live/ws/asr-session';
 export { AUDIO_FORMAT } from '@/api/live/ws/protocol';
-export type { CapacityMessage, FinalMessage, FoldMessage, PartialMessage } from '@/api/live/ws/protocol';
+export type {
+  CapacityMessage,
+  DeviceInfo,
+  RoomMessage,
+  FinalMessage,
+  FoldMessage,
+  PartialMessage,
+} from '@/api/live/ws/protocol';
 export type { AsrSessionHandlers, SessionLanguages } from '@/api/live/ws/asr-session';
 export type { ServerSnapshot, ServerStatus } from '@/api/live/ws/server-monitor';
 export type * from '@/api/types';

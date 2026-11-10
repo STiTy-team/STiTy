@@ -9,6 +9,7 @@
 
     python core/meaning_segmentator/tools/covost2_chain/merge_conditions.py <백업 디렉토리> <대상 디렉토리> de ja zh
 """
+
 import json
 import sys
 from pathlib import Path
@@ -24,19 +25,25 @@ def main() -> int:
         for name, cell in new["conditions"].items():
             if name in base["conditions"]:
                 old_bleu = base["conditions"][name].get("bleu")
-                if old_bleu is not None and cell.get("bleu") is not None \
-                        and abs(old_bleu - cell["bleu"]) > 0.01:
-                    print(f"  !! [{tgt}] {name}: BLEU 재현 안 됨 "
-                          f"{old_bleu} -> {cell['bleu']} (백업 값을 남긴다)")
+                if (
+                    old_bleu is not None
+                    and cell.get("bleu") is not None
+                    and abs(old_bleu - cell["bleu"]) > 0.01
+                ):
+                    print(
+                        f"  !! [{tgt}] {name}: BLEU 재현 안 됨 "
+                        f"{old_bleu} -> {cell['bleu']} (백업 값을 남긴다)"
+                    )
                 kept.append(name)
             else:
                 base["conditions"][name] = cell
                 added.append(name)
         bpath.with_suffix(".json").parent.mkdir(parents=True, exist_ok=True)
-        lpath.write_text(json.dumps(base, ensure_ascii=False, indent=2),
-                         encoding="utf-8")
-        print(f"[{tgt}] 조건 {len(base['conditions'])}개 "
-              f"(추가 {len(added)}: {', '.join(added) or '-'} / 유지 {len(kept)})")
+        lpath.write_text(json.dumps(base, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(
+            f"[{tgt}] 조건 {len(base['conditions'])}개 "
+            f"(추가 {len(added)}: {', '.join(added) or '-'} / 유지 {len(kept)})"
+        )
     return 0
 
 

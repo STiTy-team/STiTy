@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 DEFAULT_MODEL = "google/madlad400-3b-mt"
 
 
-@translators.register('local')
+@translators.register("local")
 class LocalTranslation(Translator):
     SETTINGS = {"model": ("model", str), "device": ("device", str), "quant": ("quant", str)}
 
@@ -33,17 +33,19 @@ class LocalTranslation(Translator):
         translator.load()
         return translator
 
-    async def translate(self, text: str, target_lang: str,
-                        source_lang: str | None = None,
-                        context: list[str] | None = None) -> tuple[str, str]:
+    async def translate(
+        self,
+        text: str,
+        target_lang: str,
+        source_lang: str | None = None,
+        context: list[str] | None = None,
+    ) -> tuple[str, str]:
         if not text.strip() or not target_lang:
             return "", ""
         self.calls += 1
         try:
-            return await self.translator.translate(
-                text, target_lang, source_lang, context=context)
+            return await self.translator.translate(text, target_lang, source_lang, context=context)
         except Exception as e:  # noqa: BLE001
             self.failed += 1
             log.warning("[TRANS-ERROR] %s", e)
             return "", ""
-

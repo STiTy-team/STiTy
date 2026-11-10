@@ -13,8 +13,7 @@ from pathlib import Path
 from openai import OpenAI
 import anthropic
 
-SYSTEM_PROMPT = (
-"""너는 구어체 한국어 텍스트의 의미 분절 전문가야.
+SYSTEM_PROMPT = """너는 구어체 한국어 텍스트의 의미 분절 전문가야.
 음성 인식 결과(구어체, 일상 대화)를 번역 단위로 나누기 위해 <SEG> 태그를 삽입해.
 목표는 컨텍스트를 반영하는 번역기가 각 분절을 자연스러운 단위로 순서대로 번역할 수 있도록 적절한 경계를 표시하는 것이야.
 번역기는 앞선 분절의 번역 결과를 컨텍스트로 참고하므로, 각 조각이 완전히 독립적일 필요는 없어.
@@ -233,12 +232,12 @@ SYSTEM_PROMPT = (
 출력: 내년에는 자격증을 하나 따려고 준비하고 있어
 
 """
-)
 
 
 def _gdt_translate(text: str, src: str = "ko", tgt: str = "en") -> str | None:
     try:
         from deep_translator import GoogleTranslator
+
         return GoogleTranslator(source=src, target=tgt).translate(text)
     except Exception as e:
         print(f"  [번역 실패] '{text}' → {e}")
@@ -249,27 +248,30 @@ def _gdt_translate_seg(seg_text: str | None, src: str = "ko", tgt: str = "en") -
     if not seg_text:
         return None
     from deep_translator import GoogleTranslator
+
     segments = seg_text.split("<SEG>")
     translated = [_gdt_translate(s.strip(), src, tgt) for s in segments if s.strip()]
     return " ".join(t for t in translated if t is not None)
 
 
-def run_gdt(data: list, raw: dict, output_path: Path, delay: float = 0.2, resume: bool = True) -> None:
+def run_gdt(
+    data: list, raw: dict, output_path: Path, delay: float = 0.2, resume: bool = True
+) -> None:
     """GDT(Google 번역)로 full/seg 번역을 실행."""
 
     for i, entry in enumerate(data):
         has_full = bool(entry.get("gdt_full_trans"))
-        has_seg  = bool(entry.get("gdt_seg_trans"))
+        has_seg = bool(entry.get("gdt_seg_trans"))
 
         if resume and has_full and has_seg:
-            print(f"[GDT {i+1}/{len(data)}] 건너뜀: {entry['file']}")
+            print(f"[GDT {i + 1}/{len(data)}] 건너뜀: {entry['file']}")
             continue
 
         if "seg_text" not in entry:
-            print(f"[GDT {i+1}/{len(data)}] seg_text 없음, 스킵: {entry['file']}")
+            print(f"[GDT {i + 1}/{len(data)}] seg_text 없음, 스킵: {entry['file']}")
             continue
 
-        print(f"[GDT {i+1}/{len(data)}] {entry['file']}")
+        print(f"[GDT {i + 1}/{len(data)}] {entry['file']}")
 
         if not (resume and has_full):
             entry["gdt_full_trans"] = _gdt_translate(entry["text"])
@@ -290,7 +292,7 @@ def run_gdt(data: list, raw: dict, output_path: Path, delay: float = 0.2, resume
 
 def _extract_seg_line(original: str, output: str) -> str:
     """출력에서 원문 기반 SEG 태그 줄만 추출. 설명/주석 제거."""
-    orig_tokens = set(re.sub(r'[^\w]', ' ', original).split())
+    orig_tokens = set(re.sub(r"[^\w]", " ", original).split())
     if not orig_tokens:
         return output.splitlines()[0].strip()
 
@@ -299,12 +301,12 @@ def _extract_seg_line(original: str, output: str) -> str:
         if not line:
             continue
         # 괄호/주석/레이블 줄 스킵
-        if line.startswith('(') or line.startswith('※') or line.startswith('*'):
+        if line.startswith("(") or line.startswith("※") or line.startswith("*"):
             continue
-        if re.match(r'^(입력|출력)\s*[:：]', line):
+        if re.match(r"^(입력|출력)\s*[:：]", line):
             continue
-        cleaned = re.sub(r'\s*<SEG>\s*', ' ', line).strip()
-        out_tokens = set(re.sub(r'[^\w]', ' ', cleaned).split())
+        cleaned = re.sub(r"\s*<SEG>\s*", " ", line).strip()
+        out_tokens = set(re.sub(r"[^\w]", " ", cleaned).split())
         overlap = len(orig_tokens & out_tokens) / len(orig_tokens)
         if overlap >= 0.5:
             return line
@@ -315,9 +317,9 @@ def _extract_seg_line(original: str, output: str) -> str:
 
 def _is_exact_seg_output(original: str, output: str) -> bool:
     """SEG 태그 제거 후 원문과 정확히 일치하는지 검증 (공백 정규화 후 비교)."""
-    cleaned  = re.sub(r'\s*<SEG>\s*', ' ', output)
-    cleaned  = re.sub(r'\s+', ' ', cleaned).strip()
-    norm_orig = re.sub(r'\s+', ' ', original).strip()
+    cleaned = re.sub(r"\s*<SEG>\s*", " ", output)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    norm_orig = re.sub(r"\s+", " ", original).strip()
     return cleaned == norm_orig
 
 
@@ -328,7 +330,7 @@ def _recover_seg_positions(original: str, modified_with_seg: str) -> str | None:
     각 SEG 경계의 좌측 마지막 단어(anchor)를 원문에서 찾아 그 뒤에 SEG를 삽입.
     anchor를 원문에서 찾지 못하면 None 반환.
     """
-    segments = [s.strip() for s in modified_with_seg.split('<SEG>')]
+    segments = [s.strip() for s in modified_with_seg.split("<SEG>")]
     if len(segments) <= 1:
         return None
 
@@ -342,10 +344,8 @@ def _recover_seg_positions(original: str, modified_with_seg: str) -> str | None:
 
         # 마지막 단어(구두점 제거)를 anchor로 사용. 2개 단어로 시도 후 1개로 fallback.
         for n_anchor in (2, 1):
-            anchors = [re.sub(r'[?!.,]+$', '', w) for w in words[-n_anchor:]]
-            pattern = re.compile(
-                r'\s+'.join(re.escape(a) for a in anchors) + r'[?!.,]*'
-            )
+            anchors = [re.sub(r"[?!.,]+$", "", w) for w in words[-n_anchor:]]
+            pattern = re.compile(r"\s+".join(re.escape(a) for a in anchors) + r"[?!.,]*")
             m = pattern.search(original, search_start)
             if m:
                 break
@@ -358,7 +358,7 @@ def _recover_seg_positions(original: str, modified_with_seg: str) -> str | None:
     # 뒤에서부터 삽입해야 앞 위치가 밀리지 않음
     result = original
     for pos in reversed(sorted(insert_positions)):
-        result = result[:pos] + ' <SEG>' + result[pos:]
+        result = result[:pos] + " <SEG>" + result[pos:]
 
     return result if _is_exact_seg_output(original, result) else None
 
@@ -366,16 +366,51 @@ def _recover_seg_positions(original: str, modified_with_seg: str) -> str | None:
 # 단독으로 분절될 수 없는 비자립 토큰: 담화표지·감탄사·접속부사·후치 부사
 # (모델이 프롬프트 금지에도 불구하고 단독 분절하는 경향이 강해 결정론적으로 병합)
 _FILLER_TOKENS = {
-    '어', '음', '으음', '아', '응', '그', '네', '예', '자', '막', '뭐', '뭔가',
-    '근데', '그러니까', '그니까', '그래', '그치', '그러고', '맞아', '맞어',
-    '완전', '아니', '그럼', '그러면', '그러면은', '어쨌든', '하여튼', '그리고', '그래서',
-    '그래가지고', '그래갖고', '가지고', '또', '또한', '왜냐면', '왜',
-    '좀', '이제', '사실', '그냥',
+    "어",
+    "음",
+    "으음",
+    "아",
+    "응",
+    "그",
+    "네",
+    "예",
+    "자",
+    "막",
+    "뭐",
+    "뭔가",
+    "근데",
+    "그러니까",
+    "그니까",
+    "그래",
+    "그치",
+    "그러고",
+    "맞아",
+    "맞어",
+    "완전",
+    "아니",
+    "그럼",
+    "그러면",
+    "그러면은",
+    "어쨌든",
+    "하여튼",
+    "그리고",
+    "그래서",
+    "그래가지고",
+    "그래갖고",
+    "가지고",
+    "또",
+    "또한",
+    "왜냐면",
+    "왜",
+    "좀",
+    "이제",
+    "사실",
+    "그냥",
 }
 
 
 def _strip_token_punct(w: str) -> str:
-    return re.sub(r'[?!.,…]+$', '', re.sub(r'^[?!.,…]+', '', w))
+    return re.sub(r"[?!.,…]+$", "", re.sub(r"^[?!.,…]+", "", w))
 
 
 def _seg_tokens(seg: str) -> list[str]:
@@ -395,7 +430,7 @@ def _merge_nonstanding_segments(seg_text: str) -> str:
     - B: 1어절 꼬리 파편 또는 비자립 토큰뿐인 마지막 조각 → 앞 조각에 병합 (예: '...해서 <SEG> 좀')
     SEG를 제거하면 원문과 동일해야 하는 불변식은 유지된다(토큰 내용 변경 없음).
     """
-    segs = [s.strip() for s in seg_text.split('<SEG>') if s.strip()]
+    segs = [s.strip() for s in seg_text.split("<SEG>") if s.strip()]
     if len(segs) <= 1:
         return seg_text
 
@@ -405,7 +440,7 @@ def _merge_nonstanding_segments(seg_text: str) -> str:
     while i < len(segs):
         cur = segs[i]
         if i < len(segs) - 1 and _is_filler_only(cur):
-            segs[i + 1] = cur + ' ' + segs[i + 1]
+            segs[i + 1] = cur + " " + segs[i + 1]
         else:
             merged.append(cur)
         i += 1
@@ -415,15 +450,17 @@ def _merge_nonstanding_segments(seg_text: str) -> str:
     while len(segs) >= 2:
         last = segs[-1]
         if len(_seg_tokens(last)) <= 1 or _is_filler_only(last):
-            segs[-2] = segs[-2] + ' ' + last
+            segs[-2] = segs[-2] + " " + last
             segs.pop()
         else:
             break
 
-    return ' <SEG> '.join(segs)
+    return " <SEG> ".join(segs)
 
 
-def mark_segmentation(client, text: str, model: str, provider: str = "openai", max_retries: int = 5) -> str:
+def mark_segmentation(
+    client, text: str, model: str, provider: str = "openai", max_retries: int = 5
+) -> str:
     user_msg = text
 
     for attempt in range(max_retries):
@@ -448,8 +485,8 @@ def mark_segmentation(client, text: str, model: str, provider: str = "openai", m
                 response = client.chat.completions.create(
                     model=model,
                     messages=[
-                        {"role": "system",    "content": SYSTEM_PROMPT},
-                        {"role": "user",      "content": f"입력:\n{text}"},
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": f"입력:\n{text}"},
                         {"role": "assistant", "content": "출력:\n"},
                     ],
                     temperature=0,
@@ -462,7 +499,7 @@ def mark_segmentation(client, text: str, model: str, provider: str = "openai", m
                     model=model,
                     messages=[
                         {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user",   "content": user_msg},
+                        {"role": "user", "content": user_msg},
                     ],
                     temperature=0,
                 )
@@ -474,16 +511,18 @@ def mark_segmentation(client, text: str, model: str, provider: str = "openai", m
                     print(f"  [복원] 원문 수정 감지 → SEG 위치 복원 성공: {recovered[:80]!r}")
                     result = recovered
                 else:
-                    print(f"  [경고] 원문 수정 감지, 복원 실패 ({attempt+1}/{max_retries}): {result[:80]!r}")
+                    print(
+                        f"  [경고] 원문 수정 감지, 복원 실패 ({attempt + 1}/{max_retries}): {result[:80]!r}"
+                    )
                     if attempt < max_retries - 1:
                         continue
                     print(f"  [폴백] 원문 그대로 반환")
                     return text
 
             # 문장 맨 앞/끝 SEG 제거, 연속 SEG 제거
-            result = re.sub(r'^(\s*<SEG>\s*)+', '', result)
-            result = re.sub(r'(\s*<SEG>\s*)+$', '', result)
-            result = re.sub(r'(\s*<SEG>\s*){2,}', ' <SEG> ', result)
+            result = re.sub(r"^(\s*<SEG>\s*)+", "", result)
+            result = re.sub(r"(\s*<SEG>\s*)+$", "", result)
+            result = re.sub(r"(\s*<SEG>\s*){2,}", " <SEG> ", result)
             result = result.strip()
             # 비자립 조각(담화표지 단독 / 1어절 꼬리 파편) 결정론적 병합
             result = _merge_nonstanding_segments(result)
@@ -497,8 +536,8 @@ def mark_segmentation(client, text: str, model: str, provider: str = "openai", m
                     wait = float(m.group(1)) / 1000 if m.group(2) == "ms" else float(m.group(1))
                     wait = max(wait + 0.2, 1.0)
                 else:
-                    wait = 2 ** attempt
-                print(f"  Rate limit — {wait:.1f}초 대기 후 재시도 ({attempt+1}/{max_retries})")
+                    wait = 2**attempt
+                print(f"  Rate limit — {wait:.1f}초 대기 후 재시도 ({attempt + 1}/{max_retries})")
                 time.sleep(wait)
             else:
                 raise
@@ -508,38 +547,79 @@ def mark_segmentation(client, text: str, model: str, provider: str = "openai", m
 def main():
     _base = Path(__file__).resolve().parent.parent / "data" / "KsponSpeech"
     _transcribe_dir = _base / "transcribe"
-    _results_dir    = _base / "results"
+    _results_dir = _base / "results"
 
     parser = argparse.ArgumentParser(description="GPT 기반 의미 분절 마킹")
-    parser.add_argument("--input",   type=str, required=True,
-                        help="입력 JSON 파일명 (core/meaning_segmentator/data/KsponSpeech/transcribe/ 기준, 예: eval_clean.json)")
-    parser.add_argument("--output",  type=str, default=None,
-                        help="출력 JSON 파일명 (기본: 입력 파일명에 _seg 추가, core/meaning_segmentator/data/KsponSpeech/results/ 저장)")
-    parser.add_argument("--provider", type=str, default="openai", choices=["openai", "claude", "ollama"],
-                        help="사용할 API 제공자 (openai, claude, ollama)")
-    parser.add_argument("--model",   type=str, default=None,
-                        help="모델명 (openai 기본값: gpt-4o-mini, claude 기본값: claude-haiku-4-5)")
-    parser.add_argument("--api-key", type=str, default=None,
-                        help="API 키 (미입력 시 OPENAI_API_KEY 또는 ANTHROPIC_API_KEY 환경변수 사용)")
-    parser.add_argument("--delay",     type=float, default=0.5, help="요청 간 딜레이(초, workers>1이면 무시)")
-    parser.add_argument("--workers",   type=int, default=1,
-                        help="동시 요청 수 (ollama 병렬 배치용, 기본 1=순차). ollama는 OLLAMA_NUM_PARALLEL을 함께 키울 것")
-    parser.add_argument("--save-every", type=int, default=50,
-                        help="병렬 모드에서 N개 완료마다 중간 저장 (기본 50)")
-    parser.add_argument("--max-retries", type=int, default=5,
-                        help="원문 수정 감지 시 재시도 횟수 (기본 5, 낮추면 폴백 빨라짐)")
-    parser.add_argument("--no-resume", dest="resume", action="store_false", help="이미 seg_text가 있는 항목도 재처리")
-    parser.add_argument("--gdt",       action="store_true",
-                        help="분절 완료 후 GDT(Google 번역) + COMET 평가 자동 실행")
-    parser.add_argument("--gdt-delay", type=float, default=0.2,
-                        help="GDT 번역 요청 간 딜레이(초, 기본: 0.2)")
+    parser.add_argument(
+        "--input",
+        type=str,
+        required=True,
+        help="입력 JSON 파일명 (core/meaning_segmentator/data/KsponSpeech/transcribe/ 기준, 예: eval_clean.json)",
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help="출력 JSON 파일명 (기본: 입력 파일명에 _seg 추가, core/meaning_segmentator/data/KsponSpeech/results/ 저장)",
+    )
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="openai",
+        choices=["openai", "claude", "ollama"],
+        help="사용할 API 제공자 (openai, claude, ollama)",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="모델명 (openai 기본값: gpt-4o-mini, claude 기본값: claude-haiku-4-5)",
+    )
+    parser.add_argument(
+        "--api-key",
+        type=str,
+        default=None,
+        help="API 키 (미입력 시 OPENAI_API_KEY 또는 ANTHROPIC_API_KEY 환경변수 사용)",
+    )
+    parser.add_argument(
+        "--delay", type=float, default=0.5, help="요청 간 딜레이(초, workers>1이면 무시)"
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="동시 요청 수 (ollama 병렬 배치용, 기본 1=순차). ollama는 OLLAMA_NUM_PARALLEL을 함께 키울 것",
+    )
+    parser.add_argument(
+        "--save-every", type=int, default=50, help="병렬 모드에서 N개 완료마다 중간 저장 (기본 50)"
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=5,
+        help="원문 수정 감지 시 재시도 횟수 (기본 5, 낮추면 폴백 빨라짐)",
+    )
+    parser.add_argument(
+        "--no-resume",
+        dest="resume",
+        action="store_false",
+        help="이미 seg_text가 있는 항목도 재처리",
+    )
+    parser.add_argument(
+        "--gdt", action="store_true", help="분절 완료 후 GDT(Google 번역) + COMET 평가 자동 실행"
+    )
+    parser.add_argument(
+        "--gdt-delay", type=float, default=0.2, help="GDT 번역 요청 간 딜레이(초, 기본: 0.2)"
+    )
     parser.set_defaults(resume=True)
     args = parser.parse_args()
 
     if args.provider == "claude":
         api_key = args.api_key or os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
-            raise ValueError("Anthropic API 키가 필요합니다. --api-key 또는 ANTHROPIC_API_KEY 환경변수를 설정하세요.")
+            raise ValueError(
+                "Anthropic API 키가 필요합니다. --api-key 또는 ANTHROPIC_API_KEY 환경변수를 설정하세요."
+            )
         client = anthropic.Anthropic(api_key=api_key)
         model = args.model or "claude-haiku-4-5"
     elif args.provider == "ollama":
@@ -549,7 +629,9 @@ def main():
     else:
         api_key = args.api_key or os.environ.get("OPENAI_API_KEY")
         if not api_key:
-            raise ValueError("OpenAI API 키가 필요합니다. --api-key 또는 OPENAI_API_KEY 환경변수를 설정하세요.")
+            raise ValueError(
+                "OpenAI API 키가 필요합니다. --api-key 또는 OPENAI_API_KEY 환경변수를 설정하세요."
+            )
         client = OpenAI(api_key=api_key)
         model = args.model or "gpt-4o-mini"
     input_path = _transcribe_dir / args.input
@@ -592,7 +674,7 @@ def main():
         for i in pending:
             entry = data[i]
             text = entry["text"]
-            print(f"[{i+1}/{len(data)}] {entry['file']}")
+            print(f"[{i + 1}/{len(data)}] {entry['file']}")
             print(f"  원문: {text}")
             try:
                 seg_text = mark_segmentation(client, text, model, args.provider, args.max_retries)
@@ -600,10 +682,15 @@ def main():
                 print(f"  분절: {seg_text}")
             except Exception as e:
                 msg = str(e)
-                if any(k in msg.lower() for k in ("insufficient_quota", "billing", "budget", "exceeded", "402")):
+                if any(
+                    k in msg.lower()
+                    for k in ("insufficient_quota", "billing", "budget", "exceeded", "402")
+                ):
                     print(f"  예산 초과 오류 — 분절 중단, 번역으로 이동합니다.\n  ({msg})")
                     budget_exceeded = True
-                    output_path.write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
+                    output_path.write_text(
+                        json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8"
+                    )
                     break
                 print(f"  오류: {e}")
                 entry["seg_text"] = None
@@ -614,12 +701,19 @@ def main():
         # ── 병렬 처리 (ollama 동시 배치) ──────────────────────────────
         from concurrent.futures import ThreadPoolExecutor, as_completed
         import threading
+
         save_lock = threading.Lock()
 
         def work(i):
             entry = data[i]
             try:
-                return i, mark_segmentation(client, entry["text"], model, args.provider, args.max_retries), None
+                return (
+                    i,
+                    mark_segmentation(
+                        client, entry["text"], model, args.provider, args.max_retries
+                    ),
+                    None,
+                )
             except Exception as e:
                 return i, None, str(e)
 
@@ -631,15 +725,17 @@ def main():
                 i, seg_text, err = fut.result()
                 entry = data[i]
                 if err is not None:
-                    print(f"  [{i+1}] 오류: {err}")
+                    print(f"  [{i + 1}] 오류: {err}")
                     entry["seg_text"] = None
                 else:
                     entry["seg_text"] = seg_text
-                    print(f"[{i+1}/{len(data)}] {entry['file']}: {seg_text}")
+                    print(f"[{i + 1}/{len(data)}] {entry['file']}: {seg_text}")
                 done += 1
                 if done % args.save_every == 0:
                     with save_lock:
-                        output_path.write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
+                        output_path.write_text(
+                            json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8"
+                        )
                     print(f"  ── 중간 저장 ({done}/{len(pending)}) ──")
         output_path.write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
 

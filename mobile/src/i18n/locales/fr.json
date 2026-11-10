@@ -26,7 +26,12 @@
     "saveHint": "Le serveur conserve la transcription pendant la traduction. Aucun audio n'est conservé.",
     "saveLocked": "S'applique à partir de la prochaine conversation.",
     "signInToSave": "Connectez-vous pour enregistrer vos conversations",
-    "saveGuestHint": "La traduction fonctionne sans compte. En vous connectant, vous gardez la transcription de chaque conversation."
+    "saveGuestHint": "La traduction fonctionne sans compte. En vous connectant, vous gardez la transcription de chaque conversation.",
+    "joinRoom": "Rejoindre un salon",
+    "joinRoomHint": "Saisissez le code de la personne qui vous a invité. Tous les micros alimentent une seule conversation.",
+    "roomCode": "Code du salon",
+    "join": "Rejoindre",
+    "joinLinkHint": "Vérifiez vos langues, puis rejoignez le salon."
   },
   "outputModes": {
     "speaker": "Haut-parleur",
@@ -78,7 +83,17 @@
     "holdToTalk": "Maintenir pour parler",
     "holdHint": "L'audio n'est envoyé que pendant que vous maintenez le bouton.",
     "holdPrompt": "Maintenez le bouton et parlez",
-    "talking": "À l'écoute… relâchez pour envoyer"
+    "talking": "À l'écoute… relâchez pour envoyer",
+    "room": "Salon {{code}}",
+    "invite": "Inviter",
+    "inviteHint": "Scannez ce QR code ou partagez le code pour rejoindre le salon. Les traductions ne seront plus lues à voix haute jusqu’à la fin de cette conversation, car tous les téléphones écoutent.",
+    "share": "Partager",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Copié",
+    "inviteQr": "QR code pour rejoindre ce salon",
+    "roomPeople": "{{count}} personnes",
+    "micOff": "Micro coupé",
+    "micOffNotice": "L’hôte a coupé votre micro. Vous pouvez continuer à suivre la conversation."
   },
   "conversationSettings": {
     "running": "La conversation continue",
@@ -107,7 +122,10 @@
     "serverUnreachable": "Connexion échouée",
     "connectionLost": "La connexion au serveur a été perdue.",
     "microphoneDenied": "La traduction en direct nécessite l'accès au micro. Autorisez-le dans les Réglages.",
-    "microphoneUnavailable": "Le micro est indisponible. Une autre app, comme un appel vidéo, l'utilise peut-être."
+    "microphoneUnavailable": "Le micro est indisponible. Une autre app, comme un appel vidéo, l'utilise peut-être.",
+    "roomNotFound": "Aucun salon ouvert ne correspond à ce code. Vérifiez-le et réessayez.",
+    "removedFromRoom": "Vous avez été retiré de ce salon.",
+    "roomEnded": "L’hôte est parti, le salon est fermé."
   },
   "settings": {
     "display": "Affichage",
@@ -129,6 +147,25 @@
     "termsSubtitle": "Règles et limites d'utilisation",
     "disclaimer": "⚠ STiTy fournit des traductions générées par IA et n'en garantit pas l'exactitude. Ne l'utilisez pas pour des communications médicales, juridiques ou d'urgence.",
     "version": "v{{version}}"
+  },
+  "developer": {
+    "section": "Développeur",
+    "serverRecording": "Enregistrer sur le serveur",
+    "serverRecordingHint": "Le serveur enregistre l'audio de ce téléphone et tous les messages pour le débogage. Seuls les serveurs qui l'autorisent enregistrent.",
+    "server": "Serveur",
+    "serverHint": "Une adresse wss:// ou https:// sans chemin, comme celle sous le code QR affiché par le serveur.",
+    "connect": "Se connecter",
+    "resetServer": "Utiliser le serveur du build",
+    "invalidServer": "Adresse de serveur non valide",
+    "invalidServerHint": "Saisissez une origine comme wss://example.trycloudflare.com, sans chemin.",
+    "linkFailed": "Ce lien ne contient pas d'adresse de serveur.",
+    "switchTitle": "Se connecter à un autre serveur ?",
+    "switchMessage": "L'audio de votre micro sera envoyé à {{server}}. Vous serez déconnecté et l'app redémarrera. Connectez-vous uniquement à un serveur de confiance.",
+    "source": {
+      "app": "Défini dans l'app. L'app redémarre quand vous le modifiez.",
+      "build": "Provient de EXPO_PUBLIC_SERVER_URL. Scannez le code QR du serveur ou touchez Serveur pour le modifier.",
+      "fallback": "Aucun serveur défini : l'app cherche donc sur localhost. Scannez le code QR du serveur ou touchez Serveur pour en définir un."
+    }
   },
   "about": {
     "copyright": "© 2026 STiTy. Tous droits réservés."
@@ -371,5 +408,20 @@
     "deletedMessage": "Votre compte, votre historique et les données STiTy de ce téléphone ont été effacés.",
     "deleteFailed": "Impossible de supprimer votre compte",
     "deleteFailedMessage": "Rien n'a été supprimé. Vérifiez votre connexion et réessayez."
+  },
+  "room": {
+    "title": "Personnes dans ce salon",
+    "participant": "Participant {{number}}",
+    "host": "Hôte",
+    "you": "Vous",
+    "micOn": "Micro activé",
+    "micOff": "Micro coupé",
+    "allMicsOn": "Activer tous les micros",
+    "allMicsOff": "Couper tous les micros",
+    "remove": "Retirer {{name}}",
+    "removeTitle": "Retirer {{name}} ?",
+    "removeMessage": "Cette personne quitte la conversation immédiatement.",
+    "removeAction": "Retirer",
+    "hostHint": "Vous êtes l’hôte. Quand vous partez, le salon ferme pour tout le monde."
   }
 }

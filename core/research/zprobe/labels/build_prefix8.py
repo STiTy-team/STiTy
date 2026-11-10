@@ -15,23 +15,32 @@ so the tail is appended via the loader's "|" concatenation with one shared quiet
 cumulative text: speech plus silence means say everything and nothing more.
 
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix8.py --kspon-root /home/mobility/stity-datasets/ksponspeech/data/train01"""
+
 import argparse, json, os, random, re
 
 import numpy as np
 import soundfile as sf
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--kspon-jsonl", default="Qwen3-ASR/finetuning/data/KSponSpeech/train_and_val.jsonl")
+ap.add_argument(
+    "--kspon-jsonl", default="Qwen3-ASR/finetuning/data/KSponSpeech/train_and_val.jsonl"
+)
 ap.add_argument("--kspon-root", default="/home/mobility/stity-datasets/ksponspeech/data/train01")
 ap.add_argument("--kspon-wav", default="/home/mobility/stity-datasets/ksponspeech/data/wav16k")
 ap.add_argument("--kspon-max-sec", type=float, default=10.0)
-ap.add_argument("--kspon-cap", type=int, default=8000, help="shortest first, so interjections survive the cap")
+ap.add_argument(
+    "--kspon-cap", type=int, default=8000, help="shortest first, so interjections survive the cap"
+)
 ap.add_argument("--aligned", default="models/zprobe/data/prefix7/aligned.jsonl")
 ap.add_argument("--base", default="models/zprobe/data/train_prefix7.jsonl")
 ap.add_argument("--out", default="models/zprobe/data/train_prefix8.jsonl")
-ap.add_argument("--extra_mids", type=int, default=2, help="extra mid-phrase rows per x->en recording")
+ap.add_argument(
+    "--extra_mids", type=int, default=2, help="extra mid-phrase rows per x->en recording"
+)
 ap.add_argument("--sil-wav", default="models/zprobe/data/silence_tail_4s.wav")
-ap.add_argument("--sil-cap", type=int, default=800, help="silence-tail rows per pair (en-ko gets twice this)")
+ap.add_argument(
+    "--sil-cap", type=int, default=800, help="silence-tail rows per pair (en-ko gets twice this)"
+)
 a = ap.parse_args()
 rng = random.Random(8)
 
@@ -66,8 +75,11 @@ for dur, name, src, text in rows_kspon:
         sf.write(wav, pcm.astype(np.float32) / 32768.0, 16000, subtype="PCM_16")
     out_rows.append({"audio": wav, "text": text, "pair": "ko-ko"})
 if rows_kspon:
-    print(f"kspon rows: {len(out_rows)} (dur <= {a.kspon_max_sec}s, shortest {rows_kspon[0][0]:.1f}s"
-          f" ~ longest kept {rows_kspon[-1][0]:.1f}s)", flush=True)
+    print(
+        f"kspon rows: {len(out_rows)} (dur <= {a.kspon_max_sec}s, shortest {rows_kspon[0][0]:.1f}s"
+        f" ~ longest kept {rows_kspon[-1][0]:.1f}s)",
+        flush=True,
+    )
 
 mids = 0
 with_tag = {"en": "language English<asr_text>"}
@@ -80,9 +92,13 @@ for l in open(a.aligned, encoding="utf-8"):
     spans = [(j, (ends[j - 1] if j else 0.0) + 0.15, ends[j] - 0.15) for j in range(len(adds))]
     spans = [(j, lo, hi) for j, lo, hi in spans if hi - lo >= 0.3 and hi >= 0.8]
     for j, lo, hi in rng.sample(spans, min(a.extra_mids, len(spans))):
-        out_rows.append({"audio": f"{os.path.abspath(r['audio'])}#end={rng.uniform(max(lo, 0.6), hi):.3f}",
-                         "text": with_tag["en"] + (cum[j - 1] if j else ""),
-                         "pair": f"{r['lang']}-en"})
+        out_rows.append(
+            {
+                "audio": f"{os.path.abspath(r['audio'])}#end={rng.uniform(max(lo, 0.6), hi):.3f}",
+                "text": with_tag["en"] + (cum[j - 1] if j else ""),
+                "pair": f"{r['lang']}-en",
+            }
+        )
         mids += 1
 print(f"x->en extra mid rows: {mids}", flush=True)
 
@@ -99,15 +115,29 @@ for (lang, tgt), rows in sorted(by_pair.items()):
     cap = a.sil_cap * (2 if (lang, tgt) == ("en", "ko") else 1)
     for r in rng.sample(rows, min(cap, len(rows))):
         full = " ".join(x.strip() for x in r["adds"] if x.strip())
-        out_rows.append({"audio": f"{os.path.abspath(r['audio'])}|{os.path.abspath(a.sil_wav)}#end={rng.uniform(0.8, 2.0):.2f}",
-                         "text": TAG[tgt] + full, "pair": f"{lang}-{tgt}"})
+        out_rows.append(
+            {
+                "audio": f"{os.path.abspath(r['audio'])}|{os.path.abspath(a.sil_wav)}#end={rng.uniform(0.8, 2.0):.2f}",
+                "text": TAG[tgt] + full,
+                "pair": f"{lang}-{tgt}",
+            }
+        )
         sil += 1
 print(f"silence-tail rows: {sil}", flush=True)
 
 en_recs = {r["audio"]: r for r in by_pair.get(("en", "ko"), []) if r.get("src")}
 for r in rng.sample(list(en_recs.values()), min(2000, len(en_recs))):
-    out_rows.append({"audio": os.path.abspath(r["audio"]), "text": TAG["en"] + r["src"].strip(), "pair": "en-en"})
-print(f"en-en verbatim rows: {min(2000, len(en_recs))} (the kspon rows cover ko-ko; the en secondary stream transcribes en speech)", flush=True)
+    out_rows.append(
+        {
+            "audio": os.path.abspath(r["audio"]),
+            "text": TAG["en"] + r["src"].strip(),
+            "pair": "en-en",
+        }
+    )
+print(
+    f"en-en verbatim rows: {min(2000, len(en_recs))} (the kspon rows cover ko-ko; the en secondary stream transcribes en speech)",
+    flush=True,
+)
 
 base = [l.rstrip("\n") for l in open(a.base, encoding="utf-8")]
 with open(a.out, "w", encoding="utf-8") as f:

@@ -1,7 +1,10 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Self
 
 from core.components.registry import Folded, Partial, Transcribed, Translated
+
+from app.models.sources import SegmentSource
 
 
 @dataclass(frozen=True)
@@ -19,6 +22,7 @@ class ConversationEvent:
     record: Partial | Transcribed | Translated | Folded
     started_at: float
     ended_at: float
+    sources: tuple[SegmentSource, ...] = ()
 
 
 class SegmentTimeline:
@@ -51,7 +55,9 @@ class SegmentTimeline:
             SegmentId(self._conversation_id, number), record, started_at, heard_to
         )
 
-    def _stamp_stream(self, record: Translated | Folded, heard_to: float) -> ConversationEvent | None:
+    def _stamp_stream(
+        self, record: Translated | Folded, heard_to: float
+    ) -> ConversationEvent | None:
         key = (record.target_lang, record.decision_audio_sec, record.original)
         if isinstance(record, Folded):
             number = self._translated_segments.pop(key, None)
@@ -99,6 +105,7 @@ class FinalOutput:
     language: str
     target_lang: str
     commit_reason: str
+    sources: tuple[SegmentSource, ...] = ()
 
     @classmethod
     def of(cls, event: ConversationEvent) -> Self:
@@ -112,6 +119,7 @@ class FinalOutput:
             language=record.language,
             target_lang=getattr(record, "target_lang", ""),
             commit_reason=record.commit_reason,
+            sources=event.sources,
         )
 
 
@@ -136,6 +144,26 @@ class FoldOutput:
 @dataclass(frozen=True)
 class JoinedConversation:
     conversation_id: str
+
+
+@dataclass(frozen=True)
+class RoomMember:
+    id: str
+    number: int
+    can_speak: bool
+
+
+@dataclass(frozen=True)
+class RoomChanged:
+    host_id: str | None
+    participants: tuple[RoomMember, ...]
+
+    @classmethod
+    def of(cls, host_id: str | None, participants: Iterable) -> Self:
+        return cls(
+            host_id,
+            tuple(RoomMember(p.id, p.number, p.can_speak) for p in participants),
+        )
 
 
 @dataclass(frozen=True)

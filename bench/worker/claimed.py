@@ -59,6 +59,8 @@ class ClaimedJob:
                     return True
         return False
 
-    def end(self, outcome: FinalOutcome, run: RemoteRun | None = None, error: str | None = None) -> None:
+    def end(
+        self, outcome: FinalOutcome, run: RemoteRun | None = None, error: str | None = None
+    ) -> None:
         self.queue.close(self.job, outcome, self.clock.now(), run=run, error=error)
         log.info("[JOB-END] %s outcome=%s run=%s", self.job.id, outcome, run and run.folder)

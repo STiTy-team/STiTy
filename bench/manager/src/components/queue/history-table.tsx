@@ -56,9 +56,14 @@ export function HistoryTable({ machine }: { machine: Machine }) {
   const [open, setOpen] = useState<string | null>(null)
 
   if (!machine.history.length) {
-    return <p className="rounded-xl border border-dashed px-4 py-5 text-sm text-muted-foreground">끝난 작업이 아직 없어요.</p>
+    return (
+      <p className="rounded-xl border border-dashed px-4 py-5 text-sm text-muted-foreground">
+        끝난 작업이 아직 없어요.
+      </p>
+    )
   }
-  const count = (f: Filter) => (f === "all" ? machine.history.length : machine.history.filter((h) => h.outcome === f).length)
+  const count = (f: Filter) =>
+    f === "all" ? machine.history.length : machine.history.filter((h) => h.outcome === f).length
   const matching = machine.history.filter((h) => filter === "all" || h.outcome === filter)
   const rows = matching.slice(0, limit)
 
@@ -144,7 +149,9 @@ export function HistoryTable({ machine }: { machine: Machine }) {
                               ["시작", formatDateTime(last?.started_at ?? null)],
                               ["끝남", formatDateTime(finished.ended_at)],
                               ["작업 ID", <code key="id">{job.id}</code>],
-                              ...(finished.error ? [["실패 원인", failureReason(finished.error)] as [string, string]] : []),
+                              ...(finished.error
+                                ? [["실패 원인", failureReason(finished.error)] as [string, string]]
+                                : []),
                             ]}
                           />
                         </TableCell>

@@ -26,7 +26,12 @@
     "saveHint": "翻訳中はサーバーが書き起こしを保存します。音声は保存しません。",
     "saveLocked": "次の会話から適用されます。",
     "signInToSave": "ログインして会話を保存",
-    "saveGuestHint": "翻訳はアカウントなしで使えます。ログインすると会話ごとに書き起こしが残ります。"
+    "saveGuestHint": "翻訳はアカウントなしで使えます。ログインすると会話ごとに書き起こしが残ります。",
+    "joinRoom": "ルームに参加",
+    "joinRoomHint": "招待してくれた人から受け取ったコードを入力してください。全員のマイクが一つの会話にまとまります。",
+    "roomCode": "ルームコード",
+    "join": "参加",
+    "joinLinkHint": "言語を確認してから参加してください。"
   },
   "outputModes": {
     "speaker": "スピーカー",
@@ -78,7 +83,17 @@
     "holdToTalk": "押して話す",
     "holdHint": "ボタンを押している間だけ音声を送信します。",
     "holdPrompt": "ボタンを押したまま話してください",
-    "talking": "聞き取り中… 離すと送信"
+    "talking": "聞き取り中… 離すと送信",
+    "room": "ルーム {{code}}",
+    "invite": "招待",
+    "inviteHint": "このQRコードをスキャンするか、コードを共有すると参加できます。全員のスマートフォンが音声を聞いているため、この会話が終わるまで翻訳は読み上げられません。",
+    "share": "共有",
+    "copyLink": "リンクをコピー",
+    "linkCopied": "コピーしました",
+    "inviteQr": "このルームに参加するQRコード",
+    "roomPeople": "{{count}}人",
+    "micOff": "マイクオフ",
+    "micOffNotice": "ホストがあなたのマイクをオフにしました。会話は引き続き確認できます。"
   },
   "conversationSettings": {
     "running": "会話は続いています",
@@ -107,7 +122,10 @@
     "serverUnreachable": "接続失敗",
     "connectionLost": "サーバーとの接続が切れました。",
     "microphoneDenied": "リアルタイム翻訳にはマイクへのアクセスが必要です。設定で許可してください。",
-    "microphoneUnavailable": "マイクを使用できません。ビデオ通話など他のアプリが使用中の可能性があります。"
+    "microphoneUnavailable": "マイクを使用できません。ビデオ通話など他のアプリが使用中の可能性があります。",
+    "roomNotFound": "このコードの開いているルームはありません。コードを確認してください。",
+    "removedFromRoom": "このルームから退出させられました。",
+    "roomEnded": "ホストが退出したため、ルームは閉じられました。"
   },
   "settings": {
     "display": "表示",
@@ -129,6 +147,25 @@
     "termsSubtitle": "利用ルールと制限事項",
     "disclaimer": "⚠ STiTyはAI翻訳を提供しており、正確性を保証しません。医療・法律・緊急時の通信には使用しないでください。",
     "version": "v{{version}}"
+  },
+  "developer": {
+    "section": "開発者",
+    "serverRecording": "サーバーに録音",
+    "serverRecordingHint": "デバッグのため、サーバーがこのスマートフォンの音声とすべてのメッセージを保存します。録音を許可したサーバーでのみ保存されます。",
+    "server": "サーバー",
+    "serverHint": "パスのない wss:// または https:// のアドレスを入力してください。サーバーが表示する QR コードの下にあるアドレスなどです。",
+    "connect": "接続",
+    "resetServer": "ビルドのサーバーを使う",
+    "invalidServer": "サーバーのアドレスではありません",
+    "invalidServerHint": "wss://example.trycloudflare.com のように、パスなしで入力してください。",
+    "linkFailed": "このリンクにはサーバーのアドレスが含まれていません。",
+    "switchTitle": "別のサーバーに接続しますか？",
+    "switchMessage": "マイクの音声が {{server}} に送信されます。ログアウトされ、アプリが再起動します。信頼できるサーバーにのみ接続してください。",
+    "source": {
+      "app": "アプリで設定しました。変更するとアプリが再起動します。",
+      "build": "EXPO_PUBLIC_SERVER_URL の値です。変更するには、サーバーの QR コードをスキャンするか、「サーバー」をタップしてください。",
+      "fallback": "サーバーが未設定のため、localhost を探します。サーバーの QR コードをスキャンするか、「サーバー」をタップして設定してください。"
+    }
   },
   "about": {
     "copyright": "© 2026 STiTy. All rights reserved."
@@ -370,5 +407,20 @@
     "deletedMessage": "アカウント、記録、このスマホのSTiTyのデータは削除されました。",
     "deleteFailed": "アカウントを削除できませんでした",
     "deleteFailedMessage": "何も削除されていません。接続を確認してもう一度お試しください。"
+  },
+  "room": {
+    "title": "このルームの参加者",
+    "participant": "参加者 {{number}}",
+    "host": "ホスト",
+    "you": "自分",
+    "micOn": "マイクオン",
+    "micOff": "マイクオフ",
+    "allMicsOn": "すべてのマイクをオン",
+    "allMicsOff": "すべてのマイクをオフ",
+    "remove": "{{name}}を退出させる",
+    "removeTitle": "{{name}}を退出させますか？",
+    "removeMessage": "この会話からすぐに退出します。",
+    "removeAction": "退出させる",
+    "hostHint": "あなたがホストです。退出するとルームは全員に対して閉じられます。"
   }
 }

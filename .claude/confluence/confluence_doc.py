@@ -10,6 +10,7 @@
   python .claude/confluence/confluence_doc.py --json payload.json --dry-run
   python .claude/confluence/confluence_doc.py --json payload.json
 """
+
 import argparse
 import html
 import json
@@ -52,8 +53,9 @@ def load_env() -> tuple[str, str]:
 class Confluence:
     def __init__(self, email: str, token: str):
         self.base = CONFIG["base_url"]
-        self.client = httpx.Client(auth=(email, token), timeout=30.0,
-                                   headers={"Accept": "application/json"})
+        self.client = httpx.Client(
+            auth=(email, token), timeout=30.0, headers={"Accept": "application/json"}
+        )
 
     def _check(self, r: httpx.Response) -> dict:
         if r.status_code >= 400:
@@ -62,12 +64,16 @@ class Confluence:
 
     def folders_under(self, parent_id: str) -> list[tuple[str, str]]:
         """parent_id 바로 아래 폴더들의 (제목, id)."""
-        r = self.client.get(f"{self.base}/rest/api/search", params={
-            "cql": f'space={CONFIG["space_key"]} and type=folder and parent={parent_id}',
-            "limit": 100,
-        })
-        return [(it.get("title", ""), it["content"]["id"])
-                for it in self._check(r).get("results", [])]
+        r = self.client.get(
+            f"{self.base}/rest/api/search",
+            params={
+                "cql": f"space={CONFIG['space_key']} and type=folder and parent={parent_id}",
+                "limit": 100,
+            },
+        )
+        return [
+            (it.get("title", ""), it["content"]["id"]) for it in self._check(r).get("results", [])
+        ]
 
     def round_folder(self, n: str) -> tuple[str, str] | None:
         """차수 폴더를 찾는다.
@@ -90,28 +96,41 @@ class Confluence:
         return out
 
     def create_folder(self, parent_id: str, title: str) -> str:
-        r = self.client.post(f"{self.base}/api/v2/folders", json={
-            "spaceId": CONFIG["space_id"], "title": title, "parentId": parent_id,
-        })
+        r = self.client.post(
+            f"{self.base}/api/v2/folders",
+            json={
+                "spaceId": CONFIG["space_id"],
+                "title": title,
+                "parentId": parent_id,
+            },
+        )
         return self._check(r)["id"]
 
     def get_storage(self, page_id: str) -> str:
-        r = self.client.get(f"{self.base}/rest/api/content/{page_id}",
-                            params={"expand": "body.storage"})
+        r = self.client.get(
+            f"{self.base}/rest/api/content/{page_id}", params={"expand": "body.storage"}
+        )
         return self._check(r)["body"]["storage"]["value"]
 
     def find_page(self, title: str) -> str | None:
-        r = self.client.get(f"{self.base}/rest/api/content",
-                            params={"spaceKey": CONFIG["space_key"], "title": title, "limit": 1})
+        r = self.client.get(
+            f"{self.base}/rest/api/content",
+            params={"spaceKey": CONFIG["space_key"], "title": title, "limit": 1},
+        )
         results = self._check(r).get("results", [])
         return results[0]["id"] if results else None
 
     def create_page(self, parent_id: str, title: str, body: str) -> dict:
-        r = self.client.post(f"{self.base}/api/v2/pages", json={
-            "spaceId": CONFIG["space_id"], "status": "current", "title": title,
-            "parentId": parent_id,
-            "body": {"representation": "storage", "value": body},
-        })
+        r = self.client.post(
+            f"{self.base}/api/v2/pages",
+            json={
+                "spaceId": CONFIG["space_id"],
+                "status": "current",
+                "title": title,
+                "parentId": parent_id,
+                "body": {"representation": "storage", "value": body},
+            },
+        )
         return self._check(r)
 
     def update_page(self, page_id: str, title: str, body: str) -> dict:
@@ -121,15 +140,23 @@ class Confluence:
         보내야 하고, 그 사이 남이 고쳤으면 409 로 막힌다 — 남의 수정을 조용히
         덮어쓰지 않게 하는 장치이므로 강제로 뚫지 않는다.
         """
-        r = self.client.get(f"{self.base}/api/v2/pages/{page_id}",
-                            params={"body-format": "storage"})
+        r = self.client.get(
+            f"{self.base}/api/v2/pages/{page_id}", params={"body-format": "storage"}
+        )
         current = self._check(r)
-        r = self.client.put(f"{self.base}/api/v2/pages/{page_id}", json={
-            "id": page_id, "status": "current", "title": title,
-            "body": {"representation": "storage", "value": body},
-            "version": {"number": current["version"]["number"] + 1,
-                        "message": "confluence_doc.py --update"},
-        })
+        r = self.client.put(
+            f"{self.base}/api/v2/pages/{page_id}",
+            json={
+                "id": page_id,
+                "status": "current",
+                "title": title,
+                "body": {"representation": "storage", "value": body},
+                "version": {
+                    "number": current["version"]["number"] + 1,
+                    "message": "confluence_doc.py --update",
+                },
+            },
+        )
         return self._check(r)
 
     def set_owner(self, page_id: str, account_id: str) -> dict:
@@ -139,33 +166,48 @@ class Confluence:
         v2 는 소유자만 따로 바꾸는 끝점이 없어서, 본문·제목을 그대로 둔 채 버전을 +1 하고
         `ownerId` 를 실어 PUT 한다. 판 하나가 더 생기지만 내용은 같다.
         """
-        r = self.client.get(f"{self.base}/api/v2/pages/{page_id}",
-                            params={"body-format": "storage"})
+        r = self.client.get(
+            f"{self.base}/api/v2/pages/{page_id}", params={"body-format": "storage"}
+        )
         cur = self._check(r)
         if cur.get("ownerId") == account_id:
             return cur
-        r = self.client.put(f"{self.base}/api/v2/pages/{page_id}", json={
-            "id": page_id, "status": "current", "title": cur["title"],
-            "body": {"representation": "storage", "value": cur["body"]["storage"]["value"]},
-            "version": {"number": cur["version"]["number"] + 1,
-                        "message": "confluence_doc.py: 작성자를 소유자로"},
-            "ownerId": account_id,
-        })
+        r = self.client.put(
+            f"{self.base}/api/v2/pages/{page_id}",
+            json={
+                "id": page_id,
+                "status": "current",
+                "title": cur["title"],
+                "body": {"representation": "storage", "value": cur["body"]["storage"]["value"]},
+                "version": {
+                    "number": cur["version"]["number"] + 1,
+                    "message": "confluence_doc.py: 작성자를 소유자로",
+                },
+                "ownerId": account_id,
+            },
+        )
         return self._check(r)
 
     def find_user(self, name: str) -> str | None:
         """표시 이름이 정확히 같은 Atlassian 계정 하나의 accountId. 없거나 여럿이면 None."""
-        r = self.client.get(f"{CONFIG['base_url'].rsplit('/wiki', 1)[0]}/rest/api/3/user/search",
-                            params={"query": name, "maxResults": 20})
-        hits = [u for u in self._check(r)
-                if u.get("accountType") == "atlassian" and u.get("displayName") == name]
+        r = self.client.get(
+            f"{CONFIG['base_url'].rsplit('/wiki', 1)[0]}/rest/api/3/user/search",
+            params={"query": name, "maxResults": 20},
+        )
+        hits = [
+            u
+            for u in self._check(r)
+            if u.get("accountType") == "atlassian" and u.get("displayName") == name
+        ]
         return hits[0]["accountId"] if len(hits) == 1 else None
 
     def add_labels(self, page_id: str, labels: list[str]) -> None:
         if not labels:
             return
-        r = self.client.post(f"{self.base}/rest/api/content/{page_id}/label",
-                             json=[{"prefix": "global", "name": n} for n in labels])
+        r = self.client.post(
+            f"{self.base}/rest/api/content/{page_id}/label",
+            json=[{"prefix": "global", "name": n} for n in labels],
+        )
         self._check(r)
 
 
@@ -189,16 +231,17 @@ def anchor_id(num: str) -> str:
 
 
 def anchor_macro(aid: str) -> str:
-    return ('<ac:structured-macro ac:name="anchor" ac:schema-version="1">'
-            f'<ac:parameter ac:name="">{esc(aid)}</ac:parameter></ac:structured-macro>')
+    return (
+        '<ac:structured-macro ac:name="anchor" ac:schema-version="1">'
+        f'<ac:parameter ac:name="">{esc(aid)}</ac:parameter></ac:structured-macro>'
+    )
 
 
 def link(text: str, target: str) -> str:
     if target.startswith("#"):
         aid = anchor_id(target[1:])
         _LINKS.append(aid)
-        return (f'<ac:link ac:anchor="{esc(aid)}">'
-                f"<ac:link-body>{esc(text)}</ac:link-body></ac:link>")
+        return f'<ac:link ac:anchor="{esc(aid)}"><ac:link-body>{esc(text)}</ac:link-body></ac:link>'
     return f'<a href="{esc(target)}">{esc(text)}</a>'
 
 
@@ -212,7 +255,7 @@ def inline(text: str) -> str:
     """줄 안의 `코드`, **굵게**, [링크](대상) 만 살린다. 나머지는 그대로 escape."""
     out, pos = [], 0
     for m in INLINE_RE.finditer(text):
-        out.append(esc(text[pos:m.start()]))
+        out.append(esc(text[pos : m.start()]))
         tok = m.group(0)
         if tok.startswith("`"):
             out.append(f"<code>{esc(tok[1:-1])}</code>")
@@ -246,16 +289,21 @@ def code_macro(text: str, lang: str = "") -> str:
     # 표식은 XML 에 넣을 수 있는 문자여야 한다. NUL 을 쓰면 ElementTree 가
     # 파싱 단계에서 버린다.
     mark = f"@@CODEBLOCK{len(_CODE_BODIES) - 1}@@"
-    return ('<ac:structured-macro ac:name="code" ac:schema-version="1">' + param +
-            f"<ac:plain-text-body>{mark}</ac:plain-text-body>"
-            "</ac:structured-macro>")
+    return (
+        '<ac:structured-macro ac:name="code" ac:schema-version="1">'
+        + param
+        + f"<ac:plain-text-body>{mark}</ac:plain-text-body>"
+        "</ac:structured-macro>"
+    )
 
 
 def restore_code_bodies(body: str) -> str:
     """표식을 실제 코드 본문(CDATA)으로 되돌린다. 직렬화가 끝난 뒤에 부른다."""
+
     def sub(m):
         raw = _CODE_BODIES[int(m.group(1))]
         return "<![CDATA[" + raw.replace("]]>", "]]]]><![CDATA[>") + "]]>"
+
     return CODE_MARK_RE.sub(sub, body)
 
 
@@ -297,13 +345,16 @@ def split_row(line: str) -> list[str]:
 
 def is_table_start(lines: list[str], i: int) -> bool:
     """머리글 줄 다음에 구분선(`|---|---|`)이 와야 표로 본다."""
-    return (lines[i].strip().startswith("|")
-            and i + 1 < len(lines) and TABLE_SEP_RE.match(lines[i + 1]) is not None)
+    return (
+        lines[i].strip().startswith("|")
+        and i + 1 < len(lines)
+        and TABLE_SEP_RE.match(lines[i + 1]) is not None
+    )
 
 
 def take_table(lines: list[str], i: int) -> tuple[str, int]:
     header = split_row(lines[i])
-    i += 2                                   # 머리글 + 구분선
+    i += 2  # 머리글 + 구분선
     rows = []
     while i < len(lines) and lines[i].strip().startswith("|"):
         rows.append(split_row(lines[i]))
@@ -311,7 +362,7 @@ def take_table(lines: list[str], i: int) -> tuple[str, int]:
     ncol = len(header)
 
     def pad(cells):
-        return (cells + [""] * ncol)[:ncol]   # 칸 수가 어긋나도 표가 깨지지 않게 맞춘다
+        return (cells + [""] * ncol)[:ncol]  # 칸 수가 어긋나도 표가 깨지지 않게 맞춘다
 
     def cell_html(c):
         return "<br/>".join(inline(part.strip()) for part in c.split("<br>"))
@@ -320,8 +371,7 @@ def take_table(lines: list[str], i: int) -> tuple[str, int]:
     parts += [f"<th><p>{cell_html(c)}</p></th>" for c in pad(header)]
     parts.append("</tr>")
     for r in rows:
-        parts.append("<tr>" + "".join(
-            f"<td><p>{cell_html(c)}</p></td>" for c in pad(r)) + "</tr>")
+        parts.append("<tr>" + "".join(f"<td><p>{cell_html(c)}</p></td>" for c in pad(r)) + "</tr>")
     parts.append("</tbody></table>")
     return "".join(parts), i
 
@@ -418,11 +468,16 @@ def cell(value, kind: str, base: int) -> str:
 
 def parse_storage(xhtml: str) -> ET.Element:
     """storage 형식을 파싱한다. ac:/ri: 접두사와 &nbsp; 때문에 손질이 필요하다."""
-    text = re.sub(r"&(?!(amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)([a-zA-Z]+);",
-                  lambda m: html.unescape(f"&{m.group(2)};"), xhtml)
-    wrapper = ('<root xmlns:ac="http://atlassian.com/content" '
-               'xmlns:ri="http://atlassian.com/resource/identifier">'
-               f"{text}</root>")
+    text = re.sub(
+        r"&(?!(amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)([a-zA-Z]+);",
+        lambda m: html.unescape(f"&{m.group(2)};"),
+        xhtml,
+    )
+    wrapper = (
+        '<root xmlns:ac="http://atlassian.com/content" '
+        'xmlns:ri="http://atlassian.com/resource/identifier">'
+        f"{text}</root>"
+    )
     return ET.fromstring(wrapper)
 
 
@@ -517,7 +572,7 @@ MAX_SEQ = 50
 def build_title(d: dict, seq: int | None) -> str:
     """제목: [n차][세분화 업무명] 공유 문서. 같은 제목이 있으면 [n차][업무명][2] 공유 문서."""
     tail = f"[{seq}]" if seq else ""
-    return f'[{d["round"]}차][{d["task"]}]{tail} {KIND_KO} 문서'
+    return f"[{d['round']}차][{d['task']}]{tail} {KIND_KO} 문서"
 
 
 def resolve_title(cf: Confluence, d: dict, autonumber: bool) -> str:
@@ -555,7 +610,7 @@ def resolve_folder(cf: Confluence, d: dict) -> tuple[str, str, bool]:
     """
     found = cf.round_folder(str(d["round"]))
     if not found:
-        sys.exit(f'{d["round"]}차 폴더가 없다. --list-folders {d["round"]} 로 확인할 것.')
+        sys.exit(f"{d['round']}차 폴더가 없다. --list-folders {d['round']} 로 확인할 것.")
     round_title, round_id = found
     fid = str(d.get("folder_id") or "")
     if not fid:
@@ -564,7 +619,7 @@ def resolve_folder(cf: Confluence, d: dict) -> tuple[str, str, bool]:
     paths = {round_id: round_title}
     stack = [round_title]
     for depth, title, i in cf.folder_tree(round_id):
-        stack = stack[:depth + 1] + [title]
+        stack = stack[: depth + 1] + [title]
         paths[i] = " > ".join(stack)
     if fid not in paths:
         sys.exit(f"folder_id {fid} 가 '{round_title}' 아래에 없다.")
@@ -583,8 +638,9 @@ def check_links() -> None:
     broken = sorted({a for a in _LINKS if a not in _ANCHORS})
     if broken:
         have = ", ".join(sorted(_ANCHORS)) or "(없음)"
-        sys.exit(f"짝이 없는 문서 안 링크: {', '.join(broken)}\n"
-                 f"번호가 붙은 소제목으로 생긴 앵커: {have}")
+        sys.exit(
+            f"짝이 없는 문서 안 링크: {', '.join(broken)}\n번호가 붙은 소제목으로 생긴 앵커: {have}"
+        )
 
 
 def preview(title: str, folder: str, labels: list[str], fields: dict) -> str:
@@ -605,8 +661,9 @@ def md_slug(text: str) -> str:
     return re.sub(r"[^\w\-]", "", s)
 
 
-def preview_md(title: str, folder: str, labels: list[str], fields: dict,
-               template: ET.Element) -> str:
+def preview_md(
+    title: str, folder: str, labels: list[str], fields: dict, template: ET.Element
+) -> str:
     """검토용 전문을 md 파일로 만든다. 에디터의 마크다운 미리보기로 실제 문서처럼 읽힌다.
 
     항목 순서는 가이드를 따른다. 줄글 항목은 `##`, 그 안의 md 소제목은 한 단계씩 내려
@@ -632,11 +689,19 @@ def preview_md(title: str, folder: str, labels: list[str], fields: dict,
                     slugs[num.group(1).strip(".")] = md_slug(m.group(1))
 
     def relink(md: str) -> str:
-        return re.sub(r"\]\(#([\d.]+)\)",
-                      lambda m: f"](#{slugs.get(m.group(1).strip('.'), m.group(1))})", md)
+        return re.sub(
+            r"\]\(#([\d.]+)\)", lambda m: f"](#{slugs.get(m.group(1).strip('.'), m.group(1))})", md
+        )
 
-    out = [f"# {title}", "", f"폴더: {folder}  ", f"라벨: {', '.join(labels)}", "",
-           "| 항목 | 값 |", "|---|---|"]
+    out = [
+        f"# {title}",
+        "",
+        f"폴더: {folder}  ",
+        f"라벨: {', '.join(labels)}",
+        "",
+        "| 항목 | 값 |",
+        "|---|---|",
+    ]
     out += [f"| {n} | {fields[n].get('value') or ''} |" for n in order if n in rows]
     for name in order:
         if name in rows:
@@ -671,20 +736,33 @@ def assign_owner(cf: Confluence, page_id: str, fields: dict) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="업무 공유 문서를 Confluence 에 만든다. 형식은 가이드 문서에서 그때그때 읽는다.")
+        description="업무 공유 문서를 Confluence 에 만든다. 형식은 가이드 문서에서 그때그때 읽는다."
+    )
     ap.add_argument("--json", help="문서 내용을 담은 JSON 파일")
-    ap.add_argument("--show-format", action="store_true",
-                    help="가이드에서 현재 형식(항목 이름)만 읽어 출력. JSON 을 짜기 전에 먼저 볼 것")
-    ap.add_argument("--list-folders", metavar="N",
-                    help="N차 폴더 아래의 하위 폴더 트리를 id 와 함께 출력")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="올리지 않고 검토용 전문과 본문 크기만 출력")
-    ap.add_argument("--show-body", action="store_true",
-                    help="--dry-run 에서 storage XHTML 본문까지 출력")
-    ap.add_argument("--update", action="store_true",
-                    help="같은 제목의 문서가 이미 있으면 번호를 붙이지 않고 본문을 갱신한다")
-    ap.add_argument("--no-autonumber", action="store_true",
-                    help="같은 제목이 있어도 번호를 붙이지 않고 그냥 멈춘다")
+    ap.add_argument(
+        "--show-format",
+        action="store_true",
+        help="가이드에서 현재 형식(항목 이름)만 읽어 출력. JSON 을 짜기 전에 먼저 볼 것",
+    )
+    ap.add_argument(
+        "--list-folders", metavar="N", help="N차 폴더 아래의 하위 폴더 트리를 id 와 함께 출력"
+    )
+    ap.add_argument(
+        "--dry-run", action="store_true", help="올리지 않고 검토용 전문과 본문 크기만 출력"
+    )
+    ap.add_argument(
+        "--show-body", action="store_true", help="--dry-run 에서 storage XHTML 본문까지 출력"
+    )
+    ap.add_argument(
+        "--update",
+        action="store_true",
+        help="같은 제목의 문서가 이미 있으면 번호를 붙이지 않고 본문을 갱신한다",
+    )
+    ap.add_argument(
+        "--no-autonumber",
+        action="store_true",
+        help="같은 제목이 있어도 번호를 붙이지 않고 그냥 멈춘다",
+    )
     args = ap.parse_args()
 
     cf = Confluence(*load_env())
@@ -701,7 +779,9 @@ def main() -> None:
     if args.list_folders:
         found = cf.round_folder(args.list_folders.strip())
         if not found:
-            print(f"{args.list_folders}차 폴더가 없다. 차수 폴더 목록 (부모 {CONFIG['docs_folder_id']}):")
+            print(
+                f"{args.list_folders}차 폴더가 없다. 차수 폴더 목록 (부모 {CONFIG['docs_folder_id']}):"
+            )
             for title, fid in sorted(cf.folders_under(CONFIG["docs_folder_id"])):
                 print(f"  {title}  ({fid})")
             return
@@ -721,7 +801,7 @@ def main() -> None:
 
     # --update 는 있는 문서를 고치는 것이므로 번호를 붙이면 안 된다.
     title = resolve_title(cf, d, autonumber=not (args.no_autonumber or args.update))
-    labels = [KIND_KO, f'{d["round"]}차']
+    labels = [KIND_KO, f"{d['round']}차"]
     folder_id, folder_path, make_folder = resolve_folder(cf, d)
 
     template = cf.get_storage(CONFIG["guide"])
@@ -746,8 +826,10 @@ def main() -> None:
             print("참고  : 폴더를 새로 만든다")
         print(preview(title, folder_path, labels, fields))
         md_path = Path(args.json).with_suffix(".preview.md")
-        md_path.write_text(preview_md(title, folder_path, labels, fields,
-                                      parse_storage(template)), encoding="utf-8")
+        md_path.write_text(
+            preview_md(title, folder_path, labels, fields, parse_storage(template)),
+            encoding="utf-8",
+        )
         print(f"본문  : {len(body)}자, 문서 안 링크 {len(_LINKS)}개 모두 짝이 맞음")
         print(f"미리보기: {md_path}")
         if args.show_body:
@@ -756,17 +838,18 @@ def main() -> None:
 
     existing = cf.find_page(title)
     if existing and not args.update:
-        sys.exit(f"같은 제목의 페이지가 이미 있다: {title}\n"
-                 "덮어쓰지 않는다. --update 로 갱신하거나 제목을 바꿀 것.")
+        sys.exit(
+            f"같은 제목의 페이지가 이미 있다: {title}\n"
+            "덮어쓰지 않는다. --update 로 갱신하거나 제목을 바꿀 것."
+        )
 
     if existing:
         page = cf.update_page(existing, title, body)
-        cf.add_labels(existing, labels)       # 라벨은 중복 추가해도 그대로다
+        cf.add_labels(existing, labels)  # 라벨은 중복 추가해도 그대로다
         assign_owner(cf, existing, fields)
         print(f"갱신됨: {title}")
         print(f"버전  : {page['version']['number']}")
-        print(f"주소  : {CONFIG['base_url']}/spaces/{CONFIG['space_key']}"
-              f"/pages/{existing}")
+        print(f"주소  : {CONFIG['base_url']}/spaces/{CONFIG['space_key']}/pages/{existing}")
         return
 
     if make_folder:

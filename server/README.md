@@ -12,6 +12,11 @@ Clients speak the mobile app's WebSocket protocol on `/api/v1/ws`
   into each language some client in the conversation reads. Every client that wants that
   language gets the same result.
 - A client that never sends audio is a listener. It gets the same partials and finals.
+- **The first client is the host.** Every client gets a `room` message listing who is in the
+  conversation and who may speak. The host can turn one client's mic off or on, turn every mic off
+  or on, and remove a client. The server drops audio from a client whose mic is off. There is one
+  host and no handover: when the host's connection ends, the conversation closes for everyone with
+  4410 `room_ended`.
 
 One server holds one model, as in production. The English and Korean finetunes are two pipelines,
 and a client picks its language by picking the server.
@@ -39,9 +44,16 @@ make server PIPELINE=asr.qwen-seg-en+mt.qwen3.5-4b HOST=0.0.0.0  # English speak
   local edit), then the server reads the file. Without `PIPELINE` the server runs `stity.pipeline`
   from `server/configs/application.yml`, which is `mock` (get it once with
   `make configs-pull ONLY=pipeline/mock`). `HOST` defaults to 127.0.0.1, and a
-  phone needs `0.0.0.0`. `PORT` defaults to 8765. The Makefile turns these into
+  phone needs `0.0.0.0`. `PORT` defaults to 8765. `scripts/server/run.sh` turns these into
   `STITY_STITY__PIPELINE`, `STITY_SERVER__HOST` and `STITY_SERVER__PORT`. Those variables, or a
   gitignored `server/configs/application.local.yml`, work too.
+- `STAGE` defaults to `dev`. On `dev`, `make server` also runs `scripts/server/tunnel.sh`, which opens a
+  Cloudflare quick tunnel to `PORT` and prints its `https://*.trycloudflare.com` URL in the log. Once the server answers through the tunnel, it also prints a QR code that opens the hosted web app pointed at it (see [Connect a client](#connect-a-client)). The
+  URL changes on every start. Needs `cloudflared` on `PATH`. Any other `STAGE` (e.g. `STAGE=prod`,
+  on the command line or in `.env`) starts the server without a tunnel.
+- `server.cors_origins` and `server.cors_origin_regex` in `application.yml` list the browser
+  origins that may call the REST API: Metro's `http://localhost:8081` and the hosted web app
+  (`stity-mobile-preview.expo.app` and its per-deploy URLs). The WebSocket doesn't need them.
 - **Translation server.** You do not start it yourself. At startup the `qwen3.5` translator
   checks `http://127.0.0.1:8100/v1`. If nothing is there, it starts `vllm serve Qwen/Qwen3.5-4B`
   from its own uv project (`core/components/translation/local_qwen_3_5_4b/`) and stops it when
@@ -59,6 +71,30 @@ make server PIPELINE=asr.qwen-seg-en+mt.qwen3.5-4b HOST=0.0.0.0  # English speak
 
 Run it in tmux so it outlives your terminal (`.claude/rules/long-jobs-in-tmux.md`).
 
+## Recordings
+
+A client asks for recording with `recording: true` in `start` or `config` (the mobile app's
+Developer → Record on server switch in conversation settings, development builds only), and can turn
+it off again mid-conversation. The server records only when `STITY_RECORDING__ALLOWED=true`, which
+is off by default; otherwise requests are refused and `ready`/`config_ok` answer `recording: false`.
+Each time recording turns on it writes a new folder,
+`server/logs/recordings/<date>/<time>-<participant id>/`. `STITY_RECORDING__DIR` moves the folder.
+`server/logs/` is gitignored.
+
+| File | What |
+|---|---|
+| `audio.wav` | Every PCM frame the client sent while recording, 16 kHz mono s16le |
+| `events.jsonl` | Every JSON message in both directions except `ping`: `{"t", "audioSeconds", "direction": "in"\|"out", "message"}`. `t` is seconds since the connection opened, `audioSeconds` how much audio had arrived by then |
+| `meta.json` | Participant id, the `device` from `start`, pipeline file name, the `serverConfig` the client got in `hello`, start time; end time and audio length are added when recording stops |
+
+While any client records, the transcription worker also writes the whole room to a sibling
+`<time>-room-<conversation id>/` folder: `tracks/<participant id>.wav` for each client, padded with
+silence so every track lines up with `mix.wav` and the others, and `room.json` with each
+participant's number and device. A room whose mics all went off gets a new folder when audio returns.
+
+The conversation id is in the `ready` message. Replaying `audio.wav` against another pipeline and
+comparing its finals with the `out` messages here is the intended test use.
+
 ## Connect a client
 
 **Scripted client** (the tests). This is the quickest way to see the server work, and it needs
@@ -73,10 +109,13 @@ PYTHONPATH=server uv run --project server python server/scripts/client.py \
 `--lang` is the language of the loaded model (`en` or `ko`). Pass the server's log to check that
 each stage ran once. It prints PASS/FAIL per check and exits non-zero on a failure.
 
-**Mobile app** (`mobile/`). Set `EXPO_PUBLIC_SERVER_URL=ws://<this machine's LAN IP>:8765` in
-`mobile/.env` (no path — the app appends `/api/v1/ws`), then follow
-[mobile/README.md](../mobile/README.md) to start it. The phone must reach that IP (same Wi-Fi, no
-client isolation).
+**Web app** (`mobile/`, hosted at `STITY_WEB_URL`, default `https://stity-mobile-preview.expo.app`).
+With `STAGE=dev`, scan the QR code the server prints with any phone camera. It opens
+`<web app>/dev-server?url=wss://….trycloudflare.com`; the app shows the address, asks before it
+connects, then signs out and restarts on that server. Or enter the printed `wss://` address in
+Profile → Developer → Server. The phone can be on any network. A development build of the mobile
+app takes the same address in Profile → Developer → Server. Preview and production builds use the
+server they were built with — see [mobile/README.md](../mobile/README.md#configuration).
 
 ## Demo script (5 minutes)
 
@@ -98,8 +137,11 @@ client isolation).
 
 ## What is not there yet
 
-- No HTTP API for conversations: a conversation exists while at least one client is in it, and
-  the id is whatever the first client sends in `start` (or a new UUID).
+- No HTTP API to create or list conversations. `GET /api/v1/rooms/{code}` only answers whether one
+  is open: 204, or 404 `conversation_not_found`. A conversation exists while at least one client is
+  in it. A client that sends no `conversationId` gets a new short code in `ready`; one that sends an
+  id it was given opens or rejoins it. With `join: true`, an id that isn't open is refused with close
+  code 4404.
 - No join tickets. Anyone who knows an id can join it.
 - No backlog: a client that joins late gets only the finals committed after it joined.
 - One `targetLang` per client.
@@ -113,6 +155,7 @@ app/
   api/websocket.py          generic receive/send loop, close codes (4000 + HTTP status)
   api/v1/endpoints/         /api/v1/ws (conversation), /api/v1/healthz
   services/conversation/    joining, leaving, the transcription and per-language translation workers
+  services/recording.py     per-connection audio + message recording (server/logs/recordings/)
   models/                   conversation state, inboxes and feeds, audio channel mixing
 scripts/client.py           scripted client that plays the mobile app (the test suite)
 ```

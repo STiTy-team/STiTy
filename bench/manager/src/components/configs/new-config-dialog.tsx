@@ -2,7 +2,15 @@ import { CircleAlertIcon, CircleCheckIcon, LoaderCircleIcon, PlusIcon } from "lu
 import { useState, type ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -47,9 +55,11 @@ function ConfigForm({ kind, configs, onDone }: { kind: ConfigKind; configs: Conf
   const savable = !exists && result?.valid === true && !result.taken && !create.isPending
 
   let verdict: ReactNode
-  if (!trimmed) verdict = <Verdict tone="bad">이름을 정해 주세요. 예: {NAME_EXAMPLE[kind]}. 규칙은 configs/README.md에 있어요.</Verdict>
-  else if (exists)
-    verdict = <Verdict tone="bad">같은 이름이 이미 있어요: {trimmed}. 다른 이름을 골라 주세요.</Verdict>
+  if (!trimmed)
+    verdict = (
+      <Verdict tone="bad">이름을 정해 주세요. 예: {NAME_EXAMPLE[kind]}. 규칙은 configs/README.md에 있어요.</Verdict>
+    )
+  else if (exists) verdict = <Verdict tone="bad">같은 이름이 이미 있어요: {trimmed}. 다른 이름을 골라 주세요.</Verdict>
   else if (!settled || check.isFetching) verdict = <Verdict tone="wait">확인 중…</Verdict>
   else if (check.error) verdict = <Verdict tone="bad">{check.error.message}</Verdict>
   else if (result && !result.valid)
@@ -62,9 +72,14 @@ function ConfigForm({ kind, configs, onDone }: { kind: ConfigKind; configs: Conf
   else if (result?.taken)
     verdict = (
       <Verdict tone="bad">
-        {result.ref} 이름은 {result.taken.by}님이 {formatDateTime(result.taken.at)}에 다른 내용으로 이미 썼어요. 새 버전이
-        필요해요.
-        <Button size="sm" variant="outline" className="mt-2 flex" onClick={() => setYaml(withVersion(yaml, result.free_version))}>
+        {result.ref} 이름은 {result.taken.by}님이 {formatDateTime(result.taken.at)}에 다른 내용으로 이미 썼어요. 새
+        버전이 필요해요.
+        <Button
+          size="sm"
+          variant="outline"
+          className="mt-2 flex"
+          onClick={() => setYaml(withVersion(yaml, result.free_version))}
+        >
           버전 올리기 (v{result.free_version})
         </Button>
       </Verdict>
@@ -130,8 +145,7 @@ export function NewConfigDialog({ kind, configs }: { kind: ConfigKind; configs: 
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <PlusIcon />
-          새 {KIND_LABEL[kind]}
+          <PlusIcon />새 {KIND_LABEL[kind]}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">

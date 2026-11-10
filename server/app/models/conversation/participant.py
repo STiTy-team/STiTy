@@ -22,6 +22,10 @@ class Participant:
     target_lang: str = ""
     lang_map: dict[str, tuple[str, ...]] = field(default_factory=dict)
     channel: str | None = None
+    number: int = 0
+    can_speak: bool = True
+    recording: bool = False
+    device: dict | None = None
     delivery: "Delivery" = field(init=False)
 
     def __post_init__(self) -> None:
@@ -96,8 +100,10 @@ class Delivery:
             if number in self._queues.get(record.target_lang, ()):
                 self._ready[record.target_lang][number] = item
                 return self._flush()
-            if not self._participant.expects_translations \
-                    and record.target_lang in self._participant.reads:
+            if (
+                not self._participant.expects_translations
+                and record.target_lang in self._participant.reads
+            ):
                 self._enqueue(record.target_lang, number)
                 self._ready[record.target_lang][number] = item
                 return self._flush()

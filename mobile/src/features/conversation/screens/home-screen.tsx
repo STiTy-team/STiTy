@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/button';
 import { Logo } from '@/components/logo';
+import { features } from '@/config/features';
 import { EndedBanner } from '@/features/conversation/components/ended-banner';
+import { JoinRoomSheet } from '@/features/conversation/components/join-room-sheet';
 import { LanguageList } from '@/features/conversation/components/language-list';
 import { OutputModeControl } from '@/features/conversation/components/output-mode-control';
 import { SaveToggle } from '@/features/conversation/components/save-toggle';
@@ -18,6 +21,7 @@ export const HomeScreen = () => {
   const { t } = useTranslation();
   const styles = useStyles();
   const full = useServerStore(selectServerFull);
+  const [joining, setJoining] = useState(false);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
@@ -32,18 +36,30 @@ export const HomeScreen = () => {
         <EndedBanner />
         <ServerNotice />
         <LanguageList />
-        <OutputModeControl />
+        {features.speech && <OutputModeControl />}
         <SaveToggle />
       </ScrollView>
 
       <View style={styles.footer}>
-        <PrimaryButton
-          label={t('home.start')}
-          icon="mic"
-          disabled={full}
-          onPress={() => openConversation()}
-        />
+        <View style={styles.action}>
+          <PrimaryButton
+            label={t('home.start')}
+            icon="mic"
+            disabled={full}
+            onPress={() => openConversation()}
+          />
+        </View>
+        <View style={styles.action}>
+          <PrimaryButton
+            label={t('home.joinRoom')}
+            icon="enter-outline"
+            variant="secondary"
+            disabled={full}
+            onPress={() => setJoining(true)}
+          />
+        </View>
       </View>
+      <JoinRoomSheet visible={joining} onClose={() => setJoining(false)} />
     </SafeAreaView>
   );
 };
@@ -65,5 +81,12 @@ const useStyles = makeStyles((colors) => ({
     paddingBottom: spacing.xxl,
     gap: spacing.xxl,
   },
-  footer: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.md },
+  action: { flex: 1 },
+  footer: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.md,
+  },
 }));

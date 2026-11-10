@@ -9,6 +9,16 @@ package or `patch-package` patch is needed.
 | Routing | `MODE_IN_COMMUNICATION` + communication device (speaker / headset / earpiece)                               | `.playAndRecord` + `.voiceChat`, `overrideOutputAudioPort`             |
 | Speech  | `TextToSpeech` (Google engine preferred) with voice-communication audio attributes, so it follows the route | `AVSpeechSynthesizer` on the shared app session                        |
 
+The web version (`src/StityAudioModule.web.ts`) captures with `getUserMedia` and an AudioWorklet
+that averages the browser's rate down to the requested one, and speaks with `speechSynthesis`.
+Browsers pick the output device themselves, so `setOutputRoute` does nothing and
+`isHeadsetConnected` is always false. The microphone needs a secure origin (`https` or
+`localhost`). Browser echo cancellation doesn't cover `speechSynthesis`, so capture sends silence
+while a translation is audibly playing (from the utterance's `onstart`). iOS Safari drops `speak()`
+calls not made from a tap without firing any event, so the first tap on the page speaks an empty
+utterance to unlock it, and an utterance that never settles is failed after a deadline based on its
+length. An `AudioContext` that iOS interrupts is resumed.
+
 Audio is delivered as `onAudioChunk` events carrying base64 PCM (s16le, mono) at the sample rate
 passed to `startCaptureAsync`. Speech is fire-and-forget: `speak` returns at once and
 `onSpeechFinished` / `onSpeechFailed` report the outcome per `utteranceId`.

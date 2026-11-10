@@ -26,7 +26,12 @@
     "saveHint": "Der Server speichert beim Übersetzen das Transkript. Audio wird nicht gespeichert.",
     "saveLocked": "Gilt ab dem nächsten Gespräch.",
     "signInToSave": "Melde dich an, um Gespräche zu speichern",
-    "saveGuestHint": "Übersetzen klappt auch ohne Konto. Wenn du dich anmeldest, wird von jedem Gespräch ein Transkript gespeichert."
+    "saveGuestHint": "Übersetzen klappt auch ohne Konto. Wenn du dich anmeldest, wird von jedem Gespräch ein Transkript gespeichert.",
+    "joinRoom": "Raum beitreten",
+    "joinRoomHint": "Gib den Code der Person ein, die dich eingeladen hat. Alle Mikrofone fließen in ein Gespräch.",
+    "roomCode": "Raumcode",
+    "join": "Beitreten",
+    "joinLinkHint": "Prüfe deine Sprachen und tritt dann bei."
   },
   "outputModes": {
     "speaker": "Lautsprecher",
@@ -78,7 +83,17 @@
     "holdToTalk": "Halten zum Sprechen",
     "holdHint": "Audio wird nur gesendet, solange du die Taste hältst.",
     "holdPrompt": "Halte die Taste und sprich",
-    "talking": "Hört zu… zum Senden loslassen"
+    "talking": "Hört zu… zum Senden loslassen",
+    "room": "Raum {{code}}",
+    "invite": "Einladen",
+    "inviteHint": "Scanne diesen QR-Code oder teile den Code, um beizutreten. Übersetzungen werden bis zum Ende dieses Gesprächs nicht vorgelesen, weil alle Telefone mithören.",
+    "share": "Teilen",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Kopiert",
+    "inviteQr": "QR-Code zum Beitreten",
+    "roomPeople": "{{count}} Personen",
+    "micOff": "Mikro aus",
+    "micOffNotice": "Die Raumleitung hat dein Mikro ausgeschaltet. Du kannst dem Gespräch weiter folgen."
   },
   "conversationSettings": {
     "running": "Das Gespräch läuft weiter",
@@ -107,7 +122,10 @@
     "serverUnreachable": "Verbindung fehlgeschlagen",
     "connectionLost": "Die Verbindung zum Server wurde unterbrochen.",
     "microphoneDenied": "Für die Live-Übersetzung wird Mikrofonzugriff benötigt. Erlaube ihn in den Einstellungen.",
-    "microphoneUnavailable": "Das Mikrofon ist nicht verfügbar. Möglicherweise nutzt eine andere App, etwa ein Videoanruf, es."
+    "microphoneUnavailable": "Das Mikrofon ist nicht verfügbar. Möglicherweise nutzt eine andere App, etwa ein Videoanruf, es.",
+    "roomNotFound": "Kein offener Raum hat diesen Code. Prüfe ihn und versuche es erneut.",
+    "removedFromRoom": "Du wurdest aus diesem Raum entfernt.",
+    "roomEnded": "Die Raumleitung ist gegangen, daher wurde der Raum geschlossen."
   },
   "settings": {
     "display": "Anzeige",
@@ -129,6 +147,25 @@
     "termsSubtitle": "Regeln und Nutzungsgrenzen",
     "disclaimer": "⚠ STiTy stellt KI-generierte Übersetzungen bereit und garantiert keine Genauigkeit. Nicht für medizinische, rechtliche oder Notfallkommunikation verwenden.",
     "version": "v{{version}}"
+  },
+  "developer": {
+    "section": "Entwickler",
+    "serverRecording": "Auf dem Server aufzeichnen",
+    "serverRecordingHint": "Der Server speichert zur Fehlersuche das Audio dieses Telefons und alle Nachrichten. Nur Server, die es erlauben, zeichnen auf.",
+    "server": "Server",
+    "serverHint": "Eine wss://- oder https://-Adresse ohne Pfad, zum Beispiel die unter dem QR-Code, den der Server ausgibt.",
+    "connect": "Verbinden",
+    "resetServer": "Server des Builds verwenden",
+    "invalidServer": "Keine Serveradresse",
+    "invalidServerHint": "Gib einen Origin wie wss://example.trycloudflare.com ohne Pfad ein.",
+    "linkFailed": "Dieser Link enthält keine Serveradresse.",
+    "switchTitle": "Mit einem anderen Server verbinden?",
+    "switchMessage": "Dein Mikrofon-Audio wird an {{server}} gesendet. Du wirst abgemeldet und die App startet neu. Verbinde dich nur mit Servern, denen du vertraust.",
+    "source": {
+      "app": "In der App festgelegt. Die App startet neu, wenn du das änderst.",
+      "build": "Aus EXPO_PUBLIC_SERVER_URL. Scanne den QR-Code des Servers oder tippe auf Server, um das zu ändern.",
+      "fallback": "Kein Server festgelegt, daher sucht die App auf localhost. Scanne den QR-Code des Servers oder tippe auf Server, um einen festzulegen."
+    }
   },
   "about": {
     "copyright": "© 2026 STiTy. Alle Rechte vorbehalten."
@@ -371,5 +408,20 @@
     "deletedMessage": "Dein Konto, dein Verlauf und die STiTy-Daten auf diesem Handy sind gelöscht.",
     "deleteFailed": "Konto konnte nicht gelöscht werden",
     "deleteFailedMessage": "Es wurde nichts gelöscht. Prüfe deine Verbindung und versuche es erneut."
+  },
+  "room": {
+    "title": "Personen in diesem Raum",
+    "participant": "Teilnehmer {{number}}",
+    "host": "Raumleitung",
+    "you": "Du",
+    "micOn": "Mikro an",
+    "micOff": "Mikro aus",
+    "allMicsOn": "Alle Mikros einschalten",
+    "allMicsOff": "Alle Mikros ausschalten",
+    "remove": "{{name}} entfernen",
+    "removeTitle": "{{name}} entfernen?",
+    "removeMessage": "Die Person verlässt das Gespräch sofort.",
+    "removeAction": "Entfernen",
+    "hostHint": "Du leitest diesen Raum. Wenn du gehst, wird er für alle geschlossen."
   }
 }

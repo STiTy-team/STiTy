@@ -54,8 +54,7 @@ def enabled() -> bool:
 
 
 def project_name() -> str:
-    return (os.environ.get("LANGSMITH_PROJECT")
-            or os.environ.get("LANGCHAIN_PROJECT") or "autoseg")
+    return os.environ.get("LANGSMITH_PROJECT") or os.environ.get("LANGCHAIN_PROJECT") or "autoseg"
 
 
 class _NullRun:
@@ -81,30 +80,32 @@ class _LangSmithRun:
                 prompt = u.get("prompt_tokens", 0) or 0
                 completion = u.get("completion_tokens", 0) or 0
                 cached = (u.get("prompt_tokens_details") or {}).get("cached_tokens", 0) or 0
-                reasoning = ((u.get("completion_tokens_details") or {})
-                             .get("reasoning_tokens", 0) or 0)
+                reasoning = (u.get("completion_tokens_details") or {}).get(
+                    "reasoning_tokens", 0
+                ) or 0
                 choice = (payload.get("choices") or [{}])[0]
                 # LangSmith 는 `usage_metadata` 로 토큰을 읽고 모델명으로 단가를 붙인다.
                 # 사고 토큰은 output_token_details.reasoning 자리에 넣어야 출력 토큰과
                 # 따로 보인다 — 이 런의 비용은 사실상 전부 여기서 나온다.
-                self._rt.end(outputs={
-                    "content": (choice.get("message") or {}).get("content"),
-                    "finish_reason": choice.get("finish_reason"),
-                    "usage_metadata": {
-                        "input_tokens": prompt,
-                        "output_tokens": completion,
-                        "total_tokens": prompt + completion,
-                        "input_token_details": {"cache_read": cached},
-                        "output_token_details": {"reasoning": reasoning},
-                    },
-                })
+                self._rt.end(
+                    outputs={
+                        "content": (choice.get("message") or {}).get("content"),
+                        "finish_reason": choice.get("finish_reason"),
+                        "usage_metadata": {
+                            "input_tokens": prompt,
+                            "output_tokens": completion,
+                            "total_tokens": prompt + completion,
+                            "input_token_details": {"cache_read": cached},
+                            "output_token_details": {"reasoning": reasoning},
+                        },
+                    }
+                )
             self._rt.patch()
-        except Exception as e:                                   # noqa: BLE001
+        except Exception as e:  # noqa: BLE001
             _warn_once(f"LangSmith 기록 실패(무시하고 계속): {e}")
 
 
-def start_llm_run(purpose: str, model: str, system: str, user: str,
-                  metadata: dict | None = None):
+def start_llm_run(purpose: str, model: str, system: str, user: str, metadata: dict | None = None):
     """LLM 호출 1건의 추적을 시작한다. 반환 핸들에 `.finish(payload=|error=)`.
 
     실패하면 `_NullRun` 을 준다 — 호출부는 성공 여부를 알 필요가 없다.
@@ -119,13 +120,23 @@ def start_llm_run(purpose: str, model: str, system: str, user: str,
             run_type="llm",
             project_name=project_name(),
             tags=[purpose, model],
-            inputs={"messages": [{"role": "system", "content": system},
-                                 {"role": "user", "content": user}]},
-            extra={"metadata": {"ls_provider": "openai", "ls_model_name": model,
-                                "purpose": purpose, **(metadata or {})}},
+            inputs={
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ]
+            },
+            extra={
+                "metadata": {
+                    "ls_provider": "openai",
+                    "ls_model_name": model,
+                    "purpose": purpose,
+                    **(metadata or {}),
+                }
+            },
         )
         rt.post()
         return _LangSmithRun(rt, model, time.time())
-    except Exception as e:                                       # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         _warn_once(f"LangSmith 시작 실패(추적 없이 계속): {e}")
         return _NullRun()

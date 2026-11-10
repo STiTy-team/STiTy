@@ -53,7 +53,9 @@ function ConfigTable({
   if (!rows.length)
     return (
       <Notice>
-        {query ? `찾는 ${KIND_LABEL[kind]} 설정이 없어요.` : `${KIND_LABEL[kind]} 설정이 아직 없어요. 오른쪽 위 버튼으로 추가해 주세요.`}
+        {query
+          ? `찾는 ${KIND_LABEL[kind]} 설정이 없어요.`
+          : `${KIND_LABEL[kind]} 설정이 아직 없어요. 오른쪽 위 버튼으로 추가해 주세요.`}
       </Notice>
     )
   return (
@@ -154,7 +156,13 @@ export function ConfigsPage() {
             </div>
             {KINDS.map((k) => (
               <TabsContent key={k} value={k} className="pt-3">
-                <ConfigTable kind={k} configs={configs.data} query={query.trim().toLowerCase()} opened={opened} onOpen={setOpened} />
+                <ConfigTable
+                  kind={k}
+                  configs={configs.data}
+                  query={query.trim().toLowerCase()}
+                  opened={opened}
+                  onOpen={setOpened}
+                />
               </TabsContent>
             ))}
             {opened && configs.data[kind][opened] && (

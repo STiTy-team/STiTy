@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { useMemo, useRef, useState, type ReactNode } from "react"
 import { Navigate, useSearchParams } from "react-router"
 
 import { Notice, PageBody, PageHeader } from "@/components/page-header"
+import { ColumnHead } from "@/components/replay/column-head"
 import { DataPanel } from "@/components/replay/data-panel"
 import { EventStream } from "@/components/replay/event-stream"
 import { ItemMetricTiles, PipelineConfig, RunSummary } from "@/components/replay/kv"
@@ -14,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAudioSync, usePlayback } from "@/hooks/use-playback"
+import { useAudioSync, usePlayback, useSpaceToToggle } from "@/hooks/use-playback"
 import { compareCandidates, prepareItem } from "@/lib/replay/model"
 import { replayUrls, useItemData, useReplay, useReplayItem } from "@/lib/replay/queries"
 import { quietTurns } from "@/lib/replay/turns"
@@ -50,18 +51,15 @@ function saveTab(tab: DetailTab) {
   }
 }
 
-function ColumnHead({ title, description, children }: { title?: string; description: ReactNode; children?: ReactNode }) {
-  return (
-    <div className="mb-3 flex min-h-9 flex-wrap items-center gap-x-3 gap-y-2">
-      {title && <h2 className="font-semibold">{title}</h2>}
-      <p className="text-sm text-muted-foreground">{description}</p>
-      <span className="flex-1" />
-      {children}
-    </div>
-  )
-}
-
-function ComparePicker({ runs, value, onChange }: { runs: CatalogRun[]; value: string | null; onChange: (run: string | null) => void }) {
+function ComparePicker({
+  runs,
+  value,
+  onChange,
+}: {
+  runs: CatalogRun[]
+  value: string | null
+  onChange: (run: string | null) => void
+}) {
   return (
     <Select value={value ?? NO_COMPARE} onValueChange={(v) => onChange(v === NO_COMPARE ? null : v)}>
       <SelectTrigger size="sm" className="max-w-full font-mono text-xs" aria-label="비교할 실행">
@@ -86,23 +84,6 @@ function Side({ caption, children }: { caption?: string; children: ReactNode }) 
       {children}
     </section>
   )
-}
-
-function useSpaceToToggle(toggle: () => void) {
-  const latest = useRef(toggle)
-  useEffect(() => {
-    latest.current = toggle
-  })
-  useEffect(() => {
-    const onKey = (ev: KeyboardEvent) => {
-      if (ev.code !== "Space") return
-      if ((ev.target as Element).closest("input, textarea, button, [role=combobox], [role=option], [role=tab], [contenteditable]")) return
-      ev.preventDefault()
-      latest.current()
-    }
-    addEventListener("keydown", onKey)
-    return () => removeEventListener("keydown", onKey)
-  }, [])
 }
 
 function ItemReplay({
@@ -147,7 +128,9 @@ function ItemReplay({
   const compareQuery = useReplayItem(comparing ? compareRun : null, item.id)
   const compared = useMemo(() => (compareQuery.data ? prepareItem(compareQuery.data) : null), [compareQuery.data])
 
-  const picker = candidates.length > 0 && <ComparePicker runs={candidates} value={comparing ? compareRun : null} onChange={onCompare} />
+  const picker = candidates.length > 0 && (
+    <ComparePicker runs={candidates} value={comparing ? compareRun : null} onChange={onCompare} />
+  )
   const compareCaption = compareQuery.isPending
     ? "불러오는 중…"
     : compareQuery.error
@@ -164,14 +147,37 @@ function ItemReplay({
     <div className="flex flex-col gap-6">
       <audio ref={audio} preload="auto" />
       <ItemStats metrics={item.metrics} />
-      <PlayerCard item={played} turns={turns} playback={playback} speed={speed} onSpeed={onSpeed} soundOn={soundOn} onSound={onSound} />
+      <PlayerCard
+        item={played}
+        turns={turns}
+        playback={playback}
+        speed={speed}
+        onSpeed={onSpeed}
+        soundOn={soundOn}
+        onSound={onSound}
+      />
 
-      <div className={cn("grid items-start gap-6", comparing ? "xl:grid-cols-2" : "xl:grid-cols-[384px_minmax(0,1fr)]")}>
+      <div
+        className={cn("grid items-start gap-6", comparing ? "xl:grid-cols-2" : "xl:grid-cols-[384px_minmax(0,1fr)]")}
+      >
         <section>
-          <ColumnHead title="휴대폰 화면" description={<>클라이언트가 <code>final</code>로 그린 화면</>}>
+          <ColumnHead
+            title="휴대폰 화면"
+            description={
+              <>
+                클라이언트가 <code>final</code>로 그린 화면
+              </>
+            }
+          >
             {!comparing && picker}
           </ColumnHead>
-          <Phone item={played} now={playback.now} playing={playback.playing} srcLang={item.src_lang} targetLang={item.target_lang} />
+          <Phone
+            item={played}
+            now={playback.now}
+            playing={playback.playing}
+            srcLang={item.src_lang}
+            targetLang={item.target_lang}
+          />
         </section>
         {comparing && (
           <section>
@@ -230,7 +236,13 @@ function ItemReplay({
               <Reference item={item} />
             </TabsContent>
             <TabsContent value="data">
-              <DataPanel data={itemData.data} loading={itemData.isPending} turns={turns} targetLang={item.target_lang} playback={playback} />
+              <DataPanel
+                data={itemData.data}
+                loading={itemData.isPending}
+                turns={turns}
+                targetLang={item.target_lang}
+                playback={playback}
+              />
             </TabsContent>
             <TabsContent value="metrics" className={pair}>
               <Side caption={ours}>
@@ -297,7 +309,9 @@ export function ReplayPage() {
     <>
       <PageHeader title="Replay" />
       <PageBody className="max-w-[1380px]">
-        {data && <ReplayControls data={data} itemId={itemId ?? ""} onItem={(id) => update({ run: data.run.dir, item: id })} />}
+        {data && (
+          <ReplayControls data={data} itemId={itemId ?? ""} onItem={(id) => update({ run: data.run.dir, item: id })} />
+        )}
         {replay.isPending ? (
           <Skeleton className="h-9 w-96" />
         ) : replay.error ? (

@@ -98,7 +98,7 @@ def load_rows(root: Path, config: str, split: str) -> list[dict]:
     if not files:
         raise FileNotFoundError(
             f"parquet 이 없습니다: {root / config}/{split}-*.parquet\n"
-            f'  hf download fixie-ai/covost2 --repo-type dataset '
+            f"  hf download fixie-ai/covost2 --repo-type dataset "
             f'--include "{config}/{split}-*.parquet" --local-dir {root}'
         )
     rows: list[dict] = []
@@ -120,8 +120,7 @@ def decode_16k(audio_bytes: bytes) -> np.ndarray:
     if sr != SAMPLING_RATE:
         import librosa
 
-        data = librosa.resample(data, orig_sr=sr, target_sr=SAMPLING_RATE,
-                                res_type="soxr_hq")
+        data = librosa.resample(data, orig_sr=sr, target_sr=SAMPLING_RATE, res_type="soxr_hq")
     return data
 
 
@@ -149,8 +148,7 @@ def build_single(args) -> int:
     src_lang, tgt_lang = args.config.split("_", 1)
     tgt_lang = tgt_lang.split("-")[0]
     # 영어 오디오는 세 config 이 동일하므로 캐시 경로에 config 을 넣지 않는다.
-    cache = (Path(args.audio_cache).expanduser().resolve()
-             / f"{src_lang}_{args.split}")
+    cache = Path(args.audio_cache).expanduser().resolve() / f"{src_lang}_{args.split}"
     cache.mkdir(parents=True, exist_ok=True)
     out_path = Path(args.out).expanduser().resolve()
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -168,8 +166,10 @@ def build_single(args) -> int:
     if ids is not None:
         missing = set(ids) - set(by_id)
         if missing:
-            print(f"  [경고] id 목록 중 {len(missing)}개가 parquet 에 없습니다 "
-                  f"(예: {sorted(missing)[:3]})")
+            print(
+                f"  [경고] id 목록 중 {len(missing)}개가 parquet 에 없습니다 "
+                f"(예: {sorted(missing)[:3]})"
+            )
         order = [i for i in ids if i in by_id]
     else:
         order = [r["id"] for r in rows]
@@ -204,19 +204,25 @@ def build_single(args) -> int:
             if not wav_path.exists():
                 sf.write(wav_path, a, SAMPLING_RATE, subtype="PCM_16")
 
-            out.write(json.dumps({
-                "utt_id": uid,
-                "wav": str(wav_path),
-                "offset": 0.0,
-                "duration": round(duration, 3),
-                "src_lang": src_lang,
-                "tgt_lang": tgt_lang,
-                "src_text": it["sentence"].strip(),
-                "tgt_text": it["translation"].strip(),
-                "speaker_id": it["client_id"][:16],
-                "talk_id": it["client_id"][:12],
-                "n_clips": 1,
-            }, ensure_ascii=False) + "\n")
+            out.write(
+                json.dumps(
+                    {
+                        "utt_id": uid,
+                        "wav": str(wav_path),
+                        "offset": 0.0,
+                        "duration": round(duration, 3),
+                        "src_lang": src_lang,
+                        "tgt_lang": tgt_lang,
+                        "src_text": it["sentence"].strip(),
+                        "tgt_text": it["translation"].strip(),
+                        "speaker_id": it["client_id"][:16],
+                        "talk_id": it["client_id"][:12],
+                        "n_clips": 1,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
             kept += 1
             total_sec += duration
             if kept % 500 == 0:
@@ -224,17 +230,23 @@ def build_single(args) -> int:
                 print(f"  ... {kept}개 / {total_sec / 3600:.2f}시간 ({el:.0f}초 경과)")
 
     print(f"\nmanifest: {out_path}")
-    print(f"  발화 {kept}개 (클립 1개 = 발화 1개) / 오디오 {total_sec / 3600:.2f}시간 / 제외 {skipped}")
+    print(
+        f"  발화 {kept}개 (클립 1개 = 발화 1개) / 오디오 {total_sec / 3600:.2f}시간 / 제외 {skipped}"
+    )
     if kept:
         print(f"  평균 길이 {total_sec / kept:.2f}초")
         if args.trim_db > 0 and raw_sec > 0:
-            print(f"  트림(top_db={args.trim_db}) 전 {raw_sec/3600:.2f}시간 "
-                  f"→ 후 {trimmed_sec/3600:.2f}시간 "
-                  f"({(trimmed_sec-raw_sec)/raw_sec*100:+.1f}%)")
+            print(
+                f"  트림(top_db={args.trim_db}) 전 {raw_sec / 3600:.2f}시간 "
+                f"→ 후 {trimmed_sec / 3600:.2f}시간 "
+                f"({(trimmed_sec - raw_sec) / raw_sec * 100:+.1f}%)"
+            )
         print(f"  오디오 캐시: {cache}")
         for n_cli in (1, 16):
-            print(f"  실시간 페이싱 예상 소요({n_cli}병렬): "
-                  f"{(total_sec + kept * 1.0) / 60 / n_cli:.0f}분")
+            print(
+                f"  실시간 페이싱 예상 소요({n_cli}병렬): "
+                f"{(total_sec + kept * 1.0) / 60 / n_cli:.0f}분"
+            )
     return 0
 
 
@@ -258,8 +270,7 @@ def build(args) -> int:
     groups: OrderedDict[str, list[dict]] = OrderedDict()
     for r in rows:
         groups.setdefault(r["client_id"], []).append(r)
-    print(f"  화자 {len(groups)}명 / 화자당 클립 "
-          f"평균 {len(rows) / len(groups):.2f}개")
+    print(f"  화자 {len(groups)}명 / 화자당 클립 평균 {len(rows) / len(groups):.2f}개")
 
     gap = np.zeros(int(SAMPLING_RATE * args.concat_gap_ms / 1000), dtype=np.float32)
 
@@ -305,35 +316,47 @@ def build(args) -> int:
             wav_path = cache / f"{utt_id}.wav"
             sf.write(wav_path, audio, SAMPLING_RATE, subtype="PCM_16")
 
-            out.write(json.dumps({
-                "utt_id": utt_id,
-                "wav": str(wav_path),
-                "offset": 0.0,
-                "duration": round(duration, 3),
-                "src_lang": src_lang,
-                "tgt_lang": tgt_lang,
-                "src_text": " ".join(sents),
-                "tgt_text": " ".join(trans),
-                "speaker_id": cid[:16],
-                "talk_id": cid[:12],
-                "n_clips": len(sents),
-            }, ensure_ascii=False) + "\n")
+            out.write(
+                json.dumps(
+                    {
+                        "utt_id": utt_id,
+                        "wav": str(wav_path),
+                        "offset": 0.0,
+                        "duration": round(duration, 3),
+                        "src_lang": src_lang,
+                        "tgt_lang": tgt_lang,
+                        "src_text": " ".join(sents),
+                        "tgt_text": " ".join(trans),
+                        "speaker_id": cid[:16],
+                        "talk_id": cid[:12],
+                        "n_clips": len(sents),
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
             kept += 1
             total_sec += duration
 
             if kept % 500 == 0:
                 el = time.perf_counter() - t0
-                print(f"  ... {kept}개 / {total_sec / 3600:.2f}시간 "
-                      f"({el:.0f}초 경과, {kept / el:.1f}발화/초)")
+                print(
+                    f"  ... {kept}개 / {total_sec / 3600:.2f}시간 "
+                    f"({el:.0f}초 경과, {kept / el:.1f}발화/초)"
+                )
 
     print(f"\nmanifest: {out_path}")
-    print(f"  발화 {kept}개 (화자 1명 = 발화 1개) / 오디오 {total_sec / 3600:.2f}시간 / 제외 {skipped}")
+    print(
+        f"  발화 {kept}개 (화자 1명 = 발화 1개) / 오디오 {total_sec / 3600:.2f}시간 / 제외 {skipped}"
+    )
     if kept:
         print(f"  평균 길이 {total_sec / kept:.2f}초")
         print(f"  오디오 캐시: {cache}")
         for n_cli in (1, 16):
-            print(f"  실시간 페이싱 예상 소요({n_cli}병렬): "
-                  f"{(total_sec + kept * 1.0) / 60 / n_cli:.0f}분")
+            print(
+                f"  실시간 페이싱 예상 소요({n_cli}병렬): "
+                f"{(total_sec + kept * 1.0) / 60 / n_cli:.0f}분"
+            )
     return 0
 
 
@@ -343,23 +366,40 @@ def main():
     p.add_argument("--config", default="en_de", help="언어쌍 (en_de, en_ja, en_zh-CN, de_en ...)")
     p.add_argument("--split", default="test", choices=["test", "validation", "train"])
     p.add_argument("--out", required=True)
-    p.add_argument("--mode", default="concat", choices=["concat", "single"],
-                   help="concat=화자별 이어붙이기(기본), single=원본 클립 하나가 발화 하나")
-    p.add_argument("--id-list", default=None,
-                   help="single 모드에서 쓸 발화 id 목록 JSON "
-                        "(select_covost2_subset.py 산출물). 미지정 시 전체")
-    p.add_argument("--audio-cache", default="~/datasets/covost2_concat",
-                   help="wav 를 저장할 곳 (리포 밖). single 모드는 미지정 시 "
-                        "~/datasets/covost2_single 로 자동 대체된다")
+    p.add_argument(
+        "--mode",
+        default="concat",
+        choices=["concat", "single"],
+        help="concat=화자별 이어붙이기(기본), single=원본 클립 하나가 발화 하나",
+    )
+    p.add_argument(
+        "--id-list",
+        default=None,
+        help="single 모드에서 쓸 발화 id 목록 JSON "
+        "(select_covost2_subset.py 산출물). 미지정 시 전체",
+    )
+    p.add_argument(
+        "--audio-cache",
+        default="~/datasets/covost2_concat",
+        help="wav 를 저장할 곳 (리포 밖). single 모드는 미지정 시 "
+        "~/datasets/covost2_single 로 자동 대체된다",
+    )
     p.add_argument("--limit", type=int, default=None, help="앞에서 N명(=N발화)만")
-    p.add_argument("--min-clips", type=int, default=1,
-                   help="이 개수 미만의 클립만 가진 화자는 제외 (1이면 전부 사용)")
+    p.add_argument(
+        "--min-clips",
+        type=int,
+        default=1,
+        help="이 개수 미만의 클립만 가진 화자는 제외 (1이면 전부 사용)",
+    )
     p.add_argument("--min-duration", type=float, default=1.0)
     p.add_argument("--max-duration", type=float, default=600.0)
-    p.add_argument("--concat-gap-ms", type=int, default=300,
-                   help="클립 사이에 넣을 무음 길이")
-    p.add_argument("--trim-db", type=float, default=30.0,
-                   help="이어붙이기 전 앞뒤 묵음 트림 기준(top_db). 0이면 트림 안 함")
+    p.add_argument("--concat-gap-ms", type=int, default=300, help="클립 사이에 넣을 무음 길이")
+    p.add_argument(
+        "--trim-db",
+        type=float,
+        default=30.0,
+        help="이어붙이기 전 앞뒤 묵음 트림 기준(top_db). 0이면 트림 안 함",
+    )
     args = p.parse_args()
     # concat 전용 기본 경로를 single 모드가 물려받으면 두 종류 wav 가 한 폴더에 섞인다.
     if args.mode == "single" and args.audio_cache == "~/datasets/covost2_concat":

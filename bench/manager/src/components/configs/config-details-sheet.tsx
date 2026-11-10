@@ -16,7 +16,14 @@ import { useEditConfigMeta } from "@/lib/queries"
 
 const NAME_PATTERN = /^[a-z0-9][a-z0-9.+-]*(_[a-z0-9][a-z0-9.+-]*)*$/
 
-const splitTags = (text: string) => [...new Set(text.split(",").map((tag) => tag.trim()).filter(Boolean))]
+const splitTags = (text: string) => [
+  ...new Set(
+    text
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean),
+  ),
+]
 
 export const CONFIG_ROW_ATTR = "data-config-row"
 
@@ -40,7 +47,17 @@ function CompareButton({ kind, name, config }: { kind: ConfigKind; name: string;
   )
 }
 
-function Details({ kind, name, config, onEdit }: { kind: ConfigKind; name: string; config: ConfigFile; onEdit: () => void }) {
+function Details({
+  kind,
+  name,
+  config,
+  onEdit,
+}: {
+  kind: ConfigKind
+  name: string
+  config: ConfigFile
+  onEdit: () => void
+}) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 pb-4">
       {config.tags.length > 0 && (
@@ -64,7 +81,9 @@ function Details({ kind, name, config, onEdit }: { kind: ConfigKind; name: strin
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-1.5">
         <span className="text-xs text-muted-foreground">YAML</span>
-        <pre className="min-h-0 flex-1 overflow-auto rounded-lg border bg-muted/40 p-3 font-mono text-xs leading-relaxed">{config.yaml}</pre>
+        <pre className="min-h-0 flex-1 overflow-auto rounded-lg border bg-muted/40 p-3 font-mono text-xs leading-relaxed">
+          {config.yaml}
+        </pre>
       </div>
     </div>
   )
@@ -104,7 +123,11 @@ function EditForm({
         edit: {
           etag: config.etag,
           name: trimmed,
-          meta: { description: description.trim(), tags: splitTags(tags), ...(versionNumber > 1 && { version: versionNumber }) },
+          meta: {
+            description: description.trim(),
+            tags: splitTags(tags),
+            ...(versionNumber > 1 && { version: versionNumber }),
+          },
         },
       },
       { onSuccess: (saved) => onSaved(saved.name) },
@@ -117,7 +140,9 @@ function EditForm({
   return (
     <>
       <div className="flex min-w-0 flex-col gap-4 overflow-auto px-4">
-        <p className="text-sm text-muted-foreground">여기서는 이름과 meta 블록만 바꿀 수 있어요. 나머지 YAML은 그대로예요.</p>
+        <p className="text-sm text-muted-foreground">
+          여기서는 이름과 meta 블록만 바꿀 수 있어요. 나머지 YAML은 그대로예요.
+        </p>
         <div className="flex flex-col gap-2">
           <Label htmlFor="edit-name">이름</Label>
           <Input
@@ -129,21 +154,39 @@ function EditForm({
             spellCheck={false}
           />
           {trimmed !== name && (
-            <p className="text-xs text-muted-foreground">이름을 바꾸면 S3에서 설정 파일이 옮겨져요. 지난 실행은 원래 이름을 그대로 써요.</p>
+            <p className="text-xs text-muted-foreground">
+              이름을 바꾸면 S3에서 설정 파일이 옮겨져요. 지난 실행은 원래 이름을 그대로 써요.
+            </p>
           )}
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="edit-description">설명</Label>
-          <Textarea id="edit-description" value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-20" />
+          <Textarea
+            id="edit-description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="min-h-20"
+          />
         </div>
         <div className="grid grid-cols-[1fr_6rem] gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="edit-tags">태그</Label>
-            <Input id="edit-tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="fleurs, sentence, clean" />
+            <Input
+              id="edit-tags"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="fleurs, sentence, clean"
+            />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="edit-version">버전</Label>
-            <Input id="edit-version" type="number" min={1} value={version} onChange={(e) => setVersion(e.target.value)} />
+            <Input
+              id="edit-version"
+              type="number"
+              min={1}
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+            />
           </div>
         </div>
         {(problem || error) && <p className="text-sm text-destructive">{problem ?? error}</p>}

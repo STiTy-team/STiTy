@@ -20,19 +20,27 @@ build    : boundary rows (up to --per_rec), one mid-phrase row and the full row 
            that neither target Korean/English from another language nor carry <SEG>.
 
 usage: sents -> phrases -> hyprefix -> leak -> align -> build"""
+
 import argparse, json, os, random, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # probe_z, seg_units
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)  # probe_z, seg_units
 import build_connective as bc  # noqa: E402  (haeyo, split_inside, nouns, FINAL_END, PUNCT_END)
 import build_connective_en as be  # noqa: E402  (resplit, words, alnum)
 
 NAME = {"en": "English", "ko": "Korean", "ja": "Japanese", "zh": "Chinese"}
 NOSPACE = {"ja", "zh"}
-UNIT = {"en": "2 to 5 words", "ko": "1 to 3 words", "ja": "3 to 8 characters", "zh": "3 to 8 characters"}
+UNIT = {
+    "en": "2 to 5 words",
+    "ko": "1 to 3 words",
+    "ja": "3 to 8 characters",
+    "zh": "3 to 8 characters",
+}
 RULES = {
     "ko": "Korean: follow the source order with connective endings (-고, -며, -는데, -면서, -지만, -어서/아서, -도록) and particles, "
-          "never with -다, -요, -니다 or a period before the end; end the sentence politely in 해요체 (-어요/-아요/-예요/-이에요).",
+    "never with -다, -요, -니다 or a period before the end; end the sentence politely in 해요체 (-어요/-아요/-예요/-이에요).",
     "en": "English: one sentence that grows in source order; no period, question or exclamation mark before the end.",
 }
 EXAMPLE = {
@@ -50,13 +58,18 @@ Bad:  [{"src": "셰이는", "add": "Hsieh implied"}, ...]   (uses "implied" befo
 }
 # --v2 (prefix2): longer phrases, an explicit <WAIT> where the target words must wait, and additions that keep the
 # particle / connective that joins them to the next one, so the joined additions read as one grammatical sentence.
-UNIT2 = {"en": "3 to 6 words", "ko": "2 to 4 words", "ja": "5 to 12 characters", "zh": "5 to 12 characters"}
+UNIT2 = {
+    "en": "3 to 6 words",
+    "ko": "2 to 4 words",
+    "ja": "5 to 12 characters",
+    "zh": "5 to 12 characters",
+}
 RULES2 = {
     "ko": "Korean: follow the source order. Each addition ends so the next one can follow grammatically: keep case "
-          "particles (-을/를, -이/가, -에게, -에서) and connective endings (-고, -며, -는데, -면서, -지만, -어서/아서) on the words, "
-          "never -다, -요, -니다 or a period before the end; end the sentence politely in 해요체 (-어요/-아요/-예요/-이에요).",
+    "particles (-을/를, -이/가, -에게, -에서) and connective endings (-고, -며, -는데, -면서, -지만, -어서/아서) on the words, "
+    "never -다, -요, -니다 or a period before the end; end the sentence politely in 해요체 (-어요/-아요/-예요/-이에요).",
     "en": "English: one sentence that grows in source order; each addition continues the previous one grammatically "
-          "(use connectives such as which, who, that, and, while); no period, question or exclamation mark before the end.",
+    "(use connectives such as which, who, that, and, while); no period, question or exclamation mark before the end.",
 }
 EXAMPLE2 = {
     "ko": """Example. Sentence: They met Charles W. Iddings, an American surveyor, along the United States border.
@@ -71,12 +84,18 @@ Good: [{"src": "그들은 미국 국경에서", "add": "Along the United States 
        {"src": "찰스 W. 이딩스를 만났다.", "add": "met Charles W. Iddings, an American surveyor."}]
 Bad:  [{"src": "그들은 미국 국경에서", "add": "They met"}, ...]   (uses "met" before it is heard)""",
 }
-COVER_RULE = ("- Every part of the meaning must reach the {tgt} text by the end: never drop a clause, a negation or an "
-              "instruction (e.g. \"don't forget that\"); content that has to wait goes into a later addition, not away.")
-MIN_COVER = 0.4  # content-word recall of the joined additions against the reference (--v3 raises it)
-WAIT_RULE = ("- If the {tgt} words for a phrase cannot be written yet without breaking the sentence (a verb, particle or "
-             "head that comes later in {tgt}), write \"<WAIT>\" as its addition; the words then come in a later addition. "
-             "Use <WAIT> rather than writing a fragment that does not connect to what follows.")
+COVER_RULE = (
+    "- Every part of the meaning must reach the {tgt} text by the end: never drop a clause, a negation or an "
+    'instruction (e.g. "don\'t forget that"); content that has to wait goes into a later addition, not away.'
+)
+MIN_COVER = (
+    0.4  # content-word recall of the joined additions against the reference (--v3 raises it)
+)
+WAIT_RULE = (
+    "- If the {tgt} words for a phrase cannot be written yet without breaking the sentence (a verb, particle or "
+    'head that comes later in {tgt}), write "<WAIT>" as its addition; the words then come in a later addition. '
+    "Use <WAIT> rather than writing a fragment that does not connect to what follows."
+)
 
 PROMPT = """Make {tgt} simultaneous-interpretation subtitles for the {src_lang} sentence below. An interpreter translates while
 listening: follow the source order and do not wait for the end of the sentence unless you must.
@@ -106,23 +125,35 @@ def sents(a):
     hy = {r["id"]: r.get("hy") for r in map(json.loads, open(a.ko_ref, encoding="utf-8"))}
     for r in map(json.loads, open(a.en_manifest, encoding="utf-8")):  # English speech -> Korean
         if hy.get(r["id"]) and r["id"] not in seen:
-            seen.add(r["id"]); out.append({"sid": r["id"], "lang": "en", "tgt": "ko", "src": r["src"], "ref": hy[r["id"]]})
+            seen.add(r["id"])
+            out.append(
+                {"sid": r["id"], "lang": "en", "tgt": "ko", "src": r["src"], "ref": hy[r["id"]]}
+            )
     for r in map(json.loads, open(a.x_manifest, encoding="utf-8")):  # ko/ja/zh speech -> English
         if r["sid"] not in seen:
-            seen.add(r["sid"]); out.append({"sid": r["sid"], "lang": r["lang"], "tgt": "en", "src": r["src"], "ref": r["ref"]})
+            seen.add(r["sid"])
+            out.append(
+                {"sid": r["sid"], "lang": r["lang"], "tgt": "en", "src": r["src"], "ref": r["ref"]}
+            )
     with open(a.out, "w", encoding="utf-8") as f:
         for r in out:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(f"{len(out)} sentences: {sum(r['tgt'] == 'ko' for r in out)} -> ko, {sum(r['tgt'] == 'en' for r in out)} -> en")
+    print(
+        f"{len(out)} sentences: {sum(r['tgt'] == 'ko' for r in out)} -> ko, {sum(r['tgt'] == 'en' for r in out)} -> en"
+    )
 
 
 def closes(text, tgt):
     t = text.strip().rstrip("\"'”’)")
-    return bool(bc.PUNCT_END.search(t) or (tgt == "ko" and bc.FINAL_END.search(t.rstrip(",").rstrip())))
+    return bool(
+        bc.PUNCT_END.search(t) or (tgt == "ko" and bc.FINAL_END.search(t.rstrip(",").rstrip()))
+    )
 
 
 def content(text, tgt):
-    return {w[:2] if tgt == "ko" else w[:5] for w in (bc.nouns(text) if tgt == "ko" else be.words(text))}
+    return {
+        w[:2] if tgt == "ko" else w[:5] for w in (bc.nouns(text) if tgt == "ko" else be.words(text))
+    }
 
 
 def check(ph, adds, r):
@@ -148,14 +179,18 @@ def check(ph, adds, r):
     if len(joined) > 1.3 * len(r["ref"]) + 10:
         return "too_long"
     toks = re.findall(r"\w+", joined.lower())
-    grams = [tuple(toks[i: i + 4]) for i in range(len(toks) - 3)]
+    grams = [tuple(toks[i : i + 4]) for i in range(len(toks) - 3)]
     if len(grams) != len(set(grams)):
         return "repeated"
     ref = content(r["ref"], tgt)
     if ref and len(ref & content(joined, tgt)) / len(ref) < MIN_COVER:
         return "far_from_reference"
     letters = [c for c in joined if c.isalpha()]
-    if tgt == "ko" and letters and sum(0xAC00 <= ord(c) <= 0xD7A3 for c in letters) / len(letters) < 0.8:
+    if (
+        tgt == "ko"
+        and letters
+        and sum(0xAC00 <= ord(c) <= 0xD7A3 for c in letters) / len(letters) < 0.8
+    ):
         return "script"
     if tgt == "en" and re.search(r"[가-힣぀-ヿ一-鿿]", joined):
         return "script"
@@ -179,9 +214,12 @@ def leak(adds, hy, tgt):
 def phrases(a):
     from transformers import AutoTokenizer
     from vllm import LLM, SamplingParams
+
     name = "Qwen/Qwen3-8B"
     tok = AutoTokenizer.from_pretrained(name)
-    llm = LLM(model=name, dtype="bfloat16", gpu_memory_utilization=a.gpu_mem, max_model_len=4096, seed=0)
+    llm = LLM(
+        model=name, dtype="bfloat16", gpu_memory_utilization=a.gpu_mem, max_model_len=4096, seed=0
+    )
     sp = SamplingParams(temperature=0.0, max_tokens=900)
     if a.hy:
         rows = [json.loads(l) for l in open(a.hy, encoding="utf-8")]
@@ -190,23 +228,43 @@ def phrases(a):
 
     def msg(r, err, keep):
         v2 = a.v2
-        c = PROMPT.format(tgt=NAME[r["tgt"]], src_lang=NAME[r["lang"]], unit=(UNIT2 if v2 else UNIT)[r["lang"]],
-                          rules=(RULES2 if v2 else RULES)[r["tgt"]], example=(EXAMPLE2 if v2 else EXAMPLE)[r["tgt"]],
-                          wait=(WAIT_RULE.format(tgt=NAME[r["tgt"]]) + ("\n" + COVER_RULE.format(tgt=NAME[r["tgt"]]) if a.v3 else ""))
-                          if v2 else "", src=r["src"], ref=r["ref"])
+        c = PROMPT.format(
+            tgt=NAME[r["tgt"]],
+            src_lang=NAME[r["lang"]],
+            unit=(UNIT2 if v2 else UNIT)[r["lang"]],
+            rules=(RULES2 if v2 else RULES)[r["tgt"]],
+            example=(EXAMPLE2 if v2 else EXAMPLE)[r["tgt"]],
+            wait=(
+                WAIT_RULE.format(tgt=NAME[r["tgt"]])
+                + ("\n" + COVER_RULE.format(tgt=NAME[r["tgt"]]) if a.v3 else "")
+            )
+            if v2
+            else "",
+            src=r["src"],
+            ref=r["ref"],
+        )
         if keep:
             c += "\n\nUse exactly these phrases: " + json.dumps(r["phrases"], ensure_ascii=False)
         if err:
             c += f"\n\nYour previous answer broke a rule ({err}). Fix it."
-        return tok.apply_chat_template([{"role": "user", "content": c}], tokenize=False, add_generation_prompt=True,
-                                       enable_thinking=False)
+        return tok.apply_chat_template(
+            [{"role": "user", "content": c}],
+            tokenize=False,
+            add_generation_prompt=True,
+            enable_thinking=False,
+        )
 
     def parse(r, txt, keep):
-        m = re.search(r"\[.*\]", txt, re.S); ph = adds = None
+        m = re.search(r"\[.*\]", txt, re.S)
+        ph = adds = None
         try:
             obj = json.loads(m.group(0)) if m else None
-            ph = [str(x["src"]).strip() for x in obj]; adds = [str(x.get("add", "")).strip() for x in obj]
-            adds = ["" if x.upper().strip("<> ") == "WAIT" else x.replace("<WAIT>", "").strip() for x in adds]
+            ph = [str(x["src"]).strip() for x in obj]
+            adds = [str(x.get("add", "")).strip() for x in obj]
+            adds = [
+                "" if x.upper().strip("<> ") == "WAIT" else x.replace("<WAIT>", "").strip()
+                for x in adds
+            ]
         except Exception:
             return None, None, "format"
         if r["tgt"] == "ko" and adds and adds[-1]:
@@ -223,17 +281,27 @@ def phrases(a):
 
     def run(batch, errs, keep):
         outs = llm.generate([msg(r, e, keep) for r, e in zip(batch, errs)], sp, use_tqdm=False)
-        return [(*parse(r, o.outputs[0].text, keep), o.outputs[0].text) for r, o in zip(batch, outs)]
+        return [
+            (*parse(r, o.outputs[0].text, keep), o.outputs[0].text) for r, o in zip(batch, outs)
+        ]
 
-    t0 = time.time(); stats = {}
+    t0 = time.time()
+    stats = {}
     out = open(a.out, "w", encoding="utf-8")
     for b in range(0, len(rows), a.chunk):
-        batch = rows[b: b + a.chunk]
+        batch = rows[b : b + a.chunk]
         if a.hy:
             res, keep = [], True
             for r in batch:
                 extra = leak(r["adds"], r.get("hy") or {}, r["tgt"]) if not r["fail"] else []
-                res.append((r["phrases"], r["adds"], r["fail"] or (f"uses later words: {', '.join(extra)}" if extra else ""), ""))
+                res.append(
+                    (
+                        r["phrases"],
+                        r["adds"],
+                        r["fail"] or (f"uses later words: {', '.join(extra)}" if extra else ""),
+                        "",
+                    )
+                )
         else:
             res, keep = run(batch, [""] * len(batch), False), False
         redo = [i for i, x in enumerate(res) if x[2]]
@@ -243,10 +311,25 @@ def phrases(a):
             for i, x in zip(redo, again):
                 res[i] = x
         for r, (ph, adds, why, txt) in zip(batch, res):
-            k = why.split(":")[0] or "ok"; stats[k] = stats.get(k, 0) + 1
-            keep_hy = {"hy": r["hy"]} if r.get("hy") and ph == r.get("phrases") else {}  # the leak/fluency checks need it again
-            out.write(json.dumps({**{k_: r[k_] for k_ in ("sid", "lang", "tgt", "src", "ref")}, "phrases": ph, "adds": adds,
-                                  "raw_llm": txt if why else "", "fail": why, **keep_hy}, ensure_ascii=False) + "\n")
+            k = why.split(":")[0] or "ok"
+            stats[k] = stats.get(k, 0) + 1
+            keep_hy = (
+                {"hy": r["hy"]} if r.get("hy") and ph == r.get("phrases") else {}
+            )  # the leak/fluency checks need it again
+            out.write(
+                json.dumps(
+                    {
+                        **{k_: r[k_] for k_ in ("sid", "lang", "tgt", "src", "ref")},
+                        "phrases": ph,
+                        "adds": adds,
+                        "raw_llm": txt if why else "",
+                        "fail": why,
+                        **keep_hy,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
         out.flush()
         print(f"{b + len(batch)}/{len(rows)} {time.time() - t0:.0f}s {stats}", flush=True)
     print(f"done {stats}", flush=True)
@@ -257,35 +340,51 @@ def fluency(a):
     A row whose additions read much worse than a plain translation (kiwi < hy kiwi - --kiwi_margin) fails as
     not_fluent; `leak` then retries it once with the phrases kept, and a second `fluency` pass drops what still fails."""
     from comet import download_model, load_from_checkpoint
+
     model = load_from_checkpoint(download_model("Unbabel/wmt22-cometkiwi-da"))
     rows = [json.loads(l) for l in open(a.phrases, encoding="utf-8")]
     todo = [r for r in rows if not r["fail"] and (r.get("hy") or {}).get("full")]
     joined = lambda r: " ".join(x.strip() for x in r["adds"] if x.strip())
-    data = [{"src": r["src"], "mt": joined(r)} for r in todo] + [{"src": r["src"], "mt": r["hy"]["full"]} for r in todo]
+    data = [{"src": r["src"], "mt": joined(r)} for r in todo] + [
+        {"src": r["src"], "mt": r["hy"]["full"]} for r in todo
+    ]
     sc = model.predict(data, batch_size=64, gpus=1, progress_bar=False).scores
-    n = len(todo); bad = 0
+    n = len(todo)
+    bad = 0
     for r, k, kh in zip(todo, sc[:n], sc[n:]):
         r["kiwi"], r["kiwi_hy"] = round(float(k), 4), round(float(kh), 4)
         if k < kh - a.kiwi_margin:
-            r["fail"] = f"not_fluent: the joined additions do not read as one grammatical sentence (score {k:.2f} vs {kh:.2f} for a plain translation)"
+            r["fail"] = (
+                f"not_fluent: the joined additions do not read as one grammatical sentence (score {k:.2f} vs {kh:.2f} for a plain translation)"
+            )
             bad += 1
     unchecked = 0
     for r in rows:  # rewritten from scratch in the retry pass: no Hy prefixes, so neither leak nor fluency was checked
-        if not r["fail"] and len(r["adds"] or []) > 1 and any(x.strip() for x in r["adds"][:-1]) and not (r.get("hy") or {}).get("full"):
-            r["fail"] = "unchecked"; unchecked += 1
+        if (
+            not r["fail"]
+            and len(r["adds"] or []) > 1
+            and any(x.strip() for x in r["adds"][:-1])
+            and not (r.get("hy") or {}).get("full")
+        ):
+            r["fail"] = "unchecked"
+            unchecked += 1
     with open(a.out, "w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(f"fluency: {bad}/{n} not fluent (margin {a.kiwi_margin}); {unchecked} rewritten rows dropped as unchecked")
+    print(
+        f"fluency: {bad}/{n} not fluent (margin {a.kiwi_margin}); {unchecked} rewritten rows dropped as unchecked"
+    )
 
 
 def hyprefix(a):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from core.translator.local_translator import HyMTTranslator
+
     name = "tencent/Hy-MT2-1.8B"
     tr = HyMTTranslator(model_name=name, quant="none", context_window=0)
-    tok = AutoTokenizer.from_pretrained(name, padding_side="left"); tok.model_input_names = ["input_ids", "attention_mask"]
+    tok = AutoTokenizer.from_pretrained(name, padding_side="left")
+    tok.model_input_names = ["input_ids", "attention_mask"]
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     tr._tokenizer = tok
@@ -305,12 +404,18 @@ def hyprefix(a):
     jobs.sort(key=lambda j: len(j[4]))
     t0 = time.time()
     for b in range(0, len(jobs), 96):
-        jb = jobs[b: b + 96]
-        enc = tok([tr._build_prompt(t, tgt, lang, None) for _, _, lang, tgt, t in jb], return_tensors="pt", padding=True,
-                  add_special_tokens=False).to("cuda")
+        jb = jobs[b : b + 96]
+        enc = tok(
+            [tr._build_prompt(t, tgt, lang, None) for _, _, lang, tgt, t in jb],
+            return_tensors="pt",
+            padding=True,
+            add_special_tokens=False,
+        ).to("cuda")
         with torch.inference_mode():
-            o = model.generate(**enc, max_new_tokens=200, do_sample=False, pad_token_id=tok.pad_token_id)
-        for (n, k, _, _, _), seq in zip(jb, o[:, enc["input_ids"].shape[1]:]):
+            o = model.generate(
+                **enc, max_new_tokens=200, do_sample=False, pad_token_id=tok.pad_token_id
+            )
+        for (n, k, _, _, _), seq in zip(jb, o[:, enc["input_ids"].shape[1] :]):
             rows[n]["hy"][k] = tok.decode(seq, skip_special_tokens=True).strip().strip('"').strip()
         if (b // 96) % 100 == 0:
             print(f"{b + len(jb)}/{len(jobs)} {time.time() - t0:.0f}s", flush=True)
@@ -323,7 +428,10 @@ def hyprefix(a):
 def align(a):
     import librosa, torch
     from qwen_asr import Qwen3ForcedAligner
-    aligner = Qwen3ForcedAligner.from_pretrained("Qwen/Qwen3-ForcedAligner-0.6B", dtype=torch.bfloat16, device_map="cuda")
+
+    aligner = Qwen3ForcedAligner.from_pretrained(
+        "Qwen/Qwen3-ForcedAligner-0.6B", dtype=torch.bfloat16, device_map="cuda"
+    )
     P = {r["sid"]: r for r in map(json.loads, open(a.phrases, encoding="utf-8")) if not r["fail"]}
     recs = []
     for r in map(json.loads, open(a.en_manifest, encoding="utf-8")):
@@ -341,10 +449,13 @@ def align(a):
         cv = [r for r in by_lang.get("en", []) if not r["id"].startswith("fl_")]
         by_lang["en"] = fl + cv[: max(0, a.max_en - len(fl))]
     recs = [r for v in by_lang.values() for r in v]
-    out = open(a.out, "w", encoding="utf-8"); t0 = time.time(); ok = 0
+    out = open(a.out, "w", encoding="utf-8")
+    t0 = time.time()
+    ok = 0
     for n, r in enumerate(recs):
         p = P[r["sid"]]
-        wav, _ = librosa.load(r["audio"], sr=16000); dur = len(wav) / 16000
+        wav, _ = librosa.load(r["audio"], sr=16000)
+        dur = len(wav) / 16000
         try:
             items = aligner.align((wav, 16000), r["src"], NAME[p["lang"]])[0]
         except Exception:
@@ -355,20 +466,40 @@ def align(a):
             cum += be.alnum(it.text)
             while len(ends) < len(marks) and cum >= marks[len(ends)]:
                 ends.append(min(dur, float(it.end_time)))
-        if len(ends) != len(marks) or any(y < x for x, y in zip(ends, ends[1:])) or (ends and ends[-1] > dur - 0.2):
+        if (
+            len(ends) != len(marks)
+            or any(y < x for x, y in zip(ends, ends[1:]))
+            or (ends and ends[-1] > dur - 0.2)
+        ):
             continue
         ok += 1
-        out.write(json.dumps({**r, "lang": p["lang"], "tgt": p["tgt"], "dur": round(dur, 2), "adds": p["adds"],
-                              "ends": [round(e, 2) for e in ends] + [round(dur, 2)]}, ensure_ascii=False) + "\n")
+        out.write(
+            json.dumps(
+                {
+                    **r,
+                    "lang": p["lang"],
+                    "tgt": p["tgt"],
+                    "dur": round(dur, 2),
+                    "adds": p["adds"],
+                    "ends": [round(e, 2) for e in ends] + [round(dur, 2)],
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
         if (n + 1) % 1000 == 0:
-            out.flush(); print(f"{n + 1}/{len(recs)} {time.time() - t0:.0f}s, timed {ok}", flush=True)
+            out.flush()
+            print(f"{n + 1}/{len(recs)} {time.time() - t0:.0f}s, timed {ok}", flush=True)
     print(f"done {len(recs)} recordings, timed {ok}", flush=True)
 
 
 def build(a):
     import soundfile as sf
+
     os.makedirs(a.wav_dir, exist_ok=True)
-    rng = random.Random(0); rows = []; kinds = {"boundary": 0, "mid": 0, "full": 0}
+    rng = random.Random(0)
+    rows = []
+    kinds = {"boundary": 0, "mid": 0, "full": 0}
     for r in map(json.loads, open(a.aligned, encoding="utf-8")):
         adds, ends, tgt = r["adds"], r["ends"], r["tgt"]
         tag = f"language {NAME[tgt]}<asr_text>"
@@ -376,7 +507,9 @@ def build(a):
         wav = sr = None
 
         def cut(t, name):
-            if not a.cut_files:  # qwen3_asr_sft.load_audio reads "file#end=t" up to t: no copies on the (slow) disk
+            if (
+                not a.cut_files
+            ):  # qwen3_asr_sft.load_audio reads "file#end=t" up to t: no copies on the (slow) disk
                 return f"{os.path.abspath(r['audio'])}#end={t:.3f}"
             nonlocal wav, sr
             path = os.path.abspath(os.path.join(a.wav_dir, f"{r['id']}_{name}.wav"))
@@ -385,16 +518,31 @@ def build(a):
                     wav, sr = sf.read(r["audio"], dtype="float32")
                 sf.write(path, wav[: int(t * sr)], sr, subtype="PCM_16")
             return path
+
         bounds = [i for i in range(len(adds) - 1) if ends[i] >= 0.6]
         for i in sorted(rng.sample(bounds, min(a.per_rec, len(bounds)))):
-            rows.append({"audio": cut(ends[i] + a.pad, f"b{i}"), "text": tag + cum[i], "pair": f"{r['lang']}-{tgt}"}); kinds["boundary"] += 1
+            rows.append(
+                {
+                    "audio": cut(ends[i] + a.pad, f"b{i}"),
+                    "text": tag + cum[i],
+                    "pair": f"{r['lang']}-{tgt}",
+                }
+            )
+            kinds["boundary"] += 1
         spans = [(j, (ends[j - 1] if j else 0.0) + 0.15, ends[j] - 0.15) for j in range(len(adds))]
         spans = [(j, lo, hi) for j, lo, hi in spans if hi - lo >= 0.3 and hi >= 0.8]
         if spans:
             j, lo, hi = rng.choice(spans)
-            rows.append({"audio": cut(rng.uniform(max(lo, 0.6), hi), f"m{j}"), "text": tag + (cum[j - 1] if j else ""),
-                         "pair": f"{r['lang']}-{tgt}"}); kinds["mid"] += 1
-        rows.append({"audio": r["audio"], "text": tag + cum[-1], "pair": f"{r['lang']}-{tgt}"}); kinds["full"] += 1
+            rows.append(
+                {
+                    "audio": cut(rng.uniform(max(lo, 0.6), hi), f"m{j}"),
+                    "text": tag + (cum[j - 1] if j else ""),
+                    "pair": f"{r['lang']}-{tgt}",
+                }
+            )
+            kinds["mid"] += 1
+        rows.append({"audio": r["audio"], "text": tag + cum[-1], "pair": f"{r['lang']}-{tgt}"})
+        kinds["full"] += 1
     base = []
     for b in map(json.loads, open(a.base, encoding="utf-8")):
         s, t = b["pair"].split("-")
@@ -411,24 +559,58 @@ def build(a):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=["sents", "phrases", "hyprefix", "fluency", "leak", "align", "build"])
-    ap.add_argument("--v2", action="store_true", help="prefix2 prompt: longer phrases, <WAIT>, joining particles")
+    ap.add_argument(
+        "mode", choices=["sents", "phrases", "hyprefix", "fluency", "leak", "align", "build"]
+    )
+    ap.add_argument(
+        "--v2",
+        action="store_true",
+        help="prefix2 prompt: longer phrases, <WAIT>, joining particles",
+    )
     ap.add_argument("--kiwi_margin", type=float, default=0.08)
-    ap.add_argument("--v3", action="store_true", help="prefix3: --v2 plus a no-dropping rule and content-word recall >= --min_cover")
+    ap.add_argument(
+        "--v3",
+        action="store_true",
+        help="prefix3: --v2 plus a no-dropping rule and content-word recall >= --min_cover",
+    )
     ap.add_argument("--min_cover", type=float, default=0.7)
     ap.add_argument("--en_manifest", default="models/zprobe/data/connective/manifest.jsonl")
     ap.add_argument("--ko_ref", default="models/zprobe/data/connective/hyref.jsonl")
     ap.add_argument("--x_manifest", default="models/zprobe/data/connective_en/manifest.jsonl")
-    ap.add_argument("--sents"); ap.add_argument("--phrases"); ap.add_argument("--hy"); ap.add_argument("--aligned")
-    ap.add_argument("--base"); ap.add_argument("--wav_dir"); ap.add_argument("--out")
-    ap.add_argument("--limit", type=int, default=0); ap.add_argument("--chunk", type=int, default=512)
+    ap.add_argument("--sents")
+    ap.add_argument("--phrases")
+    ap.add_argument("--hy")
+    ap.add_argument("--aligned")
+    ap.add_argument("--base")
+    ap.add_argument("--wav_dir")
+    ap.add_argument("--out")
+    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--chunk", type=int, default=512)
     ap.add_argument("--gpu_mem", type=float, default=0.80)
-    ap.add_argument("--max_en", type=int, default=8000, help="English recordings kept for align/build (all FLEURS + CoVoST2 up to this)")
-    ap.add_argument("--cut_files", action="store_true", help="build: write cut wav copies instead of 'file#end=t' rows")
-    ap.add_argument("--per_rec", type=int, default=3); ap.add_argument("--pad", type=float, default=0.2)
+    ap.add_argument(
+        "--max_en",
+        type=int,
+        default=8000,
+        help="English recordings kept for align/build (all FLEURS + CoVoST2 up to this)",
+    )
+    ap.add_argument(
+        "--cut_files",
+        action="store_true",
+        help="build: write cut wav copies instead of 'file#end=t' rows",
+    )
+    ap.add_argument("--per_rec", type=int, default=3)
+    ap.add_argument("--pad", type=float, default=0.2)
     a = ap.parse_args()
     if a.v3:
-        a.v2 = True; MIN_COVER = a.min_cover
+        a.v2 = True
+        MIN_COVER = a.min_cover
     if a.mode == "leak":
         a.hy, a.mode = a.phrases, "phrases"
-    {"sents": sents, "phrases": phrases, "hyprefix": hyprefix, "fluency": fluency, "align": align, "build": build}[a.mode](a)
+    {
+        "sents": sents,
+        "phrases": phrases,
+        "hyprefix": hyprefix,
+        "fluency": fluency,
+        "align": align,
+        "build": build,
+    }[a.mode](a)

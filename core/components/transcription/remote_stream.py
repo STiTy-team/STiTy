@@ -26,6 +26,7 @@ multi-asr-backends and wlk branches):
   wlk       WhisperLiveKit /asr?language=xx with --pcm-input. pcm16 bytes ->
             {lines[], buffer_transcription} snapshots -> b"" -> ready_to_stop.
 """
+
 import asyncio
 import base64
 import json
@@ -55,8 +56,11 @@ def _protocol(value: str) -> str:
 
 def _lines_text(lines) -> str:
     # speaker -2 marks silence in WLK and carries no text.
-    return " ".join(t for t in ((ln.get("text") or "").strip()
-                                for ln in lines or [] if ln.get("speaker") != -2) if t)
+    return " ".join(
+        t
+        for t in ((ln.get("text") or "").strip() for ln in lines or [] if ln.get("speaker") != -2)
+        if t
+    )
 
 
 @transcribers.register("remote-stream")
@@ -86,8 +90,8 @@ class RemoteStreamTranscriber(Transcriber):
         self.language = langs.norm_code((languages or [""])[0]) or ""
         self.ws = None
         self.reader = None
-        self.confirmed = ""       # text the server will not revise
-        self.tail = ""            # text the server may still revise (WLK, Nemotron)
+        self.confirmed = ""  # text the server will not revise
+        self.tail = ""  # text the server may still revise (WLK, Nemotron)
         self.committed_words = 0
         self.fed_samples = 0
         self.partial_seq = 0
@@ -106,16 +110,19 @@ class RemoteStreamTranscriber(Transcriber):
         elif protocol == "wlk" and getattr(self, "language", ""):
             url = f"{url}?language={self.language}"
         return await asyncio.wait_for(
-            websockets.connect(url, max_size=None, ping_interval=None,
-                               open_timeout=CONNECT_TIMEOUT_SEC),
-            timeout=CONNECT_TIMEOUT_SEC)
+            websockets.connect(
+                url, max_size=None, ping_interval=None, open_timeout=CONNECT_TIMEOUT_SEC
+            ),
+            timeout=CONNECT_TIMEOUT_SEC,
+        )
 
     async def _open(self) -> None:
         self.ws = await self._connect()
         protocol = self.settings["protocol"]
         if protocol == "voxtral":
-            await self.ws.send(json.dumps({"type": "session.update",
-                                           "model": self.settings["model"]}))
+            await self.ws.send(
+                json.dumps({"type": "session.update", "model": self.settings["model"]})
+            )
             await self.ws.send(json.dumps({"type": "input_audio_buffer.commit"}))
         elif protocol == "nemotron":
             await self._expect("hello")
@@ -163,8 +170,7 @@ class RemoteStreamTranscriber(Transcriber):
                     if "lines" in msg:
                         confirmed = _lines_text(msg.get("lines"))
                         if not confirmed.startswith(self.confirmed):
-                            log.info("[REVISED] confirmed was=%r now=%r",
-                                     self.confirmed, confirmed)
+                            log.info("[REVISED] confirmed was=%r now=%r", self.confirmed, confirmed)
                         self.confirmed = confirmed
                         self.tail = (msg.get("buffer_transcription") or "").strip()
                 self._offer_partial()
@@ -180,8 +186,11 @@ class RemoteStreamTranscriber(Transcriber):
             await self._open()
         self.fed_samples += len(audio) // 2
         if self.settings["protocol"] == "voxtral":
-            await self.ws.send(json.dumps({"type": "input_audio_buffer.append",
-                                           "audio": base64.b64encode(audio).decode()}))
+            await self.ws.send(
+                json.dumps(
+                    {"type": "input_audio_buffer.append", "audio": base64.b64encode(audio).decode()}
+                )
+            )
         else:
             await self.ws.send(audio)
         if self.cfg.stity.commit.enable_dot_commit:
@@ -199,16 +208,16 @@ class RemoteStreamTranscriber(Transcriber):
         protocol = self.settings["protocol"]
         try:
             if protocol == "voxtral":
-                await self.ws.send(json.dumps({"type": "input_audio_buffer.commit",
-                                               "final": True}))
+                await self.ws.send(json.dumps({"type": "input_audio_buffer.commit", "final": True}))
             elif protocol == "nemotron":
                 await self.ws.send(json.dumps({"type": "finish"}))
             else:
                 await self.ws.send(b"")
             await asyncio.wait_for(self.done.wait(), END_TIMEOUT_SEC)
         except asyncio.TimeoutError:
-            log.warning("[REMOTE-END-TIMEOUT] %s gave no end-of-stream in %.0fs",
-                        protocol, END_TIMEOUT_SEC)
+            log.warning(
+                "[REMOTE-END-TIMEOUT] %s gave no end-of-stream in %.0fs", protocol, END_TIMEOUT_SEC
+            )
         self._commit_all(reason, include_tail=True)
         await self._close_session()
         return self._drain()
@@ -246,29 +255,31 @@ class RemoteStreamTranscriber(Transcriber):
                 end = i + 1
                 break
         if end is not None:
-            self._commit(confirmed[self.committed_words:end], "dot")
+            self._commit(confirmed[self.committed_words : end], "dot")
             self.committed_words = end
 
     def _commit_all(self, reason: str, include_tail: bool = True) -> None:
         words = self._words(include_tail=include_tail)
-        self._commit(words[self.committed_words:], reason)
+        self._commit(words[self.committed_words :], reason)
         self.committed_words = max(self.committed_words, len(words))
 
     def _commit(self, words: list[str], reason: str) -> None:
         text = " ".join(words).strip()
         if not text:
             return
-        self.out.append(Transcribed(
-            original=text,
-            language=self.language,
-            commit_reason=reason,
-            decision_audio_sec=round(self.fed_samples / audio_mod.SAMPLING_RATE, 3),
-            committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
-        ))
+        self.out.append(
+            Transcribed(
+                original=text,
+                language=self.language,
+                commit_reason=reason,
+                decision_audio_sec=round(self.fed_samples / audio_mod.SAMPLING_RATE, 3),
+                committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+            )
+        )
         self._offer_partial()
 
     def _offer_partial(self) -> None:
-        text = " ".join(self._words()[self.committed_words:])
+        text = " ".join(self._words()[self.committed_words :])
         if text == (self.partial_text or ""):
             return
         self.partial_text = text

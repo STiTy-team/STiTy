@@ -83,7 +83,11 @@ export function ShapePanel({ ds }: { ds: string }) {
           dataset.yml
         </Badge>
         {FILES.map(({ key, label }) => (
-          <Badge key={key} variant={s.files[key] ? "secondary" : "outline"} className={cn("font-mono", !s.files[key] && "text-muted-foreground/60")}>
+          <Badge
+            key={key}
+            variant={s.files[key] ? "secondary" : "outline"}
+            className={cn("font-mono", !s.files[key] && "text-muted-foreground/60")}
+          >
             {label}
           </Badge>
         ))}
@@ -115,17 +119,32 @@ export function ShapePanel({ ds }: { ds: string }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium">길이 <span className="text-muted-foreground">초</span></h3>
+        <h3 className="text-sm font-medium">
+          길이 <span className="text-muted-foreground">초</span>
+        </h3>
         {s.items ? (
           <>
             <div className="flex flex-wrap gap-4 text-xs text-muted-foreground tabular-nums">
-              <span>min <b className="text-foreground">{num(s.duration.min, 2)}</b></span>
-              <span>p50 <b className="text-foreground">{num(s.duration.p50, 2)}</b></span>
-              <span>mean <b className="text-foreground">{num(s.duration.mean, 2)}</b></span>
-              <span>p90 <b className="text-foreground">{num(s.duration.p90, 2)}</b></span>
-              <span>max <b className="text-foreground">{num(s.duration.max, 2)}</b></span>
+              <span>
+                min <b className="text-foreground">{num(s.duration.min, 2)}</b>
+              </span>
+              <span>
+                p50 <b className="text-foreground">{num(s.duration.p50, 2)}</b>
+              </span>
+              <span>
+                mean <b className="text-foreground">{num(s.duration.mean, 2)}</b>
+              </span>
+              <span>
+                p90 <b className="text-foreground">{num(s.duration.p90, 2)}</b>
+              </span>
+              <span>
+                max <b className="text-foreground">{num(s.duration.max, 2)}</b>
+              </span>
             </div>
-            <Bars entries={s.histogram.filter((b) => b.count).map((b) => [binLabel(b.lo, b.hi), b.count])} total={s.items} />
+            <Bars
+              entries={s.histogram.filter((b) => b.count).map((b) => [binLabel(b.lo, b.hi), b.count])}
+              total={s.items}
+            />
           </>
         ) : (
           <p className="text-sm text-muted-foreground">항목 없음</p>
@@ -144,7 +163,10 @@ export function ShapePanel({ ds }: { ds: string }) {
         <Bars
           entries={[
             [`transcript${provides.transcript === false ? " (선언 안 함)" : ""}`, s.transcript.filled],
-            ...translations.map(([lang, n]): [string, number] => [`→ ${lang}${declared.includes(lang) ? "" : " (선언 안 함)"}`, n]),
+            ...translations.map(([lang, n]): [string, number] => [
+              `→ ${lang}${declared.includes(lang) ? "" : " (선언 안 함)"}`,
+              n,
+            ]),
           ]}
           total={s.items}
         />
@@ -159,14 +181,20 @@ export function ShapePanel({ ds }: { ds: string }) {
       <div className="flex flex-col gap-2">
         <h3 className="text-sm font-medium">
           정렬{" "}
-          {s.alignment.stale > 0 && <span className="text-destructive">{s.alignment.stale}개가 옛 전사 기준이에요</span>}{" "}
-          {s.alignment.orphan > 0 && <span className="text-destructive">{s.alignment.orphan}개는 manifest에 없어요</span>}
+          {s.alignment.stale > 0 && (
+            <span className="text-destructive">{s.alignment.stale}개가 옛 전사 기준이에요</span>
+          )}{" "}
+          {s.alignment.orphan > 0 && (
+            <span className="text-destructive">{s.alignment.orphan}개는 manifest에 없어요</span>
+          )}
         </h3>
         {s.files.alignment ? (
           <>
             <Bars entries={[["aligned", s.alignment.items]]} total={s.transcript.filled || s.items} />
             <p className="text-xs text-muted-foreground">
-              {Object.entries(s.alignment.aligners).map(([k, v]) => `${k} × ${v}`).join(" · ") || "—"}
+              {Object.entries(s.alignment.aligners)
+                .map(([k, v]) => `${k} × ${v}`)
+                .join(" · ") || "—"}
             </p>
           </>
         ) : (
@@ -188,7 +216,11 @@ export function ShapePanel({ ds }: { ds: string }) {
             <TableBody>
               {s.fields.map((f) => (
                 <TableRow key={f.key}>
-                  <TableCell className={cn("pl-3 font-mono text-xs", f.key.includes(".") && "pl-6 text-muted-foreground")}>{f.key}</TableCell>
+                  <TableCell
+                    className={cn("pl-3 font-mono text-xs", f.key.includes(".") && "pl-6 text-muted-foreground")}
+                  >
+                    {f.key}
+                  </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{Object.keys(f.types).join(" | ")}</TableCell>
                   <TableCell
                     className={cn(
@@ -207,7 +239,8 @@ export function ShapePanel({ ds }: { ds: string }) {
 
       {s.files.manifest_sha256 && (
         <p className="text-xs text-muted-foreground">
-          manifest sha256 <code className="font-mono">{s.files.manifest_sha256}</code> · {num(s.files.manifest_bytes / 1024, 0)} KB
+          manifest sha256 <code className="font-mono">{s.files.manifest_sha256}</code> ·{" "}
+          {num(s.files.manifest_bytes / 1024, 0)} KB
         </p>
       )}
 

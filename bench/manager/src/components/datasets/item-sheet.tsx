@@ -33,8 +33,8 @@ function DeleteAudioButton({ ds, id, onDeleted }: { ds: string; id: string; onDe
         <AlertDialogHeader>
           <AlertDialogTitle>오디오만 지울까요?</AlertDialogTitle>
           <AlertDialogDescription>
-            wav 파일만 지워져요. 행은 manifest에 남고, 다음 verify()에서 오디오 없음으로 잡혀요. <code className="font-mono">audio</code>는
-            심볼릭 링크라 링크 너머의 원본 파일이 지워져요.
+            wav 파일만 지워져요. 행은 manifest에 남고, 다음 verify()에서 오디오 없음으로 잡혀요.{" "}
+            <code className="font-mono">audio</code>는 심볼릭 링크라 링크 너머의 원본 파일이 지워져요.
           </AlertDialogDescription>
         </AlertDialogHeader>
         {remove.error && <p className="text-sm text-destructive">{remove.error.message}</p>}
@@ -45,7 +45,12 @@ function DeleteAudioButton({ ds, id, onDeleted }: { ds: string; id: string; onDe
             disabled={remove.isPending}
             onClick={(e) => {
               e.preventDefault()
-              remove.mutate(id, { onSuccess: () => { setOpen(false); onDeleted() } })
+              remove.mutate(id, {
+                onSuccess: () => {
+                  setOpen(false)
+                  onDeleted()
+                },
+              })
             }}
           >
             오디오 지우기
@@ -81,7 +86,12 @@ function DeleteItemButton({ ds, id, onDeleted }: { ds: string; id: string; onDel
             disabled={remove.isPending}
             onClick={(e) => {
               e.preventDefault()
-              remove.mutate(id, { onSuccess: () => { setOpen(false); onDeleted() } })
+              remove.mutate(id, {
+                onSuccess: () => {
+                  setOpen(false)
+                  onDeleted()
+                },
+              })
             }}
           >
             항목 지우기
@@ -160,7 +170,8 @@ export function ItemSheet({ ds, id, onClose }: { ds: string; id: string; onClose
               <DeleteItemButton ds={ds} id={id} onDeleted={onClose} />
             </div>
 
-            {(item.data.row.reference?.transcript || Object.keys(item.data.row.reference?.translations ?? {}).length > 0) && (
+            {(item.data.row.reference?.transcript ||
+              Object.keys(item.data.row.reference?.translations ?? {}).length > 0) && (
               <dl className="flex flex-col gap-2 text-sm">
                 {item.data.row.reference?.transcript && (
                   <div>
@@ -179,9 +190,9 @@ export function ItemSheet({ ds, id, onClose }: { ds: string; id: string; onClose
 
             {item.data.audio && (
               <p className={cn("text-xs", item.data.audio.problem ? "text-destructive" : "text-muted-foreground")}>
-                {item.data.audio.file} · {item.data.audio.format}/{item.data.audio.subtype} {item.data.audio.sample_rate} Hz{" "}
-                {item.data.audio.channels}ch · 파일 {item.data.audio.file_duration.toFixed(3)}s ·{" "}
-                {Math.round(item.data.audio.bytes / 1024)} KB
+                {item.data.audio.file} · {item.data.audio.format}/{item.data.audio.subtype}{" "}
+                {item.data.audio.sample_rate} Hz {item.data.audio.channels}ch · 파일{" "}
+                {item.data.audio.file_duration.toFixed(3)}s · {Math.round(item.data.audio.bytes / 1024)} KB
                 {item.data.audio.problem && ` · ${item.data.audio.problem}`}
               </p>
             )}

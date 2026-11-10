@@ -2,22 +2,32 @@ import asyncio
 from collections.abc import Callable, Iterable
 from dataclasses import replace
 
+from core.components.registry import Transcribed
 from core.pipeline import Processor
 from core.utils import logging, stream
+from core.utils.audio import MultiChannelAudio
 
 from app.models.conversation import Conversation, ConversationEvent, Inbox, Worker, is_partial
+from app.models.sources import SourceLevels
+from app.services.recording import RoomRecorder
 
 log = logging.getLogger(__name__)
 
 
 class TranscriptionWorker:
     def __init__(
-        self, conversation: Conversation, processor: Processor, on_fail: Callable[[], None]
+        self,
+        conversation: Conversation,
+        processor: Processor,
+        on_fail: Callable[[], None],
+        room_recorder: RoomRecorder | None = None,
     ):
         self._conversation = conversation
         self._audio = conversation.audio
         self._processor = processor
         self._on_fail = on_fail
+        self._room_recorder = room_recorder
+        self._levels: SourceLevels | None = SourceLevels()
         self._task = asyncio.create_task(self._run(), name=f"transcription:{conversation.id}")
 
     async def close(self) -> None:
@@ -38,6 +48,7 @@ class TranscriptionWorker:
         try:
             async for chunk in self._audio.chunks():
                 stream.audio_position(chunk.start)
+                self._observe(chunk)
                 self._publish(await self._processor.process(chunk), chunk.start)
             self._publish(await self._processor.finish(), self._audio.seconds)
         except Exception:
@@ -45,14 +56,40 @@ class TranscriptionWorker:
             self._audio.end()
             self._on_fail()
         finally:
+            if self._room_recorder is not None:
+                self._room_recorder.close()
             await self._processor.close()
             log.info("Stopped transcription worker for conversation %s", conversation_id)
+
+    def _observe(self, chunk: MultiChannelAudio) -> None:
+        """What's kept about each client is optional: a failure here never reaches transcription."""
+        if self._levels is not None:
+            try:
+                self._levels.add(chunk)
+            except Exception:
+                log.exception("Stopped tracking source levels")
+                self._levels = None
+        if self._room_recorder is not None:
+            self._room_recorder.write(chunk)
+
+    def _take_sources(self) -> tuple:
+        if self._levels is None:
+            return ()
+        try:
+            return self._levels.take()
+        except Exception:
+            log.exception("Stopped tracking source levels")
+            self._levels = None
+            return ()
 
     def _publish(self, records: list, heard_from: float) -> None:
         for record in records:
             event = self._conversation.stamp(record, heard_from, self._audio.seconds)
-            if event is not None:
-                self._conversation.publish(event)
+            if event is None:
+                continue
+            if isinstance(record, Transcribed):
+                event = replace(event, sources=self._take_sources())
+            self._conversation.publish(event)
 
 
 class TranslationWorker:

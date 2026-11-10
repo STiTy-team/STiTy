@@ -8,6 +8,7 @@ start one without ending it.
 contains no timing line at all. The tag names the work, not the model: `decode`, so
 that two backends' decoding compares in one lane.
 """
+
 import functools
 import inspect
 
@@ -22,6 +23,7 @@ def measure(tag: str):
             return call
 
         if inspect.iscoroutinefunction(call):
+
             @functools.wraps(call)
             async def measured(*args, **kwargs):
                 started, audio = stream.elapsed(), stream.audio_position()
@@ -30,6 +32,7 @@ def measure(tag: str):
                 finally:
                     _write(tag, started, audio)
         else:
+
             @functools.wraps(call)
             def measured(*args, **kwargs):
                 started, audio = stream.elapsed(), stream.audio_position()

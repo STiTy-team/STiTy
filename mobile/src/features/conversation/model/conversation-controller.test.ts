@@ -1,8 +1,21 @@
-import type { AsrSessionHandlers, LiveOpenOptions, LiveSession } from '@/api';
+import {
+  SessionRefusedError,
+  type AsrSessionHandlers,
+  type LiveOpenOptions,
+  type LiveSession,
+} from '@/api';
+import { joinRoom } from '@/domain/rooms';
 import { MicrophonePermissionError } from '@/services/audio/microphone';
 
 import { ConversationController } from './conversation-controller';
-import { conversationActions, setPresenting, useConversationStore } from './conversation-store';
+import {
+  conversationActions,
+  selectCanInvite,
+  selectIsHost,
+  selectMicOff,
+  setPresenting,
+  useConversationStore,
+} from './conversation-store';
 import type {
   AudioOutputPort,
   MicrophonePort,
@@ -23,22 +36,34 @@ const deferred = <T = void>() => {
   return { promise, resolve, reject };
 };
 
+const SERVER_CODE = 'SRV234';
+
 type FakeSession = LiveSession & {
   isOpen: boolean;
   close: jest.Mock<Promise<void>, []>;
   configure: jest.Mock;
+  setRecording: jest.Mock;
   sendAudio: jest.Mock;
   logSpeech: jest.Mock;
+  setMic: jest.Mock;
+  setAllMics: jest.Mock;
+  removeParticipant: jest.Mock;
 };
 
-const fakeSession = (conversationId: string | null): FakeSession => {
+const fakeSession = (conversationId: string | null, roomCode: string | null): FakeSession => {
   const session: FakeSession = {
     conversationId,
+    roomCode: conversationId ? null : roomCode,
+    participantId: 'me',
+    setMic: jest.fn(),
+    setAllMics: jest.fn(),
+    removeParticipant: jest.fn(),
     isOpen: true,
     close: jest.fn(async () => {
       session.isOpen = false;
     }),
     configure: jest.fn(),
+    setRecording: jest.fn(),
     sendAudio: jest.fn(),
     logSpeech: jest.fn(),
   };
@@ -62,6 +87,7 @@ const setup = (overrides: Overrides = {}) => {
     handlers.push(options.handlers);
     const session = fakeSession(
       options.save ? (options.conversationId ?? overrides.conversationId ?? null) : null,
+      options.room?.code ?? SERVER_CODE,
     );
     sessions.push(session);
     return session;
@@ -94,6 +120,7 @@ const setup = (overrides: Overrides = {}) => {
     holdToTalk: false,
     vibrate: false,
     saveRequested: true,
+    serverRecording: false,
     ...overrides.preferences,
   };
 
@@ -103,6 +130,7 @@ const setup = (overrides: Overrides = {}) => {
     openIntro,
     output,
     preferences: () => preferences,
+    device: () => ({ platform: 'ios', headset: true }),
     onCapacity: jest.fn(),
     track,
     feedback,
@@ -139,6 +167,180 @@ beforeEach(() => {
   conversationActions.reset();
   conversationActions.setPhase('idle');
   setPresenting(false);
+});
+
+describe('rooms', () => {
+  it('joins by code without saving, and opens the same room again on resume', async () => {
+    const { controller, openSession, session } = setup();
+    await controller.start({ room: joinRoom('ABC234') });
+
+    expect(openSession.mock.calls[0]![0]).toMatchObject({
+      room: { code: 'ABC234', joining: true },
+      save: false,
+    });
+
+    session().isOpen = false;
+    controller.pause();
+    await controller.resume();
+
+    expect(openSession.mock.calls[1]![0]).toMatchObject({
+      room: { code: 'ABC234', joining: false },
+    });
+  });
+
+  it('never speaks translations aloud in a room', async () => {
+    const { controller, handlers, speech } = setup();
+    await controller.start();
+    controller.invite();
+
+    handlers().onFinal({ type: 'final', original: 'hi', translation: '안녕', language: 'en' });
+
+    expect(useConversationStore.getState().entries).toHaveLength(1);
+    expect(speech.enqueue).not.toHaveBeenCalled();
+  });
+
+  it('reports a code the server refuses, and retries in the same room', async () => {
+    const { controller, openSession } = setup();
+    openSession.mockRejectedValueOnce(
+      new SessionRefusedError('conversation_not_found', 'conversation_not_found'),
+    );
+    await controller.start({ room: joinRoom('ABC234') });
+
+    expect(useConversationStore.getState().error).toBe('roomNotFound');
+
+    await controller.start();
+
+    expect(openSession.mock.calls[1]![0]).toMatchObject({ room: { code: 'ABC234' } });
+  });
+
+  it('forgets the room when the conversation ends', async () => {
+    const { controller } = setup();
+    await controller.start();
+
+    controller.end();
+
+    expect(useConversationStore.getState().room).toBeNull();
+  });
+
+  it('keeps the code the server issues, unshared and spoken until inviting', async () => {
+    const { controller, openSession, handlers, speech } = setup({
+      preferences: { saveRequested: false },
+    });
+    await controller.start();
+
+    expect(openSession.mock.calls[0]![0]).toMatchObject({
+      room: { code: null, joining: false, shared: false },
+      save: false,
+    });
+    expect(useConversationStore.getState().room?.code).toBe(SERVER_CODE);
+    expect(selectCanInvite(useConversationStore.getState())).toBe(true);
+
+    handlers().onFinal({ type: 'final', original: 'hi', translation: '안녕', language: 'en' });
+    expect(speech.enqueue).toHaveBeenCalledTimes(1);
+    speech.stop.mockClear();
+
+    controller.invite();
+
+    expect(useConversationStore.getState().room?.shared).toBe(true);
+    expect(speech.stop).toHaveBeenCalled();
+  });
+
+  it('has nothing to invite with while saving', async () => {
+    const { controller } = setup({ conversationId: 'record-1' });
+    await controller.start();
+
+    expect(useConversationStore.getState().room?.code).toBeNull();
+    expect(selectCanInvite(useConversationStore.getState())).toBe(false);
+  });
+
+  it('stops saving a resumed session once it has been shared', async () => {
+    const { controller, openSession, session } = setup({ preferences: { saveRequested: false } });
+    await controller.start();
+    controller.invite();
+
+    session().isOpen = false;
+    controller.pause();
+    await controller.resume();
+
+    expect(openSession.mock.calls[1]![0]).toMatchObject({ save: false });
+  });
+
+  const roster = (hostId: string, ...canSpeak: boolean[]) => ({
+    type: 'room' as const,
+    hostId,
+    participants: canSpeak.map((speaks, index) => ({
+      id: index === 0 ? 'me' : `p${index}`,
+      number: index + 1,
+      canSpeak: speaks,
+    })),
+  });
+
+  it('marks the host and treats someone joining as shared', async () => {
+    const { controller, handlers } = setup({ preferences: { saveRequested: false } });
+    await controller.start();
+
+    handlers().onRoom(roster('me', true));
+    expect(selectIsHost(useConversationStore.getState())).toBe(true);
+    expect(useConversationStore.getState().room?.shared).toBe(false);
+
+    handlers().onRoom(roster('me', true, true));
+    expect(useConversationStore.getState().room?.shared).toBe(true);
+  });
+
+  it('sends no audio while the host has this mic off, and again once it is on', async () => {
+    const { controller, handlers, sendChunk, session } = setup();
+    await controller.start({ room: joinRoom('ABC234') });
+
+    handlers().onRoom(roster('host', false, true));
+    expect(selectMicOff(useConversationStore.getState())).toBe(true);
+    sendChunk(new ArrayBuffer(8));
+    expect(session().sendAudio).not.toHaveBeenCalled();
+
+    handlers().onRoom(roster('host', true, true));
+    sendChunk(new ArrayBuffer(8));
+    expect(session().sendAudio).toHaveBeenCalledTimes(1);
+  });
+
+  it('tells the server which device this is, on every connection', async () => {
+    const { controller, openSession } = setup();
+    await controller.start();
+
+    expect(openSession.mock.calls[0]![0]).toMatchObject({
+      device: { platform: 'ios', headset: true },
+    });
+  });
+
+  it('passes the host actions to the session', async () => {
+    const { controller, session } = setup();
+    await controller.start({ room: joinRoom('ABC234') });
+
+    controller.setMic('p1', false);
+    controller.setAllMics(true);
+    controller.removeParticipant('p1');
+
+    expect(session().setMic).toHaveBeenCalledWith('p1', false);
+    expect(session().setAllMics).toHaveBeenCalledWith(true);
+    expect(session().removeParticipant).toHaveBeenCalledWith('p1');
+  });
+
+  it.each([
+    ['removed_from_room', 'removedFromRoom'],
+    ['room_ended', 'roomEnded'],
+  ])('pauses and forgets the room when closed with %s', async (reason, error) => {
+    const { controller, handlers } = setup();
+    await controller.start({ room: joinRoom('ABC234') });
+
+    handlers().onLost(reason);
+
+    expect(useConversationStore.getState()).toMatchObject({ error, room: null, roster: null });
+  });
+
+  it('has no room in a demo', async () => {
+    const { controller } = setup();
+    await controller.start({ demo: true });
+
+    expect(useConversationStore.getState().room).toBeNull();
+  });
 });
 
 describe('ConversationController', () => {
@@ -287,6 +489,23 @@ describe('ConversationController', () => {
     expect(session().configure).toHaveBeenCalledWith({ lang: 'ja', targetLang: 'ko' });
   });
 
+  it('asks the server to record from the start when server recording is on', async () => {
+    const { controller, openSession } = setup({ preferences: { serverRecording: true } });
+    await controller.start();
+
+    expect(openSession).toHaveBeenCalledWith(expect.objectContaining({ recording: true }));
+  });
+
+  it('switches server recording on the running session', async () => {
+    const { controller, session, preferences } = setup();
+    await controller.start();
+
+    preferences.serverRecording = true;
+    controller.applyServerRecording();
+
+    expect(session().setRecording).toHaveBeenCalledWith(true);
+  });
+
   it('ends: closes the socket, restores audio, clears the transcript, resumes monitoring', async () => {
     const { controller, session, output, monitor, handlers, track } = setup();
     await controller.start();
@@ -326,7 +545,7 @@ describe('ConversationController', () => {
       const starting = controller.start();
       await flush();
       controller.end();
-      const late = fakeSession(null);
+      const late = fakeSession(null, null);
       opened.resolve(late);
       await starting;
 

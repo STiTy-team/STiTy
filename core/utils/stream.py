@@ -8,6 +8,7 @@ The clock lives here because every line is stamped with it. `t` is seconds since
 driver opened the item, `audio` is where in the recording that moment fell, and the
 two together are what makes a run replayable faster than real time.
 """
+
 from contextvars import ContextVar
 
 from core.utils import clock

@@ -6,6 +6,7 @@ file's encoding has to be declared alongside it and then kept true.
 Window slicing (offset/duration) reads just the requested frames, so a corpus of
 long recordings cut into segments never needs a second copy on disk.
 """
+
 import asyncio
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,8 +28,9 @@ def probe_duration(path: Path) -> float:
     return float(info.frames) / float(info.samplerate)
 
 
-def load_window(path: Path, *, offset: float | None = None,
-                duration: float | None = None) -> np.ndarray:
+def load_window(
+    path: Path, *, offset: float | None = None, duration: float | None = None
+) -> np.ndarray:
     """float32 mono at SAMPLING_RATE, sliced to [offset, offset+duration).
 
     The mono-mixing and resampling below only ever fire when a corpus was converted

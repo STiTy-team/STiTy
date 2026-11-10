@@ -30,7 +30,28 @@ describe('resolveEnv', () => {
 
   it('requires a server URL outside development', () => {
     expect(() => resolveEnv({}, 'preview')).toThrow(/must be set/);
-    expect(resolveEnv({}, 'development').serverUrl).toMatch(/^wss:\/\//);
+    expect(resolveEnv({}, 'development')).toMatchObject({
+      serverUrl: 'ws://localhost:8765',
+      serverSource: 'fallback',
+    });
+  });
+
+  it('takes a server set in the app over the build, in development only', () => {
+    const build = {
+      EXPO_PUBLIC_SERVER_URL: 'wss://asr.example.com',
+      EXPO_PUBLIC_API_URL: 'https://api.example.com',
+    };
+    expect(resolveEnv(build, 'development', 'wss://dev.trycloudflare.com')).toMatchObject({
+      serverUrl: 'wss://dev.trycloudflare.com',
+      apiUrl: 'https://dev.trycloudflare.com',
+      serverSource: 'app',
+    });
+    for (const variant of ['preview', 'production'] as const) {
+      expect(resolveEnv(build, variant, 'wss://dev.trycloudflare.com')).toMatchObject({
+        serverUrl: 'wss://asr.example.com',
+        serverSource: 'build',
+      });
+    }
   });
 });
 

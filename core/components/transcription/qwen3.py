@@ -48,7 +48,7 @@ def resolve_model(raw: str) -> str:
     return raw
 
 
-@transcribers.register('qwen3')
+@transcribers.register("qwen3")
 class Qwen3Transcription(Transcriber):
     SETTINGS = {
         "model": ("model_path", resolve_model),
@@ -77,17 +77,20 @@ class Qwen3Transcription(Transcriber):
         self._log_gpu("after load")
 
     def _gpu_memory_utilization(self) -> float:
-        return float(self.settings.get("gpu_memory_utilization")
-                     or self.cfg.stity.gpu_memory_utilization)
+        return float(
+            self.settings.get("gpu_memory_utilization") or self.cfg.stity.gpu_memory_utilization
+        )
 
     def _cache_key(self) -> tuple:
         kw = self.settings
-        return ("qwen3-asr",
-                kw["model_path"],
-                self._gpu_memory_utilization(),
-                int(kw.get("max_new_tokens", 128)),
-                int(kw.get("beam_size", 1)),
-                bool(kw.get("enforce_eager", False)))
+        return (
+            "qwen3-asr",
+            kw["model_path"],
+            self._gpu_memory_utilization(),
+            int(kw.get("max_new_tokens", 128)),
+            int(kw.get("beam_size", 1)),
+            bool(kw.get("enforce_eager", False)),
+        )
 
     async def _build_model(self):
         from qwen_asr import Qwen3ASRModel
@@ -105,12 +108,12 @@ class Qwen3Transcription(Transcriber):
             enforce_eager=bool(kw.get("enforce_eager", False)),
         )
         beam_size = int(kw.get("beam_size", 1))
-        params = dict(temperature=0.0, max_tokens=max_new_tokens,
-                      skip_special_tokens=True)
+        params = dict(temperature=0.0, max_tokens=max_new_tokens, skip_special_tokens=True)
         if beam_size > 1:
             try:
                 model.sampling_params = SamplingParams(
-                    use_beam_search=True, best_of=beam_size, **params)
+                    use_beam_search=True, best_of=beam_size, **params
+                )
             except TypeError:
                 raise ConfigError(
                     f"beam_size={beam_size} but this vLLM build has no beam search. "
@@ -136,8 +139,10 @@ class Qwen3Transcription(Transcriber):
     def _allowed_language_names(self) -> list[str] | None:
         if not self.settings.get("restrict_languages", True):
             return None
-        names = [langs.CODE_TO_NAME.get(langs.norm_code(code or ""))
-                 for code in getattr(self, "_languages", ())]
+        names = [
+            langs.CODE_TO_NAME.get(langs.norm_code(code or ""))
+            for code in getattr(self, "_languages", ())
+        ]
         return list(dict.fromkeys(name for name in names if name)) or None
 
     def _start_stream(self) -> None:
@@ -173,8 +178,10 @@ class Qwen3Transcription(Transcriber):
     async def transcribe(self, audio: bytes) -> list:
         self._fed_samples += len(audio) // 2
         await self._decode_stream(
-            audio_mod.from_pcm_bytes(audio), self.state,
-            on_seg=self._trigger("seg"), on_dot=self._trigger("dot"),
+            audio_mod.from_pcm_bytes(audio),
+            self.state,
+            on_seg=self._trigger("seg"),
+            on_dot=self._trigger("dot"),
             on_partial=self._partial_callback(),
         )
         if self.cfg.stity.commit.always_commit:
@@ -187,8 +194,7 @@ class Qwen3Transcription(Transcriber):
         self._start_stream()
         return out
 
-    async def finish(self, reason: str = "finish",
-                     speech: Speech | None = None) -> list:
+    async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         if speech is not None:
             self._drop_trailing_silence(speech)
         await self._decode(self.state)
@@ -196,8 +202,10 @@ class Qwen3Transcription(Transcriber):
         return self._drain()
 
     def _drop_trailing_silence(self, speech: Speech) -> None:
-        cut = int(max(0.0, speech.silence_waited_out_sec - KEEP_AFTER_SPEECH_SEC)
-                  * audio_mod.SAMPLING_RATE)
+        cut = int(
+            max(0.0, speech.silence_waited_out_sec - KEEP_AFTER_SPEECH_SEC)
+            * audio_mod.SAMPLING_RATE
+        )
         if cut <= 0:
             return
         state = self.state
@@ -213,8 +221,7 @@ class Qwen3Transcription(Transcriber):
             state.buffer = buffer[: buffered - from_buffer]
         if cut > from_buffer:
             state.audio_accum = accum[: accumulated - (cut - from_buffer)]
-        log.debug("[AUDIO-TRIM] cause=tail-silence removed_sec=%.2f",
-                  cut / audio_mod.SAMPLING_RATE)
+        log.debug("[AUDIO-TRIM] cause=tail-silence removed_sec=%.2f", cut / audio_mod.SAMPLING_RATE)
 
     def _trigger(self, reason: str):
         commit = self.cfg.stity.commit
@@ -238,8 +245,7 @@ class Qwen3Transcription(Transcriber):
         if not force and clock.elapsed_since(self._partial_at) < PARTIAL_MIN_INTERVAL_SEC:
             return
         decoded = (self.state.text or "").replace("<SEG>", "")
-        tail = decoded[len(self._emitted):] if decoded.startswith(self._emitted) \
-            else decoded
+        tail = decoded[len(self._emitted) :] if decoded.startswith(self._emitted) else decoded
         text = tail.strip()
         if not text and not force:
             return
@@ -251,34 +257,38 @@ class Qwen3Transcription(Transcriber):
             return
         self._partial_text = text
         self._partial_seq += 1
-        self._out.append(Partial(
-            text=text,
-            language=langs.norm_code(self.state.language or ""),
-            seq=self._partial_seq))
+        self._out.append(
+            Partial(
+                text=text,
+                language=langs.norm_code(self.state.language or ""),
+                seq=self._partial_seq,
+            )
+        )
 
     def _take(self, reason: str) -> None:
         decoded = (self.state.text or "").replace("<SEG>", "")
         already = self._emitted
         self._emitted = decoded
         if decoded.startswith(already):
-            new = decoded[len(already):].strip()
+            new = decoded[len(already) :].strip()
         elif already.startswith(decoded):
-            log.info("[RETRACTED] was=%r", already[len(decoded):])
+            log.info("[RETRACTED] was=%r", already[len(decoded) :])
             new = ""
         else:
             resume_at = _last_word_boundary(decoded, already)
-            log.info("[REVISED] was=%r now=%r",
-                     already[resume_at:], decoded[resume_at:])
+            log.info("[REVISED] was=%r now=%r", already[resume_at:], decoded[resume_at:])
             new = decoded[resume_at:].strip()
         if not new:
             return
-        self._out.append(Transcribed(
-            original=new,
-            language=langs.norm_code(self.state.language or ""),
-            commit_reason=reason,
-            decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
-            committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
-        ))
+        self._out.append(
+            Transcribed(
+                original=new,
+                language=langs.norm_code(self.state.language or ""),
+                commit_reason=reason,
+                decision_audio_sec=round(self._fed_samples / audio_mod.SAMPLING_RATE, 3),
+                committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+            )
+        )
         self._offer_partial(force=True)
 
     def _log_gpu(self, when: str) -> None:
@@ -289,7 +299,6 @@ class Qwen3Transcription(Transcriber):
                 return
             free, total = torch.cuda.mem_get_info()
             free_gib, total_gib = round(free / 2**30, 2), round(total / 2**30, 2)
-            log.info("[GPU] %s: %.2f GiB free of %.2f GiB",
-                     when, free_gib, total_gib)
+            log.info("[GPU] %s: %.2f GiB free of %.2f GiB", when, free_gib, total_gib)
         except Exception:  # noqa: BLE001 - diagnostics only
             pass

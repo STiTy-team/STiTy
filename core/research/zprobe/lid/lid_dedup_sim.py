@@ -7,6 +7,7 @@ LID 불필요·인과적(창 = 커밋 시각 기준 [t-8, t+2], +2 는 전사가
 
 bench venv, cwd=STiTy-bench.
 """
+
 import argparse, copy, json, os, re, sys
 from pathlib import Path
 
@@ -14,7 +15,9 @@ sys.path.insert(0, os.getcwd())
 from bench.metrics.latency import longyaal
 from bench.metrics.translation import translation_sentences
 
-KOEN_RUN = "/home/mobility/STiTy-bench/bench/runs/northstar_ko+en-ko@v2/asr.qwen-seg-koen+mt.qwen3.5-4b"
+KOEN_RUN = (
+    "/home/mobility/STiTy-bench/bench/runs/northstar_ko+en-ko@v2/asr.qwen-seg-koen+mt.qwen3.5-4b"
+)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--run-dir", required=True)
@@ -29,22 +32,25 @@ def norm(text):
 
 
 def trigrams(s):
-    return {s[i:i + 3] for i in range(len(s) - 2)}
+    return {s[i : i + 3] for i in range(len(s) - 2)}
 
 
 transcript = {}
 for line in open(Path(KOEN_RUN) / "items.jsonl"):
     row = json.loads(line)
-    transcript[row["id"]] = [(float(c["decision_audio_sec"]), norm(c.get("original") or ""))
-                             for c in row["records"]
-                             if c.get("type") == "transcribed" and c.get("decision_audio_sec") is not None]
+    transcript[row["id"]] = [
+        (float(c["decision_audio_sec"]), norm(c.get("original") or ""))
+        for c in row["records"]
+        if c.get("type") == "transcribed" and c.get("decision_audio_sec") is not None
+    ]
 
 
 def containment(scene, t, text):
     x = norm(text)
     if len(x) < 4:
-        window_has = any(abs(ct - t) <= 5.0 and x and x in ctx
-                         for ct, ctx in transcript.get(scene, []))
+        window_has = any(
+            abs(ct - t) <= 5.0 and x and x in ctx for ct, ctx in transcript.get(scene, [])
+        )
         return 1.0 if window_has else 0.0
     window = "".join(ctx for ct, ctx in transcript.get(scene, []) if t - 8.0 <= ct <= t + 2.0)
     tg = trigrams(x)
@@ -83,11 +89,24 @@ for thr in [float(x) for x in a.thresholds.split(",")]:
     with open(out / "comet_inputs.jsonl", "w") as f:
         for s in sentences:
             f.write(json.dumps(s, ensure_ascii=False) + "\n")
-    json.dump({"metrics": {"longyaal_ms": ly, "longyaal_ca_ms": lyca, "kept": kept,
-                           "dropped": dropped, "empty_mt": empty,
-                           "n_sentences": sum(1 for s in sentences if s["src"])},
-               "unavailable": {}},
-              open(out / "summary.json", "w"), indent=1)
-    print(f"{a.target}-dedup{thr:g}: longyaal={ly and round(ly)} ca={lyca and round(lyca)} "
-          f"kept={kept} dropped={dropped} empty_mt={empty}", flush=True)
+    json.dump(
+        {
+            "metrics": {
+                "longyaal_ms": ly,
+                "longyaal_ca_ms": lyca,
+                "kept": kept,
+                "dropped": dropped,
+                "empty_mt": empty,
+                "n_sentences": sum(1 for s in sentences if s["src"]),
+            },
+            "unavailable": {},
+        },
+        open(out / "summary.json", "w"),
+        indent=1,
+    )
+    print(
+        f"{a.target}-dedup{thr:g}: longyaal={ly and round(ly)} ca={lyca and round(lyca)} "
+        f"kept={kept} dropped={dropped} empty_mt={empty}",
+        flush=True,
+    )
 print("DEDUP_SIM_DONE", flush=True)

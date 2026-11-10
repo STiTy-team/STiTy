@@ -9,7 +9,6 @@ from .base import Transcriber
 
 @transcribers.register("brig")
 class BrigTranscription(Transcriber):
-
     SETTINGS = {
         "asr": ("asr", dict),
         "adapter": ("adapter", dict),
@@ -24,8 +23,10 @@ class BrigTranscription(Transcriber):
             name = sub.pop("name", None)
             if not name:
                 raise ValueError(f"transcription brig needs `{key}` with a `name`")
-            out[key] = {"name": name,
-                        "kwargs": transcribers.get(name).validate(sub, kind=f"{kind}.{key}")}
+            out[key] = {
+                "name": name,
+                "kwargs": transcribers.get(name).validate(sub, kind=f"{kind}.{key}"),
+            }
         return out
 
     def _child(self, key: str):
@@ -42,8 +43,9 @@ class BrigTranscription(Transcriber):
         await self._asr.close()
         await self._adapter.close()
 
-    def start(self, languages: list[str] | None = None, *, target_lang: str = "",
-              vad=None, **_) -> None:
+    def start(
+        self, languages: list[str] | None = None, *, target_lang: str = "", vad=None, **_
+    ) -> None:
         self._transcript: list[tuple[float, str]] = []
         self._ctx_rows: list[tuple[float, str]] = []
         self._ctx_partial = ""
@@ -63,8 +65,7 @@ class BrigTranscription(Transcriber):
         produced = self._route(await self._adapter.flush(reason, speech))
         return heard + folds + produced
 
-    async def finish(self, reason: str = "finish",
-                     speech: Speech | None = None) -> list:
+    async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         heard = await self._asr.finish(reason, speech)
         folds = self._absorb(heard)
         produced = self._route(await self._adapter.finish(reason, speech))
@@ -97,8 +98,7 @@ class BrigTranscription(Transcriber):
         self._adapter.asr_context = " ".join(p.strip() for p in pieces if p.strip())
 
     def _route(self, produced: list) -> list:
-        keep_sec = float(self.settings.get("keep_recent_sec",
-                                           dedup.MATCH_WINDOW_BACK_SEC))
+        keep_sec = float(self.settings.get("keep_recent_sec", dedup.MATCH_WINDOW_BACK_SEC))
         out = []
         for item in produced:
             if not isinstance(item, Translated):
@@ -127,15 +127,17 @@ class BrigTranscription(Transcriber):
                 continue
             if not dedup.norm(text):
                 text = ""
-            folds.append(Folded(
-                original=item.translation,
-                translation=text,
-                language=item.language,
-                target_lang=item.target_lang,
-                commit_reason="dedup",
-                decision_audio_sec=item.decision_audio_sec,
-                committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
-            ))
+            folds.append(
+                Folded(
+                    original=item.translation,
+                    translation=text,
+                    language=item.language,
+                    target_lang=item.target_lang,
+                    commit_reason="dedup",
+                    decision_audio_sec=item.decision_audio_sec,
+                    committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
+                )
+            )
             if text:
                 kept.append(replace(item, original=text, translation=text))
         self._recent = kept

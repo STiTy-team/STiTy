@@ -10,11 +10,17 @@ keep listening" signal as the translation stream.
 concat data without any new alignment or LLM cost.
 
 usage: python core/research/zprobe/labels/build_prefix5.py --out models/zprobe/data/train_prefix5.jsonl"""
+
 import argparse, json, random, re
 
 NAME = {"en": "English", "ko": "Korean", "ja": "Japanese", "zh": "Chinese"}
 SPACED = {"en", "ko"}
-VERBATIM = {"en": (3000, 1, 1 / 3), "ko": (10**9, 2, 1.0), "ja": (10**9, 0, 0.0), "zh": (10**9, 0, 0.0)}
+VERBATIM = {
+    "en": (3000, 1, 1 / 3),
+    "ko": (10**9, 2, 1.0),
+    "ja": (10**9, 0, 0.0),
+    "zh": (10**9, 0, 0.0),
+}
 PAIR_ROT = {("ko", "ko"): 2, ("en", "en"): 1, ("ko", "en"): 2, ("ja", "en"): 1, ("zh", "en"): 1}
 PAIR_CAP = {("en", "en"): 1500}
 # non-English recordings are long (ko median 11.3 s), so 18 s rejects most pairs; the cap was a /dev/shm
@@ -57,8 +63,11 @@ for l in open(a.phrases, encoding="utf-8"):
     r = json.loads(l)
     phr[r["sid"]] = r.get("phrases") or []
 
-rows = [json.loads(l) for l in open(a.aligned, encoding="utf-8")
-        if (x := json.loads(l)) and x["adds"] and x["ends"] and text_of(x["adds"])]
+rows = [
+    json.loads(l)
+    for l in open(a.aligned, encoding="utf-8")
+    if (x := json.loads(l)) and x["adds"] and x["ends"] and text_of(x["adds"])
+]
 by_lang, by_dir = {}, {}
 for r in rows:
     p = phr.get(r["sid"])
@@ -79,12 +88,21 @@ for lang, group in sorted(by_lang.items()):
     rng.shuffle(group)
     for r in group[:cap]:
         head = f"language {NAME[lang]}<asr_text>"
-        add(f"verbatim_{lang}", {"audio": r["audio"], "text": head + r["src"].strip(), "pair": f"{lang}-{lang}"})
+        add(
+            f"verbatim_{lang}",
+            {"audio": r["audio"], "text": head + r["src"].strip(), "pair": f"{lang}-{lang}"},
+        )
         if n_boundary and rng.random() < frac and len(r["ends"]) >= 3:
             p = phr[r["sid"]]
             for i in rng.sample(range(len(p) - 1), min(n_boundary, len(p) - 1)):
-                add(f"verbatim_{lang}_cut", {"audio": clip(r, r["ends"][i]),
-                                             "text": head + cut_src(r["src"], p, i), "pair": f"{lang}-{lang}"})
+                add(
+                    f"verbatim_{lang}_cut",
+                    {
+                        "audio": clip(r, r["ends"][i]),
+                        "text": head + cut_src(r["src"], p, i),
+                        "pair": f"{lang}-{lang}",
+                    },
+                )
 
 seen_pairs = set()
 for (lang, tgt), rot in sorted(PAIR_ROT.items()):
@@ -97,7 +115,9 @@ for (lang, tgt), rot in sorted(PAIR_ROT.items()):
     for k in range(rot):
         g = group[:]
         if k == 0:
-            g.sort(key=lambda r: r["dur"])  # short with short, so long recordings still find a partner
+            g.sort(
+                key=lambda r: r["dur"]
+            )  # short with short, so long recordings still find a partner
         else:
             random.Random(a.seed + 1 + k).shuffle(g)
         for A, B in zip(g[::2], g[1::2]):
@@ -113,8 +133,22 @@ for (lang, tgt), rot in sorted(PAIR_ROT.items()):
             b_txt = B["src"].strip() if same else text_of(B["adds"])
             t_b = max(0.3, B["ends"][0] * 0.5)
             kind = ("verbatim_pair_" if same else "xen_pair_") + f"{lang}-{tgt}"
-            add(kind, {"audio": f"{A['audio']}|{clip(B, t_b)}", "text": f"{head}{a_txt} <SEG>", "pair": f"{lang}-{tgt}"})
-            add(kind, {"audio": f"{A['audio']}|{B['audio']}", "text": f"{head}{a_txt} <SEG> {b_txt}", "pair": f"{lang}-{tgt}"})
+            add(
+                kind,
+                {
+                    "audio": f"{A['audio']}|{clip(B, t_b)}",
+                    "text": f"{head}{a_txt} <SEG>",
+                    "pair": f"{lang}-{tgt}",
+                },
+            )
+            add(
+                kind,
+                {
+                    "audio": f"{A['audio']}|{B['audio']}",
+                    "text": f"{head}{a_txt} <SEG> {b_txt}",
+                    "pair": f"{lang}-{tgt}",
+                },
+            )
 
 base = [l.rstrip("\n") for l in open(a.base, encoding="utf-8")]
 with open(a.out, "w", encoding="utf-8") as f:

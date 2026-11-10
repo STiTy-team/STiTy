@@ -21,6 +21,7 @@ usage: python core/research/zprobe/labels/build_connective.py manifest --fleurs 
        PYTHONPATH=. python core/research/zprobe/labels/build_connective.py hyref --units U.jsonl --out H.jsonl
        PYTHONPATH=. python core/research/zprobe/labels/build_connective.py pieces --units H.jsonl --out P.jsonl [--limit N]
        python core/research/zprobe/labels/build_connective.py build --pieces P.jsonl --kiwi K.jsonl --base train.jsonl --out T.jsonl --wav_dir DIR"""
+
 import argparse, csv, json, os, random, re, sys, time
 from pathlib import Path
 
@@ -35,12 +36,22 @@ PUNCT_END = re.compile(r"[.!?。！？]\s*$")
 def manifest(a):
     rows = []
     if a.fleurs:
-        for r in csv.reader(open(FLEURS_EN / "train.tsv", encoding="utf-8"), delimiter="\t", quoting=csv.QUOTE_NONE):
+        for r in csv.reader(
+            open(FLEURS_EN / "train.tsv", encoding="utf-8"), delimiter="\t", quoting=csv.QUOTE_NONE
+        ):
             if len(r) >= 3 and (FLEURS_EN / "audio" / "train" / r[1]).exists():
-                rows.append({"id": f"fl_{r[0]}_{Path(r[1]).stem}", "audio": str(FLEURS_EN / "audio" / "train" / r[1]),
-                             "src": r[2].strip()})
+                rows.append(
+                    {
+                        "id": f"fl_{r[0]}_{Path(r[1]).stem}",
+                        "audio": str(FLEURS_EN / "audio" / "train" / r[1]),
+                        "src": r[2].strip(),
+                    }
+                )
     if a.covost:
-        cv = [json.loads(l) for l in open("/home/mobility/datasets/covost2_train_en/meta.jsonl", encoding="utf-8")]
+        cv = [
+            json.loads(l)
+            for l in open("/home/mobility/datasets/covost2_train_en/meta.jsonl", encoding="utf-8")
+        ]
         cv = [m for m in cv if m["dur"] <= 20]
         for m in random.Random(0).sample(cv, min(a.covost, len(cv))):
             rows.append({"id": f"cv_{m['id']}", "audio": m["audio"], "src": m["src"]})
@@ -55,29 +66,40 @@ def units(a):
     import probe_z as pz
     from seg_units import project
     from qwen_asr import Qwen3ForcedAligner
+
     m = pz.load_model()
     tok = m.processor.tokenizer
     dev = next(m.model.thinker.parameters()).device
-    aligner = Qwen3ForcedAligner.from_pretrained("Qwen/Qwen3-ForcedAligner-0.6B", dtype=torch.bfloat16, device_map="cuda")
+    aligner = Qwen3ForcedAligner.from_pretrained(
+        "Qwen/Qwen3-ForcedAligner-0.6B", dtype=torch.bfloat16, device_map="cuda"
+    )
     prompt = m._build_text_prompt(context="", force_language="English")
     done = set()
     if os.path.exists(a.out):
         done = {json.loads(l)["id"] for l in open(a.out, encoding="utf-8")}
-    out = open(a.out, "a", encoding="utf-8"); t0 = time.time(); n = cut = 0
+    out = open(a.out, "a", encoding="utf-8")
+    t0 = time.time()
+    n = cut = 0
     for r in map(json.loads, open(a.manifest, encoding="utf-8")):
         if r["id"] in done:
             continue
-        wav, _ = librosa.load(r["audio"], sr=16000); dur = len(wav) / 16000
-        inputs = m.processor(text=[prompt], audio=[wav], return_tensors="pt", padding=True).to(dev).to(torch.bfloat16)
+        wav, _ = librosa.load(r["audio"], sr=16000)
+        dur = len(wav) / 16000
+        inputs = (
+            m.processor(text=[prompt], audio=[wav], return_tensors="pt", padding=True)
+            .to(dev)
+            .to(torch.bfloat16)
+        )
         with torch.no_grad():
             o = m.model.generate(**inputs, max_new_tokens=160)
         seq = o.sequences if hasattr(o, "sequences") else o
-        raw = tok.decode(seq[0, inputs["input_ids"].shape[1]:].tolist(), skip_special_tokens=False)
+        raw = tok.decode(seq[0, inputs["input_ids"].shape[1] :].tolist(), skip_special_tokens=False)
         raw = raw.replace("<|im_end|>", "").replace("<|endoftext|>", "").strip()
         parts = [p.strip() for p in raw.split("<SEG>") if p.strip()]
         cuts, c = [], 0
         for p in parts[:-1]:
-            c += len(p.split()); cuts.append(c)
+            c += len(p.split())
+            cuts.append(c)
         gw = r["src"].split()
         bounds = [0] + project(" ".join(parts).split(), gw, cuts) + [len(gw)]
         ends, aligned = None, False
@@ -88,7 +110,8 @@ def units(a):
                 scale = 1000.0 if ew and ew[-1] > 60 else 1.0
                 ew = [e / scale for e in ew]
                 if len(ew) == len(gw):
-                    ends = [min(dur, ew[e - 1]) for e in bounds[1:-1]] + [dur]; aligned = True
+                    ends = [min(dur, ew[e - 1]) for e in bounds[1:-1]] + [dur]
+                    aligned = True
             except Exception:
                 pass
             if not aligned:  # cannot time the cuts reliably: keep the utterance uncut
@@ -96,11 +119,24 @@ def units(a):
         if ends is None:
             ends = [dur]
         us = [" ".join(gw[b:e]) for b, e in zip(bounds, bounds[1:])]
-        cut += len(us) - 1; n += 1
-        out.write(json.dumps({**r, "dur": round(dur, 2), "units": us, "ends": [round(e, 2) for e in ends], "seg_raw": raw},
-                             ensure_ascii=False) + "\n")
+        cut += len(us) - 1
+        n += 1
+        out.write(
+            json.dumps(
+                {
+                    **r,
+                    "dur": round(dur, 2),
+                    "units": us,
+                    "ends": [round(e, 2) for e in ends],
+                    "seg_raw": raw,
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
         if n % 200 == 0:
-            out.flush(); print(f"{n} done {time.time() - t0:.0f}s, inner cuts {cut / n:.2f}/utt", flush=True)
+            out.flush()
+            print(f"{n} done {time.time() - t0:.0f}s, inner cuts {cut / n:.2f}/utt", flush=True)
     print(f"done {n}, inner cuts {cut / max(1, n):.2f}/utt", flush=True)
 
 
@@ -128,8 +164,6 @@ Reference translation:
 {ref}"""
 
 
-
-
 _KIWI = None
 
 
@@ -139,6 +173,7 @@ def haeyo(s):
     global _KIWI
     if _KIWI is None:
         from kiwipiepy import Kiwi
+
         _KIWI = Kiwi()
     s = s.strip()
     toks = _KIWI.tokenize(s)
@@ -184,26 +219,34 @@ def pulls_later(pieces, hy_prefix):
     for i, hp in enumerate(hy_prefix):
         if not hp:
             continue
-        have = nouns(hp); text = hp.lower()
+        have = nouns(hp)
+        text = hp.lower()
         extra = [n for n in nouns(" ".join(pieces[: i + 1])) if n not in have and n not in text]
         if extra:
             return extra
     return []
 
 
-
-
-
 def as_strings(ps):
     if isinstance(ps, list):
-        return [p if isinstance(p, str) else next((v for v in p.values() if isinstance(v, str)), None) if isinstance(p, dict) else None
-                for p in ps]
+        return [
+            p
+            if isinstance(p, str)
+            else next((v for v in p.values() if isinstance(v, str)), None)
+            if isinstance(p, dict)
+            else None
+            for p in ps
+        ]
     return None
 
 
 def check(pieces, units):
     n = len(units)
-    if not isinstance(pieces, list) or len(pieces) != n or not all(isinstance(p, str) and p.strip() for p in pieces):
+    if (
+        not isinstance(pieces, list)
+        or len(pieces) != n
+        or not all(isinstance(p, str) and p.strip() for p in pieces)
+    ):
         return "format"
     for p, u in zip(pieces[:-1], units[:-1]):
         src_closes = bool(re.search(r'[.!?]["\u201d\')]*\s*$', u))
@@ -229,26 +272,38 @@ def hyref(a):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from core.translator.local_translator import HyMTTranslator
+
     name = "tencent/Hy-MT2-1.8B"
     tr = HyMTTranslator(model_name=name, quant="none", context_window=0)
-    tok = AutoTokenizer.from_pretrained(name, padding_side="left"); tok.model_input_names = ["input_ids", "attention_mask"]
+    tok = AutoTokenizer.from_pretrained(name, padding_side="left")
+    tok.model_input_names = ["input_ids", "attention_mask"]
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     tr._tokenizer = tok
     model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.bfloat16).to("cuda").eval()
     rows = [json.loads(l) for l in open(a.units, encoding="utf-8")]
     jobs = [(i, -1, r["src"]) for i, r in enumerate(rows)]
-    jobs += [(i, k, " ".join(r["units"][: k + 1])) for i, r in enumerate(rows) for k in range(len(r["units"]) - 1)]
+    jobs += [
+        (i, k, " ".join(r["units"][: k + 1]))
+        for i, r in enumerate(rows)
+        for k in range(len(r["units"]) - 1)
+    ]
     for r in rows:
         r["hy_prefix"] = [None] * (len(r["units"]) - 1)
     jobs.sort(key=lambda j: len(j[2]))
     for b in range(0, len(jobs), 64):
-        jb = jobs[b: b + 64]
-        enc = tok([tr._build_prompt(t, "ko", "en", None) for _, _, t in jb], return_tensors="pt", padding=True,
-                  add_special_tokens=False).to("cuda")
+        jb = jobs[b : b + 64]
+        enc = tok(
+            [tr._build_prompt(t, "ko", "en", None) for _, _, t in jb],
+            return_tensors="pt",
+            padding=True,
+            add_special_tokens=False,
+        ).to("cuda")
         with torch.inference_mode():
-            o = model.generate(**enc, max_new_tokens=256, do_sample=False, pad_token_id=tok.pad_token_id)
-        for (i, k, _), seq in zip(jb, o[:, enc["input_ids"].shape[1]:]):
+            o = model.generate(
+                **enc, max_new_tokens=256, do_sample=False, pad_token_id=tok.pad_token_id
+            )
+        for (i, k, _), seq in zip(jb, o[:, enc["input_ids"].shape[1] :]):
             h = tok.decode(seq, skip_special_tokens=True).strip().strip('"').strip()
             if k < 0:
                 rows[i]["hy"] = h
@@ -263,6 +318,7 @@ def hyref(a):
 def pieces(a):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
+
     name = "Qwen/Qwen3-8B"
     tok = AutoTokenizer.from_pretrained(name, padding_side="left")
     model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.bfloat16).to("cuda").eval()
@@ -273,17 +329,27 @@ def pieces(a):
     if os.path.exists(a.out):
         done = {json.loads(l)["id"] for l in open(a.out, encoding="utf-8")}
     rows = sorted([r for r in rows if r["id"] not in done], key=lambda r: len(r["src"]))
-    out = open(a.out, "a", encoding="utf-8"); t0 = time.time(); fails = {}
+    out = open(a.out, "a", encoding="utf-8")
+    t0 = time.time()
+    fails = {}
 
     def msg(r, err=""):
         if len(r["units"]) == 1:
             return None
         else:
-            c = PROMPT.format(n=len(r["units"]), chunks="\n".join(f"{i + 1}. {u}" for i, u in enumerate(r["units"])), ref=r["hy"])
+            c = PROMPT.format(
+                n=len(r["units"]),
+                chunks="\n".join(f"{i + 1}. {u}" for i, u in enumerate(r["units"])),
+                ref=r["hy"],
+            )
         if err:
             c += f"\n\nYour previous answer broke a rule ({err}). Fix it."
-        return tok.apply_chat_template([{"role": "user", "content": c}], tokenize=False, add_generation_prompt=True,
-                                       enable_thinking=False)
+        return tok.apply_chat_template(
+            [{"role": "user", "content": c}],
+            tokenize=False,
+            add_generation_prompt=True,
+            enable_thinking=False,
+        )
 
     def run(batch, errs):
         res = [None] * len(batch)
@@ -295,10 +361,14 @@ def pieces(a):
         if not multi:
             return res
         sub = [batch[i] for i in multi]
-        enc = tok([msg(r, errs[i]) for i, r in zip(multi, sub)], return_tensors="pt", padding=True).to("cuda")
+        enc = tok(
+            [msg(r, errs[i]) for i, r in zip(multi, sub)], return_tensors="pt", padding=True
+        ).to("cuda")
         with torch.inference_mode():
-            o = model.generate(**enc, max_new_tokens=400, do_sample=False, pad_token_id=tok.pad_token_id)
-        for i, r, seq in zip(multi, sub, o[:, enc["input_ids"].shape[1]:]):
+            o = model.generate(
+                **enc, max_new_tokens=400, do_sample=False, pad_token_id=tok.pad_token_id
+            )
+        for i, r, seq in zip(multi, sub, o[:, enc["input_ids"].shape[1] :]):
             txt = tok.decode(seq, skip_special_tokens=True).strip()
             m = re.search(r"\[.*\]", txt, re.S)
             try:
@@ -306,7 +376,10 @@ def pieces(a):
             except Exception:
                 ps = None
             if ps and all(isinstance(x, str) for x in ps):
-                ps = [haeyo(x) if PUNCT_END.search(x.strip()) or k == len(ps) - 1 else x.strip() for k, x in enumerate(ps)]
+                ps = [
+                    haeyo(x) if PUNCT_END.search(x.strip()) or k == len(ps) - 1 else x.strip()
+                    for k, x in enumerate(ps)
+                ]
             res[i] = (ps, txt, check(ps, r["units"]))
         return res
 
@@ -319,21 +392,34 @@ def pieces(a):
         return res
 
     for b in range(0, len(rows), a.batch):
-        batch = rows[b: b + a.batch]
+        batch = rows[b : b + a.batch]
         res = verify(batch, run(batch, [""] * len(batch)))
         redo = [i for i, (_, _, why) in enumerate(res) if why and len(batch[i]["units"]) > 1]
         if redo:
+
             def reason(i):
                 why, txt = res[i][2], res[i][1]
                 if why == "pulls_later":
-                    return "pieces used words from a LATER chunk: " + txt.split("[pulls_later]")[-1].strip()
+                    return (
+                        "pieces used words from a LATER chunk: "
+                        + txt.split("[pulls_later]")[-1].strip()
+                    )
                 return why
-            again = verify([batch[i] for i in redo], run([batch[i] for i in redo], [reason(i) for i in redo]))
+
+            again = verify(
+                [batch[i] for i in redo], run([batch[i] for i in redo], [reason(i) for i in redo])
+            )
             for i, rr in zip(redo, again):
                 res[i] = rr
         for r, (ps, txt, why) in zip(batch, res):
             fails[why or "ok"] = fails.get(why or "ok", 0) + 1
-            out.write(json.dumps({**r, "pieces": ps, "raw_llm": txt if why else "", "fail": why}, ensure_ascii=False) + "\n")
+            out.write(
+                json.dumps(
+                    {**r, "pieces": ps, "raw_llm": txt if why else "", "fail": why},
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
         out.flush()
         n = b + len(batch)
         if (b // a.batch) % 10 == 0:
@@ -343,6 +429,7 @@ def pieces(a):
 
 def build(a):
     import soundfile as sf
+
     kiwi = {}
     if a.kiwi:
         rs = [json.loads(l) for l in open(a.kiwi, encoding="utf-8")]
@@ -352,9 +439,11 @@ def build(a):
     rng = random.Random(1)
     for r in map(json.loads, open(a.pieces, encoding="utf-8")):
         if r["fail"]:
-            skip["fail"] += 1; continue
+            skip["fail"] += 1
+            continue
         if kiwi and kiwi.get(r["id"], 1.0) < a.min_kiwi:
-            skip["kiwi"] += 1; continue
+            skip["kiwi"] += 1
+            continue
         ps, ends = r["pieces"], r["ends"]
         used += 1
         for i in range(len(ps)):
@@ -364,9 +453,21 @@ def build(a):
                 cut = os.path.abspath(os.path.join(a.wav_dir, f"{r['id']}_{i + 1}.wav"))
                 if not os.path.exists(cut):
                     sf.write(cut, wav[: int(ends[i] * sr)], sr, subtype="PCM_16")
-                out_rows.append({"audio": cut, "text": f"language Korean<asr_text>{text}{' <SEG>' if a.seg_full else '<SEG>'}", "pair": "en-ko"})
+                out_rows.append(
+                    {
+                        "audio": cut,
+                        "text": f"language Korean<asr_text>{text}{' <SEG>' if a.seg_full else '<SEG>'}",
+                        "pair": "en-ko",
+                    }
+                )
             else:
-                out_rows.append({"audio": r["audio"], "text": f"language Korean<asr_text>{text}", "pair": "en-ko"})
+                out_rows.append(
+                    {
+                        "audio": r["audio"],
+                        "text": f"language Korean<asr_text>{text}",
+                        "pair": "en-ko",
+                    }
+                )
         keep = rng.random() < a.wait_single or len(ps) > 1
         if a.wait and keep:
             i = rng.randrange(len(ps))
@@ -378,34 +479,69 @@ def build(a):
                 if not os.path.exists(cut):
                     sf.write(cut, wav[: int(t * sr)], sr, subtype="PCM_16")
                 done = "".join(p + " <SEG> " for p in ps[:i]).rstrip()
-                out_rows.append({"audio": cut, "text": f"language Korean<asr_text>{done}", "pair": "en-ko", "wait": True})
+                out_rows.append(
+                    {
+                        "audio": cut,
+                        "text": f"language Korean<asr_text>{done}",
+                        "pair": "en-ko",
+                        "wait": True,
+                    }
+                )
     partial = sum(r["text"].endswith("<SEG>") and not r.get("wait") for r in out_rows)
     nwait = sum(bool(r.pop("wait", False)) for r in out_rows)
     base = [json.loads(l) for l in open(a.base, encoding="utf-8")]
-    base = [{"audio": b["audio"], "text": b["text"], "pair": b["pair"]} for b in base if b["pair"] != "en-ko"]
+    base = [
+        {"audio": b["audio"], "text": b["text"], "pair": b["pair"]}
+        for b in base
+        if b["pair"] != "en-ko"
+    ]
     allr = base + out_rows
     random.Random(0).shuffle(allr)
     with open(a.out, "w", encoding="utf-8") as f:
         for r in allr:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(f"utterances used {used}, skipped {skip}; new en-ko rows {len(out_rows)} ({partial} partial, {nwait} wait); "
-          f"base rows kept {len(base)}; total {len(allr)}")
+    print(
+        f"utterances used {used}, skipped {skip}; new en-ko rows {len(out_rows)} ({partial} partial, {nwait} wait); "
+        f"base rows kept {len(base)}; total {len(allr)}"
+    )
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", choices=["manifest", "units", "hyref", "pieces", "build"])
-    ap.add_argument("--fleurs", action="store_true"); ap.add_argument("--covost", type=int, default=0)
-    ap.add_argument("--manifest"); ap.add_argument("--units"); ap.add_argument("--pieces"); ap.add_argument("--out")
-    ap.add_argument("--limit", type=int, default=0); ap.add_argument("--batch", type=int, default=16)
-    ap.add_argument("--kiwi", default=""); ap.add_argument("--min_kiwi", type=float, default=0.0)
-    ap.add_argument("--base"); ap.add_argument("--wav_dir")
-    ap.add_argument("--seg_full", action="store_true", help="put <SEG> between pieces in every row, so the model also sees text "
-                    "continuing after a <SEG> (full-audio rows) and learns to stop or continue from how much audio it has")
-    ap.add_argument("--wait", action="store_true", help="add one row per utterance whose audio stops inside a piece; the target "
-                    "is only the pieces already finished (empty for the first piece), so the model learns to wait instead of "
-                    "committing a piece it has not heard to the end")
-    ap.add_argument("--wait_single", type=float, default=1.0, help="share of one-piece utterances that get a wait row (their "
-                    "target is empty); utterances with several pieces always get one")
+    ap.add_argument("--fleurs", action="store_true")
+    ap.add_argument("--covost", type=int, default=0)
+    ap.add_argument("--manifest")
+    ap.add_argument("--units")
+    ap.add_argument("--pieces")
+    ap.add_argument("--out")
+    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--batch", type=int, default=16)
+    ap.add_argument("--kiwi", default="")
+    ap.add_argument("--min_kiwi", type=float, default=0.0)
+    ap.add_argument("--base")
+    ap.add_argument("--wav_dir")
+    ap.add_argument(
+        "--seg_full",
+        action="store_true",
+        help="put <SEG> between pieces in every row, so the model also sees text "
+        "continuing after a <SEG> (full-audio rows) and learns to stop or continue from how much audio it has",
+    )
+    ap.add_argument(
+        "--wait",
+        action="store_true",
+        help="add one row per utterance whose audio stops inside a piece; the target "
+        "is only the pieces already finished (empty for the first piece), so the model learns to wait instead of "
+        "committing a piece it has not heard to the end",
+    )
+    ap.add_argument(
+        "--wait_single",
+        type=float,
+        default=1.0,
+        help="share of one-piece utterances that get a wait row (their "
+        "target is empty); utterances with several pieces always get one",
+    )
     a = ap.parse_args()
-    {"manifest": manifest, "units": units, "hyref": hyref, "pieces": pieces, "build": build}[a.mode](a)
+    {"manifest": manifest, "units": units, "hyref": hyref, "pieces": pieces, "build": build}[
+        a.mode
+    ](a)

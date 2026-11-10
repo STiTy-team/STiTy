@@ -6,6 +6,7 @@
 확정되면 음향 판정을 덮어쓴다 (아니면 음향 유지).
 보고: 단독/결합 정확도, 뒤집기 횟수(옳게/그르게), 뒤집힌 발화의 추가 지연.
 """
+
 import json, re, time, unicodedata
 import numpy as np
 import torch
@@ -18,6 +19,7 @@ TEXT_T = [1.0, 1.5, 2.0]
 KOEN = "models/Qwen3-ASR-1.7B-koen-seg-mix-merged"
 
 from silero_vad import load_silero_vad, get_speech_timestamps
+
 vad = load_silero_vad()
 
 scenes, clips = {}, []
@@ -26,17 +28,21 @@ for line in open(f"{NS}/manifest.jsonl"):
     a = it["audio"]
     if a not in scenes:
         scenes[a], _ = librosa.load(f"{NS}/{a}", sr=SR, mono=True)
-    seg = scenes[a][int(it["offset"] * SR): int((it["offset"] + it["duration"]) * SR)]
+    seg = scenes[a][int(it["offset"] * SR) : int((it["offset"] + it["duration"]) * SR)]
     ts = get_speech_timestamps(torch.from_numpy(seg), vad, sampling_rate=SR)
     if not ts or len(seg) - ts[0]["start"] < int(0.3 * SR):
         continue
-    clips.append((it["src_lang"], it["id"], seg[ts[0]["start"]:]))
+    clips.append((it["src_lang"], it["id"], seg[ts[0]["start"] :]))
 print(f"clips: {len(clips)}", flush=True)
 
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
 proc = WhisperProcessor.from_pretrained("openai/whisper-small")
-wmodel = WhisperForConditionalGeneration.from_pretrained(
-    "openai/whisper-small", dtype=torch.float16).to("cuda").eval()
+wmodel = (
+    WhisperForConditionalGeneration.from_pretrained("openai/whisper-small", dtype=torch.float16)
+    .to("cuda")
+    .eval()
+)
 tok = proc.tokenizer
 allowed = {c: tok.convert_tokens_to_ids(f"<|{c}|>") for c in ("ko", "en")}
 sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
@@ -45,10 +51,15 @@ acoustic = {}
 for w in ACOUSTIC_W:
     picks = []
     for code, uid, wav in clips:
-        feats = proc(wav[: int(w * SR)], sampling_rate=SR,
-                     return_tensors="pt").input_features.to("cuda", torch.float16)
+        feats = proc(wav[: int(w * SR)], sampling_rate=SR, return_tensors="pt").input_features.to(
+            "cuda", torch.float16
+        )
         with torch.no_grad():
-            logits = wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda")).logits[0, -1].float()
+            logits = (
+                wmodel(feats, decoder_input_ids=torch.tensor([[sot]], device="cuda"))
+                .logits[0, -1]
+                .float()
+            )
         picks.append(max(allowed, key=lambda c: logits[allowed[c]].item()))
     acoustic[w] = picks
     acc = np.mean([p == c for p, (c, _, _) in zip(picks, clips)])
@@ -77,8 +88,10 @@ def script_verdict(text):
 
 import asyncio
 from qwen_asr import Qwen3ASRModel
-asr = Qwen3ASRModel.from_pretrained(KOEN, dtype=torch.bfloat16, device_map="cuda:0",
-                                    max_inference_batch_size=32, max_new_tokens=64)
+
+asr = Qwen3ASRModel.from_pretrained(
+    KOEN, dtype=torch.bfloat16, device_map="cuda:0", max_inference_batch_size=32, max_new_tokens=64
+)
 
 text_verdicts = {}
 for t in TEXT_T:
@@ -89,11 +102,19 @@ for t in TEXT_T:
     verdicts = [script_verdict(r.text) for r in results]
     text_verdicts[t] = verdicts
     dec = sum(v is not None for v in verdicts)
-    acc_dec = np.mean([v == c for v, (c, _, _) in zip(verdicts, clips) if v is not None]) if dec else 0
-    print(f"text t={t}s decisive={dec}/{len(clips)} acc(decisive)={acc_dec:.3f} "
-          f"asr_infer={dt*1000:.0f}ms/utt", flush=True)
+    acc_dec = (
+        np.mean([v == c for v, (c, _, _) in zip(verdicts, clips) if v is not None]) if dec else 0
+    )
+    print(
+        f"text t={t}s decisive={dec}/{len(clips)} acc(decisive)={acc_dec:.3f} "
+        f"asr_infer={dt * 1000:.0f}ms/utt",
+        flush=True,
+    )
 
-print("\n| 음향 w | 텍스트 t | 음향 단독 | 결합 | 뒤집음(옳/그름) | 뒤집힌 발화 추가지연 |", flush=True)
+print(
+    "\n| 음향 w | 텍스트 t | 음향 단독 | 결합 | 뒤집음(옳/그름) | 뒤집힌 발화 추가지연 |",
+    flush=True,
+)
 print("|---|---|---|---|---|---|", flush=True)
 for w in ACOUSTIC_W:
     base = acoustic[w]
@@ -109,11 +130,16 @@ for w in ACOUSTIC_W:
                 else:
                     bad += 1
         acc = np.mean([p == c for p, (c, _, _) in zip(comb, clips)])
-        print(f"| {w}s | {t}s | {base_acc:.3f} | {acc:.3f} | {good}/{bad} | +{t-w:.1f}s (해당 {good+bad}건) |",
-              flush=True)
+        print(
+            f"| {w}s | {t}s | {base_acc:.3f} | {acc:.3f} | {good}/{bad} | +{t - w:.1f}s (해당 {good + bad}건) |",
+            flush=True,
+        )
 
 for t in TEXT_T:
-    miss = [(uid, c, a, v) for (c, uid, _), a, v in zip(clips, acoustic[1.0], text_verdicts[t])
-            if (v if v is not None else a) != c]
+    miss = [
+        (uid, c, a, v)
+        for (c, uid, _), a, v in zip(clips, acoustic[1.0], text_verdicts[t])
+        if (v if v is not None else a) != c
+    ]
     print(f"t={t}s 결합(w=1.0) 오답 {len(miss)}: {[m[0] for m in miss]}", flush=True)
 print("LID_TEXT_DONE", flush=True)

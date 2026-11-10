@@ -49,9 +49,12 @@ from train import (
 def load_encoder_with_lora(model_path: str, lora_dir: str, device: str, dtype: torch.dtype):
     from qwen_asr.core.transformers_backend import Qwen3ASRConfig, Qwen3ASRForConditionalGeneration
     from transformers import AutoConfig
+
     AutoConfig.register("qwen3_asr", Qwen3ASRConfig)
     model = Qwen3ASRForConditionalGeneration.from_pretrained(
-        model_path, dtype=dtype, device_map=device,
+        model_path,
+        dtype=dtype,
+        device_map=device,
     )
     encoder = model.thinker.audio_tower
     for p in encoder.parameters():
@@ -67,6 +70,7 @@ def load_encoder_with_lora(model_path: str, lora_dir: str, device: str, dtype: t
 # ---------------------------------------------------------------------------
 # 경계 검출
 # ---------------------------------------------------------------------------
+
 
 def detect_by_kpeak(weights_np: np.ndarray, k: int, min_distance: int = 3) -> np.ndarray:
     """qty_pred를 k로 받아 weight 곡선 상위 k개 극대점 반환."""
@@ -95,14 +99,17 @@ def detect_by_accumulation(weights_np: np.ndarray) -> tuple[np.ndarray, np.ndarr
 # 추론
 # ---------------------------------------------------------------------------
 
+
 def infer(args) -> dict:
     device = torch.device(args.device)
     dtype = torch.bfloat16
 
     ckpt = torch.load(args.ckpt, map_location=device)
     mode = ckpt.get("mode", args.mode)
-    print(f"checkpoint mode: {mode}  (epoch {ckpt.get('epoch', '?')},"
-          f"  val_loss={ckpt.get('val_loss', '?'):.4f})")
+    print(
+        f"checkpoint mode: {mode}  (epoch {ckpt.get('epoch', '?')},"
+        f"  val_loss={ckpt.get('val_loss', '?'):.4f})"
+    )
 
     lora_dir = Path(args.ckpt).parent / (Path(args.ckpt).stem + "_lora")
     is_lora = lora_dir.exists()
@@ -140,8 +147,9 @@ def infer(args) -> dict:
         return_attention_mask=True,
     )
 
-    out = feature_extractor(raw_audio, sampling_rate=16000,
-                            return_tensors="pt", return_attention_mask=True)
+    out = feature_extractor(
+        raw_audio, sampling_rate=16000, return_tensors="pt", return_attention_mask=True
+    )
     mel = out["input_features"].squeeze(0)
     mel_len = int(out["attention_mask"].squeeze(0).sum().item())
     mel = mel[:, :mel_len]
@@ -163,7 +171,7 @@ def infer(args) -> dict:
 
     print(f"\n[CIF]   Σw={acc[-1]:.3f}  경계 {len(fire_frames)}개")
     for i, (f, t) in enumerate(zip(fire_frames, fire_times)):
-        print(f"  [{i+1}] frame={f}  t={t:.3f}s  w={weights_np[f]:.4f}")
+        print(f"  [{i + 1}] frame={f}  t={t:.3f}s  w={weights_np[f]:.4f}")
 
     kpeak_frames = kpeak_times = None
     if qty_val is not None:
@@ -172,7 +180,7 @@ def infer(args) -> dict:
         kpeak_times = kpeak_frames * enc_frame_duration
         print(f"\n[kpeak] k={k}  경계 {len(kpeak_frames)}개")
         for i, (f, t) in enumerate(zip(kpeak_frames, kpeak_times)):
-            print(f"  [{i+1}] frame={f}  t={t:.3f}s  w={weights_np[f]:.4f}")
+            print(f"  [{i + 1}] frame={f}  t={t:.3f}s  w={weights_np[f]:.4f}")
 
     return dict(
         raw_audio=raw_audio,
@@ -193,18 +201,19 @@ def infer(args) -> dict:
 # 시각화
 # ---------------------------------------------------------------------------
 
+
 def plot(result: dict, out_path: str | None, show: bool):
-    raw_audio    = result["raw_audio"]
-    duration     = result["duration"]
-    weights_np   = result["weights_np"]
+    raw_audio = result["raw_audio"]
+    duration = result["duration"]
+    weights_np = result["weights_np"]
     weight_times = result["weight_times"]
-    acc          = result["acc"]
-    fire_frames  = result["fire_frames"]
-    fire_times   = result["fire_times"]
+    acc = result["acc"]
+    fire_frames = result["fire_frames"]
+    fire_times = result["fire_times"]
     kpeak_frames = result.get("kpeak_frames")
-    kpeak_times  = result.get("kpeak_times")
-    mode         = result["mode"]
-    ckpt_path    = result["ckpt_path"]
+    kpeak_times = result.get("kpeak_times")
+    mode = result["mode"]
+    ckpt_path = result["ckpt_path"]
 
     has_kpeak = kpeak_frames is not None and len(kpeak_frames) > 0
 
@@ -212,7 +221,8 @@ def plot(result: dict, out_path: str | None, show: bool):
     acc_max = max(acc[-1] + 0.5, 2.0)
 
     fig, axes = plt.subplots(
-        3, 1,
+        3,
+        1,
         figsize=(14, 8),
         sharex=True,
         gridspec_kw={"height_ratios": [1.5, 1.5, 2]},
@@ -221,7 +231,8 @@ def plot(result: dict, out_path: str | None, show: bool):
     fig.suptitle(
         f"CIF Inference  |  mode={mode}  |  {Path(ckpt_path).name}"
         f"  |  CIF={len(fire_times)}개{kpeak_info}",
-        fontsize=12, y=1.01,
+        fontsize=12,
+        y=1.01,
     )
 
     # ── 상단: 파형 ──
@@ -247,15 +258,27 @@ def plot(result: dict, out_path: str | None, show: bool):
     for t in fire_times:
         ax_w.axvline(t, color="#EF4444", alpha=0.35, linewidth=1.0)
     if len(fire_frames) > 0:
-        ax_w.scatter(fire_times, weights_np[fire_frames],
-                     color="#EF4444", zorder=5, s=40, marker="v",
-                     label=f"CIF ({len(fire_times)})")
+        ax_w.scatter(
+            fire_times,
+            weights_np[fire_frames],
+            color="#EF4444",
+            zorder=5,
+            s=40,
+            marker="v",
+            label=f"CIF ({len(fire_times)})",
+        )
     if has_kpeak:
         for t in kpeak_times:
             ax_w.axvline(t, color="#F97316", alpha=0.35, linewidth=1.0)
-        ax_w.scatter(kpeak_times, weights_np[kpeak_frames],
-                     color="#F97316", zorder=6, s=40, marker="^",
-                     label=f"kpeak ({len(kpeak_times)})")
+        ax_w.scatter(
+            kpeak_times,
+            weights_np[kpeak_frames],
+            color="#F97316",
+            zorder=6,
+            s=40,
+            marker="^",
+            label=f"kpeak ({len(kpeak_times)})",
+        )
     ax_w.legend(loc="upper right", fontsize=8)
 
     # ── 하단: 누적 곡선 ──
@@ -264,21 +287,40 @@ def plot(result: dict, out_path: str | None, show: bool):
 
     for k in range(1, int(acc_max) + 1):
         ax_acc.axhline(k, color="#6B7280", linewidth=0.6, linestyle="--", alpha=0.6)
-        ax_acc.text(weight_times[-1] * 1.002, k, f" {k}", va="center",
-                    fontsize=7, color="#6B7280", clip_on=False)
+        ax_acc.text(
+            weight_times[-1] * 1.002,
+            k,
+            f" {k}",
+            va="center",
+            fontsize=7,
+            color="#6B7280",
+            clip_on=False,
+        )
 
     for t in fire_times:
         ax_acc.axvline(t, color="#EF4444", alpha=0.35, linewidth=1.0)
     if len(fire_frames) > 0:
-        ax_acc.scatter(fire_times, acc[fire_frames],
-                       color="#EF4444", zorder=5, s=40, marker="v",
-                       label=f"CIF ({len(fire_times)})")
+        ax_acc.scatter(
+            fire_times,
+            acc[fire_frames],
+            color="#EF4444",
+            zorder=5,
+            s=40,
+            marker="v",
+            label=f"CIF ({len(fire_times)})",
+        )
     if has_kpeak:
         for t in kpeak_times:
             ax_acc.axvline(t, color="#F97316", alpha=0.35, linewidth=1.0)
-        ax_acc.scatter(kpeak_times, acc[kpeak_frames],
-                       color="#F97316", zorder=6, s=40, marker="^",
-                       label=f"kpeak ({len(kpeak_times)})")
+        ax_acc.scatter(
+            kpeak_times,
+            acc[kpeak_frames],
+            color="#F97316",
+            zorder=6,
+            s=40,
+            marker="^",
+            label=f"kpeak ({len(kpeak_times)})",
+        )
 
     ax_acc.set_ylabel("Accumulated weight")
     ax_acc.set_xlabel("Time (s)")
@@ -305,8 +347,10 @@ def plot(result: dict, out_path: str | None, show: bool):
 # 학습 데이터 시각화
 # ---------------------------------------------------------------------------
 
+
 def plot_data_samples(jsonl_path: str, n: int, seed: int, out_path: str | None, show: bool):
     import json, random
+
     random.seed(seed)
 
     with open(jsonl_path) as f:
@@ -330,14 +374,15 @@ def plot_data_samples(jsonl_path: str, n: int, seed: int, out_path: str | None, 
         text = rec.get("text_clean", "")[:60]
         ax.set_title(
             f"n_segs={rec['n_segs']}  {text}",
-            fontsize=8, pad=3,
+            fontsize=8,
+            pad=3,
         )
         ax.set_xlim(0, duration)
         ax.set_ylim(-1.05, 1.05)
         ax.set_xlabel("s", fontsize=7)
         ax.tick_params(labelsize=7)
 
-    for ax in axes[len(samples):]:
+    for ax in axes[len(samples) :]:
         ax.set_visible(False)
 
     fig.suptitle(f"Train data samples  ({jsonl_path})", fontsize=10, y=1.01)
@@ -356,26 +401,35 @@ def plot_data_samples(jsonl_path: str, n: int, seed: int, out_path: str | None, 
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     parser = argparse.ArgumentParser(description="CIF 추론/데이터 시각화")
-    parser.add_argument("--data", default=None, metavar="JSONL",
-                        help="학습 데이터 시각화 모드: jsonl 경로 지정 시 --ckpt 불필요")
+    parser.add_argument(
+        "--data",
+        default=None,
+        metavar="JSONL",
+        help="학습 데이터 시각화 모드: jsonl 경로 지정 시 --ckpt 불필요",
+    )
     parser.add_argument("--n", type=int, default=6, help="--data 모드에서 표시할 샘플 수")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--ckpt", default=None, help="checkpoint 경로")
     parser.add_argument("--audio", default=None, help="테스트할 wav 파일 경로")
-    parser.add_argument("--mode", choices=["encoder", "mel"], default="encoder",
-                        help="checkpoint에 mode가 없을 경우 fallback")
-    parser.add_argument("--model", default="Qwen/Qwen3-ASR-1.7B",
-                        help="encoder mode용 ASR 모델 경로")
+    parser.add_argument(
+        "--mode",
+        choices=["encoder", "mel"],
+        default="encoder",
+        help="checkpoint에 mode가 없을 경우 fallback",
+    )
+    parser.add_argument(
+        "--model", default="Qwen/Qwen3-ASR-1.7B", help="encoder mode용 ASR 모델 경로"
+    )
     parser.add_argument("--mel-hidden", type=int, default=256)
     parser.add_argument("--device", default="cuda:0" if torch.cuda.is_available() else "cpu")
-    parser.add_argument("--out", default=None, metavar="PATH",
-                        help="그래프 저장 경로")
-    parser.add_argument("--peak-min-dist", type=int, default=3,
-                        help="kpeak 인접 극대점 최소 간격 (encoder frames)")
-    parser.add_argument("--no-show", action="store_true",
-                        help="plt.show() 생략 (서버 환경)")
+    parser.add_argument("--out", default=None, metavar="PATH", help="그래프 저장 경로")
+    parser.add_argument(
+        "--peak-min-dist", type=int, default=3, help="kpeak 인접 극대점 최소 간격 (encoder frames)"
+    )
+    parser.add_argument("--no-show", action="store_true", help="plt.show() 생략 (서버 환경)")
     args = parser.parse_args()
 
     if args.no_show:

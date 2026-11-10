@@ -24,13 +24,21 @@ function Plot({ model, lanes, width, hatch }: { model: TimingModel; lanes: strin
   for (let t = 0; t <= model.end + 1e-9; t += step) {
     grid.push(
       <line key={`g${t}`} x1={x(t)} y1={TL.padT} x2={x(t)} y2={axisY} className="stroke-border" />,
-      <text key={`a${t}`} x={x(t)} y={axisY + 14} textAnchor="middle" className="fill-muted-foreground text-[10px] tabular-nums">
+      <text
+        key={`a${t}`}
+        x={x(t)}
+        y={axisY + 14}
+        textAnchor="middle"
+        className="fill-muted-foreground text-[10px] tabular-nums"
+      >
         {+t.toFixed(2)}
       </text>,
     )
     const half = t + step / 2
     if (half < model.end)
-      grid.push(<line key={`h${t}`} x1={x(half)} y1={TL.padT} x2={x(half)} y2={axisY} className="stroke-border opacity-60" />)
+      grid.push(
+        <line key={`h${t}`} x1={x(half)} y1={TL.padT} x2={x(half)} y2={axisY} className="stroke-border opacity-60" />,
+      )
   }
 
   return (
@@ -70,7 +78,14 @@ function Plot({ model, lanes, width, hatch }: { model: TimingModel; lanes: strin
           const from = model.wallAt(spoke)
           if (v.t! - from <= 0.005) continue
           parts.push(
-            <rect key={`v${k}`} x={x(from)} y={laneY(0)} width={x(v.t!) - x(from)} height={TL.bar} fill={`url(#${hatch})`}>
+            <rect
+              key={`v${k}`}
+              x={x(from)}
+              y={laneY(0)}
+              width={x(v.t!) - x(from)}
+              height={TL.bar}
+              fill={`url(#${hatch})`}
+            >
               <title>{`침묵 대기: 말은 오디오 ${spoke.toFixed(2)}s에 끝났고, VAD가 ${v.t!.toFixed(2)}s에 알렸어요`}</title>
             </rect>,
           )
@@ -101,10 +116,21 @@ function Plot({ model, lanes, width, hatch }: { model: TimingModel; lanes: strin
             <line key="heard" x1={heardX} y1={top} x2={heardX} y2={bottom} className="stroke-foreground" opacity="0.6">
               <title>{`commit이 들은 오디오: ${commit.audio.toFixed(2)}s`}</title>
             </line>,
-            <path key="mark" d={`M ${cx} ${markY - 4} l 4 4 l -4 4 l -4 -4 z`} className="fill-card stroke-foreground" strokeWidth="1.2">
+            <path
+              key="mark"
+              d={`M ${cx} ${markY - 4} l 4 4 l -4 4 l -4 -4 z`}
+              className="fill-card stroke-foreground"
+              strokeWidth="1.2"
+            >
               <title>{`commit ${commit.t.toFixed(2)}s (${reason})${commit.original ? ` -- ${commit.original}` : ""}`}</title>
             </path>,
-            <text key="reason" x={x(row.start) + 3} y={y0 + 10} fill={reasonColor(reason)} className="font-mono text-[10px]">
+            <text
+              key="reason"
+              x={x(row.start) + 3}
+              y={y0 + 10}
+              fill={reasonColor(reason)}
+              className="font-mono text-[10px]"
+            >
               {reason}
             </text>,
           )
@@ -127,8 +153,20 @@ function Plot({ model, lanes, width, hatch }: { model: TimingModel; lanes: strin
         }
         return (
           <g key={i}>
-            <rect x={TL.padL} y={y0} width={plot} height={rowH - TL.gap + 2} rx="3" className={i % 2 ? "fill-transparent" : "fill-muted"} />
-            <text x={TL.padL - 8} y={laneY(1) + 6} textAnchor="end" className="fill-muted-foreground text-[11px] tabular-nums">
+            <rect
+              x={TL.padL}
+              y={y0}
+              width={plot}
+              height={rowH - TL.gap + 2}
+              rx="3"
+              className={i % 2 ? "fill-transparent" : "fill-muted"}
+            />
+            <text
+              x={TL.padL - 8}
+              y={laneY(1) + 6}
+              textAnchor="end"
+              className="fill-muted-foreground text-[11px] tabular-nums"
+            >
               {commit ? `commit ${i + 1}` : "나머지"}
             </text>
             {parts}
@@ -154,7 +192,9 @@ export function LayerTiming({ item, playback }: { item: PlayedItem | null; playb
     [model, lanes, width, hatch],
   )
 
-  const headX = model ? TL.padL + (width - TL.padL - TL.padR) * Math.min(1, Math.max(0, (now + model.feedLag) / model.end)) : 0
+  const headX = model
+    ? TL.padL + (width - TL.padL - TL.padR) * Math.min(1, Math.max(0, (now + model.feedLag) / model.end))
+    : 0
   // The row being heard: the first commit that had not yet been decided at `now`.
   let heardRow = model ? model.rows.findIndex((row) => row.commit && now <= row.commit.audio + 1e-6) : -1
   if (model && heardRow < 0) heardRow = model.rows.length - 1
@@ -176,7 +216,8 @@ export function LayerTiming({ item, playback }: { item: PlayedItem | null; playb
     <div className="flex min-w-0 flex-col gap-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <p className="text-sm text-muted-foreground tabular-nums">
-          {item ? `${item.id} · 오디오 ${item.span.toFixed(1)}s · commit ${commits}개 · ` : ""}commit 하나가 한 줄이에요. 가로축은 첫 chunk부터 흐른 실제 시간이에요.
+          {item ? `${item.id} · 오디오 ${item.span.toFixed(1)}s · commit ${commits}개 · ` : ""}commit 하나가 한
+          줄이에요. 가로축은 첫 chunk부터 흐른 실제 시간이에요.
         </p>
         <span className="flex-1" />
         {item && (

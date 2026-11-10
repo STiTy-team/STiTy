@@ -19,7 +19,10 @@ export function Legend({ entries }: { entries: { label: string; color: string; c
     <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       {entries.map((entry) => (
         <span key={entry.label} className="flex items-center gap-1.5">
-          <i className={cn("inline-block h-2.5 w-2.5 rounded-sm", entry.className)} style={{ background: entry.color }} />
+          <i
+            className={cn("inline-block h-2.5 w-2.5 rounded-sm", entry.className)}
+            style={{ background: entry.color }}
+          />
           {entry.label}
         </span>
       ))}
@@ -95,7 +98,10 @@ function Ribbon({ item, turns, playback }: { item: PlayedItem; turns: QuietTurn[
               <div
                 key={i}
                 className={cn("absolute w-0.5 rounded-[1px]", commit ? "top-0.5 h-7" : "top-2 h-5.5")}
-                style={{ left: pct(e.at), background: commit ? reasonColor(e.commit_reason) : "var(--muted-foreground)" }}
+                style={{
+                  left: pct(e.at),
+                  background: commit ? reasonColor(e.commit_reason) : "var(--muted-foreground)",
+                }}
                 title={commit ? `commit ${e.commit_reason ?? ""} · ${seconds(e.audio)}` : "말 끝"}
               />
             )
@@ -146,7 +152,12 @@ export function PlayerCard({
             <RotateCcwIcon />
             처음부터
           </Button>
-          <Toggle variant="outline" pressed={soundOn} onPressedChange={onSound} aria-label={soundOn ? "소리 끄기" : "소리 켜기"}>
+          <Toggle
+            variant="outline"
+            pressed={soundOn}
+            onPressedChange={onSound}
+            aria-label={soundOn ? "소리 끄기" : "소리 켜기"}
+          >
             {soundOn ? <Volume2Icon /> : <VolumeXIcon />}
           </Toggle>
           <ToggleGroup
@@ -181,8 +192,8 @@ export function PlayerCard({
               ))}
             </ul>
             <p className="text-muted-foreground">
-              긴 표시는 commit, 짧은 회색 표시는 말 끝이에요. 아래 얇은 색 띠는 참조 구간이에요. 스페이스로 재생·정지, 막대에서 화살표 키로 이동할 수
-              있어요.
+              긴 표시는 commit, 짧은 회색 표시는 말 끝이에요. 아래 얇은 색 띠는 참조 구간이에요. 스페이스로 재생·정지,
+              막대에서 화살표 키로 이동할 수 있어요.
             </p>
           </HelpButton>
         </div>

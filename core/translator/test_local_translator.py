@@ -2,12 +2,15 @@ import asyncio
 import unittest
 
 from core.translator.local_translator import (
-    HyMTTranslator, LLMTranslator, NLLBTranslator, TranslateGemmaTranslator, make_translator,
+    HyMTTranslator,
+    LLMTranslator,
+    NLLBTranslator,
+    TranslateGemmaTranslator,
+    make_translator,
 )
 
 
 class DispatchTest(unittest.TestCase):
-
     def test_model_names_pick_their_prompt_format(self):
         cases = {
             "google/translategemma-4b-it": TranslateGemmaTranslator,
@@ -25,19 +28,34 @@ class DispatchTest(unittest.TestCase):
 
 
 class HyMTPromptTest(unittest.TestCase):
-
     def test_no_system_message_and_card_instruction(self):
         messages = HyMTTranslator()._messages("안녕하세요.", "en", "ko")
-        self.assertEqual(messages, [{"role": "user", "content": (
-            "Translate the following text into English. Note that you should only output "
-            "the translated result without any additional explanation:\n\n안녕하세요.")}])
+        self.assertEqual(
+            messages,
+            [
+                {
+                    "role": "user",
+                    "content": (
+                        "Translate the following text into English. Note that you should only output "
+                        "the translated result without any additional explanation:\n\n안녕하세요."
+                    ),
+                }
+            ],
+        )
 
     def test_context_goes_into_background_block(self):
         messages = HyMTTranslator()._messages(
-            "네, 앉으세요.", "en", "ko",
-            context=[{"text": "이 자리 비었나요?", "lang": "ko", "translation": "Is this seat free?"}])
+            "네, 앉으세요.",
+            "en",
+            "ko",
+            context=[
+                {"text": "이 자리 비었나요?", "lang": "ko", "translation": "Is this seat free?"}
+            ],
+        )
         content = messages[0]["content"]
-        self.assertTrue(content.startswith("[Background Information]\n- [Korean] 이 자리 비었나요?"))
+        self.assertTrue(
+            content.startswith("[Background Information]\n- [Korean] 이 자리 비었나요?")
+        )
         self.assertTrue(content.endswith("[Source Text]\n네, 앉으세요."))
 
     def test_braces_in_source_do_not_break_formatting(self):
@@ -46,12 +64,24 @@ class HyMTPromptTest(unittest.TestCase):
 
 
 class TranslateGemmaTest(unittest.TestCase):
-
     def test_structured_user_message_without_system(self):
         messages = TranslateGemmaTranslator()._messages("안녕", "en", "ko")
-        self.assertEqual(messages, [{"role": "user", "content": [{
-            "type": "text", "source_lang_code": "ko", "target_lang_code": "en",
-            "text": "안녕"}]}])
+        self.assertEqual(
+            messages,
+            [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "source_lang_code": "ko",
+                            "target_lang_code": "en",
+                            "text": "안녕",
+                        }
+                    ],
+                }
+            ],
+        )
 
     def test_context_is_dropped(self):
         translator = TranslateGemmaTranslator()
@@ -90,7 +120,6 @@ class _Model:
 
 
 class TokenizationTest(unittest.TestCase):
-
     def test_template_bos_is_not_doubled(self):
         translator = LLMTranslator()
         translator._tokenizer, translator._model, translator._device = _Tokenizer(), _Model(), "cpu"

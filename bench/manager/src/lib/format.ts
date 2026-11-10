@@ -56,7 +56,10 @@ export const shortSha = (sha: string | null) => (sha ?? "").slice(0, 10)
 const MAX_REASON_CHARS = 120
 
 export function failureReason(error: string): string {
-  const lines = error.split("\n").map((line) => line.trim()).filter(Boolean)
+  const lines = error
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
   const found = [...lines]
     .reverse()
     .find((line) => /error|exception|failed|refused|not on/i.test(line) && !/^make(\[\d+\])?:/.test(line))

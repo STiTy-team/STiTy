@@ -35,13 +35,34 @@ DEFAULT_MODEL = "facebook/nllb-200-distilled-600M"
 
 # 앱 언어 코드 -> NLLB FLORES-200 코드
 LANG_CODE_TO_FLORES = {
-    "en": "eng_Latn", "ko": "kor_Hang", "ja": "jpn_Jpan", "zh": "zho_Hans",
-    "es": "spa_Latn", "fr": "fra_Latn", "de": "deu_Latn", "ar": "arb_Arab",
-    "pt": "por_Latn", "it": "ita_Latn", "ru": "rus_Cyrl", "vi": "vie_Latn",
-    "th": "tha_Thai", "id": "ind_Latn", "hi": "hin_Deva", "tr": "tur_Latn",
-    "nl": "nld_Latn", "pl": "pol_Latn", "sv": "swe_Latn", "da": "dan_Latn",
-    "fi": "fin_Latn", "cs": "ces_Latn", "el": "ell_Grek", "ro": "ron_Latn",
-    "hu": "hun_Latn", "fa": "pes_Arab", "ms": "zsm_Latn", "tl": "tgl_Latn",
+    "en": "eng_Latn",
+    "ko": "kor_Hang",
+    "ja": "jpn_Jpan",
+    "zh": "zho_Hans",
+    "es": "spa_Latn",
+    "fr": "fra_Latn",
+    "de": "deu_Latn",
+    "ar": "arb_Arab",
+    "pt": "por_Latn",
+    "it": "ita_Latn",
+    "ru": "rus_Cyrl",
+    "vi": "vie_Latn",
+    "th": "tha_Thai",
+    "id": "ind_Latn",
+    "hi": "hin_Deva",
+    "tr": "tur_Latn",
+    "nl": "nld_Latn",
+    "pl": "pol_Latn",
+    "sv": "swe_Latn",
+    "da": "dan_Latn",
+    "fi": "fin_Latn",
+    "cs": "ces_Latn",
+    "el": "ell_Grek",
+    "ro": "ron_Latn",
+    "hu": "hun_Latn",
+    "fa": "pes_Arab",
+    "ms": "zsm_Latn",
+    "tl": "tgl_Latn",
     "mk": "mkd_Cyrl",
 }
 
@@ -164,7 +185,8 @@ class _Seq2SeqTranslator:
             built = self._build_input(text, target_code, source_code)
             if built is None:
                 logger.warning(
-                    f"[local-translate] 지원하지 않는 언어쌍 {source_code}->{target_code}")
+                    f"[local-translate] 지원하지 않는 언어쌍 {source_code}->{target_code}"
+                )
                 return ""
             model_input, extra = built
             encoded = tok(model_input, return_tensors="pt", truncation=True, max_length=512)
@@ -183,7 +205,10 @@ class _Seq2SeqTranslator:
             return tok.batch_decode(out, skip_special_tokens=True)[0].strip()
 
     async def translate(
-        self, text: str, target_code: str, source_code: Optional[str] = None,
+        self,
+        text: str,
+        target_code: str,
+        source_code: Optional[str] = None,
         context: Optional[list] = None,
     ) -> tuple[str, str]:
         """(번역문, 소스 언어 코드) 를 돌려준다. Google 경로와 반환 형태를 맞췄다.
@@ -198,7 +223,8 @@ class _Seq2SeqTranslator:
             self._context_warned = True
             logger.warning(
                 f"[local-translate] {self.model_name} 은 문맥을 쓸 수 없어 무시한다 — "
-                "문맥이 필요하면 LLM 백엔드(예: Qwen/Qwen3-4B-Instruct-2507)를 쓸 것")
+                "문맥이 필요하면 LLM 백엔드(예: Qwen/Qwen3-4B-Instruct-2507)를 쓸 것"
+            )
         src = (source_code or "").strip() or guess_lang_code(text)
         try:
             translated = await asyncio.to_thread(self._translate_sync, text, target_code, src)
@@ -216,7 +242,7 @@ class NLLBTranslator(_Seq2SeqTranslator):
         tgt = LANG_CODE_TO_FLORES.get(target_code)
         if not src or not tgt:
             return None
-        self._tokenizer.src_lang = src   # _translate_sync 의 락 안에서만 불린다
+        self._tokenizer.src_lang = src  # _translate_sync 의 락 안에서만 불린다
         return text, {"forced_bos_token_id": self._tokenizer.convert_tokens_to_ids(tgt)}
 
 
@@ -276,22 +302,38 @@ class LLMTranslator:
     # 번역 서버가 /health 로 문맥 사용 여부를 알린다. 문맥을 넣을 자리가 없는 서브클래스는 끈다.
     SUPPORTS_CONTEXT = True
     LANG_NAME = {
-        "en": "English", "ko": "Korean", "ja": "Japanese", "zh": "Chinese", "es": "Spanish",
-        "fr": "French", "de": "German", "pt": "Portuguese", "it": "Italian", "ru": "Russian",
-        "vi": "Vietnamese", "th": "Thai", "id": "Indonesian", "hi": "Hindi", "ar": "Arabic",
-        "tr": "Turkish", "nl": "Dutch", "pl": "Polish",
+        "en": "English",
+        "ko": "Korean",
+        "ja": "Japanese",
+        "zh": "Chinese",
+        "es": "Spanish",
+        "fr": "French",
+        "de": "German",
+        "pt": "Portuguese",
+        "it": "Italian",
+        "ru": "Russian",
+        "vi": "Vietnamese",
+        "th": "Thai",
+        "id": "Indonesian",
+        "hi": "Hindi",
+        "ar": "Arabic",
+        "tr": "Turkish",
+        "nl": "Dutch",
+        "pl": "Polish",
     }
     # **현재 줄을 명시적으로 표시해야 한다.** 앞 발화를 그냥 붙여 두고 "마지막 줄만
     # 옮겨라" 라고 하면, 현재 줄이 ASR 잡음일 때 모델이 문맥 줄을 대신 옮긴다.
     # 실측: 문맥 없이 '메야무 다니엘 이뚜?' → 'Maya Daniel I-tzu?' 로 맞게 나오는데,
     # 앞 발화 '마이 나이미스 다현정.' 을 문맥으로 주면 'Mai Naimi Dae Hyunjeong?'
     # (= 앞 문장의 번역) 이 나왔다. 줄 수 검사로는 못 잡는다 — 한 줄이라서다.
-    SYSTEM = ("You are a translation engine for a live conversation. The earlier turns are "
-              "context only: never translate them, and never repeat their translation. Use "
-              "them only to resolve pronouns, omitted subjects, gender agreement and "
-              "politeness level in the CURRENT line. Translate the CURRENT line and nothing "
-              "else, even if it looks garbled or incomplete. Output only that translation, "
-              "with no explanation and no quotes.")
+    SYSTEM = (
+        "You are a translation engine for a live conversation. The earlier turns are "
+        "context only: never translate them, and never repeat their translation. Use "
+        "them only to resolve pronouns, omitted subjects, gender agreement and "
+        "politeness level in the CURRENT line. Translate the CURRENT line and nothing "
+        "else, even if it looks garbled or incomplete. Output only that translation, "
+        "with no explanation and no quotes."
+    )
 
     def __init__(
         self,
@@ -300,7 +342,7 @@ class LLMTranslator:
         quant: str = "4bit",
         max_new_tokens: int = 200,
         context_window: int = 1,
-        num_beams: int = 1,          # noqa: ARG002 — seq2seq 쪽과 인자 형태를 맞추기 위해 받는다
+        num_beams: int = 1,  # noqa: ARG002 — seq2seq 쪽과 인자 형태를 맞추기 위해 받는다
         **_ignored,
     ):
         self.model_name = model_name
@@ -332,13 +374,16 @@ class LLMTranslator:
 
                 if self.quant == "4bit":
                     qc = BitsAndBytesConfig(
-                        load_in_4bit=True, bnb_4bit_quant_type="nf4",
-                        bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True)
+                        load_in_4bit=True,
+                        bnb_4bit_quant_type="nf4",
+                        bnb_4bit_compute_dtype=torch.bfloat16,
+                        bnb_4bit_use_double_quant=True,
+                    )
                 else:
                     qc = BitsAndBytesConfig(load_in_8bit=True)
                 model = AutoModelForCausalLM.from_pretrained(
-                    self.model_name, quantization_config=qc, device_map=device,
-                    dtype=torch.bfloat16)
+                    self.model_name, quantization_config=qc, device_map=device, dtype=torch.bfloat16
+                )
             else:
                 dtype = torch.float16 if device.startswith("cuda") else torch.float32
                 model = AutoModelForCausalLM.from_pretrained(self.model_name, dtype=dtype)
@@ -376,35 +421,43 @@ class LLMTranslator:
                 lines.append(f"- {c}")
         return "\n".join(lines)
 
-    def _messages(self, text: str, target_code: str, source_code: str,
-                  context: Optional[list] = None) -> list[dict]:
+    def _messages(
+        self, text: str, target_code: str, source_code: str, context: Optional[list] = None
+    ) -> list[dict]:
         """chat template 에 넣을 메시지. 모델마다 지시문 형식이 달라 서브클래스가 바꾼다."""
         if context:
             ctx_block = self._context_block(context, target_code)
-            user = (f"Earlier turns of the conversation, oldest first (context only — they may "
-                    f"be other speakers and other languages; do NOT translate these, do NOT "
-                    f"repeat their translation):\n{ctx_block}\n\n"
-                    f"Translate ONLY the line below, which is in {self._name(source_code)}, into "
-                    f"{self._name(target_code)}. It may be garbled or incomplete — translate it "
-                    f"as it is, do not replace it with anything from the context.\n\n{text}")
+            user = (
+                f"Earlier turns of the conversation, oldest first (context only — they may "
+                f"be other speakers and other languages; do NOT translate these, do NOT "
+                f"repeat their translation):\n{ctx_block}\n\n"
+                f"Translate ONLY the line below, which is in {self._name(source_code)}, into "
+                f"{self._name(target_code)}. It may be garbled or incomplete — translate it "
+                f"as it is, do not replace it with anything from the context.\n\n{text}"
+            )
         else:
-            user = (f"Translate the following {self._name(source_code)} sentence into "
-                    f"{self._name(target_code)}.\n\n{text}")
+            user = (
+                f"Translate the following {self._name(source_code)} sentence into "
+                f"{self._name(target_code)}.\n\n{text}"
+            )
         return [{"role": "system", "content": self.SYSTEM}, {"role": "user", "content": user}]
 
-    def _build_prompt(self, text: str, target_code: str, source_code: str,
-                      context: Optional[list] = None) -> str:
+    def _build_prompt(
+        self, text: str, target_code: str, source_code: str, context: Optional[list] = None
+    ) -> str:
         tok = self._tokenizer
         msgs = self._messages(text, target_code, source_code, context)
         try:
             # Qwen3 계열은 생각 모드를 끄지 않으면 출력이 길어져 자막 지연이 커진다.
-            return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True,
-                                           enable_thinking=False)
+            return tok.apply_chat_template(
+                msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False
+            )
         except TypeError:
             return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
 
-    def _translate_sync(self, text: str, target_code: str, source_code: str,
-                        context: Optional[list] = None) -> str:
+    def _translate_sync(
+        self, text: str, target_code: str, source_code: str, context: Optional[list] = None
+    ) -> str:
         self._ensure_loaded()
         if source_code == target_code:
             return text
@@ -415,15 +468,22 @@ class LLMTranslator:
             # chat template 이 BOS 를 이미 써 넣는다. 토크나이저가 또 붙이면 gemma 계열은
             # `<bos><bos>` 로 시작한다(실측, unsloth/gemma-3-4b-it). apply_chat_template 의
             # tokenize=True 경로도 같은 이유로 add_special_tokens=False 를 쓴다.
-            enc = tok(self._build_prompt(text, target_code, source_code, context),
-                      return_tensors="pt", add_special_tokens=False,
-                      return_token_type_ids=False)
+            enc = tok(
+                self._build_prompt(text, target_code, source_code, context),
+                return_tensors="pt",
+                add_special_tokens=False,
+                return_token_type_ids=False,
+            )
             n_prompt = enc["input_ids"].shape[1]
             enc = {k: v.to(self._device) for k, v in enc.items()}
             with torch.inference_mode():
-                out = model.generate(**enc, max_new_tokens=self.max_new_tokens,
-                                     do_sample=False, num_beams=1,
-                                     pad_token_id=tok.eos_token_id)
+                out = model.generate(
+                    **enc,
+                    max_new_tokens=self.max_new_tokens,
+                    do_sample=False,
+                    num_beams=1,
+                    pad_token_id=tok.eos_token_id,
+                )
             s = tok.decode(out[0][n_prompt:], skip_special_tokens=True).strip()
         if "</think>" in s:
             s = s.split("</think>")[-1].strip()
@@ -440,8 +500,11 @@ class LLMTranslator:
         raw_lines = [ln for ln in s.split("\n") if ln.strip()]
         if len(raw_lines) > 1:
             logger.info(f"[local-translate] multi-line output: {s[:200]!r}")
-        lines = [ln.strip(" -") for ln in raw_lines
-                 if not ln.lstrip().startswith("- [") and "→" not in ln]
+        lines = [
+            ln.strip(" -")
+            for ln in raw_lines
+            if not ln.lstrip().startswith("- [") and "→" not in ln
+        ]
         return max(lines, key=len) if lines else s
 
     @staticmethod
@@ -450,14 +513,17 @@ class LLMTranslator:
         return not re.search(r"[.!?。？！]\s*[\"'」』)]*\s*$", text.strip())
 
     async def translate(
-        self, text: str, target_code: str, source_code: Optional[str] = None,
+        self,
+        text: str,
+        target_code: str,
+        source_code: Optional[str] = None,
         context: Optional[list] = None,
     ) -> tuple[str, str]:
         """(번역문, 소스 언어 코드). ``context`` 는 앞 발화 원문 리스트(오래된 것부터)."""
         if not text.strip() or not target_code:
             return "", ""
         src = (source_code or "").strip() or guess_lang_code(text)
-        ctx = list(context or [])[-self.context_window:] if self.context_window else []
+        ctx = list(context or [])[-self.context_window :] if self.context_window else []
         if ctx and self._is_fragment(text):
             # 문장 도중에 잘린 절에는 문맥을 주지 않는다. 스트리밍 ASR 은 절 경계
             # (`…되시면`, `…에서도`)에서 커밋하는데, 그 조각에 앞 턴을 보여 주면 모델이
@@ -469,16 +535,18 @@ class LLMTranslator:
             # 없는 말은 안 만든다.
             ctx = []
         try:
-            translated = await asyncio.to_thread(
-                self._translate_sync, text, target_code, src, ctx)
+            translated = await asyncio.to_thread(self._translate_sync, text, target_code, src, ctx)
             if ctx and len(text) > 30 and len(translated) < 0.3 * len(text):
                 # 문맥을 주면 긴 문장이 `Thank you.` 한 마디로 나오는 일이 있다(실측:
                 # 앞 턴 `그리고 → and` 뒤의 영어 한 문장이 네 목표 모두 `Thank you.`).
                 # 원문 대비 터무니없이 짧으면 문맥 없이 한 번 더 한다.
-                logger.info(f"[local-translate] suspiciously short with context "
-                            f"({translated[:40]!r} for {len(text)} chars); retrying without")
+                logger.info(
+                    f"[local-translate] suspiciously short with context "
+                    f"({translated[:40]!r} for {len(text)} chars); retrying without"
+                )
                 translated = await asyncio.to_thread(
-                    self._translate_sync, text, target_code, src, [])
+                    self._translate_sync, text, target_code, src, []
+                )
         except Exception as e:
             logger.warning(f"[local-translate] failed: {e!r}")
             return "", src
@@ -498,21 +566,36 @@ class TranslateGemmaTranslator(LLMTranslator):
     SUPPORTS_CONTEXT = False
     _context_warned = False
 
-    def _messages(self, text: str, target_code: str, source_code: str,
-                  context: Optional[list] = None) -> list[dict]:
-        return [{"role": "user", "content": [{
-            "type": "text", "source_lang_code": source_code,
-            "target_lang_code": target_code, "text": text}]}]
+    def _messages(
+        self, text: str, target_code: str, source_code: str, context: Optional[list] = None
+    ) -> list[dict]:
+        return [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "source_lang_code": source_code,
+                        "target_lang_code": target_code,
+                        "text": text,
+                    }
+                ],
+            }
+        ]
 
     async def translate(
-        self, text: str, target_code: str, source_code: Optional[str] = None,
+        self,
+        text: str,
+        target_code: str,
+        source_code: Optional[str] = None,
         context: Optional[list] = None,
     ) -> tuple[str, str]:
         if context and not self._context_warned:
             self._context_warned = True
             logger.warning(
                 f"[local-translate] {self.model_name} 의 chat template 에는 문맥을 넣을 자리가 "
-                "없어 무시한다")
+                "없어 무시한다"
+            )
         return await super().translate(text, target_code, source_code, context=None)
 
 
@@ -525,18 +608,24 @@ class HyMTTranslator(LLMTranslator):
     ``[Background Information]`` 지시문에 앞 턴을 넣어 전한다.
     """
 
-    PROMPT = ("Translate the following text into {target}. Note that you should only output "
-              "the translated result without any additional explanation:\n\n{text}")
-    CONTEXT_PROMPT = ("[Background Information]\n{background}\n\n"
-                      "Please translate the following text into {target}, taking the provided "
-                      "background information into consideration.\n\n[Source Text]\n{text}")
+    PROMPT = (
+        "Translate the following text into {target}. Note that you should only output "
+        "the translated result without any additional explanation:\n\n{text}"
+    )
+    CONTEXT_PROMPT = (
+        "[Background Information]\n{background}\n\n"
+        "Please translate the following text into {target}, taking the provided "
+        "background information into consideration.\n\n[Source Text]\n{text}"
+    )
 
-    def _messages(self, text: str, target_code: str, source_code: str,
-                  context: Optional[list] = None) -> list[dict]:
+    def _messages(
+        self, text: str, target_code: str, source_code: str, context: Optional[list] = None
+    ) -> list[dict]:
         target = self._name(target_code)
         if context:
             content = self.CONTEXT_PROMPT.format(
-                background=self._context_block(context, target_code), target=target, text=text)
+                background=self._context_block(context, target_code), target=target, text=text
+            )
         else:
             content = self.PROMPT.format(target=target, text=text)
         return [{"role": "user", "content": content}]

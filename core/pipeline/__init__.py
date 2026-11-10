@@ -8,16 +8,28 @@ pipelines = Registry("pipeline")
 
 discover(__name__)
 
-__all__ = ["Pipeline", "Processor", "RunsPer", "Stage", "pipelines", "validate", "build",
-           "build_part", "build_processor", "describe", "stages_of"]
+__all__ = [
+    "Pipeline",
+    "Processor",
+    "RunsPer",
+    "Stage",
+    "pipelines",
+    "validate",
+    "build",
+    "build_part",
+    "build_processor",
+    "describe",
+    "stages_of",
+]
 
 DEFAULT_PARTS = {"mixer": "mixdown"}
 
 
 def _registries(pipeline_name: str) -> list[tuple]:
     cls = pipelines.get(pipeline_name)
-    return ([(registry, True) for registry in cls.REQUIRED]
-            + [(registry, False) for registry in cls.OPTIONAL])
+    return [(registry, True) for registry in cls.REQUIRED] + [
+        (registry, False) for registry in cls.OPTIONAL
+    ]
 
 
 def validate(cfg_stity) -> dict:
@@ -49,12 +61,12 @@ def validate(cfg_stity) -> dict:
 
 def build(cfg) -> Pipeline:
     resolved = cfg.stity.resolved
-    by_kind = {registry.kind: registry
-               for registry, _ in _registries(cfg.stity.pipeline.name)}
-    parts = {kind: by_kind[kind].get(part["name"])(part["kwargs"], cfg=cfg)
-             for kind, part in resolved["parts"].items()}
-    return pipelines.get(cfg.stity.pipeline.name)(
-        resolved["pipeline"], parts=parts, cfg=cfg)
+    by_kind = {registry.kind: registry for registry, _ in _registries(cfg.stity.pipeline.name)}
+    parts = {
+        kind: by_kind[kind].get(part["name"])(part["kwargs"], cfg=cfg)
+        for kind, part in resolved["parts"].items()
+    }
+    return pipelines.get(cfg.stity.pipeline.name)(resolved["pipeline"], parts=parts, cfg=cfg)
 
 
 def stages_of(cfg) -> tuple[Stage, ...]:
@@ -62,8 +74,7 @@ def stages_of(cfg) -> tuple[Stage, ...]:
 
 
 async def build_part(cfg, kind: str):
-    by_kind = {registry.kind: registry
-               for registry, _ in _registries(cfg.stity.pipeline.name)}
+    by_kind = {registry.kind: registry for registry, _ in _registries(cfg.stity.pipeline.name)}
     part = cfg.stity.resolved["parts"].get(kind)
     if part is None and kind in DEFAULT_PARTS:
         part = {"name": DEFAULT_PARTS[kind], "kwargs": {}}
@@ -81,6 +92,11 @@ async def build_processor(cfg, stage: Stage) -> Processor:
 
 def describe(cfg) -> dict:
     resolved = cfg.stity.resolved
-    return {"pipeline": cfg.stity.pipeline.name, **resolved["pipeline"],
-            **{kind: {"backend": part["name"], **part["kwargs"]}
-               for kind, part in resolved["parts"].items()}}
+    return {
+        "pipeline": cfg.stity.pipeline.name,
+        **resolved["pipeline"],
+        **{
+            kind: {"backend": part["name"], **part["kwargs"]}
+            for kind, part in resolved["parts"].items()
+        },
+    }

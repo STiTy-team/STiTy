@@ -42,8 +42,7 @@
 ```python
 # 청크 내에서만 attention 허용, 청크 간은 -inf
 for i in range(1, len(cu_seqlens)):
-    attention_mask[..., cu_seqlens[i-1]:cu_seqlens[i],
-                        cu_seqlens[i-1]:cu_seqlens[i]] = 0
+    attention_mask[..., cu_seqlens[i - 1] : cu_seqlens[i], cu_seqlens[i - 1] : cu_seqlens[i]] = 0
 ```
 
 **주요 파라미터** (`configuration_qwen3_asr.py`):

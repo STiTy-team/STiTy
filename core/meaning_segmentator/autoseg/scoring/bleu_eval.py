@@ -31,12 +31,21 @@ import sacrebleu
 from ..runtime import metrics
 from ..baselines import coarsen
 from ..baselines import datasets as _ds
-from ..runtime.pipeline import (GoogleTranslator, JsonCache, LocalTranslator,
-                       LOCAL_MT_DEFAULT, RemoteMTTranslator, add_translate_args,
-                       parse_translator_id, split_segments, to_lang_code,
-                       unit_count)
+from ..runtime.pipeline import (
+    GoogleTranslator,
+    JsonCache,
+    LocalTranslator,
+    LOCAL_MT_DEFAULT,
+    RemoteMTTranslator,
+    add_translate_args,
+    parse_translator_id,
+    split_segments,
+    to_lang_code,
+    unit_count,
+)
 
 from ..paths import REPO_ROOT, RUNS_DIR
+
 sys.path.insert(0, str(REPO_ROOT))
 
 from . import metrics_ast as M  # noqa: E402
@@ -44,18 +53,24 @@ from . import metrics_ast as M  # noqa: E402
 # gtx 타깃 코드는 파이프라인 규칙을 따르고(zh → zh-CN), 토크나이저는 sacrebleu 규칙을 따른다.
 # **`en` 이 여기 있어야 한다** — X→en 트랙(de/ja/zh→en)의 타깃이 영어인데 빠져 있어서
 # `TGT_NAME[tgt]` 가 KeyError 로 죽었다.
-TGT_NAME = {"en": "English", "de": "German", "ja": "Japanese", "zh": "Chinese",
-            "ko": "Korean", "es": "Spanish"}
+TGT_NAME = {
+    "en": "English",
+    "de": "German",
+    "ja": "Japanese",
+    "zh": "Chinese",
+    "ko": "Korean",
+    "es": "Spanish",
+}
 SPACED = {"en": True, "de": True, "es": True, "ja": False, "zh": False, "ko": True}
 
 
-def load_refs(tag: str, tgt: str, dataset: str = "fleurs",
-              src: str = "en") -> dict[str, str]:
+def load_refs(tag: str, tgt: str, dataset: str = "fleurs", src: str = "en") -> dict[str, str]:
     return {k: e.ref for k, e in dataset_spec(dataset, src).entries(tag, tgt).items()}
 
 
-def load_wordtimes(tag: str, source: str, dataset: str = "fleurs",
-                   src: str = "en") -> dict[str, list[float]]:
+def load_wordtimes(
+    tag: str, source: str, dataset: str = "fleurs", src: str = "en"
+) -> dict[str, list[float]]:
     """조회 키 → 어절 종료 시각(ms). 강제정렬 산출물.
 
     `interp` 는 타임스탬프 없이 발화 내 균일 발화속도로 보간하던 옛 방식이다 —
@@ -69,9 +84,15 @@ def load_wordtimes(tag: str, source: str, dataset: str = "fleurs",
     return {k: v["word_end_ms"] for k, v in blob.items()}
 
 
-def laal_ms(pieces_src: list[str], pieces_tgt: list[str], dur_ms: float,
-            ref_text: str, spaced: bool, tgt_unit: str,
-            word_end_ms: list[float] | None = None) -> float | None:
+def laal_ms(
+    pieces_src: list[str],
+    pieces_tgt: list[str],
+    dur_ms: float,
+    ref_text: str,
+    spaced: bool,
+    tgt_unit: str,
+    word_end_ms: list[float] | None = None,
+) -> float | None:
     """ms 단위 LAAL.
 
     `word_end_ms` 가 있으면 조각 경계 시각을 **강제정렬 실측**에서 읽는다. 없으면
@@ -103,8 +124,14 @@ def corpus_chrf2(hyps: list[str], refs: list[str]) -> float:
     return m.corpus_score(hyps, [refs]).score
 
 
-def paired_bootstrap(hyp_a: list[str], hyp_b: list[str], refs: list[str],
-                     tokenize: str, n_boot: int = 1000, seed: int = 20260820) -> dict:
+def paired_bootstrap(
+    hyp_a: list[str],
+    hyp_b: list[str],
+    refs: list[str],
+    tokenize: str,
+    n_boot: int = 1000,
+    seed: int = 20260820,
+) -> dict:
     """같은 문장 위에서의 corpus BLEU 차이. corpus BLEU 는 문장별 SE 가 없으므로 재표집한다.
 
     **문장별 n-gram 통계를 한 번만 뽑고 재표집에서는 합만 낸다** (sacrebleu 의
@@ -134,11 +161,12 @@ def paired_bootstrap(hyp_a: list[str], hyp_b: list[str], refs: list[str],
     lo, hi = deltas[int(0.025 * n_boot)], deltas[int(0.975 * n_boot)]
     mean_d = statistics.mean(deltas)
     # 재표집 중 부호가 평균과 반대로 나온 비율. 낮을수록 방향이 확고하다.
-    n_cross = (sum(1 for d in deltas if d <= 0) if mean_d > 0
-               else sum(1 for d in deltas if d >= 0))
-    return {"delta": round(mean_d, 3),
-            "ci95": [round(lo, 3), round(hi, 3)],
-            "p_sign_flip": round(n_cross / n_boot, 4)}
+    n_cross = sum(1 for d in deltas if d <= 0) if mean_d > 0 else sum(1 for d in deltas if d >= 0)
+    return {
+        "delta": round(mean_d, 3),
+        "ci95": [round(lo, 3), round(hi, 3)],
+        "p_sign_flip": round(n_cross / n_boot, 4),
+    }
 
 
 def make_translator(args, cfg: dict, code: str, cache: JsonCache):
@@ -152,28 +180,40 @@ def make_translator(args, cfg: dict, code: str, cache: JsonCache):
     캐시 키(`backend`)와 리포트의 `translator` 에 모델 이름이 들어간다 — 섞어 비교 금지.
     """
     if args.translate_engine == "local":
-        return LocalTranslator(tgt_code=code, cache=cache,
-                               model_id=args.local_mt_model,
-                               device=args.mt_device, batch=args.mt_batch)
+        return LocalTranslator(
+            tgt_code=code,
+            cache=cache,
+            model_id=args.local_mt_model,
+            device=args.mt_device,
+            batch=args.mt_batch,
+        )
     if args.translate_engine == "remote":
-        return RemoteMTTranslator(tgt_code=code, cache=cache,
-                                  base_url=args.remote_mt_url,
-                                  model=args.remote_mt_model,
-                                  template=args.remote_mt_template,
-                                  src_name=args.src_lang,
-                                  workers=args.remote_mt_workers)
+        return RemoteMTTranslator(
+            tgt_code=code,
+            cache=cache,
+            base_url=args.remote_mt_url,
+            model=args.remote_mt_model,
+            template=args.remote_mt_template,
+            src_name=args.src_lang,
+            workers=args.remote_mt_workers,
+        )
     # **백엔드를 런 config 에서 상속한다.** 종전에는 아무것도 안 넘겨 `auto` 였는데,
     # 그 시절 `google_api_key` 가 `.env` 를 안 읽어 결과적으로 늘 gtx 였다. 이제
     # auto 가 v2 로 해석되므로, 상속을 명시하지 않으면 옛 런과 다른 자로 재게 된다.
     inherited, _, _ = parse_translator_id(cfg.get("translator_id") or "", code)
-    return GoogleTranslator.from_args(args, tgt_code=code, cache=cache,
-                                      workers=args.workers, use_context=True,
-                                      backend=inherited)
+    return GoogleTranslator.from_args(
+        args, tgt_code=code, cache=cache, workers=args.workers, use_context=True, backend=inherited
+    )
 
 
-def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
-                     mech_every: int, has_auto: bool = True,
-                     no_greedy: bool = False) -> dict[str, list[dict]]:
+def build_conditions(
+    rows: list[dict],
+    t_grid: list[int],
+    spaced: bool,
+    mech_every: int,
+    has_auto: bool = True,
+    no_greedy: bool = False,
+) -> dict[str, list[dict]]:
     """조건 이름 → 문장별 {seg_text, pieces}. pieces 가 1개면 무분절과 같다."""
     out: dict[str, list[dict]] = {}
     out["unsegmented"] = [{"seg_text": r["text"], "pieces": [r["text"]]} for r in rows]
@@ -183,10 +223,9 @@ def build_conditions(rows: list[dict], t_grid: list[int], spaced: bool,
             cond = []
             for r in rows:
                 cell = r["by_T"][key]
-                cond.append({"seg_text": cell["seg_text"],
-                             "pieces": cell["pieces_src"]})
+                cond.append({"seg_text": cell["seg_text"], "pieces": cell["pieces_src"]})
             out[f"auto_T{T}"] = cond
-    for T in (t_grid if (has_auto and not no_greedy) else []):
+    for T in t_grid if (has_auto and not no_greedy) else []:
         cond = []
         for r in rows:
             all_pieces = split_segments(r["seg_text"]) or [r["text"]]
@@ -208,10 +247,16 @@ def dataset_spec(name: str, src: str):
     return _ds.get(name, **({"src": src} if name == "covost2" else {}))
 
 
-def load_baseline_conditions(run_dir: Path, policies: list[str], tgt: str,
-                             split: str, rows: list[dict], t_grid: list[int],
-                             spaced: bool,
-                             native_only: tuple[str, ...] = ()) -> dict[str, list[dict]]:
+def load_baseline_conditions(
+    run_dir: Path,
+    policies: list[str],
+    tgt: str,
+    split: str,
+    rows: list[dict],
+    t_grid: list[int],
+    spaced: bool,
+    native_only: tuple[str, ...] = (),
+) -> dict[str, list[dict]]:
     """`baselines/` 산출을 조건으로 읽는다. 타깃별 파일이 없으면 타깃 독립본을 쓴다.
 
     causal_align·mu_prefix 는 **타깃마다 분절이 다르다** (정렬 대상 / NMT 가 타깃별이다).
@@ -234,13 +279,15 @@ def load_baseline_conditions(run_dir: Path, policies: list[str], tgt: str,
         by_id = {r["id"]: r["pieces"] for r in blob["rows"]}
         missing = [r["id"] for r in rows if r["id"] not in by_id]
         if missing:
-            raise SystemExit(f"[{tgt}] {pol}: 라벨 없는 문장 {len(missing)}건 "
-                             f"(예: {missing[:3]}) — build 를 같은 --limit 없이 다시 돌릴 것")
+            raise SystemExit(
+                f"[{tgt}] {pol}: 라벨 없는 문장 {len(missing)}건 "
+                f"(예: {missing[:3]}) — build 를 같은 --limit 없이 다시 돌릴 것"
+            )
         base = [by_id[r["id"]] or [r["text"]] for r in rows]
         out[pol] = [{"seg_text": " <SEG> ".join(x), "pieces": x} for x in base]
         if pol in native_only:
             continue
-        for T in t_grid:                     # 정책 경계의 부분집합으로 지연을 옮긴다
+        for T in t_grid:  # 정책 경계의 부분집합으로 지연을 옮긴다
             cond = []
             for x in base:
                 pc = coarsen(x, T, spaced)
@@ -256,66 +303,113 @@ def main() -> int:
     p.add_argument("--split", default="test")
     p.add_argument("--targets", nargs="+", default=["de", "ja", "zh"])
     p.add_argument("--manifest-tag", default="clean500")
-    p.add_argument("--dataset", default="fleurs", choices=["fleurs", "covost2"],
-                   help="매니페스트·발화 길이·오디오를 어디서 읽을지")
-    p.add_argument("--src", default="en",
-                   help="소스 언어 코드. 매니페스트 이름 covost2_{src}-{tgt}_{tag}.jsonl "
-                        "과 정렬 파일 이름에 쓴다. X→en 트랙은 de/ja/zh 를 준다")
-    p.add_argument("--src-spaced", type=int, default=1,
-                   help="measured_profile.json 이 없을 때 쓸 소스 띄어쓰기 여부")
+    p.add_argument(
+        "--dataset",
+        default="fleurs",
+        choices=["fleurs", "covost2"],
+        help="매니페스트·발화 길이·오디오를 어디서 읽을지",
+    )
+    p.add_argument(
+        "--src",
+        default="en",
+        help="소스 언어 코드. 매니페스트 이름 covost2_{src}-{tgt}_{tag}.jsonl "
+        "과 정렬 파일 이름에 쓴다. X→en 트랙은 de/ja/zh 를 준다",
+    )
+    p.add_argument(
+        "--src-spaced",
+        type=int,
+        default=1,
+        help="measured_profile.json 이 없을 때 쓸 소스 띄어쓰기 여부",
+    )
     p.add_argument("--t-grid", type=int, nargs="+", default=[4, 6, 8, 12])
     p.add_argument("--mech-every", type=int, default=8)
-    p.add_argument("--workers", type=int, default=4,
-                   help="문장 단위 병렬도. **기본 4 는 gtx 무료 엔드포인트의 rate limit "
-                        "때문에 정한 값이다** — 로컬 GPU 번역기(`--translate-engine local`)"
-                        "에서는 배치를 못 채워 GPU 가 논다. 그쪽은 16~24 로 올릴 것")
-    p.add_argument("--no-auto-greedy", action="store_true",
-                   help="`auto_greedy_T*`(순위를 빼고 등간격 절단한 대조)를 안 만든다. "
-                        "번역량의 13%% 를 차지한다")
-    p.add_argument("--bootstrap", type=int, default=1000,
-                   help="paired bootstrap 재표집 횟수. **0 이면 아예 안 돌린다** — "
-                        "COMET 만 볼 때 쓴다")
-    p.add_argument("--no-sentence-bleu", action="store_true",
-                   help="조건별 문장 BLEU 평균을 안 낸다. corpus BLEU·chrF2 는 그대로 "
-                        "나온다 (한 번만 토크나이즈하므로 싸다)")
+    p.add_argument(
+        "--workers",
+        type=int,
+        default=4,
+        help="문장 단위 병렬도. **기본 4 는 gtx 무료 엔드포인트의 rate limit "
+        "때문에 정한 값이다** — 로컬 GPU 번역기(`--translate-engine local`)"
+        "에서는 배치를 못 채워 GPU 가 논다. 그쪽은 16~24 로 올릴 것",
+    )
+    p.add_argument(
+        "--no-auto-greedy",
+        action="store_true",
+        help="`auto_greedy_T*`(순위를 빼고 등간격 절단한 대조)를 안 만든다. "
+        "번역량의 13%% 를 차지한다",
+    )
+    p.add_argument(
+        "--bootstrap",
+        type=int,
+        default=1000,
+        help="paired bootstrap 재표집 횟수. **0 이면 아예 안 돌린다** — COMET 만 볼 때 쓴다",
+    )
+    p.add_argument(
+        "--no-sentence-bleu",
+        action="store_true",
+        help="조건별 문장 BLEU 평균을 안 낸다. corpus BLEU·chrF2 는 그대로 "
+        "나온다 (한 번만 토크나이즈하므로 싸다)",
+    )
     p.add_argument("--conditions", nargs="+", default=None, help="미지정 시 전부")
-    p.add_argument("--wordtimes", default="qwen", choices=["qwen", "ctc", "interp"],
-                   help="지연 시각의 출처. 기본 `qwen` — Table 3/4 가 Qwen3-ASR 를 쓰므로 "
-                        "지연축을 같은 자로 재고, 비영어 소스로 확장할 때도 쓸 수 있다. "
-                        "`ctc`(wav2vec2, 영어 전용)는 독립 교차검증용이며 조건 LAAL 이 "
-                        "22ms 이내로 일치한다. `interp` 는 타임스탬프 없던 옛 방식")
+    p.add_argument(
+        "--wordtimes",
+        default="qwen",
+        choices=["qwen", "ctc", "interp"],
+        help="지연 시각의 출처. 기본 `qwen` — Table 3/4 가 Qwen3-ASR 를 쓰므로 "
+        "지연축을 같은 자로 재고, 비영어 소스로 확장할 때도 쓸 수 있다. "
+        "`ctc`(wav2vec2, 영어 전용)는 독립 교차검증용이며 조건 LAAL 이 "
+        "22ms 이내로 일치한다. `interp` 는 타임스탬프 없던 옛 방식",
+    )
     add_translate_args(p)
-    p.add_argument("--translate-engine", default="google",
-                   choices=["google", "local", "remote"],
-                   help="번역기 종류. google=Cloud/gtx(--translate-provider 로 세분), "
-                        "local=로컬 seq2seq(--local-mt-model), "
-                        "remote=OpenAI 호환 서버의 MT 모델(--remote-mt-*). "
-                        "**번역기가 다르면 점수 축이 다르다** — 섞어 비교 금지")
-    p.add_argument("--local-mt-model", default=LOCAL_MT_DEFAULT,
-                   help="--translate-engine local 일 때 쓸 seq2seq 모델")
+    p.add_argument(
+        "--translate-engine",
+        default="google",
+        choices=["google", "local", "remote"],
+        help="번역기 종류. google=Cloud/gtx(--translate-provider 로 세분), "
+        "local=로컬 seq2seq(--local-mt-model), "
+        "remote=OpenAI 호환 서버의 MT 모델(--remote-mt-*). "
+        "**번역기가 다르면 점수 축이 다르다** — 섞어 비교 금지",
+    )
+    p.add_argument(
+        "--local-mt-model",
+        default=LOCAL_MT_DEFAULT,
+        help="--translate-engine local 일 때 쓸 seq2seq 모델",
+    )
     p.add_argument("--mt-device", default="cuda")
-    p.add_argument("--mt-batch", type=int, default=48,
-                   help="로컬 MT 마이크로 배치 크기")
+    p.add_argument("--mt-batch", type=int, default=48, help="로컬 MT 마이크로 배치 크기")
     p.add_argument("--remote-mt-url", default="http://localhost:8010/v1")
     p.add_argument("--remote-mt-model", default="seed-x")
     p.add_argument("--remote-mt-template", default="seedx")
     p.add_argument("--remote-mt-workers", type=int, default=64)
-    p.add_argument("--src-lang", default="English",
-                   help="--translate-engine remote 일 때 프롬프트에 넣을 소스 언어명")
-    p.add_argument("--baselines", nargs="+", default=[],
-                   help="baselines/ 산출을 조건으로 추가 (punct causal_align mu_prefix)")
-    p.add_argument("--baselines-native", nargs="+", default=[],
-                   help="이 정책들은 coarsen T 격자를 만들지 않고 라벨 그대로 점 하나만 "
-                        "낸다. 정책 자기 노브를 스윕한 라벨들(alignatt_f4 …)에 쓴다 — "
-                        "`--baselines` 에도 같이 적어야 파일을 읽는다")
+    p.add_argument(
+        "--src-lang",
+        default="English",
+        help="--translate-engine remote 일 때 프롬프트에 넣을 소스 언어명",
+    )
+    p.add_argument(
+        "--baselines",
+        nargs="+",
+        default=[],
+        help="baselines/ 산출을 조건으로 추가 (punct causal_align mu_prefix)",
+    )
+    p.add_argument(
+        "--baselines-native",
+        nargs="+",
+        default=[],
+        help="이 정책들은 coarsen T 격자를 만들지 않고 라벨 그대로 점 하나만 "
+        "낸다. 정책 자기 노브를 스윕한 라벨들(alignatt_f4 …)에 쓴다 — "
+        "`--baselines` 에도 같이 적어야 파일을 읽는다",
+    )
     args = p.parse_args()
 
     run_dir = RUNS_DIR / args.run_id
     cfg_path = run_dir / "config.json"
     cfg = json.loads(cfg_path.read_text(encoding="utf-8")) if cfg_path.exists() else {}
     prof = run_dir / "measured_profile.json"
-    spaced = (bool(json.loads(prof.read_text(encoding="utf-8"))
-                   ["uses_spaces_between_words"]) if prof.exists() else args.src_spaced)
+    spaced = (
+        bool(json.loads(prof.read_text(encoding="utf-8"))["uses_spaces_between_words"])
+        if prof.exists()
+        else args.src_spaced
+    )
 
     # 제안 라벨이 없어도 비교군만으로 돌 수 있어야 한다 — 라벨링을 다른 환경에서 하는
     # 동안 나머지 파이프라인을 검증하고 번역 캐시를 미리 채워 두기 위한 것이다.
@@ -325,14 +419,15 @@ def main() -> int:
         rows = json.loads(ev_path.read_text(encoding="utf-8"))["rows"]
         print(f"분절 출처: {ev_path.name} ({len(rows)}문장), 소스 띄어쓰기 {spaced}")
     else:
-        ents = dataset_spec(args.dataset, args.src).entries(args.manifest_tag,
-                                                             args.targets[0])
+        ents = dataset_spec(args.dataset, args.src).entries(args.manifest_tag, args.targets[0])
         rows = [{"id": k, "text": e.src} for k, e in ents.items()]
-        print(f"⚠ {ev_path.name} 없음 — 비교군만 평가한다 "
-              f"({len(rows)}문장, 소스 띄어쓰기 {spaced})")
+        print(
+            f"⚠ {ev_path.name} 없음 — 비교군만 평가한다 ({len(rows)}문장, 소스 띄어쓰기 {spaced})"
+        )
 
-    conds = build_conditions(rows, args.t_grid, spaced, args.mech_every, has_auto,
-                             no_greedy=args.no_auto_greedy)
+    conds = build_conditions(
+        rows, args.t_grid, spaced, args.mech_every, has_auto, no_greedy=args.no_auto_greedy
+    )
 
     out_dir = run_dir / "bleu"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -344,8 +439,7 @@ def main() -> int:
         tokenize = M.resolve_tokenize(tgt)
         man = dataset_spec(args.dataset, args.src).entries(args.manifest_tag, tgt)
         refs_map = {k: e.ref for k, e in man.items()}
-        wtimes = load_wordtimes(args.manifest_tag, args.wordtimes, args.dataset,
-                                src=args.src)
+        wtimes = load_wordtimes(args.manifest_tag, args.wordtimes, args.dataset, src=args.src)
         tgt_unit = "word" if tgt_spaced else "char"
         ids = [r["id"] for r in rows]
         missing = [i for i in ids if i not in refs_map]
@@ -355,9 +449,18 @@ def main() -> int:
         refs = [refs_map[ids[i]] for i in keep]
 
         conds_t = dict(conds)
-        conds_t.update(load_baseline_conditions(
-            run_dir, args.baselines, tgt, args.split, rows, args.t_grid, spaced,
-            native_only=tuple(args.baselines_native)))
+        conds_t.update(
+            load_baseline_conditions(
+                run_dir,
+                args.baselines,
+                tgt,
+                args.split,
+                rows,
+                args.t_grid,
+                spaced,
+                native_only=tuple(args.baselines_native),
+            )
+        )
         if args.conditions:
             conds_t = {k: v for k, v in conds_t.items() if k in args.conditions}
 
@@ -386,17 +489,25 @@ def main() -> int:
                 # (de-en test: T=12 에서 11.9, ja-en T=27 에서 27.4), 비교군 정책은 T 가
                 # 아예 없다. 논문 표·그림의 x 축 후보는 이쪽이다. 문장 평균 — 지연 축
                 # `laal_words` 가 문장 평균이라 같은 정의를 쓴다.
-                piece_units = [sum(unit_count(q, spaced) for q in pp) / max(1, len(pp))
-                               for pp in pieces_all]
-                laal = [metrics.laal_words(cond[i]["seg_text"], None, full_trans[j],
-                                           spaced, tgt_spaced)
-                        for j, i in enumerate(keep)]
+                piece_units = [
+                    sum(unit_count(q, spaced) for q in pp) / max(1, len(pp)) for pp in pieces_all
+                ]
+                laal = [
+                    metrics.laal_words(cond[i]["seg_text"], None, full_trans[j], spaced, tgt_spaced)
+                    for j, i in enumerate(keep)
+                ]
                 laal_ms_vals = []
                 for j, i in enumerate(keep):
                     d = man[ids[i]].dur_ms
-                    v = laal_ms(pieces_all[j], per_piece[j], d or 0.0,
-                                refs[j], spaced, tgt_unit,
-                                wtimes.get(man[ids[i]].key))
+                    v = laal_ms(
+                        pieces_all[j],
+                        per_piece[j],
+                        d or 0.0,
+                        refs[j],
+                        spaced,
+                        tgt_unit,
+                        wtimes.get(man[ids[i]].key),
+                    )
                     if v is not None:
                         laal_ms_vals.append(v)
                 bleu, sig = M.corpus_bleu_score(hyps, refs, tokenize)
@@ -406,24 +517,32 @@ def main() -> int:
                     "chrf2": round(corpus_chrf2(hyps, refs), 3),
                     # 문장별 BLEU 는 조건×문장 전수라 제일 비싸다 (15,430×73×3타깃).
                     # COMET 만 볼 때는 `--no-sentence-bleu` 로 끈다.
-                    "mean_sentence_bleu": (None if args.no_sentence_bleu else
-                                           round(statistics.mean(
-                                               M.sentence_bleu_score(h, r, tokenize) or 0.0
-                                               for h, r in zip(hyps, refs)), 3)),
+                    "mean_sentence_bleu": (
+                        None
+                        if args.no_sentence_bleu
+                        else round(
+                            statistics.mean(
+                                M.sentence_bleu_score(h, r, tokenize) or 0.0
+                                for h, r in zip(hyps, refs)
+                            ),
+                            3,
+                        )
+                    ),
                     "k": round(statistics.mean(ks), 2),
                     "piece_units": round(statistics.mean(piece_units), 2),
                     "laal_words": round(statistics.mean(laal), 2),
-                    "laal_ms": (round(statistics.mean(laal_ms_vals), 1)
-                                if laal_ms_vals else None),
+                    "laal_ms": (round(statistics.mean(laal_ms_vals), 1) if laal_ms_vals else None),
                     "n_laal_ms": len(laal_ms_vals),
                     "n": len(hyps),
                     "hyps": hyps,
                 }
                 _ms = per_cond[name]["laal_ms"]
-                print(f"[{tgt}] {name:18s} BLEU {per_cond[name]['bleu']:6.2f}  "
-                      f"chrF2 {per_cond[name]['chrf2']:6.2f}  k {per_cond[name]['k']:5.2f}  "
-                      f"laal {per_cond[name]['laal_words']:5.2f}w  "
-                      f"{'—' if _ms is None else format(_ms, '7.0f') + 'ms'}")
+                print(
+                    f"[{tgt}] {name:18s} BLEU {per_cond[name]['bleu']:6.2f}  "
+                    f"chrF2 {per_cond[name]['chrf2']:6.2f}  k {per_cond[name]['k']:5.2f}  "
+                    f"laal {per_cond[name]['laal_words']:5.2f}w  "
+                    f"{'—' if _ms is None else format(_ms, '7.0f') + 'ms'}"
+                )
                 cache.flush()
         finally:
             cache.flush()
@@ -436,25 +555,33 @@ def main() -> int:
                 cell["retention_chrf2"] = round(cell["chrf2"] / base["chrf2"], 4)
             if name != "unsegmented" and base and args.bootstrap > 0:
                 cell["paired_vs_unseg"] = paired_bootstrap(
-                    cell["hyps"], base["hyps"], refs, tokenize, args.bootstrap)
+                    cell["hyps"], base["hyps"], refs, tokenize, args.bootstrap
+                )
         if f"mechanical_{args.mech_every}" in per_cond:
             mech = per_cond[f"mechanical_{args.mech_every}"]
             for name, cell in per_cond.items():
                 if name.startswith("auto_") and args.bootstrap > 0:
                     cell["paired_vs_mech"] = paired_bootstrap(
-                        cell["hyps"], mech["hyps"], refs, tokenize, args.bootstrap)
+                        cell["hyps"], mech["hyps"], refs, tokenize, args.bootstrap
+                    )
 
         # **번역기를 실제 값으로 남긴다.** 종전에는 `f"google:{code}:ctx=True"` 로
         # 박혀 있었다 — 엔진을 바꿔도 리포트는 google 이라고 말하므로, 다른 번역기로
         # 잰 곡선을 같은 그림에 겹쳐 놓고도 알아챌 방법이 없다.
-        report[tgt] = {"tokenize": tokenize, "n": len(refs),
-                       "translator": f"{tr.backend}:{code}:ctx={tr.use_context}",
-                       "context_line_mismatches": tr.context_line_mismatches,
-                       "conditions": per_cond}
+        report[tgt] = {
+            "tokenize": tokenize,
+            "n": len(refs),
+            "translator": f"{tr.backend}:{code}:ctx={tr.use_context}",
+            "context_line_mismatches": tr.context_line_mismatches,
+            "conditions": per_cond,
+        }
         (out_dir / f"{tgt}.json").write_text(
-            json.dumps(report[tgt], ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"[{tgt}] {tr.backend} / 컨텍스트 줄수 불일치 "
-              f"{tr.context_line_mismatches}건 → {out_dir / f'{tgt}.json'}")
+            json.dumps(report[tgt], ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        print(
+            f"[{tgt}] {tr.backend} / 컨텍스트 줄수 불일치 "
+            f"{tr.context_line_mismatches}건 → {out_dir / f'{tgt}.json'}"
+        )
 
     write_report(out_dir / "report.md", report, args, cfg)
     print(f"\n{(out_dir / 'report.md')}")
@@ -468,41 +595,55 @@ def write_report(path: Path, report: dict, args, cfg) -> None:
     trs = sorted({b.get("translator", "?") for b in report.values()})
     tr_txt = trs[0] if len(trs) == 1 else " / ".join(trs)
     tgt_txt = "·".join(report) or "—"
-    L = [f"# 분절 조건별 참조 기반 BLEU — {args.run_id}", "",
-         f"- 분절: `{args.label}` / 번역기 `{tr_txt}` / 부트스트랩 {args.bootstrap}회",
-         "- **언어 간 절대 BLEU 비교 금지** — 토크나이저가 다르다. 언어를 가로지르는 판독은 "
-         "`retention`(자기 무분절 대비)과 `chrF2` 로 한다.",
-         f"- 소스 {args.src} → 타깃 {tgt_txt}. 이 타깃들은 프롬프트 최적화 시 목적함수에 "
-         "포함됐던 언어다 (미출현 타깃 아님).",
-         "- `k`(조각 수)는 자동·기계 분절에서는 세 타깃이 **같은 분절**을 쓰므로 동일하다. "
-         "단 `causal_align`·`mu_prefix` 는 타깃별 자원(정렬 대상·NMT)에 의존하므로 타깃마다 다르다. "
-         "`laal_words` 는 정의상 "
-         "타깃 길이가 들어가고 ja·zh 는 타깃 단위가 문자라 값이 커진다 — **타깃 간 laal 비교 금지**, "
-         "같은 타깃 안에서 T 방향만 읽을 것.",
-         f"- `laal_ms` 는 **강제정렬 실측**이다 (`--wordtimes {args.wordtimes}`). 독립 정렬기 "
-         "둘(wav2vec2 CTC / Qwen3-ForcedAligner)이 조건 수준 LAAL 에서 22ms 이내로 일치한다. "
-         "구 방식(발화 내 균일속도 보간)은 지연을 64~131ms 과소평가했고 정책마다 편차가 있었다.",
-         "- `*_T*` 비교군 점은 정책의 경계 **부분집합**이다 (좌→우 탐욕). 제안 `auto_T*` 만 "
-         "LLM 순위로 남길 경계를 고르므로, 순위 이득을 뺀 대조는 `auto_greedy_T*` 다.", ""]
+    L = [
+        f"# 분절 조건별 참조 기반 BLEU — {args.run_id}",
+        "",
+        f"- 분절: `{args.label}` / 번역기 `{tr_txt}` / 부트스트랩 {args.bootstrap}회",
+        "- **언어 간 절대 BLEU 비교 금지** — 토크나이저가 다르다. 언어를 가로지르는 판독은 "
+        "`retention`(자기 무분절 대비)과 `chrF2` 로 한다.",
+        f"- 소스 {args.src} → 타깃 {tgt_txt}. 이 타깃들은 프롬프트 최적화 시 목적함수에 "
+        "포함됐던 언어다 (미출현 타깃 아님).",
+        "- `k`(조각 수)는 자동·기계 분절에서는 세 타깃이 **같은 분절**을 쓰므로 동일하다. "
+        "단 `causal_align`·`mu_prefix` 는 타깃별 자원(정렬 대상·NMT)에 의존하므로 타깃마다 다르다. "
+        "`laal_words` 는 정의상 "
+        "타깃 길이가 들어가고 ja·zh 는 타깃 단위가 문자라 값이 커진다 — **타깃 간 laal 비교 금지**, "
+        "같은 타깃 안에서 T 방향만 읽을 것.",
+        f"- `laal_ms` 는 **강제정렬 실측**이다 (`--wordtimes {args.wordtimes}`). 독립 정렬기 "
+        "둘(wav2vec2 CTC / Qwen3-ForcedAligner)이 조건 수준 LAAL 에서 22ms 이내로 일치한다. "
+        "구 방식(발화 내 균일속도 보간)은 지연을 64~131ms 과소평가했고 정책마다 편차가 있었다.",
+        "- `*_T*` 비교군 점은 정책의 경계 **부분집합**이다 (좌→우 탐욕). 제안 `auto_T*` 만 "
+        "LLM 순위로 남길 경계를 고르므로, 순위 이득을 뺀 대조는 `auto_greedy_T*` 다.",
+        "",
+    ]
     for tgt, blob in report.items():
-        L += [f"## {args.src}→{tgt} (n={blob['n']}, tok:{blob['tokenize']}, "
-              f"번역기 `{blob.get('translator', '?')}`)", "",
-              "| 조건 | k | laal_ms ↓ | laal_words ↓ | BLEU ↑ | chrF2 | retention(BLEU) | Δ vs unseg [95% CI] |",
-              "|---|---|---|---|---|---|---|---|"]
+        L += [
+            f"## {args.src}→{tgt} (n={blob['n']}, tok:{blob['tokenize']}, "
+            f"번역기 `{blob.get('translator', '?')}`)",
+            "",
+            "| 조건 | k | laal_ms ↓ | laal_words ↓ | BLEU ↑ | chrF2 | retention(BLEU) | Δ vs unseg [95% CI] |",
+            "|---|---|---|---|---|---|---|---|",
+        ]
         for name, c in blob["conditions"].items():
             pv = c.get("paired_vs_unseg")
-            d = (f"{pv['delta']:+.2f} [{pv['ci95'][0]:+.2f}, {pv['ci95'][1]:+.2f}]"
-                 if pv else "—")
+            d = f"{pv['delta']:+.2f} [{pv['ci95'][0]:+.2f}, {pv['ci95'][1]:+.2f}]" if pv else "—"
             ms = "—" if c.get("laal_ms") is None else f"{c['laal_ms']:.0f}"
-            L.append(f"| {name} | {c['k']:.2f} | {ms} | {c['laal_words']:.2f} | {c['bleu']:.2f} | "
-                     f"{c['chrf2']:.2f} | {c.get('retention_bleu', 1.0):.4f} | {d} |")
+            L.append(
+                f"| {name} | {c['k']:.2f} | {ms} | {c['laal_words']:.2f} | {c['bleu']:.2f} | "
+                f"{c['chrf2']:.2f} | {c.get('retention_bleu', 1.0):.4f} | {d} |"
+            )
         L.append("")
-    L += ["## 언어 간 안정성 (retention = 조건 / 무분절)", "",
-          "| 조건 | " + " | ".join(f"{t} BLEU" for t in report) + " | "
-          + " | ".join(f"{t} chrF2" for t in report) + " | BLEU 폭 | chrF2 폭 |",
-          "|---" * (2 * len(report) + 3) + "|"]
+    L += [
+        "## 언어 간 안정성 (retention = 조건 / 무분절)",
+        "",
+        "| 조건 | "
+        + " | ".join(f"{t} BLEU" for t in report)
+        + " | "
+        + " | ".join(f"{t} chrF2" for t in report)
+        + " | BLEU 폭 | chrF2 폭 |",
+        "|---" * (2 * len(report) + 3) + "|",
+    ]
     names: list[str] = []
-    for blob in report.values():                 # 타깃마다 조건이 다를 수 있다
+    for blob in report.values():  # 타깃마다 조건이 다를 수 있다
         for name in blob["conditions"]:
             if name not in names:
                 names.append(name)

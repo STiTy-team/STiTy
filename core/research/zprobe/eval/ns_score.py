@@ -20,12 +20,17 @@ usage: python3 core/research/zprobe/eval/ns_score.py counts [--runs-root R] [--s
        (bench venv) python core/research/zprobe/eval/ns_score.py hangul-cer --cascade asr.qwen-seg-koen+mt.qwen3.5-4b <cfg> [<cfg> ...]
 
 The secondary-stream COMET (ns_secondary_score.py) stays separate: it imports bench and runs from STiTy-bench."""
+
 import argparse, json, os, re
 from collections import defaultdict
 
 RUNS_ROOT = "/home/mobility/STiTy-bench/bench/runs/northstar_ko+en-ko@v2"
-HALLU = re.compile(r"The (two men|1990s|1980s|government|first|woman)|arrested|criticised|How are you|Good morning")
-EMAIL_URL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+|https?://\S+|www\.\S+|\b[\w-]+\.(?:com|io|net|org|co\.kr|kr)\b")
+HALLU = re.compile(
+    r"The (two men|1990s|1980s|government|first|woman)|arrested|criticised|How are you|Good morning"
+)
+EMAIL_URL = re.compile(
+    r"[\w.+-]+@[\w-]+\.[\w.-]+|https?://\S+|www\.\S+|\b[\w-]+\.(?:com|io|net|org|co\.kr|kr)\b"
+)
 
 
 def items(run_dir):
@@ -40,13 +45,20 @@ def events(run_dir):
 
 def sentences(item):
     """Full reference sentences in time order, each with the [lo, hi) window its emissions are binned into."""
-    sents = sorted((s for s in item["reference_segmentation"] if not s.get("partial")), key=lambda s: s["offset"])
+    sents = sorted(
+        (s for s in item["reference_segmentation"] if not s.get("partial")),
+        key=lambda s: s["offset"],
+    )
     for i, s in enumerate(sents):
         yield s, s["offset"], sents[i + 1]["offset"] if i + 1 < len(sents) else float("inf")
 
 
 def binned(records, lo, hi, lag):
-    return [r["original"] for r in records if lo <= r["decision_audio_sec"] - lag < hi and r.get("original")]
+    return [
+        r["original"]
+        for r in records
+        if lo <= r["decision_audio_sec"] - lag < hi and r.get("original")
+    ]
 
 
 def counts(a):
@@ -111,8 +123,12 @@ def hangul_cer(a):
         out = {}
         for it in items(run_dir):
             prim = [r for r in it.get("records", []) if r["type"] == "translated"]
-            out[it["id"]] = " ".join(x for s, lo, hi in sentences(it) if s["src_lang"] == "ko"
-                                     for x in binned(prim, lo, hi, a.lag))
+            out[it["id"]] = " ".join(
+                x
+                for s, lo, hi in sentences(it)
+                if s["src_lang"] == "ko"
+                for x in binned(prim, lo, hi, a.lag)
+            )
         return out
 
     def cascade_hyp(run_dir):
@@ -123,11 +139,15 @@ def hangul_cer(a):
         return {k: " ".join(v) for k, v in out.items()}
 
     first = os.path.join(a.runs_root, a.cascade or a.cfgs[0])
-    refs = {it["id"]: " ".join(s["transcript"] for s, _, _ in sentences(it) if s["src_lang"] == "ko")
-            for it in items(first)}
+    refs = {
+        it["id"]: " ".join(s["transcript"] for s, _, _ in sentences(it) if s["src_lang"] == "ko")
+        for it in items(first)
+    }
     print("| run | hangul CER |")
     print("|---|---|")
-    for run, get in ([(a.cascade, cascade_hyp)] if a.cascade else []) + [(c, adapter_hyp) for c in a.cfgs]:
+    for run, get in ([(a.cascade, cascade_hyp)] if a.cascade else []) + [
+        (c, adapter_hyp) for c in a.cfgs
+    ]:
         try:
             h = get(os.path.join(a.runs_root, run))
         except FileNotFoundError:
@@ -148,7 +168,12 @@ if __name__ == "__main__":
     p = sub.add_parser("dual-wer")
     p.add_argument("--run-dir", required=True)
     p.add_argument("--target", required=True)
-    p.add_argument("--lag", type=float, default=0.5, help="decode lag subtracted from emission time before binning")
+    p.add_argument(
+        "--lag",
+        type=float,
+        default=0.5,
+        help="decode lag subtracted from emission time before binning",
+    )
     p = sub.add_parser("hangul-cer")
     p.add_argument("cfgs", nargs="*")
     p.add_argument("--runs-root", default=RUNS_ROOT)

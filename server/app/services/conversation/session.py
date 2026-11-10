@@ -19,6 +19,7 @@ class ConversationSession:
         self,
         conversation_id: str | None,
         *,
+        must_exist: bool,
         lang: str,
         target_lang: str,
         lang_map: object | None,
@@ -27,7 +28,9 @@ class ConversationSession:
             await self.configure(lang=lang, target_lang=target_lang, lang_map=lang_map)
             return
         self.participant.set_languages(lang, target_lang, lang_map)
-        self.conversation = await self._service.join(self.participant, conversation_id)
+        self.conversation = await self._service.join(
+            self.participant, conversation_id, must_exist=must_exist
+        )
 
     async def configure(
         self,
@@ -44,9 +47,28 @@ class ConversationSession:
 
     async def audio(self, pcm: bytes) -> None:
         conversation = self._started()
+        if not self.participant.can_speak:
+            return
         if self.participant.channel is None:
             await self._service.open_channel(conversation, self.participant)
         conversation.push_audio(self.participant, pcm)
+
+    def set_device(self, device: dict | None) -> None:
+        self.participant.device = device
+
+    def set_recording(self, recording: bool) -> None:
+        self.participant.recording = recording
+
+    async def set_can_speak(self, participant_id: str, can_speak: bool) -> None:
+        await self._service.set_can_speak(
+            self._started(), self.participant, participant_id, can_speak
+        )
+
+    async def set_everyone_can_speak(self, can_speak: bool) -> None:
+        await self._service.set_everyone_can_speak(self._started(), self.participant, can_speak)
+
+    async def remove_participant(self, participant_id: str) -> None:
+        await self._service.remove_participant(self._started(), self.participant, participant_id)
 
     async def finish(self) -> None:
         conversation = self._started()

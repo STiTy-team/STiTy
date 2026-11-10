@@ -14,14 +14,27 @@ import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 MODEL = "facebook/nllb-200-distilled-600M"
-NLLB_CODE = {"en": "eng_Latn", "de": "deu_Latn", "ja": "jpn_Jpan",
-             "zh": "zho_Hans", "ko": "kor_Hang", "es": "spa_Latn"}
+NLLB_CODE = {
+    "en": "eng_Latn",
+    "de": "deu_Latn",
+    "ja": "jpn_Jpan",
+    "zh": "zho_Hans",
+    "ko": "kor_Hang",
+    "es": "spa_Latn",
+}
 
 
 class Nmt:
-    def __init__(self, src: str = "en", tgt: str = "de", device: str = "cuda",
-                 model_name: str = MODEL, max_new_tokens: int = 128,
-                 attentions: bool = False, attn_layer: int = 5):
+    def __init__(
+        self,
+        src: str = "en",
+        tgt: str = "de",
+        device: str = "cuda",
+        model_name: str = MODEL,
+        max_new_tokens: int = 128,
+        attentions: bool = False,
+        attn_layer: int = 5,
+    ):
         self.device = device
         self.max_new_tokens = max_new_tokens
         self.attn_layer = attn_layer
@@ -29,15 +42,15 @@ class Nmt:
         dtype = torch.float16 if device.startswith("cuda") else torch.float32
         # 교차어텐션을 뽑으려면 sdpa 로는 안 되고 eager 여야 한다.
         kw = {"attn_implementation": "eager"} if attentions else {}
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(
-            model_name, dtype=dtype, **kw).to(device).eval()
+        self.model = (
+            AutoModelForSeq2SeqLM.from_pretrained(model_name, dtype=dtype, **kw).to(device).eval()
+        )
         self.tgt_id = self.tok.convert_tokens_to_ids(NLLB_CODE[tgt])
         self.start_id = self.model.config.decoder_start_token_id
         self.eos_id = self.tok.eos_token_id
 
     def _encode(self, text: str):
-        return self.tok(text, return_tensors="pt", truncation=True,
-                        max_length=256).to(self.device)
+        return self.tok(text, return_tensors="pt", truncation=True, max_length=256).to(self.device)
 
     def _decoder_prefix(self, forced: list[int] | None) -> torch.Tensor:
         ids = [self.start_id, self.tgt_id] + list(forced or [])
@@ -56,19 +69,26 @@ class Nmt:
         """전체 문장 번역 상위 N 후보. 첫 번째가 beam 1위다."""
         enc = self._encode(text)
         out = self.model.generate(
-            **enc, decoder_input_ids=self._decoder_prefix(None),
-            num_beams=n, num_return_sequences=n,
-            max_new_tokens=self.max_new_tokens, do_sample=False)
+            **enc,
+            decoder_input_ids=self._decoder_prefix(None),
+            num_beams=n,
+            num_return_sequences=n,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+        )
         return [self.tok.decode(self._strip(s), skip_special_tokens=True) for s in out]
 
     @torch.inference_mode()
-    def translate_prefix(self, text: str,
-                         forced: list[int] | None = None) -> tuple[str, list[int]]:
+    def translate_prefix(self, text: str, forced: list[int] | None = None) -> tuple[str, list[int]]:
         """소스 접두사를 강제 타깃 접두사 위에서 이어 디코딩한다 (greedy, 결정론적)."""
         enc = self._encode(text)
         out = self.model.generate(
-            **enc, decoder_input_ids=self._decoder_prefix(forced),
-            num_beams=1, do_sample=False, max_new_tokens=self.max_new_tokens)
+            **enc,
+            decoder_input_ids=self._decoder_prefix(forced),
+            num_beams=1,
+            do_sample=False,
+            max_new_tokens=self.max_new_tokens,
+        )
         ids = self._strip(out[0])
         return self.tok.decode(ids, skip_special_tokens=True), ids
 
@@ -89,8 +109,9 @@ class Nmt:
         return out
 
     @torch.inference_mode()
-    def emit_with_alignment(self, text: str, forced: list[int] | None = None
-                            ) -> list[tuple[int, int]]:
+    def emit_with_alignment(
+        self, text: str, forced: list[int] | None = None
+    ) -> list[tuple[int, int]]:
         """소스 접두사를 디코딩하며 **새 토큰마다 정렬된 소스 어절**을 함께 낸다.
 
         AlignAtt 이 요구하는 것이 이것뿐이다 — 토큰 i 의 교차어텐션 argmax 가 어느
@@ -101,9 +122,14 @@ class Nmt:
         """
         enc = self._encode(text)
         out = self.model.generate(
-            **enc, decoder_input_ids=self._decoder_prefix(forced),
-            num_beams=1, do_sample=False, max_new_tokens=self.max_new_tokens,
-            output_attentions=True, return_dict_in_generate=True)
+            **enc,
+            decoder_input_ids=self._decoder_prefix(forced),
+            num_beams=1,
+            do_sample=False,
+            max_new_tokens=self.max_new_tokens,
+            output_attentions=True,
+            return_dict_in_generate=True,
+        )
         w_of = self._word_of_token(enc["input_ids"][0])
         n_src = len(w_of)
         seq = out.sequences[0]
@@ -117,6 +143,6 @@ class Nmt:
                 break
             a = out.cross_attentions[step][self.attn_layer].float().mean(1)[0, -1]
             # 언어코드(0)와 </s>(마지막)는 정렬 후보에서 뺀다.
-            j = int(a[1:n_src - 1].argmax()) + 1
+            j = int(a[1 : n_src - 1].argmax()) + 1
             res.append((tok_id, w_of[j]))
         return res

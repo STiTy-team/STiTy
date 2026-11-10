@@ -39,8 +39,9 @@ def is_prefix_of_any(hyp: str, cands: list[str], spaced: bool) -> bool:
     return False
 
 
-def segment(nmt, text: str, tgt_spaced: bool, n_cands: int = 10,
-            trace: list | None = None) -> list[str]:
+def segment(
+    nmt, text: str, tgt_spaced: bool, n_cands: int = 10, trace: list | None = None
+) -> list[str]:
     toks = _WS.split(text.strip())
     if len(toks) < 2:
         return [text.strip()]
@@ -58,6 +59,6 @@ def segment(nmt, text: str, tgt_spaced: bool, n_cands: int = 10,
             pieces.append(" ".join(toks[k:t]))
             k = t
             forced = ids
-    if k < len(toks):                       # 남은 꼬리는 마지막 MU
+    if k < len(toks):  # 남은 꼬리는 마지막 MU
         pieces.append(" ".join(toks[k:]))
     return pieces or [text.strip()]

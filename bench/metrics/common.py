@@ -26,8 +26,9 @@ def translated(records: list[dict]) -> list[dict]:
 
 def displayed(records: list[dict]) -> list[dict]:
     folds = {
-        (record["target_lang"], record["decision_audio_sec"], record["original"]):
-            record["translation"]
+        (record["target_lang"], record["decision_audio_sec"], record["original"]): record[
+            "translation"
+        ]
         for record in records
         if record["type"] == "folded"
     }
@@ -42,8 +43,11 @@ def displayed(records: list[dict]) -> list[dict]:
             key = (key[0], key[1], text)
         if not text.strip():
             continue
-        out.append(record if text == record.get("translation")
-                   else {**record, "original": text, "translation": text})
+        out.append(
+            record
+            if text == record.get("translation")
+            else {**record, "original": text, "translation": text}
+        )
     return out
 
 

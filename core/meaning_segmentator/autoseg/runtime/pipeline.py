@@ -47,10 +47,14 @@ _LEGACY_RANK_MARK = "Use each number exactly once"
 def check_tag_convention(prompt: str) -> str | None:
     """순위제 프롬프트면 사유를 돌려준다. 점수제 프롬프트면 None."""
     if _LEGACY_RANK_MARK in prompt:
-        return ("순위제 프롬프트 (`<SEG:1>` 이 최고 확신) — 지금 코드는 점수제 "
-                "(`<SEG:s>`, 클수록 확신) 라 절단이 거꾸로 돈다. [Output Rules] 를 "
-                "`agents.output_rules()` 로 다시 만들 것")
+        return (
+            "순위제 프롬프트 (`<SEG:1>` 이 최고 확신) — 지금 코드는 점수제 "
+            "(`<SEG:s>`, 클수록 확신) 라 절단이 거꾸로 돈다. [Output Rules] 를 "
+            "`agents.output_rules()` 로 다시 만들 것"
+        )
     return None
+
+
 SEG = "<SEG>"
 TAG_RE = re.compile(r"<SEG(?::(\d+))?>")
 CONSECUTIVE = re.compile(r"<SEG(?::\d+)?>\s*<SEG(?::\d+)?>")
@@ -62,8 +66,7 @@ def tag(priority: int | None = None) -> str:
 
 def priorities(seg_text: str) -> list[int | None]:
     """등장 순서대로의 확신 점수 목록. 점수 없는 태그는 None."""
-    return [int(m.group(1)) if m.group(1) else None
-            for m in TAG_RE.finditer(seg_text)]
+    return [int(m.group(1)) if m.group(1) else None for m in TAG_RE.finditer(seg_text)]
 
 
 def strip_tags(seg_text: str, spaced: bool = True) -> str:
@@ -86,6 +89,7 @@ def round_half_up(x: float) -> int:
 def unit_count(text: str, spaced: bool) -> int:
     """T(목표 조각 크기)의 단위. 띄어쓰기 언어는 어절, 아니면 문자."""
     return len(text.split()) if spaced else len(re.sub(r"\s+", "", text))
+
 
 # 분절 호출의 출력 예산. **thinking 모델에서는 사고 토큰이 여기 같이 잡힌다.**
 # 1024 로 두면 긴 문장에서 사고가 예산을 전부 먹고 content 가 빈 문자열로 돌아온다
@@ -135,6 +139,7 @@ _PO_SENTENCE_OPENERS = "¿¡"
 def default_trailing_punct(sample: str) -> str:
     """프로파일에 trailing_punctuation 이 없을 때 쓰는 언어 무관 추정."""
     import unicodedata
+
     out = set()
     for ch in set(sample):
         if ch in _PO_SENTENCE_OPENERS:
@@ -145,6 +150,7 @@ def default_trailing_punct(sample: str) -> str:
 
 
 # ── 캐시 ───────────────────────────────────────────────────────────────────
+
 
 class JsonCache:
     """디스크 영속 캐시. 이터레이션 간 분절이 안 바뀐 문장의 재번역을 막는다."""
@@ -186,6 +192,7 @@ class JsonCache:
 
 
 # ── A2 Segmenter ─────────────────────────────────────────────────────────
+
 
 def segment_batch(
     gw: Gateway,
@@ -242,8 +249,9 @@ def segment_batch(
         # **모델도 같은 이유로 키에 들어간다.** 없으면 모델을 바꿔 돌린 평가가 이전 모델의
         # 캐시를 그대로 맞아 호출 0 회로 "동일한 결과"를 내놓는다 — 두 모델을 비교하려던
         # 실험이 조용히 같은 분절을 두 번 채점하는 것으로 바뀐다.
-        return JsonCache.key("seg5", prompt_hash, gw.model, reasoning_effort or "-",
-                             str(batch_size), t)
+        return JsonCache.key(
+            "seg5", prompt_hash, gw.model, reasoning_effort or "-", str(batch_size), t
+        )
 
     def cached(t: str) -> list | None:
         """쓸 수 있는 캐시 값. 없거나 빈 출력이면 None.
@@ -269,9 +277,17 @@ def segment_batch(
         if hit is not None:
             return hit[0], hit[1]
 
-        out = pre if pre is not None else gw.chat(
-            system=prompt, user=t, max_tokens=SEG_MAX_TOKENS,
-            reasoning_effort=reasoning_effort, purpose="segment")
+        out = (
+            pre
+            if pre is not None
+            else gw.chat(
+                system=prompt,
+                user=t,
+                max_tokens=SEG_MAX_TOKENS,
+                reasoning_effort=reasoning_effort,
+                purpose="segment",
+            )
+        )
         if normalize_fn is not None:
             out = normalize_fn(t, out)
         first_ok = True
@@ -281,8 +297,8 @@ def segment_batch(
                 first_ok = False
                 if first_pass_sink is not None:
                     first_pass_sink.extend(
-                        {"rule": v.rule, "detail": v.detail, "text": t, "seg_text": out}
-                        for v in vs)
+                        {"rule": v.rule, "detail": v.detail, "text": t, "seg_text": out} for v in vs
+                    )
                 detail = "; ".join(f"{v.rule}: {v.detail}" for v in vs)
                 # **규칙을 여기 다시 쓰지 않는다.** `system=prompt` 로 프롬프트를 통째로
                 # 다시 주므로 `[Output Rules]` 가 이미 들어가 있다. 예전에는 번호 규약
@@ -329,12 +345,19 @@ def segment_batch(
             reqs = [(i + 1, need_fn(t)) for i, t in enumerate(g)]
             reqs = [(i, n) for i, n in reqs if n]
             if reqs:
-                user += ("\n\n[Minimum number of <SEG:n> tags required per sentence — "
-                         "counted deterministically from sentence length and the spacing "
-                         "rule, NOT a suggestion. An answer with fewer is rejected.]\n"
-                         + "  ".join(f"[{i}] {n}" for i, n in reqs))
-        raw = gw.chat(system=batch_prompt, user=user, max_tokens=SEG_MAX_TOKENS,
-                      reasoning_effort=reasoning_effort, purpose="segment")
+                user += (
+                    "\n\n[Minimum number of <SEG:n> tags required per sentence — "
+                    "counted deterministically from sentence length and the spacing "
+                    "rule, NOT a suggestion. An answer with fewer is rejected.]\n"
+                    + "  ".join(f"[{i}] {n}" for i, n in reqs)
+                )
+        raw = gw.chat(
+            system=batch_prompt,
+            user=user,
+            max_tokens=SEG_MAX_TOKENS,
+            reasoning_effort=reasoning_effort,
+            purpose="segment",
+        )
         got: dict[str, str] = {}
         for line in raw.splitlines():
             m = _BATCH_LINE.match(line.strip())
@@ -351,7 +374,7 @@ def segment_batch(
     if batch_size > 1:
         # 캐시에 있는 것은 배치에서 뺀다 — 캐시 적중분까지 다시 부르면 배치의 의미가 없다.
         todo = [t for t in texts if cached(t) is None]
-        groups = [todo[i:i + batch_size] for i in range(0, len(todo), batch_size)]
+        groups = [todo[i : i + batch_size] for i in range(0, len(todo), batch_size)]
         if groups:
             with ThreadPoolExecutor(max_workers=workers) as ex:
                 for d in ex.map(call_group, groups):
@@ -366,6 +389,7 @@ def segment_batch(
 
 
 # ── A3 Format Validator ──────────────────────────────────────────────────
+
 
 @dataclass
 class Violation:
@@ -394,8 +418,9 @@ def _note(sink: list[dict] | None, kind: str, detail: str) -> None:
 _SELF_CHECK_SEEN: set[str] = set()
 
 
-def _self_check(out: str, spaced: bool, punct: str,
-                sink: list[dict] | None = None, min_gap: int = 0) -> list[str]:
+def _self_check(
+    out: str, spaced: bool, punct: str, sink: list[dict] | None = None, min_gap: int = 0
+) -> list[str]:
     """정규화 결과가 약속을 지켰는지 본다. 반환은 위반한 약속 목록(정상이면 빈 리스트)."""
     bad: list[str] = []
     tags = list(TAG_RE.finditer(out))
@@ -408,7 +433,7 @@ def _self_check(out: str, spaced: bool, punct: str,
     if punct and re.search(r"<SEG(?::\d+)?>\s*([" + re.escape(punct) + r"])", out):
         bad.append("태그 직후 구두점이 남음")
     for m in tags:
-        before, after = out[: m.start()], out[m.end():]
+        before, after = out[: m.start()], out[m.end() :]
         if (before and not before.endswith(" ")) or (after and not after.startswith(" ")):
             bad.append("태그 좌우 공백이 하나가 아님")
             break
@@ -437,8 +462,13 @@ def _self_check(out: str, spaced: bool, punct: str,
     return bad
 
 
-def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = None,
-                   sink: list[dict] | None = None, min_gap: int = 0) -> str:
+def normalize_tags(
+    seg_text: str,
+    spaced: bool,
+    trailing_punct: str | None = None,
+    sink: list[dict] | None = None,
+    min_gap: int = 0,
+) -> str:
     """표기 오류만 결정론적으로 고친다. **경계 위치는 절대 건드리지 않는다.**
 
     **`sink` 가 주어지면 무엇을 고쳤는지 기록한다.** 이 함수는 조용히 산출물을 바꾸는데,
@@ -523,7 +553,7 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
         while j >= 0 and not pieces[j]:
             j -= 1
         if j < 0:
-            continue        # 왼쪽에 내용이 아예 없다 = 맨 앞 구두점. 옮기면 원문이 바뀐다
+            continue  # 왼쪽에 내용이 아예 없다 = 맨 앞 구두점. 옮기면 원문이 바뀐다
         pieces[j] = pieces[j] + moved
         pieces[i + 1] = nxt
         _note(sink, "punct_moved", f"태그 뒤 {moved!r} 를 앞 조각 끝으로 옮김")
@@ -533,8 +563,8 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
     #    양쪽 태그가 각각 보고 둘 다 탈락시킨다. 순차 조립은 앞 태그만 버리고 뒤를 살린다.
     #    맨 앞/뒤 태그도 같은 규칙에서 자동으로 떨어진다.
     chunks: list[str] = [pieces[0].strip()]
-    survivors: list[int] = []                 # 살아남은 태그의 원래 인덱스
-    absorbed: dict[int, list[int | None]] = {}   # 살아남은 태그가 흡수한 이웃의 원래 번호
+    survivors: list[int] = []  # 살아남은 태그의 원래 인덱스
+    absorbed: dict[int, list[int | None]] = {}  # 살아남은 태그가 흡수한 이웃의 원래 번호
     pending: list[int | None] = []
     for i, nxt in enumerate(pieces[1:]):
         nxt = nxt.strip()
@@ -555,14 +585,20 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
             # 아무것도 없거나. 후자는 아래에서 `tag_dropped` 로 따로 기록되므로 여기선
             # 세지 않는다. 같은 사건이 두 종류로 잡히면 집계가 어긋난다.
             if i < len(pieces) - 2:
-                _note(sink, "tags_merged",
-                      f"연속 태그 — {tag(raw_prios[i])} 를 다음 태그와 같은 자리로 합침")
+                _note(
+                    sink,
+                    "tags_merged",
+                    f"연속 태그 — {tag(raw_prios[i])} 를 다음 태그와 같은 자리로 합침",
+                )
         else:
             # 맨 앞 태그 — **자리 자체가 무효**라 번호도 버린다. 뒤 태그는 실제 텍스트
             # 뒤에 있어 위치가 다르므로, 무효 자리의 확신도를 거기 이식하면 안 된다.
             if pending:
-                _note(sink, "tag_dropped",
-                      f"맨 앞 태그 {len(pending)}개 — 자리가 무효라 번호까지 버림")
+                _note(
+                    sink,
+                    "tag_dropped",
+                    f"맨 앞 태그 {len(pending)}개 — 자리가 무효라 번호까지 버림",
+                )
             pending = []
             chunks[-1] = chunks[-1] + nxt
             if i == 0:
@@ -572,8 +608,7 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
     # 2) 살아남은 태그의 점수를 정한다. 같은 자리로 합쳐진 태그들은 그중 **가장 확신한
     #    점수(최댓값)** 로 대표되고, 상한을 넘는 값은 SCORE_MAX 로 깎는다.
     def _best(i: int) -> int | None:
-        nums = [min(x, SCORE_MAX) for x in (raw_prios[i], *absorbed.get(i, []))
-                if x is not None]
+        nums = [min(x, SCORE_MAX) for x in (raw_prios[i], *absorbed.get(i, [])) if x is not None]
         return max(nums) if nums else None
 
     vals = [_best(i) for i in survivors]
@@ -597,8 +632,11 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
             keep.append(j)
         if len(keep) < len(vals):
             dropped = [tag(vals[j]) for j in range(len(vals)) if j not in keep]
-            _note(sink, "gap_pruned",
-                  f"간격 {min_gap} 미만이라 {len(dropped)}개 삭제: {' '.join(dropped)}")
+            _note(
+                sink,
+                "gap_pruned",
+                f"간격 {min_gap} 미만이라 {len(dropped)}개 삭제: {' '.join(dropped)}",
+            )
             keep_set = set(keep)
             joiner = " " if spaced else ""
             new_chunks = [chunks[0]]
@@ -613,7 +651,7 @@ def normalize_tags(seg_text: str, spaced: bool, trailing_punct: str | None = Non
                     new_chunks[-1] = (new_chunks[-1] + joiner + chunks[j + 1]).strip()
             chunks, vals, survivors = new_chunks, new_vals, new_survivors
 
-    labels: list[int | None] = list(vals)      # 점수는 그대로 — 다시 매기지 않는다
+    labels: list[int | None] = list(vals)  # 점수는 그대로 — 다시 매기지 않는다
 
     if pending:
         _note(sink, "tag_dropped", f"맨 뒤 태그 {len(pending)}개 삭제")
@@ -644,9 +682,14 @@ def blocks_scoring(violations: list["Violation"]) -> bool:
     return any(v.rule in SCORING_BLOCKERS for v in violations)
 
 
-def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
-             require_priority: bool = True,
-             min_tags: int | None = None) -> list[Violation]:
+def validate(
+    sent_id: str,
+    original: str,
+    seg_text: str,
+    spaced: bool,
+    require_priority: bool = True,
+    min_tags: int | None = None,
+) -> list[Violation]:
     """번역 호출 전에 도는 하드 게이트. LLM 없이 순수 문자열 검사.
 
     **표기 규칙은 여기 없다.** 맨앞/맨뒤 태그·연속 태그·태그 좌우 공백·번호 중복·번호
@@ -666,8 +709,13 @@ def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
     tags = list(TAG_RE.finditer(s))
 
     if strip_tags(s, spaced) != strip_tags(original, spaced):
-        v.append(Violation(sent_id, "text_modified",
-                           "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)"))
+        v.append(
+            Violation(
+                sent_id,
+                "text_modified",
+                "태그를 제거한 결과가 원문과 다름 (모델이 텍스트를 고쳐 씀)",
+            )
+        )
     # ── 점수 규칙 ──────────────────────────────────────────────────────
     # 점수가 없으면 Truncator 가 "상위 k−1개"를 정의할 수 없어 노브 자체가 죽는다.
     #
@@ -681,8 +729,13 @@ def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
     # 지웠다. 되살리려면 그 절을 먼저 읽을 것.
     if require_priority and tags:
         if any(m.group(1) is None for m in tags):
-            v.append(Violation(sent_id, "bad_priority_format",
-                               "점수 없는 태그. 모든 태그는 <SEG:s> (s = 0..100) 형태여야 함"))
+            v.append(
+                Violation(
+                    sent_id,
+                    "bad_priority_format",
+                    "점수 없는 태그. 모든 태그는 <SEG:s> (s = 0..100) 형태여야 함",
+                )
+            )
 
     # ── 커버리지 요건 (v2, C 방식) ──────────────────────────────────────
     # 노브는 경계를 **빼기만** 하므로 프롬프트가 안 찍은 경계는 만들어낼 수 없다.
@@ -694,8 +747,7 @@ def validate(sent_id: str, original: str, seg_text: str, spaced: bool,
     # 두면 복구 재시도가 개수를 명시해 다시 시킬 수 있고, "덜 찍어서 점수 얻기"가
     # 애초에 성립하지 않는다.
     if min_tags and len(tags) < min_tags:
-        v.append(Violation(sent_id, "too_few_tags",
-                           f"경계 {len(tags)}개 — 최소 {min_tags}개 필요"))
+        v.append(Violation(sent_id, "too_few_tags", f"경계 {len(tags)}개 — 최소 {min_tags}개 필요"))
 
     # ── 간격 요건은 여기 없다 ──────────────────────────────────────────
     # `normalize_tags(min_gap=)` 가 먼저 돌아 너무 가까운 태그를 결정론으로 쳐낸다.
@@ -729,6 +781,7 @@ def split_segments(seg_text: str) -> list[str]:
 
 
 # ── A4 Truncator — 지연 노브, 결정론적 ───────────────────────────────────────────
+
 
 def chunk_budget(text: str, target_chunk_words: int, spaced: bool) -> int:
     """이 문장을 몇 조각으로 낼 것인가.
@@ -796,9 +849,13 @@ def _score_order(score: int | None, pos_index: int, higher_first: bool = True):
     return (0, -score if higher_first else score, pos_index)
 
 
-def truncate(seg_text: str, target_chunk_words: int,
-             spaced: bool = True, min_gap: int = 0,
-             higher_first: bool = True) -> tuple[str, int]:
+def truncate(
+    seg_text: str,
+    target_chunk_words: int,
+    spaced: bool = True,
+    min_gap: int = 0,
+    higher_first: bool = True,
+) -> tuple[str, int]:
     """점수 상위 `k−1` 개 경계만 남긴다. 반환 `(절단된 seg_text, missing_boundaries)`.
 
     `higher_first=False` 는 **순위제로 라벨된 옛 데이터**(`<SEG:1>` 이 최고 확신)를 오프라인
@@ -863,7 +920,7 @@ def truncate(seg_text: str, target_chunk_words: int,
     body = strip_tags(seg_text, spaced)
     want = boundaries(body, target_chunk_words, spaced)
     if any(p is None for p in prios):
-        return seg_text, max(0, want - len(tags))      # 점수 없음 — 절단 불가
+        return seg_text, max(0, want - len(tags))  # 점수 없음 — 절단 불가
 
     # `min_gap <= 0` 을 따로 분기하지 않는다 — 거리 조건이 절대 참이 안 되므로 아래
     # 루프가 그대로 `order[:want]` 가 된다 (랜덤 20,000건 검증, 불일치 0).
@@ -1003,12 +1060,19 @@ def add_translate_args(p, default: str = "auto") -> None:
     게이트웨이의 `gateway.add_provider_args` 와 같은 역할이다 — 인자 이름과 기본값이
     스크립트마다 갈라지지 않게 한 곳에서 붙인다.
     """
-    p.add_argument("--translate-provider", default=default, choices=TRANSLATE_PROVIDERS,
-                   help="번역 백엔드. gtx=비공식 무료(차단되기 쉽다), "
-                        "v2=Cloud Translation Basic(API 키 필요), "
-                        f"auto=키가 있으면 v2 없으면 gtx. 기본 {default}")
-    p.add_argument("--google-key-env", default="GOOGLE_TRANSLATE_API_KEY",
-                   help="API 키를 읽을 환경변수/.env 키 이름. 계정을 갈아끼울 때 쓴다")
+    p.add_argument(
+        "--translate-provider",
+        default=default,
+        choices=TRANSLATE_PROVIDERS,
+        help="번역 백엔드. gtx=비공식 무료(차단되기 쉽다), "
+        "v2=Cloud Translation Basic(API 키 필요), "
+        f"auto=키가 있으면 v2 없으면 gtx. 기본 {default}",
+    )
+    p.add_argument(
+        "--google-key-env",
+        default="GOOGLE_TRANSLATE_API_KEY",
+        help="API 키를 읽을 환경변수/.env 키 이름. 계정을 갈아끼울 때 쓴다",
+    )
 
 
 def to_lang_code(name: str) -> str:
@@ -1025,7 +1089,8 @@ def to_lang_code(name: str) -> str:
 
     이미 코드로 들어온 값(`en`, `zh-TW`, `pt-BR`)은 그대로 통과시킨다.
     """
-    import langcodes                      # 22MB 데이터라 지연 로드
+    import langcodes  # 22MB 데이터라 지연 로드
+
     key = name.strip()
     if not key:
         raise ValueError("타깃 언어가 비었습니다")
@@ -1034,9 +1099,9 @@ def to_lang_code(name: str) -> str:
     try:
         tag = langcodes.Language.get(key)
         if tag.is_valid() and tag.language:
-            return key                    # 이미 코드다 — 지역/스크립트를 그대로 보존
+            return key  # 이미 코드다 — 지역/스크립트를 그대로 보존
     except langcodes.tag_parser.LanguageTagError:
-        pass                              # 코드가 아니다 -> 이름으로 조회
+        pass  # 코드가 아니다 -> 이름으로 조회
     try:
         return str(langcodes.find(key))
     except LookupError:
@@ -1056,9 +1121,9 @@ def parse_translator_id(tr_id: str, fallback_code: str) -> tuple[str | None, str
     파싱이 `eval_prompt` 에 복제돼 있던 것을 합쳤다.
     """
     if not tr_id.startswith("google:"):
-        return None, fallback_code, True          # 백엔드는 호출자/기본값에 맡긴다
+        return None, fallback_code, True  # 백엔드는 호출자/기본값에 맡긴다
     parts = tr_id.split(":")
-    if len(parts) >= 4:                           # google:backend:code:ctx=...
+    if len(parts) >= 4:  # google:backend:code:ctx=...
         return parts[1], parts[2], parts[3].endswith("True")
     return "gtx", parts[1], parts[-1].endswith("True")
 
@@ -1077,7 +1142,7 @@ class GoogleTranslator:
 
     tgt_code: str
     cache: JsonCache | None = None
-    workers: int = 4          # gtx 는 비공식이라 동시성을 낮게 잡는다
+    workers: int = 4  # gtx 는 비공식이라 동시성을 낮게 잡는다
     use_context: bool = True
     timeout: float = 30.0
     max_retries: int = 5
@@ -1100,18 +1165,21 @@ class GoogleTranslator:
         if self.backend in (None, "auto"):
             self.backend = "v2" if self.api_key else "gtx"
         if self.backend not in ("gtx", "v2"):
-            raise ValueError(f"모르는 번역 백엔드: {self.backend!r} "
-                             f"(사용 가능: {TRANSLATE_PROVIDERS})")
+            raise ValueError(
+                f"모르는 번역 백엔드: {self.backend!r} (사용 가능: {TRANSLATE_PROVIDERS})"
+            )
         # **명시했는데 키가 없으면 조용히 gtx 로 떨어뜨리지 않는다.** 그 폴백이야말로
         # v2 를 쓰고 있다고 믿으면서 gtx 로 재게 만드는 경로다.
         if self.backend == "v2" and not self.api_key:
             raise ValueError(
                 f"backend='v2' 인데 {self.key_env} 를 찾을 수 없습니다 — "
-                f"환경변수나 레포 루트 .env 에 넣거나 --google-key-env 로 이름을 지정하세요")
+                f"환경변수나 레포 루트 .env 에 넣거나 --google-key-env 로 이름을 지정하세요"
+            )
         self._client = httpx.Client(
             timeout=self.timeout,
-            limits=httpx.Limits(max_connections=self.workers,
-                                max_keepalive_connections=self.workers),
+            limits=httpx.Limits(
+                max_connections=self.workers, max_keepalive_connections=self.workers
+            ),
         )
 
     @classmethod
@@ -1128,13 +1196,17 @@ class GoogleTranslator:
             backend = inherited
         else:
             if inherited not in (None, "auto") and inherited != want:
-                print(f"[translate] 경고: 런이 기록한 백엔드 {inherited!r} 를 "
-                      f"--translate-provider {want!r} 로 덮어씁니다 — "
-                      f"그 런의 캐시는 재사용되지 않고 점수도 같은 축이 아닙니다")
+                print(
+                    f"[translate] 경고: 런이 기록한 백엔드 {inherited!r} 를 "
+                    f"--translate-provider {want!r} 로 덮어씁니다 — "
+                    f"그 런의 캐시는 재사용되지 않고 점수도 같은 축이 아닙니다"
+                )
             backend = want
-        return cls(backend=backend,
-                   key_env=getattr(args, "google_key_env", "GOOGLE_TRANSLATE_API_KEY"),
-                   **kw)
+        return cls(
+            backend=backend,
+            key_env=getattr(args, "google_key_env", "GOOGLE_TRANSLATE_API_KEY"),
+            **kw,
+        )
 
     def close(self) -> None:
         if self._client is not None:
@@ -1178,13 +1250,21 @@ class GoogleTranslator:
                 with self._lock:
                     self.calls += 1
                 return out
-            except (httpx.HTTPError, RuntimeError, ValueError, IndexError, TypeError, KeyError) as e:
+            except (
+                httpx.HTTPError,
+                RuntimeError,
+                ValueError,
+                IndexError,
+                TypeError,
+                KeyError,
+            ) as e:
                 last = e
             # 대기는 **한 곳에서만** 계산한다. 예전에는 HTTP 실패 경로와 예외 경로가
             # 같은 식을 각자 갖고 있어, 한쪽만 고치면 상황에 따라 대기가 달라졌다.
-            time.sleep(min(BACKOFF_BASE ** attempt, BACKOFF_MAX))
-        raise RuntimeError(f"Google 번역 실패({self.max_retries}회 재시도, "
-                           f"backend={self.backend}): {last}")
+            time.sleep(min(BACKOFF_BASE**attempt, BACKOFF_MAX))
+        raise RuntimeError(
+            f"Google 번역 실패({self.max_retries}회 재시도, backend={self.backend}): {last}"
+        )
 
     def _call(self, text: str) -> str:
         """캐시를 거친 번역 1회.
@@ -1243,7 +1323,9 @@ class GoogleTranslator:
             done.append(lines[-1] if lines else whole)
         return done
 
-    def seg_batch(self, seg_texts: list[str], full_fallback: list[str]) -> tuple[list[str], list[list[str]]]:
+    def seg_batch(
+        self, seg_texts: list[str], full_fallback: list[str]
+    ) -> tuple[list[str], list[list[str]]]:
         def one(pair):
             seg_text, fb = pair
             parts = split_segments(seg_text)
@@ -1308,7 +1390,7 @@ class LocalTranslator:
     wait: float = 0.05
     max_new_tokens: int = 192
     device: str = "cuda"
-    workers: int = 64          # 배칭이 GPU 를 채우므로 스레드는 많을수록 좋다
+    workers: int = 64  # 배칭이 GPU 를 채우므로 스레드는 많을수록 좋다
     use_context: bool = False  # 위 주석 참조 — 로컬에서는 쓰지 않는다
     calls: int = 0
     context_line_mismatches: int = 0
@@ -1317,7 +1399,6 @@ class LocalTranslator:
     # 이유다 (기존 캐시 18건 재번역 대조 일치 0/18).
     backend: str = ""
     _lock: threading.Lock = field(init=False, repr=False, default_factory=threading.Lock)
-
 
     def __post_init__(self):
         self.backend = self.backend or f"local:{self.model_id}"
@@ -1337,9 +1418,13 @@ class LocalTranslator:
             if model_id not in _MT_SHARED:
                 import torch
                 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
                 tok = AutoTokenizer.from_pretrained(model_id)
-                mdl = AutoModelForSeq2SeqLM.from_pretrained(
-                    model_id, dtype=torch.float16).to(device).eval()
+                mdl = (
+                    AutoModelForSeq2SeqLM.from_pretrained(model_id, dtype=torch.float16)
+                    .to(device)
+                    .eval()
+                )
                 _MT_SHARED[model_id] = (tok, mdl)
             return _MT_SHARED[model_id]
 
@@ -1349,10 +1434,16 @@ class LocalTranslator:
 
     def _generate(self, texts: list[str]) -> list[str]:
         import torch
+
         tok, mdl = self._get_model(self.model_id, self.device)
         with torch.inference_mode():
-            enc = tok([self._prefix(t) for t in texts], return_tensors="pt",
-                      padding=True, truncation=True, max_length=384).to(self.device)
+            enc = tok(
+                [self._prefix(t) for t in texts],
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=384,
+            ).to(self.device)
             gen = mdl.generate(**enc, max_new_tokens=self.max_new_tokens, num_beams=1)
         return tok.batch_decode(gen, skip_special_tokens=True)
 
@@ -1365,12 +1456,12 @@ class LocalTranslator:
                 if self._stop and not self._q:
                     return
                 self._cv.wait(timeout=self.wait) if len(self._q) < self.batch else None
-                jobs, self._q = self._q[: self.batch], self._q[self.batch:]
+                jobs, self._q = self._q[: self.batch], self._q[self.batch :]
             if not jobs:
                 continue
             try:
                 outs = self._generate([j[0] for j in jobs])
-            except Exception as e:                      # noqa: BLE001
+            except Exception as e:  # noqa: BLE001
                 outs = None
                 err = e
             for k, (_, box, ev) in enumerate(jobs):
@@ -1405,6 +1496,7 @@ class LocalTranslator:
 
 # ── 원격 LLM 번역기 ──────────────────────────────────────────────────────
 
+
 # **왜 또 하나인가.** `LocalTranslator` 는 `AutoModelForSeq2SeqLM` 전용이다 (madlad·nllb).
 # MT 전용 디코더 모델(Seed-X 계열)은 causal LM 이고 타깃 지정이 접두 토큰이 아니라
 # 프롬프트 규약이라 그 클래스에 들어가지 않는다. 그리고 in-process `generate` 대신
@@ -1420,10 +1512,11 @@ def lang_display_name(code: str) -> str:
     Seed-X 류 프롬프트가 코드가 아니라 이름을 요구하는데, 호출부는 코드만 들고
     있어서 필요하다. 표를 코드에 박지 않는 이유는 `to_lang_code` 와 같다.
     """
-    import langcodes                      # 22MB 데이터라 지연 로드
+    import langcodes  # 22MB 데이터라 지연 로드
+
     try:
         return langcodes.Language.get(code).display_name("en")
-    except Exception:                      # noqa: BLE001
+    except Exception:  # noqa: BLE001
         return code
 
 
@@ -1462,16 +1555,20 @@ class RemoteMTTranslator:
 
     def __post_init__(self):
         if self.template not in REMOTE_MT_TEMPLATES:
-            raise ValueError(f"모르는 템플릿: {self.template!r}. "
-                             f"{sorted(REMOTE_MT_TEMPLATES)} 중 하나여야 한다")
+            raise ValueError(
+                f"모르는 템플릿: {self.template!r}. {sorted(REMOTE_MT_TEMPLATES)} 중 하나여야 한다"
+            )
         # 호출부(`make_translator`)는 코드만 들고 있고 이름이 없다. 프롬프트는 이름을
         # 요구하므로 코드에서 되짚는다 — `to_lang_code` 의 역방향이다.
         self.tgt_name = self.tgt_name or lang_display_name(self.tgt_code)
         self.backend = self.backend or f"remote:{self.model}"
         self._client = httpx.Client(
-            timeout=self.timeout, base_url=self.base_url.rstrip("/"),
-            limits=httpx.Limits(max_connections=self.workers,
-                                max_keepalive_connections=self.workers))
+            timeout=self.timeout,
+            base_url=self.base_url.rstrip("/"),
+            limits=httpx.Limits(
+                max_connections=self.workers, max_keepalive_connections=self.workers
+            ),
+        )
 
     def close(self) -> None:
         if self._client is not None:
@@ -1479,8 +1576,8 @@ class RemoteMTTranslator:
 
     def _prompt(self, text: str) -> str:
         return REMOTE_MT_TEMPLATES[self.template].format(
-            src_name=self.src_name, tgt_name=self.tgt_name,
-            tgt_code=self.tgt_code, text=text)
+            src_name=self.src_name, tgt_name=self.tgt_name, tgt_code=self.tgt_code, text=text
+        )
 
     def _raw(self, text: str) -> str:
         """재시도 포함 번역 1회. **첫 줄만 취한다** — base 모델은 뒤에 다음 예시를
@@ -1488,19 +1585,26 @@ class RemoteMTTranslator:
         last: Exception | None = None
         for attempt in range(self.max_retries):
             try:
-                r = self._client.post("/completions", json={
-                    "model": self.model, "prompt": self._prompt(text),
-                    "temperature": 0, "max_tokens": self.max_tokens})
+                r = self._client.post(
+                    "/completions",
+                    json={
+                        "model": self.model,
+                        "prompt": self._prompt(text),
+                        "temperature": 0,
+                        "max_tokens": self.max_tokens,
+                    },
+                )
                 r.raise_for_status()
                 out = r.json()["choices"][0]["text"]
                 with self._lock:
                     self.calls += 1
                 return out.strip().split("\n")[0].strip()
-            except Exception as e:                      # noqa: BLE001
+            except Exception as e:  # noqa: BLE001
                 last = e
-            time.sleep(min(BACKOFF_BASE ** attempt, BACKOFF_MAX))
-        raise RuntimeError(f"원격 번역 실패({self.max_retries}회 재시도, "
-                           f"model={self.model}): {last}")
+            time.sleep(min(BACKOFF_BASE**attempt, BACKOFF_MAX))
+        raise RuntimeError(
+            f"원격 번역 실패({self.max_retries}회 재시도, model={self.model}): {last}"
+        )
 
     # ── 공개 인터페이스 — GoogleTranslator 와 동일 ───────────────────────
     _call = GoogleTranslator._call

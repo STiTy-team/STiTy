@@ -17,3 +17,9 @@ jest.mock('@modules/stity-audio', () => ({
     stopSpeaking: jest.fn(),
   },
 }));
+
+jest.mock('expo-secure-store', () => ({
+  ...jest.requireActual('expo-secure-store'),
+  getItem: jest.fn(() => null),
+  setItem: jest.fn(),
+}));

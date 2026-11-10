@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import type { Room, Roster } from '@/domain/rooms';
+
 import type { ConversationErrorCode } from './conversation-error';
 import type { ConversationPhase } from './conversation-machine';
 import type { FeedEvent, LivePartial, SettingChange, TranscriptEntry } from './transcript';
@@ -20,6 +22,11 @@ type ConversationState = {
   recordingSince: number | null;
   /** The record the server writes for this conversation; kept across pauses and resumes. */
   conversationId: string | null;
+  /** The room behind this conversation; kept across pauses and resumes. */
+  room: Room | null;
+  roster: Roster | null;
+  /** Who this phone is in the roster. */
+  participantId: string | null;
   /** Hold-to-talk is held down. */
   talking: boolean;
 };
@@ -35,10 +42,25 @@ const INITIAL_STATE: ConversationState = {
   recordedMs: 0,
   recordingSince: null,
   conversationId: null,
+  room: null,
+  roster: null,
+  participantId: null,
   talking: false,
 };
 
 export const useConversationStore = create<ConversationState>()(() => INITIAL_STATE);
+
+export const selectInRoom = (state: ConversationState) => state.room?.shared === true;
+
+export const selectIsHost = (state: ConversationState) =>
+  state.roster !== null && state.roster.hostId === state.participantId;
+
+/** The host turned this phone's mic off. */
+export const selectMicOff = ({ roster, participantId }: ConversationState) =>
+  roster?.participants.find((participant) => participant.id === participantId)?.canSpeak === false;
+
+export const selectCanInvite = (state: ConversationState) =>
+  state.room?.code != null && state.conversationId === null;
 
 let nextEntryId = 0;
 let nextEventId = 0;
@@ -63,6 +85,9 @@ export const conversationActions = {
   setDemo: (demo: boolean) => set({ demo }),
   fail: (error: ConversationErrorCode | null) => set({ error }),
   setConversationId: (conversationId: string | null) => set({ conversationId }),
+  setRoom: (room: Room | null) => set({ room }),
+  setRoster: (roster: Roster | null) => set({ roster }),
+  setParticipantId: (participantId: string | null) => set({ participantId }),
   setTalking: (talking: boolean) => set({ talking }),
   markSpeechPending: () => set({ speechPending: true }),
   clearLive: () => set({ partial: null, speechPending: false }),
@@ -84,9 +109,7 @@ export const conversationActions = {
   /** A brig fold shrinks a committed bubble to what the transcript does not already carry. */
   rewriteEntry: (id: string, text: string, translation: string): void =>
     set(({ entries }) => ({
-      entries: entries.map((entry) =>
-        entry.id === id ? { ...entry, text, translation } : entry,
-      ),
+      entries: entries.map((entry) => (entry.id === id ? { ...entry, text, translation } : entry)),
     })),
 
   /** A brig fold with nothing left removes the bubble; the transcription pane still shows it. */
@@ -101,9 +124,7 @@ export const conversationActions = {
           ? entry
           : {
               ...entry,
-              translation: entry.translation
-                ? `${entry.translation}\n${translation}`
-                : translation,
+              translation: entry.translation ? `${entry.translation}\n${translation}` : translation,
             },
       ),
     })),

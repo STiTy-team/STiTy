@@ -8,7 +8,6 @@ from .base import Mixer
 
 @mixers.register("mixdown")
 class Mixdown(Mixer):
-
     def mix(self, audio: MultiChannelAudio) -> bytes:
         if not audio.channels:
             return b""

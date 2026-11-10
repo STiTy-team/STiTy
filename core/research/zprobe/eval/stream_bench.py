@@ -19,6 +19,7 @@ computation-aware), the same two clocks bench/seamless/seamless_score.py uses. O
 
 usage: PROBE_MODEL=<koen-seg-mix> PROBE_ADAPTER=models/zprobe/adapters/segconn2 PYTHONPATH=Qwen3-ASR \
          python core/research/zprobe/eval/stream_bench.py --manifest <export>/manifest.jsonl --tgt ko --agree 2 [--beams 4] --out X.jsonl"""
+
 import argparse, json, os, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -28,17 +29,33 @@ from seg_units import continuation, join  # noqa: E402
 def main(a):
     import soundfile as sf, torch
     import probe_z as pz
+
     m = pz.load_model()
     tok = m.processor.tokenizer
     dev = next(m.model.thinker.parameters()).device
     base = m._build_text_prompt(context="", force_language=pz.LANGS[a.tgt][1])
 
     def gen(wav, pieces):
-        prefix = "".join(p + " <SEG> " for p in pieces) if a.mode == "seg" else ("".join(p + " " for p in pieces) if a.tgt not in ("ja", "zh") else "".join(pieces))
-        inputs = m.processor(text=[base + prefix], audio=[wav], return_tensors="pt", padding=True).to(dev).to(torch.bfloat16)
+        prefix = (
+            "".join(p + " <SEG> " for p in pieces)
+            if a.mode == "seg"
+            else (
+                "".join(p + " " for p in pieces) if a.tgt not in ("ja", "zh") else "".join(pieces)
+            )
+        )
+        inputs = (
+            m.processor(text=[base + prefix], audio=[wav], return_tensors="pt", padding=True)
+            .to(dev)
+            .to(torch.bfloat16)
+        )
         with torch.no_grad():
-            o = m.model.generate(**inputs, max_new_tokens=a.max_new_tokens, no_repeat_ngram_size=a.no_repeat or None,
-                                 num_beams=a.beams, do_sample=False)
+            o = m.model.generate(
+                **inputs,
+                max_new_tokens=a.max_new_tokens,
+                no_repeat_ngram_size=a.no_repeat or None,
+                num_beams=a.beams,
+                do_sample=False,
+            )
         seq = o.sequences if hasattr(o, "sequences") else o
         out = continuation(tok, inputs["input_ids"][0], seq[0])
         torch.cuda.synchronize()
@@ -53,20 +70,29 @@ def main(a):
         past the final decode is just truncation, so it bans EOS for two tokens and lifts the n-gram ban (which blocks
         legitimate repeats like 802.11a/b/g and leaves EOS as the only move)."""
         flush = final and a.final_flush
-        inputs = m.processor(text=[base + raw], audio=[wav], return_tensors="pt", padding=True).to(dev).to(torch.bfloat16)
+        inputs = (
+            m.processor(text=[base + raw], audio=[wav], return_tensors="pt", padding=True)
+            .to(dev)
+            .to(torch.bfloat16)
+        )
         ids = inputs["input_ids"][0]
         with torch.no_grad():
-            o = m.model.generate(**inputs, max_new_tokens=a.max_new_tokens,
-                                 no_repeat_ngram_size=None if flush else (a.no_repeat or None),
-                                 min_new_tokens=2 if flush else None,
-                                 num_beams=a.beams, do_sample=False)
+            o = m.model.generate(
+                **inputs,
+                max_new_tokens=a.max_new_tokens,
+                no_repeat_ngram_size=None if flush else (a.no_repeat or None),
+                min_new_tokens=2 if flush else None,
+                num_beams=a.beams,
+                do_sample=False,
+            )
         seq = o.sequences if hasattr(o, "sequences") else o
-        new = seq[0, ids.shape[0]:]
+        new = seq[0, ids.shape[0] :]
         while len(new) and int(new[-1]) in EOS:
             new = new[:-1]
         txt = continuation(tok, ids, torch.cat([ids, new]))
         while "\ufffd" in txt and len(new):
-            new = new[:-1]; txt = continuation(tok, ids, torch.cat([ids, new]))
+            new = new[:-1]
+            txt = continuation(tok, ids, torch.cat([ids, new]))
         torch.cuda.synchronize()
         return txt if a.keep_seg else txt.replace("<SEG>", "")
 
@@ -78,9 +104,11 @@ def main(a):
     # (eager attention only: PROBE_ATTN=eager). Each call stores the last query row, averaged over heads.
     att_rows = []
     if a.mode == "alignatt":
+
         def hook(mod, args, out):
             if isinstance(out, tuple) and len(out) > 1 and out[1] is not None:
                 att_rows.append(out[1][0, :, -1, :].float().mean(0))
+
         for l in layers:
             m.model.thinker.model.layers[l].self_attn.register_forward_hook(hook)
 
@@ -88,30 +116,47 @@ def main(a):
         """New raw text after `raw` (may contain <SEG>), cut before the first token that looks at the newest audio.
         With --att_ban_eos the model may not answer with EOS: mid-stream the attention cut does the waiting instead
         (for a prefix-trained model whose EOS conflates "wait" and "done"), and the final decode must flush."""
-        inputs = m.processor(text=[base + raw], audio=[wav], return_tensors="pt", padding=True).to(dev).to(torch.bfloat16)
-        ids = inputs["input_ids"][0]; aud = (ids == audio_id).nonzero().squeeze(-1)
+        inputs = (
+            m.processor(text=[base + raw], audio=[wav], return_tensors="pt", padding=True)
+            .to(dev)
+            .to(torch.bfloat16)
+        )
+        ids = inputs["input_ids"][0]
+        aud = (ids == audio_id).nonzero().squeeze(-1)
         att_rows.clear()
         ban = sorted(x for x in EOS if x is not None)
         with torch.no_grad():
-            o = m.model.generate(**inputs, max_new_tokens=min(a.max_new_tokens, 40) if (a.att_ban_eos and not final) else a.max_new_tokens,
-                                 suppress_tokens=ban if (a.att_ban_eos and not final) else None,
-                                 min_new_tokens=2 if ((a.att_ban_eos or a.final_flush) and final) else None,
-                                 do_sample=False, num_beams=1)
-        new = o.sequences[0, ids.shape[0]:]
+            o = m.model.generate(
+                **inputs,
+                max_new_tokens=min(a.max_new_tokens, 40)
+                if (a.att_ban_eos and not final)
+                else a.max_new_tokens,
+                suppress_tokens=ban if (a.att_ban_eos and not final) else None,
+                min_new_tokens=2 if ((a.att_ban_eos or a.final_flush) and final) else None,
+                do_sample=False,
+                num_beams=1,
+            )
+        new = o.sequences[0, ids.shape[0] :]
         keep = len(new)
         if not final and len(aud):
             last = max(1, int(round(a.att_sec * len(aud) / (len(wav) / 16000))))
-            steps = len(att_rows) // len(layers)  # one row per hooked layer per forward call (prefill, then one per token)
+            steps = len(att_rows) // len(
+                layers
+            )  # one row per hooked layer per forward call (prefill, then one per token)
             for j in range(min(len(new), steps)):
-                w = torch.stack([att_rows[j * len(layers) + i][: ids.shape[0]] for i in range(len(layers))]).mean(0)
+                w = torch.stack(
+                    [att_rows[j * len(layers) + i][: ids.shape[0]] for i in range(len(layers))]
+                ).mean(0)
                 if int(w[aud].argmax()) >= len(aud) - last:
-                    keep = j; break
+                    keep = j
+                    break
         new = new[:keep]
         if len(new) and int(new[-1]) in EOS:
             new = new[:-1]
         txt = continuation(tok, ids, torch.cat([ids, new]))
         while "\ufffd" in txt and len(new):  # never show half of a multi-byte character
-            new = new[:-1]; txt = continuation(tok, ids, torch.cat([ids, new]))
+            new = new[:-1]
+            txt = continuation(tok, ids, torch.cat([ids, new]))
         torch.cuda.synchronize()
         return txt
 
@@ -120,12 +165,16 @@ def main(a):
     if os.path.exists(a.out):
         done = {json.loads(l)["utt_id"] for l in open(a.out, encoding="utf-8")}
     if a.mode == "alignatt":
-        gen_att(sf.read(items[0]["wav"], dtype="float32")[0][:16000], "", False)  # warm-up, not timed
+        gen_att(
+            sf.read(items[0]["wav"], dtype="float32")[0][:16000], "", False
+        )  # warm-up, not timed
     elif a.mode == "prefix":
         gen_raw(sf.read(items[0]["wav"], dtype="float32")[0][:16000], "")
     else:
         gen(sf.read(items[0]["wav"], dtype="float32")[0][:16000], [])  # warm-up, not timed
-    out = open(a.out, "a", encoding="utf-8"); t0 = time.time(); ndec = 0
+    out = open(a.out, "a", encoding="utf-8")
+    t0 = time.time()
+    ndec = 0
     for n, it in enumerate(items):
         if it["utt_id"] in done:
             continue
@@ -133,7 +182,8 @@ def main(a):
         assert sr == 16000
         dur = len(wav) / sr
         pieces, segs, last, decodes, raw = [], [], None, 0, ""
-        start = time.perf_counter(); fed = 0.0
+        start = time.perf_counter()
+        fed = 0.0
         while True:
             now = time.perf_counter() - start
             if now < dur and (now < a.first or now - fed < a.step):
@@ -142,36 +192,44 @@ def main(a):
             fed = min(dur, now)
             final = fed >= dur
             if a.mode == "alignatt":
-                add = gen_att(wav[: int(fed * sr)], raw, final); decodes += 1
+                add = gen_att(wav[: int(fed * sr)], raw, final)
+                decodes += 1
                 wall = time.perf_counter() - start
                 raw += add
                 shown = re.sub(r"\s+", " ", add.replace("<SEG>", " ")).strip()
                 if shown:
-                    pieces.append(shown); segs.append([shown, round(fed, 3), round(wall, 3)])
+                    pieces.append(shown)
+                    segs.append([shown, round(fed, 3), round(wall, 3)])
                 if final:
                     break
                 continue
             if a.mode == "prefix":
-                add = gen_raw(wav[: int(fed * sr)], raw, final); decodes += 1
+                add = gen_raw(wav[: int(fed * sr)], raw, final)
+                decodes += 1
                 wall = time.perf_counter() - start
                 raw += add
                 shown = re.sub(r"\s+", " ", add.replace("<SEG>", " ")).strip()
                 if shown:
-                    pieces.append(shown); segs.append([shown, round(fed, 3), round(wall, 3)])
+                    pieces.append(shown)
+                    segs.append([shown, round(fed, 3), round(wall, 3)])
                 if final:
                     break
                 continue
-            text = gen(wav[: int(fed * sr)], pieces); decodes += 1
+            text = gen(wav[: int(fed * sr)], pieces)
+            decodes += 1
             wall = time.perf_counter() - start
             if final:
                 rest = re.sub(r"\s+", " ", text.replace("<SEG>", " ")).strip()
                 if rest or not pieces:
-                    pieces.append(rest); segs.append([rest, round(fed, 3), round(wall, 3)])
+                    pieces.append(rest)
+                    segs.append([rest, round(fed, 3), round(wall, 3)])
                 break
             if "<SEG>" in text:
                 piece = re.sub(r"\s+", " ", text.split("<SEG>")[0]).strip()
                 if piece and (a.agree < 2 or piece == last):
-                    pieces.append(piece); segs.append([piece, round(fed, 3), round(wall, 3)]); last = None
+                    pieces.append(piece)
+                    segs.append([piece, round(fed, 3), round(wall, 3)])
+                    last = None
                 else:
                     last = piece or None
             else:
@@ -182,8 +240,20 @@ def main(a):
             hyp = join(hyp, p, a.tgt)
         if a.mode in ("prefix", "alignatt"):
             hyp = re.sub(r"\s+", " ", raw.replace("<SEG>", " ")).strip()
-        out.write(json.dumps({"utt_id": it["utt_id"], "ok": True, "text": hyp, "segments": segs, "decodes": decodes,
-                              "duration_sec": round(dur, 3)}, ensure_ascii=False) + "\n")
+        out.write(
+            json.dumps(
+                {
+                    "utt_id": it["utt_id"],
+                    "ok": True,
+                    "text": hyp,
+                    "segments": segs,
+                    "decodes": decodes,
+                    "duration_sec": round(dur, 3),
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
         out.flush()
         if (n + 1) % 20 == 0:
             print(f"{n + 1}/{len(items)} {time.time() - t0:.0f}s, {ndec} decodes", flush=True)
@@ -192,15 +262,34 @@ def main(a):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--manifest", required=True); ap.add_argument("--tgt", default="ko"); ap.add_argument("--out", required=True)
-    ap.add_argument("--step", type=float, default=0.5, help="decode again once this much new audio has arrived (s)")
-    ap.add_argument("--first", type=float, default=1.0, help="first decode once this much audio has arrived (s)")
-    ap.add_argument("--agree", type=int, default=2); ap.add_argument("--beams", type=int, default=1)
-    ap.add_argument("--no_repeat", type=int, default=4); ap.add_argument("--max_new_tokens", type=int, default=120)
-    ap.add_argument("--final_flush", action="store_true"); ap.add_argument("--att_ban_eos", action="store_true")
+    ap.add_argument("--manifest", required=True)
+    ap.add_argument("--tgt", default="ko")
+    ap.add_argument("--out", required=True)
+    ap.add_argument(
+        "--step",
+        type=float,
+        default=0.5,
+        help="decode again once this much new audio has arrived (s)",
+    )
+    ap.add_argument(
+        "--first", type=float, default=1.0, help="first decode once this much audio has arrived (s)"
+    )
+    ap.add_argument("--agree", type=int, default=2)
+    ap.add_argument("--beams", type=int, default=1)
+    ap.add_argument("--no_repeat", type=int, default=4)
+    ap.add_argument("--max_new_tokens", type=int, default=120)
+    ap.add_argument("--final_flush", action="store_true")
+    ap.add_argument("--att_ban_eos", action="store_true")
     ap.add_argument("--keep_seg", action="store_true")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--mode", choices=["seg", "prefix", "alignatt"], default="seg")
-    ap.add_argument("--att_sec", type=float, default=0.5, help="alignatt: stop when attention peaks in this much newest audio")
-    ap.add_argument("--att_layers", default="16,20,24,27", help="alignatt: layers whose attention is averaged")
+    ap.add_argument(
+        "--att_sec",
+        type=float,
+        default=0.5,
+        help="alignatt: stop when attention peaks in this much newest audio",
+    )
+    ap.add_argument(
+        "--att_layers", default="16,20,24,27", help="alignatt: layers whose attention is averaged"
+    )
     main(ap.parse_args())

@@ -80,6 +80,9 @@ export const useConversationLifecycle = () => {
         controller.applyMuted(next.muted);
         noteChange({ kind: 'muted', muted: next.muted });
       }
+      if (next.serverRecording !== previous.serverRecording) {
+        controller.applyServerRecording();
+      }
     });
 
     const stopWatchingLanguages = usePreferencesStore.subscribe((next, previous) => {

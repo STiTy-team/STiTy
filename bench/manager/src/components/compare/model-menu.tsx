@@ -44,11 +44,17 @@ export function ModelMenu({
         <div className="flex max-h-96 flex-col gap-0.5 overflow-auto">
           {runs.map((run) => (
             <label key={run.name} className="flex cursor-pointer items-start gap-2.5 rounded-md p-2 hover:bg-muted">
-              <Checkbox checked={!hidden.has(run.name)} onCheckedChange={(on) => flip(run.name, on === true)} className="mt-0.5" />
+              <Checkbox
+                checked={!hidden.has(run.name)}
+                onCheckedChange={(on) => flip(run.name, on === true)}
+                className="mt-0.5"
+              />
               <span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: colors.get(run.name) }} />
               <span className="min-w-0">
                 <span className="font-mono text-xs">{run.pipeline}</span>
-                {run.status && run.status !== "ok" && <span className="ml-1.5 text-xs text-muted-foreground">{run.status}</span>}
+                {run.status && run.status !== "ok" && (
+                  <span className="ml-1.5 text-xs text-muted-foreground">{run.status}</span>
+                )}
                 <span className="block text-xs text-muted-foreground">{modelLine(run)}</span>
               </span>
             </label>

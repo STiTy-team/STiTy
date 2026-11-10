@@ -1,18 +1,15 @@
 name: ci/format
 
-on:
-  push:
-    paths: ["bench/**", "server/**", ".github/workflows/ci-format.yml"]
-  pull_request:
-    paths: ["bench/**", "server/**", ".github/workflows/ci-format.yml"]
+on: [push, pull_request]
 
 jobs:
-  ruff:
+  fmt:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/ruff-action@v4.1.0
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v5
         with:
-          version: "0.16.9"
-          src: bench server
-          args: format --check --diff
+          node-version: 22
+      - run: make fmt
+      - run: git diff --exit-code

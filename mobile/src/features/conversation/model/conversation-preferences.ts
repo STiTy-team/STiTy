@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { appInfo } from '@/config/app-info';
 import type { OutputMode } from '@/domain/output-modes';
 import { peerLanguageOf, type LanguageSettings } from '@/stores/preferences-store';
 import { persistedStorage, savedField } from '@/stores/persisted-storage';
@@ -31,20 +32,25 @@ type ConversationPreferencesState = AddOns & {
   muted: boolean;
   /** Ask the server to save the next conversation; chosen before Start and kept across runs. */
   saveRequested: boolean;
+  /** Development builds: the server saves this phone's audio and messages for debugging. */
+  serverRecording: boolean;
   setAddOn: (addOn: keyof AddOns, on: boolean) => void;
   setOutputMode: (mode: OutputMode) => void;
   setMuted: (muted: boolean) => void;
   setSaveRequested: (saveRequested: boolean) => void;
+  setServerRecording: (serverRecording: boolean) => void;
   reset: () => void;
 };
 
 const DEFAULTS: AddOns &
-  Pick<ConversationPreferencesState, 'outputMode' | 'muted' | 'saveRequested'> = {
-  ...DEFAULT_ADD_ONS,
-  outputMode: 'speaker',
-  muted: false,
-  saveRequested: true,
-};
+  Pick<ConversationPreferencesState, 'outputMode' | 'muted' | 'saveRequested' | 'serverRecording'> =
+  {
+    ...DEFAULT_ADD_ONS,
+    outputMode: 'speaker',
+    muted: false,
+    saveRequested: true,
+    serverRecording: false,
+  };
 
 const savedSchema = z
   .object({
@@ -52,6 +58,7 @@ const savedSchema = z
     largeText: savedField(z.boolean()),
     vibrate: savedField(z.boolean()),
     saveRequested: savedField(z.boolean()),
+    serverRecording: savedField(z.boolean()),
   })
   .catch({});
 
@@ -64,6 +71,7 @@ export const useConversationPreferences = create<ConversationPreferencesState>()
       setOutputMode: (outputMode) => set({ outputMode }),
       setMuted: (muted) => set({ muted }),
       setSaveRequested: (saveRequested) => set({ saveRequested }),
+      setServerRecording: (serverRecording) => set({ serverRecording }),
       reset: () => set(DEFAULTS),
     }),
     {
@@ -78,15 +86,17 @@ export const useConversationPreferences = create<ConversationPreferencesState>()
           largeText: restored.largeText ?? current.largeText,
           vibrate: restored.vibrate ?? current.vibrate,
           saveRequested: restored.saveRequested ?? current.saveRequested,
+          serverRecording: restored.serverRecording ?? current.serverRecording,
         };
       },
       // The output mode follows whether an earphone is plugged in at launch, and mute is per
       // conversation, so neither is saved.
-      partialize: ({ holdToTalk, largeText, vibrate, saveRequested }) => ({
+      partialize: ({ holdToTalk, largeText, vibrate, saveRequested, serverRecording }) => ({
         holdToTalk,
         largeText,
         vibrate,
         saveRequested,
+        serverRecording,
       }),
     },
   ),
@@ -103,4 +113,5 @@ export const sessionPreferences = (
   holdToTalk: conversation.holdToTalk,
   vibrate: conversation.vibrate,
   saveRequested: conversation.saveRequested,
+  serverRecording: appInfo.variant === 'development' && conversation.serverRecording,
 });

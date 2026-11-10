@@ -21,35 +21,86 @@ Expo Go cannot run this app: microphone capture and audio routing live in a loca
 (`modules/stity-audio`), so the app always runs as a development build. Any change under
 `modules/` or `assets/fonts/` needs a rebuild; JavaScript changes reload instantly.
 
+`pnpm web` runs the same app in a browser, with microphone and speech from the browser (see
+[modules/stity-audio](modules/stity-audio/README.md)). It needs no build or install, so it works on
+an iPhone, but it can't choose earphone or speaker. The microphone only works on `https` or
+`localhost`, so a phone has to open it through a tunnel such as `pnpm start --tunnel`.
+
 | Command                                           | What it does                                                      |
 | ------------------------------------------------- | ----------------------------------------------------------------- |
 | `pnpm check`                                      | lint + typecheck + format check + tests — run before every commit |
 | `pnpm test`                                       | Jest unit tests (`*.test.ts` next to the code)                    |
+| `pnpm web`                                        | The app in a browser, served by Metro                             |
 | `pnpm run doctor`                                 | `expo-doctor`: dependency and config health                       |
 | `pnpm build:dev` / `build:preview` / `build:prod` | EAS cloud builds                                                  |
 
 ## Configuration
 
-| Variable                 | Default                              | Meaning                                                                                                                               |
-| ------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `EXPO_PUBLIC_SERVER_URL` | RunPod proxy in development only     | WebSocket origin (`wss://`; `ws://` in development only), no path — the app appends `/api/v1/ws`. Required for preview and production |
-| `EXPO_PUBLIC_API_URL`    | the WebSocket host over `http(s)`    | REST origin for accounts and records — the app appends `/api/v1`                                                                      |
-| `EXPO_PUBLIC_API_MOCKS`  | everything but `live` (none in prod) | API areas answered by mock data: a comma list, `all` or `none` — see [API layer](#api-layer-mock-or-live)                             |
-| `APP_VARIANT`            | `development`                        | `development` · `preview` · `production` — set by the EAS profile                                                                     |
-| `APP_ID`                 | `com.anonymous.stitymobile`          | Bundle id and Android package. Production builds refuse the placeholder                                                               |
+| Variable                 | Default                                   | Meaning                                                                                                                                                                                       |
+| ------------------------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EXPO_PUBLIC_SERVER_URL` | `ws://localhost:8765` in development only | WebSocket origin (`wss://`; `ws://` in development only), no path — the app appends `/api/v1/ws`. Required for preview and production                                                         |
+| `EXPO_PUBLIC_API_URL`    | the WebSocket host over `http(s)`         | REST origin for accounts and records — the app appends `/api/v1`                                                                                                                              |
+| `EXPO_PUBLIC_API_MOCKS`  | everything but `live` (none in prod)      | API areas answered by mock data: a comma list, `all` or `none` — see [API layer](#api-layer-mock-or-live)                                                                                     |
+| `STITY_WEB_URL`          | the hosted preview web app                | Where a phone's invite links open. Read at build time from the environment, then the repository's `.env`; EAS cloud builds don't upload that file, so set it in `eas.json` to change it there |
+| `APP_VARIANT`            | `development`                             | `development` · `preview` · `production` — set by the EAS profile                                                                                                                             |
+| `APP_ID`                 | `com.anonymous.stitymobile`               | Bundle id and Android package. Production builds refuse the placeholder                                                                                                                       |
 
 Values are validated at startup in `src/config/env.ts`; a malformed URL, a URL with a path,
 cleartext in a release build, an unknown API area or a mock in production fails fast. For EAS builds, set them per environment with `eas env:create`
 instead of committing them.
 
-Each variant gets its own app id (`.dev`, `.preview` suffixes) and name, so all three can be
-installed side by side. Cleartext `ws://` and `http://` are allowed only in the development
+Each variant gets its own app id (`.dev`, `.preview` suffixes), name and URL scheme (`stity-dev`,
+`stity-preview`, `stity`), so all three can be installed side by side. Cleartext `ws://` and `http://` are allowed only in the development
 variant.
+
+### Feature switches (`configs/application.yml`)
+
+Features that a platform can't run well are switched per platform in `configs/application.yml`,
+the way the server uses `server/configs/application.yml`:
+
+```yaml
+features:
+  speech:
+    ios: true
+    android: true
+    web: false
+```
+
+| Feature  | Off means                                                                                                                                     |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `speech` | Translations aren't read aloud; the sound and output-mode controls are hidden. Off on web: Safari's `speechSynthesis` silences the microphone |
+
+`app.config.ts` reads the file at build time and puts it in `extra.features`. The schema and the
+per-platform choice live in `src/config/feature-switches.ts`; the app reads the result as
+`features.speech` from `src/config/features.ts`. A test loads the real app config and checks the file
+against the schema, so a typo fails `pnpm check` instead of the app. `app.config.ts` runs in Node and
+is typechecked on its own with `tsconfig.node.json`. Metro caches the config, so restart with
+`npx expo start -c` after editing it.
+
+### Changing the server in a development build
+
+A development build can switch servers without a rebuild. Either way the app signs out (a session
+belongs to the server that issued it), saves the address in secure storage, ignores
+`EXPO_PUBLIC_API_URL`, and restarts on the new server:
+
+- **Scan** the QR code `make server` prints when it opens a Cloudflare tunnel
+  ([server/README.md](../server/README.md#connect-a-client)). It opens the hosted web app at
+  `/dev-server?url=wss://…`, which `src/app/dev-server.tsx` handles (a development build answers
+  the same path as `stity-dev://dev-server?url=…`). Anyone can send such a link, so the app shows
+  the address and asks before it connects.
+- **Type** it in Profile → Developer → Server. `https://host` and a bare host are taken as
+  `wss://host`. _Use the build's server_ forgets it.
+
+`src/config/server-override.ts` holds the saved address and `changeServer` in
+`features/account/account-runtime.ts` switches; `resolveEnv` uses the address only in the
+development variant, so preview and production builds always talk to the server they were built
+with and show no Developer section.
 
 ## Project structure
 
 ```
 app.config.ts            Expo config: variants, permissions, plugins
+configs/application.yml  Feature switches per platform
 eas.json                 EAS build profiles (development / preview / production)
 modules/stity-audio/     Local native module — mic capture, audio routing, speech (Kotlin + Swift)
 src/
@@ -73,7 +124,7 @@ src/
 ├── domain/              Core vocabulary: languages, output modes
 ├── i18n/                i18next setup and one JSON file per UI language
 ├── theme/               Light and dark colors, spacing, Pretendard type scale — styles via makeStyles
-├── config/              Validated environment and app info
+├── config/              Validated environment, app info and feature switches
 └── lib/                 Small pure helpers
 ```
 
@@ -140,8 +191,8 @@ settings, kept in `conversation-preferences.ts`; the controller reads them per c
 translation. **Present mode** (`/present`) shows the same conversation in landscape for a
 mirrored TV or projector. It runs on top of the live screen, so the session never restarts; while
 it shows, hold to talk is ignored. Its controls are the live screen's `SessionControls` on a dark
-floating bar, so it connects, retries and resumes the same way, and they stay up while not
-recording. **The intro** (Profile → About) is a scripted session: `getIntroLive()` replays
+floating bar, so it connects, retries and resumes the same way. A tap on the screen shows or hides
+them; they come up by themselves whenever recording stops. **The intro** (Profile → About) is a scripted session: `getIntroLive()` replays
 `INTRO_SCRIPT` through the same `open()` as a real conversation, with no server or microphone, and
 pauses at its end; resuming plays it again. The mocked `live` area uses the same script player. Turning sideways needs `expo-screen-orientation`, so the native app
 allows rotation and the JavaScript side locks portrait at launch.
@@ -184,6 +235,36 @@ typed `Api` from `getApi()`; `EXPO_PUBLIC_API_MOCKS` decides per area whether th
 `session_error` (code) and `record_opened`. They go to the device log until a crash and analytics
 vendor is plugged in with `setTelemetrySink`.
 
+## Rooms
+
+The server gives every unsaved conversation a short room code in `ready`. Invite in the conversation
+header shows it with a QR code and a link to share, and Join room on the home screen enters it on other phones.
+The sheet asks `GET /api/v1/rooms/{code}`
+on the conversation server first, and stays open with an error unless the room is open, so a bad code
+never reaches the conversation screen. That request goes to the WebSocket's host over `http(s)`, not
+`EXPO_PUBLIC_API_URL`. The code is then sent as `conversationId` in `start` with `join: true`, so a
+room that closed in between is still refused (close code 4404, shown as `errors.roomNotFound`). The
+code lives in `room` in the conversation store and is used again on resume.
+
+Inviting or joining makes the conversation shared until it ends. The server mixes every phone's
+microphone into one stream, so a shared conversation has no speaker labels: lines show the language
+rather than "Me". Translations aren't spoken, because every phone is listening. A room closes when
+the last phone leaves.
+
+The first phone is the host (방장). Everyone sees who is in the room in conversation settings
+(`room-section.tsx`), and the host can turn each mic on or off, turn all mics on or off, and remove
+someone. The server enforces this; the phone only reflects it, showing a notice and "Mic off" in
+place of Listening. There is one host and no handover: when the host's connection ends, including
+when the app goes to the background, the room closes for everyone.
+
+A saved conversation has no code to share, because its `conversationId` is the id of its record, so
+Invite is hidden while saving.
+
+The link is `/join?room=<code>` on the web app, or on `STITY_WEB_URL` when shared from a phone. `src/app/join.tsx` shows the room and the languages and joins on a tap, so a link alone never
+starts the microphone. A phone with a server set in the app adds `&server=<url>`, and a development
+build asks before it switches to that server. The installed app opens `stity://join?room=<code>`;
+opening the `https` link in the app would need universal links.
+
 ## Output modes
 
 | Mode     | Who hears what                                                      |
@@ -193,6 +274,18 @@ vendor is plugged in with `setTelemetrySink`.
 | Both     | Peer → my earphone; me → the loudspeaker for the peer               |
 
 The mode defaults to Earphone when a headset is connected at launch.
+
+## Web hosting
+
+Every push to `main` that touches `mobile/` exports the web build and deploys it to EAS Hosting as
+the production alias (`.github/workflows/deploy-web.yml`, which needs the `EXPO_TOKEN` secret). It
+is a development build: it starts on `ws://localhost:8765`, takes its server from Profile →
+Developer or a `/dev-server?url=…` link, and answers everything but `live` from mocks. By hand:
+
+```bash
+npx expo export --platform web
+npx eas-cli deploy          # a preview URL; add --prod to move the production alias
+```
 
 ## Releasing
 
