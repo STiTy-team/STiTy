@@ -21,6 +21,45 @@ REPEAT_TEMPLATE = r"((.{1,12}?))(?:\2){%d,}"
 SENTENCE_HEAD = re.compile(r"^.*?[.!?…](?=\s|$)", re.S)
 
 
+class _ProbeLid:
+    """Language verdict from the component's own audio encoder (ln_post mean-pool) through a
+    linear head trained offline by core/research/zprobe/lid/lid_probe.py - no extra models."""
+
+    def __init__(self, component, head_path, conf):
+        import numpy as np
+
+        d = np.load(head_path)
+        self._w, self._b = d["w"], float(d["b"][0])
+        self._mu, self._sd = d["mu"], d["sd"]
+        self._labels = [str(x) for x in d["labels"]]
+        self._conf = conf
+        self._c = component
+        self._tap = {}
+        self._hook = None
+        self._base = None
+
+    def verdict(self, wav):
+        import numpy as np
+        import torch
+
+        comp = self._c
+        thinker = comp.model.model.thinker
+        if self._hook is None:
+            self._hook = thinker.audio_tower.ln_post.register_forward_hook(
+                lambda mod, i, o: self._tap.update(v=o.detach()))
+            self._base = comp.model._build_text_prompt(context="", force_language="Korean")
+        inputs = comp.model.processor(text=[self._base], audio=[wav],
+                                      return_tensors="pt", padding=True)
+        inputs = inputs.to(comp._dev).to(torch.bfloat16)
+        with torch.no_grad():
+            thinker(**inputs)
+        e = self._tap["v"].reshape(-1, self._tap["v"].shape[-1]).float().mean(0).cpu().numpy()
+        z = float(np.dot((e - self._mu) / self._sd, self._w) + self._b)
+        p = 1 / (1 + np.exp(-z))
+        lang = self._labels[1] if p > 0.5 else self._labels[0]
+        return lang, max(p, 1 - p) >= self._conf
+
+
 def _continuation(tok, input_ids, seq) -> str:
     hits = (input_ids == tok.convert_tokens_to_ids("<asr_text>")).nonzero()
     start = int(hits[-1]) + 1 if len(hits) else 0
@@ -53,6 +92,13 @@ class ZprobePrefixTranscription(Transcriber):
         "latin_commit_guard": ("latin_commit_guard", bool),
         "wait_token": ("wait_token", bool),
         "lid_slot_reset": ("lid_slot_reset", bool),
+        "lid_backend": ("lid_backend", str),
+        "lid_probe_head": ("lid_probe_head", str),
+        "lid_probe_conf": ("lid_probe_conf", float),
+        "asr_context": ("asr_context", bool),
+        "source_tag": ("source_tag", bool),
+        "asr_context_chars": ("asr_context_chars", int),
+        "asr_context_window_sec": ("asr_context_window_sec", float),
         "lid_profiles": ("lid_profiles", str),
         "lid_window_sec": ("lid_window_sec", float),
         "lid_keep_sec": ("lid_keep_sec", float),
@@ -71,9 +117,14 @@ class ZprobePrefixTranscription(Transcriber):
         self.model = await cache.load(("zprobe-prefix", self.settings["model_path"]), self._build_model)
         self._lid = None
         if self.settings.get("lid_slot_reset"):
-            profiles = self.settings.get("lid_profiles", "models/zprobe/data/lid_phone_profiles.json")
-            self._lid = await cache.load(("fused-lid", profiles),
-                                         lambda: lid.FusedLid.build(profiles))
+            if self.settings.get("lid_backend", "fused") == "probe":
+                head = self.settings.get("lid_probe_head",
+                                         "models/zprobe/data/prefix12/lid_probe_head.npz")
+                self._lid = _ProbeLid(self, head, float(self.settings.get("lid_probe_conf", 0.99)))
+            else:
+                profiles = self.settings.get("lid_profiles", "models/zprobe/data/lid_phone_profiles.json")
+                self._lid = await cache.load(("fused-lid", profiles),
+                                             lambda: lid.FusedLid.build(profiles))
 
     async def _build_model(self):
         import torch
@@ -94,14 +145,16 @@ class ZprobePrefixTranscription(Transcriber):
         self._targets = wanted or [code for code in (primary,) if code]
         if not self._targets:
             raise ValueError("transcription zprobe-prefix needs `targets` or a target language")
-        self._bases = {
-            t: self.model._build_text_prompt(context="", force_language=langs.CODE_TO_NAME.get(t))
-            for t in self._targets
-        }
+        self._base0 = self.model._build_text_prompt(context="", force_language=None)
+        self._suffix = {t: f"language {langs.CODE_TO_NAME.get(t)}<asr_text>" for t in self._targets}
+        self._bases = {t: self._base0 + self._suffix[t] for t in self._targets}
+        self._tag_lang = None
         self._tok = self.model.processor.tokenizer
         self._tok.padding_side = "left"
         self._dev = next(self.model.model.thinker.parameters()).device
         self._fed_samples = 0
+        self.asr_context = ""
+        self._ctx_in_base = ""
         self._reset_utterance()
 
     def _reset_utterance(self) -> None:
@@ -138,6 +191,8 @@ class ZprobePrefixTranscription(Transcriber):
         if self._lid is not None and self._in_speech():
             window = int(float(self.settings.get("lid_window_sec", 2.5)) * audio_mod.SAMPLING_RATE)
             verdict, agree = self._lid.verdict(self._wav[-window:])
+            if verdict:
+                self._tag_lang = verdict
             if verdict and agree and self._slot_lang is None:
                 self._slot_lang = verdict
             elif verdict and agree and verdict != self._slot_lang:
@@ -231,6 +286,16 @@ class ZprobePrefixTranscription(Transcriber):
             if tail.shape[0] == 0 or float(abs(tail).max()) < 0.012:
                 flush = False
         no_repeat = int(self.settings.get("no_repeat", 4))
+        if self.settings.get("asr_context"):
+            cap = int(self.settings.get("asr_context_chars", 320))
+            ctx = (self.asr_context or "")[-cap:]
+            if ctx != self._ctx_in_base:
+                self._base0 = self.model._build_text_prompt(context=ctx, force_language=None)
+                self._ctx_in_base = ctx
+        tag = ""
+        if self.settings.get("source_tag") and self._tag_lang:
+            tag = f"speech {langs.CODE_TO_NAME.get(self._tag_lang)} "
+        self._bases = {t: self._base0 + tag + self._suffix[t] for t in self._targets}
         texts = [self._bases[t] + self._raw[t] for t in self._targets]
         inputs = self.model.processor(
             text=texts, audio=[self._wav] * len(texts),

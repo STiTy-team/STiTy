@@ -25,13 +25,17 @@ RULES = ("English: natural spoken English a simultaneous interpreter would actua
          "translation of the whole sentence is given: redistribute THAT translation into source-order "
          "additions, rephrasing only as much as the source order forces; do not introduce content the "
          "reference does not have.\n"
-         "Two priorities, in this order:\n"
+         "Three priorities, in this order:\n"
          "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, "
          "or content word whose source appears only in a later phrase.\n"
-         "2. Naturalness: the additions read, joined together, as one fluent English sentence. Additions "
-         "before the last must stay syntactically open - no sentence-final period. When emitting a phrase's "
-         "content right away would force stiff phrasing, leave that addition \"\" (wait) and fold the content "
-         "naturally into the NEXT addition instead. Waiting is always allowed; fillers and stiffness are not.")
+         "2. Earliness: emit each phrase's content in its own addition whenever a faithful, grammatical "
+         "continuation exists - a simultaneous interpreter speaks as soon as speaking is safe. Leave an "
+         "addition \"\" (wait) ONLY when rendering the phrase's content would require information that "
+         "appears in a later phrase (a pending verb, negation, or head noun); then fold it into the NEXT "
+         "addition. An empty addition whose content could have been emitted is an error, as bad as lookahead.\n"
+         "3. Naturalness: the additions read, joined together, as one fluent English sentence. Additions "
+         "before the last must stay syntactically open - no sentence-final period. Plain phrasing is "
+         "acceptable; fillers and ungrammatical joins are not.")
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--pieces", default="models/zprobe/data/connective_en/pieces1.jsonl")
@@ -84,13 +88,43 @@ spent = 0.0
 lock = threading.Lock()
 
 
-def leaked(adds, hy_row):
+_gtx_cache = {}
+_gtx_lock = threading.Lock()
+
+
+def _gtx_prefix_content(row, i):
+    key = (row["sid"], i)
+    with _gtx_lock:
+        if key in _gtx_cache:
+            return _gtx_cache[key]
+    import urllib.parse
+    import urllib.request
+    q = urllib.parse.quote(" ".join(row["phrases"][: i + 1]))
+    url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q={q}"
+    words = set()
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(url, timeout=10) as resp:
+                parts = json.loads(resp.read().decode())[0] or []
+                words = content(" ".join(p[0] for p in parts if p and p[0]), "en")
+                break
+        except Exception:  # noqa: BLE001
+            time.sleep(2 * (attempt + 1))
+    with _gtx_lock:
+        _gtx_cache[key] = words
+    return words
+
+
+def leaked(adds, hy_row, row=None):
     full = content(hy_row.get("full") or "", "en")
     for i_s, hp in hy_row.items():
         if i_s == "full" or not hp:
             continue
         have = content(hp, "en")
         extra = sorted(content(" ".join(adds[: int(i_s) + 1]), "en") - have & full)
+        if extra and row is not None:
+            known = _gtx_prefix_content(row, int(i_s))
+            extra = [w for w in extra if w not in known]
         if extra:
             return extra
     return []
@@ -136,7 +170,7 @@ def check(row, adds):
     for x in body[:-1]:
         if re.search(r"[.!?]$", x):
             return f"addition before the end closes the sentence: {x!r}"
-    extra = leaked(adds, hy.get(row["sid"]) or {})
+    extra = leaked(adds, hy.get(row["sid"]) or {}, row)
     if extra:
         return ("these words are said before their source phrase has been heard (no-lookahead violation): "
                 + ", ".join(extra) + " - move them to the addition of the phrase that contains them")

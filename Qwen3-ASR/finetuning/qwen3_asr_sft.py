@@ -105,7 +105,9 @@ def load_audio(path: str, sr: int = 16000):
     parts = []
     for p in path.split("|"):
         p, _, frag = p.partition("#end=")
-        wav, _ = librosa.load(p, sr=sr, mono=True, duration=float(frag) if frag else None)
+        p, _, start = p.partition("#start=")
+        wav, _ = librosa.load(p, sr=sr, mono=True, offset=float(start) if start else 0.0,
+                              duration=(float(frag) - (float(start) if start else 0.0)) if frag else None)
         parts.append(wav)
     return parts[0] if len(parts) == 1 else np.concatenate(parts)
 

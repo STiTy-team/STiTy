@@ -32,7 +32,7 @@ SHORT = {"ko": "8 words", "ja": "20 characters", "zh": "20 characters"}
 
 PROMPT = """Make English live subtitles for the {lang} sentence below, in the order it is spoken.
 Split the {lang} sentence into chunks that a live subtitler would commit one after another, and write one English piece per chunk.
-- Use 1 chunk if the sentence is short (under about {short}); otherwise use 2 or 3 chunks (4 only for a very long sentence). Cut only where the part so far
+{density} Cut only where the part so far
   can already be translated: after a clause, after a phrase ending in a particle or connective, or at a comma. Never cut inside a word.
 - The chunks joined in order must give back the {lang} sentence exactly (same characters, same order, nothing left out).
 - English piece i may only use what was said up to chunk i. NEVER put anything from a later chunk into an earlier piece:
@@ -106,8 +106,16 @@ def resplit(chunks, src):
     return out if len(out) == len(chunks) and all(out) else None
 
 
+FINE = False
+DENSITY_COARSE = ("Use 1 chunk if the sentence is short (under about {short}); otherwise use 2 or 3 chunks "
+                  "(4 only for a very long sentence).")
+DENSITY_FINE = ("Cut into short consecutive phrases - a typical sentence gets 4 to 6 chunks; a short sentence "
+                "(under about {short}) may use fewer. Each chunk should be a small phrase, not a clause.")
+CHUNK_CAP = 4
+
+
 def check(chunks, pieces, sent):
-    if not chunks or len(chunks) != len(pieces) or len(chunks) > 4 or not all(c.strip() and p.strip() for c, p in zip(chunks, pieces)):
+    if not chunks or len(chunks) != len(pieces) or len(chunks) > CHUNK_CAP or not all(c.strip() and p.strip() for c, p in zip(chunks, pieces)):
         return "format"
     if resplit(chunks, sent["src"]) is None:
         return "chunks_not_source"
@@ -174,7 +182,8 @@ def pieces(a):
     rows.sort(key=lambda r: len(r["src"]))
 
     def msg(r, err, keep):
-        c = PROMPT.format(lang=LANG[r["lang"]][1], short=SHORT[r["lang"]], src=r["src"], ref=r["ref"])
+        density = (DENSITY_FINE if FINE else DENSITY_COARSE).format(short=SHORT[r["lang"]])
+        c = PROMPT.format(lang=LANG[r["lang"]][1], short=SHORT[r["lang"]], src=r["src"], ref=r["ref"], density=density)
         if keep:
             c += "\n\nUse exactly these chunks: " + json.dumps(r["chunks"], ensure_ascii=False)
         if err:
@@ -345,5 +354,9 @@ if __name__ == "__main__":
     ap.add_argument("--manifest"); ap.add_argument("--pieces"); ap.add_argument("--hy"); ap.add_argument("--aligned")
     ap.add_argument("--base"); ap.add_argument("--wav_dir"); ap.add_argument("--out")
     ap.add_argument("--batch", type=int, default=16); ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--fine", action="store_true", help="short-phrase chunking (4-6/sentence, cap 8) for the prefix13 x->en expansion")
     a = ap.parse_args()
+    if a.fine:
+        FINE = True
+        CHUNK_CAP = 8
     {"manifest": manifest, "pieces": pieces, "hyprefix": hyprefix, "align": align, "build": build}[a.mode](a)

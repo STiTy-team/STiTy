@@ -3,7 +3,7 @@ from dataclasses import replace
 from core.utils import dedup, timing
 
 from . import transcribers
-from ..registry import Folded, Speech, Transcribed, Translated
+from ..registry import Folded, Partial, Speech, Transcribed, Translated
 from .base import Transcriber
 
 
@@ -45,6 +45,8 @@ class BrigTranscription(Transcriber):
     def start(self, languages: list[str] | None = None, *, target_lang: str = "",
               vad=None, **_) -> None:
         self._transcript: list[tuple[float, str]] = []
+        self._ctx_rows: list[tuple[float, str]] = []
+        self._ctx_partial = ""
         self._recent: list[Translated] = []
         self._asr.start(languages, target_lang=target_lang, vad=vad)
         self._adapter.start(languages, target_lang=target_lang, vad=vad)
@@ -69,14 +71,30 @@ class BrigTranscription(Transcriber):
         return heard + folds + produced
 
     def _absorb(self, heard: list) -> list:
+        partials = [item for item in heard if isinstance(item, Partial)]
+        if partials:
+            self._ctx_partial = partials[-1].text
         arrived = [item for item in heard if isinstance(item, Transcribed)]
         if not arrived:
+            self._feed_context()
             return []
         for item in arrived:
             self._transcript.append((item.decision_audio_sec, dedup.norm(item.original)))
+            self._ctx_rows.append((item.decision_audio_sec, item.original))
+            self._ctx_partial = ""
         horizon = arrived[-1].decision_audio_sec - dedup.MATCH_WINDOW_BACK_SEC * 2
         self._transcript = [row for row in self._transcript if row[0] >= horizon]
+        self._ctx_rows = [row for row in self._ctx_rows
+                          if row[0] >= arrived[-1].decision_audio_sec
+                          - float(self._adapter.settings.get("asr_context_window_sec", 12.0))]
+        self._feed_context()
         return self._refold()
+
+    def _feed_context(self) -> None:
+        if not self._adapter.settings.get("asr_context"):
+            return
+        pieces = [t for _, t in self._ctx_rows] + ([self._ctx_partial] if self._ctx_partial else [])
+        self._adapter.asr_context = " ".join(p.strip() for p in pieces if p.strip())
 
     def _route(self, produced: list) -> list:
         keep_sec = float(self.settings.get("keep_recent_sec",
