@@ -1,6 +1,7 @@
 #!/bin/bash
 # prefix13: source-language tag (probe-LID verdict semantics) + transcription track sized to the
-# translation track + the prefix12 axes (terra-fine x->en labels, ASR-context prompt, reset-tail).
+# translation track + terra-fine x->en labels + reset-tail rows. No ASR-context prompt anywhere -
+# the single-mast direction trains both tasks as pure listening (system slot stays empty).
 # Runs the GPU stages the labeling machine could not: word alignment -> Hy prefixes for the luna
 # rechunk -> terra adds for it (API, LETSUR_API_KEY) -> aligned/corpus build -> SFT -> merge ->
 # LID head refit on the merged encoder (the LoRA moves audio_tower, so the head must be refit per
@@ -62,7 +63,7 @@ echo "$(date '+%F %T') P13S MARK corpus"
   --aligned models/zprobe/data/prefix13/aligned.jsonl \
   --out models/zprobe/data/prefix13/train_base.jsonl || { echo P13S_FAIL base; exit 1; }
 [ -f models/zprobe/data/train_prefix13.jsonl ] || \
-.venv/bin/python core/research/zprobe/labels/build_prefix13.py || { echo P13S_FAIL corpus; exit 1; }
+.venv/bin/python core/research/zprobe/labels/build_prefix13.py --no-context || { echo P13S_FAIL corpus; exit 1; }
 .venv/bin/python - <<'PYEOF'
 import json
 import os
@@ -107,7 +108,7 @@ PYTHONPATH=Qwen3-ASR .venv/bin/python -u core/research/zprobe/lid/lid_probe.py \
   --model models/zprobe/merged/prefix13_full --skip-fused \
   --head-out models/zprobe/data/prefix13/lid_probe_head.npz || echo P13S_FAIL headrefit
 
-for CFG in brig.koen+prefix13-lidreset brig.koen+prefix13-ctx-lidreset brig.koen+prefix13-ctx-probelid; do
+for CFG in brig.koen+prefix13-lidreset brig.koen+prefix13-probelid; do
   KO=bench/runs/northstar_ko+en-ko@v2/$CFG
   EN=bench/runs/northstar_ko+en-en@v2/$CFG
   echo "$(date '+%F %T') P13S MARK bench $CFG"
@@ -126,9 +127,8 @@ import json
 print("| run | COMET | LongYAAL |")
 for label, cfg in [
     ("v10ts (직전 SFT)", "brig.koen+prefix10ts-lidreset"),
-    ("prefix13 (태그, ctx 끔)", "brig.koen+prefix13-lidreset"),
-    ("prefix13 (태그+ctx)", "brig.koen+prefix13-ctx-lidreset"),
-    ("prefix13 (태그+ctx+탐침LID)", "brig.koen+prefix13-ctx-probelid"),
+    ("prefix13 (태그)", "brig.koen+prefix13-lidreset"),
+    ("prefix13 (태그+탐침LID)", "brig.koen+prefix13-probelid"),
     ("ceren+lid (기준선)", "brig.koen+grpoceren-lidreset"),
 ]:
     for tgt in ("ko", "en"):
@@ -138,6 +138,6 @@ for label, cfg in [
             print(f"| {label} {tgt} | {m.get('comet', 0):.3f} | {m.get('longyaal_ms', 0):.0f} |")
         except FileNotFoundError:
             print(f"| {label} {tgt} | 없음 |")
-print("판독: ① en 지연 1500대(잘게+선방출 라벨) ② 전사/번역 모드 분리 효과 ③ ctx 어휘 교정 ④ 탐침 LID 접기·리셋")
+print("판독: ① en 지연 1500대(잘게+선방출 라벨) ② 전사/번역 모드 분리 — 같은언어 WER vs qwen-seg WER(단일 돛대 거리) ③ 탐침 LID 접기·리셋")
 PYEOF
 echo "P13S_DONE $(date '+%F %T')"
