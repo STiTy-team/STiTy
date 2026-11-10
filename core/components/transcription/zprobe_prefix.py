@@ -286,16 +286,21 @@ class ZprobePrefixTranscription(Transcriber):
             if tail.shape[0] == 0 or float(abs(tail).max()) < 0.012:
                 flush = False
         no_repeat = int(self.settings.get("no_repeat", 4))
+        base_ctx = self._base0
         if self.settings.get("asr_context"):
             cap = int(self.settings.get("asr_context_chars", 320))
             ctx = (self.asr_context or "")[-cap:]
             if ctx != self._ctx_in_base:
-                self._base0 = self.model._build_text_prompt(context=ctx, force_language=None)
+                self._ctx_base = self.model._build_text_prompt(context=ctx, force_language=None)
                 self._ctx_in_base = ctx
+            base_ctx = getattr(self, "_ctx_base", self._base0)
         tag = ""
         if self.settings.get("source_tag") and self._tag_lang:
             tag = f"speech {langs.CODE_TO_NAME.get(self._tag_lang)} "
-        self._bases = {t: self._base0 + tag + self._suffix[t] for t in self._targets}
+        self._bases = {
+            t: (self._base0 if t == self._tag_lang else base_ctx) + tag + self._suffix[t]
+            for t in self._targets
+        }
         texts = [self._bases[t] + self._raw[t] for t in self._targets]
         inputs = self.model.processor(
             text=texts, audio=[self._wav] * len(texts),

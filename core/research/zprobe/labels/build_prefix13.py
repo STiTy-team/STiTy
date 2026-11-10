@@ -10,7 +10,10 @@ transcription track sized to the translation track.
   transcription ko-ko / en-en streaming rows (cond = transcript prefix, text = continuation, plus
                 full rows) cut at eojeol boundaries from word_times, sources FLEURS ko/en + kspon +
                 DailyTalk, scaled to --transcribe-ratio x the translation delta rows and balanced
-                50:50 ko/en. The same-mast transcription task: speech X language X.
+                50:50 ko/en. The single-mast transcription task: speech X language X. NO context on
+                these rows - the system-slot ASR text would be the answer's own prefix (label leak),
+                and the single-mast target has no ASR text to lean on; transcription is trained as
+                pure listening. Translation rows keep the context (a transform task, not a leak).
   context/reset as build_prefix12 (ASR-frontier prompt, reset-tail rows).
 
 expects: prefix13/aligned.jsonl (build_prefix13_aligned.py) and prefix13/train_base.jsonl
@@ -291,7 +294,7 @@ if not a.no_transcribe:
                                   "text": (" " if j else "") + cont, "pair": f"{lg}-{lg}"})
             for row in rows_here:
                 parts = parse_audio(row["audio"])
-                row["prompt"] = "" if a.no_context else (frontier_text(parts, a.lag_sec) or "")
+                row["prompt"] = ""
                 tag = tag_of(lg, parts)
                 if tag and tag != lg:
                     stats["tag_wrong"] += 1
