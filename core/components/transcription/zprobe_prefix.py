@@ -47,6 +47,7 @@ class ZprobePrefixTranscription(Transcriber):
         "lid_profiles": ("lid_profiles", str),
         "lid_window_sec": ("lid_window_sec", float),
         "lid_keep_sec": ("lid_keep_sec", float),
+        "flush_keep_sec": ("flush_keep_sec", float),
     }
 
     model = None
@@ -180,7 +181,8 @@ class ZprobePrefixTranscription(Transcriber):
 
     async def finish(self, reason: str = "finish", speech: Speech | None = None) -> list:
         if speech is not None:
-            cut = int(max(0.0, speech.silence_waited_out_sec - 0.1) * audio_mod.SAMPLING_RATE)
+            keep = float(self.settings.get("flush_keep_sec", 0.1))
+            cut = int(max(0.0, speech.silence_waited_out_sec - keep) * audio_mod.SAMPLING_RATE)
             if 0 < cut < self._wav.shape[0]:
                 self._wav = self._wav[: self._wav.shape[0] - cut]
         if self._wav.shape[0] == 0 or (not any(self._raw.values()) and not self._has_speech()):
