@@ -44,6 +44,7 @@ ap.add_argument("--sil_sec", type=float, default=2.0); ap.add_argument("--kappa"
 ap.add_argument("--noise_frac", type=float, default=0.0, help="fraction of utterances rolled out with a speech-shaped noise tail (a crop from --noise_dir) - the VAD-open state where the torture-set gap emissions fire; a gaussian silence tail never visits it. Drawn before --sil_frac from the same roll")
 ap.add_argument("--noise_dir", default="models/zprobe/data/noise9x")
 ap.add_argument("--kspon_utts", type=int, default=0, help="conversational ko-ko rollouts from the KsponSpeech training jsonl - the register where the passthrough substitutions happen, which FLEURS read speech never visits")
+ap.add_argument("--source_tag", type=int, default=0, help="prefix13+: prepend the source-language tag (speech X) the SFT format carries - rollouts must match the policy's training prompt")
 ap.add_argument("--koko_cap", type=int, default=-1, help="cap on the FLEURS ko-ko utterances AFTER the even per-pair split (-1 = no cap). The transcription-reward share of the pool is the knob the CER/COMET trade rides on; --pairs splits evenly so this is the only way below one share per pair")
 ap.add_argument("--kspon_jsonl", default="Qwen3-ASR/finetuning/data/KSponSpeech/train_and_val.jsonl")
 ap.add_argument("--kspon_wav", default="/home/mobility/stity-datasets/ksponspeech/data/wav16k")
@@ -53,6 +54,15 @@ ap.add_argument("--dailytalk_jsonl", default="Qwen3-ASR/finetuning/data/DailyTal
 ap.add_argument("--dailytalk_wav", default="Qwen3-ASR/finetuning/data/DailyTalk/audio")
 a = ap.parse_args(); os.makedirs(a.out, exist_ok=True); random.seed(0); torch.manual_seed(0)
 dev = "cuda"
+
+
+def base_for(u):
+    b = pol._build_text_prompt(context="", force_language=P.LANGS[u["tgt"]][1])
+    if a.source_tag:
+        src = u["pair"].split("-")[0]
+        b = b.replace(f"language {P.LANGS[u['tgt']][1]}",
+                      f"speech {P.LANGS[src][1]} language {P.LANGS[u['tgt']][1]}", 1)
+    return b
 
 
 def wrong_script(text, tgt):
@@ -146,7 +156,7 @@ def rollout(u, wav, dur_real=None):
     count toward the hallucination share."""
     sr = 16000; dur = len(wav) / sr
     dur_real = dur_real or dur
-    base = pol._build_text_prompt(context="", force_language=P.LANGS[u["tgt"]][1])
+    base = base_for(u)
     raw, recs, times = "", [], []
     t = min(a.first, dur)
     while True:
@@ -178,7 +188,7 @@ def rollout(u, wav, dur_real=None):
 
 def offline(u, wav):
     """Greedy full-audio decode: the anchor each group is scored against (reward only, no gradient)."""
-    base = pol._build_text_prompt(context="", force_language=P.LANGS[u["tgt"]][1])
+    base = base_for(u)
     inp = inputs_for(wav, base, "")
     with torch.no_grad():
         o = pol.model.generate(**inp, max_new_tokens=160, do_sample=False, pad_token_id=tok.eos_token_id)
@@ -249,7 +259,7 @@ for step in range(1, a.steps + 1):
         if mc >= 0.7 and u in hard:
             hard.remove(u)
         pol.model.train()
-        base = pol._build_text_prompt(context="", force_language=P.LANGS[u["tgt"]][1])
+        base = base_for(u)
         ntok = sum(len(r["toks"]) for recs, _, _, _ in outs for r in recs) or 1
         for g, (recs, _, _, _) in enumerate(outs):
             if abs(adv[g]) < 1e-6:
