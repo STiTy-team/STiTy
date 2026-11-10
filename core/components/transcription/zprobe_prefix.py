@@ -18,7 +18,6 @@ EOS_TOKENS = (151645, 151643)
 SPECIAL = re.compile(r"<\|[^<>|]+\|>")
 WAIT = "<WAIT>"
 REPEAT_TEMPLATE = r"((.{1,12}?))(?:\2){%d,}"
-SENTENCE_HEAD = re.compile(r"^.*?[.!?…](?=\s|$)", re.S)
 
 
 def _continuation(tok, input_ids, seq) -> str:
@@ -40,15 +39,8 @@ class ZprobePrefixTranscription(Transcriber):
         "first_sec": ("first_sec", float),
         "max_new_tokens": ("max_new_tokens", int),
         "no_repeat": ("no_repeat", int),
-        "max_utterance_sec": ("max_utterance_sec", float),
         "seg_reset": ("seg_reset", bool),
         "seg_keep_sec": ("seg_keep_sec", float),
-        "stall_flush_sec": ("stall_flush_sec", float),
-        "flush_min_new": ("flush_min_new", int),
-        "flush_allow_eos": ("flush_allow_eos", bool),
-        "flush_max_new": ("flush_max_new", int),
-        "flush_sentence_cut": ("flush_sentence_cut", bool),
-        "flush_needs_speech": ("flush_needs_speech", bool),
         "repeat_cap": ("repeat_cap", int),
         "latin_commit_guard": ("latin_commit_guard", bool),
         "wait_token": ("wait_token", bool),
@@ -108,7 +100,6 @@ class ZprobePrefixTranscription(Transcriber):
         self._wav = self._np.empty(0, dtype=self._np.float32)
         self._raw = {t: "" for t in self._targets}
         self._decoded_samples = 0
-        self._last_emit_samples = 0
         self._slot_lang = None
 
     def _in_speech(self) -> bool:
@@ -126,11 +117,6 @@ class ZprobePrefixTranscription(Transcriber):
         self._wav = self._np.concatenate([self._wav, audio_mod.from_pcm_bytes(audio)])
         if not any(self._raw.values()) and not self._in_speech():
             return []
-        cap = float(self.settings.get("max_utterance_sec", 14.0))
-        if self._wav.shape[0] >= int(cap * audio_mod.SAMPLING_RATE):
-            out = self._emit(self._decode(final=True), "cap")
-            self._reset_utterance()
-            return out
         step = int(float(self.settings.get("step_sec", 0.5)) * audio_mod.SAMPLING_RATE)
         first = int(float(self.settings.get("first_sec", 1.0)) * audio_mod.SAMPLING_RATE)
         if self._wav.shape[0] < first or self._wav.shape[0] - self._decoded_samples < step:
@@ -153,10 +139,7 @@ class ZprobePrefixTranscription(Transcriber):
                     log.info("[SLOT-RESET] cause=lid from=%s to=%s keep_sec=%.1f",
                              prev, verdict, keep / audio_mod.SAMPLING_RATE)
                     return out
-        stall = float(self.settings.get("stall_flush_sec", 0) or 0)
-        force = bool(stall) and (self._wav.shape[0] - self._last_emit_samples
-                                 >= int(stall * audio_mod.SAMPLING_RATE))
-        added = self._decode(final=False, force=force)
+        added = self._decode(final=False)
         driver = added[self._targets[0]]
         if self.settings.get("seg_reset") and "<SEG>" in driver \
                 and (self._raw[self._targets[0]] or driver.split("<SEG>")[0].strip()):
@@ -182,8 +165,7 @@ class ZprobePrefixTranscription(Transcriber):
                 self._wav = self._wav[: self._wav.shape[0] - cut]
         if self._wav.shape[0] == 0 or (not any(self._raw.values()) and not self._has_speech()):
             return []
-        allow_eos = bool(self.settings.get("flush_allow_eos")) and reason == "finish"
-        return self._emit(self._decode(final=True, allow_eos=allow_eos), reason)
+        return self._emit(self._decode(final=True), reason)
 
     def _latin_blocked(self, target: str, added: str) -> bool:
         if not self.settings.get("latin_commit_guard") or target != "ko":
@@ -193,7 +175,6 @@ class ZprobePrefixTranscription(Transcriber):
 
     def _emit(self, added: dict[str, str], reason: str) -> list:
         out = []
-        driver_emitted = False
         for target in self._targets:
             text = added.get(target, "")
             if self._latin_blocked(target, text):
@@ -203,8 +184,6 @@ class ZprobePrefixTranscription(Transcriber):
             shown = re.sub(r"\s+", " ", shown)
             if not shown:
                 continue
-            if target == self._targets[0]:
-                driver_emitted = True
             elapsed = round(timing.elapsed() or 0.0, 4)
             out.append(Translated(
                 original=shown,
@@ -216,20 +195,13 @@ class ZprobePrefixTranscription(Transcriber):
                 committed_elapsed_sec=elapsed,
                 translated_elapsed_sec=elapsed,
             ))
-        if driver_emitted:
-            self._last_emit_samples = self._wav.shape[0]
         return out
 
     @timing.measure("decode")
-    def _decode(self, *, final: bool, force: bool = False, allow_eos: bool = False) -> dict[str, str]:
+    def _decode(self, *, final: bool) -> dict[str, str]:
         import torch
 
         self._decoded_samples = self._wav.shape[0]
-        flush = final or force
-        if flush and self.settings.get("flush_needs_speech"):
-            tail = self._wav[self._last_emit_samples:]
-            if tail.shape[0] == 0 or float(abs(tail).max()) < 0.012:
-                flush = False
         no_repeat = int(self.settings.get("no_repeat", 4))
         texts = [self._bases[t] + self._raw[t] for t in self._targets]
         inputs = self.model.processor(
@@ -238,12 +210,8 @@ class ZprobePrefixTranscription(Transcriber):
         prompt_len = inputs["input_ids"].shape[1]
         with torch.no_grad():
             o = self.model.model.generate(
-                **inputs, max_new_tokens=(min(int(self.settings.get("max_new_tokens", 120)),
-                                              int(self.settings.get("flush_max_new", 0) or 10**9))
-                                          if flush else int(self.settings.get("max_new_tokens", 120))),
-                no_repeat_ngram_size=None if flush else (no_repeat or None),
-                min_new_tokens=(None if allow_eos or self.settings.get("wait_token")
-                                else (int(self.settings.get("flush_min_new", 2)) or None)) if flush else None,
+                **inputs, max_new_tokens=int(self.settings.get("max_new_tokens", 120)),
+                no_repeat_ngram_size=None if final else (no_repeat or None),
                 do_sample=False, pad_token_id=self._tok.eos_token_id)
         seq = o.sequences if hasattr(o, "sequences") else o
         outs = {}
@@ -266,9 +234,5 @@ class ZprobePrefixTranscription(Transcriber):
             cap = int(self.settings.get("repeat_cap", 0) or 0)
             if cap:
                 txt = re.sub(REPEAT_TEMPLATE % cap, lambda m: m.group(1) * cap, txt, flags=re.S)
-            if flush and self.settings.get("flush_sentence_cut"):
-                m = SENTENCE_HEAD.search(txt)
-                if m:
-                    txt = m.group(0)
             outs[target] = txt if self.settings.get("seg_reset") else txt.replace("<SEG>", "")
         return outs
