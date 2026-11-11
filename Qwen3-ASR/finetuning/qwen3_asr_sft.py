@@ -251,6 +251,32 @@ class DataCollatorForQwen3ASRFinetuning:
         return result
 
 
+@dataclass
+class LazyFeaturesCollator:
+    """Build the batch from raw jsonl rows at training time instead of a cached map().
+
+    The eager path stores every row's mel spectrogram (128 bins x 100 frames/s, as float64 lists)
+    in the datasets cache - about 0.7 MB per row, 80-125 GB for a 100-200k-row corpus, and a
+    multi-hour map() before the first step. Here the rows stay as paths and text; each batch
+    runs the same preprocess function and then the same padding collator, so the tensors the
+    model sees are identical. The per-batch CPU work (audio load + mel) is a few tens of ms,
+    hidden behind a multi-second GPU step; use --num_workers to overlap it if it is not.
+    """
+    preprocess: Any
+    inner: DataCollatorForQwen3ASRFinetuning
+
+    def __call__(self, rows: List[Dict[str, Any]]) -> Dict[str, torch.Tensor]:
+        return self.inner([self.preprocess(r) for r in rows])
+
+
+def _align_columns(ds, like):
+    """Give `ds` exactly the columns of `like` (missing ones empty) so the two can be concatenated."""
+    for col in like.column_names:
+        if col not in ds.column_names:
+            ds = ds.add_column(col, [""] * len(ds))
+    return ds.select_columns(like.column_names)
+
+
 def preprocess_logits_for_metrics(logits, labels):
     """메모리 절약: 전체 logits 대신 argmax token id만 보관."""
     if isinstance(logits, tuple):
@@ -443,6 +469,9 @@ def parse_args():
     p.add_argument("--attn_impl", type=str, default="sdpa",
                    choices=["sdpa", "flash_attention_2", "eager"],
                    help="attention 구현 (sdpa 권장, eager는 느림)")
+    p.add_argument("--lazy_features", type=int, default=1,
+                   help="1 = 멜 스펙트로그램을 캐시에 저장하지 않고 배치를 만들 때 계산한다 (map 단계·수십~백 GB 캐시 없음). "
+                        "0 = 예전처럼 map() 에서 전부 미리 계산해 datasets 캐시에 둔다.")
     p.add_argument("--group_by_length", type=int, default=1,
                    help="유사 길이끼리 배치(패딩 낭비 감소). 1=on")
     p.add_argument("--load_best", type=int, default=1,
@@ -547,21 +576,25 @@ def main():
                 lambda ex, b=_base: {"audio": resolve_audio(ex["audio"], b)}
             )
 
-    ds = raw_ds.map(
-        make_preprocess_fn_with_features(processor, sampling_rate=args_cli.sr),
-        remove_columns=raw_ds["train"].column_names,
-    )
+    preprocess_fn = make_preprocess_fn_with_features(processor, sampling_rate=args_cli.sr)
+    lazy = bool(args_cli.lazy_features)
+    if lazy:
+        # rows stay as paths + text; LazyFeaturesCollator runs preprocess_fn per batch
+        ds = raw_ds
+        print("[lazy_features] no feature cache - audio is loaded and featurised in the collator")
+    else:
+        ds = raw_ds.map(preprocess_fn, remove_columns=raw_ds["train"].column_names)
 
     if args_cli.silence_samples > 0:
         default_prompt = raw_ds["train"][0].get("prompt", "") if len(raw_ds["train"]) > 0 else ""
-        preprocess_fn = make_preprocess_fn_with_features(processor, sampling_rate=args_cli.sr)
 
         silence_jsonl = generate_silence_dataset(
             args_cli.silence_samples, args_cli.silence_dir, args_cli.sr, prompt=default_prompt
         )
         silence_raw = load_dataset("json", data_files={"train": silence_jsonl})
-        silence_ds = silence_raw.map(preprocess_fn, remove_columns=silence_raw["train"].column_names)
-        ds["train"] = concatenate_datasets([ds["train"], silence_ds["train"]]).shuffle(seed=42)
+        silence_ds = silence_raw if lazy else silence_raw.map(preprocess_fn, remove_columns=silence_raw["train"].column_names)
+        sil_train = _align_columns(silence_ds["train"], ds["train"]) if lazy else silence_ds["train"]
+        ds["train"] = concatenate_datasets([ds["train"], sil_train]).shuffle(seed=42)
         print(f"[silence] train: {len(ds['train'])}개 "
               f"(원본 {len(ds['train']) - args_cli.silence_samples} + 무음 {args_cli.silence_samples})")
 
@@ -576,12 +609,15 @@ def main():
                 prompt=default_prompt,
             )
             val_silence_raw = load_dataset("json", data_files={"train": val_silence_jsonl})
-            val_silence_ds = val_silence_raw.map(preprocess_fn, remove_columns=val_silence_raw["train"].column_names)
-            ds["validation"] = concatenate_datasets([ds["validation"], val_silence_ds["train"]]).shuffle(seed=42)
+            val_silence_ds = val_silence_raw if lazy else val_silence_raw.map(preprocess_fn, remove_columns=val_silence_raw["train"].column_names)
+            val_sil = _align_columns(val_silence_ds["train"], ds["validation"]) if lazy else val_silence_ds["train"]
+            ds["validation"] = concatenate_datasets([ds["validation"], val_sil]).shuffle(seed=42)
             print(f"[silence] val:   {len(ds['validation'])}개 "
                   f"(원본 {len(ds['validation']) - val_silence_n} + 무음 {val_silence_n})")
 
     collator = DataCollatorForQwen3ASRFinetuning(processor=processor)
+    if lazy:
+        collator = LazyFeaturesCollator(preprocess=preprocess_fn, inner=collator)
 
     training_args = TrainingArguments(
         output_dir=args_cli.output_dir,
