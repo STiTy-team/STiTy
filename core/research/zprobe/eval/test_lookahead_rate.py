@@ -56,3 +56,27 @@ def test_run_dir_end_to_end(tmp_path):
     assert (res["pieces"], res["judged"], res["unjudged"]) == (3, 2, 1)
     saved = json.loads((tmp_path / "lookahead.json").read_text())
     assert (saved["pieces"], saved["judged"], saved["unjudged"], saved["grace"]) == (3, 2, 1, 2.0)
+
+
+def test_heard_uses_pad():
+    from lookahead_rate import PAD
+    assert PAD == 0.2
+    assert heard_words(AL, 1.0, SEG, PAD) == ["a"]  # b ends at 1.0, heard from 1.2
+    assert heard_words(AL, 1.2, SEG, PAD) == ["a", "b"]
+
+
+def test_known_is_cumulative_over_prefixes(tmp_path, monkeypatch):
+    # prefix "a" translates to "manager", prefix "a b" to "boss approved": manag stays known at 2 words
+    import json
+    import types
+    from lookahead_rate import run_dir
+    tr = {"a": "manager", "a b": "boss approved", "a b c": "the manager approved the budget"}
+    fake = types.SimpleNamespace(load_model=lambda: (None, None, None, None),
+                                 translate=lambda reqs, *a: [tr[t] for t, _, _ in reqs])
+    monkeypatch.setitem(sys.modules, "hy_word_prefixes", fake)
+    segs = [{"offset": 0.0, "duration": 2.0, "src_lang": "ko", "transcript": "a b c"}]
+    rec = {"type": "translated", "target_lang": "en", "translation": "manager approved", "decision_audio_sec": 1.25}
+    item = {"id": "s1", "reference_segmentation": segs, "reference_alignment": AL, "records": [rec]}
+    (tmp_path / "items.jsonl").write_text(json.dumps(item) + "\n")
+    res = run_dir(str(tmp_path), "en", grace=0.0)
+    assert res["judged"] == 1 and res["violations"] == 0

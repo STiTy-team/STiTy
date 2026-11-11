@@ -4,12 +4,15 @@ could not have heard yet.
 Definition. Only pieces with type == "translated" and target_lang == --target are used. A piece is judged only when
 its decision_audio_sec falls inside a reference segment whose src_lang != target (a cross-language segment);
 otherwise it is "unjudged". For a judged piece at time t in segment S:
-  heard  = alignment words with end <= t lying inside S [offset, offset+duration]
-  known  = content(translation into target of " ".join(heard), target)
+  heard  = alignment words with end + PAD <= t lying inside S [offset, offset+duration] (PAD = 0.2 s, the
+           same alignment margin build_prefix14 uses for training rows)
+  known  = union over j = 1..len(heard) of content(translation of the first j heard words, target) - the
+           cumulative set schedule_gate/hy_word_prefixes.known_sets uses, so a stem that a shorter prefix
+           translation already had stays known even if a longer prefix is translated differently
   full   = content(translation into target of S.transcript, target)
   piece_content = content(piece.translation, target)
   violation = bool((piece_content - known) & full)
-Translation is Hy-MT2 (hy_word_prefixes.load_model/translate), cached by (segment index, number of heard words).
+Translation is Hy-MT2 (hy_word_prefixes.load_model/translate), cached by (segment index, prefix length).
 --no-hy: known/full use the SOURCE words themselves (crude same-script fallback, only to exercise the pipeline).
 
 Window: a piece belongs to the segment with offset <= t < min(next segment offset, end + grace); --grace (default 2.0 s)
@@ -27,12 +30,23 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "labels"))
 
+PAD = 0.2  # = build_prefix14.PAD: a word counts as heard only from its end + PAD
 
-def heard_words(alignment, t, seg):
-    """Source words with end <= t that lie inside seg [offset, offset+duration]."""
+
+def heard_words(alignment, t, seg, pad=0.0):
+    """Source words with end + pad <= t that lie inside seg [offset, offset+duration]. run() passes PAD."""
     lo, hi = seg["offset"], seg["offset"] + seg["duration"]
     eps = 1e-6
-    return [w["word"] for w in alignment if w["end"] <= t + eps and w["start"] >= lo - eps and w["end"] <= hi + eps]
+    return [w["word"] for w in alignment
+            if w["end"] + pad <= t + eps and w["start"] >= lo - eps and w["end"] <= hi + eps]
+
+
+def cumulative_known(prefix_translations, target, content):
+    """Union of content stems over the translations of prefixes 1..n (same as hy_word_prefixes.known_sets[-1])."""
+    acc = set()
+    for t in prefix_translations:
+        acc |= content(t or "", target)
+    return acc
 
 
 def judge(piece_content, known, full):
@@ -78,10 +92,10 @@ def run(items, target, no_hy=False, batch=32, grace=0.0):
             if not judged:
                 prep.append(None)
                 continue
-            hw = heard_words(al, r["decision_audio_sec"], segs[si])
+            hw = heard_words(al, r["decision_audio_sec"], segs[si], PAD)
             prep.append((ii, si, hw))
-            if hw:
-                need[(ii, si, len(hw))] = (" ".join(hw), segs[si]["src_lang"])
+            for j in range(1, len(hw) + 1):
+                need[(ii, si, j)] = (" ".join(hw[:j]), segs[si]["src_lang"])
             need[(ii, si, -1)] = (segs[si]["transcript"], segs[si]["src_lang"])
     if no_hy:
         tr = {k: v[0] for k, v in need.items()}
@@ -102,7 +116,7 @@ def run(items, target, no_hy=False, batch=32, grace=0.0):
             if p is None:
                 continue
             _, si, hw = p
-            known = content(tr.get((ii, si, len(hw)), ""), target) if hw else set()
+            known = cumulative_known([tr.get((ii, si, j), "") for j in range(1, len(hw) + 1)], target, content)
             full = content(tr.get((ii, si, -1), ""), target)
             pc = content(r.get("translation", ""), target)
             judged_n += 1
