@@ -2,7 +2,8 @@
 # prefix14: emission-schedule labels (design docs/superpowers/specs/2026-11-11-schedule-labels-design.md).
 #   wait for the prefix13tr chain to exit -> sentence manifest -> forced alignment -> Hy word-prefix
 #   translations -> luna schedule labels -> completeness gate + hygiene table -> [GO file] -> training rows
-#   -> SFT (lazy features, load_best) -> merge -> bench (manager queue) -> GRPO -> merge -> bench.
+#   -> SFT (lazy features, load_best) -> merge -> bench (manager queue) -> GRPO (schedule emit/wait terms,
+#   latency floor; schedule_reward.py) -> merge -> bench.
 # Idempotent by file existence; rerun the same command to resume. Markers P14 MARK/FAIL/STATS_READY/SFT_READY/DONE.
 # The hygiene judgment is manual: after P14_STATS_READY the chain waits for $OUT/GO.
 cd "$(git rev-parse --show-toplevel)" || exit 1
@@ -146,7 +147,7 @@ bench() {  # $1 marker name  $2 pipeline  $3 dataset: submit once (job id kept i
 stage "bench sft (manager queue)"
 bench bench_sft brig.koen+prefix14-lidreset northstar_ko+en-ko
 
-stage "grpo 400 (B recipe, en-ko/ko-en, no tag)"
+stage "grpo 400 (B recipe + schedule emit/wait terms + latency floor, en-ko/ko-en, no tag)"
 GOUT=models/zprobe/grpo/prefix14_grpo_cerenlat; A=models/zprobe/adapters/prefix14_grpo_cerenlat; mkdir -p $GOUT
 if [ ! -d "$A" ]; then
   for TRY in 1 2 3; do
@@ -158,6 +159,8 @@ if [ ! -d "$A" ]; then
       --policy_model models/zprobe/merged/prefix14_full --out $GOUT --source_tag 0 \
       --steps 400 --lam 0.1 --sil_frac 0.25 --mu 0.25 --anchor 1 --hard_frac 0.5 --nu 0.3 --rho 0.2 \
       --nli vicgalle/xlm-roberta-large-xnli-anli --pairs en-ko ko-en --utts 400 \
+      --schedule $GATED --sentences $OUT/sentences.jsonl --word_times $OUT/word_times.jsonl \
+      --sigma_s 0.2 --sigma_l 0.1 --lat_floor 1 \
       > $LOG/grpo_prefix14_cerenlat.log 2>&1
     kill $CS 2>/dev/null; wait $CS 2>/dev/null
     last=$(ls -d $GOUT/adapter_step* 2>/dev/null | sort -V | tail -1)

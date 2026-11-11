@@ -15,6 +15,11 @@ pool and --hard_frac of every later batch is drawn from it, because collapse cas
 Loss: GRPO advantage (R - mean_G) / (std_G + eps) times the mean log-probability of every sampled continuation token
 (EOS included: stopping is the decision to wait), + beta * KL to the reference on the same tokens.
 COMET comes from comet_server.py (start it with the COMET env). Smoke: --utts 4 --G 2 --steps 2.
+With --schedule/--sentences/--word_times (prefix14 emission schedules) the pool is those sentences instead of FLEURS
+and two per-step terms join the reward (schedule_reward.py): + sigma_s * emit_agree (share of steps where the schedule
+has something due and the rollout emitted) + sigma_l * wait_agree (share of steps where nothing is due and the rollout
+stayed quiet, silence tail included); with --lat_floor 1 the latency charge is lam * max(latency, the schedule's own
+latency), so a rollout earns nothing by racing ahead of the labels.
 
 usage: PYTHONPATH=Qwen3-ASR python core/research/zprobe/train/grpo_prefix.py --policy_model models/zprobe/merged/prefix1 --out DIR"""
 import argparse, csv, json, os, random, re, sys, time
@@ -24,6 +29,8 @@ import numpy as np, requests, soundfile as sf, torch
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import probe_z as P  # noqa: E402
 from seg_units import continuation  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import schedule_reward as SR  # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--policy_model", required=True); ap.add_argument("--out", required=True)
@@ -52,6 +59,12 @@ ap.add_argument("--enen_cap", type=int, default=-1, help="cap on the FLEURS en-e
 ap.add_argument("--dailytalk_utts", type=int, default=0, help="conversational en-en rollouts from the DailyTalk jsonl - the English counterpart of --kspon_utts, same register argument")
 ap.add_argument("--dailytalk_jsonl", default="Qwen3-ASR/finetuning/data/DailyTalk/train.jsonl")
 ap.add_argument("--dailytalk_wav", default="Qwen3-ASR/finetuning/data/DailyTalk/audio")
+ap.add_argument("--schedule", default="", help="prefix14 gated schedule jsonl: the pool becomes its train-split sentences and the per-step terms below apply")
+ap.add_argument("--sentences", default="models/zprobe/data/prefix14/sentences.jsonl")
+ap.add_argument("--word_times", default="models/zprobe/data/prefix14/word_times.jsonl")
+ap.add_argument("--sigma_s", type=float, default=0.0, help="weight of emit_agree (schedule says due, rollout emitted)")
+ap.add_argument("--sigma_l", type=float, default=0.0, help="weight of wait_agree (nothing due, rollout quiet)")
+ap.add_argument("--lat_floor", type=int, default=0, help="1: charge lam * max(latency, schedule latency) instead of lam * latency")
 a = ap.parse_args(); os.makedirs(a.out, exist_ok=True); random.seed(0); torch.manual_seed(0)
 dev = "cuda"
 
@@ -95,12 +108,14 @@ def tsv(lang):
 
 
 pool = []
-for pair in a.pairs:
+for pair in ([] if a.schedule else a.pairs):
     s, t = pair.split("-"); rs, rt = tsv(s), tsv(t)
     for sid in sorted(set(rs) & set(rt), key=int):
         wav = P.FLEURS / P.LANGS[s][0] / "audio" / "train" / rs[sid][1]
         if wav.exists() and sf.info(str(wav)).duration <= a.max_dur:
             pool.append({"pair": pair, "tgt": t, "wav": str(wav), "src": rs[sid][2].strip(), "ref": rt[sid][2].strip()})
+if a.schedule:
+    pool = SR.load_pool(a.schedule, a.sentences, a.word_times, a.pairs, a.max_dur)
 random.shuffle(pool)
 per = a.utts // len(a.pairs)
 pool = [u for pair in a.pairs for u in [x for x in pool if x["pair"] == pair][:per]]
@@ -146,6 +161,19 @@ def verbatim_score(ref, texts):
     return [1.0 - min(1.0, lev(r, "".join(t.split())) / max(len(r), 1)) for t in texts]
 
 
+def read_wav(audio):
+    """16 kHz mono float32 for a path or a 'path#start=S#end=E' clip."""
+    path, start, end = SR.parse_clip(audio)
+    info = sf.info(path)
+    s0 = int(round((start or 0.0) * info.samplerate))
+    s1 = int(round(end * info.samplerate)) if end is not None else None
+    wav, sr = sf.read(path, dtype="float32", start=s0, stop=s1)
+    if wav.ndim > 1:
+        wav = wav.mean(1)
+    assert sr == 16000, f"{path}: {sr} Hz"
+    return wav
+
+
 def inputs_for(wav, base, text):
     return pol.processor(text=[base + text], audio=[wav], return_tensors="pt", padding=True).to(dev).to(torch.bfloat16)
 
@@ -157,7 +185,7 @@ def rollout(u, wav, dur_real=None):
     sr = 16000; dur = len(wav) / sr
     dur_real = dur_real or dur
     base = base_for(u)
-    raw, recs, times = "", [], []
+    raw, recs, times, emits = "", [], [], []
     t = min(a.first, dur)
     while True:
         prefix = raw
@@ -176,6 +204,7 @@ def rollout(u, wav, dur_real=None):
             keep = keep[:-1]; new = keep; add = continuation(tok, ids, torch.tensor(ids.tolist() + keep, device=dev))
         add = add.replace("<SEG>", "")
         recs.append({"t": t, "prefix": prefix, "toks": new})
+        emits.append(bool(add.strip()))
         if add.strip():
             raw += add; times += [t] * len(add.replace(" ", ""))
         if t >= dur:
@@ -183,7 +212,11 @@ def rollout(u, wav, dur_real=None):
         t = min(dur, t + a.step)
     lat = float(np.mean(times) / dur) if times else 1.0
     hall = float(np.mean([t > dur_real + 1e-6 for t in times])) if times else 0.0
-    return recs, re.sub(r"\s+", " ", raw).strip(), lat, hall
+    agree = (1.0, 1.0)
+    if u.get("due") is not None:
+        grid_t = [r["t"] for r in recs]
+        agree = SR.agreement(SR.step_labels(u["due"], dur_real, grid_t), emits)
+    return recs, re.sub(r"\s+", " ", raw).strip(), lat, hall, agree
 
 
 def offline(u, wav):
@@ -218,7 +251,7 @@ for step in range(1, a.steps + 1):
     opt.zero_grad(); stats = []
     nh = min(len(hard), int(a.batch_utts * a.hard_frac))
     for u in random.sample(hard, nh) + random.sample(pool, a.batch_utts - nh):
-        wav, _ = sf.read(u["wav"], dtype="float32")
+        wav = read_wav(u["wav"])
         dur_real = len(wav) / 16000
         tail_roll = random.random()
         if tail_roll < a.noise_frac:
@@ -227,9 +260,12 @@ for step in range(1, a.steps + 1):
             wav = np.concatenate([wav, np.random.default_rng(step).normal(0.0, 0.0015, int(a.sil_sec * 16000)).astype(np.float32)])
         pol.model.eval()
         outs = [rollout(u, wav, dur_real) for _ in range(a.G)]
-        texts = [txt for _, txt, _, _ in outs] + ([offline(u, wav)] if a.anchor else [])
-        lats = [lat for _, _, lat, _ in outs] + ([1.0] if a.anchor else [])
-        halls = np.array([h for _, _, _, h in outs] + ([0.0] if a.anchor else []))
+        texts = [o[1] for o in outs] + ([offline(u, wav)] if a.anchor else [])
+        lats = np.array([o[2] for o in outs] + ([1.0] if a.anchor else []))
+        halls = np.array([o[3] for o in outs] + ([0.0] if a.anchor else []))
+        emit_ag = np.array([o[4][0] for o in outs] + ([0.0] if a.anchor else []))
+        wait_ag = np.array([o[4][1] for o in outs] + ([1.0] if a.anchor else []))
+        lat_floor = SR.label_latency(u["due"], u["chars"], len(wav) / 16000) if a.lat_floor and u.get("due") is not None else 0.0
         if u["pair"].split("-")[0] == u["tgt"]:
             comet = verbatim_score(u["ref"], texts)
         else:
@@ -245,7 +281,8 @@ for step in range(1, a.steps + 1):
                                    padding=True, truncation=True, max_length=256).to(dev)
                     probs = torch.softmax(nli_model(**toks).logits.float(), -1)
                     contra[k:k + 8] = probs[:, nli_contra].cpu().numpy()
-        R = np.array(comet) - a.lam * np.array(lats) - a.mu * short - a.nu * wrong - a.rho * contra - a.kappa * halls
+        R = (np.array(comet) - a.lam * np.maximum(lats, lat_floor) - a.mu * short - a.nu * wrong - a.rho * contra
+             - a.kappa * halls + a.sigma_s * emit_ag + a.sigma_l * wait_ag)
         # the anchor stays out of the advantage: it is off-policy and nearly always on top, so including it makes
         # every sampled rollout negative on average and the gradient only ever suppresses (measured: policy collapse).
         adv = (R[: a.G] - R[: a.G].mean()) / (R[: a.G].std() + 1e-6)
@@ -260,8 +297,8 @@ for step in range(1, a.steps + 1):
             hard.remove(u)
         pol.model.train()
         base = base_for(u)
-        ntok = sum(len(r["toks"]) for recs, _, _, _ in outs for r in recs) or 1
-        for g, (recs, _, _, _) in enumerate(outs):
+        ntok = sum(len(r["toks"]) for o in outs for r in o[0]) or 1
+        for g, (recs, *_) in enumerate(outs):
             if abs(adv[g]) < 1e-6:
                 continue
             for r in recs:
@@ -280,13 +317,18 @@ for step in range(1, a.steps + 1):
                 loss = (-(float(adv[g]) * lp) + a.beta * kl).sum() / ntok / a.batch_utts
                 loss.backward()
         stats.append({"pair": u["pair"], "R": R.round(3).tolist(), "comet": [round(c, 3) for c in comet],
-                      "lat": [round(l, 3) for l in lats], "text": outs[int(np.argmax(R[: a.G]))][1][:120]})
+                      "lat": [round(float(l), 3) for l in lats], "emit": emit_ag[: a.G].round(3).tolist(),
+                      "wait": wait_ag[: a.G].round(3).tolist(), "lat_floor": round(lat_floor, 3),
+                      "text": outs[int(np.argmax(R[: a.G]))][1][:120]})
     torch.nn.utils.clip_grad_norm_([p for p in pol.model.parameters() if p.requires_grad], 1.0); opt.step()
     rec = {"step": step, "t": round(time.time() - t0), "meanR": float(np.mean([np.mean(s["R"][: a.G]) for s in stats])),
            "meanC": float(np.mean([np.mean(s["comet"][: a.G]) for s in stats])),
-           "meanLat": float(np.mean([np.mean(s["lat"][: a.G]) for s in stats])), "hard": len(hard), "stats": stats}
+           "meanLat": float(np.mean([np.mean(s["lat"][: a.G]) for s in stats])),
+           "meanEmit": float(np.mean([np.mean(s["emit"]) for s in stats])),
+           "meanWait": float(np.mean([np.mean(s["wait"]) for s in stats])), "hard": len(hard), "stats": stats}
     log.write(json.dumps(rec, ensure_ascii=False) + "\n"); log.flush()
-    print(f"step {step} R={rec['meanR']:.3f} COMET={rec['meanC']:.3f} lat={rec['meanLat']:.3f} {rec['t']}s", flush=True)
+    print(f"step {step} R={rec['meanR']:.3f} COMET={rec['meanC']:.3f} lat={rec['meanLat']:.3f} "
+          f"emit={rec['meanEmit']:.2f} wait={rec['meanWait']:.2f} {rec['t']}s", flush=True)
     if step % a.save_every == 0 or step == a.steps:
         pol.model.save_pretrained(os.path.join(a.out, f"adapter_step{step}"))
 print("GRPO_DONE", flush=True)
