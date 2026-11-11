@@ -1,0 +1,68 @@
+import os
+import random
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import build_prefix14 as b  # noqa: E402
+
+ITEMS = [(2, "매니저가"), (9, "새 사무실 예산을"), (10, "어제 승인했어요")]
+ENDS = [1.0, 2.3, 2.6, 2.9, 3.2, 3.5, 3.8, 4.1, 4.4, 4.7]
+TAG = "language Korean<asr_text>"
+
+
+def test_on_time_rows():
+    rows = b.rows_on_time(ITEMS, ENDS, 5.0, "en-ko", "/x/a.wav")
+    early = [r for r in rows if float(r["audio"].split("#end=")[1]) < 2.5]
+    assert early and all(r["text"] == "" and r["cond"] == TAG for r in early)
+    first = next(r for r in rows if r["text"])
+    assert first["cond"] == TAG and first["text"] == "매니저가"
+    assert first["audio"] == "/x/a.wav#end=2.500"
+    last = rows[-1]
+    assert "매니저가" in last["cond"] and "새 사무실 예산을" in last["cond"]
+    assert all(r["pair"] == "en-ko" and r["prompt"] == "" for r in rows)
+    # the 2nd item is delta-joined with a leading space onto a non-empty cond
+    second = next(r for r in rows if r["text"].strip() == "새 사무실 예산을")
+    assert second["text"].startswith(" ") and second["cond"] == TAG + "매니저가"
+
+
+def test_start_end_cut():
+    assert b.cut("/x/a.wav", 2.0) == "/x/a.wav#end=2.000"
+    assert b.cut("/x/a.wav#start=3.000#end=9.000", 2.0) == "/x/a.wav#start=3.000#end=5.000"
+    assert b.cut("/x/a.wav#start=3.000#end=9.000", 20.0) == "/x/a.wav#start=3.000#end=9.000"
+
+
+def test_catchup_text_joins_lagged_items():
+    rows = b.rows_catchup(ITEMS, ENDS, 5.0, "en-ko", "/x/a.wav", random.Random(0), n=3, lag=(2, 2))
+    assert len(rows) == 3
+    ok = {"매니저가 새 사무실 예산을", "새 사무실 예산을 어제 승인했어요"}
+    assert all(r["text"].strip() in ok for r in rows)
+
+
+def test_holdout_keeps_sid_together():
+    sids = [f"s{i}" for i in range(500)]
+    h = b.split_holdout(sids, 0.02, 14)
+    assert len(h) == 10 and h <= set(sids)
+    assert h == b.split_holdout(sids * 3, 0.02, 14)  # duplicate recs of a sid do not change the sid set
+
+
+def test_two_recs_different_cut_times():
+    toks = "a b c d".split()
+    wa = [{"w": t, "end": 0.5 * (i + 1)} for i, t in enumerate(toks)]
+    wb = [{"w": t, "end": 0.9 * (i + 1)} for i, t in enumerate(toks)]
+    items = [(2, "X"), (4, "Y")]
+    ra = b.rows_on_time(items, b.end_times_for(toks, wa), 2.0, "en-ko", "/x/a.wav")
+    rb = b.rows_on_time(items, b.end_times_for(toks, wb), 3.6, "en-ko", "/x/b.wav")
+    ta = [r["audio"].split("#end=")[1] for r in ra if r["text"]]
+    tb = [r["audio"].split("#end=")[1] for r in rb if r["text"]]
+    assert ta != tb
+
+
+def test_end_and_silence_rows():
+    rows = b.rows_end(ITEMS, "en-ko", "/x/a.wav", 5.0, ENDS)
+    assert rows[0]["audio"] == "/x/a.wav#end=5.000"
+    assert rows[1]["audio"] == "/x/a.wav" and rows[1]["cond"] == TAG
+    assert rows[1]["text"] == "매니저가 새 사무실 예산을 어제 승인했어요"
+    s = b.rows_silence(ITEMS, "en-ko", "/x/a.wav", "/x/sil.wav", random.Random(1), 5.0, catchup=False)
+    assert "|/x/sil.wav#end=" in s["audio"] and s["text"] == ""
+    c = b.rows_silence(ITEMS, "en-ko", "/x/a.wav", "/x/sil.wav", random.Random(1), 5.0, catchup=True)
+    assert c["text"] != ""
