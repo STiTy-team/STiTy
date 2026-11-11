@@ -15,6 +15,7 @@ PY=.venv/bin/python; CPY=.venv-tpm/bin/python
 DS=/home/skkai/STiTy-team/datasets
 OUT=models/zprobe/data/prefix14
 LOG=models/zprobe/logs; mkdir -p $LOG $OUT
+rm -f $OUT/GO   # a stale GO would skip the hygiene review
 LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-20}
 SCHED=$OUT/schedule_${LABEL_MODEL}.jsonl
 
@@ -38,14 +39,25 @@ stage "sentence manifest"
 echo "  sentences: $(wc -l < $OUT/sentences.jsonl)"
 
 stage "forced alignment"
-roomy 4000
-[ -f $OUT/align.done ] || { PYTHONPATH=Qwen3-ASR $PY -u core/research/zprobe/lid/align_more.py \
-  --manifest $OUT/sentences.jsonl --out $OUT/word_times.jsonl --reuse models/zprobe/data/prefix12/word_times.jsonl \
-  && touch $OUT/align.done || { echo P14_FAIL align; exit 1; }; }
+if [ ! -f $OUT/align.done ]; then
+  roomy 4000
+  PYTHONPATH=Qwen3-ASR $PY -u core/research/zprobe/lid/align_more.py \
+    --manifest $OUT/sentences.jsonl --out $OUT/word_times.jsonl --reuse models/zprobe/data/prefix12/word_times.jsonl \
+    || { echo P14_FAIL align; exit 1; }
+  # align_more exits 0 even when some recs failed: check coverage before calling it done
+  $PY - $OUT <<'PYEOF' || { echo P14_FAIL align-coverage; exit 1; }
+import json, sys
+out = sys.argv[1]
+recs = {json.loads(l)["audio"] for l in open(f"{out}/sentences.jsonl", encoding="utf-8") if l.strip()}
+rows = sum(1 for l in open(f"{out}/word_times.jsonl", encoding="utf-8") if l.strip())
+print(f"  align coverage: word_times rows {rows} / distinct audio in sentences {len(recs)}")
+sys.exit(0 if rows >= 0.98 * len(recs) else 1)
+PYEOF
+  touch $OUT/align.done
+fi
 
 stage "hy word prefixes"
-roomy 6000
-[ -f $OUT/hy.done ] || { PYTHONPATH=. $PY -u core/research/zprobe/labels/hy_word_prefixes.py \
+[ -f $OUT/hy.done ] || { roomy 6000; PYTHONPATH=. $PY -u core/research/zprobe/labels/hy_word_prefixes.py \
   --sentences $OUT/sentences.jsonl --out $OUT/hy_prefixes.jsonl && touch $OUT/hy.done \
   || { echo P14_FAIL hy; exit 1; }; }
 
@@ -56,32 +68,39 @@ stage "schedule labels ($LABEL_MODEL, budget $LABEL_BUDGET)"
 echo "  labeled: $(wc -l < $SCHED), cost: $($PY -c "import json,sys; print(round(sum(json.loads(l)['est_usd'] for l in open('$SCHED.usage.jsonl')),2))")"
 
 stage "completeness gate + hygiene"
-roomy 6000
-[ -f ${SCHED%.jsonl}.gated.jsonl ] || PYTHONPATH=. $CPY -u core/research/zprobe/labels/schedule_stats.py \
-  --schedule $SCHED --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl \
-  --old models/zprobe/data/prefix13/aligned.jsonl --out-gated ${SCHED%.jsonl}.gated.jsonl 2>&1 | tee $LOG/prefix14_stats.log \
-  || { echo P14_FAIL stats; exit 1; }
+GATED=${SCHED%.jsonl}.gated.jsonl
+if [ ! -f $OUT/stats.done ]; then
+  roomy 6000
+  if ! { PYTHONPATH=. $CPY -u core/research/zprobe/labels/schedule_stats.py \
+      --schedule $SCHED --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl \
+      --old models/zprobe/data/prefix13/aligned.jsonl --out-gated ${GATED}.tmp 2>&1 | tee $LOG/prefix14_stats.log; }; then
+    echo P14_FAIL stats; exit 1
+  fi
+  mv ${GATED}.tmp ${GATED} && touch $OUT/stats.done
+fi
 echo "P14_STATS_READY $(date '+%F %T') - review $LOG/prefix14_stats.log, then: touch $OUT/GO"
+echo "  hint: gated file ${GATED}, waiting for $OUT/GO"
 until [ -f $OUT/GO ]; do sleep 60; done
 
 stage "training rows"
 [ -f models/zprobe/data/train_prefix14.jsonl ] || $PY core/research/zprobe/labels/build_prefix14.py \
-  --schedule ${SCHED%.jsonl}.gated.jsonl --sentences $OUT/sentences.jsonl --word-times $OUT/word_times.jsonl \
+  --schedule $GATED --sentences $OUT/sentences.jsonl --word-times $OUT/word_times.jsonl \
   --sil-wav models/zprobe/data/silence_tail_4s.wav --out models/zprobe/data/train_prefix14.jsonl \
   --val-out models/zprobe/data/val_prefix14.jsonl --rows-per-rec 8 --catchup-per-rec 2 \
   --sil-cap 800 --seg-cap 2500 --reset-rows 3000 --seed 14 || { echo P14_FAIL rows; exit 1; }
 echo "  train rows: $(wc -l < models/zprobe/data/train_prefix14.jsonl), val rows: $(wc -l < models/zprobe/data/val_prefix14.jsonl)"
 
 stage "sft"
-roomy 20000
 sft() { $PY -u Qwen3-ASR/finetuning/qwen3_asr_sft.py \
   --model_path models/Qwen3-ASR-1.7B-koen-seg-mix-merged \
   --train_file models/zprobe/data/train_prefix14.jsonl --eval_file models/zprobe/data/val_prefix14.jsonl \
   --output_dir models/zprobe/adapters/prefix14 --use_lora 1 --no_seg 1 --load_best 1 --lazy_features 1 \
   --lora_r 64 --lora_alpha 128 --lora_dropout 0.05 --lora_targets q_proj,k_proj,v_proj,o_proj \
   --lr 1e-4 --epochs 1 --batch_size 2 --grad_acc 8 --save_steps 200 --save_total_limit 2 --resume 1 "$@"; }
-[ -f models/zprobe/adapters/prefix14/final/adapter_model.safetensors ] || \
-sft --gradient_checkpointing 0 || sft --gradient_checkpointing 1 || { echo P14_FAIL sft; exit 1; }
+if [ ! -f models/zprobe/adapters/prefix14/final/adapter_model.safetensors ]; then
+  roomy 20000
+  sft --gradient_checkpointing 0 || sft --gradient_checkpointing 1 || { echo P14_FAIL sft; exit 1; }
+fi
 
 stage "merge"
 [ -d models/zprobe/merged/prefix14_full ] || PYTHONPATH=Qwen3-ASR $PY core/research/zprobe/train/merge_adapter.py \
@@ -99,13 +118,33 @@ PYEOF
 )
   [ -n "$JOB" ] && curl -s -XPOST localhost:29130/api/machines/4090/jobs/$JOB/run-now -H 'Content-Type: application/json' -d '{}' >/dev/null
 }
-wait_job() {  # block until the job left the queue (done/failed) - keeps GPU free for the bench
-  [ -z "$1" ] && return
-  while curl -s localhost:29130/api/machines | python3 -c "import json,sys; j=[x for m in json.load(sys.stdin)['machines'] if m['host']=='4090' for x in m['jobs'] if x['id']=='$1']; sys.exit(0 if j else 1)"; do sleep 60; done
+wait_job() {  # block until the job id has cleanly left the manager's jobs list (done/failed move to history)
+  if [ -z "$1" ]; then echo P14_FAIL bench-submit; exit 1; fi
+  local n=0 rc
+  while :; do
+    JID=$1 curl -s --max-time 20 localhost:29130/api/machines | python3 -c "
+import json, os, sys
+try:
+    d = json.load(sys.stdin)
+    jobs = [x for m in d['machines'] if m['host'] == '4090' for x in m['jobs']]
+    sys.exit(0 if any(str(x['id']) == os.environ['JID'] for x in jobs) else 1)
+except Exception:
+    sys.exit(2)
+"
+    rc=$?
+    [ $rc -eq 1 ] && break
+    n=$((n + 1)); [ $((n % 10)) -eq 0 ] && echo "$(date '+%F %T') P14 waiting for bench job $1 (rc=$rc)"
+    sleep 60
+  done
+}
+bench() {  # $1 marker name  $2 pipeline  $3 dataset: submit once (job id kept in $OUT/$1.job), then wait
+  if [ -f $OUT/$1.job ]; then JOB=$(cat $OUT/$1.job); echo "  reuse bench job $JOB"
+  else submit $2 $3; [ -n "$JOB" ] && echo "$JOB" > $OUT/$1.job; fi
+  wait_job "$JOB"
 }
 
 stage "bench sft (manager queue)"
-submit brig.koen+prefix14-lidreset northstar_ko+en-ko; wait_job "$JOB"
+bench bench_sft brig.koen+prefix14-lidreset northstar_ko+en-ko
 
 stage "grpo 400 (B recipe, en-ko/ko-en, no tag)"
 GOUT=models/zprobe/grpo/prefix14_grpo_cerenlat; A=models/zprobe/adapters/prefix14_grpo_cerenlat; mkdir -p $GOUT
@@ -134,5 +173,5 @@ stage "merge grpo"
   || { echo P14_FAIL merge-grpo; exit 1; }
 
 stage "bench grpo (manager queue)"
-submit brig.koen+prefix14-grpo-lidreset northstar_ko+en-ko
+bench bench_grpo brig.koen+prefix14-grpo-lidreset northstar_ko+en-ko
 echo "P14_DONE $(date '+%F %T')"

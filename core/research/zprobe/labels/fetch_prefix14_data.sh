@@ -6,6 +6,7 @@
 # Nothing here touches the shared bench manifests (kosp2e/zeroth test). Markers P14D MARK/FAIL/DONE.
 # Talks listed in $OUT/aihub_skip.txt are left out (audio convert.py cannot read, mixed directions).
 cd "$(git rev-parse --show-toplevel)" || exit 1
+REPO=$(pwd)
 set -o pipefail
 trap 'echo "P14D_EXIT $(date "+%F %T")"' EXIT
 set -a; . /home/skkai/STiTy/.env; set +a
@@ -14,6 +15,7 @@ export AIHUB_APIKEY="${AIHUB_API_KEY:-}"
 DS=/home/skkai/STiTy-team/datasets
 OUT=models/zprobe/data/prefix14
 mkdir -p $OUT
+rows() { [ -f "$1" ] && wc -l < "$1" || echo 0; }
 touch $OUT/aihub_skip.txt
 
 pick_talks() {  # $1 lang (ko|en)  $2 per-domain count  -> comma list on stdout
@@ -48,8 +50,8 @@ PYEOF
 }
 
 echo "$(date '+%F %T') P14D MARK aihub ko talks"
-if [ "$(wc -l < $DS/aihub71693/ko/manifest.jsonl 2>/dev/null || echo 0)" -ge 11000 ]; then
-  echo "[skip] aihub ko manifest already has $(wc -l < $DS/aihub71693/ko/manifest.jsonl) rows"
+if [ "$(rows $DS/aihub71693/ko/manifest.jsonl)" -ge 11000 ]; then
+  echo "[skip] aihub ko manifest already has $(rows $DS/aihub71693/ko/manifest.jsonl) rows"
 else
   TALKS_KO=$(pick_talks ko 12) || { echo P14D_FAIL aihub-ko-select; exit 1; }
   echo "ko talks: $(echo "$TALKS_KO" | tr ',' '\n' | wc -l)"
@@ -58,11 +60,12 @@ else
 fi
 
 echo "$(date '+%F %T') P14D MARK aihub en talks (en->ko extra, Korean references)"
-if [ "$(wc -l < $DS/aihub71693/en/manifest.jsonl 2>/dev/null || echo 0)" -ge 2000 ]; then
-  echo "[skip] aihub en manifest already has $(wc -l < $DS/aihub71693/en/manifest.jsonl) rows"
+if [ "$(rows $DS/aihub71693/en/manifest.jsonl)" -ge 2000 ]; then
+  echo "[skip] aihub en manifest already has $(rows $DS/aihub71693/en/manifest.jsonl) rows"
 else
   # the English audio zips (VS_en_EA/MA/NA/SA = file keys 546225..546228, ~35 GB) were never downloaded
-  ( cd $DS/aihub71693/data && for z in VS_en_EA VS_en_MA VS_en_NA VS_en_SA; do find . -name "$z.zip" -print -quit | grep -q . || need=1; done
+  ( cd $DS/aihub71693/data && need=
+    for z in VS_en_EA VS_en_MA VS_en_NA VS_en_SA; do find . -name "$z.zip" -print -quit | grep -q . || need=1; done
     if [ -n "$need" ]; then
       [ -x ../aihubshell ] || { curl -fsSL -o ../aihubshell https://api.aihub.or.kr/api/aihubshell.do && chmod +x ../aihubshell; }
       ../aihubshell -mode d -datasetkey 71693 -filekey 546225,546226,546227,546228 -aihubapikey "$AIHUB_APIKEY" || true
@@ -77,7 +80,7 @@ fi
 echo "$(date '+%F %T') P14D MARK zeroth train parquet"
 mkdir -p $OUT/zeroth_train
 if ! ls $OUT/zeroth_train/data/train-*.parquet >/dev/null 2>&1; then
-  ( cd $DS && uv run python -c "from huggingface_hub import snapshot_download; snapshot_download('kresnik/zeroth_korean', repo_type='dataset', allow_patterns=['data/train-*.parquet'], local_dir='$PWD/$OUT/zeroth_train')" ) \
+  ( cd $DS && uv run python -c "from huggingface_hub import snapshot_download; snapshot_download('kresnik/zeroth_korean', repo_type='dataset', allow_patterns=['data/train-*.parquet'], local_dir='$REPO/$OUT/zeroth_train')" ) \
     || { echo P14D_FAIL zeroth-download; exit 1; }
 fi
 ls $OUT/zeroth_train/data/ | head -3
