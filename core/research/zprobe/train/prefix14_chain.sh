@@ -1,0 +1,138 @@
+#!/bin/bash
+# prefix14: emission-schedule labels (design docs/superpowers/specs/2026-11-11-schedule-labels-design.md).
+#   wait for the prefix13tr chain to exit -> sentence manifest -> forced alignment -> Hy word-prefix
+#   translations -> luna schedule labels -> completeness gate + hygiene table -> [GO file] -> training rows
+#   -> SFT (lazy features, load_best) -> merge -> bench (manager queue) -> GRPO -> merge -> bench.
+# Idempotent by file existence; rerun the same command to resume. Markers P14 MARK/FAIL/STATS_READY/SFT_READY/DONE.
+# The hygiene judgment is manual: after P14_STATS_READY the chain waits for $OUT/GO.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+set -o pipefail
+trap 'echo "P14_EXIT $(date "+%F %T")"' EXIT
+set -a; . /home/skkai/STiTy/.env; set +a
+export PATH=$HOME/.local/bin:$PATH
+export STITY_DATA_ROOT=/home/skkai/STiTy-team/datasets
+PY=.venv/bin/python; CPY=.venv-tpm/bin/python
+DS=/home/skkai/STiTy-team/datasets
+OUT=models/zprobe/data/prefix14
+LOG=models/zprobe/logs; mkdir -p $LOG $OUT
+LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-20}
+SCHED=$OUT/schedule_${LABEL_MODEL}.jsonl
+
+roomy() { local ok=0; while [ $ok -lt 3 ]; do
+  if [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | head -1)" -ge "$1" ]; then ok=$((ok + 1)); else ok=0; fi
+  [ $ok -lt 3 ] && sleep 60; done; }
+stage() { echo "$(date '+%F %T') P14 MARK $*"; df -h / | tail -1 | awk '{print "  disk free " $4}'; }
+
+stage "wait for prefix13tr chain exit"
+until grep -q "^P13T_EXIT" /tmp/p13t_chain.log 2>/dev/null; do sleep 120; done
+stage "wait for data fetch"
+until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do sleep 120; done
+
+stage "sentence manifest"
+[ -f $OUT/sentences.jsonl ] || $PY core/research/zprobe/labels/build_prefix14_manifest.py \
+  --aligned models/zprobe/data/prefix13/aligned.jsonl --fleurs-root ~/datasets/fleurs/data \
+  --aihub-manifest $DS/aihub71693/ko/manifest.jsonl --aihub-sentences 5000 \
+  --aihub-en-manifest $DS/aihub71693/en/manifest.jsonl --aihub-en-sentences 2000 \
+  --kosp2e-manifest $OUT/kosp2e_zeroth/manifest.jsonl --kosp2e-sentences 3000 \
+  --out $OUT/sentences.jsonl --seed 14 || { echo P14_FAIL manifest; exit 1; }
+echo "  sentences: $(wc -l < $OUT/sentences.jsonl)"
+
+stage "forced alignment"
+roomy 4000
+[ -f $OUT/align.done ] || { PYTHONPATH=Qwen3-ASR $PY -u core/research/zprobe/lid/align_more.py \
+  --manifest $OUT/sentences.jsonl --out $OUT/word_times.jsonl --reuse models/zprobe/data/prefix12/word_times.jsonl \
+  && touch $OUT/align.done || { echo P14_FAIL align; exit 1; }; }
+
+stage "hy word prefixes"
+roomy 6000
+[ -f $OUT/hy.done ] || { PYTHONPATH=. $PY -u core/research/zprobe/labels/hy_word_prefixes.py \
+  --sentences $OUT/sentences.jsonl --out $OUT/hy_prefixes.jsonl && touch $OUT/hy.done \
+  || { echo P14_FAIL hy; exit 1; }; }
+
+stage "schedule labels ($LABEL_MODEL, budget $LABEL_BUDGET)"
+[ -f $OUT/label.done ] || { PYTHONPATH=. $PY -u core/research/zprobe/labels/label_schedule.py \
+  --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl --model $LABEL_MODEL --workers 32 \
+  --budget $LABEL_BUDGET --out $SCHED && touch $OUT/label.done || { echo P14_FAIL label; exit 1; }; }
+echo "  labeled: $(wc -l < $SCHED), cost: $($PY -c "import json,sys; print(round(sum(json.loads(l)['est_usd'] for l in open('$SCHED.usage.jsonl')),2))")"
+
+stage "completeness gate + hygiene"
+roomy 6000
+[ -f ${SCHED%.jsonl}.gated.jsonl ] || PYTHONPATH=. $CPY -u core/research/zprobe/labels/schedule_stats.py \
+  --schedule $SCHED --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl \
+  --old models/zprobe/data/prefix13/aligned.jsonl --out-gated ${SCHED%.jsonl}.gated.jsonl 2>&1 | tee $LOG/prefix14_stats.log \
+  || { echo P14_FAIL stats; exit 1; }
+echo "P14_STATS_READY $(date '+%F %T') - review $LOG/prefix14_stats.log, then: touch $OUT/GO"
+until [ -f $OUT/GO ]; do sleep 60; done
+
+stage "training rows"
+[ -f models/zprobe/data/train_prefix14.jsonl ] || $PY core/research/zprobe/labels/build_prefix14.py \
+  --schedule ${SCHED%.jsonl}.gated.jsonl --sentences $OUT/sentences.jsonl --word-times $OUT/word_times.jsonl \
+  --sil-wav models/zprobe/data/silence_tail_4s.wav --out models/zprobe/data/train_prefix14.jsonl \
+  --val-out models/zprobe/data/val_prefix14.jsonl --rows-per-rec 8 --catchup-per-rec 2 \
+  --sil-cap 800 --seg-cap 2500 --reset-rows 3000 --seed 14 || { echo P14_FAIL rows; exit 1; }
+echo "  train rows: $(wc -l < models/zprobe/data/train_prefix14.jsonl), val rows: $(wc -l < models/zprobe/data/val_prefix14.jsonl)"
+
+stage "sft"
+roomy 20000
+sft() { $PY -u Qwen3-ASR/finetuning/qwen3_asr_sft.py \
+  --model_path models/Qwen3-ASR-1.7B-koen-seg-mix-merged \
+  --train_file models/zprobe/data/train_prefix14.jsonl --eval_file models/zprobe/data/val_prefix14.jsonl \
+  --output_dir models/zprobe/adapters/prefix14 --use_lora 1 --no_seg 1 --load_best 1 --lazy_features 1 \
+  --lora_r 64 --lora_alpha 128 --lora_dropout 0.05 --lora_targets q_proj,k_proj,v_proj,o_proj \
+  --lr 1e-4 --epochs 1 --batch_size 2 --grad_acc 8 --save_steps 200 --save_total_limit 2 --resume 1 "$@"; }
+[ -f models/zprobe/adapters/prefix14/final/adapter_model.safetensors ] || \
+sft --gradient_checkpointing 0 || sft --gradient_checkpointing 1 || { echo P14_FAIL sft; exit 1; }
+
+stage "merge"
+[ -d models/zprobe/merged/prefix14_full ] || PYTHONPATH=Qwen3-ASR $PY core/research/zprobe/train/merge_adapter.py \
+  --base models/Qwen3-ASR-1.7B-koen-seg-mix-merged --adapter models/zprobe/adapters/prefix14/final \
+  --out models/zprobe/merged/prefix14_full || { echo P14_FAIL merge; exit 1; }
+echo "P14_SFT_READY $(date '+%F %T')"
+
+submit() {  # $1 pipeline  $2 dataset  -> job id in $JOB
+  JOB=$(CFG=$1 DSN=$2 python3 - <<'PYEOF' | curl -s -XPOST localhost:29130/api/machines/4090/jobs -H 'Content-Type: application/json' -d @- | python3 -c "import json,sys; d=json.load(sys.stdin); x=d.get('data') or {}; print(x.get('id') or ''); sys.stderr.write('P14 JOB %s %s %s\n' % (d.get('ok'), x.get('id'), d.get('error','')[:200]))"
+import json, os, pathlib
+c, d = os.environ["CFG"], os.environ["DSN"]
+print(json.dumps({"branch": "main", "pipeline": {"name": c, "yaml": pathlib.Path(f"configs/pipelines/{c}.yml").read_text()},
+                  "dataset": {"name": d, "yaml": pathlib.Path(f"configs/datasets/{d}.yml").read_text()}}))
+PYEOF
+)
+  [ -n "$JOB" ] && curl -s -XPOST localhost:29130/api/machines/4090/jobs/$JOB/run-now -H 'Content-Type: application/json' -d '{}' >/dev/null
+}
+wait_job() {  # block until the job left the queue (done/failed) - keeps GPU free for the bench
+  [ -z "$1" ] && return
+  while curl -s localhost:29130/api/machines | python3 -c "import json,sys; j=[x for m in json.load(sys.stdin)['machines'] if m['host']=='4090' for x in m['jobs'] if x['id']=='$1']; sys.exit(0 if j else 1)"; do sleep 60; done
+}
+
+stage "bench sft (manager queue)"
+submit brig.koen+prefix14-lidreset northstar_ko+en-ko; wait_job "$JOB"
+
+stage "grpo 400 (B recipe, en-ko/ko-en, no tag)"
+GOUT=models/zprobe/grpo/prefix14_grpo_cerenlat; A=models/zprobe/adapters/prefix14_grpo_cerenlat; mkdir -p $GOUT
+if [ ! -d "$A" ]; then
+  for TRY in 1 2 3; do
+    roomy 20000
+    $CPY -u core/research/zprobe/train/comet_server.py --port 8777 > $LOG/comet_server_p14.log 2>&1 & CS=$!
+    until grep -q "ready" $LOG/comet_server_p14.log || ! kill -0 $CS 2>/dev/null; do sleep 5; done
+    kill -0 $CS 2>/dev/null || { echo P14_FAIL comet_server; exit 1; }
+    PYTHONPATH=Qwen3-ASR $PY -u core/research/zprobe/train/grpo_prefix.py \
+      --policy_model models/zprobe/merged/prefix14_full --out $GOUT --source_tag 0 \
+      --steps 400 --lam 0.1 --sil_frac 0.25 --mu 0.25 --anchor 1 --hard_frac 0.5 --nu 0.3 --rho 0.2 \
+      --nli vicgalle/xlm-roberta-large-xnli-anli --pairs en-ko ko-en --utts 400 \
+      > $LOG/grpo_prefix14_cerenlat.log 2>&1
+    kill $CS 2>/dev/null; wait $CS 2>/dev/null
+    last=$(ls -d $GOUT/adapter_step* 2>/dev/null | sort -V | tail -1)
+    grep -q GRPO_DONE $LOG/grpo_prefix14_cerenlat.log 2>/dev/null && { cp -r "$last" "$A"; break; }
+    echo "GRPO try $TRY failed"; tail -3 $LOG/grpo_prefix14_cerenlat.log; sleep 30
+  done
+fi
+[ -d "$A" ] || { echo P14_FAIL grpo; exit 1; }
+
+stage "merge grpo"
+[ -d models/zprobe/merged/prefix14_grpo_cerenlat_full ] || PYTHONPATH=Qwen3-ASR $PY core/research/zprobe/train/merge_adapter.py \
+  --base models/zprobe/merged/prefix14_full --adapter "$A" --out models/zprobe/merged/prefix14_grpo_cerenlat_full \
+  || { echo P14_FAIL merge-grpo; exit 1; }
+
+stage "bench grpo (manager queue)"
+submit brig.koen+prefix14-grpo-lidreset northstar_ko+en-ko
+echo "P14_DONE $(date '+%F %T')"
