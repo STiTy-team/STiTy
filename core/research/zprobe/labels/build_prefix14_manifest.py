@@ -1,0 +1,184 @@
+"""Build the prefix14 sentence manifest: one line per unique source sentence.
+
+Inputs (all optional except --aligned):
+  --aligned          prefix13 aligned.jsonl (FLEURS + CoVoST recordings; only en->ko and ko->en kept)
+  --fleurs-root      FLEURS data dir with {en_us,ko_kr}/train.tsv (col0 = sentence id shared across
+                     languages, col2 = raw text); used to look up the reference translation
+  --aihub-manifest / --aihub-en-manifest
+                     AI Hub 71693 Korean / English talk manifests (one sentence per line); whole talks are
+                     picked round-robin over the four domains (EA/MA/NA/SA), biggest talks first
+  --kosp2e-manifest  kosp2e zeroth manifest (ko transcript + en translation)
+
+Output (--out): sentences.jsonl, one line per unique (lang, whitespace-collapsed src):
+  {"sid","lang","tgt","src","ref","source","recs":[{"audio": path or path#start=..#end=..}, ...]}
+  sid = f"{source}_{lang}_{sha1(src)[:8]}"; when several sources share a sentence the first source's
+  name is kept and the recordings are merged. Prints per (lang->tgt, source) sentence/recording counts.
+"""
+
+import argparse
+import csv
+import hashlib
+import json
+import os
+import sys
+from collections import Counter, defaultdict
+
+DIRECTIONS = {("en", "ko"), ("ko", "en")}
+DOMAINS = ("EA", "MA", "NA", "SA")
+_TSV = {"en": "en_us", "ko": "ko_kr"}
+
+
+def norm(s: str) -> str:
+    return " ".join(s.split())
+
+
+def make_sid(source: str, lang: str, src: str) -> str:
+    return f"{source}_{lang}_{hashlib.sha1(norm(src).encode('utf-8')).hexdigest()[:8]}"
+
+
+def read_jsonl(path) -> list[dict]:
+    with open(path, encoding="utf-8") as f:
+        return [json.loads(line) for line in f if line.strip()]
+
+
+def dedup(rows: list[dict]) -> list[dict]:
+    """Merge recording rows ({lang,tgt,src,ref,source,audio}) sharing (lang, src) into sentence lines."""
+    out: dict[tuple, dict] = {}
+    for r in rows:
+        src = norm(r["src"])
+        key = (r["lang"], src)
+        if key not in out:
+            out[key] = {"sid": make_sid(r["source"], r["lang"], src), "lang": r["lang"], "tgt": r["tgt"],
+                        "src": src, "ref": r.get("ref"), "source": r["source"], "recs": []}
+        e = out[key]
+        if not e["ref"] and r.get("ref"):
+            e["ref"] = r["ref"]
+        rec = {"audio": r["audio"]}
+        if rec not in e["recs"]:
+            e["recs"].append(rec)
+    return list(out.values())
+
+
+def select_aihub(manifest_rows: list[dict], n_sentences: int, domains=DOMAINS) -> list[dict]:
+    """Pick whole talks round-robin over domains (biggest talk first within a domain).
+
+    Stops after the round in which the sentence count reaches n_sentences, so domains stay balanced.
+    """
+    talks: dict[str, list[dict]] = defaultdict(list)
+    for r in manifest_rows:
+        talks[r["group"]].append(r)
+    by_dom = {d: sorted((g for g in talks if g.split("_")[1] == d), key=lambda g: (-len(talks[g]), g))
+              for d in domains}
+    picked: list[dict] = []
+    i = 0
+    while len(picked) < n_sentences and any(i < len(v) for v in by_dom.values()):
+        for d in domains:
+            if i < len(by_dom[d]):
+                picked += talks[by_dom[d][i]]
+        i += 1
+    return picked
+
+
+def aihub_rows(manifest_rows, manifest_path, lang: str, tgt: str, n_sentences: int) -> list[dict]:
+    base = os.path.dirname(os.path.abspath(manifest_path))
+    out = []
+    for r in select_aihub(manifest_rows, n_sentences):
+        ref = r["reference"]
+        src, tr = norm(ref.get("transcript") or ""), norm((ref.get("translations") or {}).get(tgt) or "")
+        if not src or not tr:
+            continue
+        a = os.path.join(base, r["audio"])
+        off = float(r.get("offset", 0.0))
+        out.append({"lang": lang, "tgt": tgt, "src": src, "ref": tr, "source": "aihub",
+                    "audio": f"{a}#start={off:.3f}#end={off + float(r['duration']):.3f}"})
+    return out
+
+
+def kosp2e_rows(manifest_rows, n_sentences: int) -> list[dict]:
+    out = []
+    for r in manifest_rows:
+        src, en = norm(r.get("transcript") or ""), norm(r.get("en") or "")
+        if src and en:
+            out.append({"lang": "ko", "tgt": "en", "src": src, "ref": en, "source": "kosp2e", "audio": r["audio"]})
+        if len(out) >= n_sentences:
+            break
+    return out
+
+
+def _read_tsv(path) -> list[list[str]]:
+    with open(path, encoding="utf-8", newline="") as f:
+        return list(csv.reader(f, delimiter="\t", quoting=csv.QUOTE_NONE))
+
+
+def aligned_rows(aligned_path, fleurs_root) -> list[dict]:
+    """Recordings from aligned.jsonl; FLEURS refs come from the other language's tsv (same sentence id)."""
+    fn2id: dict[str, dict[str, str]] = {}
+    id2text: dict[str, dict[str, str]] = {}
+    for lang, loc in _TSV.items():
+        p = os.path.join(fleurs_root, loc, "train.tsv")
+        fn2id[lang], id2text[lang] = {}, {}
+        if not os.path.exists(p):
+            continue
+        for row in _read_tsv(p):
+            if len(row) >= 3:
+                fn2id[lang][row[1]] = row[0]
+                id2text[lang][row[0]] = row[2]
+    other = {"en": "ko", "ko": "en"}
+    out = []
+    for r in read_jsonl(aligned_path):
+        if (r["lang"], r["tgt"]) not in DIRECTIONS:
+            continue
+        source = "covost" if "covost" in r["audio"] else "fleurs"
+        ref = None
+        if source == "fleurs":
+            sid = fn2id[r["lang"]].get(os.path.basename(r["audio"]))
+            if sid is not None:
+                ref = id2text[other[r["lang"]]].get(sid)
+        out.append({"lang": r["lang"], "tgt": r["tgt"], "src": r["src"], "ref": ref, "source": source,
+                    "audio": r["audio"]})
+    return out
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--aligned", default="models/zprobe/data/prefix13/aligned.jsonl")
+    ap.add_argument("--fleurs-root", default=os.path.expanduser("~/datasets/fleurs/data"))
+    ap.add_argument("--aihub-manifest", default=None)
+    ap.add_argument("--aihub-sentences", type=int, default=5000)
+    ap.add_argument("--aihub-en-manifest", default=None)
+    ap.add_argument("--aihub-en-sentences", type=int, default=2000)
+    ap.add_argument("--kosp2e-manifest", default=None)
+    ap.add_argument("--kosp2e-sentences", type=int, default=3000)
+    ap.add_argument("--out", default="models/zprobe/data/prefix14/sentences.jsonl")
+    args = ap.parse_args()
+
+    rows = aligned_rows(args.aligned, args.fleurs_root)
+    if args.aihub_manifest:
+        rows += aihub_rows(read_jsonl(args.aihub_manifest), args.aihub_manifest, "ko", "en", args.aihub_sentences)
+    if args.aihub_en_manifest:
+        rows += aihub_rows(read_jsonl(args.aihub_en_manifest), args.aihub_en_manifest, "en", "ko",
+                           args.aihub_en_sentences)
+    if args.kosp2e_manifest:
+        rows += kosp2e_rows(read_jsonl(args.kosp2e_manifest), args.kosp2e_sentences)
+    sents = dedup(rows)
+
+    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+    with open(args.out, "w", encoding="utf-8") as f:
+        for s in sents:
+            f.write(json.dumps(s, ensure_ascii=False) + "\n")
+
+    ns, nr, tot = Counter(), Counter(), Counter()
+    for s in sents:
+        k = (f"{s['lang']}->{s['tgt']}", s["source"])
+        ns[k] += 1
+        nr[k] += len(s["recs"])
+        tot[k[0]] += 1
+    for k in sorted(ns):
+        print(f"{k[0]} {k[1]:8s} sentences={ns[k]:6d} recordings={nr[k]:6d}")
+    for d in sorted(tot):
+        print(f"TOTAL {d} sentences={tot[d]}")
+    print(f"wrote {args.out}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
