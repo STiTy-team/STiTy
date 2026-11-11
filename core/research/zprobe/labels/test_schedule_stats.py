@@ -55,3 +55,25 @@ def test_skip_completeness_main(tmp_path):
     ss.main(["--schedule", str(sd / "sch.jsonl"), "--sentences", str(sd / "s.jsonl"), "--hy", str(sd / "h.jsonl"),
              "--out-gated", str(out), "--skip-completeness"])
     assert len(out.read_text().strip().splitlines()) == 3
+
+
+def test_empty_items_are_not_emissions():
+    # an early empty item at word 1 must not count as an emission position, first item, or anti-dump
+    s = ss.stats_for([_row("w", [[1, ""], [5, "x y"], [6, "z"]])], tok)
+    assert s["first_after_median"] == 5
+    assert abs(s["empty_share"] - (1 - 2 / 6)) < 1e-9
+    assert s["dump_share"] == 1.0
+
+
+def test_fully_dropped_direction_gets_zero_row(tmp_path, monkeypatch, capsys):
+    sent = [dict(sid="e", lang="en", tgt="ko", src=SRC, ref=None, source="t", recs=[]),
+            dict(sid="k", lang="ko", tgt="en", src=SRC, ref=None, source="t", recs=[])]
+    (tmp_path / "s.jsonl").write_text("\n".join(json.dumps(r) for r in sent))
+    (tmp_path / "h.jsonl").write_text("\n".join(json.dumps({"sid": r["sid"], "prefixes": ["a"] * 6}) for r in sent))
+    sch = [dict(sid=r["sid"], lang=r["lang"], tgt=r["tgt"], schedule=[[6, "x"]], attempts=1) for r in sent]
+    (tmp_path / "sch.jsonl").write_text("\n".join(json.dumps(r) for r in sch))
+    monkeypatch.setattr(ss, "gate", lambda rows, *a: [r for r in rows if r["lang"] == "en"])
+    ss.main(["--schedule", str(tmp_path / "sch.jsonl"), "--sentences", str(tmp_path / "s.jsonl"),
+             "--hy", str(tmp_path / "h.jsonl"), "--out-gated", str(tmp_path / "g.jsonl")])
+    line = [l for l in capsys.readouterr().out.splitlines() if l.startswith("ko->en")][0]
+    assert line.split()[1] == "0" and line.split()[-1] == "1"

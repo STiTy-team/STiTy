@@ -5,7 +5,8 @@
    - ref null:    cometkiwi(joined) >= cometkiwi(Hy full translation) - --kiwi_margin (0.08)
    Survivors (with "comet" or "kiwi"/"kiwi_hy" added) go to --out-gated. --skip-completeness copies every row
    (CPU tests / stats-only check; comet is imported lazily so it is not needed then).
-2. Hygiene table per direction lang->tgt: n, empty_share, dump_share, first_after_median/p95, deferral_median/max,
+2. Hygiene table per direction lang->tgt (empty-text items are waits and are ignored; a direction the gate
+   dropped entirely gets a row with n=0): n, empty_share, dump_share, first_after_median/p95, deferral_median/max,
    len_ratio_median/p5/p95, gated_out. With --old, the same metrics for the old phrase-level corpus (aligned.jsonl).
    Old-corpus approximations: phrases are not word-delimited, so the source tokens are split proportionally to
    the phrase index (phrase i of P owns tokens round(i*N/P)..round((i+1)*N/P)); "words to first item" = tokens
@@ -49,14 +50,14 @@ def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0):
     dump = big = 0
     for r in rows:
         K = len(tokens_fn(r["src"], r["lang"]))
-        sch = [(int(a), t) for a, t in r["schedule"]]
+        sch = [(int(a), t) for a, t in r["schedule"] if t.strip()]  # empty items are waits, not emissions
         if K and sch:
             empties.append(1 - len({a for a, _ in sch}) / K)
             firsts.append(min(a for a, _ in sch))
         if K >= 4:
             big += 1
             dump += bool(sch) and all(a > 2 * K / 3 for a, _ in sch)
-        joined = " ".join(t for _, t in sch if t.strip())
+        joined = " ".join(t for _, t in sch)
         if r["src"]:
             ratios.append(len(joined) / len(r["src"]))
         if known_fn is not None:
@@ -185,6 +186,9 @@ def main(argv=None):
         groups[f"{s['lang']}->{s['tgt']}"].append({**r, "src": s["src"], "lang": s["lang"], "tgt": s["tgt"], "ref": s.get("ref")})
     known_fn = lambda sid: known_sets(hy[sid], sents[sid]["tgt"])
     new = {d: stats_for(g, words, known_fn, gated_out=dropped[d]) for d, g in groups.items()}
+    for d in dropped:  # a direction the gate removed entirely still gets a (zero) row
+        if d not in new:
+            new[d] = stats_for([], words, gated_out=dropped[d])
     print_table("new schedule corpus", new)
     if a.old:
         og = defaultdict(list)
