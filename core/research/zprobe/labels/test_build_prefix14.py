@@ -109,3 +109,20 @@ def test_rows_end_whole_once():
     assert len(b.rows_end(ITEMS, "en-ko", "/x/a.wav", 5.0, ENDS)) == 2
     only = b.rows_end(ITEMS, "en-ko", "/x/b.wav", 5.0, ENDS, whole=False)
     assert len(only) == 1 and only[0]["audio"] == "/x/b.wav#end=5.000"
+
+
+def test_cap_reserves_pre_emit_wait_rows():
+    # 12.5 s recording, 15 words, one item per word: every grid cut but a few is an emission
+    ends = [0.8 * (i + 1) for i in range(15)]
+    items = [(i + 1, f"w{i + 1}") for i in range(15)]
+    full = b.rows_on_time(items, ends, 12.5, "en-ko", "/x/a.wav")
+    cap = 5
+    rows = b.rows_on_time(items, ends, 12.5, "en-ko", "/x/a.wav", cap, random.Random(3))
+    assert len(rows) == cap
+    empty = [r for r in rows if not r["text"]]
+    assert len(empty) >= cap / 3
+    # every kept wait row is the cut right before an emission in the uncapped list
+    idx = {r["audio"]: i for i, r in enumerate(full)}
+    for r in empty:
+        i = idx[r["audio"]]
+        assert i + 1 < len(full) and full[i + 1]["text"]

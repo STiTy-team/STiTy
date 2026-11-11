@@ -104,6 +104,24 @@ def _due(items, w):
     return [(a, t) for a, t in items if t.strip() and a <= w]
 
 
+def _cap_keep(rows, cap, rng):
+    """Indices to keep under a per-recording cap. ceil(cap/3) slots are reserved for empty-text (wait)
+    rows, preferring the grid point just before each emission (the hardest "not yet" decision); the
+    rest go to emission rows; unused slots on either side go to the other."""
+    is_em = [r["_emit"] or bool(r["text"]) for r in rows]
+    em = [i for i, e in enumerate(is_em) if e]
+    pre = sorted({i - 1 for i in em if i > 0 and not is_em[i - 1]})
+    other = [i for i, e in enumerate(is_em) if not e and i not in set(pre)]
+    rng.shuffle(em)
+    rng.shuffle(pre)
+    rng.shuffle(other)
+    empty = pre + other
+    n_empty = min(len(empty), -(-cap // 3))
+    n_em = min(len(em), cap - n_empty)
+    n_empty = min(len(empty), cap - n_em)
+    return sorted(em[:n_em] + empty[:n_empty])
+
+
 def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
     tag = tag_of(pair)
     emits = {round(e, 3) for (a, t), e in zip(items, emit_times(items, end_times)) if t.strip()}
@@ -119,13 +137,7 @@ def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
         rows.append(r)
         prev_w = w
     if cap is not None and len(rows) > cap:
-        rng = rng or random.Random(0)
-        em = [i for i, r in enumerate(rows) if r["_emit"] or r["text"]]
-        rest = [i for i, r in enumerate(rows) if not (r["_emit"] or r["text"])]
-        rng.shuffle(em)
-        rng.shuffle(rest)
-        keep = sorted((em + rest)[:cap])
-        rows = [rows[i] for i in keep]
+        rows = [rows[i] for i in _cap_keep(rows, cap, rng or random.Random(0))]
     for r in rows:
         r.pop("_emit")
     return rows
