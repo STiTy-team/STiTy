@@ -53,3 +53,42 @@ def test_prompt():
     assert "1:The 2:manager" in p and "Reference translation (Korean)" in p and "more than 8 source words" in p
     assert "NOTE" in p and "Reference" not in build_prompt({**ROW, "ref": None})
     assert "more than 6" in build_prompt({**ROW, "lang": "ko", "tgt": "en", "src": "a b"})
+
+
+def test_spent_so_far(tmp_path):
+    from label_schedule import spent_so_far
+    p = tmp_path / "u.jsonl"
+    assert spent_so_far(str(p)) == 0.0
+    p.write_text('{"est_usd": 1.25}\n{"est_usd": 0.5}\n{"est_us', encoding="utf-8")
+    assert abs(spent_so_far(str(p)) - 1.75) < 1e-9
+
+
+def test_with_retry():
+    import httpx
+    import openai
+    import pytest
+    from label_schedule import retryable, with_retry
+    req = httpx.Request("POST", "http://x")
+    e429 = openai.RateLimitError("rl", response=httpx.Response(429, request=req), body=None)
+    e400 = openai.BadRequestError("bad", response=httpx.Response(400, request=req), body=None)
+    e503 = openai.InternalServerError("down", response=httpx.Response(503, request=req), body=None)
+    assert retryable(e429) and retryable(e503) and retryable(openai.APIConnectionError(request=req)) and not retryable(e400)
+    seq, slept = [e429, e503, "ok"], []
+
+    def fn():
+        x = seq.pop(0)
+        if isinstance(x, Exception):
+            raise x
+        return x
+    assert with_retry(fn, sleep=slept.append) == "ok" and slept == [2, 4]
+    slept.clear()
+    with pytest.raises(openai.RateLimitError):
+        with_retry(lambda: (_ for _ in ()).throw(e429), sleep=slept.append)
+    assert slept == [2, 4, 8]
+    with pytest.raises(openai.BadRequestError):
+        with_retry(lambda: (_ for _ in ()).throw(e400), sleep=slept.append)
+
+
+def test_too_many_errors():
+    from label_schedule import too_many_errors
+    assert not too_many_errors(1, 100) and too_many_errors(2, 100) and not too_many_errors(0, 0)

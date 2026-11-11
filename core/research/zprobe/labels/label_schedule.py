@@ -6,8 +6,9 @@ failure the model is asked once more with the reason; a second failure is a FAIL
 translations (hy_word_prefixes.py) supply the "known content after word k" sets used by the gate.
 
 Output: --out jsonl {"sid","lang","tgt","schedule":[[after,text],...],"attempts":n}; per-call usage (tokens,
-est. cost) appends to <out>.usage.jsonl; --budget aborts past the cap (exit code 2). Resume: sids already in
---out are skipped. Endpoint: Letsur gateway (LETSUR_API_KEY).
+est. cost) appends to <out>.usage.jsonl; --budget counts what that file already holds and aborts past the cap
+(exit code 2). API errors (429/5xx/connection) are retried 3x; exceptions on more than 1% of rows exit 3.
+Resume: sids already in --out are skipped, so a rerun retries ERROR rows. Endpoint: Letsur gateway (LETSUR_API_KEY).
 
 usage: .venv/bin/python core/research/zprobe/labels/label_schedule.py --limit 50 \
     --out models/zprobe/data/prefix14/schedule_pilot.jsonl
@@ -37,6 +38,43 @@ def n_cap(lang):
 
 def should_stop(spent, budget):
     return spent > budget
+
+
+def spent_so_far(usage_path):
+    """Sum of est_usd already logged in <out>.usage.jsonl, so a rerun keeps counting against --budget."""
+    if not os.path.exists(usage_path):
+        return 0.0
+    total = 0.0
+    for l in open(usage_path, encoding="utf-8"):
+        try:
+            total += float(json.loads(l).get("est_usd") or 0.0)
+        except (ValueError, AttributeError):
+            continue  # a line cut by a crash
+    return total
+
+
+def retryable(e):
+    """429, 5xx and connection/timeout errors are worth retrying; other API errors are not."""
+    import openai
+    if isinstance(e, (openai.APIConnectionError, openai.RateLimitError)):  # APITimeoutError is a connection error
+        return True
+    return isinstance(e, openai.APIStatusError) and (e.status_code == 429 or e.status_code >= 500)
+
+
+def with_retry(fn, is_retryable=retryable, delays=(2, 4, 8), sleep=time.sleep):
+    """fn(), retried after each delay in `delays` while the error is retryable; the last error is raised."""
+    for d in (*delays, None):
+        try:
+            return fn()
+        except Exception as e:  # noqa: BLE001
+            if d is None or not is_retryable(e):
+                raise
+            sleep(d)
+
+
+def too_many_errors(errors, n_todo):
+    """ERROR (exceptions, not gate FAILs) above 1% of the attempted rows fails the run."""
+    return errors > 0.01 * n_todo
 
 
 def build_prompt(row, note=""):
@@ -118,13 +156,14 @@ def main():
     out = open(a.out, "a", encoding="utf-8")
     usage = open(a.out + ".usage.jsonl", "a", encoding="utf-8")
     lock = threading.Lock()
-    st = {"spent": 0.0, "ok": 0, "fail": 0, "seen": 0}
+    st = {"spent": spent_so_far(a.out + ".usage.jsonl"), "ok": 0, "fail": 0, "error": 0, "seen": 0}
+    print(f"already spent ${st['spent']:.2f} (from {a.out}.usage.jsonl)", flush=True)
 
     def ask(row, note=""):
         t0 = time.time()
-        resp = client.chat.completions.create(
+        resp = with_retry(lambda: client.chat.completions.create(
             model=a.model, reasoning_effort=a.reasoning,
-            messages=[{"role": "user", "content": build_prompt(row, note)}])
+            messages=[{"role": "user", "content": build_prompt(row, note)}]))
         u = resp.usage
         ec = (resp.model_extra or {}).get("estimated_cost") or {}
         try:
@@ -153,7 +192,7 @@ def main():
         except Exception as e:  # noqa: BLE001
             with lock:
                 st["seen"] += 1
-                st["fail"] += 1
+                st["error"] += 1
                 print(f"ERROR {row['sid']}: {e}", flush=True)
             return
         with lock:
@@ -166,7 +205,8 @@ def main():
                 out.flush()
                 st["ok"] += 1
             if st["seen"] % 50 == 0:
-                print(f"{st['seen']}/{len(rows)} ok={st['ok']} fail={st['fail']} est ${st['spent']:.2f}", flush=True)
+                print(f"{st['seen']}/{len(rows)} ok={st['ok']} fail={st['fail']} error={st['error']} "
+                      f"est ${st['spent']:.2f}", flush=True)
 
     todo = [r for r in rows if r["sid"] not in done]
     print(f"rows {len(rows)}, todo {len(todo)}", flush=True)
@@ -175,7 +215,10 @@ def main():
     if should_stop(st["spent"], a.budget):
         print(f"BUDGET_STOP ${st['spent']:.2f} > ${a.budget}", flush=True)
         sys.exit(2)
-    print(f"LABEL_SCHEDULE_DONE ok={st['ok']} fail={st['fail']} est ${st['spent']:.2f}", flush=True)
+    print(f"LABEL_SCHEDULE_DONE ok={st['ok']} fail={st['fail']} error={st['error']} est ${st['spent']:.2f}", flush=True)
+    if too_many_errors(st["error"], len(todo)):
+        print(f"LABEL_SCHEDULE_ERRORS {st['error']} > 1% of {len(todo)} - rerun to retry them", flush=True)
+        sys.exit(3)
 
 
 if __name__ == "__main__":
