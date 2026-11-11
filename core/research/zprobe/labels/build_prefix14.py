@@ -68,12 +68,18 @@ def _delta(cond_items, new_items):
     return (" " + d) if d and _join(cond_items) else d
 
 
-def heard(end_times, t):
-    return sum(1 for e in end_times if e <= t + EPS)
+PAD = 0.2
 
 
-def emit_times(items, end_times, pad=0.2):
-    return [end_times[min(max(a, 1), len(end_times)) - 1] + pad for a, _ in items]
+def heard(end_times, t, pad=PAD):
+    """Words heard at t: a word counts only after its end + pad (alignment error margin)."""
+    return sum(1 for e in end_times if e + pad <= t + EPS)
+
+
+def emit_times(items, end_times, pad=PAD):
+    if any(a < 1 for a, _ in items):
+        raise ValueError(f"schedule item with after < 1: {items}")
+    return [end_times[min(a, len(end_times)) - 1] + pad for a, _ in items]
 
 
 def grid(dur, emit_ts, step=0.5, first=1.0):
@@ -101,7 +107,7 @@ def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
     tag = tag_of(pair)
     emits = {round(e, 3) for (a, t), e in zip(items, emit_times(items, end_times)) if t.strip()}
     rows, prev_w = [], 0
-    for t in grid(dur, emit_times(items, end_times), ):
+    for t in grid(dur, emit_times(items, end_times)):
         w = heard(end_times, t)
         cond_items = [(a, x) for a, x in items if a <= prev_w]
         new_items = [(a, x) for a, x in items if prev_w < a <= w]
@@ -123,30 +129,42 @@ def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
 
 
 def rows_catchup(items, end_times, dur, pair, audio, rng, n=2, lag=(1, 2)):
+    """Cut on the plain 0.5s grid. cond = the on-time cond at the previous cut minus its last L items;
+    text = those L items + items newly due at t."""
     tag = tag_of(pair)
-    pts = grid(dur, emit_times(items, end_times))
-    out, avail = [], list(pts)
-    rng.shuffle(avail)
-    for t in avail:
-        if len(out) >= n:
-            break
-        due = _due(items, heard(end_times, t))
-        ls = [x for x in lag if x <= len(due)]
-        if not ls:
-            continue
+    full = grid(dur, emit_times(items, end_times))
+    cand = []
+    for t in grid(dur, []):
+        k = full.index(t)
+        prev_w = heard(end_times, full[k - 1]) if k else 0
+        cond_items = _due(items, prev_w)
+        ls = [x for x in lag if x <= len(cond_items)]
+        if ls:
+            cand.append((t, prev_w, cond_items, ls))
+    rng.shuffle(cand)
+    out = []
+    for t, prev_w, cond_items, ls in cand[:n]:
         L = rng.choice(ls)
-        cond_items, back = due[:-L], due[-L:]
-        out.append(_row(cut(audio, t), tag + _join(cond_items), _delta(cond_items, back), pair))
+        w = heard(end_times, t)
+        back = cond_items[-L:] + [(a, x) for a, x in items if prev_w < a <= w and x.strip()]
+        keep = cond_items[:-L]
+        out.append(_row(cut(audio, t), tag + _join(keep), _delta(keep, back), pair))
     return out
 
 
 def rows_end(items, pair, audio, dur, end_times):
+    """(a) cut at the end of speech: cond = on-time state just before the last pending emission (at least
+    one item short), text = the rest. (b) whole sentence: cond = prefix only, text = all items."""
     tag = tag_of(pair)
-    pts = grid(dur, emit_times(items, end_times))
-    prev_w = heard(end_times, pts[-2]) if len(pts) >= 2 else 0
-    cond_items = [(a, x) for a, x in items if a <= prev_w]
-    rest = [(a, x) for a, x in items if a > prev_w]
-    return [_row(cut(audio, dur), tag + _join(cond_items), _delta(cond_items, rest), pair),
+    its = [(a, t) for a, t in items if t.strip()]
+    ems = emit_times(its, end_times)
+    if its:
+        last_e = ems[-1]
+        keep = [it for it, e in zip(its[:-1], ems[:-1]) if e < last_e - EPS]
+    else:
+        keep = []
+    rest = its[len(keep):]
+    return [_row(cut(audio, dur), tag + _join(keep), _delta(keep, rest), pair),
             _row(audio, tag, _join(items), pair)]
 
 
@@ -162,10 +180,12 @@ def rows_silence(items, pair, audio, sil_wav, rng, dur, catchup=False):
 
 
 def rows_seg_pairs(recs_a, recs_b, pair, cap=None):
-    """recs_a: [{"audio", "full"}]; recs_b: [{"audio", "first_end"}] (same length, paired by index)."""
+    """recs_a: [{"sid", "audio", "full"}]; recs_b: [{"sid", "audio", "first_end"}] (same length, paired by index)."""
     tag = tag_of(pair)
     out = []
     for A, B in zip(recs_a, recs_b):
+        if A.get("sid") is not None and A.get("sid") == B.get("sid"):
+            continue
         if cap is not None and len(out) >= cap:
             break
         t_b = max(0.3, B["first_end"] * 0.5)
@@ -239,6 +259,8 @@ def main():
     for l in open(a.schedule, encoding="utf-8"):
         r = json.loads(l)
         sched[r["sid"]] = [(int(x), t) for x, t in r["schedule"]]
+        if any(x < 1 for x, _ in sched[r["sid"]]):
+            raise ValueError(f"sid {r['sid']}: schedule item with after < 1")
     wt = {}
     for l in open(a.word_times, encoding="utf-8"):
         r = json.loads(l)
@@ -298,8 +320,8 @@ def main():
         A, B = sp[0::2], sp[1::2]
         m = min(len(A), len(B))
         add(train, "seg", rows_seg_pairs(
-            [{"audio": r["audio"], "full": _join(r["items"])} for r in A[:m]],
-            [{"audio": r["audio"], "first_end": r["ends"][0]} for r in B[:m]], pair, a.seg_cap * mult))
+            [{"sid": r["sid"], "audio": r["audio"], "full": _join(r["items"])} for r in A[:m]],
+            [{"sid": r["sid"], "audio": r["audio"], "first_end": r["ends"][0]} for r in B[:m]], pair, a.seg_cap * mult))
 
     rpool = {}
     for r in recs:
