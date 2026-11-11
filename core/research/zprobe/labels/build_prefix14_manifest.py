@@ -20,6 +20,8 @@ import csv
 import hashlib
 import json
 import os
+import random
+import re
 import sys
 from collections import Counter, defaultdict
 
@@ -110,7 +112,10 @@ def aihub_rows(manifest_rows, manifest_path, lang: str, tgt: str, n_sentences: i
     return out
 
 
-def kosp2e_rows(manifest_rows, n_sentences: int) -> list[dict]:
+def kosp2e_rows(manifest_rows, n_sentences: int, seed: int = 14) -> list[dict]:
+    """First n usable rows after a seeded shuffle (the manifest is in corpus order, not random)."""
+    manifest_rows = list(manifest_rows)
+    random.Random(seed).shuffle(manifest_rows)
     out = []
     for r in manifest_rows:
         src, en = norm(r.get("transcript") or ""), norm(r.get("en") or "")
@@ -155,6 +160,28 @@ def aligned_rows(aligned_path, fleurs_root) -> list[dict]:
     return out
 
 
+def _clip_dur(audio):
+    m = re.search(r"#start=([0-9.]+)#end=([0-9.]+)", audio)
+    return float(m.group(2)) - float(m.group(1)) if m else None
+
+
+def length_report(sents) -> list[str]:
+    """Per source: sentences, source word (eojeol) count mean/p99/max, longest clip (clipped recordings only)."""
+    by = defaultdict(list)
+    for s in sents:
+        by[s["source"]].append(s)
+    lines = []
+    for src in sorted(by):
+        ss = by[src]
+        n = sorted(len(s["src"].split()) for s in ss)
+        p99 = n[min(len(n) - 1, int(0.99 * (len(n) - 1) + 0.5))]
+        durs = [d for s in ss for r in s["recs"] if (d := _clip_dur(r["audio"])) is not None]
+        dmax = f"{max(durs):.1f}s" if durs else "-"
+        lines.append(f"LENGTH {src:8s} sentences={len(ss):6d} words mean={sum(n) / len(n):.1f} p99={p99} "
+                     f"max={n[-1]} clip_dur_max={dmax}")
+    return lines
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--aligned", default="models/zprobe/data/prefix13/aligned.jsonl")
@@ -166,6 +193,7 @@ def main():
     ap.add_argument("--kosp2e-manifest", default=None)
     ap.add_argument("--kosp2e-sentences", type=int, default=3000)
     ap.add_argument("--out", default="models/zprobe/data/prefix14/sentences.jsonl")
+    ap.add_argument("--seed", type=int, default=14, help="kosp2e sample order")
     args = ap.parse_args()
 
     stats: dict = {}
@@ -176,13 +204,15 @@ def main():
         rows += aihub_rows(read_jsonl(args.aihub_en_manifest), args.aihub_en_manifest, "en", "ko",
                            args.aihub_en_sentences, stats)
     if args.kosp2e_manifest:
-        rows += kosp2e_rows(read_jsonl(args.kosp2e_manifest), args.kosp2e_sentences)
+        rows += kosp2e_rows(read_jsonl(args.kosp2e_manifest), args.kosp2e_sentences, args.seed)
     sents = dedup(rows)
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
-    with open(args.out, "w", encoding="utf-8") as f:
+    tmp = args.out + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
         for s in sents:
             f.write(json.dumps(s, ensure_ascii=False) + "\n")
+    os.replace(tmp, args.out)  # the chain skips this stage when the file exists: never leave a partial one
 
     ns, nr, tot = Counter(), Counter(), Counter()
     for s in sents:
@@ -197,6 +227,8 @@ def main():
     noref = sum(1 for r in rows if r["source"] == "fleurs" and not r["ref"])
     print(f"FLEURS recordings with ref=None: {noref}")
     print(f"AI Hub talks skipped (domain not in {DOMAINS}): {stats.get('skipped_talks', 0)}")
+    for line in length_report(sents):
+        print(line)
     print(f"wrote {args.out}", file=sys.stderr)
 
 

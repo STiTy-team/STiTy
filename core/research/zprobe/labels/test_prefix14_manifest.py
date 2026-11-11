@@ -111,3 +111,36 @@ def test_kosp2e_rows_are_ko_to_en(tmp_path):
     out = m.kosp2e_rows(m.read_jsonl(mp), 10)
     assert len(out) == 1
     assert (out[0]["lang"], out[0]["tgt"], out[0]["ref"], out[0]["source"]) == ("ko", "en", "hi", "kosp2e")
+
+
+def test_kosp2e_rows_seeded_shuffle():
+    rows = [{"audio": f"/z/{i}.wav", "transcript": f"문장 {i}", "en": f"s {i}"} for i in range(100)]
+    a = m.kosp2e_rows(rows, 10, seed=14)
+    assert len(a) == 10 and a == m.kosp2e_rows(rows, 10, seed=14)
+    assert [r["audio"] for r in a] != [f"/z/{i}.wav" for i in range(10)]
+    assert a != m.kosp2e_rows(rows, 10, seed=15)
+
+
+def test_length_report():
+    sents = [{"source": "aihub", "src": "a b c", "recs": [{"audio": "/x.wav#start=1.000#end=4.500"}]},
+             {"source": "aihub", "src": "a", "recs": [{"audio": "/x.wav#start=5.000#end=6.000"}]},
+             {"source": "fleurs", "src": "a b", "recs": [{"audio": "/f.wav"}]}]
+    lines = m.length_report(sents)
+    assert lines[0].split()[1] == "aihub" and "sentences=     2" in lines[0]
+    assert "mean=2.0" in lines[0] and "max=3" in lines[0] and "clip_dur_max=3.5s" in lines[0]
+    assert "clip_dur_max=-" in lines[1]
+
+
+def test_main_accepts_chain_args(tmp_path, monkeypatch, capsys):
+    # the chain passes --seed 14; the output is written via .tmp + os.replace
+    for loc in ("en_us", "ko_kr"):
+        (tmp_path / loc).mkdir()
+        (tmp_path / loc / "train.tsv").write_text("", encoding="utf-8")
+    _w(tmp_path / "al.jsonl", [{"lang": "en", "tgt": "ko", "src": "a b", "audio": "/c/covost_1.wav"}])
+    _w(tmp_path / "k.jsonl", [{"audio": "/z/1.wav", "transcript": "안녕", "en": "hi"}])
+    out = tmp_path / "s.jsonl"
+    monkeypatch.setattr(sys, "argv", ["x", "--aligned", str(tmp_path / "al.jsonl"), "--fleurs-root", str(tmp_path),
+                                      "--kosp2e-manifest", str(tmp_path / "k.jsonl"), "--out", str(out), "--seed", "14"])
+    m.main()
+    assert len(out.read_text(encoding="utf-8").splitlines()) == 2 and not (tmp_path / "s.jsonl.tmp").exists()
+    assert "LENGTH kosp2e" in capsys.readouterr().out
