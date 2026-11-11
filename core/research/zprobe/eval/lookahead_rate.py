@@ -12,7 +12,11 @@ otherwise it is "unjudged". For a judged piece at time t in segment S:
 Translation is Hy-MT2 (hy_word_prefixes.load_model/translate), cached by (segment index, number of heard words).
 --no-hy: known/full use the SOURCE words themselves (crude same-script fallback, only to exercise the pipeline).
 
-usage: PYTHONPATH=. python lookahead_rate.py --run-dir bench/runs/<..>/<run> [--target ko] [--no-hy] [--batch 32]
+Window: a piece belongs to the segment with offset <= t < min(next segment offset, end + grace); --grace (default 2.0 s)
+covers pieces decided just after a segment ends (heard = all its words). Longer gaps stay unjudged; --grace 0 is strict.
+(The brief's `lag` parameter of heard_words is intentionally not implemented.)
+
+usage: PYTHONPATH=. python lookahead_rate.py --run-dir bench/runs/<..>/<run> [--target ko] [--no-hy] [--batch 32] [--grace 2.0]
 Prints "LOOKAHEAD run=.. pieces=.. judged=.. violations=.. rate=.. unjudged=.." and writes <run_dir>/lookahead.json."""
 
 import argparse
@@ -36,15 +40,17 @@ def judge(piece_content, known, full):
     return bool((set(piece_content) - set(known)) & set(full))
 
 
-def segment_at(segments, t):
-    """Index of the segment with offset <= t < offset+duration, else None."""
+def segment_at(segments, t, grace=0.0):
+    """Index of the segment with offset <= t < min(next segment offset, end + grace), else None.
+    A piece decided slightly after a segment's end (within grace, before the next segment starts) still belongs to it."""
     for i, s in enumerate(segments):
-        if s["offset"] <= t < s["offset"] + s["duration"]:
+        nxt = segments[i + 1]["offset"] if i + 1 < len(segments) else float("inf")
+        if s["offset"] <= t < min(nxt, s["offset"] + s["duration"] + grace):
             return i
     return None
 
 
-def collect(items, target):
+def collect(items, target, grace=0.0):
     """Per item: list of (piece record, seg index or None, judged?). Judged = inside a cross-language segment."""
     out = []
     for it in items:
@@ -54,16 +60,16 @@ def collect(items, target):
             if r.get("type") != "translated" or r.get("target_lang") != target:
                 continue
             t = r.get("decision_audio_sec")
-            si = segment_at(segs, t) if t is not None else None
+            si = segment_at(segs, t, grace) if t is not None else None
             judged = si is not None and segs[si]["src_lang"] != target
             rows.append((r, si if judged else None, judged))
         out.append((it, rows))
     return out
 
 
-def run(items, target, no_hy=False, batch=32):
+def run(items, target, no_hy=False, batch=32, grace=0.0):
     from build_prefix import content
-    data = collect(items, target)
+    data = collect(items, target, grace)
     need = {}  # (item idx, seg idx, nheard) -> (text, src_lang)
     prep = []
     for ii, (it, rows) in enumerate(data):
@@ -74,7 +80,8 @@ def run(items, target, no_hy=False, batch=32):
                 continue
             hw = heard_words(al, r["decision_audio_sec"], segs[si])
             prep.append((ii, si, hw))
-            need[(ii, si, len(hw))] = (" ".join(hw), segs[si]["src_lang"])
+            if hw:
+                need[(ii, si, len(hw))] = (" ".join(hw), segs[si]["src_lang"])
             need[(ii, si, -1)] = (segs[si]["transcript"], segs[si]["src_lang"])
     if no_hy:
         tr = {k: v[0] for k, v in need.items()}
@@ -82,9 +89,9 @@ def run(items, target, no_hy=False, batch=32):
         from hy_word_prefixes import load_model, translate
         torch, trn, tok, model = load_model()
         keys = list(need)
-        jobs = [(need[k][0], need[k][1], target) if need[k][0] else ("", need[k][1], target) for k in keys]
-        res = translate(jobs, batch, torch, trn, tok, model)
-        tr = {k: ("" if not need[k][0] else v) for k, v in zip(keys, res)}
+        keys = [k for k in keys if need[k][0].strip()]  # empty text is never sent to Hy
+        res = translate([(need[k][0], need[k][1], target) for k in keys], batch, torch, trn, tok, model)
+        tr = dict(zip(keys, res))
     scenes, viol, pieces, judged_n, k = [], [], 0, 0, 0
     for ii, (it, rows) in enumerate(data):
         sj = sv = 0
@@ -95,8 +102,8 @@ def run(items, target, no_hy=False, batch=32):
             if p is None:
                 continue
             _, si, hw = p
-            known = content(tr[(ii, si, len(hw))], target) if hw else set()
-            full = content(tr[(ii, si, -1)], target)
+            known = content(tr.get((ii, si, len(hw)), ""), target) if hw else set()
+            full = content(tr.get((ii, si, -1), ""), target)
             pc = content(r.get("translation", ""), target)
             judged_n += 1
             sj += 1
@@ -108,25 +115,33 @@ def run(items, target, no_hy=False, batch=32):
     return pieces, judged_n, viol, scenes
 
 
+def run_dir(path, target="ko", no_hy=False, batch=32, grace=2.0):
+    items = [json.loads(l) for l in open(os.path.join(path, "items.jsonl"), encoding="utf-8") if l.strip()]
+    pieces, judged, viol, scenes = run(items, target, no_hy, batch, grace)
+    mode = "no-hy" if no_hy else "hy"
+    name = os.path.basename(os.path.normpath(path))
+    rate = len(viol) / judged if judged else 0.0
+    print(f"LOOKAHEAD run={name} pieces={pieces} judged={judged} violations={len(viol)} rate={rate:.3f} "
+          f"unjudged={pieces - judged} mode={mode} grace={grace}")
+    print("per-scene: " + " ".join(f"{s['id']}:{s['violations']}/{s['judged']}" for s in scenes))
+    res = {"run": name, "target": target, "mode": mode, "grace": grace, "pieces": pieces, "judged": judged,
+           "violations": len(viol), "rate": rate, "unjudged": pieces - judged, "scenes": scenes,
+           "violating_pieces": viol}
+    with open(os.path.join(path, "lookahead.json"), "w", encoding="utf-8") as f:
+        json.dump(res, f, ensure_ascii=False, indent=1)
+    return res
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--target", default="ko")
     ap.add_argument("--no-hy", action="store_true")
     ap.add_argument("--batch", type=int, default=32)
+    ap.add_argument("--grace", type=float, default=2.0,
+                    help="seconds after a segment's end (before the next segment) still judged against it; 0 = strict")
     a = ap.parse_args()
-    items = [json.loads(l) for l in open(os.path.join(a.run_dir, "items.jsonl"), encoding="utf-8") if l.strip()]
-    pieces, judged, viol, scenes = run(items, a.target, a.no_hy, a.batch)
-    mode = "no-hy" if a.no_hy else "hy"
-    name = os.path.basename(os.path.normpath(a.run_dir))
-    rate = len(viol) / judged if judged else 0.0
-    print(f"LOOKAHEAD run={name} pieces={pieces} judged={judged} violations={len(viol)} rate={rate:.3f} "
-          f"unjudged={pieces - judged} mode={mode}")
-    print("per-scene: " + " ".join(f"{s['id']}:{s['violations']}/{s['judged']}" for s in scenes))
-    with open(os.path.join(a.run_dir, "lookahead.json"), "w", encoding="utf-8") as f:
-        json.dump({"run": name, "target": a.target, "mode": mode, "pieces": pieces, "judged": judged,
-                   "violations": len(viol), "rate": rate, "unjudged": pieces - judged, "scenes": scenes,
-                   "violating_pieces": viol}, f, ensure_ascii=False, indent=1)
+    run_dir(a.run_dir, a.target, a.no_hy, a.batch, a.grace)
 
 
 if __name__ == "__main__":
