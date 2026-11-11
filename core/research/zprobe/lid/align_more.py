@@ -75,34 +75,60 @@ else:
         for l in open(OUT, encoding="utf-8"):
             done.add(os.path.abspath(json.loads(l)["audio"].split("#")[0]))
     key = lambda r: os.path.abspath(r["audio"])  # noqa: E731
+def norm(t):
+    return "".join(c for c in t if c.isalnum()).lower()
+
+
 todo = [r for r in recs if key(r) not in done]
-seen = set()
-todo = [r for r in todo if not (key(r) in seen or seen.add(key(r)))]
+first, conflicts, deduped = {}, [], 0
+uniq = []
+for r in todo:
+    k = key(r)
+    if k in first:
+        deduped += 1
+        if norm(first[k]["src"]) != norm(r["src"]):
+            conflicts.append(r["audio"])
+        continue
+    first[k] = r
+    uniq.append(r)
+todo = uniq
+print(f"deduped recs {deduped}", flush=True)
+if conflicts:
+    print(f"WARNING {len(conflicts)} audio shared by sentences with different src, e.g. {conflicts[:5]}", flush=True)
 print(f"sources {len(recs)}, already aligned {len(recs) - len(todo)}, todo {len(todo)}", flush=True)
 
 reuse_rows = {}
 for rp in args.reuse:
     for l in open(rp, encoding="utf-8"):
         row = json.loads(l)
-        reuse_rows.setdefault(os.path.abspath(row["audio"].split("#")[0]), row)
-reused = 0
+        if "#" in row["audio"]:
+            continue
+        reuse_rows.setdefault(os.path.abspath(row["audio"]), row)
+reused = skipped = 0
+os.makedirs(os.path.dirname(OUT) or ".", exist_ok=True)
 if reuse_rows:
     rest = []
     fo = open(OUT, "a", encoding="utf-8")
     for r in todo:
-        row = reuse_rows.get(os.path.abspath(r["audio"].split("#")[0])) if "#" not in r["audio"] else None
+        row = reuse_rows.get(os.path.abspath(r["audio"])) if "#" not in r["audio"] else None
         if row is None:
+            rest.append(r)
+            continue
+        if row["lang"] != r["lang"] or norm("".join(w["w"] for w in row["words"])) != norm(r["src"]):
+            skipped += 1
             rest.append(r)
             continue
         fo.write(json.dumps({"id": r["id"], "audio": r["audio"], "lang": r["lang"],
                              "words": row["words"]}, ensure_ascii=False) + "\n")
+        fo.flush()
         reused += 1
     fo.close()
     todo = rest
-    print(f"reused {reused}, to align {len(todo)}", flush=True)
+    print(f"reused {reused}, skipped-for-mismatch {skipped}, to align {len(todo)}", flush=True)
 
 aligner = Qwen3ForcedAligner.from_pretrained("Qwen/Qwen3-ForcedAligner-0.6B",
                                              dtype=torch.bfloat16, device_map="cuda")
+os.makedirs(os.path.dirname(OUT) or ".", exist_ok=True)
 out = open(OUT, "a", encoding="utf-8")
 t0 = time.time()
 ok = fail = 0
@@ -122,4 +148,7 @@ for n, r in enumerate(todo):
     ok += 1
     if (n + 1) % 1000 == 0:
         print(f"{n + 1}/{len(todo)} ok={ok} fail={fail} {time.time() - t0:.0f}s", flush=True)
+if conflicts:
+    print(f"CONFLICT {len(conflicts)} transcript conflicts; manifest is wrong", flush=True)
+    sys.exit(1)
 print(f"ALIGN_MORE_DONE ok={ok} fail={fail} reused={reused} {time.time() - t0:.0f}s", flush=True)
