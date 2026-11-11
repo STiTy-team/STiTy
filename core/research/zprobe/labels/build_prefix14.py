@@ -3,11 +3,12 @@
 A schedule is [(after_word, text), ...]: once source word `after_word` has been heard the text is
 appended to the translation. Word end times (forced alignment, per recording) turn that into rows:
 
-  on_time     audio cut on a 0.5s grid plus each item's emit time (end of word + pad);
+  on_time     audio cut on a 0.5s grid plus each item's emit time (end of word + pad), before dur;
               cond = items due at the previous cut, text = items that became due since. Mostly empty.
   catchup     cond is pulled back 1-2 items behind what the audio supports; text = the backlog.
   end         (a) cut exactly at the end of speech, cond = state one cut earlier, text = everything left;
-              (b) the whole sentence: cond = prefix only, text = all items joined (uncut audio).
+              (b) the whole sentence: cond = prefix only, text = all items joined (uncut audio of the
+              sentence's first recording, once per sentence).
   sil_end     recording | quiet tail, cond = everything, text = "" (no hallucination in silence).
   sil_catchup recording | quiet tail, cond = all but the last L items (L in 1..n), text = those L.
   seg         recording A | start of recording B, cond = A's full text, text = " <SEG>".
@@ -108,6 +109,8 @@ def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
     emits = {round(e, 3) for (a, t), e in zip(items, emit_times(items, end_times)) if t.strip()}
     rows, prev_w = [], 0
     for t in grid(dur, emit_times(items, end_times)):
+        if t >= dur - EPS:
+            break  # the cut at dur belongs to rows_end (its cond lags one emission)
         w = heard(end_times, t)
         cond_items = [(a, x) for a, x in items if a <= prev_w]
         new_items = [(a, x) for a, x in items if prev_w < a <= w]
@@ -152,9 +155,10 @@ def rows_catchup(items, end_times, dur, pair, audio, rng, n=2, lag=(1, 2)):
     return out
 
 
-def rows_end(items, pair, audio, dur, end_times):
+def rows_end(items, pair, audio, dur, end_times, whole=True):
     """(a) cut at the end of speech: cond = on-time state just before the last pending emission (at least
-    one item short), text = the rest. (b) whole sentence: cond = prefix only, text = all items."""
+    one item short), text = the rest. (b) whole sentence: cond = prefix only, text = all items; only when
+    `whole` (main passes it for the first recording of a sentence, so the row is not repeated per recording)."""
     tag = tag_of(pair)
     its = [(a, t) for a, t in items if t.strip()]
     ems = emit_times(its, end_times)
@@ -164,8 +168,10 @@ def rows_end(items, pair, audio, dur, end_times):
     else:
         keep = []
     rest = its[len(keep):]
-    return [_row(cut(audio, dur), tag + _join(keep), _delta(keep, rest), pair),
-            _row(audio, tag, _join(items), pair)]
+    out = [_row(cut(audio, dur), tag + _join(keep), _delta(keep, rest), pair)]
+    if whole:
+        out.append(_row(audio, tag, _join(items), pair))
+    return out
 
 
 def rows_silence(items, pair, audio, sil_wav, rng, dur, catchup=False):
@@ -293,7 +299,7 @@ def main():
             dst.append(r)
             fam_n[(dst is val, fam)] = fam_n.get((dst is val, fam), 0) + 1
 
-    on_time_train = []
+    on_time_train, whole_done = [], set()
     for r in recs:
         dst = val if r["held"] else train
         ot = rows_on_time(r["items"], r["ends"], r["dur"], r["pair"], r["audio"], a.rows_per_rec, rng)
@@ -302,7 +308,8 @@ def main():
             on_time_train += ot
         add(dst, "catchup", rows_catchup(r["items"], r["ends"], r["dur"], r["pair"], r["audio"], rng,
                                          a.catchup_per_rec))
-        add(dst, "end", rows_end(r["items"], r["pair"], r["audio"], r["dur"], r["ends"]))
+        add(dst, "end", rows_end(r["items"], r["pair"], r["audio"], r["dur"], r["ends"], whole=r["sid"] not in whole_done))
+        whole_done.add(r["sid"])
 
     by_pair = {}
     for r in recs:

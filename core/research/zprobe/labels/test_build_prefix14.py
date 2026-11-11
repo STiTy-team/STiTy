@@ -43,6 +43,8 @@ def test_catchup_cond_lags_on_time_cond():
     rows = b.rows_catchup(ITEMS, ENDS, 5.0, "en-ko", "/x/a.wav", random.Random(0), n=20, lag=(1, 1))
     assert rows
     for r in rows:
+        if r["audio"] not in on:  # t = dur: on_time leaves that cut to rows_end
+            continue
         o = on[r["audio"]]
         assert r["cond"] != o["cond"] and o["cond"].startswith(r["cond"])
         assert r["text"].strip().endswith(o["text"].strip())
@@ -94,3 +96,16 @@ def test_seg_pairs_skip_same_sid():
     B = [{"sid": "s1", "audio": "/x/b.wav", "first_end": 1.0}, {"sid": "s3", "audio": "/x/d.wav", "first_end": 1.0}]
     rows = b.rows_seg_pairs(A, B, "en-ko")
     assert len(rows) == 1 and rows[0]["audio"].startswith("/x/c.wav|/x/d.wav")
+
+
+def test_on_time_stops_before_dur():
+    rows = b.rows_on_time(ITEMS, ENDS, 5.0, "en-ko", "/x/a.wav")
+    assert rows and all(float(r["audio"].split("#end=")[1]) < 5.0 for r in rows)
+    end_a = b.rows_end(ITEMS, "en-ko", "/x/a.wav", 5.0, ENDS)[0]
+    assert end_a["audio"] == "/x/a.wav#end=5.000"
+
+
+def test_rows_end_whole_once():
+    assert len(b.rows_end(ITEMS, "en-ko", "/x/a.wav", 5.0, ENDS)) == 2
+    only = b.rows_end(ITEMS, "en-ko", "/x/b.wav", 5.0, ENDS, whole=False)
+    assert len(only) == 1 and only[0]["audio"] == "/x/b.wav#end=5.000"
