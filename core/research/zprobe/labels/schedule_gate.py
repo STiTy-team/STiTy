@@ -16,6 +16,34 @@ _EN_CONJ = {"and", "but", "so", "because", "if", "when", "while", "that", "which
 _EN_PUNCT_END = re.compile(r"[.!?;:,][\"'”’)\]]*$")
 _KO_PUNCT_END = re.compile(r"[.!?,][\"'”’)\]]*$")
 _KO_CONNECTIVE_END = ("고", "서", "면", "데", "지만", "니까")
+# Particles that end in a connective-looking syllable (학교에서, 선생님께서, 학생으로서).
+_KO_PARTICLE_END = ("에서", "께서", "로서")
+
+
+def _ko_connective(tok: str) -> bool:
+    """Heuristic: eojeol ends in a clausal connective. Drops particle endings and one-syllable
+    remainders (최고, 광고, 측면). Sino-Korean nouns with a longer stem (예: 홍보광고) still slip
+    through; that residual noise is accepted rather than pulling in a tagger."""
+    t = tok.rstrip(".!?,\"'”’)]")
+    if t.endswith(_KO_PARTICLE_END):
+        return False
+    for suf in _KO_CONNECTIVE_END:
+        if t.endswith(suf):
+            stem = t[: len(t) - len(suf)]
+            if len(stem) >= 2:
+                return True
+            # One-syllable stems: keep the clearly verbal ones (하고/해서/되면, and past tense 갔고/했고).
+            return len(stem) == 1 and (stem in _KO_VERBAL_1 or _has_ss_final(stem))
+    return False
+
+
+_KO_VERBAL_1 = {"하", "해", "되", "돼"}
+
+
+def _has_ss_final(syl: str) -> bool:
+    """Hangul syllable whose final consonant is ㅆ (past-tense marker: 갔, 했, 왔)."""
+    code = ord(syl) - 0xAC00
+    return 0 <= code < 11172 and code % 28 == 20
 
 
 def words(src: str, lang: str) -> list[str]:
@@ -29,7 +57,7 @@ def clause_ends(tokens: list[str], lang: str) -> list[int]:
     n = len(tokens)
     for i, t in enumerate(tokens, 1):
         if lang == "ko":
-            if _KO_PUNCT_END.search(t) or t.rstrip(".!?,\"'”’)]").endswith(_KO_CONNECTIVE_END):
+            if _KO_PUNCT_END.search(t) or _ko_connective(t):
                 ends.add(i)
         else:
             if _EN_PUNCT_END.search(t):

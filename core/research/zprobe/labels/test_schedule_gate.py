@@ -67,3 +67,14 @@ def test_check_empty_items_are_waits():
     known = {1: set(), 2: set(), 3: {"보내"}, 4: {"보내"}, 5: {"보내", "보고"}, 6: {"보내", "보고", "내일"}}
     items = [(1, ""), (3, "  "), (6, "내일 보고서를 보낼게요.")]
     assert check_schedule(items, toks, "en", "ko", known_at=lambda k: known[k], full_known={"보내", "보고", "내일"}, N=8, clause_end=[6]) is None
+
+
+def test_clause_ends_ko_particles_are_not_clause_ends():
+    toks = words("학교에서 친구를 만났고 최고 광고를 측면 보았다", "ko")
+    # 학교에서(1) particle, 만났고(3) connective, 최고(4)/측면(6) one-syllable noun remainders
+    assert clause_ends(toks, "ko") == [3, 7]
+
+
+def test_clause_ends_ko_short_verbal_stems():
+    toks = words("밥을 먹었고 숙제를 하고 잤다", "ko")
+    assert clause_ends(toks, "ko") == [2, 4, 5]
