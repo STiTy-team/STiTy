@@ -1,7 +1,8 @@
 #!/bin/bash
 # prefix14: emission-schedule labels (design docs/superpowers/specs/2026-11-11-schedule-labels-design.md).
-#   wait for the prefix13tr chain to exit -> sentence manifest -> forced alignment -> Hy word-prefix
-#   translations -> luna schedule labels -> GRPO smoke -> ... -> completeness gate + hygiene table -> auto_go [GO file] -> training rows
+#   wait for the prefix13tr chain to exit -> GRPO smoke (schedule flags) -> wait for data fetch -> sentence
+#   manifest -> forced alignment -> Hy word-prefix translations -> luna schedule labels -> completeness gate +
+#   hygiene table -> auto_go verdict [GO file] -> training rows
 #   -> SFT (lazy features, load_best) -> merge -> bench (manager queue) -> GRPO (schedule emit/wait terms,
 #   latency floor; schedule_reward.py) -> merge -> bench.
 # Idempotent by file existence; rerun the same command to resume. Markers P14 MARK/FAIL/STATS_READY/SFT_READY/DONE.
