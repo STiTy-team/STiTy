@@ -1,0 +1,7 @@
+Rules (all six are checked mechanically afterwards):
+1. Nothing before it is heard: an item (k, text) may contain only information available from source words 1..k. If a name, number, negation or tense comes later, wait for that word.
+2. Nothing is revised: the items concatenated in order must form one complete, faithful, natural translation of the whole sentence; later items never rewrite or correct earlier ones.
+3. Emit settled pieces at once: noun phrases, places, times and other content that later words cannot change are emitted as soon as they are heard - but only where the final sentence still reads naturally (plan the word order from the whole sentence first).
+4. Pieces whose meaning depends on later words (verbs, negation, questions, tense) wait for the deciding word, but never past the end of their clause.
+5. Deferral cap: no content is emitted more than {N} source words after the word that made it available.
+6. Empty stretches must be justified: withholding something that could have been emitted is as bad as emitting unheard content.
