@@ -1,11 +1,12 @@
 #!/bin/bash
 # prefix14: emission-schedule labels (design docs/superpowers/specs/2026-11-11-schedule-labels-design.md).
 #   wait for the prefix13tr chain to exit -> sentence manifest -> forced alignment -> Hy word-prefix
-#   translations -> luna schedule labels -> completeness gate + hygiene table -> [GO file] -> training rows
+#   translations -> luna schedule labels -> GRPO smoke -> ... -> completeness gate + hygiene table -> auto_go [GO file] -> training rows
 #   -> SFT (lazy features, load_best) -> merge -> bench (manager queue) -> GRPO (schedule emit/wait terms,
 #   latency floor; schedule_reward.py) -> merge -> bench.
 # Idempotent by file existence; rerun the same command to resume. Markers P14 MARK/FAIL/STATS_READY/SFT_READY/DONE.
-# The hygiene judgment is manual: after P14_STATS_READY the chain waits for $OUT/GO.
+# Hygiene: after P14_STATS_READY auto_go.py decides; a failing verdict stops the chain, and `touch $OUT/GO`
+# then rerunning overrides it. GO is cleared whenever the stats stage reruns.
 cd "$(git rev-parse --show-toplevel)" || exit 1
 set -o pipefail
 trap 'echo "P14_EXIT $(date "+%F %T")"' EXIT
@@ -16,7 +17,6 @@ PY=.venv/bin/python; CPY=.venv-tpm/bin/python
 DS=/home/skkai/STiTy-team/datasets
 OUT=models/zprobe/data/prefix14
 LOG=models/zprobe/logs; mkdir -p $LOG $OUT
-rm -f $OUT/GO   # a stale GO would skip the hygiene review
 LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-20}
 SCHED=$OUT/schedule_${LABEL_MODEL}.jsonl
 
@@ -27,8 +27,16 @@ stage() { echo "$(date '+%F %T') P14 MARK $*"; df -h / | tail -1 | awk '{print "
 
 stage "wait for prefix13tr chain exit"
 until grep -q "^P13T_EXIT" /tmp/p13t_chain.log 2>/dev/null; do sleep 120; done
+
+stage "grpo smoke (schedule flags)"
+[ -f $OUT/grpo_smoke.done ] || { roomy 16000; bash core/research/zprobe/train/prefix14_grpo_smoke.sh > $LOG/prefix14_grpo_smoke.log 2>&1 \
+  && touch $OUT/grpo_smoke.done || { echo P14_FAIL grpo-smoke; tail -5 $LOG/prefix14_grpo_smoke.log; exit 1; }; }
+
 stage "wait for data fetch"
-until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do sleep 120; done
+until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do
+  grep -q '^P14D_FAIL' /tmp/p14d.log 2>/dev/null && { echo P14_FAIL fetch; exit 1; }
+  sleep 120
+done
 
 stage "sentence manifest"
 [ -f $OUT/sentences.jsonl ] || $PY core/research/zprobe/labels/build_prefix14_manifest.py \
@@ -71,6 +79,7 @@ echo "  labeled: $(wc -l < $SCHED), cost: $($PY -c "import json,sys; print(round
 stage "completeness gate + hygiene"
 GATED=${SCHED%.jsonl}.gated.jsonl
 if [ ! -f $OUT/stats.done ]; then
+  rm -f $OUT/GO   # a GO left from an earlier gated file would skip the hygiene decision on the new one
   roomy 6000
   if ! { PYTHONPATH=. $CPY -u core/research/zprobe/labels/schedule_stats.py \
       --schedule $SCHED --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl \
@@ -79,9 +88,11 @@ if [ ! -f $OUT/stats.done ]; then
   fi
   mv ${GATED}.tmp ${GATED} && touch $OUT/stats.done
 fi
-echo "P14_STATS_READY $(date '+%F %T') - review $LOG/prefix14_stats.log, then: touch $OUT/GO"
-echo "  hint: gated file ${GATED}, waiting for $OUT/GO"
-until [ -f $OUT/GO ]; do sleep 60; done
+echo "P14_STATS_READY $(date '+%F %T') - $LOG/prefix14_stats.log"
+if [ ! -f $OUT/GO ]; then
+  PYTHONPATH=. $PY core/research/zprobe/labels/auto_go.py --gated $GATED --labeled $SCHED 2>&1 | tee -a $LOG/prefix14_stats.log
+  [ ${PIPESTATUS[0]} -eq 0 ] && touch $OUT/GO || { echo "P14_FAIL hygiene - review $LOG/prefix14_stats.log; to override: touch $OUT/GO and rerun"; exit 1; }
+fi
 
 stage "training rows"
 [ -f models/zprobe/data/train_prefix14.jsonl ] || $PY core/research/zprobe/labels/build_prefix14.py \
