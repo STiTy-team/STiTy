@@ -102,6 +102,8 @@ class ZprobePrefixTranscription(Transcriber):
         "lid_profiles": ("lid_profiles", str),
         "lid_window_sec": ("lid_window_sec", float),
         "lid_keep_sec": ("lid_keep_sec", float),
+        "oracle_tags": ("oracle_tags", str),
+        "oracle_tag_lag_sec": ("oracle_tag_lag_sec", float),
     }
 
     model = None
@@ -135,11 +137,22 @@ class ZprobePrefixTranscription(Transcriber):
             max_inference_batch_size=1)
 
     def start(self, languages: list[str] | None = None, *, target_lang: str = "",
-              vad=None, **_) -> None:
+              vad=None, item_id: str | None = None, **_) -> None:
         import numpy as np
 
         self._vad = vad
         self._np = np
+        # Oracle source tag (experiment): the reference segmentation of this item decides the
+        # tag instead of the LID verdict, to measure how much of the tag-mode design's loss
+        # is tag error. LID slot resets are untouched.
+        self._oracle = None
+        if self.settings.get("oracle_tags"):
+            import json
+
+            table = json.load(open(self.settings["oracle_tags"], encoding="utf-8"))
+            if item_id not in table:
+                raise ValueError(f"oracle_tags has no entry for item {item_id!r}")
+            self._oracle = [(float(o), float(o) + float(d), langs.norm_code(l)) for o, d, l in table[item_id]]
         wanted = [langs.norm_code(t) for t in (self.settings.get("targets") or []) if langs.norm_code(t)]
         primary = langs.norm_code(target_lang or "")
         self._targets = wanted or [code for code in (primary,) if code]
@@ -208,6 +221,11 @@ class ZprobePrefixTranscription(Transcriber):
                     log.info("[SLOT-RESET] cause=lid from=%s to=%s keep_sec=%.1f",
                              prev, verdict, keep / audio_mod.SAMPLING_RATE)
                     return out
+        if self._oracle is not None:
+            at = self._fed_samples / audio_mod.SAMPLING_RATE - float(self.settings.get("oracle_tag_lag_sec", 0.8))
+            spoken = [l for s, e, l in self._oracle if s <= at]
+            if spoken:
+                self._tag_lang = spoken[-1]
         stall = float(self.settings.get("stall_flush_sec", 0) or 0)
         force = bool(stall) and (self._wav.shape[0] - self._last_emit_samples
                                  >= int(stall * audio_mod.SAMPLING_RATE))

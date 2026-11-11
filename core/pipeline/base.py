@@ -28,8 +28,8 @@ class Processor:
     def __init__(self, parts: dict[str, Component]):
         self.parts = parts
 
-    def start(self, *, languages: list[str], target_lang: str = "") -> None:
-        stages.start(self.parts, languages=languages, target_lang=target_lang)
+    def start(self, *, languages: list[str], target_lang: str = "", **extra) -> None:
+        stages.start(self.parts, languages=languages, target_lang=target_lang, **extra)
 
     def accepts(self, item) -> bool:
         return True

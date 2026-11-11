@@ -5,11 +5,12 @@ from core.utils.audio import MultiChannelAudio
 log = logging.getLogger(__name__)
 
 
-def start(parts: dict[str, Component], *, languages: list[str], target_lang: str = "") -> None:
+def start(parts: dict[str, Component], *, languages: list[str], target_lang: str = "", **extra) -> None:
     detector = parts.get("vad")
     for part in parts.values():
         part.start(
-            languages=languages, target_lang=target_lang, vad=None if part is detector else detector
+            languages=languages, target_lang=target_lang, vad=None if part is detector else detector,
+            **extra,
         )
 
 

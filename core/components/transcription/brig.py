@@ -51,7 +51,7 @@ class BrigTranscription(Transcriber):
         self._ctx_partial = ""
         self._recent: list[Translated] = []
         self._asr.start(languages, target_lang=target_lang, vad=vad)
-        self._adapter.start(languages, target_lang=target_lang, vad=vad)
+        self._adapter.start(languages, target_lang=target_lang, vad=vad, **_)
 
     async def transcribe(self, audio: bytes) -> list:
         heard = await self._asr.transcribe(audio)

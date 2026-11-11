@@ -58,8 +58,8 @@ class SpeechProcessor(Processor):
 
 
 class TranslationProcessor(Processor):
-    def start(self, *, languages: list[str], target_lang: str = "") -> None:
-        super().start(languages=languages, target_lang=target_lang)
+    def start(self, *, languages: list[str], target_lang: str = "", **extra) -> None:
+        super().start(languages=languages, target_lang=target_lang, **extra)
         self.target_lang = target_lang
         self.languages = set(languages)
         self.said_so_far: list[str] = []
