@@ -41,12 +41,33 @@ def test_select_aihub_balances_domains_and_returns_sentences():
     sel = m.select_aihub(rows, 29)
     assert all("reference" in r for r in sel)
     groups = {r["group"] for r in sel}
-    per_dom = {}
-    for g in groups:
-        per_dom[g.split("_")[1]] = per_dom.get(g.split("_")[1], 0) + 1
-    assert per_dom == {"EA": 2, "MA": 2, "NA": 2, "SA": 2}
-    # largest talks first within a domain
-    assert "K_EA_2" in groups and "K_EA_1" in groups and "K_EA_0" not in groups
+    # sizes per domain 7,6,5; stops at the talk that reaches >= 29 (EA2, MA2, NA2, SA2, EA1 -> 34)
+    assert groups == {"K_EA_2", "K_MA_2", "K_NA_2", "K_SA_2", "K_EA_1"}
+    assert len(sel) == 34
+    assert len(m.select_aihub(rows, 28)) == 28  # stops right at 28, no extra talk
+
+
+def test_select_aihub_malformed_id_raises():
+    import pytest
+    with pytest.raises(ValueError, match="K_EA"):
+        m.select_aihub(_talk_rows("K_EA", 2), 5)
+
+
+def test_select_aihub_unknown_domain_skipped_and_counted():
+    rows = _talk_rows("K_EA_1", 2) + _talk_rows("K_XX_1", 3)
+    stats = {}
+    sel = m.select_aihub(rows, 100, stats=stats)
+    assert {r["group"] for r in sel} == {"K_EA_1"} and stats["skipped_talks"] == 1
+
+
+def test_missing_fleurs_tsv_fails(tmp_path):
+    import pytest
+    (tmp_path / "en_us").mkdir()
+    (tmp_path / "en_us" / "train.tsv").write_text("1\ta.wav\tx\n", encoding="utf-8")
+    aligned = tmp_path / "al.jsonl"
+    _w(aligned, [])
+    with pytest.raises(FileNotFoundError, match="ko_kr"):
+        m.aligned_rows(aligned, tmp_path)
 
 
 def test_aihub_audio_gets_start_end(tmp_path):

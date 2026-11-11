@@ -7,7 +7,7 @@ Inputs (all optional except --aligned):
   --aihub-manifest / --aihub-en-manifest
                      AI Hub 71693 Korean / English talk manifests (one sentence per line); whole talks are
                      picked round-robin over the four domains (EA/MA/NA/SA), biggest talks first
-  --kosp2e-manifest  kosp2e zeroth manifest (ko transcript + en translation)
+  --kosp2e-manifest  pre-joined kosp2e manifest (ko transcript + en translation per line)
 
 Output (--out): sentences.jsonl, one line per unique (lang, whitespace-collapsed src):
   {"sid","lang","tgt","src","ref","source","recs":[{"audio": path or path#start=..#end=..}, ...]}
@@ -59,30 +59,46 @@ def dedup(rows: list[dict]) -> list[dict]:
     return list(out.values())
 
 
-def select_aihub(manifest_rows: list[dict], n_sentences: int, domains=DOMAINS) -> list[dict]:
+def select_aihub(manifest_rows: list[dict], n_sentences: int, domains=DOMAINS, stats: dict | None = None) -> list[dict]:
     """Pick whole talks round-robin over domains (biggest talk first within a domain).
 
-    Stops after the round in which the sentence count reaches n_sentences, so domains stay balanced.
+    Stops as soon as the sentence count reaches n_sentences (checked after each talk), so domains
+    stay balanced to within one talk. A talk id must look like `X_<DOMAIN>_...` (ValueError otherwise);
+    talks of a domain not in `domains` are skipped and counted in stats["skipped_talks"].
     """
     talks: dict[str, list[dict]] = defaultdict(list)
     for r in manifest_rows:
         talks[r["group"]].append(r)
-    by_dom = {d: sorted((g for g in talks if g.split("_")[1] == d), key=lambda g: (-len(talks[g]), g))
-              for d in domains}
+    by_dom: dict[str, list[str]] = {d: [] for d in domains}
+    skipped = 0
+    for g in talks:
+        parts = g.split("_")
+        if len(parts) < 3 or not parts[1]:
+            raise ValueError(f"malformed AI Hub talk id {g!r}: expected '<X>_<DOMAIN>_<n>'")
+        if parts[1] in by_dom:
+            by_dom[parts[1]].append(g)
+        else:
+            skipped += 1
+    if stats is not None:
+        stats["skipped_talks"] = stats.get("skipped_talks", 0) + skipped
+    for d in domains:
+        by_dom[d].sort(key=lambda g: (-len(talks[g]), g))
     picked: list[dict] = []
     i = 0
-    while len(picked) < n_sentences and any(i < len(v) for v in by_dom.values()):
+    while any(i < len(v) for v in by_dom.values()):
         for d in domains:
             if i < len(by_dom[d]):
                 picked += talks[by_dom[d][i]]
+                if len(picked) >= n_sentences:
+                    return picked
         i += 1
     return picked
 
 
-def aihub_rows(manifest_rows, manifest_path, lang: str, tgt: str, n_sentences: int) -> list[dict]:
+def aihub_rows(manifest_rows, manifest_path, lang: str, tgt: str, n_sentences: int, stats: dict | None = None) -> list[dict]:
     base = os.path.dirname(os.path.abspath(manifest_path))
     out = []
-    for r in select_aihub(manifest_rows, n_sentences):
+    for r in select_aihub(manifest_rows, n_sentences, stats=stats):
         ref = r["reference"]
         src, tr = norm(ref.get("transcript") or ""), norm((ref.get("translations") or {}).get(tgt) or "")
         if not src or not tr:
@@ -118,7 +134,7 @@ def aligned_rows(aligned_path, fleurs_root) -> list[dict]:
         p = os.path.join(fleurs_root, loc, "train.tsv")
         fn2id[lang], id2text[lang] = {}, {}
         if not os.path.exists(p):
-            continue
+            raise FileNotFoundError(f"FLEURS tsv missing: {p} (check --fleurs-root)")
         for row in _read_tsv(p):
             if len(row) >= 3:
                 fn2id[lang][row[1]] = row[0]
@@ -152,12 +168,13 @@ def main():
     ap.add_argument("--out", default="models/zprobe/data/prefix14/sentences.jsonl")
     args = ap.parse_args()
 
+    stats: dict = {}
     rows = aligned_rows(args.aligned, args.fleurs_root)
     if args.aihub_manifest:
-        rows += aihub_rows(read_jsonl(args.aihub_manifest), args.aihub_manifest, "ko", "en", args.aihub_sentences)
+        rows += aihub_rows(read_jsonl(args.aihub_manifest), args.aihub_manifest, "ko", "en", args.aihub_sentences, stats)
     if args.aihub_en_manifest:
         rows += aihub_rows(read_jsonl(args.aihub_en_manifest), args.aihub_en_manifest, "en", "ko",
-                           args.aihub_en_sentences)
+                           args.aihub_en_sentences, stats)
     if args.kosp2e_manifest:
         rows += kosp2e_rows(read_jsonl(args.kosp2e_manifest), args.kosp2e_sentences)
     sents = dedup(rows)
@@ -177,6 +194,9 @@ def main():
         print(f"{k[0]} {k[1]:8s} sentences={ns[k]:6d} recordings={nr[k]:6d}")
     for d in sorted(tot):
         print(f"TOTAL {d} sentences={tot[d]}")
+    noref = sum(1 for r in rows if r["source"] == "fleurs" and not r["ref"])
+    print(f"FLEURS recordings with ref=None: {noref}")
+    print(f"AI Hub talks skipped (domain not in {DOMAINS}): {stats.get('skipped_talks', 0)}")
     print(f"wrote {args.out}", file=sys.stderr)
 
 
