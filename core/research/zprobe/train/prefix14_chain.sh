@@ -35,6 +35,8 @@ stage "grpo smoke (schedule flags)"
 stage "wait for data fetch"
 until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do
   grep -q '^P14D_FAIL' /tmp/p14d.log 2>/dev/null && { echo P14_FAIL fetch; exit 1; }
+  # P14D_EXIT without P14D_DONE: the fetch died without a FAIL marker (DONE is printed before EXIT)
+  grep -q '^P14D_EXIT' /tmp/p14d.log 2>/dev/null && ! grep -q '^P14D_DONE' /tmp/p14d.log && { echo P14_FAIL fetch-exit; exit 1; }
   sleep 120
 done
 
