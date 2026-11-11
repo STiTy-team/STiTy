@@ -8,7 +8,8 @@ translations (hy_word_prefixes.py) supply the "known content after word k" sets 
 Output: --out jsonl {"sid","lang","tgt","schedule":[[after,text],...],"attempts":n}; per-call usage (tokens,
 est. cost) appends to <out>.usage.jsonl; --budget counts what that file already holds and aborts past the cap
 (exit code 2). API errors (429/5xx/connection) are retried 3x; exceptions on more than 1% of rows exit 3.
-Resume: sids already in --out are skipped, so a rerun retries ERROR rows. Endpoint: Letsur gateway (LETSUR_API_KEY).
+Resume: sids already in --out or in <out>.fail.jsonl (gate FAILs, with the reason) are skipped, so a rerun
+retries only ERROR rows and pays nothing twice. Endpoint: Letsur gateway (LETSUR_API_KEY).
 
 usage: .venv/bin/python core/research/zprobe/labels/label_schedule.py --limit 50 \
     --out models/zprobe/data/prefix14/schedule_pilot.jsonl
@@ -153,7 +154,11 @@ def main():
     done = set()
     if os.path.exists(a.out):
         done = {json.loads(l)["sid"] for l in open(a.out, encoding="utf-8")}
+    fail_path = a.out + ".fail.jsonl"
+    if os.path.exists(fail_path):
+        done |= {json.loads(l)["sid"] for l in open(fail_path, encoding="utf-8") if l.strip()}
     out = open(a.out, "a", encoding="utf-8")
+    fail_out = open(fail_path, "a", encoding="utf-8")
     usage = open(a.out + ".usage.jsonl", "a", encoding="utf-8")
     lock = threading.Lock()
     st = {"spent": spent_so_far(a.out + ".usage.jsonl"), "ok": 0, "fail": 0, "error": 0, "seen": 0}
@@ -200,6 +205,8 @@ def main():
             if rec is None:
                 st["fail"] += 1
                 print(f"FAIL {row['sid']}: {reasons[-1] if reasons else '?'}", flush=True)
+                fail_out.write(json.dumps({"sid": row["sid"], "reason": reasons[-1] if reasons else "?"}, ensure_ascii=False) + "\n")
+                fail_out.flush()
             else:
                 out.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 out.flush()

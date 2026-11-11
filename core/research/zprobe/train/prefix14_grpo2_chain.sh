@@ -17,9 +17,14 @@ roomy() { local ok=0; while [ $ok -lt 3 ]; do
 stage() { echo "$(date '+%F %T') P14G2 MARK $*"; }
 
 stage "wait for P14_DONE"
+# the chain log is appended across relaunches: judge only the lines after the latest launch, and keep waiting
+# through a failure (a human may override and rerun the chain) - a note once an hour says why we are waiting
+n=0
 until grep -q "^P14_DONE" /tmp/p14_chain.log 2>/dev/null; do
-  grep -q "^P14_FAIL" /tmp/p14_chain.log 2>/dev/null && { echo "P14G2_FAIL prefix14 chain failed"; exit 1; }
-  sleep 300
+  if awk '/^P14L launch/{buf=""} {buf=buf $0 "\n"} END{printf "%s", buf}' /tmp/p14_chain.log 2>/dev/null | grep -q "^P14_FAIL"; then
+    [ $((n % 12)) -eq 0 ] && echo "$(date '+%F %T') P14G2 prefix14 chain shows P14_FAIL since its last launch; waiting for a rerun"
+  fi
+  n=$((n + 1)); sleep 300
 done
 [ -d models/zprobe/merged/prefix14_full ] || { echo P14G2_FAIL sft-model-missing; exit 1; }
 [ -f $GATED ] || { echo P14G2_FAIL gated-schedule-missing; exit 1; }

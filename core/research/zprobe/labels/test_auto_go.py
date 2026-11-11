@@ -30,3 +30,17 @@ def test_dump_and_kept_and_ratio():
     assert "en-ko dump_share 1.000 > 0.05" in joined
     assert "50% of labeled 10" in joined
     assert "empty_share ratio" in joined
+
+
+def test_main_merges_src_from_sentences(tmp_path, capsys):
+    import json
+    (tmp_path / "sent.jsonl").write_text(
+        json.dumps({"sid": "a", "lang": "en", "tgt": "ko", "src": "a b c d e f", "ref": "x", "recs": []}) + "\n"
+        + json.dumps({"sid": "b", "lang": "ko", "tgt": "en", "src": "가 나 다 라 마 바", "ref": "y", "recs": []}) + "\n")
+    gated = [{"sid": "a", "lang": "en", "tgt": "ko", "schedule": [[2, "x"], [4, "y"], [6, "z"]], "attempts": 1},
+             {"sid": "b", "lang": "ko", "tgt": "en", "schedule": [[2, "x"], [4, "y"], [6, "z"]], "attempts": 1}]
+    (tmp_path / "g.jsonl").write_text("".join(json.dumps(r) + "\n" for r in gated))
+    (tmp_path / "l.jsonl").write_text("".join(json.dumps(r) + "\n" for r in gated))
+    rc = auto_go.main(["--gated", str(tmp_path / "g.jsonl"), "--labeled", str(tmp_path / "l.jsonl"),
+                       "--sentences", str(tmp_path / "sent.jsonl"), "--min-kept", "2"])
+    assert rc == 0 and "AUTO_GO_YES" in capsys.readouterr().out

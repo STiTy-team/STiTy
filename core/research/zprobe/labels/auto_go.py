@@ -7,9 +7,10 @@ Checks (per direction = lang-tgt):
               other directions <= --dump-other (en->ko is where the old labels dumped at the end)
   empty       empty_share of the two directions within --empty-ratio of each other (one direction must not be
               taught to wait far more than the other)
-  first_after first_after_median <= --first-after (the first piece must not routinely wait past this many words)
+  first_after first_after_median <= --first-after (the first piece must not routinely wait past this many words; 8 = a stop, not a target)
 
-usage: PYTHONPATH=. python core/research/zprobe/labels/auto_go.py --gated <gated.jsonl> --labeled <schedule.jsonl>"""
+usage: PYTHONPATH=. python core/research/zprobe/labels/auto_go.py --gated <gated.jsonl> --labeled <schedule.jsonl> \
+         --sentences <sentences.jsonl>     (the labeler's rows carry no src; it is merged in by sid)"""
 import argparse
 import json
 import os
@@ -46,14 +47,26 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--gated", required=True)
     ap.add_argument("--labeled", required=True)
+    ap.add_argument("--sentences", required=True)
     ap.add_argument("--min-kept", type=int, default=4000)
     ap.add_argument("--min-kept-share", type=float, default=0.5)
     ap.add_argument("--dump-enko", type=float, default=0.05)
     ap.add_argument("--dump-other", type=float, default=0.10)
     ap.add_argument("--empty-ratio", type=float, default=2.0)
-    ap.add_argument("--first-after", type=float, default=6)
+    ap.add_argument("--first-after", type=float, default=8)
     a = ap.parse_args(argv)
+    src = {}
+    for l in open(a.sentences, encoding="utf-8"):
+        if l.strip():
+            r = json.loads(l)
+            src[r["sid"]] = r["src"]
     rows = [json.loads(l) for l in open(a.gated, encoding="utf-8") if l.strip()]
+    missing = [r["sid"] for r in rows if r["sid"] not in src]
+    if missing:
+        print(f"AUTO_GO_NO: {len(missing)} gated sids absent from sentences (e.g. {missing[:3]})")
+        return 1
+    for r in rows:
+        r["src"] = src[r["sid"]]
     n_labeled = sum(1 for l in open(a.labeled, encoding="utf-8") if l.strip()) if os.path.exists(a.labeled) else 0
     table, reasons = check(rows, n_labeled, a)
     for d, m in sorted(table.items()):

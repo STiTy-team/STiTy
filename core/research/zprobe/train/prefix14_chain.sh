@@ -27,7 +27,8 @@ roomy() { local ok=0; while [ $ok -lt 3 ]; do
 stage() { echo "$(date '+%F %T') P14 MARK $*"; df -h / | tail -1 | awk '{print "  disk free " $4}'; }
 
 stage "wait for prefix13tr chain exit"
-until grep -q "^P13T_EXIT" /tmp/p13t_chain.log 2>/dev/null; do sleep 120; done
+# both /tmp-log waits are skipped once their downstream output exists (a rerun after a reboot has no /tmp logs)
+[ -f $OUT/grpo_smoke.done ] || until grep -q "^P13T_EXIT" /tmp/p13t_chain.log 2>/dev/null; do sleep 120; done
 
 stage "grpo smoke (schedule flags)"
 [ -f $OUT/grpo_smoke.done ] || { roomy 16000; bash core/research/zprobe/train/prefix14_grpo_smoke.sh > $LOG/prefix14_grpo_smoke.log 2>&1 \
@@ -37,7 +38,7 @@ stage "wait for data fetch"
 fetch_dead() {  # FAIL marker, or EXIT without DONE (the fetch died without a FAIL marker; DONE prints before EXIT)
   grep -q '^P14D_FAIL' /tmp/p14d.log 2>/dev/null && return 0
   grep -q '^P14D_EXIT' /tmp/p14d.log 2>/dev/null && ! grep -q '^P14D_DONE' /tmp/p14d.log 2>/dev/null; }
-until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do
+[ -f $OUT/sentences.jsonl ] || until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do
   # p14d_retry.sh (tmux p14dr) rotates a dead fetch's log and reruns within ~60 s: confirm after a grace period
   if fetch_dead; then sleep 180; fetch_dead && { echo P14_FAIL fetch; tail -3 /tmp/p14d.log; exit 1; }; fi
   sleep 120
@@ -76,10 +77,22 @@ stage "hy word prefixes"
   || { echo P14_FAIL hy; exit 1; }; }
 
 stage "schedule labels ($LABEL_MODEL, budget $LABEL_BUDGET)"
-[ -f $OUT/label.done ] || { PYTHONPATH=. $PY -u core/research/zprobe/labels/label_schedule.py \
+label() { PYTHONPATH=. $PY -u core/research/zprobe/labels/label_schedule.py \
   --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl --model $LABEL_MODEL --workers 32 \
-  --budget $LABEL_BUDGET --out $SCHED && touch $OUT/label.done || { echo P14_FAIL label; exit 1; }; }
-echo "  labeled: $(wc -l < $SCHED), cost: $($PY -c "import json,sys; print(round(sum(json.loads(l)['est_usd'] for l in open('$SCHED.usage.jsonl')),2))")"
+  --budget $LABEL_BUDGET --out $SCHED; }
+if [ ! -f $OUT/label.done ]; then
+  label; rc=$?
+  # exit 3 = API errors on >1% of rows (an outage): one more pass retries only the ERROR rows (ok/FAIL sids are kept)
+  if [ $rc -eq 3 ]; then echo "  label pass 1 hit API errors; retrying the ERROR rows in 10 min"; sleep 600; label; rc=$?; fi
+  [ $rc -eq 0 ] && touch $OUT/label.done || { echo P14_FAIL label rc=$rc; exit 1; }
+fi
+echo "  labeled: $(wc -l < $SCHED), cost: $($PY -c "
+import json
+t = 0.0
+for l in open('$SCHED.usage.jsonl', encoding='utf-8'):
+    try: t += json.loads(l)['est_usd']
+    except Exception: pass
+print(round(t, 2))")"
 
 stage "completeness gate + hygiene"
 GATED=${SCHED%.jsonl}.gated.jsonl
@@ -95,7 +108,7 @@ if [ ! -f $OUT/stats.done ]; then
 fi
 echo "P14_STATS_READY $(date '+%F %T') - $LOG/prefix14_stats.log"
 if [ ! -f $OUT/GO ]; then
-  PYTHONPATH=. $PY core/research/zprobe/labels/auto_go.py --gated $GATED --labeled $SCHED 2>&1 | tee -a $LOG/prefix14_stats.log
+  PYTHONPATH=. $PY core/research/zprobe/labels/auto_go.py --gated $GATED --labeled $SCHED --sentences $OUT/sentences.jsonl 2>&1 | tee -a $LOG/prefix14_stats.log
   [ ${PIPESTATUS[0]} -eq 0 ] && touch $OUT/GO || { echo "P14_FAIL hygiene - review $LOG/prefix14_stats.log; to override: touch $OUT/GO and rerun"; exit 1; }
 fi
 
