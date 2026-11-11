@@ -85,8 +85,8 @@ class Pipeline:
     async def close(self) -> None:
         await stages.close(self.parts)
 
-    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None) -> None:
-        stages.start(self.parts, languages=languages, target_lang=target_lang)
+    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None, **extra) -> None:
+        stages.start(self.parts, languages=languages, target_lang=target_lang, **extra)
 
     async def listen(self, audio: bytes) -> list:
         raise NotImplementedError

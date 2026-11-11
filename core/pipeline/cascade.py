@@ -72,11 +72,11 @@ class CascadePipeline(Pipeline):
         ),
     )
 
-    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None) -> None:
+    def start(self, *, languages: list[str], target_lang: str, own_lang: str | None = None, **extra) -> None:
         self.target_lang = target_lang
         self.own_lang = own_lang
         self.said_so_far: list[str] = []
-        super().start(languages=languages, target_lang=target_lang)
+        super().start(languages=languages, target_lang=target_lang, **extra)
 
     async def listen(self, audio: bytes) -> list:
         return await self._translated(await stages.hear(self.parts, audio))
