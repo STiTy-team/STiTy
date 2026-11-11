@@ -34,10 +34,12 @@ stage "grpo smoke (schedule flags)"
   && touch $OUT/grpo_smoke.done || { echo P14_FAIL grpo-smoke; tail -5 $LOG/prefix14_grpo_smoke.log; exit 1; }; }
 
 stage "wait for data fetch"
+fetch_dead() {  # FAIL marker, or EXIT without DONE (the fetch died without a FAIL marker; DONE prints before EXIT)
+  grep -q '^P14D_FAIL' /tmp/p14d.log 2>/dev/null && return 0
+  grep -q '^P14D_EXIT' /tmp/p14d.log 2>/dev/null && ! grep -q '^P14D_DONE' /tmp/p14d.log 2>/dev/null; }
 until grep -q "^P14D_DONE" /tmp/p14d.log 2>/dev/null; do
-  grep -q '^P14D_FAIL' /tmp/p14d.log 2>/dev/null && { echo P14_FAIL fetch; exit 1; }
-  # P14D_EXIT without P14D_DONE: the fetch died without a FAIL marker (DONE is printed before EXIT)
-  grep -q '^P14D_EXIT' /tmp/p14d.log 2>/dev/null && ! grep -q '^P14D_DONE' /tmp/p14d.log && { echo P14_FAIL fetch-exit; exit 1; }
+  # p14d_retry.sh (tmux p14dr) rotates a dead fetch's log and reruns within ~60 s: confirm after a grace period
+  if fetch_dead; then sleep 180; fetch_dead && { echo P14_FAIL fetch; tail -3 /tmp/p14d.log; exit 1; }; fi
   sleep 120
 done
 
