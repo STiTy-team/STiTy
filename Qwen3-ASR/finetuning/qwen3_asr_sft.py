@@ -269,12 +269,16 @@ class LazyFeaturesCollator:
         return self.inner([self.preprocess(r) for r in rows])
 
 
-def _align_columns(ds, like):
-    """Give `ds` exactly the columns of `like` (missing ones empty) so the two can be concatenated."""
-    for col in like.column_names:
+LAZY_COLUMNS = ["audio", "text", "prompt", "cond"]  # everything _preprocess reads
+
+
+def _align_columns(ds, cols=LAZY_COLUMNS):
+    """Cut `ds` to exactly `cols` (missing ones filled with "") so two raw datasets can be concatenated
+    whatever extra columns (pair, sid, ...) or column types either side carries."""
+    for col in cols:
         if col not in ds.column_names:
             ds = ds.add_column(col, [""] * len(ds))
-    return ds.select_columns(like.column_names)
+    return ds.select_columns(cols)
 
 
 def preprocess_logits_for_metrics(logits, labels):
@@ -469,7 +473,7 @@ def parse_args():
     p.add_argument("--attn_impl", type=str, default="sdpa",
                    choices=["sdpa", "flash_attention_2", "eager"],
                    help="attention 구현 (sdpa 권장, eager는 느림)")
-    p.add_argument("--lazy_features", type=int, default=1,
+    p.add_argument("--lazy_features", type=int, default=0,
                    help="1 = 멜 스펙트로그램을 캐시에 저장하지 않고 배치를 만들 때 계산한다 (map 단계·수십~백 GB 캐시 없음). "
                         "0 = 예전처럼 map() 에서 전부 미리 계산해 datasets 캐시에 둔다.")
     p.add_argument("--group_by_length", type=int, default=1,
@@ -593,8 +597,10 @@ def main():
         )
         silence_raw = load_dataset("json", data_files={"train": silence_jsonl})
         silence_ds = silence_raw if lazy else silence_raw.map(preprocess_fn, remove_columns=silence_raw["train"].column_names)
-        sil_train = _align_columns(silence_ds["train"], ds["train"]) if lazy else silence_ds["train"]
-        ds["train"] = concatenate_datasets([ds["train"], sil_train]).shuffle(seed=42)
+        if lazy:
+            ds["train"] = concatenate_datasets([_align_columns(ds["train"]), _align_columns(silence_ds["train"])]).shuffle(seed=42)
+        else:
+            ds["train"] = concatenate_datasets([ds["train"], silence_ds["train"]]).shuffle(seed=42)
         print(f"[silence] train: {len(ds['train'])}개 "
               f"(원본 {len(ds['train']) - args_cli.silence_samples} + 무음 {args_cli.silence_samples})")
 
@@ -610,8 +616,11 @@ def main():
             )
             val_silence_raw = load_dataset("json", data_files={"train": val_silence_jsonl})
             val_silence_ds = val_silence_raw if lazy else val_silence_raw.map(preprocess_fn, remove_columns=val_silence_raw["train"].column_names)
-            val_sil = _align_columns(val_silence_ds["train"], ds["validation"]) if lazy else val_silence_ds["train"]
-            ds["validation"] = concatenate_datasets([ds["validation"], val_sil]).shuffle(seed=42)
+            if lazy:
+                ds["validation"] = concatenate_datasets(
+                    [_align_columns(ds["validation"]), _align_columns(val_silence_ds["train"])]).shuffle(seed=42)
+            else:
+                ds["validation"] = concatenate_datasets([ds["validation"], val_silence_ds["train"]]).shuffle(seed=42)
             print(f"[silence] val:   {len(ds['validation'])}개 "
                   f"(원본 {len(ds['validation']) - val_silence_n} + 무음 {val_silence_n})")
 
