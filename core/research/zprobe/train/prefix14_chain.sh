@@ -48,7 +48,7 @@ if [ ! -f $OUT/align.done ]; then
   $PY - $OUT <<'PYEOF' || { echo P14_FAIL align-coverage; exit 1; }
 import json, sys
 out = sys.argv[1]
-recs = {json.loads(l)["audio"] for l in open(f"{out}/sentences.jsonl", encoding="utf-8") if l.strip()}
+recs = {r["audio"] for l in open(f"{out}/sentences.jsonl", encoding="utf-8") if l.strip() for r in json.loads(l)["recs"]}
 rows = sum(1 for l in open(f"{out}/word_times.jsonl", encoding="utf-8") if l.strip())
 print(f"  align coverage: word_times rows {rows} / distinct audio in sentences {len(recs)}")
 sys.exit(0 if rows >= 0.98 * len(recs) else 1)
@@ -122,7 +122,7 @@ wait_job() {  # block until the job id has cleanly left the manager's jobs list 
   if [ -z "$1" ]; then echo P14_FAIL bench-submit; exit 1; fi
   local n=0 rc
   while :; do
-    JID=$1 curl -s --max-time 20 localhost:29130/api/machines | python3 -c "
+    curl -s --max-time 20 localhost:29130/api/machines | JID=$1 python3 -c "
 import json, os, sys
 try:
     d = json.load(sys.stdin)
