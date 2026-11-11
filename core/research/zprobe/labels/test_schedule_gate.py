@@ -51,3 +51,19 @@ def test_eojeol_end_times_merged_tokens():
     toks = ["자각몽을", "꾸었다"]
     wt = [{"w": "자각", "end": 0.4}, {"w": "몽을", "end": 0.8}, {"w": "꾸었다", "end": 1.3}]
     assert eojeol_end_times(toks, wt) == [0.8, 1.3]
+
+
+def test_check_repeated_word_checked_on_first_emission_only():
+    # "We collected the data, and then we finally analyzed the data" - 데이터 is heard at 4,
+    # emitted at 4, and repeated at 11; the repeat must not count as a late emission.
+    toks = words("We collected the data, and then we finally analyzed the data", "en")
+    known = lambda k: ({"데이"} if k >= 4 else set()) | ({"분석"} if k >= 10 else set())
+    items = [(4, "우리는 데이터를 수집했고,"), (11, "마침내 데이터를 분석했어요.")]
+    assert check_schedule(items, toks, "en", "ko", known_at=known, full_known={"데이", "분석"}, N=5, clause_end=clause_ends(toks, "en")) is None
+
+
+def test_check_empty_items_are_waits():
+    toks = words("I will send the report tomorrow", "en")
+    known = {1: set(), 2: set(), 3: {"보내"}, 4: {"보내"}, 5: {"보내", "보고"}, 6: {"보내", "보고", "내일"}}
+    items = [(1, ""), (3, "  "), (6, "내일 보고서를 보낼게요.")]
+    assert check_schedule(items, toks, "en", "ko", known_at=lambda k: known[k], full_known={"보내", "보고", "내일"}, N=8, clause_end=[6]) is None

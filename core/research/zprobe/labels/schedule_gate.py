@@ -104,20 +104,27 @@ def check_schedule(
         for w in content(text, tgt):
             if w not in first_seen:
                 first_seen[w] = next((k for k in range(1, K + 1) if w in known_at(k)), None)
+    # A stem is checked only on the item that first emits it: a repeated content word
+    # ("... analyzed the data") is a later mention, not a deferred first emission.
+    first_emit = []
+    emitted = set()
+    for after, text in items:
+        for w in sorted(content(text, tgt)):
+            if w not in emitted:
+                emitted.add(w)
+                first_emit.append((after, w))
     ends = sorted(clause_end)
-    for after, text in items:
-        for w in sorted(content(text, tgt)):
-            j = first_seen[w]
-            if j is None:
-                continue
-            c = next((e for e in ends if e >= j), K)
-            if after > c:
-                return f"clause: {w} heard at word {j} (clause ends {c}) but emitted after {after}"
-    for after, text in items:
-        for w in sorted(content(text, tgt)):
-            j = first_seen[w]
-            if j is not None and after - j > N:
-                return f"deferral: {w} heard at word {j} but emitted after {after} (> {N} words late)"
+    for after, w in first_emit:
+        j = first_seen[w]
+        if j is None:
+            continue
+        c = next((e for e in ends if e >= j), K)
+        if after > c:
+            return f"clause: {w} heard at word {j} (clause ends {c}) but emitted after {after}"
+    for after, w in first_emit:
+        j = first_seen[w]
+        if j is not None and after - j > N:
+            return f"deferral: {w} heard at word {j} but emitted after {after} (> {N} words late)"
     return None
 
 
