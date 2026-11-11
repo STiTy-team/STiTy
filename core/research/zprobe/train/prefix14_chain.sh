@@ -87,7 +87,7 @@ stage "training rows"
 [ -f models/zprobe/data/train_prefix14.jsonl ] || $PY core/research/zprobe/labels/build_prefix14.py \
   --schedule $GATED --sentences $OUT/sentences.jsonl --word-times $OUT/word_times.jsonl \
   --sil-wav models/zprobe/data/silence_tail_4s.wav --out models/zprobe/data/train_prefix14.jsonl \
-  --val-out models/zprobe/data/val_prefix14.jsonl --rows-per-rec 8 --catchup-per-rec 2 \
+  --val-out models/zprobe/data/val_prefix14.jsonl --rows-per-rec 5 --catchup-per-rec 2 --val-cap 1500 \
   --sil-cap 800 --seg-cap 2500 --reset-rows 3000 --seed 14 || { echo P14_FAIL rows; exit 1; }
 echo "  train rows: $(wc -l < models/zprobe/data/train_prefix14.jsonl), val rows: $(wc -l < models/zprobe/data/val_prefix14.jsonl)"
 

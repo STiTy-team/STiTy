@@ -253,6 +253,39 @@ def _clip_dur(audio, cache):
     return d - float(kv.get("start", 0)) if "start" in kv else (min(d, float(kv["end"])) if "end" in kv else d)
 
 
+def audio_paths(audio):
+    """File paths inside an audio string: `|`-joined pieces, each `path[#start=..][#end=..]`."""
+    return [p.partition("#")[0] for p in audio.split("|")]
+
+
+def drop_missing(rows, exists=os.path.exists):
+    """(rows whose every audio piece exists, sorted missing paths)."""
+    cache, missing, keep = {}, set(), []
+    for r in rows:
+        ok = True
+        for p in audio_paths(r["audio"]):
+            if p not in cache:
+                cache[p] = exists(p)
+            if not cache[p]:
+                ok = False
+                missing.add(p)
+        if ok:
+            keep.append(r)
+    return keep, sorted(missing)
+
+
+def write_jsonl_atomic(path, rows):
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    os.replace(tmp, path)
+
+
+ROW_RANGE = (60000, 200000)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--schedule", default="models/zprobe/data/prefix14/schedule_luna.gated.jsonl")
@@ -261,13 +294,16 @@ def main():
     ap.add_argument("--sil-wav", default="models/zprobe/data/silence_tail_4s.wav")
     ap.add_argument("--out", default="models/zprobe/data/train_prefix14.jsonl")
     ap.add_argument("--val-out", default="models/zprobe/data/val_prefix14.jsonl")
-    ap.add_argument("--rows-per-rec", type=int, default=8)
+    ap.add_argument("--rows-per-rec", type=int, default=5)
     ap.add_argument("--catchup-per-rec", type=int, default=2)
     ap.add_argument("--sil-cap", type=int, default=800, help="per pair (en-ko gets twice this)")
     ap.add_argument("--seg-cap", type=int, default=2500, help="per pair (en-ko gets twice this)")
     ap.add_argument("--reset-rows", type=int, default=3000)
     ap.add_argument("--lid-frac", type=float, default=0.33)
     ap.add_argument("--holdout", type=float, default=0.02)
+    ap.add_argument("--val-cap", type=int, default=1500, help="random sample of held-out rows (0 = all)")
+    ap.add_argument("--no-range-check", action="store_true",
+                    help=f"skip the total row-count check {ROW_RANGE[0]}..{ROW_RANGE[1]}")
     ap.add_argument("--seed", type=int, default=14)
     a = ap.parse_args()
     rng = random.Random(a.seed)
@@ -290,7 +326,7 @@ def main():
             sents.append(r)
     held = split_holdout([s["sid"] for s in sents], a.holdout, a.seed)
 
-    dur_cache, skipped = {}, 0
+    dur_cache, skipped, gone = {}, 0, []
     recs = []  # one dict per usable recording
     for s in sents:
         toks = words(s["src"], s["lang"])
@@ -299,17 +335,20 @@ def main():
             if not ws:
                 skipped += 1
                 continue
+            if not os.path.exists(audio_paths(rec["audio"])[0]):
+                gone.append(rec["audio"])
+                continue
             recs.append(dict(sid=s["sid"], lang=s["lang"], pair=f"{s['lang']}-{s['tgt']}",
                              audio=rec["audio"], items=sched[s["sid"]],
                              ends=end_times_for(toks, ws), dur=_clip_dur(rec["audio"], dur_cache),
                              held=s["sid"] in held))
 
-    train, val, fam_n = [], [], {}
+    train, val, fam_of = [], [], {}  # fam_of: id(row) -> family name, for the report
 
     def add(dst, fam, rows):
         for r in rows:
             dst.append(r)
-            fam_n[(dst is val, fam)] = fam_n.get((dst is val, fam), 0) + 1
+            fam_of[id(r)] = fam
 
     on_time_train, whole_done = [], set()
     for r in recs:
@@ -352,17 +391,43 @@ def main():
 
     rng.shuffle(train)
     rng.shuffle(val)
-    for path, rows in ((a.out, train), (a.val_out, val)):
-        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            for r in rows:
-                f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    for isval, name, rows in ((False, "train", train), (True, "val", val)):
-        fams = {f: n for (v, f), n in sorted(fam_n.items()) if v == isval}
+    if a.val_cap and len(val) > a.val_cap:
+        print(f"val: sampled {a.val_cap} of {len(val)} held-out rows")
+        val = val[: a.val_cap]  # already shuffled with the seeded rng
+
+    # one unreadable file would kill lazy-feature SFT hours in: check every piece of every row now
+    n_all = len(train) + len(val)
+    train, miss_t = drop_missing(train)
+    val, miss_v = drop_missing(val)
+    missing = sorted(set(miss_t) | set(miss_v))
+    dropped = n_all - len(train) - len(val)
+    n_recs = len(recs) + len(gone)
+    if gone:
+        print(f"missing audio: {len(gone)}/{n_recs} recordings skipped; e.g. {gone[:5]}")
+    if missing:
+        print(f"missing audio: {len(missing)} files, {dropped} rows dropped; e.g. {missing[:5]}")
+    if dropped > 0.005 * max(1, n_all) or len(gone) > 0.005 * max(1, n_recs):
+        print(f"BUILD_PREFIX14_FAIL missing audio: {len(gone)}/{n_recs} recordings, {dropped}/{n_all} rows (> 0.5%)")
+        sys.exit(1)
+
+    for name, rows in (("train", train), ("val", val)):
+        fams = {}
+        for r in rows:
+            fams[fam_of[id(r)]] = fams.get(fam_of[id(r)], 0) + 1
+        fams = dict(sorted(fams.items()))
         empty = sum(1 for r in rows if not r["text"])
-        print(f"{name}: {len(rows)} rows {fams}; empty text {empty} ({empty / max(1, len(rows)):.1%})")
+        print(f"{name}: {len(rows)} rows; per family {fams}; empty text {empty} ({empty / max(1, len(rows)):.1%})")
     held_recs = sum(1 for r in recs if r["held"])
     print(f"holdout: {len(held)} sentences, {held_recs} recs; recs skipped (no word_times): {skipped}")
+    total = len(train) + len(val)
+    print(f"total: train {len(train)} + val {len(val)} = {total}")
+    lo, hi = ROW_RANGE
+    if not a.no_range_check and not lo <= total <= hi:
+        print(f"BUILD_PREFIX14_FAIL total rows {total} outside [{lo}, {hi}] - change --rows-per-rec "
+              "or pass --no-range-check")
+        sys.exit(1)
+    write_jsonl_atomic(a.val_out, val)
+    write_jsonl_atomic(a.out, train)  # last: the chain treats the train file as the done marker
     print("BUILD_PREFIX14_DONE")
 
 
