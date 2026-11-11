@@ -69,7 +69,7 @@ async def _stream_item(pipeline, augmenter, item, cfg, languages: list[str]) -> 
         target_lang=cfg.target,
         augment=augmented,
     )
-    pipeline.start(languages=languages, target_lang=cfg.target)
+    pipeline.start(languages=languages, target_lang=cfg.target, own_lang=cfg.lang)
     try:
         async for chunk in audio.stream_realtime(pcm, chunk_ms=CHUNK_SIZE_MS):
             silence = heard_sec >= audio_sec

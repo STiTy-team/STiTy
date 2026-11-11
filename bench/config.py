@@ -15,7 +15,7 @@ from core.utils.paths import get_project_root
 
 from .augment import AugmentConfig
 
-DATASET_KEYS = {"dataset", "target", "augment"}
+DATASET_KEYS = {"dataset", "target", "lang", "augment"}
 NAME_PATTERN = re.compile(r"[a-z0-9][a-z0-9.+-]*(_[a-z0-9][a-z0-9.+-]*)*")
 
 
@@ -82,6 +82,9 @@ class BenchConfig(ConfigBody):
     name: str
     dataset: DatasetConfig
     target: str
+    # The speaker's own language. Set it and segments heard in `lang` go to `target`
+    # while everything else comes back into `lang` -- a two-way conversation.
+    lang: str | None = None
     augment: AugmentConfig | None = None
     stity: PipelineConfig
 
@@ -91,7 +94,10 @@ class BenchConfig(ConfigBody):
     @classmethod
     def expand(cls, raw: Any) -> Any:
         if isinstance(raw, dict) and "target" in raw:
-            return {**raw, "target": _code(raw["target"], field="target")}
+            raw = {**raw, "target": _code(raw["target"], field="target")}
+            if raw.get("lang"):
+                raw["lang"] = _code(raw["lang"], field="lang")
+            return raw
         return raw
 
     @property

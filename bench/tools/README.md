@@ -50,3 +50,14 @@ VAD 커밋에서 빠지고 스트림이 닫힐 때 혼자 커밋된다 — FLEUR
 FLEURS 의 가장 긴 문장(29초, 약 420토큰)에는 넉넉하지만 회의·발표를 한 세션으로 흘리면 금방 닿는다.
 
 이 박스에는 nvcc 가 없어 `VLLM_USE_FLASHINFER_SAMPLER=0` 이 필요하다.
+
+## rescore_target.py
+
+양방향 실행(데이터셋 설정에 `lang` 이 있는 것)을 다른 목표 언어로 다시 채점한다. bench 는 `target`
+방향만 채점하므로, `lang` 으로 돌아온 말의 점수는 이것으로 같은 `items.jsonl` 에서 낸다.
+
+```bash
+PYTHONPATH=. bench/.venv/bin/python bench/tools/rescore_target.py --run-dir <run> --target ko
+```
+
+COMET 은 그 뒤 `python -m bench.metrics.comet --run-dir <out>` 으로 더한다.

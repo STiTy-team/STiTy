@@ -447,6 +447,12 @@ bench 는 `parse_args` 를 부르지 않고 위 표로만 푼다. 해석된 값�
 고르는 것과 같다 — 실행 하나가 청자 한 명이다. 양쪽이 서로의 언어로 받는 대화를 재려면 `target`
 을 바꿔 두 번 돌린다.
 
+한 번에 양방향을 재려면 데이터셋 설정에 `lang` 을 더한다. `lang` 으로 들린 말은 `target` 으로, 그 밖의
+말은 `lang` 으로 번역한다 — 화자 한 명이 상대와 서로의 언어로 대화하는 경우다
+(`configs/datasets/fleurs_ko+en-ko+en_lvl26_vol23.yml`: `target: en`, `lang: ko`). bench 는 이때도
+`target` 방향만 채점한다. 반대 방향(`lang` 으로 돌아온 말)은 끝난 실행에서
+`bench/tools/rescore_target.py --run-dir <run> --target <lang>` 으로 따로 낸다.
+
 어느 언어로 들렸는지는 파이프라인이 정한다. bench 는 데이터셋의 `languages` 와 `target` 만
 넘기고, **항목의 실제 언어는 넘기지 않는다.** 넘기면 언어 판정을 정답으로 대신하게 되어 언어 판정
 지표가 늘 1.0 근처로 나온다.

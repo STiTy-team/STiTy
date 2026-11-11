@@ -38,10 +38,13 @@
 | 조건 | `cafe` | 카페 소음 (`augment.noise.place: cafe`) |
 | 조건 | `hall` | 공연장 울림 (`augment.room.place: hall`) |
 | 조건 | `lvl26` | 턴마다 −26 dBFS 로 맞춘 데이터 (`mix.py --level -26`) |
+| 조건 | `vol23` | 조용한 클립을 −23 dB RMS 로 올린다 (`augment.volume.min_level_db: -23`) |
 | 부분 | `top<N>` | 가장 긴 N개 (`limit: N`, `pick: longest`) |
 | 부분 | `first<N>` | 앞의 N개 (`limit: N`) |
 | 부분 | `hallu` | 헛말이 커밋됐던 문장과 대조군 (`ids: [...]`) |
 | 역할 | `asr.` · `mt.` | 음성 인식, 번역 |
+| 변형 | `seg` · `punct` | 커밋 정책 (`commit: seg` / `commit: punct`) |
+| 변형 | `noctx` | 앞 턴 문맥 없이 번역 (`translation.context_turns: 0`) |
 
 ## `meta` 블록
 
