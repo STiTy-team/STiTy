@@ -113,20 +113,23 @@ def main():
         mt = join_texts([t for _, t in rec["schedule"]])
         try:
             v = verdict(ask(build_prompt(row, mt)))
+            if v is None:
+                v = verdict(ask(build_prompt(row, mt)))
         except Exception as e:  # noqa: BLE001
             with lock:
                 st["error"] += 1
                 print(f"ERROR {rec['sid']}: {e}", flush=True)
             return
-        if v is None:
-            v = (["malformed"], "malformed judge reply")
-        defects, note = v
+        unjudged = v is None  # two malformed replies: not a defect, the row keeps its label and is marked
+        defects, note = ([], "malformed judge reply") if unjudged else v
         ok = not defects
         with lock:
             st["n"] += 1
             st["fail"] += not ok
-            out.write(json.dumps({"sid": rec["sid"], "defects": defects, "note": note, "pass": ok,
-                                  "mt": mt}, ensure_ascii=False) + "\n")
+            rec_out = {"sid": rec["sid"], "defects": defects, "note": note, "pass": ok, "mt": mt}
+            if unjudged:
+                rec_out["unjudged"] = True
+            out.write(json.dumps(rec_out, ensure_ascii=False) + "\n")
             out.flush()
             if st["n"] % 100 == 0:
                 print(f"{st['n']} judged, fail={st['fail']} est ${st['spent']:.2f}", flush=True)

@@ -113,3 +113,16 @@ def test_rules_and_cap_flags_reach_the_prompt(tmp_path):
     finally:
         RULES.update(old[0])
         DEFERRAL_CAP.update(old[1])
+
+
+def test_note_goes_into_first_request():
+    ask = fake([GOOD])
+    label_one(ROW, HY, ask, note="A reviewer found: missing subject. Fix that.")
+    assert ask.calls[0].endswith("A reviewer found: missing subject. Fix that.")
+
+
+def test_reviewer_notes_from_judge_file(tmp_path):
+    from label_schedule import reviewer_notes
+    p = tmp_path / "j.jsonl"
+    p.write_text('{"sid": "a", "pass": false, "note": "missing subject"}\n{"sid": "b", "pass": true, "note": ""}\n', encoding="utf-8")
+    assert reviewer_notes(str(p)) == {"a": "A reviewer found: missing subject. Fix that."}

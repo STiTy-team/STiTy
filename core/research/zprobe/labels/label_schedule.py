@@ -128,15 +128,28 @@ def hy_disagreements(row, hy_row, reply):
     return n
 
 
-def label_one(row, hy_row, ask, fail=None):
-    """Output record, or None on FAIL. ask(row, note) -> parsed JSON dict. `fail(reason)` is told why."""
+def reviewer_notes(judge_path):
+    """sid -> first-request note for the rows a judge file (judge_schedule.py) failed."""
+    notes = {}
+    for l in open(judge_path, encoding="utf-8"):
+        if not l.strip():
+            continue
+        j = json.loads(l)
+        if not j.get("pass"):
+            notes[j["sid"]] = f"A reviewer found: {j.get('note') or ', '.join(j.get('defects') or [])}. Fix that."
+    return notes
+
+
+def label_one(row, hy_row, ask, fail=None, note=""):
+    """Output record, or None on FAIL. ask(row, note) -> parsed JSON dict. `fail(reason)` is told why.
+    `note` (a reviewer's finding) is appended to the first request; a gate rejection replaces it on the retry."""
     fail = fail or (lambda why: None)
     tokens = words(row["src"], row["lang"])
     prefixes = (hy_row or {}).get("prefixes")
     if not prefixes or len(prefixes) != len(tokens):
         fail("no hy prefixes")
         return None
-    note, why = "", None
+    why = None
     for attempt in (1, 2):
         reply = ask(row, note)
         why = gate(row, hy_row, reply)
@@ -164,6 +177,8 @@ def main():
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--out", required=True)
     ap.add_argument("--rules", default=RULES_PATH, help="rules text appended to every prompt")
+    ap.add_argument("--only-sids", help="file with one sid per line: label only these")
+    ap.add_argument("--notes", help="judge_schedule.py output: its failed rows' notes go into the first request")
     ap.add_argument("--deferral-cap", type=int, default=None,
                     help="deferral cap in source words for both languages (0 = off); default en 8 / ko 6")
     a = ap.parse_args()
@@ -225,7 +240,7 @@ def main():
             return
         reasons = []
         try:
-            rec = label_one(row, hy.get(row["sid"]), ask, fail=reasons.append)
+            rec = label_one(row, hy.get(row["sid"]), ask, fail=reasons.append, note=notes.get(row["sid"], ""))
         except Exception as e:  # noqa: BLE001
             with lock:
                 st["seen"] += 1
@@ -247,6 +262,10 @@ def main():
                 print(f"{st['seen']}/{len(todo)} ok={st['ok']} fail={st['fail']} error={st['error']} "
                       f"est ${st['spent']:.2f}", flush=True)
 
+    notes = reviewer_notes(a.notes) if a.notes else {}
+    if a.only_sids:
+        only = {l.strip() for l in open(a.only_sids, encoding="utf-8") if l.strip()}
+        rows = [r for r in rows if r["sid"] in only]
     todo = [r for r in rows if r["sid"] not in done]
     print(f"rows {len(rows)}, todo {len(todo)}", flush=True)
     with ThreadPoolExecutor(max_workers=a.workers) as ex:
