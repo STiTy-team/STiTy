@@ -26,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from hy_word_prefixes import known_sets  # noqa: E402
-from schedule_gate import check_schedule, clause_ends, parse_schedule, words  # noqa: E402
+from schedule_gate import check_schedule, clause_ends, parse_covers, parse_schedule, words  # noqa: E402
 
 PRICE = {"gpt-6-luna": (0.10, 0.50), "gpt-5-mini": (0.25, 2.00)}
 LANG_NAME = {"en": "English", "ko": "Korean"}
@@ -90,7 +90,8 @@ def build_prompt(row, note=""):
     lines.append(rules)
     if note:
         lines.append(note)
-    lines.append('Answer with JSON only: {"schedule": [{"after": k, "text": "..."}, ...]}')
+    lines.append('Answer with JSON only: {"schedule": [{"after": k, "text": "...", "src": [i, j, ...]}, ...]} where '
+                 '"src" lists the numbers of the source words that "text" translates (all <= "after"; [] for an empty text).')
     return "\n".join(lines)
 
 
@@ -100,10 +101,24 @@ def gate(row, hy_row, reply):
     known = known_sets(hy_row["prefixes"], row["tgt"])
     try:
         items = parse_schedule(reply)
+        covers = parse_covers(reply)
     except ValueError as e:
         return str(e)
     return check_schedule(items, tokens, row["lang"], row["tgt"], known_at=lambda k: known[k - 1],
-                          full_known=known[-1], N=n_cap(row["lang"]), clause_end=clause_ends(tokens, row["lang"]))
+                          full_known=known[-1], N=n_cap(row["lang"]), clause_end=clause_ends(tokens, row["lang"]),
+                          covers=covers)
+
+
+def hy_disagreements(row, hy_row, reply):
+    """How many non-empty items the Hy-stem lookahead rule would have rejected: a diagnostic on the
+    self-reported alignment (recorded, never a FAIL)."""
+    from build_prefix import content
+    known = known_sets(hy_row["prefixes"], row["tgt"])
+    n = 0
+    for after, text in parse_schedule(reply):
+        if text.strip() and (content(text, row["tgt"]) - known[after - 1]) & known[-1]:
+            n += 1
+    return n
 
 
 def label_one(row, hy_row, ask, fail=None):
@@ -120,8 +135,13 @@ def label_one(row, hy_row, ask, fail=None):
         why = gate(row, hy_row, reply)
         if why is None:
             items = parse_schedule(reply)
-            return {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
-                    "schedule": [[k, t] for k, t in items], "attempts": attempt}
+            covers = parse_covers(reply)
+            rec = {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
+                   "schedule": [[k, t] for k, t in items], "attempts": attempt}
+            if any(c is not None for c in covers):
+                rec["src_words"] = [sorted(c) if c is not None else None for c in covers]
+                rec["hy_disagree"] = hy_disagreements(row, hy_row, reply)
+            return rec
         note = f"Previous attempt was rejected: {why}. Fix that."
     fail(why)
     return None

@@ -1,7 +1,10 @@
 """Emission-schedule labels: source tokenization, clause ends, LLM JSON parsing and the gate.
 
 A schedule is a list of (after_word, text) items: once source word `after` has been heard,
-`text` is appended to the translation. Pure functions only; no I/O.
+`text` is appended to the translation. An item may also carry `src`, the source word numbers it
+translates (self-reported alignment); with it the lookahead, clause and deferral rules are judged
+against max(src) instead of Hy prefix-translation stems, which misfire on synonyms (서한/편지).
+Pure functions only; no I/O.
 """
 
 import os
@@ -86,6 +89,21 @@ def parse_schedule(obj) -> list[tuple[int, str]]:
     return out
 
 
+def parse_covers(obj) -> list:
+    """Per item of parse_schedule(obj): the set of source word numbers in its "src" list, or None when absent.
+    ValueError("format: ...") when "src" is present but not a list of ints."""
+    out = []
+    for it in obj["schedule"]:
+        src = it.get("src")
+        if src is None:
+            out.append(None)
+            continue
+        if not isinstance(src, list) or any(isinstance(x, bool) or not isinstance(x, int) for x in src):
+            raise ValueError(f"format: 'src' must be a list of ints: {src!r}")
+        out.append(set(src))
+    return out
+
+
 def check_schedule(
     items,
     tokens: list[str],
@@ -96,13 +114,17 @@ def check_schedule(
     full_known: set,
     N: int,
     clause_end: list[int],
+    covers=None,
 ) -> str | None:
     """Reason string if the schedule violates a rule, else None.
 
     Order: range, all-empty, lookahead, clause, deferral. `known_at(k)` is the set of target
     content stems already supported by source words 1..k; `full_known` is the same for the whole source.
+    `covers` (parse_covers): items with a src set are judged by it - lookahead = any src word > after,
+    clause/deferral measured from max(src); items without one fall back to the Hy stems.
     """
     K = len(tokens)
+    covers = list(covers) if covers is not None else [None] * len(items) if isinstance(items, (list, tuple)) else []
     if not isinstance(items, (list, tuple)):
         return "range: items is not a list"
     prev = 0
@@ -121,11 +143,35 @@ def check_schedule(
 
     if not any(text.strip() for _, text in items):
         return "all additions are empty"
+    if len(covers) != len(items):
+        return f"range: {len(covers)} src lists for {len(items)} items"
 
-    for after, text in items:
+    for (after, text), cov in zip(items, covers):
+        if cov is not None:
+            if text.strip() and not cov:
+                return f"range: item after={after} has text but an empty src list"
+            bad = sorted(x for x in cov if not 1 <= x <= K)
+            if bad:
+                return f"range: src words {bad} outside 1..{K}"
+            late = sorted(x for x in cov if x > after)
+            if late:
+                return f"lookahead: src words {late} are after word {after}"
+            continue
         ahead = sorted((content(text, tgt) - known_at(after)) & full_known)
         if ahead:
             return f"lookahead: {' '.join(ahead)} - not yet heard at word {after}"
+
+    ends = sorted(clause_end)
+    for (after, text), cov in zip(items, covers):  # self-aligned items: clause and deferral from max(src)
+        if cov is None or not text.strip():
+            continue
+        j = max(cov)
+        c = next((e for e in ends if e >= j), K)
+        if after > c:
+            return f"clause: item covering words up to {j} (clause ends {c}) emitted after {after}"
+        if after - j > N:
+            return f"deferral: item covering words up to {j} emitted after {after} (> {N} words late)"
+    items = [it for it, cov in zip(items, covers) if cov is None]  # the rest: Hy-stem rules below
 
     first_seen = {}
     for after, text in items:
@@ -141,7 +187,6 @@ def check_schedule(
             if w not in emitted:
                 emitted.add(w)
                 first_emit.append((after, w))
-    ends = sorted(clause_end)
     for after, w in first_emit:
         j = first_seen[w]
         if j is None:

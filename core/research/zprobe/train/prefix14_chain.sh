@@ -18,7 +18,9 @@ PY=.venv/bin/python; CPY=.venv-tpm/bin/python
 DS=/home/skkai/STiTy-team/datasets
 OUT=models/zprobe/data/prefix14
 LOG=models/zprobe/logs; mkdir -p $LOG $OUT
-LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-20}
+LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-35}; LABEL_REASONING=${LABEL_REASONING:-low}
+# STOP_AFTER_ROWS=1 ends the chain once train/val rows exist (the training half runs elsewhere); BENCH=0 skips the
+# manager bench stages (no manager reachable from that machine - submit from the 4090 with the merged models copied back)
 SCHED=$OUT/schedule_${LABEL_MODEL}.jsonl
 
 roomy() { local ok=0; while [ $ok -lt 3 ]; do
@@ -79,7 +81,7 @@ stage "hy word prefixes"
 stage "schedule labels ($LABEL_MODEL, budget $LABEL_BUDGET)"
 label() { PYTHONPATH=. $PY -u core/research/zprobe/labels/label_schedule.py \
   --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl --model $LABEL_MODEL --workers 32 \
-  --budget $LABEL_BUDGET --out $SCHED; }
+  --budget $LABEL_BUDGET --reasoning $LABEL_REASONING --out $SCHED; }
 if [ ! -f $OUT/label.done ]; then
   label; rc=$?
   # exit 3 = API errors on >1% of rows (an outage): one more pass retries only the ERROR rows (ok/FAIL sids are kept)
@@ -119,6 +121,8 @@ stage "training rows"
   --val-out models/zprobe/data/val_prefix14.jsonl --rows-per-rec 5 --catchup-per-rec 2 --val-cap 1500 \
   --sil-cap 800 --seg-cap 2500 --reset-rows 3000 --seed 14 || { echo P14_FAIL rows; exit 1; }
 echo "  train rows: $(wc -l < models/zprobe/data/train_prefix14.jsonl), val rows: $(wc -l < models/zprobe/data/val_prefix14.jsonl)"
+
+[ "${STOP_AFTER_ROWS:-0}" = 1 ] && { echo "P14_ROWS_READY $(date '+%F %T') - STOP_AFTER_ROWS=1, training half runs elsewhere"; exit 0; }
 
 stage "sft"
 sft() { $PY -u Qwen3-ASR/finetuning/qwen3_asr_sft.py \
@@ -168,6 +172,7 @@ except Exception:
   done
 }
 bench() {  # $1 marker name  $2 pipeline  $3 dataset: submit once (job id kept in $OUT/$1.job), then wait
+  [ "${BENCH:-1}" = 0 ] && { echo "  BENCH=0: skipping $2 (submit from the 4090 later)"; return 0; }
   if [ -f $OUT/$1.job ]; then JOB=$(cat $OUT/$1.job); echo "  reuse bench job $JOB"
   else submit $2 $3; [ -n "$JOB" ] && echo "$JOB" > $OUT/$1.job; fi
   wait_job "$JOB"

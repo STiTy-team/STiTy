@@ -78,3 +78,26 @@ def test_clause_ends_ko_particles_are_not_clause_ends():
 def test_clause_ends_ko_short_verbal_stems():
     toks = words("밥을 먹었고 숙제를 하고 잤다", "ko")
     assert clause_ends(toks, "ko") == [2, 4, 5]
+
+
+def test_parse_covers_and_self_aligned_rules():
+    from schedule_gate import parse_covers
+    obj = {"schedule": [{"after": 2, "text": "서한은", "src": [1, 2]}, {"after": 5, "text": "옹호했다", "src": [3]}, {"after": 6, "text": "", "src": []}]}
+    assert parse_covers(obj) == [{1, 2}, {3}, set()]
+    assert parse_covers({"schedule": [{"after": 1, "text": "x"}]}) == [None]
+    try:
+        parse_covers({"schedule": [{"after": 1, "text": "x", "src": "1"}]})
+        assert False
+    except ValueError as e:
+        assert str(e).startswith("format")
+    toks = words("This letter advocated constitutional and parliamentary governance.", "en")
+    hy = lambda k: set()  # Hy knows nothing: without src every non-empty item would be a lookahead FAIL
+    kw = dict(known_at=hy, full_known={"서한", "옹호"}, N=8, clause_end=clause_ends(toks, "en"))
+    items = [(2, "서한은"), (4, "옹호했다")]  # clause ends at 4 (before "and") and 7
+    assert check_schedule(items, toks, "en", "ko", covers=[{1, 2}, {3}], **kw) is None
+    assert check_schedule(items, toks, "en", "ko", covers=[{1, 3}, {3}], **kw).startswith("lookahead: src words [3]")
+    assert check_schedule([(2, "서한은"), (7, "옹호했다")], toks, "en", "ko", covers=[{1, 2}, {3}], **kw).startswith("clause")
+    assert check_schedule([(2, "서한은")], toks, "en", "ko", covers=[set()], **kw).startswith("range: item after=2 has text")
+    assert check_schedule(items, toks, "en", "ko", covers=[{1, 2}], **kw).startswith("range: 1 src lists")
+    # a src-less item still goes through the Hy rule
+    assert check_schedule(items, toks, "en", "ko", covers=[{1, 2}, None], **kw).startswith("lookahead: 옹호")

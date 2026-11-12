@@ -92,3 +92,10 @@ def test_with_retry():
 def test_too_many_errors():
     from label_schedule import too_many_errors
     assert not too_many_errors(1, 100) and too_many_errors(2, 100) and not too_many_errors(0, 0)
+
+
+def test_src_words_recorded_and_prompt_asks_for_src():
+    good = {"schedule": [{"after": 2, "text": "관리자가", "src": [1, 2]}, {"after": 5, "text": "계획을 승인했다", "src": [3, 4, 5]}]}
+    rec = label_one(ROW, HY, fake([good]))
+    assert rec["src_words"] == [[1, 2], [3, 4, 5]] and rec["hy_disagree"] == 0
+    assert '"src"' in build_prompt(ROW)
