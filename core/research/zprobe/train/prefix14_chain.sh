@@ -18,7 +18,9 @@ PY=.venv/bin/python; CPY=.venv-tpm/bin/python
 DS=/home/skkai/STiTy-team/datasets
 OUT=models/zprobe/data/prefix14
 LOG=models/zprobe/logs; mkdir -p $LOG $OUT
-LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-35}; LABEL_REASONING=${LABEL_REASONING:-low}
+LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-35}; LABEL_REASONING=${LABEL_REASONING:-low}; LABEL_WORKERS=${LABEL_WORKERS:-32}
+# STOP_AFTER_LABEL=1 ends the chain once the labels are complete (every GPU stage - COMET gate, rows' audio check,
+# SFT, GRPO - then runs on another machine from a copy of models/zprobe/data/prefix14).
 # STOP_AFTER_ROWS=1 ends the chain once train/val rows exist (the training half runs elsewhere); BENCH=0 skips the
 # manager bench stages (no manager reachable from that machine - submit from the 4090 with the merged models copied back)
 SCHED=$OUT/schedule_${LABEL_MODEL}.jsonl
@@ -80,7 +82,7 @@ stage "hy word prefixes"
 
 stage "schedule labels ($LABEL_MODEL, budget $LABEL_BUDGET)"
 label() { PYTHONPATH=. $PY -u core/research/zprobe/labels/label_schedule.py \
-  --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl --model $LABEL_MODEL --workers 32 \
+  --sentences $OUT/sentences.jsonl --hy $OUT/hy_prefixes.jsonl --model $LABEL_MODEL --workers $LABEL_WORKERS \
   --budget $LABEL_BUDGET --reasoning $LABEL_REASONING --out $SCHED; }
 if [ ! -f $OUT/label.done ]; then
   label; rc=$?
@@ -88,6 +90,7 @@ if [ ! -f $OUT/label.done ]; then
   if [ $rc -eq 3 ]; then echo "  label pass 1 hit API errors; retrying the ERROR rows in 10 min"; sleep 600; label; rc=$?; fi
   [ $rc -eq 0 ] && touch $OUT/label.done || { echo P14_FAIL label rc=$rc; exit 1; }
 fi
+[ "${STOP_AFTER_LABEL:-0}" = 1 ] && { echo "  labeled: $(wc -l < $SCHED)"; echo "P14_LABELS_READY $(date '+%F %T') - STOP_AFTER_LABEL=1, the rest runs elsewhere"; exit 0; }
 echo "  labeled: $(wc -l < $SCHED), cost: $($PY -c "
 import json
 t = 0.0
