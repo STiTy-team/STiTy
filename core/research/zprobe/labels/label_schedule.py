@@ -26,15 +26,21 @@ from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from hy_word_prefixes import known_sets  # noqa: E402
-from schedule_gate import check_schedule, clause_ends, parse_covers, parse_schedule, words  # noqa: E402
+from schedule_gate import (check_schedule, clause_ends, fix_leading_punct, merge_same_after, parse_covers,  # noqa: E402
+                           parse_schedule, shape_check, words)
 
 PRICE = {"gpt-6-luna": (0.10, 0.50), "gpt-5-mini": (0.25, 2.00)}
 LANG_NAME = {"en": "English", "ko": "Korean"}
 RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts", "schedule_rules.txt")
 
 
+DEFERRAL_CAP = {"en": 8, "ko": 6}
+RULES = {"path": RULES_PATH}
+
+
 def n_cap(lang):
-    return 8 if lang == "en" else 6
+    """Deferral cap in source words; 0 (--deferral-cap 0) turns the rule off (the clause rule still holds)."""
+    return DEFERRAL_CAP[lang] or 10**6
 
 
 def should_stop(spent, budget):
@@ -82,7 +88,7 @@ def build_prompt(row, note=""):
     tokens = words(row["src"], row["lang"])
     numbered = " ".join(f"{i}:{t}" for i, t in enumerate(tokens, 1))
     tgt_name = LANG_NAME[row["tgt"]]
-    rules = open(RULES_PATH, encoding="utf-8").read().strip().format(N=n_cap(row["lang"]))
+    rules = open(RULES["path"], encoding="utf-8").read().strip().format(N=n_cap(row["lang"]))
     lines = [f"Source sentence ({LANG_NAME[row['lang']]}), words numbered from 1:", numbered]
     if row.get("ref"):
         lines.append(f"Reference translation ({tgt_name}): {row['ref']}")
@@ -104,9 +110,10 @@ def gate(row, hy_row, reply):
         covers = parse_covers(reply)
     except ValueError as e:
         return str(e)
-    return check_schedule(items, tokens, row["lang"], row["tgt"], known_at=lambda k: known[k - 1],
-                          full_known=known[-1], N=n_cap(row["lang"]), clause_end=clause_ends(tokens, row["lang"]),
-                          covers=covers)
+    why = check_schedule(items, tokens, row["lang"], row["tgt"], known_at=lambda k: known[k - 1],
+                         full_known=known[-1], N=n_cap(row["lang"]), clause_end=clause_ends(tokens, row["lang"]),
+                         covers=covers)
+    return why or shape_check(items, row["tgt"])
 
 
 def hy_disagreements(row, hy_row, reply):
@@ -134,8 +141,7 @@ def label_one(row, hy_row, ask, fail=None):
         reply = ask(row, note)
         why = gate(row, hy_row, reply)
         if why is None:
-            items = parse_schedule(reply)
-            covers = parse_covers(reply)
+            items, covers = merge_same_after(fix_leading_punct(parse_schedule(reply)), parse_covers(reply))
             rec = {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
                    "schedule": [[k, t] for k, t in items], "attempts": attempt}
             if any(c is not None for c in covers):
@@ -157,7 +163,13 @@ def main():
     ap.add_argument("--budget", type=float, default=20.0)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--rules", default=RULES_PATH, help="rules text appended to every prompt")
+    ap.add_argument("--deferral-cap", type=int, default=None,
+                    help="deferral cap in source words for both languages (0 = off); default en 8 / ko 6")
     a = ap.parse_args()
+    RULES["path"] = a.rules
+    if a.deferral_cap is not None:
+        DEFERRAL_CAP["en"] = DEFERRAL_CAP["ko"] = a.deferral_cap
 
     from openai import OpenAI
     client = OpenAI(base_url="https://gw.letsur.ai/v1", api_key=os.environ["LETSUR_API_KEY"])

@@ -27,7 +27,7 @@ import random
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from schedule_gate import eojeol_end_times, words  # noqa: E402
+from schedule_gate import eojeol_end_times, glues, join_texts, words  # noqa: E402
 
 NAME = {"en": "English", "ko": "Korean", "ja": "Japanese", "zh": "Chinese"}
 EPS = 1e-9
@@ -61,12 +61,18 @@ def cut(audio, t):
 
 
 def _join(items):
-    return " ".join(t.strip() for _, t in items if t.strip())
+    return join_texts([t for _, t in items])
 
 
 def _delta(cond_items, new_items):
+    """Text appended to the cond text: a leading space unless cond is empty or the first new piece glues on
+    (a particle/ending continuing the previous eojeol: 응답률 + 도)."""
     d = _join(new_items)
-    return (" " + d) if d and _join(cond_items) else d
+    c = _join(cond_items)
+    if not d or not c:
+        return d
+    first = next((t for _, t in new_items if t.strip()), "")
+    return d if glues(c, first) else " " + d
 
 
 PAD = 0.2
