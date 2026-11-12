@@ -232,7 +232,7 @@ def main():
                 out.flush()
                 st["ok"] += 1
             if st["seen"] % 50 == 0:
-                print(f"{st['seen']}/{len(rows)} ok={st['ok']} fail={st['fail']} error={st['error']} "
+                print(f"{st['seen']}/{len(todo)} ok={st['ok']} fail={st['fail']} error={st['error']} "
                       f"est ${st['spent']:.2f}", flush=True)
 
     todo = [r for r in rows if r["sid"] not in done]
