@@ -241,3 +241,8 @@ def test_drop_missing_threshold():
     keep, miss = b.drop_missing(rows, exists=lambda p: not p.startswith("/gone"))
     assert len(keep) == 999 and miss == ["/gone/b.wav"]
     assert b.audio_paths("/a.wav#start=1#end=2|/b.wav#end=3") == ["/a.wav", "/b.wav"]
+
+
+def test_delta_glues_particle_piece():
+    assert b._delta([(4, "응답률")], [(6, "도")]) == "도"
+    assert b._delta([(4, "응답률도")], [(7, "더 높습니다.")]) == " 더 높습니다."

@@ -99,3 +99,17 @@ def test_src_words_recorded_and_prompt_asks_for_src():
     rec = label_one(ROW, HY, fake([good]))
     assert rec["src_words"] == [[1, 2], [3, 4, 5]] and rec["hy_disagree"] == 0
     assert '"src"' in build_prompt(ROW)
+
+
+def test_rules_and_cap_flags_reach_the_prompt(tmp_path):
+    from label_schedule import DEFERRAL_CAP, RULES, n_cap
+    rules = tmp_path / "r.txt"
+    rules.write_text("RULE-MARKER {N}", encoding="utf-8")
+    old = dict(RULES), dict(DEFERRAL_CAP)
+    try:
+        RULES["path"] = str(rules)
+        DEFERRAL_CAP["en"] = DEFERRAL_CAP["ko"] = 0
+        assert "RULE-MARKER 1000000" in build_prompt(ROW, "") and n_cap("en") == 10**6
+    finally:
+        RULES.update(old[0])
+        DEFERRAL_CAP.update(old[1])

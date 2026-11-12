@@ -101,3 +101,33 @@ def test_parse_covers_and_self_aligned_rules():
     assert check_schedule(items, toks, "en", "ko", covers=[{1, 2}], **kw).startswith("range: 1 src lists")
     # a src-less item still goes through the Hy rule
     assert check_schedule(items, toks, "en", "ko", covers=[{1, 2}, None], **kw).startswith("lookahead: 옹호")
+
+
+def test_shape_bare_noun_rejected_unless_particle_follows():
+    from schedule_gate import shape_check
+    assert shape_check([(2, "이 문장"), (4, "특별히"), (7, "당신을 위해 만들어졌습니다.")], "ko").startswith("shape: piece 1")
+    assert shape_check([(4, "응답률"), (6, "도"), (7, "더 높습니다.")], "ko") is None
+    assert shape_check([(1, "그것은"), (3, "영국의"), (4, "가장 오래된"), (7, "골격이다.")], "ko") is None
+
+
+def test_shape_english_dangling_and_lone_conjunction():
+    from schedule_gate import shape_check
+    assert "dangling" in shape_check([(2, "Based on this,"), (9, "is one of the sources, so"), (12, "I introduced it.")], "en")
+    assert shape_check([(1, "But"), (2, "even this"), (7, "I can't.")], "en") is None
+    assert "splits a word" in shape_check([(2, "the son-in-law"), (3, "'s"), (5, "sentence was light.")], "en")
+
+
+def test_glues_needs_bare_noun_before_and_particle_after():
+    from schedule_gate import glues, join_texts
+    assert join_texts(["응답률", "도", "더 높습니다."]) == "응답률도 더 높습니다."
+    assert join_texts(["팔과 턱", "에 상처를 입었고,"]) == "팔과 턱에 상처를 입었고,"
+    assert join_texts(["빠르게", "이 숫자를"]) == "빠르게 이 숫자를"
+    assert join_texts(["그래서,", "이 GU 종양 영역에서"]) == "그래서, 이 GU 종양 영역에서"
+    assert glues("그래서,", "도") is False
+
+
+def test_fix_leading_punct_and_merge_same_after():
+    from schedule_gate import fix_leading_punct, merge_same_after
+    assert fix_leading_punct([(9, "there is a bomb"), (10, ", namely,"), (15, " the spread")]) == [(9, "there is a bomb,"), (10, " namely,"), (15, " the spread")]
+    items, covers = merge_same_after([(2, "또한,"), (13, "여러분의 모든 전기에"), (13, "깊은 인상을 받았습니다.")], [{1, 2}, {3}, {4}])
+    assert items == [(2, "또한,"), (13, "여러분의 모든 전기에 깊은 인상을 받았습니다.")] and covers == [{1, 2}, {3, 4}]

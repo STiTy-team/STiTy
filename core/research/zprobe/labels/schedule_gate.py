@@ -129,9 +129,17 @@ def join_texts(texts: list[str]) -> str:
     return out
 
 
+_EN_WORD_SPLIT = re.compile(r"^\s*('(s|re|ve|ll|d|m)|n't)\b")
+
+
 def shape_check(items, tgt: str) -> str | None:
-    """Reason string if a piece has a bad shape, else None. Only non-final pieces with text are judged."""
+    """Reason string if a piece has a bad shape, else None. Non-final pieces with text are judged; an English
+    piece that starts with a clitic ('s, n't) is a split word wherever it sits."""
     texts = [t for _, t in items if t.strip()]
+    if tgt != "ko":
+        for i, t in enumerate(texts):
+            if _EN_WORD_SPLIT.match(t):
+                return f"shape: piece {i + 1} \"{t.strip()}\" splits a word - join it to the previous piece"
     for i, t in enumerate(texts[:-1]):
         t = t.strip()
         nxt = texts[i + 1]
