@@ -19,3 +19,12 @@ def test_each_sid_lands_in_exactly_one_place():
     assert rescue == [{"sid": "still", "why": "judge"}, {"sid": "gatefail", "why": "fail"}]
     all_sids = [r["sid"] for r in kept] + [r["sid"] for r in rescue]
     assert sorted(all_sids) == ["blind", "fixed", "gatefail", "ok", "still"]
+
+
+def test_error_sids_rescued_and_missing_judge_row_flagged():
+    s1 = [{"sid": "ok", "schedule": [[1, "a"]]}, {"sid": "nojudge", "schedule": [[1, "b"]]}]
+    j1 = [{"sid": "ok", "pass": True}]
+    kept, rescue = compose(s1, j1, [], [], fail_sids=["gatefail"], all_sids=["ok", "nojudge", "gatefail", "apierr"])
+    by = {r["sid"]: r for r in kept}
+    assert by["nojudge"].get("unjudged") is True and "unjudged" not in by["ok"]
+    assert rescue == [{"sid": "gatefail", "why": "fail"}, {"sid": "apierr", "why": "error"}]

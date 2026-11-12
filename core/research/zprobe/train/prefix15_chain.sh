@@ -28,9 +28,10 @@ roomy() { local ok=0; while [ $ok -lt 3 ]; do
   [ $ok -lt 3 ] && sleep 60; done; }
 stage() { echo "$(date '+%F %T') P15 MARK $*"; df -h / | tail -1 | awk '{print "  disk free " $4}'; }
 spent() { $PY -c "
-import json, sys, glob
+import json, os
 t = 0.0
-for p in glob.glob('$OUT/*.usage.jsonl'):
+for p in ['$S1.usage.jsonl', '$J1.usage.jsonl', '$S2.usage.jsonl', '$J2.usage.jsonl']:
+    if not os.path.exists(p): continue
     for l in open(p, encoding='utf-8'):
         try: t += json.loads(l)['est_usd']
         except Exception: pass
@@ -42,8 +43,13 @@ label() {  # $@ extra args; exit 3 = API errors on >1% of rows -> one more pass 
     PYTHONPATH=. $PY -u $L/label_schedule.py --sentences $SENTS --hy $HY --model $LABEL_MODEL --reasoning low \
       --workers $LABEL_WORKERS --budget $LABEL_BUDGET --rules $RULES --deferral-cap 0 "$@"; rc=$?; fi
   return $rc; }
-judge() { PYTHONPATH=. $PY -u $L/judge_schedule.py --schedule "$1" --sentences $SENTS --model $LABEL_MODEL --reasoning low \
-  --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2"; }
+judge() {  # exit 3 = API errors on >1% -> one more pass after 10 min; exit 2 = budget stop (fails the stage)
+  PYTHONPATH=. $PY -u $L/judge_schedule.py --schedule "$1" --sentences $SENTS --model $LABEL_MODEL --reasoning low \
+    --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2"; local rc=$?
+  if [ $rc -eq 3 ]; then echo "  judge hit API errors; retrying the ERROR rows in 10 min"; sleep 600
+    PYTHONPATH=. $PY -u $L/judge_schedule.py --schedule "$1" --sentences $SENTS --model $LABEL_MODEL --reasoning low \
+      --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2"; rc=$?; fi
+  return $rc; }
 
 stage "label ($LABEL_MODEL, v2 rules, budget $LABEL_BUDGET)"
 [ -f $OUT/label.done ] || { label --out $S1 && touch $OUT/label.done || { echo P15_FAIL label; exit 1; }; }
@@ -75,14 +81,15 @@ echo "  spent so far \$$(spent)"
 
 stage "compose"
 PYTHONPATH=. $PY $L/compose_judged.py --s1 $S1 --j1 $J1 --s2 $S2 --j2 $J2 --fail1 $S1.fail.jsonl --fail2 $S2.fail.jsonl \
-  --out $SJ --out-rescue $RESCUE || { echo P15_FAIL compose; exit 1; }
+  --sentences $SENTS --out $SJ --out-rescue $RESCUE || { echo P15_FAIL compose; exit 1; }
 
 stage "completeness gate + wait labels + hygiene"
+OLD=""; [ -f models/zprobe/data/prefix13/aligned.jsonl ] && OLD="--old models/zprobe/data/prefix13/aligned.jsonl"
 if [ ! -f $OUT/stats.done ]; then
   rm -f $OUT/GO
   roomy 6000
   if ! { PYTHONPATH=. $CPY -u $L/schedule_stats.py --schedule $SJ --sentences $SENTS --hy $HY \
-      --old models/zprobe/data/prefix13/aligned.jsonl --rescue $RESCUE --judge $J1 \
+      $OLD --rescue $RESCUE --judge $J1 \
       --out-gated ${GATED}.tmp --out-dropped $OUT/dropped.jsonl 2>&1 | tee $LOG/prefix15_stats.log; }; then
     echo P15_FAIL stats; exit 1
   fi

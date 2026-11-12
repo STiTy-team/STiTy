@@ -4,7 +4,8 @@ scored 0.82-0.93 in the pilot); this asks a model directly. Piece boundaries are
 text matters - and splitting into several sentences / trailing follow-ups is explicitly allowed.
 
 Output: --out jsonl {"sid", "defects", "note", "pass"}; usage per call in <out>.usage.jsonl
-(cost-watch). A row is appended per sentence as it finishes.
+(cost-watch). A row is appended per sentence as it finishes; a rerun skips the sids already in --out and keeps
+counting against --budget from the usage file. Exit 2 = budget stop, 3 = API errors on > 1% of rows.
 
 usage: PYTHONPATH=. .venv/bin/python core/research/zprobe/labels/judge_schedule.py \
          --schedule models/zprobe/data/prefix15/pilot_v5.jsonl --sentences ... --out .../pilot_v5.judge.jsonl"""
@@ -18,6 +19,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from label_schedule import should_stop, spent_so_far, too_many_errors  # noqa: E402
 from schedule_gate import join_texts  # noqa: E402
 
 PRICE = {"gpt-6-luna": (0.10, 0.50), "gpt-5-mini": (0.25, 2.00)}
@@ -82,7 +84,8 @@ def main():
     out = open(a.out, "a", encoding="utf-8")
     usage = open(a.out + ".usage.jsonl", "a", encoding="utf-8")
     lock = threading.Lock()
-    st = {"spent": 0.0, "n": 0, "fail": 0, "error": 0}
+    st = {"spent": spent_so_far(a.out + ".usage.jsonl"), "n": 0, "fail": 0, "error": 0}
+    print(f"already spent ${st['spent']:.2f} (from {a.out}.usage.jsonl)", flush=True)
 
     def ask(prompt):
         t0 = time.time()
@@ -107,7 +110,7 @@ def main():
             return {}
 
     def work(rec):
-        if st["spent"] > a.budget or rec["sid"] not in S or not rec.get("schedule"):
+        if should_stop(st["spent"], a.budget) or rec["sid"] not in S or not rec.get("schedule"):
             return
         row = S[rec["sid"]]
         mt = join_texts([t for _, t in rec["schedule"]])
@@ -138,7 +141,13 @@ def main():
     print(f"rows {len(recs)}, todo {len(todo)}", flush=True)
     with ThreadPoolExecutor(max_workers=a.workers) as ex:
         list(ex.map(work, todo))
+    if should_stop(st["spent"], a.budget):
+        print(f"BUDGET_STOP ${st['spent']:.2f} > ${a.budget}", flush=True)
+        sys.exit(2)
     print(f"JUDGE_DONE n={st['n']} fail={st['fail']} error={st['error']} est ${st['spent']:.3f}", flush=True)
+    if too_many_errors(st["error"], len(todo)):
+        print(f"JUDGE_ERRORS {st['error']} > 1% of {len(todo)} - rerun to retry them", flush=True)
+        sys.exit(3)
 
 
 if __name__ == "__main__":

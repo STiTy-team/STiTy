@@ -161,7 +161,7 @@ def label_one(row, hy_row, ask, fail=None, note=""):
                 rec["src_words"] = [sorted(c) if c is not None else None for c in covers]
                 rec["hy_disagree"] = hy_disagreements(row, hy_row, reply)
             return rec
-        note = f"Previous attempt was rejected: {why}. Fix that."
+        note = (f"{note} " if note else "") + f"Previous attempt was rejected: {why}. Fix that."
     fail(why)
     return None
 

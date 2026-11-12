@@ -126,3 +126,9 @@ def test_reviewer_notes_from_judge_file(tmp_path):
     p = tmp_path / "j.jsonl"
     p.write_text('{"sid": "a", "pass": false, "note": "missing subject"}\n{"sid": "b", "pass": true, "note": ""}\n', encoding="utf-8")
     assert reviewer_notes(str(p)) == {"a": "A reviewer found: missing subject. Fix that."}
+
+
+def test_gate_retry_keeps_the_reviewer_note():
+    ask = fake([BAD_RANGE, GOOD])
+    label_one(ROW, HY, ask, note="A reviewer found: missing subject. Fix that.")
+    assert ask.calls[1].startswith("A reviewer found: missing subject. Fix that. Previous attempt was rejected: range")

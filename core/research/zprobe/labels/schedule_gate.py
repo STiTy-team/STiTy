@@ -63,13 +63,16 @@ _EN_DANGLING = {"a", "an", "the", "of", "to", "in", "on", "at", "by", "for", "wi
                 "very"}
 _KO_DETERMINERS = {"이", "그", "저", "이런", "그런", "저런", "어느", "무슨", "몇", "어떤", "새", "옛", "온갖"}
 _kiwi = None
+_kiwi_lock = __import__("threading").Lock()
 
 
 def _tags(text: str) -> list[str]:
     global _kiwi
     if _kiwi is None:
-        from kiwipiepy import Kiwi
-        _kiwi = Kiwi()
+        with _kiwi_lock:
+            if _kiwi is None:
+                from kiwipiepy import Kiwi
+                _kiwi = Kiwi()
     return [t.tag for t in _kiwi.tokenize(text.strip())]
 
 

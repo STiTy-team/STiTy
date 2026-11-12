@@ -97,9 +97,11 @@ def test_wait_labels_reference_whole_and_clause_split():
 
 
 def test_wait_labels_two_sentences_split_at_clause_ends():
-    sents = {"c": _sent("c", "ko", "en", "회의가 끝나면 자료를 보낼게요.", "When the meeting ends. I'll send the file.")}
-    labels, _ = ss.make_wait_labels(["c"], sents, {}, {}, None, {"c": "judge"})
-    assert labels[0]["schedule"] == [[2, "When the meeting ends."], [4, "I'll send the file."]] and labels[0]["why"] == "judge"
+    sents = {"c": _sent("c", "ko", "en", "회의가 끝났어요. 자료를 보낼게요.", "The meeting ended. I'll send the file."),
+             "d": _sent("d", "ko", "en", "회의가 끝나면 자료를 보낼게요.", "When the meeting ends. I'll send the file.")}
+    labels, _ = ss.make_wait_labels(["c", "d"], sents, {}, {}, None, {"c": "judge"})
+    assert labels[0]["schedule"] == [[2, "The meeting ended."], [4, "I'll send the file."]] and labels[0]["why"] == "judge"
+    assert labels[1]["schedule"] == [[4, "When the meeting ends. I'll send the file."]]  # a connective ending is not a split point
 
 
 def test_wait_labels_covost_uses_hy_and_kiwi_floor():
@@ -121,9 +123,18 @@ def test_short_share_excludes_connectives_and_refuses_wait_rows():
 
 def test_rescue_report_counts():
     sents = {"a": _sent("a", "en", "ko", "a", "x"), "b": _sent("b", "en", "ko", "a", "x"), "c": _sent("c", "ko", "en", "가", "y")}
-    kept = [{"sid": "a", "judge_attempts": 2}, {"sid": "c", "judge_attempts": 1}]
+    kept = [{"sid": "a", "attempts": 2, "judge_attempts": 2}, {"sid": "c", "attempts": 1, "judge_attempts": 1}]
     waits = [{"sid": "b", "rescue": "wait", "why": "judge"}]
     judge = [{"sid": "a", "pass": False}, {"sid": "b", "pass": False}, {"sid": "c", "pass": True}]
     r = ss.rescue_report(kept, waits, sents, judge)
     assert r["en->ko"]["wait"] == 1 and r["en->ko"]["rescued_wait_share"] == 0.5 and r["en->ko"]["by_why"] == {"judge": 1}
-    assert r["en->ko"]["retried_share"] == 1.0 and r["en->ko"]["judge_fail_share"] == 1.0 and r["ko->en"]["judge_fail_share"] == 0.0
+    assert r["en->ko"]["retried_share"] == 1.0 and r["en->ko"]["relabeled_share"] == 1.0 and r["ko->en"]["relabeled_share"] == 0.0
+    assert r["en->ko"]["judge_fail_share"] == 1.0 and r["ko->en"]["judge_fail_share"] == 0.0
+
+
+def test_wait_labels_do_not_split_at_connectives_or_abbreviations():
+    sents = {"f": _sent("f", "ko", "en", "트럭은 더 달려 박씨를 치고 멈췄다.", "The truck ran on, hit Mr. Park and stopped."),
+             "g": _sent("g", "en", "ko", "He left. She stayed.", "그는 떠났다. 그녀는 남았다.")}
+    labels, _ = ss.make_wait_labels(["f", "g"], sents, {}, {}, None)
+    assert labels[0]["schedule"] == [[6, "The truck ran on, hit Mr. Park and stopped."]]  # connective ends are not splits
+    assert labels[1]["schedule"] == [[2, "그는 떠났다."], [4, "그녀는 남았다."]]

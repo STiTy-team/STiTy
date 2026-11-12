@@ -33,6 +33,8 @@ from schedule_gate import _tags, clause_ends, join_texts, words  # noqa: E402
 
 EN_CONNECTIVES = {"and", "or", "but", "so", "oh", "well", "then", "next", "still", "anyway", "also", "now"}
 _SENT_SPLIT = re.compile(r"(?<=[.?!])\s+")
+_ABBREV_END = re.compile(r"\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|No|vs|etc|Inc|Ltd|Co|U\.S|e\.g|i\.e)\.$")
+_PUNCT_TOKEN = re.compile(r"[.?!][\"'”’)\]]*$")
 
 
 def is_connective_piece(text: str, tgt: str) -> bool:
@@ -155,12 +157,12 @@ def make_wait_labels(sids, sents, hy, hy_kiwi, kiwi_floor, why_of=None):
             dropped.append({"sid": sid, "why": "no_translation"})
             continue
         toks = words(s["src"], s["lang"])
-        ends = clause_ends(toks, s["lang"])
-        parts = [x for x in _SENT_SPLIT.split(full) if x.strip()]
-        if 2 <= len(ends) <= 3 and len(parts) == len(ends):
+        sched = [[len(toks), full]]
+        ends = [e for e in clause_ends(toks, s["lang"]) if _PUNCT_TOKEN.search(toks[e - 1])]  # sentence-final only
+        parts = [x.strip() for x in _SENT_SPLIT.split(full) if x.strip()]
+        if (2 <= len(ends) <= 3 and len(parts) == len(ends) and ends[-1] == len(toks)
+                and all(len(x.split()) >= 2 and not _ABBREV_END.search(x) for x in parts)):
             sched = [[e, t] for e, t in zip(ends, parts)]
-        else:
-            sched = [[len(toks), full]]
         labels.append({"sid": sid, "lang": s["lang"], "tgt": s["tgt"], "schedule": sched, "rescue": "wait", "why": why})
     return labels, dropped
 
@@ -210,13 +212,15 @@ def _fmt(v):
 
 
 def rescue_report(kept, waits, sents, judge_rows):
-    """Per direction: wait-label count/share by reason, judge_fail share (first judge), retried share."""
+    """Per direction: wait-label count/share by reason, judge_fail share (first judge), retried share (gate retry,
+    attempts >= 2) and relabeled share (judge relabel, judge_attempts >= 2)."""
     out = {}
     key = lambda sid: f"{sents[sid]['lang']}->{sents[sid]['tgt']}"
     for r in kept:
         d = out.setdefault(key(r["sid"]), {"kept": 0, "wait": 0, "by_why": {}, "retried": 0, "judge_fail": 0, "judged": 0})
         d["kept"] += 1
-        d["retried"] += r.get("judge_attempts", 1) >= 2
+        d["retried"] += r.get("attempts", 1) >= 2
+        d["relabeled"] = d.get("relabeled", 0) + (r.get("judge_attempts", 1) >= 2)
     for r in waits:
         d = out.setdefault(key(r["sid"]), {"kept": 0, "wait": 0, "by_why": {}, "retried": 0, "judge_fail": 0, "judged": 0})
         d["wait"] += 1
@@ -230,6 +234,7 @@ def rescue_report(kept, waits, sents, judge_rows):
         tot = d["kept"] + d["wait"]
         d["rescued_wait_share"] = d["wait"] / tot if tot else None
         d["retried_share"] = d["retried"] / d["kept"] if d["kept"] else None
+        d["relabeled_share"] = d.get("relabeled", 0) / d["kept"] if d["kept"] else None
         d["judge_fail_share"] = d["judge_fail"] / d["judged"] if d["judged"] else None
     return out
 
@@ -238,7 +243,7 @@ def print_rescue(kept, waits, sents, judge_rows):
     print("\n== rescue / judge")
     for d, m in sorted(rescue_report(kept, waits, sents, judge_rows).items()):
         print(d.ljust(8), f"kept {m['kept']}", f"wait {m['wait']} ({_fmt(m['rescued_wait_share'])}) {m['by_why']}",
-              f"retried {_fmt(m['retried_share'])}", f"judge_fail {_fmt(m['judge_fail_share'])}")
+              f"retried {_fmt(m['retried_share'])}", f"relabeled {_fmt(m['relabeled_share'])}", f"judge_fail {_fmt(m['judge_fail_share'])}")
 
 
 def print_table(title, by_dir):
