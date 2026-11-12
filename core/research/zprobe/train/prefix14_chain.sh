@@ -177,7 +177,10 @@ except Exception:
 bench() {  # $1 marker name  $2 pipeline  $3 dataset: submit once (job id kept in $OUT/$1.job), then wait
   [ "${BENCH:-1}" = 0 ] && { echo "  BENCH=0: skipping $2 (submit from the 4090 later)"; return 0; }
   if [ -f $OUT/$1.job ]; then JOB=$(cat $OUT/$1.job); echo "  reuse bench job $JOB"
-  else submit $2 $3; [ -n "$JOB" ] && echo "$JOB" > $OUT/$1.job; fi
+  else
+    for i in $(seq 1 30); do submit $2 $3; [ -n "$JOB" ] && break; echo "  $(date '+%F %T') manager unreachable or rejected submit, retry $i/30 in 60s"; sleep 60; done
+    [ -n "$JOB" ] && echo "$JOB" > $OUT/$1.job
+  fi
   wait_job "$JOB"
 }
 
