@@ -59,6 +59,7 @@ stage "merge grpo2"
 
 stage "bench grpo2 (manager queue)"
 P=brig.koen+prefix14-grpo2-lidreset
+[ "${BENCH:-1}" = 0 ] && { echo "  BENCH=0: skipping the bench (submit from the 4090 later)"; echo "P14G2_DONE $(date '+%F %T')"; exit 0; }
 if [ -f $OUT/bench_grpo2.job ]; then JOB=$(cat $OUT/bench_grpo2.job); echo "  reuse bench job $JOB"
 else
   JOB=$(CFG=$P DSN=northstar_ko+en-ko python3 - <<'PYEOF' | curl -s -XPOST localhost:29130/api/machines/4090/jobs -H 'Content-Type: application/json' -d @- | python3 -c "import json,sys; d=json.load(sys.stdin); x=d.get('data') or {}; print(x.get('id') or ''); sys.stderr.write('P14G2 JOB %s %s %s\n' % (d.get('ok'), x.get('id'), d.get('error','')[:200]))"
