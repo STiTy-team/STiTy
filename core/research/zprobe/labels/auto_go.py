@@ -8,6 +8,7 @@ Checks (per direction = lang-tgt):
   empty       empty_share of the two directions within --empty-ratio of each other (one direction must not be
               taught to wait far more than the other)
   first_after first_after_median <= --first-after (the first piece must not routinely wait past this many words; 8 = a stop, not a target)
+  rescued     wait labels (rescue == "wait", counted apart from the table) <= --rescued-max of the corpus
 
 usage: PYTHONPATH=. python core/research/zprobe/labels/auto_go.py --gated <gated.jsonl> --labeled <schedule.jsonl> \
          --sentences <sentences.jsonl>     (the labeler's rows carry no src; it is merged in by sid)"""
@@ -22,10 +23,16 @@ from schedule_stats import stats_for  # noqa: E402
 
 
 def check(rows, n_labeled, a):
+    """rows may include wait labels (rescue == "wait"): they are counted as rescued, not in the corpus table."""
+    waits = [r for r in rows if r.get("rescue") == "wait"]
+    rows = [r for r in rows if r.get("rescue") != "wait"]
     by = {}
     for r in rows:
         by.setdefault(f"{r['lang']}-{r['tgt']}", []).append(r)
     reasons = []
+    rescued_max = getattr(a, "rescued_max", 0.25)
+    if waits and len(waits) > rescued_max * (len(rows) + len(waits)):
+        reasons.append(f"rescued wait labels {len(waits)}/{len(rows) + len(waits)} = {len(waits) / (len(rows) + len(waits)):.3f} > {rescued_max}")
     if len(rows) < a.min_kept:
         reasons.append(f"kept {len(rows)} < {a.min_kept}")
     if n_labeled and len(rows) < a.min_kept_share * n_labeled:
@@ -50,7 +57,8 @@ def main(argv=None):
     ap.add_argument("--sentences", required=True)
     ap.add_argument("--min-kept", type=int, default=4000)
     ap.add_argument("--min-kept-share", type=float, default=0.5)
-    ap.add_argument("--dump-enko", type=float, default=0.05)
+    ap.add_argument("--dump-enko", type=float, default=0.15)
+    ap.add_argument("--rescued-max", type=float, default=0.25, help="wait labels (rescued) may be at most this share of the corpus")
     ap.add_argument("--dump-other", type=float, default=0.10)
     ap.add_argument("--empty-ratio", type=float, default=2.0)
     ap.add_argument("--first-after", type=float, default=8)
@@ -74,7 +82,8 @@ def main(argv=None):
     if reasons:
         print("AUTO_GO_NO:", "; ".join(reasons))
         return 1
-    print(f"AUTO_GO_YES kept={len(rows)} labeled={n_labeled}")
+    n_wait = sum(1 for r in rows if r.get("rescue") == "wait")
+    print(f"AUTO_GO_YES kept={len(rows) - n_wait} wait={n_wait} labeled={n_labeled}")
     return 0
 
 

@@ -44,3 +44,13 @@ def test_main_merges_src_from_sentences(tmp_path, capsys):
     rc = auto_go.main(["--gated", str(tmp_path / "g.jsonl"), "--labeled", str(tmp_path / "l.jsonl"),
                        "--sentences", str(tmp_path / "sent.jsonl"), "--min-kept", "2"])
     assert rc == 0 and "AUTO_GO_YES" in capsys.readouterr().out
+
+
+def test_too_many_wait_labels_is_no():
+    good = [_row("en", "ko", "a b c d e f", [[2, "x"], [4, "y"], [6, "z"]]),
+            _row("ko", "en", "가 나 다 라 마 바", [[2, "x"], [4, "y"], [6, "z"]])]
+    waits = [{**_row("en", "ko", "a b c d e f g", [[7, "all"]]), "sid": "w1", "rescue": "wait"}]
+    _, reasons = auto_go.check(good + waits, 3, _args(rescued_max=0.25))
+    assert any("rescued wait labels 1/3" in r for r in reasons)
+    _, reasons = auto_go.check(good + waits, 3, _args(rescued_max=0.5))
+    assert reasons == []
