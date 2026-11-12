@@ -44,7 +44,7 @@
 - Consumes: `schedule_gate.shape_check(items, tgt) -> str | None`, `glues(prev, text) -> bool`, `join_texts(texts) -> str`, `ko_continues(text) -> bool`, `fix_leading_punct(items) -> items`, `merge_same_after(items, covers) -> (items, covers)`; `build_prefix14._delta(cond_items, new_items) -> str`; `label_schedule.build_prompt(row, note)`, `RULES`, `DEFERRAL_CAP`, `n_cap(lang)`.
 - Produces: 없음(테스트). `shape_check` 에 영어 `'s`/`'re`/`n't` 로 시작하는 조각 거부가 추가된다: 이유 문자열 `shape: piece i "…" splits a word - join it to the previous piece`.
 
-- [ ] **Step 1: 실패하는 테스트 쓰기** (`test_schedule_gate.py` 에 추가)
+- [x] **Step 1: 실패하는 테스트 쓰기** (`test_schedule_gate.py` 에 추가)
 
 ```python
 def test_shape_bare_noun_rejected_unless_particle_follows():
@@ -85,10 +85,10 @@ def test_rules_and_cap_flags_reach_the_prompt(tmp_path):
     assert "RULE-MARKER 1000000" in build_prompt(ROW, "") and n_cap("en") == 10**6
 ```
 
-- [ ] **Step 2: 실패 확인** — `env -u PYTHONPATH .venv/bin/python -m pytest -q -p no:cacheprovider core/research/zprobe/labels -k "shape or glues or leading or delta or rules_and_cap"` → `'s` 검사 테스트 1개 FAIL, 나머지는 PASS 여야 한다(이미 구현됨).
-- [ ] **Step 3: `shape_check` 에 영어 어절 쪼갬 거부 추가** — `schedule_gate.py` 의 영어 분기 앞에: 조각이 `re.match(r"^\s*'(s|re|ve|ll|d|m)\b|^\s*n't\b", t)` 면 `shape: piece {i+1} "{t}" splits a word - join it to the previous piece`. 마지막 조각도 검사한다(쪼갬은 위치와 무관).
-- [ ] **Step 4: 전체 테스트 통과 확인** — `env -u PYTHONPATH .venv/bin/python -m pytest -q -p no:cacheprovider core/research/zprobe/labels` → 전부 PASS.
-- [ ] **Step 5: 커밋** — `test(zprobe): prefix15 형태 게이트·붙이기 테스트, 영어 어절 쪼갬 거부`
+- [x] **Step 2: 실패 확인** — `env -u PYTHONPATH .venv/bin/python -m pytest -q -p no:cacheprovider core/research/zprobe/labels -k "shape or glues or leading or delta or rules_and_cap"` → `'s` 검사 테스트 1개 FAIL, 나머지는 PASS 여야 한다(이미 구현됨).
+- [x] **Step 3: `shape_check` 에 영어 어절 쪼갬 거부 추가** — `schedule_gate.py` 의 영어 분기 앞에: 조각이 `re.match(r"^\s*'(s|re|ve|ll|d|m)\b|^\s*n't\b", t)` 면 `shape: piece {i+1} "{t}" splits a word - join it to the previous piece`. 마지막 조각도 검사한다(쪼갬은 위치와 무관).
+- [x] **Step 4: 전체 테스트 통과 확인** — `env -u PYTHONPATH .venv/bin/python -m pytest -q -p no:cacheprovider core/research/zprobe/labels` → 전부 PASS.
+- [x] **Step 5: 커밋** — `test(zprobe): prefix15 형태 게이트·붙이기 테스트, 영어 어절 쪼갬 거부`
 
 ### Task 2: 판정 탈락분 재라벨 입력 — `label_schedule.py --only-sids --notes`, `judge_schedule.py` 테스트
 
@@ -102,7 +102,7 @@ def test_rules_and_cap_flags_reach_the_prompt(tmp_path):
 - Consumes: `label_one(row, hy_row, ask, fail=None, note="")` — `note` 가 있으면 1차 요청부터 프롬프트 끝에 붙는다(지금은 재요청에만 붙음).
 - Produces: `label_schedule.py --only-sids FILE`(한 줄에 sid 하나; 그 sid 만 처리) `--notes FILE`(judge jsonl; `pass` 가 거짓인 행의 `note` 를 `"A reviewer found: {note}. Fix that."` 로 1차 요청에 붙임). `judge_schedule.verdict(reply) -> (defects: list[str], note: str) | None`; main 은 `None` 이면 한 번 재요청하고 또 None 이면 `{"defects": [], "note": "malformed", "pass": true, "unjudged": true}` 로 쓴다 — 탈락이 아니다(Review Focus 5).
 
-- [ ] **Step 1: 실패하는 테스트**
+- [x] **Step 1: 실패하는 테스트**
 
 `test_judge_schedule.py`:
 ```python
@@ -123,11 +123,11 @@ def test_note_goes_into_first_request():
     assert ask.calls[0].endswith("A reviewer found: missing subject. Fix that.")
 ```
 
-- [ ] **Step 2: 실패 확인** — `pytest … -k "verdict or reference or note_goes"` → FAIL (`note` 인자 없음, `build_prompt` 미정의).
-- [ ] **Step 3: 구현** — `label_one(…, note="")`: `note` 초기값을 인자로. `main`: `--only-sids`, `--notes` 파싱; `todo` 를 sids 로 거르고 `work(row)` 가 `label_one(…, note=notes.get(sid, ""))`. `judge_schedule.main`: malformed 1회 재요청, 그래도 None 이면 `unjudged` 행.
-- [ ] **Step 4: 통과 확인** — 전체 라벨 테스트 PASS.
-- [ ] **Step 5: 50문장 파일럿으로 흐름 확인($0.05)** — `pilot_v5.judge3.jsonl` 의 탈락 11 sid 를 `--only-sids`/`--notes` 로 재라벨 → 새 파일을 판정 → 통과 수를 적어 둔다(보고용).
-- [ ] **Step 6: 커밋** — `feat(zprobe): 판정 탈락 문장만 메모 붙여 재라벨 (--only-sids/--notes), 판정 malformed 는 미판정`
+- [x] **Step 2: 실패 확인** — `pytest … -k "verdict or reference or note_goes"` → FAIL (`note` 인자 없음, `build_prompt` 미정의).
+- [x] **Step 3: 구현** — `label_one(…, note="")`: `note` 초기값을 인자로. `main`: `--only-sids`, `--notes` 파싱; `todo` 를 sids 로 거르고 `work(row)` 가 `label_one(…, note=notes.get(sid, ""))`. `judge_schedule.main`: malformed 1회 재요청, 그래도 None 이면 `unjudged` 행.
+- [x] **Step 4: 통과 확인** — 전체 라벨 테스트 PASS.
+- [x] **Step 5: 50문장 파일럿으로 흐름 확인($0.05)** — `pilot_v5.judge3.jsonl` 의 탈락 11 sid 를 `--only-sids`/`--notes` 로 재라벨 → 새 파일을 판정 → 통과 수를 적어 둔다(보고용).
+- [x] **Step 6: 커밋** — `feat(zprobe): 판정 탈락 문장만 메모 붙여 재라벨 (--only-sids/--notes), 판정 malformed 는 미판정`
 
 ### Task 3: 판정 합치기 `compose_judged.py`
 
@@ -139,11 +139,11 @@ def test_note_goes_into_first_request():
 - Consumes: S1 라벨 jsonl, J1 판정 jsonl, S2 재라벨 jsonl, J2 판정 jsonl (파일 형식은 Task 2 의 출력), `.fail.jsonl` 둘.
 - Produces: `compose(s1, j1, s2, j2) -> (kept: list[rec], rescue: list[{"sid", "why"}])` 와 CLI `--s1 --j1 --s2 --j2 --fail1 --fail2 --out schedule.judged.jsonl --out-rescue rescue.jsonl`. 규칙: J1 통과(또는 `unjudged`) → S1 행; J1 탈락이면 S2 행이 J2 통과일 때만 S2 행; 그 외(J2 탈락, S2 없음, FAIL) → rescue 에 `why` ∈ {`judge`, `fail`}. 한 sid 는 한 곳에만(Review Focus 4). 출력 행에 `judge_attempts: 1|2` 를 남긴다.
 
-- [ ] **Step 1: 실패하는 테스트** — `test_compose_judged.py`: 위 네 경우(통과/재라벨 통과/재라벨 탈락/FAIL) 각 sid 하나씩 만들어 `compose` 결과의 sid 집합과 `why` 를 단언. 어느 쪽에도 없는 sid 가 0 임을 단언.
-- [ ] **Step 2: 실패 확인** → 모듈 없음.
-- [ ] **Step 3: 구현** — 순수 함수 + 파일 읽는 `main`. 같은 sid 가 S1 에 두 번 있으면 마지막 행.
-- [ ] **Step 4: 통과 확인.**
-- [ ] **Step 5: 커밋** — `feat(zprobe): 1차·재라벨 판정 결과를 하나의 라벨 파일로 합친다`
+- [x] **Step 1: 실패하는 테스트** — `test_compose_judged.py`: 위 네 경우(통과/재라벨 통과/재라벨 탈락/FAIL) 각 sid 하나씩 만들어 `compose` 결과의 sid 집합과 `why` 를 단언. 어느 쪽에도 없는 sid 가 0 임을 단언.
+- [x] **Step 2: 실패 확인** → 모듈 없음.
+- [x] **Step 3: 구현** — 순수 함수 + 파일 읽는 `main`. 같은 sid 가 S1 에 두 번 있으면 마지막 행.
+- [x] **Step 4: 통과 확인.**
+- [x] **Step 5: 커밋** — `feat(zprobe): 1차·재라벨 판정 결과를 하나의 라벨 파일로 합친다`
 
 ### Task 4: 완결성 게이트 + 기다림 라벨 + 위생표 새 열 — `schedule_stats.py`, `auto_go.py`
 
@@ -161,11 +161,11 @@ def test_note_goes_into_first_request():
   - CLI: `--rescue rescue.jsonl --judge j1.jsonl --kiwi-floor-pct 10 --out-dropped dropped.jsonl`; `--out-gated` 에 통과 행 + 기다림 행을 함께 쓴다.
   - `auto_go.py`: 기다림 행은 분리해 `rescued share > --rescued-max` 면 NO; `--dump-enko` 기본 0.15.
 
-- [ ] **Step 1: 실패하는 테스트** — `test_schedule_stats.py`: `make_wait_labels` 가 (a) 참조 있는 문장을 `[[K, ref]]` 로, (b) 절 2개·마침표 2개 문장을 2항목으로, (c) CoVoST 를 Hy 번역으로, (d) kiwi 바닥 미만을 제외하는지; `stats_for` 가 `short_share` 에서 `그리고` 단독을 빼는지, `rescue` 행을 받으면 ValueError 를 내는지(섞이지 않게). `test_auto_go.py`: 기다림 30% 면 `AUTO_GO_NO … rescued`.
-- [ ] **Step 2: 실패 확인.**
-- [ ] **Step 3: 구현** — 기존 `gate` 호출부와 표 출력은 유지, 새 열은 `print_table` 의 열 목록에 추가. COMET 로딩은 기존처럼 `.venv-tpm` 에서만 — CPU 테스트는 `--skip-completeness` 경로.
-- [ ] **Step 4: 통과 확인** + 파일럿 50문장으로 실행 1회(`.venv-tpm`, GPU 필요 — 4090 에서; 여기선 `--skip-completeness` 로 형식만).
-- [ ] **Step 5: 커밋** — `feat(zprobe): 기다림 라벨 구제와 위생표 새 열(조각 길이·접속사 제외 3자 비율·구제율·판정 탈락률)`
+- [x] **Step 1: 실패하는 테스트** — `test_schedule_stats.py`: `make_wait_labels` 가 (a) 참조 있는 문장을 `[[K, ref]]` 로, (b) 절 2개·마침표 2개 문장을 2항목으로, (c) CoVoST 를 Hy 번역으로, (d) kiwi 바닥 미만을 제외하는지; `stats_for` 가 `short_share` 에서 `그리고` 단독을 빼는지, `rescue` 행을 받으면 ValueError 를 내는지(섞이지 않게). `test_auto_go.py`: 기다림 30% 면 `AUTO_GO_NO … rescued`.
+- [x] **Step 2: 실패 확인.**
+- [x] **Step 3: 구현** — 기존 `gate` 호출부와 표 출력은 유지, 새 열은 `print_table` 의 열 목록에 추가. COMET 로딩은 기존처럼 `.venv-tpm` 에서만 — CPU 테스트는 `--skip-completeness` 경로.
+- [x] **Step 4: 통과 확인** + 파일럿 50문장으로 실행 1회(`.venv-tpm`, GPU 필요 — 4090 에서; 여기선 `--skip-completeness` 로 형식만).
+- [x] **Step 5: 커밋** — `feat(zprobe): 기다림 라벨 구제와 위생표 새 열(조각 길이·접속사 제외 3자 비율·구제율·판정 탈락률)`
 
 ### Task 5: 체인 `prefix15_chain.sh` 와 설정
 
@@ -187,9 +187,9 @@ def test_note_goes_into_first_request():
   9. `bench` (매니저 queue, `BENCH=0` 이면 생략) → `post`(en rescore·COMET·lookahead·요약 출력) → `P15_DONE`
   마커 접두사 `P15`. 단계마다 "파일 있으면 건너뜀". 각 라벨·판정 단계 뒤에 누적 비용(usage 합)을 로그에 찍는다.
 
-- [ ] **Step 1: 스크립트 작성** — 위 단계 순서대로. 라벨 단계는 `rc=3`(API 오류 >1%) 이면 10분 뒤 1회 재실행(prefix14 와 같음). `STOP_AFTER_ROWS=1` 지원.
-- [ ] **Step 2: 문법·드라이런** — `bash -n`; 그리고 `OUT` 을 임시 디렉터리로 바꿔 파일럿 50문장(`pilot_sentences.jsonl`)에 `STOP_AFTER_ROWS=1 BENCH=0` 으로 1~5 단계 실행(GPU 없는 머신에선 6단계가 `roomy` 에서 멈추므로 거기까지; $0.1).
-- [ ] **Step 3: 커밋** — `feat(zprobe): prefix15 체인 — 라벨·판정·재라벨·구제·위생표·SFT·벤치`
+- [x] **Step 1: 스크립트 작성** — 위 단계 순서대로. 라벨 단계는 `rc=3`(API 오류 >1%) 이면 10분 뒤 1회 재실행(prefix14 와 같음). `STOP_AFTER_ROWS=1` 지원.
+- [x] **Step 2: 문법·드라이런** — `bash -n`; 그리고 `OUT` 을 임시 디렉터리로 바꿔 파일럿 50문장(`pilot_sentences.jsonl`)에 `STOP_AFTER_ROWS=1 BENCH=0` 으로 1~5 단계 실행(GPU 없는 머신에선 6단계가 `roomy` 에서 멈추므로 거기까지; $0.1).
+- [x] **Step 3: 커밋** — `feat(zprobe): prefix15 체인 — 라벨·판정·재라벨·구제·위생표·SFT·벤치`
 
 ### Task 6: 4090 실행과 보고
 
