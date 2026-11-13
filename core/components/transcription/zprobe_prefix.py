@@ -18,6 +18,24 @@ EOS_TOKENS = (151645, 151643)
 SPECIAL = re.compile(r"<\|[^<>|]+\|>")
 WAIT = "<WAIT>"
 REPEAT_TEMPLATE = r"((.{1,12}?))(?:\2){%d,}"
+JOINT_SRC = "<blank1>"     # joint adapter cond: X_committed + JOINT_SRC + T_committed
+JOINT_SPLIT = "<blank2>"   # joint adapter output: dT + JOINT_SPLIT + dX
+
+
+def split_joint(txt: str) -> tuple[str, str]:
+    """Split one joint-adapter step `dT<blank2>dX` into (transcript increment, translation increment).
+    No marker -> the whole text is transcript. A <SEG> generated on the transcript side (SEG pair rows are
+    ` <SEG>` with no marker) moves, with the whitespace before it, to the front of the translation side so
+    seg_reset sees it on the translation slot. Stray markers are dropped."""
+    dt, _, dx = txt.partition(JOINT_SPLIT)
+    dx = dx.replace(JOINT_SPLIT, "").replace(JOINT_SRC, "")
+    dt = dt.replace(JOINT_SRC, "")
+    if "<SEG>" in dt:
+        pre, _, post = dt.partition("<SEG>")
+        head = pre.rstrip()
+        dt = head + post.replace("<SEG>", "")
+        dx = pre[len(head):] + "<SEG>" + dx
+    return dt, dx
 
 
 class _ProbeLid:
@@ -95,6 +113,7 @@ class ZprobePrefixTranscription(Transcriber):
         "lid_window_sec": ("lid_window_sec", float),
         "lid_keep_sec": ("lid_keep_sec", float),
         "flush_keep_sec": ("flush_keep_sec", float),
+        "joint": ("joint", bool),
     }
 
     model = None
@@ -148,13 +167,20 @@ class ZprobePrefixTranscription(Transcriber):
         self._fed_samples = 0
         self.asr_context = ""
         self._ctx_in_base = ""
+        self._joint = bool(self.settings.get("joint"))
+        self.joint_transcript = []
         self._reset_utterance()
 
     def _reset_utterance(self) -> None:
         self._wav = self._np.empty(0, dtype=self._np.float32)
         self._raw = {t: "" for t in self._targets}
+        self._raw_t = {t: "" for t in self._targets}
+        self._last_dt = {}
         self._decoded_samples = 0
         self._slot_lang = None
+
+    def _has_state(self) -> bool:
+        return any(self._raw.values()) or (self._joint and any(self._raw_t.values()))
 
     def _in_speech(self) -> bool:
         spans = getattr(self._vad, "spans", None)
@@ -169,7 +195,7 @@ class ZprobePrefixTranscription(Transcriber):
     async def transcribe(self, audio: bytes) -> list:
         self._fed_samples += len(audio) // 2
         self._wav = self._np.concatenate([self._wav, audio_mod.from_pcm_bytes(audio)])
-        if not any(self._raw.values()) and not self._in_speech():
+        if not self._has_state() and not self._in_speech():
             return []
         step = int(float(self.settings.get("step_sec", 0.5)) * audio_mod.SAMPLING_RATE)
         first = int(float(self.settings.get("first_sec", 1.0)) * audio_mod.SAMPLING_RATE)
@@ -226,7 +252,7 @@ class ZprobePrefixTranscription(Transcriber):
             cut = int(max(0.0, speech.silence_waited_out_sec - keep) * audio_mod.SAMPLING_RATE)
             if 0 < cut < self._wav.shape[0]:
                 self._wav = self._wav[: self._wav.shape[0] - cut]
-        if self._wav.shape[0] == 0 or (not any(self._raw.values()) and not self._has_speech()):
+        if self._wav.shape[0] == 0 or (not self._has_state() and not self._has_speech()):
             return []
         return self._emit(self._decode(final=True), reason)
 
@@ -240,9 +266,15 @@ class ZprobePrefixTranscription(Transcriber):
         out = []
         for target in self._targets:
             text = added.get(target, "")
+            dt = self._last_dt.pop(target, "") if self._joint else ""
             if self._latin_blocked(target, text):
                 continue
             self._raw[target] += text
+            if dt:
+                # phase 1: the transcript increment only conditions the next step and is logged
+                self._raw_t[target] += dt
+                self.joint_transcript.append(
+                    (round(self._fed_samples / audio_mod.SAMPLING_RATE, 3), target, dt))
             shown = text.replace("<SEG>", " ").strip()
             shown = re.sub(r"\s+", " ", shown)
             if not shown:
@@ -283,7 +315,10 @@ class ZprobePrefixTranscription(Transcriber):
             t: (self._base0 if t == self._tag_lang else base_ctx) + tag + self._suffix[t]
             for t in self._targets
         }
-        texts = [self._bases[t] + self._raw[t] for t in self._targets]
+        if self._joint:
+            texts = [self._bases[t] + self._raw[t] + JOINT_SRC + self._raw_t[t] for t in self._targets]
+        else:
+            texts = [self._bases[t] + self._raw[t] for t in self._targets]
         inputs = self.model.processor(
             text=texts, audio=[self._wav] * len(texts),
             return_tensors="pt", padding=True).to(self._dev).to(torch.bfloat16)
@@ -308,6 +343,9 @@ class ZprobePrefixTranscription(Transcriber):
                 new = new[:-1]
                 txt = _continuation(self._tok, ids, torch.cat([ids, new]))
             txt = SPECIAL.sub("", txt)
+            if self._joint:
+                dt, txt = split_joint(txt)
+                self._last_dt[target] = dt
             if self.settings.get("wait_token"):
                 txt = txt.replace(WAIT, "")
                 for k in range(len(WAIT) - 1, 0, -1):
