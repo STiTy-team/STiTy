@@ -1,0 +1,16 @@
+meta:
+  description: "p14cot - one zprobe adapter writes, every 0.5 s step, the new source words then the new translation words in one decode ({src}<asr_text>{tgt}\\n deltas, header 'language Interpret<asr_text>'), so BRIG runs without the separate qwen-seg ASR and without LID; direction comes from the Hangul share of its own transcript. SFT on the prefix14 sentences/word times + prefix15 gpt-6-luna schedules (no new labels), base Qwen3-ASR-1.7B-koen-seg-mix-merged, prefix14 recipe; rows with text > 400 chars dropped. Transcribed records carry the model's own transcript (transcript WER). Compare with brig.koen+prefix14-lidreset."
+  tags: [p14cot, cot, transcribe-then-translate, schedule-labels, zprobe, delta, single-model, koen]
+pipeline:
+  name: brig
+  transcription:
+    name: zprobe-cot
+    model: /home/skkai/STiTy-wt/p14cot/models/zprobe/merged/p14cot_full
+    step_sec: 0.5
+    max_utterance_sec: 14
+    repeat_cap: 3
+  vad:
+    name: silero
+    min_silence_ms: 800
+commit: seg
+gpu_memory_utilization: 0.30
