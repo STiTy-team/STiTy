@@ -2,12 +2,14 @@
 SeamlessStreaming: YAAL from the commit segments (fed_sec = computation-unaware, wall_sec = computation-aware),
 and comet_inputs.jsonl + summary.json so `python -m bench.metrics.comet --run-dir` adds COMET.
 
-There is no source transcript, so WER/CER and Token Emission are left out (as for SeamlessStreaming's S2S run).
+There is no source transcript, so WER/CER and Token Emission are left out (as for SeamlessStreaming's S2S run) - except
+for a `--mode joint` run, whose rows carry the adapter's own "transcript": it is scored against the manifest's src_text
+(transcript_wer / transcript_cer, jiwer, lower-cased, punctuation dropped), with tokens and decode ms per step.
 
 Run from the STiTy-bench root with the bench env:
     PYTHONPATH=.:bench/seamless bench/.venv/bin/python <this> --export DIR --run X.jsonl --name NAME --run-dir DIR"""
 
-import argparse, json, math
+import argparse, json, math, re
 from pathlib import Path
 
 from omnisteval import YAALScorer
@@ -17,6 +19,10 @@ from seamless_score import yaal_instance
 
 def read(p):
     return [json.loads(l) for l in Path(p).read_text(encoding="utf-8").splitlines()]
+
+
+def _norm(t):
+    return re.sub(r"\s+", " ", re.sub(r"[^\w\s']", " ", (t or "").lower())).strip()
 
 
 def main():
@@ -56,6 +62,10 @@ def main():
             comet_inputs.append(
                 {"pair": pair, "src": u["src_text"], "mt": r["text"], "ref": u["tgt_text"]}
             )
+            if "transcript" in r:
+                row["transcript"] = r["transcript"]
+                row["gen_tokens"] = r.get("gen_tokens")
+                row["decode_ms"] = r.get("decode_ms")
         per_item.append(row)
     y, yc = cu(instances), ca(instances)
     la, lac = lcu(instances), lca(instances)
@@ -69,6 +79,19 @@ def main():
         "segments_per_item": sum(r["segments"] for r in ok) / len(ok),
         "decodes_per_item": sum(r["decodes"] or 0 for r in ok) / len(ok),
     }
+    joint = [r for r in ok if "transcript" in r]
+    if joint:
+        import jiwer
+
+        pairs = [(_norm(r["reference"]), _norm(r["transcript"])) for r in joint if _norm(r["reference"])]
+        refs, hyps = [p[0] for p in pairs], [p[1] for p in pairs]
+        metrics["transcript_wer"] = jiwer.wer(refs, hyps) if refs else None
+        metrics["transcript_cer"] = (
+            jiwer.cer([x.replace(" ", "") for x in refs], [x.replace(" ", "") for x in hyps]) if refs else None
+        )
+        dec = sum(r["decodes"] or 0 for r in joint)
+        metrics["tokens_per_step"] = sum(r.get("gen_tokens") or 0 for r in joint) / dec if dec else None
+        metrics["decode_ms_per_step"] = sum(r.get("decode_ms") or 0 for r in joint) / dec if dec else None
     counts = {
         "items": len(items),
         "errored": len(items) - len(ok),
@@ -93,7 +116,7 @@ def main():
                 "name": a.name,
                 "metrics": metrics,
                 "unavailable": {
-                    "wer": "direct speech translation, no source transcript",
+                    **({} if joint else {"wer": "direct speech translation, no source transcript"}),
                     "token_emission_ms": "no source-transcript timing to align",
                 },
                 "counts": counts,

@@ -6,6 +6,10 @@ segconn2 behaviour described below. --mode alignatt needs no retraining (AlignAt
 continues the raw text written so far token by token and stops before the first token whose attention over the audio
 peaks in the last --att_sec seconds of what has arrived (the model is reaching for speech it has not fully heard);
 the tokens before it are shown and never revised. Run with PROBE_ATTN=eager so attention weights are returned.
+--mode joint (A1 joint adapter, rows of 08-A1 build_joint.py): like prefix, but the prompt carries both committed strings
+(translation X, then <blank1>, then transcript T) and every step answers `dT<blank2>dX`; dX streams exactly like prefix
+mode, dT is appended to T and the row also gets "transcript", "gen_tokens", "decode_ms" (summed over its decodes) and
+"malformed_steps" (non-empty answers that are not ` <SEG>` and do not carry exactly one <blank2>).
 
 The audio of each item arrives at wall-clock speed. Whenever at least --step seconds of new audio have arrived, the adapter
 (trained with --seg_full, e.g. segconn2) translates audio[0:now] with the committed pieces forced as "p1 <SEG> p2 <SEG> ";
@@ -96,6 +100,50 @@ def main(a):
         torch.cuda.synchronize()
         return txt if a.keep_seg else txt.replace("<SEG>", "")
 
+    stats = {"tokens": 0, "ms": 0.0, "malformed": 0}
+
+    def gen_joint(wav, raw_x, raw_t, final=False):
+        """joint mode: one decode with prompt base + X + <blank1> + T; returns (dT, dX) split on <blank2>."""
+        root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), *[".."] * 4))
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        from core.components.transcription.zprobe_prefix import JOINT_SRC, split_joint
+
+        flush = final and a.final_flush
+        t_dec = time.perf_counter()
+        inputs = (
+            m.processor(text=[base + raw_x + JOINT_SRC + raw_t], audio=[wav], return_tensors="pt", padding=True)
+            .to(dev)
+            .to(torch.bfloat16)
+        )
+        ids = inputs["input_ids"][0]
+        with torch.no_grad():
+            o = m.model.generate(
+                **inputs,
+                max_new_tokens=a.max_new_tokens,
+                no_repeat_ngram_size=None if flush else (a.no_repeat or None),
+                min_new_tokens=2 if flush else None,
+                num_beams=a.beams,
+                do_sample=False,
+            )
+        seq = o.sequences if hasattr(o, "sequences") else o
+        new = seq[0, ids.shape[0] :]
+        stats["tokens"] += int(len(new))
+        while len(new) and int(new[-1]) in EOS:
+            new = new[:-1]
+        txt = continuation(tok, ids, torch.cat([ids, new]))
+        while "\ufffd" in txt and len(new):
+            new = new[:-1]
+            txt = continuation(tok, ids, torch.cat([ids, new]))
+        torch.cuda.synchronize()
+        stats["ms"] += (time.perf_counter() - t_dec) * 1000.0
+        txt = re.sub(r"<\|[^<>|]+\|>", "", txt)
+        # well-formed step: "" (wait), " <SEG>", or exactly one <blank2>
+        if txt.strip() and txt.strip() != "<SEG>" and txt.count("<blank2>") != 1:
+            stats["malformed"] += 1
+        dt, dx = split_joint(txt)
+        return dt, (dx if a.keep_seg else dx.replace("<SEG>", ""))
+
     layers = [int(x) for x in a.att_layers.split(",")]
     audio_id = getattr(m.model.config, "thinker_config", m.model.config)
     audio_id = getattr(audio_id, "audio_token_id", 151646)
@@ -170,6 +218,8 @@ def main(a):
         )  # warm-up, not timed
     elif a.mode == "prefix":
         gen_raw(sf.read(items[0]["wav"], dtype="float32")[0][:16000], "")
+    elif a.mode == "joint":
+        gen_joint(sf.read(items[0]["wav"], dtype="float32")[0][:16000], "", "")
     else:
         gen(sf.read(items[0]["wav"], dtype="float32")[0][:16000], [])  # warm-up, not timed
     out = open(a.out, "a", encoding="utf-8")
@@ -182,6 +232,8 @@ def main(a):
         assert sr == 16000
         dur = len(wav) / sr
         pieces, segs, last, decodes, raw = [], [], None, 0, ""
+        raw_t = ""
+        stats["tokens"], stats["ms"], stats["malformed"] = 0, 0.0, 0
         start = time.perf_counter()
         fed = 0.0
         while True:
@@ -196,6 +248,19 @@ def main(a):
                 decodes += 1
                 wall = time.perf_counter() - start
                 raw += add
+                shown = re.sub(r"\s+", " ", add.replace("<SEG>", " ")).strip()
+                if shown:
+                    pieces.append(shown)
+                    segs.append([shown, round(fed, 3), round(wall, 3)])
+                if final:
+                    break
+                continue
+            if a.mode == "joint":
+                dt, add = gen_joint(wav[: int(fed * sr)], raw, raw_t, final)
+                decodes += 1
+                wall = time.perf_counter() - start
+                raw += add
+                raw_t += dt
                 shown = re.sub(r"\s+", " ", add.replace("<SEG>", " ")).strip()
                 if shown:
                     pieces.append(shown)
@@ -238,22 +303,21 @@ def main(a):
         hyp = ""
         for p in pieces:
             hyp = join(hyp, p, a.tgt)
-        if a.mode in ("prefix", "alignatt"):
+        if a.mode in ("prefix", "alignatt", "joint"):
             hyp = re.sub(r"\s+", " ", raw.replace("<SEG>", " ")).strip()
-        out.write(
-            json.dumps(
-                {
-                    "utt_id": it["utt_id"],
-                    "ok": True,
-                    "text": hyp,
-                    "segments": segs,
-                    "decodes": decodes,
-                    "duration_sec": round(dur, 3),
-                },
-                ensure_ascii=False,
-            )
-            + "\n"
-        )
+        row = {
+            "utt_id": it["utt_id"],
+            "ok": True,
+            "text": hyp,
+            "segments": segs,
+            "decodes": decodes,
+            "duration_sec": round(dur, 3),
+        }
+        if a.mode == "joint":
+            row.update(transcript=re.sub(r"\s+", " ", raw_t).strip(),
+                       gen_tokens=stats["tokens"], decode_ms=round(stats["ms"], 1),
+                       malformed_steps=stats["malformed"])
+        out.write(json.dumps(row, ensure_ascii=False) + "\n")
         out.flush()
         if (n + 1) % 20 == 0:
             print(f"{n + 1}/{len(items)} {time.time() - t0:.0f}s, {ndec} decodes", flush=True)
@@ -282,7 +346,7 @@ if __name__ == "__main__":
     ap.add_argument("--att_ban_eos", action="store_true")
     ap.add_argument("--keep_seg", action="store_true")
     ap.add_argument("--limit", type=int, default=0)
-    ap.add_argument("--mode", choices=["seg", "prefix", "alignatt"], default="seg")
+    ap.add_argument("--mode", choices=["seg", "prefix", "alignatt", "joint"], default="seg")
     ap.add_argument(
         "--att_sec",
         type=float,
