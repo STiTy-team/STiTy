@@ -199,6 +199,7 @@ def offline(u, wav):
 noise_wavs = []
 if a.noise_frac > 0:
     import glob
+
     noise_wavs = sorted(glob.glob(os.path.join(a.noise_dir, "*.wav")))
     assert noise_wavs, f"--noise_frac > 0 but no wavs in {a.noise_dir}"
 
@@ -210,7 +211,7 @@ def noise_tail(n):
     if len(y) < n:
         y = np.tile(y, n // len(y) + 1)
     off = random.randrange(len(y) - n + 1)
-    return y[off:off + n]
+    return y[off : off + n]
 
 
 log = open(os.path.join(a.out, "train.log"), "a"); t0 = time.time(); hard = []
