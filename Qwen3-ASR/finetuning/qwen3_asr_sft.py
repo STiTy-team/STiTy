@@ -387,10 +387,43 @@ def copy_required_hf_files_for_qwen_asr(src_dir: str, dst_dir: str):
             shutil.copy2(src, os.path.join(dst_dir, fn))
 
 
+def save_extra_token_rows(model, ids, out_dir: str) -> None:
+    """--extra_train_tokens 행(LoRA adapter 에 안 들어감)을 out_dir/extra_token_rows.pt 로 저장.
+    임베딩이 묶여 있으면(tied) lm_head 는 None."""
+    if not ids:
+        return
+    base = model.base_model.model if hasattr(model, "base_model") else model
+    thinker = base.thinker if hasattr(base, "thinker") else base
+    emb = thinker.get_input_embeddings()
+    lm_head = thinker.get_output_embeddings()
+    idx = torch.tensor(list(ids), dtype=torch.long, device=emb.weight.device)
+    tied = lm_head is None or lm_head.weight is emb.weight
+    torch.save({
+        "ids": list(ids),
+        "emb": emb.weight.detach().index_select(0, idx).cpu(),
+        "lm_head": None if tied else lm_head.weight.detach().index_select(0, idx).cpu(),
+    }, os.path.join(out_dir, "extra_token_rows.pt"))
+
+
+def load_extra_token_rows(model, path: str) -> None:
+    """save_extra_token_rows 의 역: 저장된 행을 임베딩(및 묶이지 않은 lm_head)에 되돌려 쓴다 (resume 용)."""
+    d = torch.load(path, map_location="cpu")
+    base = model.base_model.model if hasattr(model, "base_model") else model
+    thinker = base.thinker if hasattr(base, "thinker") else base
+    emb = thinker.get_input_embeddings()
+    lm_head = thinker.get_output_embeddings()
+    with torch.no_grad():
+        for k, i in enumerate(d["ids"]):
+            emb.weight[i] = d["emb"][k].to(emb.weight.dtype)
+            if d.get("lm_head") is not None and lm_head is not None and lm_head.weight is not emb.weight:
+                lm_head.weight[i] = d["lm_head"][k].to(lm_head.weight.dtype)
+
+
 class MakeEveryCheckpointInferableCallback(TrainerCallback):
-    def __init__(self, base_model_path: str, tokenizer):
+    def __init__(self, base_model_path: str, tokenizer, extra_ids=()):
         self.base_model_path = base_model_path
         self._tokenizer = tokenizer
+        self._extra_ids = list(extra_ids)
 
     def on_save(self, args: TrainingArguments, state, control, **kwargs):
         if args.process_index != 0:
@@ -413,6 +446,7 @@ class MakeEveryCheckpointInferableCallback(TrainerCallback):
             thinker = base.thinker if hasattr(base, "thinker") else base
             emb = thinker.get_input_embeddings()
             torch.save(emb.weight[seg_id].detach().cpu(), os.path.join(ckpt_dir, "seg_embedding.pt"))
+            save_extra_token_rows(model, self._extra_ids, ckpt_dir)
 
             lm_head = thinker.get_output_embeddings()
             if lm_head is not None and lm_head.weight is not emb.weight:
@@ -497,6 +531,9 @@ def parse_args():
                    help="생성된 무음 WAV 및 JSONL 저장 경로")
     p.add_argument("--no_seg", type=int, default=0,
                    help="1 이면 <SEG> 토큰을 추가하지 않고 임베딩·lm_head 도 얼린다 (LoRA 만 학습).")
+    p.add_argument("--extra_train_tokens", type=str, default="",
+                   help="쉼표로 구분한 기존 vocab 토큰 (예 '<blank1>,<blank2>'). 이 행들만 임베딩·lm_head 에서 학습하고 "
+                        "(--no_seg 1 이어도) checkpoint 마다 extra_token_rows.pt 로 저장한다. weight_decay 는 0 으로 둘 것.")
     p.add_argument("--lora_targets", type=str, default="q_proj,k_proj,v_proj,o_proj")
     p.add_argument("--lora_r", type=int, default=128)
     p.add_argument("--lora_alpha", type=int, default=256)
@@ -543,21 +580,46 @@ def main():
             )
             model = get_peft_model(model, lora_config)
 
+    # --extra_train_tokens: 기존 vocab 의 (미학습) 토큰 행을 학습 대상으로
+    extra_ids = []
+    for t in [x.strip() for x in args_cli.extra_train_tokens.split(",") if x.strip()]:
+        tid = processor.tokenizer.convert_tokens_to_ids(t)
+        n_rows = model.thinker.get_input_embeddings().weight.shape[0]
+        assert tid is not None and tid != processor.tokenizer.unk_token_id and 0 <= tid < n_rows, \
+            f"--extra_train_tokens: {t!r} -> id {tid} (rows {n_rows}, unk {processor.tokenizer.unk_token_id})"
+        assert len(processor.tokenizer.encode(t, add_special_tokens=False)) == 1, f"{t!r} is not a single token"
+        extra_ids.append(int(tid))
+    if extra_ids:
+        assert args_cli.weight_decay == 0.0, "--extra_train_tokens needs --weight_decay 0 (else every embedding row decays)"
+        print(f"[extra_train_tokens] ids = {extra_ids}")
+
     # PEFT가 freeze한 이후 SEG 임베딩 unfreeze + gradient hook (resume 포함 항상 등록)
-    def _make_seg_only_hook(sid):
+    def _make_rows_hook(ids):
         def _hook(grad):
             mask = torch.zeros_like(grad)
-            mask[sid] = 1.0
+            mask[ids] = 1.0
             return grad * mask
         return _hook
 
-    if not args_cli.no_seg:
+    def _make_seg_only_hook(sid):
+        return _make_rows_hook([sid])
+
+    if not args_cli.no_seg and not extra_ids:
         emb = model.thinker.get_input_embeddings()
         emb.weight.requires_grad_(True)
         emb.weight.register_hook(_make_seg_only_hook(seg_id))
         lm_head = model.thinker.get_output_embeddings()
         lm_head.weight.requires_grad_(True)
         lm_head.weight.register_hook(_make_seg_only_hook(seg_id))
+    elif extra_ids:
+        rows = ([] if args_cli.no_seg else [seg_id]) + extra_ids
+        emb = model.thinker.get_input_embeddings()
+        emb.weight.requires_grad_(True)
+        emb.weight.register_hook(_make_rows_hook(rows))
+        lm_head = model.thinker.get_output_embeddings()
+        if lm_head is not None and lm_head.weight is not emb.weight:
+            lm_head.weight.requires_grad_(True)
+            lm_head.weight.register_hook(_make_rows_hook(rows))
 
     model.print_trainable_parameters()
 
@@ -670,7 +732,8 @@ def main():
         eval_dataset=ds.get("validation", None),
         data_collator=collator,
         tokenizer=processor.tokenizer,
-        callbacks=[MakeEveryCheckpointInferableCallback(base_model_path=args_cli.model_path, tokenizer=processor.tokenizer)],
+        callbacks=[MakeEveryCheckpointInferableCallback(base_model_path=args_cli.model_path, tokenizer=processor.tokenizer,
+                                                        extra_ids=extra_ids)],
         compute_metrics=make_compute_metrics(processor),
         preprocess_logits_for_metrics=preprocess_logits_for_metrics,
     )
@@ -682,12 +745,29 @@ def main():
     if resume_from:
         if trainer.args.process_index == 0:
             print(f"[resume] resume_from_checkpoint = {resume_from}")
+        # Trainer 는 adapter 만 되살린다: 학습 중인 extra 토큰 행은 checkpoint 의 사본에서 복원
+        _rows = os.path.join(resume_from, "extra_token_rows.pt")
+        if extra_ids and os.path.exists(_rows):
+            load_extra_token_rows(trainer.model, _rows)
+            print(f"[resume] extra token rows <- {_rows}")
         trainer.train(resume_from_checkpoint=resume_from)
     else:
         trainer.train()
     # 마지막(또는 load_best 면 최선) 어댑터를 final/ 에 남긴다.
     if trainer.args.process_index == 0:
-        trainer.save_model(os.path.join(training_args.output_dir, "final"))
+        final_dir = os.path.join(training_args.output_dir, "final")
+        trainer.save_model(final_dir)
+        if extra_ids:
+            # load_best 는 adapter 만 best checkpoint 로 되돌린다: 행도 같은 checkpoint 의 사본을 쓴다
+            best = trainer.state.best_model_checkpoint if training_args.load_best_model_at_end else None
+            best_rows = os.path.join(best, "extra_token_rows.pt") if best else ""
+            if best_rows and os.path.exists(best_rows):
+                shutil.copy2(best_rows, os.path.join(final_dir, "extra_token_rows.pt"))
+                load_extra_token_rows(trainer.model, best_rows)
+                print(f"[extra_train_tokens] final rows <- best {best_rows}")
+            else:
+                save_extra_token_rows(trainer.model, extra_ids, final_dir)
+                print(f"[extra_train_tokens] final rows <- last step")
 
 
 if __name__ == "__main__":
