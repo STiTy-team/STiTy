@@ -63,15 +63,43 @@ def _mean(xs):
     return sum(xs) / len(xs) if xs else None
 
 
-def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0):
-    """rows: dicts with sid, lang, tgt, src, schedule [[after, text], ...]. Returns the metric dict."""
+def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0, word_times=None, points_fn=None):
+    """rows: dicts with sid, lang, tgt, src, schedule [[after, text], ...]. Returns the metric dict.
+    prefix16 columns: mid_closed_share (non-final pieces ending a sentence), first_bare_subj (sentences whose first
+    piece is a bare subject or, with src_words, covers < 3 words), first_after_frac (first emission / K, median),
+    point_empty_share (empty items / all items - the labeler's waits), regret_share (sentences with regret_rounds > 0),
+    est_lag_s (mean seconds from the earliest src word of a piece to its `after` word; needs word_times {sid: words})."""
+    from schedule_gate import _SENT_CLOSE, FIRST_PIECE_MIN_WORDS, eojeol_end_times, is_bare_subject
     empties, firsts, defs, ratios, lens, per_word = [], [], [], [], [], []
     dump = big = short = short_tot = single = 0
+    mid_tot = mid_closed = bare = pt_tot = pt_empty = regret = 0
+    first_frac, lags = [], []
     for r in rows:
         if r.get("rescue") == "wait":
             raise ValueError("stats_for: wait labels are counted separately, not in the corpus table")
-        K = len(tokens_fn(r["src"], r["lang"]))
+        toks = tokens_fn(r["src"], r["lang"])
+        K = len(toks)
         sch = [(int(a), t) for a, t in r["schedule"] if t.strip()]  # empty items are waits, not emissions
+        pt_tot += len(r["schedule"])
+        pt_empty += sum(1 for _, t in r["schedule"] if not t.strip())
+        regret += (r.get("regret_rounds") or 0) > 0
+        for _, t in sch[:-1]:
+            mid_tot += 1
+            mid_closed += bool(_SENT_CLOSE.search(t.strip()))
+        if sch:
+            cov0 = next((c for (_, t), c in zip(r["schedule"], r.get("src_words") or [None] * len(r["schedule"])) if t.strip()), None)
+            narrow = cov0 is not None and len(cov0) < FIRST_PIECE_MIN_WORDS and len(sch) > 1 and not sch[0][1].strip().endswith(",") \
+                and not is_connective_piece(sch[0][1], r["tgt"])
+            bare += is_bare_subject(sch[0][1], r["tgt"]) or narrow
+            if K:
+                first_frac.append(min(a for a, _ in sch) / K)
+        if word_times is not None and r.get("src_words") and r["sid"] in word_times:
+            ends = eojeol_end_times(toks, word_times[r["sid"]])
+            for (a, t), c in zip(r["schedule"], r["src_words"]):
+                if t.strip() and c:
+                    j = min(c)
+                    if 1 <= j <= K and 1 <= a <= K:
+                        lags.append(ends[a - 1] - ends[j - 1])
         if K and sch:
             empties.append(1 - len({a for a, _ in sch}) / K)
             firsts.append(min(a for a, _ in sch))
@@ -105,6 +133,12 @@ def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0):
         "len_ratio_p95": _pct(ratios, 0.95), "gated_out": gated_out,
         "piece_len_median": _pct(lens, 0.5), "short_share": short / short_tot if short_tot else None,
         "pieces_per_word": _pct(per_word, 0.5), "single_share": single / len(rows) if rows else None,
+        "mid_closed_share": mid_closed / mid_tot if mid_tot else None,
+        "first_bare_subj": bare / len(rows) if rows else None,
+        "first_after_frac": _pct(first_frac, 0.5),
+        "point_empty_share": pt_empty / pt_tot if pt_tot else None,
+        "regret_share": regret / len(rows) if rows else None,
+        "est_lag_s": _mean(lags),
     }
 
 
@@ -204,7 +238,8 @@ def gate(rows, sents, hy, comet_min, kiwi_margin, extra_hy_sids=()):
 
 _COLS = ["n", "empty_share", "dump_share", "first_after_median", "first_after_p95", "deferral_median",
          "deferral_max", "len_ratio_median", "len_ratio_p5", "len_ratio_p95", "gated_out",
-         "piece_len_median", "short_share", "pieces_per_word", "single_share"]
+         "piece_len_median", "short_share", "pieces_per_word", "single_share",
+         "mid_closed_share", "first_bare_subj", "first_after_frac", "point_empty_share", "regret_share", "est_lag_s"]
 
 
 def _fmt(v):
@@ -268,6 +303,7 @@ def main(argv=None):
     ap.add_argument("--kiwi-floor-pct", type=float, default=10.0,
                     help="no-reference wait labels whose Hy kiwi is under this percentile of all Hy kiwi scores are dropped")
     ap.add_argument("--out-dropped", help="jsonl of sids that got no label at all (under the kiwi floor / no translation)")
+    ap.add_argument("--word-times", help="word_times.jsonl: with it the table reports est_lag_s (first recording per sentence)")
     a = ap.parse_args(argv)
 
     load = lambda p: [json.loads(l) for l in open(p, encoding="utf-8") if l.strip()]
@@ -309,7 +345,11 @@ def main(argv=None):
         s = sents[r["sid"]]
         groups[f"{s['lang']}->{s['tgt']}"].append({**r, "src": s["src"], "lang": s["lang"], "tgt": s["tgt"], "ref": s.get("ref")})
     known_fn = lambda sid: known_sets(hy[sid], sents[sid]["tgt"])
-    new = {d: stats_for(g, words, known_fn, gated_out=dropped[d]) for d, g in groups.items()}
+    wt = None
+    if a.word_times:
+        by_audio = {r["audio"]: r["words"] for r in load(a.word_times)}
+        wt = {sid: by_audio[s["recs"][0]["audio"]] for sid, s in sents.items() if s.get("recs") and s["recs"][0]["audio"] in by_audio}
+    new = {d: stats_for(g, words, known_fn, gated_out=dropped[d], word_times=wt) for d, g in groups.items()}
     for d in dropped:  # a direction the gate removed entirely still gets a (zero) row
         if d not in new:
             new[d] = stats_for([], words, gated_out=dropped[d])

@@ -138,3 +138,41 @@ def test_wait_labels_do_not_split_at_connectives_or_abbreviations():
     labels, _ = ss.make_wait_labels(["f", "g"], sents, {}, {}, None)
     assert labels[0]["schedule"] == [[6, "The truck ran on, hit Mr. Park and stopped."]]  # connective ends are not splits
     assert labels[1]["schedule"] == [[2, "그는 떠났다."], [4, "그녀는 남았다."]]
+
+
+# --- prefix16 columns -------------------------------------------------------------------------------------------
+def test_new_columns():
+    from prefix_points import candidate_points
+    from schedule_gate import words
+    rows = [{"sid": "a", "lang": "en", "tgt": "ko", "src": "the manager approved the budget , and the team left early",
+             "schedule": [[6, "매니저가 예산을 승인했고,"], [11, "팀은 일찍 떠났습니다."]],
+             "src_words": [[1, 2, 3, 4, 5], [7, 8, 9, 10, 11]], "regret_rounds": 1},
+            {"sid": "b", "lang": "en", "tgt": "ko", "src": "hello there friend",
+             "schedule": [[3, "안녕 친구."]], "src_words": [[1, 2, 3]], "regret_rounds": 0}]
+    m = ss.stats_for(rows, words, points_fn=candidate_points)
+    assert m["mid_closed_share"] == 0.0 and m["first_bare_subj"] == 0.0 and m["regret_share"] == 0.5
+    assert m["point_empty_share"] == 0.0
+    assert abs(m["first_after_frac"] - (6 / 11 + 1.0) / 2) < 1e-6  # median of two values = their mean
+    rows[0]["schedule"][0][1] = "매니저가 예산을 승인했습니다."
+    assert ss.stats_for(rows, words, points_fn=candidate_points)["mid_closed_share"] == 1.0
+
+
+def test_point_empty_share_and_bare_subject():
+    from schedule_gate import words
+    rows = [{"sid": "a", "lang": "ko", "tgt": "en", "src": "어제 회의에서 홍 지사는 새 예산을 1990년에 승인했다",
+             "schedule": [[2, "At yesterday's meeting,"], [4, ""], [7, ""], [8, "Governor Hong approved the new budget in 1990."]],
+             "src_words": [[1, 2], [], [], [3, 4, 5, 6, 7, 8]]},
+            {"sid": "b", "lang": "ko", "tgt": "en", "src": "지각은 가까운 쪽이 약 70km 두께입니다",
+             "schedule": [[1, "The crust"], [6, "is about 70 km thick."]], "src_words": [[1], [2, 3, 4, 5, 6]]}]
+    m = ss.stats_for(rows, words)
+    assert abs(m["point_empty_share"] - 2 / 6) < 1e-6 and m["first_bare_subj"] == 0.5
+
+
+def test_est_lag_from_word_times():
+    from schedule_gate import words
+    rows = [{"sid": "a", "lang": "en", "tgt": "ko", "src": "the manager approved",
+             "schedule": [[3, "매니저가 승인했습니다."]], "src_words": [[1, 2, 3]]}]
+    wt = {"a": [{"w": "the", "end": 0.5}, {"w": "manager", "end": 1.0}, {"w": "approved", "end": 2.0}]}
+    m = ss.stats_for(rows, words, word_times=wt)
+    assert abs(m["est_lag_s"] - 1.5) < 1e-6  # earliest src word (the, 0.5 s) -> after=3 (2.0 s)
+    assert ss.stats_for(rows, words)["est_lag_s"] is None

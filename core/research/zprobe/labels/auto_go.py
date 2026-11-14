@@ -44,6 +44,18 @@ def check(rows, n_labeled, a):
             reasons.append(f"{d} dump_share {m['dump_share']:.3f} > {lim}")
         if m["first_after_median"] is not None and m["first_after_median"] > a.first_after:
             reasons.append(f"{d} first_after_median {m['first_after_median']} > {a.first_after}")
+        # prefix16 (open pieces): closing mid-source, bare-subject openers, too few waits, too many regrets, lag
+        for key, attr, above, default in (("mid_closed_share", "mid_closed", True, 0.03), ("first_bare_subj", "first_bare", True, 0.05),
+                                          ("point_empty_share", "empty_min", False, 0.0), ("regret_share", "regret_max", True, 0.30),
+                                          ("est_lag_s", "lag_max", True, 1.6)):
+            lim = getattr(a, attr, default)
+            v = m.get(key)
+            if v is None:
+                continue
+            if above and v > lim:
+                reasons.append(f"{d} {key} {v:.3f} > {lim}")
+            if not above and v < lim:
+                reasons.append(f"{d} {key} {v:.3f} < {lim}")
     es = {d: m["empty_share"] for d, m in table.items() if m["empty_share"] is not None}
     if len(es) >= 2 and max(es.values()) > a.empty_ratio * max(min(es.values()), 0.05):  # floor: 0 vs 0.08 is fine
         reasons.append(f"empty_share ratio {max(es.values()) / max(min(es.values()), 0.05):.2f} > {a.empty_ratio}: {es}")
@@ -62,6 +74,11 @@ def main(argv=None):
     ap.add_argument("--dump-other", type=float, default=0.10)
     ap.add_argument("--empty-ratio", type=float, default=2.0)
     ap.add_argument("--first-after", type=float, default=8)
+    ap.add_argument("--mid-closed", type=float, default=0.03, help="non-final pieces that close a sentence, at most")
+    ap.add_argument("--first-bare", type=float, default=0.05, help="sentences whose first piece is a bare subject, at most")
+    ap.add_argument("--empty-min", type=float, default=0.0, help="empty (wait) items among all items, at least (0 = off; prefix16 chain passes 0.05)")
+    ap.add_argument("--regret-max", type=float, default=0.30, help="sentences that went through a regret round, at most")
+    ap.add_argument("--lag-max", type=float, default=1.6, help="est_lag_s (needs --word-times in schedule_stats), at most")
     a = ap.parse_args(argv)
     src = {}
     for l in open(a.sentences, encoding="utf-8"):
