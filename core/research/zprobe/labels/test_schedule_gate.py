@@ -172,3 +172,21 @@ def test_open_accepts_connective_pieces():
     toks = "when the meeting ends , the manager will approve the budget".split()
     items = [(5, "회의가 끝나면,"), (10, "매니저가 예산을 승인할 것입니다.")]
     assert shape_check_open(items, [{1, 2, 3, 4}, {6, 7, 8, 9, 10}], "ko", toks) is None
+
+
+def test_open_final_false_checks_last_piece_as_mid():
+    toks = "the manager approved the budget , and the team left".split()
+    items = [(6, "매니저가 예산을 승인했습니다.")]
+    assert shape_check_open(items, [{1, 2, 3, 4, 5}], "ko", toks) is None  # final piece may close
+    assert shape_check_open(items, [{1, 2, 3, 4, 5}], "ko", toks, final=False).startswith("open: piece 1 closes")
+
+
+def test_open_first_piece_comma_adverbial_exempt_from_width():
+    toks = "어제 회의에서 홍 지사는 승인했다".split()
+    assert shape_check_open([(2, "At yesterday's meeting,")], [{1, 2}], "en", toks, final=False) is None
+
+
+def test_open_width_rule_skips_a_whole_sentence_piece():
+    # a two-word sentence translated in one piece at its end: nothing more could have been waited for
+    assert shape_check_open([(2, "안녕하세요.")], [{1, 2}], "ko", ["hello", "there"]) is None
+    assert shape_check_open([(2, "안녕하세요")], [{1, 2}], "ko", ["hello", "there", "friend"], final=False).startswith("open: first piece covers 2")

@@ -90,3 +90,105 @@ def parse_regret(reply, n_pieces: int) -> tuple[list[int], str]:
         raise ValueError("format: expected {'regret': [...], 'note': ...}")
     nums = sorted({x for x in reply["regret"] if isinstance(x, int) and not isinstance(x, bool) and 1 <= x <= n_pieces})
     return nums, str(reply.get("note") or "")
+
+
+# --- the per-sentence loop ---------------------------------------------------------------------------------------
+from prefix_points import candidate_points  # noqa: E402
+from schedule_gate import fix_leading_punct, join_texts, shape_check_open  # noqa: E402
+
+END_REASK = "The sentence has ended; emit all that is still missing."
+
+
+def step_gate(text: str, cov: set, k: int, items, covers, tgt: str, tokens: list[str], is_end: bool) -> str | None:
+    """Reason if this point's answer is rejected: range (text without src, src < 1), lookahead (src > k),
+    then the open-piece shape of the pieces so far plus this one."""
+    if text and not cov:
+        return "range: text without src"
+    if any(x < 1 for x in cov):
+        return f"range: src words {sorted(x for x in cov if x < 1)} below 1"
+    late = sorted(x for x in cov if x > k)
+    if late:
+        return f"lookahead: src words {late} are after word {k}"
+    if not text:
+        return None
+    return shape_check_open(list(items) + [(k, text)], list(covers) + [set(cov)], tgt, tokens, final=is_end)
+
+
+def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail=None, note: str = "",
+                   min_gap: int = 2) -> dict | None:
+    """Walk the candidate points, gate each answer, then run the regret check (see the module docstring).
+    ask_step(row, k, committed, is_end, note) and ask_regret(row, pieces) return parsed JSON dicts.
+    Returns the label record, or None after fail(reason)."""
+    fail = fail or (lambda why: None)
+    tokens = words(row["src"], row["lang"])
+    points = candidate_points(tokens, row["lang"], min_gap)
+    items: list[tuple[int, str]] = []
+    covers: list[set] = []
+    st = {"calls": 0, "attempts": 0}
+
+    def ask_point(k, is_end, n):
+        """(text, cov) for this point, or None when the sentence fails here."""
+        committed = join_texts([t for _, t in items])
+        for attempt in (1, 2):
+            st["calls"] += 1
+            reply = ask_step(row, k, committed, is_end, n)
+            try:
+                text, cov = parse_add(reply)
+                why = step_gate(text, cov, k, items, covers, row["tgt"], tokens, is_end)
+            except ValueError as e:
+                text, cov, why = "", set(), str(e)
+            if why is None and is_end and not text:
+                why = "final point empty"
+            if why is None:
+                return text, cov
+            if why.startswith("lookahead"):
+                return "", set()  # not re-asked: unheard content is a wait by definition
+            if attempt == 1:
+                st["attempts"] += 1
+                hint = END_REASK if why == "final point empty" else f"Previous attempt was rejected: {why}. Fix that."
+                n = f"{n} {hint}" if n else hint
+                continue
+            if is_end:
+                fail(why if why == "final point empty" else f"final point: {why}")
+                return None
+            return "", set()
+
+    def run_from(start, first_note):
+        del items[start:]
+        del covers[start:]
+        for idx in range(start, len(points)):
+            res = ask_point(points[idx], idx == len(points) - 1, first_note if idx == start else "")
+            if res is None:
+                return False
+            items.append((points[idx], res[0]))
+            covers.append(set(res[1]))
+        return True
+
+    if not run_from(0, note):
+        return None
+    rounds = 0
+    while True:
+        pieces = [(k, t) for k, t in items if t.strip()]
+        try:
+            regs, rnote = parse_regret(ask_regret(row, pieces), len(pieces))
+        except ValueError:
+            regs, rnote = [], ""  # a malformed verdict is no verdict
+        if not regs:
+            break
+        if rounds >= max_regret:
+            fail("regret unresolved")
+            return None
+        rounds += 1
+        idx = items.index(pieces[regs[0] - 1])
+        if idx == len(items) - 1:
+            ok = run_from(idx, f"A reviewer found: {rnote}. Fix that." if rnote else "A reviewer rejected the last piece. Fix that.")
+        else:
+            items[idx] = (items[idx][0], "")
+            covers[idx] = set()
+            ok = run_from(idx + 1, "")
+        if not ok:
+            return None
+    fixed = fix_leading_punct(items)
+    return {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
+            "schedule": [[k, t] for k, t in fixed], "src_words": [sorted(c) for c in covers],
+            "attempts": st["attempts"], "regret_rounds": rounds, "calls": st["calls"]}

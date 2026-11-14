@@ -186,11 +186,17 @@ def is_bare_subject(text: str, tgt: str) -> bool:
     return (len(ws) == 1 and ws[0] in _EN_PRONOUNS) or (len(ws) == 2 and ws[0] in _EN_ARTICLES)
 
 
-def shape_check_open(items, covers, tgt: str, tokens: list[str]) -> str | None:
+def shape_check_open(items, covers, tgt: str, tokens: list[str], final: bool = True) -> str | None:
     """Reason string if a piece breaks the open-piece rules (prefix16), else the prefix15 shape_check verdict.
-    `covers` (parse_covers) is used for the first-piece width; None entries skip that check."""
+    `covers` (parse_covers) is used for the first-piece width; None entries skip that check. `final=False`
+    means the source is not over yet, so the last piece is judged as a mid-sentence piece too (the step gate).
+    A first piece that ends in a comma (an open adverbial or subordinate phrase) is exempt from the width rule."""
     from schedule_stats import is_connective_piece  # lazy: schedule_stats imports this module
     covers = list(covers) if covers is not None else [None] * len(items)
+    items = list(items)
+    if not final and items:
+        items.append((items[-1][0], "\u2026"))  # sentinel: every real piece is now a mid piece
+        covers.append(None)
     texts = [(i, t.strip(), c) for i, ((_, t), c) in enumerate(zip(items, covers), 1) if t.strip()]
     for n, (i, t, _) in enumerate(texts):
         if n < len(texts) - 1 and _SENT_CLOSE.search(t):
@@ -198,9 +204,9 @@ def shape_check_open(items, covers, tgt: str, tokens: list[str]) -> str | None:
     for i, t, _ in texts:
         if is_bare_subject(t, tgt):
             return f"open: piece {i} is a bare subject (\"{t}\") - wait until something goes with it"
-    if texts:
+    if texts and not (final and len(texts) == 1):  # a lone piece at the sentence end had nothing left to wait for
         i, t, c = texts[0]
-        if c is not None and len(c) < FIRST_PIECE_MIN_WORDS and not is_connective_piece(t, tgt):
+        if c is not None and len(c) < FIRST_PIECE_MIN_WORDS and not is_connective_piece(t, tgt) and not t.endswith(","):
             return (f"open: first piece covers {len(c)} source words (< {FIRST_PIECE_MIN_WORDS}) - "
                     "wait until more has been heard")
     return shape_check(items, tgt)
