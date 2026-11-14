@@ -50,12 +50,12 @@ label() {  # $@ extra args; exit 3 = API errors on >1% of rows -> one more pass 
     PYTHONPATH=. $PY -u $L/label_prefix.py --sentences $SENTS --hy $HY --model $LABEL_MODEL --reasoning low \
       --workers $LABEL_WORKERS --budget $LABEL_BUDGET --rules $RULES "$@"; rc=$?; fi
   return $rc; }
-judge() {  # exit 3 = API errors on >1% -> one more pass after 10 min; exit 2 = budget stop (fails the stage)
+judge() {  # $3 = extra flags; exit 3 = API errors on >1% -> one more pass after 10 min; exit 2 = budget stop (fails the stage)
   PYTHONPATH=. $PY -u $L/judge_schedule.py --schedule "$1" --sentences $SENTS --model $LABEL_MODEL --reasoning low \
-    --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2"; local rc=$?
+    --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2" $3; local rc=$?
   if [ $rc -eq 3 ]; then echo "  judge hit API errors; retrying the ERROR rows in 10 min"; sleep 600
     PYTHONPATH=. $PY -u $L/judge_schedule.py --schedule "$1" --sentences $SENTS --model $LABEL_MODEL --reasoning low \
-      --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2"; rc=$?; fi
+      --workers $LABEL_WORKERS --budget $JUDGE_BUDGET --out "$2" $3; rc=$?; fi
   return $rc; }
 
 stage "label ($LABEL_MODEL, prefix rules v1, budget $LABEL_BUDGET, sentences $SENTS)"
@@ -81,7 +81,7 @@ fi
 
 stage "judge 2"
 if [ ! -f $OUT/judge2.done ]; then
-  if [ -s $S2 ]; then judge $S2 $J2 || { echo P16_FAIL judge2; exit 1; }; else : > $J2; fi
+  if [ -s $S2 ]; then judge $S2 $J2 "--votes 2" || { echo P16_FAIL judge2; exit 1; }; else : > $J2; fi  # two judges must agree
   touch $OUT/judge2.done
 fi
 echo "  spent so far \$$(spent)"
