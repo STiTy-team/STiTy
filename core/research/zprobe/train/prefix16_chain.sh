@@ -28,7 +28,9 @@ L=core/research/zprobe/labels
 S1=$OUT/schedule_${LABEL_MODEL}.jsonl; J1=$OUT/schedule.judge1.jsonl; S2=$OUT/schedule.retry.jsonl; J2=$OUT/schedule.retry.judge2.jsonl
 SJ=$OUT/schedule.judged.jsonl; RESCUE=$OUT/rescue.jsonl; GATED=$OUT/schedule.gated.jsonl
 MACHINE=${MACHINE:-gpu2}; BRANCH=${BRANCH:-exp/schedule-labels}; MANAGER=${MANAGER:-localhost:29140}
-PIPE=brig.koen+prefix16-lidreset; DSNS=${DSNS:-"fleurs_en-ko_vol23 fleurs_ko-en_vol23 northstar_ko+en-ko"}
+# V = model variant suffix ("" = prefix16; "b" = prefix16b: same labels, rebalanced rows via ROW_FLAGS); ROW_FLAGS = extra build_prefix14 flags
+V=${V:-}; ROW_FLAGS=${ROW_FLAGS:-}; M=prefix16$V
+PIPE=brig.koen+$M-lidreset; DSNS=${DSNS:-"fleurs_en-ko_vol23 fleurs_ko-en_vol23 northstar_ko+en-ko"}
 
 roomy() { local ok=0; while [ $ok -lt 3 ]; do
   if [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | head -1)" -ge "$1" ]; then ok=$((ok + 1)); else ok=0; fi
@@ -114,32 +116,32 @@ if [ ! -f $OUT/GO ]; then
 fi
 
 stage "training rows"
-[ -f models/zprobe/data/train_prefix16.jsonl ] || $PY $L/build_prefix14.py \
+[ -f models/zprobe/data/train_$M.jsonl ] || $PY $L/build_prefix14.py \
   --schedule $GATED --sentences $SENTS --word-times $WT \
-  --sil-wav models/zprobe/data/silence_tail_4s.wav --out models/zprobe/data/train_prefix16.jsonl \
-  --val-out models/zprobe/data/val_prefix16.jsonl --rows-per-rec 5 --catchup-per-rec 2 --val-cap 1500 \
+  --sil-wav models/zprobe/data/silence_tail_4s.wav --out models/zprobe/data/train_$M.jsonl \
+  --val-out models/zprobe/data/val_$M.jsonl --rows-per-rec 5 --catchup-per-rec 2 --val-cap 1500 $ROW_FLAGS \
   --sil-cap 800 --seg-cap 2500 --reset-rows 3000 --seed 16 || { echo P16_FAIL rows; exit 1; }
-echo "  train rows: $(wc -l < models/zprobe/data/train_prefix16.jsonl), val rows: $(wc -l < models/zprobe/data/val_prefix16.jsonl)"
+echo "  train rows: $(wc -l < models/zprobe/data/train_$M.jsonl), val rows: $(wc -l < models/zprobe/data/val_$M.jsonl)"
 [ "${STOP_AFTER_ROWS:-0}" = 1 ] && { echo "P16_ROWS_READY $(date '+%F %T') - STOP_AFTER_ROWS=1"; exit 0; }
 
 stage "sft"
 sft() { $PY -u Qwen3-ASR/finetuning/qwen3_asr_sft.py \
   --model_path models/Qwen3-ASR-1.7B-koen-seg-mix-merged \
-  --train_file models/zprobe/data/train_prefix16.jsonl --eval_file models/zprobe/data/val_prefix16.jsonl \
-  --output_dir models/zprobe/adapters/prefix16 --use_lora 1 --no_seg 1 --load_best 1 --lazy_features 1 \
+  --train_file models/zprobe/data/train_$M.jsonl --eval_file models/zprobe/data/val_$M.jsonl \
+  --output_dir models/zprobe/adapters/$M --use_lora 1 --no_seg 1 --load_best 1 --lazy_features 1 \
   --lora_r 64 --lora_alpha 128 --lora_dropout 0.05 --lora_targets q_proj,k_proj,v_proj,o_proj \
   --lr 1e-4 --epochs 1 --batch_size 2 --grad_acc 8 --save_steps 200 --save_total_limit 2 --resume 1 "$@"; }
-if [ ! -f models/zprobe/adapters/prefix16/final/adapter_model.safetensors ]; then
+if [ ! -f models/zprobe/adapters/$M/final/adapter_model.safetensors ]; then
   roomy 20000
-  sft --gradient_checkpointing 0 > $LOG/sft_prefix16.log 2>&1 || sft --gradient_checkpointing 1 >> $LOG/sft_prefix16.log 2>&1 \
-    || { echo P16_FAIL sft; tail -5 $LOG/sft_prefix16.log; exit 1; }
+  sft --gradient_checkpointing 0 > $LOG/sft_$M.log 2>&1 || sft --gradient_checkpointing 1 >> $LOG/sft_$M.log 2>&1 \
+    || { echo P16_FAIL sft; tail -5 $LOG/sft_$M.log; exit 1; }
 fi
-grep -oE "'eval_loss': [0-9.]+|'eval_cer': [0-9.]+" $LOG/sft_prefix16.log | tail -2
+grep -oE "'eval_loss': [0-9.]+|'eval_cer': [0-9.]+" $LOG/sft_$M.log | tail -2
 
 stage "merge"
-[ -d models/zprobe/merged/prefix16_full ] || PYTHONPATH=Qwen3-ASR $PY core/research/zprobe/train/merge_adapter.py \
-  --base models/Qwen3-ASR-1.7B-koen-seg-mix-merged --adapter models/zprobe/adapters/prefix16/final \
-  --out models/zprobe/merged/prefix16_full || { echo P16_FAIL merge; exit 1; }
+[ -d models/zprobe/merged/${M}_full ] || PYTHONPATH=Qwen3-ASR $PY core/research/zprobe/train/merge_adapter.py \
+  --base models/Qwen3-ASR-1.7B-koen-seg-mix-merged --adapter models/zprobe/adapters/$M/final \
+  --out models/zprobe/merged/${M}_full || { echo P16_FAIL merge; exit 1; }
 echo "P16_SFT_READY $(date '+%F %T')"
 
 submit() {  # $1 dataset -> job id on stdout (empty on failure); run-now

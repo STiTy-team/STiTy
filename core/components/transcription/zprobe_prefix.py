@@ -68,6 +68,14 @@ def _continuation(tok, input_ids, seq) -> str:
     return full[len(pre):]
 
 
+def pad_silence(wav, sec: float, np):
+    """wav + `sec` seconds of zeros: at a slot reset the model is shown the cue it was trained on for end of speech
+    (silence rows), so the backlog it is still holding goes out instead of being discarded with the slot."""
+    if sec <= 0:
+        return wav
+    return np.concatenate([wav, np.zeros(int(sec * audio_mod.SAMPLING_RATE), dtype=np.float32)])
+
+
 @transcribers.register("zprobe-prefix")
 class ZprobePrefixTranscription(Transcriber):
 
@@ -95,6 +103,7 @@ class ZprobePrefixTranscription(Transcriber):
         "lid_window_sec": ("lid_window_sec", float),
         "lid_keep_sec": ("lid_keep_sec", float),
         "flush_keep_sec": ("flush_keep_sec", float),
+        "lid_flush_silence_sec": ("lid_flush_silence_sec", float),
     }
 
     model = None
@@ -186,11 +195,15 @@ class ZprobePrefixTranscription(Transcriber):
                 prev = self._slot_lang
                 self._slot_lang = verdict
                 if any(self._raw.values()):
-                    out = self._emit(self._decode(final=False), "lid")
+                    spoken = self._wav
+                    sil = float(self.settings.get("lid_flush_silence_sec", 0.0) or 0.0)
+                    if sil > 0:
+                        self._wav = pad_silence(spoken, sil, self._np)
+                    out = self._emit(self._decode(final=sil > 0), "lid")
                     keep = int(
                         float(self.settings.get("lid_keep_sec", 1.5)) * audio_mod.SAMPLING_RATE
                     )
-                    tail = self._wav[-keep:] if keep else self._wav[:0]
+                    tail = spoken[-keep:] if keep else spoken[:0]
                     self._reset_utterance()
                     self._wav = tail
                     self._slot_lang = verdict

@@ -298,6 +298,47 @@ def write_jsonl_atomic(path, rows):
 ROW_RANGE = (60000, 200000)
 
 
+def parse_caps(specs):
+    """["en-ko/covost=2500", ...] -> {"en-ko/covost": 2500}."""
+    out = {}
+    for sp in specs or []:
+        k, v = sp.split("=")
+        out[k.strip()] = int(v)
+    return out
+
+
+def cap_sources(sents, caps, rng):
+    """Keep at most caps["<pair>/<source>"] sentences of that pair and source (a random sample); others untouched.
+    prefix16b: the en-ko corpus is 72% covost whose labels mostly emit once at the end - the model learned that."""
+    if not caps:
+        return sents
+    groups = {}
+    for s in sents:
+        groups.setdefault(f"{s['lang']}-{s['tgt']}/{s.get('source')}", []).append(s)
+    keep = set()
+    for k, g in groups.items():
+        if k in caps and len(g) > caps[k]:
+            keep.update(id(s) for s in rng.sample(g, caps[k]))
+        else:
+            keep.update(id(s) for s in g)
+    return [s for s in sents if id(s) in keep]
+
+
+def drop_empty_rows(rows, fam_of, max_share, rng):
+    """Drop random empty-text on_time rows until empty rows are at most max_share of all rows. Silence / seg /
+    reset rows are never dropped (they teach the end-of-speech and reset behaviour)."""
+    empties = [r for r in rows if not r["text"].strip()]
+    droppable = [r for r in empties if fam_of.get(id(r)) == "on_time"]
+    n_total, n_empty = len(rows), len(empties)
+    # after dropping d: (n_empty - d) / (n_total - d) <= max_share  ->  d >= (n_empty - max_share * n_total) / (1 - max_share)
+    d = int(-(-(n_empty - max_share * n_total) // (1 - max_share))) if max_share < 1 else 0
+    if d <= 0:
+        return rows
+    rng.shuffle(droppable)
+    gone = {id(r) for r in droppable[:d]}
+    return [r for r in rows if id(r) not in gone]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--schedule", default="models/zprobe/data/prefix14/schedule_luna.gated.jsonl")
@@ -317,6 +358,10 @@ def main():
     ap.add_argument("--no-range-check", action="store_true",
                     help=f"skip the total row-count check {ROW_RANGE[0]}..{ROW_RANGE[1]}")
     ap.add_argument("--seed", type=int, default=14)
+    ap.add_argument("--source-cap", action="append", default=[], metavar="PAIR/SOURCE=N",
+                    help="at most N sentences of that pair and source, e.g. en-ko/covost=2500 (repeatable)")
+    ap.add_argument("--empty-max", type=float, default=1.0, help="empty-text rows at most this share of train rows (drops on_time waits)")
+    ap.add_argument("--whole-frac", type=float, default=1.0, help="share of sentences that get the whole-sentence dump row (cond = prefix only)")
     a = ap.parse_args()
     rng = random.Random(a.seed)
     sil_wav = os.path.abspath(a.sil_wav)
@@ -336,6 +381,7 @@ def main():
         r = json.loads(l)
         if r["sid"] in sched and any(t.strip() for _, t in sched[r["sid"]]):
             sents.append(r)
+    sents = cap_sources(sents, parse_caps(a.source_cap), rng)
     held = split_holdout([s["sid"] for s in sents], a.holdout, a.seed)
 
     dur_cache, skipped, gone = {}, 0, []
@@ -371,7 +417,8 @@ def main():
             on_time_train += ot
         add(dst, "catchup", rows_catchup(r["items"], r["ends"], r["dur"], r["pair"], r["audio"], rng,
                                          a.catchup_per_rec))
-        add(dst, "end", rows_end(r["items"], r["pair"], r["audio"], r["dur"], r["ends"], whole=r["sid"] not in whole_done))
+        whole = r["sid"] not in whole_done and (a.whole_frac >= 1 or rng.random() < a.whole_frac)
+        add(dst, "end", rows_end(r["items"], r["pair"], r["audio"], r["dur"], r["ends"], whole=whole))
         whole_done.add(r["sid"])
 
     by_pair = {}
@@ -401,6 +448,10 @@ def main():
     for row, f in zip(rr, fam):
         add(train, f, [row])
 
+    if a.empty_max < 1:
+        before = len(train)
+        train = drop_empty_rows(train, fam_of, a.empty_max, rng)
+        print(f"empty-max {a.empty_max}: dropped {before - len(train)} empty on_time rows")
     rng.shuffle(train)
     rng.shuffle(val)
     if a.val_cap and len(val) > a.val_cap:

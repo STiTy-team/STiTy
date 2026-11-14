@@ -255,3 +255,29 @@ def test_wait_points_survive_cap():
     cuts = sorted(float(r["audio"].split("#end=")[1]) for r in rows if not r["text"])
     assert 1.2 in cuts and 2.2 in cuts  # the wait points (word end + 0.2) are kept under the cap
     assert all("_wait_pt" not in r and "_emit" not in r for r in rows)
+
+
+# --- prefix16b: rebalance rows toward emitting ------------------------------------------------------------------
+def test_drop_empty_rows_caps_the_empty_share_using_on_time_rows_only():
+    rows = [{"text": "", "pair": "en-ko"} for _ in range(60)] + [{"text": "x", "pair": "en-ko"} for _ in range(40)]
+    fam = {id(r): ("on_time" if i < 50 else "sil_end") for i, r in enumerate(rows)}  # 10 empties are sil_end: never dropped
+    out = b.drop_empty_rows(rows, fam, 0.25, random.Random(0))
+    empties = sum(1 for r in out if not r["text"])
+    assert empties / len(out) <= 0.25 + 1e-9 and sum(1 for r in out if r["text"]) == 40
+    assert sum(1 for r in out if not r["text"] and fam[id(r)] == "sil_end") == 10
+
+
+def test_drop_empty_rows_is_a_no_op_under_the_cap():
+    rows = [{"text": "", "pair": "en-ko"}, {"text": "x", "pair": "en-ko"}, {"text": "y", "pair": "en-ko"}]
+    fam = {id(r): "on_time" for r in rows}
+    assert b.drop_empty_rows(rows, fam, 0.5, random.Random(0)) == rows
+
+
+def test_cap_sources_limits_sentences_per_pair_and_source():
+    sents = [{"sid": f"c{i}", "lang": "en", "tgt": "ko", "source": "covost"} for i in range(10)] + \
+            [{"sid": f"a{i}", "lang": "en", "tgt": "ko", "source": "aihub"} for i in range(3)] + \
+            [{"sid": f"k{i}", "lang": "ko", "tgt": "en", "source": "covost"} for i in range(4)]
+    out = b.cap_sources(sents, {"en-ko/covost": 4}, random.Random(0))
+    assert sum(1 for s in out if s["source"] == "covost" and s["lang"] == "en") == 4
+    assert sum(1 for s in out if s["source"] == "aihub") == 3 and sum(1 for s in out if s["lang"] == "ko") == 4
+    assert b.parse_caps(["en-ko/covost=4", "ko-en/aihub=10"]) == {"en-ko/covost": 4, "ko-en/aihub": 10}
