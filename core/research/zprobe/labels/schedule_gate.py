@@ -163,6 +163,49 @@ def shape_check(items, tgt: str) -> str | None:
     return None
 
 
+# --- prefix16: open pieces. A non-final piece must not close a sentence; no piece may be a bare subject
+# (a pronoun, or one noun with its particle / article + noun); the first piece must cover >= 3 source words
+# unless it is a lone interjection / vocative / connective.
+_SENT_CLOSE = re.compile(r"[.!?][\"'”’)\]]*$")
+_EN_PRONOUNS = {"he", "she", "it", "they", "we", "i", "you", "this", "that", "these", "those"}
+_EN_ARTICLES = {"the", "a", "an"}
+_KO_SUBJ_HEAD = ("NP", "NNG", "NNP")
+FIRST_PIECE_MIN_WORDS = 3
+
+
+def is_bare_subject(text: str, tgt: str) -> bool:
+    """A pronoun alone, or one noun carrying its particle (Korean) / article + noun (English)."""
+    t = text.strip().rstrip(",")
+    if not t:
+        return False
+    if tgt == "ko":
+        tags = _piece_tags(t)
+        return (len(tags) == 1 and tags[0] == "NP") or (
+            len(tags) == 2 and tags[0] in _KO_SUBJ_HEAD and tags[1].startswith("J"))
+    ws = [w.lower().strip("\"'”’") for w in t.split()]
+    return (len(ws) == 1 and ws[0] in _EN_PRONOUNS) or (len(ws) == 2 and ws[0] in _EN_ARTICLES)
+
+
+def shape_check_open(items, covers, tgt: str, tokens: list[str]) -> str | None:
+    """Reason string if a piece breaks the open-piece rules (prefix16), else the prefix15 shape_check verdict.
+    `covers` (parse_covers) is used for the first-piece width; None entries skip that check."""
+    from schedule_stats import is_connective_piece  # lazy: schedule_stats imports this module
+    covers = list(covers) if covers is not None else [None] * len(items)
+    texts = [(i, t.strip(), c) for i, ((_, t), c) in enumerate(zip(items, covers), 1) if t.strip()]
+    for n, (i, t, _) in enumerate(texts):
+        if n < len(texts) - 1 and _SENT_CLOSE.search(t):
+            return f"open: piece {i} closes a sentence mid-source (\"{t}\") - keep it open or wait"
+    for i, t, _ in texts:
+        if is_bare_subject(t, tgt):
+            return f"open: piece {i} is a bare subject (\"{t}\") - wait until something goes with it"
+    if texts:
+        i, t, c = texts[0]
+        if c is not None and len(c) < FIRST_PIECE_MIN_WORDS and not is_connective_piece(t, tgt):
+            return (f"open: first piece covers {len(c)} source words (< {FIRST_PIECE_MIN_WORDS}) - "
+                    "wait until more has been heard")
+    return shape_check(items, tgt)
+
+
 _LEADING_PUNCT = re.compile(r"^\s*([,.;:!?\u2026]+)\s*")
 
 
@@ -262,10 +305,12 @@ def check_schedule(
     N: int,
     clause_end: list[int],
     covers=None,
+    clause_rule: bool = True,
 ) -> str | None:
     """Reason string if the schedule violates a rule, else None.
 
-    Order: range, all-empty, lookahead, clause, deferral. `known_at(k)` is the set of target
+    Order: range, all-empty, lookahead, clause, deferral. `clause_rule=False` (prefix16) skips the clause
+    rule: waiting past a clause end is the design there, and lag is measured instead. `known_at(k)` is the set of target
     content stems already supported by source words 1..k; `full_known` is the same for the whole source.
     `covers` (parse_covers): items with a src set are judged by it - lookahead = any src word > after,
     clause/deferral measured from max(src); items without one fall back to the Hy stems.
@@ -314,7 +359,7 @@ def check_schedule(
             continue
         j = max(cov)
         c = next((e for e in ends if e >= j), K)
-        if after > c:
+        if clause_rule and after > c:
             return f"clause: item covering words up to {j} (clause ends {c}) emitted after {after}"
         if after - j > N:
             return f"deferral: item covering words up to {j} emitted after {after} (> {N} words late)"
@@ -339,7 +384,7 @@ def check_schedule(
         if j is None:
             continue
         c = next((e for e in ends if e >= j), K)
-        if after > c:
+        if clause_rule and after > c:
             return f"clause: {w} heard at word {j} (clause ends {c}) but emitted after {after}"
     for after, w in first_emit:
         j = first_seen[w]

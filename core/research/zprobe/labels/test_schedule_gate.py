@@ -131,3 +131,44 @@ def test_fix_leading_punct_and_merge_same_after():
     assert fix_leading_punct([(9, "there is a bomb"), (10, ", namely,"), (15, " the spread")]) == [(9, "there is a bomb,"), (10, " namely,"), (15, " the spread")]
     items, covers = merge_same_after([(2, "또한,"), (13, "여러분의 모든 전기에"), (13, "깊은 인상을 받았습니다.")], [{1, 2}, {3}, {4}])
     assert items == [(2, "또한,"), (13, "여러분의 모든 전기에 깊은 인상을 받았습니다.")] and covers == [{1, 2}, {3, 4}]
+
+
+# --- prefix16: clause rule switch, open-piece shape ---------------------------------------------------------
+from schedule_gate import shape_check_open  # noqa: E402
+
+
+def test_clause_rule_off_allows_waiting():
+    toks = "the manager approved the budget yesterday".split()
+    items = [(3, ""), (6, "매니저가 승인했습니다")]  # "the manager approved" (clause ends at 3) held until word 6
+    covers = [set(), {1, 2, 3}]
+    kw = dict(known_at=lambda k: set(), full_known=set(), N=10**6, clause_end=[3, 6], covers=covers)
+    assert check_schedule(items, toks, "en", "ko", **kw).startswith("clause")
+    assert check_schedule(items, toks, "en", "ko", clause_rule=False, **kw) is None
+
+
+def test_open_rejects_mid_sentence_close():
+    toks = "the manager approved the budget , and the team left".split()
+    items = [(6, "매니저가 예산을 승인했습니다."), (10, "그리고 팀은 떠났습니다.")]
+    why = shape_check_open(items, [{1, 2, 3, 4, 5}, {7, 8, 9, 10}], "ko", toks)
+    assert why and why.startswith("open: piece 1 closes")
+
+
+def test_open_rejects_bare_subject_piece():
+    toks = "지각은 가까운 쪽이 약 70km 두께입니다".split()
+    why = shape_check_open([(1, "The crust"), (6, "is about 70 km thick")], [{1}, {2, 3, 4, 5, 6}], "en", toks)
+    assert why.startswith("open: piece 1 is a bare subject")
+    why = shape_check_open([(1, "그는"), (3, "떠났습니다")], [{1}, {2, 3}], "ko", ["he", "left", "early"])
+    assert why.startswith("open: piece 1 is a bare subject")
+
+
+def test_open_first_piece_needs_three_words_unless_connective():
+    toks = "today the only insects that cannot fold their wings are dragonflies".split()
+    why = shape_check_open([(2, "오늘날 그"), (11, "날개를 접을 수 없는 곤충은 잠자리입니다")], [{1, 2}, set(range(3, 12))], "ko", toks)
+    assert why.startswith("open: first piece covers 2")
+    assert shape_check_open([(1, "그러나"), (11, "날개를 접을 수 없는 곤충은 잠자리입니다")], [{1}, set(range(2, 12))], "ko", toks) is None
+
+
+def test_open_accepts_connective_pieces():
+    toks = "when the meeting ends , the manager will approve the budget".split()
+    items = [(5, "회의가 끝나면,"), (10, "매니저가 예산을 승인할 것입니다.")]
+    assert shape_check_open(items, [{1, 2, 3, 4}, {6, 7, 8, 9, 10}], "ko", toks) is None
