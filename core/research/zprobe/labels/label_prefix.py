@@ -216,8 +216,9 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
         items[idx] = (items[idx][0], "")
         covers[idx] = set()
         hint = (f'A reviewer withdrew the earlier piece "{withdrawn}"' + (f": {rnote}" if rnote else "") +
-                ". Continue from the committed text without repeating that mistake. Prefer emitting nothing at a "
-                "point unless the source still to come cannot change the word order of what you add.")
+                ". Its content is no longer in the translation and must be said again, in the committed text shown "
+                "below only. Continue from that committed text without repeating the mistake. Prefer emitting nothing "
+                "at a point unless the source still to come cannot change the word order of what you add.")
         if not run_from(idx + 1, hint):
             return None
         if forced:

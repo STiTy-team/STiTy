@@ -252,3 +252,12 @@ def test_regret_prompt_treats_a_repeated_predicate_as_an_early_piece():
 def test_rules_do_not_forbid_repetition_at_emission_time():
     from label_prefix import rules_text
     assert "repeat a predicate" not in rules_text()
+
+
+def test_reextraction_hint_says_withdrawn_content_must_be_said_again():
+    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, {"add": "The governor said", "src": [3, 4]},
+                        EMPTY, {"add": "approved the new budget in 1990.", "src": [5, 6, 7, 8]},
+                        EMPTY, FINAL])
+    regrets = iter([{"regret": [2], "note": "said is not in the source"}, {"regret": [], "note": ""}])
+    label_sentence(ROW_KO, steps, lambda row, pieces: next(regrets))
+    assert "no longer in the translation" in steps.calls[4][3]
