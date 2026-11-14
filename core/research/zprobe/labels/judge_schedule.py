@@ -34,11 +34,11 @@ List the DEFECTS - things an editor would have to change for the text to be corr
 - grammar: a sentence is ungrammatical (missing or doubled subject, broken agreement, a dangling fragment that is not a complete sentence, a particle or ending that does not fit)
 - order: word order that a native speaker would not produce (an object before its verb in English, a modifier after its noun in Korean)
 - mistranslation: a word or phrase means something else than the source (e.g. "bound" rendered as "바인딩하다")
-- omission: a piece of source information is missing
-- addition: information not in the source was added
+- omission: a piece of source information is missing, and its absence changes the meaning
+- addition: information not in the source was added, and it changes the meaning
 When a reference translation is given, a rendering that matches the reference's reading of the source is correct, not a mistranslation, omission or addition. A rendering that is faithful to the source is also correct when the reference reads the source differently: the source decides, the reference only helps you read it.
 
-NOT defects (do not report these): punctuation alone (a missing or extra comma, a comma before the period, quotation marks); wording that is merely awkward, literal or stiff but correct; a Korean sentence whose implied subject is rendered in English with a passive or a generic subject ("유전자를 설계해요" -> "Genes are designed."); the target being several sentences; a short follow-up sentence that adds a trailing detail ("오늘 아침에 보냈는데요."); a connective or interjection as its own sentence; spoken-style register; a transliterated name; a plausible rendering of a vague or garbled source.
+NOT defects (do not report these): punctuation alone (a missing or extra comma, a comma before the period, quotation marks); a dropped spoken discourse filler or hedge (이제, 좀, 약간, 뭐, 이런, "you know", "kind of"); a possessive, article or determiner the context implies ("my neighbors" for 이웃 사람들); a particle or word choice that leaves the meaning intact (에서 vs 에서도, 더); a word inside an institution or product name rendered by its official English name; wording that is merely awkward, literal or stiff but correct; a Korean sentence whose implied subject is rendered in English with a passive or a generic subject ("유전자를 설계해요" -> "Genes are designed."); the target being several sentences; a short follow-up sentence that adds a trailing detail ("오늘 아침에 보냈는데요."); a connective or interjection as its own sentence; spoken-style register; a transliterated name; a plausible rendering of a vague or garbled source.
 
 Answer with JSON only: {{"defects": ["code", ...], "note": "one short sentence naming the worst problem, or empty"}}"""
 

@@ -26,3 +26,10 @@ def test_prompt_excludes_punctuation_and_source_faithful_readings():
     p = build_prompt({"lang": "ko", "tgt": "en", "src": "그것은 성과입니다.", "ref": "It is an acquisition."}, "It is an achievement.")
     assert "punctuation" in p.lower()
     assert "faithful to the source" in p
+
+
+def test_prompt_excludes_fillers_implied_determiners_and_name_internal_words():
+    p = build_prompt({"lang": "ko", "tgt": "en", "src": "이제 좀 기쁩니다.", "ref": None}, "I'm happy for my neighbors.")
+    for s in ("discourse filler", "possessive", "particle", "institution"):
+        assert s in p, s
+    assert "changes the meaning" in p
