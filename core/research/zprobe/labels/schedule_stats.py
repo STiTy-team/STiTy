@@ -285,7 +285,7 @@ def print_table(title, by_dir):
     print(f"\n== {title}")
     print("direction".ljust(8), *[c.rjust(18) for c in _COLS])
     for d in sorted(by_dir):
-        print(d.ljust(8), *[_fmt(by_dir[d][c]).rjust(18) for c in _COLS])
+        print(d.ljust(8), *[_fmt(by_dir[d].get(c)).rjust(18) for c in _COLS])
 
 
 def main(argv=None):

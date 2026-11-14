@@ -176,3 +176,9 @@ def test_est_lag_from_word_times():
     m = ss.stats_for(rows, words, word_times=wt)
     assert abs(m["est_lag_s"] - 1.5) < 1e-6  # earliest src word (the, 0.5 s) -> after=3 (2.0 s)
     assert ss.stats_for(rows, words)["est_lag_s"] is None
+
+
+def test_print_table_tolerates_missing_columns(capsys):
+    ss.print_table("old", {"en->ko": {"n": 3}})  # stats_old rows lack the prefix16 columns
+    out = capsys.readouterr().out
+    assert "en->ko" in out and "-" in out
