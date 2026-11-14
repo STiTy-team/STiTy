@@ -226,7 +226,10 @@ def fix_leading_punct(items):
         m = _LEADING_PUNCT.match(text) if text else None
         if m and out and out[-1][1].strip():
             pa, pt = out[-1]
-            out[-1] = (pa, pt.rstrip() + m.group(1))
+            pt = pt.rstrip()
+            if m.group(1)[0] in ".!?…":
+                pt = pt.rstrip(",;:")  # a closing mark replaces a trailing comma ("emerging," + "." -> "emerging.")
+            out[-1] = (pa, pt + m.group(1))
             text = text[m.end():]
             if text and not text.startswith(" "):
                 text = " " + text

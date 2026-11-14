@@ -202,3 +202,9 @@ def test_en_article_noun_is_bare_only_as_first_piece():
     toks = "the manager approved the report yesterday".split()
     assert shape_check_open([(2, "The manager")], [{1, 2}], "en", toks, final=False).startswith("open: piece 1 is a bare subject")
     assert shape_check_open([(3, "The manager approved"), (5, "the report")], [{1, 2, 3}, {4, 5}], "en", toks, final=False) is None
+
+
+def test_fix_leading_punct_replaces_a_trailing_comma_with_the_closing_mark():
+    from schedule_gate import fix_leading_punct
+    out = fix_leading_punct([(4, "Drug resistance, too,"), (6, "is currently emerging,"), (7, ".")])
+    assert out == [(4, "Drug resistance, too,"), (6, "is currently emerging."), (7, "")]
