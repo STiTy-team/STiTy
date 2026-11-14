@@ -174,3 +174,49 @@ def test_regret_prompt_uses_hy_hint_when_no_reference():
     row = {"sid": "c1", "lang": "en", "tgt": "ko", "src": "hello there", "ref": None, "ref_hint": "안녕하세요."}
     p = build_regret_prompt(row, [(2, "안녕.")])
     assert "안녕하세요." in p and "machine translation" in p
+
+
+# --- smoke 3 fixes -------------------------------------------------------------------------------------------
+def test_final_point_text_without_src_is_accepted_as_closing():
+    # the labeler closes the sentence with "." and names no new source word: a closing, not a range error
+    ask = fake_steps([EMPTY, EMPTY,
+                      {"add": "At yesterday's meeting, Governor Hong approved the new budget in 1990", "src": list(range(1, 8))},
+                      {"add": ".", "src": []}])
+    reasons = []
+    rec = label_sentence(ROW_KO, ask, no_regret, fail=reasons.append)
+    assert reasons == [] and rec is not None and rec["attempts"] == 0
+    assert rec["src_words"][-1] == [8]
+    assert rec["schedule"][2][1].endswith("1990.") and rec["schedule"][3] == [8, ""]  # the lone "." joins the previous piece
+
+
+def test_mid_point_text_without_src_is_still_a_range_error():
+    ask = fake_steps([{"add": "At yesterday's meeting,", "src": []}, {"add": "At yesterday's meeting,", "src": []},
+                      EMPTY, EMPTY, FINAL])
+    rec = label_sentence(ROW_KO, ask, no_regret)
+    assert rec["schedule"][0] == [2, ""] and rec["attempts"] == 1 and "range" in ask.calls[1][3]
+
+
+def test_regret_past_max_rounds_withdraws_and_keeps_the_label():
+    answers = [{"add": "At yesterday's meeting,", "src": [1, 2]}, {"add": "The governor said", "src": [3, 4]}, EMPTY, FINAL,
+               {"add": "The governor said", "src": [1, 2, 3, 4]}, EMPTY, FINAL,  # round 1: k=2 withdrawn
+               {"add": "the governor approved", "src": [5, 6, 7]}, FINAL,  # round 2: k=4 withdrawn
+               FINAL]                                                      # forced round: k=7 withdrawn, no verdict after
+    regrets = []
+
+    def ask_regret(row, pieces):
+        regrets.append([t for _, t in pieces])
+        return {"regret": [1], "note": "too early"}
+    reasons = []
+    rec = label_sentence(ROW_KO, fake_steps(answers), ask_regret, max_regret=2, fail=reasons.append)
+    assert reasons == [] and rec is not None
+    assert rec["schedule"] == [[2, ""], [4, ""], [7, ""], [8, FINAL["add"]]]
+    assert rec["regret_rounds"] == 3 and len(regrets) == 3 and rec["regret_forced"] is True
+
+
+def test_reextraction_hint_asks_to_prefer_waiting():
+    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, {"add": "The governor said", "src": [3, 4]},
+                        EMPTY, {"add": "approved the new budget in 1990.", "src": [5, 6, 7, 8]},
+                        EMPTY, FINAL])
+    regrets = iter([{"regret": [2], "note": "said is not in the source"}, {"regret": [], "note": ""}])
+    label_sentence(ROW_KO, steps, lambda row, pieces: next(regrets))
+    assert "Prefer emitting nothing" in steps.calls[4][3]

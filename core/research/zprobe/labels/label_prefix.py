@@ -7,9 +7,11 @@ step gate (range, lookahead against k, open-piece shape); a lookahead violation 
 item) at once, a shape/format violation is re-asked once at that point and then becomes a wait. When the
 sentence is over, a regret check shows the LLM the whole source (and the reference, if any) with the
 piece boundaries and asks which pieces should not have gone out; a regretted piece becomes a wait and
-the points after it are re-asked; the last piece is never a regret (it heard the whole source, and
-judge_schedule.py reviews the final text). The record keeps one item per candidate point, empty ones included -
-those are the wait labels - and the regret notes.
+the points after it are re-asked, up to --max-regret rounds; a regret after that is applied once more
+without asking again ("regret_forced"), so the label keeps the waits instead of failing. The last piece is
+never a regret (it heard the whole source, and judge_schedule.py reviews the final text). At the final
+point a closing with no new source word (".") is accepted and joins the previous piece. The record keeps
+one item per candidate point, empty ones included - those are the wait labels - and the regret notes.
 
 Output: --out jsonl {"sid","lang","tgt","schedule":[[after,text],...],"src_words":[[...],...],"attempts",
 "regret_rounds","calls"}; <out>.fail.jsonl {"sid","reason"}; <out>.usage.jsonl one line per call with
@@ -149,6 +151,8 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
             reply = ask_step(row, k, committed, is_end, n)
             try:
                 text, cov = parse_add(reply)
+                if is_end and text and not cov:
+                    cov = {len(tokens)}  # a closing (".", a final particle) names no new word: it covers the end
                 why = step_gate(text, cov, k, items, covers, row["tgt"], tokens, is_end)
             except ValueError as e:
                 text, cov, why = "", set(), str(e)
@@ -181,7 +185,7 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
 
     if not run_from(0, note):
         return None
-    rounds, notes = 0, []
+    rounds, notes, forced = 0, [], False
     while True:
         pieces = [(k, t) for k, t in items if t.strip()]
         if not pieces:
@@ -193,9 +197,7 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
         regs = [j for j in regs if j < len(pieces)]  # the last piece heard the whole source: not a regret
         if not regs:
             break
-        if rounds >= max_regret:
-            fail("regret unresolved")
-            return None
+        forced = rounds >= max_regret  # last round: withdraw and re-extract once more, then stop asking
         rounds += 1
         notes.append(rnote)
         idx = items.index(pieces[regs[0] - 1])
@@ -203,13 +205,17 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
         items[idx] = (items[idx][0], "")
         covers[idx] = set()
         hint = (f'A reviewer withdrew the earlier piece "{withdrawn}"' + (f": {rnote}" if rnote else "") +
-                ". Continue from the committed text without repeating that mistake.")
+                ". Continue from the committed text without repeating that mistake. Prefer emitting nothing at a "
+                "point unless the source still to come cannot change the word order of what you add.")
         if not run_from(idx + 1, hint):
             return None
+        if forced:
+            break
     fixed = fix_leading_punct(items)
     return {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
             "schedule": [[k, t] for k, t in fixed], "src_words": [sorted(c) for c in covers],
-            "attempts": st["attempts"], "regret_rounds": rounds, "regret_notes": notes, "calls": st["calls"]}
+            "attempts": st["attempts"], "regret_rounds": rounds, "regret_notes": notes, "regret_forced": forced,
+            "calls": st["calls"]}
 
 
 # --- CLI ------------------------------------------------------------------------------------------------------
