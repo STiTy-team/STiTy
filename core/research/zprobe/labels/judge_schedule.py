@@ -3,7 +3,8 @@ rendering of the source? COMET passes grammar slips (a dropped subject, a double
 scored 0.82-0.93 in the pilot); this asks a model directly. Piece boundaries are not shown - only the final
 text matters - and splitting into several sentences / trailing follow-ups is explicitly allowed.
 
-Output: --out jsonl {"sid", "defects", "note", "pass"}; usage per call in <out>.usage.jsonl
+Output: --out jsonl {"sid", "defects", "note", "pass"} (with --votes N also "votes": each judge's codes; a row fails only
+when every judge finds a defect); usage per call in <out>.usage.jsonl
 (cost-watch). A row is appended per sentence as it finishes; a rerun skips the sids already in --out and keeps
 counting against --budget from the usage file. Exit 2 = budget stop, 3 = API errors on > 1% of rows.
 
@@ -60,6 +61,20 @@ def verdict(reply):
     return [str(x) for x in d if str(x) in CODES], str(reply.get("note") or "")
 
 
+def combine(verdicts):
+    """Several judges' (defects, note) -> (defects, note, pass). Pass when any judge found nothing; fail only when every
+    valid judge found a defect (codes they agree on, else all of them). None when no vote was valid."""
+    valid = [v for v in verdicts if v is not None]
+    if not valid:
+        return None
+    if any(not d for d, _ in valid):
+        return [], "", True
+    common = set.intersection(*[set(d) for d, _ in valid])
+    codes = sorted(common) if common else sorted({c for d, _ in valid for c in d})
+    note = next((n for _, n in valid if n), "")
+    return codes, note, False
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--schedule", required=True)
@@ -69,6 +84,7 @@ def main():
     ap.add_argument("--reasoning", default="low")
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--budget", type=float, default=10.0)
+    ap.add_argument("--votes", type=int, default=1, help="ask this many judges; a row fails only when all of them find a defect")
     a = ap.parse_args()
     from openai import OpenAI
     client = OpenAI(base_url="https://gw.letsur.ai/v1", api_key=os.environ["LETSUR_API_KEY"])
@@ -115,21 +131,26 @@ def main():
         row = S[rec["sid"]]
         mt = join_texts([t for _, t in rec["schedule"]])
         try:
-            v = verdict(ask(build_prompt(row, mt)))
-            if v is None:
+            votes = []
+            for _ in range(a.votes):
                 v = verdict(ask(build_prompt(row, mt)))
+                if v is None:
+                    v = verdict(ask(build_prompt(row, mt)))
+                votes.append(v)
         except Exception as e:  # noqa: BLE001
             with lock:
                 st["error"] += 1
                 print(f"ERROR {rec['sid']}: {e}", flush=True)
             return
-        unjudged = v is None  # two malformed replies: not a defect, the row keeps its label and is marked
-        defects, note = ([], "malformed judge reply") if unjudged else v
-        ok = not defects
+        c = combine(votes)
+        unjudged = c is None  # only malformed replies: not a defect, the row keeps its label and is marked
+        defects, note, ok = ([], "malformed judge reply", True) if unjudged else c
         with lock:
             st["n"] += 1
             st["fail"] += not ok
             rec_out = {"sid": rec["sid"], "defects": defects, "note": note, "pass": ok, "mt": mt}
+            if a.votes > 1:
+                rec_out["votes"] = [None if v is None else v[0] for v in votes]
             if unjudged:
                 rec_out["unjudged"] = True
             out.write(json.dumps(rec_out, ensure_ascii=False) + "\n")

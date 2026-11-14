@@ -33,3 +33,12 @@ def test_prompt_excludes_fillers_implied_determiners_and_name_internal_words():
     for s in ("discourse filler", "possessive", "particle", "institution"):
         assert s in p, s
     assert "changes the meaning" in p
+
+
+def test_combine_votes_passes_unless_every_judge_finds_a_defect():
+    from judge_schedule import combine
+    assert combine([(["grammar"], "a"), ([], "")]) == ([], "", True)
+    assert combine([(["grammar"], "a"), (["omission"], "b")]) == (["grammar", "omission"], "a", False)
+    assert combine([(["grammar", "order"], ""), (["order"], "x")]) == (["order"], "x", False)
+    assert combine([None, (["grammar"], "a")]) == (["grammar"], "a", False)  # a malformed vote does not count
+    assert combine([None, None]) is None
