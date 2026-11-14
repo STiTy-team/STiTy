@@ -133,3 +133,15 @@ def test_regret_unresolved_fails():
     assert label_sentence(ROW_KO, steps, lambda r, p: {"regret": [2], "note": "bad"}, max_regret=2,
                           fail=reasons.append) is None
     assert reasons[-1] == "regret unresolved"
+
+
+# --- main: resume / budget --------------------------------------------------------------------------------------
+def test_resume_skips_done_and_counts_spent(tmp_path):
+    from label_prefix import plan_todo
+    out = tmp_path / "o.jsonl"
+    out.write_text('{"sid": "a"}\n')
+    (tmp_path / "o.jsonl.fail.jsonl").write_text('{"sid": "b", "reason": "x"}\n')
+    (tmp_path / "o.jsonl.usage.jsonl").write_text('{"est_usd": 0.5}\n{"est_usd": 0.25}\n')
+    rows = [{"sid": s} for s in "abc"]
+    todo, spent = plan_todo(rows, str(out))
+    assert [r["sid"] for r in todo] == ["c"] and spent == 0.75

@@ -192,3 +192,141 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
     return {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
             "schedule": [[k, t] for k, t in fixed], "src_words": [sorted(c) for c in covers],
             "attempts": st["attempts"], "regret_rounds": rounds, "calls": st["calls"]}
+
+
+# --- CLI ------------------------------------------------------------------------------------------------------
+import argparse  # noqa: E402
+import json  # noqa: E402
+import re  # noqa: E402
+import threading  # noqa: E402
+import time  # noqa: E402
+from concurrent.futures import ThreadPoolExecutor  # noqa: E402
+
+from label_schedule import PRICE, reviewer_notes, should_stop, spent_so_far, too_many_errors, with_retry  # noqa: E402
+
+
+def plan_todo(rows, out_path):
+    """(rows not yet in --out or its .fail.jsonl, est_usd already spent per the usage file)."""
+    done = set()
+    for p in (out_path, out_path + ".fail.jsonl"):
+        if os.path.exists(p):
+            done |= {json.loads(l)["sid"] for l in open(p, encoding="utf-8") if l.strip()}
+    return [r for r in rows if r["sid"] not in done], spent_so_far(out_path + ".usage.jsonl")
+
+
+def make_askers(client, model, reasoning, usage, lock, st):
+    """(ask_step, ask_regret) for label_sentence: each call goes through with_retry, logs usage (kind step|regret)
+    and returns the parsed JSON object in the reply ({} when there is none)."""
+    def call(kind, sid, prompt):
+        t0 = time.time()
+        resp = with_retry(lambda: client.chat.completions.create(
+            model=model, reasoning_effort=reasoning, messages=[{"role": "user", "content": prompt}]))
+        u = resp.usage
+        ec = (resp.model_extra or {}).get("estimated_cost") or {}
+        try:
+            cost = float(ec.get("amount"))
+        except (TypeError, ValueError):
+            pin, pout = PRICE.get(model, (0.25, 2.00))
+            cost = u.prompt_tokens / 1e6 * pin + u.completion_tokens / 1e6 * pout
+        with lock:
+            st["spent"] += cost
+            st["calls"] += 1
+            usage.write(json.dumps({"sid": sid, "kind": kind, "model": model, "in": u.prompt_tokens,
+                                    "out": u.completion_tokens, "est_usd": round(cost, 6),
+                                    "sec": round(time.time() - t0, 1)}) + "\n")
+            usage.flush()
+        m = re.search(r"\{.*\}", resp.choices[0].message.content or "", re.S)
+        try:
+            return json.loads(m.group(0)) if m else {}
+        except json.JSONDecodeError:
+            return {}
+
+    def ask_step(row, k, committed, is_end, note):
+        return call("step", row["sid"], build_step_prompt(row, k, committed, is_end, note))
+
+    def ask_regret(row, pieces):
+        return call("regret", row["sid"], build_regret_prompt(row, pieces))
+    return ask_step, ask_regret
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--sentences", default="models/zprobe/data/prefix14/sentences.jsonl")
+    ap.add_argument("--model", default="gpt-6-luna")
+    ap.add_argument("--reasoning", default="low")
+    ap.add_argument("--workers", type=int, default=32)
+    ap.add_argument("--budget", type=float, default=60.0)
+    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--rules", default=RULES_PATH, help="rules text put in every step prompt")
+    ap.add_argument("--only-sids", help="file with one sid per line: label only these")
+    ap.add_argument("--notes", help="judge_schedule.py output: its failed rows' notes go into the first point's request")
+    ap.add_argument("--min-gap", type=int, default=2, help="minimum tokens between two candidate points")
+    ap.add_argument("--max-regret", type=int, default=2)
+    a = ap.parse_args()
+    RULES["path"] = a.rules
+
+    from openai import OpenAI
+    client = OpenAI(base_url="https://gw.letsur.ai/v1", api_key=os.environ["LETSUR_API_KEY"])
+
+    rows = [json.loads(l) for l in open(a.sentences, encoding="utf-8") if l.strip()]
+    if a.limit:
+        rows = rows[: a.limit]
+    if a.only_sids:
+        only = {l.strip() for l in open(a.only_sids, encoding="utf-8") if l.strip()}
+        rows = [r for r in rows if r["sid"] in only]
+    notes = reviewer_notes(a.notes) if a.notes else {}
+
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
+    todo, spent = plan_todo(rows, a.out)
+    out = open(a.out, "a", encoding="utf-8")
+    fail_out = open(a.out + ".fail.jsonl", "a", encoding="utf-8")
+    usage = open(a.out + ".usage.jsonl", "a", encoding="utf-8")
+    lock = threading.Lock()
+    st = {"spent": spent, "calls": 0, "ok": 0, "fail": 0, "error": 0, "seen": 0}
+    print(f"already spent ${st['spent']:.2f} (from {a.out}.usage.jsonl); rows {len(rows)}, todo {len(todo)}", flush=True)
+    ask_step, ask_regret = make_askers(client, a.model, a.reasoning, usage, lock, st)
+
+    def work(row):
+        if should_stop(st["spent"], a.budget):
+            return
+        reasons = []
+        try:
+            rec = label_sentence(row, ask_step, ask_regret, max_regret=a.max_regret, fail=reasons.append,
+                                 note=notes.get(row["sid"], ""), min_gap=a.min_gap)
+        except Exception as e:  # noqa: BLE001
+            with lock:
+                st["seen"] += 1
+                st["error"] += 1
+                print(f"ERROR {row['sid']}: {e}", flush=True)
+            return
+        with lock:
+            st["seen"] += 1
+            if rec is None:
+                st["fail"] += 1
+                why = reasons[-1] if reasons else "?"
+                print(f"FAIL {row['sid']}: {why}", flush=True)
+                fail_out.write(json.dumps({"sid": row["sid"], "reason": why}, ensure_ascii=False) + "\n")
+                fail_out.flush()
+            else:
+                out.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                out.flush()
+                st["ok"] += 1
+            if st["seen"] % 50 == 0:
+                print(f"{st['seen']}/{len(todo)} ok={st['ok']} fail={st['fail']} error={st['error']} "
+                      f"calls={st['calls']} est ${st['spent']:.2f}", flush=True)
+
+    with ThreadPoolExecutor(max_workers=a.workers) as ex:
+        list(ex.map(work, todo))
+    if should_stop(st["spent"], a.budget):
+        print(f"BUDGET_STOP ${st['spent']:.2f} > ${a.budget}", flush=True)
+        sys.exit(2)
+    print(f"LABEL_PREFIX_DONE ok={st['ok']} fail={st['fail']} error={st['error']} calls={st['calls']} "
+          f"est ${st['spent']:.2f}", flush=True)
+    if too_many_errors(st["error"], len(todo)):
+        print(f"LABEL_PREFIX_ERRORS {st['error']} > 1% of {len(todo)} - rerun to retry them", flush=True)
+        sys.exit(3)
+
+
+if __name__ == "__main__":
+    main()
