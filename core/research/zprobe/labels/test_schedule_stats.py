@@ -150,7 +150,7 @@ def test_new_columns():
             {"sid": "b", "lang": "en", "tgt": "ko", "src": "hello there friend",
              "schedule": [[3, "안녕 친구."]], "src_words": [[1, 2, 3]], "regret_rounds": 0}]
     m = ss.stats_for(rows, words, points_fn=candidate_points)
-    assert m["mid_closed_share"] == 0.0 and m["first_bare_subj"] == 0.0 and m["regret_share"] == 0.5
+    assert m["mid_closed_share"] == 0.0 and m["first_bare_subj"] == 0.0 and abs(m["regret_share"] - 1 / 3) < 1e-6  # 1 regret / 3 items
     assert m["point_empty_share"] == 0.0
     assert abs(m["first_after_frac"] - (6 / 11 + 1.0) / 2) < 1e-6  # median of two values = their mean
     rows[0]["schedule"][0][1] = "매니저가 예산을 승인했습니다."
@@ -174,7 +174,7 @@ def test_est_lag_from_word_times():
              "schedule": [[3, "매니저가 승인했습니다."]], "src_words": [[1, 2, 3]]}]
     wt = {"a": [{"w": "the", "end": 0.5}, {"w": "manager", "end": 1.0}, {"w": "approved", "end": 2.0}]}
     m = ss.stats_for(rows, words, word_times=wt)
-    assert abs(m["est_lag_s"] - 1.5) < 1e-6  # earliest src word (the, 0.5 s) -> after=3 (2.0 s)
+    assert abs(m["est_lag_s"] - (1.5 + 1.0 + 0.0) / 3) < 1e-6  # per word: the 0.5->2.0, manager 1.0->2.0, approved 2.0->2.0
     assert ss.stats_for(rows, words)["est_lag_s"] is None
 
 
@@ -182,3 +182,13 @@ def test_print_table_tolerates_missing_columns(capsys):
     ss.print_table("old", {"en->ko": {"n": 3}})  # stats_old rows lack the prefix16 columns
     out = capsys.readouterr().out
     assert "en->ko" in out and "-" in out
+
+
+def test_regret_share_is_per_item_and_est_lag_per_word():
+    from schedule_gate import words
+    rows = [{"sid": "a", "lang": "en", "tgt": "ko", "src": "the manager approved the budget",
+             "schedule": [[2, ""], [5, "매니저가 예산을 승인했습니다."]], "src_words": [[], [1, 2, 3, 4, 5]], "regret_rounds": 1}]
+    wt = {"a": [{"w": "the", "end": 1.0}, {"w": "manager", "end": 2.0}, {"w": "approved", "end": 3.0}, {"w": "the", "end": 4.0}, {"w": "budget", "end": 5.0}]}
+    m = ss.stats_for(rows, words, word_times=wt)
+    assert abs(m["regret_share"] - 1 / 2) < 1e-6        # one regretted piece over two candidate items
+    assert abs(m["est_lag_s"] - 2.0) < 1e-6             # per word: (4+3+2+1+0)/5

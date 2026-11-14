@@ -22,7 +22,7 @@ from schedule_gate import words  # noqa: E402
 from schedule_stats import stats_for  # noqa: E402
 
 
-def check(rows, n_labeled, a):
+def check(rows, n_labeled, a, word_times=None):
     """rows may include wait labels (rescue == "wait"): they are counted as rescued, not in the corpus table."""
     waits = [r for r in rows if r.get("rescue") == "wait"]
     rows = [r for r in rows if r.get("rescue") != "wait"]
@@ -37,7 +37,7 @@ def check(rows, n_labeled, a):
         reasons.append(f"kept {len(rows)} < {a.min_kept}")
     if n_labeled and len(rows) < a.min_kept_share * n_labeled:
         reasons.append(f"kept {len(rows)} < {a.min_kept_share:.0%} of labeled {n_labeled}")
-    table = {d: stats_for(v, words) for d, v in by.items()}
+    table = {d: stats_for(v, words, word_times=word_times) for d, v in by.items()}
     for d, m in table.items():
         lim = a.dump_enko if d == "en-ko" else a.dump_other
         if m["dump_share"] is not None and m["dump_share"] > lim:
@@ -47,10 +47,12 @@ def check(rows, n_labeled, a):
         # prefix16 (open pieces): closing mid-source, bare-subject openers, too few waits, too many regrets, lag
         for key, attr, above, default in (("mid_closed_share", "mid_closed", True, 0.03), ("first_bare_subj", "first_bare", True, 0.05),
                                           ("point_empty_share", "empty_min", False, 0.0), ("regret_share", "regret_max", True, 0.30),
-                                          ("est_lag_s", "lag_max", True, 1.6)):
+                                          ("est_lag_s", "lag_max", True, 0.0)):
             lim = getattr(a, attr, default)
             v = m.get(key)
             if v is None:
+                if key == "est_lag_s" and lim:
+                    reasons.append(f"{d} est_lag_s unavailable (pass --word-times) while --lag-max {lim} is set")
                 continue
             if above and v > lim:
                 reasons.append(f"{d} {key} {v:.3f} > {lim}")
@@ -78,7 +80,8 @@ def main(argv=None):
     ap.add_argument("--first-bare", type=float, default=0.05, help="sentences whose first piece is a bare subject, at most")
     ap.add_argument("--empty-min", type=float, default=0.0, help="empty (wait) items among all items, at least (0 = off; prefix16 chain passes 0.05)")
     ap.add_argument("--regret-max", type=float, default=0.30, help="sentences that went through a regret round, at most")
-    ap.add_argument("--lag-max", type=float, default=1.6, help="est_lag_s (needs --word-times in schedule_stats), at most")
+    ap.add_argument("--lag-max", type=float, default=0.0, help="est_lag_s at most; needs --word-times (0 = off; the prefix16 chain passes 1.6)")
+    ap.add_argument("--word-times", help="word_times.jsonl; est_lag_s is measured on each sentence's first recording")
     a = ap.parse_args(argv)
     src = {}
     for l in open(a.sentences, encoding="utf-8"):
@@ -92,8 +95,22 @@ def main(argv=None):
         return 1
     for r in rows:
         r["src"] = src[r["sid"]]
+    wt = None
+    if a.word_times:
+        first_audio = {}
+        for l in open(a.sentences, encoding="utf-8"):
+            if l.strip():
+                r = json.loads(l)
+                if r.get("recs"):
+                    first_audio[r["sid"]] = r["recs"][0]["audio"]
+        by_audio = {}
+        for l in open(a.word_times, encoding="utf-8"):
+            if l.strip():
+                r = json.loads(l)
+                by_audio[r["audio"]] = r["words"]
+        wt = {sid: by_audio[au] for sid, au in first_audio.items() if au in by_audio}
     n_labeled = sum(1 for l in open(a.labeled, encoding="utf-8") if l.strip()) if os.path.exists(a.labeled) else 0
-    table, reasons = check(rows, n_labeled, a)
+    table, reasons = check(rows, n_labeled, a, word_times=wt)
     for d, m in sorted(table.items()):
         print(d, {k: (round(v, 3) if isinstance(v, float) else v) for k, v in m.items()})
     if reasons:

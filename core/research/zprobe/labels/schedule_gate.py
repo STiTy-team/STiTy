@@ -170,20 +170,24 @@ _SENT_CLOSE = re.compile(r"[.!?][\"'”’)\]]*$")
 _EN_PRONOUNS = {"he", "she", "it", "they", "we", "i", "you", "this", "that", "these", "those"}
 _EN_ARTICLES = {"the", "a", "an"}
 _KO_SUBJ_HEAD = ("NP", "NNG", "NNP")
+_KO_SUBJ_PARTICLES = {"이", "가", "은", "는"}  # subject/topic markers; 을/를, 에서, 부터, 도 ... do not make a subject
 FIRST_PIECE_MIN_WORDS = 3
 
 
-def is_bare_subject(text: str, tgt: str) -> bool:
-    """A pronoun alone, or one noun carrying its particle (Korean) / article + noun (English)."""
+def is_bare_subject(text: str, tgt: str, first: bool = True) -> bool:
+    """A pronoun alone, or one noun with a subject/topic particle (Korean); in English a pronoun alone, or - only
+    for the first piece of a sentence, where nothing else can make it an object - article + noun."""
     t = text.strip().rstrip(",")
     if not t:
         return False
     if tgt == "ko":
-        tags = _piece_tags(t)
-        return (len(tags) == 1 and tags[0] == "NP") or (
-            len(tags) == 2 and tags[0] in _KO_SUBJ_HEAD and tags[1].startswith("J"))
+        _tags("")
+        toks = _kiwi.tokenize(t)
+        return (len(toks) == 1 and toks[0].tag == "NP") or (
+            len(toks) == 2 and toks[0].tag in _KO_SUBJ_HEAD and toks[1].tag.startswith("J")
+            and toks[1].form in _KO_SUBJ_PARTICLES)
     ws = [w.lower().strip("\"'”’") for w in t.split()]
-    return (len(ws) == 1 and ws[0] in _EN_PRONOUNS) or (len(ws) == 2 and ws[0] in _EN_ARTICLES)
+    return (len(ws) == 1 and ws[0] in _EN_PRONOUNS) or (first and len(ws) == 2 and ws[0] in _EN_ARTICLES)
 
 
 def shape_check_open(items, covers, tgt: str, tokens: list[str], final: bool = True) -> str | None:
@@ -201,8 +205,8 @@ def shape_check_open(items, covers, tgt: str, tokens: list[str], final: bool = T
     for n, (i, t, _) in enumerate(texts):
         if n < len(texts) - 1 and _SENT_CLOSE.search(t):
             return f"open: piece {i} closes a sentence mid-source (\"{t}\") - keep it open or wait"
-    for i, t, _ in texts:
-        if is_bare_subject(t, tgt):
+    for n, (i, t, _) in enumerate(texts):
+        if is_bare_subject(t, tgt, first=n == 0):
             return f"open: piece {i} is a bare subject (\"{t}\") - wait until something goes with it"
     if texts and not (final and len(texts) == 1):  # a lone piece at the sentence end had nothing left to wait for
         i, t, c = texts[0]

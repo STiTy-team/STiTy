@@ -67,8 +67,9 @@ def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0, word
     """rows: dicts with sid, lang, tgt, src, schedule [[after, text], ...]. Returns the metric dict.
     prefix16 columns: mid_closed_share (non-final pieces ending a sentence), first_bare_subj (sentences whose first
     piece is a bare subject or, with src_words, covers < 3 words), first_after_frac (first emission / K, median),
-    point_empty_share (empty items / all items - the labeler's waits), regret_share (sentences with regret_rounds > 0),
-    est_lag_s (mean seconds from the earliest src word of a piece to its `after` word; needs word_times {sid: words})."""
+    point_empty_share (empty items / all items - the labeler's waits), regret_share (regretted pieces / all candidate
+    items - one piece per regret round), est_lag_s (mean over source words of: end of the word -> end of the `after`
+    word of the piece that carries it; needs word_times {sid: words})."""
     from schedule_gate import _SENT_CLOSE, FIRST_PIECE_MIN_WORDS, eojeol_end_times, is_bare_subject
     empties, firsts, defs, ratios, lens, per_word = [], [], [], [], [], []
     dump = big = short = short_tot = single = 0
@@ -82,7 +83,7 @@ def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0, word
         sch = [(int(a), t) for a, t in r["schedule"] if t.strip()]  # empty items are waits, not emissions
         pt_tot += len(r["schedule"])
         pt_empty += sum(1 for _, t in r["schedule"] if not t.strip())
-        regret += (r.get("regret_rounds") or 0) > 0
+        regret += r.get("regret_rounds") or 0
         for _, t in sch[:-1]:
             mid_tot += 1
             mid_closed += bool(_SENT_CLOSE.search(t.strip()))
@@ -96,10 +97,8 @@ def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0, word
         if word_times is not None and r.get("src_words") and r["sid"] in word_times:
             ends = eojeol_end_times(toks, word_times[r["sid"]])
             for (a, t), c in zip(r["schedule"], r["src_words"]):
-                if t.strip() and c:
-                    j = min(c)
-                    if 1 <= j <= K and 1 <= a <= K:
-                        lags.append(ends[a - 1] - ends[j - 1])
+                if t.strip() and c and 1 <= a <= K:
+                    lags += [ends[a - 1] - ends[j - 1] for j in c if 1 <= j <= K]
         if K and sch:
             empties.append(1 - len({a for a, _ in sch}) / K)
             firsts.append(min(a for a, _ in sch))
@@ -137,7 +136,7 @@ def stats_for(rows, tokens_fn, known_fn=None, content_fn=None, gated_out=0, word
         "first_bare_subj": bare / len(rows) if rows else None,
         "first_after_frac": _pct(first_frac, 0.5),
         "point_empty_share": pt_empty / pt_tot if pt_tot else None,
-        "regret_share": regret / len(rows) if rows else None,
+        "regret_share": regret / pt_tot if pt_tot else None,
         "est_lag_s": _mean(lags),
     }
 

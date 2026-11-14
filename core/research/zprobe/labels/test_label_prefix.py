@@ -115,25 +115,6 @@ def test_regret_turns_piece_into_wait_and_reextracts():
     assert steps.calls[4][1] == "At yesterday's meeting,"  # committed rolled back to before the regretted piece
 
 
-def test_regret_on_last_piece_reasks_last():
-    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, EMPTY, EMPTY,
-                        {"add": "Governor Hong rejected the budget.", "src": [3, 4, 5, 6, 7, 8]},
-                        FINAL])
-    regrets = iter([{"regret": [2], "note": "rejected contradicts the source"}, {"regret": [], "note": ""}])
-    rec = label_sentence(ROW_KO, steps, lambda row, pieces: next(regrets))
-    assert rec["schedule"][-1] == [8, FINAL["add"]] and "contradicts" in steps.calls[4][3]
-    assert rec["regret_rounds"] == 1
-
-
-def test_regret_unresolved_fails():
-    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, EMPTY, EMPTY,
-                        {"add": "Governor Hong rejected it.", "src": [3, 4, 5, 6, 7, 8]}] +
-                       [{"add": "Governor Hong rejected it.", "src": [3, 4, 5, 6, 7, 8]}] * 4)
-    reasons = []
-    assert label_sentence(ROW_KO, steps, lambda r, p: {"regret": [2], "note": "bad"}, max_regret=2,
-                          fail=reasons.append) is None
-    assert reasons[-1] == "regret unresolved"
-
 
 # --- main: resume / budget --------------------------------------------------------------------------------------
 def test_resume_skips_done_and_counts_spent(tmp_path):
@@ -145,3 +126,51 @@ def test_resume_skips_done_and_counts_spent(tmp_path):
     rows = [{"sid": s} for s in "abc"]
     todo, spent = plan_todo(rows, str(out))
     assert [r["sid"] for r in todo] == ["c"] and spent == 0.75
+
+
+# --- smoke-2 changes: the last piece is not regrettable; regret notes are kept ----------------------------------
+def test_regret_on_last_piece_is_ignored():
+    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, EMPTY, EMPTY, FINAL])
+    rec = label_sentence(ROW_KO, steps, lambda r, p: {"regret": [2], "note": "last piece doubt"})
+    assert rec["schedule"][-1] == [8, FINAL["add"]] and rec["regret_rounds"] == 0 and rec["calls"] == 4
+
+
+def test_regret_notes_are_recorded():
+    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, {"add": "The governor said", "src": [3, 4]},
+                        EMPTY, {"add": "approved the new budget in 1990.", "src": [5, 6, 7, 8]},
+                        EMPTY, FINAL])
+    regrets = iter([{"regret": [2], "note": "said is not in the source"}, {"regret": [], "note": ""}])
+    rec = label_sentence(ROW_KO, steps, lambda row, pieces: next(regrets))
+    assert rec["regret_notes"] == ["said is not in the source"]
+
+
+def test_regret_on_last_piece_after_reextraction_is_ignored():
+    answers = [{"add": "At yesterday's meeting,", "src": [1, 2]}, {"add": "The governor said", "src": [3, 4]}, EMPTY, FINAL,
+               EMPTY, FINAL]  # re-extraction after the regret at k=4
+    regrets = iter([{"regret": [2], "note": "said is not in the source"}, {"regret": [2], "note": "doubt"}])
+    rec = label_sentence(ROW_KO, fake_steps(answers), lambda r, p: next(regrets), max_regret=2)
+    # second verdict names piece 2 = FINAL, now the last piece -> ignored, no further round
+    assert rec is not None and rec["schedule"][1] == [4, ""] and rec["regret_rounds"] == 1 and rec["calls"] == 6
+
+
+# --- review fixes --------------------------------------------------------------------------------------------
+def test_final_point_src_past_end_is_range_and_reasked():
+    row = {"sid": "e1", "lang": "en", "tgt": "ko", "src": "hello there"}
+    ask = fake_steps([{"add": "안녕하세요.", "src": [1, 2, 3]}, {"add": "안녕하세요.", "src": [1, 2]}])
+    rec = label_sentence(row, ask, no_regret)
+    assert rec["schedule"] == [[2, "안녕하세요."]] and rec["attempts"] == 1 and "range" in ask.calls[1][3]
+
+
+def test_regret_note_reaches_the_reextraction():
+    steps = fake_steps([{"add": "At yesterday's meeting,", "src": [1, 2]}, {"add": "The governor said", "src": [3, 4]},
+                        EMPTY, {"add": "approved the new budget in 1990.", "src": [5, 6, 7, 8]},
+                        EMPTY, FINAL])
+    regrets = iter([{"regret": [2], "note": "said is not in the source"}, {"regret": [], "note": ""}])
+    label_sentence(ROW_KO, steps, lambda row, pieces: next(regrets))
+    assert "said is not in the source" in steps.calls[4][3]  # first re-asked point (k=7) carries the reviewer's note
+
+
+def test_regret_prompt_uses_hy_hint_when_no_reference():
+    row = {"sid": "c1", "lang": "en", "tgt": "ko", "src": "hello there", "ref": None, "ref_hint": "안녕하세요."}
+    p = build_regret_prompt(row, [(2, "안녕.")])
+    assert "안녕하세요." in p and "machine translation" in p

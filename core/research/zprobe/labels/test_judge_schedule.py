@@ -14,3 +14,9 @@ def test_prompt_mentions_reference_only_when_present():
     row = {"lang": "ko", "tgt": "en", "src": "아피아는", "ref": "Apia is"}
     assert "Reference translation" in build_prompt(row, "Apia is.")
     assert "Reference translation" not in build_prompt({**row, "ref": ""}, "Apia is.")
+
+
+def test_prompt_allows_implied_subject_rendered_passive():
+    from judge_schedule import build_prompt
+    p = build_prompt({"sid": "a", "lang": "ko", "tgt": "en", "src": "유전자를 설계해요"}, "Genes are designed.")
+    assert "implied subject" in p

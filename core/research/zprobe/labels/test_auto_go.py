@@ -69,3 +69,17 @@ def test_new_thresholds_stop():
     a.empty_min = 0.05  # no empty items at all -> below the floor
     _, reasons = auto_go.check(rows, 10, a)
     assert any(r.startswith("en-ko point_empty_share") for r in reasons)
+
+
+def test_lag_gate_needs_word_times(tmp_path, capsys):
+    import json
+    g = tmp_path / "g.jsonl"; s = tmp_path / "s.jsonl"; l = tmp_path / "l.jsonl"
+    g.write_text(json.dumps({"sid": "a", "lang": "en", "tgt": "ko", "schedule": [[3, "매니저가 승인했습니다."]], "src_words": [[1, 2, 3]]}) + "\n")
+    s.write_text(json.dumps({"sid": "a", "lang": "en", "tgt": "ko", "src": "the manager approved", "recs": [{"audio": "/a.wav"}]}) + "\n")
+    l.write_text("x\n")
+    rc = auto_go.main(["--gated", str(g), "--labeled", str(l), "--sentences", str(s), "--min-kept", "1", "--min-kept-share", "0", "--lag-max", "1.6"])
+    assert rc == 1 and "est_lag_s" in capsys.readouterr().out      # no --word-times: the lag gate cannot pass silently
+    wt = tmp_path / "wt.jsonl"
+    wt.write_text(json.dumps({"audio": "/a.wav", "words": [{"w": "the", "end": 0.5}, {"w": "manager", "end": 1.0}, {"w": "approved", "end": 1.4}]}) + "\n")
+    rc = auto_go.main(["--gated", str(g), "--labeled", str(l), "--sentences", str(s), "--min-kept", "1", "--min-kept-share", "0", "--lag-max", "1.6", "--word-times", str(wt)])
+    assert rc == 0

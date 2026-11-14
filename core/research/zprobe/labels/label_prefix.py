@@ -7,8 +7,9 @@ step gate (range, lookahead against k, open-piece shape); a lookahead violation 
 item) at once, a shape/format violation is re-asked once at that point and then becomes a wait. When the
 sentence is over, a regret check shows the LLM the whole source (and the reference, if any) with the
 piece boundaries and asks which pieces should not have gone out; a regretted piece becomes a wait and
-the points after it are re-asked. The record keeps one item per candidate point, empty ones included -
-those are the wait labels.
+the points after it are re-asked; the last piece is never a regret (it heard the whole source, and
+judge_schedule.py reviews the final text). The record keeps one item per candidate point, empty ones included -
+those are the wait labels - and the regret notes.
 
 Output: --out jsonl {"sid","lang","tgt","schedule":[[after,text],...],"src_words":[[...],...],"attempts",
 "regret_rounds","calls"}; <out>.fail.jsonl {"sid","reason"}; <out>.usage.jsonl one line per call with
@@ -27,7 +28,14 @@ from label_schedule import LANG_NAME  # noqa: E402
 from schedule_gate import words  # noqa: E402
 
 RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts", "prefix_rules_v1.txt")
-RULES = {"path": RULES_PATH}
+RULES = {"path": RULES_PATH, "text": None, "text_path": None}
+
+
+def rules_text() -> str:
+    if RULES["text"] is None or RULES["text_path"] != RULES["path"]:
+        with open(RULES["path"], encoding="utf-8") as f:
+            RULES["text"], RULES["text_path"] = f.read().strip(), RULES["path"]
+    return RULES["text"]
 
 END_NOTE = "The source sentence ENDS here: emit everything that is still missing and close the sentence."
 MORE_NOTE = "More source may follow; you do not know how much."
@@ -38,7 +46,7 @@ def build_step_prompt(row: dict, k: int, committed: str, is_end: bool, note: str
     words after k."""
     tokens = words(row["src"], row["lang"])[:k]
     numbered = " ".join(f"{i}:{t}" for i, t in enumerate(tokens, 1))
-    rules = open(RULES["path"], encoding="utf-8").read().strip()
+    rules = rules_text()
     lines = [f"Source ({LANG_NAME[row['lang']]}) heard so far, words numbered from 1:", numbered,
              END_NOTE if is_end else MORE_NOTE,
              f"Translation ({LANG_NAME[row['tgt']]}) committed so far: {committed.strip() or '(nothing yet)'}",
@@ -59,12 +67,16 @@ def build_regret_prompt(row: dict, pieces: list[tuple[int, str]]) -> str:
              f"Source ({LANG_NAME[row['lang']]}): {row['src']}"]
     if row.get("ref"):
         lines.append(f"Reference translation ({LANG_NAME[row['tgt']]}), for meaning only: {row['ref']}")
+    elif row.get("ref_hint"):
+        lines.append(f"A machine translation of the whole source ({LANG_NAME[row['tgt']]}), for meaning only - it may "
+                     f"itself be imperfect: {row['ref_hint']}")
     lines += [f"Pieces ({LANG_NAME[row['tgt']]}): {numbered}",
               "Knowing the whole source now, list the pieces that should NOT have been emitted at that moment: "
               "(i) the piece left no natural place for content that came later (word order is now blocked), "
               "(ii) its meaning turned out wrong once the rest was heard (negation, tense, what a modifier attaches to), "
               "(iii) it contains content that had not been heard yet. A piece that is merely awkward but correct is not "
-              "a regret. The last piece may be listed only for (ii) or (iii).",
+              "a regret. Do NOT list the last piece: it was emitted with the whole source heard, and a separate "
+              "reviewer judges the final text.",
               'Answer with JSON only: {"regret": [piece numbers], "note": "one short sentence, or empty"}']
     return "\n".join(lines)
 
@@ -106,6 +118,9 @@ def step_gate(text: str, cov: set, k: int, items, covers, tgt: str, tokens: list
         return "range: text without src"
     if any(x < 1 for x in cov):
         return f"range: src words {sorted(x for x in cov if x < 1)} below 1"
+    beyond = sorted(x for x in cov if x > len(tokens))
+    if beyond:
+        return f"range: src words {beyond} outside 1..{len(tokens)}"
     late = sorted(x for x in cov if x > k)
     if late:
         return f"lookahead: src words {late} are after word {k}"
@@ -166,32 +181,35 @@ def label_sentence(row: dict, ask_step, ask_regret, *, max_regret: int = 2, fail
 
     if not run_from(0, note):
         return None
-    rounds = 0
+    rounds, notes = 0, []
     while True:
         pieces = [(k, t) for k, t in items if t.strip()]
+        if not pieces:
+            break
         try:
             regs, rnote = parse_regret(ask_regret(row, pieces), len(pieces))
         except ValueError:
             regs, rnote = [], ""  # a malformed verdict is no verdict
+        regs = [j for j in regs if j < len(pieces)]  # the last piece heard the whole source: not a regret
         if not regs:
             break
         if rounds >= max_regret:
             fail("regret unresolved")
             return None
         rounds += 1
+        notes.append(rnote)
         idx = items.index(pieces[regs[0] - 1])
-        if idx == len(items) - 1:
-            ok = run_from(idx, f"A reviewer found: {rnote}. Fix that." if rnote else "A reviewer rejected the last piece. Fix that.")
-        else:
-            items[idx] = (items[idx][0], "")
-            covers[idx] = set()
-            ok = run_from(idx + 1, "")
-        if not ok:
+        withdrawn = items[idx][1]
+        items[idx] = (items[idx][0], "")
+        covers[idx] = set()
+        hint = (f'A reviewer withdrew the earlier piece "{withdrawn}"' + (f": {rnote}" if rnote else "") +
+                ". Continue from the committed text without repeating that mistake.")
+        if not run_from(idx + 1, hint):
             return None
     fixed = fix_leading_punct(items)
     return {"sid": row["sid"], "lang": row["lang"], "tgt": row["tgt"],
             "schedule": [[k, t] for k, t in fixed], "src_words": [sorted(c) for c in covers],
-            "attempts": st["attempts"], "regret_rounds": rounds, "calls": st["calls"]}
+            "attempts": st["attempts"], "regret_rounds": rounds, "regret_notes": notes, "calls": st["calls"]}
 
 
 # --- CLI ------------------------------------------------------------------------------------------------------
@@ -263,6 +281,8 @@ def main():
     ap.add_argument("--notes", help="judge_schedule.py output: its failed rows' notes go into the first point's request")
     ap.add_argument("--min-gap", type=int, default=2, help="minimum tokens between two candidate points")
     ap.add_argument("--max-regret", type=int, default=2)
+    ap.add_argument("--hy", default="models/zprobe/data/prefix14/hy_prefixes.jsonl",
+                    help="Hy word-prefix translations: the whole-sentence one stands in for a missing reference in the regret check")
     a = ap.parse_args()
     RULES["path"] = a.rules
 
@@ -270,6 +290,16 @@ def main():
     client = OpenAI(base_url="https://gw.letsur.ai/v1", api_key=os.environ["LETSUR_API_KEY"])
 
     rows = [json.loads(l) for l in open(a.sentences, encoding="utf-8") if l.strip()]
+    if a.hy and os.path.exists(a.hy):
+        hy_full = {}
+        for l in open(a.hy, encoding="utf-8"):
+            if l.strip():
+                r = json.loads(l)
+                if r.get("prefixes"):
+                    hy_full[r["sid"]] = r["prefixes"][-1]
+        for r in rows:
+            if not r.get("ref") and r["sid"] in hy_full:
+                r["ref_hint"] = hy_full[r["sid"]]
     if a.limit:
         rows = rows[: a.limit]
     if a.only_sids:

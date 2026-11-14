@@ -190,3 +190,15 @@ def test_open_width_rule_skips_a_whole_sentence_piece():
     # a two-word sentence translated in one piece at its end: nothing more could have been waited for
     assert shape_check_open([(2, "안녕하세요.")], [{1, 2}], "ko", ["hello", "there"]) is None
     assert shape_check_open([(2, "안녕하세요")], [{1, 2}], "ko", ["hello", "there", "friend"], final=False).startswith("open: first piece covers 2")
+
+
+def test_bare_subject_is_only_subject_or_topic_particles():
+    from schedule_gate import is_bare_subject
+    assert is_bare_subject("지각은", "ko") and is_bare_subject("학생이", "ko") and is_bare_subject("그는", "ko")
+    assert not is_bare_subject("보고서를", "ko") and not is_bare_subject("내년부터", "ko") and not is_bare_subject("서울에서,", "ko")
+
+
+def test_en_article_noun_is_bare_only_as_first_piece():
+    toks = "the manager approved the report yesterday".split()
+    assert shape_check_open([(2, "The manager")], [{1, 2}], "en", toks, final=False).startswith("open: piece 1 is a bare subject")
+    assert shape_check_open([(3, "The manager approved"), (5, "the report")], [{1, 2, 3}, {4, 5}], "en", toks, final=False) is None

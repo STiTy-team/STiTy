@@ -38,7 +38,7 @@ List the DEFECTS - things an editor would have to change for the text to be corr
 - addition: information not in the source was added
 When a reference translation is given, a rendering that matches the reference's reading of the source is correct, not a mistranslation, omission or addition.
 
-NOT defects (do not report these): wording that is merely awkward, literal or stiff but correct; the target being several sentences; a short follow-up sentence that adds a trailing detail ("오늘 아침에 보냈는데요."); a connective or interjection as its own sentence; spoken-style register; a transliterated name; a plausible rendering of a vague or garbled source.
+NOT defects (do not report these): wording that is merely awkward, literal or stiff but correct; a Korean sentence whose implied subject is rendered in English with a passive or a generic subject ("유전자를 설계해요" -> "Genes are designed."); the target being several sentences; a short follow-up sentence that adds a trailing detail ("오늘 아침에 보냈는데요."); a connective or interjection as its own sentence; spoken-style register; a transliterated name; a plausible rendering of a vague or garbled source.
 
 Answer with JSON only: {{"defects": ["code", ...], "note": "one short sentence naming the worst problem, or empty"}}"""
 
