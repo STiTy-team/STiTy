@@ -82,7 +82,10 @@ def build_regret_prompt(row: dict, pieces: list[tuple[int, str]]) -> str:
               "(iii) it contains content that had not been heard yet, (iv) its ending left no grammatical continuation - "
               "the pieces after it could only attach ungrammatically (a Korean connective followed by a clause that does "
               "not belong to it, a reporting phrase hanging after a finished clause, a sentence fragment). A piece that is "
-              "merely awkward but correct is not a regret. Do NOT list the last piece: it was emitted with the whole source heard, and a separate "
+              "merely awkward but correct is not a regret. A piece that ends in an open connective or phrase (Korean "
+              "…어/…고/…며/…는데, a particle-final phrase; an English subordinate or prepositional phrase, \"…, and\") "
+              "which the later content could follow grammatically and in order is not a regret under (i), even if a "
+              "different split would have read better. Do NOT list the last piece: it was emitted with the whole source heard, and a separate "
               "reviewer judges the final text.",
               'Answer with JSON only: {"regret": [piece numbers], "note": "one short sentence, or empty"}']
     return "\n".join(lines)

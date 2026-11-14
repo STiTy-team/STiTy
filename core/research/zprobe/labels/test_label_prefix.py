@@ -231,3 +231,15 @@ def test_regret_prompt_lists_ungrammatical_continuation_as_a_regret():
 def test_end_note_requires_one_grammatical_sentence():
     p = build_step_prompt(ROW, 6, "매니저가 승인했는데", True)
     assert "one grammatical" in p and "committed text" in p
+
+
+# --- 200-sentence pilot: over-regret, predicate repetition, split verb complex ------------------------------------
+def test_regret_prompt_exempts_open_connective_endings():
+    p = build_regret_prompt(ROW, [(2, "매니저가 승인했는데"), (6, "어제 예산을 승인했습니다.")])
+    assert "open connective" in p and "not a regret" in p
+
+
+def test_rules_forbid_repeating_a_committed_predicate_and_splitting_a_verb_complex():
+    from label_prefix import rules_text
+    t = rules_text()
+    assert "repeat a predicate" in t and "auxiliary" in t
