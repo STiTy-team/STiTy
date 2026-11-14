@@ -22,6 +22,13 @@ from schedule_gate import words  # noqa: E402
 from schedule_stats import stats_for  # noqa: E402
 
 
+def lag_limit(a, d: str) -> float:
+    """est_lag_s limit for direction d: --lag-max for en-ko, --lag-max-other (falling back to --lag-max) otherwise."""
+    base = getattr(a, "lag_max", 0.0) or 0.0
+    other = getattr(a, "lag_max_other", 0.0) or 0.0
+    return base if d == "en-ko" or not other else other
+
+
 def check(rows, n_labeled, a, word_times=None):
     """rows may include wait labels (rescue == "wait"): they are counted as rescued, not in the corpus table."""
     waits = [r for r in rows if r.get("rescue") == "wait"]
@@ -48,11 +55,11 @@ def check(rows, n_labeled, a, word_times=None):
         for key, attr, above, default in (("mid_closed_share", "mid_closed", True, 0.03), ("first_bare_subj", "first_bare", True, 0.05),
                                           ("point_empty_share", "empty_min", False, 0.0), ("regret_share", "regret_max", True, 0.30),
                                           ("est_lag_s", "lag_max", True, 0.0)):
-            lim = getattr(a, attr, default)
+            lim = lag_limit(a, d) if key == "est_lag_s" else getattr(a, attr, default)
             v = m.get(key)
             if v is None:
                 if key == "est_lag_s" and lim:
-                    reasons.append(f"{d} est_lag_s unavailable (pass --word-times) while --lag-max {lim} is set")
+                    reasons.append(f"{d} est_lag_s unavailable (pass --word-times) while a lag limit {lim} is set")
                 continue
             if above and v > lim:
                 reasons.append(f"{d} {key} {v:.3f} > {lim}")
@@ -80,7 +87,9 @@ def main(argv=None):
     ap.add_argument("--first-bare", type=float, default=0.05, help="sentences whose first piece is a bare subject, at most")
     ap.add_argument("--empty-min", type=float, default=0.0, help="empty (wait) items among all items, at least (0 = off; prefix16 chain passes 0.05)")
     ap.add_argument("--regret-max", type=float, default=0.30, help="sentences that went through a regret round, at most")
-    ap.add_argument("--lag-max", type=float, default=0.0, help="est_lag_s at most; needs --word-times (0 = off; the prefix16 chain passes 1.6)")
+    ap.add_argument("--lag-max", type=float, default=0.0, help="en-ko est_lag_s at most; needs --word-times (0 = off; the prefix16 chain passes 1.8)")
+    ap.add_argument("--lag-max-other", type=float, default=0.0,
+                    help="est_lag_s limit for the other directions (verb-final source waits longer); 0 = same as --lag-max (the chain passes 2.5)")
     ap.add_argument("--word-times", help="word_times.jsonl; est_lag_s is measured on each sentence's first recording")
     a = ap.parse_args(argv)
     src = {}

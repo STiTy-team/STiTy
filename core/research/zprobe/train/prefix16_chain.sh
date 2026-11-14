@@ -17,6 +17,9 @@ export PATH=$HOME/.local/bin:$PATH
 PY=.venv/bin/python; CPY=.venv-tpm/bin/python
 OUT=${OUT:-models/zprobe/data/prefix16}; LOG=models/zprobe/logs; mkdir -p $LOG $OUT
 D14=models/zprobe/data/prefix14
+# prefix16 gates: waits are the design, so dump_share is off and the first emission may come later; a verb-final source
+# (ko->en) waits longer than en->ko; regret rounds up to 40% of sentences (smoke 3b/4: 0.26-0.36)
+GATES="--dump-enko 1 --dump-other 1 --first-after 12 --lag-max 1.8 --lag-max-other 2.5 --regret-max 0.4"
 SENTS=${SENTS:-$D14/sentences.jsonl}; HY=$D14/hy_prefixes.jsonl; WT=$D14/word_times.jsonl
 LABEL_MODEL=${LABEL_MODEL:-gpt-6-luna}; LABEL_BUDGET=${LABEL_BUDGET:-60}; JUDGE_BUDGET=${JUDGE_BUDGET:-10}; LABEL_WORKERS=${LABEL_WORKERS:-32}
 if [ "${SMOKE:-0}" = 1 ]; then SENTS=${SENTS_SMOKE:-$OUT/pilot_sentences.jsonl}; OUT=${SMOKE_OUT:-$OUT/smoke}; mkdir -p $OUT; LABEL_BUDGET=3; JUDGE_BUDGET=1; fi
@@ -101,12 +104,12 @@ if [ ! -f $OUT/stats.done ]; then
 fi
 echo "P16_STATS_READY $(date '+%F %T') - $LOG/prefix16_stats.log"
 if [ "${SMOKE:-0}" = 1 ]; then
-  PYTHONPATH=. $PY $L/auto_go.py --gated $GATED --labeled $S1 --sentences $SENTS --word-times $WT --lag-max 1.6 --min-kept 1 --min-kept-share 0 \
+  PYTHONPATH=. $PY $L/auto_go.py --gated $GATED --labeled $S1 --sentences $SENTS --word-times $WT $GATES --min-kept 1 --min-kept-share 0 \
     --empty-min 0.05 2>&1 | tee -a $LOG/prefix16_stats.log
   echo "P16_SMOKE_READY $(date '+%F %T') - spent \$$(spent)"; exit 0
 fi
 if [ ! -f $OUT/GO ]; then
-  PYTHONPATH=. $PY $L/auto_go.py --gated $GATED --labeled $S1 --sentences $SENTS --word-times $WT --lag-max 1.6 --empty-min 0.05 2>&1 | tee -a $LOG/prefix16_stats.log
+  PYTHONPATH=. $PY $L/auto_go.py --gated $GATED --labeled $S1 --sentences $SENTS --word-times $WT $GATES --empty-min 0.05 2>&1 | tee -a $LOG/prefix16_stats.log
   [ ${PIPESTATUS[0]} -eq 0 ] && touch $OUT/GO || { echo "P16_FAIL hygiene - review $LOG/prefix16_stats.log; to override: touch $OUT/GO and rerun"; exit 1; }
 fi
 

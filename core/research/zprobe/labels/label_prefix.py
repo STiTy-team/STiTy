@@ -39,7 +39,10 @@ def rules_text() -> str:
             RULES["text"], RULES["text_path"] = f.read().strip(), RULES["path"]
     return RULES["text"]
 
-END_NOTE = "The source sentence ENDS here: emit everything that is still missing and close the sentence."
+END_NOTE = ("The source sentence ENDS here: emit everything that is still missing and close the sentence. Read the "
+            "ending of the committed text first: the committed text plus your addition must read as one grammatical, "
+            "natural sentence (a Korean connective such as …는데/…고 must be continued by the clause it announces, in "
+            "합니다체; an English open clause must get its main clause). Never restart the sentence.")
 MORE_NOTE = "More source may follow; you do not know how much."
 
 
@@ -76,8 +79,10 @@ def build_regret_prompt(row: dict, pieces: list[tuple[int, str]]) -> str:
               "Knowing the whole source now, list the pieces that should NOT have been emitted at that moment: "
               "(i) the piece left no natural place for content that came later (word order is now blocked), "
               "(ii) its meaning turned out wrong once the rest was heard (negation, tense, what a modifier attaches to), "
-              "(iii) it contains content that had not been heard yet. A piece that is merely awkward but correct is not "
-              "a regret. Do NOT list the last piece: it was emitted with the whole source heard, and a separate "
+              "(iii) it contains content that had not been heard yet, (iv) its ending left no grammatical continuation - "
+              "the pieces after it could only attach ungrammatically (a Korean connective followed by a clause that does "
+              "not belong to it, a reporting phrase hanging after a finished clause, a sentence fragment). A piece that is "
+              "merely awkward but correct is not a regret. Do NOT list the last piece: it was emitted with the whole source heard, and a separate "
               "reviewer judges the final text.",
               'Answer with JSON only: {"regret": [piece numbers], "note": "one short sentence, or empty"}']
     return "\n".join(lines)

@@ -220,3 +220,14 @@ def test_reextraction_hint_asks_to_prefer_waiting():
     regrets = iter([{"regret": [2], "note": "said is not in the source"}, {"regret": [], "note": ""}])
     label_sentence(ROW_KO, steps, lambda row, pieces: next(regrets))
     assert "Prefer emitting nothing" in steps.calls[4][3]
+
+
+# --- smoke 4 fixes: connective chains ---------------------------------------------------------------------------
+def test_regret_prompt_lists_ungrammatical_continuation_as_a_regret():
+    p = build_regret_prompt(ROW, [(2, "매니저가 승인했는데"), (6, "어제 예산을 승인했습니다.")])
+    assert "(iv)" in p and "grammatical" in p
+
+
+def test_end_note_requires_one_grammatical_sentence():
+    p = build_step_prompt(ROW, 6, "매니저가 승인했는데", True)
+    assert "one grammatical" in p and "committed text" in p

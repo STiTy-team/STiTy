@@ -83,3 +83,11 @@ def test_lag_gate_needs_word_times(tmp_path, capsys):
     wt.write_text(json.dumps({"audio": "/a.wav", "words": [{"w": "the", "end": 0.5}, {"w": "manager", "end": 1.0}, {"w": "approved", "end": 1.4}]}) + "\n")
     rc = auto_go.main(["--gated", str(g), "--labeled", str(l), "--sentences", str(s), "--min-kept", "1", "--min-kept-share", "0", "--lag-max", "1.6", "--word-times", str(wt)])
     assert rc == 0
+
+
+def test_lag_limit_is_per_direction():
+    import argparse
+    a = argparse.Namespace(lag_max=1.8, lag_max_other=2.5)
+    assert auto_go.lag_limit(a, "en-ko") == 1.8 and auto_go.lag_limit(a, "ko-en") == 2.5
+    a = argparse.Namespace(lag_max=1.6, lag_max_other=0.0)  # other directions fall back to --lag-max
+    assert auto_go.lag_limit(a, "ko-en") == 1.6
