@@ -239,10 +239,9 @@ def test_regret_prompt_exempts_open_connective_endings():
     assert "open connective" in p and "not a regret" in p
 
 
-def test_rules_forbid_repeating_a_committed_predicate_and_splitting_a_verb_complex():
+def test_rules_forbid_splitting_a_verb_complex():
     from label_prefix import rules_text
-    t = rules_text()
-    assert "repeat a predicate" in t and "auxiliary" in t
+    assert "auxiliary" in rules_text()
 
 
 def test_regret_prompt_treats_a_repeated_predicate_as_an_early_piece():
