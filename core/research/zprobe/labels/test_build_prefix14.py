@@ -246,3 +246,12 @@ def test_drop_missing_threshold():
 def test_delta_glues_particle_piece():
     assert b._delta([(4, "응답률")], [(6, "도")]) == "도"
     assert b._delta([(4, "응답률도")], [(7, "더 높습니다.")]) == " 더 높습니다."
+
+
+def test_wait_points_survive_cap():
+    items = [(2, ""), (4, ""), (6, "x y z"), (7, "w.")]  # 7 tokens; two labeler waits at words 2 and 4
+    ends = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
+    rows = b.rows_on_time(items, ends, 3.8, "en-ko", "/a.wav", cap=4, rng=random.Random(0))
+    cuts = sorted(float(r["audio"].split("#end=")[1]) for r in rows if not r["text"])
+    assert 1.2 in cuts and 2.2 in cuts  # the wait points (word end + 0.2) are kept under the cap
+    assert all("_wait_pt" not in r and "_emit" not in r for r in rows)

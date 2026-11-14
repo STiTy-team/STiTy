@@ -112,16 +112,19 @@ def _due(items, w):
 
 def _cap_keep(rows, cap, rng):
     """Indices to keep under a per-recording cap. ceil(cap/3) slots are reserved for empty-text (wait)
-    rows, preferring the grid point just before each emission (the hardest "not yet" decision); the
-    rest go to emission rows; unused slots on either side go to the other."""
+    rows: first the cuts at the labeler's own wait points (`_wait_pt`, prefix16 empty items), then the grid
+    point just before each emission (the hardest "not yet" decision), then the rest; emission rows take the
+    other slots; unused slots on either side go to the other."""
     is_em = [r["_emit"] or bool(r["text"]) for r in rows]
     em = [i for i, e in enumerate(is_em) if e]
-    pre = sorted({i - 1 for i in em if i > 0 and not is_em[i - 1]})
-    other = [i for i, e in enumerate(is_em) if not e and i not in set(pre)]
+    wait_pts = [i for i, r in enumerate(rows) if r.get("_wait_pt") and not is_em[i]]
+    pre = sorted({i - 1 for i in em if i > 0 and not is_em[i - 1]} - set(wait_pts))
+    other = [i for i, e in enumerate(is_em) if not e and i not in set(pre) and i not in set(wait_pts)]
     rng.shuffle(em)
+    rng.shuffle(wait_pts)
     rng.shuffle(pre)
     rng.shuffle(other)
-    empty = pre + other
+    empty = wait_pts + pre + other
     n_empty = min(len(empty), -(-cap // 3))
     n_em = min(len(em), cap - n_empty)
     n_empty = min(len(empty), cap - n_em)
@@ -131,6 +134,7 @@ def _cap_keep(rows, cap, rng):
 def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
     tag = tag_of(pair)
     emits = {round(e, 3) for (a, t), e in zip(items, emit_times(items, end_times)) if t.strip()}
+    wait_ts = {round(e, 3) for (a, t), e in zip(items, emit_times(items, end_times)) if not t.strip()}
     rows, prev_w = [], 0
     for t in grid(dur, emit_times(items, end_times)):
         if t >= dur - EPS:
@@ -140,12 +144,14 @@ def rows_on_time(items, end_times, dur, pair, audio, cap=None, rng=None):
         new_items = [(a, x) for a, x in items if prev_w < a <= w]
         r = _row(cut(audio, t), tag + _join(cond_items), _delta(cond_items, new_items), pair)
         r["_emit"] = t in emits
+        r["_wait_pt"] = t in wait_ts
         rows.append(r)
         prev_w = w
     if cap is not None and len(rows) > cap:
         rows = [rows[i] for i in _cap_keep(rows, cap, rng or random.Random(0))]
     for r in rows:
         r.pop("_emit")
+        r.pop("_wait_pt")
     return rows
 
 
