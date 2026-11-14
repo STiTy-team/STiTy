@@ -243,3 +243,13 @@ def test_rules_forbid_repeating_a_committed_predicate_and_splitting_a_verb_compl
     from label_prefix import rules_text
     t = rules_text()
     assert "repeat a predicate" in t and "auxiliary" in t
+
+
+def test_regret_prompt_treats_a_repeated_predicate_as_an_early_piece():
+    p = build_regret_prompt(ROW, [(6, "국가는 인력이 필요하게 될 것이며"), (8, "자원도 필요하게 될 것입니다.")])
+    assert "(v)" in p and "repeat" in p and "too early" in p
+
+
+def test_rules_do_not_forbid_repetition_at_emission_time():
+    from label_prefix import rules_text
+    assert "repeat a predicate" not in rules_text()
