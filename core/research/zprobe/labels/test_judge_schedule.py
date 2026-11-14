@@ -20,3 +20,9 @@ def test_prompt_allows_implied_subject_rendered_passive():
     from judge_schedule import build_prompt
     p = build_prompt({"sid": "a", "lang": "ko", "tgt": "en", "src": "유전자를 설계해요"}, "Genes are designed.")
     assert "implied subject" in p
+
+
+def test_prompt_excludes_punctuation_and_source_faithful_readings():
+    p = build_prompt({"lang": "ko", "tgt": "en", "src": "그것은 성과입니다.", "ref": "It is an acquisition."}, "It is an achievement.")
+    assert "punctuation" in p.lower()
+    assert "faithful to the source" in p
