@@ -143,11 +143,17 @@ stage "merge"
 echo "P16_SFT_READY $(date '+%F %T')"
 
 submit() {  # $1 dataset -> job id on stdout (empty on failure); run-now
-  CFG=$PIPE DSN=$1 BR=$BRANCH python3 - <<'PYEOF' | curl -s -XPOST http://$MANAGER/api/machines/$MACHINE/jobs -H 'Content-Type: application/json' -d @- | python3 -c "import json,sys; d=json.load(sys.stdin); x=d.get('data') or {}; print(x.get('id') or ''); sys.stderr.write('P16 JOB %s %s %s\n' % (d.get('ok'), x.get('id'), str(d.get('error',''))[:200]))"
-import json, os, pathlib
+  CFG=$PIPE DSN=$1 BR=$BRANCH MGR=$MANAGER python3 - <<'PYEOF' | curl -s -XPOST http://$MANAGER/api/machines/$MACHINE/jobs -H 'Content-Type: application/json' -d @- | python3 -c "import json,sys; d=json.load(sys.stdin); x=d.get('data') or {}; print(x.get('id') or ''); sys.stderr.write('P16 JOB %s %s %s\n' % (d.get('ok'), x.get('id'), str(d.get('error',''))[:200]))"
+import json, os, pathlib, urllib.request
 c, d = os.environ["CFG"], os.environ["DSN"]
+p = pathlib.Path(f"configs/datasets/{d}.yml")
+if p.exists():
+    ds_yaml = p.read_text()
+else:  # a dataset that lives only in the manager's config store (the vol23 variants)
+    cfg = json.load(urllib.request.urlopen(f"http://{os.environ['MGR']}/api/configs"))
+    ds_yaml = cfg.get("data", cfg)["dataset"][d]["yaml"]
 print(json.dumps({"branch": os.environ["BR"], "pipeline": {"name": c, "yaml": pathlib.Path(f"configs/pipelines/{c}.yml").read_text()},
-                  "dataset": {"name": d, "yaml": pathlib.Path(f"configs/datasets/{d}.yml").read_text()}}))
+                  "dataset": {"name": d, "yaml": ds_yaml}}))
 PYEOF
 }
 wait_job() {  # $1 job id: poll until it leaves the queue
