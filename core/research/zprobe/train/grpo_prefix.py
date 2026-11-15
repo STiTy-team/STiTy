@@ -19,7 +19,10 @@ With --schedule/--sentences/--word_times (prefix14 emission schedules) the pool 
 and two per-step terms join the reward (schedule_reward.py): + sigma_s * emit_agree (share of steps where the schedule
 has something due and the rollout emitted) + sigma_l * wait_agree (share of steps where nothing is due and the rollout
 stayed quiet, silence tail included); with --lat_floor 1 the latency charge is lam * max(latency, the schedule's own
-latency), so a rollout earns nothing by racing ahead of the labels.
+latency), so a rollout earns nothing by racing ahead of the labels; --lat_floor_scale < 1 lowers that floor (prefix16
+labels wait where the structure is unknown, and the goal is to beat their latency). Label rules as penalties:
+--xi on closing a target sentence before the source closed one (src_close times), --psi on a bare-subject first
+piece. Rescued wait labels and sentences without a reference are not in the pool (schedule_reward.load_pool).
 
 usage: PYTHONPATH=Qwen3-ASR python core/research/zprobe/train/grpo_prefix.py --policy_model models/zprobe/merged/prefix1 --out DIR"""
 import argparse, csv, json, os, random, re, sys, time
@@ -65,6 +68,9 @@ ap.add_argument("--word_times", default="models/zprobe/data/prefix14/word_times.
 ap.add_argument("--sigma_s", type=float, default=0.0, help="weight of emit_agree (schedule says due, rollout emitted)")
 ap.add_argument("--sigma_l", type=float, default=0.0, help="weight of wait_agree (nothing due, rollout quiet)")
 ap.add_argument("--lat_floor", type=int, default=0, help="1: charge lam * max(latency, schedule latency) instead of lam * latency")
+ap.add_argument("--lat_floor_scale", type=float, default=1.0, help="floor at this x the schedule latency (< 1: prefix16 labels wait, so a rollout may beat them)")
+ap.add_argument("--xi", type=float, default=0.0, help="penalty on the share of closing pieces that close before the source closed its sentence (label rule 3)")
+ap.add_argument("--psi", type=float, default=0.0, help="penalty when the first of several pieces is a bare subject (label rule 4)")
 a = ap.parse_args(); os.makedirs(a.out, exist_ok=True); random.seed(0); torch.manual_seed(0)
 dev = "cuda"
 
@@ -185,7 +191,7 @@ def rollout(u, wav, dur_real=None):
     sr = 16000; dur = len(wav) / sr
     dur_real = dur_real or dur
     base = base_for(u)
-    raw, recs, times, emits = "", [], [], []
+    raw, recs, times, emits, pieces = "", [], [], [], []
     t = min(a.first, dur)
     while True:
         prefix = raw
@@ -206,7 +212,7 @@ def rollout(u, wav, dur_real=None):
         recs.append({"t": t, "prefix": prefix, "toks": new})
         emits.append(bool(add.strip()))
         if add.strip():
-            raw += add; times += [t] * len(add.replace(" ", ""))
+            raw += add; times += [t] * len(add.replace(" ", "")); pieces.append((t, add))
         if t >= dur:
             break
         t = min(dur, t + a.step)
@@ -216,7 +222,8 @@ def rollout(u, wav, dur_real=None):
     if u.get("due") is not None:
         grid_t = [r["t"] for r in recs]
         agree = SR.agreement(SR.step_labels(u["due"], dur_real, grid_t), emits)
-    return recs, re.sub(r"\s+", " ", raw).strip(), lat, hall, agree
+    shape = SR.shape_terms(pieces, u["src_close"], u["tgt"]) if u.get("src_close") else (0.0, 0.0)
+    return recs, re.sub(r"\s+", " ", raw).strip(), lat, hall, agree, shape
 
 
 def offline(u, wav):
@@ -267,6 +274,9 @@ for step in range(1, a.steps + 1):
         emit_ag = np.array([o[4][0] for o in outs] + ([0.0] if a.anchor else []))
         wait_ag = np.array([o[4][1] for o in outs] + ([1.0] if a.anchor else []))
         lat_floor = SR.label_latency(u["due"], u["chars"], len(wav) / 16000) if a.lat_floor and u.get("due") is not None else 0.0
+        lat_charge = np.array([SR.latency_charge(l, lat_floor, a.lat_floor_scale) for l in lats])
+        early = np.array([o[5][0] for o in outs] + ([0.0] if a.anchor else []))
+        bare = np.array([o[5][1] for o in outs] + ([0.0] if a.anchor else []))
         if u["pair"].split("-")[0] == u["tgt"]:
             comet = verbatim_score(u["ref"], texts)
         else:
@@ -282,8 +292,8 @@ for step in range(1, a.steps + 1):
                                    padding=True, truncation=True, max_length=256).to(dev)
                     probs = torch.softmax(nli_model(**toks).logits.float(), -1)
                     contra[k:k + 8] = probs[:, nli_contra].cpu().numpy()
-        R = (np.array(comet) - a.lam * np.maximum(lats, lat_floor) - a.mu * short - a.nu * wrong - a.rho * contra
-             - a.kappa * halls + a.sigma_s * emit_ag + a.sigma_l * wait_ag)
+        R = (np.array(comet) - a.lam * lat_charge - a.mu * short - a.nu * wrong - a.rho * contra
+             - a.kappa * halls + a.sigma_s * emit_ag + a.sigma_l * wait_ag - a.xi * early - a.psi * bare)
         # the anchor stays out of the advantage: it is off-policy and nearly always on top, so including it makes
         # every sampled rollout negative on average and the gradient only ever suppresses (measured: policy collapse).
         adv = (R[: a.G] - R[: a.G].mean()) / (R[: a.G].std() + 1e-6)
@@ -320,16 +330,19 @@ for step in range(1, a.steps + 1):
         stats.append({"pair": u["pair"], "R": R.round(3).tolist(), "comet": [round(c, 3) for c in comet],
                       "lat": [round(float(l), 3) for l in lats], "emit": emit_ag[: a.G].round(3).tolist(),
                       "wait": wait_ag[: a.G].round(3).tolist(), "lat_floor": round(lat_floor, 3),
+                      "early": early[: a.G].round(3).tolist(), "bare": bare[: a.G].round(3).tolist(),
                       "text": outs[int(np.argmax(R[: a.G]))][1][:120]})
     torch.nn.utils.clip_grad_norm_([p for p in pol.model.parameters() if p.requires_grad], 1.0); opt.step()
     rec = {"step": step, "t": round(time.time() - t0), "meanR": float(np.mean([np.mean(s["R"][: a.G]) for s in stats])),
            "meanC": float(np.mean([np.mean(s["comet"][: a.G]) for s in stats])),
            "meanLat": float(np.mean([np.mean(s["lat"][: a.G]) for s in stats])),
            "meanEmit": float(np.mean([np.mean(s["emit"]) for s in stats])),
-           "meanWait": float(np.mean([np.mean(s["wait"]) for s in stats])), "hard": len(hard), "stats": stats}
+           "meanWait": float(np.mean([np.mean(s["wait"]) for s in stats])),
+           "meanEarly": float(np.mean([np.mean(s["early"]) for s in stats])),
+           "meanBare": float(np.mean([np.mean(s["bare"]) for s in stats])), "hard": len(hard), "stats": stats}
     log.write(json.dumps(rec, ensure_ascii=False) + "\n"); log.flush()
     print(f"step {step} R={rec['meanR']:.3f} COMET={rec['meanC']:.3f} lat={rec['meanLat']:.3f} "
-          f"emit={rec['meanEmit']:.2f} wait={rec['meanWait']:.2f} {rec['t']}s", flush=True)
+          f"emit={rec['meanEmit']:.2f} wait={rec['meanWait']:.2f} early={rec['meanEarly']:.2f} bare={rec['meanBare']:.2f} {rec['t']}s", flush=True)
     if step % a.save_every == 0 or step == a.steps:
         pol.model.save_pretrained(os.path.join(a.out, f"adapter_step{step}"))
 print("GRPO_DONE", flush=True)
