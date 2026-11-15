@@ -298,6 +298,20 @@ def write_jsonl_atomic(path, rows):
 ROW_RANGE = (60000, 200000)
 
 
+def load_schedules(path, drop_rescue=False):
+    """sid -> [(after, text)]; with drop_rescue the prefix16 rescued wait labels ('rescue': 'wait' - the whole sentence
+    at its end, for sentences the judge failed) are left out."""
+    sched = {}
+    for line in open(path, encoding="utf-8"):
+        r = json.loads(line)
+        if drop_rescue and r.get("rescue") == "wait":
+            continue
+        sched[r["sid"]] = [(int(x), t) for x, t in r["schedule"]]
+        if any(x < 1 for x, _ in sched[r["sid"]]):
+            raise ValueError(f"sid {r['sid']}: schedule item with after < 1")
+    return sched
+
+
 def parse_caps(specs):
     """["en-ko/covost=2500", ...] -> {"en-ko/covost": 2500}."""
     out = {}
@@ -361,17 +375,13 @@ def main():
     ap.add_argument("--source-cap", action="append", default=[], metavar="PAIR/SOURCE=N",
                     help="at most N sentences of that pair and source, e.g. en-ko/covost=2500 (repeatable)")
     ap.add_argument("--empty-max", type=float, default=1.0, help="empty-text rows at most this share of train rows (drops on_time waits)")
+    ap.add_argument("--drop-rescue", action="store_true", help="leave out prefix16 rescued wait labels (rescue: wait)")
     ap.add_argument("--whole-frac", type=float, default=1.0, help="share of sentences that get the whole-sentence dump row (cond = prefix only)")
     a = ap.parse_args()
     rng = random.Random(a.seed)
     sil_wav = os.path.abspath(a.sil_wav)
 
-    sched = {}
-    for l in open(a.schedule, encoding="utf-8"):
-        r = json.loads(l)
-        sched[r["sid"]] = [(int(x), t) for x, t in r["schedule"]]
-        if any(x < 1 for x, _ in sched[r["sid"]]):
-            raise ValueError(f"sid {r['sid']}: schedule item with after < 1")
+    sched = load_schedules(a.schedule, a.drop_rescue)
     wt = {}
     for l in open(a.word_times, encoding="utf-8"):
         r = json.loads(l)

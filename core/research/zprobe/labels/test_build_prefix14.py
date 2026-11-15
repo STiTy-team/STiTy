@@ -281,3 +281,10 @@ def test_cap_sources_limits_sentences_per_pair_and_source():
     assert sum(1 for s in out if s["source"] == "covost" and s["lang"] == "en") == 4
     assert sum(1 for s in out if s["source"] == "aihub") == 3 and sum(1 for s in out if s["lang"] == "ko") == 4
     assert b.parse_caps(["en-ko/covost=4", "ko-en/aihub=10"]) == {"en-ko/covost": 4, "ko-en/aihub": 10}
+
+
+def test_load_schedules_can_drop_rescued_wait_labels(tmp_path):
+    p = tmp_path / "s.jsonl"
+    p.write_text('{"sid":"a","schedule":[[2,"x"],[4,"y."]]}\n{"sid":"b","schedule":[[4,"z."]],"rescue":"wait"}\n', encoding="utf-8")
+    assert set(b.load_schedules(str(p), drop_rescue=False)) == {"a", "b"}
+    assert set(b.load_schedules(str(p), drop_rescue=True)) == {"a"}
