@@ -38,3 +38,9 @@ def test_accept_allows_only_words_with_a_formal_ending_to_change():
     assert R.accept(["중성자는 전하가 없습니다만"], ["중성자는 전하가 없지만"])
     assert not R.accept(["이건 문제가 됩니다."], ["저건 문제가 돼요."])   # a word without a formal ending changed
     assert R.accept(["확인합니다."], ["확인해요."])
+
+
+def test_needs_restyle_takes_the_source_set():
+    allsrc = {"aihub", "covost", "fleurs"}
+    assert R.needs_restyle({"lang": "en", "tgt": "ko", "source": "covost"}, allsrc)
+    assert not R.needs_restyle({"lang": "en", "tgt": "ko", "source": "covost"})

@@ -1,5 +1,6 @@
-"""Register-only relabel of prefix16 schedules: Korean targets of spoken English sources (aihub talks) go from
-합니다체 to 해요체; read sources (covost wiki sentences, fleurs news) keep 합니다체. The piece boundaries, the empty
+"""Register-only relabel of prefix16 schedules: Korean targets of the chosen English sources (--sources; default the
+spoken ones, aihub talks and conversation) go from 합니다체 to 해요체. prefix16c passes every source: the carried
+v8b/prefix13tr corpus it is mixed with is 해요체 throughout, covost and fleurs included. The piece boundaries, the empty
 items (wait labels) and the wording stay: the model is asked to change only endings and polite verb forms, and a
 reply that changes the number of pieces, fills an empty item or changes a word that carries no formal ending
 is rejected and the record keeps its original text. No judge rerun: content does not change.
@@ -22,8 +23,7 @@ from concurrent.futures import ThreadPoolExecutor
 SPOKEN_SOURCES = {"aihub", "kspon", "dailytalk"}
 PRICE = {"gpt-6-luna": (0.10, 0.50)}
 
-PROMPT = """These are the pieces of one Korean sentence, emitted one after another by a simultaneous interpreter of a
-spoken talk. Rewrite them from 합니다체 into 해요체: change ONLY sentence endings and polite verb forms
+PROMPT = """These are the pieces of one Korean sentence, emitted one after another by a simultaneous interpreter. Rewrite them from 합니다체 into 해요체: change ONLY sentence endings and polite verb forms
 (…습니다 -> …어요/아요, …입니다 -> …이에요/예요, …합니다만 -> …하지만, …습니까 -> …나요). Keep every other word, every
 connective ending (…는데, …고, …며), every error and fragment exactly as it is. Keep empty pieces empty. Return a JSON
 list with exactly {n} strings, one per piece, in order.
@@ -31,8 +31,8 @@ list with exactly {n} strings, one per piece, in order.
 Pieces: {pieces}"""
 
 
-def needs_restyle(sent: dict) -> bool:
-    return sent.get("tgt") == "ko" and sent.get("lang") == "en" and sent.get("source") in SPOKEN_SOURCES
+def needs_restyle(sent: dict, sources=None) -> bool:
+    return sent.get("tgt") == "ko" and sent.get("lang") == "en" and sent.get("source") in (sources or SPOKEN_SOURCES)
 
 
 FORMAL = re.compile(r"(니다|니까|십시오|시오)")
@@ -90,6 +90,8 @@ def main():
     ap.add_argument("--reasoning", default="low")
     ap.add_argument("--workers", type=int, default=64)
     ap.add_argument("--budget", type=float, default=2.0)
+    ap.add_argument("--sources", nargs="+", default=sorted(SPOKEN_SOURCES),
+                    help="sentence sources whose Korean target is restyled (default: the spoken ones; pass every en source for all-해요체)")
     a = ap.parse_args()
     from openai import OpenAI
     client = OpenAI(base_url="https://gw.letsur.ai/v1", api_key=os.environ["LETSUR_API_KEY"])
@@ -124,7 +126,7 @@ def main():
         if rec["sid"] in done:
             return
         sent = S.get(rec["sid"], {})
-        if not needs_restyle(sent) or not any(t.strip() for _, t in rec["schedule"]):
+        if not needs_restyle(sent, set(a.sources)) or not any(t.strip() for _, t in rec["schedule"]):
             res = rec
         elif st["spent"] > a.budget:
             return
