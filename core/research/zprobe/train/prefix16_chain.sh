@@ -178,7 +178,7 @@ stage "bench ($MACHINE queue via manager $MANAGER): $DSNS"
 if [ "${BENCH:-1}" = 0 ]; then echo "  BENCH=0: skipping the bench"
 else
   for DSN in $DSNS; do
-    JF=$OUT/bench.$DSN.job
+    JF=$OUT/bench$V.$DSN.job  # per variant: prefix16b must not reuse prefix16's jobs
     if [ -f $JF ]; then JOB=$(cat $JF); echo "  reuse bench job $JOB ($DSN)"
     else JOB=$(submit $DSN); [ -n "$JOB" ] || { echo "P16_FAIL bench-submit $DSN"; exit 1; }; echo "$JOB" > $JF
       curl -s -XPOST http://$MANAGER/api/machines/$MACHINE/jobs/$JOB/run-now -H 'Content-Type: application/json' -d '{}' > /dev/null; fi
