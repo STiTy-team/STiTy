@@ -32,3 +32,10 @@ def test_pick_carried_caps_per_pair_and_source():
     out = M.pick_carried(rows, {"en-ko/covost": 4, "x-en": 2}, random.Random(0))
     pairs = [r["pair"] for r in out]
     assert pairs.count("en-ko") == 5 and pairs.count("zh-en") == 2 and "en-ja" not in pairs
+
+
+def test_end_dump_rows_are_full_audio_emissions_only():
+    assert M.is_end_dump({"audio": "/a.wav", "text": "통째 번역이에요."})
+    assert not M.is_end_dump({"audio": "/a.wav#end=2.0", "text": "앞부분을"})
+    assert not M.is_end_dump({"audio": "/a.wav#end=3.0|/sil.wav#end=1.2", "text": "나머지예요."})  # silence tail catch-up stays
+    assert not M.is_end_dump({"audio": "/a.wav", "text": ""})

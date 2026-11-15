@@ -26,6 +26,13 @@ def is_formal(r: dict) -> bool:
     return r["pair"].endswith("-ko") and bool(FORMAL.search((r.get("cond") or "") + " " + r["text"]))
 
 
+def is_end_dump(r: dict) -> bool:
+    """A row that emits text on the full recording with no silence tail: 'say it all once the utterance is over'.
+    prefix16c showed these (14.5% of its emit rows, 2% in the prefix16 part) pull the model into waiting."""
+    a = r["audio"]
+    return bool(r["text"].strip()) and "|" not in a and "#end=" not in a
+
+
 def cap_empty(rows: list[dict], share: float, rng) -> list[dict]:
     full = [r for r in rows if r["text"].strip()]
     empty = [r for r in rows if not r["text"].strip()]
@@ -83,6 +90,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--val-out", required=True)
     ap.add_argument("--seed", type=int, default=16)
+    ap.add_argument("--drop-end-dumps", action="store_true", help="leave out end-of-utterance dump rows of the carried and mtpl corpora")
     a = ap.parse_args()
     rng = random.Random(a.seed)
     import os
@@ -93,6 +101,11 @@ def main():
     carried = pick_carried(read(a.carried), caps, rng)
     raw = read(a.mtpl)
     kept = [remap(r, sil) for r in raw if not is_formal(r)]
+    if a.drop_end_dumps:
+        n0, m0 = len(carried), len(kept)
+        carried = [r for r in carried if not is_end_dump(r)]
+        kept = [r for r in kept if not is_end_dump(r)]
+        print(f"drop-end-dumps: carried {n0} -> {len(carried)}, mtpl {m0} -> {len(kept)}")
     mtpl = cap_empty(kept, a.mtpl_empty, rng)
     train = p16 + carried + mtpl
     rng.shuffle(train)
