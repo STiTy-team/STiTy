@@ -69,8 +69,6 @@ def _continuation(tok, input_ids, seq) -> str:
 
 
 def pad_silence(wav, sec: float, np):
-    """wav + `sec` seconds of zeros: at a slot reset the model is shown the cue it was trained on for end of speech
-    (silence rows), so the backlog it is still holding goes out instead of being discarded with the slot."""
     if sec <= 0:
         return wav
     return np.concatenate([wav, np.zeros(int(sec * audio_mod.SAMPLING_RATE), dtype=np.float32)])
