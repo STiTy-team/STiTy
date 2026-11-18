@@ -17,6 +17,8 @@ CASES = [
     ("Okay, okay", "OK ok", True),
     ("물냉, 비냉 중에 뭐로 하실래요?", "물냉 비냉 중에 뭘로 하실래요", True),
     ("크래시", "크래쉬", True),
+    ("J-M-T? What's JMT?", "존맛탱? What's 존맛탱?", True),
+    ("진짜 JMT이예요.", "진짜 존맛탱이에요", True),
     ("부산 가시믄 해운대 가가 회 접시 한 접시 드이소. 광안리 야경도 직입니더.",
      "부산 가시면 해운대 가서 회 접시 한 접시 드세요 광안리 야경도 직입니다", True),
     ("넘어갔제! 롯데 올해는 진짜 되는갑다!", "넘어갔지 롯데 올해는 진짜 되는가 보다", True),
@@ -28,6 +30,7 @@ CASES = [
     ("Oh, crap — sorry, sorry! Did that— ah, did it get on your phone?", "oh crap sorry sorry did that did it get on your phone", False),
     ("광안리 야경도 직입니더.", "광안리 야경도 찍입니다", False),
     ("팔로업 메일", "팔로우 메일", False),
+    ("J-M-T? What's JMT?", "John Martin? What's John Martin?", False),
     ("that's won, right?", "that's one right", False),
     ("응응, 응. 나 아홉 시 반까진 갈게.", "나 9시 반까진 갈게", False),
 ]
