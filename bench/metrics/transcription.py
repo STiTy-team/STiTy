@@ -1,8 +1,11 @@
+import os
+
 import jiwer
 
 from core.utils import langs
 
 from .common import basic, english, src_codes
+from . import r2norm
 from .numbers import normalize_numbers
 
 
@@ -30,6 +33,9 @@ def _transcripts(rows: list[dict]) -> list[tuple[str, str]]:
         if "ko" in src_codes(row):
             # The English normalizer already writes numbers as digits; Korean needs its own pass.
             normalize = lambda text, base=normalize: base(normalize_numbers(text))
+        if os.environ.get("STITY_R2NORM"):
+            # r2 scoring: align fillers, spelling variants, dialect endings and number forms on both sides (r2norm.py).
+            normalize = lambda text, base=normalize, use=r2norm.parts(os.environ["STITY_R2NORM"]): base(r2norm.apply(text, use))
         reference = normalize(row["reference"] or "").strip()
         if reference:
             transcripts.append((reference, normalize(row["transcription_output"] or "").strip()))
