@@ -121,3 +121,16 @@ def test_temperature_sharpens_scores():
     d = detector({"ko": -0.6, "en": -0.8}, span=(1.0, 2.5), temperature=10.0, conf=0.7)
     d.hear(pcm(4.0))
     assert asyncio.run(d.detect(commit("hi", 4.0))) == "ko"
+
+
+def test_timeline_silent_span_keeps_previous():
+    d = detector({}, span=(1.2, 1.9), mode="timeline", windows=(1.0,))
+    d.previous = "en"
+    d.steps = [
+        (1.0, {"ko": 0.0, "en": -6.0}),
+        (2.0, None),
+        (2.5, None),
+        (3.0, {"ko": 0.0, "en": -6.0}),
+    ]
+    d.audio = np.zeros(int(3.0 * SR), dtype=np.float32)
+    assert asyncio.run(d.detect(commit("hi", 3.0))) == "en"

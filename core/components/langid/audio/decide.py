@@ -43,10 +43,14 @@ def with_prior(logp: dict[str, float], previous: str | None, stay: float) -> dic
 
 
 def decide(probs: dict[str, float] | None, previous: str | None, conf: float) -> str | None:
-    """The top candidate if it reaches `conf`; otherwise the previous language (or None)."""
+    """The top candidate if it is the unique top and reaches `conf`; otherwise the previous
+    language (or None). A tie means no evidence either way (e.g. a uniform posterior)."""
     if not probs:
         return previous
+    ranked = sorted(probs.values(), reverse=True)
     best = max(probs, key=probs.get)
+    if len(ranked) > 1 and ranked[0] <= ranked[1]:
+        return previous
     return best if probs[best] >= conf else previous
 
 
@@ -87,3 +91,28 @@ def smooth(
 def lag_span(prev_decision: float, decision: float, lag: float) -> tuple[float, float]:
     """The fallback span: the audio between decisions, moved back by `lag` seconds."""
     return max(0.0, prev_decision - lag), max(0.0, decision - lag)
+
+
+def span_mass(
+    steps: list[tuple[float, dict[str, float] | None]],
+    posts: list[dict[str, float]],
+    span: tuple[float, float],
+    half: float,
+    candidates: tuple[str, ...],
+) -> dict[str, float] | None:
+    """Posterior mass over the timeline steps whose centre (t - half) lies in the span. Steps in
+    the span without speech give no verdict (None); a span holding no step centre at all reads
+    the nearest step."""
+    if not steps:
+        return None
+    centres = [t - half for t, _ in steps]
+    in_span = [i for i, c in enumerate(centres) if span[0] <= c <= span[1]]
+    if in_span:
+        inside = [i for i in in_span if steps[i][1]]
+        if not inside:
+            return None
+    else:
+        inside = [min(range(len(centres)), key=lambda i: abs(centres[i] - span[1]))]
+    mass = {c: sum(posts[i][c] for i in inside) for c in candidates}
+    total = sum(mass.values()) or 1.0
+    return {c: v / total for c, v in mass.items()}

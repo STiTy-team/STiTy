@@ -46,3 +46,24 @@ def test_smooth_skips_steps_without_scores():
 def test_lag_span():
     assert lag_span(10.0, 12.0, 0.5) == (9.5, 11.5)
     assert lag_span(0.2, 1.0, 0.5) == (0.0, 0.5)
+
+
+def test_decide_tie_keeps_previous():
+    assert decide({"ko": 0.5, "en": 0.5}, "en", 0.5) == "en"
+    assert decide({"ko": 0.5, "en": 0.5}, None, 0.5) is None
+
+
+def test_span_mass_none_when_steps_in_span_have_no_speech():
+    from core.components.langid.audio.decide import span_mass
+
+    steps = [
+        (1.0, {"ko": 0.0, "en": -5.0}),
+        (1.5, None),
+        (2.0, None),
+        (2.5, {"ko": 0.0, "en": -5.0}),
+    ]
+    posts = [{"ko": 0.99, "en": 0.01}] * 4
+    assert span_mass(steps, posts, (1.0, 1.6), 0.5, ("ko", "en")) is None
+    assert span_mass(steps, posts, (0.3, 0.6), 0.5, ("ko", "en"))["ko"] > 0.9
+    far = span_mass(steps, posts, (5.0, 5.2), 0.5, ("ko", "en"))
+    assert far["ko"] > 0.9

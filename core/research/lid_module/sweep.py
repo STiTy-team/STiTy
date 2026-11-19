@@ -16,7 +16,13 @@ from statistics import mean
 
 sys.path.insert(0, os.getcwd())
 
-from core.components.langid.audio.decide import decide, normalise, smooth, with_prior  # noqa: E402
+from core.components.langid.audio.decide import (  # noqa: E402
+    decide,
+    normalise,
+    smooth,
+    span_mass,
+    with_prior,
+)
 from core.utils import langs as langs_mod  # noqa: E402
 
 TEMPS = (1.0, 3.0, 10.0)
@@ -56,17 +62,11 @@ def timeline_acc(rows, cands, temp, p_stay, conf):
     for r in rows:
         if r["conv"] != prev_conv:
             prev_conv, previous = r["conv"], None
-        steps = r["steps"]
+        steps = [(t, scaled(st, temp)) for t, st in r["steps"]]
         probs = None
         if steps:
-            posts = smooth([scaled(s, temp) for _, s in steps], cands, p_stay)
-            lo, hi = r["span"]
-            inside = [i for i, (t, s) in enumerate(steps) if lo <= t - HALF <= hi and s]
-            if not inside:
-                inside = [min(range(len(steps)), key=lambda i: abs(steps[i][0] - HALF - hi))]
-            mass = {c: sum(posts[i][c] for i in inside) for c in cands}
-            total = sum(mass.values()) or 1.0
-            probs = {c: v / total for c, v in mass.items()}
+            posts = smooth([st for _, st in steps], cands, p_stay)
+            probs = span_mass(steps, posts, tuple(r["span"]), HALF, cands)
         got = decide(probs, previous, conf)
         previous = got or previous
         if r["truth"]:
@@ -76,13 +76,24 @@ def timeline_acc(rows, cands, temp, p_stay, conf):
 
 
 def alphabet_acc(rows, cands):
-    hits = [
-        langs_mod.detect_by_alphabet(r["text"], langs=cands, threshold=langs_mod.ALPHABET_THRESHOLD)
-        == r["truth"]
-        for r in rows
-        if r["truth"]
-    ]
-    return sum(hits) / len(hits)
+    """The alphabet rule with the same fallback as audio LID: no verdict keeps the previous
+    commit's language (in a pipeline the ASR tag would stay instead)."""
+    hit = n = 0
+    prev_conv, previous = None, None
+    for r in rows:
+        if r["conv"] != prev_conv:
+            prev_conv, previous = r["conv"], None
+        got = (
+            langs_mod.detect_by_alphabet(
+                r["text"], langs=cands, threshold=langs_mod.ALPHABET_THRESHOLD
+            )
+            or previous
+        )
+        previous = got
+        if r["truth"]:
+            n += 1
+            hit += got == r["truth"]
+    return hit / n if n else None
 
 
 def main(eval_dir):
@@ -103,20 +114,26 @@ def main(eval_dir):
                 (t, p, c): timeline_acc(rows, cands, t, p, c)
                 for t, p, c in itertools.product(TEMPS, PSTAYS, CONFS)
             }
+        grid = {k: v for k, v in grid.items() if v is not None}
+        if not grid:
+            continue
         src = sum(r["src"] == "aligner" for r in rows) / len(rows)
-        cells[(dataset, mode, scorer)] = (grid, alphabet_acc(rows, cands), src)
+        no_truth = f"{sum(not r['truth'] for r in rows)}/{len(rows)}"
+        cells[(dataset, mode, scorer)] = (grid, alphabet_acc(rows, cands) or 0.0, src, no_truth)
 
     datasets = sorted({d for d, _, _ in cells})
     print(
         "## Per dataset — default settings (T=1, stay/p_stay 0.7/0.9, conf 0.7) and best setting\n"
     )
-    print("| dataset | mode | scorer | default | best | best setting | alphabet | aligner spans |")
-    print("|---|---|---|---|---|---|---|---|")
-    for (d, m, s), (grid, alpha, src) in sorted(cells.items()):
-        default = grid[(1.0, 0.7 if m == "segment" else 0.9, 0.7)]
+    print(
+        "| dataset | mode | scorer | default | best | best setting | alphabet | aligner spans | no truth |"
+    )
+    print("|---|---|---|---|---|---|---|---|---|")
+    for (d, m, s), (grid, alpha, src, no_truth) in sorted(cells.items()):
+        default = grid.get((1.0, 0.7 if m == "segment" else 0.9, 0.7), float("nan"))
         best_key = max(grid, key=lambda k: grid[k])
         print(
-            f"| {d} | {m} | {s} | {default:.3f} | {grid[best_key]:.3f} | {best_key} | {alpha:.3f} | {src:.2f} |"
+            f"| {d} | {m} | {s} | {default:.3f} | {grid[best_key]:.3f} | {best_key} | {alpha:.3f} | {src:.2f} | {no_truth} |"
         )
 
     print("\n## One setting per (mode, scorer), chosen by mean accuracy over datasets\n")

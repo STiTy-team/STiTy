@@ -9,7 +9,7 @@ from core.utils import logging
 
 from .. import langids
 from ..base import LanguageDetector, Transcribed
-from .decide import decide, lag_span, normalise, smooth, with_prior
+from .decide import decide, lag_span, normalise, smooth, span_mass, with_prior
 from .scorers import SCORERS, build_scorer
 from .span import AlignerSpan
 from .vad import speech_only
@@ -58,6 +58,10 @@ class AudioLanguageDetector(LanguageDetector):
         return out
 
     async def load(self) -> None:
+        if self.settings.get("mode", "segment") == "timeline":
+            # Timeline scoring runs synchronously inside hear(), on the caller's event loop: fine
+            # for offline bench, but a live server room would stall on every 0.5 s step.
+            log.warning("[LANGID] audio timeline scores inside hear() - bench use only")
         name, model = self.settings.get("scorer", "whisper-token"), self.settings.get("model")
         self.scorer = await cache.load(
             ("audio-langid", name, model), lambda: asyncio.to_thread(build_scorer, name, model)
@@ -132,7 +136,8 @@ class AudioLanguageDetector(LanguageDetector):
         return lag_span(self.since, decision, self.settings.get("lag_sec", 0.5)), "lag"
 
     def _segment_probs(self, span: tuple[float, float]) -> tuple[dict | None, dict | None]:
-        speech = speech_only(self._slice(*span))[: int(SR * self.settings.get("max_sec", 10.0))]
+        # Keep the end: on a long fallback span the commit's speech is nearest the decision.
+        speech = speech_only(self._slice(*span))[-int(SR * self.settings.get("max_sec", 10.0)) :]
         if len(speech) < SR * MIN_SPEECH_SEC:
             return None, None
         raw = self.scorer.scores(speech, self.candidates)
@@ -146,13 +151,7 @@ class AudioLanguageDetector(LanguageDetector):
         posts = smooth([s for _, s in known], self.candidates, self.settings.get("p_stay", 0.9))
         # A step's trailing windows end at t; its centre is half the shortest window earlier.
         half = min(float(w) for w in self.settings.get("windows", (1.0, 2.0, 4.0))) / 2
-        centres = [t - half for t, _ in known]
-        inside = [i for i, c in enumerate(centres) if span[0] <= c <= span[1] and known[i][1]]
-        if not inside:
-            inside = [min(range(len(centres)), key=lambda i: abs(centres[i] - span[1]))]
-        mass = {c: sum(posts[i][c] for i in inside) for c in self.candidates}
-        total = sum(mass.values()) or 1.0
-        return {c: v / total for c, v in mass.items()}
+        return span_mass(known, posts, span, half, self.candidates)
 
     async def detect(self, item: Transcribed) -> str | None:
         if len(self.candidates) < 2:
