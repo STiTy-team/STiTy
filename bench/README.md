@@ -471,6 +471,14 @@ bench 는 `parse_args` 를 부르지 않고 위 표로만 푼다. 해석된 값�
 언어를 항목의 참조 언어와 비교한다. 번역기가 추정한 언어는 섞지 않는다. 판정이 틀리면 영어 발화를
 한국어로 알고 번역 없이 넘기는 식의 오류가 나므로, 번역 지표와 별개로 봐야 한다.
 
+**번역 방향을 정한 언어는 `lang_detect_route_accuracy`·`lang_detect_route_confusion` 으로 잰다.**
+langid 부품을 거친 뒤의 언어(`translated`)를, 커밋 텍스트가 실제로 속한 참조 문장의 언어와 비교한다.
+참조 문장은 커밋 시각 8초 전부터 커밋 시각까지 걸친 문장 가운데 글자 두 개씩 묶음(bigram)이 가장 많이
+겹치는 것이고, 겹침이 커밋 텍스트의 30% 미만이면 짝이 없는 커밋으로 빼고 그 수를
+`lang_detect_route_unmatched` 에 남긴다(잘못 받아 적은 조각, 군말, 다른 글자로 받아 적은 음차가 여기 든다).
+`lang_detect_accuracy` 는 커밋 직전 결정부터 이번 결정까지의 오디오 구간으로 정답을 고르는데, 커밋은 다음 청크를
+들은 뒤 확정되므로 그 구간이 다음 발화를 담는 일이 많다 — langid 를 바꾼 실험은 route 쪽을 본다.
+
 **중간에 끊긴 발화**(항목의 `partial: true`, `fleurs/mix.py --cut` 이 만든다)는 전사가 실제로 말한
 단어까지이고 번역 참조는 문장 전체의 것이다. 반쪽 문장의 번역 참조는 없으므로 번역 지표에서 빼고,
 WER·언어 판정에는 쓴다.
@@ -632,6 +640,7 @@ log.info("[COMMIT-SKIP] reason=%s text=%r", reason, shown)
 | `longyaal_ms` | `longform` 실행에서만. OmniSTEval 이 가설을 참조 문장에 재분절(SoftSegmenter)하고 문장마다 YAAL 을 `is_longform=True` 로 낸 평균이다 — 문장 끝을 넘겨 나온 단위도 녹음이 끝날 때까지는 센다. 녹음 끝은 발표 오디오 길이다 — 마지막 참조 문장의 끝으로 잡으면 발화가 끝난 뒤 커밋되는 마지막 문장이 통째로 빠진다. `decision_audio_sec` 기준이고 벽시계 기준은 `longyaal_ca_ms`. 위 '발표를 통째로 흘리기' 참고 |
 | `token_emission_ms` | 단어가 실제로 발화된 끝 시각부터 화면에 **바뀌지 않고 남은** 채로 처음 나타난 시각까지. 참조와 맞게 인식된 단어만 센다. `audio` 시계 기준이고, 벽시계 기준은 `token_emission_ca_ms`. 둘 다 평균·`_p50_ms`·`_p90_ms`. 발화 시각은 데이터셋의 `alignment.jsonl` 에서 온다 — 아래 참고 |
 | `commit_reasons` | 사유별 비율. `finish` 비율이 크면 축의 커밋 경로가 안 도는 것이다 |
+| `lang_detect_route_accuracy`·`lang_detect_route_confusion`·`lang_detect_route_unmatched` | 번역 방향을 정한 언어(langid 를 거친 `translated` 의 언어)의 정확도와 혼동 행렬, 정답 문장을 못 찾은 커밋 수. 정답은 커밋 텍스트와 글자가 가장 많이 겹치는 참조 문장의 언어다 |
 | `lang_detect_accuracy`·`confusion` | 언어 판정 정확도와 혼동 행렬. ASR 이 커밋한 전사의 언어를 참조 언어와 비교하고, 모든 항목으로 낸다. 판정 정확도는 참조 언어와 판정 언어를 둘 다 언어 코드로 맞춘 뒤 비교하고, 언어를 내지 않은 세그먼트는 `?` 로 틀린 것으로 센다 |
 | `gpu_peak_mib`·`gpu_mean_mib` | 이 실행이 잡은 GPU 메모리의 최댓값·평균(MiB). `gpu_usage.py` 가 실행 내내 1초마다 NVML 에 물어, **이 프로세스와 그 자식들**(vLLM 엔진, 번역 서버)의 메모리만 더한다. 모델 로딩 전부터 재므로 로딩 때 치솟는 값도 들어간다. vLLM 은 `gpu_memory_utilization` 만큼 미리 잡으므로 이 값은 실제로 필요한 양이 아니라 그 설정을 주로 보여 준다. 프로세스 이름별 최댓값은 `gpu_by_process_mib`, 표본 전체는 `gpu.jsonl` |
 | `gpu_util_mean` | 이 실행의 프로세스들이 GPU 연산 장치를 쓴 비율의 평균. 드라이버의 프로세스별 사용률 표본이라 대략값이다. 드라이버가 내주지 않으면 비운다 |

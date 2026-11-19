@@ -88,6 +88,9 @@ const METRIC_LABELS: Record<string, string> = {
   avg_fsl_sec: "Avg FSL",
   token_emission: "Token emission",
   lang_detect_accuracy: "Lang detect accuracy",
+  lang_detect_route_accuracy: "Lang route accuracy",
+  lang_detect_route_confusion: "Language route confusion",
+  lang_detect_route_unmatched: "Lang route unmatched commits",
   segments_per_item: "Segments / item",
   commit_reasons: "Commit reasons",
   confusion: "Language confusion",
@@ -103,7 +106,7 @@ const METRIC_LABELS: Record<string, string> = {
   gpu_other_peak_mib: "Other processes peak",
   gpu_by_process_mib: "GPU peak by process",
 }
-const PERCENT_KEYS = new Set(["lang_detect_accuracy", "commit_reasons", "gpu_util_mean"])
+const PERCENT_KEYS = new Set(["lang_detect_accuracy", "lang_detect_route_accuracy", "commit_reasons", "gpu_util_mean"])
 const MIB_KEYS = new Set(["gpu_by_process_mib"])
 
 export function labelOf(key: string): string | null {
