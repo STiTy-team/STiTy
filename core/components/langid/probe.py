@@ -87,6 +87,7 @@ class ProbeLanguageDetector(LanguageDetector):
         "head": ("head", str),
         "conf": ("conf", float),
         "max_sec": ("max_sec", float),
+        "lag_sec": ("lag_sec", float),
         "fallback": ("fallback", str),
         "langs": ("langs", tuple),
         "threshold": ("threshold", float),
@@ -122,20 +123,35 @@ class ProbeLanguageDetector(LanguageDetector):
         self._forget(len(self.audio) - int(SR * KEEP_SEC))
 
     async def detect(self, item: Transcribed) -> str | None:
-        start = max(0, int((self.since - self.offset) * SR))
-        end = max(0, int((item.decision_audio_sec - self.offset) * SR))
+        # A commit is confirmed after the chunk that follows its speech, so the audio up to the
+        # decision ends with the start of the next utterance; lag_sec moves the span back.
+        lag = self.settings.get("lag_sec", 0.0)
+        span_from, span_to = max(0.0, self.since - lag), max(0.0, item.decision_audio_sec - lag)
+        start = max(0, int((span_from - self.offset) * SR))
+        end = max(0, int((span_to - self.offset) * SR))
         span = self.audio[start:end][: int(SR * self.settings.get("max_sec", 10.0))]
         self.since = item.decision_audio_sec
         self._forget(end)
         verdict = await asyncio.to_thread(self.scorer.judge, span)
-        if verdict is not None and verdict[1] >= self.settings.get("conf", 0.99):
-            log.debug("[LANGID] probe %s (%.3f)", *verdict)
-            return verdict[0]
-        if self.settings.get("fallback", "alphabet") == "alphabet":
-            candidates = self.settings.get("langs") or langs.ALPHABET_LANGS
-            threshold = self.settings.get("threshold", langs.ALPHABET_THRESHOLD)
-            return langs.detect_by_alphabet(item.original, langs=candidates, threshold=threshold)
-        return None
+        sure = verdict is not None and verdict[1] >= self.settings.get("conf", 0.99)
+        detected = verdict[0] if sure else self._fallback(item)
+        log.info(
+            "[LANGID] probe=%s conf=%s span=%.1f-%.1fs -> %s: %r",
+            verdict[0] if verdict else "-",
+            f"{verdict[1]:.3f}" if verdict else "-",
+            span_from,
+            span_to,
+            detected,
+            item.original[:40],
+        )
+        return detected
+
+    def _fallback(self, item: Transcribed) -> str | None:
+        if self.settings.get("fallback", "alphabet") != "alphabet":
+            return None
+        candidates = self.settings.get("langs") or langs.ALPHABET_LANGS
+        threshold = self.settings.get("threshold", langs.ALPHABET_THRESHOLD)
+        return langs.detect_by_alphabet(item.original, langs=candidates, threshold=threshold)
 
     def _forget(self, samples: int) -> None:
         samples = min(samples, len(self.audio))

@@ -71,3 +71,11 @@ def test_each_commit_judges_only_its_own_span():
 def test_head_is_required():
     with pytest.raises(ConfigError):
         ProbeLanguageDetector.validate({}, kind="langid")
+
+
+def test_lag_moves_the_span_back():
+    d = detector(("ko", 1.0), lag_sec=0.5)
+    d.hear(pcm(5.0))
+    asyncio.run(d.detect(committed("하나", 2.0)))
+    asyncio.run(d.detect(committed("둘", 5.0)))
+    assert d.scorer.spans == [int(1.5 * SR), 3 * SR]
