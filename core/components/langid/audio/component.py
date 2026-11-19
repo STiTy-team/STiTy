@@ -42,6 +42,7 @@ class AudioLanguageDetector(LanguageDetector):
         "lag_sec": ("lag_sec", float),
         "aligner": ("aligner", bool),
         "max_sec": ("max_sec", float),
+        "temperature": ("temperature", float),
     }
 
     scorer = None
@@ -108,11 +109,16 @@ class AudioLanguageDetector(LanguageDetector):
             speech = speech_only(self._slice(t - float(w), t))
             if len(speech) < SR * MIN_SPEECH_SEC:
                 continue
-            scores = self.scorer.scores(speech, self.candidates)
+            scores = self._scaled(self.scorer.scores(speech, self.candidates))
             for c in self.candidates:
                 total[c] += scores[c]
             n += 1
         return {c: v / n for c, v in total.items()} if n else None
+
+    def _scaled(self, scores: dict[str, float]) -> dict[str, float]:
+        """Scorer log-scores times `temperature` (a sharper or flatter scorer scale)."""
+        temp = self.settings.get("temperature", 1.0)
+        return scores if temp == 1.0 else {k: v * temp for k, v in scores.items()}
 
     def _span(self, item: Transcribed) -> tuple[tuple[float, float], str]:
         decision = item.decision_audio_sec
@@ -130,7 +136,7 @@ class AudioLanguageDetector(LanguageDetector):
         if len(speech) < SR * MIN_SPEECH_SEC:
             return None, None
         raw = self.scorer.scores(speech, self.candidates)
-        prior = with_prior(raw, self.previous, self.settings.get("stay_prior", 0.7))
+        prior = with_prior(self._scaled(raw), self.previous, self.settings.get("stay_prior", 0.7))
         return normalise(prior, self.candidates), raw
 
     def _timeline_probs(self, span: tuple[float, float], decision: float) -> dict | None:

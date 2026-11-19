@@ -115,3 +115,9 @@ def test_timeline_span_before_buffer_uses_nearest_step():
     d = detector({"ko": 0.0, "en": -3.0}, span=(0.0, 0.1), mode="timeline", windows=(1.0,))
     d.hear(pcm(2.0))
     assert asyncio.run(d.detect(commit("hi", 2.0))) == "ko"
+
+
+def test_temperature_sharpens_scores():
+    d = detector({"ko": -0.6, "en": -0.8}, span=(1.0, 2.5), temperature=10.0, conf=0.7)
+    d.hear(pcm(4.0))
+    assert asyncio.run(d.detect(commit("hi", 4.0))) == "ko"
