@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import PrivateAttr
+from pydantic import PrivateAttr, field_validator
 
 from core import config as core_config
 from core.config import ConfigMeta, PipelineConfig
@@ -14,6 +14,7 @@ from core.utils.config import ConfigBody, as_component
 from core.utils.paths import get_project_root
 
 from .augment import AugmentConfig
+from .metrics import r2norm as r2norm_parts
 
 DATASET_KEYS = {"dataset", "target", "lang", "augment"}
 NAME_PATTERN = re.compile(r"[a-z0-9][a-z0-9.+-]*(_[a-z0-9][a-z0-9.+-]*)*")
@@ -30,6 +31,16 @@ class DatasetConfig(ConfigBody):
     pick: Literal["first", "longest"] = "first"
     # Exact items to run, in manifest order -- re-check the ones a change targets.
     ids: list[str] | None = None
+    # WER/CER normalization for references like northstar r2: all, or some of
+    # fillers,variants,dialect,numbers (bench/metrics/r2norm.py).
+    r2norm: str | None = None
+
+    @field_validator("r2norm")
+    @classmethod
+    def _known_r2norm(cls, value: str | None) -> str | None:
+        if value is not None:
+            r2norm_parts.parts(value)
+        return value
 
     @classmethod
     def normalize(cls, raw: Any) -> Any:

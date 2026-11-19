@@ -97,12 +97,12 @@ async def _stream_item(pipeline, augmenter, item, cfg, languages: list[str]) -> 
 
 def score_item(row: dict, cfg) -> dict:
     if row.get("status") == "ok":
-        row.update(score.score_row(row, cfg.target))
+        row.update(score.score_row(row, cfg.target, cfg.dataset.r2norm))
     return row
 
 
 def score_run(rows, cfg, gpu: GpuSampler) -> tuple[dict, dict]:
-    scores, unavailable = score.score_run(rows, cfg.target)
+    scores, unavailable = score.score_run(rows, cfg.target, cfg.dataset.r2norm)
     unavailable["comet"] = "scored separately by python -m bench.metrics.comet"
     gpu_scores, gpu_unavailable = gpu.scores()
     return {**scores, **gpu_scores}, {**unavailable, **gpu_unavailable}
