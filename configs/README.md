@@ -38,6 +38,7 @@
 | 조건 | `cafe` | 카페 소음 (`augment.noise.place: cafe`) |
 | 조건 | `hall` | 공연장 울림 (`augment.room.place: hall`) |
 | 조건 | `lvl26` | 턴마다 −26 dBFS 로 맞춘 데이터 (`mix.py --level -26`) |
+| 조건 | `sw07` | 차례마다 언어가 바뀔 확률 0.7, 차례 사이 무음 0.2~1.0 초로 섞은 대화 (`mix.py --switch 0.7 --gap 0.2 1.0`) |
 | 조건 | `vol23` | 조용한 클립을 −23 dB RMS 로 올린다 (`augment.volume.min_level_db: -23`) |
 | 부분 | `top<N>` | 가장 긴 N개 (`limit: N`, `pick: longest`) |
 | 부분 | `first<N>` | 앞의 N개 (`limit: N`) |
