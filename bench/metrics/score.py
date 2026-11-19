@@ -1,3 +1,4 @@
+from functools import partial
 from statistics import mean
 
 import numpy as np
@@ -5,6 +6,7 @@ import numpy as np
 from .common import macro, per_lang, succeeded, translated
 from .latency import fsl, laal, longyaal, token_emission, yaal
 from .asr import commit_reasons, language_detection
+from . import transcription
 from .transcription import cer, wer
 from .translation import bleu, bleu_pairs
 
@@ -46,13 +48,13 @@ UNAVAILABLE = {
 }
 
 
-def score_row(row: dict, target: str) -> dict:
+def score_row(row: dict, target: str, r2norm: str | None = None) -> dict:
     emission = token_emission([row], clock="audio")
     emission_ca = token_emission([row], clock="t")
     values = {
         "n_segments": len(translated(row["records"])),
-        "wer": wer([row]),
-        "cer": cer([row]),
+        "wer": wer([row], r2norm),
+        "cer": cer([row], r2norm),
         "sentence_bleu": bleu([row], target),
         "avg_fsl_sec": fsl([row]),
         "laal_ms": laal([row], target),
@@ -67,8 +69,10 @@ def score_row(row: dict, target: str) -> dict:
     return {key: value for key, value in values.items() if value is not None}
 
 
-def score_run(rows: list[dict], target: str) -> tuple[dict, dict]:
+def score_run(rows: list[dict], target: str, r2norm: str | None = None) -> tuple[dict, dict]:
     rows = succeeded(rows)
+    wer = partial(transcription.wer, r2norm=r2norm)
+    cer = partial(transcription.cer, r2norm=r2norm)
     segments = [s for row in rows for s in translated(row["records"])]
     wer_by_lang = per_lang(wer, rows)
     cer_by_lang = per_lang(cer, rows)

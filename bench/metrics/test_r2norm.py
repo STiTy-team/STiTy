@@ -41,5 +41,12 @@ for ref, hyp, same in CASES:
     ok = ("".join(r.split()) == "".join(h.split())) == same
     bad += not ok
     print("ok " if ok else "BAD", "|", r, "||", h)
+# The dataset config's dataset.r2norm turns it on without the environment variable.
+del os.environ["STITY_R2NORM"]
+row = {"src_lang": "ko", "reference": "다 잡힌 것 같아요", "transcription_output": "다 잡힌 거 같애요"}
+off, on = transcription.wer([row]), transcription.wer([row], "all")
+ok = off > 0 and on == 0
+bad += not ok
+print("ok " if ok else "BAD", "| dataset.r2norm: wer off", off, "on", on)
 print("all passed" if not bad else f"{bad} failed")
 sys.exit(1 if bad else 0)

@@ -1,6 +1,6 @@
 """r2 채점 정규화: 정답과 전사에 똑같이 적용해, 모델이 틀리지 않았는데 틀린 것으로 잡히는 표기 차이를 없앤다.
 
-STITY_R2NORM 으로 켠다. 값은 all, 또는 쉼표로 고른 부분(fillers, variants, dialect, numbers)이다.
+데이터셋 설정의 `dataset.r2norm` 으로 켠다(환경변수 STITY_R2NORM 이 있으면 그것이 우선한다). 값은 all, 또는 쉼표로 고른 부분(fillers, variants, dialect, numbers)이다.
 숫자 맞춤(numbers.py)보다 먼저 원문에 적용한다. 목록과 근거는 Confluence [8차][북극성 전사 정답 리뉴얼(r2)] 에 있다.
 
 - fillers: 뜻 없는 군말을 지운다. 감탄·반응(아, ah, oh, 응)은 번역에 나가는 말이라 지우지 않는다.
@@ -30,7 +30,7 @@ def parts(value):
     chosen = {p.strip() for p in value.split(",") if p.strip()}
     unknown = chosen - set(PARTS)
     if unknown:
-        raise ValueError(f"STITY_R2NORM: unknown parts {sorted(unknown)}")
+        raise ValueError(f"r2norm: unknown parts {sorted(unknown)}")
     return chosen
 
 
