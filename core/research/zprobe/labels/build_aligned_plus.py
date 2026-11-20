@@ -8,6 +8,7 @@ appends every left-out recording whose sentence passed the leak check, mapping p
 so the en-target delta supervision roughly doubles without any new labelling or alignment.
 
 usage: .venv/bin/python core/research/zprobe/labels/build_aligned_plus.py"""
+
 import argparse
 import json
 
@@ -43,10 +44,23 @@ for l in open(a.extra, encoding="utf-8"):
     if len(r["pieces"]) != len(r["ends"]) or not any(p.strip() for p in r["pieces"]):
         skipped += 1
         continue
-    out.write(json.dumps({"id": r["id"], "sid": r["sid"], "audio": r["audio"],
-                          "src": r["src"], "lang": r["lang"], "tgt": "en",
-                          "dur": float(r["dur"]), "adds": r["pieces"], "ends": r["ends"]},
-                         ensure_ascii=False) + "\n")
+    out.write(
+        json.dumps(
+            {
+                "id": r["id"],
+                "sid": r["sid"],
+                "audio": r["audio"],
+                "src": r["src"],
+                "lang": r["lang"],
+                "tgt": "en",
+                "dur": float(r["dur"]),
+                "adds": r["pieces"],
+                "ends": r["ends"],
+            },
+            ensure_ascii=False,
+        )
+        + "\n"
+    )
     added[r["lang"]] += 1
 out.close()
 print(f"base {n_base} + added {added} (skipped {skipped}) -> {a.out}", flush=True)

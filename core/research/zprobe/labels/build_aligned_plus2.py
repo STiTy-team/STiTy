@@ -14,6 +14,7 @@ merge : prefix7 aligned en->ko rows + the full x->en pool (old aligned + aligned
 usage: .venv/bin/python core/research/zprobe/labels/build_aligned_plus2.py prep
        (build_connective_en.py align --manifest ... --pieces ... --out aligned_extra.jsonl)
        .venv/bin/python core/research/zprobe/labels/build_aligned_plus2.py merge"""
+
 import argparse
 import json
 
@@ -38,9 +39,12 @@ for l in open(a.pieces, encoding="utf-8"):
     r = json.loads(l)
     pieces[r["sid"]] = r
 
-usable = {s for s, r in pieces.items()
-          if (s in luna and len(luna[s]) == len(r["chunks"]))
-          or (not r.get("fail") and r.get("pieces") and len(r["pieces"]) == len(r["chunks"]))}
+usable = {
+    s
+    for s, r in pieces.items()
+    if (s in luna and len(luna[s]) == len(r["chunks"]))
+    or (not r.get("fail") and r.get("pieces") and len(r["pieces"]) == len(r["chunks"]))
+}
 
 if a.stage == "prep":
     aligned_sids = {json.loads(l)["sid"] for l in open(a.aligned, encoding="utf-8")}
@@ -59,8 +63,11 @@ if a.stage == "prep":
                 r["pieces"] = luna[s]
             r["fail"] = ""
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(f"usable sids {len(usable)}, already aligned {len(usable & aligned_sids)}, "
-          f"to align: {len(missing)} sids / {n} recordings", flush=True)
+    print(
+        f"usable sids {len(usable)}, already aligned {len(usable & aligned_sids)}, "
+        f"to align: {len(missing)} sids / {n} recordings",
+        flush=True,
+    )
     print("PREP_DONE", flush=True)
 else:
     out = open(a.out, "w", encoding="utf-8")
@@ -94,11 +101,27 @@ else:
                 kept_old += 1
             if not adds or len(adds) != len(r["ends"]):
                 continue
-            out.write(json.dumps({"id": r["id"], "sid": sid, "audio": r["audio"],
-                                  "src": r["src"], "lang": r["lang"], "tgt": "en",
-                                  "dur": float(r["dur"]), "adds": adds, "ends": r["ends"]},
-                                 ensure_ascii=False) + "\n")
+            out.write(
+                json.dumps(
+                    {
+                        "id": r["id"],
+                        "sid": sid,
+                        "audio": r["audio"],
+                        "src": r["src"],
+                        "lang": r["lang"],
+                        "tgt": "en",
+                        "dur": float(r["dur"]),
+                        "adds": adds,
+                        "ends": r["ends"],
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
             added[r["lang"]] += 1
     out.close()
-    print(f"en->ko kept {n_enko}, x->en added {added} (luna {swapped}, old pieces {kept_old})", flush=True)
+    print(
+        f"en->ko kept {n_enko}, x->en added {added} (luna {swapped}, old pieces {kept_old})",
+        flush=True,
+    )
     print("MERGE_DONE", flush=True)

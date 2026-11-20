@@ -4,6 +4,7 @@ per row. Transcripts: FLEURS train.tsv, conv manifests' src.
 
 usage: PYTHONPATH=Qwen3-ASR .venv/bin/python core/research/zprobe/lid/align_more.py
 """
+
 import csv
 import json
 import os
@@ -46,12 +47,16 @@ if os.path.exists(OUT):
         done_paths.add(os.path.abspath(json.loads(l)["audio"].split("#")[0]))
 todo = [r for r in recs if os.path.abspath(r["audio"]) not in done_paths]
 seen = set()
-todo = [r for r in todo if not (os.path.abspath(r["audio"]) in seen
-                                or seen.add(os.path.abspath(r["audio"])))]
+todo = [
+    r
+    for r in todo
+    if not (os.path.abspath(r["audio"]) in seen or seen.add(os.path.abspath(r["audio"])))
+]
 print(f"sources {len(recs)}, already aligned {len(recs) - len(todo)}, todo {len(todo)}", flush=True)
 
-aligner = Qwen3ForcedAligner.from_pretrained("Qwen/Qwen3-ForcedAligner-0.6B",
-                                             dtype=torch.bfloat16, device_map="cuda")
+aligner = Qwen3ForcedAligner.from_pretrained(
+    "Qwen/Qwen3-ForcedAligner-0.6B", dtype=torch.bfloat16, device_map="cuda"
+)
 out = open(OUT, "a", encoding="utf-8")
 t0 = time.time()
 ok = fail = 0
@@ -65,8 +70,13 @@ for n, r in enumerate(todo):
         if fail <= 5:
             print(f"FAIL {r['id']}: {e}", flush=True)
         continue
-    out.write(json.dumps({"id": r["id"], "audio": r["audio"], "lang": r["lang"],
-                          "words": words}, ensure_ascii=False) + "\n")
+    out.write(
+        json.dumps(
+            {"id": r["id"], "audio": r["audio"], "lang": r["lang"], "words": words},
+            ensure_ascii=False,
+        )
+        + "\n"
+    )
     out.flush()
     ok += 1
     if (n + 1) % 1000 == 0:

@@ -8,8 +8,12 @@ from core.utils import logging
 
 from . import translators
 from .base import Translator
-from .local_qwen_3_5_4b.translator import (SYSTEM_PROMPT, ends_a_sentence,
-                                           language_name, without_reasoning)
+from .local_qwen_3_5_4b.translator import (
+    SYSTEM_PROMPT,
+    ends_a_sentence,
+    language_name,
+    without_reasoning,
+)
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +56,8 @@ class ApiTranslation(Translator):
         self.cost_usd = 0.0
         self.client = httpx.AsyncClient(
             timeout=self.settings.get("timeout_sec", 20.0),
-            headers={"Authorization": f"Bearer {key}"})
+            headers={"Authorization": f"Bearer {key}"},
+        )
         log.info("[LOAD] api translation %s at %s", self.model, self.url)
 
     async def close(self) -> None:
@@ -62,9 +67,13 @@ class ApiTranslation(Translator):
         except RuntimeError:
             pass
 
-    async def translate(self, text: str, target_lang: str,
-                        source_lang: str | None = None,
-                        context: list[str] | None = None) -> tuple[str, str]:
+    async def translate(
+        self,
+        text: str,
+        target_lang: str,
+        source_lang: str | None = None,
+        context: list[str] | None = None,
+    ) -> tuple[str, str]:
         if not text.strip() or not target_lang:
             return "", ""
         if source_lang == target_lang:
@@ -78,24 +87,26 @@ class ApiTranslation(Translator):
             return "", ""
         return without_reasoning(reply), source_lang or ""
 
-    def _prompt(self, text: str, target_lang: str, source_lang: str | None,
-                context: list[str]) -> list[dict]:
+    def _prompt(
+        self, text: str, target_lang: str, source_lang: str | None, context: list[str]
+    ) -> list[dict]:
         source, target = language_name(source_lang), language_name(target_lang)
         earlier_turns = self._turns_to_show(text, context)
         if earlier_turns:
             listed = "\n".join(f"- {turn}" for turn in earlier_turns)
-            request = (f"Earlier turns of the conversation, oldest first (context only; do NOT "
-                       f"translate these):\n{listed}\n\n"
-                       f"Translate ONLY the line below, which is in {source}, into {target}.\n\n{text}")
+            request = (
+                f"Earlier turns of the conversation, oldest first (context only; do NOT "
+                f"translate these):\n{listed}\n\n"
+                f"Translate ONLY the line below, which is in {source}, into {target}.\n\n{text}"
+            )
         else:
             request = f"Translate the following {source} sentence into {target}.\n\n{text}"
-        return [{"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": request}]
+        return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": request}]
 
     def _turns_to_show(self, text: str, context: list[str]) -> list[str]:
         if not self.context_turns or not ends_a_sentence(text):
             return []
-        return context[-self.context_turns:]
+        return context[-self.context_turns :]
 
     async def _chat(self, messages: list[dict]) -> str:
         body = {"model": self.model, "messages": messages, "max_tokens": self.max_tokens}
@@ -112,9 +123,13 @@ class ApiTranslation(Translator):
         usage = data.get("usage") or {}
         cost = float((data.get("estimated_cost") or {}).get("amount") or 0.0)
         self.cost_usd += cost
-        line = {"t": time.time(), "model": self.model,
-                "in": usage.get("prompt_tokens"), "out": usage.get("completion_tokens"),
-                "cost": cost}
+        line = {
+            "t": time.time(),
+            "model": self.model,
+            "in": usage.get("prompt_tokens"),
+            "out": usage.get("completion_tokens"),
+            "cost": cost,
+        }
         with self.usage_path.open("a") as f:
             f.write(json.dumps(line) + "\n")
         if self.calls % USAGE_LOG_EVERY == 0:

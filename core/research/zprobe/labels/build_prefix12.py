@@ -14,6 +14,7 @@ new axes, each with an off switch so a regression can be dissected:
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix12.py
 (expects train_base from: build_prefix10.py --aligned models/zprobe/data/prefix12/aligned.jsonl)
 """
+
 import argparse
 import json
 import math
@@ -30,7 +31,9 @@ ap.add_argument("--lag-sec", type=float, default=0.5)
 ap.add_argument("--stale-frac", type=float, default=0.15, help="slice with a 2.5s lag instead")
 ap.add_argument("--context-dropout", type=float, default=0.25)
 ap.add_argument("--reset-rows", type=int, default=3000)
-ap.add_argument("--lid-frac", type=float, default=0.33, help="share of reset rows with a foreign tail")
+ap.add_argument(
+    "--lid-frac", type=float, default=0.33, help="share of reset rows with a foreign tail"
+)
 ap.add_argument("--samelang-per-lang", type=int, default=800)
 ap.add_argument("--no-context", action="store_true")
 ap.add_argument("--no-reset", action="store_true")
@@ -90,7 +93,7 @@ def _src_span(path, i0, i1):
     if b is None:
         return "" if i0 == i1 else None
     src = src_by_path[path]
-    return src[b[0]:b[1] + 1]
+    return src[b[0] : b[1] + 1]
 
 
 def parse_audio(audio):
@@ -98,8 +101,13 @@ def parse_audio(audio):
     for seg in audio.split("|"):
         p, _, end = seg.partition("#end=")
         p, _, start = p.partition("#start=")
-        parts.append((os.path.abspath(p), float(start) if start else 0.0,
-                      float(end) if end else dur_by_path.get(os.path.abspath(p))))
+        parts.append(
+            (
+                os.path.abspath(p),
+                float(start) if start else 0.0,
+                float(end) if end else dur_by_path.get(os.path.abspath(p)),
+            )
+        )
     return parts
 
 
@@ -121,8 +129,7 @@ def frontier_text(parts, lag):
         ws = words_by_path.get(p)
         if not ws:
             continue
-        idx = [i for i, w in enumerate(ws)
-               if s <= w["end"] <= e and off + (w["end"] - s) <= c]
+        idx = [i for i, w in enumerate(ws) if s <= w["end"] <= e and off + (w["end"] - s) <= c]
         if not idx:
             continue
         span = _src_span(p, idx[0], idx[-1] + 1)
@@ -132,8 +139,17 @@ def frontier_text(parts, lag):
 
 
 out = open(a.out, "w", encoding="utf-8")
-stats = {"carried": 0, "delta": 0, "ctx_attached": 0, "ctx_empty_natural": 0,
-         "ctx_dropout": 0, "ctx_stale": 0, "reset_seg": 0, "reset_lid": 0, "samelang": 0}
+stats = {
+    "carried": 0,
+    "delta": 0,
+    "ctx_attached": 0,
+    "ctx_empty_natural": 0,
+    "ctx_dropout": 0,
+    "ctx_stale": 0,
+    "reset_seg": 0,
+    "reset_lid": 0,
+    "samelang": 0,
+}
 
 delta_rows = []
 for l in open(a.train_base, encoding="utf-8"):
@@ -169,9 +185,13 @@ if not a.no_reset:
     for p, lg in lang_by_path.items():
         if p in words_by_path and dur_by_path.get(p, 0) > 2.5:
             pool.setdefault(lg, []).append(p)
-    cands = [r for r in delta_rows if "|" not in r["audio"] and
-             r["cond"].endswith("<asr_text>") and
-             os.path.abspath(r["audio"].split("#")[0]) in words_by_path]
+    cands = [
+        r
+        for r in delta_rows
+        if "|" not in r["audio"]
+        and r["cond"].endswith("<asr_text>")
+        and os.path.abspath(r["audio"].split("#")[0]) in words_by_path
+    ]
     rng.shuffle(cands)
     for r in cands[: a.reset_rows]:
         own = os.path.abspath(r["audio"].split("#")[0])
@@ -193,8 +213,11 @@ if not a.no_reset:
 
 if not a.no_samelang:
     for lg in ("ko", "en"):
-        paths = [p for p, l2 in lang_by_path.items()
-                 if l2 == lg and p in words_by_path and len(words_by_path[p]) >= 8]
+        paths = [
+            p
+            for p, l2 in lang_by_path.items()
+            if l2 == lg and p in words_by_path and len(words_by_path[p]) >= 8
+        ]
         rng.shuffle(paths)
         for p in paths[: a.samelang_per_lang]:
             ws = words_by_path[p]
@@ -222,14 +245,29 @@ if not a.no_samelang:
             cond = f"language {NAME[lg]}<asr_text>" + head
             text = " " + cont
             prompt = "" if a.no_context else (frontier_text(parse_audio(audio), a.lag_sec) or "")
-            out.write(json.dumps({"audio": audio, "cond": cond, "text": text,
-                                  "pair": f"{lg}-{lg}", "prompt": prompt}, ensure_ascii=False) + "\n")
+            out.write(
+                json.dumps(
+                    {
+                        "audio": audio,
+                        "cond": cond,
+                        "text": text,
+                        "pair": f"{lg}-{lg}",
+                        "prompt": prompt,
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
             stats["samelang"] += 1
 
 out.close()
-tot = stats["carried"] + stats["delta"] + stats["reset_seg"] + stats["reset_lid"] + stats["samelang"]
+tot = (
+    stats["carried"] + stats["delta"] + stats["reset_seg"] + stats["reset_lid"] + stats["samelang"]
+)
 print(json.dumps(stats, indent=1))
 print(f"{a.out}: {tot} rows")
 ctx_den = max(1, stats["ctx_attached"] + stats["ctx_empty_natural"] + stats["ctx_dropout"])
-print(f"context 분포: 부착 {stats['ctx_attached']/ctx_den:.0%}, 자연 공백 {stats['ctx_empty_natural']/ctx_den:.0%}, "
-      f"드랍아웃 {stats['ctx_dropout']/ctx_den:.0%} (목표: 라이브 제로율 ~50%)")
+print(
+    f"context 분포: 부착 {stats['ctx_attached'] / ctx_den:.0%}, 자연 공백 {stats['ctx_empty_natural'] / ctx_den:.0%}, "
+    f"드랍아웃 {stats['ctx_dropout'] / ctx_den:.0%} (목표: 라이브 제로율 ~50%)"
+)

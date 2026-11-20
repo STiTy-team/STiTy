@@ -5,6 +5,7 @@ are dropped - a zero-second audio increment puts two labels on one cut.
 
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix12_aligned.py
 """
+
 import argparse
 import json
 
@@ -39,4 +40,6 @@ with open(a.out, "w", encoding="utf-8") as out:
             kept += 1
         out.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-print(f"aligned: en->ko {enko} | x->en terra 교체 {swapped}, 기존 유지 {kept}, 0초 청크 제외 {dropped}")
+print(
+    f"aligned: en->ko {enko} | x->en terra 교체 {swapped}, 기존 유지 {kept}, 0초 청크 제외 {dropped}"
+)

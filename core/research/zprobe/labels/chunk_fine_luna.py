@@ -7,6 +7,7 @@ usage: .venv/bin/python core/research/zprobe/labels/chunk_fine_luna.py \
   --manifest models/zprobe/data/prefix13/new_ko_manifest.jsonl \
   --out models/zprobe/data/prefix13/pieces_ko_fine.jsonl [--limit 30] [--budget 3]
 """
+
 import argparse
 import json
 import os
@@ -64,11 +65,17 @@ n_ok = n_fail = n_seen = 0
 def ask(r, note=""):
     global spent
     density = bce.DENSITY_FINE.format(short=bce.SHORT[r["lang"]])
-    msg = bce.PROMPT.format(lang=bce.LANG[r["lang"]][1], short=bce.SHORT[r["lang"]],
-                            src=r["src"], ref=r["ref"], density=density) + ("\n" + note if note else "")
+    msg = bce.PROMPT.format(
+        lang=bce.LANG[r["lang"]][1],
+        short=bce.SHORT[r["lang"]],
+        src=r["src"],
+        ref=r["ref"],
+        density=density,
+    ) + ("\n" + note if note else "")
     t0 = time.time()
-    resp = client.chat.completions.create(model=a.model, reasoning_effort=a.reasoning,
-                                          messages=[{"role": "user", "content": msg}])
+    resp = client.chat.completions.create(
+        model=a.model, reasoning_effort=a.reasoning, messages=[{"role": "user", "content": msg}]
+    )
     u = resp.usage
     ec = (resp.model_extra or {}).get("estimated_cost") or {}
     try:
@@ -77,9 +84,19 @@ def ask(r, note=""):
         cost = u.prompt_tokens / 1e6 * 0.10 + u.completion_tokens / 1e6 * 0.50
     with lock:
         spent += cost
-        usage.write(json.dumps({"sid": r["sid"], "model": a.model, "in": u.prompt_tokens,
-                                "out": u.completion_tokens, "est_usd": round(cost, 6),
-                                "sec": round(time.time() - t0, 1)}) + "\n")
+        usage.write(
+            json.dumps(
+                {
+                    "sid": r["sid"],
+                    "model": a.model,
+                    "in": u.prompt_tokens,
+                    "out": u.completion_tokens,
+                    "est_usd": round(cost, 6),
+                    "sec": round(time.time() - t0, 1),
+                }
+            )
+            + "\n"
+        )
         usage.flush()
     txt = resp.choices[0].message.content
     m = re.search(r"\[.*\]", txt, re.S)
@@ -109,9 +126,22 @@ def work(r):
             n_fail += 1
         else:
             n_ok += 1
-        out.write(json.dumps({"sid": r["sid"], "lang": r["lang"], "src": r["src"], "ref": r["ref"],
-                              "chunks": chunks, "pieces": pieces, "raw_llm": raw if why else "",
-                              "fail": why or ""}, ensure_ascii=False) + "\n")
+        out.write(
+            json.dumps(
+                {
+                    "sid": r["sid"],
+                    "lang": r["lang"],
+                    "src": r["src"],
+                    "ref": r["ref"],
+                    "chunks": chunks,
+                    "pieces": pieces,
+                    "raw_llm": raw if why else "",
+                    "fail": why or "",
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
         out.flush()
         if n_seen % 100 == 0:
             print(f"{n_seen}/{len(rows)} ok={n_ok} fail={n_fail} est ${spent:.2f}", flush=True)

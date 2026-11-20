@@ -9,6 +9,7 @@ B) Detection latency on northstar: judge every 0.5s from utterance onset (growin
 
 usage: PYTHONPATH=Qwen3-ASR .venv/bin/python core/research/zprobe/lid/lid_cold_round4.py
 """
+
 import glob
 import json
 import os
@@ -32,12 +33,16 @@ HELD = 300
 THIRD = 400
 rng = random.Random(0)
 
-AMB = re.compile(r"^[\s\W]*(하+|ㅎ+|아{1,3}[\s,.…!?~]|어[\s,.…]|음+|네[\s,.…!?]|예[\s,.…]|자[\s,]|자자"
-                 r"|응+|에이|아이[\s,]|에휴|흠|어유|이?모님|위하여|완전[\s!]|그래요|그럼[\s,.!]"
-                 r"|um+|uh+|oh[\s,.!]|haha|h[ma]+[\s,.]|yeah|okay|ok[\s,.]|wow|mm+)", re.I)
+AMB = re.compile(
+    r"^[\s\W]*(하+|ㅎ+|아{1,3}[\s,.…!?~]|어[\s,.…]|음+|네[\s,.…!?]|예[\s,.…]|자[\s,]|자자"
+    r"|응+|에이|아이[\s,]|에휴|흠|어유|이?모님|위하여|완전[\s!]|그래요|그럼[\s,.!]"
+    r"|um+|uh+|oh[\s,.!]|haha|h[ma]+[\s,.]|yeah|okay|ok[\s,.]|wow|mm+)",
+    re.I,
+)
 
-m = Qwen3ASRModel.from_pretrained(MODEL, dtype=torch.bfloat16, device_map="cuda",
-                                  max_inference_batch_size=1)
+m = Qwen3ASRModel.from_pretrained(
+    MODEL, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1
+)
 m.model.eval()
 thinker = m.model.thinker
 dev = next(thinker.parameters()).device
@@ -48,8 +53,9 @@ BASE = m._build_text_prompt(context="", force_language="Korean")
 
 @torch.no_grad()
 def emb(wav):
-    inputs = m.processor(text=[BASE], audio=[np.asarray(wav, dtype=np.float32)],
-                         return_tensors="pt", padding=True)
+    inputs = m.processor(
+        text=[BASE], audio=[np.asarray(wav, dtype=np.float32)], return_tensors="pt", padding=True
+    )
     inputs = inputs.to(dev).to(torch.bfloat16)
     thinker(**inputs)
     return _enc["v"].reshape(-1, _enc["v"].shape[-1]).float().mean(0).cpu().numpy()
@@ -59,15 +65,15 @@ def onset_cut(wav, n):
     loud = np.flatnonzero(np.abs(wav) > 0.02)
     if loud.size == 0 or wav.shape[0] - loud[0] < n:
         return None
-    return wav[loud[0]:loud[0] + n]
+    return wav[loud[0] : loud[0] + n]
 
 
 def augment(wav):
     w = wav * (10 ** (rng.uniform(-6, 6) / 20))
     snr = rng.uniform(10, 30)
     noise = np.random.default_rng(rng.randrange(1 << 30)).normal(0, 1, wav.shape[0])
-    p_sig = np.mean(w ** 2) + 1e-9
-    noise *= np.sqrt(p_sig / (10 ** (snr / 10)) / (np.mean(noise ** 2) + 1e-9))
+    p_sig = np.mean(w**2) + 1e-9
+    noise *= np.sqrt(p_sig / (10 ** (snr / 10)) / (np.mean(noise**2) + 1e-9))
     return w + noise
 
 
@@ -104,8 +110,7 @@ for line in open(f"{NS}/manifest.jsonl", encoding="utf-8"):
     scene = it["audio"].split("/")[-1].removesuffix(".wav")
     head = (it.get("reference") or {}).get("transcript", "")
     utts.append((scene, it["offset"], it["duration"], it["src_lang"], bool(AMB.match(head))))
-scene_wav = {s: librosa.load(f"{NS}/audio/{s}.wav", sr=SR)[0]
-             for s in sorted({u[0] for u in utts})}
+scene_wav = {s: librosa.load(f"{NS}/audio/{s}.wav", sr=SR)[0] for s in sorted({u[0] for u in utts})}
 
 
 def collect(plist, lo, cap, n, aug):
@@ -134,7 +139,10 @@ def fit(X, y):
     opt = torch.optim.Adam([w, b], lr=0.05)
     for _ in range(300):
         opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(xt @ w + b, yt) + 1e-3 * w.pow(2).sum()
+        loss = (
+            torch.nn.functional.binary_cross_entropy_with_logits(xt @ w + b, yt)
+            + 1e-3 * w.pow(2).sum()
+        )
         loss.backward()
         opt.step()
     return w.detach().numpy(), float(b.item()), mu, sd
@@ -145,14 +153,19 @@ heads = {}
 print("== A. 헤드 2종 x 코퍼스별 채점 ==", flush=True)
 for w_sec in (0.5, 1.0):
     n = int(w_sec * SR)
-    tr_fl = {li: collect(FL[lang], 0, PER_LANG, n, aug=False)
-             for li, lang in enumerate(("ko", "en"))}
-    heads[("fleurs", w_sec)] = fit(np.stack(tr_fl[0] + tr_fl[1]),
-                                   np.array([0] * len(tr_fl[0]) + [1] * len(tr_fl[1])))
-    tr_mix = {li: tr_fl[li] + collect(CV[lang], 0, PER_LANG, n, aug=True)
-              for li, lang in enumerate(("ko", "en"))}
-    heads[("mixed", w_sec)] = fit(np.stack(tr_mix[0] + tr_mix[1]),
-                                  np.array([0] * len(tr_mix[0]) + [1] * len(tr_mix[1])))
+    tr_fl = {
+        li: collect(FL[lang], 0, PER_LANG, n, aug=False) for li, lang in enumerate(("ko", "en"))
+    }
+    heads[("fleurs", w_sec)] = fit(
+        np.stack(tr_fl[0] + tr_fl[1]), np.array([0] * len(tr_fl[0]) + [1] * len(tr_fl[1]))
+    )
+    tr_mix = {
+        li: tr_fl[li] + collect(CV[lang], 0, PER_LANG, n, aug=True)
+        for li, lang in enumerate(("ko", "en"))
+    }
+    heads[("mixed", w_sec)] = fit(
+        np.stack(tr_mix[0] + tr_mix[1]), np.array([0] * len(tr_mix[0]) + [1] * len(tr_mix[1]))
+    )
 
     evals = {
         "fl_ko": (collect(FL["ko"], PER_LANG, HELD, n, False), "ko"),
@@ -166,7 +179,7 @@ for w_sec in (0.5, 1.0):
     for scene, off, dur, lang, amb in utts:
         if lang not in ("ko", "en") or dur < w_sec:
             continue
-        seg = onset_cut(scene_wav[scene][int(off * SR):int((off + dur) * SR)], n)
+        seg = onset_cut(scene_wav[scene][int(off * SR) : int((off + dur) * SR)], n)
         if seg is not None:
             ns_embs.append((emb(seg), lang, amb))
 
@@ -176,19 +189,37 @@ for w_sec in (0.5, 1.0):
         def acc(embs, lang):
             if not embs:
                 return None
-            hit = sum((1 / (1 + np.exp(-(float(np.dot((e - mu) / sd, wm)) + bm))) > 0.5)
-                      == (lang == "en") for e in embs)
+            hit = sum(
+                (1 / (1 + np.exp(-(float(np.dot((e - mu) / sd, wm)) + bm))) > 0.5) == (lang == "en")
+                for e in embs
+            )
             return round(hit / len(embs), 3)
 
         row = {k: acc(v[0], v[1]) for k, v in evals.items()}
-        row["ns_content"] = round(sum((1 / (1 + np.exp(-(float(np.dot((e - mu) / sd, wm)) + bm))) > 0.5)
-                                      == (lg == "en") for e, lg, amb in ns_embs if not amb)
-                                  / max(1, sum(1 for _, _, amb in ns_embs if not amb)), 3)
-        row["ns_amb"] = round(sum((1 / (1 + np.exp(-(float(np.dot((e - mu) / sd, wm)) + bm))) > 0.5)
-                                  == (lg == "en") for e, lg, amb in ns_embs if amb)
-                              / max(1, sum(1 for _, _, amb in ns_embs if amb)), 3)
-        print(f"w={w_sec} {name:6s}: " + "  ".join(f"{k} {v}" for k, v in row.items())
-              + f"  ({time.time() - t0:.0f}s)", flush=True)
+        row["ns_content"] = round(
+            sum(
+                (1 / (1 + np.exp(-(float(np.dot((e - mu) / sd, wm)) + bm))) > 0.5) == (lg == "en")
+                for e, lg, amb in ns_embs
+                if not amb
+            )
+            / max(1, sum(1 for _, _, amb in ns_embs if not amb)),
+            3,
+        )
+        row["ns_amb"] = round(
+            sum(
+                (1 / (1 + np.exp(-(float(np.dot((e - mu) / sd, wm)) + bm))) > 0.5) == (lg == "en")
+                for e, lg, amb in ns_embs
+                if amb
+            )
+            / max(1, sum(1 for _, _, amb in ns_embs if amb)),
+            3,
+        )
+        print(
+            f"w={w_sec} {name:6s}: "
+            + "  ".join(f"{k} {v}" for k, v in row.items())
+            + f"  ({time.time() - t0:.0f}s)",
+            flush=True,
+        )
 
 print("== B. 확정 지연 시뮬레이션 (북극성, 2연속 일치 확정) ==", flush=True)
 for head_name in ("fleurs", "mixed"):
@@ -196,11 +227,11 @@ for head_name in ("fleurs", "mixed"):
     for scene, off, dur, lang, amb in utts:
         if lang not in ("ko", "en") or dur < 1.0:
             continue
-        chunk = scene_wav[scene][int(off * SR):int((off + dur) * SR)]
+        chunk = scene_wav[scene][int(off * SR) : int((off + dur) * SR)]
         loud = np.flatnonzero(np.abs(chunk) > 0.02)
         if loud.size == 0:
             continue
-        chunk = chunk[loud[0]:]
+        chunk = chunk[loud[0] :]
         prev = None
         done = False
         for k in range(1, 7):
@@ -209,7 +240,7 @@ for head_name in ("fleurs", "mixed"):
                 break
             w_sec = 0.5 if k == 1 else 1.0
             wm, bm, mu, sd = heads[(head_name, w_sec)]
-            seg = chunk[max(0, int((t - w_sec) * SR)):int(t * SR)]
+            seg = chunk[max(0, int((t - w_sec) * SR)) : int(t * SR)]
             p = 1 / (1 + np.exp(-(float(np.dot((emb(seg) - mu) / sd, wm)) + bm)))
             v = "en" if p > 0.5 else "ko"
             if prev is not None and v == prev:
@@ -222,6 +253,11 @@ for head_name in ("fleurs", "mixed"):
     for kind, rows in confirms.items():
         ts = [t for t, ok in rows if t is not None]
         accs = [ok for t, ok in rows if t is not None]
-        print(f"{head_name} {kind}: 확정 {len(ts)}/{len(rows)}, 중앙 {np.median(ts) if ts else '-'}s, "
-              f"확정 정확도 {np.mean(accs):.3f}" if accs else f"{head_name} {kind}: 확정 없음", flush=True)
+        print(
+            f"{head_name} {kind}: 확정 {len(ts)}/{len(rows)}, 중앙 {np.median(ts) if ts else '-'}s, "
+            f"확정 정확도 {np.mean(accs):.3f}"
+            if accs
+            else f"{head_name} {kind}: 확정 없음",
+            flush=True,
+        )
 print("LID_R4_DONE", flush=True)

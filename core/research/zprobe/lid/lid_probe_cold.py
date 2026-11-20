@@ -7,6 +7,7 @@ of FLEURS train recordings. FusedLid is scored on the identical windows.
 
 usage: PYTHONPATH=Qwen3-ASR .venv/bin/python core/research/zprobe/lid/lid_probe_cold.py
 """
+
 import asyncio
 import json
 import os
@@ -29,8 +30,9 @@ PER_LANG = 600
 SR = 16000
 rng = random.Random(0)
 
-m = Qwen3ASRModel.from_pretrained(MODEL, dtype=torch.bfloat16, device_map="cuda",
-                                  max_inference_batch_size=1)
+m = Qwen3ASRModel.from_pretrained(
+    MODEL, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1
+)
 m.model.eval()
 thinker = m.model.thinker
 dev = next(thinker.parameters()).device
@@ -63,10 +65,10 @@ for line in open(f"{NS}/manifest.jsonl", encoding="utf-8"):
     scene = it["audio"].split("/")[-1].removesuffix(".wav")
     head = (it.get("reference") or {}).get("transcript", "")[:24]
     utts.append((scene, it["offset"], it["duration"], it["src_lang"], head))
-scene_wav = {s: librosa.load(f"{NS}/audio/{s}.wav", sr=SR)[0]
-             for s in sorted({u[0] for u in utts})}
+scene_wav = {s: librosa.load(f"{NS}/audio/{s}.wav", sr=SR)[0] for s in sorted({u[0] for u in utts})}
 
 from core.utils import lid as lidmod  # noqa: E402
+
 fused = asyncio.run(lidmod.FusedLid.build("models/zprobe/data/lid_phone_profiles.json"))
 
 report = {}
@@ -86,7 +88,7 @@ for w in WINDOWS:
             loud = np.flatnonzero(np.abs(wav) > 0.02)
             if loud.size == 0 or wav.shape[0] - loud[0] < n:
                 continue
-            X.append(embed(wav[loud[0]:loud[0] + n]))
+            X.append(embed(wav[loud[0] : loud[0] + n]))
             y.append(li)
             done += 1
     X = np.stack(X)
@@ -99,8 +101,10 @@ for w in WINDOWS:
     opt = torch.optim.Adam([wgt, b], lr=0.05)
     for _ in range(300):
         opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(xt @ wgt + b, yt) \
+        loss = (
+            torch.nn.functional.binary_cross_entropy_with_logits(xt @ wgt + b, yt)
             + 1e-3 * wgt.pow(2).sum()
+        )
         loss.backward()
         opt.step()
     wn, bn = wgt.detach().numpy(), float(b.item())
@@ -111,11 +115,11 @@ for w in WINDOWS:
     for scene, off, dur, lang, head in utts:
         if lang not in ("ko", "en") or dur < w:
             continue
-        chunk = scene_wav[scene][int(off * SR):int((off + dur) * SR)]
+        chunk = scene_wav[scene][int(off * SR) : int((off + dur) * SR)]
         loud = np.flatnonzero(np.abs(chunk) > 0.02)
         if loud.size == 0 or chunk.shape[0] - loud[0] < n:
             continue
-        seg = chunk[loud[0]:loud[0] + n]
+        seg = chunk[loud[0] : loud[0] + n]
         e = (embed(seg) - mu) / sd
         p = 1 / (1 + np.exp(-(float(np.dot(e, wn)) + bn)))
         pv = "en" if p > 0.5 else "ko"
@@ -123,7 +127,7 @@ for w in WINDOWS:
         probe_n += 1
         probe_hit += pv == lang
         if pv != lang:
-            fails.append(f"{scene}@{off:.1f} truth={lang} conf={max(p,1-p):.2f} | {head}")
+            fails.append(f"{scene}@{off:.1f} truth={lang} conf={max(p, 1 - p):.2f} | {head}")
         fv, fa = fused.verdict(seg)
         if fv in ("ko", "en"):
             fused_n += 1
@@ -131,10 +135,14 @@ for w in WINDOWS:
             fused_abstain += not fa
         else:
             fused_abstain += 1
-    report[w] = {"probe_acc": round(probe_hit / max(1, probe_n), 3), "n": probe_n,
-                 "probe_conf_mean": round(float(np.mean(confs)), 3),
-                 "fused_acc": round(fused_hit / max(1, fused_n), 3), "fused_n": fused_n,
-                 "fused_abstain": fused_abstain}
+    report[w] = {
+        "probe_acc": round(probe_hit / max(1, probe_n), 3),
+        "n": probe_n,
+        "probe_conf_mean": round(float(np.mean(confs)), 3),
+        "fused_acc": round(fused_hit / max(1, fused_n), 3),
+        "fused_n": fused_n,
+        "fused_abstain": fused_abstain,
+    }
     print(f"w={w}s {report[w]} ({time.time() - t0:.0f}s)", flush=True)
     if w in (0.3, 0.5):
         for f in fails:

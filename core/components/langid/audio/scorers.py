@@ -39,6 +39,12 @@ class Scorer:
     def scores(self, audio: np.ndarray, candidates: tuple[str, ...]) -> dict[str, float]:
         raise NotImplementedError
 
+    def scores_batch(
+        self, audios: list[np.ndarray], candidates: tuple[str, ...]
+    ) -> list[dict[str, float]]:
+        """Several clips at once; scorers that can batch on the GPU override this."""
+        return [self.scores(a, candidates) for a in audios]
+
 
 def _device(device: str | None) -> str:
     import torch
@@ -90,6 +96,26 @@ class WhisperTokenScorer(Scorer):
         sel = torch.tensor([self.ids[c] for c in known], device=self.device)
         logp = torch.log_softmax(logits[sel], -1).cpu().tolist()
         out.update(dict(zip(known, logp)))
+        return out
+
+    def scores_batch(self, audios, candidates):
+        """Whisper pads every clip to 30 s, so a batch costs about one encoder pass."""
+        torch = self.torch
+        known = [c for c in candidates if c in self.ids]
+        out = [{c: -math.inf for c in candidates} for _ in audios]
+        live = [i for i, a in enumerate(audios) if len(a)]
+        if not known or not live:
+            return out
+        feats = self.processor.feature_extractor(
+            [audios[i] for i in live], sampling_rate=SR, return_tensors="pt"
+        ).input_features.to(self.device, self.model.dtype)
+        start = torch.full((len(live), 1), self.sot, device=self.device)
+        with self.lock, torch.inference_mode():
+            logits = self.model(input_features=feats, decoder_input_ids=start).logits[:, -1].float()
+        sel = torch.tensor([self.ids[c] for c in known], device=self.device)
+        logp = torch.log_softmax(logits[:, sel], -1).cpu().tolist()
+        for i, row in zip(live, logp):
+            out[i].update(dict(zip(known, row)))
         return out
 
 
@@ -145,6 +171,25 @@ class EcapaScorer(Scorer):
         logp = logp.float().cpu()
         sel = torch.tensor([self.index[c] for c in known])
         out.update(dict(zip(known, torch.log_softmax(logp[sel], -1).tolist())))
+        return out
+
+    def scores_batch(self, audios, candidates):
+        torch = self.torch
+        known = [c for c in candidates if c in self.index]
+        out = [{c: -math.inf for c in candidates} for _ in audios]
+        live = [i for i, a in enumerate(audios) if len(a)]
+        if not known or not live:
+            return out
+        longest = max(len(audios[i]) for i in live)
+        wavs = torch.zeros(len(live), longest)
+        for row, i in enumerate(live):
+            wavs[row, : len(audios[i])] = torch.from_numpy(audios[i]).float()
+        lens = torch.tensor([len(audios[i]) / longest for i in live])
+        with self.lock, torch.inference_mode():
+            logp = self.model.classify_batch(wavs, wav_lens=lens)[0].float().cpu()
+        sel = torch.tensor([self.index[c] for c in known])
+        for row, i in enumerate(live):
+            out[i].update(dict(zip(known, torch.log_softmax(logp[row][sel], -1).tolist())))
         return out
 
 

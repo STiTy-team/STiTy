@@ -17,6 +17,7 @@ Row families:
                    verbatim, concat <SEG> pairs - catchup-from-empty and ASR skills stay cumulative.
 
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix9d.py"""
+
 import argparse
 import json
 import os
@@ -30,8 +31,12 @@ ap.add_argument("--val", default="models/zprobe/data/val_big_local.jsonl")
 ap.add_argument("--out", default="models/zprobe/data/train_prefix9d.jsonl")
 ap.add_argument("--out-val", default="models/zprobe/data/val_prefix9d.jsonl")
 ap.add_argument("--pad", type=float, default=0.2)
-ap.add_argument("--sil-cap", type=int, default=800, help="silence-tail rows per pair (en-ko gets twice this)")
-ap.add_argument("--seg-cap", type=int, default=2500, help="seg-boundary rows per pair (en-ko gets twice this)")
+ap.add_argument(
+    "--sil-cap", type=int, default=800, help="silence-tail rows per pair (en-ko gets twice this)"
+)
+ap.add_argument(
+    "--seg-cap", type=int, default=2500, help="seg-boundary rows per pair (en-ko gets twice this)"
+)
 a = ap.parse_args()
 rng = random.Random(9)
 
@@ -64,8 +69,10 @@ def cum_at(adds, i):
 
 
 def row(audio, cond, delta, pair):
-    out.write(json.dumps({"audio": audio, "cond": cond, "text": delta, "pair": pair},
-                         ensure_ascii=False) + "\n")
+    out.write(
+        json.dumps({"audio": audio, "cond": cond, "text": delta, "pair": pair}, ensure_ascii=False)
+        + "\n"
+    )
 
 
 for (lang, tgt), recs in sorted(by_pair.items()):
@@ -87,15 +94,23 @@ for (lang, tgt), recs in sorted(by_pair.items()):
         spans = [(j, lo, hi) for j, lo, hi in spans if hi - lo >= 0.3 and hi >= 0.8]
         if spans:
             j, lo, hi = rng.choice(spans)
-            row(f"{path}#end={rng.uniform(max(lo, 0.6), hi):.3f}",
-                tag + (cum_at(adds, j - 1) if j else ""), "", pair)
+            row(
+                f"{path}#end={rng.uniform(max(lo, 0.6), hi):.3f}",
+                tag + (cum_at(adds, j - 1) if j else ""),
+                "",
+                pair,
+            )
             kinds["mid"] += 1
 
     sil_wav = os.path.abspath(a.sil_wav)
     cap = a.sil_cap * (2 if (lang, tgt) == ("en", "ko") else 1)
     for r in rng.sample(recs, min(cap, len(recs))):
-        row(f"{os.path.abspath(r['audio'])}|{sil_wav}#end={rng.uniform(0.8, 2.0):.2f}",
-            tag + cum_at(r["adds"], len(r["adds"]) - 1), "", pair)
+        row(
+            f"{os.path.abspath(r['audio'])}|{sil_wav}#end={rng.uniform(0.8, 2.0):.2f}",
+            tag + cum_at(r["adds"], len(r["adds"]) - 1),
+            "",
+            pair,
+        )
         kinds["sil"] += 1
 
     cap = a.seg_cap * (2 if (lang, tgt) == ("en", "ko") else 1)
@@ -103,8 +118,12 @@ for (lang, tgt), recs in sorted(by_pair.items()):
     rng.shuffle(pool)
     for A, B in list(zip(pool[0::2], pool[1::2]))[:cap]:
         t_b = max(0.3, B["ends"][0] * 0.5)
-        row(f"{os.path.abspath(A['audio'])}|{os.path.abspath(B['audio'])}#end={t_b:.3f}",
-            tag + cum_at(A["adds"], len(A["adds"]) - 1), " <SEG>", pair)
+        row(
+            f"{os.path.abspath(A['audio'])}|{os.path.abspath(B['audio'])}#end={t_b:.3f}",
+            tag + cum_at(A["adds"], len(A["adds"]) - 1),
+            " <SEG>",
+            pair,
+        )
         kinds["seg"] += 1
 
 out.close()

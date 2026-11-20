@@ -15,13 +15,22 @@ it, falling back to the other when one abstains. `verdict` also reports whether 
 agree: agreement ran at 0.975 accuracy, so callers acting irreversibly (slot resets) can
 require it.
 """
+
 import json
 
 
 class FusedLid:
-
-    def __init__(self, whisper, whisper_proc, phone, phone_fe, phone_vocab, profiles,
-                 langs=("ko", "en"), short_sec=1.5):
+    def __init__(
+        self,
+        whisper,
+        whisper_proc,
+        phone,
+        phone_fe,
+        phone_vocab,
+        profiles,
+        langs=("ko", "en"),
+        short_sec=1.5,
+    ):
         self._wm = whisper
         self._wproc = whisper_proc
         self._pm = phone
@@ -39,13 +48,22 @@ class FusedLid:
     async def build(cls, profiles_path, langs=("ko", "en"), short_sec=1.5):
         import torch
         from huggingface_hub import hf_hub_download
-        from transformers import (Wav2Vec2FeatureExtractor, Wav2Vec2ForCTC,
-                                  WhisperForConditionalGeneration, WhisperProcessor)
+        from transformers import (
+            Wav2Vec2FeatureExtractor,
+            Wav2Vec2ForCTC,
+            WhisperForConditionalGeneration,
+            WhisperProcessor,
+        )
 
         blob = json.load(open(profiles_path))
         wproc = WhisperProcessor.from_pretrained("openai/whisper-small")
-        wm = WhisperForConditionalGeneration.from_pretrained(
-            "openai/whisper-small", dtype=torch.float16).to("cuda").eval()
+        wm = (
+            WhisperForConditionalGeneration.from_pretrained(
+                "openai/whisper-small", dtype=torch.float16
+            )
+            .to("cuda")
+            .eval()
+        )
         pfe = Wav2Vec2FeatureExtractor.from_pretrained(blob["model"])
         pm = Wav2Vec2ForCTC.from_pretrained(blob["model"], dtype=torch.float16).to("cuda").eval()
         vocab = json.load(open(hf_hub_download(blob["model"], "vocab.json")))
@@ -54,18 +72,23 @@ class FusedLid:
     def _whisper(self, wav):
         import torch
 
-        feats = self._wproc(wav, sampling_rate=16000,
-                            return_tensors="pt").input_features.to("cuda", torch.float16)
+        feats = self._wproc(wav, sampling_rate=16000, return_tensors="pt").input_features.to(
+            "cuda", torch.float16
+        )
         with torch.no_grad():
-            logits = self._wm(feats, decoder_input_ids=torch.tensor(
-                [[self._sot]], device="cuda")).logits[0, -1].float()
+            logits = (
+                self._wm(feats, decoder_input_ids=torch.tensor([[self._sot]], device="cuda"))
+                .logits[0, -1]
+                .float()
+            )
         return max(self._allowed, key=lambda c: logits[self._allowed[c]].item())
 
     def _phones(self, wav):
         import torch
 
-        inp = self._pfe(wav, sampling_rate=16000,
-                        return_tensors="pt").input_values.to("cuda", torch.float16)
+        inp = self._pfe(wav, sampling_rate=16000, return_tensors="pt").input_values.to(
+            "cuda", torch.float16
+        )
         with torch.no_grad():
             ids = self._pm(inp).logits.argmax(-1)[0].tolist()
         out, prev = [], None
@@ -81,8 +104,11 @@ class FusedLid:
         phones = self._phones(wav)
         if len(phones) < 4:
             return None
-        scores = {lang: sum(math.log(prof.get(ph, 1e-4)) for ph in phones)
-                  for lang, prof in self._profiles.items() if lang in self._langs}
+        scores = {
+            lang: sum(math.log(prof.get(ph, 1e-4)) for ph in phones)
+            for lang, prof in self._profiles.items()
+            if lang in self._langs
+        }
         return max(scores, key=scores.get) if scores else None
 
     def verdict(self, wav) -> tuple[str | None, bool]:

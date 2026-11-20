@@ -1,6 +1,7 @@
 """The addition-validity pieces of build_conv_pairs, importable without its CLI: the RULES text,
 the format / openness / leak checks, and the language-name map. build_conv_pairs.py and
 eval_models.py both run these, so a rule change moves every consumer at once."""
+
 import os
 import sys
 
@@ -10,24 +11,28 @@ from build_prefix import closes, content  # noqa: E402
 LANGNAME = {"ko": "Korean", "en": "English"}
 
 RULES = {
-    "en": ("English: natural spoken English a simultaneous interpreter would actually say.\n"
-           "Two priorities, in this order:\n"
-           "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, "
-           "or content word whose source appears only in a later phrase.\n"
-           "2. Naturalness: the additions read, joined together, as one fluent English sentence. Additions "
-           "before the last must stay syntactically open - no sentence-final period. When emitting a phrase's "
-           "content right away would force stiff phrasing, leave that addition \"\" (wait) and fold the content "
-           "naturally into the NEXT addition instead. Waiting is always allowed; fillers and stiffness are not."),
-    "ko": ("Korean: natural spoken Korean a simultaneous interpreter would actually say, with connective endings "
-           "(-고, -며, -는데, -면서, -지만, -어서/아서, -도록) and particles; never -다, -요, -니다 or a period before the "
-           "end; end the sentence politely in 해요체 (-어요/-아요/-예요/-이에요).\n"
-           "Two priorities, in this order:\n"
-           "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, or "
-           "content word whose source appears only in a later phrase.\n"
-           "2. Naturalness: the additions read, joined together, as one fluent Korean sentence. When emitting a "
-           "phrase's content right away would force stiff phrasing or a filler tail, leave that addition \"\" "
-           "(wait) and fold the content naturally into the NEXT addition instead. Waiting is always allowed; "
-           "fillers and stiffness are not."),
+    "en": (
+        "English: natural spoken English a simultaneous interpreter would actually say.\n"
+        "Two priorities, in this order:\n"
+        "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, "
+        "or content word whose source appears only in a later phrase.\n"
+        "2. Naturalness: the additions read, joined together, as one fluent English sentence. Additions "
+        "before the last must stay syntactically open - no sentence-final period. When emitting a phrase's "
+        'content right away would force stiff phrasing, leave that addition "" (wait) and fold the content '
+        "naturally into the NEXT addition instead. Waiting is always allowed; fillers and stiffness are not."
+    ),
+    "ko": (
+        "Korean: natural spoken Korean a simultaneous interpreter would actually say, with connective endings "
+        "(-고, -며, -는데, -면서, -지만, -어서/아서, -도록) and particles; never -다, -요, -니다 or a period before the "
+        "end; end the sentence politely in 해요체 (-어요/-아요/-예요/-이에요).\n"
+        "Two priorities, in this order:\n"
+        "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, or "
+        "content word whose source appears only in a later phrase.\n"
+        "2. Naturalness: the additions read, joined together, as one fluent Korean sentence. When emitting a "
+        'phrase\'s content right away would force stiff phrasing or a filler tail, leave that addition "" '
+        "(wait) and fold the content naturally into the NEXT addition instead. Waiting is always allowed; "
+        "fillers and stiffness are not."
+    ),
 }
 
 
@@ -60,7 +65,11 @@ def make_check(hy):
             return f"the last addition does not close the sentence: {body[-1]!r}"
         extra = leaked(adds, hy.get(row["sid"]) or [], tgt)
         if extra:
-            return ("these words are said before their source phrase has been heard (no-lookahead violation): "
-                    + ", ".join(extra) + " - move them to the addition of the phrase that contains them")
+            return (
+                "these words are said before their source phrase has been heard (no-lookahead violation): "
+                + ", ".join(extra)
+                + " - move them to the addition of the phrase that contains them"
+            )
         return None
+
     return check
