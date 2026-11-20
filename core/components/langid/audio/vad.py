@@ -26,3 +26,18 @@ def speech_only(audio: np.ndarray) -> np.ndarray:
     if not spans:
         return audio[:0]
     return np.concatenate([audio[s["start"] : s["end"]] for s in spans])
+
+
+def speech_spans(audio: np.ndarray) -> list[tuple[int, int]]:
+    """Speech (start, end) sample ranges in `audio`."""
+    global _model
+    if len(audio) < SR // 10:
+        return []
+    import torch
+    from silero_vad import get_speech_timestamps, load_silero_vad
+
+    with _lock:
+        if _model is None:
+            _model = load_silero_vad()
+        found = get_speech_timestamps(torch.from_numpy(audio), _model, sampling_rate=SR)
+    return [(s["start"], s["end"]) for s in found]
