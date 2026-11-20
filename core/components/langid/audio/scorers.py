@@ -223,11 +223,80 @@ class MmsScorer(Scorer):
         return out
 
 
+PHONE_PROFILES = "/home/mobility/STiTy-team/STiTy/models/lidprofiles/phone_profiles.json"
+BIGRAM_WEIGHT = 0.7
+
+
+class PhoneScorer(Scorer):
+    """Phonotactic LID: a wav2vec2 phone recognizer turns the clip into a phone sequence, scored
+    against per-language phone profiles (core/research/lid_module/build_phone_profiles.py) as a
+    unigram or bigram (interpolated with the unigram) log-likelihood. Strong on short clips,
+    where whisper is weakest. `model` is the profiles file."""
+
+    def __init__(self, model: str, device: str | None, order: int):
+        import json
+
+        import torch
+        from huggingface_hub import hf_hub_download
+        from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2ForCTC
+
+        self.torch = torch
+        self.device = _device(device)
+        blob = json.load(open(model))
+        self.profiles = blob["profiles"]
+        self.order = order
+        self.extractor = Wav2Vec2FeatureExtractor.from_pretrained(blob["model"])
+        dtype = torch.float16 if self.device.startswith("cuda") else torch.float32
+        self.model = (
+            Wav2Vec2ForCTC.from_pretrained(blob["model"], dtype=dtype).to(self.device).eval()
+        )
+        vocab = json.load(open(hf_hub_download(blob["model"], "vocab.json")))
+        self.id2tok = {v: k for k, v in vocab.items()}
+        self.special = {v for k, v in vocab.items() if k.startswith("<")}
+        self.lock = threading.Lock()
+
+    def phones(self, audio: np.ndarray) -> list[str]:
+        torch = self.torch
+        inp = self.extractor(audio, sampling_rate=SR, return_tensors="pt").input_values
+        with self.lock, torch.inference_mode():
+            ids = self.model(inp.to(self.device, self.model.dtype)).logits.argmax(-1)[0].tolist()
+        out, prev = [], None
+        for i in ids:
+            if i != prev and i not in self.special:
+                out.append(self.id2tok[i])
+            prev = i
+        return out
+
+    def scores(self, audio, candidates):
+        out = {c: -math.inf for c in candidates}
+        known = [c for c in candidates if c in self.profiles]
+        if not known or len(audio) < SR // 10:
+            return out
+        seq = self.phones(audio)
+        if len(seq) < 2:
+            return {c: (0.0 if c in known else -math.inf) for c in candidates}
+        for c in known:
+            uni, bi = self.profiles[c]["uni"], self.profiles[c]["bi"]
+            total, prev = 0.0, "<s>"
+            for ph in seq:
+                p_uni = uni.get(ph, 1e-4)
+                if self.order == 2:
+                    p = BIGRAM_WEIGHT * bi.get(f"{prev} {ph}", 0.0) + (1 - BIGRAM_WEIGHT) * p_uni
+                else:
+                    p = p_uni
+                total += math.log(max(p, 1e-6))
+                prev = ph
+            out[c] = total
+        return out
+
+
 SCORERS = {
     "whisper-token": (WhisperTokenScorer, "openai/whisper-small"),
     "whisper-decode": (WhisperDecodeScorer, "openai/whisper-small"),
     "ecapa": (EcapaScorer, "speechbrain/lang-id-voxlingua107-ecapa"),
     "mms": (MmsScorer, "facebook/mms-lid-256"),
+    "phone-uni": (lambda model, device: PhoneScorer(model, device, 1), PHONE_PROFILES),
+    "phone-bi": (lambda model, device: PhoneScorer(model, device, 2), PHONE_PROFILES),
 }
 
 
