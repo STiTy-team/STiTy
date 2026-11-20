@@ -54,17 +54,28 @@ def decide(probs: dict[str, float] | None, previous: str | None, conf: float) ->
     return best if probs[best] >= conf else previous
 
 
+def _transitions(p: float, k: int) -> list[list[float]]:
+    stay = math.log(p)
+    move = math.log((1.0 - p) / (k - 1)) if k > 1 else -math.inf
+    return [[stay if i == j else move for j in range(k)] for i in range(k)]
+
+
 def smooth(
-    steps: list[dict[str, float] | None], candidates: tuple[str, ...], p_stay: float
+    steps: list[dict[str, float] | None],
+    candidates: tuple[str, ...],
+    p_stay: float,
+    p_gap: float | None = None,
+    gaps: list[bool] | None = None,
 ) -> list[dict[str, float]]:
     """Forward-backward posteriors per step. Each step holds log-likelihoods per candidate
-    (None = no evidence); the language stays with probability `p_stay` between steps."""
+    (None = no evidence); the language stays with probability `p_stay` between steps, or
+    `p_gap` into a step that follows a silence (`gaps[i]` true)."""
     n, k = len(steps), len(candidates)
     if n == 0:
         return []
-    stay = math.log(p_stay)
-    move = math.log((1.0 - p_stay) / (k - 1)) if k > 1 else -math.inf
-    trans = [[stay if i == j else move for j in range(k)] for i in range(k)]
+    usual = _transitions(p_stay, k)
+    across = _transitions(p_gap, k) if p_gap is not None else usual
+    tr = [across if gaps and gaps[t] else usual for t in range(n)]
     emit = [[0.0] * k if s is None else [s.get(c, -math.inf) for c in candidates] for s in steps]
 
     def lse(xs):
@@ -74,12 +85,13 @@ def smooth(
     fwd = [[-math.log(k) + emit[0][j] for j in range(k)]]
     for t in range(1, n):
         fwd.append(
-            [lse([fwd[t - 1][i] + trans[i][j] for i in range(k)]) + emit[t][j] for j in range(k)]
+            [lse([fwd[t - 1][i] + tr[t][i][j] for i in range(k)]) + emit[t][j] for j in range(k)]
         )
     bwd = [[0.0] * k for _ in range(n)]
     for t in range(n - 2, -1, -1):
         bwd[t] = [
-            lse([trans[i][j] + emit[t + 1][j] + bwd[t + 1][j] for j in range(k)]) for i in range(k)
+            lse([tr[t + 1][i][j] + emit[t + 1][j] + bwd[t + 1][j] for j in range(k)])
+            for i in range(k)
         ]
     out = []
     for t in range(n):
@@ -99,20 +111,55 @@ def span_mass(
     span: tuple[float, float],
     half: float,
     candidates: tuple[str, ...],
+    read: str = "mean",
+    read_sec: float = 1.0,
 ) -> dict[str, float] | None:
     """Posterior mass over the timeline steps whose centre (t - half) lies in the span. Steps in
     the span without speech give no verdict (None); a span holding no step centre at all reads
-    the nearest step."""
+    the nearest step. `read` picks which in-span steps count: all (`mean`), those in the last
+    `read_sec` of the span (`tail`), or only the last one with speech (`end`)."""
     if not steps:
         return None
     centres = [t - half for t, _ in steps]
-    in_span = [i for i, c in enumerate(centres) if span[0] <= c <= span[1]]
+    lo = max(span[0], span[1] - read_sec) if read == "tail" else span[0]
+    in_span = [i for i, c in enumerate(centres) if lo <= c <= span[1]]
+    if read == "tail" and not any(steps[i][1] for i in in_span):
+        in_span = [i for i, c in enumerate(centres) if span[0] <= c <= span[1]]
     if in_span:
         inside = [i for i in in_span if steps[i][1]]
         if not inside:
             return None
+        if read == "end":
+            inside = inside[-1:]
     else:
         inside = [min(range(len(centres)), key=lambda i: abs(centres[i] - span[1]))]
     mass = {c: sum(posts[i][c] for i in inside) for c in candidates}
     total = sum(mass.values()) or 1.0
     return {c: v / total for c, v in mass.items()}
+
+
+def combine(
+    per_scorer: dict[str, dict[str, float]],
+    candidates: tuple[str, ...],
+    how: str = "mean",
+    weights: dict[str, float] | None = None,
+) -> dict[str, float] | None:
+    """One log-score per candidate from several scorers, each first renormalised over the
+    candidates: `mean` = weighted mean of log-probabilities, `max` = the scorer whose top
+    candidate is most probable. None when no scorer has a verdict."""
+    probs = {}
+    for name, scores in per_scorer.items():
+        p = normalise(scores, candidates)
+        if p:
+            probs[name] = p
+    if not probs:
+        return None
+    if how == "max":
+        best = max(probs, key=lambda n: max(probs[n].values()))
+        return {c: math.log(v) if v > 0 else -math.inf for c, v in probs[best].items()}
+    weights = weights or {}
+    total = sum(weights.get(n, 1.0) for n in probs)
+    return {
+        c: sum(weights.get(n, 1.0) * math.log(max(p[c], 1e-12)) for n, p in probs.items()) / total
+        for c in candidates
+    }

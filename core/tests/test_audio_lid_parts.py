@@ -67,3 +67,40 @@ def test_span_mass_none_when_steps_in_span_have_no_speech():
     assert span_mass(steps, posts, (0.3, 0.6), 0.5, ("ko", "en"))["ko"] > 0.9
     far = span_mass(steps, posts, (5.0, 5.2), 0.5, ("ko", "en"))
     assert far["ko"] > 0.9
+
+
+def test_combine_mean_and_max():
+    from core.components.langid.audio.decide import combine
+
+    per = {
+        "w": {"ko": math.log(0.9), "en": math.log(0.1)},
+        "e": {"ko": math.log(0.4), "en": math.log(0.6)},
+    }
+    mean = normalise(combine(per, ("ko", "en"), "mean"), ("ko", "en"))
+    assert mean["ko"] > mean["en"]
+    weighted = normalise(combine(per, ("ko", "en"), "mean", {"w": 0.1, "e": 1.0}), ("ko", "en"))
+    assert weighted["en"] > weighted["ko"]
+    top = normalise(combine(per, ("ko", "en"), "max"), ("ko", "en"))
+    assert math.isclose(top["ko"], 0.9, abs_tol=1e-6)
+    assert combine({}, ("ko", "en"), "mean") is None
+    assert combine({"w": {"ko": -math.inf, "en": -math.inf}}, ("ko", "en"), "max") is None
+
+
+def test_smooth_switches_easily_after_a_gap():
+    steps = [{"ko": 0.0, "en": -3.0}, {"ko": 0.0, "en": -3.0}, None, {"ko": -1.5, "en": 0.0}]
+    stuck = smooth(steps, ("ko", "en"), 0.99)
+    assert stuck[3]["ko"] > stuck[3]["en"]
+    freed = smooth(steps, ("ko", "en"), 0.99, p_gap=0.5, gaps=[False, False, False, True])
+    assert freed[3]["en"] > freed[3]["ko"]
+
+
+def test_span_mass_read_modes():
+    from core.components.langid.audio.decide import span_mass
+
+    ko, en = {"ko": 0.95, "en": 0.05}, {"ko": 0.05, "en": 0.95}
+    steps = [(t, {"x": 0}) for t in (1.0, 1.5, 2.0, 2.5, 3.0)]
+    posts = [ko, ko, ko, en, en]
+    cands = ("ko", "en")
+    assert span_mass(steps, posts, (1.0, 3.0), 0.0, cands)["ko"] > 0.5
+    assert span_mass(steps, posts, (1.0, 3.0), 0.0, cands, read="tail", read_sec=1.0)["en"] > 0.5
+    assert span_mass(steps, posts, (1.0, 3.0), 0.0, cands, read="end")["en"] > 0.9
