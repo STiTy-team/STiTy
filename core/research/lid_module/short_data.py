@@ -115,10 +115,11 @@ def yodas_items(lang: str, shard: int, n: int):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", choices=("fleurs", "yodas"), required=True)
+    ap.add_argument("--source", choices=("fleurs", "yodas", "manifest"), required=True)
     ap.add_argument("--split", required=True, help="train / dev / test (output name)")
     ap.add_argument("--lang", required=True, help="FLEURS dir (ko_kr) or YODAS2 code (ko)")
     ap.add_argument("--shard", type=int, default=0, help="YODAS2 shard")
+    ap.add_argument("--manifest", help="--source manifest: an installed dataset's manifest.jsonl")
     ap.add_argument("--items", type=int, required=True)
     ap.add_argument("--crops", type=int, required=True, help="crops per utterance / video")
     ap.add_argument("--out-dir", required=True)
@@ -127,7 +128,22 @@ def main() -> None:
     rng = random.Random(f"{a.source}-{a.split}-{a.lang}-{a.seed}")
     code = FLEURS_LANG.get(a.lang, a.lang)
     crops = []
-    if a.source == "fleurs":
+    if a.source == "manifest":
+        import librosa
+
+        base = os.path.dirname(a.manifest)
+        rows = [__import__("json").loads(line) for line in open(a.manifest, encoding="utf-8")][
+            : a.items
+        ]
+        for r in rows:
+            audio, _ = librosa.load(
+                os.path.join(base, r["audio"]),
+                sr=SR,
+                offset=r.get("offset") or 0.0,
+                duration=r.get("duration"),
+            )
+            crops += crops_from(speech_only(audio), a.crops, rng)
+    elif a.source == "fleurs":
         for audio in fleurs_items(a.lang, "dev" if a.split == "dev" else a.split, a.items):
             crops += crops_from(speech_only(audio), a.crops, rng)
     else:
