@@ -290,11 +290,69 @@ class PhoneScorer(Scorer):
         return out
 
 
+LID_HEAD = "/home/mobility/STiTy-team/STiTy/models/lidhead/whisper_small_7lang.pt"
+
+
+class WhisperHeadScorer(Scorer):
+    """A language head (audio/head.py, trained on short crops of many languages by
+    core/research/lid_module/short_train.py) over the whisper encoder frames of the clip.
+    `model` is the head checkpoint; the encoder named in it is loaded alongside."""
+
+    name = "whisper-head"
+
+    def __init__(self, model: str, device: str | None):
+        import torch
+        from transformers import WhisperFeatureExtractor, WhisperModel
+
+        from .head import LidHead
+
+        self.torch = torch
+        self.device = _device(device)
+        self.head, self.langs, meta = LidHead.load(model)
+        self.head = self.head.to(self.device).eval()
+        name = meta.get("encoder", "openai/whisper-small")
+        dtype = torch.float16 if self.device.startswith("cuda") else torch.float32
+        self.extractor = WhisperFeatureExtractor.from_pretrained(name)
+        self.encoder = (
+            WhisperModel.from_pretrained(name, dtype=dtype).encoder.to(self.device).eval()
+        )
+        self.lock = threading.Lock()
+
+    def scores(self, audio, candidates):
+        return self.scores_batch([audio], candidates)[0]
+
+    def scores_batch(self, audios, candidates):
+        torch = self.torch
+        out = [{c: -math.inf for c in candidates} for _ in audios]
+        known = [c for c in candidates if c in self.langs]
+        live = [i for i, a in enumerate(audios) if len(a) >= 320]
+        if not known or not live:
+            return out
+        clips = [audios[i] for i in live]
+        feats = self.extractor(clips, sampling_rate=SR, return_tensors="pt").input_features
+        n = [max(1, math.ceil(len(c) / 320)) for c in clips]
+        with self.lock, torch.inference_mode():
+            frames = self.encoder(feats.to(self.device, self.encoder.dtype)).last_hidden_state
+            T = max(n)
+            x = frames[:, :T].float()
+            mask = (
+                torch.arange(T, device=self.device)[None, :]
+                < torch.tensor(n, device=self.device)[:, None]
+            )
+            logits = self.head(x, mask)
+        sel = torch.tensor([self.langs.index(c) for c in known], device=self.device)
+        logp = torch.log_softmax(logits[:, sel], -1).cpu().tolist()
+        for i, row in zip(live, logp):
+            out[i].update(dict(zip(known, row)))
+        return out
+
+
 SCORERS = {
     "whisper-token": (WhisperTokenScorer, "openai/whisper-small"),
     "whisper-decode": (WhisperDecodeScorer, "openai/whisper-small"),
     "ecapa": (EcapaScorer, "speechbrain/lang-id-voxlingua107-ecapa"),
     "mms": (MmsScorer, "facebook/mms-lid-256"),
+    "whisper-head": (WhisperHeadScorer, LID_HEAD),
     "phone-uni": (lambda model, device: PhoneScorer(model, device, 1), PHONE_PROFILES),
     "phone-bi": (lambda model, device: PhoneScorer(model, device, 2), PHONE_PROFILES),
 }
