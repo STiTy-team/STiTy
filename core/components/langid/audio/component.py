@@ -29,6 +29,17 @@ MIN_SPEECH_SEC = 0.3
 SILENT_SLOT_SEC = 0.1
 
 
+def _defaults(mode: str) -> dict:
+    """Settings that helped in the 2026-11-20 replays, on unless a config says otherwise:
+    aligner window from the previous aligned end and conf 0.5 for both modes; for the timeline,
+    centered windows, reading the span's last speech step, p_stay 0.8 at temperature 10.
+    `p_gap` and several scorers did not help and stay off."""
+    out = {"align_from": "prev_end", "conf": 0.5}
+    if mode == "timeline":
+        out.update(centered=True, read="end", p_stay=0.8, temperature=10.0)
+    return out
+
+
 def _scorer_specs(settings: dict) -> list[tuple[str, str | None]]:
     """(scorer name, model) pairs: `scorers: [name or name@model, ...]`, else `scorer`/`model`."""
     listed = settings.get("scorers")
@@ -52,7 +63,8 @@ class AudioLanguageDetector(LanguageDetector):
     silent one), `read` (`mean`, `tail` = last `read_sec` of the span, `end` = last speech step).
     Several `scorers` run in parallel and are merged per window by `combine` (`mean` with optional
     `weights`, or `max` = the surest scorer). `align_from: prev_end` starts the aligner window at
-    the previous commit's aligned end instead of 1 s before the previous decision."""
+    the previous commit's aligned end, `decision` 1 s before the previous decision. Defaults: see
+    `_defaults` (what helped is on)."""
 
     SETTINGS = {
         "mode": ("mode", str),
@@ -80,6 +92,9 @@ class AudioLanguageDetector(LanguageDetector):
 
     scorers: dict = {}
     spanner = None
+
+    def __init__(self, settings: dict, *, cfg):
+        super().__init__({**_defaults(settings.get("mode", "segment")), **settings}, cfg=cfg)
 
     @classmethod
     def validate(cls, options: dict, *, kind: str) -> dict:

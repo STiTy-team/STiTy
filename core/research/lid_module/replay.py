@@ -117,7 +117,13 @@ def main() -> None:
     a = ap.parse_args()
 
     commits = list(run_commits(a.run, a.data_root) if a.run else mix_commits(a.mix))
-    det = AudioLanguageDetector({"mode": a.mode, "scorer": a.scorer, "model": a.model}, cfg=None)
+    # The settings of the first grid (2026-11-20 night), before the component's defaults changed.
+    legacy = {"align_from": "decision", "conf": 0.7}
+    if a.mode == "timeline":
+        legacy.update(centered=False, read="mean", p_stay=0.9, temperature=1.0)
+    det = AudioLanguageDetector(
+        {"mode": a.mode, "scorer": a.scorer, "model": a.model, **legacy}, cfg=None
+    )
     det.scorer = build_scorer(a.scorer, a.model)
     det.spanner = MemoSpan(AlignerSpan(), a.span_cache)
     out = open(a.out, "w", encoding="utf-8")

@@ -76,14 +76,14 @@ def test_segment_decides_confident_language_and_logs_aligner_span():
 
 
 def test_segment_keeps_previous_below_conf():
-    d = detector({"ko": -0.6, "en": -0.8}, span=(1.0, 2.5))
+    d = detector({"ko": -0.6, "en": -0.8}, span=(1.0, 2.5), conf=0.7)
     d.previous = "en"
     d.hear(pcm(4.0))
     assert asyncio.run(d.detect(commit("hi", 4.0))) == "en"
 
 
 def test_first_unsure_commit_returns_none():
-    d = detector({"ko": -0.69, "en": -0.70}, span=(1.0, 2.5))
+    d = detector({"ko": -0.69, "en": -0.70}, span=(1.0, 2.5), conf=0.7)
     d.hear(pcm(4.0))
     assert asyncio.run(d.detect(commit("hi", 4.0))) is None
 
@@ -103,7 +103,16 @@ def test_silent_span_keeps_previous():
 
 
 def test_timeline_smooths_over_a_weak_step():
-    d = detector({}, span=(1.2, 1.4), mode="timeline", windows=(1.0,))
+    d = detector(
+        {},
+        span=(1.2, 1.4),
+        mode="timeline",
+        windows=(1.0,),
+        centered=False,
+        read="mean",
+        p_stay=0.9,
+        temperature=1.0,
+    )
     strong_ko, weak_en = {"ko": 0.0, "en": -6.0}, {"ko": -1.0, "en": 0.0}
     d.steps = [
         (1.0, strong_ko),
@@ -117,14 +126,32 @@ def test_timeline_smooths_over_a_weak_step():
 
 
 def test_timeline_scores_steps_while_hearing():
-    d = detector({"ko": 0.0, "en": -3.0}, span=(0.5, 1.5), mode="timeline", windows=(1.0,))
+    d = detector(
+        {"ko": 0.0, "en": -3.0},
+        span=(0.5, 1.5),
+        mode="timeline",
+        windows=(1.0,),
+        centered=False,
+        read="mean",
+        p_stay=0.9,
+        temperature=1.0,
+    )
     d.hear(pcm(2.0))
     assert [t for t, _ in d.steps] == [0.5, 1.0, 1.5, 2.0]
     assert asyncio.run(d.detect(commit("hi", 2.0))) == "ko"
 
 
 def test_timeline_span_before_buffer_uses_nearest_step():
-    d = detector({"ko": 0.0, "en": -3.0}, span=(0.0, 0.1), mode="timeline", windows=(1.0,))
+    d = detector(
+        {"ko": 0.0, "en": -3.0},
+        span=(0.0, 0.1),
+        mode="timeline",
+        windows=(1.0,),
+        centered=False,
+        read="mean",
+        p_stay=0.9,
+        temperature=1.0,
+    )
     d.hear(pcm(2.0))
     assert asyncio.run(d.detect(commit("hi", 2.0))) == "ko"
 
@@ -136,7 +163,16 @@ def test_temperature_sharpens_scores():
 
 
 def test_timeline_silent_span_keeps_previous():
-    d = detector({}, span=(1.2, 1.9), mode="timeline", windows=(1.0,))
+    d = detector(
+        {},
+        span=(1.2, 1.9),
+        mode="timeline",
+        windows=(1.0,),
+        centered=False,
+        read="mean",
+        p_stay=0.9,
+        temperature=1.0,
+    )
     d.previous = "en"
     d.steps = [
         (1.0, {"ko": 0.0, "en": -6.0}),
@@ -188,7 +224,7 @@ def test_centered_steps_wait_for_audio_after_them():
 
 
 def test_silent_step_marks_a_gap():
-    d = detector({"ko": 0.0, "en": -3.0}, mode="timeline", windows=(1.0,))
+    d = detector({"ko": 0.0, "en": -3.0}, mode="timeline", windows=(1.0,), centered=False)
     d.hear(pcm(1.0))
     d.hear(audio_mod.to_pcm_bytes(np.zeros(SR, dtype=np.float32)))
     d.hear(pcm(1.0))
@@ -201,3 +237,17 @@ def test_keep_raw_records_scorer_and_window_scores():
     )
     d.hear(pcm(2.0))
     assert set(d.raw[-1]["w"]) == {"1.0", "2.0"}
+
+
+def test_defaults_turn_on_what_helped():
+    seg = AudioLanguageDetector({}, cfg=None).settings
+    assert seg["align_from"] == "prev_end" and seg["conf"] == 0.5
+    assert "centered" not in seg
+    tl = AudioLanguageDetector({"mode": "timeline"}, cfg=None).settings
+    assert tl["centered"] is True and tl["read"] == "end"
+    assert tl["p_stay"] == 0.8 and tl["temperature"] == 10.0 and tl["align_from"] == "prev_end"
+    assert "p_gap" not in tl
+    assert (
+        AudioLanguageDetector({"mode": "timeline", "read": "mean"}, cfg=None).settings["read"]
+        == "mean"
+    )
