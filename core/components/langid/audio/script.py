@@ -33,6 +33,8 @@ def text_language(text: str, candidates: tuple[str, ...]) -> str | None:
     letters = [ch for ch in text if ch.isalpha()]
     if not letters:
         return None
+    if "ja" in candidates and any(PATTERNS["kana"].match(ch) for ch in letters):
+        return "ja"  # Japanese text often carries English words in Latin letters
     counts = {s: sum(bool(p.match(ch)) for ch in letters) for s, p in PATTERNS.items()}
     if "ja" in candidates and not any(SCRIPT.get(c) == "han" for c in candidates):
         counts["kana"] += counts.pop("han")  # kanji in a session without Chinese

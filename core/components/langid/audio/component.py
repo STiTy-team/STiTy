@@ -35,9 +35,12 @@ def _defaults(mode: str) -> dict:
     aligner window from the previous aligned end and conf 0.5 for both modes; for the timeline,
     centered windows, reading the span's last speech step, p_stay 0.8 at temperature 10. Spans
     shorter than `short_text_sec` take the language of the commit text's script when it singles
-    out one candidate (2026-11-21: northstar errors 6 -> 2); 0 turns that off.
+    out one candidate (2026-11-21: northstar errors 6 -> 2); 0 turns that off. On longer spans,
+    when the acoustic verdict and the text script disagree and the acoustic confidence is under
+    `text_override_conf`, the script wins (northstar 2 -> 1); a sure acoustic verdict stands, which
+    keeps English transliterated into Hangul English.
     `p_gap` and several scorers did not help and stay off."""
-    out = {"align_from": "prev_end", "conf": 0.5, "short_text_sec": 0.8}
+    out = {"align_from": "prev_end", "conf": 0.5, "short_text_sec": 0.8, "text_override_conf": 0.9}
     if mode == "timeline":
         out.update(centered=True, read="end", p_stay=0.8, temperature=10.0)
     return out
@@ -92,6 +95,7 @@ class AudioLanguageDetector(LanguageDetector):
         "temperature": ("temperature", float),
         "keep_raw": ("keep_raw", bool),
         "short_text_sec": ("short_text_sec", float),
+        "text_override_conf": ("text_override_conf", float),
     }
 
     scorers: dict = {}
@@ -338,6 +342,14 @@ class AudioLanguageDetector(LanguageDetector):
                 self._timeline_probs, span, item.decision_audio_sec
             )
         detected = decide(probs, self.previous, self.settings.get("conf", 0.7))
+        if by_text is None and probs and detected is not None:
+            written = text_language(item.original, self.candidates)
+            if (
+                written is not None
+                and written != detected
+                and max(probs.values()) < self.settings.get("text_override_conf", 0.0)
+            ):
+                detected, source = written, source + "+text-override"
         self.trace.append(
             {
                 "decision": item.decision_audio_sec,

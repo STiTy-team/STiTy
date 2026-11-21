@@ -21,3 +21,11 @@ def test_han_counts_as_japanese_only_without_chinese():
 def test_mixed_or_empty_text_gives_no_verdict():
     assert text_language("OK, uh, 감사합니다", ("ko", "en")) is None
     assert text_language("...", ("ko", "en")) is None
+
+
+def test_any_kana_means_japanese_in_a_japanese_session():
+    assert text_language("itmonthで話題", ("ko", "ja", "en")) == "ja"
+    assert (
+        text_language("itmonthで話題", ("ko", "en")) is None
+        or text_language("itmonthで話題", ("ko", "en")) == "en"
+    )

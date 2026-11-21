@@ -160,7 +160,13 @@ def test_timeline_span_before_buffer_uses_nearest_step():
 
 
 def test_temperature_sharpens_scores():
-    d = detector({"ko": -0.6, "en": -0.8}, span=(1.0, 2.5), temperature=10.0, conf=0.7)
+    d = detector(
+        {"ko": -0.6, "en": -0.8},
+        span=(1.0, 2.5),
+        temperature=10.0,
+        conf=0.7,
+        text_override_conf=0.0,
+    )
     d.hear(pcm(4.0))
     assert asyncio.run(d.detect(commit("hi", 4.0))) == "ko"
 
@@ -247,7 +253,7 @@ def test_defaults_turn_on_what_helped():
     seg = AudioLanguageDetector({}, cfg=None).settings
     assert seg["align_from"] == "prev_end" and seg["conf"] == 0.5
     assert "centered" not in seg
-    assert seg["short_text_sec"] == 0.8
+    assert seg["short_text_sec"] == 0.8 and seg["text_override_conf"] == 0.9
     tl = AudioLanguageDetector({"mode": "timeline"}, cfg=None).settings
     assert tl["centered"] is True and tl["read"] == "end"
     assert tl["p_stay"] == 0.8 and tl["temperature"] == 10.0 and tl["align_from"] == "prev_end"
@@ -278,3 +284,19 @@ def test_long_span_ignores_the_text():
     d = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 2.5))
     d.hear(pcm(4.0))
     assert asyncio.run(d.detect(commit("Wait, wait.", 4.0))) == "ko"
+
+
+def test_unsure_audio_is_overridden_by_the_text_script():
+    d = detector({"ko": -0.5, "en": -1.0}, span=(1.0, 2.5))  # ko about 0.62, under 0.9
+    d.hear(pcm(4.0))
+    assert asyncio.run(d.detect(commit("Is it always like this?", 4.0))) == "en"
+    assert d.trace[-1]["src"].endswith("text-override")
+
+
+def test_sure_audio_keeps_its_verdict_against_the_text():
+    d = detector({"ko": 0.0, "en": -8.0}, span=(1.0, 2.5))
+    d.hear(pcm(4.0))
+    assert asyncio.run(d.detect(commit("오 스피킹 of 부산", 4.0))) == "ko"
+    d2 = detector({"ko": -8.0, "en": 0.0}, span=(1.0, 2.5))
+    d2.hear(pcm(4.0))
+    assert asyncio.run(d2.detect(commit("오 스피킹 of 부산", 4.0))) == "en"

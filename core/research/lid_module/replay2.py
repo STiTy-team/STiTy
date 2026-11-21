@@ -57,6 +57,7 @@ def main() -> None:
         "centered": a.centered,
         "align_from": "prev_end",
         "short_text_sec": 0.0,
+        "text_override_conf": 0.0,
         "keep_raw": True,
     }
     det = AudioLanguageDetector(settings, cfg=None)
