@@ -118,7 +118,7 @@ def main() -> None:
 
     commits = list(run_commits(a.run, a.data_root) if a.run else mix_commits(a.mix))
     # The settings of the first grid (2026-11-20 night), before the component's defaults changed.
-    legacy = {"align_from": "decision", "conf": 0.7}
+    legacy = {"align_from": "decision", "conf": 0.7, "short_text_sec": 0.0}
     if a.mode == "timeline":
         legacy.update(centered=False, read="mean", p_stay=0.9, temperature=1.0)
     det = AudioLanguageDetector(

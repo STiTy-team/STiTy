@@ -12,6 +12,7 @@ from .. import langids
 from ..base import LanguageDetector, Transcribed
 from .decide import combine, decide, lag_span, normalise, smooth, span_mass, with_prior
 from .scorers import SCORERS, build_scorer
+from .script import text_language
 from .span import AlignerSpan
 from .vad import speech_only, speech_spans
 
@@ -32,9 +33,11 @@ SILENT_SLOT_SEC = 0.1
 def _defaults(mode: str) -> dict:
     """Settings that helped in the 2026-11-20 replays, on unless a config says otherwise:
     aligner window from the previous aligned end and conf 0.5 for both modes; for the timeline,
-    centered windows, reading the span's last speech step, p_stay 0.8 at temperature 10.
+    centered windows, reading the span's last speech step, p_stay 0.8 at temperature 10. Spans
+    shorter than `short_text_sec` take the language of the commit text's script when it singles
+    out one candidate (2026-11-21: northstar errors 6 -> 2); 0 turns that off.
     `p_gap` and several scorers did not help and stay off."""
-    out = {"align_from": "prev_end", "conf": 0.5}
+    out = {"align_from": "prev_end", "conf": 0.5, "short_text_sec": 0.8}
     if mode == "timeline":
         out.update(centered=True, read="end", p_stay=0.8, temperature=10.0)
     return out
@@ -88,6 +91,7 @@ class AudioLanguageDetector(LanguageDetector):
         "max_sec": ("max_sec", float),
         "temperature": ("temperature", float),
         "keep_raw": ("keep_raw", bool),
+        "short_text_sec": ("short_text_sec", float),
     }
 
     scorers: dict = {}
@@ -322,7 +326,12 @@ class AudioLanguageDetector(LanguageDetector):
             return None
         span, source = await asyncio.to_thread(self._span, item)
         raw, extra = None, []
-        if self.mode == "segment":
+        by_text = None
+        if span[1] - span[0] < self.settings.get("short_text_sec", 0.0):
+            by_text = text_language(item.original, self.candidates)
+        if by_text is not None:
+            probs, source = {c: float(c == by_text) for c in self.candidates}, source + "+text"
+        elif self.mode == "segment":
             probs, raw = await asyncio.to_thread(self._segment_probs, span)
         else:
             probs, extra = await asyncio.to_thread(

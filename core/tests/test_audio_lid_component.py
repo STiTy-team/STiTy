@@ -112,6 +112,7 @@ def test_timeline_smooths_over_a_weak_step():
         read="mean",
         p_stay=0.9,
         temperature=1.0,
+        short_text_sec=0.0,
     )
     strong_ko, weak_en = {"ko": 0.0, "en": -6.0}, {"ko": -1.0, "en": 0.0}
     d.steps = [
@@ -135,6 +136,7 @@ def test_timeline_scores_steps_while_hearing():
         read="mean",
         p_stay=0.9,
         temperature=1.0,
+        short_text_sec=0.0,
     )
     d.hear(pcm(2.0))
     assert [t for t, _ in d.steps] == [0.5, 1.0, 1.5, 2.0]
@@ -151,6 +153,7 @@ def test_timeline_span_before_buffer_uses_nearest_step():
         read="mean",
         p_stay=0.9,
         temperature=1.0,
+        short_text_sec=0.0,
     )
     d.hear(pcm(2.0))
     assert asyncio.run(d.detect(commit("hi", 2.0))) == "ko"
@@ -172,6 +175,7 @@ def test_timeline_silent_span_keeps_previous():
         read="mean",
         p_stay=0.9,
         temperature=1.0,
+        short_text_sec=0.0,
     )
     d.previous = "en"
     d.steps = [
@@ -243,6 +247,7 @@ def test_defaults_turn_on_what_helped():
     seg = AudioLanguageDetector({}, cfg=None).settings
     assert seg["align_from"] == "prev_end" and seg["conf"] == 0.5
     assert "centered" not in seg
+    assert seg["short_text_sec"] == 0.8
     tl = AudioLanguageDetector({"mode": "timeline"}, cfg=None).settings
     assert tl["centered"] is True and tl["read"] == "end"
     assert tl["p_stay"] == 0.8 and tl["temperature"] == 10.0 and tl["align_from"] == "prev_end"
@@ -251,3 +256,25 @@ def test_defaults_turn_on_what_helped():
         AudioLanguageDetector({"mode": "timeline", "read": "mean"}, cfg=None).settings["read"]
         == "mean"
     )
+
+
+def test_short_span_uses_the_text_script():
+    d = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 1.5))
+    d.hear(pcm(4.0))
+    assert asyncio.run(d.detect(commit("Wait, wait.", 4.0))) == "en"
+    assert d.trace[-1]["src"].endswith("text")
+
+
+def test_short_span_with_shared_script_falls_back_to_audio():
+    d = AudioLanguageDetector({"aligner": True}, cfg=None)
+    d.scorer = FakeScorer({"es": 0.0, "en": -5.0})
+    d.spanner = FakeSpan((1.0, 1.5))
+    d.start(languages=["es", "en"])
+    d.hear(pcm(4.0))
+    assert asyncio.run(d.detect(commit("hello there", 4.0))) == "es"
+
+
+def test_long_span_ignores_the_text():
+    d = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 2.5))
+    d.hear(pcm(4.0))
+    assert asyncio.run(d.detect(commit("Wait, wait.", 4.0))) == "ko"
