@@ -30,6 +30,7 @@ class ApiTranslation(Translator):
         "max_tokens": ("max_tokens", int),
         "timeout_sec": ("timeout_sec", float),
         "usage_path": ("usage_path", str),
+        "extra_body": ("extra_body", dict),
     }
 
     async def load(self) -> None:
@@ -46,6 +47,7 @@ class ApiTranslation(Translator):
         self.reasoning_effort = self.settings.get("reasoning_effort", "low")
         self.context_turns = self.settings.get("context_turns", 1)
         self.max_tokens = self.settings.get("max_tokens", 1024)
+        self.extra_body = self.settings.get("extra_body", {})
         self.usage_path = Path(self.settings.get("usage_path", DEFAULT_USAGE_PATH))
         self.calls = 0
         self.failed = 0
@@ -98,7 +100,8 @@ class ApiTranslation(Translator):
         return context[-self.context_turns:]
 
     async def _chat(self, messages: list[dict]) -> str:
-        body = {"model": self.model, "messages": messages, "max_tokens": self.max_tokens}
+        body = {"model": self.model, "messages": messages, "max_tokens": self.max_tokens,
+                **self.extra_body}
         if self.reasoning_effort:
             body["reasoning_effort"] = self.reasoning_effort
         response = await self.client.post(f"{self.url}/chat/completions", json=body)
@@ -110,7 +113,7 @@ class ApiTranslation(Translator):
     def _record_usage(self, data: dict) -> None:
         self.calls += 1
         usage = data.get("usage") or {}
-        cost = float((data.get("estimated_cost") or {}).get("amount") or 0.0)
+        cost = float((data.get("estimated_cost") or {}).get("amount") or usage.get("cost") or 0.0)
         self.cost_usd += cost
         line = {"t": time.time(), "model": self.model,
                 "in": usage.get("prompt_tokens"), "out": usage.get("completion_tokens"),

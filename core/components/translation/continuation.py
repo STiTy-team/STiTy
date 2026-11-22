@@ -52,14 +52,12 @@ class OpenSentence:
 class ContinuationTranslation(ApiTranslation):
     SETTINGS = {
         **ApiTranslation.SETTINGS,
-        "extra_body": ("extra_body", dict),
         "max_open_pieces": ("max_open_pieces", int),
     }
 
     async def load(self) -> None:
         await super().load()
         self.context_turns = self.settings.get("context_turns", 3)
-        self.extra_body = self.settings.get("extra_body", {})
         self.max_open_pieces = self.settings.get("max_open_pieces", 4)
         self.corrections = 0
         self.start()
@@ -142,17 +140,3 @@ class ContinuationTranslation(ApiTranslation):
         return {"text": data["text"].strip(),
                 "finished": bool(data.get("finished")),
                 "corrected": bool(data.get("corrected"))}
-
-    async def _chat(self, messages: list[dict]) -> str:
-        body = {"model": self.model, "messages": messages, "max_tokens": self.max_tokens,
-                **self.extra_body}
-        if self.reasoning_effort:
-            body["reasoning_effort"] = self.reasoning_effort
-        response = await self.client.post(f"{self.url}/chat/completions", json=body)
-        response.raise_for_status()
-        data = response.json()
-        cost = (data.get("usage") or {}).get("cost")
-        if "estimated_cost" not in data and cost is not None:
-            data["estimated_cost"] = {"amount": cost}
-        self._record_usage(data)
-        return data["choices"][0]["message"]["content"] or ""
