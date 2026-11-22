@@ -27,7 +27,8 @@ briefly and naturally ("- actually, ...", "- or rather, ...") and set "corrected
 Getting the meaning right matters more than sounding smooth.
 4. The earlier sentences are context only. Use them for pronouns, omitted subjects, names and \
 terms, and keep every term translated the way you translated it before.
-5. If nothing can be said yet, use an empty "text".
+5. Use an empty "text" only when the piece is a bare filler or noise ("uh", "um", "아", "음"). \
+For anything with content, say your best guess rather than nothing.
 
 Set "finished" to true when the source sentence is complete."""
 
@@ -77,7 +78,7 @@ class ContinuationTranslation(ApiTranslation):
         sentence = self._sentence_for(source_lang or "", target_lang)
         sentence.sources.append(text)
         try:
-            reply = self._parse(await self._chat(self._prompt_for(sentence, text)))
+            reply = self._parse(await self._ask(self._prompt_for(sentence, text)))
         except Exception as e:  # noqa: BLE001
             self.failed += 1
             log.warning("[TRANS-ERROR] %s", e)
@@ -119,12 +120,13 @@ class ContinuationTranslation(ApiTranslation):
         earlier = self.history[-self.context_turns:] if self.context_turns else []
         if earlier:
             lines.append("\nEarlier sentences, oldest first (context only):")
-            lines.extend(f"- {original} => {translation}" for original, translation in earlier)
+            lines.extend(f"- {self._for_model(original)} => {translation}"
+                         for original, translation in earlier)
         lines.append("\nCurrent sentence so far:")
-        lines.append(f"source: {sentence.source()}")
-        lines.append(f"newest piece: {newest}")
+        lines.append(f"source: {self._for_model(sentence.source())}")
+        lines.append(f"newest piece: {self._for_model(newest)}")
         lines.append(f"already spoken: {sentence.said() or '(nothing yet)'}")
-        return [{"role": "system", "content": SYSTEM_PROMPT},
+        return [{"role": "system", "content": self._system_prompt(SYSTEM_PROMPT)},
                 {"role": "user", "content": "\n".join(lines)}]
 
     @staticmethod

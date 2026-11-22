@@ -45,6 +45,8 @@
 | 역할 | `asr.` · `mt.` | 음성 인식, 번역 |
 | 변형 | `seg` · `punct` | 커밋 정책 (`commit: seg` / `commit: punct`) |
 | 변형 | `noctx` | 앞 턴 문맥 없이 번역 (`translation.context_turns: 0`) |
+| 변형 | `cont` | 미완 문장을 이어 말하는 번역 (`translation.name: continuation`) |
+| 변형 | `nopunct` | 전사의 문장부호를 지우고 번역기가 추론하게 한다 (`translation.strip_punctuation: true`) |
 
 ## `meta` 블록
 
