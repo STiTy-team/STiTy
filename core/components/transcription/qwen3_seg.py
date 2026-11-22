@@ -20,12 +20,20 @@ SEG_TAG = "<SEG>"
 SEG_RE = re.compile(SEG_TAG)
 
 PARTIAL_MIN_INTERVAL_SEC = 0.12
-KEEP_AFTER_SPEECH_SEC = 0.1
+# 발화 끝 무음을 자를 때 남기는 말 뒤 여유.
+# 0.1초면 청크 끝에 걸린 끝 단어("fix")가 끝 확정에서 잘렸다.
+KEEP_AFTER_SPEECH_SEC = 0.4
 RETRY_LEAD_PAD_SEC = 0.2
 PREROLL_SEC = 1.0
 MAX_AUDIO_ACCUM_SEC = 90.0
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
+# 끝 확정 때 반복 줄이기는 이 횟수까지 남긴다.
+# 2 면 사람이 실제로 세 번 한 말("뜨거, 뜨거, 뜨거")이 줄었다.
+COLLAPSE_MAX_REPEATS = 3
+# committed-prefix 는 확정된 문장과 이 단어 수 이상 겹칠 때만 앞부분을 지운다.
+# 한 단어("I", "Man,")는 사람이 실제로 되풀이하거나, 보류만 하고 아직 내보내지 않은 말일 수 있다.
+PREFIX_DEDUP_MIN_WORDS = 2
 FUZZY_DEDUP_MIN_WORDS = 6
 FUZZY_DEDUP_RATIO = 0.85
 FRAGMENT_MAX_WORDS = 3
@@ -816,6 +824,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
             previous_words = previous.split()
             if not previous_words or len(normalized) <= len(previous_words):
                 continue
+            if len(previous_words) < PREFIX_DEDUP_MIN_WORDS:
+                continue
             head = " ".join(normalized[: len(previous_words)])
             if difflib.SequenceMatcher(None, head, previous).ratio() >= FUZZY_DEDUP_RATIO:
                 kept = " ".join(words[len(previous_words) :]).lstrip(" ,.;:!?")
@@ -1220,14 +1230,17 @@ class Qwen3SegTranscription(Qwen3Transcription):
         text = display_of(
             uncommitted_from(current_text, slot["committed_display"], slot["committed_seg_count"])
         )
-        text = collapse_repetition(text)
+        text = collapse_repetition(text, max_repeats=COLLAPSE_MAX_REPEATS)
         if text:
             self._open_utterance()
         deferred, self._deferred_fragment = self._deferred_fragment, ""
+        # 중간 확정(_merge_comma_fragments)처럼 중복 제거를 먼저 하고 보류한 말은 나중에 붙인다.
+        # 보류한 말은 _advance_cursor 에서 이미 확정 목록에 올라가 있어,
+        # 먼저 붙이면 중복 제거가 지운다.
+        text = self._apply_commit_guards(text)
         if deferred:
             text = (deferred + " " + text).strip()
             log.info("[COMMIT-JOIN] held=%r next=<flush>", deferred)
-        text = self._apply_commit_guards(text)
         if not text:
             return
         text = self._strip_dot_switch_tail(text)
