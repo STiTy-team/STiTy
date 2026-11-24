@@ -325,6 +325,18 @@ class AudioLanguageDetector(LanguageDetector):
         )
         return probs, extra
 
+    def tail_language(self, sec: float) -> tuple[str, float] | None:
+        """Language of the last `sec` of heard audio and its probability (timeline mode), for a
+        transcriber deciding whether its slot crossed a language switch."""
+        if self.mode != "timeline" or len(self.candidates) < 2:
+            return None
+        end = self._end_sec()
+        probs, _ = self._timeline_probs((max(self.offset, end - sec), end), end)
+        if not probs:
+            return None
+        lang = max(probs, key=probs.get)
+        return lang, probs[lang]
+
     async def detect(self, item: Transcribed) -> str | None:
         if len(self.candidates) < 2:
             return None

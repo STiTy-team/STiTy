@@ -283,6 +283,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         "dot_commit_confirm": ("dot_commit_confirm", bool),
         "dot_commit_stall_chunks": ("dot_commit_stall_chunks", int),
         "rep_dedup": ("rep_dedup", bool),
+        "lid_slot_reset": ("lid_slot_reset", bool),
+        "lid_reset_conf": ("lid_reset_conf", float),
+        "lid_tail_sec": ("lid_tail_sec", float),
     }
 
     GUARD_STAGES = {
@@ -301,6 +304,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out.setdefault("dot_commit_confirm", True)
         out.setdefault("dot_commit_stall_chunks", 1)
         out.setdefault("rep_dedup", True)
+        out.setdefault("lid_slot_reset", False)
+        out.setdefault("lid_reset_conf", 0.9)
+        out.setdefault("lid_tail_sec", 1.0)
         return out
 
     def start(self, languages: list[str] | None = None, vad=None, **_) -> None:
@@ -312,6 +318,12 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self.dot_commit_confirm = bool(self.settings["dot_commit_confirm"])
         self.dot_commit_stall_chunks = int(self.settings["dot_commit_stall_chunks"])
         self.rep_dedup = bool(self.settings["rep_dedup"])
+        # The pipeline links the langid here (`lid`) when one is configured. With
+        # `lid_slot_reset`, a commit whose remaining tail the langid hears in another language
+        # than the slot's header restarts the slot from the commit's last chunk.
+        self.lid_slot_reset = bool(self.settings["lid_slot_reset"])
+        self.lid_reset_conf = float(self.settings["lid_reset_conf"])
+        self.lid_tail_sec = float(self.settings["lid_tail_sec"])
         self.vad = vad
 
         self._fed_samples = 0
@@ -591,6 +603,18 @@ class Qwen3SegTranscription(Qwen3Transcription):
             )
             return
 
+        if not ends_with_seg and remaining.strip() and self._lid_switched():
+            carry_samples = min(max(accum.shape[0] - accum_before, chunk_samples), accum.shape[0])
+            carry = accum[-carry_samples:].copy()
+            self._restart_with_audio(carry, committed, header_reset=True)
+            log.info(
+                "[SLOT-RESET] cause=lid carry_sec=%.2f tail=%r slot_committed=%r",
+                carry.shape[0] / audio_mod.SAMPLING_RATE,
+                remaining[-40:],
+                committed,
+            )
+            return
+
         if ends_with_seg or not remaining.strip():
             carry_samples = accum.shape[0] - accum_before if header_tail else 0
             if header_tail:
@@ -627,6 +651,20 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 carry.shape[0] / audio_mod.SAMPLING_RATE,
                 committed,
             )
+
+    def _lid_switched(self) -> bool:
+        """The langid hears the last `lid_tail_sec` in another language than the slot's header."""
+        lid = getattr(self, "lid", None)
+        if not self.lid_slot_reset or lid is None or not hasattr(lid, "tail_language"):
+            return False
+        header = langs.norm_code(self.slot["state"].language or "")
+        heard = lid.tail_language(self.lid_tail_sec)
+        if not header or heard is None:
+            return False
+        lang, prob = heard
+        switched = lang != header and prob >= self.lid_reset_conf
+        log.info("[LID-TAIL] header=%s heard=%s p=%.3f switch=%s", header, lang, prob, switched)
+        return switched
 
     def _restart_with_audio(
         self,
