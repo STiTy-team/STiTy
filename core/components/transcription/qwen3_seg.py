@@ -776,6 +776,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         lid = getattr(self, "lid", None)
         if not self.lid_slot_reset or lid is None or not hasattr(lid, "tail_language"):
             return False
+        if self.settings.get("lid_reset_mode") == "boundary":
+            return False
         header = langs.norm_code(self.slot["state"].language or "")
         heard = lid.tail_language(self.lid_tail_sec)
         if not header or heard is None:
