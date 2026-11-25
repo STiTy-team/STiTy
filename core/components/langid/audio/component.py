@@ -337,6 +337,84 @@ class AudioLanguageDetector(LanguageDetector):
         lang = max(probs, key=probs.get)
         return lang, probs[lang]
 
+    def confirmed_switch(self, header: str, min_sec: float, conf: float) -> str | None:
+        """A language other than `header` that the smoothed timeline has held with p >= `conf`
+        for at least `min_sec` up to the newest step, or None."""
+        if self.mode != "timeline" or len(self.candidates) < 2:
+            return None
+        end = self._end_sec()
+        known = [(t, sc) for t, sc in self.steps if t <= end + 1e-6]
+        silent = (self.silent + [False] * len(known))[: len(known)]
+        if self.settings.get("centered"):
+            t = self.next_step
+            while t <= end + 1e-6:
+                scores, quiet, _ = self._score_step(t, end)
+                known.append((t, scores))
+                silent.append(quiet)
+                t += self.settings.get("step_sec", 0.5)
+        if not known:
+            return None
+        posts = smooth(
+            [sc for _, sc in known],
+            self.candidates,
+            self.settings.get("p_stay", 0.9),
+            self.settings.get("p_gap"),
+            [False] + silent[:-1],
+        )
+        step = self.settings.get("step_sec", 0.5)
+        lang, held = None, 0
+        for post in reversed(posts):
+            if not post:
+                break
+            best = max(post, key=post.get)
+            if best == header or post[best] < conf or (lang and best != lang):
+                break
+            lang, held = best, held + 1
+        return lang if lang and held * step >= min_sec else None
+
+    def split_words(
+        self, audio: np.ndarray, words: list, old: str, new: str
+    ) -> int | None:
+        """Index of the first word of `words` (aligned in `audio`) spoken in `new`: the split
+        that maximises log P(old | before) + log P(new | from there). None when the audio from
+        the best split is not heard as `new` (p < 0.5) or is shorter than 0.5 s."""
+        scorer = next(iter(self.scorers.values()))
+        cands = tuple(self.candidates)
+
+        def clip(a: float, b: float) -> np.ndarray:
+            return audio[int(a * SR) : int(b * SR)]
+
+        def logp(scores: dict, lang: str) -> float:
+            vals = np.array([scores[c] for c in cands], dtype=np.float64)
+            top = vals.max()
+            if not np.isfinite(top):
+                return float("-inf")
+            return float(scores[lang] - top - np.log(np.exp(vals - top).sum()))
+
+        end = words[-1][2]
+        splits = [k for k in range(len(words)) if end - words[k][1] >= 0.5]
+        if not splits:
+            return None
+        sufs = scorer.scores_batch([clip(words[k][1], end) for k in splits], cands)
+        pres = scorer.scores_batch(
+            [clip(words[0][1], words[k][1]) if k else audio[:0] for k in splits], cands
+        )
+        best, best_score, best_new = None, float("-inf"), float("-inf")
+        for k, suf, pre in zip(splits, sufs, pres):
+            before = words[k][1] - words[0][1]
+            total = logp(suf, new) + (logp(pre, old) if k and before >= 0.3 else 0.0)
+            if total > best_score:
+                best, best_score, best_new = k, total, logp(suf, new)
+        log.info("[LID-SPLIT] k=%s/%d p_new=%.3f", best, len(words), float(np.exp(best_new)))
+        if best is None or np.exp(best_new) < 0.5:
+            return None
+        return best
+
+    def tail_words(self, audio: np.ndarray, head: str, tail: str) -> list | None:
+        if self.spanner is None:
+            return None
+        return self.spanner.tail_words(audio, head, tail, self.candidates)
+
     def tail_start(self, audio: np.ndarray, head: str, tail: str) -> float | None:
         """Seconds into `audio` (a transcriber's slot) where the uncommitted `tail` starts."""
         if self.spanner is None:

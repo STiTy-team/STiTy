@@ -25,6 +25,7 @@ RETRY_LEAD_PAD_SEC = 0.2
 PREROLL_SEC = 1.0
 MAX_AUDIO_ACCUM_SEC = 90.0
 LID_CARRY_PAD_SEC = 0.3
+LID_RESET_COOLDOWN_SEC = 3.0
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
 FUZZY_DEDUP_MIN_WORDS = 6
@@ -148,6 +149,25 @@ def tail_overlaps(previous: str, sentence: str) -> bool:
         1 for a, b in zip(tail, new_words) if a and b and (a == b or a.endswith(b) or b.endswith(a))
     )
     return hits >= max(1, (len(new_words) + 1) // 2)
+
+
+def split_tail_text(tail: str, words: list[str], k: int) -> str | None:
+    """Text of `tail` before its `k`-th aligned word, finding the aligner's words in order
+    (case and punctuation ignored); None when a word cannot be found."""
+    if k == 0:
+        return ""
+    low, pos = tail.lower(), 0
+    for i, w in enumerate(words):
+        w = re.sub(r"[^\w]+", "", w.lower())
+        if not w:
+            continue
+        idx = low.find(w, pos)
+        if idx < 0:
+            return None
+        if i == k:
+            return tail[:idx].strip()
+        pos = idx + len(w)
+    return None
 
 
 def committed_cursor(text: str, committed_display: str, committed_seg_count: int = 0) -> int:
@@ -289,6 +309,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         "lid_tail_sec": ("lid_tail_sec", float),
         "lid_carry": ("lid_carry", str),
         "lid_every_chunk": ("lid_every_chunk", bool),
+        "lid_reset_mode": ("lid_reset_mode", str),
+        "lid_reset_from": ("lid_reset_from", list),
+        "lid_confirm_sec": ("lid_confirm_sec", float),
     }
 
     GUARD_STAGES = {
@@ -312,6 +335,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out.setdefault("lid_tail_sec", 1.0)
         out.setdefault("lid_carry", "chunk")
         out.setdefault("lid_every_chunk", False)
+        out.setdefault("lid_reset_mode", "seg")
+        out.setdefault("lid_reset_from", [])
+        out.setdefault("lid_confirm_sec", 1.0)
         return out
 
     def start(self, languages: list[str] | None = None, vad=None, **_) -> None:
@@ -329,6 +355,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self.lid_slot_reset = bool(self.settings["lid_slot_reset"])
         self.lid_reset_conf = float(self.settings["lid_reset_conf"])
         self.lid_tail_sec = float(self.settings["lid_tail_sec"])
+        self.lid_confirm_sec = float(self.settings["lid_confirm_sec"])
         self.vad = vad
 
         self._fed_samples = 0
@@ -560,6 +587,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if any_commit:
             slot["seg_chunk_accum"] = accum_before
 
+        if self.lid_slot_reset and self.settings.get("lid_reset_mode") == "boundary":
+            if self._lid_boundary_reset(committed, snapshot):
+                return
+
         if not any_commit and header_tail:
             accum = slot["state"].audio_accum
             since = slot.get("seg_chunk_accum")
@@ -669,6 +700,60 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 carry.shape[0] / audio_mod.SAMPLING_RATE,
                 committed,
             )
+
+    def _lid_boundary_reset(self, committed: str, snapshot: str | None) -> bool:
+        """`lid_reset_mode: boundary`. Once the langid has held another language than the slot
+        header for `lid_confirm_sec`, split the uncommitted tail at the word where that language
+        starts (aligner word times + the langid scorer): the words before are committed
+        (`commitReason: lid`), the slot restarts from the split word's audio, and the first
+        sentence of the new slot skips the dedup rules (its audio does not overlap the old one)."""
+        slot = self.slot
+        lid = getattr(self, "lid", None)
+        if lid is None or not hasattr(lid, "confirmed_switch"):
+            return False
+        if self._audio_sec() - getattr(self, "_lid_reset_at", -1e9) < LID_RESET_COOLDOWN_SEC:
+            return False
+        header = langs.norm_code(slot["state"].language or "")
+        allowed = [langs.norm_code(x) for x in self.settings.get("lid_reset_from") or []]
+        if not header or (allowed and header not in allowed):
+            return False
+        tail = self._uncommitted_display(snapshot)
+        if not tail.strip():
+            return False
+        new = lid.confirmed_switch(header, self.lid_confirm_sec, self.lid_reset_conf)
+        if not new:
+            return False
+        accum = slot["state"].audio_accum
+        words = lid.tail_words(accum, committed, tail)
+        if not words:
+            log.info("[LID-BOUNDARY] skip=no-words header=%s new=%s tail=%r", header, new, tail)
+            return False
+        k = lid.split_words(accum, words, header, new)
+        if k is None:
+            return False
+        before = split_tail_text(tail, [w for w, _, _ in words], k)
+        if before is None:
+            log.info("[LID-BOUNDARY] skip=text-map tail=%r words=%r", tail, words)
+            return False
+        start = words[k][1]
+        prev_end = words[k - 1][2] if k else 0.0
+        at = max(prev_end, start - 0.1)
+        carry = accum[int(at * audio_mod.SAMPLING_RATE) :].copy()
+        if before:
+            self._open_utterance()
+            self._emit_final(before, "lid")
+        self._restart_with_audio(carry, (committed + " " + before).strip())
+        self.slot.pop("seg_reset_last_committed", None)
+        self.slot["lid_fresh"] = True
+        self._lid_reset_at = self._audio_sec()
+        log.info(
+            "[SLOT-RESET] cause=lid-boundary %s->%s split=%d/%d at=%.2f carry_sec=%.2f "
+            "committed_tail=%r redecode=%r",
+            header, new, k, len(words), at, carry.shape[0] / audio_mod.SAMPLING_RATE,
+            before, tail[len(before):].strip(),
+        )
+        self._offer_partial(force=True)
+        return True
 
     def _lid_carry(
         self, accum: np.ndarray, committed: str, remaining: str, accum_before: int, chunk: int
@@ -796,6 +881,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot = self.slot
         applies = lambda name: stage in self.GUARD_STAGES[name]
         if not sentence:
+            return None
+        if slot.get("lid_fresh"):
             return None
 
         if (
@@ -1272,6 +1359,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
         self._last_final_end_sec = audio_end_sec
         self._last_final_text = original
+        if reason != "lid" and self.slot.get("lid_fresh"):
+            self.slot["lid_fresh"] = False
         self._out.append(
             Transcribed(
                 original=original,
