@@ -41,6 +41,37 @@ class AlignerSpan:
         )
         self.lock = threading.Lock()
 
+    def split_at(
+        self, audio: np.ndarray, head: str, tail: str, candidates: tuple[str, ...]
+    ) -> float | None:
+        """Seconds into `audio` where `tail` starts, aligning `head + tail` over the audio (the
+        head's item count comes from aligning the head text alone)."""
+        if not tail.strip() or len(audio) < SR // 5:
+            return None
+        if any(c not in ALIGNER_LANGS for c in candidates):
+            return None
+        text = f"{head} {tail}".strip()
+        try:
+            with self.lock:
+                full = self.aligner.align(
+                    audio=(audio, SR), text=text, language=tokenizer_language(text)
+                )[0].items
+                n_head = (
+                    len(
+                        self.aligner.align(
+                            audio=(audio, SR), text=head, language=tokenizer_language(head)
+                        )[0].items
+                    )
+                    if head.strip()
+                    else 0
+                )
+        except Exception as e:  # noqa: BLE001
+            log.warning("[ALIGN-FAILED] %s: %r", e, tail[:40])
+            return None
+        if n_head >= len(full):
+            return None
+        return float(full[n_head].start_time)
+
     def find(
         self, audio: np.ndarray, audio_start_sec: float, text: str, candidates: tuple[str, ...]
     ) -> tuple[float, float] | None:

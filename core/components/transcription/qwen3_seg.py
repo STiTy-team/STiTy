@@ -24,6 +24,7 @@ KEEP_AFTER_SPEECH_SEC = 0.1
 RETRY_LEAD_PAD_SEC = 0.2
 PREROLL_SEC = 1.0
 MAX_AUDIO_ACCUM_SEC = 90.0
+LID_CARRY_PAD_SEC = 0.3
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
 FUZZY_DEDUP_MIN_WORDS = 6
@@ -286,6 +287,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         "lid_slot_reset": ("lid_slot_reset", bool),
         "lid_reset_conf": ("lid_reset_conf", float),
         "lid_tail_sec": ("lid_tail_sec", float),
+        "lid_carry": ("lid_carry", str),
+        "lid_every_chunk": ("lid_every_chunk", bool),
     }
 
     GUARD_STAGES = {
@@ -307,6 +310,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out.setdefault("lid_slot_reset", False)
         out.setdefault("lid_reset_conf", 0.9)
         out.setdefault("lid_tail_sec", 1.0)
+        out.setdefault("lid_carry", "chunk")
+        out.setdefault("lid_every_chunk", False)
         return out
 
     def start(self, languages: list[str] | None = None, vad=None, **_) -> None:
@@ -576,6 +581,20 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
 
         if not any_commit:
+            # `lid_every_chunk`: a switch heard inside the uncommitted tail restarts the slot
+            # without waiting for a commit; nothing committed is lost, the tail is decoded again.
+            if self.settings.get("lid_every_chunk"):
+                tail = self._uncommitted_display(snapshot)
+                if tail.strip() and self._lid_switched():
+                    accum = slot["state"].audio_accum
+                    carry = self._lid_carry(accum, committed, tail, accum_before, chunk_samples)
+                    self._restart_with_audio(carry, committed, header_reset=True)
+                    log.info(
+                        "[SLOT-RESET] cause=lid-chunk carry_sec=%.2f tail=%r slot_committed=%r",
+                        carry.shape[0] / audio_mod.SAMPLING_RATE,
+                        tail[-40:],
+                        committed,
+                    )
             return
 
         ends_with_seg = decoded.endswith(SEG_TAG) or header_tail
@@ -604,8 +623,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
 
         if not ends_with_seg and remaining.strip() and self._lid_switched():
-            carry_samples = min(max(accum.shape[0] - accum_before, chunk_samples), accum.shape[0])
-            carry = accum[-carry_samples:].copy()
+            carry = self._lid_carry(accum, committed, remaining, accum_before, chunk_samples)
             self._restart_with_audio(carry, committed, header_reset=True)
             log.info(
                 "[SLOT-RESET] cause=lid carry_sec=%.2f tail=%r slot_committed=%r",
@@ -651,6 +669,22 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 carry.shape[0] / audio_mod.SAMPLING_RATE,
                 committed,
             )
+
+    def _lid_carry(
+        self, accum: np.ndarray, committed: str, remaining: str, accum_before: int, chunk: int
+    ) -> np.ndarray:
+        """Audio the restarted slot keeps: from where the aligner puts the start of the
+        uncommitted tail (`lid_carry: tail`, less `LID_CARRY_PAD_SEC`), or the commit's chunk."""
+        carry_from = accum.shape[0] - min(max(accum.shape[0] - accum_before, chunk), accum.shape[0])
+        lid = getattr(self, "lid", None)
+        if self.settings.get("lid_carry") == "tail" and lid is not None:
+            start = lid.tail_start(accum, committed, remaining)
+            if start is not None:
+                at = max(0, int((start - LID_CARRY_PAD_SEC) * audio_mod.SAMPLING_RATE))
+                carry_from = min(carry_from, at)
+            log.info("[LID-CARRY] tail_start=%s carry_sec=%.2f", start,
+                     (accum.shape[0] - carry_from) / audio_mod.SAMPLING_RATE)
+        return accum[carry_from:].copy()
 
     def _lid_switched(self) -> bool:
         """The langid hears the last `lid_tail_sec` in another language than the slot's header."""

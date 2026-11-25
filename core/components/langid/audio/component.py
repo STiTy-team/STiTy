@@ -337,6 +337,12 @@ class AudioLanguageDetector(LanguageDetector):
         lang = max(probs, key=probs.get)
         return lang, probs[lang]
 
+    def tail_start(self, audio: np.ndarray, head: str, tail: str) -> float | None:
+        """Seconds into `audio` (a transcriber's slot) where the uncommitted `tail` starts."""
+        if self.spanner is None:
+            return None
+        return self.spanner.split_at(audio, head, tail, self.candidates)
+
     async def detect(self, item: Transcribed) -> str | None:
         if len(self.candidates) < 2:
             return None
