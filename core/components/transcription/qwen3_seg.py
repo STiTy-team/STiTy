@@ -26,6 +26,7 @@ PREROLL_SEC = 1.0
 MAX_AUDIO_ACCUM_SEC = 90.0
 LID_CARRY_PAD_SEC = 0.3
 LID_RESET_COOLDOWN_SEC = 3.0
+LID_UNHEARD_MAX_SEC = 0.8
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
 FUZZY_DEDUP_MIN_WORDS = 6
@@ -731,6 +732,12 @@ class Qwen3SegTranscription(Qwen3Transcription):
         words = lid.tail_words(accum, committed, tail)
         if not words:
             log.info("[LID-BOUNDARY] skip=no-words header=%s new=%s tail=%r", header, new, tail)
+            return False
+        # The model has not written the audio after the tail yet: the new language may be
+        # there, not in the tail's words. Wait a chunk instead of cutting the tail wrongly.
+        unheard = accum.shape[0] / audio_mod.SAMPLING_RATE - words[-1][2]
+        if unheard > LID_UNHEARD_MAX_SEC:
+            log.info("[LID-BOUNDARY] wait=unheard %.2fs tail=%r", unheard, tail[-40:])
             return False
         k = lid.split_words(accum, words, header, new)
         if k is None:
