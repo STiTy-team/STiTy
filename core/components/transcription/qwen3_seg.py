@@ -748,12 +748,18 @@ class Qwen3SegTranscription(Qwen3Transcription):
             self._emit_final(before, "lid")
         self._restart_with_audio(carry, (committed + " " + before).strip())
         self.slot.pop("seg_reset_last_committed", None)
+        # Keep decoding on from what the new slot writes: without this its first chunks are
+        # decoded from scratch over the whole slot audio, and the model can rewrite (drop) the
+        # sentences it already committed there, which then never commit again.
+        state = self.slot["state"]
+        state.chunk_id = state.unfixed_chunk_num
         self.slot["lid_fresh"] = True
         self._lid_reset_at = self._audio_sec()
         log.info(
-            "[SLOT-RESET] cause=lid-boundary %s->%s split=%d/%d at=%.2f carry_sec=%.2f "
-            "committed_tail=%r redecode=%r",
-            header, new, k, len(words), at, carry.shape[0] / audio_mod.SAMPLING_RATE,
+            "[SLOT-RESET] cause=lid-boundary audio=%.2f %s->%s split=%d/%d at=%.2f "
+            "carry_sec=%.2f committed_tail=%r redecode=%r",
+            self._audio_sec(), header, new, k, len(words), at,
+            carry.shape[0] / audio_mod.SAMPLING_RATE,
             before, tail[len(before):].strip(),
         )
         self._offer_partial(force=True)

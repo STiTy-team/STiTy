@@ -81,7 +81,9 @@ def resets(log_path: str, n_sessions: int) -> list[list[tuple[float, str, str]]]
         last, started = t, True
         r = RESET_RE.match(line.rstrip())
         if r:
-            per[-1].append((t, r.group(2), r.group(3)[:160]))
+            # Prefer the audio time the reset line carries; log seconds drift behind the audio.
+            at = re.search(r"audio=([\d.]+)", r.group(3))
+            per[-1].append((float(at.group(1)) if at else t, r.group(2), r.group(3)[:160]))
     return (per + [[]] * n_sessions)[:n_sessions]
 
 
