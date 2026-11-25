@@ -392,7 +392,12 @@ class AudioLanguageDetector(LanguageDetector):
             return float(scores[lang] - top - np.log(np.exp(vals - top).sum()))
 
         end = words[-1][2]
-        splits = [k for k in range(len(words)) if end - words[k][1] >= 0.5]
+        # A split needs 0.5 s after it, and either nothing before it or 0.3 s to judge.
+        splits = [
+            k
+            for k in range(len(words))
+            if end - words[k][1] >= 0.5 and (k == 0 or words[k][1] - words[0][1] >= 0.3)
+        ]
         if not splits:
             return None
         sufs = scorer.scores_batch([clip(words[k][1], end) for k in splits], cands)
@@ -401,8 +406,7 @@ class AudioLanguageDetector(LanguageDetector):
         )
         best, best_score, best_new = None, float("-inf"), float("-inf")
         for k, suf, pre in zip(splits, sufs, pres):
-            before = words[k][1] - words[0][1]
-            total = logp(suf, new) + (logp(pre, old) if k and before >= 0.3 else 0.0)
+            total = logp(suf, new) + (logp(pre, old) if k else 0.0)
             if total > best_score:
                 best, best_score, best_new = k, total, logp(suf, new)
         log.info("[LID-SPLIT] k=%s/%d p_new=%.3f", best, len(words), float(np.exp(best_new)))

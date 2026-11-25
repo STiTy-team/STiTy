@@ -156,16 +156,19 @@ def split_tail_text(tail: str, words: list[str], k: int) -> str | None:
     (case and punctuation ignored); None when a word cannot be found."""
     if k == 0:
         return ""
-    low, pos = tail.lower(), 0
+    # Index the word characters of the tail so the aligner's words (punctuation stripped)
+    # are found in order and mapped back to a cut position in the original text.
+    chars = [(i, c.lower()) for i, c in enumerate(tail) if re.match(r"\w", c)]
+    flat, pos = "".join(c for _, c in chars), 0
     for i, w in enumerate(words):
         w = re.sub(r"[^\w]+", "", w.lower())
         if not w:
             continue
-        idx = low.find(w, pos)
+        idx = flat.find(w, pos)
         if idx < 0:
             return None
         if i == k:
-            return tail[:idx].strip()
+            return tail[: chars[idx][0]].strip()
         pos = idx + len(w)
     return None
 
@@ -359,6 +362,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self.vad = vad
 
         self._fed_samples = 0
+        self._lid_reset_at = -1e9
         self._partial_seq = 0
         self._out: list = []
         self._partial_text = None
