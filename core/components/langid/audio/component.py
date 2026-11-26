@@ -388,7 +388,15 @@ class AudioLanguageDetector(LanguageDetector):
         await self._settle()
         return await asyncio.to_thread(self._confirmed_switch, header, min_sec, conf)
 
-    def _confirmed_switch(self, header: str, min_sec: float, conf: float) -> str | None:
+    async def confirmed_switch_at(
+        self, header: str, min_sec: float, conf: float
+    ) -> tuple[str, float] | None:
+        """Like `confirmed_switch`, with the stream time where the held language starts (half a
+        step before its first step)."""
+        await self._settle()
+        return await asyncio.to_thread(self._confirmed_switch, header, min_sec, conf, True)
+
+    def _confirmed_switch(self, header: str, min_sec: float, conf: float, with_time: bool = False):
         """A language other than `header` that the smoothed timeline has held with p >= `conf`
         for at least `min_sec` up to the newest step, or None."""
         if self.mode != "timeline" or len(self.candidates) < 2:
@@ -421,7 +429,13 @@ class AudioLanguageDetector(LanguageDetector):
             if best == header or post[best] < conf or (lang and best != lang):
                 break
             lang, held = best, held + 1
-        return lang if lang and held * step >= min_sec else None
+        if not lang or held * step < min_sec:
+            return None
+        if not with_time:
+            return lang
+        first = known[len(known) - held][0]
+        half = step / 2 if self.settings.get("centered") else min(self._windows()) / 2
+        return lang, first - half
 
     def split_words(
         self, audio: np.ndarray, words: list, old: str, new: str

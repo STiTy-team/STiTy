@@ -153,6 +153,31 @@ def tail_overlaps(previous: str, sentence: str) -> bool:
     return hits >= max(1, (len(new_words) + 1) // 2)
 
 
+LANG_NAME = {"ko": "Korean", "en": "English", "ja": "Japanese", "zh": "Chinese"}
+PAUSE_SEARCH_BACK_SEC = 3.0
+PAUSE_SEARCH_AHEAD_SEC = 0.5
+MIN_PAUSE_SEC = 0.15
+
+
+def pause_near(audio: np.ndarray, at: float) -> float:
+    """Seconds into `audio` to cut near `at`: the middle of the pause (VAD) closest to `at`
+    within [at - 3.0, at + 0.5] s, or `at` itself when there is none."""
+    from core.components.langid.audio.vad import speech_spans
+
+    sr = audio_mod.SAMPLING_RATE
+    spans = speech_spans(audio)
+    edges = [0] + [x for s, e in spans for x in (s, e)] + [len(audio)]
+    best = None
+    for gap_start, gap_end in zip(edges[0::2], edges[1::2]):
+        a, b = gap_start / sr, gap_end / sr
+        if b - a < MIN_PAUSE_SEC or b < at - PAUSE_SEARCH_BACK_SEC or a > at + PAUSE_SEARCH_AHEAD_SEC:
+            continue
+        mid = (a + b) / 2
+        if best is None or abs(mid - at) < abs(best - at):
+            best = mid
+    return best if best is not None else at
+
+
 def split_tail_text(tail: str, words: list[str], k: int) -> str | None:
     """Text of `tail` before its `k`-th aligned word, finding the aligner's words in order
     (case and punctuation ignored); None when a word cannot be found."""
@@ -388,9 +413,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out, self._out = self._out, []
         return out
 
-    def _new_state(self, seed_text: str = ""):
+    def _new_state(self, seed_text: str = "", force_language: str | None = None):
         kw = self.settings
         state = self.model.init_streaming_state(
+            language=force_language,
             chunk_size_sec=float(kw.get("chunk_size_sec", 2.0)),
             unfixed_chunk_num=int(kw.get("unfixed_chunk_num", 2)),
             unfixed_token_num=int(kw.get("unfixed_token_num", 5)),
@@ -596,6 +622,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if self.lid_slot_reset and self.settings.get("lid_reset_mode") == "boundary":
             if await self._lid_boundary_reset(committed, snapshot):
                 return
+        if self.lid_slot_reset and self.settings.get("lid_reset_mode") == "finish":
+            if await self._lid_finish_reset(committed, snapshot):
+                return
 
         if not any_commit and header_tail:
             accum = slot["state"].audio_accum
@@ -709,6 +738,81 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 committed,
             )
 
+    async def _lid_finish_reset(self, committed: str, snapshot: str | None) -> bool:
+        """`lid_reset_mode: finish`. Once the langid has held another language than the slot
+        header for `lid_confirm_sec`, cut the slot audio in the pause (VAD) nearest the switch:
+        the old slot decodes once more over the audio before the cut and commits what it has not
+        committed (`commitReason: lid`), and a new slot starts from the cut with its header forced
+        to the new language. No aligner and no text splitting: each language is written by a
+        slot that heard only that language."""
+        slot = self.slot
+        lid = getattr(self, "lid", None)
+        if lid is None or not hasattr(lid, "confirmed_switch_at"):
+            return False
+        if self._audio_sec() - getattr(self, "_lid_reset_at", -1e9) < LID_RESET_COOLDOWN_SEC:
+            return False
+        state = slot["state"]
+        header = langs.norm_code(state.language or "")
+        allowed = [langs.norm_code(x) for x in self.settings.get("lid_reset_from") or []]
+        if not header or (allowed and header not in allowed):
+            return False
+        if not self._uncommitted_display(snapshot).strip():
+            return False
+        found = await lid.confirmed_switch_at(header, self.lid_confirm_sec, self.lid_reset_conf)
+        if not found:
+            return False
+        new, switch_at = found
+        accum = state.audio_accum
+        sr = audio_mod.SAMPLING_RATE
+        accum_end = self._audio_sec() - state.buffer.shape[0] / sr
+        rel = switch_at - (accum_end - accum.shape[0] / sr)
+        if rel <= 0.2 or rel >= accum.shape[0] / sr:
+            log.info("[LID-FINISH] skip=switch-outside-slot rel=%.2f", rel)
+            return False
+        cut = await asyncio.to_thread(pause_near, accum, rel)
+        before = accum[: int(cut * sr)]
+        raw = await self._decode_once(before, state)
+        text = collapse_repetition(
+            display_of(
+                uncommitted_from(
+                    strip_asr_text(raw.strip()), slot["committed_display"], slot["committed_seg_count"]
+                )
+            )
+        )
+        if text:
+            self._open_utterance()
+            self._emit_final(text, "lid")
+        carry = accum[int(cut * sr) :].copy()
+        self._restart_with_audio(carry, (committed + " " + text).strip())
+        self.slot.pop("seg_reset_last_committed", None)
+        self.slot["lid_fresh"] = True
+        self.slot["state"] = self._new_state(force_language=LANG_NAME.get(new))
+        self.slot["state"].audio_accum = carry
+        self.state = self.slot["state"]
+        self._lid_reset_at = self._audio_sec()
+        log.info(
+            "[SLOT-RESET] cause=lid-finish audio=%.2f %s->%s switch=%.2f cut=%.2f/%.2f "
+            "finished=%r carry_sec=%.2f",
+            self._audio_sec(), header, new, rel, cut, accum.shape[0] / sr, text,
+            carry.shape[0] / sr,
+        )
+        self._offer_partial(force=True)
+        return True
+
+    async def _decode_once(self, audio: np.ndarray, state) -> str:
+        """One decode of `audio` with the slot's prompt and committed prefix (what the next
+        streaming step would do), without touching the slot state."""
+        import uuid
+
+        prefix = self.model._build_streaming_prefix(state)
+        inp = {"prompt": state.prompt_raw + prefix, "multi_modal_data": {"audio": [audio]}}
+        final = None
+        async for out in self.model.model.generate(
+            inp, self.model.sampling_params, request_id=str(uuid.uuid4())
+        ):
+            final = out
+        return prefix + (final.outputs[0].text if final is not None else "")
+
     async def _lid_boundary_reset(self, committed: str, snapshot: str | None) -> bool:
         """`lid_reset_mode: boundary`. Once the langid has held another language than the slot
         header for `lid_confirm_sec`, split the uncommitted tail at the word where that language
@@ -796,7 +900,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         lid = getattr(self, "lid", None)
         if not self.lid_slot_reset or lid is None or not hasattr(lid, "tail_language"):
             return False
-        if self.settings.get("lid_reset_mode") == "boundary":
+        if self.settings.get("lid_reset_mode") in ("boundary", "finish"):
             return False
         header = langs.norm_code(self.slot["state"].language or "")
         heard = await lid.tail_language(self.lid_tail_sec)
