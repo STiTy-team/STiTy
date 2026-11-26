@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 SR = audio_mod.SAMPLING_RATE
 KEEP_SEC = 30.0
+SR_PAD_SEC = 1.0
 # Forced alignment assumes the audio holds only the text: start 1 s before the previous
 # decision (northstar: 91% of the span inside the commit's sentence, vs 40% from 6 s back).
 # `align_from: prev_end` starts at the previous commit's aligned end instead (0.92 overall,
@@ -100,6 +101,7 @@ class AudioLanguageDetector(LanguageDetector):
 
     scorers: dict = {}
     spanner = None
+    _pump_task = None
 
     def __init__(self, settings: dict, *, cfg):
         super().__init__({**_defaults(settings.get("mode", "segment")), **settings}, cfg=cfg)
@@ -129,10 +131,6 @@ class AudioLanguageDetector(LanguageDetector):
         self.scorers = {"main": value}
 
     async def load(self) -> None:
-        if self.settings.get("mode", "segment") == "timeline":
-            # Timeline scoring runs synchronously inside hear(), on the caller's event loop: fine
-            # for offline bench, but a live server room would stall on every 0.5 s step.
-            log.warning("[LANGID] audio timeline scores inside hear() - bench use only")
         loaded = {}
         for name, model in _scorer_specs(self.settings):
             loaded[f"{name}@{model}" if model else name] = await cache.load(
@@ -156,6 +154,7 @@ class AudioLanguageDetector(LanguageDetector):
         self.silent: list[bool] = []
         self.raw: list[dict] = []
         self.next_step = self.settings.get("step_sec", 0.5)
+        self._pump_task = None
         self.trace: list[dict] = []
         self.pool = ThreadPoolExecutor(max_workers=max(1, len(self.scorers)))
 
@@ -179,13 +178,28 @@ class AudioLanguageDetector(LanguageDetector):
         return self._end_sec() >= t + ahead - 1e-9
 
     def hear(self, audio: bytes) -> None:
+        """Take audio. In timeline mode the 0.5 s steps are scored off the event loop: inside a
+        running loop hear() only schedules `_pump` (a worker thread scores, the loop appends),
+        so a live room is not blocked; without a loop (tests, scripts) it scores in place.
+        Readers (`detect`, `confirmed_switch`, `tail_language`) await `_settle` first, so they
+        see the same steps as the in-place scoring."""
         self.audio = np.concatenate([self.audio, audio_mod.from_pcm_bytes(audio)])
         if self.mode == "timeline" and len(self.candidates) > 1:
-            step = self.settings.get("step_sec", 0.5)
-            while self._ready(self.next_step):
-                self._add_step(self.next_step, self._end_sec())
-                self.next_step += step
-        keep_from = self._end_sec() - KEEP_SEC
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = None
+            if loop is None:
+                step = self.settings.get("step_sec", 0.5)
+                while self._ready(self.next_step):
+                    self._add_step(self.next_step, self._end_sec())
+                    self.next_step += step
+            elif self._pump_task is None or self._pump_task.done():
+                self._pump_task = loop.create_task(self._pump())
+        # Keep the audio a step still waiting to be scored needs.
+        keep_from = min(
+            self._end_sec() - KEEP_SEC, self.next_step - max(self._windows()) - SR_PAD_SEC
+        )
         if keep_from > self.offset:
             self.audio = self.audio[int((keep_from - self.offset) * SR) :]
             self.offset = keep_from
@@ -195,6 +209,30 @@ class AudioLanguageDetector(LanguageDetector):
             if self.raw:
                 self.raw = [self.raw[i] for i in kept]
 
+    async def _pump(self) -> None:
+        step = self.settings.get("step_sec", 0.5)
+        while self._ready(self.next_step):
+            t, limit, view = self.next_step, self._end_sec(), (self.audio, self.offset)
+            scores, silent, raw = await asyncio.to_thread(self._score_step, t, limit, view)
+            self.steps.append((t, scores))
+            self.silent.append(silent)
+            if self.settings.get("keep_raw"):
+                self.raw.append(raw)
+            self.next_step = t + step
+
+    async def _settle(self) -> None:
+        """Wait until every step the heard audio allows is scored."""
+        while True:
+            task = self._pump_task
+            if task is not None and not task.done():
+                await task
+            elif self.mode == "timeline" and len(self.candidates) > 1 and self._ready(
+                self.next_step
+            ):
+                self._pump_task = asyncio.get_running_loop().create_task(self._pump())
+            else:
+                return
+
     def _add_step(self, t: float, limit: float) -> None:
         scores, silent, raw = self._score_step(t, limit)
         self.steps.append((t, scores))
@@ -202,7 +240,9 @@ class AudioLanguageDetector(LanguageDetector):
         if self.settings.get("keep_raw"):
             self.raw.append(raw)
 
-    def _score_step(self, t: float, limit: float) -> tuple[dict | None, bool, dict]:
+    def _score_step(
+        self, t: float, limit: float, view: tuple | None = None
+    ) -> tuple[dict | None, bool, dict]:
         """Log-scores at step `t` (windows merged across scorers, then averaged over windows),
         whether the step's own slot is silent, and the raw per-scorer, per-window scores. Audio
         after `limit` is not used (a centered window near the decision is cut there)."""
@@ -212,9 +252,10 @@ class AudioLanguageDetector(LanguageDetector):
         bounds = {
             w: ((t - w / 2, min(t + w / 2, limit)) if centered else (t - w, t)) for w in windows
         }
-        lo = max(min(b[0] for b in bounds.values()), self.offset)
+        held, held_from = view if view is not None else (self.audio, self.offset)
+        lo = max(min(b[0] for b in bounds.values()), held_from)
         hi = max(b[1] for b in bounds.values())
-        audio = self._slice(lo, hi)
+        audio = held[max(0, int((lo - held_from) * SR)) : max(0, int((hi - held_from) * SR))]
         spans = speech_spans(audio)
 
         def speech(a: float, b: float) -> np.ndarray:
@@ -325,7 +366,12 @@ class AudioLanguageDetector(LanguageDetector):
         )
         return probs, extra
 
-    def tail_language(self, sec: float) -> tuple[str, float] | None:
+    async def tail_language(self, sec: float) -> tuple[str, float] | None:
+        """Off the event loop: see `_tail_language`."""
+        await self._settle()
+        return await asyncio.to_thread(self._tail_language, sec)
+
+    def _tail_language(self, sec: float) -> tuple[str, float] | None:
         """Language of the last `sec` of heard audio and its probability (timeline mode), for a
         transcriber deciding whether its slot crossed a language switch."""
         if self.mode != "timeline" or len(self.candidates) < 2:
@@ -337,7 +383,12 @@ class AudioLanguageDetector(LanguageDetector):
         lang = max(probs, key=probs.get)
         return lang, probs[lang]
 
-    def confirmed_switch(self, header: str, min_sec: float, conf: float) -> str | None:
+    async def confirmed_switch(self, header: str, min_sec: float, conf: float) -> str | None:
+        """Off the event loop: see `_confirmed_switch`."""
+        await self._settle()
+        return await asyncio.to_thread(self._confirmed_switch, header, min_sec, conf)
+
+    def _confirmed_switch(self, header: str, min_sec: float, conf: float) -> str | None:
         """A language other than `header` that the smoothed timeline has held with p >= `conf`
         for at least `min_sec` up to the newest step, or None."""
         if self.mode != "timeline" or len(self.candidates) < 2:
@@ -428,6 +479,7 @@ class AudioLanguageDetector(LanguageDetector):
     async def detect(self, item: Transcribed) -> str | None:
         if len(self.candidates) < 2:
             return None
+        await self._settle()
         span, source = await asyncio.to_thread(self._span, item)
         raw, extra = None, []
         by_text = None

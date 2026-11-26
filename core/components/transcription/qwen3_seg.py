@@ -1,3 +1,4 @@
+import asyncio
 import difflib
 import re
 from functools import cache
@@ -593,7 +594,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
             slot["seg_chunk_accum"] = accum_before
 
         if self.lid_slot_reset and self.settings.get("lid_reset_mode") == "boundary":
-            if self._lid_boundary_reset(committed, snapshot):
+            if await self._lid_boundary_reset(committed, snapshot):
                 return
 
         if not any_commit and header_tail:
@@ -621,9 +622,11 @@ class Qwen3SegTranscription(Qwen3Transcription):
             # without waiting for a commit; nothing committed is lost, the tail is decoded again.
             if self.settings.get("lid_every_chunk"):
                 tail = self._uncommitted_display(snapshot)
-                if tail.strip() and self._lid_switched():
+                if tail.strip() and await self._lid_switched():
                     accum = slot["state"].audio_accum
-                    carry = self._lid_carry(accum, committed, tail, accum_before, chunk_samples)
+                    carry = await self._lid_carry(
+                        accum, committed, tail, accum_before, chunk_samples
+                    )
                     self._restart_with_audio(carry, committed, header_reset=True)
                     log.info(
                         "[SLOT-RESET] cause=lid-chunk carry_sec=%.2f tail=%r slot_committed=%r",
@@ -658,8 +661,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
             )
             return
 
-        if not ends_with_seg and remaining.strip() and self._lid_switched():
-            carry = self._lid_carry(accum, committed, remaining, accum_before, chunk_samples)
+        if not ends_with_seg and remaining.strip() and await self._lid_switched():
+            carry = await self._lid_carry(accum, committed, remaining, accum_before, chunk_samples)
             self._restart_with_audio(carry, committed, header_reset=True)
             log.info(
                 "[SLOT-RESET] cause=lid carry_sec=%.2f tail=%r slot_committed=%r",
@@ -706,7 +709,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 committed,
             )
 
-    def _lid_boundary_reset(self, committed: str, snapshot: str | None) -> bool:
+    async def _lid_boundary_reset(self, committed: str, snapshot: str | None) -> bool:
         """`lid_reset_mode: boundary`. Once the langid has held another language than the slot
         header for `lid_confirm_sec`, split the uncommitted tail at the word where that language
         starts (aligner word times + the langid scorer): the words before are committed
@@ -725,11 +728,11 @@ class Qwen3SegTranscription(Qwen3Transcription):
         tail = self._uncommitted_display(snapshot)
         if not tail.strip():
             return False
-        new = lid.confirmed_switch(header, self.lid_confirm_sec, self.lid_reset_conf)
+        new = await lid.confirmed_switch(header, self.lid_confirm_sec, self.lid_reset_conf)
         if not new:
             return False
         accum = slot["state"].audio_accum
-        words = lid.tail_words(accum, committed, tail)
+        words = await asyncio.to_thread(lid.tail_words, accum, committed, tail)
         if not words:
             log.info("[LID-BOUNDARY] skip=no-words header=%s new=%s tail=%r", header, new, tail)
             return False
@@ -739,7 +742,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if unheard > LID_UNHEARD_MAX_SEC:
             log.info("[LID-BOUNDARY] wait=unheard %.2fs tail=%r", unheard, tail[-40:])
             return False
-        k = lid.split_words(accum, words, header, new)
+        k = await asyncio.to_thread(lid.split_words, accum, words, header, new)
         if k is None:
             return False
         before = split_tail_text(tail, [w for w, _, _ in words], k)
@@ -772,7 +775,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._offer_partial(force=True)
         return True
 
-    def _lid_carry(
+    async def _lid_carry(
         self, accum: np.ndarray, committed: str, remaining: str, accum_before: int, chunk: int
     ) -> np.ndarray:
         """Audio the restarted slot keeps: from where the aligner puts the start of the
@@ -780,7 +783,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         carry_from = accum.shape[0] - min(max(accum.shape[0] - accum_before, chunk), accum.shape[0])
         lid = getattr(self, "lid", None)
         if self.settings.get("lid_carry") == "tail" and lid is not None:
-            start = lid.tail_start(accum, committed, remaining)
+            start = await asyncio.to_thread(lid.tail_start, accum, committed, remaining)
             if start is not None:
                 at = max(0, int((start - LID_CARRY_PAD_SEC) * audio_mod.SAMPLING_RATE))
                 carry_from = min(carry_from, at)
@@ -788,7 +791,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
                      (accum.shape[0] - carry_from) / audio_mod.SAMPLING_RATE)
         return accum[carry_from:].copy()
 
-    def _lid_switched(self) -> bool:
+    async def _lid_switched(self) -> bool:
         """The langid hears the last `lid_tail_sec` in another language than the slot's header."""
         lid = getattr(self, "lid", None)
         if not self.lid_slot_reset or lid is None or not hasattr(lid, "tail_language"):
@@ -796,7 +799,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if self.settings.get("lid_reset_mode") == "boundary":
             return False
         header = langs.norm_code(self.slot["state"].language or "")
-        heard = lid.tail_language(self.lid_tail_sec)
+        heard = await lid.tail_language(self.lid_tail_sec)
         if not header or heard is None:
             return False
         lang, prob = heard

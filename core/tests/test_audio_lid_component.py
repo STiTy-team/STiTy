@@ -300,3 +300,39 @@ def test_sure_audio_keeps_its_verdict_against_the_text():
     d2 = detector({"ko": -8.0, "en": 0.0}, span=(1.0, 2.5))
     d2.hear(pcm(4.0))
     assert asyncio.run(d2.detect(commit("오 스피킹 of 부산", 4.0))) == "en"
+
+
+def test_timeline_hear_in_running_loop_scores_off_loop_with_same_steps():
+    """Inside an event loop hear() only schedules the scoring; after detect() the steps equal
+    the ones scored in place (no loop)."""
+    settings = dict(mode="timeline", centered=True, windows=[1.0, 2.0], read="end")
+
+    in_place = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 3.5), **settings)
+    for _ in range(8):
+        in_place.hear(pcm(0.5))
+    want = asyncio.run(in_place.detect(commit("hi", 4.0)))
+
+    async def run():
+        d = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 3.5), **settings)
+        for _ in range(8):
+            d.hear(pcm(0.5))
+        assert d.steps == [] or len(d.steps) < len(in_place.steps)  # scheduled, not done yet
+        got = await d.detect(commit("hi", 4.0))
+        return d, got
+
+    d, got = asyncio.run(run())
+    assert got == want
+    assert [t for t, _ in d.steps] == [t for t, _ in in_place.steps]
+
+
+def test_confirmed_switch_is_awaitable_and_needs_held_language():
+    settings = dict(mode="timeline", centered=False, windows=[1.0], step_sec=0.5)
+
+    async def run(sec):
+        d = detector({"ko": -5.0, "en": 0.0}, **settings)
+        for _ in range(int(sec / 0.5)):
+            d.hear(pcm(0.5))
+        return await d.confirmed_switch("ko", 1.0, 0.9)
+
+    assert asyncio.run(run(4.0)) == "en"
+    assert asyncio.run(run(0.5)) is None
