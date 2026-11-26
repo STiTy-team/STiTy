@@ -391,6 +391,7 @@ class Qwen3SegTranscription(Qwen3Transcription):
 
         self._fed_samples = 0
         self._lid_reset_at = -1e9
+        self._lid_job = None
         self._partial_seq = 0
         self._out: list = []
         self._partial_text = None
@@ -759,28 +760,32 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return False
         if not self._uncommitted_display(snapshot).strip():
             return False
-        found = await lid.confirmed_switch_at(header, self.lid_confirm_sec, self.lid_reset_conf)
-        if not found:
-            return False
-        new, switch_at = found
-        accum = state.audio_accum
+        # The judgement (timeline switch + best_cut scoring) runs as a background task on a
+        # snapshot of the slot audio, so the commit path never waits for it; a later chunk
+        # applies the result if the slot is still the one it was made for.
         sr = audio_mod.SAMPLING_RATE
-        accum_end = self._audio_sec() - state.buffer.shape[0] / sr
-        rel = switch_at - (accum_end - accum.shape[0] / sr)
-        if rel <= 0.2 or rel >= accum.shape[0] / sr:
-            log.info("[LID-FINISH] skip=switch-outside-slot rel=%.2f", rel)
+        job = getattr(self, "_lid_job", None)
+        if job is None:
+            accum = state.audio_accum.copy()
+            accum_start = self._audio_sec() - state.buffer.shape[0] / sr - accum.shape[0] / sr
+            task = asyncio.get_running_loop().create_task(
+                self._lid_judge(lid, header, accum, accum_start)
+            )
+            self._lid_job = (task, slot)
             return False
-        if hasattr(lid, "best_cut"):
-            found_cut = await asyncio.to_thread(lid.best_cut, accum, rel, header, new)
-            if found_cut is None:
-                return False
-            cut, p_new, margin = found_cut
-            if p_new < self.lid_reset_conf:
-                log.info("[LID-FINISH] wait=p_new %.3f cut=%.2f", p_new, cut)
-                return False
-            force = LANG_NAME.get(new) if margin >= LID_FORCE_MARGIN else None
-        else:
-            cut, force = await asyncio.to_thread(pause_near, accum, rel), LANG_NAME.get(new)
+        task, job_slot = job
+        if not task.done():
+            return False
+        self._lid_job = None
+        if task.cancelled() or task.exception() is not None:
+            log.warning("[LID-FINISH] judge failed: %r", None if task.cancelled() else task.exception())
+            return False
+        result = task.result()
+        if result is None or job_slot is not slot:
+            return False
+        new, cut = result
+        force = LANG_NAME.get(new)
+        accum = state.audio_accum
         before = accum[: int(cut * sr)]
         raw = await self._decode_once(before, state)
         text = collapse_repetition(
@@ -809,6 +814,31 @@ class Qwen3SegTranscription(Qwen3Transcription):
         )
         self._offer_partial(force=True)
         return True
+
+    async def _lid_judge(
+        self, lid, header: str, accum: np.ndarray, accum_start: float
+    ) -> tuple[str, float] | None:
+        """(new language, cut seconds into `accum`) when the langid holds another language and
+        the audio after the best cut is heard as it with p >= lid_reset_conf, else None."""
+        found = await lid.confirmed_switch_at(header, self.lid_confirm_sec, self.lid_reset_conf)
+        if not found:
+            return None
+        new, switch_at = found
+        sr = audio_mod.SAMPLING_RATE
+        rel = switch_at - accum_start
+        if rel <= 0.2 or rel >= accum.shape[0] / sr:
+            log.info("[LID-FINISH] skip=switch-outside-slot rel=%.2f", rel)
+            return None
+        if not hasattr(lid, "best_cut"):
+            return new, await asyncio.to_thread(pause_near, accum, rel)
+        found_cut = await asyncio.to_thread(lid.best_cut, accum, rel, header, new)
+        if found_cut is None:
+            return None
+        cut, p_new, _ = found_cut
+        if p_new < self.lid_reset_conf:
+            log.info("[LID-FINISH] wait=p_new %.3f cut=%.2f", p_new, cut)
+            return None
+        return new, cut
 
     async def _decode_once(self, audio: np.ndarray, state) -> str:
         """One decode of `audio` with the slot's prompt and committed prefix (what the next
