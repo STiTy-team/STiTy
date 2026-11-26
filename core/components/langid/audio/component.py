@@ -21,6 +21,10 @@ log = logging.getLogger(__name__)
 SR = audio_mod.SAMPLING_RATE
 KEEP_SEC = 30.0
 SR_PAD_SEC = 1.0
+CUT_BACK_SEC = 3.0
+CUT_AHEAD_SEC = 0.5
+CUT_GRID_SEC = 0.25
+CUT_SIDE_SEC = 2.0
 # Forced alignment assumes the audio holds only the text: start 1 s before the previous
 # decision (northstar: 91% of the span inside the commit's sentence, vs 40% from 6 s back).
 # `align_from: prev_end` starts at the previous commit's aligned end instead (0.92 overall,
@@ -436,6 +440,62 @@ class AudioLanguageDetector(LanguageDetector):
         first = known[len(known) - held][0]
         half = step / 2 if self.settings.get("centered") else min(self._windows()) / 2
         return lang, first - half
+
+    def best_cut(
+        self, audio: np.ndarray, at: float, old: str, new: str
+    ) -> tuple[float, float, float] | None:
+        """Where in `audio` (seconds) the speech turns from `old` to `new`, searched in
+        [at - CUT_BACK_SEC, at + CUT_AHEAD_SEC] around the timeline's switch time `at`.
+        Candidates are the middles of VAD pauses, else a CUT_GRID_SEC grid; each is scored by
+        log P(old | up to CUT_SIDE_SEC of speech before) + log P(new | the speech after), with
+        the whisper scorer. Returns (cut, p_new after the cut, margin over the best candidate
+        elsewhere), or None when no candidate has 0.5 s of speech after it."""
+        scorer = next(iter(self.scorers.values()))
+        cands = tuple(self.candidates)
+        dur = len(audio) / SR
+        lo, hi = max(0.0, at - CUT_BACK_SEC), min(dur - 0.5, at + CUT_AHEAD_SEC)
+        if hi <= lo:
+            return None
+        spans = speech_spans(audio)
+        edges = [0] + [x for a_, b_ in spans for x in (a_, b_)] + [len(audio)]
+        points = [
+            (a_ + b_) / 2 / SR
+            for a_, b_ in zip(edges[0::2], edges[1::2])
+            if (b_ - a_) / SR >= 0.15 and lo <= (a_ + b_) / 2 / SR <= hi
+        ]
+        if not points:
+            points = list(np.arange(lo, hi + 1e-9, CUT_GRID_SEC))
+        lefts = [speech_only(audio[int(max(0.0, c - CUT_SIDE_SEC) * SR) : int(c * SR)]) for c in points]
+        rights = [speech_only(audio[int(c * SR) :]) for c in points]
+        keep = [i for i, r in enumerate(rights) if len(r) >= SR // 2]
+        if not keep:
+            return None
+        points = [points[i] for i in keep]
+        lefts = [lefts[i] for i in keep]
+        rights = [rights[i] for i in keep]
+        rs = scorer.scores_batch(rights, cands)
+        ls = scorer.scores_batch(lefts, cands)
+
+        def logp(scores: dict, lang: str) -> float:
+            vals = np.array([scores[c] for c in cands], dtype=np.float64)
+            top = vals.max()
+            if not np.isfinite(top):
+                return float(np.log(1.0 / len(cands)))
+            return float(scores[lang] - top - np.log(np.exp(vals - top).sum()))
+
+        totals = []
+        for left, lsc, rsc in zip(lefts, ls, rs):
+            before = logp(lsc, old) if len(left) >= int(0.3 * SR) else float(np.log(0.5))
+            totals.append(before + logp(rsc, new))
+        order = sorted(range(len(points)), key=lambda i: totals[i], reverse=True)
+        best = order[0]
+        margin = totals[best] - totals[order[1]] if len(order) > 1 else float("inf")
+        p_new = float(np.exp(logp(rs[best], new)))
+        log.info(
+            "[LID-CUT] at=%.2f cands=%d cut=%.2f p_new=%.3f margin=%.2f",
+            at, len(points), points[best], p_new, margin,
+        )
+        return float(points[best]), p_new, float(margin)
 
     def split_words(
         self, audio: np.ndarray, words: list, old: str, new: str

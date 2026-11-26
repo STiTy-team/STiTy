@@ -28,6 +28,7 @@ MAX_AUDIO_ACCUM_SEC = 90.0
 LID_CARRY_PAD_SEC = 0.3
 LID_RESET_COOLDOWN_SEC = 3.0
 LID_UNHEARD_MAX_SEC = 0.8
+LID_FORCE_MARGIN = 2.0
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
 FUZZY_DEDUP_MIN_WORDS = 6
@@ -769,7 +770,17 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if rel <= 0.2 or rel >= accum.shape[0] / sr:
             log.info("[LID-FINISH] skip=switch-outside-slot rel=%.2f", rel)
             return False
-        cut = await asyncio.to_thread(pause_near, accum, rel)
+        if hasattr(lid, "best_cut"):
+            found_cut = await asyncio.to_thread(lid.best_cut, accum, rel, header, new)
+            if found_cut is None:
+                return False
+            cut, p_new, margin = found_cut
+            if p_new < self.lid_reset_conf:
+                log.info("[LID-FINISH] wait=p_new %.3f cut=%.2f", p_new, cut)
+                return False
+            force = LANG_NAME.get(new) if margin >= LID_FORCE_MARGIN else None
+        else:
+            cut, force = await asyncio.to_thread(pause_near, accum, rel), LANG_NAME.get(new)
         before = accum[: int(cut * sr)]
         raw = await self._decode_once(before, state)
         text = collapse_repetition(
@@ -786,14 +797,14 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self._restart_with_audio(carry, (committed + " " + text).strip())
         self.slot.pop("seg_reset_last_committed", None)
         self.slot["lid_fresh"] = True
-        self.slot["state"] = self._new_state(force_language=LANG_NAME.get(new))
+        self.slot["state"] = self._new_state(force_language=force)
         self.slot["state"].audio_accum = carry
         self.state = self.slot["state"]
         self._lid_reset_at = self._audio_sec()
         log.info(
             "[SLOT-RESET] cause=lid-finish audio=%.2f %s->%s switch=%.2f cut=%.2f/%.2f "
-            "finished=%r carry_sec=%.2f",
-            self._audio_sec(), header, new, rel, cut, accum.shape[0] / sr, text,
+            "force=%s finished=%r carry_sec=%.2f",
+            self._audio_sec(), header, new, rel, cut, accum.shape[0] / sr, force, text,
             carry.shape[0] / sr,
         )
         self._offer_partial(force=True)
