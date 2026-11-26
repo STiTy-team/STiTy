@@ -14,6 +14,9 @@ SEG = "<SEG>"
 ASR_TEXT = "<asr_text>"
 CHUNK_SAMPLES = 2 * audio_mod.SAMPLING_RATE
 
+# 슬롯 오디오 길이가 이 길이를 넘을 경우에는 강제로 커밋하고 비우기
+MAX_SLOT_SAMPLES = 30 * audio_mod.SAMPLING_RATE # Whisper 창 길이 30초 기준
+
 
 async def load_model(path: str, gpu_memory_utilization: float) -> tuple:
     from qwen_asr.core.transformers_backend import Qwen3ASRProcessor
@@ -64,8 +67,20 @@ class ZeroQwen3Transcription(Transcriber):
             return []
 
         await self._decode()
-        before, seg, _ = self._decoded.rpartition(SEG)
-        return self._commit(before + seg, "seg")
+
+        # SEG 가 안 끝나 슬롯이 30초를 넘을 경우에는 전부 커밋하고 슬롯 비우기
+        if len(self._audio) > MAX_SLOT_SAMPLES:
+            return await self.flush("limit")
+
+        before, seg, tail = self._decoded.rpartition(SEG)
+        out = self._commit(before + seg, "seg")
+
+        # SEG 로 딱 끝났다 -> 오디오/커밋 텍스트를 버리고 새 슬롯 시작하기
+        # TODO: 여기에서 문제 발생하는거일수도??
+        if seg and not tail.strip():
+            self._reset()
+
+        return out
 
     async def flush(self, reason: str, speech: Speech | None = None) -> list:
         out = await self.finish(reason, speech)
