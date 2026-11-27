@@ -101,9 +101,9 @@ class ZeroQwen3Transcription(Transcriber):
     async def transcribe(self, audio: bytes) -> list:
         samples = audio_mod.from_pcm_bytes(audio)
         if getattr(self, "lid", None) is not None:
-            # Scoring a timeline step runs whisper; do it off the event loop so a server room
-            # does not stall the others every 0.5 s. Awaited, so the steps stay in order.
-            await asyncio.to_thread(self.lid.hear, audio)
+            # Inside a running loop hear() only schedules the timeline scoring in a worker
+            # thread; _switch_at waits for it (_settle) before reading the steps.
+            self.lid.hear(audio)
         self._heard += len(samples)
         self._audio = np.concatenate([self._audio, samples])
         self._undecoded += len(samples)
@@ -117,6 +117,7 @@ class ZeroQwen3Transcription(Transcriber):
             return await self.flush("limit")
 
         if getattr(self, "lid", None) is not None and self.aligner is not None:
+            await self.lid._settle()
             held = self._hold_on_header_change()
             switched = await self._commit_at_switch(held)
             if switched is not None:
