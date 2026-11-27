@@ -121,16 +121,27 @@ class Replay:
 
 
 def bare(text: str) -> str:
-    """Lowercase, without spaces and punctuation: "이 차" and "이차", "This was" and "this was" match."""
-    return re.sub(r"[\W_]", "", text.lower())
+    """Text as bench scores it, then without spaces, punctuation and case.
+
+    The same chain as WER scoring with r2 on (bench/metrics/transcription.py): r2norm (fillers,
+    spelling variants, dialect endings, 이차 -> 2 차), Korean number forms, then the basic
+    normaliser. "이차" and "2차", "This was" and "this was", "JMT" and "존맛탱" all match.
+    """
+    from bench.metrics import r2norm
+    from bench.metrics.common import basic
+    from bench.metrics.numbers import normalize_numbers
+
+    return re.sub(r"[\W_]", "", basic(normalize_numbers(r2norm.apply(text, r2norm.parts("all")))).lower())
 
 
-def said(r, text: str) -> bool:
-    return any(bare(text) in bare(c["original"]) for c in r.commits)
+def said(r, text) -> bool:
+    """Whether a commit holds `text`; a list means any one of its alternatives."""
+    options = text if isinstance(text, list) else [text]
+    return any(bare(t) in bare(c["original"]) for t in options for c in r.commits)
 
 
 # Each check takes the replay and its parameters from the YAML and says whether it holds.
-# Text is compared bare (see `bare`).
+# Text is compared bare (see `bare`); in `texts`, a list stands for alternatives.
 CHECKS = {
     "must-commit": lambda r, texts: all(said(r, t) for t in texts),
     "must-commit-any": lambda r, texts: any(said(r, t) for t in texts),

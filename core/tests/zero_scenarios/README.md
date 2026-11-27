@@ -8,7 +8,8 @@ zero 파이프라인(`core/pipeline/zero.py`, 전사기 `core/components/transcr
 | **시나리오** (`<이름>.yml`) | bench 실행에서 본 문제 하나. 무엇이 틀렸는지(`what`·`why`), 그 일이 난 음성 구간(`item`·`span_sec`), 그때의 로그 줄(`baseline`), 지금 맞아야 할 것(`checks`)과 보고된 문제(`known_issues`) |
 | **replay** | 그 구간의 음성만 진짜 파이프라인에 흘린다 — bench 처럼 200ms 조각으로, VAD·ASR 모델 그대로. 코드를 바꿀 때마다 돌려 그 지점이 어떻게 바뀌는지 본다 |
 
-GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다.
+GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 코드를 바꿔 효과를 볼 때는 지금 기준
+설정 `zero.asr.koen+mt.mock_segalign-w1`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름)과 비교한다.
 
 ```bash
 python -m core.tests.zero_replay                          # 전부
@@ -21,7 +22,10 @@ replay 는 구간마다 커밋을 기준선(`before`)과 지금(`now`) 나란히
 - `checks` 는 지금 반드시 맞아야 한다. 하나라도 틀리면 종료 코드 1.
 - `known_issues` 는 보고된 문제다. 틀리는 게 정상이고, 맞기 시작하면 `FIXED` 로 찍힌다 — 그때 `checks` 로 옮긴다.
 
-검사 이름과 받는 값은 `core/tests/zero_replay.py` 의 `CHECKS` 에 있다.
+검사 이름과 받는 값은 `core/tests/zero_replay.py` 의 `CHECKS` 에 있다. 글자를 보는 검사(`must-commit`,
+`never-commits`, `language-of` …)는 양쪽 글자를 bench 의 r2 채점과 같은 정규화(군말·표기 변형·사투리 어미·숫자
+꼴)에 거친 뒤 띄어쓰기·문장부호·대소문자를 빼고 비교한다 — `2차` 와 `이차`, `This` 와 `this` 는 같은 말이다.
+`texts` 안의 목록은 "이 중 하나" 다: `[["이 차", "2차"], "Cheers"]`.
 
 ## 남는 것 (전부 로컬)
 

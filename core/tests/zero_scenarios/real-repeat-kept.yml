@@ -7,5 +7,5 @@ span_sec: [34.8, 88.4]
 run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
 baseline: fixtures/real-repeat-kept.jsonl
 checks:
-  - must-commit: {"texts": ["이 차 이 차 이 차", "this was this was", "Cheers. Cheers."]}
+  - must-commit: {"texts": [["이 차 이 차 이 차", "2차 2차 2차"], "this was this was", "Cheers. Cheers."]}
 known_issues: []

@@ -1,0 +1,13 @@
+what: "scene1 40~48s — 문장 중간 SEG 마다 잘라 슬롯이 2초 남짓이 되자, 앞 문맥 없이 첫 단어를 잘못 받아 적는다 (\"Emma's not great with\" -> \"That's a Amazon upgrade with\", \"Mild is my friend\" -> \"While this my friend\")"
+why: "SEG 확인 + aligner bench(zero.asr.koen+mt.mock_segalign) 정답 대조에서 찾음 (2026-11-27). 리셋하면 앞 문맥 텍스트도 넘기지 않는다"
+pipeline: configs/pipelines/zero.asr.koen+mt.mock_segalign.yml
+dataset: configs/datasets/northstar_ko+en-ko.yml
+item: scene1
+span_sec: [35.4, 60.4]
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock_segalign
+baseline: fixtures/short-slot-misheard.jsonl
+checks: []
+known_issues:
+  - must-commit: {"texts": ["not great"]}
+  - never-commits: {"texts": ["Amazon upgrade"]}
+  - must-commit: {"texts": ["mild is my friend"]}
