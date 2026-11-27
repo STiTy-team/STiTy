@@ -68,6 +68,7 @@ class ZeroQwen3Transcription(Transcriber):
         "force_allowed_language": ("force_allowed_language", bool),
         "lid_timeline": ("lid_timeline", dict),
         "lid_switch_steps": ("lid_switch_steps", int),
+        "lid_hold_sec": ("lid_hold_sec", float),
     }
 
     async def load(self) -> None:
@@ -114,9 +115,17 @@ class ZeroQwen3Transcription(Transcriber):
             return await self.flush("limit")
 
         if getattr(self, "lid", None) is not None and self.aligner is not None:
-            switched = await self._commit_at_switch()
+            held = self._hold_on_header_change()
+            switched = await self._commit_at_switch(held)
             if switched is not None:
+                self._switch_hold = None
                 return switched
+            if held is not None:
+                waited = (self._heard - held[2]) / audio_mod.SAMPLING_RATE
+                if waited < self.settings.get("lid_hold_sec", 4.0):
+                    return []
+                # The timeline never saw a switch: the new header corrected the old one.
+                self._switch_hold = None
 
         if self.settings.get("seg_confirm"):
             return await self._commit_confirmed()
@@ -209,7 +218,21 @@ class ZeroQwen3Transcription(Transcriber):
                 return (known[i - 1][0] + known[i][0]) / 2 - start, old, known[i][1]
         return None
 
-    async def _commit_at_switch(self) -> list | None:
+    def _hold_on_header_change(self) -> tuple[str, int, int] | None:
+        """The decode to keep while the timeline catches up: when this decode names another
+        language than the one before it in the same slot, the one before (text, the audio length
+        it heard, when the hold began). The timeline places a step only once 2 s of audio after
+        it are in, so the change is seen in the header first."""
+        if self._switch_hold is None:
+            before, now = (_header_code(d) for d in (self._prev[0], self._decoded))
+            if before and now and before != now:
+                self._switch_hold = (self._prev[0], self._prev[1], self._heard)
+                if self.settings.get("record_decodes"):
+                    stream.record("lang_hold", slot_start=self._heard - len(self._audio),
+                                  old=before, new=now)
+        return self._switch_hold
+
+    async def _commit_at_switch(self, held: tuple[str, int, int] | None = None) -> list | None:
         """With lid_timeline: when the language changes inside the slot, commit what was said
         before the change and restart the slot there.
 
@@ -222,7 +245,8 @@ class ZeroQwen3Transcription(Transcriber):
         if found is None:
             return None
         at, old, new = found
-        for decoded, length in ((self._decoded, len(self._audio)), self._prev):
+        sources = [held[:2]] if held else []
+        for decoded, length in sources + [(self._decoded, len(self._audio)), self._prev]:
             named = re.match(r"language (\S+?)" + re.escape(ASR_TEXT), decoded or "")
             if named and langs.norm_code(named.group(1)) == old and decoded.startswith(self._committed):
                 break
@@ -310,6 +334,7 @@ class ZeroQwen3Transcription(Transcriber):
         self._prev = ("", 0)
         self._committed = ""
         self._held = None
+        self._switch_hold = None
         # A new slot starts with the last committed sentences as context (context_sentences).
         keep = self.settings.get("context_sentences", 0)
         self._context = " ".join(self._recent[-keep:]) if keep else ""
@@ -388,6 +413,12 @@ class ZeroQwen3Transcription(Transcriber):
                 committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
             )
         ]
+
+
+def _header_code(decoded: str) -> str:
+    """The language code a decode's header names ("" for none, or "None")."""
+    named = re.match(r"language (\S+?)" + re.escape(ASR_TEXT), decoded or "")
+    return langs.norm_code(named.group(1)) if named else ""
 
 
 def _prefix_kept(body: str, n: int) -> str:
