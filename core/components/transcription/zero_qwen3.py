@@ -66,6 +66,8 @@ class ZeroQwen3Transcription(Transcriber):
         "context_sentences": ("context_sentences", int),
         "carry_sentence": ("carry_sentence", bool),
         "force_allowed_language": ("force_allowed_language", bool),
+        "lid_timeline": ("lid_timeline", dict),
+        "lid_switch_steps": ("lid_switch_steps", int),
     }
 
     async def load(self) -> None:
@@ -77,9 +79,19 @@ class ZeroQwen3Transcription(Transcriber):
         if self.settings.get("aligner"):
             name = self.settings["aligner"]
             self.aligner = await cache.load(("zero-aligner", name), lambda: load_aligner(name))
+        self.lid = None
+        if self.settings.get("lid_timeline") is not None:
+            from core.components.langid.audio.component import AudioLanguageDetector
+
+            # Only the timeline is used: it is fed every piece and read at each decode.
+            options = {"mode": "timeline", "aligner": False, **self.settings["lid_timeline"]}
+            self.lid = AudioLanguageDetector(options, cfg=self.cfg)
+            await self.lid.load()
 
     def start(self, languages: list[str] | None = None, **_) -> None:
         self._allowed = [code for code in (langs.norm_code(x) for x in languages or []) if code]
+        if getattr(self, "lid", None) is not None:
+            self.lid.start(languages=self._allowed)
         self._heard = 0
         self._language = ""
         self._recent = []
@@ -87,6 +99,8 @@ class ZeroQwen3Transcription(Transcriber):
 
     async def transcribe(self, audio: bytes) -> list:
         samples = audio_mod.from_pcm_bytes(audio)
+        if getattr(self, "lid", None) is not None:
+            self.lid.hear(audio)
         self._heard += len(samples)
         self._audio = np.concatenate([self._audio, samples])
         self._undecoded += len(samples)
@@ -98,6 +112,11 @@ class ZeroQwen3Transcription(Transcriber):
         # SEG 가 안 끝나 슬롯이 30초를 넘을 경우에는 전부 커밋하고 슬롯 비우기
         if len(self._audio) > MAX_SLOT_SAMPLES:
             return await self.flush("limit")
+
+        if getattr(self, "lid", None) is not None and self.aligner is not None:
+            switched = await self._commit_at_switch()
+            if switched is not None:
+                return switched
 
         if self.settings.get("seg_confirm"):
             return await self._commit_confirmed()
@@ -164,6 +183,78 @@ class ZeroQwen3Transcription(Transcriber):
         self._held = pending
         return out
 
+    def _switch_at(self) -> tuple[float, str, str] | None:
+        """Where, inside the slot, the audio language timeline says the language changes: the
+        time (seconds into the slot) halfway between the last step of the old language and the
+        first of the new, when lid_switch_steps steps in a row are in the new one."""
+        from core.components.langid.audio.decide import smooth
+
+        lid, need = self.lid, self.settings.get("lid_switch_steps", 2)
+        start = (self._heard - len(self._audio)) / audio_mod.SAMPLING_RATE
+        steps = [(t, sc, q) for (t, sc), q in zip(lid.steps, lid.silent) if t >= start]
+        if len(lid.candidates) < 2 or len(steps) < need + 1:
+            return None
+        posts = smooth([sc for _, sc, _ in steps], lid.candidates, lid.settings.get("p_stay", 0.8))
+        conf = lid.settings.get("conf", 0.5)
+        labels = [
+            None if q or sc is None or max(p.values()) < conf else max(p, key=p.get)
+            for (_, sc, q), p in zip(steps, posts)
+        ]
+        known = [(t, lab) for (t, _, _), lab in zip(steps, labels) if lab]
+        if not known:
+            return None
+        old = known[0][1]
+        for i in range(1, len(known) - need + 1):
+            if all(lab != old and lab == known[i][1] for _, lab in known[i : i + need]):
+                return (known[i - 1][0] + known[i][0]) / 2 - start, old, known[i][1]
+        return None
+
+    async def _commit_at_switch(self) -> list | None:
+        """With lid_timeline: when the language changes inside the slot, commit what was said
+        before the change and restart the slot there.
+
+        The text comes from the latest decode written in the old language - the decode that
+        heard the new language often rewrites the slot in it and drops the old sentence. That
+        text is aligned to the audio it was decoded from; the words ending before the change are
+        committed (reason "lang") and the slot restarts halfway to the next word.
+        """
+        found = self._switch_at()
+        if found is None:
+            return None
+        at, old, new = found
+        for decoded, length in ((self._decoded, len(self._audio)), self._prev):
+            named = re.match(r"language (\S+?)" + re.escape(ASR_TEXT), decoded or "")
+            if named and langs.norm_code(named.group(1)) == old and decoded.startswith(self._committed):
+                break
+        else:
+            return None
+        header, body = named.group(), decoded[named.end() :]
+        text = " ".join(body.replace(SEG, " ").split())
+        if not text:
+            return None
+        audio = self._audio[:length]
+        result = await asyncio.to_thread(
+            self.aligner.align, (audio, audio_mod.SAMPLING_RATE), text, named.group(1)
+        )
+        units = list(result[0])
+        kept = [u for u in units if u.end_time <= at + 0.15]
+        if not kept:
+            return None
+        k = len(kept) - 1
+        cut = (units[k].end_time + units[k + 1].start_time) / 2 if k + 1 < len(units) else at
+        through = header + _prefix_kept(body, sum(_kept_chars(u.text) for u in kept))
+        if len(through) <= len(self._committed):
+            return None
+        sample = int(min(cut, at + 0.3) * audio_mod.SAMPLING_RATE)
+        if self.settings.get("record_decodes"):
+            stream.record("lang_switch", slot_start=self._heard - len(self._audio), at=at, old=old,
+                          new=new, cut=sample, last=units[k].text)
+        out = self._commit(through, "lang")
+        carry = self._audio[sample:]
+        self._reset()
+        self._audio, self._undecoded = carry, len(carry)
+        return out
+
     async def _pause_at(self, through: str) -> tuple[int, int | None] | None:
         """The sample in the slot halfway between the last word of `through` and the next one,
         and where the last sentence of `through` starts (halfway from the word before it).
@@ -215,6 +306,8 @@ class ZeroQwen3Transcription(Transcriber):
         self._audio = np.zeros(0, dtype=np.float32)
         self._undecoded = 0
         self._decoded = ""
+        self._decoded_len = 0
+        self._prev = ("", 0)
         self._committed = ""
         self._held = None
         # A new slot starts with the last committed sentences as context (context_sentences).
@@ -241,7 +334,9 @@ class ZeroQwen3Transcription(Transcriber):
             text = forced + out.outputs[0].text
         if self.settings.get("record_decodes"):
             self._record_decode(text)
+        self._prev = (self._decoded, self._decoded_len)
         self._decoded = self._committed + text
+        self._decoded_len = len(self._audio)
         self._undecoded = 0
 
     def _allowed_header(self, text: str) -> str:
@@ -293,6 +388,26 @@ class ZeroQwen3Transcription(Transcriber):
                 committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
             )
         ]
+
+
+def _prefix_kept(body: str, n: int) -> str:
+    """The start of decoded `body` that holds its first `n` aligner-kept characters, with the
+    punctuation right after them; <SEG> marks are not counted."""
+    count, i = 0, 0
+    while i < len(body):
+        if body.startswith(SEG, i):
+            i += len(SEG)
+            continue
+        ch = body[i]
+        i += 1
+        if ch == "'" or unicodedata.category(ch)[0] in "LN":
+            count += 1
+            if count == n:
+                while i < len(body) and not body.startswith(SEG, i) and not body[i].isspace() \
+                        and not (body[i] == "'" or unicodedata.category(body[i])[0] in "LN"):
+                    i += 1
+                return body[:i]
+    return body
 
 
 def _kept_chars(text: str) -> int:

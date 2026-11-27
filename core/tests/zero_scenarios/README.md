@@ -9,7 +9,8 @@ zero 파이프라인(`core/pipeline/zero.py`, 전사기 `core/components/transcr
 | **replay** | 그 구간의 음성만 진짜 파이프라인에 흘린다 — bench 처럼 200ms 조각으로, VAD·ASR 모델 그대로. 코드를 바꿀 때마다 돌려 그 지점이 어떻게 바뀌는지 본다 |
 
 GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 코드를 바꿔 효과를 볼 때는 지금 기준
-설정 `zero.asr.koen+mt.mock_segalign-w1`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름)과 비교한다.
+설정 `zero.asr.koen+mt.mock_segalign-w1-lang`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름, 허용 언어 밖
+머리말이면 언어를 정해 다시 디코딩)과 비교한다.
 
 ```bash
 python -m core.tests.zero_replay                          # 전부
