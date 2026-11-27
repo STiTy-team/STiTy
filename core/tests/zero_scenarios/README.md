@@ -36,7 +36,7 @@ replay 는 구간마다 커밋을 기준선(`before`)과 지금(`now`) 나란히
 |---|---|
 | `found_in` | 문제를 찾은 bench 실행이 돈 커밋 (`zero_cut cut` 이 실행 기록에서 채운다) |
 | `introduced_in` | `{commit, by}` — 원인이 들어온 커밋과 무엇 때문인지. 문제가 아니라 지켜야 할 동작이면 `commit: guard` |
-| `applies_when` | 이 시나리오가 뜻이 있는 전사기 설정. `true` 는 켜져 있음, `"set"` 은 값이 있음, 그 밖의 값은 같음. 맞지 않는 파이프라인으로 replay 하면 GPU 를 쓰기 전에 건너뛰고 "not applicable" 로 찍는다. 없으면 모든 파이프라인에 해당한다 |
+| `applies_when` | 이 시나리오가 뜻이 있는 설정. 키는 전사기 설정, 또는 파이프라인 부품이면 `part.<종류>`(`part.langid: "set"`). `true` 는 켜져 있음, `"set"` 은 값이 있음, 그 밖의 값은 같음. 맞지 않는 파이프라인으로 replay 하면 GPU 를 쓰기 전에 건너뛰고 "not applicable" 로 찍는다. 없으면 모든 파이프라인에 해당한다 |
 
 기능을 되돌리면 그 기능 때문에 생긴 시나리오는 빠져야 한다. 설정을 끄거나 기능 코드를 지우면 `applies_when` 이 맞지 않아
 빠지고, `introduced_in` 커밋이 지금 checkout 의 이력에 없으면(그 커밋 없이 다시 만든 브랜치) 그것으로도 빠진다.

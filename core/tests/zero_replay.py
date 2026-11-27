@@ -168,7 +168,8 @@ def label(name: str, params: dict) -> str:
 
 
 def applies(sc: dict, settings: dict) -> list[str]:
-    """The `applies_when` conditions the pipeline's transcription settings do not meet.
+    """The `applies_when` conditions the pipeline does not meet. Keys are transcription settings,
+    or `part.<kind>` for the pipeline's parts (`part.langid: "set"`, `part.langid: audio`).
 
     true: the setting is on; "set": it is given (any value); anything else: equal to it.
     """
@@ -340,7 +341,8 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
     for (pipeline, dataset), members in groups.items():
         print(f"\n### {pipeline} on {dataset}: loading")
         bench = Bench(pipeline, dataset)
-        settings = bench.cfg.stity.resolved["parts"]["transcription"]["kwargs"]
+        parts = bench.cfg.stity.resolved["parts"]
+        settings = {**parts["transcription"]["kwargs"], **{f"part.{kind}": p["name"] for kind, p in parts.items()}}
         members = [(name, sc) for name, sc in members if not _not_applicable(name, sc, settings)]
         if not members:
             continue

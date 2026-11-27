@@ -3,8 +3,12 @@
 Speech goes in, the transcriber commits a line, and that line is translated on its own.
 Nothing sits between the two steps: no language re-detection, no correction, no context
 from earlier lines, no fallback when a translation fails.
+
+An optional `langid` part hears the same audio and is handed to the transcriber (`lid`),
+which may use it to restart its slot at a language switch; commits keep their own language.
 """
 
+from core.components.langid import langids
 from core.components.mixer import mixers
 from core.components.registry import Transcribed
 from core.components.transcription import transcribers
@@ -14,7 +18,19 @@ from core.utils import langs
 
 from . import pipelines, stages
 from .base import Pipeline, Processor, RunsPer, Stage
-from .cascade import SpeechProcessor
+from .cascade_v2 import hear_language
+
+
+class SpeechProcessor(Processor):
+    """Server stage: the room's mixed audio to the langid (if any), the VAD and the transcriber."""
+
+    async def process(self, audio) -> list:
+        pcm = self.parts["mixer"].mix(audio)
+        hear_language(self.parts, pcm)
+        return await stages.hear(self.parts, pcm)
+
+    async def finish(self) -> list:
+        return await stages.finish(self.parts)
 
 
 class TranslationProcessor(Processor):
@@ -33,17 +49,17 @@ class TranslationProcessor(Processor):
 
 @pipelines.register("zero")
 class ZeroPipeline(Pipeline):
-    """Transcription and translation are required; the mixer and VAD are optional.
+    """Transcription and translation are required; the mixer, VAD and langid are optional.
 
     The server runs STAGES: speech once per room, translation once per target language.
     Bench calls listen/finish directly and gets the same output in one list.
     """
 
     REQUIRED = (transcribers, translators)
-    OPTIONAL = (mixers, detectors)
+    OPTIONAL = (mixers, detectors, langids)
     STAGES = (
         Stage(
-            parts=("mixer", "vad", "transcription"),
+            parts=("mixer", "vad", "langid", "transcription"),
             runs_per=RunsPer.ROOM,
             processor=SpeechProcessor,
         ),
@@ -60,6 +76,7 @@ class ZeroPipeline(Pipeline):
         super().start(languages=languages, target_lang=target_lang)
 
     async def listen(self, audio: bytes) -> list:
+        hear_language(self.parts, audio)
         return await self._with_translations(await stages.hear(self.parts, audio))
 
     async def finish(self) -> list:

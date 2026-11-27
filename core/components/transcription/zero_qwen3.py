@@ -57,6 +57,9 @@ async def load_model(path: str, gpu_memory_utilization: float) -> tuple:
 
 @transcribers.register("zero-qwen3")
 class ZeroQwen3Transcription(Transcriber):
+    # The pipeline hands its langid part over here, if one is configured (timeline mode).
+    lid = None
+
     SETTINGS = {
         "model": ("model_path", resolve_model),
         "record_decodes": ("record_decodes", bool),
@@ -66,7 +69,6 @@ class ZeroQwen3Transcription(Transcriber):
         "context_sentences": ("context_sentences", int),
         "carry_sentence": ("carry_sentence", bool),
         "drop_other_languages": ("drop_other_languages", bool),
-        "lid_timeline": ("lid_timeline", dict),
         "lid_switch_steps": ("lid_switch_steps", int),
         "lid_hold_sec": ("lid_hold_sec", float),
     }
@@ -80,19 +82,9 @@ class ZeroQwen3Transcription(Transcriber):
         if self.settings.get("aligner"):
             name = self.settings["aligner"]
             self.aligner = await cache.load(("zero-aligner", name), lambda: load_aligner(name))
-        self.lid = None
-        if self.settings.get("lid_timeline") is not None:
-            from core.components.langid.audio.component import AudioLanguageDetector
-
-            # Only the timeline is used: it is fed every piece and read at each decode.
-            options = {"mode": "timeline", "aligner": False, **self.settings["lid_timeline"]}
-            self.lid = AudioLanguageDetector(options, cfg=self.cfg)
-            await self.lid.load()
 
     def start(self, languages: list[str] | None = None, **_) -> None:
         self._allowed = [code for code in (langs.norm_code(x) for x in languages or []) if code]
-        if getattr(self, "lid", None) is not None:
-            self.lid.start(languages=self._allowed)
         self._heard = 0
         self._language = ""
         self._recent = []
@@ -100,10 +92,6 @@ class ZeroQwen3Transcription(Transcriber):
 
     async def transcribe(self, audio: bytes) -> list:
         samples = audio_mod.from_pcm_bytes(audio)
-        if getattr(self, "lid", None) is not None:
-            # Inside a running loop hear() only schedules the timeline scoring in a worker
-            # thread; _switch_at waits for it (_settle) before reading the steps.
-            self.lid.hear(audio)
         self._heard += len(samples)
         self._audio = np.concatenate([self._audio, samples])
         self._undecoded += len(samples)
@@ -116,7 +104,9 @@ class ZeroQwen3Transcription(Transcriber):
         if len(self._audio) > MAX_SLOT_SAMPLES:
             return await self.flush("limit")
 
-        if getattr(self, "lid", None) is not None and self.aligner is not None:
+        if self.lid is not None and self.aligner is not None:
+            # The pipeline feeds the langid; its timeline scoring runs off the loop, so wait
+            # until every step the heard audio allows is in.
             await self.lid._settle()
             held = self._hold_on_header_change()
             switched = await self._commit_at_switch(held)
@@ -196,7 +186,7 @@ class ZeroQwen3Transcription(Transcriber):
         return out
 
     def _switch_at(self) -> tuple[float, str, str] | None:
-        """Where, inside the slot, the audio language timeline says the language changes: the
+        """Where, inside the slot, the langid's audio language timeline says the language changes: the
         time (seconds into the slot) halfway between the last step of the old language and the
         first of the new, when lid_switch_steps steps in a row are in the new one."""
         from core.components.langid.audio.decide import smooth
@@ -236,7 +226,7 @@ class ZeroQwen3Transcription(Transcriber):
         return self._switch_hold
 
     async def _commit_at_switch(self, held: tuple[str, int, int] | None = None) -> list | None:
-        """With lid_timeline: when the language changes inside the slot, commit what was said
+        """With a langid part: when the language changes inside the slot, commit what was said
         before the change and restart the slot there.
 
         The text comes from the latest decode written in the old language - the decode that
