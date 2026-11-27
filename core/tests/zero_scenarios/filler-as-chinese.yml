@@ -1,5 +1,7 @@
 what: "scene2 68.8s, 79~84s — 맞장구 \"음\" 을 language Chinese 로 \"嗯。\" 받아 적어 커밋한다"
 why: "할루시네이션 (2026-11-27). laugh-as-chinese 와 같은 신호"
+found_in: 2a6d055c
+introduced_in: {"commit": "18aa554c", "by": "모델이 맞장구를 Chinese 로 받아 적고, zero 는 머리말 언어를 거르지 않는다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene2

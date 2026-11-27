@@ -112,7 +112,9 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
     end = steps[last][0]
 
     # The run's own config names: "<dataset>@vN/<pipeline>" -> configs/... files of this checkout.
-    dataset, _, pipeline = items["__run__"][0]["name"].partition("/")
+    run_open = items["__run__"][0]
+    found_in = (run_open.get("source") or {}).get("commit", "?")[:8]
+    dataset, _, pipeline = run_open["name"].partition("/")
     dataset, pipeline = dataset.split("@")[0], pipeline.split("@")[0]
 
     kept = [d for d in decodes if offset <= d["slot_start"] and d["slot_start"] + d["slot_samples"] <= end]
@@ -134,6 +136,8 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
     scenario.write_text(
         f"what: {json.dumps(what or f'{item} {offset / SR:.1f}s-{end / SR:.1f}s', ensure_ascii=False)}\n"
         f"why: {json.dumps(why or '(왜 잘라 왔는지 적는다)', ensure_ascii=False)}\n"
+        f"found_in: {found_in}\n"
+        f"introduced_in: {{\"commit\": \"?\", \"by\": \"(원인이 들어온 커밋과 무엇 때문인지 적는다)\"}}\n"
         f"pipeline: configs/pipelines/{pipeline}.yml\n"
         f"dataset: configs/datasets/{dataset}.yml\n"
         f"item: {item}\n"

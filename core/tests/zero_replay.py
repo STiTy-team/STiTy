@@ -167,6 +167,20 @@ def label(name: str, params: dict) -> str:
     return name + ("" if not params else " " + json.dumps(params, ensure_ascii=False))
 
 
+def applies(sc: dict, settings: dict) -> list[str]:
+    """The `applies_when` conditions the pipeline's transcription settings do not meet.
+
+    true: the setting is on; "set": it is given (any value); anything else: equal to it.
+    """
+    missing = []
+    for key, want in (sc.get("applies_when") or {}).items():
+        have = settings.get(key)
+        ok = bool(have) if want is True else have not in (None, False) if want == "set" else have == want
+        if not ok:
+            missing.append(f"{key}={json.dumps(want)}")
+    return missing
+
+
 def read_baseline(path: Path) -> tuple[dict, list[dict]]:
     meta, commits = None, []
     for line in path.read_text().splitlines():
@@ -286,6 +300,13 @@ def write_status(latest: dict) -> None:
     STATUS.write_text("\n".join(lines) + "\n")
 
 
+def _not_applicable(name: str, sc: dict, settings: dict) -> bool:
+    missing = applies(sc, settings)
+    if missing:
+        print(f"[{name}] not applicable to this pipeline (needs {', '.join(missing)})")
+    return bool(missing)
+
+
 async def main(names: list[str], pipeline_override: str | None, gate: bool) -> int:
     paths = sorted(HERE.glob("*.yml"))
     if names:
@@ -307,6 +328,10 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
     for (pipeline, dataset), members in groups.items():
         print(f"\n### {pipeline} on {dataset}: loading")
         bench = Bench(pipeline, dataset)
+        settings = bench.cfg.stity.resolved["parts"]["transcription"]["kwargs"]
+        members = [(name, sc) for name, sc in members if not _not_applicable(name, sc, settings)]
+        if not members:
+            continue
         await bench.load()
         for name, sc in members:
             meta, baseline = read_baseline(HERE / sc["baseline"])
@@ -316,6 +341,8 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
             replay = Replay(commits, decodes, baseline)
 
             print(f"\n[{name}] {sc['what']}")
+            introduced = sc.get("introduced_in") or {}
+            print(f"  found in {sc.get('found_in', '?')}, introduced in {introduced.get('commit', '?')}: {introduced.get('by', '')}")
             print(describe(sc, replay))
             verdict, differences = replay.behavior()
             print(f"  behavior vs baseline: {verdict}")

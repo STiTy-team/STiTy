@@ -5,7 +5,7 @@ zero 파이프라인(`core/pipeline/zero.py`, 전사기 `core/components/transcr
 
 | | 무엇 |
 |---|---|
-| **시나리오** (`<이름>.yml`) | bench 실행에서 본 문제 하나. 무엇이 틀렸는지(`what`·`why`), 그 일이 난 음성 구간(`item`·`span_sec`), 그때의 로그 줄(`baseline`), 지금 맞아야 할 것(`checks`)과 보고된 문제(`known_issues`) |
+| **시나리오** (`<이름>.yml`) | bench 실행에서 본 문제 하나. 무엇이 틀렸는지(`what`·`why`), 그 일이 난 음성 구간(`item`·`span_sec`), 그때의 로그 줄(`baseline`), 지금 맞아야 할 것(`checks`)과 보고된 문제(`known_issues`), 그리고 아래 버전 필드 |
 | **replay** | 그 구간의 음성만 진짜 파이프라인에 흘린다 — bench 처럼 200ms 조각으로, VAD·ASR 모델 그대로. 코드를 바꿀 때마다 돌려 그 지점이 어떻게 바뀌는지 본다 |
 
 GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 코드를 바꿔 효과를 볼 때는 지금 기준
@@ -29,6 +29,14 @@ replay 는 구간마다 커밋을 기준선(`before`)과 지금(`now`) 나란히
 `never-commits`, `language-of` …)는 양쪽 글자를 bench 의 r2 채점과 같은 정규화(군말·표기 변형·사투리 어미·숫자
 꼴)에 거친 뒤 띄어쓰기·문장부호·대소문자를 빼고 비교한다 — `2차` 와 `이차`, `This` 와 `this` 는 같은 말이다.
 `texts` 안의 목록은 "이 중 하나" 다: `[["이 차", "2차"], "Cheers"]`.
+
+## 버전 필드
+
+| 필드 | 뜻 |
+|---|---|
+| `found_in` | 문제를 찾은 bench 실행이 돈 커밋 (`zero_cut cut` 이 실행 기록에서 채운다) |
+| `introduced_in` | `{commit, by}` — 원인이 들어온 커밋과 무엇 때문인지. 문제가 아니라 지켜야 할 동작이면 `commit: guard` |
+| `applies_when` | 이 시나리오가 뜻이 있는 전사기 설정. `true` 는 켜져 있음, `"set"` 은 값이 있음, 그 밖의 값은 같음. 맞지 않는 파이프라인으로 replay 하면 GPU 를 쓰기 전에 건너뛰고 "not applicable" 로 찍는다. 없으면 모든 파이프라인에 해당한다 |
 
 ## 남는 것 (전부 로컬)
 
@@ -66,5 +74,6 @@ python -m core.tests.zero_cut scan bench/runs/<데이터셋>/<파이프라인>  
 python -m core.tests.zero_cut cut  bench/runs/<데이터셋>/<파이프라인> <항목> <이름> --from 120 --to 150
 ```
 
-구간은 VAD flush 자리로 맞춰진다. 만든 뒤 yml 의 `what`·`why` 를 채우고, 본 문제를 `known_issues` 에 적는다.
+구간은 VAD flush 자리로 맞춰진다. 만든 뒤 yml 의 `what`·`why`·`introduced_in`(필요하면 `applies_when`)을 채우고, 본
+문제를 `known_issues` 에 적는다.
 bench 는 `core/` 아래 커밋 안 된 파일이 있으면 돌지 않으므로, 새 yml 은 bench 를 돌리기 전에 커밋한다.

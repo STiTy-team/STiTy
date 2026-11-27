@@ -1,5 +1,7 @@
 what: "scene2 8~36s — SEG 커밋이 이어져도 디코딩이 <SEG> 로 딱 끝나지 않아 슬롯이 28초까지 자란다"
 why: "리뷰에서 찾고 북극성 ko 실행에서 확인 (2026-11-27). seg 커밋 225번 중 리셋은 76번(34%). 디코딩마다 슬롯 전체를 다시 읽는다"
+found_in: 2a6d055c
+introduced_in: {"commit": "f05dda22", "by": "SEG 리셋이 \"SEG 로 딱 끝남\"에서만 걸려 슬롯이 자란다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene2

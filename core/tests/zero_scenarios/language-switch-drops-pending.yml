@@ -1,5 +1,8 @@
 what: "scene2 115~133s — 들은 영어 문장이 커밋 전에, 다음 디코딩이 머리말 언어를 한국어로 바꾸며 다시 써서 사라진다 (\"Because if you're adding another QA cycle\", \"Please tell me that's won\")"
 why: "SEG 확인 + aligner bench(zero.asr.koen+mt.mock_segalign) 정답 대조에서 찾음 (2026-11-27). 새로 생긴 큰 오류 24개 중 15개가 이 모양 — 사라진 말은 한 번 이상 받아 적혔고, 다음 디코딩에서 머리말 언어가 바뀌었다. 확정을 기다리는 동안 드러난다"
+found_in: 9f1a2f55
+introduced_in: {"commit": "9f1a2f55", "by": "seg_confirm 이 SEG 확정을 기다리는 동안 다음 디코딩이 언어를 바꾸며 텍스트를 지운다"}
+applies_when: {"seg_confirm": true}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock_segalign.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene2

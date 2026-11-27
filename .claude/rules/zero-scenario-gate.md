@@ -29,6 +29,9 @@ GPU 흔들림은 막을 수 없다. 같은 음성·같은 코드로 replay 해�
 
 ## 지킬 것
 
+- 시나리오에는 버전 필드를 채운다: `found_in`(찾은 bench 실행의 커밋), `introduced_in`(원인이 들어온 커밋과 무엇 때문인지,
+  지켜야 할 동작이면 `guard`), 특정 설정에서만 생기는 문제면 `applies_when`. 뜻은 `core/tests/zero_scenarios/README.md` 의
+  "버전 필드" 에 있다.
 - 코드에 커밋 안 된 수정이 없는 상태(새 yml 제외)에서 돌린다. 기준선을 만든 bench 실행과 지금 코드가 같아야 비교가 된다.
 - `different` 가 나오면 올리지 않고 원인을 가린다.
   - 기준선을 만든 bench 실행이 지금과 다른 코드에서 돌았다 — 지금 코드로 bench 를 다시 돌리고 `zero_cut cut` 으로 다시 자른다.

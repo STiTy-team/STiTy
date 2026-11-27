@@ -1,5 +1,7 @@
 what: "scene5 75.0s — <SEG> 뒤에 다음 말이 있던 슬롯에서 다음 디코딩이 빈 출력을 내자 \"SEG로 딱 끝남\"이 되어 리셋하고, 앞 디코딩이 들은 영어 문장(\"Wow, Jieun, you're such a lifesaver\")을 버린다"
 why: "북극성 ko 실행 정답 대조에서 찾음 (2026-11-27). scene6 88.4s 도 같은 모양. 리셋을 디코딩 한 번의 텍스트로만 정한다"
+found_in: 2a6d055c
+introduced_in: {"commit": "f05dda22", "by": "SEG 리셋 조건이 그 디코딩 한 번의 텍스트(\"SEG 로 딱 끝남\")만 본다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene5

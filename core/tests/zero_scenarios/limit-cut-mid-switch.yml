@@ -1,5 +1,7 @@
 what: "scene5 25~57s — 슬롯이 30초 제한에 닿아 한·영 전환 중간에서 잘린다 (\"...꼴맛이에요. 아 I think\")"
 why: "리뷰에서 찾고 북극성 ko 실행에서 확인 (2026-11-27). 제한에서 자를 때 남은 꼬리를 문장 중간에서 커밋한다"
+found_in: 2a6d055c
+introduced_in: {"commit": "f05dda22", "by": "30초 제한에서 남은 꼬리를 문장 중간에서 커밋한다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene5

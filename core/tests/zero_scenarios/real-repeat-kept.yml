@@ -1,5 +1,7 @@
 what: "scene6 — \"이 차 이 차 이 차\", \"this was this was\", \"Cheers. Cheers.\" 는 정답에도 있는 실제 반복이다"
 why: "반복을 할루시네이션으로 보고 지우는 수정이 이것까지 지우지 않는지 지킨다 (2026-11-27)"
+found_in: 2a6d055c
+introduced_in: {"commit": "guard", "by": "문제가 아니라 지켜야 할 동작: 정답에도 있는 반복은 남아야 한다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene6
