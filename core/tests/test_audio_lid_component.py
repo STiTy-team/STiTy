@@ -300,3 +300,73 @@ def test_sure_audio_keeps_its_verdict_against_the_text():
     d2 = detector({"ko": -8.0, "en": 0.0}, span=(1.0, 2.5))
     d2.hear(pcm(4.0))
     assert asyncio.run(d2.detect(commit("오 스피킹 of 부산", 4.0))) == "en"
+
+
+def test_timeline_hear_in_running_loop_scores_off_loop_with_same_steps():
+    """Inside an event loop hear() only schedules the scoring; after detect() the steps equal
+    the ones scored in place (no loop)."""
+    settings = dict(mode="timeline", centered=True, windows=[1.0, 2.0], read="end")
+
+    in_place = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 3.5), **settings)
+    for _ in range(8):
+        in_place.hear(pcm(0.5))
+    want = asyncio.run(in_place.detect(commit("hi", 4.0)))
+
+    async def run():
+        d = detector({"ko": 0.0, "en": -5.0}, span=(1.0, 3.5), **settings)
+        for _ in range(8):
+            d.hear(pcm(0.5))
+        assert d.steps == [] or len(d.steps) < len(in_place.steps)  # scheduled, not done yet
+        got = await d.detect(commit("hi", 4.0))
+        return d, got
+
+    d, got = asyncio.run(run())
+    assert got == want
+    assert [t for t, _ in d.steps] == [t for t, _ in in_place.steps]
+
+
+def test_confirmed_switch_is_awaitable_and_needs_held_language():
+    settings = dict(mode="timeline", centered=False, windows=[1.0], step_sec=0.5)
+
+    async def run(sec):
+        d = detector({"ko": -5.0, "en": 0.0}, **settings)
+        for _ in range(int(sec / 0.5)):
+            d.hear(pcm(0.5))
+        return await d.confirmed_switch("ko", 1.0, 0.9)
+
+    assert asyncio.run(run(4.0)) == "en"
+    assert asyncio.run(run(0.5)) is None
+
+
+class SideScorer:
+    """Korean for quiet speech (amplitude 0.1), English for loud (0.3)."""
+
+    def scores_batch(self, audios, candidates):
+        out = []
+        for a in audios:
+            if len(a) == 0:
+                out.append({c: float("-inf") for c in candidates})
+                continue
+            loud = float(np.mean(np.abs(a))) > 0.2
+            out.append({"ko": -5.0 if loud else 0.0, "en": 0.0 if loud else -5.0})
+        return out
+
+
+def test_best_cut_picks_the_pause_between_the_languages(monkeypatch):
+    # Korean 0-1.0 s, pause, Korean 1.4-2.0 s, pause, English 2.6-4.0 s; the switch is put at 3.0.
+    audio = np.zeros(int(4.0 * SR), dtype=np.float32)
+    audio[: int(1.0 * SR)] = 0.1
+    audio[int(1.4 * SR) : int(2.0 * SR)] = 0.1
+    audio[int(2.6 * SR) :] = 0.3
+
+    def spans(a):
+        if len(a) != len(audio):
+            loud = np.flatnonzero(np.abs(a) > 0.05)
+            return [(int(loud[0]), int(loud[-1]) + 1)] if len(loud) else []
+        return [(0, int(1.0 * SR)), (int(1.4 * SR), int(2.0 * SR)), (int(2.6 * SR), len(audio))]
+
+    monkeypatch.setattr(comp, "speech_spans", spans)
+    d = detector({"ko": 0.0, "en": -5.0})
+    d.scorers = {"side": SideScorer()}
+    cut, p_new, margin = d.best_cut(audio, 3.0, "ko", "en")
+    assert abs(cut - 2.3) < 1e-6 and p_new > 0.99 and margin > 0

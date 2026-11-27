@@ -1,3 +1,4 @@
+import asyncio
 import difflib
 import re
 from functools import cache
@@ -26,6 +27,10 @@ KEEP_AFTER_SPEECH_SEC = 0.4
 RETRY_LEAD_PAD_SEC = 0.2
 PREROLL_SEC = 1.0
 MAX_AUDIO_ACCUM_SEC = 90.0
+LID_CARRY_PAD_SEC = 0.3
+LID_RESET_COOLDOWN_SEC = 3.0
+LID_UNHEARD_MAX_SEC = 0.8
+LID_FORCE_MARGIN = 2.0
 MAX_SEED_COMMITTED_SENTENCES = 1
 REP_DEDUP_MAX_REPEATS = 2
 # 끝 확정 때 반복 줄이기는 이 횟수까지 남긴다.
@@ -155,6 +160,53 @@ def tail_overlaps(previous: str, sentence: str) -> bool:
         1 for a, b in zip(tail, new_words) if a and b and (a == b or a.endswith(b) or b.endswith(a))
     )
     return hits >= max(1, (len(new_words) + 1) // 2)
+
+
+LANG_NAME = {"ko": "Korean", "en": "English", "ja": "Japanese", "zh": "Chinese"}
+PAUSE_SEARCH_BACK_SEC = 3.0
+PAUSE_SEARCH_AHEAD_SEC = 0.5
+MIN_PAUSE_SEC = 0.15
+
+
+def pause_near(audio: np.ndarray, at: float) -> float:
+    """Seconds into `audio` to cut near `at`: the middle of the pause (VAD) closest to `at`
+    within [at - 3.0, at + 0.5] s, or `at` itself when there is none."""
+    from core.components.langid.audio.vad import speech_spans
+
+    sr = audio_mod.SAMPLING_RATE
+    spans = speech_spans(audio)
+    edges = [0] + [x for s, e in spans for x in (s, e)] + [len(audio)]
+    best = None
+    for gap_start, gap_end in zip(edges[0::2], edges[1::2]):
+        a, b = gap_start / sr, gap_end / sr
+        if b - a < MIN_PAUSE_SEC or b < at - PAUSE_SEARCH_BACK_SEC or a > at + PAUSE_SEARCH_AHEAD_SEC:
+            continue
+        mid = (a + b) / 2
+        if best is None or abs(mid - at) < abs(best - at):
+            best = mid
+    return best if best is not None else at
+
+
+def split_tail_text(tail: str, words: list[str], k: int) -> str | None:
+    """Text of `tail` before its `k`-th aligned word, finding the aligner's words in order
+    (case and punctuation ignored); None when a word cannot be found."""
+    if k == 0:
+        return ""
+    # Index the word characters of the tail so the aligner's words (punctuation stripped)
+    # are found in order and mapped back to a cut position in the original text.
+    chars = [(i, c.lower()) for i, c in enumerate(tail) if re.match(r"\w", c)]
+    flat, pos = "".join(c for _, c in chars), 0
+    for i, w in enumerate(words):
+        w = re.sub(r"[^\w]+", "", w.lower())
+        if not w:
+            continue
+        idx = flat.find(w, pos)
+        if idx < 0:
+            return None
+        if i == k:
+            return tail[: chars[idx][0]].strip()
+        pos = idx + len(w)
+    return None
 
 
 def committed_cursor(text: str, committed_display: str, committed_seg_count: int = 0) -> int:
@@ -291,6 +343,14 @@ class Qwen3SegTranscription(Qwen3Transcription):
         "dot_commit_confirm": ("dot_commit_confirm", bool),
         "dot_commit_stall_chunks": ("dot_commit_stall_chunks", int),
         "rep_dedup": ("rep_dedup", bool),
+        "lid_slot_reset": ("lid_slot_reset", bool),
+        "lid_reset_conf": ("lid_reset_conf", float),
+        "lid_tail_sec": ("lid_tail_sec", float),
+        "lid_carry": ("lid_carry", str),
+        "lid_every_chunk": ("lid_every_chunk", bool),
+        "lid_reset_mode": ("lid_reset_mode", str),
+        "lid_reset_from": ("lid_reset_from", list),
+        "lid_confirm_sec": ("lid_confirm_sec", float),
     }
 
     GUARD_STAGES = {
@@ -309,6 +369,14 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out.setdefault("dot_commit_confirm", True)
         out.setdefault("dot_commit_stall_chunks", 1)
         out.setdefault("rep_dedup", True)
+        out.setdefault("lid_slot_reset", False)
+        out.setdefault("lid_reset_conf", 0.9)
+        out.setdefault("lid_tail_sec", 1.0)
+        out.setdefault("lid_carry", "chunk")
+        out.setdefault("lid_every_chunk", False)
+        out.setdefault("lid_reset_mode", "seg")
+        out.setdefault("lid_reset_from", [])
+        out.setdefault("lid_confirm_sec", 1.0)
         return out
 
     def start(self, languages: list[str] | None = None, vad=None, **_) -> None:
@@ -320,9 +388,18 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self.dot_commit_confirm = bool(self.settings["dot_commit_confirm"])
         self.dot_commit_stall_chunks = int(self.settings["dot_commit_stall_chunks"])
         self.rep_dedup = bool(self.settings["rep_dedup"])
+        # The pipeline links the langid here (`lid`) when one is configured. With
+        # `lid_slot_reset`, a commit whose remaining tail the langid hears in another language
+        # than the slot's header restarts the slot from the commit's last chunk.
+        self.lid_slot_reset = bool(self.settings["lid_slot_reset"])
+        self.lid_reset_conf = float(self.settings["lid_reset_conf"])
+        self.lid_tail_sec = float(self.settings["lid_tail_sec"])
+        self.lid_confirm_sec = float(self.settings["lid_confirm_sec"])
         self.vad = vad
 
         self._fed_samples = 0
+        self._lid_reset_at = -1e9
+        self._lid_job = None
         self._partial_seq = 0
         self._out: list = []
         self._partial_text = None
@@ -346,9 +423,10 @@ class Qwen3SegTranscription(Qwen3Transcription):
         out, self._out = self._out, []
         return out
 
-    def _new_state(self, seed_text: str = ""):
+    def _new_state(self, seed_text: str = "", force_language: str | None = None):
         kw = self.settings
         state = self.model.init_streaming_state(
+            language=force_language,
             chunk_size_sec=float(kw.get("chunk_size_sec", 2.0)),
             unfixed_chunk_num=int(kw.get("unfixed_chunk_num", 2)),
             unfixed_token_num=int(kw.get("unfixed_token_num", 5)),
@@ -551,6 +629,13 @@ class Qwen3SegTranscription(Qwen3Transcription):
         if any_commit:
             slot["seg_chunk_accum"] = accum_before
 
+        if self.lid_slot_reset and self.settings.get("lid_reset_mode") == "boundary":
+            if await self._lid_boundary_reset(committed, snapshot):
+                return
+        if self.lid_slot_reset and self.settings.get("lid_reset_mode") == "finish":
+            if await self._lid_finish_reset(committed, snapshot):
+                return
+
         if not any_commit and header_tail:
             accum = slot["state"].audio_accum
             since = slot.get("seg_chunk_accum")
@@ -572,6 +657,22 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
 
         if not any_commit:
+            # `lid_every_chunk`: a switch heard inside the uncommitted tail restarts the slot
+            # without waiting for a commit; nothing committed is lost, the tail is decoded again.
+            if self.settings.get("lid_every_chunk"):
+                tail = self._uncommitted_display(snapshot)
+                if tail.strip() and await self._lid_switched():
+                    accum = slot["state"].audio_accum
+                    carry = await self._lid_carry(
+                        accum, committed, tail, accum_before, chunk_samples
+                    )
+                    self._restart_with_audio(carry, committed, header_reset=True)
+                    log.info(
+                        "[SLOT-RESET] cause=lid-chunk carry_sec=%.2f tail=%r slot_committed=%r",
+                        carry.shape[0] / audio_mod.SAMPLING_RATE,
+                        tail[-40:],
+                        committed,
+                    )
             return
 
         ends_with_seg = decoded.endswith(SEG_TAG) or header_tail
@@ -595,6 +696,17 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 audio_sec,
                 MAX_AUDIO_ACCUM_SEC,
                 seed_text,
+                committed,
+            )
+            return
+
+        if not ends_with_seg and remaining.strip() and await self._lid_switched():
+            carry = await self._lid_carry(accum, committed, remaining, accum_before, chunk_samples)
+            self._restart_with_audio(carry, committed, header_reset=True)
+            log.info(
+                "[SLOT-RESET] cause=lid carry_sec=%.2f tail=%r slot_committed=%r",
+                carry.shape[0] / audio_mod.SAMPLING_RATE,
+                remaining[-40:],
                 committed,
             )
             return
@@ -635,6 +747,228 @@ class Qwen3SegTranscription(Qwen3Transcription):
                 carry.shape[0] / audio_mod.SAMPLING_RATE,
                 committed,
             )
+
+    async def _lid_finish_reset(self, committed: str, snapshot: str | None) -> bool:
+        """`lid_reset_mode: finish`. Once the langid has held another language than the slot
+        header for `lid_confirm_sec`, cut the slot audio in the pause (VAD) nearest the switch:
+        the old slot decodes once more over the audio before the cut and commits what it has not
+        committed (`commitReason: lid`), and a new slot starts from the cut with its header forced
+        to the new language. No aligner and no text splitting: each language is written by a
+        slot that heard only that language."""
+        slot = self.slot
+        lid = getattr(self, "lid", None)
+        if lid is None or not hasattr(lid, "confirmed_switch_at"):
+            return False
+        if self._audio_sec() - getattr(self, "_lid_reset_at", -1e9) < LID_RESET_COOLDOWN_SEC:
+            return False
+        state = slot["state"]
+        header = langs.norm_code(state.language or "")
+        allowed = [langs.norm_code(x) for x in self.settings.get("lid_reset_from") or []]
+        if not header or (allowed and header not in allowed):
+            return False
+        if not self._uncommitted_display(snapshot).strip():
+            return False
+        # The judgement (timeline switch + best_cut scoring) runs as a background task on a
+        # snapshot of the slot audio, so the commit path never waits for it; a later chunk
+        # applies the result if the slot is still the one it was made for.
+        sr = audio_mod.SAMPLING_RATE
+        job = getattr(self, "_lid_job", None)
+        if job is None:
+            accum = state.audio_accum.copy()
+            accum_start = self._audio_sec() - state.buffer.shape[0] / sr - accum.shape[0] / sr
+            task = asyncio.get_running_loop().create_task(
+                self._lid_judge(lid, header, accum, accum_start)
+            )
+            self._lid_job = (task, slot, slot["committed_display"], accum.shape[0])
+            return False
+        task, job_slot, job_committed, job_len = job
+        if not task.done():
+            return False
+        self._lid_job = None
+        if task.cancelled() or task.exception() is not None:
+            log.warning("[LID-FINISH] judge failed: %r", None if task.cancelled() else task.exception())
+            return False
+        result = task.result()
+        if result is None or job_slot is not slot:
+            return False
+        # A judgement made before a commit, or more than a chunk ago, cuts audio the slot has
+        # since written: drop it and judge again on the current slot.
+        grown = state.audio_accum.shape[0] - job_len
+        if slot["committed_display"] != job_committed or grown > state.chunk_size_samples:
+            log.info(
+                "[LID-FINISH] drop=stale committed_changed=%s grown_sec=%.2f",
+                slot["committed_display"] != job_committed,
+                grown / audio_mod.SAMPLING_RATE,
+            )
+            return False
+        new, cut = result
+        force = LANG_NAME.get(new)
+        accum = state.audio_accum
+        before = accum[: int(cut * sr)]
+        raw = await self._decode_once(before, state)
+        text = collapse_repetition(
+            display_of(
+                uncommitted_from(
+                    strip_asr_text(raw.strip()), slot["committed_display"], slot["committed_seg_count"]
+                )
+            )
+        )
+        if text:
+            self._open_utterance()
+            self._emit_final(text, "lid")
+        carry = accum[int(cut * sr) :].copy()
+        self._restart_with_audio(carry, (committed + " " + text).strip())
+        self.slot.pop("seg_reset_last_committed", None)
+        self.slot["lid_fresh"] = True
+        self.slot["state"] = self._new_state(force_language=force)
+        self.slot["state"].audio_accum = carry
+        self.state = self.slot["state"]
+        self._lid_reset_at = self._audio_sec()
+        log.info(
+            "[SLOT-RESET] cause=lid-finish audio=%.2f %s->%s cut=%.2f/%.2f "
+            "force=%s finished=%r carry_sec=%.2f",
+            self._audio_sec(), header, new, cut, accum.shape[0] / sr, force, text,
+            carry.shape[0] / sr,
+        )
+        self._offer_partial(force=True)
+        return True
+
+    async def _lid_judge(
+        self, lid, header: str, accum: np.ndarray, accum_start: float
+    ) -> tuple[str, float] | None:
+        """(new language, cut seconds into `accum`) when the langid holds another language and
+        the audio after the best cut is heard as it with p >= lid_reset_conf, else None."""
+        found = await lid.confirmed_switch_at(header, self.lid_confirm_sec, self.lid_reset_conf)
+        if not found:
+            return None
+        new, switch_at = found
+        sr = audio_mod.SAMPLING_RATE
+        rel = switch_at - accum_start
+        if rel <= 0.2 or rel >= accum.shape[0] / sr:
+            log.info("[LID-FINISH] skip=switch-outside-slot rel=%.2f", rel)
+            return None
+        if not hasattr(lid, "best_cut"):
+            return new, await asyncio.to_thread(pause_near, accum, rel)
+        found_cut = await asyncio.to_thread(lid.best_cut, accum, rel, header, new)
+        if found_cut is None:
+            return None
+        cut, p_new, _ = found_cut
+        if p_new < self.lid_reset_conf:
+            log.info("[LID-FINISH] wait=p_new %.3f cut=%.2f", p_new, cut)
+            return None
+        return new, cut
+
+    async def _decode_once(self, audio: np.ndarray, state) -> str:
+        """One decode of `audio` with the slot's prompt and committed prefix (what the next
+        streaming step would do), without touching the slot state."""
+        import uuid
+
+        prefix = self.model._build_streaming_prefix(state)
+        inp = {"prompt": state.prompt_raw + prefix, "multi_modal_data": {"audio": [audio]}}
+        final = None
+        async for out in self.model.model.generate(
+            inp, self.model.sampling_params, request_id=str(uuid.uuid4())
+        ):
+            final = out
+        return prefix + (final.outputs[0].text if final is not None else "")
+
+    async def _lid_boundary_reset(self, committed: str, snapshot: str | None) -> bool:
+        """`lid_reset_mode: boundary`. Once the langid has held another language than the slot
+        header for `lid_confirm_sec`, split the uncommitted tail at the word where that language
+        starts (aligner word times + the langid scorer): the words before are committed
+        (`commitReason: lid`), the slot restarts from the split word's audio, and the first
+        sentence of the new slot skips the dedup rules (its audio does not overlap the old one)."""
+        slot = self.slot
+        lid = getattr(self, "lid", None)
+        if lid is None or not hasattr(lid, "confirmed_switch"):
+            return False
+        if self._audio_sec() - getattr(self, "_lid_reset_at", -1e9) < LID_RESET_COOLDOWN_SEC:
+            return False
+        header = langs.norm_code(slot["state"].language or "")
+        allowed = [langs.norm_code(x) for x in self.settings.get("lid_reset_from") or []]
+        if not header or (allowed and header not in allowed):
+            return False
+        tail = self._uncommitted_display(snapshot)
+        if not tail.strip():
+            return False
+        new = await lid.confirmed_switch(header, self.lid_confirm_sec, self.lid_reset_conf)
+        if not new:
+            return False
+        accum = slot["state"].audio_accum
+        words = await asyncio.to_thread(lid.tail_words, accum, committed, tail)
+        if not words:
+            log.info("[LID-BOUNDARY] skip=no-words header=%s new=%s tail=%r", header, new, tail)
+            return False
+        # The model has not written the audio after the tail yet: the new language may be
+        # there, not in the tail's words. Wait a chunk instead of cutting the tail wrongly.
+        unheard = accum.shape[0] / audio_mod.SAMPLING_RATE - words[-1][2]
+        if unheard > LID_UNHEARD_MAX_SEC:
+            log.info("[LID-BOUNDARY] wait=unheard %.2fs tail=%r", unheard, tail[-40:])
+            return False
+        k = await asyncio.to_thread(lid.split_words, accum, words, header, new)
+        if k is None:
+            return False
+        before = split_tail_text(tail, [w for w, _, _ in words], k)
+        if before is None:
+            log.info("[LID-BOUNDARY] skip=text-map tail=%r words=%r", tail, words)
+            return False
+        start = words[k][1]
+        prev_end = words[k - 1][2] if k else 0.0
+        at = max(prev_end, start - 0.1)
+        carry = accum[int(at * audio_mod.SAMPLING_RATE) :].copy()
+        if before:
+            self._open_utterance()
+            self._emit_final(before, "lid")
+        self._restart_with_audio(carry, (committed + " " + before).strip())
+        self.slot.pop("seg_reset_last_committed", None)
+        # Keep decoding on from what the new slot writes: without this its first chunks are
+        # decoded from scratch over the whole slot audio, and the model can rewrite (drop) the
+        # sentences it already committed there, which then never commit again.
+        state = self.slot["state"]
+        state.chunk_id = state.unfixed_chunk_num
+        self.slot["lid_fresh"] = True
+        self._lid_reset_at = self._audio_sec()
+        log.info(
+            "[SLOT-RESET] cause=lid-boundary audio=%.2f %s->%s split=%d/%d at=%.2f "
+            "carry_sec=%.2f committed_tail=%r redecode=%r",
+            self._audio_sec(), header, new, k, len(words), at,
+            carry.shape[0] / audio_mod.SAMPLING_RATE,
+            before, tail[len(before):].strip(),
+        )
+        self._offer_partial(force=True)
+        return True
+
+    async def _lid_carry(
+        self, accum: np.ndarray, committed: str, remaining: str, accum_before: int, chunk: int
+    ) -> np.ndarray:
+        """Audio the restarted slot keeps: from where the aligner puts the start of the
+        uncommitted tail (`lid_carry: tail`, less `LID_CARRY_PAD_SEC`), or the commit's chunk."""
+        carry_from = accum.shape[0] - min(max(accum.shape[0] - accum_before, chunk), accum.shape[0])
+        lid = getattr(self, "lid", None)
+        if self.settings.get("lid_carry") == "tail" and lid is not None:
+            start = await asyncio.to_thread(lid.tail_start, accum, committed, remaining)
+            if start is not None:
+                at = max(0, int((start - LID_CARRY_PAD_SEC) * audio_mod.SAMPLING_RATE))
+                carry_from = min(carry_from, at)
+            log.info("[LID-CARRY] tail_start=%s carry_sec=%.2f", start,
+                     (accum.shape[0] - carry_from) / audio_mod.SAMPLING_RATE)
+        return accum[carry_from:].copy()
+
+    async def _lid_switched(self) -> bool:
+        """The langid hears the last `lid_tail_sec` in another language than the slot's header."""
+        lid = getattr(self, "lid", None)
+        if not self.lid_slot_reset or lid is None or not hasattr(lid, "tail_language"):
+            return False
+        if self.settings.get("lid_reset_mode") in ("boundary", "finish"):
+            return False
+        header = langs.norm_code(self.slot["state"].language or "")
+        heard = await lid.tail_language(self.lid_tail_sec)
+        if not header or heard is None:
+            return False
+        lang, prob = heard
+        switched = lang != header and prob >= self.lid_reset_conf
+        log.info("[LID-TAIL] header=%s heard=%s p=%.3f switch=%s", header, lang, prob, switched)
+        return switched
 
     def _restart_with_audio(
         self,
@@ -732,6 +1066,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
         slot = self.slot
         applies = lambda name: stage in self.GUARD_STAGES[name]
         if not sentence:
+            return None
+        if slot.get("lid_fresh"):
             return None
 
         if (
@@ -1210,6 +1546,8 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return
         self._last_final_end_sec = audio_end_sec
         self._last_final_text = original
+        if reason != "lid" and self.slot.get("lid_fresh"):
+            self.slot["lid_fresh"] = False
         self._out.append(
             Transcribed(
                 original=original,

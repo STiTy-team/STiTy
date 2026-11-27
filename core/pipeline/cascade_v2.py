@@ -33,6 +33,9 @@ def hear_language(parts: dict, audio: bytes) -> None:
     detector = parts.get("langid")
     if detector is not None:
         detector.hear(audio)
+        transcriber = parts.get("transcription")
+        if transcriber is not None and getattr(transcriber, "lid", None) is None:
+            transcriber.lid = detector
 
 
 async def detect_language(parts: dict, item: Transcribed) -> Transcribed:
