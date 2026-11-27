@@ -1,0 +1,15 @@
+what: SEG 리셋 0.2초 뒤에 VAD flush가 와서, 다음 단어 앞소리만 든 0.2초 조각을 디코딩해 짐작한 말을 커밋한다
+why: 북극성 scene1 20.4~20.6s 에서 찾음 (2026-11-27) — "Well" 앞소리가 "Would" 로 커밋되고, 다음 슬롯에서 "Well" 이 또 나왔다. scene4 32.2~32.6s 도 같은 모양
+source: script
+talk:
+  - sentence: {first: 1, count: 5, start: 0.2}
+  - sentence: {first: 6, count: 5, start: 4.1}
+model:
+  guess: true
+vad_ends: [4.2]
+until: 8.0
+checks:
+  - slot-restarted: {after: 4.2}
+  - every-word-once
+known_issues:
+  - no-extra-words

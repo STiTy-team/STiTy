@@ -1,0 +1,10 @@
+what: "북극성 scene6 실제 재생 — \"이 차 이 차 이 차\", \"this was this was\", \"Cheers. Cheers.\" 는 정답에도 있는 실제 반복이다"
+why: "반복을 할루시네이션으로 보고 지우는 수정이 이것까지 지우지 않는지 지키는 시나리오 (2026-11-27)"
+source: replay
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
+item: scene6
+span_sec: [34.8, 88.4]
+fixture: fixtures/ns-real-repeat-kept.jsonl
+checks:
+  - matches-recording
+  - must-commit: {texts: ["이 차 이 차 이 차", "this was this was", "Cheers. Cheers."]}

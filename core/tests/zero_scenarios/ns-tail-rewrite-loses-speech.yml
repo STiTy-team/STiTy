@@ -1,0 +1,11 @@
+what: "북극성 scene4 실제 재생 — 확정 안 된 꼬리에 두 번 나온 영어 문장 \"That is the most diplomatic answer I have ever heard\" 가 슬롯이 길어지자 한국어로 다시 쓰이며 사라진다"
+why: "정답 대조에서 가장 큰 누락(44자) (2026-11-27). 같은 꼬리가 두 번 연속 나왔으니 local agreement 라면 확정됐을 것"
+source: replay
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
+item: scene4
+span_sec: [32.6, 70.6]
+fixture: fixtures/ns-tail-rewrite-loses-speech.jsonl
+checks:
+  - matches-recording
+known_issues:
+  - must-commit: {texts: ["diplomatic"]}

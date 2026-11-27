@@ -58,6 +58,10 @@ class Run:
         said = [w.text.rstrip(".") for w in self.words or []]
         return [w for w in said if w not in self.written]
 
+    def extra(self) -> list[str]:
+        said = {w.text.rstrip(".") for w in self.words or []}
+        return [w for w in self.written if w not in said]
+
     def repeated(self) -> list[str]:
         if self.words is None:
             return []
@@ -85,7 +89,7 @@ class Run:
             "reasons": {r: self.reasons().count(r) for r in sorted(set(self.reasons()))},
         }
         if self.words is not None:
-            out.update(lost=self.lost(), repeated=self.repeated())
+            out.update(lost=self.lost(), repeated=self.repeated(), extra=self.extra())
         return out
 
 
@@ -111,6 +115,11 @@ def longest_loop(text: str, longest: int = 6) -> tuple[int, str]:
 # Each check takes the run and its parameters from the YAML and says whether it holds.
 CHECKS = {
     "every-word-once": lambda r: not r.lost() and not r.repeated(),
+    "no-extra-words": lambda r: not r.extra(),
+    "language-per-sentence": lambda r: all(sentence_lang(r, i) in ("", i.language) for i in r.committed),
+    "allowed-languages": lambda r, codes: all(i.language in codes for i in r.committed),
+    "must-commit": lambda r, texts: all(any(t in i.original for i in r.committed) for t in texts),
+    "language-of": lambda r, text, code: all(i.language == code for i in r.committed if text in i.original),
     "first-commit-reason": lambda r, reason: r.reasons()[:1] == [reason],
     "last-commit-reason": lambda r, reason: r.reasons()[-1:] == [reason],
     "has-commit-reason": lambda r, reason: reason in r.reasons(),
@@ -125,6 +134,13 @@ CHECKS = {
     "never-commits": lambda r, texts: not any(t in i.original for t in texts for i in r.committed),
     "no-repeat-loop": lambda r, max: all(longest_loop(i.original)[0] <= max for i in r.committed),
 }
+
+
+def sentence_lang(run: Run, item) -> str:
+    """The language most of a commit's words were spoken in ("" if none are known)."""
+    langs = {w.text.rstrip("."): w.lang for w in run.words or []}
+    spoken_in = [langs[t.rstrip(".")] for t in item.original.split() if t.rstrip(".") in langs]
+    return max(set(spoken_in), key=spoken_in.count) if spoken_in else ""
 
 
 def parse_check(entry) -> tuple[str, dict]:
@@ -174,8 +190,10 @@ async def play(sc: dict) -> Run:
         out = await feed(asr, steps, start=meta["offset"], finish=meta["finish"])
         return Run(out, engine, recorded=commits)
     words = build_talk(sc["talk"])
-    engine = ScriptEngine(words)
-    out = await feed(transcriber(engine), even_steps(sc["until"]), finish=False)
+    model = sc.get("model", {})
+    engine = ScriptEngine(words, empty_at=model.get("empty_at", ()), guess=model.get("guess", False))
+    steps = even_steps(sc["until"], vad_ends=sc.get("vad_ends", ()))
+    out = await feed(transcriber(engine), steps, finish=False)
     return Run(out, engine, words=words)
 
 
@@ -209,6 +227,9 @@ def write_status(latest: dict) -> None:
     ]
     for name in sorted(latest):
         row = latest[name]
+        if row.get("stale"):
+            lines.append(f"| `{name}` | {row['at']} · {row['commit']} | 녹화 밖 (GPU로 다시 녹화) | - | 녹화에 없음 {row['metrics']['misses']} |")
+            continue
         failed = [k for k, ok in row["checks"].items() if not ok]
         known = [k for k, ok in row["known_issues"].items() if not ok]
         fixed = [k for k, ok in row["known_issues"].items() if ok]
@@ -245,6 +266,13 @@ async def main(names: list[str]) -> int:
 
         print(f"\n[{path.stem}] {sc['what']}")
         print(describe(run))
+        if sc["source"] == "replay" and run.misses():
+            # The logic asked for decodes the recording does not have: the replay no longer
+            # says what the model would do. Re-record the span on a GPU.
+            print(f"\n[{path.stem}] STALE: {run.misses()} of {len(run.engine.decodes)} decodes are not in the recording")
+            rows.append({"at": at, "commit": commit, "dirty": dirty, "scenario": path.stem, "stale": True,
+                         "checks": {}, "known_issues": {}, "metrics": run.metrics()})
+            continue
         checks = {"engine stayed in step": run.misses() == 0, "same output on a second run": same}
         for entry in sc.get("checks", []):
             name, params = parse_check(entry)

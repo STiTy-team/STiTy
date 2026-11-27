@@ -21,7 +21,11 @@ from core.utils import audio as audio_mod
 SR = audio_mod.SAMPLING_RATE
 STEP = SR // 100  # samples per 10 ms time code
 SEG_LAG_SEC = 0.3
-HEADER = "language Korean" + ASR_TEXT
+# The real model still hears a word whose first 150 ms fell before the slot.
+ONSET_TOLERANCE_SEC = 0.15
+# A slot shorter than this that holds only the start of a word makes the model guess it.
+GUESS_MAX_SLOT_SEC = 0.5
+LANGUAGE_NAMES = {"ko": "Korean", "en": "English"}
 SILENT_HEADER = "language None" + ASR_TEXT
 PROMPT = "<|im_start|>assistant\n"
 
@@ -32,14 +36,18 @@ class Word:
     start: float
     end: float
     ends_sentence: bool = False
+    lang: str = "ko"
 
 
-def sentence(first: int, count: int, start: float, word_sec=0.4, gap_sec=0.1, closed=True) -> list[Word]:
-    """`count` words named 단어<n> from `first`; the last one closes the sentence if `closed`."""
+def sentence(
+    first: int, count: int, start: float, word_sec=0.4, gap_sec=0.1, closed=True, lang="ko"
+) -> list[Word]:
+    """`count` words from `first` (단어<n>, or word<n> in English); the last closes the sentence if `closed`."""
+    stem = "단어" if lang == "ko" else "word"
     words, t = [], start
     for i in range(count):
         last = closed and i == count - 1
-        words.append(Word(f"단어{first + i}" + ("." if last else ""), t, t + word_sec, last))
+        words.append(Word(f"{stem}{first + i}" + ("." if last else ""), t, t + word_sec, last, lang))
         t += word_sec + gap_sec
     return words
 
@@ -94,21 +102,33 @@ class Engine:
 
 
 class ScriptEngine(Engine):
-    def __init__(self, words: list[Word]) -> None:
+    """`empty_at`: decode ends (seconds) where the model returns nothing, as it sometimes does
+    right after a prefix that ends in <SEG>. `guess`: a short slot holding only a word's start
+    makes the model write a guess (~<word>) instead of nothing."""
+
+    def __init__(self, words: list[Word], *, empty_at=(), guess=False) -> None:
         super().__init__()
         self.words = words
+        self.empty_at = {round(t * SR) for t in empty_at}
+        self.guess = guess
 
     def answer(self, window, committed):
         start, end = window[0] / SR, window[1] / SR
-        heard = [w for w in self.words if w.start >= start and w.end <= end]
+        if window[1] in self.empty_at:
+            return Decode(window, committed, "")
+        heard = [w for w in self.words if w.start >= start - ONSET_TOLERANCE_SEC and w.end <= end]
+        if not heard and self.guess and end - start < GUESS_MAX_SLOT_SEC:
+            started = [w for w in self.words if start <= w.start < end < w.end]
+            heard = [Word("~" + w.text.rstrip("."), w.start, w.end, False, w.lang) for w in started[:1]]
         full = SILENT_HEADER
         if heard:
+            # Like the real model, the slot's language is named once, by its first words.
             body = ""
             for w in heard:
                 body += (" " if body and not body.endswith(SEG) else "") + w.text
                 if w.ends_sentence and end >= w.end + SEG_LAG_SEC:
                     body += SEG
-            full = HEADER + body
+            full = f"language {LANGUAGE_NAMES[heard[0].lang]}{ASR_TEXT}" + body
         # A prefix the talk does not start with would mean the scenario fell out of step.
         missed = not full.startswith(committed)
         output = "" if missed else full[len(committed):]
@@ -154,9 +174,9 @@ async def feed(asr, steps: list[tuple[int, bool]], *, start: int = 0, finish: bo
     return committed
 
 
-def even_steps(until: float, *, every: float = 0.1, flush_at: float | None = None) -> list[tuple[int, bool]]:
-    """Pieces of `every` seconds up to `until`, with a VAD flush at the end (or at `flush_at`)."""
-    stop = round((until if flush_at is None else flush_at) * SR)
-    size = round(every * SR)
-    ends = list(range(size, stop, size)) + [stop]
-    return [(end, end == stop) for end in ends]
+def even_steps(until: float, *, every: float = 0.1, vad_ends=()) -> list[tuple[int, bool]]:
+    """Pieces of `every` seconds up to `until`, with a VAD flush at each of `vad_ends` and at the end."""
+    stop, size = round(until * SR), round(every * SR)
+    flushes = {round(t * SR) for t in vad_ends} | {stop}
+    ends = sorted(set(range(size, stop, size)) | flushes)
+    return [(end, end in flushes) for end in ends]

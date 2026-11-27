@@ -1,0 +1,11 @@
+what: 한국어 문장 뒤에 같은 슬롯에서 영어 문장이 이어지는데, 언어를 슬롯 첫 머리말로만 정해서 영어 문장이 ko로 커밋된다
+why: 북극성 scene6 85~87s 에서 찾음 (2026-11-27) — "Oh, thank you so much, Mr. Kim." 이 [ko]. 언어 판별 0.733 의 주된 원인으로 보인다
+source: script
+talk:
+  - sentence: {first: 1, count: 5, start: 0.2}
+  - sentence: {first: 1, count: 5, start: 3.0, lang: en}
+until: 8.0
+checks:
+  - every-word-once
+known_issues:
+  - language-per-sentence

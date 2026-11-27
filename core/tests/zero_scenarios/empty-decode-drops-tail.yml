@@ -1,0 +1,13 @@
+what: <SEG> 뒤에 다음 말이 있던 슬롯에서 다음 디코딩이 빈 출력을 내자, "SEG로 딱 끝남"이 되어 리셋하면서 다음 문장을 통째로 버린다
+why: 북극성 scene5 75.0s 에서 찾음 (2026-11-27) — 영어 문장 약 3초가 사라졌다. scene6 88.4s 도 같은 모양. 리셋을 디코딩 한 번의 텍스트로만 정한다
+source: script
+talk:
+  - sentence: {first: 1, count: 5, start: 0.2}
+  - sentence: {first: 6, count: 5, start: 3.0}
+model:
+  empty_at: [6.0]     # 6초 디코딩만 빈 출력
+until: 9.0
+checks:
+  - slot-restarted: {after: 6.0}
+known_issues:
+  - every-word-once

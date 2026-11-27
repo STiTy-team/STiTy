@@ -1,0 +1,12 @@
+what: "북극성 scene2 실제 재생 — 맞장구 \"음\" 을 language Chinese 로 \"嗯。\" 받아 적어 커밋한다"
+why: "할루시네이션 — ns-laugh-as-chinese 와 같은 신호 (2026-11-27)"
+source: replay
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
+item: scene2
+span_sec: [61.2, 100.4]
+fixture: fixtures/ns-filler-as-chinese.jsonl
+checks:
+  - matches-recording
+known_issues:
+  - allowed-languages: {codes: ["ko", "en"]}
+  - never-commits: {texts: ["嗯"]}
