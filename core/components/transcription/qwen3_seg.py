@@ -807,9 +807,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
         self.state = self.slot["state"]
         self._lid_reset_at = self._audio_sec()
         log.info(
-            "[SLOT-RESET] cause=lid-finish audio=%.2f %s->%s switch=%.2f cut=%.2f/%.2f "
+            "[SLOT-RESET] cause=lid-finish audio=%.2f %s->%s cut=%.2f/%.2f "
             "force=%s finished=%r carry_sec=%.2f",
-            self._audio_sec(), header, new, rel, cut, accum.shape[0] / sr, force, text,
+            self._audio_sec(), header, new, cut, accum.shape[0] / sr, force, text,
             carry.shape[0] / sr,
         )
         self._offer_partial(force=True)
