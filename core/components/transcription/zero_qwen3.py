@@ -101,7 +101,9 @@ class ZeroQwen3Transcription(Transcriber):
     async def transcribe(self, audio: bytes) -> list:
         samples = audio_mod.from_pcm_bytes(audio)
         if getattr(self, "lid", None) is not None:
-            self.lid.hear(audio)
+            # Scoring a timeline step runs whisper; do it off the event loop so a server room
+            # does not stall the others every 0.5 s. Awaited, so the steps stay in order.
+            await asyncio.to_thread(self.lid.hear, audio)
         self._heard += len(samples)
         self._audio = np.concatenate([self._audio, samples])
         self._undecoded += len(samples)
