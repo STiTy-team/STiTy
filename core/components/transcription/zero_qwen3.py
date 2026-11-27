@@ -18,8 +18,9 @@ SEG = "<SEG>"
 ASR_TEXT = "<asr_text>"
 CHUNK_SAMPLES = 2 * audio_mod.SAMPLING_RATE
 
-# seg_confirm 에서 SEG 뒤에 이만큼 단어가 붙어 나오면 그 SEG 를 확정된 것으로 본다
-SEG_MIN_TAIL_WORDS = 3
+# seg_confirm 에서 SEG 뒤에 이만큼 단어가 붙어 나오면 그 SEG 를 확정된 것으로 본다.
+# 끝 SEG 를 들고 있다가 다음 디코딩에서 말이 붙은 경우도 같은 기준으로 확정된다.
+SEG_MIN_TAIL_WORDS = 1
 
 # 슬롯 오디오 길이가 이 길이를 넘을 경우에는 강제로 커밋하고 비우기
 MAX_SLOT_SAMPLES = 30 * audio_mod.SAMPLING_RATE # Whisper 창 길이 30초 기준
@@ -110,7 +111,8 @@ class ZeroQwen3Transcription(Transcriber):
           keeping the audio from the middle of the pause at that <SEG>; without one the slot
           goes on.
         - A <SEG> at the very end may be a breath: hold it. If the next decode still ends
-          there with nothing new, commit and reset; if words follow, the rule above takes it.
+          there with nothing new, commit and reset; if words follow, the rule above takes it
+          (with the default of one word, as soon as anything follows).
         - A decode that adds nothing tells nothing and changes nothing.
         VAD end and the 30 s limit still flush everything.
         """
