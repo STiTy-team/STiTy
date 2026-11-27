@@ -20,6 +20,7 @@ expects: prefix13/aligned.jsonl (build_prefix13_aligned.py) and prefix13/train_b
          (build_prefix10.py --aligned prefix13/aligned.jsonl).
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix13.py
 """
+
 import argparse
 import csv
 import json
@@ -76,10 +77,13 @@ for l in open(a.aligned, encoding="utf-8"):
 for lang, sub in (("ko", "ko_kr"), ("en", "en_us")):
     base = f"{a.fleurs}/{sub}"
     try:
-        for row in csv.reader(open(f"{base}/train.tsv", encoding="utf-8"),
-                              delimiter="\t", quoting=csv.QUOTE_NONE):
+        for row in csv.reader(
+            open(f"{base}/train.tsv", encoding="utf-8"), delimiter="\t", quoting=csv.QUOTE_NONE
+        ):
             if len(row) >= 3:
-                src_by_path.setdefault(os.path.abspath(f"{base}/audio/train/{row[1]}"), row[2].strip())
+                src_by_path.setdefault(
+                    os.path.abspath(f"{base}/audio/train/{row[1]}"), row[2].strip()
+                )
     except FileNotFoundError:
         pass
 for name in ("kspon_manifest", "dailytalk_manifest"):
@@ -115,7 +119,7 @@ def _src_span(path, i0, i1):
     b = _span_bounds(path, i0, i1)
     if b is None:
         return "" if i0 == i1 else None
-    return src_by_path[path][b[0]:b[1] + 1]
+    return src_by_path[path][b[0] : b[1] + 1]
 
 
 def parse_audio(audio):
@@ -123,8 +127,13 @@ def parse_audio(audio):
     for seg in audio.split("|"):
         p, _, end = seg.partition("#end=")
         p, _, start = p.partition("#start=")
-        parts.append((os.path.abspath(p), float(start) if start else 0.0,
-                      float(end) if end else dur_by_path.get(os.path.abspath(p))))
+        parts.append(
+            (
+                os.path.abspath(p),
+                float(start) if start else 0.0,
+                float(end) if end else dur_by_path.get(os.path.abspath(p)),
+            )
+        )
     return parts
 
 
@@ -184,8 +193,17 @@ def put_tag(row, tag):
 
 
 out = open(a.out, "w", encoding="utf-8")
-stats = {"carried": 0, "delta": 0, "ctx_attached": 0, "ctx_empty": 0, "ctx_dropout": 0,
-         "reset_seg": 0, "reset_lid": 0, "transcribe": 0, "tag_wrong": 0}
+stats = {
+    "carried": 0,
+    "delta": 0,
+    "ctx_attached": 0,
+    "ctx_empty": 0,
+    "ctx_dropout": 0,
+    "reset_seg": 0,
+    "reset_lid": 0,
+    "transcribe": 0,
+    "tag_wrong": 0,
+}
 
 delta_rows = []
 for l in open(a.train_base, encoding="utf-8"):
@@ -226,9 +244,13 @@ if not a.no_reset:
     for p, lg in lang_by_path.items():
         if p in words_by_path and dur_by_path.get(p, 0) > 2.5:
             pool.setdefault(lg, []).append(p)
-    cands = [(r, sl) for r, sl in delta_rows if "|" not in r["audio"]
-             and r["cond"].endswith("<asr_text>")
-             and os.path.abspath(r["audio"].split("#")[0]) in words_by_path]
+    cands = [
+        (r, sl)
+        for r, sl in delta_rows
+        if "|" not in r["audio"]
+        and r["cond"].endswith("<asr_text>")
+        and os.path.abspath(r["audio"].split("#")[0]) in words_by_path
+    ]
     rng.shuffle(cands)
     for r, src_lang in cands[: a.reset_rows]:
         own = os.path.abspath(r["audio"].split("#")[0])
@@ -256,9 +278,11 @@ if not a.no_transcribe:
     target = int(stats["delta"] * a.transcribe_ratio)
     per_lang = target // 2
     for lg in ("ko", "en"):
-        paths = [p for p, l2 in lang_by_path.items()
-                 if l2 == lg and p in words_by_path and p in src_by_path
-                 and len(words_by_path[p]) >= 6]
+        paths = [
+            p
+            for p, l2 in lang_by_path.items()
+            if l2 == lg and p in words_by_path and p in src_by_path and len(words_by_path[p]) >= 6
+        ]
         rng.shuffle(paths)
         made = 0
         for p in paths:
@@ -290,8 +314,14 @@ if not a.no_transcribe:
                     continue
                 cut = ws[k - 1]["end"] + 0.2
                 audio = p if k == len(ws) else f"{p}#end={cut:.3f}"
-                rows_here.append({"audio": audio, "cond": full_cond + head,
-                                  "text": (" " if j else "") + cont, "pair": f"{lg}-{lg}"})
+                rows_here.append(
+                    {
+                        "audio": audio,
+                        "cond": full_cond + head,
+                        "text": (" " if j else "") + cont,
+                        "pair": f"{lg}-{lg}",
+                    }
+                )
             for row in rows_here:
                 parts = parse_audio(row["audio"])
                 row["prompt"] = ""
@@ -303,6 +333,12 @@ if not a.no_transcribe:
                 stats["transcribe"] += 1
 
 out.close()
-tot = stats["carried"] + stats["delta"] + stats["reset_seg"] + stats["reset_lid"] + stats["transcribe"]
+tot = (
+    stats["carried"]
+    + stats["delta"]
+    + stats["reset_seg"]
+    + stats["reset_lid"]
+    + stats["transcribe"]
+)
 print(json.dumps(stats, indent=1))
 print(f"{a.out}: {tot} rows, tag_wrong {stats['tag_wrong'] / max(1, tot):.1%}")

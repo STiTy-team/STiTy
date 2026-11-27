@@ -29,6 +29,12 @@ async def enhance_audio(parts: dict, audio: bytes) -> bytes:
         return audio
 
 
+def hear_language(parts: dict, audio: bytes) -> None:
+    detector = parts.get("langid")
+    if detector is not None:
+        detector.hear(audio)
+
+
 async def detect_language(parts: dict, item: Transcribed) -> Transcribed:
     detector = parts.get("langid")
     if detector is None:
@@ -54,6 +60,7 @@ async def identified(parts: dict, produced: list) -> list:
 class SpeechProcessor(Processor):
     async def process(self, audio: MultiChannelAudio) -> list:
         pcm = await enhance_audio(self.parts, self.parts["mixer"].mix(audio))
+        hear_language(self.parts, pcm)
         return await identified(self.parts, await stages.hear(self.parts, pcm))
 
     async def finish(self) -> list:
@@ -85,6 +92,7 @@ class CascadePipelineV2(Pipeline):
 
     async def listen(self, audio: bytes) -> list:
         audio = await enhance_audio(self.parts, audio)
+        hear_language(self.parts, audio)
         return await self._translated(await stages.hear(self.parts, audio))
 
     async def finish(self) -> list:

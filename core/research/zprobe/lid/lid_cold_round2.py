@@ -9,6 +9,7 @@ final:  the best config re-scored on northstar onsets (content/amb split) for th
 
 usage: PYTHONPATH=Qwen3-ASR .venv/bin/python core/research/zprobe/lid/lid_cold_round2.py
 """
+
 import asyncio
 import json
 import os
@@ -30,8 +31,9 @@ EVAL_PER_LANG = 500
 SR = 16000
 rng = random.Random(0)
 
-m = Qwen3ASRModel.from_pretrained(MODEL, dtype=torch.bfloat16, device_map="cuda",
-                                  max_inference_batch_size=1)
+m = Qwen3ASRModel.from_pretrained(
+    MODEL, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1
+)
 m.model.eval()
 thinker = m.model.thinker
 dev = next(thinker.parameters()).device
@@ -52,7 +54,7 @@ def onset_cut(wav, n):
     loud = np.flatnonzero(np.abs(wav) > 0.02)
     if loud.size == 0 or wav.shape[0] - loud[0] < n:
         return None
-    return wav[loud[0]:loud[0] + n]
+    return wav[loud[0] : loud[0] + n]
 
 
 paths = {"ko": [], "en": []}
@@ -64,6 +66,7 @@ for k in paths:
     rng.shuffle(paths[k])
 
 from core.utils import lid as lidmod  # noqa: E402
+
 fused = asyncio.run(lidmod.FusedLid.build("models/zprobe/data/lid_phone_profiles.json"))
 
 
@@ -76,8 +79,11 @@ def phone_prob_en(seg):
     phones = fused._phones(seg)  # noqa: SLF001
     if len(phones) < 3:
         return None
-    s = {lang: sum(math.log(prof.get(ph, 1e-4)) for ph in phones) / len(phones)
-         for lang, prof in fused._profiles.items() if lang in ("ko", "en")}  # noqa: SLF001
+    s = {
+        lang: sum(math.log(prof.get(ph, 1e-4)) for ph in phones) / len(phones)
+        for lang, prof in fused._profiles.items()
+        if lang in ("ko", "en")
+    }  # noqa: SLF001
     if "ko" not in s or "en" not in s:
         return None
     z = np.exp(np.array([s["ko"], s["en"]]) - max(s.values()))
@@ -101,10 +107,16 @@ for w in WINDOWS:
                 out.append(seg)
         return out
 
-    tr = {li: windows_from(paths[lang], 0, PER_LANG * 2)[:PER_LANG]
-          for li, lang in enumerate(("ko", "en"))}
-    ev = {li: windows_from(paths[lang], PER_LANG * 2, PER_LANG * 2 + EVAL_PER_LANG * 2)[:EVAL_PER_LANG]
-          for li, lang in enumerate(("ko", "en"))}
+    tr = {
+        li: windows_from(paths[lang], 0, PER_LANG * 2)[:PER_LANG]
+        for li, lang in enumerate(("ko", "en"))
+    }
+    ev = {
+        li: windows_from(paths[lang], PER_LANG * 2, PER_LANG * 2 + EVAL_PER_LANG * 2)[
+            :EVAL_PER_LANG
+        ]
+        for li, lang in enumerate(("ko", "en"))
+    }
 
     trf = {li: [frames_of(s) for s in tr[li]] for li in (0, 1)}
     Xm = np.stack([fr.mean(0) for li in (0, 1) for fr in trf[li]])
@@ -117,8 +129,10 @@ for w in WINDOWS:
     opt = torch.optim.Adam([wgt, b], lr=0.05)
     for _ in range(300):
         opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(xt @ wgt + b, yt) \
+        loss = (
+            torch.nn.functional.binary_cross_entropy_with_logits(xt @ wgt + b, yt)
             + 1e-3 * wgt.pow(2).sum()
+        )
         loss.backward()
         opt.step()
     wm, bm = wgt.detach().numpy(), float(b.item())
@@ -133,8 +147,10 @@ for w in WINDOWS:
     opt = torch.optim.Adam([wgf, bf_], lr=0.05)
     for _ in range(200):
         opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(xtf @ wgf + bf_, ytf) \
+        loss = (
+            torch.nn.functional.binary_cross_entropy_with_logits(xtf @ wgf + bf_, ytf)
             + 1e-3 * wgf.pow(2).sum()
+        )
         loss.backward()
         opt.step()
     wf, bf = wgf.detach().numpy(), float(bf_.item())
@@ -148,16 +164,26 @@ for w in WINDOWS:
             pm = 1 / (1 + np.exp(-(float(np.dot((fr.mean(0) - mu) / sd, wm)) + bm)))
             pv = float((1 / (1 + np.exp(-(((fr - muf) / sdf) @ wf + bf)))).mean())
             pp = phone_prob_en(seg)
-            for name, p in (("mean", pm), ("vote", pv), ("phone", pp),
-                            ("fuse", None if pp is None else (pv + pp) / 2)):
+            for name, p in (
+                ("mean", pm),
+                ("vote", pv),
+                ("phone", pp),
+                ("fuse", None if pp is None else (pv + pp) / 2),
+            ):
                 if p is None:
                     continue
                 tot[name] += 1
                 hits[name] += ("en" if p > 0.5 else "ko") == lang
     report[w] = {k: (round(hits[k] / tot[k], 3) if tot[k] else None, tot[k]) for k in hits}
-    print(f"w={w}: " + "  ".join(f"{k} {report[w][k][0]} (n={report[w][k][1]})" for k in hits)
-          + f"  ({time.time() - t0:.0f}s)", flush=True)
+    print(
+        f"w={w}: "
+        + "  ".join(f"{k} {report[w][k][0]} (n={report[w][k][1]})" for k in hits)
+        + f"  ({time.time() - t0:.0f}s)",
+        flush=True,
+    )
 
-json.dump({str(k): v for k, v in report.items()},
-          open("models/zprobe/data/prefix12/lid_cold_round2.json", "w"))
+json.dump(
+    {str(k): v for k, v in report.items()},
+    open("models/zprobe/data/prefix12/lid_cold_round2.json", "w"),
+)
 print("LID_R2_DONE", flush=True)

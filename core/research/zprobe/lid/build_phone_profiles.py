@@ -7,6 +7,7 @@ Fitted on read speech, judged on conversational commits: the 283-window northsta
 profile verdict at 0.876 overall and 0.912 on short commits, the whisper-small blind spot.
 
 usage: .venv/bin/python core/research/zprobe/lid/build_phone_profiles.py [--langs ko en] [--utts 200]"""
+
 import argparse
 import csv
 import json
@@ -28,6 +29,7 @@ SR = 16000
 
 from huggingface_hub import hf_hub_download  # noqa: E402
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2ForCTC  # noqa: E402
+
 fe = Wav2Vec2FeatureExtractor.from_pretrained(a.model)
 pm = Wav2Vec2ForCTC.from_pretrained(a.model, dtype=torch.float16).to("cuda").eval()
 vocab = json.load(open(hf_hub_download(a.model, "vocab.json")))

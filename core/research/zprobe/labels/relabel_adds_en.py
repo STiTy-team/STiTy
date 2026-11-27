@@ -11,6 +11,7 @@ downstream. Usage (tokens, est. cost) appends to <out>.usage.jsonl per call; --b
 The endpoint is the Letsur gateway (LETSUR_API_KEY).
 
 usage: .venv/bin/python core/research/zprobe/labels/relabel_adds_en.py --limit 50 --out models/zprobe/data/relabel/pilot_en.jsonl"""
+
 import argparse
 import json
 import os
@@ -21,21 +22,23 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 PRICE = {"gpt-6-luna": (0.10, 0.50), "gpt-5-mini": (0.25, 2.00)}
-RULES = ("English: natural spoken English a simultaneous interpreter would actually say. A reference "
-         "translation of the whole sentence is given: redistribute THAT translation into source-order "
-         "additions, rephrasing only as much as the source order forces; do not introduce content the "
-         "reference does not have.\n"
-         "Three priorities, in this order:\n"
-         "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, "
-         "or content word whose source appears only in a later phrase.\n"
-         "2. Earliness: emit each phrase's content in its own addition whenever a faithful, grammatical "
-         "continuation exists - a simultaneous interpreter speaks as soon as speaking is safe. Leave an "
-         "addition \"\" (wait) ONLY when rendering the phrase's content would require information that "
-         "appears in a later phrase (a pending verb, negation, or head noun); then fold it into the NEXT "
-         "addition. An empty addition whose content could have been emitted is an error, as bad as lookahead.\n"
-         "3. Naturalness: the additions read, joined together, as one fluent English sentence. Additions "
-         "before the last must stay syntactically open - no sentence-final period. Plain phrasing is "
-         "acceptable; fillers and ungrammatical joins are not.")
+RULES = (
+    "English: natural spoken English a simultaneous interpreter would actually say. A reference "
+    "translation of the whole sentence is given: redistribute THAT translation into source-order "
+    "additions, rephrasing only as much as the source order forces; do not introduce content the "
+    "reference does not have.\n"
+    "Three priorities, in this order:\n"
+    "1. STRICT no-lookahead: addition i may use ONLY information from phrases 1..i - no entity, number, "
+    "or content word whose source appears only in a later phrase.\n"
+    "2. Earliness: emit each phrase's content in its own addition whenever a faithful, grammatical "
+    "continuation exists - a simultaneous interpreter speaks as soon as speaking is safe. Leave an "
+    'addition "" (wait) ONLY when rendering the phrase\'s content would require information that '
+    "appears in a later phrase (a pending verb, negation, or head noun); then fold it into the NEXT "
+    "addition. An empty addition whose content could have been emitted is an error, as bad as lookahead.\n"
+    "3. Naturalness: the additions read, joined together, as one fluent English sentence. Additions "
+    "before the last must stay syntactically open - no sentence-final period. Plain phrasing is "
+    "acceptable; fillers and ungrammatical joins are not."
+)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--pieces", default="models/zprobe/data/connective_en/pieces1.jsonl")
@@ -45,7 +48,11 @@ ap.add_argument("--model", default="gpt-6-luna")
 ap.add_argument("--reasoning", default="medium")
 ap.add_argument("--limit", type=int, default=0)
 ap.add_argument("--workers", type=int, default=16)
-ap.add_argument("--include-fail", action="store_true", help="also relabel rows whose first-pass pieces failed (the chunk split exists; validation gates the result)")
+ap.add_argument(
+    "--include-fail",
+    action="store_true",
+    help="also relabel rows whose first-pass pieces failed (the chunk split exists; validation gates the result)",
+)
 ap.add_argument("--budget", type=float, default=15.0)
 ap.add_argument("--out", required=True)
 a = ap.parse_args()
@@ -55,6 +62,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from build_prefix import content  # noqa: E402
 
 from openai import OpenAI  # noqa: E402
+
 client = OpenAI(base_url="https://gw.letsur.ai/v1", api_key=os.environ["LETSUR_API_KEY"])
 
 hy = {}
@@ -73,8 +81,16 @@ for l in open(a.pieces, encoding="utf-8"):
         continue
     if r.get("fail") and not a.include_fail:
         continue
-    rows.append({"sid": r["sid"], "lang": r["lang"], "src": r["src"], "ref": r["ref"],
-                 "phrases": r["chunks"], "old": r.get("pieces")})
+    rows.append(
+        {
+            "sid": r["sid"],
+            "lang": r["lang"],
+            "src": r["src"],
+            "ref": r["ref"],
+            "phrases": r["chunks"],
+            "old": r.get("pieces"),
+        }
+    )
 if a.limit:
     rows = rows[: a.limit]
 
@@ -99,6 +115,7 @@ def _gtx_prefix_content(row, i):
             return _gtx_cache[key]
     import urllib.parse
     import urllib.request
+
     q = urllib.parse.quote(" ".join(row["phrases"][: i + 1]))
     url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q={q}"
     words = set()
@@ -133,15 +150,17 @@ def leaked(adds, hy_row, row=None):
 def ask(row, note=""):
     global spent
     phrases = json.dumps(row["phrases"], ensure_ascii=False)
-    msg = (f"Source sentence ({row['lang']}): {row['src']}\n"
-           f"Reference English translation: {row['ref']}\n"
-           f"Phrases (in order): {phrases}\n"
-           f"Write the simultaneous-interpretation English addition for each phrase.\n{RULES}\n{note}\n"
-           f'Answer with JSON only: {{"adds": ["...", ...]}} with exactly {len(row["phrases"])} items.')
+    msg = (
+        f"Source sentence ({row['lang']}): {row['src']}\n"
+        f"Reference English translation: {row['ref']}\n"
+        f"Phrases (in order): {phrases}\n"
+        f"Write the simultaneous-interpretation English addition for each phrase.\n{RULES}\n{note}\n"
+        f'Answer with JSON only: {{"adds": ["...", ...]}} with exactly {len(row["phrases"])} items.'
+    )
     t0 = time.time()
     resp = client.chat.completions.create(
-        model=a.model, reasoning_effort=a.reasoning,
-        messages=[{"role": "user", "content": msg}])
+        model=a.model, reasoning_effort=a.reasoning, messages=[{"role": "user", "content": msg}]
+    )
     u = resp.usage
     ec = (resp.model_extra or {}).get("estimated_cost") or {}
     try:
@@ -152,9 +171,19 @@ def ask(row, note=""):
     with lock:
         global spent
         spent += cost
-        usage.write(json.dumps({"sid": row["sid"], "model": a.model, "in": u.prompt_tokens,
-                                "out": u.completion_tokens, "est_usd": round(cost, 6),
-                                "sec": round(time.time() - t0, 1)}) + "\n")
+        usage.write(
+            json.dumps(
+                {
+                    "sid": row["sid"],
+                    "model": a.model,
+                    "in": u.prompt_tokens,
+                    "out": u.completion_tokens,
+                    "est_usd": round(cost, 6),
+                    "sec": round(time.time() - t0, 1),
+                }
+            )
+            + "\n"
+        )
         usage.flush()
     txt = resp.choices[0].message.content
     m = re.search(r"\{.*\}", txt, re.S)
@@ -172,8 +201,11 @@ def check(row, adds):
             return f"addition before the end closes the sentence: {x!r}"
     extra = leaked(adds, hy.get(row["sid"]) or {}, row)
     if extra:
-        return ("these words are said before their source phrase has been heard (no-lookahead violation): "
-                + ", ".join(extra) + " - move them to the addition of the phrase that contains them")
+        return (
+            "these words are said before their source phrase has been heard (no-lookahead violation): "
+            + ", ".join(extra)
+            + " - move them to the addition of the phrase that contains them"
+        )
     return None
 
 
@@ -203,8 +235,13 @@ def work(row):
                 n_fail += 1
                 print(f"FAIL {row['sid']}: {why}", flush=True)
             else:
-                out.write(json.dumps({"sid": row["sid"], "lang": row["lang"],
-                                      "adds": finish_sentence(adds)}, ensure_ascii=False) + "\n")
+                out.write(
+                    json.dumps(
+                        {"sid": row["sid"], "lang": row["lang"], "adds": finish_sentence(adds)},
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
                 out.flush()
                 n_ok += 1
             if n_seen % 50 == 0:

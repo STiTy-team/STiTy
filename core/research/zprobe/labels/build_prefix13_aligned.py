@@ -9,6 +9,7 @@ fine_fail692_terra - later files win), falling back to the chunking model's own 
 
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix13_aligned.py
 """
+
 import argparse
 import json
 import os
@@ -19,10 +20,15 @@ ap.add_argument("--manifest", default="models/zprobe/data/prefix13/ko_all_manife
 ap.add_argument("--word-times", default="models/zprobe/data/prefix12/word_times.jsonl")
 ap.add_argument("--phrases1", default="models/zprobe/data/prefix3/phrases1.jsonl")
 ap.add_argument("--luna-pieces", default="models/zprobe/data/prefix13/pieces_ko_fail.jsonl")
-ap.add_argument("--relabels", nargs="+", default=[
-    "models/zprobe/data/relabel/full_fine_terra.jsonl",
-    "models/zprobe/data/relabel/fine_ok285_terra.jsonl",
-    "models/zprobe/data/relabel/fine_fail692_terra.jsonl"])
+ap.add_argument(
+    "--relabels",
+    nargs="+",
+    default=[
+        "models/zprobe/data/relabel/full_fine_terra.jsonl",
+        "models/zprobe/data/relabel/fine_ok285_terra.jsonl",
+        "models/zprobe/data/relabel/fine_fail692_terra.jsonl",
+    ],
+)
 ap.add_argument("--out", default="models/zprobe/data/prefix13/aligned.jsonl")
 a = ap.parse_args()
 
@@ -97,8 +103,11 @@ for l in open(a.manifest, encoding="utf-8"):
             break
         ends.append(ws[wi - 1]["end"])
     dur = ws[-1]["end"]
-    if len(ends) != len(marks) or any(b <= x for x, b in zip(ends, ends[1:])) \
-            or (ends and ends[-1] > dur - 0.2):
+    if (
+        len(ends) != len(marks)
+        or any(b <= x for x, b in zip(ends, ends[1:]))
+        or (ends and ends[-1] > dur - 0.2)
+    ):
         map_fail += 1
         continue
     adds = adds_by_sid.get(r["sid"])
@@ -110,11 +119,25 @@ for l in open(a.manifest, encoding="utf-8"):
             map_fail += 1
             continue
         fallback += 1
-    out.write(json.dumps({"id": r["id"], "sid": r["sid"], "audio": r["audio"],
-                          "src": r["src"], "lang": "ko", "tgt": "en",
-                          "dur": round(dur + 0.2, 2), "adds": adds,
-                          "ends": [round(e, 2) for e in ends] + [round(dur + 0.2, 2)]},
-                         ensure_ascii=False) + "\n")
+    out.write(
+        json.dumps(
+            {
+                "id": r["id"],
+                "sid": r["sid"],
+                "audio": r["audio"],
+                "src": r["src"],
+                "lang": "ko",
+                "tgt": "en",
+                "dur": round(dur + 0.2, 2),
+                "adds": adds,
+                "ends": [round(e, 2) for e in ends] + [round(dur + 0.2, 2)],
+            },
+            ensure_ascii=False,
+        )
+        + "\n"
+    )
     added += 1
-print(f"base {base} | ko->en 신규 {added} (terra {terra}, 1차 대체 {fallback}) | "
-      f"제외: 분할없음 {no_chunks}, 정렬없음 {no_words}, 매핑실패 {map_fail}")
+print(
+    f"base {base} | ko->en 신규 {added} (terra {terra}, 1차 대체 {fallback}) | "
+    f"제외: 분할없음 {no_chunks}, 정렬없음 {no_words}, 매핑실패 {map_fail}"
+)

@@ -13,6 +13,7 @@ windows      0.3 / 0.5 / 0.7 / 1.0 s from the onset (first loud sample)
 
 usage: PYTHONPATH=Qwen3-ASR .venv/bin/python core/research/zprobe/lid/lid_cold_grid.py
 """
+
 import json
 import os
 import random
@@ -34,12 +35,16 @@ PER_LANG = 600
 SR = 16000
 rng = random.Random(0)
 
-AMB = re.compile(r"^[\s\W]*(하+|ㅎ+|아{1,3}[\s,.…!?~]|어[\s,.…]|음+|네[\s,.…!?]|예[\s,.…]|자[\s,]|자자"
-                 r"|응+|에이|아이[\s,]|에휴|흠|어유|이?모님|위하여|완전[\s!]|그래요|그럼[\s,.!]"
-                 r"|um+|uh+|oh[\s,.!]|haha|h[ma]+[\s,.]|yeah|okay|ok[\s,.]|wow|mm+)", re.I)
+AMB = re.compile(
+    r"^[\s\W]*(하+|ㅎ+|아{1,3}[\s,.…!?~]|어[\s,.…]|음+|네[\s,.…!?]|예[\s,.…]|자[\s,]|자자"
+    r"|응+|에이|아이[\s,]|에휴|흠|어유|이?모님|위하여|완전[\s!]|그래요|그럼[\s,.!]"
+    r"|um+|uh+|oh[\s,.!]|haha|h[ma]+[\s,.]|yeah|okay|ok[\s,.]|wow|mm+)",
+    re.I,
+)
 
-m = Qwen3ASRModel.from_pretrained(MODEL, dtype=torch.bfloat16, device_map="cuda",
-                                  max_inference_batch_size=1)
+m = Qwen3ASRModel.from_pretrained(
+    MODEL, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1
+)
 m.model.eval()
 thinker = m.model.thinker
 dev = next(thinker.parameters()).device
@@ -60,7 +65,7 @@ def onset_cut(wav, n):
     loud = np.flatnonzero(np.abs(wav) > 0.02)
     if loud.size == 0 or wav.shape[0] - loud[0] < n:
         return None
-    return wav[loud[0]:loud[0] + n]
+    return wav[loud[0] : loud[0] + n]
 
 
 def fleurs_paths():
@@ -91,8 +96,7 @@ for line in open(f"{NS}/manifest.jsonl", encoding="utf-8"):
     scene = it["audio"].split("/")[-1].removesuffix(".wav")
     head = (it.get("reference") or {}).get("transcript", "")
     utts.append((scene, it["offset"], it["duration"], it["src_lang"], bool(AMB.match(head))))
-scene_wav = {s: librosa.load(f"{NS}/audio/{s}.wav", sr=SR)[0]
-             for s in sorted({u[0] for u in utts})}
+scene_wav = {s: librosa.load(f"{NS}/audio/{s}.wav", sr=SR)[0] for s in sorted({u[0] for u in utts})}
 print(f"eval utts: {len(utts)}, 간투사 첫머리 {sum(u[4] for u in utts)}", flush=True)
 
 t0 = time.time()
@@ -134,7 +138,10 @@ def fit_head(X, y, l2=1e-3, iters=300):
     opt = torch.optim.Adam([w, b], lr=0.05)
     for _ in range(iters):
         opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(xt @ w + b, yt) + l2 * w.pow(2).sum()
+        loss = (
+            torch.nn.functional.binary_cross_entropy_with_logits(xt @ w + b, yt)
+            + l2 * w.pow(2).sum()
+        )
         loss.backward()
         opt.step()
     return w.detach().numpy(), float(b.item()), mu, sd
@@ -156,7 +163,7 @@ def eval_frames(w):
     for scene, off, dur, lang, amb in utts:
         if lang not in ("ko", "en") or dur < w:
             continue
-        seg = onset_cut(scene_wav[scene][int(off * SR):int((off + dur) * SR)], n)
+        seg = onset_cut(scene_wav[scene][int(off * SR) : int((off + dur) * SR)], n)
         if seg is None:
             continue
         rows.append((frames_of(seg), lang, amb))
@@ -167,8 +174,11 @@ def eval_frames(w):
 def score(preds):
     allv = [(p, l) for p, l, amb in preds]
     content = [(p, l) for p, l, amb in preds if not amb]
-    return (sum(p == l for p, l in allv) / max(1, len(allv)),
-            sum(p == l for p, l in content) / max(1, len(content)), len(content))
+    return (
+        sum(p == l for p, l in allv) / max(1, len(allv)),
+        sum(p == l for p, l in content) / max(1, len(content)),
+        len(content),
+    )
 
 
 results = {}
@@ -208,10 +218,18 @@ for source in ("fleurs", "conv", "both"):
             preds.append(("en" if p > 0.5 else "ko", lang, amb))
         results[(source, w, "tail")] = score(preds)
 
-        print(f"{source:6s} w={w}: " + "  ".join(
-            f"{pool} 전체 {results[(source, w, pool)][0]:.3f}/내용 {results[(source, w, pool)][1]:.3f}"
-            for pool in ("mean", "vote", "tail")) + f"  ({time.time() - t0:.0f}s)", flush=True)
+        print(
+            f"{source:6s} w={w}: "
+            + "  ".join(
+                f"{pool} 전체 {results[(source, w, pool)][0]:.3f}/내용 {results[(source, w, pool)][1]:.3f}"
+                for pool in ("mean", "vote", "tail")
+            )
+            + f"  ({time.time() - t0:.0f}s)",
+            flush=True,
+        )
 
-json.dump({f"{s}|{w}|{p}": v for (s, w, p), v in results.items()},
-          open("models/zprobe/data/prefix12/lid_cold_grid.json", "w"))
+json.dump(
+    {f"{s}|{w}|{p}": v for (s, w, p), v in results.items()},
+    open("models/zprobe/data/prefix12/lid_cold_grid.json", "w"),
+)
 print("LID_GRID_DONE", flush=True)

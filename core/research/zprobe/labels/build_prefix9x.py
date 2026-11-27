@@ -18,6 +18,7 @@ Everything else is train_prefix9d.jsonl carried unchanged, so the single variabl
 noise supervision.
 
 usage: .venv/bin/python core/research/zprobe/labels/build_prefix9x.py"""
+
 import argparse
 import json
 import os
@@ -31,9 +32,18 @@ ap.add_argument("--aligned", default="models/zprobe/data/prefix7/aligned.jsonl")
 ap.add_argument("--base", default="models/zprobe/data/train_prefix9d.jsonl")
 ap.add_argument("--noise-dir", default="models/zprobe/data/noise9x")
 ap.add_argument("--out", default="models/zprobe/data/train_prefix9x.jsonl")
-ap.add_argument("--n-noise", type=int, default=1200, help="noise wavs to synthesize (half reversed, half babble)")
-ap.add_argument("--tail-cap", type=int, default=800, help="noise-tail rows per pair (en-ko gets twice this)")
-ap.add_argument("--only-per-lang", type=int, default=600, help="noise-only rows per target language")
+ap.add_argument(
+    "--n-noise",
+    type=int,
+    default=1200,
+    help="noise wavs to synthesize (half reversed, half babble)",
+)
+ap.add_argument(
+    "--tail-cap", type=int, default=800, help="noise-tail rows per pair (en-ko gets twice this)"
+)
+ap.add_argument(
+    "--only-per-lang", type=int, default=600, help="noise-only rows per target language"
+)
 a = ap.parse_args()
 rng = random.Random(11)
 
@@ -64,11 +74,11 @@ for i in range(a.n_noise):
         y = np.zeros(n, dtype="float32")
         for p in parts:
             off = rng.randrange(max(1, n - len(p) + 1))
-            y[off:off + len(p)] += p
+            y[off : off + len(p)] += p
     span = int(rng.uniform(2.0, 6.0) * sr)
     if len(y) > span:
         off = rng.randrange(len(y) - span + 1)
-        y = y[off:off + span]
+        y = y[off : off + span]
     peak = float(np.max(np.abs(y))) or 1.0
     y = y * (rng.uniform(0.03, 0.12) / peak)
     sf.write(name, y, sr)
@@ -93,9 +103,18 @@ for (lang, tgt), recs in sorted(by_pair.items()):
         nz = rng.choice(noise_files)
         dur = sf.info(nz).duration
         end = min(rng.uniform(1.0, 2.5), dur)
-        out.write(json.dumps({"audio": f"{os.path.abspath(r['audio'])}|{nz}#end={end:.2f}",
-                              "cond": tag + cum_full(r), "text": "", "pair": f"{lang}-{tgt}"},
-                             ensure_ascii=False) + "\n")
+        out.write(
+            json.dumps(
+                {
+                    "audio": f"{os.path.abspath(r['audio'])}|{nz}#end={end:.2f}",
+                    "cond": tag + cum_full(r),
+                    "text": "",
+                    "pair": f"{lang}-{tgt}",
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
         kinds["tail"] += 1
 
 for tgt in ("ko", "en"):
@@ -103,11 +122,19 @@ for tgt in ("ko", "en"):
     for nz in rng.sample(noise_files, min(a.only_per_lang, len(noise_files))):
         dur = sf.info(nz).duration
         end = min(rng.uniform(1.5, 3.0), dur)
-        out.write(json.dumps({"audio": f"{nz}#end={end:.2f}", "cond": tag, "text": "",
-                              "pair": f"{tgt}-{tgt}"}, ensure_ascii=False) + "\n")
+        out.write(
+            json.dumps(
+                {"audio": f"{nz}#end={end:.2f}", "cond": tag, "text": "", "pair": f"{tgt}-{tgt}"},
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
         kinds["only"] += 1
 
 out.close()
 print(f"noise rows: {kinds}", flush=True)
-print(f"{a.out}: {kept + sum(kinds.values())} rows ({kept} carried + {sum(kinds.values())} noise)", flush=True)
+print(
+    f"{a.out}: {kept + sum(kinds.values())} rows ({kept} carried + {sum(kinds.values())} noise)",
+    flush=True,
+)
 print("BUILD_PREFIX9X_DONE", flush=True)

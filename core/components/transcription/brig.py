@@ -85,9 +85,13 @@ class BrigTranscription(Transcriber):
             self._ctx_partial = ""
         horizon = arrived[-1].decision_audio_sec - dedup.MATCH_WINDOW_BACK_SEC * 2
         self._transcript = [row for row in self._transcript if row[0] >= horizon]
-        self._ctx_rows = [row for row in self._ctx_rows
-                          if row[0] >= arrived[-1].decision_audio_sec
-                          - float(self._adapter.settings.get("asr_context_window_sec", 12.0))]
+        self._ctx_rows = [
+            row
+            for row in self._ctx_rows
+            if row[0]
+            >= arrived[-1].decision_audio_sec
+            - float(self._adapter.settings.get("asr_context_window_sec", 12.0))
+        ]
         self._feed_context()
         return self._refold()
 

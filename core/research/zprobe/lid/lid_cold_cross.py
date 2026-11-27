@@ -6,6 +6,7 @@ whether round 2's 99.8% held-out number means anything.
 
 usage: PYTHONPATH=Qwen3-ASR .venv/bin/python core/research/zprobe/lid/lid_cold_cross.py
 """
+
 import json
 import os
 import random
@@ -26,8 +27,9 @@ EVAL_PER_LANG = 300
 SR = 16000
 rng = random.Random(0)
 
-m = Qwen3ASRModel.from_pretrained(MODEL, dtype=torch.bfloat16, device_map="cuda",
-                                  max_inference_batch_size=1)
+m = Qwen3ASRModel.from_pretrained(
+    MODEL, dtype=torch.bfloat16, device_map="cuda", max_inference_batch_size=1
+)
 m.model.eval()
 thinker = m.model.thinker
 dev = next(thinker.parameters()).device
@@ -48,7 +50,7 @@ def onset_cut(wav, n):
     loud = np.flatnonzero(np.abs(wav) > 0.02)
     if loud.size == 0 or wav.shape[0] - loud[0] < n:
         return None
-    return wav[loud[0]:loud[0] + n]
+    return wav[loud[0] : loud[0] + n]
 
 
 def fleurs_paths():
@@ -98,7 +100,10 @@ def fit(X, y):
     opt = torch.optim.Adam([w, b], lr=0.05)
     for _ in range(300):
         opt.zero_grad()
-        loss = torch.nn.functional.binary_cross_entropy_with_logits(xt @ w + b, yt) + 1e-3 * w.pow(2).sum()
+        loss = (
+            torch.nn.functional.binary_cross_entropy_with_logits(xt @ w + b, yt)
+            + 1e-3 * w.pow(2).sum()
+        )
         loss.backward()
         opt.step()
     return w.detach().numpy(), float(b.item()), mu, sd
@@ -107,10 +112,20 @@ def fit(X, y):
 t0 = time.time()
 for w_sec in WINDOWS:
     n = int(w_sec * SR)
-    tr = {s: {li: windows(s, lang, 0, PER_LANG * 2, n, PER_LANG)
-              for li, lang in enumerate(("ko", "en"))} for s in SRC}
-    ev = {s: {li: windows(s, lang, PER_LANG * 2, PER_LANG * 2 + EVAL_PER_LANG * 2, n, EVAL_PER_LANG)
-              for li, lang in enumerate(("ko", "en"))} for s in SRC}
+    tr = {
+        s: {
+            li: windows(s, lang, 0, PER_LANG * 2, n, PER_LANG)
+            for li, lang in enumerate(("ko", "en"))
+        }
+        for s in SRC
+    }
+    ev = {
+        s: {
+            li: windows(s, lang, PER_LANG * 2, PER_LANG * 2 + EVAL_PER_LANG * 2, n, EVAL_PER_LANG)
+            for li, lang in enumerate(("ko", "en"))
+        }
+        for s in SRC
+    }
     for train_s in ("fleurs", "conv"):
         X = np.stack(tr[train_s][0] + tr[train_s][1])
         y = np.array([0] * len(tr[train_s][0]) + [1] * len(tr[train_s][1]))
@@ -124,6 +139,8 @@ for w_sec in WINDOWS:
                     hit += (p > 0.5) == bool(li)
                     tot += 1
             line.append(f"eval={eval_s} {hit / tot:.3f} (n={tot})")
-        print(f"w={w_sec} train={train_s}: " + "  ".join(line) + f"  ({time.time() - t0:.0f}s)",
-              flush=True)
+        print(
+            f"w={w_sec} train={train_s}: " + "  ".join(line) + f"  ({time.time() - t0:.0f}s)",
+            flush=True,
+        )
 print("LID_CROSS_DONE", flush=True)

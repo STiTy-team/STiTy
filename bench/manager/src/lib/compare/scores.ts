@@ -23,6 +23,11 @@ export const SCORES: Record<string, Score> = {
   longyaal_ms: { label: "LongYAAL", better: "lower", item: "longyaal_ms" },
   longyaal_ca_ms: { label: "LongYAAL CA", better: "lower", item: "longyaal_ca_ms" },
   lang_detect_accuracy: { label: "Lang detect", better: "higher" },
+  lang_detect_route_accuracy: {
+    label: "Lang route",
+    better: "higher",
+    note: "번역 방향을 정한 언어가 커밋 텍스트의 참조 문장 언어와 맞은 비율이에요",
+  },
   segments_per_item: { label: "Segments / item", better: null, item: "n_segments" },
   gpu_peak_mib: {
     label: "GPU peak",

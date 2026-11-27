@@ -1,0 +1,280 @@
+{
+  "name": "northstar_ko+en-en@v3/vela_probelid",
+  "stamp": "20261119T093302",
+  "status": "ok",
+  "failure": null,
+  "source": {
+    "commit": "e91f3555691cbe264c512a65920fb0b11ff1cf80"
+  },
+  "started_at": "2026-11-19T09:33:02.674218+00:00",
+  "finished_at": "2026-11-19T09:46:59.832030+00:00",
+  "metrics": {
+    "wer": 0.1970909090909091,
+    "wer_by_lang": {
+      "en+ko": 0.1970909090909091
+    },
+    "wer_scored_only": 0.1970909090909091,
+    "cer": 0.1138269829858615,
+    "cer_by_lang": {
+      "en+ko": 0.1138269829858615
+    },
+    "bleu": 12.920457887813544,
+    "bleu_by_pair": {
+      "ko-en": 12.920457887813544
+    },
+    "avg_fsl_sec": 0.13177944250871157,
+    "longyaal_ms": 2656.5137154744107,
+    "longyaal_ca_ms": 2974.9900182358883,
+    "lang_detect_accuracy": 0.759581881533101,
+    "confusion": {
+      "en->en": 82,
+      "en->ko": 32,
+      "ko->?": 2,
+      "ko->en": 35,
+      "ko->ko": 136
+    },
+    "commit_reasons": {
+      "vad": 0.08710801393728224,
+      "seg": 0.9128919860627178,
+      "dot": 0.0,
+      "always": 0.0,
+      "finish": 0.0
+    },
+    "segments_per_item": 47.833333333333336,
+    "token_emission_ms": 1154.58748866727,
+    "token_emission_p50_ms": 1030.0000000000011,
+    "token_emission_p90_ms": 2190.0000000000005,
+    "token_emission_ca_ms": 1318.5548504079777,
+    "token_emission_ca_p50_ms": 1200.0000000000027,
+    "token_emission_ca_p90_ms": 2354.9199999999983,
+    "gpu_peak_mib": 15980,
+    "gpu_mean_mib": 14094,
+    "gpu_other_peak_mib": 294,
+    "gpu_by_process_mib": {
+      "VLLM::EngineCore": 7704,
+      "python": 8286
+    },
+    "gpu_util_mean": 0.097,
+    "comet": 0.6963692911797099,
+    "comet_by_pair": {
+      "ko-en": 0.6963692911797099
+    },
+    "comet_model": "Unbabel/wmt22-comet-da"
+  },
+  "unavailable": {
+    "laal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "laal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms)",
+    "yaal_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended",
+    "yaal_ca_ms": "no item carried a reference translation in its target language, or every item was already in the target language, or the run is long-form (see longyaal_ms), or every item emitted after its source ended"
+  },
+  "counts": {
+    "items": 6,
+    "sessions": 6,
+    "errored": 0,
+    "empty_transcription_output": 0,
+    "audio_sec": 699.13,
+    "wall_sec": 837.16,
+    "compute_sec": 65.11,
+    "realtime_factor": 0.09
+  },
+  "failed_items": [],
+  "config": {
+    "name": "northstar_ko+en-en@v3/vela_probelid",
+    "dataset": {
+      "name": "northstar-260928",
+      "longform": true
+    },
+    "target": "en",
+    "stity": {
+      "pipeline": {
+        "name": "cascade:v2",
+        "transcription": {
+          "name": "qwen-seg",
+          "model": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+          "chunk_size_sec": 2.0,
+          "max_new_tokens": 128,
+          "dot_commit_confirm": true,
+          "dot_commit_stall_chunks": 1,
+          "rep_dedup": true
+        },
+        "langid": {
+          "name": "probe",
+          "model": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+          "head": "/home/mobility/STiTy-team/STiTy/models/zprobe/data/lidprobe/head_segmix.npz",
+          "conf": 0.99,
+          "fallback": "alphabet",
+          "langs": [
+            "ko",
+            "en"
+          ]
+        },
+        "translation": {
+          "name": "local",
+          "model": "tencent/Hy-MT2-1.8B",
+          "quant": "none"
+        },
+        "vad": {
+          "name": "silero",
+          "min_silence_ms": 800
+        }
+      },
+      "commit": "seg",
+      "gpu_memory_utilization": 0.3
+    }
+  },
+  "identity": {
+    "dataset": {
+      "name": "northstar_ko+en-en",
+      "version": 3,
+      "ref": "northstar_ko+en-en@v3",
+      "hash": "ab8680023fe9",
+      "description": "The northstar business-dinner script (5 actors, Korean and English), each scene streamed whole, translated to English, gold r2 (r1 with non-speech sounds such as laughter, throat clearing and sighs removed from the source and translation references; datasets bc6afc7, branch feat/northstar-260928-r2). Score with STITY_R2NORM=all (bench/metrics/r2norm.py)",
+      "tags": [
+        "northstar",
+        "longform",
+        "conversation",
+        "mixed-language"
+      ]
+    },
+    "pipeline": {
+      "name": "vela_probelid",
+      "version": 1,
+      "ref": "vela_probelid",
+      "hash": "81abe2b06fe0",
+      "description": "vela@v2 with the commit-tag language judged from audio first: a linear ko/en head (core/research/zprobe/lid/lid_probe.py, FLEURS train 646 ko + 800 en 2.5 s windows) on the seg-mix ASR's own audio encoder (audio_tower.ln_post mean-pool; the same weights the ASR runs, loaded again on its own, about 0.6 GB) judges each committed span (up to 10 s); when it is under 99% sure the alphabet rule of vela decides as before. Northstar trailing 2.5 s windows: 95.4% all, 94.0% near language switches, 97.4% on the 1230/1297 windows at the 0.99 gate. Otherwise vela@v2: koen-seg-mix ASR, Hy-MT2-1.8B without context",
+      "tags": [
+        "vela",
+        "probelid",
+        "internal-probe-lid",
+        "qwen-seg",
+        "koen-asr",
+        "local-mt",
+        "northstar",
+        "hallucination",
+        "retag"
+      ]
+    }
+  },
+  "pacing": {
+    "chunk_size_ms": 200,
+    "trailing_silence_ms": 4000
+  },
+  "dataset": {
+    "name": "northstar-260928",
+    "split": "test",
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "audio": {
+      "format": "wav",
+      "sample_rate": 16000
+    },
+    "provides": {
+      "transcript": true,
+      "translations": [
+        "en",
+        "ko"
+      ]
+    },
+    "primary_metric": "cer",
+    "group_rule": "scene (one recording of the six-scene script, 5 speakers, en+ko)",
+    "bench_defaults": {
+      "trailing_silence_ms": 4000,
+      "chunk_size_ms": 200,
+      "send_interval_ms": 200
+    },
+    "speakers": {
+      "A": {
+        "name": "Mike Donovan",
+        "lang": "en",
+        "voice": "male, General American"
+      },
+      "B": {
+        "name": "Emma Whitfield",
+        "lang": "en",
+        "voice": "female, Southern British"
+      },
+      "C": {
+        "name": "김태호 부장",
+        "lang": "ko",
+        "voice": "male, Seoul / Gyeongsang"
+      },
+      "D": {
+        "name": "박지은 과장",
+        "lang": "ko",
+        "voice": "female, Seoul"
+      },
+      "E": {
+        "name": "이준서 대리",
+        "lang": "ko",
+        "voice": "male, Seoul, low volume"
+      }
+    },
+    "scenes": {
+      "scene1": {
+        "title": "Scene 1 — Arrival & ordering (0:00–1:20)",
+        "recording": "20260928_221247.m4a"
+      },
+      "scene2": {
+        "title": "Scene 2 — Meeting recap: dates, numbers & budget (1:20–3:50)",
+        "recording": "20260928_221627.m4a"
+      },
+      "scene3": {
+        "title": "Scene 3 — Food, etiquette & the toast (3:50–5:40)",
+        "recording": "20260928_221959.m4a"
+      },
+      "scene4": {
+        "title": "Scene 4 — The phone call & side talk (5:40–6:50)",
+        "recording": "20260928_222200.m4a"
+      },
+      "scene5": {
+        "title": "Scene 5 — Baseball, dialect, weekend plans & jokes (6:50–8:50)",
+        "recording": "20260928_222328.m4a"
+      },
+      "scene6": {
+        "title": "Scene 6 — Contacts, the bill & goodbyes (8:50–10:00)",
+        "recording": "20260928_222605.m4a"
+      }
+    },
+    "root": "/home/mobility/STiTy-team/datasets/northstar-260928",
+    "manifest_sha256": "a5ea19ac0af9bf57ba86ee008712d3c99d98fb4add892153d5e281c40d667451",
+    "alignment_sha256": "e82857981d60a697e4cde285b44c52df8ee89b287de2f563af6754dc24666550",
+    "n_aligned": 6,
+    "n_items": 6,
+    "n_sessions": 6
+  },
+  "components": {
+    "pipeline": "cascade:v2",
+    "transcription": {
+      "backend": "qwen-seg",
+      "model_path": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+      "chunk_size_sec": 2.0,
+      "max_new_tokens": 128,
+      "dot_commit_confirm": true,
+      "dot_commit_stall_chunks": 1,
+      "rep_dedup": true,
+      "restrict_languages": true
+    },
+    "vad": {
+      "backend": "silero",
+      "min_silence_ms": 800
+    },
+    "translation": {
+      "backend": "local",
+      "model": "tencent/Hy-MT2-1.8B",
+      "quant": "none"
+    },
+    "langid": {
+      "backend": "probe",
+      "model": "Doo12/Qwen3-ASR-1.7B-koen-seg-mix-merged",
+      "head": "/home/mobility/STiTy-team/STiTy/models/zprobe/data/lidprobe/head_segmix.npz",
+      "conf": 0.99,
+      "fallback": "alphabet",
+      "langs": [
+        "ko",
+        "en"
+      ]
+    }
+  }
+}

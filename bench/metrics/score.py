@@ -5,7 +5,7 @@ import numpy as np
 
 from .common import macro, per_lang, succeeded, translated
 from .latency import fsl, laal, longyaal, token_emission, yaal
-from .asr import commit_reasons, language_detection
+from .asr import commit_reasons, language_detection, language_routing
 from . import transcription
 from .transcription import cer, wer
 from .translation import bleu, bleu_pairs
@@ -44,6 +44,9 @@ UNAVAILABLE = {
     "token_emission_ms": NO_ALIGNMENT,
     "token_emission_ca_ms": NO_ALIGNMENT,
     "lang_detect_accuracy": "no segment reported a detected language",
+    "lang_detect_route_accuracy": (
+        "no commit's text matched a reference sentence (or the item has no reference sentences)"
+    ),
     "commit_reasons": NO_SEGMENT,
 }
 
@@ -95,6 +98,7 @@ def score_run(rows: list[dict], target: str, r2norm: str | None = None) -> tuple
         "longyaal_ms": longyaal(rows, target),
         "longyaal_ca_ms": longyaal(rows, target, computation_aware=True),
         **language_detection(rows),
+        **language_routing(rows),
         "commit_reasons": commit_reasons(rows),
         "segments_per_item": len(segments) / len(rows) if rows else None,
     }
