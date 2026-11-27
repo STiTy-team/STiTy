@@ -40,14 +40,18 @@ async def load_model(path: str, gpu_memory_utilization: float) -> tuple:
         )
     )
     processor = Qwen3ASRProcessor.from_pretrained(path, fix_mistral_regex=True)
-    prompt = processor.apply_chat_template(
-        [
-            {"role": "system", "content": ""},
-            {"role": "user", "content": [{"type": "audio", "audio": ""}]},
-        ],
-        add_generation_prompt=True,
-        tokenize=False,
-    )
+
+    def prompt(context: str = "") -> str:
+        # Qwen3-ASR reads earlier text, if any, from the system message.
+        return processor.apply_chat_template(
+            [
+                {"role": "system", "content": context},
+                {"role": "user", "content": [{"type": "audio", "audio": ""}]},
+            ],
+            add_generation_prompt=True,
+            tokenize=False,
+        )
+
     return engine, prompt, SamplingParams(temperature=0.0, max_tokens=128)
 
 
@@ -59,6 +63,7 @@ class ZeroQwen3Transcription(Transcriber):
         "seg_confirm": ("seg_confirm", bool),
         "seg_min_tail_words": ("seg_min_tail_words", int),
         "aligner": ("aligner", str),
+        "context_sentences": ("context_sentences", int),
     }
 
     async def load(self) -> None:
@@ -74,6 +79,7 @@ class ZeroQwen3Transcription(Transcriber):
     def start(self, languages: list[str] | None = None, **_) -> None:
         self._heard = 0
         self._language = ""
+        self._recent = []
         self._reset()
 
     async def transcribe(self, audio: bytes) -> list:
@@ -192,12 +198,15 @@ class ZeroQwen3Transcription(Transcriber):
         self._decoded = ""
         self._committed = ""
         self._held = None
+        # A new slot starts with the last committed sentences as context (context_sentences).
+        keep = self.settings.get("context_sentences", 0)
+        self._context = " ".join(self._recent[-keep:]) if keep else ""
 
     async def _decode(self) -> None:
         # Re-decodes all audio since the last reset with the committed text as a fixed prefix,
         # so the model continues after it and never rewrites what was already emitted.
         request = {
-            "prompt": self.prompt + self._committed,
+            "prompt": self.prompt(self._context) + self._committed,
             "multi_modal_data": {"audio": [self._audio]},
         }
         async for out in self.engine.generate(request, self.params, request_id=str(uuid.uuid4())):
@@ -217,6 +226,7 @@ class ZeroQwen3Transcription(Transcriber):
             slot_samples=len(self._audio),
             audio_sha1=hashlib.sha1(self._audio.tobytes()).hexdigest()[:16],
             committed=self._committed,
+            context=self._context,
             output=text,
         )
 
@@ -229,6 +239,9 @@ class ZeroQwen3Transcription(Transcriber):
         if tag:
             self._language = langs.norm_code(header.removeprefix("language ")) or self._language
 
+        # Each <SEG>-closed piece counts as one sentence for the next slot's context.
+        self._recent += [" ".join(p.split()) for p in text.split(SEG) if p.strip()]
+        del self._recent[:-8]
         text = " ".join(text.replace(SEG, " ").split())
         if not text:
             return []
