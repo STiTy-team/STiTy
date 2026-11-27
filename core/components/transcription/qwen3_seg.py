@@ -771,9 +771,9 @@ class Qwen3SegTranscription(Qwen3Transcription):
             task = asyncio.get_running_loop().create_task(
                 self._lid_judge(lid, header, accum, accum_start)
             )
-            self._lid_job = (task, slot)
+            self._lid_job = (task, slot, slot["committed_display"], accum.shape[0])
             return False
-        task, job_slot = job
+        task, job_slot, job_committed, job_len = job
         if not task.done():
             return False
         self._lid_job = None
@@ -782,6 +782,16 @@ class Qwen3SegTranscription(Qwen3Transcription):
             return False
         result = task.result()
         if result is None or job_slot is not slot:
+            return False
+        # A judgement made before a commit, or more than a chunk ago, cuts audio the slot has
+        # since written: drop it and judge again on the current slot.
+        grown = state.audio_accum.shape[0] - job_len
+        if slot["committed_display"] != job_committed or grown > state.chunk_size_samples:
+            log.info(
+                "[LID-FINISH] drop=stale committed_changed=%s grown_sec=%.2f",
+                slot["committed_display"] != job_committed,
+                grown / audio_mod.SAMPLING_RATE,
+            )
             return False
         new, cut = result
         force = LANG_NAME.get(new)
