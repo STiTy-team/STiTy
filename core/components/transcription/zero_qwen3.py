@@ -65,7 +65,7 @@ class ZeroQwen3Transcription(Transcriber):
         "aligner": ("aligner", str),
         "context_sentences": ("context_sentences", int),
         "carry_sentence": ("carry_sentence", bool),
-        "force_allowed_language": ("force_allowed_language", bool),
+        "drop_other_languages": ("drop_other_languages", bool),
         "lid_timeline": ("lid_timeline", dict),
         "lid_switch_steps": ("lid_switch_steps", int),
         "lid_hold_sec": ("lid_hold_sec", float),
@@ -349,32 +349,25 @@ class ZeroQwen3Transcription(Transcriber):
         async for out in self.engine.generate(request, self.params, request_id=str(uuid.uuid4())):
             pass
         text = out.outputs[0].text
-        forced = self._allowed_header(text)
-        if forced:
-            # The model named a language outside the session's (laughter as Chinese, "음" as
-            # "嗯"): decode again with the header fixed to the last committed language.
-            request["prompt"] += forced
-            async for out in self.engine.generate(request, self.params, request_id=str(uuid.uuid4())):
-                pass
-            text = forced + out.outputs[0].text
         if self.settings.get("record_decodes"):
             self._record_decode(text)
+        if self._other_language(text):
+            # The model named a language outside the session's - laughter as "language Chinese
+            # 哈哈", "음" as "嗯": not speech to translate, so the decode adds nothing. Forcing
+            # a session language instead made it write laughter as "Ha ha ha ..." to the token limit.
+            text = ""
         self._prev = (self._decoded, self._decoded_len)
         self._decoded = self._committed + text
         self._decoded_len = len(self._audio)
         self._undecoded = 0
 
-    def _allowed_header(self, text: str) -> str:
-        """With force_allowed_language, the header to force when a slot's first decode names a
-        language the session does not have; "" otherwise."""
-        if not self.settings.get("force_allowed_language") or self._committed or not self._allowed:
-            return ""
+    def _other_language(self, text: str) -> bool:
+        """With drop_other_languages, whether a slot's first decode names a language the
+        session does not have."""
+        if not self.settings.get("drop_other_languages") or self._committed or not self._allowed:
+            return False
         named = re.match(r"language (\S+?)" + re.escape(ASR_TEXT), text)
-        code = langs.norm_code(named.group(1)) if named else ""
-        if not named or named.group(1) == "None" or code in self._allowed:
-            return ""
-        keep = self._language if self._language in self._allowed else self._allowed[0]
-        return f"language {langs.CODE_TO_NAME[keep]}{ASR_TEXT}"
+        return bool(named) and named.group(1) != "None" and langs.norm_code(named.group(1)) not in self._allowed
 
     def _record_decode(self, text: str) -> None:
         # One "decode" event per model call: what the slot held, the prefix it was given and

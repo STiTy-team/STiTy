@@ -9,8 +9,8 @@ zero 파이프라인(`core/pipeline/zero.py`, 전사기 `core/components/transcr
 | **replay** | 그 구간의 음성만 진짜 파이프라인에 흘린다 — bench 처럼 200ms 조각으로, VAD·ASR 모델 그대로. 코드를 바꿀 때마다 돌려 그 지점이 어떻게 바뀌는지 본다 |
 
 GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 코드를 바꿔 효과를 볼 때는 지금 기준
-설정 `zero.asr.koen+mt.mock_segalign-w1-lang`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름, 허용 언어 밖
-머리말이면 언어를 정해 다시 디코딩)과 비교한다.
+설정 `zero.asr.koen+mt.mock_segalign-w1-lang`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름, 세션 언어 밖
+머리말로 시작하는 디코딩은 버림)과 비교한다.
 
 ```bash
 python -m core.tests.zero_replay                          # 전부
@@ -23,7 +23,9 @@ replay 는 구간마다 커밋을 기준선(`before`)과 지금(`now`) 나란히
 - `checks` 는 지금 반드시 맞아야 한다. 하나라도 틀리면 종료 코드 1.
 - `known_issues` 는 보고된 문제다. 틀리는 게 정상이고, 맞기 시작하면 `FIXED` 로 찍힌다 — 그때 `checks` 로 옮긴다.
 
-검사 이름과 받는 값은 `core/tests/zero_replay.py` 의 `CHECKS` 에 있다. 글자를 보는 검사(`must-commit`,
+검사 이름과 받는 값은 `core/tests/zero_replay.py` 의 `CHECKS` 에 있다. 헛말 시나리오에는 그 헛말이 없어졌는지와 함께
+**다른 모양의 헛말로 바뀌지 않았는지**도 검사한다 — 웃음이 `哈哈` 대신 `Ha ha ha …` 반복으로 나와도 `哈` 와 언어만 보는
+검사는 통과한다. `no-repeat-loop` 은 같은 말이 몇 번 넘게 이어지면 틀린 것으로 본다. 글자를 보는 검사(`must-commit`,
 `never-commits`, `language-of` …)는 양쪽 글자를 bench 의 r2 채점과 같은 정규화(군말·표기 변형·사투리 어미·숫자
 꼴)에 거친 뒤 띄어쓰기·문장부호·대소문자를 빼고 비교한다 — `2차` 와 `이차`, `This` 와 `this` 는 같은 말이다.
 `texts` 안의 목록은 "이 중 하나" 다: `[["이 차", "2차"], "Cheers"]`.
