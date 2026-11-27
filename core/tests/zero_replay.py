@@ -120,12 +120,23 @@ class Replay:
         return ("text-only" if alike else "different"), off
 
 
+def bare(text: str) -> str:
+    """Lowercase, without spaces and punctuation: "이 차" and "이차", "This was" and "this was" match."""
+    return re.sub(r"[\W_]", "", text.lower())
+
+
+def said(r, text: str) -> bool:
+    return any(bare(text) in bare(c["original"]) for c in r.commits)
+
+
 # Each check takes the replay and its parameters from the YAML and says whether it holds.
+# Text is compared bare (see `bare`).
 CHECKS = {
-    "must-commit": lambda r, texts: all(any(t in c["original"] for c in r.commits) for t in texts),
-    "never-commits": lambda r, texts: not any(t in c["original"] for t in texts for c in r.commits),
+    "must-commit": lambda r, texts: all(said(r, t) for t in texts),
+    "must-commit-any": lambda r, texts: any(said(r, t) for t in texts),
+    "never-commits": lambda r, texts: not any(said(r, t) for t in texts),
     "allowed-languages": lambda r, codes: all(c["language"] in codes for c in r.commits),
-    "language-of": lambda r, text, code: all(c["language"] == code for c in r.commits if text in c["original"]),
+    "language-of": lambda r, text, code: all(c["language"] == code for c in r.commits if bare(text) in bare(c["original"])),
     "longest-slot-under": lambda r, sec: r.longest_slot_sec() <= sec,
     "no-commit-reason": lambda r, reason: reason not in r.reasons(),
     "no-repeat-loop": lambda r, max: all(longest_loop(c["original"])[0] <= max for c in r.commits),

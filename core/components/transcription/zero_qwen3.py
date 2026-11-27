@@ -1,4 +1,7 @@
+import asyncio
 import hashlib
+import re
+import unicodedata
 import uuid
 
 import numpy as np
@@ -14,6 +17,9 @@ from .qwen3 import MAX_MODEL_LEN, resolve_model
 SEG = "<SEG>"
 ASR_TEXT = "<asr_text>"
 CHUNK_SAMPLES = 2 * audio_mod.SAMPLING_RATE
+
+# seg_confirm 에서 SEG 뒤에 이만큼 단어가 붙어 나오면 그 SEG 를 확정된 것으로 본다
+SEG_MIN_TAIL_WORDS = 3
 
 # 슬롯 오디오 길이가 이 길이를 넘을 경우에는 강제로 커밋하고 비우기
 MAX_SLOT_SAMPLES = 30 * audio_mod.SAMPLING_RATE # Whisper 창 길이 30초 기준
@@ -49,6 +55,9 @@ class ZeroQwen3Transcription(Transcriber):
     SETTINGS = {
         "model": ("model_path", resolve_model),
         "record_decodes": ("record_decodes", bool),
+        "seg_confirm": ("seg_confirm", bool),
+        "seg_min_tail_words": ("seg_min_tail_words", int),
+        "aligner": ("aligner", str),
     }
 
     async def load(self) -> None:
@@ -56,6 +65,10 @@ class ZeroQwen3Transcription(Transcriber):
         gpu = self.cfg.stity.gpu_memory_utilization
         key = ("zero-qwen3", path, gpu)
         self.engine, self.prompt, self.params = await cache.load(key, lambda: load_model(path, gpu))
+        self.aligner = None
+        if self.settings.get("aligner"):
+            name = self.settings["aligner"]
+            self.aligner = await cache.load(("zero-aligner", name), lambda: load_aligner(name))
 
     def start(self, languages: list[str] | None = None, **_) -> None:
         self._heard = 0
@@ -76,6 +89,9 @@ class ZeroQwen3Transcription(Transcriber):
         if len(self._audio) > MAX_SLOT_SAMPLES:
             return await self.flush("limit")
 
+        if self.settings.get("seg_confirm"):
+            return await self._commit_confirmed()
+
         before, seg, tail = self._decoded.rpartition(SEG)
         out = self._commit(before + seg, "seg")
 
@@ -85,6 +101,78 @@ class ZeroQwen3Transcription(Transcriber):
             self._reset()
 
         return out
+
+    async def _commit_confirmed(self) -> list:
+        """Commits a <SEG> only once the model has stood by it.
+
+        - A <SEG> followed by at least seg_min_tail_words words was written after hearing
+          what comes next: commit through it now. With an aligner the slot restarts there,
+          keeping the audio from the middle of the pause at that <SEG>; without one the slot
+          goes on.
+        - A <SEG> at the very end may be a breath: hold it. If the next decode still ends
+          there with nothing new, commit and reset; if words follow, the rule above takes it.
+        - A decode that adds nothing tells nothing and changes nothing.
+        VAD end and the 30 s limit still flush everything.
+        """
+        pending = self._decoded[len(self._committed) :]
+        if not pending.strip():
+            return []
+        need = self.settings.get("seg_min_tail_words", SEG_MIN_TAIL_WORDS)
+        cut = None
+        for found in re.finditer(re.escape(SEG), pending):
+            if len(_words(pending[found.end() :])) >= need:
+                cut = found.end()
+        out = []
+        if cut is not None:
+            through = self._committed + pending[:cut]
+            at = await self._pause_at(through) if self.aligner is not None else None
+            out = self._commit(through, "seg")
+            pending = pending[cut:]
+            if at is not None:
+                carry = self._audio[at:]
+                self._reset()
+                self._audio, self._undecoded = carry, len(carry)
+                return out
+        if not pending.rstrip().endswith(SEG):
+            self._held = None
+            return out
+        if self._held is not None and _words(self._held) == _words(pending):
+            out += self._commit(self._committed + pending, "seg")
+            self._reset()
+            return out
+        self._held = pending
+        return out
+
+    async def _pause_at(self, through: str) -> int | None:
+        """The sample in the slot halfway between the last word of `through` and the next one.
+
+        The whole decoded slot is aligned so the next word's start is known; aligned units
+        are mapped back by counting the characters the aligner keeps.
+        """
+        header, _, body = self._decoded.rpartition(ASR_TEXT)
+        language = "Korean" if "Korean" in header or not header else header.split()[-1]
+        text = " ".join(body.replace(SEG, " ").split())
+        before = _kept_chars(through.rpartition(ASR_TEXT)[2].replace(SEG, " "))
+        if not text or not before:
+            return None
+        audio = self._audio
+        result = await asyncio.to_thread(self.aligner.align, (audio, audio_mod.SAMPLING_RATE), text, language)
+        units, done = list(result[0]), 0
+        for i, unit in enumerate(units):
+            done += _kept_chars(unit.text)
+            if done == before:
+                if i + 1 >= len(units):
+                    return None
+                at = (unit.end_time + units[i + 1].start_time) / 2
+                sample = int(at * audio_mod.SAMPLING_RATE)
+                if self.settings.get("record_decodes"):
+                    stream.record("align", slot_start=self._heard - len(audio), cut=sample,
+                                  last=unit.text, next=units[i + 1].text,
+                                  last_end=unit.end_time, next_start=units[i + 1].start_time)
+                return sample if 0 < sample < len(audio) else None
+            if done > before:
+                return None
+        return None
 
     async def flush(self, reason: str, speech: Speech | None = None) -> list:
         out = await self.finish(reason, speech)
@@ -101,6 +189,7 @@ class ZeroQwen3Transcription(Transcriber):
         self._undecoded = 0
         self._decoded = ""
         self._committed = ""
+        self._held = None
 
     async def _decode(self) -> None:
         # Re-decodes all audio since the last reset with the committed text as a fixed prefix,
@@ -150,3 +239,21 @@ class ZeroQwen3Transcription(Transcriber):
                 committed_elapsed_sec=round(timing.elapsed() or 0.0, 4),
             )
         ]
+
+
+def _kept_chars(text: str) -> int:
+    """How many characters of `text` the forced aligner keeps (letters, digits, apostrophes)."""
+    return sum(1 for ch in text if ch == "'" or unicodedata.category(ch)[0] in "LN")
+
+
+async def load_aligner(name: str):
+    import torch
+    from qwen_asr import Qwen3ForcedAligner
+
+    return Qwen3ForcedAligner.from_pretrained(name, dtype=torch.bfloat16, device_map="cuda")
+
+
+def _words(text: str) -> list[str]:
+    """The words of a piece of decoded text, without language headers, <SEG> and punctuation."""
+    text = re.sub(r"language \S*" + re.escape(ASR_TEXT), " ", text).replace(SEG, " ")
+    return [w for w in (re.sub(r"[^\w]", "", t.lower()) for t in text.split()) if w]
