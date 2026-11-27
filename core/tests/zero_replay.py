@@ -23,6 +23,7 @@ All of these stay local.
 import argparse
 import asyncio
 import datetime
+import difflib
 import json
 import re
 import subprocess
@@ -41,6 +42,8 @@ HERE = Path(__file__).parent / "zero_scenarios"
 RESULTS = HERE / "results.jsonl"
 STATUS = HERE / "STATUS.md"
 SR = audio_mod.SAMPLING_RATE
+# How alike two commits' text must be to count as the same commit decoded a little differently.
+GPU_TEXT_SIMILARITY = 0.8
 CHUNK_MS = 200  # bench/__main__.py CHUNK_SIZE_MS
 TRAILING_SILENCE_MS = 4000  # bench/__main__.py
 
@@ -84,10 +87,37 @@ class Replay:
             "longest_slot_sec": round(self.longest_slot_sec(), 2),
             "reasons": dict(sorted(self.reasons().items())),
             "same_as_baseline": self.same_as_baseline(),
+            "behavior": self.behavior()[0],
         }
 
     def same_as_baseline(self) -> bool:
         return [c["original"] for c in self.commits] == [c["original"] for c in self.baseline]
+
+    def behavior(self) -> tuple[str, list[str]]:
+        """"same", "text-only" (every commit where it was, a few characters off, as vLLM's
+        decoding drifts between runs) or "different", with the commits that differ."""
+        shape = lambda c: (c["commit_reason"], c["language"], round(c["audio"], 1))
+        if [shape(c) for c in self.commits] != [shape(c) for c in self.baseline]:
+            changed = [
+                line for line in difflib.unified_diff(
+                    [f"{c['audio']:.1f}s {c['commit_reason']} [{c['language']}] {c['original']}" for c in self.baseline],
+                    [f"{c['audio']:.1f}s {c['commit_reason']} [{c['language']}] {c['original']}" for c in self.commits],
+                    lineterm="", n=0)
+                if line[:1] in "+-" and line[:3] not in ("+++", "---")
+            ]
+            return "different", changed
+        off = [
+            f"{a['audio']:.1f}s {a['original']!r} -> {b['original']!r}"
+            for a, b in zip(self.baseline, self.commits)
+            if a["original"] != b["original"]
+        ]
+        if not off:
+            return "same", []
+        alike = all(
+            difflib.SequenceMatcher(a=a["original"], b=b["original"]).ratio() >= GPU_TEXT_SIMILARITY
+            for a, b in zip(self.baseline, self.commits)
+        )
+        return ("text-only" if alike else "different"), off
 
 
 # Each check takes the replay and its parameters from the YAML and says whether it holds.
@@ -100,6 +130,7 @@ CHECKS = {
     "no-commit-reason": lambda r, reason: reason not in r.reasons(),
     "no-repeat-loop": lambda r, max: all(longest_loop(c["original"])[0] <= max for c in r.commits),
     "same-as-baseline": lambda r: r.same_as_baseline(),
+    "behaves-as-baseline": lambda r: r.behavior()[0] != "different",
 }
 
 
@@ -225,14 +256,15 @@ def write_status(latest: dict) -> None:
         if fixed:
             issues += " / FIXED: " + ", ".join(fixed)
         m = row["metrics"]
+        behavior = {"same": "같음", "text-only": "글자만 다름(GPU)", "different": "다른 동작"}[m["behavior"]]
         numbers = (f"커밋 {m['commits']} · 디코딩 {m['decodes']} · 최장 슬롯 {m['longest_slot_sec']}s · "
-                   f"기준선과 {'같음' if m['same_as_baseline'] else '다름'}")
+                   f"기준선과 {behavior}")
         commit = row["commit"] + ("+수정" if row["dirty"] else "")
         lines.append(f"| `{name}` | {row['at']} · {commit} · {row['pipeline']} | {checks} | {issues} | {numbers} |")
     STATUS.write_text("\n".join(lines) + "\n")
 
 
-async def main(names: list[str], pipeline_override: str | None) -> int:
+async def main(names: list[str], pipeline_override: str | None, gate: bool) -> int:
     paths = sorted(HERE.glob("*.yml"))
     if names:
         paths = [p for p in paths if p.stem in names]
@@ -263,7 +295,13 @@ async def main(names: list[str], pipeline_override: str | None) -> int:
 
             print(f"\n[{name}] {sc['what']}")
             print(describe(sc, replay))
+            verdict, differences = replay.behavior()
+            print(f"  behavior vs baseline: {verdict}")
+            for line in differences:
+                print(f"    {line}")
             checks, issues = {}, {}
+            if gate:
+                checks["behaves-as-baseline"] = verdict != "different"
             for entry in sc.get("checks", []):
                 check, params = parse_check(entry)
                 checks[label(check, params)] = CHECKS[check](replay, **params)
@@ -300,5 +338,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("names", nargs="*")
     parser.add_argument("--pipeline", help="replay with this pipeline config instead of each scenario's own")
+    parser.add_argument("--gate", action="store_true",
+                        help="also fail when a replay behaves differently from its baseline (text-only drift passes)")
     args = parser.parse_args()
-    sys.exit(asyncio.run(main(args.names, args.pipeline)))
+    sys.exit(asyncio.run(main(args.names, args.pipeline, args.gate)))

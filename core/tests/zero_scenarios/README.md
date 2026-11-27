@@ -35,9 +35,20 @@ replay 는 구간마다 커밋을 기준선(`before`)과 지금(`now`) 나란히
 기준선과 replay 는 데이터셋 원문이 들어 있어 git 에 올리지 않는다. yml 만 올린다. 기준선이 없는 머신에서는 그
 시나리오를 건너뛴다.
 
-구간은 VAD flush 자리에서 시작한다(그 자리에서는 슬롯이 비어 있다). 다만 VAD 는 앞 소리를 기억하므로, 구간만
-흘렸을 때의 판단이 전체를 흘렸을 때와 조금 다를 수 있다. 처음 replay 한 결과가 기준선과 다르면 그 차이가 이것이다
-— `same_as_baseline` 수치로 보인다.
+구간은 VAD flush 자리에서 시작한다(그 자리에서는 슬롯이 비어 있다). VAD 는 앞 소리를 기억하므로, 구간 앞의
+오디오를 VAD 에만 먼저 흘린 뒤 구간을 파이프라인에 흘린다 — 말 끝 판단이 전체 실행 때와 같아진다.
+
+## 시나리오 올리기 — 기준선과 같게 재현될 때만
+
+새 시나리오를 올리거나 기존 시나리오를 고치면, 커밋 전에 지금 코드로 `--gate` replay 를 돌린다.
+
+```bash
+python -m core.tests.zero_replay --gate <시나리오 이름 ...>
+```
+
+시나리오마다 `behavior vs baseline` 이 찍힌다. `same`(글자까지 같음)이나 `text-only`(커밋 수·이유·언어·시각이 모두
+같고 글자만 조금 다름 — GPU 흔들림)면 올린다. `different` 면 올리지 않는다. 기준과 할 일은
+[.claude/rules/zero-scenario-gate.md](../../../.claude/rules/zero-scenario-gate.md) 에 있다.
 
 ## 시나리오 만들기
 
