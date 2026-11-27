@@ -1,0 +1,12 @@
+what: "scene3 33.4~37.4s — 웃음을 language Chinese 로 \"哈哈哈哈哈！\" 받아 적어 커밋한다"
+why: "할루시네이션 (2026-11-27). 허용 언어(ko, en) 밖 머리말로 나온다는 점이 실제 반복과 구분되는 신호"
+pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
+dataset: configs/datasets/northstar_ko+en-ko.yml
+item: scene3
+span_sec: [16.2, 38.2]
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
+baseline: fixtures/laugh-as-chinese.jsonl
+checks: []
+known_issues:
+  - allowed-languages: {"codes": ["ko", "en"]}
+  - never-commits: {"texts": ["哈"]}

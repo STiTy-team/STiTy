@@ -1,7 +1,8 @@
-"""Turns part of a zero bench run into a replay scenario, and finds the parts worth turning.
+"""Turns part of a zero bench run into a scenario, and finds the parts worth turning.
 
 The run must use a zero pipeline with `record_decodes: true`, so its events.jsonl has one
-"decode" event per model call.
+"decode" event per model call. A scenario points at the stretch of the item's audio; the run's
+log lines for that stretch become its baseline (fixtures/<name>.jsonl, kept local).
 
     # where did the model loop or a slot grow long?
     python -m core.tests.zero_cut scan bench/runs/<dataset>/<pipeline>
@@ -11,7 +12,7 @@ The run must use a zero pipeline with `record_decodes: true`, so its events.json
 
 A cut starts right after a VAD flush (the slot is empty there) and ends at a VAD flush, so
 the replay needs nothing from before it. Without --from it starts at the item's beginning;
-without --to it runs to the end, finish() included.
+without --to it runs to the end of the stream.
 """
 
 import argparse
@@ -20,8 +21,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from core.tests.test_zero_qwen3 import HERE, longest_loop, spoken
-from core.tests.zero_fake import SR
+from core.tests.zero_replay import HERE, SR, longest_loop, spoken
 
 CHUNK = SR * 200 // 1000  # bench feeds 200 ms pieces (bench/__main__.py CHUNK_SIZE_MS)
 
@@ -31,7 +31,9 @@ def read_items(run_dir: Path) -> dict[str, list[dict]]:
     with (run_dir / "events.jsonl").open() as f:
         for line in f:
             event = json.loads(line)
-            if event.get("item") and event["type"] in ("chunk", "speech", "decode", "transcribed"):
+            if event["type"] == "run_open":
+                items["__run__"] = [event]
+            elif event.get("item") and event["type"] in ("chunk", "speech", "decode", "transcribed"):
                 items[event["item"]].append(event)
     return items
 
@@ -54,7 +56,7 @@ def timeline(events: list[dict]) -> tuple[list[tuple[int, bool]], list[dict], li
         tail = [end for end in ends if end > last_full]
         steps[-1][0] = max(tail) if tail else round(chunks[-1]["audio"] * SR)
     commits = [
-        {"original": e["original"], "commit_reason": e["commit_reason"], "audio": e.get("audio")}
+        {"original": e["original"], "language": e["language"], "commit_reason": e["commit_reason"], "audio": e.get("audio")}
         for e in events
         if e["type"] == "transcribed"
     ]
@@ -63,6 +65,8 @@ def timeline(events: list[dict]) -> tuple[list[tuple[int, bool]], list[dict], li
 
 def scan(run_dir: Path) -> None:
     for item, events in read_items(run_dir).items():
+        if item == "__run__":
+            continue
         steps, decodes, commits = timeline(events)
         if not decodes:
             print(f"{item}: no decode events (record_decodes off?)")
@@ -84,7 +88,8 @@ def scan(run_dir: Path) -> None:
 
 
 def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | None, what: str, why: str) -> None:
-    events = read_items(run_dir).get(item)
+    items = read_items(run_dir)
+    events = items.get(item)
     if not events:
         raise SystemExit(f"no events for item {item!r} in {run_dir}")
     steps, decodes, commits = timeline(events)
@@ -98,22 +103,24 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
             raise SystemExit(f"no VAD flush at or before {start}s to start from")
         first = before[-1] + 1
     offset = steps[first - 1][0] if first else 0
-    last, finish = len(steps) - 1, True
+    last = len(steps) - 1
     if stop is not None:
         after = [i for i, (end, flushed) in enumerate(steps) if flushed and end >= stop * SR and i >= first]
         if not after:
             raise SystemExit(f"no VAD flush at or after {stop}s to end at")
-        last, finish = after[0], False
+        last = after[0]
     end = steps[last][0]
+
+    # The run's own config names: "<dataset>@vN/<pipeline>" -> configs/... files of this checkout.
+    dataset, _, pipeline = items["__run__"][0]["name"].partition("/")
+    dataset, pipeline = dataset.split("@")[0], pipeline.split("@")[0]
 
     kept = [d for d in decodes if offset <= d["slot_start"] and d["slot_start"] + d["slot_samples"] <= end]
     inside = [c for c in commits if c["audio"] is not None and offset / SR < c["audio"] <= end / SR]
     fixture = HERE / "fixtures" / f"{name}.jsonl"
     fixture.parent.mkdir(exist_ok=True)
     with fixture.open("w") as f:
-        meta = {"kind": "meta", "run": str(run_dir), "item": item, "offset": offset,
-                "steps": steps[first : last + 1], "finish": finish}
-        f.write(json.dumps(meta) + "\n")
+        f.write(json.dumps({"kind": "meta", "run": str(run_dir), "item": item, "start": offset, "end": end}) + "\n")
         for d in kept:
             row = {k: d[k] for k in ("slot_start", "slot_samples", "audio_sha1", "committed", "output")}
             f.write(json.dumps({"kind": "decode", **row}, ensure_ascii=False) + "\n")
@@ -121,19 +128,20 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
             f.write(json.dumps({"kind": "commit", **c}, ensure_ascii=False) + "\n")
 
     scenario = HERE / f"{name}.yml"
+    if scenario.exists():
+        print(f"{scenario}: kept as it is; baseline rewritten ({len(kept)} decodes, {len(inside)} commits)")
+        return
     scenario.write_text(
-        f"what: {what or f'{item} {offset / SR:.1f}s-{end / SR:.1f}s 실제 모델 출력 재생'}\n"
-        f"why: {why or '(왜 잘라 왔는지 적는다)'}\n"
-        f"source: replay\n"
-        f"run: {run_dir}\n"
+        f"what: {json.dumps(what or f'{item} {offset / SR:.1f}s-{end / SR:.1f}s', ensure_ascii=False)}\n"
+        f"why: {json.dumps(why or '(왜 잘라 왔는지 적는다)', ensure_ascii=False)}\n"
+        f"pipeline: configs/pipelines/{pipeline}.yml\n"
+        f"dataset: configs/datasets/{dataset}.yml\n"
         f"item: {item}\n"
         f"span_sec: [{offset / SR:.1f}, {end / SR:.1f}]\n"
-        f"fixture: fixtures/{name}.jsonl\n"
-        f"checks:\n"
-        f"  - matches-recording\n"
-        f"# known_issues:\n"
-        f"#   - no-repeat-loop: {{max: 2}}\n"
-        f"#   - never-commits: {{texts: [\"...\"]}}\n"
+        f"run: {run_dir}\n"
+        f"baseline: fixtures/{name}.jsonl\n"
+        f"checks: []\n"
+        f"known_issues: []\n"
     )
     print(f"{scenario}: {len(kept)} decodes, {len(inside)} commits, {offset / SR:.1f}s-{end / SR:.1f}s")
 

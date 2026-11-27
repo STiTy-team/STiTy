@@ -1,11 +1,12 @@
-what: 한국어 문장 뒤에 같은 슬롯에서 영어 문장이 이어지는데, 언어를 슬롯 첫 머리말로만 정해서 영어 문장이 ko로 커밋된다
-why: 북극성 scene6 85~87s 에서 찾음 (2026-11-27) — "Oh, thank you so much, Mr. Kim." 이 [ko]. 언어 판별 0.733 의 주된 원인으로 보인다
-source: script
-talk:
-  - sentence: {first: 1, count: 5, start: 0.2}
-  - sentence: {first: 1, count: 5, start: 3.0, lang: en}
-until: 8.0
-checks:
-  - every-word-once
+what: "scene6 85~87s — 한국어로 시작한 슬롯에서 이어진 영어 문장들이 ko 로 커밋된다"
+why: "언어를 슬롯 첫 머리말로만 정한다 (2026-11-27). 언어 판별 0.733 의 주된 원인으로 보인다. scene5 17~21s 는 영어를 한글로 받아 적었다"
+pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
+dataset: configs/datasets/northstar_ko+en-ko.yml
+item: scene6
+span_sec: [71.2, 88.4]
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
+baseline: fixtures/language-stale-in-slot.jsonl
+checks: []
 known_issues:
-  - language-per-sentence
+  - language-of: {"text": "thank you", "code": "en"}
+  - language-of: {"text": "Honestly", "code": "en"}
