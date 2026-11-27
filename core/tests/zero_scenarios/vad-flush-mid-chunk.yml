@@ -1,0 +1,9 @@
+what: 마지막 디코딩 뒤 1.3초 만에 말이 끝나 VAD가 flush하고, flush가 남은 오디오를 디코딩한다
+why: 기본 경로 — VAD flush가 디코딩 안 된 꼬리를 놓치지 않아야 한다
+source: script
+talk:
+  - sentence: {first: 1, count: 6, start: 0.2}
+until: 3.3
+checks:
+  - every-word-once
+  - last-commit-reason: {reason: vad}

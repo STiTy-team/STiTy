@@ -10,7 +10,7 @@ GPU_MEMORY_UTILIZATION = 0.2
 MAX_MODEL_LEN = 2048
 
 
-async def load_model(path: str) -> tuple:
+async def load_model(path: str, gpu_memory_utilization: float) -> tuple:
     from transformers import AutoTokenizer
     from vllm import SamplingParams
     from vllm.engine.arg_utils import AsyncEngineArgs
@@ -19,7 +19,7 @@ async def load_model(path: str) -> tuple:
     engine = AsyncLLMEngine.from_engine_args(
         AsyncEngineArgs(
             model=path,
-            gpu_memory_utilization=GPU_MEMORY_UTILIZATION,
+            gpu_memory_utilization=gpu_memory_utilization,
             max_model_len=MAX_MODEL_LEN,
             enforce_eager=True,
         )
@@ -30,12 +30,16 @@ async def load_model(path: str) -> tuple:
 
 @translators.register("zero-local-llm")
 class ZeroLocalLLMTranslation(Translator):
-    SETTINGS = {"model": ("model", str)}
+    SETTINGS = {
+        "model": ("model", str),
+        "gpu_memory_utilization": ("gpu_memory_utilization", float),
+    }
 
     async def load(self) -> None:
         path = self.settings["model"]
+        gpu = self.settings.get("gpu_memory_utilization", GPU_MEMORY_UTILIZATION)
         self.engine, self.tokenizer, self.params = await cache.load(
-            ("zero-local-llm", path), lambda: load_model(path)
+            ("zero-local-llm", path, gpu), lambda: load_model(path, gpu)
         )
 
     async def translate(

@@ -1,0 +1,12 @@
+what: 문장이 끝나고 쉼이 다음 디코딩까지 이어져서, 디코딩이 <SEG>로 딱 끝나고 슬롯이 리셋된다
+why: 기본 경로 — SEG 리셋이 걸려야 하는 가장 단순한 경우
+source: script
+talk:
+  - sentence: {first: 1, count: 5, start: 0.2}
+  - sentence: {first: 6, count: 5, start: 4.5}
+until: 8.0
+checks:
+  - every-word-once
+  - first-commit-reason: {reason: seg}
+  - slot-restarted: {after: 4.0}
+  - language: {code: ko}

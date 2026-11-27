@@ -1,9 +1,10 @@
+import hashlib
 import uuid
 
 import numpy as np
 
 from core.utils import audio as audio_mod
-from core.utils import cache, langs, timing
+from core.utils import cache, langs, stream, timing
 
 from . import transcribers
 from ..registry import Speech, Transcribed
@@ -45,7 +46,10 @@ async def load_model(path: str, gpu_memory_utilization: float) -> tuple:
 
 @transcribers.register("zero-qwen3")
 class ZeroQwen3Transcription(Transcriber):
-    SETTINGS = {"model": ("model_path", resolve_model)}
+    SETTINGS = {
+        "model": ("model_path", resolve_model),
+        "record_decodes": ("record_decodes", bool),
+    }
 
     async def load(self) -> None:
         path = self.settings["model_path"]
@@ -107,8 +111,23 @@ class ZeroQwen3Transcription(Transcriber):
         }
         async for out in self.engine.generate(request, self.params, request_id=str(uuid.uuid4())):
             pass
-        self._decoded = self._committed + out.outputs[0].text
+        text = out.outputs[0].text
+        if self.settings.get("record_decodes"):
+            self._record_decode(text)
+        self._decoded = self._committed + text
         self._undecoded = 0
+
+    def _record_decode(self, text: str) -> None:
+        # One "decode" event per model call: what the slot held, the prefix it was given and
+        # the raw reply (headers and <SEG> included), so a run can be replayed without a GPU.
+        stream.record(
+            "decode",
+            slot_start=self._heard - len(self._audio),
+            slot_samples=len(self._audio),
+            audio_sha1=hashlib.sha1(self._audio.tobytes()).hexdigest()[:16],
+            committed=self._committed,
+            output=text,
+        )
 
     def _commit(self, through: str, reason: str) -> list:
         piece = through[len(self._committed) :]

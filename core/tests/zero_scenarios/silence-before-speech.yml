@@ -1,0 +1,11 @@
+what: 10초 무음 뒤에 한 문장
+why: 리뷰에서 찾음 (2026-11-27) — 말이 없어도 2초마다 디코딩하고, 무음이 슬롯에 쌓인다
+source: script
+talk:
+  - sentence: {first: 1, count: 5, start: 10.2}
+until: 14.0
+checks:
+  - every-word-once
+  - no-empty-commit
+known_issues:
+  - no-silent-decode
