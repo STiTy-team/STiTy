@@ -300,10 +300,22 @@ def write_status(latest: dict) -> None:
     STATUS.write_text("\n".join(lines) + "\n")
 
 
+def in_history(sc: dict) -> bool:
+    """Whether the commit that brought the scenario's cause is in this checkout's history (a
+    branch rebuilt without it has no such problem to look for). guard and unknown pass."""
+    commit = (sc.get("introduced_in") or {}).get("commit", "")
+    if not commit or commit in ("guard", "?"):
+        return True
+    return subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"], capture_output=True).returncode == 0
+
+
 def _not_applicable(name: str, sc: dict, settings: dict) -> bool:
     missing = applies(sc, settings)
     if missing:
         print(f"[{name}] not applicable to this pipeline (needs {', '.join(missing)})")
+    elif not in_history(sc):
+        print(f"[{name}] not applicable to this checkout ({sc['introduced_in']['commit']} is not in its history)")
+        return True
     return bool(missing)
 
 
