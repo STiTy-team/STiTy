@@ -64,6 +64,8 @@ class ZeroQwen3Transcription(Transcriber):
         "seg_min_tail_words": ("seg_min_tail_words", int),
         "aligner": ("aligner", str),
         "context_sentences": ("context_sentences", int),
+        "carry_sentence": ("carry_sentence", bool),
+        "force_allowed_language": ("force_allowed_language", bool),
     }
 
     async def load(self) -> None:
@@ -77,6 +79,7 @@ class ZeroQwen3Transcription(Transcriber):
             self.aligner = await cache.load(("zero-aligner", name), lambda: load_aligner(name))
 
     def start(self, languages: list[str] | None = None, **_) -> None:
+        self._allowed = [code for code in (langs.norm_code(x) for x in languages or []) if code]
         self._heard = 0
         self._language = ""
         self._recent = []
@@ -133,12 +136,22 @@ class ZeroQwen3Transcription(Transcriber):
         out = []
         if cut is not None:
             through = self._committed + pending[:cut]
-            at = await self._pause_at(through) if self.aligner is not None else None
+            found = await self._pause_at(through) if self.aligner is not None else None
+            header = re.match(r"language \S*" + re.escape(ASR_TEXT), self._decoded)
             out = self._commit(through, "seg")
             pending = pending[cut:]
-            if at is not None:
-                carry = self._audio[at:]
-                self._reset()
+            if found is not None:
+                at, sentence_at = found
+                last = [p for p in through.split(SEG) if p.strip()][-1].rpartition(ASR_TEXT)[2]
+                if self.settings.get("carry_sentence") and sentence_at is not None and header:
+                    # Keep the sentence just committed, as audio and as already-written text,
+                    # so the new slot starts with both kinds of context and does not write it again.
+                    carry = self._audio[sentence_at:]
+                    self._reset()
+                    self._committed = self._decoded = f"{header.group()}{' '.join(last.split())} {SEG}"
+                else:
+                    carry = self._audio[at:]
+                    self._reset()
                 self._audio, self._undecoded = carry, len(carry)
                 return out
         if not pending.rstrip().endswith(SEG):
@@ -151,8 +164,9 @@ class ZeroQwen3Transcription(Transcriber):
         self._held = pending
         return out
 
-    async def _pause_at(self, through: str) -> int | None:
-        """The sample in the slot halfway between the last word of `through` and the next one.
+    async def _pause_at(self, through: str) -> tuple[int, int | None] | None:
+        """The sample in the slot halfway between the last word of `through` and the next one,
+        and where the last sentence of `through` starts (halfway from the word before it).
 
         The whole decoded slot is aligned so the next word's start is known; aligned units
         are mapped back by counting the characters the aligner keeps.
@@ -163,10 +177,15 @@ class ZeroQwen3Transcription(Transcriber):
         before = _kept_chars(through.rpartition(ASR_TEXT)[2].replace(SEG, " "))
         if not text or not before:
             return None
+        pieces = [p for p in through.split(SEG) if p.strip()]
+        lead = before - _kept_chars(pieces[-1].rpartition(ASR_TEXT)[2]) if pieces else None
         audio = self._audio
         result = await asyncio.to_thread(self.aligner.align, (audio, audio_mod.SAMPLING_RATE), text, language)
-        units, done = list(result[0]), 0
+        units, done, sentence_at = list(result[0]), 0, None
         for i, unit in enumerate(units):
+            if done == lead:
+                start = (units[i - 1].end_time + unit.start_time) / 2 if i else 0.0
+                sentence_at = int(start * audio_mod.SAMPLING_RATE)
             done += _kept_chars(unit.text)
             if done == before:
                 if i + 1 >= len(units):
@@ -175,9 +194,9 @@ class ZeroQwen3Transcription(Transcriber):
                 sample = int(at * audio_mod.SAMPLING_RATE)
                 if self.settings.get("record_decodes"):
                     stream.record("align", slot_start=self._heard - len(audio), cut=sample,
-                                  last=unit.text, next=units[i + 1].text,
+                                  sentence_start=sentence_at, last=unit.text, next=units[i + 1].text,
                                   last_end=unit.end_time, next_start=units[i + 1].start_time)
-                return sample if 0 < sample < len(audio) else None
+                return (sample, sentence_at) if 0 < sample < len(audio) else None
             if done > before:
                 return None
         return None
@@ -212,10 +231,30 @@ class ZeroQwen3Transcription(Transcriber):
         async for out in self.engine.generate(request, self.params, request_id=str(uuid.uuid4())):
             pass
         text = out.outputs[0].text
+        forced = self._allowed_header(text)
+        if forced:
+            # The model named a language outside the session's (laughter as Chinese, "음" as
+            # "嗯"): decode again with the header fixed to the last committed language.
+            request["prompt"] += forced
+            async for out in self.engine.generate(request, self.params, request_id=str(uuid.uuid4())):
+                pass
+            text = forced + out.outputs[0].text
         if self.settings.get("record_decodes"):
             self._record_decode(text)
         self._decoded = self._committed + text
         self._undecoded = 0
+
+    def _allowed_header(self, text: str) -> str:
+        """With force_allowed_language, the header to force when a slot's first decode names a
+        language the session does not have; "" otherwise."""
+        if not self.settings.get("force_allowed_language") or self._committed or not self._allowed:
+            return ""
+        named = re.match(r"language (\S+?)" + re.escape(ASR_TEXT), text)
+        code = langs.norm_code(named.group(1)) if named else ""
+        if not named or named.group(1) == "None" or code in self._allowed:
+            return ""
+        keep = self._language if self._language in self._allowed else self._allowed[0]
+        return f"language {langs.CODE_TO_NAME[keep]}{ASR_TEXT}"
 
     def _record_decode(self, text: str) -> None:
         # One "decode" event per model call: what the slot held, the prefix it was given and
