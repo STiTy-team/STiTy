@@ -2,8 +2,9 @@ what: "scene2 44.2s — SEG 뒤에 단어 하나만 붙어도 잘라서, 새 슬
 why: "기준 설정 bench(zero.asr.koen+mt.mock_segalign-w1-lang-lid-w12) 정답 대조에서 찾음 (2026-11-28). scene5 59.9s \"Thanks.\" 도 같은 모양. 새 슬롯에는 비교할 앞 디코딩이 없어 머리말 붙들기도 걸리지 않는다"
 found_in: dacca59b
 introduced_in: {"commit": "3b98cb2a", "by": "1단어 기준: SEG 뒤 단어 하나로 확정하고 aligner 로 잘라, 다른 언어 한 단어로 시작하는 짧은 슬롯이 생긴다"}
-applies_when: {"seg_confirm": true, "aligner": "set"}
+applies_when: {"seg_confirm": true, "aligner": "set", "seg_min_tail_words": 1}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock_segalign-w1-lang-lid-w12.yml
+pipeline_version: 3
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene2
 span_sec: [43.2, 61.2]

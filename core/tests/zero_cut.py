@@ -84,7 +84,8 @@ def scan(run_dir: Path) -> None:
         for c in commits:
             times, phrase = longest_loop(c["original"])
             if times >= 3:
-                print(f"  loop x{times} {phrase!r} at {c['audio']}s ({c['commit_reason']}): {c['original'][:120]}")
+                # Dataset text: the phrase only, not the whole commit (see the quoting rule).
+                print(f"  loop x{times} {phrase[:20]!r} at {c['audio']}s ({c['commit_reason']})")
 
 
 def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | None, what: str, why: str) -> None:
@@ -100,7 +101,7 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
     if start is not None:
         before = [i for i, (end, flushed) in enumerate(steps) if flushed and end <= start * SR]
         if not before:
-            raise SystemExit(f"no VAD flush at or before {start}s to start from")
+            raise SystemExit(f"no VAD flush at or before {start}s to start from; leave out --from to start at the item's beginning")
         first = before[-1] + 1
     offset = steps[first - 1][0] if first else 0
     last = len(steps) - 1
@@ -115,7 +116,8 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
     run_open = items["__run__"][0]
     found_in = (run_open.get("source") or {}).get("commit", "?")[:8]
     dataset, _, pipeline = run_open["name"].partition("/")
-    dataset, pipeline = dataset.split("@")[0], pipeline.split("@")[0]
+    pipeline, _, version = pipeline.partition("@v")
+    dataset, version = dataset.split("@")[0], int(version or 1)
 
     kept = [d for d in decodes if offset <= d["slot_start"] and d["slot_start"] + d["slot_samples"] <= end]
     inside = [c for c in commits if c["audio"] is not None and offset / SR < c["audio"] <= end / SR]
@@ -129,9 +131,33 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
         for c in inside:
             f.write(json.dumps({"kind": "commit", **c}, ensure_ascii=False) + "\n")
 
+    asked = (start if start is not None else 0.0, stop if stop is not None else end / SR)
+    if offset / SR < asked[0] - 5 or end / SR > asked[1] + 5:
+        # VAD flushes can be far apart; the span grows to the nearest ones.
+        print(f"note: asked {asked[0]:.1f}s-{asked[1]:.1f}s, cut {offset / SR:.1f}s-{end / SR:.1f}s (nearest VAD flushes)")
+
     scenario = HERE / f"{name}.yml"
+    span = {
+        "span_sec": f"span_sec: [{offset / SR:.1f}, {end / SR:.1f}]",
+        "span_samples": f"span_samples: [{offset}, {end}]",
+        "run": f"run: {run_dir}",
+        "found_in": f"found_in: {found_in}",
+        "pipeline_version": f"pipeline_version: {version}",
+    }
     if scenario.exists():
-        print(f"{scenario}: kept as it is; baseline rewritten ({len(kept)} decodes, {len(inside)} commits)")
+        # Cut again: the span (and where it came from) follows the new baseline; what the
+        # scenario says about the problem stays as written.
+        lines = scenario.read_text().splitlines()
+        seen = set()
+        for i, line in enumerate(lines):
+            key = line.split(":")[0]
+            if key in span:
+                lines[i], _ = span[key], seen.add(key)
+        at = next(i for i, line in enumerate(lines) if line.startswith("span_sec:")) + 1
+        lines[at:at] = [span[k] for k in ("span_samples", "pipeline_version") if k not in seen]
+        scenario.write_text("\n".join(lines) + "\n")
+        print(f"{scenario}: span updated to {offset / SR:.1f}s-{end / SR:.1f}s; baseline rewritten "
+              f"({len(kept)} decodes, {len(inside)} commits); re-run --gate")
         return
     scenario.write_text(
         f"what: {json.dumps(what or f'{item} {offset / SR:.1f}s-{end / SR:.1f}s', ensure_ascii=False)}\n"
@@ -139,6 +165,7 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
         f"found_in: {found_in}\n"
         f"introduced_in: {{\"commit\": \"?\", \"by\": \"(원인이 들어온 커밋과 무엇 때문인지 적는다)\"}}\n"
         f"pipeline: configs/pipelines/{pipeline}.yml\n"
+        f"pipeline_version: {version}\n"
         f"dataset: configs/datasets/{dataset}.yml\n"
         f"item: {item}\n"
         f"span_sec: [{offset / SR:.1f}, {end / SR:.1f}]\n"

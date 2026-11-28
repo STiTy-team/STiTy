@@ -11,9 +11,11 @@ wrong, the stretch of the item's audio where it happened, and that run's log lin
 stretch (fixtures/<name>.jsonl, the baseline). The replay feeds the stretch to the pipeline in
 200 ms pieces, as bench does, records every event, and shows the commits next to the baseline.
 
-- `checks` must hold now. A failure exits non-zero.
-- `known_issues` are the reported problems. They fail until fixed; then the run says FIXED and
-  the entry moves to `checks`.
+- `checks` must hold now; `known_issues` are the reported problems (FIXED once they hold).
+  A `when` block replaces both lists for the pipelines its `if:` matches - where a problem is
+  fixed, it becomes a check there; where it is a known failure, a known issue there.
+- Exit codes: 0 all checks hold, 1 a check failed (with --gate also: behaves differently from
+  the baseline, or nothing was replayed), 2 no such scenario, 3 the GPU is busy (--force-gpu).
 
 Each replay's events go to zero_scenarios/replays/<name>/<time>.jsonl, one line per scenario to
 zero_scenarios/results.jsonl, and the latest state of every scenario to zero_scenarios/STATUS.md.
@@ -44,6 +46,10 @@ STATUS = HERE / "STATUS.md"
 SR = audio_mod.SAMPLING_RATE
 # How alike two commits' text must be to count as the same commit decoded a little differently.
 GPU_TEXT_SIMILARITY = 0.8
+# How far apart (seconds) the same commit may land between the baseline and a replay.
+SAME_TIME_SEC = 0.15
+# What a replay needs on the GPU: the ASR engine (0.30 of 24 GB), the aligner and whisper-small.
+GPU_NEEDED_MIB = 12288
 CHUNK_MS = 200  # bench/__main__.py CHUNK_SIZE_MS
 TRAILING_SILENCE_MS = 4000  # bench/__main__.py
 
@@ -96,8 +102,11 @@ class Replay:
     def behavior(self) -> tuple[str, list[str]]:
         """"same", "text-only" (every commit where it was, a few characters off, as vLLM's
         decoding drifts between runs) or "different", with the commits that differ."""
-        shape = lambda c: (c["commit_reason"], c["language"], round(c["audio"], 1))
-        if [shape(c) for c in self.commits] != [shape(c) for c in self.baseline]:
+        shape = lambda c: (c["commit_reason"], c["language"])
+        moved = len(self.commits) != len(self.baseline) or any(
+            abs(a["audio"] - b["audio"]) > SAME_TIME_SEC for a, b in zip(self.baseline, self.commits)
+        )
+        if moved or [shape(c) for c in self.commits] != [shape(c) for c in self.baseline]:
             changed = [
                 line for line in difflib.unified_diff(
                     [f"{c['audio']:.1f}s {c['commit_reason']} [{c['language']}] {c['original']}" for c in self.baseline],
@@ -180,6 +189,26 @@ def applies(sc: dict, settings: dict) -> list[str]:
         if not ok:
             missing.append(f"{key}={json.dumps(want)}")
     return missing
+
+
+def expectations(sc: dict, settings: dict) -> tuple[list, list, str]:
+    """The checks and known issues that hold for this pipeline, and which block they came from.
+
+    `checks`/`known_issues` at the top hold for every pipeline the scenario applies to. A
+    `when` block (`if:` conditions as in applies_when) replaces both lists for the pipelines
+    it matches; the first matching block wins. That is where a problem fixed by some settings
+    becomes a check for them, while it stays a known issue for the plain pipeline."""
+    for block in sc.get("when") or []:
+        if not applies({"applies_when": block["if"]}, settings):
+            return block.get("checks", []), block.get("known_issues", []), json.dumps(block["if"])
+    return sc.get("checks", []), sc.get("known_issues", []), ""
+
+
+def gpu_free_mib() -> tuple[int, int]:
+    """Free GPU memory (MiB) and how many processes use the GPU."""
+    q = lambda *a: subprocess.run(["nvidia-smi", *a, "--format=csv,noheader,nounits"], capture_output=True, text=True).stdout
+    total, used = (int(x) for x in q("--query-gpu=memory.total,memory.used").splitlines()[0].split(","))
+    return total - used, len([line for line in q("--query-compute-apps=pid").splitlines() if line.strip()])
 
 
 def read_baseline(path: Path) -> tuple[dict, list[dict]]:
@@ -280,7 +309,7 @@ def git_state() -> tuple[str, bool]:
     return git("rev-parse", "--short", "HEAD"), bool(git("status", "--porcelain", "--", "core"))
 
 
-def write_status(latest: dict) -> None:
+def write_status(latest: dict, this_run: set) -> None:
     lines = [
         "# zero 시나리오 상태",
         "",
@@ -304,16 +333,20 @@ def write_status(latest: dict) -> None:
         numbers = (f"커밋 {m['commits']} · 디코딩 {m['decodes']} · 최장 슬롯 {m['longest_slot_sec']}s · "
                    f"기준선과 {behavior}")
         commit = row["commit"] + ("+수정" if row["dirty"] else "")
-        lines.append(f"| `{name}` | {row['at']} · {commit} · {row['pipeline']} | {checks} | {issues} | {numbers} |")
+        old = "" if name in this_run else " (이번 실행에 없음)"
+        lines.append(f"| `{name}` | {row['at']}{old} · {commit} · {row['pipeline']} | {checks} | {issues} | {numbers} |")
     STATUS.write_text("\n".join(lines) + "\n")
 
 
 def in_history(sc: dict) -> bool:
     """Whether the commit that brought the scenario's cause is in this checkout's history (a
-    branch rebuilt without it has no such problem to look for). guard and unknown pass."""
+    branch rebuilt without it has no such problem to look for). guard and "?" pass; a commit
+    this repository does not know at all is an error - a typo would hide the scenario."""
     commit = (sc.get("introduced_in") or {}).get("commit", "")
     if not commit or commit in ("guard", "?"):
         return True
+    if subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], capture_output=True).returncode:
+        raise SystemExit(f"introduced_in commit {commit!r} is not in this repository (typo, or a shallow clone?)")
     return subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"], capture_output=True).returncode == 0
 
 
@@ -327,10 +360,20 @@ def _not_applicable(name: str, sc: dict, settings: dict) -> bool:
     return bool(missing)
 
 
-async def main(names: list[str], pipeline_override: str | None, gate: bool) -> int:
+async def main(names: list[str], pipeline_override: str | None, gate: bool, force_gpu: bool) -> int:
     paths = sorted(HERE.glob("*.yml"))
     if names:
+        unknown = sorted(set(names) - {p.stem for p in paths})
+        if unknown:
+            print(f"no such scenario: {', '.join(unknown)}")
+            return 2
         paths = [p for p in paths if p.stem in names]
+    free, apps = gpu_free_mib()
+    if (free < GPU_NEEDED_MIB or apps) and not force_gpu:
+        # Loading next to someone else's job can fail midway (vLLM profiles free memory) or
+        # starve theirs; --force-gpu if you know it fits.
+        print(f"GPU busy: {free} MiB free, {apps} process(es) on it; a replay needs about {GPU_NEEDED_MIB} MiB")
+        return 3
     scenarios = [(p.stem, yaml.safe_load(p.read_text())) for p in paths]
     commit, dirty = git_state()
     at = datetime.datetime.now().isoformat(timespec="minutes")
@@ -344,7 +387,7 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
         groups.setdefault((pipeline_override or sc["pipeline"], sc["dataset"]), []).append((name, sc))
 
     failed = fixed = 0
-    rows = []
+    rows, gated = [], []
     for (pipeline, dataset), members in groups.items():
         print(f"\n### {pipeline} on {dataset}: loading")
         bench = Bench(pipeline, dataset)
@@ -353,6 +396,7 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
         members = [(name, sc) for name, sc in members if not _not_applicable(name, sc, settings)]
         if not members:
             continue
+        _check_config(pipeline, members)
         await bench.load()
         for name, sc in members:
             # The span comes from the yml; the baseline (the reporting run's own lines for the
@@ -377,12 +421,17 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
             if gate:
                 # The gate is a comparison: without the baseline there is nothing to pass.
                 checks["behaves-as-baseline"] = have_baseline and verdict != "different"
-            for entry in sc.get("checks", []):
+            want_checks, want_issues, block = expectations(sc, settings)
+            if block:
+                print(f"  expectations for this pipeline (when {block})")
+            for entry in want_checks:
                 check, params = parse_check(entry)
                 checks[label(check, params)] = CHECKS[check](replay, **params)
-            for entry in sc.get("known_issues", []):
+            for entry in want_issues:
                 check, params = parse_check(entry)
                 issues[label(check, params)] = CHECKS[check](replay, **params)
+            if gate:
+                gated.append(f"  {name:36} {verdict:12} ({Path(pipeline).stem})")
             for check, ok in checks.items():
                 failed += not ok
                 print(f"  {'ok  ' if ok else 'FAIL'} {check}")
@@ -403,10 +452,40 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
             row = json.loads(line)
             if (HERE / f"{row['scenario']}.yml").exists():
                 latest[row["scenario"]] = row
-    write_status(latest)
+    write_status(latest, {row["scenario"] for row in rows})
 
+    if gate:
+        # Paste these lines into the commit message; the baselines stay local.
+        print("\n--gate:\n" + ("\n".join(gated) or "  nothing was replayed"))
+        if not gated:
+            print("--gate fails: no scenario was replayed (none chosen, not applicable, or no span)")
+            return 1
     print(f"\n{failed} check(s) failed, {fixed} known issue(s) now pass  ->  {STATUS}")
     return 1 if failed else 0
+
+
+def _check_config(pipeline: str, members: list) -> None:
+    """Warn when the local config is not the one the scenarios were cut with, or not the one in
+    S3 (bench reads S3, replay reads the local file)."""
+    path = Path(pipeline)
+    if not path.is_file():
+        return
+    text = path.read_text()
+    version = (yaml.safe_load(text).get("meta") or {}).get("version", 1)
+    for name, sc in members:
+        want = sc.get("pipeline_version")
+        if want is not None and want != version and str(path) == sc.get("pipeline"):
+            print(f"[{name}] warning: cut from {path.stem} version {want}, the local file is version {version}")
+    try:
+        from bench.settings import BenchSettings
+        from bench.shared_configs import SharedConfigs
+
+        bucket = BenchSettings.load().bucket()
+        remote = SharedConfigs(bucket).get("pipeline", path.stem) if bucket else None
+    except Exception:  # noqa: BLE001 - no S3 here: nothing to compare with
+        remote = None
+    if remote is not None and remote.text != text:
+        print(f"warning: {path} differs from the S3 copy bench reads; make configs-pull, or push yours")
 
 
 if __name__ == "__main__":
@@ -415,5 +494,7 @@ if __name__ == "__main__":
     parser.add_argument("--pipeline", help="replay with this pipeline config instead of each scenario's own")
     parser.add_argument("--gate", action="store_true",
                         help="also fail when a replay behaves differently from its baseline (text-only drift passes)")
+    parser.add_argument("--force-gpu", action="store_true",
+                        help="replay even though the GPU looks busy or short of memory")
     args = parser.parse_args()
-    sys.exit(asyncio.run(main(args.names, args.pipeline, args.gate)))
+    sys.exit(asyncio.run(main(args.names, args.pipeline, args.gate, args.force_gpu)))

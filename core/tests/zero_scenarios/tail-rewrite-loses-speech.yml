@@ -1,8 +1,9 @@
-what: "scene4 38.6→42.6s — 확정 안 된 꼬리에 두 번 나온 영어 문장 \"That is the most diplomatic answer I have ever heard\" 가 슬롯이 길어지자 한국어로 다시 쓰이며 사라진다"
+what: "scene4 38.6→42.6s — 확정 안 된 꼬리에 두 번 나온 영어 문장(\"diplomatic\" 이 든)이 슬롯이 길어지자 한국어로 다시 쓰이며 사라진다"
 why: "정답 대조에서 가장 큰 누락(44자) (2026-11-27). SEG 가 안 붙어 커밋되지 않은 꼬리다"
 found_in: 2a6d055c
 introduced_in: {"commit": "18aa554c", "by": "커밋은 SEG 에서만 하고, 확정 안 된 꼬리는 디코딩마다 새로 쓴다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
+pipeline_version: 1
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene4
 span_sec: [32.6, 70.6]
@@ -12,3 +13,9 @@ baseline: fixtures/tail-rewrite-loses-speech.jsonl
 checks: []
 known_issues:
   - must-commit: {"texts": ["diplomatic"]}
+# 기준 설정에서는 보고된 문제가 고쳐져 있어야 한다 (2026-11-28 replay 기준)
+when:
+  - if: {"seg_confirm": true, "seg_min_tail_words": 1, "aligner": "set", "drop_other_languages": true, "part.langid": "set"}
+    checks:
+      - must-commit: {"texts": ["diplomatic"]}
+    known_issues: []

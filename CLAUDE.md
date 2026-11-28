@@ -37,8 +37,9 @@ describes.
 | `mobile/` | The mobile app. [mobile/README.md](mobile/README.md) |
 | `bench/` | Config-driven benchmark of the same pipeline, no WebSocket. Run experiments from the manager website (`bench/manager/`, `make bench-manager`), which queues them on a GPU machine's worker; `make bench`·`make bench-batch` run on this machine and are allowed but not preferred. [bench/README.md](bench/README.md), naming rules in [configs/README.md](configs/README.md) |
 | `core/` | Pipeline components, the local translator and segmentation research — [core/CLAUDE.md](core/CLAUDE.md). Which local model to load and how much context it can use: [core/translator/LOCAL_TRANSLATION.md](core/translator/LOCAL_TRANSLATION.md) |
+| `core/tests/zero_scenarios/` | Scenarios and replay for the zero pipeline: each problem seen in a bench run is kept with its audio span, and `python -m core.tests.zero_replay` feeds just those spans to the real pipeline after every code change (not the bench manager's session Replay). [core/tests/zero_scenarios/README.md](core/tests/zero_scenarios/README.md), upload rule [.claude/rules/zero-scenario-gate.md](.claude/rules/zero-scenario-gate.md) |
 | `Qwen3-ASR/` | Vendored upstream ASR (QwenLM/Qwen3-ASR), tracked directly — **not** a submodule. Finetuning lives in `finetuning/`. [Qwen3-ASR/CLAUDE.md](Qwen3-ASR/CLAUDE.md) |
-| `models/` | Finetuned weights: `Qwen3-ASR-1.7B-{ko-silence-v4c900,en-silence-c80}-merged/` and `Qwen3-ASR-1.7B-en-dailytalk-seg/` |
+| `models/` | Finetuned weights: `Qwen3-ASR-1.7B-{ko-silence-v4c900,en-silence-c80}-merged/`, `Qwen3-ASR-1.7B-en-dailytalk-seg/` and `Qwen3-ASR-1.7B-koen-seg-mix-merged/` (Korean+English SEG mix, used by the zero configs) |
 | [docs/WEBSOCKET_PROTOCOL.md](docs/WEBSOCKET_PROTOCOL.md) | Every message type, `langMap` semantics, `commitReason` values |
 
 ## Key configuration

@@ -3,6 +3,7 @@ why: "언어를 슬롯 첫 머리말로만 정한다 (2026-11-27). 언어 판별
 found_in: 2a6d055c
 introduced_in: {"commit": "18aa554c", "by": "커밋 언어를 슬롯 첫 머리말로만 정한다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
+pipeline_version: 1
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene6
 span_sec: [71.2, 88.4]
@@ -13,3 +14,10 @@ checks: []
 known_issues:
   - language-of: {"text": "thank you", "code": "en"}
   - language-of: {"text": "Honestly", "code": "en"}
+# 기준 설정에서는 보고된 문제가 고쳐져 있어야 한다 (2026-11-28 replay 기준)
+when:
+  - if: {"seg_confirm": true, "seg_min_tail_words": 1, "aligner": "set", "drop_other_languages": true, "part.langid": "set"}
+    checks:
+      - language-of: {"text": "thank you", "code": "en"}
+      - language-of: {"text": "Honestly", "code": "en"}
+    known_issues: []

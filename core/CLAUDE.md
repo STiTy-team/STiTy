@@ -17,6 +17,7 @@
 | `meaning_segmentator/autoseg/baselines/` | Table 1a 타 정책 구현(`punct`/`syntax`/`causal_align`/`alignatt`/`mu_prefix`) + 강제정렬 타임스탬프 빌더 |
 | `meaning_segmentator/docs/X2EN_DATASET.md` | {de,ja,zh}→en 트랙 데이터셋 구축 기록. 소스 언어별 단위·`T` 환산과 오염 방지 구간 배분 |
 | ⤷ 문헌 대조 | @meaning_segmentator/docs/SEGMENTATION_CRITERIA_RELATED_WORK.md |
+| `tests/zero_scenarios/` | zero 파이프라인 시나리오 — bench 에서 본 문제마다 음성 구간과 기준 로그를 남기고, 코드를 바꿀 때마다 그 구간만 진짜 파이프라인에 다시 흘린다(`python -m core.tests.zero_replay`, 잘라 오기는 `zero_cut`). 쓰는 법 @tests/zero_scenarios/README.md, 올리기 규칙 [../.claude/rules/zero-scenario-gate.md](../.claude/rules/zero-scenario-gate.md) |
 | `research/cif` | CIF 실험. 런타임 경로 아님 |
 | `research/zprobe/` | 공통 의미 표현(z) 탐침과 언어 공통 번역·분절 어댑터 스파이크 — 공용 탐침 `probe_z.py`·`seg_units.py` 와 `labels/`(prefix 라벨 빌더) · `train/`(GRPO·병합) · `eval/`(스트리밍·북극성 채점) · `hybrid/`(구간 접기) · `lid/`(언어 판별 실측). 실험 기록은 [research/zprobe/LOG.md](research/zprobe/LOG.md) |
 

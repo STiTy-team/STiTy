@@ -3,6 +3,7 @@ why: "할루시네이션 (2026-11-27). 허용 언어(ko, en) 밖 머리말로 �
 found_in: 2a6d055c
 introduced_in: {"commit": "18aa554c", "by": "모델이 웃음을 Chinese 로 받아 적고, zero 는 머리말 언어를 거르지 않는다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
+pipeline_version: 1
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene3
 span_sec: [16.2, 38.2]
@@ -14,3 +15,11 @@ checks:
 known_issues:
   - allowed-languages: {"codes": ["ko", "en"]}
   - never-commits: {"texts": ["哈"]}
+# 기준 설정에서는 보고된 문제가 고쳐져 있어야 한다 (2026-11-28 replay 기준)
+when:
+  - if: {"seg_confirm": true, "seg_min_tail_words": 1, "aligner": "set", "drop_other_languages": true, "part.langid": "set"}
+    checks:
+      - no-repeat-loop: {"max": 3}
+      - allowed-languages: {"codes": ["ko", "en"]}
+      - never-commits: {"texts": ["哈"]}
+    known_issues: []

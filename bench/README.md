@@ -119,6 +119,9 @@ Replay(실행 하나의 항목 하나를 휴대폰 화면·이벤트·타이밍�
 
 ### Replay
 
+zero 파이프라인의 시나리오 replay(`python -m core.tests.zero_replay`, 구간 음성을 모델에 다시 흘림)와는 다른 것이다 —
+그쪽은 [core/tests/zero_scenarios/README.md](../core/tests/zero_scenarios/README.md).
+
 **`/replay?run=<실행>` 은 세션 재생이다.** 실행은 Runs 에서 고른다 — 주소에 `run` 이 없으면 Runs 로
 돌아간다. 데이터셋과 파이프라인의 이름·태그·설명은 위 "실행 정보" 에 있다. 아직 도는 실행도 열린다 — 그때까지 끝난 항목이 보이고, 설정은 실행이 시작할 때 `run_open`
 이벤트에 남긴 것을 쓰며, 데이터셋은 `items.jsonl` 의 오디오 경로에서 거슬러 찾는다. 실행 요약만

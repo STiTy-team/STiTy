@@ -1,8 +1,9 @@
-what: "scene5 25~57s — 슬롯이 30초 제한에 닿아 한·영 전환 중간에서 잘린다 (\"...꼴맛이에요. 아 I think\")"
+what: "scene5 25~57s — 슬롯이 30초 제한에 닿아 한·영 전환 중간에서 잘린다"
 why: "리뷰에서 찾고 북극성 ko 실행에서 확인 (2026-11-27). 제한에서 자를 때 남은 꼬리를 문장 중간에서 커밋한다"
 found_in: 2a6d055c
 introduced_in: {"commit": "f05dda22", "by": "30초 제한에서 남은 꼬리를 문장 중간에서 커밋한다"}
 pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
+pipeline_version: 1
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene5
 span_sec: [3.0, 92.8]
@@ -12,3 +13,9 @@ baseline: fixtures/limit-cut-mid-switch.jsonl
 checks: []
 known_issues:
   - no-commit-reason: {"reason": "limit"}
+# 기준 설정에서는 보고된 문제가 고쳐져 있어야 한다 (2026-11-28 replay 기준)
+when:
+  - if: {"seg_confirm": true, "seg_min_tail_words": 1, "aligner": "set", "drop_other_languages": true, "part.langid": "set"}
+    checks:
+      - no-commit-reason: {"reason": "limit"}
+    known_issues: []
