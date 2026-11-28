@@ -1,0 +1,16 @@
+what: "scene2 72.6s — 한국어 \"네\" 를 처음에 영어 \"You\" 로 받아 적었다가 다음 디코딩이 한국어로 바로잡았는데, 언어 전환 리셋이 이를 버림으로 보고 \"You\" 를 커밋한다"
+why: "기준 설정 bench 정답 대조에서 찾음 (2026-11-28). 앞 화자가 영어로 말하다 이 화자가 한국어로 답한 자리라 timeline 에도 실제 en->ko 전환이 있었다. 붙든 텍스트가 전환 앞 소리인지는 확인하지 않는다"
+found_in: dacca59b
+introduced_in: {"commit": "2e259dd1", "by": "머리말이 바뀌면 붙들고, timeline 이 전환을 보면 붙든 앞 언어 텍스트를 커밋한다"}
+applies_when: {"part.langid": "set"}
+pipeline: configs/pipelines/zero.asr.koen+mt.mock_segalign-w1-lang-lid-w12.yml
+dataset: configs/datasets/northstar_ko+en-ko.yml
+item: scene2
+span_sec: [68.8, 79.0]
+span_samples: [1100800, 1264000]
+run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock_segalign-w1-lang-lid-w12@v3
+baseline: fixtures/lang-switch-commits-misheard.jsonl
+checks: []
+known_issues:
+  - never-commits: {"texts": ["You"]}
+  - must-commit: {"texts": ["네 450"]}

@@ -224,8 +224,10 @@ class Bench:
     async def replay(self, item_id: str, start: int, end: int, events: Path) -> tuple[list, list]:
         """Feeds samples start..end of the item and returns its commits and decodes.
 
-        VAD remembers what it heard, so the audio before the stretch goes through VAD alone
-        first; its speech ends then fall where they fell in the full run.
+        VAD and the langid remember what they heard, so the audio before the stretch goes
+        through them alone first; speech ends and the language timeline then fall where they
+        fell in the full run. The transcriber starts its clock at the stretch, so its slot
+        positions are the item's, as in the bench events, and line up with the langid's.
         """
         whole = self.audio(item_id)
         before, pcm = whole[: start * 2], whole[start * 2 : end * 2]
@@ -237,10 +239,13 @@ class Bench:
             self.pipeline.start(
                 languages=self.dataset.languages, target_lang=self.cfg.target, own_lang=self.cfg.lang
             )
-            vad = self.pipeline.part("vad")
-            if vad is not None:
-                for at in range(0, len(before), step):
+            vad, lid = self.pipeline.part("vad"), self.pipeline.part("langid")
+            for at in range(0, len(before), step):
+                if vad is not None:
                     vad.detect(before[at : at + step])
+                if lid is not None:
+                    lid.hear(before[at : at + step])
+            self.pipeline.part("transcription")._heard = start
             heard = start / SR
             for at in range(0, len(pcm), step):
                 chunk = pcm[at : at + step]

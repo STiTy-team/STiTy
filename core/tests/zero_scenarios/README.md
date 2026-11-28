@@ -10,8 +10,9 @@ zero 파이프라인(`core/pipeline/zero.py`, 전사기 `core/components/transcr
 
 GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 시나리오가 가리키는 파이프라인 설정은
 S3 에 있으니 먼저 `make configs-pull` 로 받는다. 코드를 바꿔 효과를 볼 때는 지금 기준
-설정 `zero.asr.koen+mt.mock_segalign-w1-lang`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름, 세션 언어 밖
-머리말로 시작하는 디코딩은 버림)과 비교한다.
+설정 `zero.asr.koen+mt.mock_segalign-w1-lang-lid-w12` 와 비교한다. SEG 뒤에 단어 하나가 붙으면 확정하고 aligner 로
+슬롯을 자르며, 세션 언어 밖 머리말로 시작하는 디코딩은 버리고, `langid` 부품(오디오 언어 timeline, 1·2초 창)이 찾은
+언어 전환에서 슬롯을 자르는 설정이다.
 
 ```bash
 python -m core.tests.zero_replay                          # 전부
