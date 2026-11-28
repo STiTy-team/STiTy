@@ -6,6 +6,7 @@ pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene5
 span_sec: [3.0, 92.8]
+span_samples: [48000, 1484800]
 run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
 baseline: fixtures/empty-decode-drops-tail.jsonl
 checks: []

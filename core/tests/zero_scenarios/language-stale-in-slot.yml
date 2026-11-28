@@ -6,6 +6,7 @@ pipeline: configs/pipelines/zero.asr.koen+mt.mock.yml
 dataset: configs/datasets/northstar_ko+en-ko.yml
 item: scene6
 span_sec: [71.2, 88.4]
+span_samples: [1139200, 1414400]
 run: bench/runs/northstar_ko+en-ko@v4/zero.asr.koen+mt.mock
 baseline: fixtures/language-stale-in-slot.jsonl
 checks: []

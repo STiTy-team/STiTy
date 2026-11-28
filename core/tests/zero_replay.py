@@ -71,7 +71,7 @@ def longest_loop(text: str, longest: int = 6) -> tuple[int, str]:
 class Replay:
     commits: list[dict]  # transcribed events; "audio" is seconds into the item
     decodes: list[dict]
-    baseline: list[dict]
+    baseline: list[dict] | None  # None: the baseline is not on this machine
 
     def reasons(self) -> Counter:
         return Counter(c["commit_reason"] for c in self.commits)
@@ -86,12 +86,12 @@ class Replay:
             "silent_decodes": sum(1 for d in self.decodes if not spoken(d["committed"] + d["output"])),
             "longest_slot_sec": round(self.longest_slot_sec(), 2),
             "reasons": dict(sorted(self.reasons().items())),
-            "same_as_baseline": self.same_as_baseline(),
-            "behavior": self.behavior()[0],
+            "same_as_baseline": None if self.baseline is None else self.same_as_baseline(),
+            "behavior": "no baseline" if self.baseline is None else self.behavior()[0],
         }
 
     def same_as_baseline(self) -> bool:
-        return [c["original"] for c in self.commits] == [c["original"] for c in self.baseline]
+        return self.baseline is not None and [c["original"] for c in self.commits] == [c["original"] for c in self.baseline]
 
     def behavior(self) -> tuple[str, list[str]]:
         """"same", "text-only" (every commit where it was, a few characters off, as vLLM's
@@ -152,7 +152,7 @@ CHECKS = {
     "no-commit-reason": lambda r, reason: reason not in r.reasons(),
     "no-repeat-loop": lambda r, max: all(longest_loop(c["original"])[0] <= max for c in r.commits),
     "same-as-baseline": lambda r: r.same_as_baseline(),
-    "behaves-as-baseline": lambda r: r.behavior()[0] != "different",
+    "behaves-as-baseline": lambda r: r.baseline is not None and r.behavior()[0] != "different",
 }
 
 
@@ -260,7 +260,8 @@ class Bench:
 
 def describe(sc: dict, replay: Replay) -> str:
     lines = []
-    for side, commits in (("before", replay.baseline), ("now", replay.commits)):
+    sides = [("now", replay.commits)] if replay.baseline is None else [("before", replay.baseline), ("now", replay.commits)]
+    for side, commits in sides:
         lines.append(f"  {side}:")
         lines += [f"    {c['audio']:7.1f}s {c['commit_reason']:>6} [{c['language']}] {c['original']}" for c in commits]
     lines.append("    " + json.dumps(replay.metrics(), ensure_ascii=False))
@@ -293,7 +294,8 @@ def write_status(latest: dict) -> None:
         if fixed:
             issues += " / FIXED: " + ", ".join(fixed)
         m = row["metrics"]
-        behavior = {"same": "같음", "text-only": "글자만 다름(GPU)", "different": "다른 동작"}[m["behavior"]]
+        behavior = {"same": "같음", "text-only": "글자만 다름(GPU)", "different": "다른 동작",
+                    "no baseline": "기준선 없음"}[m["behavior"]]
         numbers = (f"커밋 {m['commits']} · 디코딩 {m['decodes']} · 최장 슬롯 {m['longest_slot_sec']}s · "
                    f"기준선과 {behavior}")
         commit = row["commit"] + ("+수정" if row["dirty"] else "")
@@ -331,8 +333,8 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
 
     groups: dict[tuple[str, str], list] = {}
     for name, sc in scenarios:
-        if not (HERE / sc["baseline"]).exists():
-            print(f"[{name}] skipped: {sc['baseline']} is not on this machine (baselines stay local)")
+        if "span_samples" not in sc and not (HERE / sc["baseline"]).exists():
+            print(f"[{name}] skipped: no span_samples and {sc['baseline']} is not on this machine")
             continue
         groups.setdefault((pipeline_override or sc["pipeline"], sc["dataset"]), []).append((name, sc))
 
@@ -348,23 +350,28 @@ async def main(names: list[str], pipeline_override: str | None, gate: bool) -> i
             continue
         await bench.load()
         for name, sc in members:
-            meta, baseline = read_baseline(HERE / sc["baseline"])
+            # The span comes from the yml; the baseline (the reporting run's own lines for the
+            # span, dataset text included) stays local and is only for comparing.
+            have_baseline = (HERE / sc["baseline"]).exists()
+            meta, baseline = read_baseline(HERE / sc["baseline"]) if have_baseline else ({}, [])
+            start, end = sc.get("span_samples") or (meta["start"], meta["end"])
             events = HERE / "replays" / name / f"{stamp}.jsonl"
             events.parent.mkdir(parents=True, exist_ok=True)
-            commits, decodes = await bench.replay(sc["item"], meta["start"], meta["end"], events)
-            replay = Replay(commits, decodes, baseline)
+            commits, decodes = await bench.replay(sc["item"], start, end, events)
+            replay = Replay(commits, decodes, baseline if have_baseline else None)
 
             print(f"\n[{name}] {sc['what']}")
             introduced = sc.get("introduced_in") or {}
             print(f"  found in {sc.get('found_in', '?')}, introduced in {introduced.get('commit', '?')}: {introduced.get('by', '')}")
             print(describe(sc, replay))
-            verdict, differences = replay.behavior()
+            verdict, differences = replay.behavior() if have_baseline else ("no baseline", [])
             print(f"  behavior vs baseline: {verdict}")
             for line in differences:
                 print(f"    {line}")
             checks, issues = {}, {}
             if gate:
-                checks["behaves-as-baseline"] = verdict != "different"
+                # The gate is a comparison: without the baseline there is nothing to pass.
+                checks["behaves-as-baseline"] = have_baseline and verdict != "different"
             for entry in sc.get("checks", []):
                 check, params = parse_check(entry)
                 checks[label(check, params)] = CHECKS[check](replay, **params)

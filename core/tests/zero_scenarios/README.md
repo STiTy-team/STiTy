@@ -5,10 +5,11 @@ zero 파이프라인(`core/pipeline/zero.py`, 전사기 `core/components/transcr
 
 | | 무엇 |
 |---|---|
-| **시나리오** (`<이름>.yml`) | bench 실행에서 본 문제 하나. 무엇이 틀렸는지(`what`·`why`), 그 일이 난 음성 구간(`item`·`span_sec`), 그때의 로그 줄(`baseline`), 지금 맞아야 할 것(`checks`)과 보고된 문제(`known_issues`), 그리고 아래 버전 필드 |
+| **시나리오** (`<이름>.yml`) | bench 실행에서 본 문제 하나. 무엇이 틀렸는지(`what`·`why`), 그 일이 난 음성 구간(`item`·`span_samples`, 읽기 쉽게 `span_sec`), 그때의 로그 줄이 든 기준선 파일 이름(`baseline`), 지금 맞아야 할 것(`checks`)과 보고된 문제(`known_issues`), 그리고 아래 버전 필드 |
 | **replay** | 그 구간의 음성만 진짜 파이프라인에 흘린다 — bench 처럼 200ms 조각으로, VAD·ASR 모델 그대로. 코드를 바꿀 때마다 돌려 그 지점이 어떻게 바뀌는지 본다 |
 
-GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 코드를 바꿔 효과를 볼 때는 지금 기준
+GPU 와 데이터셋(`STITY_DATA_ROOT`)이 있는 머신에서 저장소 루트에서 돌린다. 시나리오가 가리키는 파이프라인 설정은
+S3 에 있으니 먼저 `make configs-pull` 로 받는다. 코드를 바꿔 효과를 볼 때는 지금 기준
 설정 `zero.asr.koen+mt.mock_segalign-w1-lang`(SEG 뒤에 단어 하나가 붙으면 확정, aligner 로 슬롯을 자름, 세션 언어 밖
 머리말로 시작하는 디코딩은 버림)과 비교한다.
 
@@ -52,8 +53,10 @@ replay 는 구간마다 커밋을 기준선(`before`)과 지금(`now`) 나란히
 | `STATUS.md` | 시나리오마다 마지막 결과 표. 실행마다 다시 쓴다 |
 | `fixtures/<이름>.jsonl` | 기준선: 시나리오를 만든 실행의 그 구간 로그 줄과 구간 샘플 위치 |
 
-기준선과 replay 는 데이터셋 원문이 들어 있어 git 에 올리지 않는다. yml 만 올린다. 기준선이 없는 머신에서는 그
-시나리오를 건너뛴다.
+기준선과 replay 는 데이터셋 원문이 들어 있어 git 에도 S3 에도 올리지 않는다. yml 만 올린다. yml 에는 구간 위치
+(`span_samples`)가 숫자로 들어 있어서, 기준선이 없는 머신에서도 replay 와 검사는 돈다. 그때는 기준선과의 비교
+(`before`, `behavior vs baseline`)만 `no baseline` 으로 빠진다. `--gate` 는 비교가 목적이라 기준선이 없으면 통과하지
+않는다 — 시나리오를 올리는 사람은 자기 bench 기록에서 `zero_cut cut` 으로 기준선을 만든다.
 
 구간은 VAD flush 자리에서 시작한다(그 자리에서는 슬롯이 비어 있다). VAD 는 앞 소리를 기억하므로, 구간 앞의
 오디오를 VAD 에만 먼저 흘린 뒤 구간을 파이프라인에 흘린다 — 말 끝 판단이 전체 실행 때와 같아진다.

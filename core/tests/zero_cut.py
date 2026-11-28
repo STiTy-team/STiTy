@@ -142,6 +142,7 @@ def cut(run_dir: Path, item: str, name: str, start: float | None, stop: float | 
         f"dataset: configs/datasets/{dataset}.yml\n"
         f"item: {item}\n"
         f"span_sec: [{offset / SR:.1f}, {end / SR:.1f}]\n"
+        f"span_samples: [{offset}, {end}]\n"
         f"run: {run_dir}\n"
         f"baseline: fixtures/{name}.jsonl\n"
         f"checks: []\n"
